@@ -329,6 +329,24 @@ sgs.ai_skill_cardask["@lianli-slash"] = function(self)
 	return self:getCardId("Slash") or "."
 end
 
+local qiaocai_skill = {name = "qiaocai"}
+table.insert(sgs.ai_skills, qiaocai_skill)
+function qiaocai_skill.getTurnUseCard(self)
+	if self.player:getMark("@tied")>0 or self.player:hasUsed("QiaocaiCard") then return end
+	return sgs.Card_Parse("@QiaocaiCard=.")
+end
+
+function sgs.ai_skill_use_func.QiaocaiCard(card, use, self)
+	local function compare_func(a,b)
+		return a:getCards("j"):length() > b:getCards("j"):length()
+	end
+	table.sort(self.friends, compare_func)
+	if not self.friends[1]:getCards("j"):isEmpty() then
+		use.card = card
+		if use.to then use.to:append(self.friends[1]) end
+	end
+end
+
 sgs.ai_card_intention.QiaocaiCard = -70
 
 sgs.ai_skill_invoke.tongxin = true
@@ -402,10 +420,9 @@ sgs.ai_skill_use_func.LexueCard = function(card, use, self)
 		self:sortByUseValue(cards, true)
 		for _, hcard in ipairs(cards) do
 			if hcard:getSuit() == lexuesrc:getSuit() then
-				local lexue = sgs.Sanguosha:cloneCard(lexuesrc:objectName(), lexuesrc:getSuit(), lexuesrc:getNumber())
-				lexue:addSubcard(hcard:getId())
-				lexue:setSkillName("lexue")
-				if self:getUseValue(lexuesrc) > self:getUseValue(hcard) then
+				local lexuestr = ("%s:lexue[%s:%s]=%d"):format(lexuesrc:objectName(), hcard:getSuitString(), hcard:getNumberString(), hcard:getId())
+				local lexue = sgs.Card_Parse(lexuestr)
+				if self:getUseValue(lexue) > self:getUseValue(hcard) then
 					if lexuesrc:inherits("BasicCard") then
 						self:useBasicCard(lexuesrc, use)
 						if use.card then use.card = lexue return end
@@ -437,6 +454,24 @@ sgs.ai_skill_use_func.LexueCard = function(card, use, self)
 end
 
 sgs.ai_use_priority.LexueCard = 10
+
+local xunzhi_skill = {name = "xunzhi"}
+table.insert(sgs.ai_skills, xunzhi_skill)
+function xunzhi_skill.getTurnUseCard(self)
+	if self.player:hasUsed("XunzhiCard") then return end
+	if (#self.friends > 1 and self.role ~= "renegade") or (#self.enemies == 1 and sgs.turncount > 1) then
+		if self:getAllPeachNum() == 0 and self.player:getHp() == 1 then
+			return sgs.Card_Parse("@XunzhiCard=.")
+		end
+		if self:isWeak() and self.role == "rebel" and self.player:inMyAttackRange(self.room:getLord()) and self:isEquip("Crossbow") then
+			return sgs.Card_Parse("@XunzhiCard=.")
+		end
+	end
+end
+
+function sgs.ai_skill_use_func.XunzhiCard(card, use)
+	use.card = card
+end
 
 sgs.ai_skill_invoke.zhenggong  = true
 

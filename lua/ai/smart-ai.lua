@@ -729,7 +729,7 @@ local function getGameProcessValues(self, players)
 			end
 			if aplayer:inMyAttackRange(self.room:getLord()) and rebel_num > 1 then
 				rebel_value = rebel_value + 0.2
-				if aplayer:getWeapon() and aplayer:getWeapon():inherits("Crossbow") or aplayer:hasSkill("paoxiao") then
+				if self:isEquip("Crossbow", aplayer) then
 					rebel_value = rebel_value + 0.4
 				end
 			end
@@ -1218,9 +1218,11 @@ function SmartAI:filterEvent(event, player, data)
 			if player:objectName() == caiwenji:objectName() then intention = 0 end
 			sgs.refreshLoyalty(caiwenji, intention)
 		end
-	elseif event == sgs.TurnStart and player:isLord() then
-		sgs.turncount = (sgs.turncount or 0) + 1
+	elseif event == sgs.PhaseChange and player:isLord() and player:getPhase()== sgs.Player_Finish then
+		sgs.turncount = sgs.turncount + 1
 		--self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)
+	elseif event == sgs.GameStart then
+		sgs.turncount = 0
 	end
 end
 
@@ -1457,7 +1459,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 	else
 		if flags:match("e") then
-			if self:isEquip("Crossbow",who) then
+			if who:getWeapon() and who:getWeapon():inherits("Crossbow") then
 				for _, friend in ipairs(self.friends) do
 					if who:distanceTo(friend) <= 1 then return who:getWeapon():getId() end
 				end
@@ -1936,7 +1938,7 @@ function SmartAI:getTurnUse()
 
 	self:sortByUseValue(cards)
 
-	if self.player:hasSkill("paoxiao") or (self.player:getWeapon() and self.player:getWeapon():objectName() == "crossbow") then
+	if self:isEquip("Crossbow") then
 		slashAvail = 100
 	end
 
@@ -2660,6 +2662,7 @@ function SmartAI:isEquip(equip_name, player)
 		if card:inherits(equip_name) then return true end
 	end
 	if equip_name == "EightDiagram" and player:hasSkill("bazhen") and not player:getArmor() then return true end
+	if equip_name == "Crossbow" and player:hasSkill("paoxiao") then return true end
 	return false
 end
 

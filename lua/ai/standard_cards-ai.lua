@@ -140,17 +140,9 @@ end
 
 function SmartAI:slashIsAvailable(player)
 	player = player or self.player
-	if player:hasFlag("tianyi_failed") or player:hasFlag("xianzhen_failed") then return false end
-
-	if player:hasWeapon("crossbow") or player:hasSkill("paoxiao") then
-		return true
-	end
-
-	if player:hasFlag("tianyi_success") then
-		return (player:usedTimes("Slash") + player:usedTimes("FireSlash") + player:usedTimes("ThunderSlash")) < 2
-	else
-		return (player:usedTimes("Slash") + player:usedTimes("FireSlash") + player:usedTimes("ThunderSlash")) < 1
-	end
+	local slash = self:getCard("Slash", player) or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	assert(slash)
+	return slash:isAvailable(player)
 end
 
 function SmartAI:useCardSlash(card, use)

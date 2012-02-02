@@ -31,7 +31,7 @@ sgs.ai_skill_invoke.jilei = function(self, data)
 end	
 
 sgs.ai_skill_choice.jilei = function(self, choices)
-	if (self.jilei_source:hasSkill("paoxiao") or self:isEquip("Crossbow",self.jilei_source)) and self.jilei_source:inMyAttackRange(self.player) then
+	if self:isEquip("Crossbow",self.jilei_source) and self.jilei_source:inMyAttackRange(self.player) then
 		return "basic"
 	else
 		return "trick"
