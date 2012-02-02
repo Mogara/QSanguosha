@@ -24,6 +24,12 @@ sgs.ai_choicemade_filter.skillInvoke.hujia = function(player, promptlist)
 	end
 end
 
+function sgs.ai_slash_prohibit.hujia(self, to)
+	if self:isFriend(to) then return false end
+	local guojia = self.room:findPlayerBySkillName("tiandu")
+	if guojia and guojia:getKingdom() == "wei" and self:isFriend(to, guojia) then return sgs.ai_slash_prohibit.tiandu(self, guojia) end
+end
+
 sgs.ai_choicemade_filter.cardResponsed["@hujia-jink"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.hujiasource, -80)
@@ -80,7 +86,7 @@ sgs.ai_skill_invoke.ganglie = function(self, data)
 end
 
 sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equip)
-	if self.player:getHp() > self.player:getHandcardNum() then return {} end
+	if self:getOverflow() > 0 then return end
 
 	if self.player:getHandcardNum() == 3 then
 		local to_discard = {}
@@ -105,6 +111,11 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equ
 	end
 
 	if self.player:getHandcardNum() < 2 then return {} end
+end
+
+function sgs.ai_slash_prohibit.ganglie(self, to)
+	if self:isWeak() or self:isFriend(to) then return true end
+	return self.player:getHandcardNum()+self.player:getHp() < 5
 end
 
 sgs.ai_chaofeng.xiahoudun = -3
@@ -191,6 +202,10 @@ sgs.xuchu_keep_value =
 sgs.ai_chaofeng.xuchu = 3
 
 sgs.ai_skill_invoke.tiandu = sgs.ai_skill_invoke.jianxiong
+
+function sgs.ai_slash_prohibit.tiandu(self, to)
+	if self:isEnemy(to) and self:isEquip("EightDiagram", to) then return true end
+end
 
 sgs.ai_chaofeng.guojia = -4
 
@@ -995,6 +1010,13 @@ end
 
 sgs.ai_card_intention.LiuliCard = function(card,from,to,source)
 	sgs.ai_liuli_effect=true
+end
+
+function sgs.ai_slash_prohibit.liuli(self, to, card)
+	if self:isFriend(to) then return false end
+	for _, friend in ipairs(self.friends_noself) do
+		if to:canSlash(friend,true) and self:slashIsEffective(card, friend) then return true end
+	end
 end
 
 sgs.daqiao_suit_value = 

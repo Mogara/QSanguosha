@@ -551,6 +551,11 @@ function sgs.ai_skill_use_func.XunzhiCard(card, use)
 	use.card = card
 end
 
+function sgs.ai_slash_prohibit.dushi(self, to)
+	if self:isFriend(to) and self:isWeak(to) then return true end
+	return self.player:isLord() and self:isWeak(enemy)
+end
+
 sgs.ai_skill_invoke.zhenggong  = true
 
 sgs.ai_skill_invoke.toudu = function(self, data)

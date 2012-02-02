@@ -242,6 +242,11 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	end
 end
 
+function sgs.ai_slash_prohibit.xiangle(self, to)
+	if self:isFriend(to) then return false end
+	return self:getCardsNum("Slash")+self:getCardsNum("Analpetic")+math.max(self:getCardsNum("Jink")-1,0) < 2
+end
+
 sgs.ai_skill_invoke.fangquan = function(self, data)
 	if #self.friends == 1 then
 		return false
@@ -486,6 +491,11 @@ sgs.ai_chaofeng.erzhang = 5
 sgs.ai_skill_invoke.beige = function(self, data)
 	local damage = data:toDamage()
 	return self:isFriend(damage.to) and not self:isFriend(damage.from)
+end
+
+function sgs.ai_slash_prohibit.duanchang(self, to)
+	if self:isFriend(to) and self:isWeak(to) then return true end
+	return #self.enemies>1 and self:isWeak(to) and (self.player:isLord() or not self:isWeak())
 end
 
 sgs.ai_chaofeng.caiwenji = -5

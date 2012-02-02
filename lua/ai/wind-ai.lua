@@ -186,6 +186,21 @@ end
 
 sgs.ai_card_intention.LeijiCard = 80
 
+function sgs.ai_slash_prohibit.leiji(self, to, card)
+	if self:isFriend(to) then return false end
+	local hcard = to:getHandcardNum()
+	if self.player:hasSkill("tieji") or
+		(self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange())) then return false end
+
+	if to:getHandcardNum() >= 2 then return true end
+	if self:isEquip("EightDiagram", to) then
+		local equips = to:getEquips()
+		for _, equip in sgs.qlist(equips) do
+			if equip:getSuitString() == "spade" then return true end
+		end
+	end
+end
+
 local huangtianv_skill={}
 huangtianv_skill.name="huangtianv"
 table.insert(sgs.ai_skills,huangtianv_skill)

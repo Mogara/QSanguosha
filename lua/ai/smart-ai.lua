@@ -2794,9 +2794,9 @@ function SmartAI:useEquipCard(card, use)
 end
 
 dofile "lua/ai/debug-ai.lua"
-dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"
+dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/basara-ai.lua"
 dofile "lua/ai/hegemony-ai.lua"

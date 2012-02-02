@@ -12,6 +12,14 @@ end
 
 sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash
 
+function sgs.ai_slash_prohibit.weidi(self, to, card)
+	local lord = self.room:getLord()
+	for _, askill in sgs.qlist(lord:getVisibleSkillList()) do
+		local filter = sgs.ai_slash_prohibit[askill:objectName()]
+		if to:hasLordSkill(askill:objectName()) and filter and type(filter) == "function" and filter(self, to, card) then return true end
+	end
+end
+
 sgs.ai_chaofeng.yuanshu = 3
 
 sgs.ai_skill_invoke.danlao = function(self, data)

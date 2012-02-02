@@ -6,102 +6,28 @@ local function hasExplicitRebel(room)
 	return false
 end
 
+sgs.ai_slash_prohibit = {}
 function SmartAI:slashProhibit(card,enemy)
-	if card == nil then
-		card = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	card = card or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
+		local filter = sgs.ai_slash_prohibit[askill:objectName()]
+		if filter and type(filter) == "function" and filter(self, enemy, card) then return true end
 	end
 
-	if self:isWeak() and self:hasSkills("enyuan|ganglie", enemy) then return true end
 	if self:isFriend(enemy) then
-		if card:inherits("FireSlash") or self.player:hasWeapon("fan") then
+		if card:inherits("FireSlash") or self.player:hasWeapon("fan") or self.player:hasSkill("zonghuo") then
 			if self:isEquip("Vine", enemy) then return true end
 		end
-		if enemy:isChained() and card:inherits("NatureSlash") and #(self:getChainedFriends())>1 and
+		if enemy:isChained() and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) and #(self:getChainedFriends())>1 and
 			self:slashIsEffective(card,enemy) then return true end
 		if self:getCardsNum("Jink",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card,enemy) then return true end
-		if self:hasSkills("duanchang|huilei|dushi", enemy) and self:isWeak(enemy) then return true end
 		if self:isEquip("GudingBlade") and enemy:isKongcheng() then return true end
 	else
-		if enemy:hasSkill("liuli") then
-			if enemy:getHandcardNum() < 1 then return false end
-			for _, friend in ipairs(self.friends_noself) do
-				if enemy:canSlash(friend,true) and self:slashIsEffective(card, friend) then return true end
-			end
-		end
-
-		if enemy:hasSkill("leiji") then
-			local hcard = enemy:getHandcardNum()
-			if self.player:hasSkill("tieji") or
-				(self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange())) then return false end
-
-			if enemy:getHandcardNum() >= 2 then return true end
-			if self:isEquip("EightDiagram", enemy) then
-				local equips = enemy:getEquips()
-				for _,equip in sgs.qlist(equips) do
-					if equip:getSuitString() == "spade" then return true end
-				end
-			end
-		end
-
-		if enemy:hasSkill("tiandu") then
-			if self:isEquip("EightDiagram", enemy) then return true end
-		end
-
-		if enemy:hasLordSkill("hujia") then
-			for _, player in ipairs(self:getFriends(enemy)) do
-				if player:hasSkill("tiandu") and self:isEquip("EightDiagram", player) and player:getKingdom() == "wei" then return true end
-			end
-		end
-
-		if enemy:hasSkill("ganglie") then
-			if self.player:getHandcardNum()+self.player:getHp() < 5 then return true end
-		end
-
-		if enemy:hasSkill("shenjun") and (enemy:getGeneral():isMale()~= self.player:getGeneral():isMale()) and not card:inherits("ThunderSlash") then
+		if enemy:isChained() and #(self:getChainedFriends()) > #(self:getChainedEnemies()) and self:slashIsEffective(card,enemy) 
+			and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) then
 			return true
 		end
-
-		if enemy:hasSkill("xiangle") and self:getCardsNum("Slash")+self:getCardsNum("Analpetic")+math.max(self:getCardsNum("Jink")-1,0) < 2 then
-			return true
-		end
-
-		if enemy:isChained() and #(self:getChainedFriends()) > #(self:getChainedEnemies()) and self:slashIsEffective(card,enemy) then
-			return true
-		end
-
-		if enemy:hasSkill("wuhun") and self:isWeak(enemy) and not (enemy:isLord() and self.player:getRole() == "rebel") then
-			local mark = 0
-			local marks = {}
-			for _, player in sgs.qlist(self.room:getAlivePlayers()) do
-				local mymark = player:getMark("@nightmare")
-				if player:objectName() == self.player:objectName() then
-					mymark = mymark + 1
-					if self.player:hasFlag("drank") then mymark = mymark + 1 end
-				end
-				if mymark > mark then mark = mymark end
-				marks[player:objectName()] = mymark
-			end
-			if mark > 0 then
-				for _,friend in ipairs(self.friends) do
-					if marks[friend:objectName()] == mark and (not self:isWeak(friend) or friend:isLord()) and
-						not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
-				end
-				if self.player:getRole()~="rebel" and marks[self.room:getLord():objectName()] == mark and
-					not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
-			end
-		end
-
-		if enemy:hasSkill("duanchang") and #self.enemies>1 and self:isWeak(enemy) and (self.player:isLord() or not self:isWeak()) then
-			return true
-		end
-
-		if enemy:hasSkill("huilei") and #self.enemies>1 and self:isWeak(enemy) and
-			(self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0) then
-			return true
-		end
-
-		if enemy:hasSkill("dushi") and self.player:isLord() and self:isWeak(enemy) then return true end
 	end
 
 	return not self:slashIsEffective(card, enemy)

@@ -113,6 +113,11 @@ end
 sgs.ai_use_value.XinzhanCard = 4.4
 sgs.ai_use_priority.XinzhanCard = 9.2
 
+function sgs.ai_slash_prohibit.huilei(self, to)
+	if self:isFriend(to) and self:isWeak(to) then return true end
+	return #self.enemies>1 and self:isWeak(to) and (self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0)
+end
+
 sgs.ai_chaofeng.masu = -4
 
 sgs.ai_skill_cardask["@enyuan"] = function(self)
@@ -123,6 +128,10 @@ sgs.ai_skill_cardask["@enyuan"] = function(self)
 		end
 	end
 	return "."
+end
+
+function sgs.ai_slash_prohibit.enyuan(self)
+	if self:isWeak() then return true end
 end
 
 xuanhuo_skill={}
