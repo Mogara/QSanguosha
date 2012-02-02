@@ -114,13 +114,15 @@ function SmartAI:slashIsEffective(slash, to)
 		end
 	end
 
-	local nature = {
+	local natures = {
 		Slash = sgs.DamageStruct_Normal,
 		FireSlash = sgs.DamageStruct_Fire,
 		ThunderSlash = sgs.DamageStruct_Thunder,
 	}
 
-	if not self:damageIsEffective(to, nature[slash:className()]) then return false end
+	local nature = natures[slash:className()]
+	if self.player:hasSkill("zonghuo") then nature = sgs.DamageStruct_Fire end
+	if not self:damageIsEffective(to, nature) then return false end
 
 	if self.player:hasWeapon("qinggang_sword") or (self.player:hasFlag("xianzhen_success") and self.room:getTag("XianzhenTarget"):toPlayer() == to) then
 		return true
@@ -131,7 +133,7 @@ function SmartAI:slashIsEffective(slash, to)
 		if armor:objectName() == "renwang_shield" then
 			return not slash:isBlack()
 		elseif armor:objectName() == "vine" then
-			return slash:inherits("NatureSlash") or self.player:hasWeapon("fan")
+			return nature ~= sgs.DamageStruct_Normal or self.player:hasWeapon("fan")
 		end
 	end
 

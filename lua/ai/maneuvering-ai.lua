@@ -216,7 +216,8 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if (self:objectiveLevel(enemy) > 3) and not enemy:isKongcheng() and self:hasTrickEffective(fire_attack, enemy) then
+		if (self:objectiveLevel(enemy) > 3) and not enemy:isKongcheng() and self:hasTrickEffective(fire_attack, enemy) 
+			and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) then
 
 			local cards = enemy:getHandcards()
 			local success = true

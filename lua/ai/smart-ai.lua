@@ -899,7 +899,7 @@ end
 
 function SmartAI:isFriend(other, another)
 	if another then return self:isFriend(other)==self:isFriend(another) end
-	if sgs.isRolePredictable() then return self.lua_ai:isFriend(other) end
+	if sgs.isRolePredictable() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isFriend(other) end
 	if self.player:objectName() == other:objectName() then return true end
 	if self:objectiveLevel(other) < 0 then return true end
 	return false
@@ -907,7 +907,7 @@ end
 
 function SmartAI:isEnemy(other, another)
 	if another then return self:isFriend(other)~=self:isFriend(another) end
-	if sgs.isRolePredictable() then return self.lua_ai:isEnemy(other) end
+	if sgs.isRolePredictable() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
 	if self:objectiveLevel(other) >= 0 then return true end
 	return false
@@ -990,7 +990,7 @@ function SmartAI:updatePlayers(inclusive)
 
 		self.retain = 2
 		self.harsh_retain = false
-		return
+		if self.role ~= "renegade" or #self.enemies > 0 then return end
 	end
 
 	inclusive = inclusive or true
@@ -1136,8 +1136,7 @@ function SmartAI:filterEvent(event, player, data)
 			and (to:getHandcardNum()>2 or from:getState() == "robot") then
 			sgs.ai_leiji_effect = true
 		end
-	end
-	if event == sgs.Damaged then
+	elseif event == sgs.Damaged then
 		local damage = data:toDamage()
 		local card = damage.card
 		local from = damage.from
@@ -1727,7 +1726,7 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	for _, id in ipairs(ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(id))
 	end
-	self:sortByCardNeed(cards, true)
+	if sgs.turncount and sgs.turncount > 0 then self:sortByCardNeed(cards) else self:sortByUseValue(cards) end
 	return cards[#cards]:getEffectiveId()
 end
 
@@ -2726,8 +2725,8 @@ function SmartAI:evaluateArmor(card, player)
 	if ecard:inherits("EightDiagram") and self:hasWizard(self:getEnemies(player),true) then return 2 end
 	if ecard:inherits("Vine") then
 		for _, enemy in ipairs(self:getEnemies(player)) do
-			if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or enemy:hasSkill("huoji") then return -1 end
-			if enemy == self.player and (self:getCardId("FireSlash", enemy) or self:getCardId("FireAttack",enemy)) then return -1 end
+			if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or self:hasSkills("huoji|shaoying", enemy) then return -1 end
+			if enemy:objectName() == self.player:objectName() and (self:getCardId("FireSlash", enemy) or self:getCardId("FireAttack",enemy)) then return -1 end
 		end
 	end
 	if #(self:getEnemies(player))<3 and ecard:inherits("Vine") then return 4 end

@@ -414,6 +414,27 @@ sgs.ai_skill_invoke.caizhaoji_hujia = function(self, data)
 	return true
 end
 
+function sgs.ai_skill_choice.shenjun(self, choices)
+	local gender
+	if sgs.isRolePredictable() then
+		local male = 0
+		self:updatePlayers()
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:getGeneral():isMale() then male = male + 1 end
+		end
+		gender = (male < #self.enemies - male)
+	else
+		gender = (sgs.Sanguosha:getSkill("shenjun"):getDefaultChoice(self.player) == "male")	
+	end
+	if self.player:getSeat() < self.room:alivePlayerCount()/2 then gender = not gender end
+	if gender then return "male" else return "female" end
+end
+
+function sgs.ai_skill_invoke.shaoying(self, data)
+	local damage = data:toDamage()
+	return self:isEnemy(damage.to:getNextAlive())
+end
+
 sgs.ai_skill_invoke.gongmou = true
 
 sgs.ai_skill_playerchosen.gongmou = function(self,choices)
