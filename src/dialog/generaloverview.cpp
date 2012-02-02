@@ -178,6 +178,13 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
             last_word = Sanguosha->translate(("~") +  origin_generals.at(1));
     }
 
+    if(last_word.startsWith("~") && general->objectName().endsWith("f")){
+        QString origin_general = general->objectName();
+        origin_general.chop(1);
+        if(Sanguosha->getGeneral(origin_general))
+            last_word = Sanguosha->translate(("~") + origin_general);
+    }
+
     if(!last_word.startsWith("~")){
 
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
