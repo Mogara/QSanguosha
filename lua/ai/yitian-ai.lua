@@ -329,6 +329,8 @@ sgs.ai_skill_cardask["@lianli-slash"] = function(self)
 	return self:getCardId("Slash") or "."
 end
 
+sgs.ai_skill_invoke.tongxin = true
+
 local qiaocai_skill = {name = "qiaocai"}
 table.insert(sgs.ai_skills, qiaocai_skill)
 function qiaocai_skill.getTurnUseCard(self)
@@ -349,7 +351,62 @@ end
 
 sgs.ai_card_intention.QiaocaiCard = -70
 
-sgs.ai_skill_invoke.tongxin = true
+local guihan_skill = {name = "guihan"}
+table.insert(sgs.ai_skills, guihan_skill)
+function guihan_skill.getTurnUseCard(self)
+	if self:getOverflow() == 0 or self.player:hasUsed("GuihanCard") then return end
+	if self.room:alivePlayerCount() == 2 or self.role == "renegade" then return end
+	local rene = 0
+	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+		if aplayer:getRole() == "renegade" then rene = rene + 1 end
+	end
+	if #self.friends + #self.enemies + rene < self.room:alivePlayerCount() then return end
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByUseValue(cards)
+	local red_cards = {}
+	for index = #cards, 1, -1 do
+		if self:getUseValue(cards[index]) >= 6 then break end
+		if cards[index]:isRed() then
+			table.insert(red_cards, cards[index]:getId())
+			table.remove(cards, index)
+			if #red_cards >=2 then break end
+		end
+	end
+	if #red_cards == 2 then return sgs.Card_Parse("@GuihanCard=" .. table.concat(red_cards, "+")) end
+end
+
+function sgs.ai_skill_use_func.GuihanCard(card, use, self)
+	local values, range, fediff = {}, self.player:getAttackRange(), 0
+	local nplayer = self.player
+	while nplayer:getNextAlive():objectName() ~= self.player:objectName() do
+		nplayer = nplayer:getNextAlive()
+		if self:isFriend(nplayer) then fediff = fediff - 1
+		elseif self:isEnemy(nplayer) then fediff = fediff + 1 end
+		values[nplayer:objectName()] = fediff
+	end
+	local function get_value(a)
+		local ret = 0
+		for _, enemy in ipairs(self.enemies) do
+			if a:objectName() ~= enemy:objectName() and a:distanceTo(enemy) <= range then ret = ret + 1 end
+		end
+		return ret
+	end
+	local function compare_func(a,b)
+		if values[a:objectName()] ~= values[b:objectName()] then
+			return values[a:objectName()] > values[b:objectName()]
+		else
+			return get_value(a) > get_value(b)
+		end
+	end
+	local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
+	table.sort(players, compare_func)
+	if values[players[1]:objectName()] > 0 then
+		use.card = card
+		if use.to then use.to:append(players[1]) end
+	end
+end
+
+sgs.ai_use_priority.GuihanCard = 8
 
 sgs.ai_skill_invoke.caizhaoji_hujia = function(self, data)
 	local zhangjiao = self.room:findPlayerBySkillName("guidao")
