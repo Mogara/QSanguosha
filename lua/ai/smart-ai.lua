@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120202 (V0.7 Beta 1)"
+version = "QSanguosha AI 20120203 (V0.7 Beta 1)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -1603,6 +1603,10 @@ function SmartAI:askForCard(pattern, prompt, data)
 				self:sortByUseValue(cards, true)
 				return "$"..cards[1]:getEffectiveId().."+"..cards[2]:getEffectiveId()
 			end
+		end
+	elseif parsedPrompt[1] == "blade-slash" then
+		if target and self:isFriend(target) and not (target:hasSkill("leiji") and self:getCardsNum("Jink", target, "h") > 0) then
+			return "."
 		end
 	end
 

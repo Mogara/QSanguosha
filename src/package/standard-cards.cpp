@@ -235,7 +235,7 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        const Card *card = room->askForCard(player, "slash", "blade-slash");
+        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName());
         if(card){
             // if player is drank, unset his flag
             if(player->hasFlag("drank"))
