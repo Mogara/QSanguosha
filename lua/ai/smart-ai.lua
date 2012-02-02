@@ -1148,19 +1148,13 @@ function SmartAI:filterEvent(event, player, data)
 			if sgs.ai_quhu_effect then
 				sgs.quhu_effect = false
 				local xunyu = self.room:findPlayerBySkillName("quhu")
-				intention = sgs.ai_card_intention.general(to, 80)
+				intention = 80
 				from = xunyu
 			else
-				intention = sgs.ai_card_intention.general(to, 100) 
+				intention = 100 
 			end
 			
-			if from then
-				if from:objectName() == to:objectName() then intention = 0 end
-				sgs.refreshLoyalty(from, intention)
-				if to:isLord() and intention < 0 then
-					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
-				end
-			end
+			if from then sgs.updateIntention(from, to, intention) end
 		end
 	elseif event == sgs.CardUsed then
 		local struct = data:toCardUse()
@@ -1191,22 +1185,18 @@ function SmartAI:filterEvent(event, player, data)
 	elseif event == sgs.CardLost then
 		local move = data:toCardMove()
 		local from = move.from
-		local to =   move.to
 		local place = move.from_place
 		local card = sgs.Sanguosha:getCard(move.card_id)
 		if sgs.ai_snat_disma_effect then
 			sgs.ai_snat_disma_effect = false
-			local intention = sgs.ai_card_intention.general(from,70)
+			local intention = 70
 			if place == sgs.Player_Judging then
-				if not card:inherits("Lightning") and not card:inherits("Disaster") then intention = -intention else intention = 0 end
+				if not card:inherits("Disaster") then intention = -intention else intention = 0 end
 			elseif place == sgs.Player_Equip then
 				if player:getLostHp() > 1 and card:inherits("SilverLion") then intention = -intention end
 				if self:hasSkills(sgs.lose_equip_skill, player) or card:inherits("GaleShell") then intention = 0 end
 			end
-			if from:isLord() and intention < 0 then
-				sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] = (sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] or 0)+1
-			end
-			sgs.refreshLoyalty(sgs.ai_snat_dism_from,intention)
+			sgs.updateIntention(sgs.ai_snat_dism_from, from, intention)
 		end
 	elseif event == sgs.StartJudge then
 		local judge = data:toJudge()
