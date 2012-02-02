@@ -465,6 +465,8 @@ end
 
 sgs.ai_card_intention.ZhijianCard = -80
 
+sgs.ai_cardneed.zhijian = sgs.ai_cardneed.equip
+
 sgs.ai_skill_invoke.guzheng = function(self, data)
 	local player = self.room:getCurrent()
 	return (self:isFriend(player) and not self:hasSkills(sgs.need_kongcheng, player)) or data:toInt() >= 3

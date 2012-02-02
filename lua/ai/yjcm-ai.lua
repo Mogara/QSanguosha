@@ -392,6 +392,7 @@ sgs.ai_use_priority.MingceCard = 4
 
 sgs.ai_card_intention.MingceCard = -70
 
+sgs.ai_cardneed.mingce = sgs.ai_cardneed.equip
 local jiejiu_skill={}
 jiejiu_skill.name="jiejiu"
 table.insert(sgs.ai_skills,jiejiu_skill)
@@ -504,6 +505,7 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 	end
 end
 
+sgs.ai_cardneed.xianzhen = sgs.ai_cardneed.bignumber
 sgs.ai_card_intention.XianzhenCard = 70
 
 sgs.dynamic_value.control_card.XianzhenCard = true

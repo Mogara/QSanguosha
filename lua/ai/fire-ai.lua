@@ -66,6 +66,7 @@ end
 
 table.insert(sgs.ai_choicemade_filter.cardUsed, quhu_filter)
 
+sgs.ai_cardneed.quhu = sgs.ai_cardneed.bignumber
 sgs.ai_skill_playerchosen.quhu = sgs.ai_skill_playerchosen.damage
 
 sgs.ai_card_intention.QuhuCard = 30
@@ -334,6 +335,8 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 		end
 	end
 end
+
+sgs.ai_cardneed.tianyi = sgs.ai_cardneed.bignumber
 
 sgs.ai_card_intention.TianyiCard = 30
 

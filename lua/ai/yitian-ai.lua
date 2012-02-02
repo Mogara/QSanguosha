@@ -129,25 +129,36 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 	local cards=self.player:getCards("he")
 	cards=sgs.QList2Table(cards)
 	self:sortByUseValue(cards,true)
+	local opt1, opt2
 	for _,card in ipairs(cards) do
-		if card:getNumber()==point then return "@ChengxiangCard=" .. card:getId() .. "->" .. targets[1]:objectName() end
+		if card:getNumber()==point then opt1 = "@ChengxiangCard=" .. card:getId() .. "->" .. targets[1]:objectName() break end
 	end
 	for _,card1 in ipairs(cards) do
 		for __,card2 in ipairs(cards) do
 			if card1:getId()==card2:getId() then
 			elseif card1:getNumber()+card2:getNumber()==point then
 				if #targets >= 2 and targets[2]:isWounded() then
-					return "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
+					opt2 = "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
+					break
 				elseif targets[1]:getHp()==1 or self:getUseValue(card1)+self:getUseValue(card2)<=6 then
-					return "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()
+					opt2 = "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()
+					break
 				end
 			end
 		end
+		if opt2 then break end
 	end
-	return "."
+	if opt1 and opt2 then
+		if self:getHandcardNum() > 7 then return opt2 else return opt1 end
+	end
+	return opt2 or opt1 or "."
 end
 
 sgs.ai_card_intention.ChengxiangCard = sgs.ai_card_intention.QingnangCard
+
+function sgs.ai_cardneed.chengxiang(to, card, self)
+	return card:getNumber()<8 and self:getUseValue(card)<6 and to:hasSkill("chengxiang") and to:getHandcardNum() < 12
+end
 
 sgs.ai_skill_invoke.jueji = true
 
@@ -716,3 +727,5 @@ sgs.ai_skill_use_func.TaichenCard=function(card,use,self)
 		use.card = sgs.Card_Parse(card_str)
 	end
 end
+
+sgs.ai_cardneed.taichen = sgs.ai_cardneed.equip

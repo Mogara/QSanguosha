@@ -106,6 +106,8 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	return "."
 end
 
+sgs.ai_cardneed.shensu = sgs.ai_cardneed.equip
+
 sgs.ai_card_intention.ShensuCard = 80
 
 sgs.xiahouyuan_keep_value = 
@@ -199,6 +201,10 @@ function sgs.ai_slash_prohibit.leiji(self, to, card)
 			if equip:getSuitString() == "spade" then return true end
 		end
 	end
+end
+
+function sgs.ai_cardneed.leiji(to, card, self)
+	return card:inherits("Jink") and self:getCardsNum("Jink")>1
 end
 
 local huangtianv_skill={}
