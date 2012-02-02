@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120201 (V0.7 Stable Patch 2)"
+version = "QSanguosha AI 20120202 (V0.7 Beta 1)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -1202,7 +1202,7 @@ function SmartAI:filterEvent(event, player, data)
 				if not card:inherits("Lightning") and not card:inherits("Disaster") then intention = -intention else intention = 0 end
 			elseif place == sgs.Player_Equip then
 				if player:getLostHp() > 1 and card:inherits("SilverLion") then intention = -intention end
-				if self:hasSkills(sgs.lose_equip_skill, player) then intention = 0 end
+				if self:hasSkills(sgs.lose_equip_skill, player) or card:inherits("GaleShell") then intention = 0 end
 			end
 			if from:isLord() and intention < 0 then
 				sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] = (sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] or 0)+1
@@ -1405,7 +1405,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 	local cardchosen = sgs.ai_skill_cardchosen[string.gsub(reason,"%-","_")]
 	local card
 	if type(cardchosen) == "function" then
-		card = cardchosen(self, who)
+		card = cardchosen(self, who, flags)
 	end
 	if card then
 		return card:getId()

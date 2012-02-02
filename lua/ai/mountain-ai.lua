@@ -16,7 +16,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		end
 
 		local equips = who:getCards("e")
-		if not target and not equips:isEmpty() then
+		if not target and not equips:isEmpty() and self:hasSkills(sgs.lose_equip_skill, who) then
 			for _, equip in sgs.qlist(equips) do
 				if equip:inherits("OffensiveHorse") then card = equip break
 				elseif equip:inherits("DefensiveHorse") then card = equip break
@@ -38,7 +38,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 	else
 		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():inherits("GaleShell")) then return end
 		local card_id = self:askForCardChosen(who, "e", "snatch")
-		if card_id > 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
+		if card_id >= 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
 		local targets = {}
 		if card then
 			for _, friend in ipairs(self.friends) do
