@@ -211,8 +211,10 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:isChained() then
-			if use.to then use.to:append(enemy) end
-			if use.to:length() == 2 then break end
+			if use.to then
+				use.to:append(enemy)
+				if use.to:length() == 2 then break end
+			end
 		end
 	end
 	use.card = sgs.Card_Parse("@MediumYeyanCard=" .. table.concat(need_cards, "+"))

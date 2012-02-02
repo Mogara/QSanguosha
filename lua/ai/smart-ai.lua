@@ -580,7 +580,7 @@ sgs.ai_explicit = {}
 sgs.ai_loyalty = {}
 
 sgs.ai_card_intention.general=function(to,level)
-	if not to then return 0 end
+	if not to then to:getRoom():writeToConsole(debug.traceback()) end
 	local has_rebel = false
 	-- if not to.getRoom then global_room:writeToConsole(debug.traceback()) end
 	for _, aplayer in sgs.qlist(to:getRoom():getAlivePlayers()) do
@@ -678,6 +678,8 @@ function sgs.refreshLoyalty(player,intention)
 end
 
 function sgs.updateIntention(from, to, intention, card)
+	if not to then self.room:writeToConsole(debug.traceback()) end
+	if from:objectName() == to:objectName() then return end
 	intention = sgs.ai_card_intention.general(to, intention)
 	--[[if (from:getRole() == "loyalist" and intention < 0) or (from:getRole() == "rebel" and intention > 0) then
 		from:getRoom():writeToConsole("---------")
@@ -696,9 +698,7 @@ end
 
 function sgs.updateIntentions(from, tos, intention, card)
 	for _, to in ipairs(tos) do
-		if from:objectName() ~= to:objectName() then
-			sgs.updateIntention(from, to, intention, card)
-		end
+		sgs.updateIntention(from, to, intention, card)
 	end
 end
 
