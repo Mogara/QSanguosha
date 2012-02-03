@@ -814,6 +814,7 @@ function SmartAI:objectiveLevel(player)
 
 	if self.role == "lord" then
 		if rebel_num == 0 then
+			if self:isWeak(player) then return 0 end
 			local comp_func = function(a, b)
 				local aname = a:objectName()
 				local bname = b:objectName()
@@ -827,8 +828,6 @@ function SmartAI:objectiveLevel(player)
 			if (sgs.ai_anti_lord[player:objectName()] or 0) > 0 or (sgs.ai_renegade_suspect[player:objectName()]  or 0) > 2 then
 				if player:objectName() == players[1]:objectName() or (renegade_num == 2 and player:objectName() == players[2]:objectName())
 					then return 5 else return -2 end
-			elseif self:isWeak(player) then
-				return -1
 			else
 				return 0
 			end
@@ -1908,7 +1907,7 @@ function SmartAI:askForPindian(requestor, reason)
 	mincard = mincard or minusecard
 	local callback = sgs.ai_skill_pindian[reason]
 	if callback and type(callback) == "function" then
-		local ret = callback(minusecard, self, requstor, maxcard, mincard)
+		local ret = callback(minusecard, self, requestor, maxcard, mincard)
 		if ret then return ret end
 	end
 	if self:isFriend(requestor) then return mincard else return maxcard end
