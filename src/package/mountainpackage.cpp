@@ -1127,10 +1127,9 @@ public:
         int n = damage.damage;
         if(n == 0)
             return;
-		Room *room = zuoci->getRoom();
-        if(room->askForSkillInvoke(zuoci, objectName())){
-            Huashen::PlayEffect(zuoci, objectName());
 
+        if(zuoci->askForSkillInvoke(objectName())){
+            Huashen::PlayEffect(zuoci, objectName());
             Huashen::AcquireGenerals(zuoci, n);
         }
     }
