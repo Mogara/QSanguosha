@@ -1153,12 +1153,12 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 			end
 
 			if first and second then
+				use.card = card
 				if use.to then 
 					use.to:append(first)
 					use.to:append(second)
 				end
 			end
-			use.card=card
 		end
 	end
 end
