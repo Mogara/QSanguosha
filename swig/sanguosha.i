@@ -847,7 +847,7 @@ public:
 
 	// interactive methods
 	void activate(ServerPlayer *player, CardUseStruct &card_use);
-	Card::Suit askForSuit(ServerPlayer *player);
+	Card::Suit askForSuit(ServerPlayer *player, const char *reason);
 	QString askForKingdom(ServerPlayer *player);
 	bool askForSkillInvoke(ServerPlayer *player, const char *skill_name, const QVariant &data = QVariant());
 	QString askForChoice(ServerPlayer *player, const char *skill_name, const char *choices);

@@ -1217,7 +1217,7 @@ end
 
 sgs.ai_skill_suit = {}
 
-function SmartAI:askForSuit()
+function SmartAI:askForSuit(reason)
 	return math.min(math.floor(math.random(0,8)/2),3)
 end
 
