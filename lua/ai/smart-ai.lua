@@ -1218,7 +1218,12 @@ end
 sgs.ai_skill_suit = {}
 
 function SmartAI:askForSuit(reason)
-	return math.min(math.floor(math.random(0,8)/2),3)
+	if not reason then return sgs.ai_skill_suit.fanjian() end -- this line is kept for back-compatibility
+	local callback = sgs.ai_skill_suit[reason]
+	if callback and type(callback) == "function" then
+		if callback() then return callback(self) end
+	end
+	return math.random(0,3)
 end
 
 sgs.ai_skill_invoke = {}

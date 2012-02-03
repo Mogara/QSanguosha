@@ -779,6 +779,11 @@ end
 
 sgs.ai_card_intention.FanjianCard = 70
 
+function sgs.ai_skill_suit.fanjian()
+	local map = {0, 0, 1, 2, 2, 3, 3, 3}
+	return map[math.random(1,8)]
+end
+
 sgs.dynamic_value.damage_card.FanjianCard = true
 
 sgs.ai_chaofeng.zhouyu = 3
