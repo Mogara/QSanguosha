@@ -284,7 +284,7 @@ sgs.ai_skill_invoke.lianli_jink = function(self, data)
 	return self:getCardsNum("Jink")==0
 end
 
-sgs.ai_choicemade_filter.skillInvoke.lianli_jink = function(player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke["lianli-jink"] = function(player, promptlist)
 	if promptlist[#promptlist] == "yes" then
 		sgs.lianlisource = player
 	end

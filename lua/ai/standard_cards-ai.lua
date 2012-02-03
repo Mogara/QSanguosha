@@ -73,6 +73,7 @@ function SmartAI:slashIsAvailable(player)
 	return slash:isAvailable(player)
 end
 
+sgs.ai_slash_weaponfilter = {}
 function SmartAI:useCardSlash(card, use)
 	if not self:slashIsAvailable() then return end
 	local no_distance = self.slash_distance_limit
@@ -134,26 +135,13 @@ function SmartAI:useCardSlash(card, use)
 						use.card = anal
 						return
 					end
-					if self.player:getGender()~=enemy:getGender() and self:getCardsNum("DoubleSword",self.player,"h") > 0 then
-						self:useEquipCard(self:getCard("DoubleSword"), use)
-						if use.card then return end
-					end
-					if enemy:isKongcheng() and self:getCardsNum("GudingBlade", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("GudingBlade"), use)
-						if use.card then return end
-					end
-					if self:getOverflow()>0 and self:getCardsNum("Axe", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("Axe"), use)
-						if use.card then return end
-					end
-					if enemy:getArmor() and self:getCardsNum("Fan", self.player, "h") > 0 and
-						(enemy:getArmor():inherits("Vine") or enemy:getArmor():inherits("GaleShell")) then
-						self:useEquipCard(self:getCard("Fan"), use)
-						if use.card then return end
-					end
-					if enemy:getDefensiveHorse() and self:getCardsNum("KylinBow", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("KylinBow") ,use)
-						if use.card then return end
+					local equips = self:getCards("EquipCard", self.player, "h")
+					for _, equip in ipairs(equips) do
+						local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
+						if callback and type(callback) == "function" and callback(enemy, self) then
+							self:useEquipCard(equip, use)
+							if use.card then return end
+						end
 					end
 					if enemy:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
 						if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
@@ -312,6 +300,10 @@ sgs.weapon_range.KylinBow = 5
 
 sgs.ai_skill_invoke.double_sword = true
 
+function sgs.ai_slash_weaponfilter.double_sword(to, self)
+	return self.player:getGender()~=to:getGender()
+end
+
 sgs.ai_skill_invoke.ice_sword=function(self, data)
 	if self.player:hasFlag("drank") then return false end
 	local effect = data:toSlashEffect() 
@@ -331,6 +323,14 @@ sgs.ai_skill_invoke.ice_sword=function(self, data)
 		if target:getCards("he"):length()<4 and target:getCards("he"):length()>1 then return true end
 		return false
 	end
+end
+
+function sgs.ai_slash_weaponfilter.guding_blade(to)
+	return to:isKongcheng()
+end
+
+function sgs.ai_slash_weaponfilter.axe(to, self)
+	return self:getOverflow() > 0
 end
 
 local spear_skill={}
@@ -362,6 +362,11 @@ spear_skill.getTurnUseCard=function(self,inclusive)
 	return slash	
 end
 
+function sgs.ai_slash_weaponfilter.fan(to)
+	local armor = to:getArmor()
+	return armor and (armor:inherits("Vine") or armor:inherits("GaleShell"))
+end
+
 sgs.ai_skill_invoke.kylin_bow = function(self, data)
 	local effect = data:toSlashEffect()
 
@@ -370,6 +375,10 @@ sgs.ai_skill_invoke.kylin_bow = function(self, data)
 	end
 
 	return self:isEnemy(effect.to)
+end
+
+function sgs.ai_slash_weaponfilter.kylin_bow(to)
+	if to:getDefensiveHorse() then return true else return false end
 end
 
 sgs.ai_skill_invoke.eight_diagram = function(self, data)
