@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -503,6 +503,22 @@
      </property>
      <property name="text">
       <string>Never nullify my single target trick</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="minimizecCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Minimize the dialog when server runs</string>
      </property>
      <property name="checked">
       <bool>true</bool>

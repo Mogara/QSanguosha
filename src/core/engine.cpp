@@ -22,19 +22,20 @@ extern "C" {
     int luaopen_sgs(lua_State *);
 }
 
-static inline void *GetSymbol(QLibrary *lib, const char *name){
+template<typename T>
+static inline T GetSymbol(QLibrary *lib, const char *name){
     char buffer[255] = "New";
     strcat(buffer, name);
 
-    return lib->resolve(buffer);
+    void *func = lib->resolve(buffer);
+    return reinterpret_cast<T>(func);
 }
 
 void Engine::addPackage(const QString &name){
     typedef Package * (*package_creator)();
-    void *func = GetSymbol(lib, name.toAscii());
+    package_creator creator = GetSymbol<package_creator>(lib, name.toAscii());
 
-    if(func){
-        package_creator creator = reinterpret_cast<package_creator>(func);
+    if(creator){
         addPackage(creator());
     }else
         qWarning("Package %s cannot be loaded!", qPrintable(name));
@@ -42,10 +43,9 @@ void Engine::addPackage(const QString &name){
 
 void Engine::addScenario(const QString &name){
     typedef Scenario * (*scenario_creator)();
-    void *func = GetSymbol(lib, name.toAscii());
+    scenario_creator creator = GetSymbol<scenario_creator>(lib, name.toAscii());
 
-    if(func){
-        scenario_creator creator = reinterpret_cast<scenario_creator>(func);
+    if(creator){
         addScenario(creator());
     }else
         qWarning("Scenario %s cannot be loaded!", qPrintable(name));
@@ -56,6 +56,10 @@ Engine::Engine()
     Sanguosha = this;
 
     lib = new QLibrary(qApp->applicationFilePath(), this);
+    if(!lib->load()){
+        qWarning("Package can not be loaded \n Error string: %s", qPrintable(lib->errorString()));
+        exit(1);
+    }
 
     QStringList package_names;
     package_names << "Standard"
@@ -123,6 +127,10 @@ Engine::Engine()
     if(lua == NULL){
         QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
         exit(1);
+    }
+
+    foreach(QString ban, getBanPackages()){
+        addBanPackage(ban);
     }
 }
 

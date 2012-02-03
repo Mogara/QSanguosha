@@ -10,6 +10,7 @@
 #include <QFrame>
 #include <QFile>
 #include <QFileDialog>
+#include <QCommandLinkButton>
 
 static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
                      QWidget *rear1 = NULL, QWidget *rear2 = NULL, QWidget *rear3 = NULL, QWidget *rear4 = NULL,
@@ -175,6 +176,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     set_turned = new QCheckBox(tr("Player Turned"));
     set_chained = new QCheckBox(tr("Player Chained"));
 
+    extra_skill_set = new QPushButton(tr("Set Extra Skills"));
+
     single_turn_text = new QLabel(tr("After this turn "));
     single_turn_text2 = new QLabel(tr("win"));
     single_turn_box = new QComboBox();
@@ -195,6 +198,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     QPushButton *loadButton = new QPushButton(tr("load"));
     QPushButton *saveButton = new QPushButton(tr("save"));
+    QPushButton *defaultLoadButton = new QPushButton(tr("Default load"));
+    defaultLoadButton->setObjectName("default_load");
 
     vlayout->addWidget(role_combobox);
     vlayout->addWidget(num_combobox);
@@ -208,16 +213,16 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
     vlayout->addWidget(set_turned);
     vlayout->addWidget(set_chained);
+    vlayout->addWidget(extra_skill_set);
     vlayout->addWidget(starter_group);
     vlayout->addWidget(single_turn);
     vlayout->addLayout(HLay(single_turn_text, single_turn_text2, single_turn_box));
     vlayout->addWidget(before_next);
     vlayout->addLayout(HLay(before_next_text, before_next_text2, before_next_box));
     vlayout->addStretch();
-    vlayout->addWidget(loadButton);
-    vlayout->addWidget(saveButton);
-    vlayout->addWidget(okButton);
-    vlayout->addWidget(cancelButton);
+    vlayout->addWidget(defaultLoadButton);
+    vlayout->addLayout(HLay(loadButton, saveButton));
+    vlayout->addLayout(HLay(okButton, cancelButton));
 
     single_turn_text->hide();
     single_turn_text2->hide();
@@ -285,6 +290,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
     connect(set_turned, SIGNAL(toggled(bool)), this, SLOT(doPlayerTurns(bool)));
     connect(set_chained, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
+    connect(extra_skill_set, SIGNAL(clicked()), this, SLOT(doSkillSelect()));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
     connect(player_draw, SIGNAL(valueChanged(int)), this, SLOT(setPlayerStartDraw(int)));
@@ -304,6 +310,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(loadButton,SIGNAL(clicked()),this,SLOT(load()));
     connect(saveButton,SIGNAL(clicked()),this,SLOT(save()));
+    connect(defaultLoadButton, SIGNAL(clicked()), this, SLOT(load()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
@@ -772,6 +779,20 @@ void CustomAssignDialog::doPlayerTurns(bool toggled){
     player_turned[name] = toggled;
 }
 
+void CustomAssignDialog::doSkillSelect(){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    SkillAssignDialog *dialog = new SkillAssignDialog(this, name, player_exskills[name]);
+
+    connect(dialog, SIGNAL(skill_update(QStringList)), this, SLOT(updatePlayerExSkills(QStringList)));
+    dialog->exec();
+}
+
+void CustomAssignDialog::updatePlayerExSkills(QStringList update_skills){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_exskills[name].clear();
+    player_exskills[name].append(update_skills);
+}
+
 void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     QString player_name = current->data(Qt::UserRole).toString();
     if(!general_mapping.value(player_name, "").isEmpty()){
@@ -866,7 +887,9 @@ void CustomAssignDialog::checkSingleTurnBox(bool toggled){
 
 void CustomAssignDialog::load()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
+    QString filename;
+    if(sender()->objectName() == "default_load") filename = "etc/customScenes/custom_scenario.txt";
+    else filename = QFileDialog::getOpenFileName(this,
                                                     tr("Open mini scenario settings"),
                                                     "etc/customScenes",
                                                     tr("Pure text replay file (*.txt)"));
@@ -886,7 +909,7 @@ void CustomAssignDialog::load()
     player_chained.clear();
     player_turned.clear();
     player_marks.clear();
-
+    player_exskills.clear();
     player_handcards.clear();
     player_equips.clear();
     player_judges.clear();
@@ -962,6 +985,13 @@ void CustomAssignDialog::load()
         if(player["starter"]!=NULL)starter = name;
         if(player["chained"]!=NULL)player_chained[name]=true;
         if(player["turned"]!=NULL)player_turned[name]=true;
+        if(player["acquireSkills"] != NULL){
+            QStringList skills;
+            foreach(QString skill_name, player["acquireSkills"].split(","))
+                skills << skill_name;
+
+            player_exskills[name].append(skills);
+        }
         if(player["singleTurn"] != NULL){
             single_turn_box->setCurrentIndex(role_index.value(player["singleTurn"], 0));
             is_single_turn = true;
@@ -1148,6 +1178,14 @@ bool CustomAssignDialog::save(QString path)
         if(player_hp[name]>0)line.append(QString("hp:%1 ").arg(player_hp[name]));
         if(player_turned[name])line.append("turned:true ");
         if(player_chained[name])line.append("chained:true ");
+        if(player_exskills[name].length() > 0){
+            line.append("acquireSkills:");
+            foreach(QString skill_name, player_exskills[name]){
+                line.append(skill_name + ",");
+            }
+            line.remove(line.length()-1, 1);
+            line.append(" ");
+        }
         if(i == 0){
             if(is_single_turn){
                 QString winner = single_turn_box->itemData(single_turn_box->currentIndex()).toString();
@@ -1331,10 +1369,10 @@ CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString c
     vlayout->addWidget(getCardButton);
     vlayout->addWidget(back);
 
-    QHBoxLayout *layout = new QHBoxLayout();
+    QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(card_list);
     layout->addLayout(vlayout);
-    QVBoxLayout *mainlayout = new QVBoxLayout();
+    QVBoxLayout *mainlayout = new QVBoxLayout;
     mainlayout->addLayout(layout);
     setLayout(mainlayout);
 
@@ -1400,4 +1438,123 @@ void CardAssignDialog::updateCardList(){
 
     if(n>0)
         card_list->setCurrentRow(0);
+}
+
+//-----------------------------------
+
+SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStringList &player_skills)
+    :QDialog(parent), update_skills(player_skills)
+{
+    setWindowTitle(tr("Skill Chosen"));
+    QHBoxLayout *layout = new QHBoxLayout;
+    skill_list = new QListWidget;
+
+    select_skill = new QPushButton(tr("Select Skill from Generals"));
+    delete_skill = new QPushButton(tr("Delete Current Skill"));
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+
+    skill_info = new QTextEdit;
+    skill_info->setReadOnly(true);
+
+    updateSkillList();
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    vlayout->addWidget(new QLabel(Sanguosha->translate(player_name)));
+    vlayout->addWidget(skill_list);
+    layout->addLayout(vlayout);
+    QVBoxLayout *sided_lay = new QVBoxLayout;
+    sided_lay->addWidget(skill_info);
+    sided_lay->addStretch();
+    sided_lay->addLayout(HLay(select_skill, delete_skill));
+    sided_lay->addLayout(HLay(ok_button, cancel_button));
+    layout->addLayout(sided_lay);
+    QVBoxLayout *mainlayout = new QVBoxLayout;
+    mainlayout->addLayout(layout);
+    setLayout(mainlayout);
+
+    connect(select_skill, SIGNAL(clicked()), this, SLOT(selectSkill()));
+    connect(delete_skill, SIGNAL(clicked()), this, SLOT(deleteSkill()));
+    connect(skill_list, SIGNAL(itemSelectionChanged()), this, SLOT(changeSkillInfo()));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
+void SkillAssignDialog::changeSkillInfo(){
+    QString skill_name = skill_list->currentItem()->data(Qt::UserRole).toString();
+    skill_info->clear();
+
+    skill_info->setText(Sanguosha->translate(":" + skill_name));
+}
+
+void SkillAssignDialog::selectSkill(){
+    GeneralAssignDialog *dialog = new GeneralAssignDialog(this);
+
+    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(getSkillFromGeneral(QString)));
+    dialog->exec();
+}
+
+void SkillAssignDialog::deleteSkill(){
+    QString skill_name = skill_list->currentItem()->data(Qt::UserRole).toString();
+    update_skills.removeOne(skill_name);
+
+    updateSkillList();
+}
+
+void SkillAssignDialog::getSkillFromGeneral(QString general_name){
+    QDialog *select_dialog = new QDialog(this);
+    select_dialog->setWindowTitle(tr("Skill Chosen"));
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    const General *general = Sanguosha->getGeneral(general_name);
+    foreach(const Skill *skill, general->getVisibleSkillList()){
+        QCommandLinkButton *button = new QCommandLinkButton;
+        button->setObjectName(skill->objectName());
+        button->setText(Sanguosha->translate(skill->objectName()));
+        button->setToolTip(Sanguosha->translate(":" + skill->objectName()));
+
+        connect(button, SIGNAL(clicked()), select_dialog, SLOT(accept()));
+        connect(button, SIGNAL(clicked()), this, SLOT(addSkill()));
+
+        layout->addWidget(button);
+    }
+
+    select_dialog->setLayout(layout);
+    select_dialog->exec();
+}
+
+void SkillAssignDialog::addSkill(){
+    QString name = sender()->objectName();
+    update_skills << name;
+
+    updateSkillList();
+}
+
+void SkillAssignDialog::updateSkillList(){
+    int index = skill_list->count() > 0 ? skill_list->currentRow() : 0;
+
+    skill_list->clear();
+    skill_info->clear();
+
+    foreach(QString skill_name, update_skills){
+        if(Sanguosha->getSkill(skill_name) != NULL){
+            QListWidgetItem *item = new QListWidgetItem(Sanguosha->translate(skill_name));
+            item->setData(Qt::UserRole, skill_name);
+            skill_list->addItem(item);
+        }
+    }
+    skill_list->setCurrentRow(index >= skill_list->count() ? skill_list->count()-1 : index);
+
+    if(skill_list->count() > 0){
+        changeSkillInfo();
+        delete_skill->setEnabled(true);
+    }
+    else delete_skill->setEnabled(false);
+}
+
+void SkillAssignDialog::accept(){
+    emit skill_update(update_skills);
+
+    QDialog::accept();
 }

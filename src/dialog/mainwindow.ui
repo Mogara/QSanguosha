@@ -87,6 +87,7 @@
     <addaction name="actionDeath_note"/>
     <addaction name="actionRevive_wand"/>
     <addaction name="actionSend_lowlevel_command"/>
+    <addaction name="actionExecute_script_at_server_side"/>
    </widget>
    <widget class="QMenu" name="menuDIY">
     <property name="title">
@@ -367,6 +368,11 @@
   <action name="actionAbout_Lua">
    <property name="text">
     <string>About Lua</string>
+   </property>
+  </action>
+  <action name="actionExecute_script_at_server_side">
+   <property name="text">
+    <string>Execute script at server side ...</string>
    </property>
   </action>
  </widget>

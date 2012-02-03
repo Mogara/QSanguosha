@@ -17,6 +17,8 @@ const Card::Suit Card::AllSuits[4] = {
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1)
 {
+    can_jilei = will_throw;
+
     if(number < 1 || number > 13)
         number = 0;
 }
@@ -155,10 +157,7 @@ bool Card::CompareByType(const Card *a, const Card *b){
 
 QString Card::getPixmapPath() const{
     QString path = QString("image/card/%1.jpg").arg(objectName());
-    if(QFile::exists(path))
-        return path;
-    else
-        return "image/card/unknown.jpg";
+    return QFile::exists(path) ? path : "image/card/unknown.jpg";
 }
 
 QString Card::getIconPath() const{
@@ -501,6 +500,10 @@ bool Card::isMute() const{
 
 bool Card::willThrow() const{
     return will_throw;
+}
+
+bool Card::canJilei() const{
+    return can_jilei;
 }
 
 // ---------   Skill card     ------------------

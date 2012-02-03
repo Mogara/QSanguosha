@@ -884,8 +884,23 @@ public:
 
 	void writeToConsole(const char *msg){
 		$self->output(msg);
+		qWarning(msg);
 	}
 };
+
+%{
+
+void Room::doScript(const QString &script){
+	SWIG_NewPointerObj(L, this, SWIGTYPE_p_Room, 0);
+	lua_setglobal(L, "R");
+
+	SWIG_NewPointerObj(L, current, SWIGTYPE_p_ServerPlayer, 0);
+	lua_setglobal(L, "P");
+
+	luaL_dostring(L, script.toAscii());
+}
+
+%}
 
 class QRegExp{
 public:

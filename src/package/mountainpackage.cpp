@@ -927,6 +927,14 @@ public:
 
     }
 
+    static void PlayEffect(ServerPlayer *zuoci, const QString &skill_name){
+        int r = qrand() % 2;
+        if(zuoci->getGender() == General::Female)
+            r += 2;
+
+        zuoci->getRoom()->playSkillEffect(skill_name, r);
+    }
+
     static void AcquireGenerals(ServerPlayer *zuoci, int n){
         QStringList list = GetAvailableGenerals(zuoci);
         qShuffle(list);
@@ -978,7 +986,7 @@ public:
 
     static QString SelectSkill(ServerPlayer *zuoci, bool acquire_instant = true){
         Room *room = zuoci->getRoom();
-		room->playSkillEffect("huashen");
+        PlayEffect(zuoci, "huashen");
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
         if(!huashen_skill.isEmpty())
@@ -1121,7 +1129,7 @@ public:
             return;
 		Room *room = zuoci->getRoom();
         if(room->askForSkillInvoke(zuoci, objectName())){
-            room->playSkillEffect(objectName());
+            Huashen::PlayEffect(zuoci, objectName());
 
             Huashen::AcquireGenerals(zuoci, n);
         }

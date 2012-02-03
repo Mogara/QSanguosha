@@ -195,6 +195,8 @@ void MainWindow::on_actionStart_Server_triggered()
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if(start_scene){
         start_scene->switchToServer(server);
+        if(Config.value("EnableMinimizeDialog", false).toBool())
+            this->on_actionMinimize_to_system_tray_triggered();
     }
 }
 
@@ -360,6 +362,7 @@ void MainWindow::enterRoom(){
         connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
         connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
         connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
+        connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
     }
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
@@ -587,7 +590,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    Window *window = new Window(tr("Role assign table"), QSize(232, 342));
+    Window *window = new Window(tr("Role assign table"), QSize(280, 380));
     scene->addItem(window);
 
     window->addContent(content);

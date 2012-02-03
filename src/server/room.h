@@ -221,6 +221,7 @@ private:
     void makeDamage(const QStringList &texts);
     void makeKilling(const QStringList &texts);
     void makeReviving(const QStringList &texts);
+    void doScript(const QString &script);
 
 private slots:
     void reportDisconnection();
