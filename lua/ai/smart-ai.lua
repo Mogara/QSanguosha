@@ -1841,7 +1841,7 @@ function SmartAI:getCardNeedPlayer(cards)
 	local shit
 	shit = self:getCard("Shit")
 	self:sort(self.enemies, "hp")
-	if #self.enemies  > 0 then
+	if shit and #self.enemies  > 0 then
 		for _,enemy in ipairs(self.enemies) do
 			local v1 = 0
 			if sgs[enemy:getGeneralName().."_suit_value"] then
@@ -2650,10 +2650,14 @@ function SmartAI:hasTrickEffective(card, player)
 	return true
 end
 
+sgs.ai_trick_prohibit = {}
 function SmartAI:trickProhibit(card, to)
-	if card:isBlack() and to:hasSkill("weimu") then return true end
-	if card:inherits("Indulgence") or card:inherits("Snatch") and to:hasSkill("qianxun") then return true end
-	if card:inherits("Duel") and to:hasSkill("kongcheng") and to:isKongcheng() then return true end
+	for _, askill in sgs.qlist(to:getVisibleSkillList()) do
+		local callback = sgs.ai_trick_prohibit[askill:objectName()]
+		if callback and type(callback) == "function" then
+			if callback(card, self, to) then return true end
+		end
+	end
 	return false
 end
 
