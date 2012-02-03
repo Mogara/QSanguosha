@@ -106,6 +106,8 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	return "."
 end
 
+sgs.ai_cardneed.shensu = sgs.ai_cardneed.equip
+
 sgs.ai_card_intention.ShensuCard = 80
 
 sgs.xiahouyuan_keep_value = 
@@ -185,6 +187,25 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
 end
 
 sgs.ai_card_intention.LeijiCard = 80
+
+function sgs.ai_slash_prohibit.leiji(self, to, card)
+	if self:isFriend(to) then return false end
+	local hcard = to:getHandcardNum()
+	if self.player:hasSkill("tieji") or
+		(self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange())) then return false end
+
+	if to:getHandcardNum() >= 2 then return true end
+	if self:isEquip("EightDiagram", to) then
+		local equips = to:getEquips()
+		for _, equip in sgs.qlist(equips) do
+			if equip:getSuitString() == "spade" then return true end
+		end
+	end
+end
+
+function sgs.ai_cardneed.leiji(to, card, self)
+	return card:inherits("Jink") and self:getCardsNum("Jink")>1
+end
 
 local huangtianv_skill={}
 huangtianv_skill.name="huangtianv"
@@ -343,12 +364,14 @@ sgs.xiaoqiao_suit_value =
 
 table.insert(sgs.ai_global_flags, "questioner")
 
-sgs.ai_choicemade_filter.cardUsed.GuhuoCard = function(player, carduse)
+local guhuo_filter = function(player, carduse)
 	if carduse.card:inherits("GuhuoCard") then
 		sgs.questioner = nil
 		sgs.guhuotype = carduse.card:toString():split(":")[2]
 	end
 end
+
+table.insert(sgs.ai_choicemade_filter.cardUsed, guhuo_filter)
 
 sgs.ai_skill_choice.guhuo = function(self, choices)
 	if sgs.guhuotype and (sgs.guhuotype == "shit" or sgs.guhuotype == "amazing_grace") then return "noquestion" end

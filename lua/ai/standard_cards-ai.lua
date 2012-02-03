@@ -6,102 +6,28 @@ local function hasExplicitRebel(room)
 	return false
 end
 
+sgs.ai_slash_prohibit = {}
 function SmartAI:slashProhibit(card,enemy)
-	if card == nil then
-		card = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	card = card or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
+		local filter = sgs.ai_slash_prohibit[askill:objectName()]
+		if filter and type(filter) == "function" and filter(self, enemy, card) then return true end
 	end
 
-	if self:isWeak() and self:hasSkills("enyuan|ganglie", enemy) then return true end
 	if self:isFriend(enemy) then
-		if card:inherits("FireSlash") or self.player:hasWeapon("fan") then
+		if card:inherits("FireSlash") or self.player:hasWeapon("fan") or self.player:hasSkill("zonghuo") then
 			if self:isEquip("Vine", enemy) then return true end
 		end
-		if enemy:isChained() and card:inherits("NatureSlash") and #(self:getChainedFriends())>1 and
+		if enemy:isChained() and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) and #(self:getChainedFriends())>1 and
 			self:slashIsEffective(card,enemy) then return true end
 		if self:getCardsNum("Jink",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card,enemy) then return true end
-		if self:hasSkills("duanchang|huilei|dushi", enemy) and self:isWeak(enemy) then return true end
 		if self:isEquip("GudingBlade") and enemy:isKongcheng() then return true end
 	else
-		if enemy:hasSkill("liuli") then
-			if enemy:getHandcardNum() < 1 then return false end
-			for _, friend in ipairs(self.friends_noself) do
-				if enemy:canSlash(friend,true) and self:slashIsEffective(card, friend) then return true end
-			end
-		end
-
-		if enemy:hasSkill("leiji") then
-			local hcard = enemy:getHandcardNum()
-			if self.player:hasSkill("tieji") or
-				(self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange())) then return false end
-
-			if enemy:getHandcardNum() >= 2 then return true end
-			if self:isEquip("EightDiagram", enemy) then
-				local equips = enemy:getEquips()
-				for _,equip in sgs.qlist(equips) do
-					if equip:getSuitString() == "spade" then return true end
-				end
-			end
-		end
-
-		if enemy:hasSkill("tiandu") then
-			if self:isEquip("EightDiagram", enemy) then return true end
-		end
-
-		if enemy:hasLordSkill("hujia") then
-			for _, player in ipairs(self:getFriends(enemy)) do
-				if player:hasSkill("tiandu") and self:isEquip("EightDiagram", player) and player:getKingdom() == "wei" then return true end
-			end
-		end
-
-		if enemy:hasSkill("ganglie") then
-			if self.player:getHandcardNum()+self.player:getHp() < 5 then return true end
-		end
-
-		if enemy:hasSkill("shenjun") and (enemy:getGeneral():isMale()~= self.player:getGeneral():isMale()) and not card:inherits("ThunderSlash") then
+		if enemy:isChained() and #(self:getChainedFriends()) > #(self:getChainedEnemies()) and self:slashIsEffective(card,enemy) 
+			and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) then
 			return true
 		end
-
-		if enemy:hasSkill("xiangle") and self:getCardsNum("Slash")+self:getCardsNum("Analpetic")+math.max(self:getCardsNum("Jink")-1,0) < 2 then
-			return true
-		end
-
-		if enemy:isChained() and #(self:getChainedFriends()) > #(self:getChainedEnemies()) and self:slashIsEffective(card,enemy) then
-			return true
-		end
-
-		if enemy:hasSkill("wuhun") and self:isWeak(enemy) and not (enemy:isLord() and self.player:getRole() == "rebel") then
-			local mark = 0
-			local marks = {}
-			for _, player in sgs.qlist(self.room:getAlivePlayers()) do
-				local mymark = player:getMark("@nightmare")
-				if player:objectName() == self.player:objectName() then
-					mymark = mymark + 1
-					if self.player:hasFlag("drank") then mymark = mymark + 1 end
-				end
-				if mymark > mark then mark = mymark end
-				marks[player:objectName()] = mymark
-			end
-			if mark > 0 then
-				for _,friend in ipairs(self.friends) do
-					if marks[friend:objectName()] == mark and (not self:isWeak(friend) or friend:isLord()) and
-						not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
-				end
-				if self.player:getRole()~="rebel" and marks[self.room:getLord():objectName()] == mark and
-					not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
-			end
-		end
-
-		if enemy:hasSkill("duanchang") and #self.enemies>1 and self:isWeak(enemy) and (self.player:isLord() or not self:isWeak()) then
-			return true
-		end
-
-		if enemy:hasSkill("huilei") and #self.enemies>1 and self:isWeak(enemy) and
-			(self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0) then
-			return true
-		end
-
-		if enemy:hasSkill("dushi") and self.player:isLord() and self:isWeak(enemy) then return true end
 	end
 
 	return not self:slashIsEffective(card, enemy)
@@ -114,13 +40,15 @@ function SmartAI:slashIsEffective(slash, to)
 		end
 	end
 
-	local nature = {
+	local natures = {
 		Slash = sgs.DamageStruct_Normal,
 		FireSlash = sgs.DamageStruct_Fire,
 		ThunderSlash = sgs.DamageStruct_Thunder,
 	}
 
-	if not self:damageIsEffective(to, nature[slash:className()]) then return false end
+	local nature = natures[slash:className()]
+	if self.player:hasSkill("zonghuo") then nature = sgs.DamageStruct_Fire end
+	if not self:damageIsEffective(to, nature) then return false end
 
 	if self.player:hasWeapon("qinggang_sword") or (self.player:hasFlag("xianzhen_success") and self.room:getTag("XianzhenTarget"):toPlayer() == to) then
 		return true
@@ -131,7 +59,7 @@ function SmartAI:slashIsEffective(slash, to)
 		if armor:objectName() == "renwang_shield" then
 			return not slash:isBlack()
 		elseif armor:objectName() == "vine" then
-			return slash:inherits("NatureSlash") or self.player:hasWeapon("fan")
+			return nature ~= sgs.DamageStruct_Normal or self.player:hasWeapon("fan")
 		end
 	end
 
@@ -140,19 +68,12 @@ end
 
 function SmartAI:slashIsAvailable(player)
 	player = player or self.player
-	if player:hasFlag("tianyi_failed") or player:hasFlag("xianzhen_failed") then return false end
-
-	if player:hasWeapon("crossbow") or player:hasSkill("paoxiao") then
-		return true
-	end
-
-	if player:hasFlag("tianyi_success") then
-		return (player:usedTimes("Slash") + player:usedTimes("FireSlash") + player:usedTimes("ThunderSlash")) < 2
-	else
-		return (player:usedTimes("Slash") + player:usedTimes("FireSlash") + player:usedTimes("ThunderSlash")) < 1
-	end
+	local slash = self:getCard("Slash", player) or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	assert(slash)
+	return slash:isAvailable(player)
 end
 
+sgs.ai_slash_weaponfilter = {}
 function SmartAI:useCardSlash(card, use)
 	if not self:slashIsAvailable() then return end
 	local no_distance = self.slash_distance_limit
@@ -214,26 +135,13 @@ function SmartAI:useCardSlash(card, use)
 						use.card = anal
 						return
 					end
-					if self.player:getGender()~=enemy:getGender() and self:getCardsNum("DoubleSword",self.player,"h") > 0 then
-						self:useEquipCard(self:getCard("DoubleSword"), use)
-						if use.card then return end
-					end
-					if enemy:isKongcheng() and self:getCardsNum("GudingBlade", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("GudingBlade"), use)
-						if use.card then return end
-					end
-					if self:getOverflow()>0 and self:getCardsNum("Axe", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("Axe"), use)
-						if use.card then return end
-					end
-					if enemy:getArmor() and self:getCardsNum("Fan", self.player, "h") > 0 and
-						(enemy:getArmor():inherits("Vine") or enemy:getArmor():inherits("GaleShell")) then
-						self:useEquipCard(self:getCard("Fan"), use)
-						if use.card then return end
-					end
-					if enemy:getDefensiveHorse() and self:getCardsNum("KylinBow", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("KylinBow") ,use)
-						if use.card then return end
+					local equips = self:getCards("EquipCard", self.player, "h")
+					for _, equip in ipairs(equips) do
+						local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
+						if callback and type(callback) == "function" and callback(enemy, self) then
+							self:useEquipCard(equip, use)
+							if use.card then return end
+						end
 					end
 					if enemy:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
 						if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
@@ -392,6 +300,10 @@ sgs.weapon_range.KylinBow = 5
 
 sgs.ai_skill_invoke.double_sword = true
 
+function sgs.ai_slash_weaponfilter.double_sword(to, self)
+	return self.player:getGender()~=to:getGender()
+end
+
 sgs.ai_skill_invoke.ice_sword=function(self, data)
 	if self.player:hasFlag("drank") then return false end
 	local effect = data:toSlashEffect() 
@@ -411,6 +323,14 @@ sgs.ai_skill_invoke.ice_sword=function(self, data)
 		if target:getCards("he"):length()<4 and target:getCards("he"):length()>1 then return true end
 		return false
 	end
+end
+
+function sgs.ai_slash_weaponfilter.guding_blade(to)
+	return to:isKongcheng()
+end
+
+function sgs.ai_slash_weaponfilter.axe(to, self)
+	return self:getOverflow() > 0
 end
 
 local spear_skill={}
@@ -442,6 +362,11 @@ spear_skill.getTurnUseCard=function(self,inclusive)
 	return slash	
 end
 
+function sgs.ai_slash_weaponfilter.fan(to)
+	local armor = to:getArmor()
+	return armor and (armor:inherits("Vine") or armor:inherits("GaleShell"))
+end
+
 sgs.ai_skill_invoke.kylin_bow = function(self, data)
 	local effect = data:toSlashEffect()
 
@@ -450,6 +375,10 @@ sgs.ai_skill_invoke.kylin_bow = function(self, data)
 	end
 
 	return self:isEnemy(effect.to)
+end
+
+function sgs.ai_slash_weaponfilter.kylin_bow(to)
+	if to:getDefensiveHorse() then return true else return false end
 end
 
 sgs.ai_skill_invoke.eight_diagram = function(self, data)

@@ -18,7 +18,7 @@ public:
 	QList<ServerPlayer *> getFriends() const;
 
 	virtual void activate(CardUseStruct &card_use) = 0;
-	virtual Card::Suit askForSuit() = 0;
+	virtual Card::Suit askForSuit(const QString&) = 0;
 	virtual QString askForKingdom() = 0;
 	virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) = 0;
 	virtual QString askForChoice(const char *skill_name, const char *choices) = 0;
@@ -39,7 +39,7 @@ public:
 	TrustAI(ServerPlayer *player);
 
 	virtual void activate(CardUseStruct &card_use) ;
-	virtual Card::Suit askForSuit() ;
+	virtual Card::Suit askForSuit(const QString&) ;
 	virtual QString askForKingdom() ;
 	virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) ;
 	virtual QString askForChoice(const char *skill_name, const char *choices);
@@ -72,7 +72,7 @@ public:
 	virtual int askForAG(const QList<int> &card_ids, bool refusable, const char *reason);
 	virtual const Card *askForSinglePeach(ServerPlayer *dying);
 	virtual const Card *askForPindian(ServerPlayer *requestor, const char *reanson);
-	virtual Card::Suit askForSuit();
+	virtual Card::Suit askForSuit(const QString&);
 	
 	LuaFunction callback;
 };
@@ -390,17 +390,18 @@ const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason)
 		return TrustAI::askForPindian(requestor, reason);
 }
 
-Card::Suit LuaAI::askForSuit(){
+Card::Suit LuaAI::askForSuit(const QString &reason){
 	lua_State *L = room->getLuaState();
 
 	pushCallback(L, __func__);
-	int error = lua_pcall(L, 1, 1, 0);
+	lua_pushstring(L, reason.toAscii());
+	int error = lua_pcall(L, 2, 1, 0);
 	if(error){
 		const char *error_msg = lua_tostring(L, -1);
 		lua_pop(L, 1);
 		room->output(error_msg);
 
-		return TrustAI::askForSuit();
+		return TrustAI::askForSuit(reason);
 	}
 
 	if(lua_isnumber(L, -1)){
@@ -409,7 +410,7 @@ Card::Suit LuaAI::askForSuit(){
 		return result;
 	}
 
-    return TrustAI::askForSuit();
+    return TrustAI::askForSuit(reason);
 }
 
 %}

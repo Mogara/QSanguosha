@@ -119,7 +119,7 @@ void FanjianCard::onEffect(const CardEffectStruct &effect) const{
 
     int card_id = zhouyu->getRandomHandCardId();
     const Card *card = Sanguosha->getCard(card_id);
-    Card::Suit suit = room->askForSuit(target);
+    Card::Suit suit = room->askForSuit(target, "fanjian");
 
     LogMessage log;
     log.type = "#ChooseSuit";

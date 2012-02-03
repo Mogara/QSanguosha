@@ -113,6 +113,11 @@ end
 sgs.ai_use_value.XinzhanCard = 4.4
 sgs.ai_use_priority.XinzhanCard = 9.2
 
+function sgs.ai_slash_prohibit.huilei(self, to)
+	if self:isFriend(to) and self:isWeak(to) then return true end
+	return #self.enemies>1 and self:isWeak(to) and (self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0)
+end
+
 sgs.ai_chaofeng.masu = -4
 
 sgs.ai_skill_cardask["@enyuan"] = function(self)
@@ -123,6 +128,10 @@ sgs.ai_skill_cardask["@enyuan"] = function(self)
 		end
 	end
 	return "."
+end
+
+function sgs.ai_slash_prohibit.enyuan(self)
+	if self:isWeak() then return true end
 end
 
 xuanhuo_skill={}
@@ -383,6 +392,7 @@ sgs.ai_use_priority.MingceCard = 4
 
 sgs.ai_card_intention.MingceCard = -70
 
+sgs.ai_cardneed.mingce = sgs.ai_cardneed.equip
 local jiejiu_skill={}
 jiejiu_skill.name="jiejiu"
 table.insert(sgs.ai_skills,jiejiu_skill)
@@ -493,6 +503,12 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 			break
 		end
 	end
+end
+
+sgs.ai_cardneed.xianzhen = sgs.ai_cardneed.bignumber
+function sgs.ai_skill_pindian.xianzhen(minusecard, self, requestor)
+	if self:isFriend(requestor) then return end
+	if requestor:getHandcardNum() <= 2 then return minusecard end
 end
 
 sgs.ai_card_intention.XianzhenCard = 70

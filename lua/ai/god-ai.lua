@@ -50,8 +50,31 @@ sgs.ai_skill_playerchosen.wuhun = function(self, targets)
 	return targetlist[1]
 end
 
-sgs.ai_chaofeng.shenguanyu = -6
+function sgs.ai_slash_prohibit.wuhun(self, to)
+	if self:isEnemy(to) and self:isWeak(to) and not (to:isLord() and self.player:getRole() == "rebel") then
+		local mark = 0
+		local marks = {}
+		for _, player in sgs.qlist(self.room:getAlivePlayers()) do
+			local mymark = player:getMark("@nightmare")
+			if player:objectName() == self.player:objectName() then
+				mymark = mymark + 1
+				if self.player:hasFlag("drank") then mymark = mymark + 1 end
+			end
+			if mymark > mark then mark = mymark end
+			marks[player:objectName()] = mymark
+		end
+		if mark > 0 then
+			for _,friend in ipairs(self.friends) do
+				if marks[friend:objectName()] == mark and (not self:isWeak(friend) or friend:isLord()) and
+					not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
+			end
+			if self.player:getRole()~="rebel" and marks[self.room:getLord():objectName()] == mark and
+				not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
+		end
+	end
+end
 
+sgs.ai_chaofeng.shenguanyu = -6
 
 sgs.ai_skill_invoke.shelie = true
 
@@ -211,8 +234,10 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:isChained() then
-			if use.to then use.to:append(enemy) end
-			if use.to:length() == 2 then break end
+			if use.to then
+				use.to:append(enemy)
+				if use.to:length() == 2 then break end
+			end
 		end
 	end
 	use.card = sgs.Card_Parse("@MediumYeyanCard=" .. table.concat(need_cards, "+"))

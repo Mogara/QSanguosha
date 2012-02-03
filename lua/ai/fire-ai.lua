@@ -58,12 +58,15 @@ sgs.ai_skill_use_func.QuhuCard = function(card, use, self)
 	end
 end
 
-sgs.ai_choicemade_filter.cardUsed.QuhuCard = function(player, carduse)
+local quhu_filter = function(player, carduse)
 	if carduse.card:inherits("QuhuCard") then
 		sgs.ai_quhu_effect = true
 	end
 end
 
+table.insert(sgs.ai_choicemade_filter.cardUsed, quhu_filter)
+
+sgs.ai_cardneed.quhu = sgs.ai_cardneed.bignumber
 sgs.ai_skill_playerchosen.quhu = sgs.ai_skill_playerchosen.damage
 
 sgs.ai_card_intention.QuhuCard = 30
@@ -332,6 +335,13 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 		end
 	end
 end
+
+function sgs.ai_skill_pindian.tianyi(minusecard, self, requestor)
+	if self:isFriend(requestor) then return end
+	if requestor:getHandcardNum() <= 2 then return minusecard end
+end
+
+sgs.ai_cardneed.tianyi = sgs.ai_cardneed.bignumber
 
 sgs.ai_card_intention.TianyiCard = 30
 

@@ -220,7 +220,7 @@ bool TrustAI::useCard(const Card *card){
         return false;
 }
 
-Card::Suit TrustAI::askForSuit(){
+Card::Suit TrustAI::askForSuit(const QString &){
     return Card::AllSuits[qrand() % 4];
 }
 

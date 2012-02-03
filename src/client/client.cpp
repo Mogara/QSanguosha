@@ -1073,6 +1073,12 @@ void Client::killPlayer(const QString &player_name){
                 last_word = Sanguosha->translate(("~") +  origin_generals.at(1));
         }
 
+        if(last_word.startsWith("~") && general_name.endsWith("f")){
+            QString origin_general = general_name;
+            origin_general.chop(1);
+            if(Sanguosha->getGeneral(origin_general))
+                last_word = Sanguosha->translate(("~") + origin_general);
+        }
         skill_title = tr("%1[dead]").arg(Sanguosha->translate(general_name));
         skill_line = last_word;
 
