@@ -336,6 +336,11 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 	end
 end
 
+function sgs.ai_skill_pindian.tianyi(minusecard, self, requestor)
+	if self:isFriend(requestor) then return end
+	if requestor:getHandcardNum() <= 2 then return minusecard end
+end
+
 sgs.ai_cardneed.tianyi = sgs.ai_cardneed.bignumber
 
 sgs.ai_card_intention.TianyiCard = 30

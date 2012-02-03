@@ -189,6 +189,11 @@ end
 
 sgs.ai_card_intention.JuejiCard = 30
 
+function sgs.ai_skill_pindian.jueji(minusecard, self, requestor)
+	if self:isFriend(requestor) then return end
+	if (maxcard:getNumber()/13)^requestor:getHandcardNum() <= 0.6 then return minusecard end
+end
+
 sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
 	local handcard = self.player:getHandcardNum()
 	local max_card = self.player:getMaxCards()

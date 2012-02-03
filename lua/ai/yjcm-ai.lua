@@ -506,6 +506,11 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 end
 
 sgs.ai_cardneed.xianzhen = sgs.ai_cardneed.bignumber
+function sgs.ai_skill_pindian.xianzhen(minusecard, self, requestor)
+	if self:isFriend(requestor) then return end
+	if requestor:getHandcardNum() <= 2 then return minusecard end
+end
+
 sgs.ai_card_intention.XianzhenCard = 70
 
 sgs.dynamic_value.control_card.XianzhenCard = true

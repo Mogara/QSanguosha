@@ -413,6 +413,18 @@ sgs.ai_skill_choice.zhiba_pindian = function(self, choices)
 	end
 end
 
+function sgs.ai_skill_pindian.zhiba(minusecard, self, requestor, maxcard)
+	local cards, maxcard = sgs.QList2Table(self.player:getHandcards())
+	local function compare_func(a, b)
+		return a:getNumber() > b:getNumber()
+	end
+	table.sort(cards, compare_func)
+	for _, card in ipairs(cards) do
+		if self:getUseValue(card) < 6 then maxcard = card break end
+	end
+	return maxcard or cards[1]
+end
+
 local zhijian_skill={}
 zhijian_skill.name="zhijian"
 table.insert(sgs.ai_skills, zhijian_skill)

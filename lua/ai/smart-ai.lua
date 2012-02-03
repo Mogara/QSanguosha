@@ -1897,19 +1897,16 @@ function SmartAI:askForPindian(requestor, reason)
 	for _, card in ipairs(sgs.reverse(cards)) do
 		if self:getUseValue(card) < 6 then maxcard = card break end
 	end
-	if reason == "zhiba" and self.player:hasLordSkill("sunce_zhiba") then return (maxcard or cards[#cards]) end
 	self:sortByUseValue(cards, true)
 	minusecard = cards[1]
 	maxcard = maxcard or minusecard
 	mincard = mincard or minusecard
-	if self:isFriend(requestor) then return mincard end
-	if reason == "jueji" then
-		if (maxcard:getNumber()/13)^requestor:getHandcardNum() > 0.6 then return maxcard else return minusecard end
+	local callback = sgs.ai_skill_pindian[reason]
+	if callback and type(callback) == "function" then
+		local ret = callback(minusecard, self, requstor, maxcard, mincard)
+		if ret then return ret end
 	end
-	if ("tianyi|xianzhen"):match(reason) then
-		if requestor:getHandcardNum() > 2 then return maxcard else return minusecard end
-	end
-	return maxcard
+	if self:isFriend(requestor) then return mincard else return maxcard end
 end
 
 sgs.ai_skill_playerchosen = {}
