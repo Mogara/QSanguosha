@@ -40,6 +40,8 @@ class CustomAssignDialog: public QDialog{
 public:
     CustomAssignDialog(QWidget *parent);
 
+    QString setListText(QString name, QString role, int index = -1);
+
 protected:
     virtual void accept();
     virtual void reject();
@@ -56,6 +58,7 @@ private:
     QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
     QCheckBox *set_turned, *set_chained;
     QComboBox *single_turn_box, *before_next_box;
+    QCheckBox *random_roles_box;
     QCheckBox *single_turn, *before_next;
     QLabel *single_turn_text, *single_turn_text2, *before_next_text, *before_next_text2;
     QPushButton *extra_skill_set;
@@ -78,13 +81,15 @@ private:
     bool choose_general2;
     QString starter;
     bool is_single_turn, is_before_next;
-
+    bool is_random_roles;
 private slots:
     void updateRole(int index);
     void updateNumber(int num);
+    void updateListItems();
     void updatePileInfo();
     void updatePlayerInfo(QString name);
     void updatePlayerHpInfo(QString name);
+    void updateAllRoles(bool toggled = false);
     void updatePlayerExSkills(QStringList update_skills);
 
     void freeChoose(bool toggled);

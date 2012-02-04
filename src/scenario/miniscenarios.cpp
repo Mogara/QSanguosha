@@ -1,5 +1,6 @@
 #include "miniscenarios.h"
 
+#include <QMessageBox>
 #include <QFile>
 
 MiniSceneRule::MiniSceneRule(Scenario *scenario)
@@ -70,9 +71,13 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         room->broadcastInvoke("addHistory","pushPile");
     }
 
-    int i=0;
-    foreach(ServerPlayer * sp,players)
+    int i=0, j=0;
+    for(i = ex_options["randomRoles"].toString() == "true" ?
+        qrand() % players.length() : 0, j = 0; j < players.length(); i++, j++)
     {
+        i = i < players.length() ? i : i % players.length();
+        ServerPlayer *sp = players.at(j);
+
         room->setPlayerProperty(sp,"role",this->players.at(i)["role"]);
 
         QString general = this->players.at(i)["general"];
@@ -205,8 +210,6 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         }
         if(this->players.at(i)["starter"] != NULL)
             room->setCurrent(sp);
-
-        i++;
     }
     i =0;
     foreach(ServerPlayer *sp,players)
@@ -256,6 +259,10 @@ void MiniSceneRule::setPile(QString cardList)
     setup = cardList;
 }
 
+void MiniSceneRule::setOptions(QStringList option){
+    ex_options[option.first()] = option.last();
+}
+
 void MiniSceneRule::loadSetting(QString path)
 {
     QFile file(path);
@@ -268,6 +275,8 @@ void MiniSceneRule::loadSetting(QString path)
             QString aline = stream.readLine();
             if(aline.startsWith("setPile"))
                 setPile(aline.split(":").at(1));
+            else if(aline.startsWith("randomRoles"))
+                setOptions(aline.split(":"));
             else
                 addNPC(aline);
         }
