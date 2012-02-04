@@ -76,7 +76,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         qrand() % players.length() : 0, j = 0; j < players.length(); i++, j++)
     {
         i = i < players.length() ? i : i % players.length();
-        ServerPlayer *sp = players.at(j);
+        ServerPlayer *sp = players.at(ex_options["randomRoles"].toString() == "true" ? j : i);
 
         room->setPlayerProperty(sp,"role",this->players.at(i)["role"]);
 
