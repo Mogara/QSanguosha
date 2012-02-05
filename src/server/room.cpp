@@ -505,8 +505,9 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     bool invoked;
     AI *ai = player->getAI();
     if(ai){
-        thread->delay(Config.AIDelay);
         invoked = ai->askForSkillInvoke(skill_name, data);
+        if(invoked)
+            thread->delay(Config.AIDelay);
     }else{
         QString invoke_str;
         if(data.type() == QVariant::String)
@@ -706,8 +707,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }else if(pattern.startsWith("@") || !player->isNude()){
         AI *ai = player->getAI();
         if(ai){
-            thread->delay(Config.AIDelay);
             card = ai->askForCard(pattern, prompt, data);
+            if(card)
+                thread->delay(Config.AIDelay);
         }else{
             player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
             getResult("responseCardCommand", player);
@@ -773,8 +775,10 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
 
     AI *ai = player->getAI();
     if(ai){
-        thread->delay(Config.AIDelay);
         answer = ai->askForUseCard(pattern, prompt);
+
+        if(answer != ".")
+            thread->delay(Config.AIDelay);
     }else{
         player->invoke("askForUseCard", QString("%1:%2").arg(pattern).arg(prompt));
         getResult("useCardCommand", player);
