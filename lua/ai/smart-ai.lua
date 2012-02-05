@@ -61,6 +61,7 @@ function SmartAI:initialize(player)
 		self.room:writeToConsole(version .. ", Powered by " .. _VERSION)
 	end
 	global_room = self.room
+	self:updatePlayers()
 end
 
 function sgs.getValue(player)
@@ -839,7 +840,7 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.ai_explicit[player:objectName()] == "loyalish" then return -1
 		elseif sgs.singleRole(self.room, self.player) == "rebel" then return 4.6-modifier
 		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return -1
-		elseif (sgs.ai_loyalty[player:objectName()] < 0) and
+		elseif (sgs.ai_loyalty[player:objectName()] or 0)< 0 and
 			(sgs.ai_card_intention["general"](player,100) > 0)
 			then return 3
 		else return 0 end
@@ -853,7 +854,7 @@ function SmartAI:objectiveLevel(player)
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("loyal") then return -1
 		elseif sgs.singleRole(self.room, self.player) == "rebel" then return 4-modifier
 		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return -1
-		elseif (sgs.ai_loyalty[player:objectName()] < 0) and
+		elseif (sgs.ai_loyalty[player:objectName()] or 0) < 0 and
 			(sgs.ai_card_intention["general"](player,100) > 0)
 			then return 3.1
 		else return 0 end
@@ -863,7 +864,7 @@ function SmartAI:objectiveLevel(player)
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return -1
 		elseif sgs.singleRole(self.room, self.player) == "rebel" then return -1
 		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return 4-modifier
-		elseif (sgs.ai_loyalty[player:objectName()] > 0) and
+		elseif (sgs.ai_loyalty[player:objectName()] or 0) > 0 and
 			(sgs.ai_card_intention["general"](player,100) < 0)
 			then return 3
 		else return 0 end
@@ -1537,6 +1538,16 @@ end
 
 sgs.ai_skill_cardask = {}
 
+function sgs.ai_skill_cardask.nullfilter(self)
+	if self.player:hasSkill("tianxiang") then
+		local dmgStr = {damage = 1, nature = 0}
+		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
+		if willTianxiang ~= "." then return "." end
+	elseif self.player:hasSkill("longhun") and self.player:getHp() > 1 then
+		return "."
+	end
+end
+
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
 	local target, target2
@@ -1668,7 +1679,7 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	for _, id in ipairs(ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(id))
 	end
-	if sgs.turncount and sgs.turncount > 1 then self:sortByCardNeed(cards) else self:sortByUseValue(cards) end
+	self:sortByCardNeed(cards)
 	return cards[#cards]:getEffectiveId()
 end
 
