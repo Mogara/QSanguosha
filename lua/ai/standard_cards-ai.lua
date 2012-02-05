@@ -138,7 +138,8 @@ function SmartAI:useCardSlash(card, use)
 					local equips = self:getCards("EquipCard", self.player, "h")
 					for _, equip in ipairs(equips) do
 						local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
-						if callback and type(callback) == "function" and callback(enemy, self) then
+						if callback and type(callback) == "function" and callback(enemy, self) and
+							self.player:distanceTo(enemy) <= (sgs.weapon_range[equip:className()] or 0) then
 							self:useEquipCard(equip, use)
 							if use.card then return end
 						end
@@ -271,6 +272,12 @@ function SmartAI:useCardPeach(card, use)
 				if friend:isWounded() and friend:getGeneral():isMale() then return end
 			end
 		end
+		
+		if self.player:hasSkill("ganlu") then
+			local dummy_use = {isDummy = true}
+			self:useSkillCard(sgs.Card_Parse("@GanluCard=."),dummy_use)
+			if dummy_use.card then return end
+		end
 
 		use.card = card
 	end
@@ -298,10 +305,26 @@ sgs.weapon_range.Spear = 3
 sgs.weapon_range.Halberd = 4
 sgs.weapon_range.KylinBow = 5
 
+function sgs.ai_slash_weaponfilter.crossbow(to, self)
+	return self:getCardsNum("Slash") > 1 and not self:isEquip("Crossbow")
+end
+
 sgs.ai_skill_invoke.double_sword = true
 
 function sgs.ai_slash_weaponfilter.double_sword(to, self)
 	return self.player:getGender()~=to:getGender()
+end
+
+sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target)
+	if target and self:isFriend(target) then return "." end
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:inherits("Slash") or card:inherits("Shit") or card:inherits("Collateral") or card:inherits("GodSalvation")
+		or card:inherits("Disaster") or card:inherits("EquipCard") or card:inherits("AmazingGrace") then
+			return "$"..card:getEffectiveId()
+		end
+	end
+	return "."
 end
 
 sgs.ai_skill_invoke.ice_sword=function(self, data)
@@ -329,8 +352,58 @@ function sgs.ai_slash_weaponfilter.guding_blade(to)
 	return to:isKongcheng()
 end
 
+sgs.ai_skill_cardask["@axe"] = function(self, data, pattern, target)
+	if target and self:isFriend(target) then return "." end
+
+	local allcards = self.player:getCards("he")
+	allcards = sgs.QList2Table(allcards)
+	if self.player:hasFlag("drank") or #allcards-2 >= self.player:getHp() or (self.player:hasSkill("kuanggu") and self.player:isWounded()) then
+		local cards = self.player:getCards("h")
+		cards = sgs.QList2Table(cards)
+		local index
+		if self:hasSkills(sgs.need_kongcheng) then index = #cards end
+		if self.player:getOffensiveHorse() then
+			if index then
+				if index < 2 then
+					index = index + 1
+					table.insert(cards, self.player:getOffensiveHorse())
+				end
+			end
+			table.insert(cards, self.player:getOffensiveHorse())
+		end
+		if self.player:getArmor() then
+			if index then
+				if index < 2 then
+					index = index + 1
+					table.insert(cards, self.player:getArmor())
+				end
+			end
+			table.insert(cards, self.player:getArmor())
+		end
+		if self.player:getDefensiveHorse() then
+			if index then
+				if index < 2 then
+					index = index + 1
+					table.insert(cards, self.player:getDefensiveHorse())
+				end
+			end
+			table.insert(cards, self.player:getDefensiveHorse())
+		end
+		if #cards >= 2 then
+			self:sortByUseValue(cards, true)
+			return "$"..cards[1]:getEffectiveId().."+"..cards[2]:getEffectiveId()
+		end
+	end
+end
+
 function sgs.ai_slash_weaponfilter.axe(to, self)
 	return self:getOverflow() > 0
+end
+
+sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
+	if target and self:isFriend(target) and not (target:hasSkill("leiji") and self:getCardsNum("Jink", target, "h") > 0) then
+		return "."
+	end
 end
 
 local spear_skill={}

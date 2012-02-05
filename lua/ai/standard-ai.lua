@@ -48,11 +48,11 @@ sgs.ai_skill_invoke.fankui = function(self, data)
 		return (target:hasSkill("xiaoji") and not target:getEquips():isEmpty()) or (self:isEquip("SilverLion",target) and target:isWounded())
 	end
 	if self:isEnemy(target) then				---fankui without zhugeliang and luxun
-			if (target:hasSkill("kongcheng") or target:hasSkill("lianying")) and target:getHandcardNum() == 1 then
-				if not target:getEquips():isEmpty() then return true
-				else return false
-				end
+		if (target:hasSkill("kongcheng") or target:hasSkill("lianying")) and target:getHandcardNum() == 1 then
+			if not target:getEquips():isEmpty() then return true
+			else return false
 			end
+		end
 	end
 	--self:updateLoyalty(-0.8*sgs.ai_loyalty[target:objectName()],self.player:objectName())
 	return true
@@ -1029,6 +1029,11 @@ sgs.huatuo_suit_value =
 }
 
 sgs.ai_chaofeng.huatuo = 6
+
+sgs.ai_skill_cardask["@wushuang-slash-1"] = function(self)
+	if self:getCardsNum("Slash") < 2 and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
+end
+
 sgs.ai_chaofeng.lubu = 1
 
 local lijian_skill={}

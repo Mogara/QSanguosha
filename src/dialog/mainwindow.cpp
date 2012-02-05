@@ -744,6 +744,7 @@ QGroupBox *MeleeDialog::createGeneralBox(){
 
     loop_checkbox = new QCheckBox(tr("LOOP"));
     loop_checkbox->setObjectName("loop_checkbox");
+    loop_checkbox->setChecked(true);
 
     form_layout->addRow(tr("Num of rooms"), spinbox);
     form_layout->addRow(loop_checkbox, start_button);

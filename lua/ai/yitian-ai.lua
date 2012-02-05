@@ -189,7 +189,7 @@ end
 
 sgs.ai_card_intention.JuejiCard = 30
 
-function sgs.ai_skill_pindian.jueji(minusecard, self, requestor)
+function sgs.ai_skill_pindian.jueji(minusecard, self, requestor, maxcard)
 	if self:isFriend(requestor) then return end
 	if (maxcard:getNumber()/13)^requestor:getHandcardNum() <= 0.6 then return minusecard end
 end
@@ -448,7 +448,15 @@ end
 
 function sgs.ai_skill_invoke.shaoying(self, data)
 	local damage = data:toDamage()
-	return self:isEnemy(damage.to:getNextAlive())
+	if not self:isEnemy(damage.to:getNextAlive()) then return false end
+	local zhangjiao = self.room:findPlayerBySkillName("guidao")
+	if not zhangjiao or self:isFriend(zhangjiao) then return true end
+	if not zhangjiao:getCards("e"):isEmpty() then
+		for _, card in sgs.qlist(zhangjiao:getCards("e")) do
+			if card:isBlack() then return false end
+		end
+	end
+	return zhangjiao:getHandcardNum() <= 1
 end
 
 sgs.ai_skill_invoke.gongmou = true
