@@ -737,7 +737,7 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     QFormLayout *form_layout = new QFormLayout;
     spinbox = new QSpinBox;
     spinbox->setRange(1, 50);
-    spinbox->setValue(10);
+    spinbox->setValue(1);
 
     start_button = new QPushButton(tr("Start"));
     connect(start_button, SIGNAL(clicked()), this, SLOT(startTest()));

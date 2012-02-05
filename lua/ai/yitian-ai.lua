@@ -149,7 +149,7 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 		if opt2 then break end
 	end
 	if opt1 and opt2 then
-		if self:getHandcardNum() > 7 then return opt2 else return opt1 end
+		if self.player:getHandcardNum() > 7 then return opt2 else return opt1 end
 	end
 	return opt2 or opt1 or "."
 end

@@ -215,6 +215,7 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
 	local need_cards = {}
+	local to = {}
 	local spade, club, heart, diamond
 	for _, card in ipairs(cards) do
 		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card:getId())
@@ -228,19 +229,29 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
-			if use.to then use.to:append(enemy) end
+			--if use.to then use.to:append(enemy) end
+			table.insert(to, enemy)
 			break
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:isChained() then
-			if use.to then
+			--[[if use.to then
 				use.to:append(enemy)
 				if use.to:length() == 2 then break end
+			end]]
+			table.insert(to, enemy)
+			if #to == 2 then break end
+		end
+	end
+	if #to > 0 then
+		use.card = sgs.Card_Parse("@MediumYeyanCard=" .. table.concat(need_cards, "+"))
+		if use.to then
+			for _, ato in ipairs(to) do
+				use.to:append(ato)
 			end
 		end
 	end
-	use.card = sgs.Card_Parse("@MediumYeyanCard=" .. table.concat(need_cards, "+"))
 end
 
 sgs.ai_use_value.MediumYeyanCard = 5.6
@@ -274,7 +285,7 @@ sgs.ai_skill_use_func.SmallYeyanCard=function(card,use,self)
 			num = num + 1
 		end
 	end
-	use.card = card
+	if num > 0 then use.card = card end
 end
 
 sgs.ai_card_intention.SmallYeyanCard = 80
