@@ -18,14 +18,14 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
 
     void addNPC(QString feature);
-
+    void setOptions(QStringList option);
     void setPile(QString cardList);
-
     void loadSetting(QString path);
 
 private:
     QList< QMap<QString, QString> > players;
     QString setup;
+    QMap<QString, QVariant> ex_options;
 };
 
 class MiniScene : public Scenario

@@ -32,10 +32,11 @@ static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
 
 CustomAssignDialog *CustomInstance = NULL;
 
+
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
       choose_general2(false),
-      is_single_turn(false), is_before_next(false)
+      is_single_turn(false), is_before_next(false), is_random_roles(false)
 {
     setWindowTitle(tr("Custom mini scene"));
 
@@ -156,6 +157,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *judgeAssign = new QPushButton(tr("JudgeAssign"));
     QPushButton *pileAssign = new QPushButton(tr("PileCardAssign"));
 
+    random_roles_box = new QCheckBox(tr("RandomRoles"));
+
     max_hp_prompt = new QCheckBox(tr("Max Hp"));
     max_hp_prompt->setChecked(false);
     max_hp_spin = new QSpinBox();
@@ -190,7 +193,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     before_next_text2 = new QLabel(tr("win"));
     before_next_box = new QComboBox();
     before_next = new QCheckBox(tr("Before next turn begin player lose"));
-    before_next_box->addItem(tr("Lord"), "Lord+Loyalist");
+    before_next_box->addItem(tr("Lord"), "lord+loyalist");
     before_next_box->addItem(tr("Renegade"), "Renegade");
     before_next_box->addItem(tr("Rebel"), "Rebel");
 
@@ -213,6 +216,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
     vlayout->addWidget(set_turned);
     vlayout->addWidget(set_chained);
+    vlayout->addWidget(random_roles_box);
     vlayout->addWidget(extra_skill_set);
     vlayout->addWidget(starter_group);
     vlayout->addWidget(single_turn);
@@ -290,6 +294,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
     connect(set_turned, SIGNAL(toggled(bool)), this, SLOT(doPlayerTurns(bool)));
     connect(set_chained, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
+    connect(random_roles_box, SIGNAL(toggled(bool)), this, SLOT(updateAllRoles(bool)));
     connect(extra_skill_set, SIGNAL(clicked()), this, SLOT(doSkillSelect()));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
@@ -312,6 +317,29 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(saveButton,SIGNAL(clicked()),this,SLOT(save()));
     connect(defaultLoadButton, SIGNAL(clicked()), this, SLOT(load()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
+QString CustomAssignDialog::setListText(QString name, QString role, int index){
+    QString text = is_random_roles ? QString("[%1]").arg(Sanguosha->translate(role)) :
+                      QString("%1[%2]").arg(Sanguosha->translate(name)).arg(Sanguosha->translate(role));
+
+    if(index >= 0)
+        list->item(index)->setText(text);
+
+    return text;
+}
+
+void CustomAssignDialog::updateListItems(){
+    for(int i = 0; i <= 9; i++){
+        QString name = (i == 0 ? "Player" : "AI");
+        if(i != 0)
+            name.append(QString::number(i));
+
+        if(role_mapping[name].isEmpty()) role_mapping[name] = "unknown";
+        QListWidgetItem *item = new QListWidgetItem(setListText(name, role_mapping[name]));
+        item->setData(Qt::UserRole, name);
+        item_map[i] = item;
+    }
 }
 
 void CustomAssignDialog::doEquipCardAssign(){
@@ -561,6 +589,17 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name){
     }
 }
 
+void CustomAssignDialog::updateAllRoles(bool toggled){
+    is_random_roles = toggled;
+
+    int i = 0;
+    for(i = 0; i < list->count(); i++){
+        QString name = player_mapping[i];
+        QString role = role_mapping[name];
+        item_map[i]->setText(setListText(name, role, i));
+    }
+}
+
 void CustomAssignDialog::getPlayerHp(int hp)
 {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
@@ -636,8 +675,7 @@ void CustomAssignDialog::getPlayerMarks(int index){
 void CustomAssignDialog::updateRole(int index){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_combobox->itemData(index).toString();
-    QString text = QString("%1[%2]").arg(Sanguosha->translate(name)).arg(Sanguosha->translate(role));
-    list->currentItem()->setText(text);
+    setListText(name, role, list->currentRow());
     role_mapping[name] = role;
 }
 
@@ -900,6 +938,7 @@ void CustomAssignDialog::load()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
+    item_map.clear();
     role_mapping.clear();
     general_mapping.clear();
     general2_mapping.clear();
@@ -919,6 +958,7 @@ void CustomAssignDialog::load()
 
     is_single_turn = false;
     is_before_next = false;
+    is_random_roles = false;
 
     int i = 0;
     for(i = 0; i < mark_icons.length(); i++)
@@ -935,7 +975,7 @@ void CustomAssignDialog::load()
         QString line = in.readLine();
         line = line.trimmed();
 
-        if(!line.startsWith("general") && !line.startsWith("setPile")){
+        if(!line.startsWith("setPile:") && !line.startsWith("randomRoles:") && !line.startsWith("general:")){
             QMessageBox::warning(this, tr("Warning"), tr("Data is unreadable"));
             file.close();
             return;
@@ -949,6 +989,10 @@ void CustomAssignDialog::load()
             {
                 set_pile.prepend(id.toInt());
             }
+            continue;
+        }
+        else if(line.startsWith("randomRoles")){
+            is_random_roles = (line.remove("randomRoles:") == "true");
             continue;
         }
 
@@ -1062,6 +1106,8 @@ void CustomAssignDialog::load()
                     player_judges[name].prepend(num);
             }
         }
+
+        updateListItems();
         numPlayer++;
     }
 
@@ -1076,6 +1122,7 @@ void CustomAssignDialog::load()
 
     player_draw->setValue(player_start_draw[list->currentItem()->data(Qt::UserRole).toString()]);
     num_combobox->setCurrentIndex(list->count()-2);
+    random_roles_box->setChecked(is_random_roles);
 
     updatePileInfo();
     file.close();
@@ -1126,15 +1173,20 @@ bool CustomAssignDialog::save(QString path)
     }
 
     QString line;
+    if(is_random_roles){
+        line.append("randomRoles:true");
+        line.append("\n");
+    }
+
     if(set_pile.length())
     {
+        line.append("setPile:");
         foreach(int id, set_pile)
         {
-            line.prepend(QString::number(id));
-            line.prepend(",");
+            line.append(QString::number(id));
+            line.append(",");
         }
-        line.remove(0,1);
-        line.prepend("setPile:");
+        line.remove(line.length()-1, 1);
         line.append("\n");
     }
 
