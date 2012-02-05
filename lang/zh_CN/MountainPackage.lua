@@ -104,7 +104,7 @@ return {
 
 	["cv:zhanghe"] = "爪子",
 	["cv:dengai"] = "烨子",
-	["cv:liushan"] = "迷宫",
+	["cv:liushan"] = "V7",
 	["cv:jiangwei"] = "Jr. Wakaran",
 	["cv:sunce"] = "",
 	["cv:erzhang"] = "",

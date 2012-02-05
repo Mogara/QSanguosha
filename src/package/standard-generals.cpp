@@ -510,6 +510,14 @@ public:
 
         return false;
     }
+
+    virtual int getEffectIndex(ServerPlayer *player, const Card *) const{
+        int r = 1 + qrand() % 2;
+        if(player->getGeneralName() == "liushan" || player->getGeneral2Name() == "liushan")
+            r += 2;
+
+        return r;
+    }
 };
 
 class Wusheng:public OneCardViewAsSkill{
