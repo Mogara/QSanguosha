@@ -193,7 +193,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     before_next_text2 = new QLabel(tr("win"));
     before_next_box = new QComboBox();
     before_next = new QCheckBox(tr("Before next turn begin player lose"));
-    before_next_box->addItem(tr("Lord"), "Lord+Loyalist");
+    before_next_box->addItem(tr("Lord"), "lord+loyalist");
     before_next_box->addItem(tr("Renegade"), "Renegade");
     before_next_box->addItem(tr("Rebel"), "Rebel");
 
@@ -975,7 +975,7 @@ void CustomAssignDialog::load()
         QString line = in.readLine();
         line = line.trimmed();
 
-        if(!line.startsWith("setPile:") && !line.startsWith("randomRoles") && !line.startsWith("general")){
+        if(!line.startsWith("setPile:") && !line.startsWith("randomRoles:") && !line.startsWith("general:")){
             QMessageBox::warning(this, tr("Warning"), tr("Data is unreadable"));
             file.close();
             return;
@@ -1183,8 +1183,8 @@ bool CustomAssignDialog::save(QString path)
         line.append("setPile:");
         foreach(int id, set_pile)
         {
-            line.prepend(QString::number(id));
-            line.prepend(",");
+            line.append(QString::number(id));
+            line.append(",");
         }
         line.remove(line.length()-1, 1);
         line.append("\n");
