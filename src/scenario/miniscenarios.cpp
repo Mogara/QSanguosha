@@ -43,6 +43,25 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
 
     if(event == PhaseChange)
     {
+        if(player == room->getTag("Starter").value<PlayerStar>()){
+            if(player->getPhase() == Player::Start){
+                room->setTag("Round", room->getTag("Round").toInt()+1);
+
+                if(!ex_options["beforeStartRound"].isNull()){
+                    if(ex_options["beforeStartRound"].toInt() == room->getTag("Round").toInt()){
+                        room->gameOver(ex_options["beforeStartRoundWinner"].toString());
+                    }
+                }
+            }
+            else if(player->getPhase() == Player::NotActive){
+                if(!ex_options["afterRound"].isNull()){
+                    if(ex_options["afterRound"].toInt() == room->getTag("Round").toInt()){
+                        room->gameOver(ex_options["afterRoundWinner"].toString());
+                    }
+                }
+            }
+        }
+
         if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL
                 )
         {
@@ -208,16 +227,15 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             if(sp->faceUp())
                 sp->turnOver();
         }
-        if(this->players.at(i)["starter"] != NULL)
+        if(this->players.at(i)["starter"] != NULL){
             room->setCurrent(sp);
-    }
-    i =0;
-    foreach(ServerPlayer *sp,players)
-    {
-        QString str = this->players.at(i)["draw"];
+            QVariant data = QVariant::fromValue(sp);
+            room->setTag("Starter", data);
+        }
+
+        str = this->players.at(i)["draw"];
         if(str == NULL)str = "4";
         room->drawCards(sp,str.toInt());
-
         if(this->players.at(i)["marks"] != NULL)
         {
             QStringList marks = this->players.at(i)["marks"].split(",");
@@ -228,8 +246,6 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
                 room->setPlayerMark(sp, keys.at(0), str.toInt());
             }
         }
-
-        i++;
     }
 
     room->setTag("WaitForPlayer",QVariant(true));
@@ -273,10 +289,18 @@ void MiniSceneRule::loadSetting(QString path)
         QTextStream stream(&file);
         while(!stream.atEnd()){
             QString aline = stream.readLine();
+
             if(aline.startsWith("setPile"))
                 setPile(aline.split(":").at(1));
-            else if(aline.startsWith("randomRoles"))
-                setOptions(aline.split(":"));
+            else if(aline.startsWith("extraOptions")){
+                aline.remove("extraOptions:");
+                QStringList options = aline.split(" ");
+                foreach(QString option, options){
+                    if(options.isEmpty()) continue;
+                    QString key = option.split(":").first(), value = option.split(":").last();
+                    ex_options[key] = QVariant::fromValue(value);
+                }
+            }
             else
                 addNPC(aline);
         }
