@@ -1700,10 +1700,12 @@ void RoomScene::useSelectedCard(){
 
 void RoomScene::onSelectChange()
 {
+    /*
     QGraphicsItem * photo = qobject_cast<QGraphicsItem*>(sender());
     if(!photo)return;
     if(photo->isSelected())animations->emphasize(photo);
     else animations->effectOut(photo);
+    */
 }
 void RoomScene::onEnabledChange()
 {
@@ -4130,6 +4132,7 @@ void RoomScene::alignTo(QGraphicsItem* object, QPoint pos, const QString &flags)
 
     object->setPos(to);
 }
+
 
 void RoomScene::appendChatEdit(QString txt){
     chat_edit->setText(chat_edit->text()+" "+txt);
