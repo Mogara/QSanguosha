@@ -362,6 +362,9 @@ sgs.ai_view_as.jiuchi = function(card, player, card_place)
 	end
 end
 
+sgs.ai_skill_cardask["@roulin1-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]
+sgs.ai_skill_cardask["@roulin2-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]
+
 sgs.ai_skill_invoke.baonue = sgs.ai_skill_invoke.songwei
 
 sgs.dongzhuo_suit_value = 

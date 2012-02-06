@@ -1538,12 +1538,26 @@ end
 
 sgs.ai_skill_cardask = {}
 
-function sgs.ai_skill_cardask.nullfilter(self)
+function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
+	if not self:damageIsEffective(nil, nil, target) then return "." end
+	if self:getDamagedEffects(self) then return "." end
 	if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = 0}
 		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
 		if willTianxiang ~= "." then return "." end
 	elseif self.player:hasSkill("longhun") and self.player:getHp() > 1 then
+		return "."
+	end
+	if (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
+	if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
+	if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
+	local sunshangxiang = self.room:findPlayerBySkillName("jieyin")
+	if sunshangxiang and sunshangxiang:isWounded() and self:isFriend(sunshangxiang) and not self.player:isWounded() 
+		and self.player:getGeneral():isMale() then
+		self:sort(self.friends, "hp")
+		for _, friend in ipairs(self.friends) do
+			if friend:getGeneral():isMale() and friend:isWounded() then return end
+		end
 		return "."
 	end
 end
@@ -1564,82 +1578,18 @@ function SmartAI:askForCard(pattern, prompt, data)
 			end
 		end
 	end
+	if (pattern == ".S" or pattern == "..S") and self.player:hasSkill("hongyan") then return "." end
 	local callback = sgs.ai_skill_cardask[parsedPrompt[1]]
 	if callback and type(callback) == "function" then
 		local ret = callback(self, data, pattern, target, target2)
 		if ret then return ret end
 	end
-	if (pattern == ".H" or pattern == "..H") and self.player:hasSkill("hongyan") then return "." end
 
-	if self.player:hasSkill("tianxiang") then
-		local dmgStr = {damage = 1, nature = 0}
-		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
-		if willTianxiang ~= "." then return "." end
-	elseif self.player:hasSkill("longhun") and self.player:getHp() > 1 then
-		return "."
-	end
-
+	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
+	
 	if pattern == "slash" then
-		if parsedPrompt[1] == "collateral-slash" then
-			if target and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Jink", targets2) > 0)and not self:hasSkills(sgs.lose_equip_skill) then
-				local slash = self:getCardId("Slash")
-				if not self:slashProhibit(sgs.Card_Parse(slash), target2) then return slash end
-			end
-			self:speak("collateral", self.player:getGeneral():isFemale())
-			return "."
-		elseif (parsedPrompt[1] == "duel-slash") then
-			if (not self:isFriend(target) and self:getCardsNum("Slash")*2 >= target:getHandcardNum())
-				or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("Peach") == 0 and not self.player:hasSkill("buqu")) then
-				return self:getCardId("Slash")
-			else return "." end
-		elseif parsedPrompt[1] == "savage-assault-slash"  then
-			if not self:damageIsEffective(nil, nil, target) then return "." end
-			local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
-			if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
-				(self.player:getHp()>1 or self:getAllPeachNum()>0 and not self.player:containsTrick("indulgence")))
-				or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
-			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
-			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
-		end
 		return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
-		if (parsedPrompt[1] == "@wushuang-jink-1" or parsedPrompt[1] == "@roulin1-jink-1" or parsedPrompt[1] == "@roulin2-jink-1")
-			and self:getCardsNum("Jink") < 2 then return "." end
-		if parsedPrompt[1] == "archery-attack-jink" or parsedPrompt[1]=="@moon-spear-jink" then
-			if not self:damageIsEffective(nil, nil, target) then return "." end
-		end
-		if target then
-			if self:isFriend(target) then
-				if parsedPrompt[1] == "archery-attack-jink"  then
-					local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
-					if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
-						(self.player:getHp()>1 or self:getAllPeachNum()>0 and not self.player:containsTrick("indulgence")))
-						or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
-
-				end
-				if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 then return "." end
-				if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
-				if target:hasSkill("guagu") and self.player:isLord() then return "." end
-				if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
-			else
-				if not target:hasFlag("drank") then
-					if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
-				else
-					return self:getCardId("Jink") or "."
-				end
-				if not self:hasSkills(sgs.need_kongcheng, player) then
-					if self:isEquip("Axe", target) then
-						if self:hasSkills(sgs.lose_equip_skill, target) and target:getEquips():length() > 1 then return "." end
-						if target:getHandcardNum() - target:getHp() > 2 then return "." end
-					elseif self:isEquip("Blade", target) then
-						if self:getCardsNum("Jink") <= self:getCardsNum("Slash", target) then return "." end
-					end
-				end
-
-			end
-		end
-		
-		if self:getDamagedEffects(self) then return "." end
 		return self:getCardId("Jink") or "."
 	end
 end
