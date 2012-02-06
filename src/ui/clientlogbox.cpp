@@ -84,8 +84,11 @@ void ClientLogBox::appendLog(
                 const SkillCard *skill_card = qobject_cast<const SkillCard *>(card);
                 if(subcard_list.isEmpty() || !skill_card->willThrow())
                     log = tr("%from use skill [%1]").arg(skill_name);
-                else
+                else{
+                    if(card->inherits("DummyCard"))
+                        skill_name = bold(Sanguosha->translate("free-discard"), Qt::yellow);
                     log = tr("%from use skill [%1], and the cost is %2").arg(skill_name).arg(subcard_str);
+                }
             }else{
                 if(subcard_list.isEmpty())
                     log = tr("%from use skill [%1], played [%2]").arg(skill_name).arg(card_name);

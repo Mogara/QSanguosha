@@ -293,6 +293,7 @@ int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QSt
 
 const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, const QVariant &data){
     response_skill->setPattern(pattern);
+    self->getRoom()->output(pattern);
     QList<const Card *> cards = self->getHandcards();
     foreach(const Card *card, cards){
         if(response_skill->matchPattern(self, card))

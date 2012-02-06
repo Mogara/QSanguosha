@@ -539,7 +539,7 @@ QString SkillCard::toString() const{
 
 // ---------- Dummy card      -------------------
 
-DummyCard::DummyCard()
+DummyCard::DummyCard():SkillCard()
 {
     target_fixed = true;
     setObjectName("dummy");

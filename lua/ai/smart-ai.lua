@@ -1581,19 +1581,23 @@ function SmartAI:askForCard(pattern, prompt, data)
 			end
 		end
 	end
-	if (pattern == ".S" or pattern == "..S") and self.player:hasSkill("hongyan") then return "." end
+	if self.player:hasSkill("hongyan") then
+		local card
+		if (pattern == ".S" or pattern == "..S") then return "."
+		elseif pattern == "..H" then card = self.lua_ai:askForCard(".|spade,heart", prompt, data)
+		elseif pattern == ".H" then card = self.lua_ai:askForCard(".", prompt, data) end
+		if card then self.room:writeToConsole(card:toString()) return card:toString() end
+	end
 	local callback = sgs.ai_skill_cardask[parsedPrompt[1]]
 	if callback and type(callback) == "function" then
 		local ret = callback(self, data, pattern, target, target2)
 		if ret then return ret end
 	end
-
-	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 	
 	if pattern == "slash" then
-		return self:getCardId("Slash") or "."
+		return sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) or self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
-		return self:getCardId("Jink") or "."
+		return sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) or self:getCardId("Jink") or "."
 	end
 end
 
