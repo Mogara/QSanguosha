@@ -47,10 +47,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     list->setMovement(QListView::Static);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
-
-
     num_combobox = new QComboBox;
-
     for(int i = 0; i <= 9; i++){
         if(i < 9)
             num_combobox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
@@ -241,7 +238,34 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     pile_list = new QListWidget;
     QVBoxLayout *info_lay = new QVBoxLayout(), *equip_lay = new QVBoxLayout(), *hand_lay = new QVBoxLayout()
             , *judge_lay = new QVBoxLayout(), *pile_lay = new QVBoxLayout();
-    info_lay->addWidget(list);
+
+    move_list_up_button = new QPushButton(tr("Move Up"));
+    move_list_down_button = new QPushButton(tr("Move Down"));
+    move_judge_up_button = new QPushButton(tr("Move Up"));
+    move_judge_down_button = new QPushButton(tr("Move Down"));
+    move_pile_up_button = new QPushButton(tr("Move Up"));
+    move_pile_down_button = new QPushButton(tr("Move Down"));
+
+    move_list_up_button->setObjectName("list_up");
+    move_list_down_button->setObjectName("list_down");
+    move_judge_up_button->setObjectName("judge_up");
+    move_judge_down_button->setObjectName("judge_down");
+    move_pile_up_button->setObjectName("pile_up");
+    move_pile_down_button->setObjectName("pile_down");
+    move_list_up_button->setEnabled(list->currentRow() != 0);
+    move_list_down_button->setEnabled(list->currentRow() != list->count()-1);
+    move_judge_up_button->setEnabled(judge_list->currentRow() != 0);
+    move_judge_down_button->setEnabled(judge_list->currentRow() != pile_list->count()-1);
+    move_pile_up_button->setEnabled(pile_list->currentRow() != 0);
+    move_pile_down_button->setEnabled(pile_list->currentRow() != pile_list->count()-1);
+    QVBoxLayout *list_move_lay = new QVBoxLayout;
+    list_move_lay->addWidget(move_list_up_button);
+    list_move_lay->addStretch();
+    list_move_lay->addWidget(move_list_down_button);
+    QHBoxLayout *list_lay = new QHBoxLayout;
+    list_lay->addWidget(list);
+    list_lay->addLayout(list_move_lay);
+    info_lay->addLayout(list_lay);
     QGroupBox *equip_group = new QGroupBox(tr("Equips"));
     QGroupBox *hands_group = new QGroupBox(tr("Handcards"));
     QGroupBox *judge_group = new QGroupBox(tr("Judges"));
@@ -281,6 +305,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(role_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
     connect(list, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
             this, SLOT(on_list_itemSelectionChanged(QListWidgetItem*)));
+    connect(move_list_up_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
+    connect(move_list_down_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
     connect(num_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
     connect(general_label, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
     connect(general_label2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
@@ -317,6 +343,62 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(saveButton,SIGNAL(clicked()),this,SLOT(save()));
     connect(defaultLoadButton, SIGNAL(clicked()), this, SLOT(load()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
+void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidgetItem *second){
+    QString first_name = first->data(Qt::UserRole).toString();
+    QString second_name = second->data(Qt::UserRole).toString();
+
+    QString role = role_mapping[first_name], general = general_mapping[first_name],
+            general2 = general2_mapping[first_name];
+    QList<int> judges(player_judges[first_name]), equips(player_equips[first_name]), hands(player_handcards[first_name]);
+    int hp = player_hp[first_name], maxhp = player_maxhp[first_name], start_draw = player_start_draw[first_name];
+    bool turned = player_turned[first_name], chained = player_chained[first_name],
+            free_general = free_choose_general[first_name], free_general2 = free_choose_general2[first_name];
+    QStringList ex_skills(player_exskills[first_name]);
+    QMap<QString, int> marks(player_marks[first_name]);
+
+    role_mapping[first_name] = role_mapping[second_name];
+    general_mapping[first_name] = general_mapping[second_name];
+    general2_mapping[first_name] = general2_mapping[second_name];
+    player_judges[first_name].clear();
+    player_judges[first_name].append(player_judges[second_name]);
+    player_equips[first_name].clear();
+    player_equips[first_name].append(player_equips[second_name]);
+    player_handcards[first_name].clear();
+    player_handcards[first_name].append(player_handcards[second_name]);
+    player_hp[first_name] = player_hp[second_name];
+    player_maxhp[first_name] = player_maxhp[second_name];
+    player_start_draw[first_name] = player_start_draw[second_name];
+    player_turned[first_name] = player_turned[second_name];
+    player_chained[first_name] = player_chained[second_name];
+    free_choose_general[first_name] = free_choose_general[second_name];
+    free_choose_general2[first_name] = free_choose_general2[second_name];
+    player_exskills[first_name].clear();
+    player_exskills[first_name].append(player_exskills[second_name]);
+    player_marks[first_name].clear();
+    player_marks[first_name] = player_marks[second_name];
+
+    role_mapping[second_name] = role;
+    general_mapping[second_name] = general;
+    general2_mapping[second_name] = general2;
+    player_judges[second_name].clear();
+    player_judges[second_name].append(judges);
+    player_judges[second_name].clear();
+    player_equips[second_name].append(equips);
+    player_handcards[second_name].clear();
+    player_handcards[second_name].append(hands);
+    player_hp[second_name] = hp;
+    player_maxhp[second_name] = maxhp;
+    player_start_draw[second_name] = start_draw;
+    player_turned[second_name] = turned;
+    player_chained[second_name] = chained;
+    free_choose_general[second_name] = free_general;
+    free_choose_general2[second_name] = free_general2;
+    player_exskills[second_name].clear();
+    player_exskills[second_name].append(ex_skills);
+    player_marks[second_name].clear();
+    player_marks[second_name] = marks;
 }
 
 QString CustomAssignDialog::setListText(QString name, QString role, int index){
@@ -831,7 +913,24 @@ void CustomAssignDialog::updatePlayerExSkills(QStringList update_skills){
     player_exskills[name].append(update_skills);
 }
 
+void CustomAssignDialog::exchangeListItem(){
+    int first_index = list->currentRow(), second_index = -1;
+    if(sender()->objectName() == "list_up") second_index = first_index-1;
+    else if(sender()->objectName() == "list_down") second_index = first_index+1;
+
+    exchangePlayersInfo(item_map[first_index], item_map[second_index]);
+    updateListItems();
+    int row = list->count();
+    list->clear();
+    for(int i = 0; i < row; i ++){
+        list->addItem(item_map[i]);
+    }
+    list->setCurrentRow(second_index);
+}
+
 void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
+    if(list->count() == 0 || current == NULL) return;
+
     QString player_name = current->data(Qt::UserRole).toString();
     if(!general_mapping.value(player_name, "").isEmpty()){
         general_label->setPixmap(QPixmap
@@ -865,6 +964,9 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
 
     single_turn->setChecked(is_single_turn);
     before_next->setChecked(is_before_next);
+
+    move_list_up_button->setEnabled(list->currentRow() != 0);
+    move_list_down_button->setEnabled(list->currentRow() != list->count()-1);
 
     int val = 4;
     if(player_start_draw.keys().contains(player_name)) val = player_start_draw[player_name];
@@ -975,7 +1077,7 @@ void CustomAssignDialog::load()
         QString line = in.readLine();
         line = line.trimmed();
 
-        if(!line.startsWith("setPile:") && !line.startsWith("randomRoles:") && !line.startsWith("general:")){
+        if(!line.startsWith("setPile:") && !line.startsWith("extraOptions:") && !line.startsWith("general:")){
             QMessageBox::warning(this, tr("Warning"), tr("Data is unreadable"));
             file.close();
             return;
@@ -991,8 +1093,18 @@ void CustomAssignDialog::load()
             }
             continue;
         }
-        else if(line.startsWith("randomRoles")){
-            is_random_roles = (line.remove("randomRoles:") == "true");
+        else if(line.startsWith("extraOptions:")){
+            line.remove("extraOptions:");
+
+            QMap<QString, QString> option_map;
+            foreach(QString option, line.split(" ")){
+                if(option.isEmpty()) continue;
+
+                option_map[option.split(":").first()] = option.split(":").last();
+            }
+
+            if(option_map["randomRoles"] == "true") is_random_roles = true;
+
             continue;
         }
 
@@ -1173,10 +1285,17 @@ bool CustomAssignDialog::save(QString path)
     }
 
     QString line;
-    if(is_random_roles){
-        line.append("randomRoles:true");
-        line.append("\n");
+
+    set_options << is_random_roles;
+    foreach(bool option, set_options){
+        if(option){
+            line.append("extraOptions:");
+            break;
+        }
     }
+    if(is_random_roles) line.append("randomRoles:true ");
+    line.remove(line.length()-1, 1);
+    line.append("\n");
 
     if(set_pile.length())
     {
