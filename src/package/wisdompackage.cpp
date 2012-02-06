@@ -380,7 +380,7 @@ void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *
             return;
         QVariant tohelp = QVariant::fromValue((PlayerStar)sunce);
         QString prompt = QString("@weidai-analeptic:%1").arg(sunce->objectName());
-        const Card *analeptic = room->askForCard(liege, ".S29", prompt, tohelp);
+        const Card *analeptic = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp);
         if(analeptic){
             LogMessage log;
             log.type = "$DiscardCard";
@@ -401,14 +401,6 @@ void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *
         }
     }
 }
-
-class SpatwoninePattern: public CardPattern{
-public:
-    virtual bool match(const Player *player, const Card *card) const{
-        return ! player->hasEquip(card) && card->getSuit() == Card::Spade
-                && card->getNumber() > 1 && card->getNumber() < 10;
-    }
-};
 
 class WeidaiViewAsSkill:public ZeroCardViewAsSkill{
 public:
@@ -524,7 +516,7 @@ public:
         QString choice = room->askForChoice(zhangzhao, objectName(), choices.join("+"));
         if(choice == "cancel")
             return false;
-        const Card *intervention = room->askForCard(zhangzhao, ".K8", "@fuzuo_card");
+        const Card *intervention = room->askForCard(zhangzhao, ".|.|~7|hand", "@fuzuo_card");
         if(intervention){
             log.type = "$Fuzuo";
             log.to.clear();
@@ -550,13 +542,6 @@ public:
             data = QVariant::fromValue(pindian);
         }
         return false;
-    }
-};
-
-class EightPattern: public CardPattern{
-public:
-    virtual bool match(const Player *player, const Card *card) const{
-        return ! player->hasEquip(card) && card->getNumber() < 8;
     }
 };
 
@@ -904,8 +889,6 @@ WisdomPackage::WisdomPackage()
         wisshuijing->addSkill(new Jiehuo);
 
         skills << new Shien;
-        patterns[".K8"] = new EightPattern;
-        patterns[".S29"] = new SpatwoninePattern;
 
         addMetaObject<JuaoCard>();
         addMetaObject<BawangCard>();

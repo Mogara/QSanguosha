@@ -782,13 +782,6 @@ public:
     }
 };
 
-class BasicPattern: public CardPattern{
-public:
-    virtual bool match(const Player *player, const Card *card) const{
-        return ! player->hasEquip(card) && card->getTypeId() == Card::Basic;
-    }
-};
-
 class Xiangle: public TriggerSkill{
 public:
     Xiangle():TriggerSkill("xiangle"){
@@ -811,7 +804,7 @@ public:
             log.to << effect.to;
             room->sendLog(log);
 
-            return !room->askForCard(effect.from, ".basic", "@xiangle-discard", data);
+            return !room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data);
         }
 
         return false;
@@ -1200,8 +1193,6 @@ MountainPackage::MountainPackage()
     addMetaObject<JixiCard>();
 
     skills << new ZhibaPindian << new Jixi;
-
-    patterns[".basic"] = new BasicPattern;
 }
 
 ADD_PACKAGE(Mountain)
