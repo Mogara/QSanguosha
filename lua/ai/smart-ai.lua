@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120206"
+version = "QSanguosha AI 20120206 (V0.7 Beta 2)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -675,7 +675,7 @@ function sgs.refreshLoyalty(player,intention)
 		sgs.ai_explicit[name] = "loyalish"
 	end
 	--self:printAll(player, intention)
-	sgs.checkMisjudge(player)
+	--sgs.checkMisjudge(player)
 end
 
 function sgs.updateIntention(from, to, intention, card)

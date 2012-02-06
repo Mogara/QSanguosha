@@ -430,9 +430,12 @@ guhuo_skill.getTurnUseCard=function(self)
 		end
 	end
 
+	self:sortByUseValue(cards, true)
 	for _,card in ipairs(cards) do
 		if (card:inherits("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
-		or (card:inherits("Jink") and self:getCardsNum("Jink", self.player, "h")>=3) then
+		or (card:inherits("Jink") and self:getCardsNum("Jink", self.player, "h")>=3)
+		or (card:inherits("Weapon") and self.player:getWeapon())
+		or card:inherits("Disaster") then
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())
