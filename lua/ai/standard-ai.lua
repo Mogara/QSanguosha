@@ -710,8 +710,6 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 	end
 end
 
-sgs.ai_card_intention.QixiCard = sgs.ai_card_intention.Dismantlement
-
 sgs.ganning_suit_value = 
 {
 	spade = 3.9,

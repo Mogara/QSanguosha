@@ -349,10 +349,10 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
     if(target){
         foreach(AI *ai, room->ais){
             ai->filterEvent(event, target, data);
-            delay(10);
         }
     }
 
+    delay(1);
     // pop event stack
     event_stack.pop_back();
 
