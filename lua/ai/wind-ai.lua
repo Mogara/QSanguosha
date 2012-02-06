@@ -137,8 +137,8 @@ sgs.ai_skill_invoke.liegong = sgs.ai_skill_invoke.tieji
 sgs.ai_chaofeng.huangzhong = 1
 sgs.ai_chaofeng.weiyan = -2
 
-sgs.ai_skill_cardask["@guidao-card"]=function(self,prompt)
-	local judge = self.player:getTag("Judge"):toJudge()
+sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
+	local judge = data:toJudge()
 	local all_cards = self.player:getCards("he")
 	if all_cards:isEmpty() then return "." end
 	local cards = {}
@@ -289,6 +289,12 @@ sgs.ai_skill_askforag.buqu = function(self, card_ids)
 end
 
 sgs.ai_chaofeng.zhoutai = -4
+
+function sgs.ai_filterskill_filter.hongyan(card, card_place)
+	if card:getSuit() == sgs.Card_Spade then
+		return ("%s:hongyan[heart:%s]=%d"):format(card:objectName(), card:getNumberString(), card:getEffectiveId())
+	end
+end
 
 sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	local friend_lost_hp = 10
