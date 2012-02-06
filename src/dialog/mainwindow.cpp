@@ -737,13 +737,14 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     QFormLayout *form_layout = new QFormLayout;
     spinbox = new QSpinBox;
     spinbox->setRange(1, 50);
-    spinbox->setValue(10);
+    spinbox->setValue(1);
 
     start_button = new QPushButton(tr("Start"));
     connect(start_button, SIGNAL(clicked()), this, SLOT(startTest()));
 
     loop_checkbox = new QCheckBox(tr("LOOP"));
     loop_checkbox->setObjectName("loop_checkbox");
+    loop_checkbox->setChecked(true);
 
     form_layout->addRow(tr("Num of rooms"), spinbox);
     form_layout->addRow(loop_checkbox, start_button);

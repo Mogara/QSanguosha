@@ -149,7 +149,7 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 		if opt2 then break end
 	end
 	if opt1 and opt2 then
-		if self:getHandcardNum() > 7 then return opt2 else return opt1 end
+		if self.player:getHandcardNum() > 7 then return opt2 else return opt1 end
 	end
 	return opt2 or opt1 or "."
 end
@@ -189,7 +189,7 @@ end
 
 sgs.ai_card_intention.JuejiCard = 30
 
-function sgs.ai_skill_pindian.jueji(minusecard, self, requestor)
+function sgs.ai_skill_pindian.jueji(minusecard, self, requestor, maxcard)
 	if self:isFriend(requestor) then return end
 	if (maxcard:getNumber()/13)^requestor:getHandcardNum() <= 0.6 then return minusecard end
 end
@@ -198,7 +198,7 @@ sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
 	local handcard = self.player:getHandcardNum()
 	local max_card = self.player:getMaxCards()
 
-	prompt = data:toString()
+	local prompt = data:toString()
 	if prompt == "draw2play" then
 		return handcard >= max_card and #(self:getTurnUse())>0
 	elseif prompt == "play2draw" then
@@ -448,7 +448,15 @@ end
 
 function sgs.ai_skill_invoke.shaoying(self, data)
 	local damage = data:toDamage()
-	return self:isEnemy(damage.to:getNextAlive())
+	if not self:isEnemy(damage.to:getNextAlive()) then return false end
+	local zhangjiao = self.room:findPlayerBySkillName("guidao")
+	if not zhangjiao or self:isFriend(zhangjiao) then return true end
+	if not zhangjiao:getCards("e"):isEmpty() then
+		for _, card in sgs.qlist(zhangjiao:getCards("e")) do
+			if card:isBlack() then return false end
+		end
+	end
+	return zhangjiao:getHandcardNum() <= 1
 end
 
 sgs.ai_skill_invoke.gongmou = true

@@ -271,8 +271,6 @@ public:
         prompt_list << "@guicai-card" << judge->who->objectName()
                 << "" << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
-
-        player->tag["Judge"] = data;
         const Card *card = room->askForCard(player, "@guicai", prompt, data);
 
         if(card){
@@ -497,7 +495,7 @@ public:
         if(!room->askForSkillInvoke(liubei, objectName()))
             return false;
 
-        room->playSkillEffect(objectName());
+        room->playSkillEffect(objectName(), getEffectIndex(liubei, NULL));
 
         QVariant tohelp = QVariant::fromValue((PlayerStar)liubei);
         foreach(ServerPlayer *liege, lieges){

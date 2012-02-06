@@ -137,8 +137,8 @@ sgs.ai_skill_invoke.liegong = sgs.ai_skill_invoke.tieji
 sgs.ai_chaofeng.huangzhong = 1
 sgs.ai_chaofeng.weiyan = -2
 
-sgs.ai_skill_cardask["@guidao-card"]=function(self,prompt)
-	local judge = self.player:getTag("Judge"):toJudge()
+sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
+	local judge = data:toJudge()
 	local all_cards = self.player:getCards("he")
 	if all_cards:isEmpty() then return "." end
 	local cards = {}
@@ -290,6 +290,12 @@ end
 
 sgs.ai_chaofeng.zhoutai = -4
 
+function sgs.ai_filterskill_filter.hongyan(card, card_place)
+	if card:getSuit() == sgs.Card_Spade then
+		return ("%s:hongyan[heart:%s]=%d"):format(card:objectName(), card:getNumberString(), card:getEffectiveId())
+	end
+end
+
 sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	local friend_lost_hp = 10
 	local friend_hp = 0
@@ -430,9 +436,12 @@ guhuo_skill.getTurnUseCard=function(self)
 		end
 	end
 
+	self:sortByUseValue(cards, true)
 	for _,card in ipairs(cards) do
 		if (card:inherits("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
-		or (card:inherits("Jink") and self:getCardsNum("Jink", self.player, "h")>=3) then
+		or (card:inherits("Jink") and self:getCardsNum("Jink", self.player, "h")>=3)
+		or (card:inherits("Weapon") and self.player:getWeapon())
+		or card:inherits("Disaster") then
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())

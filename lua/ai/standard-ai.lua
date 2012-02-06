@@ -48,18 +48,18 @@ sgs.ai_skill_invoke.fankui = function(self, data)
 		return (target:hasSkill("xiaoji") and not target:getEquips():isEmpty()) or (self:isEquip("SilverLion",target) and target:isWounded())
 	end
 	if self:isEnemy(target) then				---fankui without zhugeliang and luxun
-			if (target:hasSkill("kongcheng") or target:hasSkill("lianying")) and target:getHandcardNum() == 1 then
-				if not target:getEquips():isEmpty() then return true
-				else return false
-				end
+		if (target:hasSkill("kongcheng") or target:hasSkill("lianying")) and target:getHandcardNum() == 1 then
+			if not target:getEquips():isEmpty() then return true
+			else return false
 			end
+		end
 	end
 	--self:updateLoyalty(-0.8*sgs.ai_loyalty[target:objectName()],self.player:objectName())
 	return true
 end
 
-sgs.ai_skill_cardask["@guicai-card"]=function(self)
-	local judge = self.player:getTag("Judge"):toJudge()
+sgs.ai_skill_cardask["@guicai-card"]=function(self, data)
+	local judge = data:toJudge()
 
 	if self:needRetrial(judge) then
 		local cards = sgs.QList2Table(self.player:getHandcards())
@@ -710,8 +710,6 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 	end
 end
 
-sgs.ai_card_intention.QixiCard = sgs.ai_card_intention.Dismantlement
-
 sgs.ganning_suit_value = 
 {
 	spade = 3.9,
@@ -1029,6 +1027,17 @@ sgs.huatuo_suit_value =
 }
 
 sgs.ai_chaofeng.huatuo = 6
+
+sgs.ai_skill_cardask["@wushuang-slash-1"] = function(self, data, pattern, target)
+	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
+	if self:getCardsNum("Slash") < 2 and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
+end
+
+sgs.ai_skill_cardask["@wushuang-jink-1"] = function(self, data, pattern, target)
+	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
+	if self:getCardsNum("Jink") < 2 and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end	
+end
+
 sgs.ai_chaofeng.lubu = 1
 
 local lijian_skill={}
