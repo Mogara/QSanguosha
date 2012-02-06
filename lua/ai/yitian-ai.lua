@@ -198,7 +198,7 @@ sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
 	local handcard = self.player:getHandcardNum()
 	local max_card = self.player:getMaxCards()
 
-	prompt = data:toString()
+	local prompt = data:toString()
 	if prompt == "draw2play" then
 		return handcard >= max_card and #(self:getTurnUse())>0
 	elseif prompt == "play2draw" then

@@ -245,7 +245,7 @@ sgs.ai_card_intention.Slash = function(card,from,tos,source)
 end
 
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
-	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, prompt) then return "." end
+	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 	assert(target)
 	if self:isFriend(target) then
 		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
