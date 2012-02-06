@@ -1255,6 +1255,9 @@ function SmartAI:askForChoice(skill_name, choices)
 			return skill:getDefaultChoice(self.player)
 		else
 			local choice_table = choices:split("+");
+			for index, achoice in ipairs(choice_table) do
+				if achoice == "benghuai" then table.remove(choice_table, index) break end
+			end
 			local r = math.random(1, #choice_table)
 			return choice_table[r]
 		end
