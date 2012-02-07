@@ -383,8 +383,10 @@ function guihan_skill.getTurnUseCard(self)
 	for index = #cards, 1, -1 do
 		if self:getUseValue(cards[index]) >= 6 then break end
 		if cards[index]:isRed() then
-			table.insert(red_cards, cards[index]:getId())
-			table.remove(cards, index)
+			if #red_cards == 0 or (#red_cards == 1 and cards[index]:getSuit() == red_cards[1]:getSuit()) then
+				table.insert(red_cards, cards[index]:getId())
+				table.remove(cards, index)
+			end
 			if #red_cards >=2 then break end
 		end
 	end
