@@ -811,7 +811,7 @@ void MeleeDialog::startTest(){
     if(server){
         server->gamesOver();
     }else{
-        server = new Server(this);
+        server = new Server(this->parentWidget());
         server->listen();
         connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
     }
