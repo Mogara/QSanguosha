@@ -197,6 +197,7 @@ private:
     QMap<int, ServerPlayer*> owner_map;
 
     const Card *provided;
+    bool has_provided;
 
     QVariantMap tag;
     const Scenario *scenario;
