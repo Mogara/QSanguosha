@@ -813,6 +813,7 @@ void MeleeDialog::startTest(){
     }else{
         server = new Server(this);
         server->listen();
+        connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
     }
     Config.AIDelay = 0;
     room_count = spinbox->value();
@@ -820,7 +821,6 @@ void MeleeDialog::startTest(){
         Room *room = server->createNewRoom();
         connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
         connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
-        connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
 
         room->startTest(avatar_button->property("to_test").toString());
     }
@@ -879,7 +879,6 @@ void MeleeDialog::onGameOver(const QString &winner){
         Room *room = server->createNewRoom();
         connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
         connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
-        connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
 
         room->startTest(avatar_button->property("to_test").toString());
     }
