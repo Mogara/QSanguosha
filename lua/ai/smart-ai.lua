@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120206 (V0.7 Beta 2)"
+version = "QSanguosha AI 20120207"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -590,19 +590,23 @@ sgs.ai_card_intention.general=function(to,level)
 	if not has_rebel then
 		if to:isLord() then return -level*3 else return 0 end
 	end
+	local ret
 	if to:isLord() then
 		return -level*2
 	elseif (sgs.ai_explicit[to:objectName()] or ""):match("loyal") then
-		return -level
+		ret = -level
 	elseif (sgs.ai_explicit[to:objectName()] or ""):match("rebel") then
 		return level
 	elseif sgs.singleRole(to:getRoom()) == "loyalist" then
-		return -level
+		ret = -level
 	elseif sgs.singleRole(to:getRoom()) == "rebel" then
 		return level
 	else
 		return 0
 	end
+	if (sgs.ai_renegade_suspect[to:objectName()] or 0) == 1 then ret = ret/1.5
+	elseif (sgs.ai_renegade_suspect[to:objectName()] or 0) > 1 then ret = ret/2 end
+	return ret
 end
 
 function sgs.singleRole(room, player)
@@ -675,7 +679,7 @@ function sgs.refreshLoyalty(player,intention)
 		sgs.ai_explicit[name] = "loyalish"
 	end
 	--self:printAll(player, intention)
-	--sgs.checkMisjudge(player)
+	sgs.checkMisjudge(player)
 end
 
 function sgs.updateIntention(from, to, intention, card)
