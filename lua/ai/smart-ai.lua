@@ -638,12 +638,12 @@ function sgs.refreshLoyalty(player,intention)
 		if aplayer:getRole() == "renegade" then has_renegade = true end
 	end
 	if not has_rebel then
-		if intention < -80 then
+		if intention <= -70 then
 			sgs.ai_anti_lord[name] = (sgs.ai_anti_lord[name] or 0) + 1
 			sgs.ai_renegade_suspect[name] = (sgs.ai_renegade_suspect[name] or 0) + 1
 		end
 	end
-	if math.abs(intention)>70 and math.abs(sgs.ai_loyalty[name] or 0) > 70 then
+	if math.abs(intention)>=70 and math.abs(sgs.ai_loyalty[name] or 0) >= 70 then
 		if sgs.ai_loyalty[name]*intention<0 then
 			sgs.ai_loyalty[name]=sgs.ai_loyalty[name]/2
 			sgs.refreshLoyalty(player,0)
