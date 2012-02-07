@@ -871,7 +871,7 @@ void Dashboard::onCardItemClicked(){
 
 void Dashboard::updatePending(){
     foreach(CardItem *c, card_items){
-        if(!c->isPending()){
+        if(!c->isPending()||pendings.isEmpty()){
             c->setEnabled(view_as_skill->viewFilter(pendings, c));
         }
     }
