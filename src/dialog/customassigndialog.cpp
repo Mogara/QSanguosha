@@ -13,19 +13,16 @@
 #include <QCommandLinkButton>
 
 static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
-                     QWidget *rear1 = NULL, QWidget *rear2 = NULL, QWidget *rear3 = NULL, QWidget *rear4 = NULL,
-                     QWidget *rear5 = NULL, QWidget *rear6 = NULL){
-    QHBoxLayout *layout = new QHBoxLayout;
+                     QWidget *rear = NULL, bool is_vertically = false){
+    QBoxLayout *layout;
+    if(is_vertically) layout = new QVBoxLayout;
+    else layout = new QHBoxLayout;
+
     layout->addWidget(left);
     if(mid)
         layout->addWidget(mid);
     layout->addWidget(right);
-    if(rear1) layout->addWidget(rear1);
-    if(rear2) layout->addWidget(rear2);
-    if(rear3) layout->addWidget(rear3);
-    if(rear4) layout->addWidget(rear4);
-    if(rear5) layout->addWidget(rear5);
-    if(rear6) layout->addWidget(rear6);
+    if(rear) layout->addWidget(rear);
 
     return layout;
 }
@@ -384,7 +381,7 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     general2_mapping[second_name] = general2;
     player_judges[second_name].clear();
     player_judges[second_name].append(judges);
-    player_judges[second_name].clear();
+    player_equips[second_name].clear();
     player_equips[second_name].append(equips);
     player_handcards[second_name].clear();
     player_handcards[second_name].append(hands);
@@ -1076,6 +1073,7 @@ void CustomAssignDialog::load()
     while (!in.atEnd()) {
         QString line = in.readLine();
         line = line.trimmed();
+        if(line.isEmpty()) continue;
 
         if(!line.startsWith("setPile:") && !line.startsWith("extraOptions:") && !line.startsWith("general:")){
             QMessageBox::warning(this, tr("Warning"), tr("Data is unreadable"));
@@ -1300,8 +1298,9 @@ bool CustomAssignDialog::save(QString path)
     if(set_pile.length())
     {
         line.append("setPile:");
-        foreach(int id, set_pile)
+        for(int i = set_pile.length()-1; i >= 0; i--)
         {
+            int id = set_pile.at(i);
             line.append(QString::number(id));
             line.append(",");
         }
