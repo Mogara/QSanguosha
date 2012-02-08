@@ -90,6 +90,10 @@ sgs.ai_skill_use_func.JujianCard = function(card, use, self)
 	end
 end
 
+function sgs.ai_armor_value.yizhong(card)
+	if not card then return 4 end
+end
+
 sgs.ai_use_priority.JujianCard = 4.5
 sgs.ai_use_value.JujianCard = 6.7
 

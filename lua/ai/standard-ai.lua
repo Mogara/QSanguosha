@@ -1,5 +1,5 @@
 sgs.ai_skill_invoke.jianxiong = function(self, data)
-		return not sgs.Shit_HasShit(data:toCard())
+	return not sgs.Shit_HasShit(data:toCard())
 end
 
 table.insert(sgs.ai_global_flags, "hujiasource")

@@ -43,6 +43,10 @@ function SmartAI:useCardGaleShell(card, use)
 	end
 end
 
+sgs.ai_armor_value["gale-shell"] = function()
+	return -10
+end
+
 sgs.ai_card_intention.GaleShell = 80
 sgs.ai_use_priority.GaleShell = 0.9
 

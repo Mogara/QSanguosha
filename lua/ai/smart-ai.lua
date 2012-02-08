@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120207"
+version = "QSanguosha AI 20120208"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -2641,6 +2641,8 @@ function SmartAI:isEquip(equip_name, player)
 	return false
 end
 
+sgs.ai_weapon_value = {}
+
 function SmartAI:evaluateWeapon(card)
 	local deltaSelfThreat = 0
 	local currentRange
@@ -2657,61 +2659,37 @@ function SmartAI:evaluateWeapon(card)
 	if card:inherits("Crossbow") and deltaSelfThreat ~= 0 then
 		if self.player:hasSkill("kurou") then deltaSelfThreat = deltaSelfThreat*3+10 end
 		deltaSelfThreat = deltaSelfThreat + self:getCardsNum("Slash")*3-2
-	elseif card:inherits("Blade") then
-		deltaSelfThreat = deltaSelfThreat + self:getCardsNum("Slash")
-	elseif card:inherits("Spear") then
-	else
-		for _,enemy in ipairs(self.enemies) do
-			if self.player:distanceTo(enemy) <= currentRange then
-				if card:inherits("DoubleSword") and
-					enemy:getGeneral():isMale() ~= self.player:getGeneral():isMale() then
-						deltaSelfThreat = deltaSelfThreat+3
-				elseif card:inherits("QinggangSword") and enemy:getArmor() then
-					deltaSelfThreat = deltaSelfThreat+3
-				elseif card:inherits("Axe") and enemy:getHp() < 3 then
-					deltaSelfThreat = deltaSelfThreat+3-enemy:getHp()
-				elseif card:inherits("KylinBow") and (enemy:getDefensiveHorse() or enemy:getDefensiveHorse())then
-					deltaSelfThreat = deltaSelfThreat+1
-					break
-				elseif card:inherits("GudingBlade") and enemy:getHandcardNum() < 3 then
-					deltaSelfThreat = deltaSelfThreat+2
-					if enemy:getHandcardNum() < 1 then deltaSelfThreat = deltaSelfThreat+4 end
-				end
+	end
+	local callback = sgs.ai_weapon_value[card:objectName()]
+	if callback and type(callback) == "function" then
+		deltaSelfThreat = deltaSelfThreat + (callback(self) or 0)
+		for _, enemy in ipairs(self.enemies) do
+			if self.player:distanceTo(enemy) <= currentRange and callback then
+				deltaSelfThreat = deltaSelfThreat + (callback(self, enemy) or 0)
 			end
 		end
 	end
+
 	return deltaSelfThreat
 end
+
+sgs.ai_armor_value = {}
 
 function SmartAI:evaluateArmor(card, player)
 	player = player or self.player
 	local ecard = card or player:getArmor()
-	if not ecard then
-		if player:hasSkill("bazhen") or player:hasSkill("yizhong") then return 4 end
-		return 0
-	end
-	local armor_base_value = {
-		Vine = 3,
-		EightDiagram = 4,
-		RenwangShield = 3,
-		SilverLion = 1,
-		GaleShell = -10
-	}
-	if ecard:inherits("EightDiagram") and (self:hasWizard(self:getFriends(player),true) or player:hasSkill("tiandu")) then return 5 end
-	if ecard:inherits("EightDiagram") and self:hasWizard(self:getEnemies(player),true) then return 2 end
-	if ecard:inherits("Vine") then
-		for _, enemy in ipairs(self:getEnemies(player)) do
-			if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or self:hasSkills("huoji|shaoying", enemy) then return -1 end
-			if enemy:objectName() == self.player:objectName() and (self:getCardId("FireSlash", enemy) or self:getCardId("FireAttack",enemy)) then return -1 end
+	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
+		local callback = sgs.ai_armor_value[askill:objectName()]
+		if callback and type(callback) == "function" then
+			return (callback(ecard, player, self) or 0)
 		end
 	end
-	if #(self:getEnemies(player))<3 and ecard:inherits("Vine") then return 4 end
-	if self:hasWizard(self:getEnemies(player), true) and ecard:inherits("SilverLion") then
-		for _,player in sgs.qlist(self.room:getAlivePlayers()) do
-			if player:containsTrick("lightning") then return 5 end
-		end
+	if not ecard then return 0 end
+	local callback = sgs.ai_armor_value[ecard:objectName()]
+	assert(callback)
+	if callback and type(callback) == "function" then
+		return (callback(player, self) or 0)
 	end
-	return armor_base_value[ecard:className()]
 end
 
 function SmartAI:hasSameEquip(card, player)

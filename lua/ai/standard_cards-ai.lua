@@ -332,6 +332,10 @@ function sgs.ai_slash_weaponfilter.double_sword(to, self)
 	return self.player:getGender()~=to:getGender()
 end
 
+function sgs.ai_weapon_value.double_sword(self, enemy)
+	if enemy and enemy:getGeneral():isMale() ~= self.player:getGeneral():isMale() then return 3 end
+end
+
 sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target)
 	if target and self:isFriend(target) then return "." end
 	local cards = self.player:getHandcards()
@@ -342,6 +346,10 @@ sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target
 		end
 	end
 	return "."
+end
+
+function sgs.ai_weapon_value.qinggang_sword(self, enemy)
+	if enemy and enemy:getArmor() then return 3 end
 end
 
 sgs.ai_skill_invoke.ice_sword=function(self, data)
@@ -367,6 +375,13 @@ end
 
 function sgs.ai_slash_weaponfilter.guding_blade(to)
 	return to:isKongcheng()
+end
+
+function sgs.ai_weapon_value.guding_blade(self, enemy)
+	if not enemy then return end
+	local value = 2
+	if enemy:getHandcardNum() < 1 then value = 4 end
+	return value
 end
 
 sgs.ai_skill_cardask["@axe"] = function(self, data, pattern, target)
@@ -417,10 +432,18 @@ function sgs.ai_slash_weaponfilter.axe(to, self)
 	return self:getOverflow() > 0
 end
 
+function sgs.ai_weapon_value.axe(self, enemy)
+	if enemy and enemy:getHp() < 3 then return 3 - enemy:getHp() end
+end
+
 sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
 	if target and self:isFriend(target) and not (target:hasSkill("leiji") and self:getCardsNum("Jink", target, "h") > 0) then
 		return "."
 	end
+end
+
+function sgs.ai_weapon_value.blade(self, enemy)
+	if not enemy then return self:getCardsNum("Slash") end
 end
 
 local spear_skill={}
@@ -471,6 +494,14 @@ function sgs.ai_slash_weaponfilter.kylin_bow(to)
 	if to:getDefensiveHorse() then return true else return false end
 end
 
+function sgs.ai_weapon_value.kylin_bow(self, target)
+	if not target then
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:getOffensiveHorse() or enemy:getDefensiveHorse() then return 1 end
+		end
+	end
+end
+
 sgs.ai_skill_invoke.eight_diagram = function(self, data)
 	if sgs.hujiasource and not self:isFriend(sgs.hujiasource) then return false end
 	if sgs.lianlisource and not self:isFriend(sgs.lianlisource) then return false end
@@ -488,6 +519,25 @@ sgs.ai_skill_invoke.eight_diagram = function(self, data)
 	
 	if self:getDamagedEffects(self) then return false end
 	return true
+end
+
+function sgs.ai_armor_value.eight_diagram(player, self)
+	if self:hasWizard(self:getEnemies(player),true) then return 2
+	elseif self:hasWizard(self:getFriends(player),true) or player:hasSkill("tiandu") then return 5
+	else return 4 end
+end
+
+function sgs.ai_armor_value.renwang_shield()
+	return 4
+end
+
+function sgs.ai_armor_value.silver_lion(player, self)
+	if self:hasWizard(self:getEnemies(player), true) then
+		for _, player in sgs.qlist(self.room:getAlivePlayers()) do
+			if player:containsTrick("lightning") then return 5 end
+		end
+	end
+	return 1
 end
 
 sgs.ai_use_priority.OffensiveHorse = 2.69
