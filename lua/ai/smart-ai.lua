@@ -2743,6 +2743,8 @@ function SmartAI:useEquipCard(card, use)
 		(self.player:hasSkill("rende") or self.player:hasSkill("qingnang")
 		or (self.player:hasSkill("yongsi") and self:getOverflow() < 3)
 		or (self.player:hasSkill("qixi") and card:isBlack())) then return end
+	self:useCardByClassName(card, use)
+	if use.card or use.broken then return end
 	if card:inherits("Weapon") then
 		if self.player:hasSkill("rende") then
 			for _,friend in ipairs(self.friends_noself) do
@@ -2756,7 +2758,6 @@ function SmartAI:useEquipCard(card, use)
 			use.card = card
 		end
 	elseif card:inherits("Armor") then
-		if card:inherits("GaleShell") then self:useGaleShell(card, use) return end
 		local lion = self:getCard("SilverLion")
 		if lion and self.player:isWounded() and not self:isEquip("SilverLion") and not card:inherits("SilverLion") and
 			not (self:hasSkills("bazhen|yizhong") and not self.player:getArmor()) then
