@@ -64,8 +64,8 @@ private:
     QCheckBox *single_turn, *before_next;
     QLabel *single_turn_text, *single_turn_text2, *before_next_text, *before_next_text2;
     QPushButton *extra_skill_set;
-    QPushButton *move_list_up_button, *move_list_down_button, *move_judge_up_button, *move_judge_down_button,
-                *move_pile_up_button, *move_pile_down_button;
+    QPushButton *move_list_up_button, *move_list_down_button;
+    QCheckBox *move_list_check, *move_pile_check;
 
     QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
@@ -92,7 +92,7 @@ private slots:
     void updateRole(int index);
     void updateNumber(int num);
     void updateListItems();
-    void updatePileInfo();
+    void updatePileInfo(int row = -1);
     void updatePlayerInfo(QString name);
     void updatePlayerHpInfo(QString name);
     void updateAllRoles(bool toggled = false);
@@ -112,6 +112,7 @@ private slots:
     void setPlayerMarks(int value);
     void getPlayerMarks(int index);
     void setStarter(bool toggled);
+    void setMoveButtonAvaliable(bool toggled);
 
     void removeEquipCard();
     void removeHandCard();
