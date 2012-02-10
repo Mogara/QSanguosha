@@ -846,7 +846,7 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return -1
 		elseif (sgs.ai_loyalty[player:objectName()] or 0)< 0 and
 			(sgs.ai_card_intention["general"](player,100) > 0)
-			then return 3
+			then return 3.1
 		else return 0 end
 	elseif self.role == "loyalist" then
 		if player:isLord() then return -2
@@ -870,7 +870,7 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return 4-modifier
 		elseif (sgs.ai_loyalty[player:objectName()] or 0) > 0 and
 			(sgs.ai_card_intention["general"](player,100) < 0)
-			then return 3
+			then return 3.1
 		else return 0 end
 	elseif self.role == "renegade" then
 		if sgs.getValue(self.room:getLord()) < 6 and rebel_num > 0 then
