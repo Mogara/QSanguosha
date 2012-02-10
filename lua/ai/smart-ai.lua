@@ -777,7 +777,7 @@ function SmartAI:objectiveLevel(player)
 	for _, aplayer in ipairs (players) do
 		if aplayer:getRole() == "rebel" then
 			rebel_num = rebel_num + 1
-		elseif aplayer:getRole() == "loyal" then
+		elseif aplayer:getRole() == "loyalist" then
 			loyal_num = loyal_num + 1
 		elseif aplayer:getRole() == "renegade" then
 			renegade_num = renegade_num + 1
@@ -994,7 +994,18 @@ function SmartAI:updatePlayers(inclusive)
 
 		self.retain = 2
 		self.harsh_retain = false
-		if self.role ~= "renegade" or #self.enemies > 0 then return end
+		if #self.enemies == 0 then
+			local neutrality = {}
+			for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if self.lua_ai:relationTo(aplayer) == sgs.AI_Neutrality then table.insert(neutrality, aplayer) end
+			end
+			local function compare_func(a,b)
+				return self:objectiveLevel(a) > self:objectiveLevel(b)
+			end
+			table.sort(neutrality, compare_func)
+			table.insert(self.enemies, neutrality[1])
+			return
+		end
 	end
 
 	inclusive = inclusive or true
