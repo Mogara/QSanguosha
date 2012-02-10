@@ -1272,10 +1272,9 @@ sgs.ai_skill_discard = {}
 
 function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local callback = sgs.ai_skill_discard[reason]
-	if callback and type(callback) == "function" and callback(self, discard_num, optional, include_equip) then
-		return callback(self, discard_num, optional, include_equip)
-	end
-	if optional then return {} end
+	if callback and type(callback) == "function" then
+		if callback(self, discard_num, optional, include_equip) then return callback(self, discard_num, optional, include_equip) end
+	elseif optional then return {} end
 
 	local flag = "h"
 	if include_equip and (self.player:getEquips():isEmpty() or not self.player:isJilei(self.player:getEquips():first())) then flag = flag .. "e" end
@@ -2686,7 +2685,6 @@ function SmartAI:evaluateArmor(card, player)
 	end
 	if not ecard then return 0 end
 	local callback = sgs.ai_armor_value[ecard:objectName()]
-	assert(callback)
 	if callback and type(callback) == "function" then
 		return (callback(player, self) or 0)
 	end

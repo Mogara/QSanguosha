@@ -246,7 +246,7 @@ end
 
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
-	assert(target)
+	if not target then self.room:writeToConsole(debug.traceback()) end
 	if self:isFriend(target) then
 		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
 		if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
