@@ -2688,6 +2688,7 @@ function SmartAI:evaluateArmor(card, player)
 	if callback and type(callback) == "function" then
 		return (callback(player, self) or 0)
 	end
+	return 0.5
 end
 
 function SmartAI:hasSameEquip(card, player)
