@@ -847,8 +847,8 @@ void CustomAssignDialog::setMoveButtonAvaliable(bool toggled){
         }
     }
     else{
-        move_pile_check->setChecked(toggled);
         move_list_check->setChecked(false);
+        move_pile_check->setChecked(toggled);
         if(toggled){
             move_list_up_button->setEnabled(pile_list->currentRow() != 0);
             move_list_down_button->setEnabled(pile_list->currentRow() != pile_list->count()-1);
