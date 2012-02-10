@@ -294,7 +294,7 @@ function SmartAI:useCardPeach(card, use)
 			end
 		end
 		
-		if self.player:hasSkill("ganlu") then
+		if self.player:hasSkill("ganlu") and not self.player:hasUsed("GanluCard") then
 			local dummy_use = {isDummy = true}
 			self:useSkillCard(sgs.Card_Parse("@GanluCard=."),dummy_use)
 			if dummy_use.card then return end
