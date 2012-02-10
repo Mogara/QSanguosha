@@ -620,8 +620,8 @@ sgs.ai_card_intention.general=function(to,level)
 	else
 		return 0
 	end
-	if (sgs.ai_renegade_suspect[to:objectName()] or 0) == 1 and ret > 0 then ret = ret/1.5
-	elseif (sgs.ai_renegade_suspect[to:objectName()] or 0) > 1 and ret > 0 then ret = ret/2 end
+	if sgs.ai_renegade_suspect[to:objectName()] == 1 and ret < 0 then ret = ret/1.5
+	elseif sgs.ai_renegade_suspect[to:objectName()] > 1 and ret < 0 then ret = ret/2 end
 	return ret
 end
 
@@ -860,6 +860,7 @@ function SmartAI:objectiveLevel(player)
 end
 
 function SmartAI:isFriend(other, another)
+	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then return self:isFriend(other)==self:isFriend(another) end
 	if sgs.isRolePredictable() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isFriend(other) end
 	if self.player:objectName() == other:objectName() then return true end
@@ -868,6 +869,7 @@ function SmartAI:isFriend(other, another)
 end
 
 function SmartAI:isEnemy(other, another)
+	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then return self:isFriend(other)~=self:isFriend(another) end
 	if sgs.isRolePredictable() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
