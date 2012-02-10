@@ -258,12 +258,7 @@ sgs.ai_skill_use_func.HuangtianCard=function(card,use,self)
 	end
 end
 
-sgs.ai_card_intention.HuangtianCard = function(card,from,tos,source)
-	for _, to in ipairs(tos) do
-		sgs.updateIntention(from, to, -80)
-		if to:isLord() then sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1 end
-	end
-end
+sgs.ai_card_intention.HuangtianCard = -80
 
 sgs.ai_use_priority.HuangtianCard = 10
 sgs.ai_use_value.HuangtianCard = 8.5

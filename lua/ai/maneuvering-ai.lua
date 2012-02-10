@@ -241,7 +241,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 				end
 			end
 
-			if success then
+			if success and not (enemy:isChained() and #(self:getChainedFriends()) > #(self:getChainedEnemies())) then
 				if self:isEquip("Vine", enemy) then
 					table.insert(targets_succ, 1, enemy)
 					break
