@@ -3328,22 +3328,21 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args){
     connect(group, SIGNAL(finished()), item, SLOT(deleteLater()));
 }
 
+#include "playercarddialog.h"
+
 void RoomScene::animateHpChange(const QString &name, const QStringList &args)
 {
     QString who = args.at(0);
-    if(who == Self->objectName())
+    const ClientPlayer *player = ClientInstance->getPlayer(who);
+    int delta = - args.at(1).toInt();
+    int hp = qMax(0, player->getHp() + delta);
+    int index = 5;
+    if(player->getHp() + delta < player->getMaxHP())
+        index = qBound(0, hp, 5);
+
+    if(player == Self)
     {
-        int delta = - args.at(1).toInt();
-
-        int hp = Self->getHp() + delta;
         int max_hp = Self->getMaxHP();
-
-        int index = hp < max_hp ?
-                    qMin(hp,5) : 5;
-
-        QString path = max_hp > 6 ?
-                    QString("image/system/magatamas/small-%1.png").arg(index) :
-                    QString("image/system/magatamas/%1.png").arg(index);
 
         qreal width = max_hp > 6 ? 14 : 22;
         qreal total_width = width*max_hp;
@@ -3352,7 +3351,9 @@ void RoomScene::animateHpChange(const QString &name, const QStringList &args)
 
         for(int i=0;i<delta;i++)
         {
-            Pixmap *aniMaga = new Pixmap(path);
+            Pixmap *aniMaga = new Pixmap;
+            QPixmap *qpixmap = max_hp > 6 ? MagatamaWidget::GetSmallMagatama(index) : MagatamaWidget::GetMagatama(index);
+            aniMaga->setPixmap(*qpixmap);
             addItem(aniMaga);
             aniMaga->show();
             i+=hp-delta;
@@ -3375,8 +3376,6 @@ void RoomScene::animateHpChange(const QString &name, const QStringList &args)
 
             group->start(QAbstractAnimation::DeleteWhenStopped);
 
-
-
             i-=hp-delta;
         }
 
@@ -3384,18 +3383,8 @@ void RoomScene::animateHpChange(const QString &name, const QStringList &args)
     }
 
     Photo *photo = name2photo[who];
-    const Player *player = photo->getPlayer();
-    int delta = - args.at(1).toInt();
-
-    int hp = qMax(0, player->getHp() + delta);
-
-    int index = 5;
-    if(player->getHp() + delta < player->getMaxHP())
-        index = qBound(0, hp, 5);
-
     for(int i=0;i<delta;i++)
     {
-
         i+=player->getHp();
         Pixmap *aniMaga = new Pixmap(QString("image/system/magatamas/small-%1.png").arg(index));
         addItem(aniMaga);
@@ -3423,8 +3412,6 @@ void RoomScene::animateHpChange(const QString &name, const QStringList &args)
 
         i-=player->getHp();
     }
-
-
 }
 
 void RoomScene::animatePopup(const QString &name, const QStringList &args)

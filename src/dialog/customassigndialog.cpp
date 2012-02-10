@@ -238,26 +238,20 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     move_list_up_button = new QPushButton(tr("Move Up"));
     move_list_down_button = new QPushButton(tr("Move Down"));
-    move_judge_up_button = new QPushButton(tr("Move Up"));
-    move_judge_down_button = new QPushButton(tr("Move Down"));
-    move_pile_up_button = new QPushButton(tr("Move Up"));
-    move_pile_down_button = new QPushButton(tr("Move Down"));
+    move_list_check = new QCheckBox(tr("Move Player List"));
+    move_pile_check = new QCheckBox(tr("Move Pile List"));
 
+    move_list_check->setObjectName("list check");
+    move_pile_check->setObjectName("pile check");
     move_list_up_button->setObjectName("list_up");
     move_list_down_button->setObjectName("list_down");
-    move_judge_up_button->setObjectName("judge_up");
-    move_judge_down_button->setObjectName("judge_down");
-    move_pile_up_button->setObjectName("pile_up");
-    move_pile_down_button->setObjectName("pile_down");
-    move_list_up_button->setEnabled(list->currentRow() != 0);
-    move_list_down_button->setEnabled(list->currentRow() != list->count()-1);
-    move_judge_up_button->setEnabled(judge_list->currentRow() != 0);
-    move_judge_down_button->setEnabled(judge_list->currentRow() != pile_list->count()-1);
-    move_pile_up_button->setEnabled(pile_list->currentRow() != 0);
-    move_pile_down_button->setEnabled(pile_list->currentRow() != pile_list->count()-1);
+    move_list_up_button->setEnabled(false);
+    move_list_down_button->setEnabled(false);
     QVBoxLayout *list_move_lay = new QVBoxLayout;
-    list_move_lay->addWidget(move_list_up_button);
+    list_move_lay->addWidget(move_list_check);
+    list_move_lay->addWidget(move_pile_check);
     list_move_lay->addStretch();
+    list_move_lay->addWidget(move_list_up_button);
     list_move_lay->addWidget(move_list_down_button);
     QHBoxLayout *list_lay = new QHBoxLayout;
     list_lay->addWidget(list);
@@ -304,6 +298,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
             this, SLOT(on_list_itemSelectionChanged(QListWidgetItem*)));
     connect(move_list_up_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
     connect(move_list_down_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
+    connect(move_list_check, SIGNAL(toggled(bool)), this, SLOT(setMoveButtonAvaliable(bool)));
+    connect(move_pile_check, SIGNAL(toggled(bool)), this, SLOT(setMoveButtonAvaliable(bool)));
     connect(num_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
     connect(general_label, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
     connect(general_label2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
@@ -325,6 +321,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(starter_box, SIGNAL(toggled(bool)), this, SLOT(setStarter(bool)));
     connect(marks_count, SIGNAL(valueChanged(int)), this, SLOT(setPlayerMarks(int)));
     connect(marks_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(getPlayerMarks(int)));
+    connect(pile_list, SIGNAL(currentRowChanged(int)), this, SLOT(updatePileInfo(int)));
     connect(removeEquipButton, SIGNAL(clicked()), this, SLOT(removeEquipCard()));
     connect(removeHandButton, SIGNAL(clicked()), this, SLOT(removeHandCard()));
     connect(removeJudgeButton, SIGNAL(clicked()), this, SLOT(removeJudgeCard()));
@@ -627,7 +624,15 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
     }
 }
 
-void CustomAssignDialog::updatePileInfo(){
+void CustomAssignDialog::updatePileInfo(int row){
+    if(row >= 0){
+        if(move_pile_check->isChecked()){
+            move_list_up_button->setEnabled(row != 0);
+            move_list_down_button->setEnabled(row != pile_list->count()-1);
+        }
+        return;
+    }
+
     pile_list->clear();
 
     if(set_pile.isEmpty())
@@ -832,6 +837,25 @@ void CustomAssignDialog::doGeneralAssign2(){
     dialog->exec();
 }
 
+void CustomAssignDialog::setMoveButtonAvaliable(bool toggled){
+    if(sender()->objectName() == "list check"){
+        move_pile_check->setChecked(false);
+        move_list_check->setChecked(toggled);
+        if(toggled){
+            move_list_up_button->setEnabled(list->currentRow() != 0);
+            move_list_down_button->setEnabled(list->currentRow() != list->count()-1);
+        }
+    }
+    else{
+        move_list_check->setChecked(false);
+        move_pile_check->setChecked(toggled);
+        if(toggled){
+            move_list_up_button->setEnabled(pile_list->currentRow() != 0);
+            move_list_down_button->setEnabled(pile_list->currentRow() != pile_list->count()-1);
+        }
+    }
+}
+
 void CustomAssignDialog::accept(){
     if(save("etc/customScenes/custom_scenario.txt"))
     {
@@ -911,18 +935,33 @@ void CustomAssignDialog::updatePlayerExSkills(QStringList update_skills){
 }
 
 void CustomAssignDialog::exchangeListItem(){
-    int first_index = list->currentRow(), second_index = -1;
+    int first_index = -1, second_index = -1;
+    if(move_list_check->isChecked()) first_index = list->currentRow();
+    else if(move_pile_check->isChecked()) first_index = pile_list->currentRow();
+
     if(sender()->objectName() == "list_up") second_index = first_index-1;
     else if(sender()->objectName() == "list_down") second_index = first_index+1;
 
-    exchangePlayersInfo(item_map[first_index], item_map[second_index]);
-    updateListItems();
-    int row = list->count();
-    list->clear();
-    for(int i = 0; i < row; i ++){
-        list->addItem(item_map[i]);
+    if(first_index < 0 && second_index < 0) return;
+
+    if(move_list_check->isChecked()){
+        exchangePlayersInfo(item_map[first_index], item_map[second_index]);
+        updateListItems();
+        int row = list->count();
+        list->clear();
+        for(int i = 0; i < row; i ++){
+            list->addItem(item_map[i]);
+        }
+        list->setCurrentRow(second_index);
     }
-    list->setCurrentRow(second_index);
+    else if(move_pile_check->isChecked()){
+        int id1 = pile_list->item(first_index)->data(Qt::UserRole).toInt();
+        int id2 = pile_list->item(second_index)->data(Qt::UserRole).toInt();
+
+        set_pile.swap(set_pile.indexOf(id1), set_pile.indexOf(id2));
+        updatePileInfo();
+        pile_list->setCurrentRow(second_index);
+    }
 }
 
 void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
@@ -962,8 +1001,10 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     single_turn->setChecked(is_single_turn);
     before_next->setChecked(is_before_next);
 
-    move_list_up_button->setEnabled(list->currentRow() != 0);
-    move_list_down_button->setEnabled(list->currentRow() != list->count()-1);
+    if(move_list_check->isChecked()){
+        move_list_up_button->setEnabled(list->currentRow() != 0);
+        move_list_down_button->setEnabled(list->currentRow() != list->count()-1);
+    }
 
     int val = 4;
     if(player_start_draw.keys().contains(player_name)) val = player_start_draw[player_name];
