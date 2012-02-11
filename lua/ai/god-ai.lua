@@ -69,7 +69,13 @@ function sgs.ai_slash_prohibit.wuhun(self, to)
 					not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
 			end
 			if self.player:getRole()~="rebel" and marks[self.room:getLord():objectName()] == mark and
-				not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
+				not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then
+				local all_loyal = true
+				for _, aplayer in sgs.qlist(self.room:getOtherPlayers(to)) do
+					if aplayer:getRole() ~= "loyalist" and not aplayer:isLord() then all_loyal = false break end
+				end
+				if not all_loyal then return true end
+			end
 		end
 	end
 end
