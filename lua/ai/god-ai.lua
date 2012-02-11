@@ -74,7 +74,7 @@ function sgs.ai_slash_prohibit.wuhun(self, to)
 				for _, aplayer in sgs.qlist(self.room:getOtherPlayers(to)) do
 					if aplayer:getRole() ~= "loyalist" and not aplayer:isLord() then all_loyal = false break end
 				end
-				if not all_loyal return true end
+				if not all_loyal then return true end
 			end
 		end
 	end

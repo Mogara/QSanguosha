@@ -246,7 +246,8 @@ end
 
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
-	if not target then self.room:writeToConsole(debug.traceback()) end
+	--if not target then self.room:writeToConsole(debug.traceback()) end
+	if not target then return end
 	if self:isFriend(target) then
 		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
 		if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
@@ -917,7 +918,7 @@ end
 sgs.dynamic_value.control_card.Collateral = true
 
 sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target, target2)
-	if target and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Jink", targets2) > 0) and
+	if target and target2 and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Jink", targets2) > 0) and
 		not self:hasSkills(sgs.lose_equip_skill) then
 		local slash = self:getCardId("Slash")
 		if not self:slashProhibit(sgs.Card_Parse(slash), target2) then return slash end

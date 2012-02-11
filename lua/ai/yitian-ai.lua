@@ -400,7 +400,7 @@ function sgs.ai_skill_use_func.GuihanCard(card, use, self)
 		nplayer = nplayer:getNextAlive()
 		if self:isFriend(nplayer) then fediff = fediff - 1
 		elseif self:isEnemy(nplayer) then fediff = fediff + 1 end
-		values[nplayer:objectName()] = fediff
+		if self:isFriend(nplayer:getNextAlive()) then values[nplayer:objectName()] = fediff else values[nplayer:objectName()] = -1 end
 	end
 	local function get_value(a)
 		local ret = 0
