@@ -1420,7 +1420,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			local zhangjiao = self.room:findPlayerBySkillName("leiji")
 			if who:isWounded() and self:isEquip("SilverLion", who) and (not zhangjiao or self:isFriend(zhangjiao))
 				and not self:hasSkills("qixi|duanliang", who) then return who:getArmor():getId() end
-			if self:isEquip("GaleShell", who) then return who:getArmor():getId() end
+			if self:evaluateArmor(who:getArmor(), who)<-5 then return who:getArmor():getId() end
 			if self:hasSkills(sgs.lose_equip_skill, who) then
 				local equips = who:getEquips()
 				if not equips:isEmpty() then
