@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120211(V0.72 Stable)"
+version = "QSanguosha AI 20120211(V0.73 Stable)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -1770,6 +1770,16 @@ function SmartAI:askForYiji(card_ids)
 	
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend then return friend, card:getId() end
+	if #self.friends > 1 and self:getOverflow() > 0 then
+		self:sort(self.friends_noself, "handcard")
+		for _, afriend in ipairs(self.friends_noself) do
+			if not self:needKongcheng(afriend) then
+				for _, acard_id in ipairs(card_ids) do
+					if not sgs.Sanguosha:getCard(acard_id):inherits("Shit") then return afriend, acard_id end
+				end
+			end
+		end
+	end
 end
 
 sgs.ai_skill_pindian = {}

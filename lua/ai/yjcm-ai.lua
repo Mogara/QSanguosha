@@ -154,7 +154,7 @@ sgs.ai_skill_use_func.XuanhuoCard = function(card, use, self)
 
 	local target
 	for _, friend in ipairs(self.friends_noself) do
-		if self:hasSkills(sgs.lose_equip_skill, friend) then
+		if self:hasSkills(sgs.lose_equip_skill, friend) and not friend:getEquips():isEmpty() then
 			for _, card in ipairs(cards) do
 				if card:getSuit() == sgs.Card_Heart and self.player:getHandcardNum() > 1 then
 					use.card = sgs.Card_Parse("@XuanhuoCard=" .. card:getEffectiveId())
