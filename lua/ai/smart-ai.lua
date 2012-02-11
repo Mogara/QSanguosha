@@ -1288,7 +1288,7 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 	if null_card then null_card = sgs.Card_Parse(null_card) else return end
 
 	if positive then
-		if from and self:isEnemy(from) and (sgs.ai_explicit[from:objectName()] or sgs.isRolePredictable()) then
+		if from and self:isEnemy(from) and (sgs.ai_explicit[from:objectName()] ~= "" or sgs.isRolePredictable()) then
 			if trick_name:inherits("ExNihilo") and self:getOverflow(from) == 0 then return null_card end
 			if trick_name:inherits("IronChain") and not self:isEquip("Vine", to) then return nil end
 			if self:isFriend(to) then
@@ -1340,7 +1340,7 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 				if self:isFriend(from) then return null_card end
 			end
 		else
-			if self:isEnemy(to) and (sgs.ai_explicit[to:objectName()] or sgs.isRolePredictable()) then return null_card else return end
+			if self:isEnemy(to) and (sgs.ai_explicit[to:objectName()] ~= "" or sgs.isRolePredictable()) then return null_card else return end
 		end
 	end
 end

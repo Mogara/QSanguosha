@@ -268,8 +268,9 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     thread->trigger(GameOverJudge, victim, data);
 
 
-    broadcastInvoke("killPlayer", victim->objectName());
     broadcastProperty(victim, "role");
+    thread->delay(100);
+    broadcastInvoke("killPlayer", victim->objectName());
 
     thread->trigger(Death, victim, data);
     victim->loseAllSkills();

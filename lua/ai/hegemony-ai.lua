@@ -175,7 +175,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 			sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) + intention
 			if sgs.ai_loyalty[kingdom][player:objectName()] > 160 then sgs.ai_loyalty[kingdom][player:objectName()] = 160 end
 			if sgs.ai_loyalty[kingdom][player:objectName()] < -160 then sgs.ai_loyalty[kingdom][player:objectName()] = -160 end
-		elseif sgs.ai_explicit[player:objectName()] then
+		elseif sgs.ai_explicit[player:objectName()] ~= "" then
 			kingdom = sgs.ai_explicit[player:objectName()]
 			sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) + intention * 0.7
 			if sgs.ai_loyalty[kingdom][player:objectName()] > 160 then sgs.ai_loyalty[kingdom][player:objectName()] = 160 end
@@ -207,7 +207,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 		if neg_loyalty_count > 2 or pos_loyalty_count > 0 then
 			sgs.ai_explicit[player:objectName()] = max_kingdom
 		else
-			sgs.ai_explicit[player:objectName()] = nil
+			sgs.ai_explicit[player:objectName()] = ""
 		end
 		-- self:printAll(player, intention)
 	end
