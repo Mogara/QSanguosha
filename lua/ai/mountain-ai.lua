@@ -113,7 +113,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 		self:sort(self.enemies, "hp")
 		local has_armor = true
 		local judge
-		for _, friend in ipairs(self.friends_noself) do
+		for _, friend in ipairs(self.friends) do
 			if not friend:getCards("j"):isEmpty() and card_for_qiaobian(self, friend, ".") then
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
