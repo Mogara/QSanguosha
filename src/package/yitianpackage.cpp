@@ -357,6 +357,7 @@ public:
 
         case Player::Play:{
                 if(target->askForSkillInvoke("lukang_weiyan", "play2draw")){
+                    target->clearHistory();
                     target->getRoom()->setPlayerProperty(target, "phase", "draw");
                 }
 
