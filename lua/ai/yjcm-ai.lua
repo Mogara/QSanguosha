@@ -276,7 +276,7 @@ sgs.ai_skill_use_func.GanluCard = function(card, use, self)
 	target = nil
 	for _,friend in ipairs(self.friends) do
 		if self:isEquip("YitianSword", friend) or (self:isEquip("SilverLion",friend) and friend:isWounded()) 
-			or self:hasSkills(sgs.lose_equip_skill, friend) then target = friend break end
+			or (self:hasSkills(sgs.lose_equip_skill, friend) and not friend:getEquips():isEmpty()) then target = friend break end
 	end
 	if not target then return end
 	for _,friend in ipairs(self.friends) do
