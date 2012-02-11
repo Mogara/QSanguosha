@@ -13,6 +13,7 @@ end
 sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash
 
 function sgs.ai_slash_prohibit.weidi(self, to, card)
+	if to:isLord() then return false end
 	local lord = self.room:getLord()
 	for _, askill in sgs.qlist(lord:getVisibleSkillList()) do
 		local filter = sgs.ai_slash_prohibit[askill:objectName()]
