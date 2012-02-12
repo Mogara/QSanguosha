@@ -1282,7 +1282,7 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	return to_discard
 end
 
-function SmartAI:askForNullification(trick_name, from, to, positive)
+function SmartAI:askForNullification(trick, from, to, positive)
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
@@ -1292,43 +1292,43 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 
 	if positive then
 		if from and self:isEnemy(from) and (sgs.ai_explicit[from:objectName()] ~= "" or sgs.isRolePredictable()) then
-			if trick_name:inherits("ExNihilo") and self:getOverflow(from) == 0 then return null_card end
-			if trick_name:inherits("IronChain") and not self:isEquip("Vine", to) then return nil end
+			if trick:inherits("ExNihilo") and self:getOverflow(from) == 0 then return null_card end
+			if trick:inherits("IronChain") and not self:isEquip("Vine", to) then return nil end
 			if self:isFriend(to) then
-				if trick_name:inherits("Dismantlement") then
+				if trick:inherits("Dismantlement") then
 					if to:getArmor() then return null_card end
 				else
-					if trick_name:inherits("Snatch") then return null_card end
+					if trick:inherits("Snatch") then return null_card end
 					if self:isWeak(to) then
-						if trick_name:inherits("Duel") then
+						if trick:inherits("Duel") then
 							return null_card
-						elseif trick_name:inherits("FireAttack") then
+						elseif trick:inherits("FireAttack") then
 							if from:getHandcardNum() > 2 then return null_card end
 						end
 					end
 				end
 			elseif self:isEnemy(to) then
-				if (trick_name:inherits("Snatch") or trick_name:inherits("Dismantlement")) and to:getCards("j"):length() > 0 then
+				if (trick:inherits("Snatch") or trick:inherits("Dismantlement")) and to:getCards("j"):length() > 0 then
 					return null_card
 				end
 			end
 		end
 
 		if self:isFriend(to) then
-			if trick_name:inherits("Indulgence") or trick_name:inherits("SupplyShortage") then
+			if trick:inherits("Indulgence") or trick:inherits("SupplyShortage") then
 				return null_card
 			end
 			if self:isWeak(to) then
-				if trick_name:inherits("ArcheryAttack") then
+				if trick:inherits("ArcheryAttack") then
 					if self:getCardsNum("Jink", to) == 0 then return null_card end
-				elseif trick_name:inherits("SavageAssault") then
+				elseif trick:inherits("SavageAssault") then
 					if self:getCardsNum("Slash", to) == 0 then return null_card end
 				end
 			end
 		end
 		if from then
 			if self:isEnemy(to) then
-				if trick_name:inherits("GodSalvation") and self:isWeak(to) then
+				if trick:inherits("GodSalvation") and self:isWeak(to) then
 					return null_card
 				end
 			end
@@ -1336,11 +1336,14 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 	else
 		if from then
 			if from:objectName() == to:objectName() then
-				if self:isFriend(from) then return null_card
-				else return nil end
+				if self:isFriend(from) then return null_card else return end
 			end
-			if not (trick_name:inherits("AmazingGrace") or trick_name:inherits("GodSalvation") or trick_name:inherits("AOE")) then
-				if self:isFriend(from) then return null_card end
+			if not (trick:inherits("AmazingGrace") or trick:inherits("GodSalvation") or trick:inherits("AOE")) then
+				if self:isFriend(from) then
+					if ("snatch|dismantlement"):match(trick:objectName()) and to:isNude() then
+					elseif trick:inherits("FireAttack") and to:isKongcheng() then
+					else return null_card end
+				end
 			end
 		else
 			if self:isEnemy(to) and (sgs.ai_explicit[to:objectName()] ~= "" or sgs.isRolePredictable()) then return null_card else return end
