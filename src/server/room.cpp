@@ -269,7 +269,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
 
 
     broadcastProperty(victim, "role");
-    thread->delay(100);
+    thread->delay(300);
     broadcastInvoke("killPlayer", victim->objectName());
 
     thread->trigger(Death, victim, data);
