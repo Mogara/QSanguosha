@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120211"
+version = "QSanguosha AI 20120212 (V0.73 Patch1)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -2486,7 +2486,7 @@ function SmartAI:getAoeValueTo(card, to , from)
 			end
 		end
 
-		if to:getHp() ~= 0 then
+		if to:getHp() > 0 then
 			value = value - 24 / to:getHp() - 10
 		end
 

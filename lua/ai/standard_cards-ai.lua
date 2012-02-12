@@ -132,8 +132,7 @@ function SmartAI:useCardSlash(card, use)
 				if not use.to or use.to:isEmpty() then
 					local anal = self:searchForAnaleptic(use,enemy,card)
 					if anal and not self:isEquip("SilverLion", enemy) and not self:isWeak() then
-						use.card = anal
-						return
+						if anal:getEffectiveId() ~= card:getEffectiveId() then use.card = anal return end
 					end
 					local equips = self:getCards("EquipCard", self.player, "h")
 					for _, equip in ipairs(equips) do

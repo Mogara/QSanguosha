@@ -4,7 +4,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		local judges = who:getCards("j")
 		if not judges:isEmpty() then
 			for _, judge in sgs.qlist(judges) do
-				card = judge
+				card = judge -- Fixme: card = DelayedTrick::CastFrom(judge)
 				for _, enemy in ipairs(self.enemies) do
 					if not enemy:containsTrick(card:objectName()) and not self:trickProhibit(card, enemy) then
 						target = enemy
