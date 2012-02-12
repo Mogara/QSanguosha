@@ -584,10 +584,16 @@ end
 function sgs.isRolePredictable()
 	if sgs.GetConfig("RolePredictable", true) then return true end
 	local mode = sgs.GetConfig("GameMode", "")
-	if (mode == "06_3v3") or (not mode:find("0")) then return true end
-	if mode:find("02_1v1") or mode:find("03p") or mode:find("04_1v3") then return true end
+	if not mode:find("0") or mode:find("03p") then return true end
+	if sgs.useDefaultStrategy() then return true end
 	if mode:find("mini") or mode:find("custom_scenario") then return true end
 	return false
+end
+
+function sgs.useDefaultStrategy()
+	local mode = sgs.GetConfig("GameMode", "")
+	if (mode == "06_3v3") then return true end
+	if mode:find("02_1v1") or mode:find("04_1v3") then return true end
 end
 
 sgs.ai_renegade_threshold = 0.3
@@ -778,6 +784,12 @@ function SmartAI:objectiveLevel(player)
 	players = sgs.QList2Table(players)
 
 	if #players == 1 then return 5 end
+	
+	if sgs.useDefaultStrategy() then
+		if self.lua_ai:isFriend(player) then return -2
+		elseif self.lua_ai:isEnemy(player) then return 5
+		else return 0 end
+	end
 
 	local rebel_num, loyalish_num, loyal_num, renegade_num = 0, 0, 0, 0
 	for _, aplayer in ipairs (players) do
@@ -865,6 +877,7 @@ end
 function SmartAI:isFriend(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then return self:isFriend(other)==self:isFriend(another) end
+	if sgs.useDefaultStrategy() then return self.lua_ai:isFriend(other) end
 	if sgs.isRolePredictable() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isFriend(other) end
 	if self.player:objectName() == other:objectName() then return true end
 	if self:objectiveLevel(other) < 0 then return true end
@@ -874,6 +887,7 @@ end
 function SmartAI:isEnemy(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then return self:isFriend(other)~=self:isFriend(another) end
+	if sgs.useDefaultStrategy() then return self.lua_ai:isEnemy(other) end
 	if sgs.isRolePredictable() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
 	if self:objectiveLevel(other) >= 0 then return true end
