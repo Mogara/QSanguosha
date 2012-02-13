@@ -159,6 +159,7 @@ sgs.ai_card_intention.TuxiCard = 80
 sgs.ai_chaofeng.zhangliao = 4
 
 sgs.ai_skill_invoke.luoyi=function(self,data)
+	if self.player:isSkipped(sgs.Player_Play) then return false end
 	local cards=self.player:getHandcards()
 	cards=sgs.QList2Table(cards)
 
@@ -689,6 +690,12 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 				end
 			end
 
+			if self:getUseValue(card) > sgs.ai_use_value.Dismantlement and card:inherits("TrickCard") then
+				local dummy_use = {isDummy = true}
+				self:useTrickCard(card, dummy_use)
+				if dummy_use.card then shouldUse = false end
+			end
+
 			if shouldUse then
 				black_card = card
 				break
@@ -938,14 +945,19 @@ jieyin_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func.JieyinCard=function(card,use,self)
-	self:sort(self.friends, "hp")
+	self:sort(self.friends_noself, "hp")
 	
-	for _, friend in ipairs(self.friends) do
+	for _, friend in ipairs(self.friends_noself) do
 		if friend:getGeneral():isMale() and friend:isWounded() then
 			use.card=card
 			if use.to then use.to:append(friend) end
 			return
 		end
+	end
+	if self.player:getGeneral():isMale() and self.player:isWounded() then
+		use.card = card
+		if use.to then use.to:append(self.player) end
+		return
 	end
 end
 

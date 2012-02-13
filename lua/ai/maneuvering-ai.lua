@@ -171,7 +171,7 @@ function SmartAI:useCardIronChain(card, use)
 	local targets = {}
 	self:sort(self.friends,"defense")
 	for _, friend in ipairs(self.friends) do
-		if friend:isChained() then
+		if friend:isChained() or friend:hasSkill("danlao") then
 			table.insert(targets, friend)
 		end
 	end

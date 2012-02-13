@@ -130,7 +130,12 @@ sgs.xiahouyuan_keep_value =
 	OffensiveHorse = 5
 }
 
-sgs.ai_skill_invoke.jushou = true
+function sgs.ai_skill_invoke.jushou(self, data)
+	for _, friend in ipairs(self.friends) do
+		if self:hasSkills("fangzhu|jilve", friend) then return true end
+	end
+	return self:isWeak()
+end
 
 sgs.ai_skill_invoke.liegong = sgs.ai_skill_invoke.tieji
 

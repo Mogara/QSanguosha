@@ -1538,6 +1538,7 @@ sgs.ai_skill_cardask = {}
 function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if not self:damageIsEffective(nil, nil, target) then return "." end
 	if self:getDamagedEffects(self) then return "." end
+	if target and target:getWeapon() and target:getWeapon():inherits("IceSword") and self.player:getCards("he"):length() > 2 then return end
 	if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = 0}
 		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
@@ -2003,8 +2004,8 @@ sgs.ai_skills = {}
 sgs.lose_equip_skill = "xiaoji|xuanfeng"
 sgs.need_kongcheng = "lianying|kongcheng"
 sgs.masochism_skill = "fankui|jieming|yiji|ganglie|enyuan|fangzhu"
-sgs.wizard_skill = "guicai|guidao|tiandu"
-sgs.wizard_harm_skill = "guicai|guidao"
+sgs.wizard_skill = "guicai|guidao|jilve|tiandu"
+sgs.wizard_harm_skill = "guicai|guidao|jilve"
 
 function sgs.getSkillLists(player)
 	local slist = player:getVisibleSkillList()
@@ -2508,7 +2509,7 @@ function SmartAI:getAoeValueTo(card, to , from)
 		end
 
 		if self:isFriend(from, to) then
-		if (to:isLord() or from:isLord()) and (not to:hasSkill("buqu")) then
+		if (to:isLord() or from:isLord()) and not (to:hasSkill("buqu") and to:getPile("buqu"):length() < 5) then
 				if to:getHp() <= 1 and self:getCardsNum("Peach", from) == 0 and sj_num == 0 then
 					if to:getRole() == "renegade" then
 						value = value - 50

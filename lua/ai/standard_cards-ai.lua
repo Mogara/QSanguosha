@@ -911,6 +911,10 @@ sgs.ai_card_intention.Collateral = function(card, from, tos, source)
 		sgs.updateIntention(from, tos[1], 80)
 	elseif (sgs.ai_loyalty[tos[1]] or 0) * (sgs.ai_loyalty[tos[2]] or 0) > 0 then
 		sgs.updateIntention(from, tos[2], 80)
+	elseif from:getWeapon() and from:inMyAttackRange(tos[2]) then
+		sgs.updateIntention(from, tos[1], 80)
+	elseif tos[1]:isKongcheng() then
+		sgs.updateIntention(from, tos[1], 80)
 	end
 end
 

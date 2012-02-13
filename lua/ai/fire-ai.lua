@@ -331,7 +331,7 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 	end
 	if shouldUse then
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
+			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() and not enemy:hasSkill("tuntian") then
 				use.card = sgs.Card_Parse("@TianyiCard=" .. cards[1]:getId())
 				if use.to then use.to:append(enemy) end
 				return

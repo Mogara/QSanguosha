@@ -513,3 +513,27 @@ function sgs.ai_slash_prohibit.duanchang(self, to)
 end
 
 sgs.ai_chaofeng.caiwenji = -5
+
+function sgs.ai_skill_choice.huashen(self, choices)
+	local str = choices
+	choices = str:split("+")
+	if str:match("guixin2") then return "guixin2" end
+	if self.player:getPhase() == sgs.Player_NotActive then
+		if str:match("guixin") and (not self:isWeak() or self:getAllPeachNum() > 0) then return "guixin" end
+		for _, askill in ipairs(sgs.masochism_skill:split("|")) do
+			if str:match(askill) and (not self:isWeak() or self:getAllPeachNum() > 0) then return askill end
+		end
+		if self:isWeak() then
+			if str:match("wuhun") then return "wuhun" end
+			for _, askill in ipairs(("wuhun|duanchang|huilei|beige|buyi|jijiu"):split("|")) do
+				if str:match(askill) then return askill end
+			end
+		end
+	end
+	for index = #choices, 1, -1 do
+		if ("qixing|kuangfeng|dawu|kuangbao|wuqian|shenfen|renjie|baiyin|tuntian|benghuai"):match(choices[index]) then
+			table.remove(choices,index)
+		end
+	end
+	return choices[math.random(1,#choices)]
+end

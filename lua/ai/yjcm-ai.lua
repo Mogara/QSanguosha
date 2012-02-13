@@ -1,4 +1,6 @@
-sgs.ai_skill_invoke.jiushi= true
+function sgs.ai_skill_invoke.jiushi(self, data)
+	return not self.player:faceUp()
+end
 
 jujian_skill={}
 jujian_skill.name="jujian"
