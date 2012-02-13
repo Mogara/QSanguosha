@@ -36,3 +36,12 @@ function sgs.checkMisjudge(player)
 			sgs.ai_explicit[name] .. " " .. player:getRole() .. " " .. player:getRoom():alivePlayerCount() .. (sgs.ai_renegade_suspect[name] or 0))
 	end
 end
+
+local cardparse = sgs.Card_Parse
+function sgs.Card_Parse(str)
+	if not str then global_room:writeToConsole(debug.traceback()) end
+	if type(str) ~= "string" and type(str) ~= "number" and str.toString then 
+		global_room:writeToConsole(str:toString())
+	end
+	return cardparse(str)
+end

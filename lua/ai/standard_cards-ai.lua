@@ -920,7 +920,7 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target,
 	if target and target2 and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Jink", targets2) > 0) and
 		not self:hasSkills(sgs.lose_equip_skill) then
 		local slash = self:getCardId("Slash")
-		if not self:slashProhibit(sgs.Card_Parse(slash), target2) then return slash end
+		if slash and not self:slashProhibit(sgs.Card_Parse(slash), target2) then return slash end
 	end
 	self:speak("collateral", self.player:getGeneral():isFemale())
 	return "."
