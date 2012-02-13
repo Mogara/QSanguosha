@@ -233,7 +233,7 @@ private:
     QList<const DelayedTrick *> delayed_tricks;
     QHash<const Player *, int> fixed_distance;
 
-    QSet<Card::CardType> jilei_set;
+    QSet<QString> jilei_set;
 
 signals:
     void general_changed();

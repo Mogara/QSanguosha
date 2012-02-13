@@ -80,7 +80,7 @@ public:
             foreach(ServerPlayer *player, players){
                 if(player->hasFlag("jilei")){
                     player->jilei(".");
-                    player->invoke("jilei");
+                    player->invoke("jilei", ".");
 
                     LogMessage log;
                     log.type = "#JileiClear";
@@ -206,6 +206,27 @@ public:
                 log.arg = QString::number(total);
                 room->sendLog(log);
 
+            }else if(yuanshu->hasFlag("jilei")){
+                QSet<const Card *> jilei_cards;
+                QList<const Card *> handcards = yuanshu->getHandcards();
+                foreach(const Card *card, handcards){
+                    if(yuanshu->isJilei(card))
+                        jilei_cards << card;
+                }
+                int total = handcards.size() - jilei_cards.size() + yuanshu->getEquips().length();
+                if(x > total){
+                    // show all his cards
+                    room->showAllCards(yuanshu);
+                    LogMessage log;
+                    log.type = "#YongsiBad";
+                    log.from = yuanshu;
+                    log.arg = QString::number(total);
+                    room->sendLog(log);
+                    yuanshu->throwAllEquips();
+                    foreach(const Card *card, handcards.toSet() - jilei_cards){
+                        room->throwCard(card);
+                    }
+                }
             }else{
                 room->askForDiscard(yuanshu, "yongsi", x, false, true);
 
