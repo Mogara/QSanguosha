@@ -719,11 +719,11 @@ void Player::jilei(const QString &type){
     if(type == ".")
         jilei_set.clear();
     else if(type == "basic")
-        jilei_set << "BasicCard|.|.|hand";
+        jilei_set << "BasicCard";
     else if(type == "trick")
-        jilei_set << "TrickCard|.|.|hand";
+        jilei_set << "TrickCard";
     else if(type == "equip")
-        jilei_set << "EquipCard|.|.|hand";
+        jilei_set << "EquipCard";
     else
         jilei_set << type;
 }
@@ -737,20 +737,23 @@ bool Player::isJilei(const Card *card) const{
             const Card *c = Sanguosha->getCard(card_id);
             foreach(QString pattern, jilei_set.toList()){
                 ExpPattern p(pattern);
-                if(p.match(this,c)) return true;
+                if(p.match(this,c) && !hasEquip(c)) return true;
             }
         }
     }
     else{
-        foreach(QString pattern, jilei_set.toList()){
-            ExpPattern p(pattern);
-            if(p.match(this,card)) return true;
-        }
-        foreach(int card_id, card->getSubcards()){
-            const Card *c = Sanguosha->getCard(card_id);
+        if(card->getSubcards().isEmpty())
             foreach(QString pattern, jilei_set.toList()){
                 ExpPattern p(pattern);
-                if(p.match(this,c)) return true;
+                if(p.match(this,card)) return true;
+            }
+        else{
+            foreach(int card_id, card->getSubcards()){
+                const Card *c = Sanguosha->getCard(card_id);
+                foreach(QString pattern, jilei_set.toList()){
+                    ExpPattern p(pattern);
+                    if(p.match(this,card) && !hasEquip(c)) return true;
+                }
             }
         }
     }
