@@ -532,6 +532,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
 
 XianzhenSlashCard::XianzhenSlashCard(){
     target_fixed = true;
+    can_jilei = true;
 }
 
 void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
