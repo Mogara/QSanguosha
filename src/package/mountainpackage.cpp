@@ -8,6 +8,7 @@
 #include "generaloverview.h"
 #include "clientplayer.h"
 #include "client.h"
+#include "ai.h"
 
 #include <QCommandLinkButton>
 
@@ -993,34 +994,63 @@ public:
         foreach(QVariant huashen, huashens)
             huashen_generals << huashen.toString();
 
-        QString general_name = room->askForGeneral(zuoci, huashen_generals);
-        const General *general = Sanguosha->getGeneral(general_name);
-        QString kingdom = general->getKingdom();
-        if(zuoci->getKingdom() != kingdom){
-            if(kingdom == "god")
-                kingdom = room->askForKingdom(zuoci);
-            room->setPlayerProperty(zuoci, "kingdom", kingdom);
-        }
-        if(zuoci->getGeneral()->isMale() != general->isMale())
-            room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
-
         QStringList skill_names;
-        foreach(const Skill *skill, general->getVisibleSkillList()){
-            if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
-               || skill->getFrequency() == Skill::Wake)
-                continue;
-
-            skill_names << skill->objectName();
-        }
-
-        if(skill_names.isEmpty())
-            return QString();
-
         QString skill_name;
-        if(skill_names.length() == 1)
-            skill_name = skill_names.first();
-        else
-            skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
+        AI* ai = zuoci->getAI();
+        if(ai){
+            QHash<QString, const General*>hash;
+            foreach(QString general_name, huashen_generals){
+                const General* general = Sanguosha->getGeneral(general_name);
+                foreach(const Skill *skill, general->getVisibleSkillList()){
+                    if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
+                            || skill->getFrequency() == Skill::Wake)
+                        continue;
+
+                    if(!skill_names.contains(skill->objectName())){
+                        hash[skill->objectName()] = general;
+                        skill_names << skill->objectName();
+                    }
+                }
+            }
+            skill_name = ai->askForChoice("huashen", skill_names.join("+"));
+            const General* general = hash[skill_name];
+            QString kingdom = general->getKingdom();
+            if(zuoci->getKingdom() != kingdom){
+                if(kingdom == "god")
+                    kingdom = room->askForKingdom(zuoci);
+                room->setPlayerProperty(zuoci, "kingdom", kingdom);
+            }
+            if(zuoci->getGeneral()->isMale() != general->isMale())
+                room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
+        }
+        else{
+            QString general_name = room->askForGeneral(zuoci, huashen_generals);
+            const General *general = Sanguosha->getGeneral(general_name);
+            QString kingdom = general->getKingdom();
+            if(zuoci->getKingdom() != kingdom){
+                if(kingdom == "god")
+                    kingdom = room->askForKingdom(zuoci);
+                room->setPlayerProperty(zuoci, "kingdom", kingdom);
+            }
+            if(zuoci->getGeneral()->isMale() != general->isMale())
+                room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
+
+            foreach(const Skill *skill, general->getVisibleSkillList()){
+                if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
+                   || skill->getFrequency() == Skill::Wake)
+                    continue;
+
+                skill_names << skill->objectName();
+            }
+
+            if(skill_names.isEmpty())
+                return QString();
+
+            if(skill_names.length() == 1)
+                skill_name = skill_names.first();
+            else
+                skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
+        }
 
         zuoci->tag["HuashenSkill"] = skill_name;
 
