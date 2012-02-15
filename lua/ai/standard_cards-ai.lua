@@ -1,7 +1,7 @@
 local function hasExplicitRebel(room)
 	for _, player in sgs.qlist(room:getAllPlayers()) do
 		if sgs.isRolePredictable() and player:getRole() == "rebel" then return true end
-		if sgs.CompareRoleEvaluation(player, "rebel", "loyalist") == "rebel" then return true end
+		if sgs.compareRoleEvaluation(player, "rebel", "loyalist") == "rebel" then return true end
 	end
 	return false
 end
@@ -908,7 +908,7 @@ sgs.ai_card_intention.Collateral = function(card, from, tos)
 	assert(#tos == 2)
 	if tos[2]:objectName() == from:objectName() then
 		sgs.updateIntention(from, tos[1], 80)
-	elseif sgs.CompareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.CompareRoleEvaluation(tos[2], "rebel", "loyalist") then
+	elseif sgs.compareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.compareRoleEvaluation(tos[2], "rebel", "loyalist") then
 		sgs.updateIntention(from, tos[2], 80)
 	elseif from:getWeapon() and from:inMyAttackRange(tos[2]) then
 		sgs.updateIntention(from, tos[1], 80)

@@ -28,7 +28,7 @@ end
 
 function outputPlayersEvaluation()
 	for _, player in sgs.qlist(global_room:getOtherPlayers(global_room:getLord())) do
-		local evaluate_role = sgs.EvaluatePlayerRole(player)
+		local evaluate_role = sgs.evaluatePlayerRole(player)
 		global_room:writeToConsole("Misjudge-------" .. player:getGeneralName())
 		global_room:writeToConsole("[Role: " .. player:getRole() .. "      Evaluate role: " .. evaluate_role)
 		global_room:writeToConsole("Rebel:" .. sgs.role_evaluation[player:objectName()]["rebel"] .. " Loyalist:"
@@ -37,7 +37,7 @@ function outputPlayersEvaluation()
 	end
 end
 
-function sgs.CheckMisjudge(player)
+function sgs.checkMisjudge(player)
 	local room = global_room
 	local mode = room:getMode()
 	if player then
@@ -55,9 +55,9 @@ function sgs.CheckMisjudge(player)
 			elseif role == "renegade" then renegade_num = renegade_num + 1
 			end
 			
-			if sgs.EvaluatePlayerRole(p) == "rebel" then evaluate_rebel = evaluate_rebel + 1
-			elseif sgs.EvaluatePlayerRole(p) == "loyalist" then evaluate_loyalist = evaluate_loyalist + 1
-			elseif sgs.EvaluatePlayerRole(p) == "renegade" then evaluate_renegade = evaluate_renegade + 1
+			if sgs.evaluatePlayerRole(p) == "rebel" then evaluate_rebel = evaluate_rebel + 1
+			elseif sgs.evaluatePlayerRole(p) == "loyalist" then evaluate_loyalist = evaluate_loyalist + 1
+			elseif sgs.evaluatePlayerRole(p) == "renegade" then evaluate_renegade = evaluate_renegade + 1
 			end
 		end
 		

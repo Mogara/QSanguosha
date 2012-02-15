@@ -1196,7 +1196,7 @@ end
 table.insert(sgs.ai_choicemade_filter.cardUsed, lijian_filter)
 
 sgs.ai_card_intention.LijianCard = function(card, from, to)
-	if sgs.EvaluateRoleTrends(to[1]) == sgs.EvaluateRoleTrends(to[2]) then
+	if sgs.evaluateRoleTrends(to[1]) == sgs.evaluateRoleTrends(to[2]) then
 		sgs.updateIntentions(from, to, 40)
 	end
 end
