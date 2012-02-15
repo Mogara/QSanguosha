@@ -196,6 +196,15 @@ void ServerPlayer::unicast(const QString &message) const{
         recorder->recordLine(message);
 }
 
+void ServerPlayer::startNetworkDelayTest(){
+    test_time = QDateTime::currentDateTime();
+    invoke("networkDelayTest");
+}
+
+qint64 ServerPlayer::endNetworkDelayTest(){
+    return test_time.msecsTo(QDateTime::currentDateTime());
+}
+
 void ServerPlayer::startRecord(){
     recorder = new Recorder(this);
 }

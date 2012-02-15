@@ -37,6 +37,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["hallEntered"] = &Client::hallEntered;
 
     callbacks["setup"] = &Client::setup;
+    callbacks["networkDelayTest"] = &Client::networkDelayTest;
     callbacks["addPlayer"] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["startInXs"] = &Client::startInXs;
@@ -175,6 +176,10 @@ void Client::signup(){
         }
         request(signup_str);
     }
+}
+
+void Client::networkDelayTest(const QString &){
+    request("networkDelayTest .");
 }
 
 void Client::request(const QString &message){

@@ -75,6 +75,7 @@ public:
 
     void checkVersion(const QString &server_version);
     void setup(const QString &setup_str);
+    void networkDelayTest(const QString&);
     void addPlayer(const QString &player_info);
     void removePlayer(const QString &player_name);
     void drawCards(const QString &cards_str);

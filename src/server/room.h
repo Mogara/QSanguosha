@@ -166,6 +166,7 @@ public:
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void startTest(const QString &to_test);
+    void networkDelayTestCommand(ServerPlayer *player, const QString &);
 
 protected:
     virtual void run();
