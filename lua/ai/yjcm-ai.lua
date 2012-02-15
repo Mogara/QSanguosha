@@ -99,7 +99,7 @@ end
 sgs.ai_use_priority.JujianCard = 4.5
 sgs.ai_use_value.JujianCard = 6.7
 
-sgs.ai_card_intention.JujianCard = -70
+sgs.ai_card_intention.JujianCard = -100
 
 sgs.dynamic_value.benefit.JujianCard = true
 

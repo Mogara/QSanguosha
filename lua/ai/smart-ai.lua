@@ -104,6 +104,7 @@ end
 
 function sgs.evaluatePlayerRole(player)
 	if not player then global_room:writeToConsole("Player is empty in role's evaluation!") return end
+	if player:isLord() then return "loyalist" end
 	
 	if sgs.role_evaluation[player:objectName()]["loyalist"] == sgs.role_evaluation[player:objectName()]["renegade"] and
 		sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["renegade"] then 
@@ -112,11 +113,11 @@ function sgs.evaluatePlayerRole(player)
 	
 	if sgs.role_evaluation[player:objectName()]["loyalist"] == sgs.role_evaluation[player:objectName()]["renegade"] then
 		if sgs.role_evaluation[player:objectName()]["loyalist"] < sgs.role_evaluation[player:objectName()]["rebel"] then return "rebel"
-		else return "loyalist"
+		else return "unknown"
 		end
 	elseif sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["renegade"] then
 		if sgs.role_evaluation[player:objectName()]["rebel"] < sgs.role_evaluation[player:objectName()]["loyalist"] then return "loyalist"
-		else return "rebel"
+		else return "unknown"
 		end
 	end
 	
@@ -706,10 +707,12 @@ sgs.ai_card_intention.general=function(from,to,level)
 	
 	if level > 0 then
 		if to:isLord() or sgs.evaluatePlayerRole(to) == "loyalist" then
-			if sgs.evaluateRoleTrends(from) == "loyalist" or sgs.evaluatePlayerRole(from) == "renegade" then
+			if sgs.evaluateRoleTrends(from) == "loyalist" then
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level
 			elseif sgs.evaluatePlayerRole(from) == "rebel" then
 				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level
+			elseif sgs.evaluatePlayerRole(from) == "renegade" then
+				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level/3.3
 			elseif sgs.evaluateRoleTrends(from) == "neutral" then
 				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level/2
 			elseif sgs.compareRoleEvaluation(from, "rebel", "loyalist") == "rebel" then
@@ -721,10 +724,12 @@ sgs.ai_card_intention.general=function(from,to,level)
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level/1.3
 			end
 		elseif sgs.evaluatePlayerRole(to) == "rebel" then 
-			if sgs.evaluateRoleTrends(from) == "rebel" or sgs.evaluatePlayerRole(from) == "renegade" then
+			if sgs.evaluateRoleTrends(from) == "rebel" then
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level
 			elseif sgs.evaluatePlayerRole(from) == "loyalist" then
 				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level
+			elseif sgs.evaluatePlayerRole(from) == "renegade" then
+				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level/3.3
 			elseif sgs.evaluateRoleTrends(from) == "neutral" then
 				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level/2
 			elseif sgs.compareRoleEvaluation(from, "rebel", "loyalist") == "rebel" then
@@ -743,11 +748,14 @@ sgs.ai_card_intention.general=function(from,to,level)
 			end
 		end
 	else
+		level = -level
 		if to:isLord() or sgs.evaluatePlayerRole(to) == "loyalist" then
-			if sgs.evaluateRoleTrends(from) == "rebel" or sgs.evaluatePlayerRole(from) == "renegade" then
+			if sgs.evaluateRoleTrends(from) == "rebel" then
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level
 			elseif sgs.evaluatePlayerRole(from) == "loyalist" then
-				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level
+				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level/1.1
+			elseif sgs.evaluatePlayerRole(from) == "renegade" then
+				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level/1.9
 			elseif sgs.evaluateRoleTrends(from) == "neutral" then
 				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level/3
 			elseif sgs.compareRoleEvaluation(from, "rebel", "loyalist") == "rebel" then
@@ -759,10 +767,12 @@ sgs.ai_card_intention.general=function(from,to,level)
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level/1.3
 			end
 		elseif sgs.evaluatePlayerRole(to) == "rebel" then 
-			if sgs.evaluateRoleTrends(from) == "rebel" or sgs.evaluatePlayerRole(from) == "renegade" then
+			if sgs.evaluateRoleTrends(from) == "loyalist" then
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level
-			elseif sgs.evaluatePlayerRole(from) == "loyalist" then
-				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level/1.5
+			elseif sgs.evaluatePlayerRole(from) == "rebel" then
+				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level/1.1
+			elseif sgs.evaluatePlayerRole(from) == "renegade" then 
+				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level/1.9
 			elseif sgs.evaluateRoleTrends(from) == "neutral" then
 				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level/2
 			elseif sgs.compareRoleEvaluation(from, "rebel", "loyalist") == "rebel" then
@@ -1071,7 +1081,7 @@ function SmartAI:updatePlayers()
 	local flist = {}
 	local elist = {}
 	self.enemies = elist
-	self.friends_noself = flist
+	self.friends = flist
 	local lord = self.room:getLord()
 	local role = self.role
 	self.retain = 2
@@ -1085,6 +1095,11 @@ function SmartAI:updatePlayers()
 		if self:objectiveLevel(player) < 0 then table.insert(flist,player) end
 	end
 
+	self.friends_noself = {}
+	for _, player in ipairs(flist) do
+		table.insert(self.friends_noself, player)
+	end
+	
 	self.friends = self.friends_noself
 	table.insert(self.friends,self.player)
 
