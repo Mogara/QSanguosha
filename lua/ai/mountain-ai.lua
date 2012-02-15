@@ -1,12 +1,12 @@
 local function card_for_qiaobian(self, who, return_prompt)
 	local card, target
 	if self:isFriend(who) then
-		local judges = who:getCards("j")
+		local judges = who:getJudgingArea()
 		if not judges:isEmpty() then
 			for _, judge in sgs.qlist(judges) do
-				card = judge -- Fixme: card = DelayedTrick::CastFrom(judge)
+				card = sgs.Sanguosha:getCard(judge:getEffectiveId())
 				for _, enemy in ipairs(self.enemies) do
-					if not enemy:containsTrick(card:objectName()) and not self:trickProhibit(card, enemy) then
+					if not enemy:containsTrick(judge:objectName()) and not self:trickProhibit(judge, enemy) then
 						target = enemy
 						break
 					end
