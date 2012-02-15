@@ -174,7 +174,8 @@ end -- 其它情况，按照默认行为（弃牌阶段的策略）弃牌。
 ? sgs.ai_skill_cardchosen：
 % 元素名称：reason，其中所有的短横 "-" 要用下划线 "_" 取代。
 % 元素：函数，原型为 cardchosen(self, who)
-%% who, 返回值：与 SmartAI.askForCardChosen 含义相同
+%% who：与 SmartAI.askForCardChosen 含义相同
+%% 返回值：选择的卡牌
 返回值为 nil 时，执行默认行为。
 % 例子：只有一个，在 mountain-ai.lua 第 70 至 74 行。这是因为绝大部分情况下默认行为已经能满足要求。]]
 sgs.ai_skill_cardchosen.qiaobian = function(self, who, flags)

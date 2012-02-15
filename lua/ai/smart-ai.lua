@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120214 (Valentines)"
+version = "QSanguosha AI 20120215"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -1401,7 +1401,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		card = cardchosen(self, who, flags)
 	end
 	if card then
-		return card:getId()
+		return card:getEffectiveId()
 	end
 
 	if self:isFriend(who) then
@@ -1746,7 +1746,9 @@ function SmartAI:getCardNeedPlayer(cards)
 		end
 	end
 	local shit
-	shit = self:getCard("Shit")
+	for _, acard in ipairs(cards) do
+		if acard:inherits("Shit") then shit = acard end
+	end
 	self:sort(self.enemies, "hp")
 	if shit and #self.enemies  > 0 then
 		for _,enemy in ipairs(self.enemies) do
@@ -1761,19 +1763,19 @@ function SmartAI:getCardNeedPlayer(cards)
 	end
 	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 	if zhugeliang and zhugeliang:objectName() ~= self.player:objectName() and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
-		local shit = self:getCard("Shit") or self:getCard("Disaster") or self:getCard("GodSalvation") or self:getCard("AmazingGrace")
-		if shit then
-			return shit, zhugeliang
+		for _, acard in ipairs(cards) do
+			if ("shit|god_salvation|amazing_grace"):match(acard:objectName()) or (acard:inherits("Disaster") and not acard:inherits("Lightning")) then
+				return acard, zhugeliang
+			end
 		end
-		for _, card in ipairs(self:getCards("EquipCard")) do
-			if self:hasSameEquip(card, zhugeliang) or (card:inherits("OffensiveHorse") and not card:inherits("Monkey")) then
+		for _, card in ipairs(cards) do
+			if card:inherits("EquipCard") and self:hasSameEquip(card, zhugeliang) or (card:inherits("OffensiveHorse") and not card:inherits("Monkey")) then
 				return card, zhugeliang
 			end
 		end
 		if zhugeliang:getHp() < 2 then
-			local slash = self:getCard("Slash")
-			if slash then
-				return slash, zhugeliang
+			for _, acard in ipairs(cards) do
+				if acard:inherits("Slash") then return slash, zhugeliang end
 			end
 		end
 	end

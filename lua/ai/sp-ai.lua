@@ -67,6 +67,13 @@ sgs.ai_skill_invoke.fanqun = function(self, data)
 end
 
 sgs.ai_chaofeng.sp_machao = sgs.ai_chaofeng.machao
+
+sgs.ai_skill_invoke.tuoqiao = function(self, data)
+	if math.random(0, 2) == 0 then return false
+	elseif math.random(0, 2) == 0  then sgs.ai_skill_choice.tuoqiao="SP-Diaochan" return true
+	else sgs.ai_skill_choice.tuoqiao="BGM-Diaochan" return true end
+end
+
 sgs.ai_chaofeng.sp_diaochan = sgs.ai_chaofeng.diaochan
 
 sgs.ai_skill_invoke.guiwei = sgs.ai_skill_invoke.guixiang
