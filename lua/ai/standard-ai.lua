@@ -893,7 +893,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	return "."
 end
 
-sgs.ai_card_intention.LiuliCard = function(card,from,to,source)
+sgs.ai_card_intention.LiuliCard = function(card,from,to)
 	sgs.ai_liuli_effect=true
 end
 
@@ -1195,8 +1195,8 @@ end
 
 table.insert(sgs.ai_choicemade_filter.cardUsed, lijian_filter)
 
-sgs.ai_card_intention.LijianCard = function(card, from, to, source)
-	if (sgs.ai_loyalty[to[1]:objectName()] or 0) * (sgs.ai_loyalty[to[2]:objectName()] or 0) > 0 then
+sgs.ai_card_intention.LijianCard = function(card, from, to)
+	if sgs.EvaluateRoleTrends(to[1]) == sgs.EvaluateRoleTrends(to[2]) then
 		sgs.updateIntentions(from, to, 40)
 	end
 end

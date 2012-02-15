@@ -1,5 +1,5 @@
 sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
-	self:updatePlayers(true)
+	self:updatePlayers()
 	self:sort(self.enemies,"defense")
 	if self.player:containsTrick("lightning") and self.player:getCards("j"):length()==1
 		and self:hasWizard(self.friends) and not self:hasWizard(self.enemies,true) then return false end
@@ -47,7 +47,7 @@ sgs.ai_get_cardType=function(card)
 end
 
 sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
-	self:updatePlayers(true)
+	self:updatePlayers()
 	self:sort(self.enemies,"defense")
 	
 	local selfSub = self.player:getHp()-self.player:getHandcardNum()
@@ -170,7 +170,7 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 end
 
 sgs.ai_skill_use["@@leiji"]=function(self,prompt)
-	local mode = sgs.GetConfig("GameMode", "")
+	local mode = self.room:getMode()
 	if mode:find("mini") or mode:find("custom_scenario") then 
 		local players = self.room:getAllPlayers();
 		for _,aplayer in sgs.qlist(players) do

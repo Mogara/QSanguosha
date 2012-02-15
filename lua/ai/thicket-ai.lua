@@ -245,7 +245,7 @@ sgs.ai_skill_use_func.DimengCard=function(card,use,self)
 	end
 end
 
-sgs.ai_card_intention.DimengCard = function(card, from, to, source)
+sgs.ai_card_intention.DimengCard = function(card, from, to)
 	local compare_func = function(a, b)
 		return a:getHandcardNum() < b:getHandcardNum()
 	end

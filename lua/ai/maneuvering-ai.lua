@@ -190,7 +190,7 @@ function SmartAI:useCardIronChain(card, use)
 	end
 end
 
-sgs.ai_card_intention.IronChain=function(card,from,tos,source)
+sgs.ai_card_intention.IronChain=function(card,from,tos)
 	for _, to in ipairs(tos) do
 		if to:isChained() then
 			sgs.updateIntention(from, to, 80)

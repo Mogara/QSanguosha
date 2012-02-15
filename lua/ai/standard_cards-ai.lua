@@ -1,7 +1,7 @@
 local function hasExplicitRebel(room)
 	for _, player in sgs.qlist(room:getAllPlayers()) do
 		if sgs.isRolePredictable() and player:getRole() == "rebel" then return true end
-		if sgs.ai_explicit[player:objectName()] and sgs.ai_explicit[player:objectName()]:match("rebel") then return true end
+		if sgs.CompareRoleEvaluation(player, "rebel", "loyalist") == "rebel" then return true end
 	end
 	return false
 end
@@ -219,8 +219,7 @@ sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
 	return targets:first()
 end
 
-sgs.ai_card_intention.Slash = function(card,from,tos,source)
-	if from:objectName() ~= source:objectName() then return end
+sgs.ai_card_intention.Slash = function(card,from,tos)
 	if sgs.ai_liuli_effect then
 		sgs.ai_liuli_effect=false
 		return
@@ -905,11 +904,11 @@ end
 sgs.ai_use_value.Collateral = 8.8
 sgs.ai_use_priority.Collateral = 2.75
 
-sgs.ai_card_intention.Collateral = function(card, from, tos, source)
+sgs.ai_card_intention.Collateral = function(card, from, tos)
 	assert(#tos == 2)
 	if tos[2]:objectName() == from:objectName() then
 		sgs.updateIntention(from, tos[1], 80)
-	elseif (sgs.ai_loyalty[tos[1]] or 0) * (sgs.ai_loyalty[tos[2]] or 0) > 0 then
+	elseif sgs.CompareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.CompareRoleEvaluation(tos[2], "rebel", "loyalist") then
 		sgs.updateIntention(from, tos[2], 80)
 	elseif from:getWeapon() and from:inMyAttackRange(tos[2]) then
 		sgs.updateIntention(from, tos[1], 80)
