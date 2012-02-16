@@ -761,6 +761,7 @@ sgs.ai_card_intention.general=function(from,to,level)
 			end
 		end
 	else
+		level = -level
 		if to:isLord() or sgs.evaluatePlayerRole(to) == "loyalist" then
 			if sgs.evaluateRoleTrends(from) == "rebel" or sgs.evaluatePlayerRole(from) == "renegade" then
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level
