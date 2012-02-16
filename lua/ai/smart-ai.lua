@@ -112,11 +112,11 @@ function sgs.evaluatePlayerRole(player)
 	end
 	
 	if sgs.role_evaluation[player:objectName()]["loyalist"] == sgs.role_evaluation[player:objectName()]["renegade"] then
-		if sgs.role_evaluation[player:objectName()]["loyalist"] < sgs.role_evaluation[player:objectName()]["rebel"] then return "rebel"
+		if sgs.role_evaluation[player:objectName()]["loyalist"] + 20 < sgs.role_evaluation[player:objectName()]["rebel"] then return "rebel"
 		else return "unknown"
 		end
 	elseif sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["renegade"] then
-		if sgs.role_evaluation[player:objectName()]["rebel"] < sgs.role_evaluation[player:objectName()]["loyalist"] then return "loyalist"
+		if sgs.role_evaluation[player:objectName()]["rebel"] + 20 < sgs.role_evaluation[player:objectName()]["loyalist"] then return "loyalist"
 		else return "unknown"
 		end
 	elseif sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["loyalist"] then
@@ -126,15 +126,18 @@ function sgs.evaluatePlayerRole(player)
 	local max_value = math.max(sgs.role_evaluation[player:objectName()]["loyalist"], sgs.role_evaluation[player:objectName()]["renegade"])
 	max_value = math.max(max_value, sgs.role_evaluation[player:objectName()]["rebel"])
 	if max_value == sgs.role_evaluation[player:objectName()]["loyalist"] then
-		if sgs.role_evaluation[player:objectName()]["loyalist"] - sgs.role_evaluation[player:objectName()]["renegade"] < 20 then return "unknown"
+		local rest = math.max(sgs.role_evaluation[player:objectName()]["rebel"], sgs.role_evaluation[player:objectName()]["renegade"])
+		if sgs.role_evaluation[player:objectName()]["loyalist"] - rest < 20 then return "unknown"
 		else return "loyalist"
 		end
 	elseif max_value == sgs.role_evaluation[player:objectName()]["renegade"] then
-		if sgs.role_evaluation[player:objectName()]["renegade"] - sgs.role_evaluation[player:objectName()]["loyalist"] < 20 then return "unknown"
+		local rest = math.max(sgs.role_evaluation[player:objectName()]["rebel"], sgs.role_evaluation[player:objectName()]["loyalist"])
+		if sgs.role_evaluation[player:objectName()]["renegade"] - rest < 20 then return "unknown"
 		else return "renegade"
 		end
 	elseif max_value == sgs.role_evaluation[player:objectName()]["rebel"] then
-		if sgs.role_evaluation[player:objectName()]["rebel"] - sgs.role_evaluation[player:objectName()]["loyalist"] < 20 then return "unknown"
+		local rest = math.max(sgs.role_evaluation[player:objectName()]["renegade"], sgs.role_evaluation[player:objectName()]["loyalist"])
+		if sgs.role_evaluation[player:objectName()]["rebel"] - rest < 20 then return "unknown"
 		else return "rebel"
 		end
 	end
@@ -193,11 +196,11 @@ function sgs.modifiedRoleTrends(role)
 	for _, modifier in ipairs(min_trends) do
 		local name = modifier:objectName()
 		if role == "renegade" then
-			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["loyalist"]) + 15
+			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["loyalist"]) - 15
 		elseif role == "rebel" then
-			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["renegade"], sgs.role_evaluation[name]["loyalist"]) + 15
+			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["renegade"], sgs.role_evaluation[name]["loyalist"]) - 15
 		elseif role == "loyalist" then
-			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["renegade"]) + 15
+			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["renegade"]) - 15
 		end
 	end
 	
