@@ -119,6 +119,8 @@ function sgs.evaluatePlayerRole(player)
 		if sgs.role_evaluation[player:objectName()]["rebel"] < sgs.role_evaluation[player:objectName()]["loyalist"] then return "loyalist"
 		else return "unknown"
 		end
+	elseif sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["loyalist"] then
+		return "renegade"
 	end
 	
 	local max_value = math.max(sgs.role_evaluation[player:objectName()]["loyalist"], sgs.role_evaluation[player:objectName()]["renegade"])
@@ -138,6 +140,23 @@ function sgs.evaluatePlayerRole(player)
 	end
 	
 	return "unknown"
+end
+
+function sgs.modifiedRoleEvaluation()
+	local players = global_room:getOtherPlayers(global_room:getLord())
+	for _, player in sgs.qlist(players) do
+		local name = player:objectName()
+		if sgs.evaluatePlayerRole(player) == "unknown" then
+			local backward = sgs.backwardEvaluation(player)
+			if backward == "loyalist" then 
+				sgs.role_evaluation[name][backward] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["renegade"]) + 20
+			elseif backward == "rebel" then 
+				sgs.role_evaluation[name][backward] = math.max(sgs.role_evaluation[name]["loyalist"], sgs.role_evaluation[name]["renegade"]) + 20
+			elseif backward == "renegade" then 
+				sgs.role_evaluation[name][backward] = math.max(sgs.role_evaluation[name]["loyalist"], sgs.role_evaluation[name]["rebel"]) + 20
+			end
+		end
+	end
 end
 
 function sgs.modifiedRoleTrends(role)
@@ -188,18 +207,21 @@ end
 function sgs.backwardEvaluation(player)
 	if sgs.evaluatePlayerRole(player) ~= "unknown" then return sgs.evaluatePlayerRole(player) end
 	local players = global_room:getOtherPlayers(player)
-	
 	local rest_players = sgs.current_mode_players
+	local unknowns = {}
 	
 	for _, p in sgs.qlist(players) do
 		if not p:isLord() and sgs.evaluatePlayerRole(p) ~= "unknown" then 
 			rest_players[sgs.evaluatePlayerRole(p)] = rest_players[sgs.evaluatePlayerRole(p)] - 1
+		else
+			table.insert(unknowns, p)
 		end
 	end
+	if #unknowns == 0 then sgs.checkMisjudge() end
 	
-	if rest_players["rebel"] == 0 and rest_players["loyalist"] == 0 and rest_players["renegade"] == 1 then return "renegade"
-	elseif rest_players["rebel"] == 0 and rest_players["renegade"] == 0 and rest_players["loyalist"] == 1 then return "loyalist"
-	elseif rest_players["renegade"] == 0 and rest_players["loyalist"] == 0 and rest_players["rebel"] == 1 then return "rebel"
+	if rest_players["rebel"] == 0 and rest_players["loyalist"] == 0 and rest_players["renegade"] == #unknowns then return "renegade"
+	elseif rest_players["rebel"] == 0 and rest_players["renegade"] == 0 and rest_players["loyalist"] == #unknowns then return "loyalist"
+	elseif rest_players["renegade"] == 0 and rest_players["loyalist"] == 0 and rest_players["rebel"] == #unknowns then return "rebel"
 	end
 	
 	return "unknown"
@@ -861,20 +883,13 @@ end
 sgs.ai_global_flags = {}
 
 local function getGameProcessValues(self, players)
-	local rebel_num, loyalish_num, loyal_num, renegade_num = 0, 0, 0, 0
-	for _, aplayer in ipairs (players) do
-		if aplayer:getRole() == "rebel" then
-			rebel_num = rebel_num + 1
-		elseif aplayer:getRole() == "loyalist" then
-			loyal_num = loyal_num + 1
-		elseif aplayer:getRole() == "renegade" then
-			renegade_num = renegade_num + 1
-		end
-	end
+	local rebel_num = sgs.current_mode_players["rebel"]
+	local loyalish_num = sgs.current_mode_players["loyalist"]
+	local renegade_num = sgs.current_mode_players["renegade"]
+	
 	local ambig_num, loyal_value, rebel_value = 0, 0, 0
 	for _, aplayer in ipairs(players) do
-		if (not sgs.isRolePredictable() and sgs.evaluateRoleTrends(aplayer) == "rebel")
-				or (sgs.isRolePredictable() and aplayer:getRole() == "rebel") then
+		if sgs.evaluateRoleTrends(aplayer) == "rebel" then
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
 			else rebel_hp = aplayer:getHp() end
@@ -953,28 +968,20 @@ function SmartAI:objectiveLevel(player)
 		end
 	end
 	
-	if sgs.isRolePredictable() then
-		if player:getRole() == "renegade" then
-			if sgs.compareRoleEvaluation(player, "loyalist", "rebel") == "unknown" then return 0
-			elseif sgs.evaluateRoleTrends(player) == "loyalist" and rebel_num > 0 then
-				if self.player:isLord() or self.role == "loyalist" then return -2 else return 5 end				
-			else
-				if self.role == "rebel" then return -2 else return 5 end
-			end
-		elseif self:isFriend(player) then return -2
-		else return 5
-		end
-	end
-
 	if self.player:isLord() or self.role == "loyalist" then
 		if player:isLord() then return -2 end
 		if rebel_num == 0 then
 			local has_rene = false
 			for _, aplayer in ipairs(players) do
-				if sgs.evaluateRoleTrends(aplayer) == "rebel" or sgs.evaluateRoleTrends(aplayer) == "renegade" then
-					if player:objectName() == aplayer:objectName() then
-						if self:isWeak(player) and self.player:isLord() then return 0 else return 5 end
-					end
+				if sgs.backwardEvaluation(aplayer) == "renegade" then
+					if player:objectName() == aplayer:objectName() then return 5 end
+					has_rene = true
+				end
+			end
+			
+			for _, aplayer in ipairs(players) do
+				if sgs.evaluatePlayerRole(aplayer) ~= "loyalist" then
+					if player:objectName() == aplayer:objectName() then return 4 end
 					has_rene = true
 				end
 			end
@@ -983,17 +990,19 @@ function SmartAI:objectiveLevel(player)
 
 		if sgs.evaluatePlayerRole(player) == "rebel" then return 5
 		elseif sgs.evaluateRoleTrends(player) == "rebel" then return 3.5
-		elseif sgs.evaluateRoleTrends(player) == "loyalist" then return -2
+		elseif sgs.evaluatePlayerRole(player) == "loyalist" then return -2
+		elseif sgs.evaluateRoleTrends(player) == "loyalist" then return -1
 		elseif sgs.backwardEvaluation(player) == "rebel" then return 5
-		elseif sgs.backwardEvaluation(player) == "loyalist" then return -1
+		elseif sgs.backwardEvaluation(player) == "loyalist" then return -2
 		elseif sgs.compareRoleEvaluation(player, "rebel", "loyalist") == "rebel" then return 3
 		else return 0 end
 	elseif self.role == "rebel" then
 		if player:isLord() then return 5
 		elseif sgs.evaluatePlayerRole(player) == "loyalist" then return 5
-		elseif sgs.evaluateRoleTrends(player) == "loyalist" then return 4
+		elseif sgs.evaluateRoleTrends(player) == "loyalist" then return 3.5
+		elseif sgs.evaluatePlayerRole(player) == "rebel" then return -2
 		elseif sgs.evaluateRoleTrends(player) == "rebel" then return -1
-		elseif sgs.backwardEvaluation(player) == "rebel" then return -1
+		elseif sgs.backwardEvaluation(player) == "rebel" then return -2
 		elseif sgs.backwardEvaluation(player) == "loyalist" then return 4
 		elseif sgs.compareRoleEvaluation(player, "renegade", "loyalist") == "loyalist" then return 3
 		else return 0 end
@@ -1237,9 +1246,10 @@ function SmartAI:filterEvent(event, player, data)
 		
 		local damage = data:toDamageStar()
 		if damage then self:updateAlivePlayerRoles(damage.to) end
-	end
-
-	if (event == sgs.PhaseChange) or (event == sgs.GameStart) then
+	elseif event == sgs.PhaseChange then 
+		if self.room:getCurrent():getPhase() == sgs.Player_NotActive then sgs.modifiedRoleEvaluation() end
+		self:updatePlayers()
+	elseif event == sgs.GameStart then
 		self:updatePlayers()
 	end
 
@@ -2647,7 +2657,7 @@ function SmartAI:getAoeValueTo(card, to , from)
 		if self:isFriend(from, to) then
 		if (to:isLord() or from:isLord()) and not (to:hasSkill("buqu") and to:getPile("buqu"):length() < 5) then
 				if to:getHp() <= 1 and self:getCardsNum("Peach", from) == 0 and sj_num == 0 then
-					if to:getRole() == "renegade" then
+					if sgs.evaluatePlayerRole(to) == "renegade" then
 						value = value - 50
 					else
 						value = value - 150
@@ -2655,7 +2665,7 @@ function SmartAI:getAoeValueTo(card, to , from)
 				end
 			end
 			value = value + self:getCardsNum("Peach", from) * 2
-		elseif to:getRole() == "rebel" or (to:isLord() and from:getRole() == "rebel") then
+		elseif sgs.evaluatePlayerRole(to) == "rebel" or (to:isLord() and sgs.evaluatePlayerRole(from) == "rebel") then
 			if to:getHp() <= 1 and self:getCardsNum("Peach", to) == 0 and sj_num == 0 then
 				value = value - 50
 			end

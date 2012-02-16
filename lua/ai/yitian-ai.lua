@@ -25,7 +25,7 @@ local function findPlayerForModifyKingdom(self, players)
 	local isGood = self:isFriend(lord)
 
 	for _, player in sgs.qlist(players) do
-		if player:getRole() == "loyalist" then
+		if  sgs.evaluateRoleTrends(player) == "loyalist" then
 			local sameKingdom = player:getKingdom() == lord:getKingdom()
 			if isGood ~= sameKingdom then
 				return player
@@ -42,7 +42,7 @@ end
 local function chooseKingdomForPlayer(self, to_modify)
 	local lord = self.room:getLord()
 	local isGood = self:isFriend(lord)
-	if to_modify:getRole() == "loyalist" or to_modify:getRole() == "renegade" then
+	if  sgs.evaluateRoleTrends(to_modify) == "loyalist" or sgs.evaluateRoleTrends(to_modify) == "renegade" then
 		if isGood then
 			return lord:getKingdom()
 		else
@@ -374,7 +374,7 @@ function guihan_skill.getTurnUseCard(self)
 	if self.room:alivePlayerCount() == 2 or self.role == "renegade" then return end
 	local rene = 0
 	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		if aplayer:getRole() == "renegade" then rene = rene + 1 end
+		if sgs.evaluateRoleTrends(aplayer) == "renegade" then rene = rene + 1 end
 	end
 	if #self.friends + #self.enemies + rene < self.room:alivePlayerCount() then return end
 	local cards = sgs.QList2Table(self.player:getHandcards())

@@ -68,13 +68,13 @@ end
 sgs.ai_skill_playerchosen.yx_sword = function(self, targets)
 	local who = self.room:getTag("YxSwordVictim"):toPlayer()
 	if who then
-		if who:getRole() == "rebel" then
+		if sgs.evaluateRoleTrends(who) == "rebel" then
 			for _, player in sgs.qlist(targets) do
 				if self:isFriend(player) then
 					return player
 				end
 			end
-		elseif who:getRole() == "loyalist" then
+		elseif sgs.evaluateRoleTrends(who) == "loyalist" then
 			if self:isEnemy(who) then return self.room:getLord() end
 		end
 	end
