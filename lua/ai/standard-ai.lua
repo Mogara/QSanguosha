@@ -99,13 +99,28 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equ
 			end
 		end
 		if all_peaches >= 2 then return {} end
+		self:sortByKeepValue(cards)
+		cards = sgs.reverse(cards)
 
-		for _, card in sgs.qlist(cards) do
+		for i = #cards, 1, -1 do
+			local card = cards[i]
 			if not card:inherits("Peach") and not self.player:isJilei(card) then
 				table.insert(to_discard, card:getEffectiveId())
+				table.remove(cards, i)
 				index = index + 1
 				if index == 2 then break end
 			end
+		end	
+		if index < 2 then
+			for i = #cards, 1, -1 do
+				local card = cards[i]
+				if not self.player:isJilei(card) then
+					table.insert(to_discard, card:getEffectiveId())
+					table.remove(cards, i)
+					index = index + 1
+					if index == 2 then break end
+				end
+			end	
 		end
 		return to_discard
 	end
@@ -611,14 +626,9 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 			end
 		end
 		for _,card in ipairs(cards) do
-			if card:inherits("EquipCard") then
-				if (card:inherits("Weapon") and self.player:getHandcardNum() < 3) or
-				card:inherits("OffensiveHorse") or
-				(self:hasSameEquip(card, self.player) and not card:inherits("DefensiveHorse")) or
-				card:inherits("AmazingGrace") or
-				card:inherits("Lightning") then
-					table.insert(unpreferedCards,card:getId())
-				end
+			if (card:inherits("Weapon") and self.player:getHandcardNum() < 3) or card:inherits("OffensiveHorse") or
+				self:hasSameEquip(card, self.player) or	card:inherits("AmazingGrace") or card:inherits("Lightning") then
+				table.insert(unpreferedCards,card:getId())
 			end
 		end
 	
@@ -808,10 +818,14 @@ guose_skill.getTurnUseCard=function(self,inclusive)
 	
 	self:sortByUseValue(cards,true)
 	
-	local has_weapon=false
+	local has_weapon, has_armor = false, false
 	
 	for _,acard in ipairs(cards)  do
 		if acard:inherits("Weapon") and not (acard:getSuit() == sgs.Card_Diamond) then has_weapon=true end
+	end
+	
+	for _,acard in ipairs(cards)  do
+		if acard:inherits("Armor") and not (acard:getSuit() == sgs.Card_Diamond) then has_armor=true end
 	end
 	
 	for _,acard in ipairs(cards)  do
@@ -820,7 +834,7 @@ guose_skill.getTurnUseCard=function(self,inclusive)
 			
 			if acard:inherits("Armor") then
 				if not self.player:getArmor() then shouldUse=false 
-				elseif self:hasEquip(acard) then shouldUse=false
+				elseif self:hasEquip(acard) and not has_armor and self:evaluateArmor()>0 then shouldUse=false
 				end
 			end
 			
@@ -1118,7 +1132,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 			local safe = false
 			if (first:hasSkill("ganglie") or first:hasSkill("fankui") or first:hasSkill("enyuan")) then
 				if (first:getHp()<=1 and first:getHandcardNum()==0) then safe=true end
-			elseif (self:getCardsNum("Slash", friend_maxSlash) >= first:getHandcardNum()) then safe=true end
+			elseif (self:getCardsNum("Slash", friend_maxSlash) >= self:getCardsNum("Slash", first)) then safe=true end
 			if safe then return friend_maxSlash end
 		else self:log("unfound")
 		end
@@ -1132,8 +1146,8 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 		local zhugeliang_kongcheng
 		local duel = sgs.Sanguosha:cloneCard("duel", sgs.Card_NoSuit, 0)
 		for _, enemy in ipairs(self.enemies) do
-			if zhugeliang_kongcheng and #males==1 and self:damageIsEffective(zhugeliang_kongcheng, sgs.DamageStruct_Normal, males[1]) 
-				then table.insert(males, zhugeliang_kongcheng) end
+			--if zhugeliang_kongcheng and #males==1 and self:damageIsEffective(zhugeliang_kongcheng, sgs.DamageStruct_Normal, males[1]) 
+				--then table.insert(males, zhugeliang_kongcheng) end
 			if enemy:getGeneral():isMale() and not enemy:hasSkill("wuyan") then
 				if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then	zhugeliang_kongcheng=enemy
 				else
@@ -1150,7 +1164,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 				table.insert(males, zhugeliang_kongcheng)
 			else
 				local friend_maxSlash = findFriend_maxSlash(self,first)
-				if friend_maxSlash and self:damageIsEffective(enemy, sgs.DamageStruct_Normal, males[1]) then table.insert(males, friend_maxSlash) end
+				if friend_maxSlash and self:damageIsEffective(males[1], sgs.DamageStruct_Normal, enemy) then table.insert(males, friend_maxSlash) end
 			end
 		end
 		if (#males >= 2) then
