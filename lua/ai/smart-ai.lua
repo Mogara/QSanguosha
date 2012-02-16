@@ -936,9 +936,10 @@ function SmartAI:objectiveLevel(player)
 
 	if #players == 1 then return 5 end
 	
-	if sgs.useDefaultStrategy() then
+	if sgs.isRolePredictable() then
 		if self.lua_ai:isFriend(player) then return -2
 		elseif self.lua_ai:isEnemy(player) then return 5
+		elseif self.lua_ai:relationTo(player) == sgs.AI_Neutrality then return 4
 		else return 0 end
 	end
 
@@ -1092,6 +1093,7 @@ function SmartAI:sortEnemies(players)
 end
 
 function SmartAI:updateAlivePlayerRoles(dead)
+	if not sgs.current_mode_players then return end
 	local mode = self.room:getMode()
 	if not dead then 
 		if #(sgs.current_mode_players) == 0 then sgs.current_mode_players = sgs.getModePlayersCopy(mode) end
