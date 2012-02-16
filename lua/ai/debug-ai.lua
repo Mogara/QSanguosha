@@ -27,14 +27,16 @@ function SmartAI:log(outString)
 end
 
 function outputPlayersEvaluation()
+	global_room:writeToConsole("=========== MISJUDGE START ===========" )
 	for _, player in sgs.qlist(global_room:getOtherPlayers(global_room:getLord())) do
 		local evaluate_role = sgs.evaluatePlayerRole(player)
-		global_room:writeToConsole("Misjudge-------" .. player:getGeneralName())
-		global_room:writeToConsole("[Role: " .. player:getRole() .. "      Evaluate role: " .. evaluate_role)
+		global_room:writeToConsole("<------- " .. player:getGeneralName() .. " ------->")
+		global_room:writeToConsole("Role: " .. player:getRole() .. "      Evaluate role: " .. evaluate_role)
 		global_room:writeToConsole("Rebel:" .. sgs.role_evaluation[player:objectName()]["rebel"] .. " Loyalist:"
 									.. sgs.role_evaluation[player:objectName()]["loyalist"] .. " Renegade:"
-									.. sgs.role_evaluation[player:objectName()]["renegade"] .. "]")
+									.. sgs.role_evaluation[player:objectName()]["renegade"])
 	end
+	global_room:writeToConsole("================ END ================" )
 end
 
 function sgs.checkMisjudge(player)
@@ -64,10 +66,17 @@ function sgs.checkMisjudge(player)
 		if evaluate_renegade == 0 then 
 			if evaluate_rebel > rebel_num+renegade_num or evaluate_loyalist > loyalist_num+renegade_num then
 				outputPlayersEvaluation()
+				if evaluate_rebel > rebel_num+renegade_num then sgs.modifiedRoleTrends("rebel")
+				elseif evaluate_loyalist > loyalist_num+renegade_num then sgs.modifiedRoleTrends("loyalist")
+				end
 			end
 		else
 			if evaluate_rebel > rebel_num or evaluate_loyalist > loyalist_num or evaluate_renegade > renegade_num then
 				outputPlayersEvaluation()
+				if evaluate_rebel > rebel_num then sgs.modifiedRoleTrends("rebel")
+				elseif evaluate_loyalist > loyalist_num then sgs.modifiedRoleTrends("loyalist")
+				elseif evaluate_renegade > renegade_num then sgs.modifiedRoleTrends("renegade")
+				end
 			end
 		end
 	end
