@@ -384,7 +384,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 	local yuji
-	if self.player:getHp()<2 and room:alivePlayerCount() > 2 then return "noquestion" end
+	if self.player:getHp()<2 and self.room:alivePlayerCount() > 2 then return "noquestion" end
 	for _, other in ipairs(players) do
 		if other:hasSkill("guhuo") then yuji = other break end
 	end
