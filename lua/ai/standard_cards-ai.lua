@@ -768,6 +768,9 @@ sgs.ai_use_value.Snatch = 9
 sgs.ai_use_priority.Snatch = 4.3
 
 sgs.dynamic_value.control_card.Snatch = true
+function sgs.ai_card_intention.Snatch()
+	sgs.ai_snat_disma_effect = false
+end
 
 function SmartAI:useCardDismantlement(dismantlement, use)
 	if self.player:hasSkill("wuyan") then return end
@@ -848,6 +851,9 @@ end
 
 sgs.ai_use_value.Dismantlement = 5.6
 sgs.ai_use_priority.Dismantlement = 4.4
+function sgs.ai_card_intention.Dismantlement()
+	sgs.ai_snat_disma_effect = false
+end
 
 sgs.dynamic_value.control_card.Dismantlement = true
 
@@ -915,6 +921,7 @@ sgs.ai_card_intention.Collateral = function(card, from, tos)
 	elseif tos[1]:isKongcheng() then
 		sgs.updateIntention(from, tos[1], 80)
 	end
+	sgs.ai_collateral = false
 end
 
 sgs.dynamic_value.control_card.Collateral = true
