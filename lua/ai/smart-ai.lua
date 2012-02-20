@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120215"
+version = "QSanguosha AI 20120220"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -2913,7 +2913,7 @@ dofile "lua/ai/maneuvering-ai.lua"
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/basara-ai.lua"
---dofile "lua/ai/hegemony-ai.lua"
+dofile "lua/ai/hegemony-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
 
 local loaded = "standard|standard_cards|maneuvering|sp"
