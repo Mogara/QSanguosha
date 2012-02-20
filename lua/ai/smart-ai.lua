@@ -20,22 +20,8 @@ function CloneAI(player)
 end
 
 function setInitialTables()
-	sgs.mode_players = {}
 	sgs.role_evaluation = {}
-	sgs.current_mode_players = {}
-	
-	sgs.mode_players["02p"] = { rebel = 0, loyalist = 0, renegade = 1, }
-	sgs.mode_players["03p"] = { rebel = 1, loyalist = 0, renegade = 1, }
-	sgs.mode_players["04p"] = { rebel = 1, loyalist = 1, renegade = 1, }
-	sgs.mode_players["05p"] = { rebel = 2, loyalist = 1, renegade = 1, }
-	sgs.mode_players["06p"] = { rebel = 3, loyalist = 1, renegade = 1, }
-	sgs.mode_players["06pd"] = { rebel = 2, loyalist = 1, renegade = 2, }
-	sgs.mode_players["07p"] = { rebel = 3, loyalist = 2, renegade = 1, }
-	sgs.mode_players["08p"] = { rebel = 4, loyalist = 2, renegade = 1, }
-	sgs.mode_players["08pd"] = { rebel = 3, loyalist = 2, renegade = 2, }
-	sgs.mode_players["08same"] = sgs.mode_players["08p"]
-	sgs.mode_players["09p"] = { rebel = 4, loyalist = 3, renegade = 1, }
-	sgs.mode_players["10p"] = { rebel = 4, loyalist = 3, renegade = 2, }
+	sgs.current_mode_players = {loyalist = 0, rebel = 0, renegade = 0}
 	
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
 		table.insert(sgs.role_evaluation, aplayer:objectName())
@@ -46,10 +32,6 @@ function setInitialTables()
 		end
 	end
 	
-end
-
-function sgs.getModePlayersCopy(mode)
-	return sgs.mode_players[mode]
 end
 
 function SmartAI:initialize(player)
@@ -899,7 +881,7 @@ function sgs.gameProcess(room)
 	elseif loyal_num == 0 and rebel_num > 0 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
-		if (not sgs.isRolePredictable() and sgs.evaluateRoleTrends(aplayer) == "rebel")
+		if (not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "rebel")
 			or (sgs.isRolePredictable() and aplayer:getRole() == "rebel") then
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
@@ -909,7 +891,7 @@ function sgs.gameProcess(room)
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
 			end
-		elseif (not sgs.isRolePredictable() and sgs.evaluateRoleTrends(aplayer) == "loyalist")
+		elseif (not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "loyalist")
 				or (sgs.isRolePredictable() and aplayer:getRole() == "loyalist") or aplayer:isLord() then
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
@@ -1088,19 +1070,12 @@ function SmartAI:sortEnemies(players)
 	table.sort(players,comp_func)
 end
 
-function SmartAI:updateAlivePlayerRoles(dead)
-	if not sgs.current_mode_players then return end
-	local mode = self.room:getMode()
-	if not dead then 
-		if #(sgs.current_mode_players) == 0 then sgs.current_mode_players = sgs.getModePlayersCopy(mode) end
-		
-		for _, player in sgs.qlist(global_room:getPlayers()) do
-			if not player:isLord() then
-				if player:isDead() then sgs.current_mode_players[player:getRole()] = sgs.current_mode_players[player:getRole()] - 1 end
-			end
-		end
-	else
-		sgs.current_mode_players[dead:getRole()] = sgs.current_mode_players[dead:getRole()] - 1
+function SmartAI:updateAlivePlayerRoles()
+	for _, arole in ipairs({"loyalist", "rebel", "renegade"}) do
+		sgs.current_mode_players[arole] = 0
+	end
+	for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.room:getLord())) do
+		sgs.current_mode_players[aplayer:getRole()] = sgs.current_mode_players[aplayer:getRole()] + 1
 	end
 	
 	sgs.checkMisjudge()
@@ -1244,10 +1219,7 @@ function SmartAI:filterEvent(event, player, data)
 		self:updatePlayers()
 	elseif event == sgs.Death then
 		self:updatePlayers()
-		if self == sgs.recorder then
-			local damage = data:toDamageStar()
-			if damage then self:updateAlivePlayerRoles(damage.to) else self:updateAlivePlayerRoles() end
-		end
+		if self == sgs.recorder then self:updateAlivePlayerRoles() end
 	elseif event == sgs.PhaseChange then 
 		if self.room:getCurrent():getPhase() == sgs.Player_NotActive then sgs.modifiedRoleEvaluation() end
 		self:updatePlayers()
@@ -2731,6 +2703,7 @@ function SmartAI:useTrickCard(card, use)
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
 		if self.role == "renegade" and not self:isWeak(self.room:getLord()) then use.card = card return end
+		if self.role == "rebel" and sgs.turncount < 2 and card:inherits("ArcheryAttack") then return end
 		local good, bad = 0, 0
 		for _, friend in ipairs(self.friends_noself) do
 			if self:aoeIsEffective(card, friend) then
