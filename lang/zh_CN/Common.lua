@@ -8,6 +8,7 @@ return {
 	["basic"] = "基本牌",
 	["trick"] = "锦囊牌",
 	["equip"] = "装备牌",
+	["ndtrick"] = "非延时锦囊",
 
 	["lord"] = "主公",
 	["loyalist"] = "忠臣",

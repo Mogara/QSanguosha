@@ -1758,34 +1758,6 @@
     </message>
 </context>
 <context>
-    <name>GuhuoDialog</name>
-    <message>
-        <location filename="src/package/wind.cpp" line="755"/>
-        <source>Guhuo</source>
-        <translation>蛊惑</translation>
-    </message>
-    <message>
-        <location filename="src/package/wind.cpp" line="789"/>
-        <source>Basic cards</source>
-        <translation>基本牌</translation>
-    </message>
-    <message>
-        <location filename="src/package/wind.cpp" line="810"/>
-        <source>Non delayed tricks</source>
-        <translation>非延时锦囊</translation>
-    </message>
-    <message>
-        <location filename="src/package/wind.cpp" line="813"/>
-        <source>Single target</source>
-        <translation>单目标锦囊</translation>
-    </message>
-    <message>
-        <location filename="src/package/wind.cpp" line="816"/>
-        <source>Multiple targets</source>
-        <translation>多目标锦囊</translation>
-    </message>
-</context>
-<context>
     <name>HallDialog</name>
     <message>
         <location filename="src/dialog/halldialog.cpp" line="24"/>
