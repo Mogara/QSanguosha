@@ -94,6 +94,15 @@ local t = {
 	["~wishuaxiong"] = "智之华雄，不幸阵亡",
 	["~wistianfeng"] = "智之田丰，不幸阵亡",
 	["~wisshuijing"] = "智之水镜先生，不幸阵亡",
+
+	["illustrator:wisxuyou"] = "",
+	["illustrator:wisjiangwei"] = "",
+	["illustrator:wisjiangwan"] = "",
+	["illustrator:wissunce"] = "",
+	["illustrator:wiszhangzhao"] = "",
+	["illustrator:wishuaxiong"] = "",
+	["illustrator:wistianfeng"] = "",
+	["illustrator:wisshuijing"] = "",
 }
 
 local generals = {"wisxuyou", "wisjiangwei", "wisjiangwan", "wissunce", "wiszhangzhao", "wishuaxiong", "wistianfeng", "wisshuijing"}

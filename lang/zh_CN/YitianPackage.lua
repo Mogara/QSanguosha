@@ -3,36 +3,43 @@
 return {
 	["yitian"] = "倚天",
 	["yitian_cards"] = "倚天卡牌包",
-	["yitian_sword"] = "倚天剑",
-	["yitian-lost"] = "倚天剑",
-	["shencc"] = "魏武帝",
-	["caochong"] = "曹冲",
-	["caozhi"] = "曹植",
-	["zhangjunyi"] = "张儁乂",
 
+	["yitian_sword"] = "倚天剑",
+	[":yitian_sword"] = "1. 你的回合外，你每受到一次伤害，在其结算完后你可以立即使用一张【杀】2. 当此剑从装备区失去时，你可用此剑指定一名其他角色受到你的1点无属性伤害",
+	["yitian_sword:yes"] = "你可以使用指定任意一名角色受到你的一点无属性伤害",
+	["yitian-lost"] = "倚天剑",
+	["@yitian-sword"] = "您在回合外获得了一张【杀】，您可以此时将此【杀】打出",
+
+	-- 神曹操内测第三版
+	["shencc"] = "魏武帝",
 	["guixin2"] = "归心",
-	["chengxiang"] = "称象",
-	["conghui"] = "聪慧",
-	["zaoyao"] = "早夭",
-	["jueji"] = "绝汲",
-	["fanji"] = "反计",
 	[":guixin2"] = "回合结束阶段，你可以做以下二选一：\
       1. 永久改变一名其他角色的势力\
       2. 永久获得一项未上场或已死亡角色的主公技。(获得后即使你不是主公仍然有效)",
-	[":chengxiang"] = "每当你受到1次伤害，你可打出X张牌（X小于等于3），它们的点数之和与造成伤害的牌的点数相等，你可令X名角色各恢复1点体力（若其满体力则摸2张牌）",
-	[":conghui"] = "<b>锁定技</b>，你将永远跳过你的弃牌阶段",
-	[":zaoyao"] = "<b>锁定技</b>，回合结束阶段开始时，若你的手牌大于13张，则你必须弃掉所有手牌并流失1点体力",
-	[":fanji"] = "若其他角色使用的一张以你为唯一目标的非延时锦囊牌在结算完之后进入弃牌堆，你可以立即获得它",
-	[":jueji"] = "你可以跳过你的出牌阶段并和一名角色拼点。若你赢，你获得对方的拼点牌，并可立即再次与其拼点，如此反复，直到你没赢或不愿意继续拼点为止",
 	["guixin2:yes"] = "永久改变一名其他角色的势力或永久获得一项未上场或已死亡角色的主公技",
 	["guixin2:modify"] = "永久改变一名其他角色的势力",
 	["guixin2:obtain"] = "永久获得一项未上场或已死亡角色的主公技",
-	[":yitian_sword"] = "1. 你的回合外，你每受到一次伤害，在其结算完后你可以立即使用一张【杀】2. 当此剑从装备区失去时，你可用此剑指定一名其他角色受到你的1点无属性伤害",
-	["yitian_sword:yes"] = "你可以使用指定任意一名角色受到你的一点无属性伤害",
-	["@chengxiang-card"] = "请打出点数之和为 %arg 的卡牌以发动【称象】技能",
-	["@yitian-sword"] = "您在回合外获得了一张【杀】，您可以此时将此【杀】打出",
+
+	["fanji"] = "反计",
+	[":fanji"] = "若其他角色使用的一张以你为唯一目标的非延时锦囊牌在结算完之后进入弃牌堆，你可以立即获得它",
+
 	["yx_sword"] = "杨修剑",
 	[":yx_sword"] = "攻击范围：３<br/>当你的【杀】造成伤害时，可以指定攻击范围内的一名其他角色为伤害来源，杨修剑归该角色所有",
+
+	-- 曹冲
+	["caochong"] = "曹冲",
+	["chengxiang"] = "称象",
+	[":chengxiang"] = "每当你受到1次伤害，你可打出X张牌（X小于等于3），它们的点数之和与造成伤害的牌的点数相等，你可令X名角色各恢复1点体力（若其满体力则摸2张牌）",
+	["@chengxiang-card"] = "请打出点数之和为 %arg 的卡牌以发动【称象】技能",
+	["conghui"] = "聪慧",
+	[":conghui"] = "<b>锁定技</b>，你将永远跳过你的弃牌阶段",
+	["zaoyao"] = "早夭",
+	[":zaoyao"] = "<b>锁定技</b>，回合结束阶段开始时，若你的手牌大于13张，则你必须弃掉所有手牌并流失1点体力",
+
+	-- 张郃
+	["zhangjunyi"] = "张儁乂",
+	["jueji"] = "绝汲",
+	[":jueji"] = "你可以跳过你的出牌阶段并和一名角色拼点。若你赢，你获得对方的拼点牌，并可立即再次与其拼点，如此反复，直到你没赢或不愿意继续拼点为止",
 	["@jueji"] = "绝汲",
 	["@jueji-pindian"] = "你可以发动【绝汲】与一名角色拼点",
 
@@ -80,7 +87,7 @@ return {
 	["#LianliConnection"] = "%from 与 %to 结为连理",
 	["@tied"] = "连理",
 
-	-- 晋宣帝
+	-- 神司马
 	["jinxuandi"] = "晋宣帝",
 	["wuling"] = "五灵",
 	[":wuling"] = "回合开始阶段，你可选择一种五灵效果发动，该效果对场上所有角色生效\
@@ -115,7 +122,7 @@ return {
 	["@water"] = "五灵(水)",
 	["@earth"] = "五灵(土)",
 
-	-- 蔡昭姬
+	-- 蔡琰
 	["caizhaoji"] = "蔡昭姬",
 	["guihan"] = "归汉",
 	["caizhaoji_hujia"] = "胡笳",
@@ -125,7 +132,7 @@ return {
 	["$caizhaoji_hujia"] = "北风厉兮肃泠泠。胡笳动兮边马鸣",
 	["~caizhaoji"] = "人生几何时，怀忧终年岁",
 
-	-- 陆伯言
+	-- 陆逊
 	["luboyan"] = "陆伯言",
 	["luboyanf"] = "陆伯言(女)",
 	["shenjun"] = "神君",
@@ -163,7 +170,7 @@ return {
 	["$xunzhi2"] = "蜀汉英烈,忠魂佑我!",
 	["~jiangboyue"] = "吾计不成,乃天命也!",
 
-	-- 贾文和
+	-- 贾诩
 	["jiawenhe"] = "贾文和",
 	["dongcha"] = "洞察",
 	[":dongcha"] = "回合开始阶段开始时，你可以指定一名其他角色：该角色的所有手牌对你处于可见状态，直到你的本回合结束。其他角色都不知道你对谁发动了洞察技能，包括被洞察的角色本身",
@@ -182,7 +189,7 @@ return {
 	["#ShenliBuff"] = "%from 的锁定技【神力】被触发，【杀】的伤害增加了 %arg, 达到了 %arg2 点",
 	["@struggle"] = "死战",
 
-	-- 邓士载
+	-- 邓艾
 	["dengshizai"] = "邓士载",
 	["zhenggong"] = "争功",
 	[":zhenggong"] = "其他角色的回合开始前，若你的武将牌正面向上，你可以将你的武将牌翻面并立即进入你的回合，你的回合结束后，进入该角色的回合",
@@ -208,7 +215,6 @@ return {
 
 	-- 倚天剑
 	["yitianjian"] = "倚天剑",
-	["illustrator:yitianjian"] = "轩辕剑",
 	["zhengfeng"] = "争锋",
 	[":zhengfeng"] = " <b>锁定技</b>，当你的装备区没有武器时，你的攻击范围为X，X为你当前体力值。",
 	["zhenwei"] = "镇威",
@@ -217,7 +223,7 @@ return {
 	[":yitian"] = "<b>联动技</b>，当你对曹操造成伤害时，可令该伤害-1",
 	["#YitianSolace"] = "%from 发动了技能【倚天】，对 %to 的 %arg 点伤害减至 %arg2 点",
 
-	-- 庞令明
+	-- 庞德
 	["panglingming"] = "庞令明",
 	["taichen"] = "抬榇",
 	[":taichen"] = "出牌阶段，你可以自减1点体力或弃置一张武器牌，弃置你攻击范围内的一名角色区域的两张牌。每回合中，你可以多次使用抬榇",
@@ -264,5 +270,23 @@ return {
 	["designer:zhanggongqi"] = "背碗卤粉, Jr. Wakaran",
 	["designer:yitianjian"] = "太阳神上",
 	["designer:panglingming"] = "太阳神上",
+
+	["illustrator:shencc"] = "三国志大战",
+	["illustrator:caochong"] = "三国志大战",
+	["illustrator:zhangjunyi"] = "火凤燎原",
+	["illustrator:xiahoujuan"] = "三国志大战",
+	["illustrator:lukang"] = "火神原画",
+	["illustrator:jinxuandi"] = "梦三国",
+	["illustrator:caizhaoji"] = "火星时代实训基地",
+	["illustrator:luboyan"] = "真三国无双5",
+	["illustrator:luboyanf"] = "同人作品",
+	["illustrator:zhongshiji"] = "战国无双3",
+	["illustrator:jiangboyue"] = "不详",
+	["illustrator:jiawenhe"] = "不详",
+	["illustrator:guzhielai"] = "火凤燎原",
+	["illustrator:dengshizai"] = "不详",
+	["illustrator:zhanggongqi"] = "真三国无双",
+	["illustrator:yitianjian"] = "轩辕剑",
+	["illustrator:panglingming"] = "三国志大战",
 }
 
