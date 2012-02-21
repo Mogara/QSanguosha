@@ -54,15 +54,12 @@ return {
 
 	["designer:caozhi"] = "foxear",
 	["designer:yujin"] = "城管无畏",
-
 	["designer:fazheng"] = "michael_lee",
 	["designer:masu"] = "神点点",
 	["designer:xushu"] = "双叶松",
-
 	["designer:xusheng"] = "阿江",
 	["designer:lingtong"] = "奇迹之瞳",
 	["designer:wuguotai"] = "章鱼咬你哦",
-
 	["designer:gaoshun"] = "羽柴文理",
 	["designer:chengong"] = "Kaycent",
 
