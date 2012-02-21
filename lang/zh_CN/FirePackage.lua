@@ -87,5 +87,13 @@ return {
 	["cv:shuangxiong"] = "墨染の飞猫，霸气爷们",
 	
 	["#QuhuNoWolf"] = "%from 驱虎拼点成功，但是由于 %to 在其攻击范围内没有攻击的目标，所以不能造成伤害",
+
+	-- illustrator
+	["illustrator:yuanshao"] = "Sonia Tang",
+	["illustrator:pangde"] = "LiuHeng",
+	["illustrator:wolong"] = "北",
+	["illustrator:xunyu"] = "LiuHeng",
+	["illustrator:dianwei"] = "小冷",
+	["illustrator:taishici"] = "Tuu.",
 }
 

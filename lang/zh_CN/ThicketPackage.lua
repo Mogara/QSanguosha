@@ -134,4 +134,13 @@ return {
 	["cv:jiaxu"] = "落凤一箭",
 	["cv:dongzhuo"] = "やまもとみ，迷宫女友(肉林2)",
 	["cv:xuhuang"] = "木津川",
+
+	-- illustrator
+	["illustrator:caopi"] = "Sonia Tang",
+	["illustrator:lusu"] = "LiuHeng",
+	["illustrator:sunjian"] = "LiuHeng",
+	["illustrator:menghuo"] = "废柴男",
+	["illustrator:zhurong"] = "废柴男",
+	["illustrator:dongzhuo"] = "小冷",
+	["illustrator:xuhuang"] = "Tuu.",
 }

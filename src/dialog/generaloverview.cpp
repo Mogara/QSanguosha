@@ -221,6 +221,12 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     else
         ui->cvLineEdit->setText(tr("Official"));
 
+    QString illustrator_text = Sanguosha->translate("illustrator:" + general->objectName());
+    if(!illustrator_text.startsWith("illustrator:"))
+        ui->illustratorLineEdit->setText(illustrator_text);
+    else
+        ui->illustratorLineEdit->setText(Sanguosha->translate("DefaultIllustrator"));
+
     button_layout->addStretch();
     ui->skillTextEdit->append(general->getSkillDescription());
 }

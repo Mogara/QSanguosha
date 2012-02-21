@@ -12,7 +12,7 @@ return {
 	["xusheng"] = "徐盛",
 	["wuguotai"] = "吴国太",
 	["chengong"] = "陈宫",
-	["gaoshun"] = "高顺",	
+	["gaoshun"] = "高顺",
 
 	["luoying"] = "落英",
 	[":luoying"] = "当其他角色的梅花牌，因弃置或判定而进入弃牌堆时，你可以获得之";
@@ -42,7 +42,7 @@ return {
 	[":buyi"] = "当有角色进入濒死状态时，你可以展示该角色的一张手牌；若此牌不为基本牌，则该角色弃掉这张牌并回复1点体力",
 	["pojun"] = "破军",
 	[":pojun"] = "每当你使用【杀】造成一次伤害，可令受到该伤害的角色摸X张牌，X为该角色当前的体力值（X最多为5）,然后该角色将其武将牌翻面",
-	
+
 	["xianzhen"] = "陷阵",
 	[":xianzhen"] = "出牌阶段，你可以与一名角色拼点，若你赢，你获得以下技能直到回合结束：无视与该角色的距离及防具，可对该角色使用任意数量的【杀】；若你没赢，你不能使用【杀】直到回合结束。每阶段限一次。",
 	["jiejiu"] = "禁酒",
@@ -51,24 +51,24 @@ return {
 	[":mingce"] = "出牌阶段，你可以交给其他角色一张装备牌或【杀】,该角色进行二选一：1.视为对其攻击范围内的另一名由你指定的角色使用一张【杀】。2.摸一张牌。每阶段限一次。",
 	["zhichi"] = "智迟",
 	[":zhichi"] = "<b>锁定技</b>，在回合外，你每受到一次伤害后，任何【杀】或非延时锦囊均对你无效，直到该回合结束",
-	
+
 	["designer:caozhi"] = "foxear",
 	["designer:yujin"] = "城管无畏",
-	
+
 	["designer:fazheng"] = "michael_lee",
 	["designer:masu"] = "神点点",
 	["designer:xushu"] = "双叶松",
-	
+
 	["designer:xusheng"] = "阿江",
 	["designer:lingtong"] = "奇迹之瞳",
 	["designer:wuguotai"] = "章鱼咬你哦",
-	
+
 	["designer:gaoshun"] = "羽柴文理",
 	["designer:chengong"] = "Kaycent",
-	
+
 	["cv:caozhi"] = "殆尘",
 	["cv:chengong"] = "官方,V7",
-	
+
 	["#WuyanBad"] = "%from 的锁定技【无言】被触发，对 %to 的锦囊【%arg】无效",
 	["#WuyanGood"] = "%from 的锁定技【无言】被触发， %to 的锦囊【%arg】对其无效",
 	["#EnyuanRecover"] = "%from 的锁定技【恩怨】被触发，对其恢复体力的角色 %to 将摸 %arg 张牌",
@@ -87,7 +87,7 @@ return {
 	["#JujianRecover"] = "%from 用举荐弃掉了三张 %arg ，将恢复一点体力",
 	["luoying:yes"] = "拿屎",
 	["luoying:no"] = "不拿屎",
-	
+
 	["$jiushi1"] = "举泰山以为肉，倾东海以为酒",
 	["$jiushi2"] = "饮酒并醉，纵横喧哗。",
 	["$jiushi3"] = "归来宴平乐，美酒斗十千",
@@ -99,7 +99,7 @@ return {
 	["$buyi2"] = "有老身在，汝等尽可放心。",
 	["$ganlu1"] = "此真乃吾之佳婿。",
 	["$ganlu2"] = "男婚女嫁，须当交换文定之物。",
-	["$huilei1"] = "丞相视某如子，某以丞相为父。",	
+	["$huilei1"] = "丞相视某如子，某以丞相为父。",
 	["$huilei2"] = "谡愿以死安大局",
 	["$enyuan1"] = "得人恩果千年记",
 	["$enyuan2"] = "滴水之恩，涌泉以报！",
@@ -126,7 +126,7 @@ return {
 	["$zhichi2"] = "若吾早知如此~",
 	["$yizhong1"] = "不先为备，何以待敌",
 	["$yizhong2"] = "稳重行军，百战不殆！",
-	
+
 	["~chengong"] = "请出就戮！",
 	["~fazheng"] = "辅翼既折，蜀汉衰矣…",
 	["~gaoshun"] = "生死有命…",
@@ -135,4 +135,16 @@ return {
 	["~xusheng"] = "盛不能奋身出命，不亦辱乎…",
 	["~xushu"] = "娘……孩儿不孝……向您……请罪……",
 	["~yujin"] = "我……无颜面对丞相了……",
+
+	-- illustrator
+	["illustrator:caozhi"] = "木美人",
+	["illustrator:yujin"] = "Yi 章",
+	["illustrator:fazheng"] = "雷没才",
+	["illustrator:masu"] = "张帅",
+	["illustrator:xushu"] = "XINA",
+	["illustrator:lingtong"] = "绵 Myan",
+	["illustrator:xusheng"] = "刘周",
+	["illustrator:wuguotai"] = "zoo",
+	["illustrator:chengong"] = "黑月乱",
+	["illustrator:gaoshun"] = "邓Sir",
 }

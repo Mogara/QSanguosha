@@ -24,10 +24,12 @@ return {
 	["liegong:yes"] = "此【杀】不可被【闪】响应",
 
 	["weiyan"] = "魏延",
+	["illustrator:weiyan"] = "Sonia Tang",
 	["kuanggu"] = "狂骨",
 	[":kuanggu"] = "<b>锁定技</b>，每当你对距离1以内的一名角色造成1点伤害后，你回复1点体力",
 
 	["zhangjiao"] = "张角",
+	["illustrator:zhangjiao"] = "LiuHeng",
 	["leiji"] = "雷击",
 	[":leiji"] = "每当你使用或打出一张【闪】时，可令一名角色判定，若结果为黑桃，你对该角色造成2点雷电伤害",
 	["guidao"] = "鬼道",
@@ -55,6 +57,7 @@ return {
 	["$BuquDuplicateItem"] = "不屈重复牌: %card",
 
 	["yuji"] = "于吉",
+	["illustrator:yuji"] = "LiuHeng",
 	["guhuo"] = "蛊惑",
 	[":guhuo"] = "你可以说出任何一种基本牌或非延时类锦囊牌，并正面朝下使用或打出一张手牌。若无人质疑，则该牌按你所述之牌结算。若有人质疑则亮出验明；若为真，质疑者各失去1点体力；若为假，质疑者各摸1张牌。无论真假，弃置被质疑的牌。仅当被质疑的牌为红桃且为真时，该牌仍然可以进行结算。",
         ["guhuo_pile"] = "蛊惑牌堆",

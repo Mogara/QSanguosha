@@ -208,6 +208,7 @@ return {
 
 	-- 倚天剑
 	["yitianjian"] = "倚天剑",
+	["illustrator:yitianjian"] = "轩辕剑",
 	["zhengfeng"] = "争锋",
 	[":zhengfeng"] = " <b>锁定技</b>，当你的装备区没有武器时，你的攻击范围为X，X为你当前体力值。",
 	["zhenwei"] = "镇威",

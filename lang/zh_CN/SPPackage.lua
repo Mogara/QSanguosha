@@ -3,6 +3,7 @@
 return {
 	["sp"] = "SP",
 	["yangxiu"] = "杨修",
+	["illustrator:yangxiu"] = "张可",
 	["jilei"] = "鸡肋",
 	["danlao"] = "啖酪",
 	[":jilei"] = "当你受到伤害时，说出一种牌的类别（基本牌、锦囊牌、装备牌），对你造成伤害的角色不能使用、打出或弃掉该类别的手牌直到回合结束\
@@ -11,16 +12,19 @@ return {
 	["$jilei"] = "食之无味，弃之可惜",
 	["$danlao"] = "一人一口，分而食之",
 	["~yangxiu"] = "恃才傲物，方有此命",
+	["cv:yangxiu"] = "幻象迷宫",
 	["#DanlaoAvoid"] = "%from 发动了技能【啖酪】，跳过了锦囊 %arg 对他的结算",
 	["#Jilei"] = "%from 鸡肋了 %to 的 %arg",
 	["#JileiClear"] = "%from 的鸡肋效果消失",
 
 	["gongsunzan"] = "公孙瓒",
+	["illustrator:gongsunzan"] = "Vincent",
 	["yicong"] = "义从",
 	[":yicong"] = "<b>锁定技</b>，只要你的体力值大于2点，你计算与其他角色的距离时，始终-1；只要你的体力值为2点或更低，其他角色计算与你的距离时，始终+1",
 	["~gongsunzan"] = "我军将败，我已无颜苟活于世",
 
 	["yuanshu"] = "袁术",
+	["illustrator:yuanshu"] = "吴昊",
 	["yongsi"] = "庸肆",
 	[":yongsi"] = "<b>锁定技</b>，摸牌阶段，你额外摸X张牌，X为场上现存势力数。弃牌阶段，你至少弃掉等同于场上现存势力数的牌（不足则全弃）",
 	["weidi"] = "伪帝",
@@ -37,36 +41,43 @@ return {
 
 	["sp_diaochan"] = "SP貂蝉",
 	["SP-Diaochan"] = "SP貂蝉",
+	["illustrator:sp_diaochan"] = "巴萨小马",
 	["tuoqiao"] = "脱壳",
 	[":tuoqiao"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP貂蝉或桌游志貂蝉",
 	["cv:sp_diaochan"] = "",
 
 	["sp_sunshangxiang"] = "SP孙尚香",
+	["illustrator:sp_sunshangxiang"] = "木美人",
 	["chujia"] = "出嫁",
 	[":chujia"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
 	["cv:sp_sunshangxiang"] = "官方，背碗卤粉",
 
 	["sp_guanyu"] = "SP关羽",
+	["illustrator:sp_guanyu"] = "LiuHeng",
 	["danji"] = "单骑",
 	[":danji"] = "<b>觉醒技</b>，回合开始阶段，若你的手牌数大于你当前的体力值，且本局主公为曹操时，你须减1点体力上限并永久获得技能“马术”。",
 	["#DanjiWake"] = "%from 的手牌数(%arg)多于体力值(%arg2)，且本局主公为曹操，达到【单骑】的觉醒条件",
 
 	["sp_caiwenji"] = "SP蔡文姬",
+	["illustrator:sp_caiwenji"] = "木美人",
 	["guixiang"] = "归乡",
 	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
 	["cv:sp_caiwenji"] = "呼呼",
 	
 	["sp_jiaxu"] = "SP贾诩",
+	["illustrator:sp_jiaxu"] = "雪君S",
 	["guiwei"] = "归魏",
 	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
 	["cv:sp_jiaxu"] = "落凤一箭",
 	
 	["sp_pangde"] = "SP庞德",
+	["illustrator:sp_pangde"] = "天空之城",
 	["pangde_guiwei"] = "归魏",
 	[":pangde_guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP庞德，势力为魏",
 	["cv:sp_pangde"] = "Glory",
 
 	["sp_machao"] = "SP马超",
+	["illustrator:sp_machao"] = "天空之城",
 	["fanqun"] = "返群",
 	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
 
@@ -74,7 +85,9 @@ return {
 	["Hulaopass"] = "虎牢关模式",
 
 	["shenlvbu1"] = "神吕布(1)",
+	["illustrator:shenlvbu1"] = "LiuHeng",
 	["shenlvbu2"] = "神吕布(2)",
+	["illustrator:shenlvbu2"] = "LiuHeng",
 	["xiuluo"] = "修罗",
 	[":xiuluo"] = "回合开始阶段，你可以弃一张手牌来弃置你判定区里的一张延时类锦囊(必须花色相同)。",
 	["@xiuluo"] = "请弃置一张花色相同的手牌",

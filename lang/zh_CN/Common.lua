@@ -33,6 +33,7 @@ return {
 	["free-discard"] = "自由弃牌",
 	["yes"] = "是",
 	["no"] = "否",
+	["DefaultIllustrator"] = "KayaK",
 
 	["attack_card"] = "进攻牌",
 	["defense_card"] = "防御牌",
@@ -57,6 +58,8 @@ return {
 	["test"] = "测试",
 	["sujiang"] = "素将",
 	["sujiangf"] = "素将(女)",
+	["illustrator:sujiang"] = "火凤燎原",
+	["illustrator:sujiangf"] = "轩辕剑",
 
 	["#Murder"] = "%to【%arg】 挂了，凶手是 %from",
 	["#Suicide"] = "%to【%arg】 自杀身亡",

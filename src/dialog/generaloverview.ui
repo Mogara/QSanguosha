@@ -110,7 +110,7 @@
           <property name="maximumSize">
            <size>
             <width>271</width>
-            <height>61</height>
+            <height>91</height>
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout">
@@ -148,6 +148,26 @@
             <widget class="QLabel" name="designerLabel">
              <property name="text">
               <string>Designer</string>
+             </property>
+            </widget>
+           </item>
+	   <item row="2" column="0">
+            <widget class="QLabel" name="illustratorLabel">
+             <property name="text">
+              <string>Illustrator</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="illustratorLineEdit">
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
