@@ -50,9 +50,11 @@ public:
     bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
     void turnOver();
     void play();
+    void play(QList<Player::Phase> &set_phases);
 
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase);
+    void skip();
 
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);

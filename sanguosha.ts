@@ -1708,12 +1708,12 @@
     <message>
         <location filename="src/dialog/generaloverview.ui" line="150"/>
         <source>Designer</source>
-        <translation>设计者</translation>
+        <translation>设计</translation>
     </message>
     <message>
         <location filename="src/dialog/generaloverview.ui" line="157"/>
         <source>Illustrator</source>
-        <translation>插画师</translation>
+        <translation>插画</translation>
     </message>
     <message>
         <location filename="src/dialog/generaloverview.ui" line="133"/>

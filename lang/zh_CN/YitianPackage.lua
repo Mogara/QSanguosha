@@ -279,7 +279,7 @@ return {
 	["illustrator:jinxuandi"] = "梦三国",
 	["illustrator:caizhaoji"] = "火星时代实训基地",
 	["illustrator:luboyan"] = "真三国无双5",
-	["illustrator:luboyanf"] = "同人作品",
+	["illustrator:luboyanf"] = "阿摸",
 	["illustrator:zhongshiji"] = "战国无双3",
 	["illustrator:jiangboyue"] = "不详",
 	["illustrator:jiawenhe"] = "不详",

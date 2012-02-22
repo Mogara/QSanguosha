@@ -663,8 +663,10 @@ trust:
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
-    if(flags == "h" && !who->hasFlag("dongchaee"))
-        return who->getRandomHandCardId();
+    if(!who->hasFlag("dongchaee")){
+        if(flags == "h" || (flags == "he" && !who->hasEquip()))
+            return who->getRandomHandCardId();
+    }
 
     int card_id;
 
@@ -1034,6 +1036,15 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     }
 
     return NULL;
+}
+
+QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, bool include_dead) const{
+    QList<ServerPlayer *> list;
+    foreach(ServerPlayer *player, include_dead ? players : alive_players){
+        if(player->hasSkill(skill_name))
+            list << player;
+    }
+    return list;
 }
 
 ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name, bool include_dead) const{

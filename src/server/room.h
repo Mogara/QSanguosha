@@ -87,6 +87,7 @@ public:
     void adjustSeats();
     void swapPile();
     int getCardFromPile(const QString &card_name);
+    QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_dead = false) const;
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);

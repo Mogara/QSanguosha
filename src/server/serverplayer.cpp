@@ -544,6 +544,24 @@ void ServerPlayer::play(){
     }
 }
 
+void ServerPlayer::play(QList<Player::Phase> &set_phases){
+    if(!set_phases.contains(NotActive))
+        set_phases << NotActive;
+
+    phases = set_phases;
+    while(!phases.isEmpty()){
+        Phase phase = phases.takeFirst();
+        setPhase(phase);
+        room->broadcastProperty(this, "phase");
+        room->getThread()->trigger(PhaseChange, this);
+
+        if(isDead() && phase != NotActive){
+            phases.clear();
+            phases << NotActive;
+        }
+    }
+}
+
 QList<Player::Phase> &ServerPlayer::getPhases(){
     return phases;
 }
@@ -566,6 +584,14 @@ void ServerPlayer::skip(Player::Phase phase){
     room->sendLog(log);
 }
 
+void ServerPlayer::skip(){
+    phases.clear();
+
+    LogMessage log;
+    log.type = "#SkipAllPhase";
+    log.from = this;
+    room->sendLog(log);
+}
 
 void ServerPlayer::gainMark(const QString &mark, int n){
     int value = getMark(mark) + n;
