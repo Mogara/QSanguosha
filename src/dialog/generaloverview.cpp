@@ -240,3 +240,18 @@ void GeneralOverview::playEffect()
             Sanguosha->playEffect(source);
     }
 }
+
+#include "clientstruct.h"
+#include "client.h"
+void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
+{
+    if(!ServerInfo.FreeChoose)
+        return;
+    if(Self){
+        int row = ui->tableWidget->currentRow();
+        if(row >= 0){
+            QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
+            ClientInstance->changeGeneral(general_name);
+        }
+    }
+}

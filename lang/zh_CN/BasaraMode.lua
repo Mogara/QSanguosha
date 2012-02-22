@@ -8,5 +8,6 @@ return
 	["anjiang"] = "暗将",
 	["#BasaraGeneralChosen"] = "你选择的武将为 %arg 和 %arg2",
 	["Hegemony"] = "国战",
-	["Roles"] = "身份"
+	["Roles"] = "身份",
+	["~anjiang"] = "还没亮明武将，死不瞑目啊……",
 }

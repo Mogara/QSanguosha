@@ -362,6 +362,11 @@ void Client::requestCard(int card_id){
     request(QString("useCard @CheatCard=%1->.").arg(card_id));
 }
 
+void Client::changeGeneral(QString name){
+    Self->tag["GeneralName"] = name;
+    request(QString("useCard @ChangeCard=.->."));
+}
+
 void Client::addRobot(){
     request("addRobot .");
 }

@@ -284,8 +284,8 @@ return {
 	["illustrator:jiangboyue"] = "不详",
 	["illustrator:jiawenhe"] = "不详",
 	["illustrator:guzhielai"] = "火凤燎原",
-	["illustrator:dengshizai"] = "不详",
-	["illustrator:zhanggongqi"] = "真三国无双",
+	["illustrator:dengshizai"] = "豪杰传",
+	["illustrator:zhanggongqi"] = "真三国友盟",
 	["illustrator:yitianjian"] = "轩辕剑",
 	["illustrator:panglingming"] = "三国志大战",
 }

@@ -30,6 +30,7 @@ return {
 	["robot"] = "电脑",
 	["trust"] = "托管",
 	["cheat"] = "作弊",
+	["change"] = "变身",
 	["free-discard"] = "自由弃牌",
 	["yes"] = "是",
 	["no"] = "否",
