@@ -4,7 +4,7 @@ return {
 	["BGM"] = "桌游志",
 
 	["bgm_zhaoyun"] = "SP赵云",
-	["illustrator:bgm_zhaoyun"] = "2b",
+	["illustrator:bgm_zhaoyun"] = "Vincent",
 	["chongzhen"] = "冲阵",
 	[":chongzhen"] = "每当你发动“龙胆”使用或打出一张手牌时，你可以立即获得对方的一张手牌。",
 	
