@@ -1147,10 +1147,6 @@ function SmartAI:updatePlayers()
 		sgs[aflag] = nil
 	end
 	
-	for _, p in sgs.qlist(self.room:getAllPlayers()) do
-		self:updateTarget(p)
-	end
-
 	if sgs.isRolePredictable() then
 		self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 		table.insert(self.friends, self.player)
@@ -1195,6 +1191,10 @@ function SmartAI:updatePlayers()
 		table.insert(self.friends_noself, player)
 	end
 	table.insert(self.friends,self.player)
+	
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		self:updateTarget(p)
+	end
 
 	if self.role == "rebel" then
 		sgs.rebel_target = self.room:getLord()
