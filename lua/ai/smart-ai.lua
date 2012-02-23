@@ -1146,6 +1146,10 @@ function SmartAI:updatePlayers()
 	for _, aflag in ipairs(sgs.ai_global_flags) do
 		sgs[aflag] = nil
 	end
+	
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		self:updateTarget(p)
+	end
 
 	if sgs.isRolePredictable() then
 		self.friends = sgs.QList2Table(self.lua_ai:getFriends())
@@ -1212,10 +1216,6 @@ function SmartAI:updatePlayers()
 				if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
 			end
 		end
-	end
-	
-	for _, p in sgs.qlist(self.room:getAllPlayers()) do
-		self:updateTarget(p)
 	end
 end
 
