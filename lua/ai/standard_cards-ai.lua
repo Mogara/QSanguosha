@@ -6,7 +6,6 @@ local function hasExplicitRebel(room)
 	return false
 end
 
-sgs.ai_slash_prohibit = {}
 function SmartAI:slashProhibit(card,enemy)
 	card = card or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
@@ -73,7 +72,6 @@ function SmartAI:slashIsAvailable(player)
 	return slash:isAvailable(player)
 end
 
-sgs.ai_slash_weaponfilter = {}
 function SmartAI:useCardSlash(card, use)
 	if not self:slashIsAvailable() then return end
 	local no_distance = self.slash_distance_limit
@@ -112,58 +110,61 @@ function SmartAI:useCardSlash(card, use)
 					if self.slash_targets <= target_count then return end
 				end
 			end
---				break
 		end
 	end
 
+	local target
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		local slash_prohibit = false
 		slash_prohibit = self:slashProhibit(card,enemy)
-		if not slash_prohibit then
-			if (self.player:canSlash(enemy, not no_distance) or
-			(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy) <= self.predictedRange))) and
-			self:objectiveLevel(enemy) > 3 and
-			self:slashIsEffective(card, enemy) and
-			not (not self:isWeak(enemy) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
-				and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
-				-- fill the card use struct
-				local usecard = card
-				if not use.to or use.to:isEmpty() then
-					local anal = self:searchForAnaleptic(use,enemy,card)
-					if anal and not self:isEquip("SilverLion", enemy) and not self:isWeak() then
-						if anal:getEffectiveId() ~= card:getEffectiveId() then use.card = anal return end
-					end
-					local equips = self:getCards("EquipCard", self.player, "h")
-					for _, equip in ipairs(equips) do
-						local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
-						if callback and type(callback) == "function" and callback(enemy, self) and
-							self.player:distanceTo(enemy) <= (sgs.weapon_range[equip:className()] or 0) then
-							self:useEquipCard(equip, use)
-							if use.card then return end
-						end
-					end
-					if enemy:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
-						if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
-							local slashes = self:getCards("Slash")
-							for _, slash in ipairs(slashes) do
-								if not slash:inherits("NatureSlash") and self:slashIsEffective(slash, enemy)
-									and not self:slashProhibit(slash, enemy) then
-									usecard = slash
-									break
-								end
-							end
-						elseif not card:inherits("NatureSlash") then
-							local slash = self:getCard("NatureSlash")
-							if slash and self:slashIsEffective(slash, enemy) and not self:slashProhibit(slash, enemy) then usecard = slash end
-						end
+		if not slash_prohibit then target = enemy break end
+	end
+	target = sgs.target[self.player:getRole()] or target
+	
+	if target then
+		if (self.player:canSlash(target, not no_distance) or
+		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
+		self:objectiveLevel(target) > 3 and
+		self:slashIsEffective(card, target) and
+		not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
+			and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
+			-- fill the card use struct
+			local usecard = card
+			if not use.to or use.to:isEmpty() then
+				local anal = self:searchForAnaleptic(use,target,card)
+				if anal and not self:isEquip("SilverLion", target) and not self:isWeak() then
+					if anal:getEffectiveId() ~= card:getEffectiveId() then use.card = anal return end
+				end
+				local equips = self:getCards("EquipCard", self.player, "h")
+				for _, equip in ipairs(equips) do
+					local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
+					if callback and type(callback) == "function" and callback(target, self) and
+						self.player:distanceTo(target) <= (sgs.weapon_range[equip:className()] or 0) then
+						self:useEquipCard(equip, use)
+						if use.card then return end
 					end
 				end
-				use.card = use.card or usecard
-				if use.to then use.to:append(enemy) end
-				target_count = target_count+1
-				if self.slash_targets <= target_count then return end
+				if target:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
+					if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
+						local slashes = self:getCards("Slash")
+						for _, slash in ipairs(slashes) do
+							if not slash:inherits("NatureSlash") and self:slashIsEffective(slash, target)
+								and not self:slashProhibit(slash, target) then
+								usecard = slash
+								break
+							end
+						end
+					elseif not card:inherits("NatureSlash") then
+						local slash = self:getCard("NatureSlash")
+						if slash and self:slashIsEffective(slash, target) and not self:slashProhibit(slash, target) then usecard = slash end
+					end
+				end
 			end
+			use.card = use.card or usecard
+			if use.to then use.to:append(target) end
+			target_count = target_count+1
+			if self.slash_targets <= target_count then return end
 		end
 	end
 
@@ -636,33 +637,39 @@ function SmartAI:useCardDuel(duel, use)
 	if self.player:hasSkill("wuyan") then return end
 	self:sort(self.enemies,"handcard")
 	local enemies = self:exclude(self.enemies, duel)
+	local target 
+	local n1 = self:getCardsNum("Slash")
+	local n2
 	for _, enemy in ipairs(enemies) do
+		n2 = enemy:getHandcardNum()
 		if self:objectiveLevel(enemy) > 3 then
-			local n1 = self:getCardsNum("Slash")
-			local n2 = enemy:getHandcardNum()
 			if enemy:hasSkill("wushuang") then n2 = n2*2 end
 			if self.player:hasSkill("wushuang") then n1 = n1*2 end
-			local useduel
-			if self:hasTrickEffective(duel, enemy) then
-				if n1 >= n2 then
-					useduel = true
-				elseif n2 > n1*2 + 1 then
-					useduel = false
-				elseif n1 > 0 then
-					local percard = 0.35
-					if enemy:hasSkill("paoxiao") or enemy:hasWeapon("crossbow") then percard = 0.2 end
-					local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
-					if math.random() > poss then useduel = true end
-				end
-				if useduel then
-					use.card = duel
-					if use.to then
-						use.to:append(enemy)
-						self:speak("duel", self.player:getGeneral():isFemale())
-					end
-					return
-				end
+			target = enemy
+			break
+		end
+	end
+	
+	target = sgs.target[self.player:getRole()] or target 
+	local useduel
+	if target and self:hasTrickEffective(duel, target) then
+		if n1 >= n2 then
+			useduel = true
+		elseif n2 > n1*2 + 1 then
+			useduel = false
+		elseif n1 > 0 then
+			local percard = 0.35
+			if target:hasSkill("paoxiao") or target:hasWeapon("crossbow") then percard = 0.2 end
+			local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
+			if math.random() > poss then useduel = true end
+		end
+		if useduel then
+			use.card = duel
+			if use.to then
+				use.to:append(target)
+				self:speak("duel", self.player:getGeneral():isFemale())
 			end
+			return
 		end
 	end
 end

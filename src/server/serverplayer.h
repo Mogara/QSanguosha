@@ -93,7 +93,7 @@ public:
     void marshal(ServerPlayer *player) const;
 
     void addToPile(const QString &pile_name, int card_id, bool open = true);
-    void gainAnExtraTurn();
+    void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
 
     void copyFrom(ServerPlayer* sp);
 
