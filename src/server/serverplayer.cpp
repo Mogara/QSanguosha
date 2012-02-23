@@ -523,30 +523,14 @@ void ServerPlayer::turnOver(){
     room->getThread()->trigger(TurnedOver, this);
 }
 
-void ServerPlayer::play(){
-    static QList<Phase> all_phases;
-    if(all_phases.isEmpty()){
-        all_phases << Start << Judge << Draw << Play
+void ServerPlayer::play(QList<Player::Phase> set_phases){
+    if(!set_phases.isEmpty()){
+        if(!set_phases.contains(NotActive))
+            set_phases << NotActive;
+    }
+    else
+        set_phases << Start << Judge << Draw << Play
                 << Discard << Finish << NotActive;
-    }
-
-    phases = all_phases;
-    while(!phases.isEmpty()){
-        Phase phase = phases.takeFirst();
-        setPhase(phase);
-        room->broadcastProperty(this, "phase");
-        room->getThread()->trigger(PhaseChange, this);
-
-        if(isDead() && phase != NotActive){
-            phases.clear();
-            phases << NotActive;
-        }
-    }
-}
-
-void ServerPlayer::play(QList<Player::Phase> &set_phases){
-    if(!set_phases.contains(NotActive))
-        set_phases << NotActive;
 
     phases = set_phases;
     while(!phases.isEmpty()){

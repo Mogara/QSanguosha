@@ -965,9 +965,12 @@ function SmartAI:objectiveLevel(player)
 		if player:isLord() then return -2 end
 		if rebel_num == 0 then
 			if sgs.evaluatePlayerRole(player) == "renegade" then
-				if self.player:isLord() and self:isWeak(player) then return 3 else return 5 end
+				if self.player:isLord() and self:isWeak(player) then return 3
+				elseif self.role == "loyalist" then return 5 
+				end
+			else
+				return -2
 			end
-			return -2
 		end
 
 		if sgs.evaluatePlayerRole(player) == "rebel" then return 5

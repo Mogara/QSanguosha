@@ -260,7 +260,7 @@ public:
 	void kick();
 	bool pindian(ServerPlayer *target, const char *reason, const Card *card1 = NULL);
 	void turnOver();
-	void play();
+	void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
 
 	QList<Player::Phase> &getPhases();
 	void skip(Player::Phase phase);
