@@ -834,30 +834,30 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        ServerPlayer *wuguotai = room->findPlayerBySkillName(objectName());
+        QList<ServerPlayer *> wuguots = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *wuguotai, wuguots){
+            if(player->getHp() < 1 && wuguotai->askForSkillInvoke(objectName(), data)){
+                const Card *card = NULL;
+                if(player == wuguotai)
+                    card = room->askForCardShow(player, wuguotai, objectName());
+                else{
+                    int card_id = room->askForCardChosen(wuguotai, player, "h", "buyi");
+                    card = Sanguosha->getCard(card_id);
+                }
 
-        if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
-            const Card *card = NULL;
-            if(player == wuguotai)
-                card = room->askForCardShow(player, wuguotai, objectName());
-            else{
-                int card_id = room->askForCardChosen(wuguotai, player, "h", "buyi");
-                card = Sanguosha->getCard(card_id);
-            }
+                room->showCard(player, card->getEffectiveId());
 
-            room->showCard(player, card->getEffectiveId());
+                if(card->getTypeId() != Card::Basic){
+                    room->throwCard(card);
 
-            if(card->getTypeId() != Card::Basic){
-                room->throwCard(card);
+                    room->playSkillEffect(objectName());
 
-                room->playSkillEffect(objectName());
-
-                RecoverStruct recover;
-                recover.who = wuguotai;
-                room->recover(player, recover);
+                    RecoverStruct recover;
+                    recover.who = wuguotai;
+                    room->recover(player, recover);
+                }
             }
         }
-
         return false;
     }
 };

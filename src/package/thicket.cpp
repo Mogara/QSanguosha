@@ -24,27 +24,29 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        ServerPlayer *caopi = room->findPlayerBySkillName(objectName());
-        if(caopi && caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)){
-            if(player->isCaoCao()){
-                room->playSkillEffect(objectName(), 3);
-            }else if(player->getGeneral()->isMale())
-                room->playSkillEffect(objectName(), 1);
-            else
-                room->playSkillEffect(objectName(), 2);
+        QList<ServerPlayer *> caopis = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *caopi, caopis){
+            if(caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)){
+                if(player->isCaoCao()){
+                    room->playSkillEffect(objectName(), 3);
+                }else if(player->getGeneral()->isMale())
+                    room->playSkillEffect(objectName(), 1);
+                else
+                    room->playSkillEffect(objectName(), 2);
 
-            caopi->obtainCard(player->getWeapon());
-            caopi->obtainCard(player->getArmor());
-            caopi->obtainCard(player->getDefensiveHorse());
-            caopi->obtainCard(player->getOffensiveHorse());
+                caopi->obtainCard(player->getWeapon());
+                caopi->obtainCard(player->getArmor());
+                caopi->obtainCard(player->getDefensiveHorse());
+                caopi->obtainCard(player->getOffensiveHorse());
 
-            DummyCard *all_cards = player->wholeHandCards();
-            if(all_cards){
-                room->moveCardTo(all_cards, caopi, Player::Hand, false);
-                delete all_cards;
+                DummyCard *all_cards = player->wholeHandCards();
+                if(all_cards){
+                    room->moveCardTo(all_cards, caopi, Player::Hand, false);
+                    delete all_cards;
+                }
+                break;
             }
         }
-
         return false;
     }
 };

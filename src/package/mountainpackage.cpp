@@ -162,58 +162,59 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        ServerPlayer *caiwenji = room->findPlayerBySkillName(objectName());
-        if(caiwenji && !caiwenji->isNude() && caiwenji->askForSkillInvoke(objectName(), data)){
-            room->askForDiscard(caiwenji, "beige", 1, false, true);
+        QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *caiwenji, cais){
+            if(!caiwenji->isNude() && caiwenji->askForSkillInvoke(objectName(), data)){
+                room->askForDiscard(caiwenji, "beige", 1, false, true);
 
-            JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(.*):(.*)");
-            judge.good = true;
-            judge.who = player;
-            judge.reason = objectName();
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(.*):(.*)");
+                judge.good = true;
+                judge.who = player;
+                judge.reason = objectName();
 
-            room->judge(judge);
+                room->judge(judge);
 
-            switch(judge.card->getSuit()){
-            case Card::Heart:{
-                    room->playSkillEffect(objectName(), 4);
-                    RecoverStruct recover;
-                    recover.who = caiwenji;
-                    room->recover(player, recover);
+                switch(judge.card->getSuit()){
+                case Card::Heart:{
+                        room->playSkillEffect(objectName(), 4);
+                        RecoverStruct recover;
+                        recover.who = caiwenji;
+                        room->recover(player, recover);
 
-                    break;
-                }
-
-            case Card::Diamond:{
-                    room->playSkillEffect(objectName(), 3);
-                    player->drawCards(2);
-                    break;
-                }
-
-            case Card::Club:{
-                    room->playSkillEffect(objectName(), 1);
-                    if(damage.from && damage.from->isAlive()){
-                        int to_discard = qMin(2, damage.from->getCardCount(true));
-                        if(to_discard != 0)
-                            room->askForDiscard(damage.from, "beige", to_discard, false, true);
+                        break;
                     }
 
+                case Card::Diamond:{
+                        room->playSkillEffect(objectName(), 3);
+                        player->drawCards(2);
+                        break;
+                    }
+
+                case Card::Club:{
+                        room->playSkillEffect(objectName(), 1);
+                        if(damage.from && damage.from->isAlive()){
+                            int to_discard = qMin(2, damage.from->getCardCount(true));
+                            if(to_discard != 0)
+                                room->askForDiscard(damage.from, "beige", to_discard, false, true);
+                        }
+
+                        break;
+                    }
+
+                case Card::Spade:{
+                        room->playSkillEffect(objectName(), 2);
+                        if(damage.from && damage.from->isAlive())
+                            damage.from->turnOver();
+
+                        break;
+                    }
+
+                default:
                     break;
                 }
-
-            case Card::Spade:{
-                    room->playSkillEffect(objectName(), 2);
-                    if(damage.from && damage.from->isAlive())
-                        damage.from->turnOver();
-
-                    break;
-                }
-
-            default:
-                break;
             }
         }
-
         return false;
     }
 };

@@ -488,8 +488,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        ServerPlayer *zhangzhao = target->getRoom()->findPlayerBySkillName("fuzuo");
-        return zhangzhao;
+        return true;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -651,13 +650,16 @@ public:
         if(player->getPhase() != Player::Judge || player->getJudgingArea().length() == 0)
             return false;
         Room *room = player->getRoom();
-        ServerPlayer *tianfeng = room->findPlayerBySkillName(objectName());
-        if(tianfeng && tianfeng->getCardCount(true)>=2
-           && room->askForSkillInvoke(tianfeng, objectName(), QVariant::fromValue(player))
-            && room->askForDiscard(tianfeng, objectName(),2,false,true)){
+        QList<ServerPlayer *> tians = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *tianfeng, tians){
+            if(tianfeng->getCardCount(true)>=2
+               && room->askForSkillInvoke(tianfeng, objectName(), QVariant::fromValue(player))
+                && room->askForDiscard(tianfeng, objectName(), 2, false, true)){
 
-            foreach(const Card *jcd, player->getJudgingArea())
-                tianfeng->obtainCard(jcd);
+                foreach(const Card *jcd, player->getJudgingArea())
+                    tianfeng->obtainCard(jcd);
+                break;
+            }
         }
         return false;
     }
