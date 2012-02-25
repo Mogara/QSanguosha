@@ -162,10 +162,11 @@ public:
         return 3;
     }
 
-    int getEquipCount(ServerPlayer *caoren) const{
+    int getWeaponCount(ServerPlayer *caoren) const{
         int n = 0;
         foreach(ServerPlayer *p, caoren->getRoom()->getAlivePlayers()){
-            n += p->getEquips().count();
+            if(p->getWeapon())
+                n ++;
         }
 
         return n;
@@ -178,22 +179,19 @@ public:
             if(!room->askForSkillInvoke(player, objectName(), data))
                 return false;
 
-            int n = getEquipCount(player);
+            int n = getWeaponCount(player);
             player->drawCards(n+2);
             player->turnOver();
         }
         else if(player->getPhase() == Player::Draw){
-            int n = getEquipCount(player);
+            int n = getWeaponCount(player);
             if(n > 0){
                 if(player->getCards("he").length() <= n){
                     player->throwAllEquips();
                     player->throwAllHandCards();
                 }
                 else{
-                    for(int i = 0; i != n; i++){
-                        int card_id = room->askForCardChosen(player, player, "he", objectName());
-                        room->throwCard(card_id);
-                    }
+                    room->askForDiscard(player, objectName(), n, false, true);
                 }
             }
         }
