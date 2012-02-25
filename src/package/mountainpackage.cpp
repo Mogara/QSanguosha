@@ -855,7 +855,7 @@ public:
                     log.to << player;
                     room->sendLog(log);
 
-                    player->gainAnExtraTurn();
+                    player->gainAnExtraTurn(liushan);
                 }
 
                 break;

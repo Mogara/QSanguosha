@@ -1135,7 +1135,7 @@ public:
         log.arg = QString::number(n);
         room->sendLog(log);
 
-        shensimayi->gainAnExtraTurn();
+        shensimayi->gainAnExtraTurn(player);
 
         return false;
     }
