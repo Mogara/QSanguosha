@@ -171,6 +171,7 @@ end
 function SmartAI:updateTarget(player)
 	player = player or self.player
 	local enemies = self:getEnemies(player)
+	if #enemies == 0 then return end
 	local priority_target = {}
 	for _, enemy in ipairs(enemies) do	
 		if self:hasSkills(sgs.priority_skill, player) then

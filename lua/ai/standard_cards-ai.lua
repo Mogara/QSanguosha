@@ -113,60 +113,68 @@ function SmartAI:useCardSlash(card, use)
 		end
 	end
 
-	local target
+	local targets = {}
+	if sgs.target[self.player:getRole()] then 
+		table.insert(targets, sgs.target[self.player:getRole()])
+		target_count = target_count+1
+	end
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		local slash_prohibit = false
 		slash_prohibit = self:slashProhibit(card,enemy)
-		if not slash_prohibit then target = enemy break end
-	end
-	target = sgs.target[self.player:getRole()] or target
-	
-	if target then
-		if (self.player:canSlash(target, not no_distance) or
-		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
-		self:objectiveLevel(target) > 3 and
-		self:slashIsEffective(card, target) and
-		not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
-			and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
-			-- fill the card use struct
-			local usecard = card
-			if not use.to or use.to:isEmpty() then
-				local anal = self:searchForAnaleptic(use,target,card)
-				if anal and not self:isEquip("SilverLion", target) and not self:isWeak() then
-					if anal:getEffectiveId() ~= card:getEffectiveId() then use.card = anal return end
-				end
-				local equips = self:getCards("EquipCard", self.player, "h")
-				for _, equip in ipairs(equips) do
-					local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
-					if callback and type(callback) == "function" and callback(target, self) and
-						self.player:distanceTo(target) <= (sgs.weapon_range[equip:className()] or 0) then
-						self:useEquipCard(equip, use)
-						if use.card then return end
-					end
-				end
-				if target:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
-					if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
-						local slashes = self:getCards("Slash")
-						for _, slash in ipairs(slashes) do
-							if not slash:inherits("NatureSlash") and self:slashIsEffective(slash, target)
-								and not self:slashProhibit(slash, target) then
-								usecard = slash
-								break
-							end
-						end
-					elseif not card:inherits("NatureSlash") then
-						local slash = self:getCard("NatureSlash")
-						if slash and self:slashIsEffective(slash, target) and not self:slashProhibit(slash, target) then usecard = slash end
-					end
-				end
-			end
-			use.card = use.card or usecard
-			if use.to then use.to:append(target) end
+		if not slash_prohibit then 
+			table.insert(targets, enemy) 
 			target_count = target_count+1
-			if self.slash_targets <= target_count then return end
+		end
+		if self.slash_targets <= target_count then break end
+	end
+	
+	if #targets > 0 then
+		for _, target in ipairs(targets) do
+			if (self.player:canSlash(target, not no_distance) or
+			(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
+			self:objectiveLevel(target) > 3 and
+			self:slashIsEffective(card, target) and
+			not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
+				and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
+				-- fill the card use struct
+				local usecard = card
+				if not use.to or use.to:isEmpty() then
+					local anal = self:searchForAnaleptic(use,target,card)
+					if anal and not self:isEquip("SilverLion", target) and not self:isWeak() then
+						if anal:getEffectiveId() ~= card:getEffectiveId() then use.card = anal return end
+					end
+					local equips = self:getCards("EquipCard", self.player, "h")
+					for _, equip in ipairs(equips) do
+						local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
+						if callback and type(callback) == "function" and callback(target, self) and
+							self.player:distanceTo(target) <= (sgs.weapon_range[equip:className()] or 0) then
+							self:useEquipCard(equip, use)
+							if use.card then return end
+						end
+					end
+					if target:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
+						if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
+							local slashes = self:getCards("Slash")
+							for _, slash in ipairs(slashes) do
+								if not slash:inherits("NatureSlash") and self:slashIsEffective(slash, target)
+									and not self:slashProhibit(slash, target) then
+									usecard = slash
+									break
+								end
+							end
+						elseif not card:inherits("NatureSlash") then
+							local slash = self:getCard("NatureSlash")
+							if slash and self:slashIsEffective(slash, target) and not self:slashProhibit(slash, target) then usecard = slash end
+						end
+					end
+				end
+				use.card = use.card or usecard
+				if use.to then use.to:append(target) end
+			end
 		end
 	end
+	if self.slash_targets <= target_count then return end
 
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:hasSkill("yiji") and friend:getLostHp() < 1 and
