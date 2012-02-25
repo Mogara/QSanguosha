@@ -162,6 +162,15 @@ public:
         return 3;
     }
 
+    int getEquipCount(ServerPlayer *caoren) const{
+        int n = 0;
+        foreach(ServerPlayer *p, caoren->getRoom()->getAlivePlayers()){
+            n += p->getEquips().count();
+        }
+
+        return n;
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
 
@@ -169,17 +178,12 @@ public:
             if(!room->askForSkillInvoke(player, objectName(), data))
                 return false;
 
-            int n = 0;
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
-                n += p->getCards("e").length();
-            }
-
+            int n = getEquipCount(player);
             player->drawCards(n+2);
-            player->setMark(objectName(), n);
             player->turnOver();
         }
         else if(player->getPhase() == Player::Draw){
-            int n = player->getMark(objectName());
+            int n = getEquipCount(player);
             if(n > 0){
                 if(player->getCards("he").length() <= n){
                     player->throwAllEquips();
@@ -192,7 +196,6 @@ public:
                     }
                 }
             }
-            player->setMark(objectName(), 0);
         }
         return false;
     }
