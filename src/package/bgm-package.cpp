@@ -192,7 +192,7 @@ public:
                     }
                 }
             }
-            player->removeMark(objectName());
+            player->setMark(objectName(), 0);
         }
         return false;
     }
