@@ -209,7 +209,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "nullification";
+        return pattern == "nullification" && player->getHandcardNum() > player->getHp();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
