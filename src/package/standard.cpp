@@ -364,10 +364,10 @@ StandardPackage::StandardPackage()
     patterns[".red"] = new ExpPattern(".|.|.|hand|red");
 
     patterns[".."] = new ExpPattern(".");
-    patterns[".S"] = new ExpPattern(".|spade");
-    patterns[".C"] = new ExpPattern(".|club");
-    patterns[".H"] = new ExpPattern(".|heart");
-    patterns[".D"] = new ExpPattern(".|diamond");
+    patterns["..S"] = new ExpPattern(".|spade");
+    patterns["..C"] = new ExpPattern(".|club");
+    patterns["..H"] = new ExpPattern(".|heart");
+    patterns["..D"] = new ExpPattern(".|diamond");
 
     patterns["slash"] = new ExpPattern("Slash");
     patterns["jink"] = new ExpPattern("Jink");

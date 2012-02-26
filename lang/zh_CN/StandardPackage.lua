@@ -382,6 +382,38 @@ local t = {
 	[":zhiba"] = "出牌阶段，你可以弃置任意数量的牌，然后摸取等量的牌。每阶段可用X+1次，X为你已损失的体力值",
 	["super_guanxing"] = "超级观星",
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底",
+
+-- title
+	["title:caocao"] = "魏武帝",
+	["title:zhangliao"] = "前将军",
+	["title:guojia"] = "早终的先知",
+	["title:xiahoudun"] = "独眼的罗刹",
+	["title:simayi"] = "狼顾之鬼",
+	["title:xuchu"] = "虎痴",
+	["title:zhenji"] = "薄幸的美人",
+	["title:liubei"] = "乱世的枭雄",
+	["title:guanyu"] = "美髯公",
+	["title:zhangfei"] = "万夫不当",
+	["title:zhaoyun"] = "少年将军",
+	["title:machao"] = "一骑当千",
+	["title:zhugeliang"] = "迟暮的丞相",
+	["title:huangyueying"] = "归隐的杰女",
+	["title:sunquan"] = "年轻的贤君",
+	["title:zhouyu"] = "大都督",
+	["title:lumeng"] = "白衣渡江",
+	["title:luxun"] = "儒生雄才",
+	["title:ganning"] = "锦帆游侠",
+	["title:huanggai"] = "轻身为国",
+	["title:daqiao"] = "矜持之花",
+	["title:sunshangxiang"] = "弓腰姬",
+	["title:lubu"] = "武的化身",
+	["title:huatuo"] = "神医",
+	["title:diaochan"] = "乱世的舞姬",
+	
+	["title:zhibasunquan"] = "年轻的贤君",
+	["title:wuxingzhuge"] = "迟暮的丞相",
+	["title:sujiang"] = "金童",
+	["title:sujiangf"] = "玉女",
 }
 
 local ohorses = {"chitu", "dayuan", "zixing"}

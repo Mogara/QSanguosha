@@ -144,4 +144,16 @@ return {
 	["illustrator:wuguotai"] = "zoo",
 	["illustrator:chengong"] = "黑月乱",
 	["illustrator:gaoshun"] = "邓Sir",
+
+	-- title
+	["title:caozhi"] = "八斗之才",
+	["title:yujin"] = "魏武之刚",
+	["title:fazheng"] = "蜀汉的辅翼",
+	["title:masu"] = "怀才自负",
+	["title:xushu"] = "忠孝的侠士",
+	["title:lingtong"] = "豪情烈胆",
+	["title:xusheng"] = "江东的铁壁",
+	["title:wuguotai"] = "武烈皇后",
+	["title:chengong"] = "刚直壮烈",
+	["title:gaoshun"] = "攻无不克",	
 }

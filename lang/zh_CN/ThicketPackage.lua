@@ -143,4 +143,14 @@ return {
 	["illustrator:zhurong"] = "废柴男",
 	["illustrator:dongzhuo"] = "小冷",
 	["illustrator:xuhuang"] = "Tuu.",
+
+	-- title
+	["title:caopi"] = "霸业的继承者",
+	["title:xuhuang"] = "周亚夫之风",
+	["title:menghuo"] = "南蛮王",
+	["title:zhurong"] = "野性的女王",
+	["title:sunjian"] = "武烈帝",
+	["title:lusu"] = "独断的外交家",
+	["title:jiaxu"] = "冷酷的毒士",
+	["title:dongzhuo"] = "魔王",
 }

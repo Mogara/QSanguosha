@@ -104,6 +104,16 @@ return {
 	["~xiaoqiao"] = "公瑾，我先走一步",
 	["~yuji"] = "竟然被猜到了",
 
+-- title
+	["title:xiahouyuan"] = "疾行的猎豹",
+	["title:caoren"] = "大将军",
+	["title:huangzhong"] = "老当益壮",
+	["title:weiyan"] = "嗜血的独狼",
+	["title:zhangjiao"] = "天公将军",
+	["title:yuji"] = "太平道人",
+	["title:xiaoqiao"] = "矫情之花",
+	["title:zhoutai"] = "历战之驱",
+
 -- guhuo dialog
 	["single_target"] = "单目标锦囊",
 	["multiple_targets"] = "多目标锦囊",

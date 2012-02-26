@@ -4,7 +4,7 @@ return {
 	["fire"] = "火包",
 	["xunyu"] = "荀彧",
 	["dianwei"] = "典韦",
-	["wolong"] = "卧龙",
+	["wolong"] = "诸葛亮",
 	["pangtong"] = "庞统",
 	["taishici"] = "太史慈",
 	["yuanshao"] = "袁绍",
@@ -95,5 +95,15 @@ return {
 	["illustrator:xunyu"] = "LiuHeng",
 	["illustrator:dianwei"] = "小冷",
 	["illustrator:taishici"] = "Tuu.",
+
+	-- Title
+	["title:xunyu"] = "王佐之才",
+	["title:dianwei"] = "古之恶来",
+	["title:wolong"] = "卧龙",
+	["title:pangtong"] = "凤雏",
+	["title:taishici"] = "笃烈之士",
+	["title:yuanshao"] = "高贵的名门",
+	["title:shuangxiong"] = "虎狼兄弟",
+	["title:pangde"] = "人马一体",
 }
 

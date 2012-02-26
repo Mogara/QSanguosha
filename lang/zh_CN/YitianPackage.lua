@@ -288,5 +288,15 @@ return {
 	["illustrator:zhanggongqi"] = "真三国友盟",
 	["illustrator:yitianjian"] = "轩辕剑",
 	["illustrator:panglingming"] = "三国志大战",
+
+	["title:luboyanf"] = "玩火的少年",
+	["title:zhongshiji"] = "狠毒的野心家",
+	["title:jiangboyue"] = "赤胆的贤将",
+	["title:jiawenhe"] = "明哲保身",
+	["title:guzhielai"] = "不坠悍将",
+	["title:dengshizai"] = "破蜀首功",
+	["title:zhanggongqi"] = "五斗米道",
+	["title:yitianjian"] = "跨海斩长鲸",
+	["title:panglingming"] = "枱榇之悟",
 }
 

@@ -103,6 +103,15 @@ local t = {
 	["illustrator:wishuaxiong"] = "",
 	["illustrator:wistianfeng"] = "",
 	["illustrator:wisshuijing"] = "",
+
+	["title:wisxuyou"] = "恃才傲物",
+	["title:wisjiangwei"] = "天水麒麟",
+	["title:wisjiangwan"] = "武侯后继",
+	["title:wissunce"] = "江东小霸王",
+	["title:wiszhangzhao"] = "东吴重臣",
+	["title:wishuaxiong"] = "心高命薄",
+	["title:wistianfeng"] = "甘冒虎口",
+	["title:wisshuijing"] = "水镜先生",
 }
 
 local generals = {"wisxuyou", "wisjiangwei", "wisjiangwan", "wissunce", "wiszhangzhao", "wishuaxiong", "wistianfeng", "wisshuijing"}
