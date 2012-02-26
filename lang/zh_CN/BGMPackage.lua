@@ -31,5 +31,5 @@ return {
 
 	["#bgm_zhaoyun"] = "白马先锋",
 	["#bgm_diaochan"] = "暗黑的傀儡师",
-	["#bgm_caoren"] = "桌幼稚新作",
+	["#bgm_caoren"] = "险不辞难",
 }
