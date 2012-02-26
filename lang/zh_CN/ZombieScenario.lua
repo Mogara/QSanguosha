@@ -20,6 +20,6 @@ return {
 	["designer:zombie"] = "HyperCross",
 	["cv:zombie"] = "不详",
 	["illustrator:zombie"] = "鬼戲",
-	["#zombie"] = "植物大战",
+	["#zombie"] = "行尸走肉",
 	["~zombie"] = "已死过一次，再死一次又有何妨？",
 }
