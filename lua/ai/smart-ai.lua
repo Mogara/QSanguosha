@@ -1199,26 +1199,18 @@ function SmartAI:updatePlayers()
 	end
 	table.insert(self.friends,self.player)
 
-	if self.role == "rebel" then
-		sgs.rebel_target = self.room:getLord()
-		self.retain = 2
-	end
+	if self.role == "rebel" then self.retain = 2 end
 
 	if self.player:getHp() < 2 then self.retain = 0 end
 	self:sortEnemies(players)
 	for _,player in ipairs(players) do
-		if not (self.role == "loyalist" and player:isLord()) then
-			if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
-			if #elist == 0 then
-				table.insert(elist,player)
-				if self:objectiveLevel(player) < 4 then self.retain = 0 end
-			else
-				if self:objectiveLevel(player) <= 0 then return end
-				table.insert(elist,player)
-
-				if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
-			end
+		if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
+		if #elist == 0 then
+			if self:objectiveLevel(player) < 4 then self.retain = 0 end
+		else
+			if self:objectiveLevel(player) <= 0 then return end
 		end
+		table.insert(elist,player)
 	end
 end
 
@@ -2695,6 +2687,7 @@ end
 
 function SmartAI:hasTrickEffective(card, player)
 	if player then
+		if player:isDead() then return false end
 		if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("wuyan") then
 			if card and not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
 		end
