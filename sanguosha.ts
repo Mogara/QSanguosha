@@ -1676,6 +1676,11 @@
         <translation>武将一览</translation>
     </message>
     <message>
+        <location filename="src/dialog/generaloverview.ui" line="42"/>
+        <source>Nick</source>
+        <translation>称号</translation>
+    </message>
+    <message>
         <location filename="src/dialog/generaloverview.ui" line="36"/>
         <source>General</source>
         <translation>武将</translation>

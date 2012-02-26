@@ -67,7 +67,7 @@ function setInitialTables()
 	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu"
 	sgs.wizard_skill = 			"guicai|guidao|jilve|tiandu"
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve"
-	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jijiu|jizhi|guzheng|qixi|xiaoji|jieyin"
+	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jijiu|jizhi|guzheng|qixi|xiaoji|jieyin|guose"
 	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|leiji|buqu|jushou|yiji|ganglie|guixin"
 	
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
@@ -174,7 +174,7 @@ function SmartAI:updateTarget(player)
 	if #enemies == 0 then return end
 	local priority_target = {}
 	for _, enemy in ipairs(enemies) do	
-		if player ~= enemy and self:hasSkills(sgs.priority_skill, player) then
+		if player:getRole() ~= enemy:getRole() and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(priority_target, enemy)
 		end
 	end
@@ -187,12 +187,12 @@ function SmartAI:updateTarget(player)
 	
 	self:sort(enemies)
 	for _, enemy in ipairs(self.enemies) do
-		if not self:hasSkills(sgs.exclusive_skill, enemy) then sgs.target[player:getRole()] = enemy return end
+		if not self:hasSkills(sgs.exclusive_skill, enemy) and player:getRole() ~= enemy:getRole() then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if self:isWeak(enemy) then sgs.target[player:getRole()] = enemy return end
+		if self:isWeak(enemy) and player:getRole() ~= enemy:getRole() then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "hp")
@@ -445,9 +445,9 @@ function SmartAI:getDynamicUsePriority(card)
 				end
 				if not probably_hit then
 					probably_hit = dummy_use.probably_hit[1]
-					value = value + 1.5
+					value = value + 12.5
 				else
-					value = value + 3
+					value = value + 14
 				end
 				value = value - (probably_hit:getHp() - 1)/2.0
 
