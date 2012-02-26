@@ -29,7 +29,7 @@ return {
 	["yanzheng"] = "严整",
 	[":yanzheng"] = "若你的手牌数大于你的体力值，你可以将你装备区内的牌当【无懈可击】使用。",
 
-	["title:bgm_zhaoyun"] = "白马先锋",
-	["title:bgm_diaochan"] = "暗黑的傀儡师",
-	["title:bgm_caoren"] = "桌幼稚新作",
+	["#bgm_zhaoyun"] = "白马先锋",
+	["#bgm_diaochan"] = "暗黑的傀儡师",
+	["#bgm_caoren"] = "桌幼稚新作",
 }

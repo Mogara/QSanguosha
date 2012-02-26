@@ -49,9 +49,9 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
         max_hp = QString::number(general->getMaxHp());
         package = Sanguosha->translate(general->getPackage());
 
-        QString nickname = Sanguosha->translate("title:" + general->objectName());
+        QString nickname = Sanguosha->translate("#" + general->objectName());
         QTableWidgetItem *nickname_item;
-        if(!nickname.startsWith("title:"))
+        if(!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
         else
             nickname_item = new QTableWidgetItem(Sanguosha->translate("UnknowNick"));
@@ -92,10 +92,10 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
         ui->tableWidget->setItem(i, 5, package_item);
     }
 
-    ui->tableWidget->setColumnWidth(0, 65);
-    ui->tableWidget->setColumnWidth(1, 70);
+    ui->tableWidget->setColumnWidth(0, 80);
+    ui->tableWidget->setColumnWidth(1, 80);
     ui->tableWidget->setColumnWidth(2, 40);
-    ui->tableWidget->setColumnWidth(3, 45);
+    ui->tableWidget->setColumnWidth(3, 50);
     ui->tableWidget->setColumnWidth(4, 60);
     ui->tableWidget->setColumnWidth(5, 60);
 

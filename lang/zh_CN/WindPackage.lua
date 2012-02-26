@@ -105,14 +105,14 @@ return {
 	["~yuji"] = "竟然被猜到了",
 
 -- title
-	["title:xiahouyuan"] = "疾行的猎豹",
-	["title:caoren"] = "大将军",
-	["title:huangzhong"] = "老当益壮",
-	["title:weiyan"] = "嗜血的独狼",
-	["title:zhangjiao"] = "天公将军",
-	["title:yuji"] = "太平道人",
-	["title:xiaoqiao"] = "矫情之花",
-	["title:zhoutai"] = "历战之驱",
+	["#xiahouyuan"] = "疾行的猎豹",
+	["#caoren"] = "大将军",
+	["#huangzhong"] = "老当益壮",
+	["#weiyan"] = "嗜血的独狼",
+	["#zhangjiao"] = "天公将军",
+	["#yuji"] = "太平道人",
+	["#xiaoqiao"] = "矫情之花",
+	["#zhoutai"] = "历战之驱",
 
 -- guhuo dialog
 	["single_target"] = "单目标锦囊",

@@ -97,13 +97,13 @@ return {
 	["illustrator:taishici"] = "Tuu.",
 
 	-- Title
-	["title:xunyu"] = "王佐之才",
-	["title:dianwei"] = "古之恶来",
-	["title:wolong"] = "卧龙",
-	["title:pangtong"] = "凤雏",
-	["title:taishici"] = "笃烈之士",
-	["title:yuanshao"] = "高贵的名门",
-	["title:shuangxiong"] = "虎狼兄弟",
-	["title:pangde"] = "人马一体",
+	["#xunyu"] = "王佐之才",
+	["#dianwei"] = "古之恶来",
+	["#wolong"] = "卧龙",
+	["#pangtong"] = "凤雏",
+	["#taishici"] = "笃烈之士",
+	["#yuanshao"] = "高贵的名门",
+	["#shuangxiong"] = "虎狼兄弟",
+	["#pangde"] = "人马一体",
 }
 
