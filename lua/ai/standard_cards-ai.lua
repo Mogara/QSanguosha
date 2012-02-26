@@ -125,7 +125,7 @@ function SmartAI:useCardSlash(card, use)
 	end
 	
 	for _, target in ipairs(targets) do
-		if (self.player:canSlash(target, not no_distance) or
+		if target:isAlive() and (self.player:canSlash(target, not no_distance) or
 		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
 		self:objectiveLevel(target) > 3 and
 		self:slashIsEffective(card, target) and
@@ -641,6 +641,7 @@ function SmartAI:useCardDuel(duel, use)
 	local target 
 	local n1 = self:getCardsNum("Slash")
 	local n2
+	if sgs.target[self.player:getRole()] then n2 = sgs.target[self.player:getRole()]:getHandcardNum() end
 	for _, enemy in ipairs(enemies) do
 		n2 = enemy:getHandcardNum()
 		if self:objectiveLevel(enemy) > 3 then
