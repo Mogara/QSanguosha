@@ -170,8 +170,8 @@ function SmartAI:useCardSlash(card, use)
 					end
 				end
 				use.card = use.card or usecard
-				if use.to then use.to:append(target) end
-			end
+				if use.to and not use.to:contains(target) then use.to:append(target) end
+			end 
 		end
 	end
 	if self.slash_targets <= target_count then return end

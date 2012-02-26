@@ -174,7 +174,7 @@ function SmartAI:updateTarget(player)
 	if #enemies == 0 then return end
 	local priority_target = {}
 	for _, enemy in ipairs(enemies) do	
-		if self:hasSkills(sgs.priority_skill, player) then
+		if player ~= enemy and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(priority_target, enemy)
 		end
 	end
@@ -1143,6 +1143,12 @@ function SmartAI:updateAlivePlayerRoles()
 	sgs.checkMisjudge()
 end
 
+function SmartAI:updateRoleTarget()
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		self:updateTarget(p)
+	end
+end
+
 function SmartAI:updatePlayers()
 	for _, aflag in ipairs(sgs.ai_global_flags) do
 		sgs[aflag] = nil
@@ -1192,10 +1198,6 @@ function SmartAI:updatePlayers()
 		table.insert(self.friends_noself, player)
 	end
 	table.insert(self.friends,self.player)
-	
-	for _, p in sgs.qlist(self.room:getAllPlayers()) do
-		self:updateTarget(p)
-	end
 
 	if self.role == "rebel" then
 		sgs.rebel_target = self.room:getLord()
@@ -1271,18 +1273,16 @@ function SmartAI:filterEvent(event, player, data)
 				end
 			end
 		end
-	elseif event == sgs.CardUsed then
+	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.Death or event == sgs.PhaseChange then
 		self:updatePlayers()
-	elseif event == sgs.CardEffect then
-		self:updatePlayers()
-	elseif event == sgs.Death then
-		self:updatePlayers()
+		self:updateRoleTarget()
+	end
+	
+	if event == sgs.Death then
 		if self == sgs.recorder then self:updateAlivePlayerRoles() end
-	elseif event == sgs.PhaseChange then 
+	end
+	if event == sgs.PhaseChange then
 		if self.room:getCurrent():getPhase() == sgs.Player_NotActive then sgs.modifiedRoleEvaluation() end
-		self:updatePlayers()
-	elseif event == sgs.GameStart then
-		self:updatePlayers()
 	end
 
 	if self ~= sgs.recorder then return end

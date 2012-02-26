@@ -182,8 +182,12 @@ public:
             int n = getWeaponCount(player);
             player->drawCards(n+2);
             player->turnOver();
+            player->tag[objectName()] = true;
         }
         else if(player->getPhase() == Player::Draw){
+            if(!player->tag[objectName()].toBool())
+                return false;
+
             int n = getWeaponCount(player);
             if(n > 0){
                 if(player->getCards("he").length() <= n){
@@ -194,6 +198,8 @@ public:
                     room->askForDiscard(player, objectName(), n, false, true);
                 }
             }
+
+            player->tag.remove(objectName());
         }
         return false;
     }
