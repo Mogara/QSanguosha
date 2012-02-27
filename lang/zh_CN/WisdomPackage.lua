@@ -4,15 +4,8 @@ local t = {
 	["wisdom"] = "智包",
 	["designer:wisdoms"] = "太阳神三国杀创意小组",
 
+	["#wisxuyou"] = "恃才傲物",
 	["wisxuyou"] = "许攸",
-	["wisjiangwei"] = "姜维",
-	["wisjiangwan"] = "蒋琬",
-	["wissunce"] = "孙策",
-	["wiszhangzhao"] = "张昭",
-	["wishuaxiong"] = "华雄",
-	["wistianfeng"] = "田丰",
-	["wisshuijing"] = "司马徽",
-
 	["juao"] = "倨傲",
 	[":juao"] = "出牌阶段，你可以选择两张手牌背面向上移出游戏，指定一名角色，被指定的角色到下个回合开始阶段时，跳过摸牌阶段，得到你所移出游戏的两张牌。每阶段限一次",
 	["juaocd"] = "倨傲牌",
@@ -21,15 +14,24 @@ local t = {
 	[":tanlan"] = "每当你受到一次伤害，可与伤害来源进行拼点：若你赢，你获得两张拼点牌",
 	["shicai"] = "恃才",
 	[":shicai"] = "<b>锁定技</b>，当你拼点成功时，摸一张牌",
+
+	["#wisjiangwei"] = "天水麒麟",
+	["wisjiangwei"] = "姜维",
 	["yicai"] = "异才",
 	[":yicai"] = "每当你使用一张非延时类锦囊时(在它结算之前)，可立即对攻击范围内的角色使用一张【杀】",
 	["beifa"] = "北伐",
 	[":beifa"] = "<b>锁定技</b>，当你失去最后一张手牌时，视为对攻击范围内的一名角色使用了一张【杀】\
 ★北伐发动时，姜维必须一次做出决定：选择一名攻击范围内的角色（若攻击范围内没有角色，视为选择了自己），然后视为对该角色使用一张【杀】",
+
+	["#wisjiangwan"] = "武侯后继",
+	["wisjiangwan"] = "蒋琬",
 	["houyuan"] = "后援",
 	[":houyuan"] = "出牌阶段，你可以弃置两张手牌，指定一名其他角色摸两张牌，每阶段限一次",
 	["chouliang"] = "筹粮",
 	[":chouliang"] = "回合结束阶段开始时，若你手牌少于三张，你可以从牌堆顶亮出X张牌（X为4减当前手牌数），拿走其中的基本牌，把其余的牌置入弃牌堆",
+
+	["#wissunce"] = "江东小霸王",
+	["wissunce"] = "孙策",
 	["bawang"] = "霸王",
 	[":bawang"] = "当你使用的【杀】被【闪】响应时，你可以和对方拼点：若你赢，可以选择最多两个目标角色，视为对其分别使用了一张【杀】",
 	["@bawang"] = "你可以指定1~2个看上去不爽的家伙为目标",
@@ -39,6 +41,9 @@ local t = {
 --	["analeptic:ignore"] = "我是打酱油的~",
 	["@weidai"] = "你正徘徊在生死边缘，是否发动【危殆】？",
 	["@weidai-analeptic"] = "%src 现在需要【酒】<br/>你只要打出一张 黑桃２~９的手牌<br/>就能为 %src 提供一张【酒】",
+
+	["#wiszhangzhao"] = "东吴重臣",
+	["wiszhangzhao"] = "张昭",
 	["longluo"] = "笼络",
 	[":longluo"] = "回合结束阶段开始时，你可以选择一名其他角色摸取与你弃牌阶段弃牌数量相同的牌",
 	["fuzuo"] = "辅佐",
@@ -52,19 +57,28 @@ local t = {
 	[":jincui"] = "当你死亡时，可令一名角色摸取或者弃置三张牌",
 	["jincui:draw"] = "摸三张牌",
 	["jincui:throw"] = "弃置三张牌",
+
+	["#wishuaxiong"] = "心高命薄",
+	["wishuaxiong"] = "华雄",
 	["badao"] = "霸刀",
 	[":badao"] = "当你成为黑色的【杀】目标时，你可以对你攻击范围内的一名其他角色使用一张【杀】",
 	["wenjiu"] = "温酒",
 	[":wenjiu"] = "<b>锁定技</b>，你使用黑色的【杀】造成的伤害+1，你无法闪避红色的【杀】",
 	["#Wenjiu1"] = "%to 受到【温酒】技能的影响，%from 对其使用的红色杀不可闪避",
 	["#Wenjiu2"] = "%from 的【温酒】技能被触发，伤害从 %arg 点上升至 %arg2 点",
+
+	["#wistianfeng"] = "甘冒虎口",
+	["wistianfeng"] = "田丰",
 	["shipo"] = "识破",
 	[":shipo"] = "任意角色判定阶段判定前，你可以弃置两张牌，获得该角色判定区里的所有牌",
 	["gushou"] = "固守",
-	[":gushou"] = "当你使用或打出一张【闪】时，可以摸一张牌",
+	[":gushou"] = "当你使用或打出一张基本牌时，可以摸一张牌",
 	["yuwen"] = "狱刎",
 	[":yuwen"] = "<b>锁定技</b>，当你死亡时，凶手视为自己",
 	["#YuwenEffect"] = "%from 的锁定技【%arg】被触发，死亡视为自杀",
+
+	["#wisshuijing"] = "水镜先生",
+	["wisshuijing"] = "司马徽",
 	["shouye"] = "授业",
 	[":shouye"] = "出牌阶段，你可以弃置一张红色手牌，指定最多两名其他角色各摸一张牌",
 	["@shouye"] = "授业",
@@ -103,15 +117,6 @@ local t = {
 	["illustrator:wishuaxiong"] = "三国志大战",
 	["illustrator:wistianfeng"] = "一将优秀作品画册",
 	["illustrator:wisshuijing"] = "一将优秀作品画册",
-
-	["#wisxuyou"] = "恃才傲物",
-	["#wisjiangwei"] = "天水麒麟",
-	["#wisjiangwan"] = "武侯后继",
-	["#wissunce"] = "江东小霸王",
-	["#wiszhangzhao"] = "东吴重臣",
-	["#wishuaxiong"] = "心高命薄",
-	["#wistianfeng"] = "甘冒虎口",
-	["#wisshuijing"] = "水镜先生",
 }
 
 local generals = {"wisxuyou", "wisjiangwei", "wisjiangwan", "wissunce", "wiszhangzhao", "wishuaxiong", "wistianfeng", "wisshuijing"}

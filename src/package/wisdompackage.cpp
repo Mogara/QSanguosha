@@ -680,7 +680,7 @@ public:
         }else if(event == CardResponsed)
             card = data.value<CardStar>();
 
-        if(card->inherits("Jink")){
+        if(card->inherits("BasicCard")){
             Room *room = tianfeng->getRoom();
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
                 room->playSkillEffect(objectName());

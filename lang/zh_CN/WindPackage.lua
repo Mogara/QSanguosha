@@ -3,6 +3,7 @@
 return {
 	["wind"] = "风包",
 
+	["#xiahouyuan"] = "疾行的猎豹",
 	["xiahouyuan"] = "夏侯渊",
 	["shensu"] = "神速",
 	[":shensu"] = "你可以分别作出下列选择：\
@@ -12,22 +13,26 @@ return {
 	["@shensu1"] = "跳过该回合的判定阶段和摸牌阶段，视为对任意一名角色使用了一张【杀】",
 	["@shensu2"] = "跳过该回合出牌阶段并弃置一张装备牌视为对任意一名角色使用了一张【杀】",
 
+	["#caoren"] = "大将军",
 	["caoren"] = "曹仁",
 	["jushou"] = "据守",
 	[":jushou"] = "回合结束阶段开始时，你可以摸三张牌，然后将你的武将牌翻面",
 	["jushou:yes"] = "摸三张牌，并将你的武将翻面",
 
+	["#huangzhong"] = "老当益壮",
 	["huangzhong"] = "黄忠",
 	["liegong"] = "烈弓",
 	[":liegong"] = "出牌阶段，当你使用【杀】指定一名角色为目标后，以下两种情况，你可以令此【杀】不可被【闪】响应：1、目标角色的手牌数大于或等于你的体力值。2、目标角色的手牌数小于或等于你的攻击范围\
 ★攻击范围计算只和武器有关，与+1马-1马无关",
 	["liegong:yes"] = "此【杀】不可被【闪】响应",
 
+	["#weiyan"] = "嗜血的独狼",
 	["weiyan"] = "魏延",
 	["illustrator:weiyan"] = "Sonia Tang",
 	["kuanggu"] = "狂骨",
 	[":kuanggu"] = "<b>锁定技</b>，每当你对距离1以内的一名角色造成1点伤害后，你回复1点体力",
 
+	["#zhangjiao"] = "天公将军",
 	["zhangjiao"] = "张角",
 	["illustrator:zhangjiao"] = "LiuHeng",
 	["leiji"] = "雷击",
@@ -40,6 +45,7 @@ return {
 	[":huangtian"] = "<b>主公技</b>，群雄角色可以在他们各自的出牌阶段交给你一张【闪】或【闪电】。每阶段限一次",
 	["huangtianv"] = "黄天送牌",
 
+	["#xiaoqiao"] = "矫情之花",
 	["xiaoqiao"] = "小乔",
 	["hongyan"] = "红颜",
 	[":hongyan"] = "<b>锁定技</b>，你的黑桃牌均视为红桃花色",
@@ -48,6 +54,7 @@ return {
 	["@@tianxiang-card"] = "请弃置一张红桃牌来转移伤害",
 	["#HongyanJudge"] = "%from 的锁定技【红颜】触发， 判定牌由黑牌变成了红桃",
 
+	["#zhoutai"] = "历战之驱",
 	["zhoutai"] = "周泰",
 	["buqu"] = "不屈",
 	[":buqu"] = "每当你扣减1点体力时，若你当前体力为0：你可以从牌堆顶亮出一张牌置于你的武将牌上，若该牌的点数与你武将牌上已有的任何一张牌都不同，你不会死亡；若出现相同点数的牌，你进入濒死状态",
@@ -57,6 +64,7 @@ return {
 	["#BuquDuplicateGroup"] = "第 %arg 组重复点数为 %arg2",
 	["$BuquDuplicateItem"] = "不屈重复牌: %card",
 
+	["#yuji"] = "太平道人",
 	["yuji"] = "于吉",
 	["illustrator:yuji"] = "LiuHeng",
 	["guhuo"] = "蛊惑",
@@ -104,16 +112,6 @@ return {
 	["~zhangjiao"] = "黄天…也死了……",
 	["~xiaoqiao"] = "公瑾，我先走一步",
 	["~yuji"] = "竟然被猜到了",
-
--- title
-	["#xiahouyuan"] = "疾行的猎豹",
-	["#caoren"] = "大将军",
-	["#huangzhong"] = "老当益壮",
-	["#weiyan"] = "嗜血的独狼",
-	["#zhangjiao"] = "天公将军",
-	["#yuji"] = "太平道人",
-	["#xiaoqiao"] = "矫情之花",
-	["#zhoutai"] = "历战之驱",
 
 -- guhuo dialog
 	["single_target"] = "单目标锦囊",
