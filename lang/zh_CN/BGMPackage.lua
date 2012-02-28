@@ -22,7 +22,7 @@ return {
 
 	["#bgm_caoren"] = "险不辞难",
 	["bgm_caoren"] = "SP曹仁",
-	["illustrator:bgm_caoren"] = "Vincent",
+	["illustrator:bgm_caoren"] = "张帅",
 	["designer:bgm_caoren"] = "桌游志",
 	["kuiwei"] = "溃围",
 	[":kuiwei"] = "回合结束阶段开始时，你可以摸2+X张牌，然后将你的武将牌翻面。在你的下个摸牌阶段开始时，你须弃置X张牌。X等于当时场上装备区内的武器牌的数量。",
