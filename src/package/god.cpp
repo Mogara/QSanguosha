@@ -629,6 +629,7 @@ public:
             return;
 
         Room *room = shenzhuge->getRoom();
+        room->playSkillEffect("qixing");
         room->fillAG(stars, shenzhuge);
 
         int ai_delay = Config.AIDelay;

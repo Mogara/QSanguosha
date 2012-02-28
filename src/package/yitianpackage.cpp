@@ -1309,13 +1309,16 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     source->tag["newgeneral"] = general;
     room->transfigure(source, general, false, false, "jiangboyue");
     room->acquireSkill(source, "xunzhi", false);
-    source->setFlags("xunzhi");
+    room->setPlayerFlag(source, "xunzhi");
 }
 
 class XunzhiViewAsSkill: public ZeroCardViewAsSkill{
 public:
     XunzhiViewAsSkill():ZeroCardViewAsSkill("#xunzhi"){
+    }
 
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasFlag("xunzhi");
     }
 
     virtual const Card *viewAs() const{
