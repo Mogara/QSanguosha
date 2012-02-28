@@ -131,6 +131,7 @@ sgs.xiahouyuan_keep_value =
 }
 
 function sgs.ai_skill_invoke.jushou(self, data)
+	if not self.player:faceUp() then return true end
 	for _, friend in ipairs(self.friends) do
 		if self:hasSkills("fangzhu|jilve", friend) then return true end
 	end
