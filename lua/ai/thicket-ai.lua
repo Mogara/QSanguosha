@@ -37,7 +37,7 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 		else
 			self:sort(self.enemies)
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:faceUp() then
+				if enemy:faceUp() and not  ((enemy:hasSkill("jushou") or enemy:hasSkill("kuiwei")) and enemy:getPhase() == sgs.Player_Play) then
 					target = enemy
 					break
 				end
