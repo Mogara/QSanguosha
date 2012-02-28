@@ -1008,10 +1008,11 @@ function sgs.gameProcess(room)
 	local loyal_num = sgs.current_mode_players["loyalist"]
 	if sgs.turncount < 2 then return "neutral"
 	elseif rebel_num == 0 then return "loyalist"
-	elseif loyal_num == 0 and rebel_num > 0 then return "rebel" end
+	elseif loyal_num == 0 and rebel_num > 1 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
 	local health = 0
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
+	    if not (aplayer:getPhase() == sgs.Player_Play and aplayer:getRole() == "renegade") then 
 		if (not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "rebel")
 			or (sgs.isRolePredictable() and aplayer:getRole() == "rebel") then
 			local rebel_hp
@@ -1033,6 +1034,7 @@ function sgs.gameProcess(room)
 				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
 			end
 		end
+	    end
 	end
 	local diff = loyal_value - rebel_value
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
