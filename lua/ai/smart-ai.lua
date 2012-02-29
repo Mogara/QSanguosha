@@ -168,13 +168,18 @@ function sgs.getDefense(player)
 	return defense
 end
 
+function SmartAI:inOneGroup(player)
+	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
+	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player)
+end
+
 function SmartAI:updateTarget(player)
 	player = player or self.player
 	local enemies = self:getEnemies(player)
 	if #enemies == 0 then return end
 	local priority_target = {}
 	for _, enemy in ipairs(enemies) do	
-		if player:getRole() ~= enemy:getRole() and self:hasSkills(sgs.priority_skill, player) then
+		if not self:inOneGroup(enemy) and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(priority_target, enemy)
 		end
 	end
@@ -187,12 +192,12 @@ function SmartAI:updateTarget(player)
 	
 	self:sort(enemies)
 	for _, enemy in ipairs(self.enemies) do
-		if not self:hasSkills(sgs.exclusive_skill, enemy) and player:getRole() ~= enemy:getRole() then sgs.target[player:getRole()] = enemy return end
+		if not self:hasSkills(sgs.exclusive_skill, enemy) and not self:inOneGroup(enemy) then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if self:isWeak(enemy) and player:getRole() ~= enemy:getRole() then sgs.target[player:getRole()] = enemy return end
+		if self:isWeak(enemy) and not self:inOneGroup(enemy) then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "hp")
@@ -940,8 +945,7 @@ function sgs.gameProcess(room)
 	elseif loyal_num == 0 and rebel_num > 0 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
-		if (not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "rebel")
-			or (sgs.isRolePredictable() and aplayer:getRole() == "rebel") then
+		if not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "rebel" then
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
 			else rebel_hp = aplayer:getHp() end
@@ -950,8 +954,7 @@ function sgs.gameProcess(room)
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
 			end
-		elseif (not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "loyalist")
-				or (sgs.isRolePredictable() and aplayer:getRole() == "loyalist") or aplayer:isLord() then
+		elseif not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "loyalist" then
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
 			else loyal_hp = aplayer:getHp() end
