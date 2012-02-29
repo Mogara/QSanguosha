@@ -673,6 +673,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *tianfeng, QVariant &data) const{
+        Room *room = tianfeng->getRoom();
+        if(room->getCurrent() == tianfeng)
+            return false;
         CardStar card = NULL;
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
@@ -681,7 +684,6 @@ public:
             card = data.value<CardStar>();
 
         if(card->inherits("BasicCard")){
-            Room *room = tianfeng->getRoom();
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
                 room->playSkillEffect(objectName());
                 tianfeng->drawCards(1);
