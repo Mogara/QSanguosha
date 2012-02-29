@@ -659,7 +659,7 @@ end
 function sgs.evaluatePlayerRole(player)
 	if not player then global_room:writeToConsole("Player is empty in role's evaluation!") return end
 	if player:isLord() then return "loyalist" end
-	
+	if sgs.current_mode_players["loyalist"] == 0 and sgs.current_mode_players["rebel"] == 0 then return "renegade" end
 	if sgs.role_evaluation[player:objectName()]["loyalist"] == sgs.role_evaluation[player:objectName()]["renegade"] and
 		sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["renegade"] then 
 		return "unknown"
@@ -1013,7 +1013,7 @@ function sgs.gameProcess(room)
 	local loyal_num = sgs.current_mode_players["loyalist"]
 	if sgs.turncount < 2 then return "neutral"
 	elseif rebel_num == 0 then return "loyalist"
-	elseif loyal_num == 0 and rebel_num > 0 then return "rebel" end
+	elseif loyal_num == 0 and rebel_num > 1 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
 	local health = 0
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
@@ -1129,6 +1129,13 @@ function SmartAI:objectiveLevel(player)
 			else
 				return -2
 			end
+		end
+		if loyal_num == 0 then
+		   if rebel_num > 2 then
+		      if sgs.evaluatePlayerRole(player) == "renegade" then return -1 end
+		   elseif rebel_num > 1 then
+		      if sgs.evaluatePlayerRole(player) == "renegade" then return 0 end
+		   elseif sgs.evaluatePlayerRole(player) == "renegade" then return 4 end
 		end
 
 		if sgs.evaluatePlayerRole(player) == "rebel" then return 5
