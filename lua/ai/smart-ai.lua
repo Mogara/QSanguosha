@@ -1135,7 +1135,7 @@ function SmartAI:objectiveLevel(player)
 		      if sgs.evaluatePlayerRole(player) == "renegade" then return -1
 		   elseif rebel_num > 1 then
 		      if sgs.evaluatePlayerRole(player) == "renegade" then return 0
-		   elseif sgs.evaluatePlayerRole(player) == "renegade" return 4 
+		   elseif sgs.evaluatePlayerRole(player) == "renegade" then return 4 
                 end
 
 		if sgs.evaluatePlayerRole(player) == "rebel" then return 5
