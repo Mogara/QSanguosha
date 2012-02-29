@@ -1083,7 +1083,7 @@ public:
 
 HuashenDialog::HuashenDialog()
 {
-    setWindowTitle(tr("Incarnation"));
+    setWindowTitle(Sanguosha->translate("huashen"));
 }
 
 void HuashenDialog::popup(){

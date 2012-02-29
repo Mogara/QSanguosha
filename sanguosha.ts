@@ -1181,12 +1181,12 @@
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="170"/>
         <source>General Self Select</source>
-        <translation>开局自选主将</translation>
+        <translation>主将自选</translation>
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="171"/>
         <source>General2 Self Select</source>
-        <translation>开局自选副将</translation>
+        <translation>副将自选</translation>
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="173"/>
@@ -1803,14 +1803,6 @@
         <location filename="src/dialog/halldialog.cpp" line="44"/>
         <source>Waiting room only</source>
         <translation>仅显示未满房间</translation>
-    </message>
-</context>
-<context>
-    <name>HuashenDialog</name>
-    <message>
-        <location filename="src/package/mountainpackage.cpp" line="1085"/>
-        <source>Incarnation</source>
-        <translation>化身</translation>
     </message>
 </context>
 <context>

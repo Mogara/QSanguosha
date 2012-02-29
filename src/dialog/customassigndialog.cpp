@@ -204,12 +204,10 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     label_lay->addWidget(general_box);
     label_lay->addWidget(general_box2);
     vlayout->addLayout(label_lay);
-    vlayout->addWidget(self_select_general);
-    vlayout->addWidget(self_select_general2);
+    vlayout->addLayout(HLay(self_select_general, self_select_general2));
     vlayout->addLayout(HLay(max_hp_prompt,max_hp_spin));
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
-    vlayout->addWidget(set_turned);
-    vlayout->addWidget(set_chained);
+    vlayout->addLayout(HLay(set_turned, set_chained));
     vlayout->addWidget(random_roles_box);
     vlayout->addWidget(extra_skill_set);
     vlayout->addWidget(starter_group);
