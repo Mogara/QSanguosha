@@ -94,8 +94,9 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 
 	local card_str = self:getCardId("Analeptic")
 	if card_str then return sgs.Card_Parse(card_str) end
-
+        
 	for _, anal in ipairs(cards) do
+	        if self:needBear() then return end
 		if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) and
 			not isCompulsoryView(anal, "Slash", self.player, sgs.Player_Hand) then
 			return anal
@@ -118,7 +119,7 @@ end
 
 function SmartAI:useCardSupplyShortage(card, use)
 	table.sort(self.enemies, handcard_subtract_hp)
-
+	if self:needBear() then return end
 	local enemies = self:exclude(self.enemies, card)
 	for _, enemy in ipairs(enemies) do
 		if (self:hasSkills("yongsi|haoshi|tuxi", enemy) or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1)) and
@@ -168,6 +169,7 @@ end
 function SmartAI:useCardIronChain(card, use)
 	use.card = card
 	if #self.enemies == 1 and #(self:getChainedFriends()) <= 1 then return end
+	if self:needBear() then return end
 	local targets = {}
 	self:sort(self.friends,"defense")
 	for _, friend in ipairs(self.friends) do
@@ -207,6 +209,7 @@ sgs.dynamic_value.benefit.IronChain = true
 
 function SmartAI:useCardFireAttack(fire_attack, use)
 	if self.player:hasSkill("wuyan") then return end
+	if self:needBear() then return end
 	local lack = {
 		spade = true,
 		club = true,
