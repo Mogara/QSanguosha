@@ -271,7 +271,7 @@ return {
 	["$yingzi1"] = "哈哈哈~",
 	["$yingzi2"] = "汝等看好了",
 	["$zhiheng1"] = "容我三思",
-	
+
 -- last words
 	["~caocao"] = "霸业未成，未成啊……",
 	["~zhangliao"] = "真没想到",
@@ -307,6 +307,8 @@ return {
 	["cv:sunshangxiang"] = "官方，背碗卤粉",
 
 -- test
+	["test"] = "测试",
+
 	["#zhibasunquan"] = "年轻的贤君",
 	["zhibasunquan"] = "制霸孙权",
 	["zhiba"] = "制霸",
@@ -318,6 +320,10 @@ return {
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底",
 
 	["#sujiang"] = "金童",
+	["sujiang"] = "素将",
+	["illustrator:sujiang"] = "火凤燎原",
 	["#sujiangf"] = "玉女",
+	["sujiangf"] = "素将(女)",
+	["illustrator:sujiangf"] = "轩辕剑",
 }
 
