@@ -1132,11 +1132,11 @@ function SmartAI:objectiveLevel(player)
 		end
 		if loyal_num == 0 then
 		   if rebel_num > 2 then
-		      if sgs.evaluatePlayerRole(player) == "renegade" then return -1
+		      if sgs.evaluatePlayerRole(player) == "renegade" then return -1 end
 		   elseif rebel_num > 1 then
-		      if sgs.evaluatePlayerRole(player) == "renegade" then return 0
-		   elseif sgs.evaluatePlayerRole(player) == "renegade" then return 4 
-                end
+		      if sgs.evaluatePlayerRole(player) == "renegade" then return 0 end
+		   elseif sgs.evaluatePlayerRole(player) == "renegade" then return 4 end
+		end
 
 		if sgs.evaluatePlayerRole(player) == "rebel" then return 5
 		elseif sgs.evaluateRoleTrends(player) == "rebel" then return 3.5
