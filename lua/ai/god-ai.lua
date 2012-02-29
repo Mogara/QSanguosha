@@ -223,6 +223,7 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	local need_cards = {}
 	local to = {}
 	local spade, club, heart, diamond
+	local targetname
 	for _, card in ipairs(cards) do
 		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card:getId())
 		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card:getId())
@@ -237,6 +238,7 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 		if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
 			--if use.to then use.to:append(enemy) end
 			table.insert(to, enemy)
+			targetname = enemy:getGeneralName()
 			break
 		end
 	end
@@ -246,7 +248,8 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 				use.to:append(enemy)
 				if use.to:length() == 2 then break end
 			end]]
-			table.insert(to, enemy)
+			if  enemy:getGeneralName() ~= targetname then
+			table.insert(to, enemy) end
 			if #to == 2 then break end
 		end
 	end
@@ -478,7 +481,8 @@ sgs.ai_skill_invoke.jilve=function(self,data)
 	if sgs.lastevent == sgs.AskForRetrial or sgs.lastevent == sgs.StartJudge then
 		local judge = data:toJudge()
 		if not self:needRetrial(judge) then return false end
-		return (use or judge.who == self.player) and self:getRetrialCardId(sgs.QList2Table(self.player:getHandcards()), judge) ~= -1
+		return (use or judge.who == self.player or judge.reason == "lightning") and 
+		        self:getRetrialCardId(sgs.QList2Table(self.player:getHandcards()), judge) ~= -1
 	elseif sgs.lastevent == sgs.Damage then
 		return use and self:askForUseCard("@@fangzhu","@fangzhu")~="."
 	else
@@ -492,20 +496,54 @@ local jilve_skill={}
 jilve_skill.name="jilve"
 table.insert(sgs.ai_skills,jilve_skill)
 jilve_skill.getTurnUseCard=function(self)
-	if self.player:getMark("@bear")<1 or self.player:hasUsed("ZhihengCard") then return end
-	local card=sgs.Card_Parse("@ZhihengCard=.")
-	local dummy_use={isDummy=true}
-	self:useSkillCard(card,dummy_use)
-	if dummy_use.card then return sgs.Card_Parse("@JilveCard=.") end
+    if self.player:getMark("@bear")<1 or self.player:usedTimes("JilveCard") > 2 then return end
+	local wanshadone = self.player:getTag("JilveWansha"):toPlayer()
+	if not wanshadone then
+	    local cards=self.player:getHandcards()
+	    cards=sgs.QList2Table(cards)
+	    local slashes = self:getCards("Slash")
+	    self:sort(self.enemies, "hp")
+		local target
+		for _, enemy in ipairs(self.enemies) do
+			if not (enemy:hasSkill("kongcheng") and enemy:isKongcheng()) and self:isWeak(enemy) and self:damageMinusHp(self, enemy, 1) > 0 then
+				 sgs.ai_skill_choice.jilve="wansha" 
+			     local wanshacard = sgs.Card_Parse("@JilveCard=.")
+	             dummy_use={isDummy=true}
+			     self:useSkillCard(wanshacard,dummy_use)
+	             return sgs.Card_Parse("@JilveCard=.") 
+			end
+		end
+	end
+	if not self.player:hasUsed("ZhihengCard") and not wanshadone then
+	   sgs.ai_skill_choice.jilve="zhiheng" 
+	   local card=sgs.Card_Parse("@ZhihengCard=.")
+	   local dummy_use={isDummy=true}
+	   self:useSkillCard(card,dummy_use)
+	   if dummy_use.card then return sgs.Card_Parse("@JilveCard=.") end
+	elseif not wanshadone then
+	    local cards=self.player:getHandcards()
+	    cards=sgs.QList2Table(cards)
+	    local slashes = self:getCards("Slash")
+	    self:sort(self.enemies, "hp")
+		local target
+		for _, enemy in ipairs(self.enemies) do
+			if not (enemy:hasSkill("kongcheng") and enemy:isKongcheng()) and self:isWeak(enemy) and self:damageMinusHp(self, enemy, 1) > 0 then
+				 sgs.ai_skill_choice.jilve="wansha" 
+			     local wanshacard = sgs.Card_Parse("@JilveCard=.")
+	             dummy_use={isDummy=true}
+			     self:useSkillCard(wanshacard,dummy_use)
+	             return sgs.Card_Parse("@JilveCard=.") 
+			end
+		end
+	end
 end
-
-sgs.ai_skill_choice.jilve="zhiheng"
 
 sgs.ai_skill_use_func.JilveCard=function(card,use,self)
 	use.card = card
 end
 
-sgs.ai_use_priority.JilveCard = 0.4
+if sgs.ai_skill_choice.jilve == "zhiheng" or not sgs.ai_skill_choice.jilve == "wansha" then sgs.ai_use_priority.JilveCard = 3
+else sgs.ai_use_priority.JilveCard = 6 end
 
 sgs.ai_skill_use["@zhiheng"]=function(self,prompt)
 	local card=sgs.Card_Parse("@ZhihengCard=.")
