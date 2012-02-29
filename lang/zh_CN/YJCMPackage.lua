@@ -149,13 +149,13 @@ return {
 
 	-- illustrator
 	["illustrator:caozhi"] = "木美人",
-	["illustrator:yujin"] = "Yi 章",
+	["illustrator:yujin"] = "Yi章",
 	["illustrator:fazheng"] = "雷没才",
 	["illustrator:masu"] = "张帅",
 	["illustrator:xushu"] = "XINA",
 	["illustrator:lingtong"] = "绵 Myan",
-	["illustrator:xusheng"] = "刘周",
+	["illustrator:xusheng"] = "刘周（天空之城）",
 	["illustrator:wuguotai"] = "zoo",
 	["illustrator:chengong"] = "黑月乱",
-	["illustrator:gaoshun"] = "邓Sir",
+	["illustrator:gaoshun"] = "鄧Sir",
 }

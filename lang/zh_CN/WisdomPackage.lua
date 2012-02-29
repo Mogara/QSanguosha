@@ -111,12 +111,12 @@ local t = {
 
 	["illustrator:wisxuyou"] = "三国志大战",
 	["illustrator:wisjiangwei"] = "巴萨小马",
-	["illustrator:wisjiangwan"] = "一将优秀作品画册",
+	["illustrator:wisjiangwan"] = "Zero",
 	["illustrator:wissunce"] = "永恒之轮",
 	["illustrator:wiszhangzhao"] = "三国志大战",
 	["illustrator:wishuaxiong"] = "三国志大战",
-	["illustrator:wistianfeng"] = "一将优秀作品画册",
-	["illustrator:wisshuijing"] = "一将优秀作品画册",
+	["illustrator:wistianfeng"] = "小矮米",
+	["illustrator:wisshuijing"] = "小仓",
 }
 
 local generals = {"wisxuyou", "wisjiangwei", "wisjiangwan", "wissunce", "wiszhangzhao", "wishuaxiong", "wistianfeng", "wisshuijing"}
