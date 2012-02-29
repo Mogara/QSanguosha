@@ -178,18 +178,13 @@ QWidget *ServerDialog::createAdvancedTab(){
     scene_checkbox->setChecked(Config.EnableScene);	//changjing
     //changjing
 
-
     max_hp_label = new QLabel(tr("Max HP scheme"));
-    max_hp_label->setVisible(Config.Enable2ndGeneral);
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
+
     max_hp_scheme_combobox = new QComboBox;
     max_hp_scheme_combobox->addItem(tr("Sum - 3"));
     max_hp_scheme_combobox->addItem(tr("Minimum"));
     max_hp_scheme_combobox->addItem(tr("Average"));
     max_hp_scheme_combobox->setCurrentIndex(Config.MaxHpScheme);
-    max_hp_scheme_combobox->setVisible(Config.Enable2ndGeneral);
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setVisible(bool)));
-
     second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
 
@@ -242,6 +237,12 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
+
+    max_hp_label->setVisible(Config.Enable2ndGeneral);
+    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
+    max_hp_scheme_combobox->setVisible(Config.Enable2ndGeneral);
+    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setVisible(bool)));
+
     return widget;
 }
 
