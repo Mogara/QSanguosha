@@ -100,3 +100,31 @@ end
 
 sgs.ai_use_value.LihunCard = 8.5
 sgs.ai_use_priority.LihunCard = 6
+
+--AI for BGM Caoren
+
+sgs.ai_skill_invoke.jiagu = function(self, data)
+    if math.random(0, 1) == 0 then return true else return false end
+end
+
+function sgs.ai_skill_invoke.kuiwei(self, data)
+    local weapon = 0
+    if not self.player:faceUp() then return true end
+	for _, friend in ipairs(self.friends) do
+		if self:hasSkills("fangzhu|jilve", friend) then return true end
+	end
+	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+	    if aplayer:getWeapon() then weapon = weapon + 1 end
+	end
+	if weapon >1 then return true end
+	return self:isWeak()
+end
+
+sgs.ai_view_as.yanzheng = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card_place == sgs.Player_Equip then
+	    return ("nullification:yanzheng[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
