@@ -546,7 +546,7 @@ void Client::hpChange(const QString &change_str){
 }
 
 void Client::setStatus(Status status){
-    if(this->status != status){
+    if(this->status != status||status == NotActive){
         this->status = status;
         emit status_changed(status);
     }
