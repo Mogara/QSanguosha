@@ -576,11 +576,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
         damage.to = effect.to;
         damage.nature = DamageStruct::Normal;
 
-        if(effect.from->isAlive())
         damage.from = effect.from;
-        else
-        damage.from = NULL;
-
         room->damage(damage);
     }
 }
@@ -600,10 +596,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
         DamageStruct damage;
         damage.card = this;
         damage.damage = 1;
-        if(effect.from->isAlive())
         damage.from = effect.from;
-        else
-        damage.from = NULL;
         damage.to = effect.to;
         damage.nature = DamageStruct::Normal;
 
@@ -694,7 +687,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
         }
         if (source->isDead()){
             if (killer->isAlive()){
-            if(slash){
+                if(slash)
                     CardUseStruct use;
                     use.card = slash;
                     use.from = killer;
@@ -706,7 +699,9 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                             int card_id = weapon->getId();
                             room->throwCard(card_id);
                         }
+                    }
             }
+            else ;
         }
         else{
             if(killer->isDead()) ;
@@ -717,11 +712,11 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                         use.from = killer;
                         use.to = victims;
                         room->useCard(use);
-                 }
-                 else{
+                    }
+                    else{
                           if(killer->getWeapon())
                           source->obtainCard(weapon);
-                     }
+                    }
              }
         }
     }
