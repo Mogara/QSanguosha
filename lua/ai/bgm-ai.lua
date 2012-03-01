@@ -63,24 +63,15 @@ end
 sgs.ai_skill_use_func.LihunCard = function(card,use,self)
 	local cards=self.player:getHandcards()
 	cards=sgs.QList2Table(cards)
-	local slashes = self:getCards("Slash")
-
-	if self:getCardsNum("Slash") < 2 then return end
-	if self:getCardsNum("Analeptic") + self:getCardsNum("GudingBlade") + self:getCardsNum("Duel") + self:getCardsNum("SavageAssault")
-		+ self:getCardsNum("ArcheryAttack") == 0 then return end
 
 	if not self.player:hasUsed("LihunCard") then
 		self:sort(self.enemies, "hp")
 		local target
 		for _, enemy in ipairs(self.enemies) do
-			if (enemy:getGeneral():isMale() and self.player:distanceTo(enemy) <= self.player:getAttackRange()) and
-				(not enemy:hasSkill("kongcheng") and not enemy:hasSkill("lianying")  and not self:isEquip("SilverLion",enemy)) and
-				(enemy:getHp() < 3 or (enemy:getHp() == 3 and enemy:getHandcardNum() >2) or (enemy:getHp() ==4 and enemy:getHandcardNum() > 4)) then
-				local slash_effective = false
-				for _, slash in ipairs(slashes) do
-					if self:slashIsEffective(slash, enemy) then slash_effective = true break end
-				end
-				if slash_effective then
+			if enemy:getGeneral():isMale() and not enemy:hasSkill("kongcheng") then
+			    if (enemy:hasSkill("lianying") and self:damageMinusHp(self, enemy, 1) > 0) or
+				   (enemy:getHp() < 3 and self:damageMinusHp(self, enemy, 0) > 0 ) or
+				   (enemy:getHandcardNum() >= enemy:getHp() and enemy:getHp() > 2 and self:damageMinusHp(self, enemy, 0) >= -1) then
 					target = enemy
 					break
 				end
