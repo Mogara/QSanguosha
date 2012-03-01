@@ -3032,7 +3032,7 @@ function SmartAI:damageMinusHp(self, enemy, type)
 		end
 		for _, acard in ipairs(cards) do
 			if ((acard:inherits("Duel") or acard:inherits("SavageAssault") or acard:inherits("ArcheryAttack") or acard:inherits("FireAttack")) 
-			   and not self:trickProhibit(acard,enemy)) 
+			   and not self.room:isProhibited(self.player, enemy, acard))
 			   or ((acard:inherits("SavageAssault") or acard:inherits("ArcheryAttack")) and self:aoeIsEffective(acard, enemy)) then
 			     if acard:inherits("FireAttack") then
 				     if not enemy:isKongcheng() then 
