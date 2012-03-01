@@ -826,7 +826,7 @@ end
 sgs.ai_card_intention.general=function(from,to,level)
 	if not to then global_room:writeToConsole(debug.traceback()) return end
 	if from:isLord() then return end
-	sgs.outputProcessValues(from:getRoom())
+	--sgs.outputProcessValues(from:getRoom())
 	sgs.outputRoleValues(from, level)
 	
 	if level > 0 then
@@ -918,7 +918,7 @@ sgs.ai_card_intention.general=function(from,to,level)
 		end
 	end
 
-	sgs.outputProcessValues(from:getRoom())
+	--sgs.outputProcessValues(from:getRoom())
 	sgs.outputRoleValues(from, level)
 	sgs.checkMisjudge()
 end
@@ -1803,6 +1803,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if not self:damageIsEffective(nil, nil, target) then return "." end
 	if self:getDamagedEffects(self) then return "." end
 	if target and target:getWeapon() and target:getWeapon():inherits("IceSword") and self.player:getCards("he"):length() > 2 then return end
+	if self:needBear()  then return "." end
 	if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = 0}
 		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
@@ -2957,6 +2958,12 @@ function SmartAI:hasSameEquip(card, player)
 	return false
 end
 
+function SmartAI:needBear(player)
+    if not player then player = self.player end
+    if player:hasSkill("renjie") and not player:hasSkill("jilve") and player:getMark("@bear") < 4 then return true
+	else return false end
+end
+
 function SmartAI:useEquipCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:hasSameEquip(card) then return end
 	if self:hasSkills(sgs.lose_equip_skill) and self:evaluateArmor(card)>-5 then
@@ -2974,6 +2981,7 @@ function SmartAI:useEquipCard(card, use)
 	self:useCardByClassName(card, use)
 	if use.card or use.broken then return end
 	if card:inherits("Weapon") then
+	        if self:needBear() then return end
 		if self.player:hasSkill("rende") then
 			for _,friend in ipairs(self.friends_noself) do
 				if not friend:getWeapon() then return end
@@ -2986,6 +2994,7 @@ function SmartAI:useEquipCard(card, use)
 			use.card = card
 		end
 	elseif card:inherits("Armor") then
+	        if self:needBear() and self.player:getLostHp() == 0 then return end
 		local lion = self:getCard("SilverLion")
 		if lion and self.player:isWounded() and not self:isEquip("SilverLion") and not card:inherits("SilverLion") and
 			not (self:hasSkills("bazhen|yizhong") and not self.player:getArmor()) then
@@ -2999,6 +3008,7 @@ function SmartAI:useEquipCard(card, use)
 		end
 		if self:evaluateArmor(card) > self:evaluateArmor() then use.card = card end
 		return
+	elseif self:needBear() then return 
 	elseif card:inherits("OffensiveHorse") and self.player:hasSkill("rende") then
 		for _,friend in ipairs(self.friends_noself) do
 			if not friend:getOffensiveHorse() then return end
@@ -3006,6 +3016,46 @@ function SmartAI:useEquipCard(card, use)
 	elseif card:inherits("Monkey") or self.lua_ai:useCard(card) then
 		use.card = card
 	end
+end
+
+function SmartAI:damageMinusHp(self, enemy, type)
+		local trick_effectivenum = 0
+		local slash_damagenum = 0
+		local analepticpowerup = 0
+		local effectivefireattacknum = 0
+		local basicnum = 0
+		local cards = self.player:getCards("he")
+		cards = sgs.QList2Table(cards)
+		for _, acard in ipairs(cards) do
+		    if acard:getTypeId() == sgs.Card_Basic and not acard:inherits("Peach") then basicnum = basicnum + 1 end
+			if ((acard:inherits("Duel") or acard:inherits("SavageAssault") or acard:inherits("ArcheryAttack") or acard:inherits("FireAttack")) 
+			   and not self:trickProhibit(acard,enemy)) 
+			   or ((acard:inherits("SavageAssault") or acard:inherits("ArcheryAttack")) and self:aoeIsEffective(acard, enemy)) then
+			     if acard:inherits("FireAttack") then
+				     if not enemy:isKongcheng() then 
+					   effectivefireattacknum = effectivefireattacknum + 1 
+					 else
+					   trick_effectivenum = trick_effectivenum -1
+					 end
+				 end
+				 trick_effectivenum = trick_effectivenum + 1
+			elseif acard:inherits("Slash") and self:slashIsEffective(acard, enemy) and ( slash_damagenum == 0 or self:isEquip("Crossbow", self.player)) 
+			       and (self.player:distanceTo(enemy) <= self.player:getAttackRange()) then
+				 if not (enemy:hasSkill("xiangle") and basicnum < 2) then slash_damagenum = slash_damagenum + 1 end
+				 if self:getCardsNum("Analeptic") > 0 and analepticpowerup == 0 and 
+				    not ((self:isEquip("SilverLion", enemy) or self:isEquip("EightDiagram", enemy) or 
+					     (not enemy:getArmor() and enemy:hasSkill("bazhen"))) and not self:isEquip("QinggangSword", self.player)) then 
+					    slash_damagenum = slash_damagenum + 1 
+					    analepticpowerup = analepticpowerup + 1 
+				 end
+				 if self:isEquip("GudingBlade", self.player) and enemy:isKongcheng() and not self:isEquip("SilverLion", self.player) then
+					   slash_damagenum = slash_damagenum + 1 
+				 end
+			end
+		end
+		if type == 0 then return (trick_effectivenum + slash_damagenum - effectivefireattacknum - enemy:getHp()) 
+		else return  (trick_effectivenum + slash_damagenum - enemy:getHp()) end
+	return -10
 end
 
 dofile "lua/ai/debug-ai.lua"

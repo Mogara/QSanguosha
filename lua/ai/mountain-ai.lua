@@ -351,6 +351,7 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 		if player:hasLordSkill("sunce_zhiba") and not player:isKongcheng() then table.insert(lords, player) end
 	end
 	if #lords == 0 then return end
+	if self:needBear() then return end
 	self:sort(lords, "defense")
 	for _, lord in ipairs(lords) do
 		local zhiba_str
@@ -520,16 +521,17 @@ function sgs.ai_skill_choice.huashen(self, choices)
 	if self.player:getHp() < 1 then return "buqu" end
 	if str:match("guixin2") then return "guixin2" end
 	if self.player:getPhase() == sgs.Player_NotActive then
-		if str:match("guixin") and (not self:isWeak() or self:getAllPeachNum() > 0) then return "guixin" end
-		for _, askill in ipairs(sgs.masochism_skill:split("|")) do
-			if str:match(askill) and (not self:isWeak() or self:getAllPeachNum() > 0) then return askill end
-		end
-		if self:isWeak() then
+		if self.player:getHp() == 1 then
 			if str:match("wuhun") then return "wuhun" end
 			for _, askill in ipairs(("wuhun|duanchang|jijiu|longhun|jiushi|jiuchi|buyi|huilei|dushi|juejing"):split("|")) do
 				if str:match(askill) then return askill end
 			end
 		end
+		if str:match("guixin") and (not self:isWeak() or self:getAllPeachNum() > 0) then return "guixin" end
+		for _, askill in ipairs(sgs.masochism_skill:split("|")) do
+			if str:match(askill) and (self.player:getHp() > 1 or self:getAllPeachNum() > 0) then return askill end
+		end
+
 		if self.player:isKongcheng() then
 			if str:match("kongcheng") then return "kongcheng" end
 		end

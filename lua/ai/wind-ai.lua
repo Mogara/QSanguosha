@@ -256,7 +256,7 @@ sgs.ai_skill_use_func.HuangtianCard=function(card,use,self)
 	end
 	
 	if #targets == 0 then return end
-
+	if self:needBear() then return "." end
 	use.card=card
 	self:sort(targets, "defense")
 	if use.to then
