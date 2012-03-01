@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "recorder.h"
 #include "banpair.h"
+#include "lua-wrapper.h"
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), socket(NULL), room(room),
@@ -468,6 +469,13 @@ bool ServerPlayer::hasNullification() const{
     foreach(const Card *card, handcards){
         if(card->objectName() == "nullification")
             return true;
+    }
+
+    foreach(const Skill* skill, getVisibleSkillList()){
+        if(skill->inherits("LuaViewAsSkill")){
+            const LuaViewAsSkill* luaskill = qobject_cast<const LuaViewAsSkill*>(skill);
+            if(luaskill->isEnabledAtNullification(this)) return true;
+        }
     }
 
     return false;

@@ -136,6 +136,7 @@ function sgs.CreateViewAsSkill(spec)
 	
 	skill.enabled_at_play = spec.enabled_at_play
 	skill.enabled_at_response = spec.enabled_at_response
+	skill.enabled_at_nullification = spec.enabled_at_nullification
 	
 	return skill
 end

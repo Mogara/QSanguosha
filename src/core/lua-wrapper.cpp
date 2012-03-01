@@ -26,7 +26,7 @@ LuaProhibitSkill::LuaProhibitSkill(const char *name)
 
 LuaViewAsSkill::LuaViewAsSkill(const char *name)
     :ViewAsSkill(name), view_filter(0), view_as(0),
-    enabled_at_play(0), enabled_at_response(0)
+      enabled_at_play(0), enabled_at_response(0), enabled_at_nullification(0)
 {
 
 }

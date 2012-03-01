@@ -49,9 +49,11 @@ public:
 
     LuaFunction enabled_at_play;
     LuaFunction enabled_at_response;
+    LuaFunction enabled_at_nullification;
 
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
+    virtual bool isEnabledAtNullification(const Player *player) const;
 };
 
 class LuaFilterSkill: public FilterSkill{

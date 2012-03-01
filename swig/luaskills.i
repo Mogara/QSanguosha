@@ -75,6 +75,7 @@ public:
 
 	LuaFunction enabled_at_play;
 	LuaFunction enabled_at_response;
+	LuaFunction enabled_at_nullification;
 };
 
 class OneCardViewAsSkill: public ViewAsSkill{
@@ -422,6 +423,29 @@ bool LuaViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pa
 	}
 }
 
+bool LuaViewAsSkill::isEnabledAtNullification(const Player *player) const{
+	if(enabled_at_nullification == 0)
+		return false;
+
+	lua_State *L = Sanguosha->getLuaState();
+
+	// the callback
+	lua_rawgeti(L, LUA_REGISTRYINDEX, enabled_at_nullification);
+
+	pushSelf(L);
+
+	SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
+
+	int error = lua_pcall(L, 2, 1, 0);
+	if(error){
+		Error(L);
+		return false;
+	}else{
+		bool result = lua_toboolean(L, -1);
+		lua_pop(L, 1);
+		return result;
+	}
+}
 // ---------------------
 
 void LuaSkillCard::pushSelf(lua_State *L) const{
