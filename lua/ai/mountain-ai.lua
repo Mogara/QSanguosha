@@ -351,6 +351,7 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 		if player:hasLordSkill("sunce_zhiba") and not player:isKongcheng() then table.insert(lords, player) end
 	end
 	if #lords == 0 then return end
+	if self:needBear() then return end
 	self:sort(lords, "defense")
 	for _, lord in ipairs(lords) do
 		local zhiba_str
