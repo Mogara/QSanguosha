@@ -891,7 +891,6 @@ function SmartAI:useCardCollateral(card, use)
 		if not self.room:isProhibited(self.player, enemy, card)
 			and self:hasTrickEffective(card, enemy)
 			and not self:hasSkill(sgs.lose_equip_skill, enemy)
-			and not enemy:hasSkill("weimu")
 			and enemy:getWeapon() then
 
 			for _, enemy2 in ipairs(self.enemies) do

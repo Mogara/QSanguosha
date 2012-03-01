@@ -492,10 +492,6 @@ sgs.zhangfei_keep_value =
 
 sgs.ai_chaofeng.zhangfei = 3
 
-function sgs.ai_trick_prohibit.kongcheng(card, to)
-	return card:inherits("Duel") and to:isKongcheng()
-end
-
 dofile "lua/ai/guanxing-ai.lua"
 
 local longdan_skill={}
@@ -924,10 +920,6 @@ sgs.daqiao_suit_value =
 }
 
 sgs.ai_chaofeng.daqiao = 2
-
-function sgs.ai_trick_prohibit.qianxun(card)
-	return card:inherits("Indulgence") or card:inherits("Snatch")
-end
 
 sgs.ai_chaofeng.luxun = -1
 

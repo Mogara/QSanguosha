@@ -2804,6 +2804,7 @@ end
 function SmartAI:hasTrickEffective(card, player)
 	if player then
 		if player:isDead() then return false end
+		if self.room:isProhibited(self.player, player, card) then return false end
 		if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("wuyan") then
 			if card and not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
 		end
@@ -2817,17 +2818,6 @@ function SmartAI:hasTrickEffective(card, player)
 		end
 	end
 	return true
-end
-
-sgs.ai_trick_prohibit = {}
-function SmartAI:trickProhibit(card, to)
-	for _, askill in sgs.qlist(to:getVisibleSkillList()) do
-		local callback = sgs.ai_trick_prohibit[askill:objectName()]
-		if callback and type(callback) == "function" then
-			if callback(card, self, to) then return true end
-		end
-	end
-	return false
 end
 
 function SmartAI:useTrickCard(card, use)

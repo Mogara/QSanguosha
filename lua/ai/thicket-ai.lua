@@ -262,10 +262,6 @@ sgs.dynamic_value.control_card.DimengCard = true
 
 sgs.ai_chaofeng.lusu = 4
 
-function sgs.ai_trick_prohibit.weimu(card)
-	return card:isBlack()
-end
-
 luanwu_skill={}
 luanwu_skill.name="luanwu"
 table.insert(sgs.ai_skills, luanwu_skill)
