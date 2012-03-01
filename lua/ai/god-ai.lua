@@ -475,6 +475,11 @@ sgs.shenzhaoyun_suit_value =
 
 sgs.ai_skill_invoke.lianpo = true
 
+function SmartAI:needBear(player)
+    player = player or self.player
+    return player:hasSkill("renjie") and not player:hasSkill("jilve") and player:getMark("@bear") < 4
+end
+
 sgs.ai_skill_invoke.jilve=function(self,data)
 	local n=self.player:getMark("@bear")
 	local use=(n>2 or self:getOverflow()>0)

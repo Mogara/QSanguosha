@@ -74,7 +74,6 @@ end
 
 function SmartAI:useCardSlash(card, use)
 	if not self:slashIsAvailable() then return end
-	if self:needBear() then return end
 	local no_distance = self.slash_distance_limit
 	if card:getSkillName() == "wushen" then no_distance = true end
 	if (self.player:getHandcardNum() == 1
@@ -249,7 +248,6 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 	--if not target then self.room:writeToConsole(debug.traceback()) end
 	if not target then return end
-	if self:needBear() and self.player:getLostHp() == 0 then return "." end
 	if self:isFriend(target) then
 		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
 		if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
@@ -278,7 +276,6 @@ function SmartAI:useCardPeach(card, use)
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("longhun") and not self.player:isLord() and
 		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
-	if self:needBear() and self.player:getHp()> 2 then return end
 	if not (self.player:hasSkill("rende") and self:getOverflow() > 1 and #self.friends_noself > 0) then
 		local peaches = 0
 		local cards = self.player:getHandcards()
@@ -579,12 +576,10 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, target2, name)
 end
 
 sgs.ai_skill_cardask["savage-assault-slash"] = function(self, data, pattern, target, target2)
-	if self:needBear() and self.player:getLostHp() == 0 then return "." end
 	return sgs.ai_skill_cardask.aoe(self, data, pattern, target, target2, "savage_assault")
 end
 
 sgs.ai_skill_cardask["archery-attack-jink"] = function(self, data, pattern, target)
-	if self:needBear() and self.player:getLostHp() == 0 then return "." end
 	return sgs.ai_skill_cardask.aoe(self, data, pattern, target, target2, "archery_attack")
 end
 
@@ -592,7 +587,6 @@ sgs.ai_keep_value.Nullification = 3
 sgs.ai_use_value.Nullification = 8
 
 function SmartAI:useCardAmazingGrace(card, use)
-	if self:needBear()  then return  end
 	if #self.friends >= #self.enemies or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1)
 		or self.player:hasSkill("jizhi") then
 		use.card = card
@@ -607,7 +601,6 @@ sgs.ai_use_priority.AmazingGrace = 1
 
 function SmartAI:useCardGodSalvation(card, use)
 	local good, bad = 0, 0
-	if self:needBear()  then return  end
 	if self.player:hasSkill("wuyan") and self.player:isWounded() then
 		use.card = card
 		return
@@ -649,7 +642,6 @@ function SmartAI:useCardDuel(duel, use)
 	local target 
 	local n1 = self:getCardsNum("Slash")
 	local n2
-	if self:needBear()  then return  end
 	-- if sgs.target[self.player:getRole()] then n2 = sgs.target[self.player:getRole()]:getHandcardNum() end (it doesn't work correctly now)
 	for _, enemy in ipairs(enemies) do
 		n2 = enemy:getHandcardNum()
@@ -792,7 +784,6 @@ end
 
 function SmartAI:useCardDismantlement(dismantlement, use)
 	if self.player:hasSkill("wuyan") then return end
-	if self:needBear() then return end
 	if (not self.has_wizard) and self:hasWizard(self.enemies) then
 		-- find lightning
 		local players = self.room:getOtherPlayers(self.player)
@@ -878,7 +869,6 @@ sgs.dynamic_value.control_card.Dismantlement = true
 
 function SmartAI:useCardCollateral(card, use)
 	if self.player:hasSkill("wuyan") then return end
-	if self:needBear() then return end
 	self:sort(self.enemies,"threat")
 
 	for _, friend in ipairs(self.friends_noself) do
@@ -965,7 +955,6 @@ local function hp_subtract_handcard(a,b)
 end
 
 function SmartAI:useCardIndulgence(card, use)
-	if self:needBear() then return end
 	table.sort(self.enemies, hp_subtract_handcard)
 	
 	local enemies = self:exclude(self.enemies, card)
@@ -995,7 +984,6 @@ sgs.dynamic_value.control_usecard.Indulgence = true
 function SmartAI:useCardLightning(card, use)
 	if self.player:containsTrick("lightning") then return end
 	if self.player:hasSkill("weimu") and card:isBlack() then return end
-	if self:needBear() then return end
 
 	if not self:hasWizard(self.enemies) then--and self.room:isProhibited(self.player, self.player, card) then
 		if self:hasWizard(self.friends) then
