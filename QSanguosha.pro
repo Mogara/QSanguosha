@@ -60,7 +60,6 @@ SOURCES += src/main.cpp \
 	src/scenario/couple-scenario.cpp \
 	src/scenario/fancheng-scenario.cpp \
 	src/scenario/guandu-scenario.cpp \
-	src/scenario/scenario.cpp \
 	src/scenario/scenerule.cpp \
 	src/scenario/miniscenarios.cpp \
 	src/scenario/zombie-mode-scenario.cpp \
@@ -121,7 +120,9 @@ SOURCES += src/main.cpp \
 	src/lua/lbaselib.c \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
-	swig/sanguosha_wrap.cxx
+	swig/sanguosha_wrap.cxx \
+    src/package/package.cpp\
+        src/scenario/scenario.cpp
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -276,3 +277,4 @@ OTHER_FILES += \
 	acknowledgement/main.qml \
 	acknowledgement/list.png \
 	acknowledgement/back.png
+

@@ -13,7 +13,6 @@
 
 class AI;
 class Scenario;
-class QLibrary;
 
 struct lua_State;
 
@@ -108,8 +107,6 @@ private:
     QSet<QString> ban_package;
 
     lua_State *lua;
-
-    QLibrary *lib;
 };
 
 extern Engine *Sanguosha;

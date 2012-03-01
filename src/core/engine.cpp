@@ -13,7 +13,6 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <QDir>
-#include <QLibrary>
 #include <QApplication>
 
 Engine *Sanguosha = NULL;
@@ -22,44 +21,25 @@ extern "C" {
     int luaopen_sgs(lua_State *);
 }
 
-template<typename T>
-static inline T GetSymbol(QLibrary *lib, const char *name){
-    char buffer[255] = "New";
-    strcat(buffer, name);
-
-    void *func = lib->resolve(buffer);
-    return reinterpret_cast<T>(func);
-}
-
 void Engine::addPackage(const QString &name){
-    typedef Package * (*package_creator)();
-    package_creator creator = GetSymbol<package_creator>(lib, name.toAscii());
-
-    if(creator){
-        addPackage(creator());
-    }else
+    Package *pack = PackageAdder::Packages[name];
+    if(pack)
+        addPackage(pack);
+    else
         qWarning("Package %s cannot be loaded!", qPrintable(name));
 }
 
 void Engine::addScenario(const QString &name){
-    typedef Scenario * (*scenario_creator)();
-    scenario_creator creator = GetSymbol<scenario_creator>(lib, name.toAscii());
-
-    if(creator){
-        addScenario(creator());
-    }else
+    Scenario *scenario = ScenarioAdder::Scenarios[name];
+    if(scenario)
+        addScenario(scenario);
+    else
         qWarning("Scenario %s cannot be loaded!", qPrintable(name));
 }
 
 Engine::Engine()
 {
     Sanguosha = this;
-
-    lib = new QLibrary(qApp->applicationFilePath(), this);
-    if(!lib->load()){
-        qWarning("Package can not be loaded \n Error string: %s", qPrintable(lib->errorString()));
-        exit(1);
-    }
 
     QStringList package_names;
     package_names << "Standard"
@@ -89,12 +69,12 @@ Engine::Engine()
         addPackage(name);
 
     QStringList scene_names;
-    scene_names << "GuanduScenario"
-                << "FanchengScenario"
-                << "CoupleScenario"
-                << "ZombieScenario"
-                << "ImpasseScenario"
-                << "CustomScenario";
+    scene_names << "Guandu"
+                << "Fancheng"
+                << "Couple"
+                << "Zombie"
+                << "Impasse"
+                << "Custom";
 
     for(int i=1; i<=20; i++){
         scene_names << QString("MiniScene_%1").arg(i, 2, 10, QChar('0'));
