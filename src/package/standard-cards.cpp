@@ -567,7 +567,6 @@ SavageAssault::SavageAssault(Suit suit, int number)
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:" + effect.from->objectName());
-    ServerPlayer *menghuo = room->findPlayerBySkillName("huoshou");
     if(slash)
         room->setEmotion(effect.to, "killer");
     else{
@@ -579,11 +578,9 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
 
         if(effect.from->isAlive())
         damage.from = effect.from;
-        else if(menghuo){
-        damage.from = menghuo;
-        room->playSkillEffect("huoshou");}
         else
         damage.from = NULL;
+
         room->damage(damage);
     }
 }
