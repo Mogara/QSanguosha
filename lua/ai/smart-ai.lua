@@ -3029,6 +3029,8 @@ function SmartAI:damageMinusHp(self, enemy, type)
 		cards = sgs.QList2Table(cards)
 		for _, acard in ipairs(cards) do
 		    if acard:getTypeId() == sgs.Card_Basic and not acard:inherits("Peach") then basicnum = basicnum + 1 end
+		end
+		for _, acard in ipairs(cards) do
 			if ((acard:inherits("Duel") or acard:inherits("SavageAssault") or acard:inherits("ArcheryAttack") or acard:inherits("FireAttack")) 
 			   and not self:trickProhibit(acard,enemy)) 
 			   or ((acard:inherits("SavageAssault") or acard:inherits("ArcheryAttack")) and self:aoeIsEffective(acard, enemy)) then
@@ -3049,7 +3051,7 @@ function SmartAI:damageMinusHp(self, enemy, type)
 					    slash_damagenum = slash_damagenum + 1 
 					    analepticpowerup = analepticpowerup + 1 
 				 end
-				 if self:isEquip("GudingBlade", self.player) and enemy:isKongcheng() and not self:isEquip("SilverLion", self.player) then
+				 if self:isEquip("GudingBlade", self.player) and enemy:isKongcheng() and not self:isEquip("SilverLion", enemy) then
 					   slash_damagenum = slash_damagenum + 1 
 				 end
 			end
