@@ -1201,32 +1201,6 @@ public:
     }
 };
 
-class Tuoqiao: public GameStartSkill{
-public:
-    Tuoqiao():GameStartSkill("tuoqiao"){
-        frequency = Limited;
-        default_choice = "SP-Diaochan";
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        if(Sanguosha->getBanPackages().contains("sp") && Sanguosha->getBanPackages().contains("BGM")) return false;
-        return GameStartSkill::triggerable(target) && target->getGeneralName() == "diaochan";
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        if(player->askForSkillInvoke(objectName())){
-            Room *room = player->getRoom();
-            QString choice;
-            if(Sanguosha->getBanPackages().contains("sp")) choice = "BGM-Diaochan";
-            else if(Sanguosha->getBanPackages().contains("BGM")) choice = "SP-Diaochan";
-            else
-                choice = room->askForChoice(player, objectName(), "SP-Diaochan+BGM-Diaochan");
-            if(choice == "SP-Diaochan") choice = "sp_diaochan"; else choice = "bgm_diaochan";
-            room->transfigure(player, choice, true, false, "diaochan");
-        }
-    }
-};
-
 class Qianxun: public ProhibitSkill{
 public:
     Qianxun():ProhibitSkill("qianxun"){
@@ -1301,7 +1275,6 @@ void StandardPackage::addGenerals(){
 
     zhaoyun = new General(this, "zhaoyun", "shu");
     zhaoyun->addSkill(new Longdan);
-    zhaoyun->addSkill(new SPConvertSkill("huantong", "zhaoyun", "bgm_zhaoyun", true));
 
     machao = new General(this, "machao", "shu");
     machao->addSkill(new Tieji);
@@ -1357,7 +1330,7 @@ void StandardPackage::addGenerals(){
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
-    diaochan->addSkill(new Tuoqiao);
+    diaochan->addSkill(new SPConvertSkill("tuoqiao", "diaochan", "sp_diaochan"));
 
     // for skill cards
     addMetaObject<ZhihengCard>();
