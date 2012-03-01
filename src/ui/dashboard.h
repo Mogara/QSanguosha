@@ -64,6 +64,7 @@ public slots:
     void updateSmallAvatar();
     void updateReadyItem(bool visible);
     void refresh();
+    void doFilter();
     void sortCards(int sort_type);
     void reverseSelection();
 

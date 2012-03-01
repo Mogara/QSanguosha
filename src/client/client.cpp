@@ -52,6 +52,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["revivePlayer"] = &Client::revivePlayer;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
+    callbacks["doFilter"] = &Client::doFilter;
     callbacks["log"] = &Client::log;
     callbacks["speak"] = &Client::speak;
     callbacks["acquireSkill"] = &Client::acquireSkill;
@@ -1206,6 +1207,10 @@ void Client::setMark(const QString &mark_str){
 
     ClientPlayer *player = getPlayer(who);
     player->setMark(mark, value);
+}
+
+void Client::doFilter(const QString &){
+    emit do_filter();
 }
 
 void Client::chooseSuit(){

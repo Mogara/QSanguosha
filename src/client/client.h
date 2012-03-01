@@ -97,6 +97,7 @@ public:
     void revivePlayer(const QString &player_name);
     void warn(const QString &);
     void setMark(const QString &mark_str);
+    void doFilter(const QString &);
     void showCard(const QString &show_str);
     void doGuanxing(const QString &guanxing_str);
     void doGongxin(const QString &gongxin_str);
@@ -255,6 +256,7 @@ signals:
 
     void skill_attached(const QString &skill_name, bool from_left);
     void skill_detached(const QString &skill_name);
+    void do_filter();
 
     void ag_filled(const QList<int> &card_ids);
     void ag_taken(const ClientPlayer *taker, int card_id);

@@ -138,15 +138,16 @@ void Dashboard::setActionState(){
 
 void Dashboard::setFilter(const FilterSkill *filter){
     this->filter = filter;
-
-    //if(filter == NULL){
-        foreach(CardItem *card_item, card_items)
-            card_item->filter(filter);
-    //}
+    doFilter();
 }
 
 const FilterSkill *Dashboard::getFilter() const{
     return filter;
+}
+
+void Dashboard::doFilter(){
+    foreach(CardItem *card_item, card_items)
+        card_item->filter(filter);
 }
 
 void Dashboard::setTrust(bool trust){
