@@ -561,6 +561,7 @@ void Photo::updatePile(const QString &pile_name){
         }
 
         QMenu *menu = button->menu();
+        menu->setProperty("private_pile","true");
         //menu->clear();
 
         QList<const Card *> cards;

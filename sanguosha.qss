@@ -87,6 +87,12 @@ QStatusBar{
 	color:white;
 }
 
+QMenu[private_pile="true"]{
+    background-color: rgba(43,63,53,100);
+    border-radius: 5px;
+    color: white;
+}
+
 QPushButton[private_pile="true"]{
     background-color: rgba(43,63,53,100);
     border-radius: 5px;
