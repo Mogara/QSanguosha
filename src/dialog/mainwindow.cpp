@@ -363,10 +363,18 @@ void MainWindow::enterRoom(){
         connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
         connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
         connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
+        connect(ui->actionSend_lowlevel_command, SIGNAL(triggered()), this, SLOT(sendLowLevelCommand()));
         connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
     }
-    else
+    else{
         ui->menuCheat->setEnabled(false);
+        ui->actionGet_card->disconnect();
+        ui->actionDeath_note->disconnect();
+        ui->actionDamage_maker->disconnect();
+        ui->actionRevive_wand->disconnect();
+        ui->actionSend_lowlevel_command->disconnect();
+        ui->actionExecute_script_at_server_side->disconnect();
+    }
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
@@ -394,6 +402,13 @@ void MainWindow::gotoStartScene(){
     setCentralWidget(view);
     restoreFromConfig();
 
+    ui->menuCheat->setEnabled(false);
+    ui->actionGet_card->disconnect();
+    ui->actionDeath_note->disconnect();
+    ui->actionDamage_maker->disconnect();
+    ui->actionRevive_wand->disconnect();
+    ui->actionSend_lowlevel_command->disconnect();
+    ui->actionExecute_script_at_server_side->disconnect();
     gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
@@ -997,7 +1012,7 @@ void MainWindow::on_actionReplay_file_convert_triggered()
     }
 }
 
-void MainWindow::on_actionSend_lowlevel_command_triggered()
+void MainWindow::sendLowLevelCommand()
 {
     QString command = QInputDialog::getText(this, tr("Send low level command"), tr("Please input the raw low level command"));
     if(!command.isEmpty())
