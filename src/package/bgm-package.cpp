@@ -182,10 +182,12 @@ public:
             int n = getWeaponCount(player);
             player->drawCards(n+2);
             player->turnOver();
-            player->tag[objectName()] = true;
+
+            if(player->getMark("@kuiwei") == 0)
+                player->gainMark("@kuiwei");
         }
         else if(player->getPhase() == Player::Draw){
-            if(!player->tag[objectName()].toBool())
+            if(player->getMark("@kuiwei") == 0)
                 return false;
 
             int n = getWeaponCount(player);
@@ -199,7 +201,7 @@ public:
                 }
             }
 
-            player->tag.remove(objectName());
+            player->loseMark("@kuiwei");
         }
         return false;
     }
