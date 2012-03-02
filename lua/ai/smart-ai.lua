@@ -1258,11 +1258,11 @@ function SmartAI:updateRoleTarget()
 	end
 end
 
-function SmartAI:updatePlayers()
+local function updatePlayers(self)
 	for _, aflag in ipairs(sgs.ai_global_flags) do
 		sgs[aflag] = nil
 	end
-	
+
 	if sgs.isRolePredictable() then
 		self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 		table.insert(self.friends, self.player)
@@ -1323,6 +1323,11 @@ function SmartAI:updatePlayers()
 	end
 end
 
+function SmartAI:updatePlayers()
+	updatePlayers(self)
+	self:updateRoleTarget()
+end
+
 sgs.ai_choicemade_filter.Nullification.general = function(player, promptlist)
 	if player:objectName() == promptlist[3] then return end
 	local positive = true
@@ -1376,7 +1381,6 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.Death or event == sgs.PhaseChange then
 		self:updatePlayers()
-		self:updateRoleTarget()
 	end
 	
 	if event == sgs.Death then
@@ -2804,7 +2808,6 @@ end
 
 function SmartAI:hasTrickEffective(card, player)
 	if player then
-		if player:isDead() then return false end
 		if self.room:isProhibited(self.player, player, card) then return false end
 		if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("wuyan") then
 			if card and not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end

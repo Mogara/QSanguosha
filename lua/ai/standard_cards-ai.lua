@@ -125,7 +125,7 @@ function SmartAI:useCardSlash(card, use)
 	end
 	
 	for _, target in ipairs(targets) do
-		if target:isAlive() and (self.player:canSlash(target, not no_distance) or
+		if (self.player:canSlash(target, not no_distance) or
 		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
 		self:objectiveLevel(target) > 3 and
 		self:slashIsEffective(card, target) and
