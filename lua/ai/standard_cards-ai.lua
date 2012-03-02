@@ -112,14 +112,14 @@ function SmartAI:useCardSlash(card, use)
 	end
 
 	local targets = {}
-	if sgs.target[self.player:getRole()] then 
+	if sgs.target[self.player:getRole()] and self:isEnemy(sgs.target[self.player:getRole()]) then 
 		table.insert(targets, sgs.target[self.player:getRole()])
 	end
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		local slash_prohibit = false
 		slash_prohibit = self:slashProhibit(card,enemy)
-		if not slash_prohibit and enemy ~= sgs.target[self.player:getRole()] then 
+		if not slash_prohibit and enemy:objectName() ~= sgs.target[self.player:getRole()]:objectName() then 
 			table.insert(targets, enemy)
 		end
 	end
