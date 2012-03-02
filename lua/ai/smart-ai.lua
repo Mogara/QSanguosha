@@ -43,6 +43,7 @@ sgs.ai_skill_use_func = 	{}
 sgs.ai_skills = 			{}
 sgs.ai_slash_weaponfilter = {}
 sgs.ai_slash_prohibit = 	{}
+sgs.ai_trick_prohibit =		{} -- Kept for back-compatibility only
 sgs.dynamic_value = 		{
 	damage_card = 			{},
 	control_usecard = 		{},
