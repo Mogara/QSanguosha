@@ -528,8 +528,8 @@ void Photo::updatePile(const QString &pile_name){
         button_widget = new QGraphicsProxyWidget(this);
         button_widget->setWidget(button);
         //button_widget->setPos(pos());
-        button_widget->moveBy(46, 68);
-        button_widget->resize(80, 16);
+        button_widget->moveBy(0, 103);
+        button_widget->resize(15, 15);
         //scene()->addItem(button_widget);
 
         QMenu *menu = new QMenu(button);
@@ -557,7 +557,8 @@ void Photo::updatePile(const QString &pile_name){
         if(!pile.isEmpty()){
             button_widget->show();
             active++;
-            button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+            button->setText(QString());
+            //button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
         }
 
         QMenu *menu = button->menu();
@@ -577,7 +578,7 @@ void Photo::updatePile(const QString &pile_name){
         }
         menu->addSeparator();
     }
-    if(active>1)button->setText(QString(tr("Multiple")));
+/*    if(active>1)button->setText(QString(tr("Multiple")));
 
     if(who->getMaxHP()>5)
     {
@@ -585,7 +586,7 @@ void Photo::updatePile(const QString &pile_name){
         button_widget->moveBy(100, 68);
         button_widget->resize(16,16);
         button->setText(QString());
-    }
+    }*/
 }
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
