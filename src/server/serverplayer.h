@@ -86,6 +86,7 @@ public:
     void clearSelected();
 
     int getGeneralMaxHP() const;
+    int getGeneralMaxHp() const;
     virtual QString getGameMode() const;
 
     QString getIp() const;
