@@ -17,19 +17,23 @@ MagatamaWidget::MagatamaWidget(int hp, Qt::Orientation orientation)
         layout = new QHBoxLayout;
 
     QPixmap pixmap = *GetMagatama(qMin(5, hp));
+    if(!pixmap.isNull()){
+        int i;
+        for(i=0; i<hp; i++){
+            QLabel *label = new QLabel;
+            label->setPixmap(pixmap);
 
-    int i;
-    for(i=0; i<hp; i++){
-        QLabel *label = new QLabel;
-        label->setPixmap(pixmap);
-
-        layout->addWidget(label);
+            layout->addWidget(label);
+        }
     }
 
     setLayout(layout);
 }
 
 QPixmap *MagatamaWidget::GetMagatama(int index){
+    if(index < 0)
+        return new QPixmap();
+
     static QPixmap magatamas[6];
     if(magatamas[0].isNull()){
         int i;
