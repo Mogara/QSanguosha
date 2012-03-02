@@ -82,7 +82,9 @@ public:
 	int getHp() const;
 	void setHp(int hp);    
 	int getMaxHP() const;
-	void setMaxHP(int max_hp);    
+	int getMaxHp() const;
+	void setMaxHP(int max_hp);
+	void setMaxHp(int max_hp);
 	int getLostHp() const;
 	bool isWounded() const;
 
@@ -296,6 +298,7 @@ public:
 	void clearSelected();
 
 	int getGeneralMaxHP() const;
+	int getGeneralMaxHp() const;
 	virtual QString getGameMode() const;
 
 	QString getIp() const;
