@@ -57,4 +57,6 @@ AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) 
     return AI::GetRelation(a, b);
 }
 
-QHash<QString, Scenario *> ScenarioAdder::Scenarios;
+ScenarioAdder::ScenarioHash& ScenarioAdder::scenarios(){
+    return *(Scenarios());
+}
