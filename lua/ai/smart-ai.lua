@@ -1259,7 +1259,7 @@ function SmartAI:updateRoleTargets()
 	end
 end
 
-function self:updatePlayers()
+function SmartAI:updatePlayers()
 	for _, aflag in ipairs(sgs.ai_global_flags) do
 		sgs[aflag] = nil
 	end
