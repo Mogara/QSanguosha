@@ -623,9 +623,7 @@ end
 
 function SmartAI:inOneGroup(player)
 	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
-	-- return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player)
-	return sgs.evaluatePlayerRole(player) == self.player:getRole() or self.player:isLord() and sgs.evaluatePlayerRole(player) == "loyalist"
-	-- return not self:isEnemy(player)
+	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player)
 end
 
 function SmartAI:updateTarget(player)
@@ -684,17 +682,17 @@ function sgs.evaluatePlayerRole(player)
 	max_value = math.max(max_value, sgs.role_evaluation[player:objectName()]["rebel"])
 	if max_value == sgs.role_evaluation[player:objectName()]["loyalist"] then
 		local rest = math.max(sgs.role_evaluation[player:objectName()]["rebel"], sgs.role_evaluation[player:objectName()]["renegade"])
-		if sgs.role_evaluation[player:objectName()]["loyalist"] - rest < 20 then return "unknown"
+		if sgs.role_evaluation[player:objectName()]["loyalist"] - rest <= 20 then return "unknown"
 		else return "loyalist"
 		end
 	elseif max_value == sgs.role_evaluation[player:objectName()]["renegade"] then
 		local rest = math.max(sgs.role_evaluation[player:objectName()]["rebel"], sgs.role_evaluation[player:objectName()]["loyalist"])
-		if sgs.role_evaluation[player:objectName()]["renegade"] - rest < 20 then return "unknown"
+		if sgs.role_evaluation[player:objectName()]["renegade"] - rest <= 20 then return "unknown"
 		else return "renegade"
 		end
 	elseif max_value == sgs.role_evaluation[player:objectName()]["rebel"] then
 		local rest = math.max(sgs.role_evaluation[player:objectName()]["renegade"], sgs.role_evaluation[player:objectName()]["loyalist"])
-		if sgs.role_evaluation[player:objectName()]["rebel"] - rest < 20 then return "unknown"
+		if sgs.role_evaluation[player:objectName()]["rebel"] - rest <= 20 then return "unknown"
 		else return "rebel"
 		end
 	end
