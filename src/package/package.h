@@ -70,12 +70,16 @@ protected:
 };
 
 class PackageAdder{
+private:
+    typedef QHash<QString, Package *> PackageHash;
+    Q_GLOBAL_STATIC(PackageHash, Packages)
+
 public:
     PackageAdder(const QString &name, Package *pack){
-        Packages[name] = pack;
+        packages()[name] = pack;
     }
-
-    static QHash<QString, Package *> Packages;
+    
+    static PackageHash& packages(void);
 };
 
 #define ADD_PACKAGE(name) static PackageAdder name##PackageAdder(#name, new name##Package);
