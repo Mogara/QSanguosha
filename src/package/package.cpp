@@ -1,5 +1,6 @@
 #include "package.h"
 
-PackageAdder::PackageHash& PackageAdder::packages(){
-    return *(Packages());
+Q_GLOBAL_STATIC(PackageHash, Packages)
+PackageHash& PackageAdder::packages(){
+    return *(::Packages());
 }

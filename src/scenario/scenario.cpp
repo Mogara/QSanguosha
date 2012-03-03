@@ -57,6 +57,7 @@ AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) 
     return AI::GetRelation(a, b);
 }
 
-ScenarioAdder::ScenarioHash& ScenarioAdder::scenarios(){
-    return *(Scenarios());
+Q_GLOBAL_STATIC(ScenarioHash, Scenarios)
+ScenarioHash& ScenarioAdder::scenarios(){
+    return *(::Scenarios());
 }

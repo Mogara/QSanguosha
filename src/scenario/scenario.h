@@ -31,11 +31,9 @@ protected:
     ScenarioRule *rule;
 };
 
-class ScenarioAdder{
-private:
-    typedef QHash<QString, Scenario *> ScenarioHash;
-    Q_GLOBAL_STATIC(ScenarioHash, Scenarios)
+typedef QHash<QString, Scenario *> ScenarioHash;
 
+class ScenarioAdder{
 public:
     ScenarioAdder(const QString &name, Scenario *scenario){
         scenarios()[name] = scenario;
