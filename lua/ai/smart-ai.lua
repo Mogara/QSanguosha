@@ -624,8 +624,8 @@ end
 function SmartAI:inOneGroup(player)
 	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
 	-- return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player)
-	-- return sgs.evaluatePlayerRole(player) == self.player:getRole()
-	return self:isEnemy(player)
+	return sgs.evaluatePlayerRole(player) == self.player:getRole()
+	-- return not self:isEnemy(player)
 end
 
 function SmartAI:updateTarget(player)
@@ -1253,13 +1253,13 @@ function SmartAI:updateAlivePlayerRoles()
 	sgs.checkMisjudge()
 end
 
-function SmartAI:updateRoleTarget()
+function SmartAI:updateRoleTargets()
 	for _, p in sgs.qlist(self.room:getAllPlayers()) do
 		self:updateTarget(p)
 	end
 end
 
-local function updatePlayers(self)
+function self:updatePlayers()
 	for _, aflag in ipairs(sgs.ai_global_flags) do
 		sgs[aflag] = nil
 	end
@@ -1324,11 +1324,6 @@ local function updatePlayers(self)
 	end
 end
 
-function SmartAI:updatePlayers()
-	updatePlayers(self)
-	self:updateRoleTarget()
-end
-
 sgs.ai_choicemade_filter.Nullification.general = function(player, promptlist)
 	if player:objectName() == promptlist[3] then return end
 	local positive = true
@@ -1382,6 +1377,7 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.Death or event == sgs.PhaseChange then
 		self:updatePlayers()
+		self:updateRoleTargets()
 	end
 	
 	if event == sgs.Death then
@@ -2226,6 +2222,7 @@ end
 
 function SmartAI:activate(use)
 	self:updatePlayers()
+	self:updateRoleTargets()
 	self:assignKeep(self.player:getHp(),true)
 	self.toUse  = self:getTurnUse()
 	self:sortByDynamicUsePriority(self.toUse)
