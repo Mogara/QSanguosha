@@ -537,7 +537,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 		end
 		for _, askill in ipairs(("yizhong|bazhen|wuyan|weimu|kanpo|liuli|qingguo|longdan|xiangle|jiang|" ..
 		"danlao|qianxun|juxiang|huoshou|zhichi|jilei|feiying|yicong|wusheng|wushuang|tianxiang|leiji|" ..
-		"xuanfeng|luoying|guhuo|guidao|guicai|lianying|xiaoji|hongyan|tiandu|guzheng|xingshang|weidi"):split("|")) do
+		"xuanfeng|luoying|xiliang|guhuo|guidao|guicai|lianying|xiaoji|hongyan|tiandu|guzheng|xingshang|weidi|badao|gushou"):split("|")) do
 			if str:match(askill) then return askill end
 		end
 	else
@@ -552,21 +552,22 @@ function sgs.ai_skill_choice.huashen(self, choices)
 			end
 		end
 		if self:isWeak() then
-			for _, askill in ipairs(("qingnang|jieyin|zaiqi|longhun|kuanggu|caizhaoji_hujia|jushou|buqu"):split("|")) do
+			for _, askill in ipairs(("qingnang|jieyin|zaiqi|longhun|kuanggu|caizhaoji_hujia|jushou|buqu|jincui|yuwen"):split("|")) do
 				if str:match(askill) then return askill end
 			end
 		end
 		for _, askill in ipairs(("tuxi|dimeng|haoshi|guanxing|zhiheng|rende|qiaobian|fangquan|" ..
 		"lijian|quhu|fanjian|tieji|liegong|wushuang|shelie|luoshen|yongsi|yingzi|juejing|" ..
-		"gongxin|mingce|ganlu|tiaoxin|xuanhuo|guhuo|roulin|qiangxi|mengjin|lieren|pojun|" ..
-		"jiushi|luoyi|jiuchi|longhun|wusheng|wushen|longdan|shensu|lianhuan|yinghun|jujian|" ..
-		"zhijian|xinzhan|guidao|guicai|lianpo|mashu|yicong|jizhi|lianying|xuanfeng|xiaoji|" ..
-		"qicai|wansha|biyue|hongyan|kurou|qinyin|zonghuo|shaoying|gongmou"):split("|")) do
+		"gongxin|duanliang|guose|mingce|ganlu|tiaoxin|xuanhuo|guhuo|roulin|qiangxi|mengjin|lieren|pojun|longluo" ..
+		"jiushi|qixi|luoyi|wenjiu|jiuchi|longhun|wusheng|wushen|longdan|shensu|lianhuan|yinghun|houyuan|jujian|huoji|luanji|gongmou|" ..
+		"jueji|zhijian|shuangxiong|xinzhan|chouliang|zhenwei|guidao|guicai|lianpo|mashu|zhengfeng|yicong|jizhi|lianying|xuanfeng|xiaoji|tianyi" ..
+		"qicai|xianzhen|wansha|biyue|hongyan|lukang_weiyan|shipo|kurou|yicai|beifa|qinyin|zonghuo|shaoying|guihan|yishe|fuzuo|shouye"):split("|")) do
 			if str:match(askill) then return askill end
 		end
 	end
 	for index = #choices, 1, -1 do
-		if ("qixing|kuangfeng|dawu|kuangbao|wuqian|wumou|shenfen|renjie|tuntian|benghuai|wuling|liqian|lianli|tongxin|shenjun|xunzhi|dongcha")
+		if ("qixing|kuangfeng|dawu|kuangbao|wuqian|wumou|shenfen|renjie|tuntian|benghuai|wuling|liqian|lianli|tongxin|shenjun|xunzhi|dongcha" ..
+		"juao")
 		:match(choices[index]) then
 			table.remove(choices,index)
 		end

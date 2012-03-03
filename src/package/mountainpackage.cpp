@@ -973,7 +973,7 @@ public:
 
         static QSet<QString> banned;
         if(banned.isEmpty()){
-            banned << "zuoci" << "zuocif" << "guzhielai" << "dengshizai" << "caochong";
+            banned << "zuoci" << "zuocif" << "guzhielai" << "dengshizai" << "caochong" << "jiangboyue";
         }
 
         return (all - banned - huashen_set - room_set).toList();
