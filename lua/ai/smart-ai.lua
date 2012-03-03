@@ -3065,7 +3065,7 @@ local files = table.concat(sgs.GetFileNames("lua/ai"), " ")
 
 for _, aextension in ipairs(sgs.Sanguosha:getExtensions()) do
 	if not loaded:match(aextension) and files:match(string.lower(aextension)) then
-		dofile("lua/ai/" .. aextension .. "-ai.lua")
+		dofile("lua/ai/" .. string.lower(aextension) .. "-ai.lua")
 	end
 end
 
@@ -3073,6 +3073,6 @@ dofile "lua/ai/sp-ai.lua"
 
 for _, ascenario in ipairs(sgs.Sanguosha:getScenarioNames()) do
 	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then
-		dofile("lua/ai/" .. ascenario .. "-ai.lua")
+		dofile("lua/ai/" .. string.lower(ascenario) .. "-ai.lua")
 	end
 end

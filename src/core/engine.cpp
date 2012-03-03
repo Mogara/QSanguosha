@@ -22,7 +22,7 @@ extern "C" {
 }
 
 void Engine::addPackage(const QString &name){
-    Package *pack = PackageAdder::Packages[name];
+    Package *pack = PackageAdder::packages()[name];
     if(pack)
         addPackage(pack);
     else
@@ -30,7 +30,7 @@ void Engine::addPackage(const QString &name){
 }
 
 void Engine::addScenario(const QString &name){
-    Scenario *scenario = ScenarioAdder::Scenarios[name];
+    Scenario *scenario = ScenarioAdder::scenarios()[name];
     if(scenario)
         addScenario(scenario);
     else

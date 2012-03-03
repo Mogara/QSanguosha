@@ -1,3 +1,5 @@
 #include "package.h"
 
-QHash<QString, Package *> PackageAdder::Packages;
+PackageAdder::PackageHash& PackageAdder::packages(){
+    return *(Packages());
+}
