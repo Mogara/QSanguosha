@@ -624,7 +624,7 @@ end
 function SmartAI:inOneGroup(player)
 	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
 	-- return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player)
-	return sgs.evaluatePlayerRole(player) == self.player:getRole()
+	return sgs.evaluatePlayerRole(player) == self.player:getRole() or self.player:isLord() and sgs.evaluatePlayerRole(player) == "loyalist"
 	-- return not self:isEnemy(player)
 end
 
@@ -1179,7 +1179,7 @@ function SmartAI:isEnemy(other, another)
 	if another then return self:isFriend(other)~=self:isFriend(another) end
 	if sgs.isRolePredictable() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
-	if self:objectiveLevel(other) >= 0 then return true end
+	if self:objectiveLevel(other) > 0 then return true end
 	return false
 end
 
