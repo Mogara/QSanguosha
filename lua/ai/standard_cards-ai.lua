@@ -233,11 +233,17 @@ sgs.ai_card_intention.Slash = function(card,from,tos)
 		if sgs.ai_leiji_effect then
 			if from and from:hasSkill("liegong") then return end
 			sgs.ai_leiji_effect = false
-			if sgs.ai_pojun_effect then value = value/1.5 else value = -value/1.5 end
+			if sgs.ai_pojun_effect then
+				value = value/1.5
+			else
+				--value = -value/1.5
+				value = 0
+			end
 		end
 		speakTrigger(card,from,to)
-		if to:hasSkill("yiji") then 
-			value = value*(2-to:getHp())/1.1
+		if to:hasSkill("yiji") then
+			-- value = value*(2-to:getHp())/1.1
+			value = math.max(value*(2-to:getHp())/1.1, 0)
 		end
 		if from:hasSkill("pojun") and to:getHp() > 3 then value = 0 end
 		sgs.updateIntention(from, to, value)
