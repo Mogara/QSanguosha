@@ -587,6 +587,12 @@ public:
 	static QList<int> StringsToIds(const QStringList &strings);
 };
 
+%extend Card{
+	Weapon* toWeapon(){
+		return qobject_cast<Weapon*>($self);
+	}	
+};
+
 class SkillCard: public Card{
 public:
 	SkillCard();
