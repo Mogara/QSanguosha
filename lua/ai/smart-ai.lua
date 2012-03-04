@@ -1057,7 +1057,7 @@ function sgs.gameProcess(room)
 		local lord_hp
 		if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
 		else lord_hp = aplayer:getHp() end
-		if lord_hp > 3 or (lord_hp >= 2 and sgs.getDefense(aplayer) > 3) then health = true end
+		if lord_hp > 3 or (lord_hp <= 3 and sgs.getDefense(aplayer) > 3) then health = true end
 		end
 	end
 
