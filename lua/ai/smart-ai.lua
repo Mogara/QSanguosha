@@ -661,6 +661,16 @@ function sgs.evaluatePlayerRole(player)
 	if not player then global_room:writeToConsole("Player is empty in role's evaluation!") return end
 	if player:isLord() then return "loyalist" end
 	if sgs.current_mode_players["loyalist"] == 0 and sgs.current_mode_players["rebel"] == 0 then return "renegade" end
+	if sgs.current_mode_players["loyalist"] == 0 and sgs.current_mode_players["renegade"] == 0 then return "rebel" end
+
+	local max_value = math.max(sgs.role_evaluation[player:objectName()]["loyalist"], sgs.role_evaluation[player:objectName()]["renegade"])
+	max_value = math.max(max_value, sgs.role_evaluation[player:objectName()]["rebel"])
+	if max_value == sgs.role_evaluation[player:objectName()]["loyalist"] then
+        if sgs.current_mode_players["loyalist"] == 0 and not sgs.current_mode_players["renegade"] == 0 then return "renegade" end 
+	elseif max_value == sgs.role_evaluation[player:objectName()]["rebel"] then
+        if sgs.current_mode_players["rebel"] == 0 and not sgs.current_mode_players["renegade"] == 0 then return "renegade" end
+	end
+	
 	if sgs.role_evaluation[player:objectName()]["loyalist"] == sgs.role_evaluation[player:objectName()]["renegade"] and
 		sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["renegade"] then 
 		return "unknown"
@@ -678,8 +688,6 @@ function sgs.evaluatePlayerRole(player)
 		return "renegade"
 	end
 	
-	local max_value = math.max(sgs.role_evaluation[player:objectName()]["loyalist"], sgs.role_evaluation[player:objectName()]["renegade"])
-	max_value = math.max(max_value, sgs.role_evaluation[player:objectName()]["rebel"])
 	if max_value == sgs.role_evaluation[player:objectName()]["loyalist"] then
 		local rest = math.max(sgs.role_evaluation[player:objectName()]["rebel"], sgs.role_evaluation[player:objectName()]["renegade"])
 		if sgs.role_evaluation[player:objectName()]["loyalist"] - rest <= 20 then return "unknown"
@@ -1017,7 +1025,9 @@ function sgs.gameProcess(room)
 	elseif loyal_num == 0 and rebel_num > 1 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
 	local health = 0
+	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
+          --if not (aplayer:objectName() == currentplayer:objectName() and aplayer:getRole() == "renegade") then 
 		if not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "rebel" then
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
@@ -1037,6 +1047,7 @@ function sgs.gameProcess(room)
 				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
 			end
 		end
+	    --end	
 	end
 	local diff = loyal_value - rebel_value
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
@@ -1044,7 +1055,7 @@ function sgs.gameProcess(room)
 		   local lord_hp
 		   if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
 		   else lord_hp = aplayer:getHp() end
-		   if lord_hp > 2 or (lord_hp == 2 and sgs.getDefense(aplayer) > 3) then health =1 end
+		   if lord_hp > 3 or (lord_hp >= 2 and sgs.getDefense(aplayer) > 3) then health =1 end
 		end
 	end
 
@@ -1105,13 +1116,18 @@ function SmartAI:objectiveLevel(player)
 			else
 				if player:isLord() then
 					if rebel_num > 0 then
+					    if loyal_num > 0 then
 						if self:isWeak(player) then return -1
 						elseif process == "loyalist" then return 3
-						else return -1 end
+						else return 0 end
+					    else 
+					        if self:isWeak(player) then return -1
+					        else return 3.5 end
+					    end    			        
 					else
 						if self:isWeak(player) then return 3
 						elseif process == "loyalish" then return 3
-						else return 5 end
+						else return 4 end
 					end
 				else
 					if process == "loyalist" then return 5 else return 3 end
@@ -1129,7 +1145,8 @@ function SmartAI:objectiveLevel(player)
 				else return 5
 				end
 			else
-				return -2
+			        if self.player:isLord() then return 0
+			        elseif loyal_num == 1 then return 5
 			end
 		end
 		if loyal_num == 0 then
