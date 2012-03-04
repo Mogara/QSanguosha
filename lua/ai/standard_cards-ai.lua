@@ -667,19 +667,43 @@ function SmartAI:useCardDuel(duel, use)
 	local enemies = self:exclude(self.enemies, duel)
 	local target 
 	local n1 = self:getCardsNum("Slash")
-	local n2
-    -- if sgs.target[self.player:getRole()] then n2 = sgs.target[self.player:getRole()]:getHandcardNum() 
+	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
+	if sgs.target[self.player:getRole()] then
+		local target = sgs.target[self.player:getRole()]
+		local n2 = sgs.target[self.player:getRole()]:getHandcardNum()
+		if target:hasSkill("wushuang") then n2 = n2*2 end
+		local useduel
+		if target and self:hasTrickEffective(duel, target) then
+			if n1 >= n2 then
+				useduel = true
+			elseif n2 > n1*2 + 1 then
+				useduel = false
+			elseif n1 > 0 then
+				local percard = 0.35
+				if target:hasSkill("paoxiao") or target:hasWeapon("crossbow") then percard = 0.2 end
+				local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
+				if math.random() > poss then useduel = true end
+			end
+			if useduel then
+				use.card = duel
+				if use.to then
+					use.to:append(target)
+					self:speak("duel", self.player:getGeneral():isFemale())
+				end
+				return
+			end
+		end
+	end
+    local n2 
 	for _, enemy in ipairs(enemies) do
 		n2 = enemy:getHandcardNum()
 		if self:objectiveLevel(enemy) > 3 then
 			if enemy:hasSkill("wushuang") then n2 = n2*2 end
-			if self.player:hasSkill("wushuang") then n1 = n1*2 end
 			target = enemy
 			break
 		end
 	end
 	
-	-- target = sgs.target[self.player:getRole()] or target 
 	local useduel
 	if target and self:hasTrickEffective(duel, target) then
 		if n1 >= n2 then
