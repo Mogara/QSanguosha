@@ -7,6 +7,7 @@ sgs.ai_skill_invoke.yitian_lost = function(self, data)
 end
 
 sgs.ai_skill_playerchosen.yitian_lost = sgs.ai_skill_playerchosen.damage
+sgs.ai_playerchosen_intention.yitian_lost = 80
 
 sgs.ai_skill_invoke.yitian_sword = function(self, targets)
 	local slash=self:getCard("Slash")

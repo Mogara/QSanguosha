@@ -264,6 +264,8 @@ sgs.ai_skill_playerchosen.fangquan = function(self, targets)
 	end
 end
 
+sgs.ai_playerchosen_intention.fangquan = -40
+
 local tiaoxin_skill={}
 tiaoxin_skill.name="tiaoxin"
 table.insert(sgs.ai_skills, tiaoxin_skill)

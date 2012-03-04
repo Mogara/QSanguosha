@@ -20,6 +20,7 @@ function CloneAI(player)
 end
 
 sgs.ai_card_intention = 	{}
+sgs.ai_playerchosen_intention = {}
 sgs.role_evaluation = 		{}
 sgs.ai_keep_value = 		{}
 sgs.ai_use_value = 			{}
@@ -56,7 +57,8 @@ sgs.ai_choicemade_filter = 	{
 	cardResponsed = 		{},
 	skillInvoke = 			{},
 	skillChoice = 			{},
-	Nullification = 		{}
+	Nullification = 		{},
+	playerChosen =			{}
 }
 
 function setInitialTables()
@@ -1359,6 +1361,23 @@ sgs.ai_choicemade_filter.Nullification.general = function(player, promptlist)
 	end
 	if positive then intention = -intention end
 	sgs.updateIntention(player, to, intention)
+end
+
+sgs.ai_choicemade_filter.playerChosen.general = function(from, promptlist)
+	if from:objectName() == promptlist[3] then return end
+	local reason = string.gsub(promptlist[2], "%-", "_")
+	local to
+	for _, p in sgs.qlist(from:getRoom():getAlivePlayers()) do
+		if p:objectName() == promptlist[3] then to = p break end
+	end
+	local callback = sgs.ai_playerchosen_intention[reason]
+	if callback then
+		if type(callback) == "number" then
+			sgs.updateIntention(from, to, sgs.ai_playerchosen_intention[reason])
+		elseif type(callback) == "function" then
+			callback(from, to)
+		end
+	end
 end
 
 function SmartAI:filterEvent(event, player, data)
