@@ -668,7 +668,7 @@ function SmartAI:useCardDuel(duel, use)
 	local target 
 	local n1 = self:getCardsNum("Slash")
 	local n2
-        if sgs.target[self.player:getRole()] then n2 = sgs.target[self.player:getRole()]:getHandcardNum() end 
+    -- if sgs.target[self.player:getRole()] then n2 = sgs.target[self.player:getRole()]:getHandcardNum() 
 	for _, enemy in ipairs(enemies) do
 		n2 = enemy:getHandcardNum()
 		if self:objectiveLevel(enemy) > 3 then
@@ -679,7 +679,7 @@ function SmartAI:useCardDuel(duel, use)
 		end
 	end
 	
-	target = sgs.target[self.player:getRole()] or target 
+	-- target = sgs.target[self.player:getRole()] or target 
 	local useduel
 	if target and self:hasTrickEffective(duel, target) then
 		if n1 >= n2 then
