@@ -623,7 +623,7 @@ end
 
 function SmartAI:inOneGroup(player)
 	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
-	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player)
+	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player) and not sgs.evaluatePlayerRole(self.player) == "renegade"
 end
 
 function SmartAI:updateTarget(player)
