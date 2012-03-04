@@ -20,6 +20,7 @@ function CloneAI(player)
 end
 
 sgs.ai_card_intention = 	{}
+sgs.ai_playerchosen_intention = {}
 sgs.role_evaluation = 		{}
 sgs.ai_keep_value = 		{}
 sgs.ai_use_value = 			{}
@@ -56,7 +57,8 @@ sgs.ai_choicemade_filter = 	{
 	cardResponsed = 		{},
 	skillInvoke = 			{},
 	skillChoice = 			{},
-	Nullification = 		{}
+	Nullification = 		{},
+	playerChosen =			{}
 }
 
 function setInitialTables()
@@ -621,9 +623,11 @@ function SmartAI:sortByCardNeed(cards)
 	table.sort(cards, compare_func)
 end
 
-function SmartAI:inOneGroup(player)
+function SmartAI:inOneGroup(player, another)
+	another = another or self.player
+	if sgs.isRolePredictable() then return self:isFriend(player, another) end
 	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
-	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player) and not sgs.evaluatePlayerRole(self.player) == "renegade"
+	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(another) and not sgs.evaluatePlayerRole(another) == "renegade"
 end
 
 function SmartAI:updateTarget(player)
@@ -632,7 +636,7 @@ function SmartAI:updateTarget(player)
 	if #enemies == 0 then return end
 	local priority_target = {}
 	for _, enemy in ipairs(enemies) do	
-		if not self:inOneGroup(enemy) and self:hasSkills(sgs.priority_skill, player) then
+		if not self:inOneGroup(enemy, player) and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(priority_target, enemy)
 		end
 	end
@@ -644,13 +648,13 @@ function SmartAI:updateTarget(player)
 	end
 	
 	self:sort(enemies)
-	for _, enemy in ipairs(self.enemies) do
-		if not self:hasSkills(sgs.exclusive_skill, enemy) and not self:inOneGroup(enemy) then sgs.target[player:getRole()] = enemy return end
+	for _, enemy in ipairs(enemies) do
+		if not self:hasSkills(sgs.exclusive_skill, enemy) and not self:inOneGroup(enemy, player) then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "defense")
-	for _, enemy in ipairs(self.enemies) do
-		if self:isWeak(enemy) and not self:inOneGroup(enemy) then sgs.target[player:getRole()] = enemy return end
+	for _, enemy in ipairs(enemies) do
+		if self:isWeak(enemy) and not self:inOneGroup(enemy, player) then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "hp")
@@ -1359,6 +1363,23 @@ sgs.ai_choicemade_filter.Nullification.general = function(player, promptlist)
 	end
 	if positive then intention = -intention end
 	sgs.updateIntention(player, to, intention)
+end
+
+sgs.ai_choicemade_filter.playerChosen.general = function(from, promptlist)
+	if from:objectName() == promptlist[3] then return end
+	local reason = string.gsub(promptlist[2], "%-", "_")
+	local to
+	for _, p in sgs.qlist(from:getRoom():getAlivePlayers()) do
+		if p:objectName() == promptlist[3] then to = p break end
+	end
+	local callback = sgs.ai_playerchosen_intention[reason]
+	if callback then
+		if type(callback) == "number" then
+			sgs.updateIntention(from, to, sgs.ai_playerchosen_intention[reason])
+		elseif type(callback) == "function" then
+			callback(from, to)
+		end
+	end
 end
 
 function SmartAI:filterEvent(event, player, data)

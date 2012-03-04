@@ -770,7 +770,8 @@ public:
             ServerPlayer *dongzhuo = effect.to;
             Room *room = female->getRoom();
 
-            room->playSkillEffect(objectName(), 2);
+            int index = effect.drank ? 3 : 2;
+            room->playSkillEffect(objectName(), index);
             room->slashResult(effect, askForDoubleJink(dongzhuo, "roulin2"));
 
             return true;
@@ -810,7 +811,8 @@ public:
         if(trigger_this){
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+maxhp");
 
-            room->playSkillEffect(objectName());
+            int index = dongzhuo->getGeneral()->isFemale() ? 2: 1;
+            room->playSkillEffect(objectName(), index);
             room->setEmotion(dongzhuo, "bad");
 
             LogMessage log;

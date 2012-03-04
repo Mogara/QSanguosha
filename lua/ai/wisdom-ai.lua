@@ -234,6 +234,8 @@ sgs.ai_skill_playerchosen.longluo = function(self, targets)
 	return self.friends_noself[1]
 end
 
+sgs.ai_playerchosen_intention.longluo = -60
+
 sgs.ai_skill_invoke.longluo = function(self, data)
 	return #self.friends > 1
 end

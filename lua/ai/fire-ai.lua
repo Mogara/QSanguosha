@@ -68,6 +68,7 @@ table.insert(sgs.ai_choicemade_filter.cardUsed, quhu_filter)
 
 sgs.ai_cardneed.quhu = sgs.ai_cardneed.bignumber
 sgs.ai_skill_playerchosen.quhu = sgs.ai_skill_playerchosen.damage
+sgs.ai_playerchosen_intention.quhu = 80
 
 sgs.ai_card_intention.QuhuCard = 30
 

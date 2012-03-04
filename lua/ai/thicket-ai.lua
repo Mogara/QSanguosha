@@ -57,6 +57,12 @@ sgs.ai_skill_invoke.songwei = function(self, data)
 	return self:isFriend(who)
 end
 
+sgs.ai_card_intention.FangzhuCard = function(card, from, tos)
+	if from:getLostHp() < 3 then
+		sgs.updateIntention(from, tos[1], 80/from:getLostHp())
+	end
+end
+
 sgs.ai_chaofeng.caopi = -3
 
 duanliang_skill={}
