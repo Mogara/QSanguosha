@@ -67,6 +67,7 @@ protected:
 class Weapon:public EquipCard{
 public:
 	Weapon(Suit suit, int number, int range);
+	int getRange();
 	virtual QString getSubtype() const;
 
 	virtual Location location() const;

@@ -392,6 +392,7 @@ sgs.ai_skill_choice.mingce = function(self, choices)
 end
 
 sgs.ai_skill_playerchosen.mingce = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_playerchosen_intention.mingce = 80
 
 sgs.ai_use_value.MingceCard = 5.9
 sgs.ai_use_priority.MingceCard = 4

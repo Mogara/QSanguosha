@@ -11,6 +11,7 @@ sgs.ai_skill_invoke.sp_moonspear = function(self, data)
 end
 
 sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_playerchosen_intention.sp_moonspaer = 80
 
 function sgs.ai_slash_prohibit.weidi(self, to, card)
 	if to:isLord() then return false end
