@@ -623,9 +623,11 @@ function SmartAI:sortByCardNeed(cards)
 	table.sort(cards, compare_func)
 end
 
-function SmartAI:inOneGroup(player)
+function SmartAI:inOneGroup(player, another)
+	another = another or self.player
+	if sgs.isRolePredictable() then return self:isFriend(player, another) end
 	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
-	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player) and not sgs.evaluatePlayerRole(self.player) == "renegade"
+	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(another) and not sgs.evaluatePlayerRole(another) == "renegade"
 end
 
 function SmartAI:updateTarget(player)
@@ -634,7 +636,7 @@ function SmartAI:updateTarget(player)
 	if #enemies == 0 then return end
 	local priority_target = {}
 	for _, enemy in ipairs(enemies) do	
-		if not self:inOneGroup(enemy) and self:hasSkills(sgs.priority_skill, player) then
+		if not self:inOneGroup(enemy, player) and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(priority_target, enemy)
 		end
 	end
@@ -646,13 +648,13 @@ function SmartAI:updateTarget(player)
 	end
 	
 	self:sort(enemies)
-	for _, enemy in ipairs(self.enemies) do
-		if not self:hasSkills(sgs.exclusive_skill, enemy) and not self:inOneGroup(enemy) then sgs.target[player:getRole()] = enemy return end
+	for _, enemy in ipairs(enemies) do
+		if not self:hasSkills(sgs.exclusive_skill, enemy) and not self:inOneGroup(enemy, player) then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "defense")
-	for _, enemy in ipairs(self.enemies) do
-		if self:isWeak(enemy) and not self:inOneGroup(enemy) then sgs.target[player:getRole()] = enemy return end
+	for _, enemy in ipairs(enemies) do
+		if self:isWeak(enemy) and not self:inOneGroup(enemy, player) then sgs.target[player:getRole()] = enemy return end
 	end
 	
 	self:sort(enemies, "hp")
