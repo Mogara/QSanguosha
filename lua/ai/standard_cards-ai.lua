@@ -32,6 +32,15 @@ function SmartAI:slashProhibit(card,enemy)
 	return not self:slashIsEffective(card, enemy)
 end
 
+function SmartAI:canLiuli(other, another)
+    if not other:hasSkill("liuli") then return false end
+	local n = other:getHandcardNum()
+	if n > 0 and (other:distanceTo(another) <= other:getAttackRange()) then return true
+	elseif other:getWeapon() and other:getOffensiveHorse() and (other:distanceTo(another) <= other:getAttackRange()) then return true
+	elseif other:getWeapon() or other:getOffensiveHorse() then return other:distanceTo(another) <= 1
+	else return false end
+end
+
 function SmartAI:slashIsEffective(slash, to)
 	if to:hasSkill("yizhong") and not to:getArmor() then
 		if slash:isBlack() then
@@ -74,6 +83,12 @@ end
 
 function SmartAI:useCardSlash(card, use)
 	if not self:slashIsAvailable() then return end
+	local basicnum = 0
+	local cards = self.player:getCards("he")
+	cards = sgs.QList2Table(cards)
+	for _, acard in ipairs(cards) do
+		if acard:getTypeId() == sgs.Card_Basic and not acard:inherits("Peach") then basicnum = basicnum + 1 end
+	end
 	local no_distance = self.slash_distance_limit
 	if card:getSkillName() == "wushen" then no_distance = true end
 	if (self.player:getHandcardNum() == 1
@@ -112,7 +127,7 @@ function SmartAI:useCardSlash(card, use)
 	end
 
 	local targets = {}
-	if sgs.target[self.player:getRole()] and self:isEnemy(sgs.target[self.player:getRole()]) then 
+	if sgs.target[self.player:getRole()]  then 
 		table.insert(targets, sgs.target[self.player:getRole()])
 	end
 	self:sort(self.enemies, "defense")
@@ -124,11 +139,16 @@ function SmartAI:useCardSlash(card, use)
 		end
 	end
 	
-	for _, target in ipairs(targets) do
+	local canliuli = false
+	    for _, target in ipairs(targets) do
+	        for _, friend in ipairs(self.friends_noself) do
+		    if self:canLiuli(target, friend) and self:slashIsEffective(card, friend) then canliuli = true end
+		end
 		if (self.player:canSlash(target, not no_distance) or
 		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
 		self:objectiveLevel(target) > 3 and
 		self:slashIsEffective(card, target) and
+		not (target:hasSkill("xiangle") and basicnum < 2) and not canliuli and
 		not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
 			and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
 			-- fill the card use struct
@@ -642,7 +662,7 @@ function SmartAI:useCardDuel(duel, use)
 	local target 
 	local n1 = self:getCardsNum("Slash")
 	local n2
-	-- if sgs.target[self.player:getRole()] then n2 = sgs.target[self.player:getRole()]:getHandcardNum() end (it doesn't work correctly now)
+        if sgs.target[self.player:getRole()] then n2 = sgs.target[self.player:getRole()]:getHandcardNum() end 
 	for _, enemy in ipairs(enemies) do
 		n2 = enemy:getHandcardNum()
 		if self:objectiveLevel(enemy) > 3 then
@@ -653,7 +673,7 @@ function SmartAI:useCardDuel(duel, use)
 		end
 	end
 	
-	--target = sgs.target[self.player:getRole()] or target (it doesn't work correctly now)
+	target = sgs.target[self.player:getRole()] or target 
 	local useduel
 	if target and self:hasTrickEffective(duel, target) then
 		if n1 >= n2 then
@@ -958,7 +978,7 @@ function SmartAI:useCardIndulgence(card, use)
 	
 	local enemies = self:exclude(self.enemies, card)
 	for _, enemy in ipairs(enemies) do
-		if self:hasSkills("lijian|fanjian") and not enemy:containsTrick("indulgence") and not enemy:isKongcheng() and enemy:faceUp() then
+		if self:hasSkills("lijian|fanjian",enemy) and not enemy:containsTrick("indulgence") and not enemy:isKongcheng() and enemy:faceUp() then
 			use.card = card
 			if use.to then use.to:append(enemy) end
 			return
