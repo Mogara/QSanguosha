@@ -259,10 +259,14 @@ return {
 
 	["designer:luboyan"] = "太阳神上、冢冢的青藤",
 	["illustrator:luboyan"] = "真三国无双5",
-	["cv:luboyan"] = "",
+	["cv:luboyan"] = "水浒杀神火将魏定国",
 	["designer:luboyanf"] = "太阳神上、冢冢的青藤",
 	["illustrator:luboyanf"] = "阿摸",
 	["cv:luboyanf"] = "",
+	["$shaoying1"] = "烈焰升腾，万物尽毁！",
+	["$shaoying2"] = "以火应敌，贼人何处逃窜？！",
+	["$zonghuo"] = "（燃烧声）",
+	["~luboyan"] = "玩火自焚啊！",
 
 	["designer:zhongshiji"] = "Jr. Wakaran",
 	["illustrator:zhongshiji"] = "战国无双3",

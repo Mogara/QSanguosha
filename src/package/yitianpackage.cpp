@@ -1041,13 +1041,14 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.nature != DamageStruct::Fire){
             effect.nature = DamageStruct::Fire;
-
+            Room *room = player->getRoom();
             data = QVariant::fromValue(effect);
 
+            room->playSkillEffect(objectName());
             LogMessage log;
             log.type = "#Zonghuo";
             log.from = player;
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
         }
 
         return false;
@@ -1088,6 +1089,7 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
+                room->playSkillEffect(objectName());
                 DamageStruct shaoying_damage;
                 shaoying_damage.nature = DamageStruct::Fire;
                 shaoying_damage.from = luboyan;
