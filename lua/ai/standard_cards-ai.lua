@@ -139,9 +139,9 @@ function SmartAI:useCardSlash(card, use)
 		end
 	end
 	
-	local canliuli = false
-	    for _, target in ipairs(targets) do
-	        for _, friend in ipairs(self.friends_noself) do
+	for _, target in ipairs(targets) do
+		local canliuli = false
+		for _, friend in ipairs(self.friends_noself) do
 		    if self:canLiuli(target, friend) and self:slashIsEffective(card, friend) then canliuli = true end
 		end
 		if (self.player:canSlash(target, not no_distance) or
