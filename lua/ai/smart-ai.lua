@@ -44,7 +44,7 @@ sgs.ai_skill_use_func = 	{}
 sgs.ai_skills = 			{}
 sgs.ai_slash_weaponfilter = {}
 sgs.ai_slash_prohibit = 	{}
-sgs.ai_trick_prohibit =		{} -- Kept for back-compatibility only
+sgs.ai_trick_prohibit =		{} -- obsolete
 sgs.dynamic_value = 		{
 	damage_card = 			{},
 	control_usecard = 		{},
@@ -64,7 +64,7 @@ sgs.ai_choicemade_filter = 	{
 function setInitialTables()
 	sgs.current_mode_players = 	{loyalist = 0, rebel = 0, renegade = 0}
 	sgs.ai_type_name = 			{"Skill", "Basic", "Trick", "Equip"}
-	sgs.target = 				{loyalist = nil, rebel = nil, renegade = nil }
+	sgs.target = 				{loyalist = nil, rebel = nil, renegade = nil } -- obsolete
 	sgs.lose_equip_skill = 		"xiaoji|xuanfeng"
 	sgs.need_kongcheng = 		"lianying|kongcheng"
 	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu"
@@ -623,42 +623,37 @@ function SmartAI:sortByCardNeed(cards)
 	table.sort(cards, compare_func)
 end
 
-function SmartAI:inOneGroup(player, another)
-	another = another or self.player
-	if sgs.isRolePredictable() then return self:isFriend(player, another) end
-	if sgs.evaluatePlayerRole(player) == "unknown" then return true end
-	return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(another) and not sgs.evaluatePlayerRole(another) == "renegade"
-end
-
-function SmartAI:updateTarget(player)
-	player = player or self.player
-	local enemies = self:getEnemies(player)
-	if #enemies == 0 then return end
+function SmartAI:getPriorityTarget()
+	local function inOneGroup(player)
+		if sgs.isRolePredictable() then return self:isFriend(player) end
+		if sgs.evaluatePlayerRole(player) == "unknown" then return true end
+		return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player) and not sgs.evaluatePlayerRole(self.player) == "renegade"
+	end
+	if #self.enemies == 0 then return end
 	local priority_target = {}
-	for _, enemy in ipairs(enemies) do	
-		if not self:inOneGroup(enemy, player) and self:hasSkills(sgs.priority_skill, player) then
+	for _, enemy in ipairs(self.enemies) do	
+		if not inOneGroup(enemy) and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(priority_target, enemy)
 		end
 	end
 	
 	if #priority_target > 0 then
 		self:sort(priority_target, "threat")
-		sgs.target[player:getRole()] = priority_target[1]
-		return
+		return priority_target[1]
 	end
 	
-	self:sort(enemies)
-	for _, enemy in ipairs(enemies) do
-		if not self:hasSkills(sgs.exclusive_skill, enemy) and not self:inOneGroup(enemy, player) then sgs.target[player:getRole()] = enemy return end
+	self:sort(self.enemies)
+	for _, enemy in ipairs(self.enemies) do
+		if not self:hasSkills(sgs.exclusive_skill, enemy) and not inOneGroup(enemy) then return enemy end
 	end
 	
-	self:sort(enemies, "defense")
-	for _, enemy in ipairs(enemies) do
-		if self:isWeak(enemy) and not self:inOneGroup(enemy, player) then sgs.target[player:getRole()] = enemy return end
+	self:sort(self.enemies, "defense")
+	for _, enemy in ipairs(self.enemies) do
+		if self:isWeak(enemy) and not inOneGroup(enemy) then return enemy end
 	end
 	
-	self:sort(enemies, "hp")
-	sgs.target[player:getRole()] = enemies[1]
+	self:sort(self.enemies, "hp")
+	return self.enemies[1]
 end
 
 function sgs.evaluatePlayerRole(player)
@@ -837,6 +832,7 @@ function sgs.isRolePredictable()
 end
 
 sgs.ai_card_intention.general=function(from,to,level)
+	if sgs.isRolePredictable() then return end
 	if not to then global_room:writeToConsole(debug.traceback()) return end
 	if from:isLord() then return end
 	--sgs.outputProcessValues(from:getRoom())
@@ -1413,7 +1409,6 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.Death or event == sgs.PhaseChange then
 		self:updatePlayers()
-		self:updateRoleTargets()
 	end
 	
 	if event == sgs.Death then
@@ -2258,7 +2253,6 @@ end
 
 function SmartAI:activate(use)
 	self:updatePlayers()
-	self:updateRoleTargets()
 	self:assignKeep(self.player:getHp(),true)
 	self.toUse  = self:getTurnUse()
 	self:sortByDynamicUsePriority(self.toUse)

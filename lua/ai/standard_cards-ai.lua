@@ -33,7 +33,7 @@ function SmartAI:slashProhibit(card,enemy)
 end
 
 function SmartAI:canLiuli(other, another)
-    if not other:hasSkill("liuli") then return false end
+	if not other:hasSkill("liuli") then return false end
 	local n = other:getHandcardNum()
 	if n > 0 and (other:distanceTo(another) <= other:getAttackRange()) then return true
 	elseif other:getWeapon() and other:getOffensiveHorse() and (other:distanceTo(another) <= other:getAttackRange()) then return true
@@ -127,14 +127,15 @@ function SmartAI:useCardSlash(card, use)
 	end
 
 	local targets = {}
-	if sgs.target[self.player:getRole()]  then 
-		table.insert(targets, sgs.target[self.player:getRole()])
+	local ptarget = self:getPriorityTarget()
+	if ptarget then 
+		table.insert(targets, ptarget)
 	end
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		local slash_prohibit = false
 		slash_prohibit = self:slashProhibit(card,enemy)
-		if not slash_prohibit and enemy:objectName() ~= sgs.target[self.player:getRole()]:objectName() then 
+		if not slash_prohibit and enemy:objectName() ~= ptarget:objectName() then 
 			table.insert(targets, enemy)
 		end
 	end
@@ -142,7 +143,7 @@ function SmartAI:useCardSlash(card, use)
 	for _, target in ipairs(targets) do
 		local canliuli = false
 		for _, friend in ipairs(self.friends_noself) do
-		    if self:canLiuli(target, friend) and self:slashIsEffective(card, friend) then canliuli = true end
+			if self:canLiuli(target, friend) and self:slashIsEffective(card, friend) then canliuli = true end
 		end
 		if (self.player:canSlash(target, not no_distance) or
 		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
@@ -469,6 +470,12 @@ sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
 	if target and self:isFriend(target) and not (target:hasSkill("leiji") and self:getCardsNum("Jink", target, "h") > 0) then
 		return "."
 	end
+	for _, slash in ipairs(self:getCards("Slash")) do
+		if self:slashIsEffective(slash, target) then 
+			return slash:toString()
+		end 
+	end
+	return "."
 end
 
 function sgs.ai_weapon_value.blade(self, enemy)
@@ -668,9 +675,10 @@ function SmartAI:useCardDuel(duel, use)
 	local target 
 	local n1 = self:getCardsNum("Slash")
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
-	if sgs.target[self.player:getRole()] then
-		local target = sgs.target[self.player:getRole()]
-		local n2 = sgs.target[self.player:getRole()]:getHandcardNum()
+	local ptarget = self:getPriorityTarget()
+	if ptarget then
+		local target = ptarget
+		local n2 = target:getHandcardNum()
 		if target:hasSkill("wushuang") then n2 = n2*2 end
 		local useduel
 		if target and self:hasTrickEffective(duel, target) then
@@ -694,7 +702,7 @@ function SmartAI:useCardDuel(duel, use)
 			end
 		end
 	end
-    local n2 
+	local n2 
 	for _, enemy in ipairs(enemies) do
 		n2 = enemy:getHandcardNum()
 		if self:objectiveLevel(enemy) > 3 then
