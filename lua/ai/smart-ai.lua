@@ -65,6 +65,8 @@ function setInitialTables()
 	sgs.current_mode_players = 	{loyalist = 0, rebel = 0, renegade = 0}
 	sgs.ai_type_name = 			{"Skill", "Basic", "Trick", "Equip"}
 	sgs.target = 				{loyalist = nil, rebel = nil, renegade = nil } -- obsolete
+	sgs.discard_pile =			global_room:getDiscardPile()
+	sgs.draw_pile = 			global_room:getDrawPile()
 	sgs.lose_equip_skill = 		"xiaoji|xuanfeng"
 	sgs.need_kongcheng = 		"lianying|kongcheng"
 	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu"
@@ -1073,7 +1075,6 @@ function sgs.gameProcess(room)
 	else return "neutral" end
 end
 
-
 function SmartAI:objectiveLevel(player)
 	if player:objectName() == self.player:objectName() then return -2 end
 
@@ -1279,6 +1280,9 @@ function SmartAI:updatePlayers()
 		sgs[aflag] = nil
 	end
 
+	sgs.discard_pile = global_room:getDiscardPile()
+	sgs.draw_pile = global_room:getDrawPile()
+	
 	if sgs.isRolePredictable() then
 		self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 		table.insert(self.friends, self.player)
@@ -2556,6 +2560,54 @@ function SmartAI:getAllPeachNum(player)
 		n = n + self:getCardsNum("Peach")
 	end
 	return n
+end
+
+function SmartAI:getCardsFromDiscardPile(class_name)
+	sgs.discard_pile = self.room:getDiscardPile()
+	local cards = {}
+	for _, card_id in sgs.qlist(sgs.discard_pile) do
+		local card = sgs.Sanguosha:getCard(card_id)
+		if card:inherits(class_name) then table.insert(cards, card) end
+	end
+	
+	return cards
+end
+
+function SmartAI:getCardsFromDrawPile(class_name)
+	sgs.discard_pile = self.room:getDrawPile()
+	local cards = {}
+	for _, card_id in sgs.qlist(sgs.discard_pile) do
+		local card = sgs.Sanguosha:getCard(card_id)
+		if card:inherits(class_name) then table.insert(cards, card) end
+	end
+	
+	return cards
+end
+
+function SmartAI:getCardsFromGame(class_name)
+	local cards = {}
+	for i=0, sgs.Sanguosha:getCardCount() do
+		local card = sgs.Sanguosha:getCard(i)
+		if card:inherits(class_name) then table.insert(cards, card) end
+	end
+end
+
+function SmartAI:evaluatePlayerCardsNum(class_name, player)
+	player = player or self.player
+	local length = sgs.draw_pile:length()
+	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+		length = length + p:getHandcardNum()
+	end
+	
+	local percentage = (#(self:getCardsFromGame(class_name)) - #(self:getCardsFromDiscardPile(class_name)))/length
+	local modified = 1;
+	if class_name == "Jink" then modified = 1.23
+	elseif class_name == "Analeptic" then modified = 1.17
+	elseif class_name == "Peach" then modified = 1.19
+	elseif class_name == "Slash" then modified = 1.09
+	end
+	
+	return player:getHandcardNum()*percentage*modified
 end
 
 function SmartAI:hasSuit(suit_strings, include_equip, player)
