@@ -127,7 +127,7 @@ function SmartAI:useCardSlash(card, use)
 	end
 
 	local targets = {}
-	local ptarget = self:getPriorityTarget()
+	local ptarget = self:getPriorTarget()
 	if ptarget then 
 		table.insert(targets, ptarget)
 	end
@@ -675,7 +675,7 @@ function SmartAI:useCardDuel(duel, use)
 	local target 
 	local n1 = self:getCardsNum("Slash")
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
-	local ptarget = self:getPriorityTarget()
+	local ptarget = self:getPriorTarget()
 	if ptarget then
 		local target = ptarget
 		local n2 = target:getHandcardNum()

@@ -623,23 +623,23 @@ function SmartAI:sortByCardNeed(cards)
 	table.sort(cards, compare_func)
 end
 
-function SmartAI:getPriorityTarget()
+function SmartAI:getPriorTarget()
 	local function inOneGroup(player)
 		if sgs.isRolePredictable() then return self:isFriend(player) end
 		if sgs.evaluatePlayerRole(player) == "unknown" then return true end
 		return sgs.evaluatePlayerRole(player) == sgs.evaluatePlayerRole(self.player) and not sgs.evaluatePlayerRole(self.player) == "renegade"
 	end
 	if #self.enemies == 0 then return end
-	local priority_target = {}
+	local prior_targets = {}
 	for _, enemy in ipairs(self.enemies) do	
 		if not inOneGroup(enemy) and self:hasSkills(sgs.priority_skill, player) then
-			table.insert(priority_target, enemy)
+			table.insert(prior_targets, enemy)
 		end
 	end
 	
-	if #priority_target > 0 then
-		self:sort(priority_target, "threat")
-		return priority_target[1]
+	if #prior_targets > 0 then
+		self:sort(prior_targets, "threat")
+		return prior_targets[1]
 	end
 	
 	self:sort(self.enemies)
