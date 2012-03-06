@@ -39,6 +39,7 @@ end
 
 sgs.ai_skill_cardask["@hujia-jink"] = function(self)
 	if not self:isFriend(sgs.hujiasource) then return "." end
+	if self:needBear() then return "." end
 	return self:getCardId("Jink") or "."
 end
 
@@ -427,6 +428,7 @@ end
 
 sgs.ai_skill_cardask["@jijiang-slash"] = function(self)
 	if not self:isFriend(sgs.jijiangsource) then return "." end
+	if self:needBear() then return "." end
 	return self:getCardId("Slash") or "."
 end
 
@@ -550,7 +552,13 @@ sgs.zhaoyun_keep_value =
 
 sgs.ai_skill_invoke.tieji = function(self, data)
 	local effect = data:toSlashEffect()
-	return not self:isFriend(effect.to) and (not effect.to:isKongcheng() or effect.to:getArmor())
+	local zj = self.room:findPlayerBySkillName("guidao")
+	if self:hasenemyZj(self.player) and self:canRetrial(zj) then
+	    return false
+	else
+		return not self:isFriend(effect.to) and not effect.to:isKongcheng()
+	end 
+	--return not self:isFriend(effect.to) and (not effect.to:isKongcheng() or effect.to:getArmor())
 end
 
 sgs.ai_chaofeng.machao = 1

@@ -1704,10 +1704,8 @@ function SmartAI:askForCardChosen(who, flags, reason)
 	local card
 	if type(cardchosen) == "function" then
 		card = cardchosen(self, who, flags)
-	end
-	if card then
-		return card:getEffectiveId()
-	end
+		if card then return card:getEffectiveId() end
+	elseif type(cardchosen) == "number" then return cardchosen end
 
 	if self:isFriend(who) then
 		if flags:match("j") then
@@ -2332,6 +2330,71 @@ function SmartAI:needRetrial(judge)
 		return false
 	end
 end
+
+function SmartAI:canRetrial(player)
+    player = player or self.player
+	if player:hasSkill("guidao") then
+	    local blackequipnum = 0
+		if player:getEquips() then
+			for _,equip in ipairs(player:getEquips()) do
+				if equip:isBlack() then blackequipnum = blackequipnum+1 end
+			end
+		end
+		return (blackequipnum+player:getHandcardNum()) > 0
+	elseif player:hasSkill("guicai") then
+	    return player:getHandcardNum() > 0
+	elseif player:hasSkill("jilve") then
+	    return player:getHandcardNum() > 0 and player:getMark("@bear") > 0
+	end		
+end
+
+function SmartAI:hasenemyZj(player)
+    player = player or self.player
+	for _, enemy in ipairs(self:getEnemies(player)) do
+	    if enemy:hasSkill("guidao") then
+			return true
+		end
+	end
+	return false
+end
+
+function SmartAI:getFinalRetrial(player)  
+	local maxfriendseat = -1
+	local maxenemyseat = -1
+	local tmpfriend
+	local tmpenemy
+	for _, aplayer in ipairs(self.friends) do
+		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and aplayer:canRetrial() then
+		    tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+			if tmpfriend > maxfriendseat then maxfriendseat = tmpfriend end
+		end
+	end
+	for _, aplayer in ipairs(self.enemies) do
+		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and aplayer:canRetrial() then
+		    tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+			if tmpenemy > maxenemyseat then maxenemyseat = tmpenemy end
+		end
+	end
+	if maxfriendseat == -1 and maxenemyseat == -1 then return 0
+	elseif maxfriendseat>maxenemyseat then return 1
+	else return 2 end
+end
+
+function SmartAI:hasDangerFriend(player)
+	player = player or self.player
+	local hashy = false
+	for _, aplayer in ipairs(self.enemies) do
+		if aplayer:hasSkill("hongyan") then hashy = true break end
+	end
+	for _, aplayer in ipairs(self.enemies) do
+		if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy) 
+		   or aplayer:hasSkill("xinzhan") then 
+		   if self:isFriend(aplayer:getNextAlive()) then return true end
+		end
+	end
+	return false
+end
+
 
 --- Get the retrial cards with the lowest keep value
 -- @param cards the table that contains all cards can use in retrial skill
