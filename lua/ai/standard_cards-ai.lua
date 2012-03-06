@@ -542,7 +542,7 @@ sgs.ai_skill_invoke.eight_diagram = function(self, data)
 	if sgs.hujiasource and not self:isFriend(sgs.hujiasource) then return false end
 	if sgs.lianlisource and not self:isFriend(sgs.lianlisource) then return false end
 	if self.player:hasSkill("tiandu") then return true end
-	if self:hasenemyZj(self.player) and self:getFinalRetrial(sgs.hujiasource) == 2 then
+	if self:hasenemyZj(self.player) and sgs.hujiasource and self:getFinalRetrial(sgs.hujiasource) == 2 then
 		return false
 	end	
 	if self:getDamagedEffects(self) then return false end
@@ -793,7 +793,8 @@ function SmartAI:valuableCard(who)
 	local offhorse = who:getOffensiveHorse()
 	local defhorse = who:getDefensiveHorse()
     self:sort(self.friends, "hp")
-	local friend = self.friends[1]
+	local friend 
+	if #self.friends > 0 then friend = self.friends[1] end
 	if friend and self:isWeak(friend) and who:inMyAttackRange(friend) then
 		if weapon and who:distanceTo(friend) > 1 and not 
 			(weapon and weapon:inherits("MoonSpear") and who:hasSkill("keji") and who:getHandcardNum() > 5) then return weapon:getId() end
@@ -816,14 +817,14 @@ function SmartAI:valuableCard(who)
 		return offhorse:getId()
 	end
 
-	if who:getEquips() and who:hasSkill("jijiu") then
+	if who:hasSkill("jijiu") then
 		local equips = sgs.QList2Table(who:getEquips())
 		for _,equip in ipairs(equips) do
 			if equip:isRed() then return equip:getId() end
 		end
 	end
 
-	if who:getEquips() and who:hasSkill("longhun") then
+	if who:hasSkill("longhun") then
 		local equips = sgs.QList2Table(who:getEquips())
 		for _,equip in ipairs(equips) do
 			if equip:getSuit() == sgs.Card_Heart then return equip:getId() end
@@ -834,7 +835,7 @@ function SmartAI:valuableCard(who)
 	end	
 
 	if armor and self:evaluateArmor(armor, who)>0
-		and not (armor:inherits("SilverLion") and self:Wounded(who)) then
+		and not (armor:inherits("SilverLion") and who:isWounded()) then
 		return armor:getId()
 	end
 
@@ -977,10 +978,10 @@ function SmartAI:useCardSnatch(snatch, use)
 			if self:hasSkills("guidao|guicai|lijian|fanjian|qingnang|longhun", enemy) then
 				use.card = snatch
 				if use.to then
-					if enemy:getEquips() then
+					--[[if not enemy:getEquips():isEmpty() then
 						sgs.ai_skill_cardchosen.snatch = enemy:getCards(flags):first():getEffectiveId()
-					else 
-						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "h") end
+					else]] 
+						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "he") --end
 					use.to:append(enemy)
 					self:speak("hostile", self.player:getGeneral():isFemale())
 				end
@@ -988,7 +989,7 @@ function SmartAI:useCardSnatch(snatch, use)
 			else
 				use.card = snatch
 				if use.to then
-					if enemy:getEquips() then
+					if not enemy:getEquips():isEmpty() then
 						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "e")
 					else 
 						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "h")
@@ -1130,10 +1131,10 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 					if  self:hasSkills("guidao|guicai|lijian|fanjian|qingnang|longhun", enemy) then
 						use.card = dismantlement
 						if use.to then
-							if enemy:getEquips() then
+							--[[if enemy:getEquips() then
 								sgs.ai_skill_cardchosen.dismantlement = enemy:getCards(flags):first():getEffectiveId()
-							else 
-								sgs.ai_skill_cardchosen.dismantlement = self:getCardRandomly(enemy, "h") end
+							else]] 
+								sgs.ai_skill_cardchosen.dismantlement = self:getCardRandomly(enemy, "he") --end
 							use.to:append(enemy)
 							self:speak("hostile", self.player:getGeneral():isFemale())
 						end
