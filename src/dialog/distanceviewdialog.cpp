@@ -105,9 +105,12 @@ void DistanceViewDialog::showDistance()
     ui->from_seat->setText(QString::number(from->getSeat()));
     ui->to_seat->setText(QString::number(to->getSeat()));
 
-    int left_distance = qAbs(from->getSeat() + from->aliveCount() - to->getSeat());
-    ui->left->setText(QString("|%1+%2-%3|=%4")
+    int left_distance = qAbs(from->getSeat() +
+                             ((from->getSeat()<to->getSeat())?from->aliveCount():-from->aliveCount())
+                             - to->getSeat());
+    ui->left->setText(QString("|%1%2%3-%4|=%5")
                       .arg(from->getSeat())
+                      .arg((from->getSeat()<to->getSeat())?"+":"-")
                       .arg(from->aliveCount())
                       .arg(to->getSeat())
                       .arg(left_distance)
