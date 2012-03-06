@@ -2336,7 +2336,8 @@ function SmartAI:canRetrial(player)
 	if player:hasSkill("guidao") then
 	    local blackequipnum = 0
 		if player:getEquips() then
-			for _,equip in ipairs(player:getEquips()) do
+			local equips = player:getEquips()
+			for _,equip in ipairs(equips) do
 				if equip:isBlack() then blackequipnum = blackequipnum+1 end
 			end
 		end
