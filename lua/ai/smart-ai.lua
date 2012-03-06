@@ -75,6 +75,7 @@ function setInitialTables()
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jijiu|jizhi|guzheng|qixi|xiaoji|jieyin|guose"
 	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|leiji|buqu|jushou|yiji|ganglie|guixin"
 	
+	
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
 		table.insert(sgs.role_evaluation, aplayer:objectName())
 		if aplayer:isLord() then
@@ -83,7 +84,6 @@ function setInitialTables()
 			sgs.role_evaluation[aplayer:objectName()] = {rebel = 30, loyalist = 30, renegade = 30}
 		end
 	end
-	
 end
 
 function SmartAI:initialize(player)
@@ -832,6 +832,26 @@ function sgs.isRolePredictable()
 	if not mode:find("0") or mode:find("03p") or mode:find("02_1v1") or mode:find("04_1v3") or mode == "06_3v3" then return true end
 	return false
 end
+
+function sgs.findIntersectionSkills(first, second)
+	local findings = {}
+	for _, skill in ipairs(first:split("|")) do
+		for _, compare_skill in ipairs(second:split("|")) do
+			if skill == compare_skill and not table.contains(findings, skill) then table.insert(findings, skill) end
+		end
+	end
+	return findings
+end
+
+function sgs.findUnionSkills(first, second)
+	local findings = first:split("|")
+	for _, skill in ipairs(second:split("|")) do
+		if not table.contains(findings, skill) then table.insert(findings, skill) end
+	end
+	
+	return findings
+end
+	
 
 sgs.ai_card_intention.general=function(from,to,level)
 	if sgs.isRolePredictable() then return end
@@ -2646,11 +2666,14 @@ function SmartAI:getCardsFromDrawPile(class_name)
 end
 
 function SmartAI:getCardsFromGame(class_name)
+	local ban = sgs.GetConfig("BanPackages", "")
 	local cards = {}
 	for i=0, sgs.Sanguosha:getCardCount() do
 		local card = sgs.Sanguosha:getCard(i)
-		if card:inherits(class_name) then table.insert(cards, card) end
+		if card:inherits(class_name) and not ban:match(card:getPackage()) then table.insert(cards, card) end
 	end
+	
+	return cards
 end
 
 function SmartAI:evaluatePlayerCardsNum(class_name, player)
