@@ -834,9 +834,12 @@ function sgs.isRolePredictable()
 end
 
 function sgs.findIntersectionSkills(first, second)
+	if type(first) == "string" then first = first:split("|") end
+	if type(second) == "string" then second = second:split("|") end
+
 	local findings = {}
-	for _, skill in ipairs(first:split("|")) do
-		for _, compare_skill in ipairs(second:split("|")) do
+	for _, skill in ipairs(first) do
+		for _, compare_skill in ipairs(second) do
 			if skill == compare_skill and not table.contains(findings, skill) then table.insert(findings, skill) end
 		end
 	end
@@ -844,8 +847,11 @@ function sgs.findIntersectionSkills(first, second)
 end
 
 function sgs.findUnionSkills(first, second)
-	local findings = first:split("|")
-	for _, skill in ipairs(second:split("|")) do
+	if type(first) == "string" then first = first:split("|") end
+	if type(second) == "string" then second = second:split("|") end
+	
+	local findings = first
+	for _, skill in ipairs(second) do
 		if not table.contains(findings, skill) then table.insert(findings, skill) end
 	end
 	
