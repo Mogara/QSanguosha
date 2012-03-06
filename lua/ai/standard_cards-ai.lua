@@ -793,8 +793,8 @@ function SmartAI:valuableCard(who)
 	local offhorse = who:getOffensiveHorse()
 	local defhorse = who:getDefensiveHorse()
     self:sort(self.friends, "hp")
-	local friends = self.friends[1]
-	if self:isWeak(friend) and who:inMyAttackRange(friend) then
+	local friend = self.friends[1]
+	if friend and self:isWeak(friend) and who:inMyAttackRange(friend) then
 		if weapon and who:distanceTo(friend) > 1 and not 
 			(weapon and weapon:inherits("MoonSpear") and who:hasSkill("keji") and who:getHandcardNum() > 5) then return weapon:getId() end
 		if offhorse and who:distanceTo(friend) > 1 then return offhorse:getId() end
