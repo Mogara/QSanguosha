@@ -241,3 +241,9 @@ function table:insertTable(list)
 	end
 	return self
 end
+
+function table:difference(list)
+	for _, e in ipairs(list) do
+		table.removeAll(self,e)
+	end
+end
