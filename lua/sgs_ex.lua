@@ -200,3 +200,44 @@ function string:split(delimiter)
   table.insert( result, string.sub( self, from  ) )
   return result
 end
+
+function table:contains(element)
+	if #self == 0 or type(self[1]) ~= type(element) then return false
+	end
+	
+	for _, e in ipairs(self) do
+		if e == element then return true end
+	end
+end
+
+function table:removeOne(element)
+	if #self == 0 or type(self[1]) ~= type(element) then return self
+	end
+	
+	for i=1, #self do
+		if self[i] == element then 
+			table.remove(self, i)
+			break
+		end
+	end
+	return self
+end
+
+function table:removeAll(element)
+	if #self == 0 or type(self[1]) ~= type(element) then return self
+	end
+	
+	for i=1, #self do
+		if self[i] == element then 
+			table.remove(self, i)
+		end
+	end
+	return self
+end
+
+function table:insertTable(list)
+	for _, e in ipairs(list) do
+		table.insert(self, e)
+	end
+	return self
+end
