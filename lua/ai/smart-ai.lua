@@ -2337,7 +2337,7 @@ function SmartAI:canRetrial(player)
 	    local blackequipnum = 0
 		if player:getEquips() then
 			local equips = player:getEquips()
-			for _,equip in ipairs(equips) do
+			for _,equip in sgs.qlist(equips) do
 				if equip:isBlack() then blackequipnum = blackequipnum+1 end
 			end
 		end
@@ -2365,13 +2365,13 @@ function SmartAI:getFinalRetrial(player)
 	local tmpfriend
 	local tmpenemy
 	for _, aplayer in ipairs(self.friends) do
-		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and aplayer:canRetrial() then
+		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
 		    tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpfriend > maxfriendseat then maxfriendseat = tmpfriend end
 		end
 	end
 	for _, aplayer in ipairs(self.enemies) do
-		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and aplayer:canRetrial() then
+		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
 		    tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpenemy > maxenemyseat then maxenemyseat = tmpenemy end
 		end

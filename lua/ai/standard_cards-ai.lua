@@ -773,24 +773,18 @@ sgs.dynamic_value.benefit.ExNihilo = true
 
 function SmartAI:dangerCard(who)
     local weapon = who:getWeapon()
-    if (weapon and weapon:inherits("Crossbow")) then return  weapon:getId() end
-	if (weapon and weapon:inherits("Spear") and who:hasSkill("paoxiao"))  then return  weapon:getId() end
-	if (weapon and weapon:inherits("Axe") and self:hasSkills("luoyi|pojun|jiushi|jiuchi", who)) then return weapon:getId() end
-	if (who:getArmor() and who:getArmor():inherits("EightDiagram") and who:getArmor():getSuit() == sgs.Card_Spade and who:hasSkill("leiji")) then return who:getArmor():getId() end
-	if (weapon and weapon:inherits("SPMoonSpear") and self:hasSkills("guidao|chongzhen|guicai|jilve", who)) then return weapon:getId() end
-	if (weapon and who:hasSkill("liegong")) then return weapon:getId() end
-	return nil
+    if (weapon and weapon:inherits("Crossbow"))
+		or (weapon and weapon:inherits("Spear") and who:hasSkill("paoxiao"))
+		or (weapon and weapon:inherits("Axe") and self:hasSkills("luoyi|pojun|jiushi|jiuchi", who))
+		or (who:getArmor() and who:getArmor():inherits("EightDiagram") and who:getArmor():getSuit() == sgs.Card_Spade and who:hasSkill("leiji"))
+		or (weapon and weapon:inherits("SPMoonSpear") and self:hasSkills("guidao|chongzhen|guicai|jilve", who))
+		or (weapon and who:hasSkill("liegong")) then
+		return weapon:getId()
+	end
 end
 
 function SmartAI:hasDangerCard(who) --I know there is high code redundancy but I have no better idea
-global_room:writeToConsole("search for dangerous card")
-    local weapon = who:getWeapon()
-    if (weapon and weapon:inherits("Crossbow")) then return  true end
-	if (weapon and weapon:inherits("Spear") and who:hasSkill("paoxiao"))  then return  true end
-	if (weapon and weapon:inherits("Axe") and self:hasSkills("luoyi|pojun|jiushi|jiuchi", who)) then return true end
-	if (who:getArmor() and who:getArmor():inherits("EightDiagram") and who:getArmor():getSuit() == sgs.Card_Spade and who:hasSkill("leiji")) then return true end
-	if (weapon and weapon:inherits("SPMoonSpear") and self:hasSkills("guidao|chongzhen|guicai|jilve", who)) then return true end
-	if (weapon and who:hasSkill("liegong")) then return true end
+	if self:dangerCard(who) then return true else return false end
 end
 
 function SmartAI:valuableCard(who)
@@ -868,100 +862,12 @@ function SmartAI:valuableCard(who)
 end
 
 function SmartAI:hasValuableCard(who)  --I know there is high code redundancy but I have no better idea
-global_room:writeToConsole("search for valuable card")
-    local weapon = who:getWeapon()
-	local armor = who:getArmor()
-	local offhorse = who:getOffensiveHorse()
-	local defhorse = who:getDefensiveHorse()
-    self:sort(self.friends, "hp")
-	local friends = self.friends[1]
-	if self:isWeak(friend) and who:inMyAttackRange(friend) then
-		if weapon and who:distanceTo(friend) > 1 and not 
-			(weapon and weapon:inherits("MoonSpear") and who:hasSkill("keji") and who:getHandcardNum() > 5) then 
-			global_room:writeToConsole("result is valuable weapon !!!!!!!!!!!!!!!!!") 
-			return true
-		end
-		if offhorse and who:distanceTo(friend) > 1 then 
-		global_room:writeToConsole("result is valuable offhorse !!!!!!!!!!!!!!!!!") 
-			return true  
-		end
-	end
-
-	if defhorse then
-		for _,friend in ipairs(self.friends) do
-			if friend:distanceTo(who) == friend:getAttackRange()+1 then 
-			global_room:writeToConsole("result is valuable defhorse !!!!!!!!!!!!!!!!!")
-				return true 
-			end
-		end
-	end
-
-	if armor and self:evaluateArmor(armor,who)>3 then 
-	global_room:writeToConsole("result is valuable armor !!!!!!!!!!!!!!!!!")
-		return true 
-	end
-
-	if self:isEquip("Monkey", who) then
-		return true
-	end
-
-	if who:getEquips() and who:hasSkill("jijiu") then
-		local equips = sgs.QList2Table(who:getEquips())
-		for _,equip in ipairs(equips) do
-			if equip:isRed() then 
-			global_room:writeToConsole("result is valuable red equip !!!!!!!!!!!!!!!!!") 
-				return true  
-			end
-		end
-	end
-
-	if who:getEquips() and who:hasSkill("longhun") then
-		local equips = sgs.QList2Table(who:getEquips())
-		for _,equip in ipairs(equips) do
-			if equip:getSuit() == sgs.Card_Heart then 
-			global_room:writeToConsole("result is valuable heart equip !!!!!!!!!!!!!!!!!") 
-				return true   
-			end
-		end
-		--[[for _,equip in ipairs(who:getEquips()) do
-			if equip:getSuit() == sgs.Card_Club then return true end
-		end]]
-	end	
-
-	if armor and self:evaluateArmor(armor, who)>0
-		and not (armor:inherits("SilverLion") and self:Wounded(who)) then 
-		global_room:writeToConsole("result is common armor !!!!!!!!!!!!!!!!!")
-		return true
-	end
-
-	if weapon then
-		if not (who:hasSkill("xiaoji") and (who:getHandcardNum() >= who:getHp())) and not self:isEquip("YitianSword",who) then
-			for _,friend in ipairs(self.friends) do
-				if (who:distanceTo(friend) <= who:getAttackRange()) and (who:distanceTo(friend) > 1) then 
-				global_room:writeToConsole("result is common weapon !!!!!!!!!!!!!!!!!")
-					return true
-				end
-			end
-		end
-	end
-
-	if offhorse then
-		if who:hasSkill("xiaoji") and who:getHandcardNum() >= who:getHp() then
-		else
-			for _,friend in ipairs(self.friends) do
-				if who:distanceTo(friend) == who:getAttackRange() and
-				who:getAttackRange() > 1 then 
-				global_room:writeToConsole("result is common offhorse !!!!!!!!!!!!!!!!!")
-					return true
-				end
-			end
-		end
-	end
+	if self:valuableCard(who) then return true else return false end
 end
 
 function SmartAI:useCardSnatch(snatch, use)
 	local players = self.room:getOtherPlayers(self.player)
-		players = self:exclude(players, snatch)
+	players = self:exclude(players, snatch)
 	for _, player in ipairs(players) do
 		if player:containsTrick("lightning") and self:getFinalRetrial(player) ==2 then 
 			use.card = snatch
@@ -1068,7 +974,7 @@ function SmartAI:useCardSnatch(snatch, use)
 			if enemy:getHandcardNum() == 1 then
 				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
 			end
-			if  self:hasSkills("guidao|guicai|lijian|fanjian|qingnang|longhun", enemy) then
+			if self:hasSkills("guidao|guicai|lijian|fanjian|qingnang|longhun", enemy) then
 				use.card = snatch
 				if use.to then
 					if enemy:getEquips() then
@@ -1085,7 +991,8 @@ function SmartAI:useCardSnatch(snatch, use)
 					if enemy:getEquips() then
 						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "e")
 					else 
-						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "h") end
+						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "h")
+					end
 					use.to:append(enemy)
 					self:speak("hostile", self.player:getGeneral():isFemale())
 				end
@@ -1159,7 +1066,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 	if hasLion then
 		use.card = dismantlement
 		if use.to then 
-			sgs.ai_skill_cardchosen.snatch = target:getArmor():getId()
+			sgs.ai_skill_cardchosen.dismantlement = target:getArmor():getId()
 			use.to:append(target) 
 		end
 		return
