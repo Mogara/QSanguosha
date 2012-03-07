@@ -169,7 +169,8 @@ function SmartAI:isgoodChainPartner(player)
 	if player:getRole() == "lord" then
 		return false
 	end
-	if player:hasSkill("buqu") or (self:hasSkills(sgs.masochism_skill,player) and player:getHp() > 1) or (self.player:hasSkill("niepan") and not self.player:getMark("@@nirvana") <= 0) then  
+	if player:hasSkill("buqu") or (self:hasSkills(sgs.masochism_skill,player) and player:getHp() > 1) or
+		(self.player:hasSkill("niepan") and self.player:getMark("@@nirvana") > 0) then  
 		return true
 	end
 	return false
@@ -231,11 +232,11 @@ function SmartAI:useCardIronChain(card, use)
 			if use.to then use.to:append(friendtargets[2]) end
 		elseif #friendtargets == 1 then
 		    if #enemytargets > 0 then
-					if use.to then use.to:append(friendtargets[1]) end
-					if use.to then use.to:append(enemytargets[1]) end
+				if use.to then use.to:append(friendtargets[1]) end
+				if use.to then use.to:append(enemytargets[1]) end
 			elseif yangxiu and self:isFriend(yangxiu) then
-					if use.to then use.to:append(friendtargets[1]) end
-					if use.to then use.to:append(yangxiu) end
+				if use.to then use.to:append(friendtargets[1]) end
+				if use.to then use.to:append(yangxiu) end
 			end
 		elseif #enemytargets > 1 then
 			if use.to then use.to:append(enemytargets[1]) end
@@ -247,6 +248,7 @@ function SmartAI:useCardIronChain(card, use)
 			end
 		end
 	end
+	if use.to then assert(use.to:length() < 3) end
 end
 
 sgs.ai_card_intention.IronChain=function(card,from,tos)

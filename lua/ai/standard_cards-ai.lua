@@ -898,17 +898,17 @@ function SmartAI:useCardSnatch(snatch, use)
 		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(snatch, friend) then
 			use.card = snatch
 			if use.to then 
-				tricks = friend:getCards("j")
+				tricks = friend:delayedTricks()
 				for _, trick in sgs.qlist(tricks) do
-					if trick:inherits("Indulgence") or trick:getSuit() == sgs.Card_Diamond then
+					if trick:inherits("Indulgence") then
 						if friend:getHp() < friend:getHandcardNum() then
 							sgs.ai_skill_cardchosen.snatch = trick:getEffectiveId() 
 						end
 					end
-					if trick:inherits("supply_shortage") or trick:getSuit() == sgs.Card_Club then
+					if trick:inherits("SupplyShortage") then
 						sgs.ai_skill_cardchosen.snatch = trick:getEffectiveId() 
 					end
-					if trick:inherits("Indulgence") or trick:getSuit() == sgs.Card_Diamond then
+					if trick:inherits("Indulgence") then
 						sgs.ai_skill_cardchosen.snatch = trick:getEffectiveId() 
 					end
 				end				
@@ -968,7 +968,7 @@ function SmartAI:useCardSnatch(snatch, use)
 			if enemy:getHandcardNum() == 1 then
 				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
 			end
-			if  self:hasSkills("sgs.cardneed_skill", enemy) then
+			if  self:hasSkills(sgs.cardneed_skill, enemy) then
 				use.card = snatch
 				if use.to then 
 						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "he") 
@@ -1047,17 +1047,17 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(dismantlement, friend) then
 			use.card = dismantlement
 			if use.to then 
-				tricks = friend:getCards("j")
+				tricks = friend:delayedTricks()
 				for _, trick in sgs.qlist(tricks) do
-					if trick:inherits("Indulgence") or trick:getSuit() == sgs.Card_Diamond then
+					if trick:inherits("Indulgence") then
 						if friend:getHp() < friend:getHandcardNum() then
 							sgs.ai_skill_cardchosen.dismantlement = trick:getEffectiveId() 
 						end
 					end
-					if trick:inherits("supply_shortage") or trick:getSuit() == sgs.Card_Club then
+					if trick:inherits("SupplyShortage") then
 						sgs.ai_skill_cardchosen.dismantlement = trick:getEffectiveId() 
 					end
-					if trick:inherits("Indulgence") or trick:getSuit() == sgs.Card_Diamond then
+					if trick:inherits("Indulgence") then
 						sgs.ai_skill_cardchosen.dismantlement = trick:getEffectiveId() 
 					end
 				end				
@@ -1119,7 +1119,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 					if enemy:getHandcardNum() == 1 then
 						if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
 					end
-					if  self:hasSkills("sgs.cardneed_skill", enemy) then
+					if  self:hasSkills(sgs.cardneed_skill, enemy) then
 						use.card = dismantlement
 						if use.to then 
 								sgs.ai_skill_cardchosen.dismantlement = self:getCardRandomly(enemy, "he") 
@@ -1221,7 +1221,6 @@ end
 sgs.dynamic_value.control_card.Collateral = true
 
 sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target, target2)
-    local invalidslash = false
 	if self:needBear() then return "." end
 	if target and target2 and not self:hasSkills(sgs.lose_equip_skill) and self:isEnemy(target2) then
 		for _, slash in ipairs(self:getCards("Slash")) do
@@ -1233,16 +1232,13 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target,
 	if target and target2 and not self:hasSkills(sgs.lose_equip_skill) and self:isFriend(target2) then
 		for _, slash in ipairs(self:getCards("Slash")) do
 			if not self:slashIsEffective(slash, target) then
-			    invalidslash = true
 				return slash:toString()
 			end 
 		end
-		if not invalidslash then
-			if (target2:getHp() > 2 or self:getCardsNum("Jink", target2) > 1) and not target2:getRole() == "lord" and self.player:getHandcardNum() > 1 then
-				for _, slash in ipairs(self:getCards("Slash")) do
-					return slash:toString()
-				end 
-			end
+		if (target2:getHp() > 2 or self:getCardsNum("Jink", target2) > 1) and not target2:getRole() == "lord" and self.player:getHandcardNum() > 1 then
+			for _, slash in ipairs(self:getCards("Slash")) do
+				return slash:toString()
+			end 
 		end
 	end
 	self:speak("collateral", self.player:getGeneral():isFemale())

@@ -169,8 +169,8 @@ smallyeyan_skill.getTurnUseCard=function(self)
 	local target_num = 0
 	local chained = 0
 	for _, enemy in ipairs(self.enemies) do
-		if ((self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy) or enemy:getMark("@gale")>0) or enemy:getHp()<=1) 
-		   and not (self.role == "renegade" and enemy:getRole() == "lord") then
+		if ((self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy) or enemy:getMark("@gale") > 0) or enemy:getHp() <= 1) 
+		   and not (self.role == "renegade" and enemy:isLord()) then
 			target_num = target_num + 1
 		end
 	end
@@ -193,7 +193,6 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 	self:sortByUseValue(cards, true)
 	local need_cards = {}
 	local spade, club, heart, diamond
-	local chosengreat = false
 	for _, card in ipairs(cards) do
 		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card:getId())
 		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card:getId())
@@ -202,63 +201,47 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 		end
 	end
 	if #need_cards < 4 then return end
+	local greatyeyan = sgs.Card_Parse("@GreatYeyanCard=" .. table.concat(need_cards, "+"))
+	assert(greatyeyan)
 
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
 		if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
 			if enemy:isChained() and self:isGoodChainTarget(enemy) then
 				if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
-					if use.to then 
-						chosengreat = true
-						use.to:append(enemy) 
-						use.card = sgs.Card_Parse("@GreatYeyanCard=" .. table.concat(need_cards, "+"))
-						return
-					end
+					use.card = greatyeyan
+					if use.to then use.to:append(enemy)	end
+					return
 				end
 			end
 		end
 	end
-	if not chosengreat then
-		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
-				if enemy:isChained() and self:isGoodChainTarget(enemy) then
-					if use.to then 
-						chosengreat = true
-						use.to:append(enemy)
-						use.card = sgs.Card_Parse("@GreatYeyanCard=" .. table.concat(need_cards, "+"))
-						return 
-					end
-				end
+	for _, enemy in ipairs(self.enemies) do
+		if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
+			if enemy:isChained() and self:isGoodChainTarget(enemy) then
+				use.card = greatyeyan
+				if use.to then use.to:append(enemy)	end
+				return
 			end
 		end
-	end	
-	if not chosengreat then
-		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
-				if not enemy:isChained() then
-					if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
-						if use.to then 
-							chosengreat = true
-							use.to:append(enemy)
-							use.card = sgs.Card_Parse("@GreatYeyanCard=" .. table.concat(need_cards, "+"))
-							return 
-						end
-					end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
+			if not enemy:isChained() then
+				if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
+					use.card = greatyeyan
+					if use.to then use.to:append(enemy)	end
+					return
 				end
 			end
 		end
 	end
-	if not chosengreat then
-		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
-				if not enemy:isChained() then
-					if use.to then 
-						chosengreat = true
-						use.to:append(enemy)
-						use.card = sgs.Card_Parse("@GreatYeyanCard=" .. table.concat(need_cards, "+"))
-						return 
-					end
-				end
+	for _, enemy in ipairs(self.enemies) do
+		if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
+			if not enemy:isChained() then
+				use.card = greatyeyan
+				if use.to then use.to:append(enemy)	end
+				return
 			end
 		end
 	end
@@ -462,7 +445,7 @@ sgs.ai_card_intention.KuangfengCard = 80
 sgs.ai_skill_use["@dawu"] = function(self, prompt)
 	self:sort(self.friends, "hp")
 	for _, friend in ipairs(self.friends) do
-		if friend:getHp()<=1 or
+		if friend:getHp()<=1 and not friend:hasSkill("buqu") or
 			(friend:getHp()==2 and (not friend:getArmor() or friend:getArmor():inherits("GaleShell")) and friend:getHandcardNum() < 2) then
 			return "@DawuCard=.->" .. friend:objectName()
 		end

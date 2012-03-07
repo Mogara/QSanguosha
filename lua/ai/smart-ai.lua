@@ -74,7 +74,8 @@ function setInitialTables()
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve"
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jijiu|jizhi|guzheng|qixi|xiaoji|jieyin|guose"
 	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|leiji|buqu|jushou|yiji|ganglie|guixin"
-	sgs.cardneed_skill =        "paoxiao|tianyi|xianzhen|shuangxiong|jizhi|guose|duanliang|qixi|qingnang|jieyin|renjie|zhiheng|rende|jujian|guicai|guidao|jilve|longhun|wusheng|longdan"
+	sgs.cardneed_skill =        "paoxiao|tianyi|xianzhen|shuangxiong|jizhi|guose|duanliang|qixi|qingnang|" ..
+								"jieyin|renjie|zhiheng|rende|jujian|guicai|guidao|jilve|longhun|wusheng|longdan"
 	
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
 		table.insert(sgs.role_evaluation, aplayer:objectName())
@@ -1651,7 +1652,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 						if trick:inherits("Duel") then
 							return null_card
 						elseif trick:inherits("FireAttack") then
-							if from:getHandcardNum() > 2 and not (from == to) then return null_card end
+							if from:getHandcardNum() > 2 and from:objectName() ~= to:objectName() then return null_card end
 						end
 					end
 				end
@@ -2354,11 +2355,11 @@ function SmartAI:needRetrial(judge)
 	if reason == "typhoon" or reason == "earthquake" or reason == "volcano" or reason == "mudslide" then return false end
 	if reason == "lightning" then  
 		if self:isFriend(judge.who) then
-			if who:isChained() and self:isGoodChainTarget(judge.who) then
+			if judge.who:isChained() and self:isGoodChainTarget(judge.who) then
 				return false   
 			end
 		else
-		    if who:isChained() and not self:isGoodChainTarget(judge.who) then 
+		    if judge.who:isChained() and not self:isGoodChainTarget(judge.who) then 
 				return judge:isGood()
 			end
 		end
