@@ -69,12 +69,12 @@ function setInitialTables()
 	sgs.draw_pile = 			global_room:getDrawPile()
 	sgs.lose_equip_skill = 		"xiaoji|xuanfeng"
 	sgs.need_kongcheng = 		"lianying|kongcheng"
-	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu"
+	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu|guixin|xinsheng"
 	sgs.wizard_skill = 			"guicai|guidao|jilve|tiandu"
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve"
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jijiu|jizhi|guzheng|qixi|xiaoji|jieyin|guose"
 	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|leiji|buqu|jushou|yiji|ganglie|guixin"
-	
+	sgs.cardneed_skill =        "paoxiao|tianyi|xianzhen|shuangxiong|jizhi|guose|duanliang|qixi|qingnang|jieyin|renjie|zhiheng|rende|jujian|guicai|guidao|jilve|longhun|wusheng|longdan"
 	
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
 		table.insert(sgs.role_evaluation, aplayer:objectName())
@@ -84,6 +84,7 @@ function setInitialTables()
 			sgs.role_evaluation[aplayer:objectName()] = {rebel = 30, loyalist = 30, renegade = 30}
 		end
 	end
+	
 end
 
 function SmartAI:initialize(player)
@@ -1639,18 +1640,18 @@ function SmartAI:askForNullification(trick, from, to, positive)
 
 	if positive then
 		if from and self:isEnemy(from) and (sgs.evaluateRoleTrends(from) ~= "neutral" or sgs.isRolePredictable()) then
-			if trick:inherits("ExNihilo") and self:getOverflow(from) == 0 then return null_card end
+			if trick:inherits("ExNihilo") and (self:isWeak(from) or self:hasSkills(sgs.cardneed_skill,from)) then return null_card end 
 			if trick:inherits("IronChain") and not self:isEquip("Vine", to) then return nil end
 			if self:isFriend(to) then
-				if trick:inherits("Dismantlement") then
-					if to:getArmor() then return null_card end
+				if trick:inherits("Dismantlement") then 
+					if self:getDangerCard(to) or self:getValuableCard(to) or (to:getHandcardNum() == 1 and not self:needKongcheng(to)) then return null_card end
 				else
 					if trick:inherits("Snatch") then return null_card end
 					if self:isWeak(to) then
 						if trick:inherits("Duel") then
 							return null_card
 						elseif trick:inherits("FireAttack") then
-							if from:getHandcardNum() > 2 then return null_card end
+							if from:getHandcardNum() > 2 and not (from == to) then return null_card end
 						end
 					end
 				end
@@ -1662,8 +1663,10 @@ function SmartAI:askForNullification(trick, from, to, positive)
 		end
 
 		if self:isFriend(to) then
-			if trick:inherits("Indulgence") or trick:inherits("SupplyShortage") then
-				return null_card
+		    if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
+				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or (trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to)) then
+					return null_card
+				end
 			end
 			if self:isWeak(to) then
 				if trick:inherits("ArcheryAttack") then
@@ -2346,9 +2349,20 @@ end
 --- Determine that the current judge is worthy retrial
 -- @param judge The JudgeStruct that contains the judge information
 -- @return True if it is needed to retrial
-function SmartAI:needRetrial(judge)
+function SmartAI:needRetrial(judge)  
 	local reason = judge.reason
 	if reason == "typhoon" or reason == "earthquake" or reason == "volcano" or reason == "mudslide" then return false end
+	if reason == "lightning" then  
+		if self:isFriend(judge.who) then
+			if who:isChained() and self:isGoodChainTarget(judge.who) then
+				return false   
+			end
+		else
+		    if who:isChained() and not self:isGoodChainTarget(judge.who) then 
+				return judge:isGood()
+			end
+		end
+	end
 	if self:isFriend(judge.who) then
 		if not self.player:hasSkill("guidao") and judge.reason == "luoshen" and self:getOverflow(judge.who) > 1 and self.player:getHandcardNum() < 3
 			and not self:isEquip("Crossbow", judge.who) then return false end
@@ -2360,7 +2374,7 @@ function SmartAI:needRetrial(judge)
 	end
 end
 
-function SmartAI:canRetrial(player)
+function SmartAI:canRetrial(player) 
     player = player or self.player
 	if player:hasSkill("guidao") then
 	    local blackequipnum = 0
@@ -2375,7 +2389,7 @@ function SmartAI:canRetrial(player)
 	end		
 end
 
-function SmartAI:hasenemyZj(player)
+function SmartAI:hasEnemyZhangjiao(player)   
     player = player or self.player
 	for _, enemy in ipairs(self:getEnemies(player)) do
 	    if enemy:hasSkill("guidao") then
@@ -2385,7 +2399,7 @@ function SmartAI:hasenemyZj(player)
 	return false
 end
 
-function SmartAI:getFinalRetrial(player)  
+function SmartAI:getFinalRetrial(player) 
 	local maxfriendseat = -1
 	local maxenemyseat = -1
 	local tmpfriend
@@ -2403,11 +2417,11 @@ function SmartAI:getFinalRetrial(player)
 		end
 	end
 	if maxfriendseat == -1 and maxenemyseat == -1 then return 0
-	elseif maxfriendseat > maxenemyseat then return 1
+	elseif maxfriendseat>maxenemyseat then return 1
 	else return 2 end
 end
 
-function SmartAI:hasDangerFriend(player)
+function SmartAI:hasDangerFriend(player) 
 	player = player or self.player
 	local hashy = false
 	for _, aplayer in ipairs(self.enemies) do
