@@ -211,23 +211,27 @@ function table:contains(element)
 end
 
 function table:removeOne(element)
-	if #self == 0 or type(self[1]) ~= type(element) then return end
+	if #self == 0 or type(self[1]) ~= type(element) then return false end
 	
 	for i=1, #self do
 		if self[i] == element then 
 			table.remove(self, i)
-			break
+			return true
 		end
 	end
+	return false
 end
 
 function table:removeAll(element)
-	if #self == 0 or type(self[1]) ~= type(element) then return end
+	if #self == 0 or type(self[1]) ~= type(element) then return 0 end
+	local n = 0
 	for i=1, #self do
 		if self[i] == element then 
 			table.remove(self, i)
+			n = n + 1
 		end
 	end
+	return n
 end
 
 function table:insertTable(list)
