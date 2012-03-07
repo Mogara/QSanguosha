@@ -185,6 +185,7 @@ end
 
 sgs.ai_skill_use_func.JixiCard = function(card, use, self)
 	use.card = sgs.Card_Parse("@JixiCard=.")
+	sgs.ai_skill_cardchosen.snatch = nil
 end
 
 sgs.ai_skill_askforag.jixi = function(self, card_ids)
