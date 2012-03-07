@@ -138,7 +138,10 @@ function sgs.ai_skill_invoke.jushou(self, data)
 	return self:isWeak()
 end
 
-sgs.ai_skill_invoke.liegong = sgs.ai_skill_invoke.tieji
+sgs.ai_skill_invoke.liegong = function(self, data)
+	local effect = data:toSlashEffect()
+	return not self:isFriend(effect.to)
+end
 
 sgs.ai_chaofeng.huangzhong = 1
 sgs.ai_chaofeng.weiyan = -2
@@ -185,7 +188,7 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
 	self:sort(self.enemies,"hp")
 	for _,enemy in ipairs(self.enemies) do
 		if not self:isEquip("SilverLion", enemy) and not enemy:hasSkill("hongyan") and
-			self:objectiveLevel(enemy) > 3 then
+			self:objectiveLevel(enemy) > 3 and not (enemy:isChained() and not self:isGoodChainTarget(enemy)) then
 			return "@LeijiCard=.->"..enemy:objectName()
 		end
 	end
