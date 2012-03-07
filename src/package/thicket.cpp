@@ -190,7 +190,7 @@ private:
 class Huoshou: public TriggerSkill{
 public:
     Huoshou():TriggerSkill("huoshou"){
-        events << Predamage << CardEffected;
+        events << Predamage;
         frequency = Compulsory;
     }
 
