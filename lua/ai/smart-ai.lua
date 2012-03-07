@@ -2351,7 +2351,7 @@ function SmartAI:needRetrial(judge)
 	if reason == "typhoon" or reason == "earthquake" or reason == "volcano" or reason == "mudslide" then return false end
 	if reason == "lightning" then  
 		if self:isFriend(judge.who) then
-			if who:isChained() and self:isGoodChainTarget(who) then
+			if who:isChained() and self:isGoodChainTarget(judge.who) then
 				return false   
 			end
 		else
