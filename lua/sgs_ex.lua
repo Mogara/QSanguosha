@@ -211,8 +211,7 @@ function table:contains(element)
 end
 
 function table:removeOne(element)
-	if #self == 0 or type(self[1]) ~= type(element) then return self
-	end
+	if #self == 0 or type(self[1]) ~= type(element) then return end
 	
 	for i=1, #self do
 		if self[i] == element then 
@@ -220,30 +219,32 @@ function table:removeOne(element)
 			break
 		end
 	end
-	return self
 end
 
 function table:removeAll(element)
-	if #self == 0 or type(self[1]) ~= type(element) then return self
-	end
-	
+	if #self == 0 or type(self[1]) ~= type(element) then return end
 	for i=1, #self do
 		if self[i] == element then 
 			table.remove(self, i)
 		end
 	end
-	return self
 end
 
 function table:insertTable(list)
 	for _, e in ipairs(list) do
 		table.insert(self, e)
 	end
-	return self
 end
 
-function table:difference(list)
+function table:removeTable(list)
 	for _, e in ipairs(list) do
 		table.removeAll(self,e)
+	end
+end
+
+function table:copyFrom(list)
+	local l = {}
+	for _, e in ipairs(list) do
+		table.insert(l, e)
 	end
 end
