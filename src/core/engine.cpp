@@ -53,6 +53,7 @@ Engine::Engine()
                   << "BGM"
                   << "Yitian"
                   << "Wisdom"
+                  << "Special3v3"
                   << "Test"
 
                   << "StandardCard"
@@ -363,7 +364,7 @@ QStringList Engine::getExtensions() const{
     QStringList extensions;
     QList<const Package *> packages = findChildren<const Package *>();
     foreach(const Package *package, packages){
-        if(package->inherits("Scenario"))
+        if(package->inherits("Scenario")||package->objectName()=="Special3v3")
             continue;
 
         extensions << package->objectName();

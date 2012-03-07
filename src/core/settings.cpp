@@ -60,6 +60,7 @@ void Settings::init(){
     }
 
     BanPackages = value("BanPackages").toStringList();
+    BanPackages << "Special3v3";
 
     ContestMode = value("ContestMode", false).toBool();
     FreeChoose = value("FreeChoose", false).toBool();
