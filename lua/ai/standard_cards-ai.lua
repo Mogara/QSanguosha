@@ -301,6 +301,7 @@ sgs.ai_keep_value.Slash = 2
 sgs.ai_use_priority.Slash = 2.4
 
 function SmartAI:useCardPeach(card, use)
+    local mustusepeach = false
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("longhun") and not self.player:isLord() and
 		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
@@ -311,10 +312,16 @@ function SmartAI:useCardPeach(card, use)
 		for _,card in ipairs(cards) do
 			if card:inherits("Peach") then peaches = peaches+1 end
 		end
-
+		for _, friend in ipairs(self.enemies) do
+			if self:hasSkills(sgs.drawpeach_skill,enemy) and self.player:getHandcardNum() < 3 then
+				mastusepeach = true
+			end
+		end
 		for _, friend in ipairs(self.friends_noself) do
-			if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
-			if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
+		    if not mustusepeach then
+				if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
+				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
+			end
 		end
 
 		if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then

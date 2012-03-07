@@ -556,7 +556,7 @@ sgs.ai_skill_invoke.tieji = function(self, data)
 	if self:hasEnemyZhangjiao(self.player) and self:canRetrial(zj) then
 	    return false
 	else
-		return not self:isFriend(effect.to) and not effect.to:isKongcheng()
+		return not self:isFriend(effect.to) 
 	end 
 	--return not self:isFriend(effect.to) and (not effect.to:isKongcheng() or effect.to:getArmor())
 end

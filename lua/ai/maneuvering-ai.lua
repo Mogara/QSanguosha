@@ -23,7 +23,12 @@ sgs.ai_use_priority.Fan = 2.655
 sgs.ai_use_priority.Vine = 0.6
 
 sgs.ai_skill_invoke.fan = function(self, data)
-	return not self:isFriend(data:toSlashEffect().to)
+    local target = data:toSlashEffect().to
+		if self:isFriend(target) then
+			return target:isChained() and self:isGoodChainTarget(target)
+		else
+			return not (target:isChained() and not self:isGoodChainTarget(target))
+		end
 end
 
 function sgs.ai_weapon_value.fan(self, enemy)
