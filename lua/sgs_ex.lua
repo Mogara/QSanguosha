@@ -242,9 +242,10 @@ function table:removeTable(list)
 	end
 end
 
-function table:copyFrom(list)
+function table.copyFrom(list)
 	local l = {}
 	for _, e in ipairs(list) do
 		table.insert(l, e)
 	end
+	return l
 end
