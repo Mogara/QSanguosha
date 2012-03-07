@@ -270,7 +270,7 @@ function SmartAI:getUseValue(card)
 	if self:hasSkills(sgs.need_kongcheng) then
 		if self.player:getHandcardNum() == 1 then v = 10 end
 	end
-	if self:hasSkill({name = "halberd"}) and card:inherits("Slash") and self.player:getHandcardNum() == 1 then v = 10 end
+	if self:hasSkill("halberd") and card:inherits("Slash") and self.player:getHandcardNum() == 1 then v = 10 end
 	if card:getTypeId() == sgs.Card_Skill then
 		if v == 0 then v = 10 end
 	end
@@ -283,7 +283,7 @@ function SmartAI:getUsePriority(card)
 	local class_name = card:className()
 	local v = 0
 	if card:inherits("EquipCard") then
-		if self:hasSkill(sgs.lose_equip_skill) then return 10 end
+		if self:hasSkills(sgs.lose_equip_skill) then return 10 end
 		if card:inherits("Armor") and not self.player:getArmor() then v = 6
 		elseif card:inherits("Weapon") and not self.player:getWeapon() then v = 5.7
 		elseif card:inherits("DefensiveHorse") and not self.player:getDefensiveHorse() then v = 5.8
@@ -1731,7 +1731,10 @@ function SmartAI:askForCardChosen(who, flags, reason)
 	if type(cardchosen) == "function" then
 		card = cardchosen(self, who, flags)
 		if card then return card:getEffectiveId() end
-	elseif type(cardchosen) == "number" then return cardchosen end
+	elseif type(cardchosen) == "number" then
+		sgs.ai_skill_cardchosen[string.gsub(reason, "%-", "_")] = nil
+		return cardchosen
+	end
 
 	if self:isFriend(who) then
 		if flags:match("j") then
