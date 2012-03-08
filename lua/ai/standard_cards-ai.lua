@@ -1102,7 +1102,7 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target,
 	end
 	if target and target2 and not self:hasSkills(sgs.lose_equip_skill) and self:isFriend(target2) then
 		for _, slash in ipairs(self:getCards("Slash")) do
-			if not self:slashIsEffective(slash, target) then
+			if not self:slashIsEffective(slash, target2) then
 				return slash:toString()
 			end 
 		end
