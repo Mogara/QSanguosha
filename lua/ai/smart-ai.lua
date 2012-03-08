@@ -551,7 +551,6 @@ function SmartAI:sort(players, key, inverse)
 end
 
 function SmartAI:sortByKeepValue(cards,inverse,kept)
-	if type(cards) ~= "table" then self.room:writeToConsole(debug.traceback()) end
 	local compare_func = function(a,b)
 		local value1 = self:getKeepValue(a,kept)
 		local value2 = self:getKeepValue(b,kept)

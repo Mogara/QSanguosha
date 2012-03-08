@@ -402,7 +402,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	if r==0 then return "noquestion" else return "question" end
 end
 
-sgs.ai_choicemade_filter.skillChoice.guhuo = function(self, promptlist)
+sgs.ai_choicemade_filter.skillChoice.guhuo = function(player, promptlist)
 	if promptlist[#promptlist] == "yes" then
 		sgs.questioner = player
 	end

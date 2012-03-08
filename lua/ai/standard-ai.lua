@@ -92,7 +92,7 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equ
 
 	if self.player:getHandcardNum() == 3 then
 		local to_discard = {}
-		local cards = self.player:getHandcards()
+		local cards = sgs.QList2Table(self.player:getHandcards())
 		local index = 0
 		local all_peaches = 0
 		for _, card in sgs.qlist(cards) do
