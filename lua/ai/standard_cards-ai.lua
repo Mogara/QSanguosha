@@ -147,8 +147,8 @@ function SmartAI:useCardSlash(card, use)
 		end
 		if (self.player:canSlash(target, not no_distance) or
 		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
-		self:objectiveLevel(target) > 3 and
-		self:slashIsEffective(card, target) and
+		self:objectiveLevel(target) > 3 and  not (target:hasSkill("leiji") and target:getHandcardNum() > 2)
+		and self:slashIsEffective(card, target) and
 		not (target:hasSkill("xiangle") and basicnum < 2) and not canliuli and
 		not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
 			and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
@@ -301,6 +301,7 @@ sgs.ai_keep_value.Slash = 2
 sgs.ai_use_priority.Slash = 2.4
 
 function SmartAI:useCardPeach(card, use)
+    local mustusepeach = false
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("longhun") and not self.player:isLord() and
 		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
@@ -311,10 +312,16 @@ function SmartAI:useCardPeach(card, use)
 		for _,card in ipairs(cards) do
 			if card:inherits("Peach") then peaches = peaches+1 end
 		end
-
+		for _, friend in ipairs(self.enemies) do
+			if self:hasSkills(sgs.drawpeach_skill,enemy) and self.player:getHandcardNum() < 3 then
+				mastusepeach = true
+			end
+		end
 		for _, friend in ipairs(self.friends_noself) do
-			if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
-			if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
+		    if not mustusepeach then
+				if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
+				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
+			end
 		end
 
 		if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
@@ -898,7 +905,7 @@ function SmartAI:useCardSnatch(snatch, use)
 		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(snatch, friend) then
 			use.card = snatch
 			if use.to then 
-				tricks = friend:delayedTricks()
+				tricks = friend:getCards("j")
 				for _, trick in sgs.qlist(tricks) do
 					if trick:inherits("Indulgence") then
 						if friend:getHp() < friend:getHandcardNum() then
@@ -938,7 +945,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and not enemy:hasSkill("kongcheng") then
+		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and not self:needKongcheng(enemy) then
 			if enemy:getHandcardNum() == 1 then 
 				use.card = snatch
 				if use.to then
@@ -966,7 +973,7 @@ function SmartAI:useCardSnatch(snatch, use)
 			not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 			not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 			if enemy:getHandcardNum() == 1 then
-				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
+				if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
 			end
 			if  self:hasSkills(sgs.cardneed_skill, enemy) then
 				use.card = snatch
@@ -1047,7 +1054,8 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(dismantlement, friend) then
 			use.card = dismantlement
 			if use.to then 
-				tricks = friend:delayedTricks()
+				--tricks = friend:delayedTricks()
+				tricks = friend:getCards("j")
 				for _, trick in sgs.qlist(tricks) do
 					if trick:inherits("Indulgence") then
 						if friend:getHp() < friend:getHandcardNum() then
@@ -1087,7 +1095,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 	end
 	for _, enemy in ipairs(enemies) do
 		if not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) then 	
-			if 	not (enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying")) then
+			if 	not (self:needKongcheng(enemy) or enemy:hasSkill("lianying")) then
 				if enemy:getHandcardNum() == 1 then 
 					use.card = dismantlement
 					if use.to then
@@ -1117,7 +1125,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then 	
 					if enemy:getHandcardNum() == 1 then
-						if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
+						if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
 					end
 					if  self:hasSkills(sgs.cardneed_skill, enemy) then
 						use.card = dismantlement

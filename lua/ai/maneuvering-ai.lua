@@ -23,7 +23,12 @@ sgs.ai_use_priority.Fan = 2.655
 sgs.ai_use_priority.Vine = 0.6
 
 sgs.ai_skill_invoke.fan = function(self, data)
-	return not self:isFriend(data:toSlashEffect().to)
+    local target = data:toSlashEffect().to
+		if self:isFriend(target) then
+			return target:isChained() and self:isGoodChainTarget(target)
+		else
+			return not (target:isChained() and not self:isGoodChainTarget(target))
+		end
 end
 
 function sgs.ai_weapon_value.fan(self, enemy)
@@ -195,6 +200,9 @@ function SmartAI:isGoodChainTarget(who)
 		end
 	end
 	for _, enemy in ipairs(self:getChainedEnemies(self.player)) do
+		if enemy:getHp() < 3 and not enemy:hasSkill("buqu") and enemy:getRole() == "lord" and self.player:getRole() == "renegade" then
+			return false
+		end
 		if self:isgoodChainPartner(enemy) then 
 			bad = bad+1 
 		end
@@ -319,7 +327,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	if #targets_succ > 0 then
 		use.card = fire_attack
 		if use.to then use.to:append(targets_succ[1]) end
-	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and self.player:isgoodChainPartner() and self.player:getHandcardNum() > 1 then
+	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and self:isgoodChainPartner(self.player) and self.player:getHandcardNum() > 1 then
 		use.card = fire_attack
 		if use.to then use.to:append(self.player) end
 	elseif #targets_fail > 0 and self:getOverflow(self.player) > 0 then
