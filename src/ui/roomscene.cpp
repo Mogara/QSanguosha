@@ -141,7 +141,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(arrangeSeats(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
-    connect(ClientInstance, SIGNAL(hp_changed(QString,int,DamageStruct::Nature)), SLOT(changeHp(QString,int,DamageStruct::Nature)));
+    connect(ClientInstance, SIGNAL(hp_changed(QString,int,DamageStruct::Nature,bool)), SLOT(changeHp(QString,int,DamageStruct::Nature,bool)));
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
@@ -2336,7 +2336,7 @@ void RoomScene::startInXs(){
     if(fill_robots) fill_robots->hide();
 }
 
-void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nature){
+void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp){
     // update
     Photo *photo = name2photo.value(who, NULL);
     if(photo)
@@ -2347,7 +2347,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
     QStringList list = QString("%1:%2").arg(who).arg(delta).split(":");
     doAnimation("hpChange",list);
 
-    if(delta < 0){
+    if(delta < 0 && !losthp){
         QString damage_effect;
         switch(delta){
         case -1: {
