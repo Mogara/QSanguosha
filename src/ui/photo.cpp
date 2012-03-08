@@ -138,7 +138,7 @@ void Photo::showProcessBar(){
     progress_bar->setValue(0);
     progress_bar->show();
 
-    if(ServerInfo.OperationTimeout != 0);
+    if(ServerInfo.OperationTimeout != 0)
         timer_id = startTimer(500);
 }
 
