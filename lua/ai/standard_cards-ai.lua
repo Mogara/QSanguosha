@@ -1156,12 +1156,25 @@ function SmartAI:useCardLightning(card, use)
 	if self.room:isProhibited(self.player, self.player, card) then end
 
 	--if not self:hasWizard(self.enemies) then--and self.room:isProhibited(self.player, self.player, card) then
+	local function hasDangerousFriend() 
+		local hashy = false
+		for _, aplayer in ipairs(self.enemies) do
+			if aplayer:hasSkill("hongyan") then hashy = true break end
+		end
+		for _, aplayer in ipairs(self.enemies) do
+			if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy) 
+			or aplayer:hasSkill("xinzhan") then 
+				if self:isFriend(aplayer:getNextAlive()) then return true end
+			end
+		end
+		return false
+	end
 	if self:getFinalRetrial(self.player) == 2 then 
-	return
+		return
 	elseif self:getFinalRetrial(self.player) == 1 then
 		use.card = card
 		return
-	elseif not self:hasDangerFriend(self.player) then
+	elseif not hasDangerousFriend() then
 		local players = self.room:getAllPlayers()
 		players = sgs.QList2Table(players)
 

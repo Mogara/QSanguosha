@@ -2427,22 +2427,6 @@ function SmartAI:getFinalRetrial(player)
 	else return 2 end
 end
 
-function SmartAI:hasDangerFriend(player) 
-	player = player or self.player
-	local hashy = false
-	for _, aplayer in ipairs(self.enemies) do
-		if aplayer:hasSkill("hongyan") then hashy = true break end
-	end
-	for _, aplayer in ipairs(self.enemies) do
-		if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy) 
-		or aplayer:hasSkill("xinzhan") then 
-		if self:isFriend(aplayer:getNextAlive()) then return true end
-		end
-	end
-	return false
-end
-
-
 --- Get the retrial cards with the lowest keep value
 -- @param cards the table that contains all cards can use in retrial skill
 -- @param judge the JudgeStruct that contains the judge information
