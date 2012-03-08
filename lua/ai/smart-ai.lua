@@ -1158,9 +1158,12 @@ function SmartAI:objectiveLevel(player)
 							if self:isWeak(player) then return -1
 							else return 3.5 end
 						end    			        
-					else
+					elseif loyal_num > 0 then
 						if self:isWeak(player) then return 3
 						elseif process == "loyalish" then return 3
+						else return 4 end
+					else
+						if self:isWeak(player) then return 2
 						else return 4 end
 					end
 				else
@@ -1970,8 +1973,8 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	end
 	for _, card in ipairs(cards) do
 		if card:inherits("Peach") then return card:getEffectiveId() end
-		if card:inherits("Indulgence") and not (self.player:isWeak() and self:getCardsNum("Jink", self.player) == 0) then return card:getEffectiveId() end
-		if card:inherits("AOE") and not (self.player:isWeak() and self:getCardsNum("Jink", self.player) == 0) then return card:getEffectiveId() end
+		if card:inherits("Indulgence") and not (self:isWeak(self.player) and self:getCardsNum("Jink", self.player) == 0) then return card:getEffectiveId() end
+		if card:inherits("AOE") and not (self:isWeak(self.player) and self:getCardsNum("Jink", self.player) == 0) then return card:getEffectiveId() end
 	end
 	self:sortByCardNeed(cards)
 	return cards[#cards]:getEffectiveId()
