@@ -128,7 +128,7 @@ function SmartAI:useCardSlash(card, use)
 
 	local targets = {}
 	local ptarget = self:getPriorTarget()
-	if ptarget then 
+	if ptarget and not self:slashProhibit(card, ptarget) then 
 		table.insert(targets, ptarget)
 	end
 	self:sort(self.enemies, "defense")
@@ -301,7 +301,7 @@ sgs.ai_keep_value.Slash = 2
 sgs.ai_use_priority.Slash = 2.4
 
 function SmartAI:useCardPeach(card, use)
-    local mustusepeach = false
+	local mustusepeach = false
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("longhun") and not self.player:isLord() and
 		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
@@ -318,7 +318,7 @@ function SmartAI:useCardPeach(card, use)
 			end
 		end
 		for _, friend in ipairs(self.friends_noself) do
-		    if not mustusepeach then
+			if not mustusepeach then
 				if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
 				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
 			end
@@ -550,7 +550,7 @@ sgs.ai_skill_invoke.eight_diagram = function(self, data)
 	if sgs.hujiasource and not self:isFriend(sgs.hujiasource) then return false end
 	if sgs.lianlisource and not self:isFriend(sgs.lianlisource) then return false end
 	if self.player:hasSkill("tiandu") then return true end
-	if self:hasEnemyZhangjiao(self.player) and sgs.hujiasource and self:getFinalRetrial(sgs.hujiasource) == 2 then
+	if self:hasSkills("leiji", self.enemies) and sgs.hujiasource and self:getFinalRetrial(sgs.hujiasource) == 2 then
 		return false
 	end	
 	if self:getDamagedEffects(self) then return false end
@@ -558,11 +558,12 @@ sgs.ai_skill_invoke.eight_diagram = function(self, data)
 end
 
 function sgs.ai_armor_value.eight_diagram(player, self)
-	if self:hasEnemyZhangjiao(player) and self:getFinalRetrial(player) == 2 then 
+	local haszj = self:hasSkills("leiji", self:getEnemies(player))
+	if haszj and self:getFinalRetrial(player) == 2 then 
 		return 2
 	end
-	if (not self:hasEnemyZhangjiao(player) and self:getFinalRetrial(player) == 2) or
-		(self:hasEnemyZhangjiao(player) and self:getFinalRetrial(player) == 1) then
+	if (not haszj and self:getFinalRetrial(player) == 2) or
+		(haszj and self:getFinalRetrial(player) == 1) then
 		return 3
 	end
 	if self:getFinalRetrial(player) == 1 or player:hasSkill("tiandu") then 
@@ -779,9 +780,9 @@ sgs.ai_use_priority.ExNihilo = 4.6
 
 sgs.dynamic_value.benefit.ExNihilo = true
 
-function SmartAI:getDangerCard(who)
-    local weapon = who:getWeapon()
-    if (weapon and weapon:inherits("Crossbow")) then return  weapon:getEffectiveId() end
+function SmartAI:getDangerousCard(who)
+	local weapon = who:getWeapon()
+	if (weapon and weapon:inherits("Crossbow")) then return  weapon:getEffectiveId() end
 	if (weapon and weapon:inherits("Spear") and who:hasSkill("paoxiao"))  then return  weapon:getEffectiveId() end
 	if (weapon and weapon:inherits("Axe") and self:hasSkills("luoyi|pojun|jiushi|jiuchi", who)) then return weapon:getEffectiveId() end
 	if (who:getArmor() and who:getArmor():inherits("EightDiagram") and who:getArmor():getSuit() == sgs.Card_Spade and who:hasSkill("leiji")) then return who:getArmor():getEffectiveId() end
@@ -790,11 +791,11 @@ function SmartAI:getDangerCard(who)
 end
 
 function SmartAI:getValuableCard(who)
-    local weapon = who:getWeapon()
+	local weapon = who:getWeapon()
 	local armor = who:getArmor()
 	local offhorse = who:getOffensiveHorse()
 	local defhorse = who:getDefensiveHorse()
-    self:sort(self.friends, "hp")
+	self:sort(self.friends, "hp")
 	local friend 
 	if #self.friends > 0 then friend = self.friends[1] end
 	if friend and self:isWeak(friend) and who:inMyAttackRange(friend) then
@@ -860,19 +861,20 @@ function SmartAI:getValuableCard(who)
 	end
 end
 
-function SmartAI:useCardSnatch(snatch, use)
+function SmartAI:useCardSnatchOrDismantlement(card, use)
+	local name = card:objectName()
 	if self.player:hasSkill("wuyan") then return end
 	local players = self.room:getOtherPlayers(self.player)
 	local tricks
-	players = self:exclude(players, snatch)
+	players = self:exclude(players, card)
 	for _, player in ipairs(players) do
-		if player:containsTrick("lightning") and self:getFinalRetrial(player) ==2 and self:hasTrickEffective(snatch, player) then 
-			use.card = snatch
+		if player:containsTrick("lightning") and self:getFinalRetrial(player) ==2 and self:hasTrickEffective(card, player) then 
+			use.card = card
 			if use.to then 
 				tricks = player:getCards("j")
 				for _, trick in sgs.qlist(tricks) do
 					if trick:inherits("Lightning") then
-						sgs.ai_skill_cardchosen.snatch = trick:getEffectiveId()
+						sgs.ai_skill_cardchosen[name] = trick:getEffectiveId()
 					end
 				end
 				use.to:append(player)
@@ -883,16 +885,16 @@ function SmartAI:useCardSnatch(snatch, use)
 
 	self:sort(self.enemies,"defense")
 	if sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
-	local enemies = self:exclude(self.enemies, snatch)
+	local enemies = self:exclude(self.enemies, card)
 	self:sort(self.friends_noself,"defense")
-	local friends = self:exclude(self.friends_noself, snatch)
+	local friends = self:exclude(self.friends_noself, card)
 	local hasLion, target
 	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) then
-		    if self:getDangerCard(enemy) then
-				use.card = snatch
+		if not enemy:isNude() and self:hasTrickEffective(card, enemy) then
+			if self:getDangerousCard(enemy) then
+				use.card = card
 				if use.to then
-					sgs.ai_skill_cardchosen.snatch = self:getDangerCard(enemy)
+					sgs.ai_skill_cardchosen[name] = self:getDangerousCard(enemy)
 					use.to:append(enemy)
 					self:speak("hostile", self.player:getGeneral():isFemale())
 				end
@@ -902,40 +904,40 @@ function SmartAI:useCardSnatch(snatch, use)
 	end
 
 	for _, friend in ipairs(friends) do
-		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(snatch, friend) then
-			use.card = snatch
+		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(card, friend) then
+			use.card = card
 			if use.to then 
 				tricks = friend:delayedTricks()
 				for _, trick in sgs.qlist(tricks) do
 					if trick:inherits("Indulgence") then
 						if friend:getHp() < friend:getHandcardNum() then
-							sgs.ai_skill_cardchosen.snatch = trick:getEffectiveId() 
+							sgs.ai_skill_cardchosen[name] = trick:getEffectiveId() 
 						end
 					end
 					if trick:inherits("SupplyShortage") then
-						sgs.ai_skill_cardchosen.snatch = trick:getEffectiveId() 
+						sgs.ai_skill_cardchosen[name] = trick:getEffectiveId() 
 					end
 					if trick:inherits("Indulgence") then
-						sgs.ai_skill_cardchosen.snatch = trick:getEffectiveId() 
+						sgs.ai_skill_cardchosen[name] = trick:getEffectiveId() 
 					end
 				end				
 				use.to:append(friend) 
 			end
 			return
 		end
-		if self:isEquip("SilverLion", friend) and self:hasTrickEffective(snatch, friend) and 
-		   friend:isWounded() and (friend:hasSkill("benghuai") or (friend:getHp() < 4 and not friend:hasSkill("longhun"))) then
+		if self:isEquip("SilverLion", friend) and self:hasTrickEffective(card, friend) and 
+		friend:isWounded() and (friend:hasSkill("benghuai") or (friend:getHp() < 4 and not friend:hasSkill("longhun"))) then
 			hasLion = true
 			target = friend
 		end
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) then
+		if not enemy:isNude() and self:hasTrickEffective(card, enemy) then
 			if self:getValuableCard(enemy) then
-				use.card = snatch
+				use.card = card
 				if use.to then
-					sgs.ai_skill_cardchosen.snatch = self:getValuableCard(enemy)
+					sgs.ai_skill_cardchosen[name] = self:getValuableCard(enemy)
 					use.to:append(enemy)
 					self:speak("hostile", self.player:getGeneral():isFemale())
 				end
@@ -945,11 +947,11 @@ function SmartAI:useCardSnatch(snatch, use)
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and not self:needKongcheng(enemy) then
+		if not enemy:isNude() and self:hasTrickEffective(card, enemy) and not self:needKongcheng(enemy) then
 			if enemy:getHandcardNum() == 1 then 
-				use.card = snatch
+				use.card = card
 				if use.to then
-					sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "h")
+					sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "h")
 					use.to:append(enemy)
 					self:speak("hostile", self.player:getGeneral():isFemale())
 				end
@@ -959,46 +961,49 @@ function SmartAI:useCardSnatch(snatch, use)
 	end
 
 	if hasLion then
-		use.card = snatch
+		use.card = card
 		if use.to then 
-			sgs.ai_skill_cardchosen.snatch = target:getArmor():getEffectiveId()
+			sgs.ai_skill_cardchosen[name] = target:getArmor():getEffectiveId()
 			use.to:append(target) 
 		end
 		return
 	end
 
-	for _, enemy in ipairs(enemies) do
-		local equips = enemy:getEquips()
-		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and not enemy:hasSkill("tuntian") and
-			not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
-			not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
-			if enemy:getHandcardNum() == 1 then
-				if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
-			end
-			if  self:hasSkills(sgs.cardneed_skill, enemy) then
-				use.card = snatch
-				if use.to then 
-						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "he") 
-					use.to:append(enemy)
-					self:speak("hostile", self.player:getGeneral():isFemale())
+	if name == "snatch" or self:getOverflow() > 0 then
+		for _, enemy in ipairs(enemies) do
+			local equips = enemy:getEquips()
+			if not enemy:isNude() and self:hasTrickEffective(card, enemy) and not enemy:hasSkill("tuntian") and
+				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
+				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
+				if enemy:getHandcardNum() == 1 then
+					if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
 				end
-				return
-			else
-				use.card = snatch
-				if use.to then
-					if not equips:isEmpty() then
-						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "e")
-					else 
-						sgs.ai_skill_cardchosen.snatch = self:getCardRandomly(enemy, "h") end
-					use.to:append(enemy)
-					self:speak("hostile", self.player:getGeneral():isFemale())
+				if self:hasSkills(sgs.cardneed_skill, enemy) then
+					use.card = card
+					if use.to then 
+						sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "he") 
+						use.to:append(enemy)
+						self:speak("hostile", self.player:getGeneral():isFemale())
+					end
+					return
+				else
+					use.card = card
+					if use.to then
+						if not equips:isEmpty() then
+							sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "e")
+						else 
+							sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "h") end
+						use.to:append(enemy)
+						self:speak("hostile", self.player:getGeneral():isFemale())
+					end
+					return
 				end
-				return
 			end
 		end
 	end
-end		
+end
 
+SmartAI.useCardSnatch = SmartAI.useCardSnatchOrDismantlement
 
 sgs.ai_use_value.Snatch = 9
 sgs.ai_use_priority.Snatch = 4.3
@@ -1008,148 +1013,7 @@ function sgs.ai_card_intention.Snatch()
 	sgs.ai_snat_disma_effect = false
 end
 
-function SmartAI:useCardDismantlement(dismantlement, use)
-	if self.player:hasSkill("wuyan") then return end
-	-- find lightning
-	local players = self.room:getOtherPlayers(self.player)
-	local tricks
-	players = self:exclude(players, dismantlement)
-	for _, player in ipairs(players) do
-		if player:containsTrick("lightning") and self:getFinalRetrial(player) ==2 and self:hasTrickEffective(dismantlement, player) then
-			use.card = dismantlement
-			if use.to then 
-				tricks = player:getCards("j")
-				for _, trick in sgs.qlist(tricks) do
-					if trick:inherits("Lightning") then
-						sgs.ai_skill_cardchosen.dismantlement = trick:getEffectiveId()
-					end
-				end
-				use.to:append(player)
-			end
-			return
-		end
-	end
-	self:sort(self.enemies,"defense")
-	if sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
-	local enemies = self:exclude(self.enemies, dismantlement)
-	self:sort(self.friends_noself,"defense")
-	local friends = self:exclude(self.friends_noself, dismantlement)
-	local hasLion, target
-
-	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) then
-		    if self:getDangerCard(enemy) then
-				use.card = dismantlement
-				if use.to then
-					sgs.ai_skill_cardchosen.dismantlement = self:getDangerCard(enemy)
-					use.to:append(enemy)
-					self:speak("hostile", self.player:getGeneral():isFemale())
-				end
-				return
-			end
-		end
-	end
-
-	for _, friend in ipairs(friends) do
-		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(dismantlement, friend) then
-			use.card = dismantlement
-			if use.to then 
-				tricks = friend:delayedTricks()
-				for _, trick in sgs.qlist(tricks) do
-					if trick:inherits("Indulgence") then
-						if friend:getHp() < friend:getHandcardNum() then
-							sgs.ai_skill_cardchosen.dismantlement = trick:getEffectiveId() 
-						end
-					end
-					if trick:inherits("SupplyShortage") then
-						sgs.ai_skill_cardchosen.dismantlement = trick:getEffectiveId() 
-					end
-					if trick:inherits("Indulgence") then
-						sgs.ai_skill_cardchosen.dismantlement = trick:getEffectiveId() 
-					end
-				end				
-				use.to:append(friend) 
-			end
-			return
-		end
-		if self:isEquip("SilverLion", friend) and friend:isWounded() and self:hasTrickEffective(dismantlement, friend) and 
-			(friend:hasSkill("benghuai") or (friend:getHp() < 4 and not friend:hasSkill("longhun"))) then
-			hasLion = true
-			target = friend
-		end
-	end
-
-	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) then
-			if self:getValuableCard(enemy) then
-				use.card = dismantlement
-				if use.to then
-					sgs.ai_skill_cardchosen.dismantlement = self:getValuableCard(enemy)
-					use.to:append(enemy)
-					self:speak("hostile", self.player:getGeneral():isFemale())
-				end
-				return
-			end
-		end
-	end
-	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) then 	
-			if 	not (self:needKongcheng(enemy) or enemy:hasSkill("lianying")) then
-				if enemy:getHandcardNum() == 1 then 
-					use.card = dismantlement
-					if use.to then
-						sgs.ai_skill_cardchosen.dismantlement = self:getCardRandomly(enemy, "h")
-						use.to:append(enemy)
-						self:speak("hostile", self.player:getGeneral():isFemale())
-					end
-					return	
-				end
-			end
-		end
-	end
-
-	if hasLion then
-		use.card = dismantlement
-		if use.to then
-			sgs.ai_skill_cardchosen.dismantlement = target:getArmor():getEffectiveId()
-			use.to:append(target) 
-		end
-		return
-	end
-
-	if self:getOverflow() > 0 then
-		for _, enemy in ipairs(enemies) do
-			local equips = enemy:getEquips()
-			if not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) and not enemy:hasSkill("tuntian") and
-				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
-				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then 	
-					if enemy:getHandcardNum() == 1 then
-						if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
-					end
-					if  self:hasSkills(sgs.cardneed_skill, enemy) then
-						use.card = dismantlement
-						if use.to then 
-								sgs.ai_skill_cardchosen.dismantlement = self:getCardRandomly(enemy, "he") 
-							use.to:append(enemy)
-							self:speak("hostile", self.player:getGeneral():isFemale())
-						end
-						return
-					else
-						use.card = dismantlement
-						if use.to then
-							if enemy:hasEquip() then
-								sgs.ai_skill_cardchosen.dismantlement = self:getCardRandomly(enemy, "e")
-							else 
-								sgs.ai_skill_cardchosen.dismantlement = self:getCardRandomly(enemy, "h") end
-							use.to:append(enemy)
-							self:speak("hostile", self.player:getGeneral():isFemale())
-						end
-						return
-					end
-			end			
-		end	
-	end	
-end
+SmartAI.useCardDismantlement = SmartAI.useCardSnatchOrDismantlement
 
 sgs.ai_use_value.Dismantlement = 5.6
 sgs.ai_use_priority.Dismantlement = 4.4

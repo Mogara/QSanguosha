@@ -1647,7 +1647,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			if trick:inherits("IronChain") and not self:isEquip("Vine", to) then return nil end
 			if self:isFriend(to) then
 				if trick:inherits("Dismantlement") then 
-					if self:getDangerCard(to) or self:getValuableCard(to) or (to:getHandcardNum() == 1 and not self:needKongcheng(to)) then return null_card end
+					if self:getDangerousCard(to) or self:getValuableCard(to) or (to:getHandcardNum() == 1 and not self:needKongcheng(to)) then return null_card end
 				else
 					if trick:inherits("Snatch") then return null_card end
 					if self:isWeak(to) then
@@ -2397,16 +2397,6 @@ function SmartAI:canRetrial(player)
 	end		
 end
 
-function SmartAI:hasEnemyZhangjiao(player)   
-    player = player or self.player
-	for _, enemy in ipairs(self:getEnemies(player)) do
-	    if enemy:hasSkill("guidao") then
-			return true
-		end
-	end
-	return false
-end
-
 function SmartAI:getFinalRetrial(player) 
 	local maxfriendseat = -1
 	local maxenemyseat = -1
@@ -2761,11 +2751,19 @@ end
 
 function SmartAI:hasSkills(skill_names, player)
 	player = player or self.player
-	for _, skill_name in ipairs(skill_names:split("|")) do
+	if type(player) == "table" then
+		for _, p in ipairs(player) do
+			if self:hasSkills(skill_names, p) then return true end
+		end
+		return false
+	end
+	if type(skill_names) == "string" then skill_names = skill_names:split("|") end
+	for _, skill_name in ipairs(skill_names) do
 		if player:hasSkill(skill_name) then
 			return true
 		end
 	end
+	return false
 end
 
 function SmartAI:fillSkillCards(cards)

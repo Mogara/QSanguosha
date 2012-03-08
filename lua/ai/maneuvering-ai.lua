@@ -169,7 +169,7 @@ function SmartAI:getChainedEnemies()
 	return chainedEnemies
 end
 
-function SmartAI:isgoodChainPartner(player)  
+function SmartAI:isGoodChainPartner(player)  
     player = player or self.player
 	if player:getRole() == "lord" then
 		return false
@@ -189,10 +189,10 @@ function SmartAI:isGoodChainTarget(who)
 	    if friend:getRole() == "lord" then
 			return false
 		end
-		if friend:objectName() == self.player:objectName() and not self:isgoodChainPartner(self.player) then
+		if friend:objectName() == self.player:objectName() and not self:isGoodChainPartner(self.player) then
 			return false
 		end
-		if self:isgoodChainPartner(friend) then 
+		if self:isGoodChainPartner(friend) then 
 			good = good+1 
 		end
 		if self:isWeak(friend) and not friend:hasSkill("buqu") then 
@@ -203,7 +203,7 @@ function SmartAI:isGoodChainTarget(who)
 		if enemy:getHp() < 3 and not enemy:hasSkill("buqu") and enemy:getRole() == "lord" and self.player:getRole() == "renegade" then
 			return false
 		end
-		if self:isgoodChainPartner(enemy) then 
+		if self:isGoodChainPartner(enemy) then 
 			bad = bad+1 
 		end
 		if self:isWeak(enemy) and not enemy:hasSkill("buqu") then 
@@ -223,7 +223,7 @@ function SmartAI:useCardIronChain(card, use)
 	local yangxiu = self.room:findPlayerBySkillName("danlao")
 	self:sort(self.friends,"defense")
 	for _, friend in ipairs(self.friends) do
-		if friend:isChained() and not self:isgoodChainPartner(friend) and self:hasTrickEffective(card, friend) and not friend:hasSkill("danlao") then
+		if friend:isChained() and not self:isGoodChainPartner(friend) and self:hasTrickEffective(card, friend) and not friend:hasSkill("danlao") then
 			table.insert(friendtargets, friend)
 		end
 	end
@@ -327,7 +327,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	if #targets_succ > 0 then
 		use.card = fire_attack
 		if use.to then use.to:append(targets_succ[1]) end
-	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and self:isgoodChainPartner(self.player) and self.player:getHandcardNum() > 1 then
+	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and self:isGoodChainPartner(self.player) and self.player:getHandcardNum() > 1 then
 		use.card = fire_attack
 		if use.to then use.to:append(self.player) end
 	elseif #targets_fail > 0 and self:getOverflow(self.player) > 0 then
