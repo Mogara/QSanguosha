@@ -1669,7 +1669,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 		end
 
 		if self:isFriend(to) then
-		    if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
+			if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
 				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or 
 					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and to:getMark("@kuiwei") == 0) then
 					return null_card
@@ -2193,7 +2193,7 @@ end
 function SmartAI:askForSinglePeach(dying)
 	local card_str
 	if self:isFriend(dying) then
-	    if self:needDeath(dying) then return "." end
+		if self:needDeath(dying) then return "." end
 		local buqu = dying:getPile("buqu")
 		local weaklord = false
 		if not buqu:isEmpty() then
@@ -2374,7 +2374,7 @@ function SmartAI:needRetrial(judge)
 				return false   
 			end
 		else
-		    if judge.who:isChained() and not self:isGoodChainTarget(judge.who) then 
+			if judge.who:isChained() and not self:isGoodChainTarget(judge.who) then 
 				return judge:isGood()
 			end
 		end
@@ -2391,17 +2391,17 @@ function SmartAI:needRetrial(judge)
 end
 
 function SmartAI:canRetrial(player) 
-    player = player or self.player
+	player = player or self.player
 	if player:hasSkill("guidao") then
-	    local blackequipnum = 0
+		local blackequipnum = 0
 		for _,equip in sgs.qlist(player:getEquips()) do
 			if equip:isBlack() then blackequipnum = blackequipnum+1 end
 		end
 		return (blackequipnum+player:getHandcardNum()) > 0
 	elseif player:hasSkill("guicai") then
-	    return player:getHandcardNum() > 0
+		return player:getHandcardNum() > 0
 	elseif player:hasSkill("jilve") then
-	    return player:getHandcardNum() > 0 and player:getMark("@bear") > 0
+		return player:getHandcardNum() > 0 and player:getMark("@bear") > 0
 	end		
 end
 
@@ -2412,13 +2412,13 @@ function SmartAI:getFinalRetrial(player)
 	local tmpenemy
 	for _, aplayer in ipairs(self:getFriends(player)) do
 		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
-		    tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+			tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpfriend > maxfriendseat then maxfriendseat = tmpfriend end
 		end
 	end
 	for _, aplayer in ipairs(self:getEnemies(player)) do
 		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
-		    tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+			tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpenemy > maxenemyseat then maxenemyseat = tmpenemy end
 		end
 	end
@@ -2435,8 +2435,8 @@ function SmartAI:hasDangerFriend(player)
 	end
 	for _, aplayer in ipairs(self.enemies) do
 		if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy) 
-		   or aplayer:hasSkill("xinzhan") then 
-		   if self:isFriend(aplayer:getNextAlive()) then return true end
+		or aplayer:hasSkill("xinzhan") then 
+		if self:isFriend(aplayer:getNextAlive()) then return true end
 		end
 	end
 	return false
