@@ -129,7 +129,11 @@ function SmartAI:useCardSlash(card, use)
 	local targets = {}
 	local ptarget = self:getPriorTarget()
 	if ptarget then 
-		table.insert(targets, ptarget)
+		local slash_prohibit = false
+		slash_prohibit = self:slashProhibit(card,ptarget)
+		if not slash_prohibit then
+			table.insert(targets, ptarget)
+		end
 	end
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
@@ -168,7 +172,7 @@ function SmartAI:useCardSlash(card, use)
 						if use.card then return end
 					end
 				end
-				if target:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
+				if target:isChained() and self:isGoodChainTarget(target) and not use.card then
 					if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
 						local slashes = self:getCards("Slash")
 						for _, slash in ipairs(slashes) do
