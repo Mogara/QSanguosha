@@ -905,7 +905,7 @@ function SmartAI:useCardSnatch(snatch, use)
 		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(snatch, friend) then
 			use.card = snatch
 			if use.to then 
-				tricks = friend:getCards("j")
+				tricks = friend:delayedTricks()
 				for _, trick in sgs.qlist(tricks) do
 					if trick:inherits("Indulgence") then
 						if friend:getHp() < friend:getHandcardNum() then
@@ -1054,8 +1054,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and self:hasTrickEffective(dismantlement, friend) then
 			use.card = dismantlement
 			if use.to then 
-				--tricks = friend:delayedTricks()
-				tricks = friend:getCards("j")
+				tricks = friend:delayedTricks()
 				for _, trick in sgs.qlist(tricks) do
 					if trick:inherits("Indulgence") then
 						if friend:getHp() < friend:getHandcardNum() then
