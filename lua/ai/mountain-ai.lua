@@ -28,7 +28,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 			if card then
 				for _, friend in ipairs(self.friends) do
 					if friend == who then
-					elseif friend:getCards("e"):isEmpty() or not self:hasSameEquip(card, friend) then
+					elseif friend:getCards("e"):isEmpty() or not self:getSameEquip(card, friend) then
 						target = friend
 						break
 					end
@@ -42,7 +42,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		local targets = {}
 		if card then
 			for _, friend in ipairs(self.friends) do
-				if friend:getCards("e"):isEmpty() or not self:hasSameEquip(card, friend) then
+				if friend:getCards("e"):isEmpty() or not self:getSameEquip(card, friend) then
 					table.insert(targets, friend)
 					break
 				end
@@ -447,7 +447,7 @@ sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 	local equips = {}
 	for _, card in sgs.qlist(self.player:getHandcards()) do
 		if card:inherits("Armor") or card:inherits("Weapon") then
-			if not self:hasSameEquip(card) then
+			if not self:getSameEquip(card) then
 			else
 				table.insert(equips, card)
 			end
@@ -461,7 +461,7 @@ sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 	local select_equip, target
 	for _, friend in ipairs(self.friends_noself) do
 		for _, equip in ipairs(equips) do
-			if not self:hasSameEquip(equip, friend) then
+			if not self:getSameEquip(equip, friend) then
 				target = friend
 				select_equip = equip
 				break

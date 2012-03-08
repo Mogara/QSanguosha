@@ -632,7 +632,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 		end
 		for _,card in ipairs(cards) do
 			if (card:inherits("Weapon") and self.player:getHandcardNum() < 3) or card:inherits("OffensiveHorse") or
-				self:hasSameEquip(card, self.player) or	card:inherits("AmazingGrace") or card:inherits("Lightning") then
+				self:getSameEquip(card, self.player) or	card:inherits("AmazingGrace") or card:inherits("Lightning") then
 				table.insert(unpreferedCards,card:getId())
 			end
 		end

@@ -244,7 +244,7 @@ function SmartAI:getUseValue(card)
 			if card:inherits("DefensiveHorse") and self:isEquip("EightDiagram") then return 5.5 end
 			return 9
 		end
-		if not self:hasSameEquip(card) then v = 6.7 end
+		if not self:getSameEquip(card) then v = 6.7 end
 		if self.weaponUsed and card:inherits("Weapon") then v = 2 end
 		if self.player:hasSkill("qiangxi") and card:inherits("Weapon") then v = 2 end
 		if self.player:hasSkill("kurou") and card:inherits("Crossbow") then return 9 end
@@ -2065,7 +2065,7 @@ function SmartAI:getCardNeedPlayer(cards)
 				if hcard:inherits("EquipCard") then
 					self:sort(self.friends_noself)
 					for _, friend in ipairs(self.friends_noself) do
-						if (not self:hasSameEquip(hcard, friend)
+						if (not self:getSameEquip(hcard, friend)
 							or (self:hasSkills(sgs.lose_equip_skill, friend) and not friend:containsTrick("indulgence"))) and
 							not self:needKongcheng(friend) then
 							return hcard, friend
@@ -2096,7 +2096,7 @@ function SmartAI:getCardNeedPlayer(cards)
 			return shit, zhugeliang
 		end
 		for _, card in ipairs(self:getCards("EquipCard")) do
-			if self:hasSameEquip(card, zhugeliang) or (card:inherits("OffensiveHorse") and not card:inherits("Monkey")) then
+			if self:getSameEquip(card, zhugeliang) or (card:inherits("OffensiveHorse") and not card:inherits("Monkey")) then
 				return card, zhugeliang
 			end
 		end
@@ -3136,23 +3136,20 @@ function SmartAI:evaluateArmor(card, player)
 	return 0.5
 end
 
-function SmartAI:hasSameEquip(card, player)
+function SmartAI:getSameEquip(card, player)
 	player = player or self.player
-	if player:getEquips():isEmpty() then return false end
-	if card:inherits("Weapon") then
-		if player:getWeapon() then return true end
-	elseif card:inherits("Armor") then
-		if player:getArmor() then return true end
-	elseif card:inherits("DefensiveHorse") then
-		if player:getDefensiveHorse() then return true end
-	elseif card:inherits("OffensiveHorse") then
-		if player:getOffensiveHorse() then return true end
-	end
-	return false
+	if card:inherits("Weapon") then return player:getWeapon()
+	elseif card:inherits("Armor") then return player:getArmor()
+	elseif card:inherits("DefensiveHorse") then return player:getDefensiveHorse()
+	elseif card:inherits("OffensiveHorse") then return player:getOffensiveHorse() end
+end
+
+function SmartAI:hasSameEquip(card, player) -- obsolete
+	if self:getSameEquip(card,player) then return true else return false end
 end
 
 function SmartAI:useEquipCard(card, use)
-	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:hasSameEquip(card) then return end
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:getSameEquip(card) then return end
 	if self:hasSkills(sgs.lose_equip_skill) and self:evaluateArmor(card)>-5 then
 		use.card = card
 		return
@@ -3161,14 +3158,19 @@ function SmartAI:useEquipCard(card, use)
 		use.card = card
 		return
 	end
-	if self:hasSameEquip(card) and
-		(self.player:hasSkill("rende") or self.player:hasSkill("qingnang")
+	local same = self:getSameEquip(card)
+	if same then
+		if (self.player:hasSkill("rende") or self.player:hasSkill("qingnang"))
 		or (self.player:hasSkill("yongsi") and self:getOverflow() < 3)
-		or (self.player:hasSkill("qixi") and card:isBlack())) then return end
+		or (self:hasSkills("qixi|duanliang") and (card:isBlack() or same:isBlack()))
+		or (self:hasSkills("guose|longhun") and (card:getSuit() == sgs.Card_Diamond or same:getSuit() == sgs.Card_Diamond))
+		or (self:hasSkill("jijiu") and (card:isRed() or same:isRed())) then return end
+	end
 	self:useCardByClassName(card, use)
 	if use.card or use.broken then return end
 	if card:inherits("Weapon") then
-			if self:needBear() then return end
+		if self:needBear() then return end
+		if self:hasSkill("qiangxi") and same then return end
 		if self.player:hasSkill("rende") then
 			for _,friend in ipairs(self.friends_noself) do
 				if not friend:getWeapon() then return end
