@@ -80,6 +80,28 @@ function sgs.ai_slash_prohibit.wuhun(self, to)
 	end
 end
 
+function SmartAI:needDeath(player)
+    local maxfriendmark = 0
+	local maxenemymark = 0
+	player = player or self.player
+	if player:hasSkill("wuhun") then
+		for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+			local mark = aplayer:getMark("@nightmare")
+			if self:isFriend(player,aplayer) and not player:objectName() == aplayer:objectName() then
+				if mark > maxfriendmark then maxfriendmark = mark end
+			end
+			if self:isEnemy(player,aplayer) then
+				if mark > maxenemymark then maxenemymark = mark end
+			end
+			if maxfriendmark > maxenemymark then return false
+			elseif maxenemymark == 0 then return false
+			else return true end
+		end
+	end
+	return false
+end
+
+
 sgs.ai_chaofeng.shenguanyu = -6
 
 sgs.ai_skill_invoke.shelie = true
