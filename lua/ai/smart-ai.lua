@@ -2204,10 +2204,10 @@ function SmartAI:askForSinglePeach(dying)
 		elseif  dying:getRole() == "lord" then
 			card_str = self:getCardId("Peach")
 		else
-			for _, friend in ipairs(self:getFriends(player)) do
-				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then weaklord =1 end
+			for _, friend in ipairs(self.friends_noself) do
+				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then  weaklord =1 end
 			end
-			for _, enemy in ipairs(self:getFriends(enemy)) do
+			for _, enemy in ipairs(self.enemies) do
 				if enemy:getHp() == 1 and enemy:isLord() and not enemy:hasSkill("buqu") and self.player:getRole() == "renegade"  then weaklord =1 end
 			end
 			if weaklord ==0 or self:getAllPeachNum() > 1 then
