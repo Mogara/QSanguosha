@@ -2183,7 +2183,6 @@ end
 
 function SmartAI:askForSinglePeach(dying)
 	local card_str
-
 	if self:isFriend(dying) then
 	    if self:needDeath(dying) then return "." end
 		local buqu = dying:getPile("buqu")
@@ -2202,12 +2201,14 @@ function SmartAI:askForSinglePeach(dying)
 		end
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic") or self:getCardId("Peach")
+		elseif  dying:getRole() == "lord" then
+			card_str = self:getCardId("Peach")
 		else
 			for _, friend in ipairs(self:getFriends(player)) do
 				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then weaklord =1 end
 			end
 			for _, enemy in ipairs(self:getFriends(enemy)) do
-				if enemy:getHp() == 1 and enemy:isLord() and not enemy:hasSkill("buqu") and self.player:getRole() == "renegade" then weaklord =1 end
+				if enemy:getHp() == 1 and enemy:isLord() and not enemy:hasSkill("buqu") and self.player:getRole() == "renegade"  then weaklord =1 end
 			end
 			if weaklord ==0 or self:getAllPeachNum() > 1 then
 				card_str = self:getCardId("Peach") 
