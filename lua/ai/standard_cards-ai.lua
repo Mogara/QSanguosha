@@ -147,8 +147,8 @@ function SmartAI:useCardSlash(card, use)
 		end
 		if (self.player:canSlash(target, not no_distance) or
 		(use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
-		self:objectiveLevel(target) > 3 and
-		self:slashIsEffective(card, target) and
+		self:objectiveLevel(target) > 3 and  not (target:hasSkill("leiji") and target:getHandcardNum() > 2)
+		and self:slashIsEffective(card, target) and
 		not (target:hasSkill("xiangle") and basicnum < 2) and not canliuli and
 		not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
 			and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then

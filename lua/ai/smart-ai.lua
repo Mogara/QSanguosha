@@ -1083,10 +1083,10 @@ function sgs.gameProcess(room)
 	local diff = loyal_value - rebel_value
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		if aplayer:isLord() then
-		local lord_hp
-		if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
-		else lord_hp = aplayer:getHp() end
-		if lord_hp > 3 or (lord_hp >= 2 and sgs.getDefense(aplayer) > 3) then health = true end
+			local lord_hp
+			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
+			else lord_hp = aplayer:getHp() end
+		if lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(aplayer) > 3) then health = true end
 		end
 	end
 
@@ -1667,7 +1667,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 		if self:isFriend(to) then
 		    if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
 				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or 
-					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and not to:getMark("@kuiwei") > 0) then
+					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and not to:getMark("@kuiwei")) then
 					return null_card
 				end
 			end
