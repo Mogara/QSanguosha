@@ -87,7 +87,7 @@ function SmartAI:needDeath(player)
 	if player:hasSkill("wuhun") then
 		for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
 			local mark = aplayer:getMark("@nightmare")
-			if self:isFriend(player,aplayer) and not player:objectName() == aplayer:objectName() then
+			if self:isFriend(player,aplayer) and player:objectName() ~= aplayer:objectName() then
 				if mark > maxfriendmark then maxfriendmark = mark end
 			end
 			if self:isEnemy(player,aplayer) then

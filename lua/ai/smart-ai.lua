@@ -1667,7 +1667,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 		if self:isFriend(to) then
 		    if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
 				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or 
-					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and not to:getMark("@kuiwei")) then
+					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and to:getMark("@kuiwei") == 0) then
 					return null_card
 				end
 			end
@@ -2186,7 +2186,7 @@ function SmartAI:askForSinglePeach(dying)
 	if self:isFriend(dying) then
 	    if self:needDeath(dying) then return "." end
 		local buqu = dying:getPile("buqu")
-		local weaklord = 0
+		local weaklord = false
 		if not buqu:isEmpty() then
 			local same = false
 			for i, card_id in sgs.qlist(buqu) do
@@ -2201,16 +2201,16 @@ function SmartAI:askForSinglePeach(dying)
 		end
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic") or self:getCardId("Peach")
-		elseif  dying:getRole() == "lord" then
+		elseif dying:isLord() then
 			card_str = self:getCardId("Peach")
 		else
 			for _, friend in ipairs(self.friends_noself) do
-				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then  weaklord =1 end
+				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then  weaklord = true end
 			end
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:getHp() == 1 and enemy:isLord() and not enemy:hasSkill("buqu") and self.player:getRole() == "renegade"  then weaklord =1 end
+				if enemy:getHp() == 1 and enemy:isLord() and not enemy:hasSkill("buqu") and self.player:getRole() == "renegade" then weaklord = true end
 			end
-			if weaklord ==0 or self:getAllPeachNum() > 1 then
+			if not weaklord or self:getAllPeachNum() > 1 then
 				card_str = self:getCardId("Peach") 
 			end
 		end
