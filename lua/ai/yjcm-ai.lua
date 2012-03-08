@@ -536,7 +536,7 @@ sgs.ai_skill_cardask["@xianzhen-slash"] = function(self)
 	local target = self.player:getTag("XianzhenTarget"):toPlayer()
 	local slashes = self:getCards("Slash")
 	for _, slash in ipairs(slashes) do
-		if self:slashIsEffective(slash, target) then return slash:getEffectiveId() end
+		if self:slashIsEffective(slash, target) then return slash:toString() end
 	end
 	return "."
 end

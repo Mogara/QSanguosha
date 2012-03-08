@@ -221,7 +221,7 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	if self:isFriend(effect.to) and not
 		(effect.to:hasSkill("leiji") and (self:getCardsNum("Jink", effect.to)>0 or (not self:isWeak(effect.to) and self:isEquip("EightDiagram",effect.to))))
 		then return "." end
-	local has_peach, has_anal, has_slash, slash_jink
+	local has_peach, has_anal, has_slash, has_jink
 	for _, card in sgs.qlist(self.player:getHandcards()) do
 		if card:inherits("Peach") then has_peach = card
 		elseif card:inherits("Analeptic") then has_anal = card

@@ -293,7 +293,10 @@ end
 
 sgs.ai_choicemade_filter.cardResponsed["@lianli-jink"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
-		sgs.updateIntention(player, sgs.lianlisource, -80)
+		-- sgs.updateIntention(player, sgs.lianlisource, -80)
+		local xiahoujuan = player:getRoom():findPlayerBySkillName("lianli")
+		assert(xiahoujuan)
+		sgs.updateIntention(player, xiahoujuan, -80)
 		sgs.lianlisource = nil
 	end
 end
