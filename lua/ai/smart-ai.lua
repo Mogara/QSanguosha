@@ -69,13 +69,14 @@ function setInitialTables()
 	sgs.draw_pile = 			global_room:getDrawPile()
 	sgs.lose_equip_skill = 		"xiaoji|xuanfeng"
 	sgs.need_kongcheng = 		"lianying|kongcheng"
-	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu|guixin|xinsheng"
+	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu|guixin"
 	sgs.wizard_skill = 			"guicai|guidao|jilve|tiandu"
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve"
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jijiu|jizhi|guzheng|qixi|xiaoji|jieyin|guose"
 	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|leiji|buqu|jushou|yiji|ganglie|guixin"
 	sgs.cardneed_skill =        "paoxiao|tianyi|xianzhen|shuangxiong|jizhi|guose|duanliang|qixi|qingnang|" ..
 								"jieyin|renjie|zhiheng|rende|jujian|guicai|guidao|jilve|longhun|wusheng|longdan"
+	sgs.drawpeach_skill =       "tuxi|qiaobian"
 	
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
 		table.insert(sgs.role_evaluation, aplayer:objectName())
@@ -1082,10 +1083,10 @@ function sgs.gameProcess(room)
 	local diff = loyal_value - rebel_value
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		if aplayer:isLord() then
-		local lord_hp
-		if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
-		else lord_hp = aplayer:getHp() end
-		if lord_hp > 3 or (lord_hp >= 2 and sgs.getDefense(aplayer) > 3) then health = true end
+			local lord_hp
+			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
+			else lord_hp = aplayer:getHp() end
+		if lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(aplayer) > 3) then health = true end
 		end
 	end
 
@@ -1638,7 +1639,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	local null_card
 	null_card = self:getCardId("Nullification")
 	if null_card then null_card = sgs.Card_Parse(null_card) else return end
-
+	if (from and from:isDead()) or (to and to:isDead()) then return nil end
 	if positive then
 		if from and self:isEnemy(from) and (sgs.evaluateRoleTrends(from) ~= "neutral" or sgs.isRolePredictable()) then
 			if trick:inherits("ExNihilo") and (self:isWeak(from) or self:hasSkills(sgs.cardneed_skill,from)) then return null_card end 
@@ -1665,7 +1666,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 
 		if self:isFriend(to) then
 		    if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
-				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or (trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to)) then
+				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or 
+					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and not to:getMark("@kuiwei")) then
 					return null_card
 				end
 			end
@@ -2181,8 +2183,8 @@ end
 
 function SmartAI:askForSinglePeach(dying)
 	local card_str
-
 	if self:isFriend(dying) then
+	    if self:needDeath(dying) then return "." end
 		local buqu = dying:getPile("buqu")
 		local weaklord = 0
 		if not buqu:isEmpty() then
@@ -2199,16 +2201,20 @@ function SmartAI:askForSinglePeach(dying)
 		end
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic") or self:getCardId("Peach")
+		elseif  dying:getRole() == "lord" then
+			card_str = self:getCardId("Peach")
 		else
-			for _, friend in ipairs(self:getFriends(player)) do
-				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then weaklord =1 end
+			for _, friend in ipairs(self.friends_noself) do
+				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then  weaklord =1 end
+			end
+			for _, enemy in ipairs(self.enemies) do
+				if enemy:getHp() == 1 and enemy:isLord() and not enemy:hasSkill("buqu") and self.player:getRole() == "renegade"  then weaklord =1 end
 			end
 			if weaklord ==0 or self:getAllPeachNum() > 1 then
-			card_str = self:getCardId("Peach") 
+				card_str = self:getCardId("Peach") 
 			end
 		end
 	end
-
 	return card_str or "."
 end
 
@@ -2445,9 +2451,9 @@ end
 function SmartAI:getRetrialCardId(cards, judge)
 	local can_use = {}
 	for _, card in ipairs(cards) do
-		if self:isFriend(judge.who) and judge:isGood(card) then
+		if self:isFriend(judge.who) and judge:isGood(card) and not (self:getFinalRetrial(judge.who) == 2 and card:inherits("Peach")) then
 			table.insert(can_use, card)
-		elseif self:isEnemy(judge.who) and not judge:isGood(card) then
+		elseif self:isEnemy(judge.who) and not judge:isGood(card) and not (self:getFinalRetrial(judge.who) == 2 and card:inherits("Peach")) then
 			table.insert(can_use, card)
 		end
 	end

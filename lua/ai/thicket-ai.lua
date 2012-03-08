@@ -19,12 +19,15 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 	self:sort(self.friends_noself)
 	local target
 	for _, friend in ipairs(self.friends_noself) do
+		if self.player:getLostHp() > 1 and friend:hasSkill("jijiu") then
+			target = friend
+			break
+		end
 		if not friend:faceUp() then
 			target = friend
 			break
 		end
-
-		if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play then
+		if (friend:hasSkill("jushou") or friend:hasSkill("kuiwei")) and friend:getPhase() == sgs.Player_Play then
 			target = friend
 			break
 		end
@@ -37,7 +40,7 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 		else
 			self:sort(self.enemies)
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:faceUp() and not  ((enemy:hasSkill("jushou") or enemy:hasSkill("kuiwei")) and enemy:getPhase() == sgs.Player_Play) then
+				if enemy:faceUp() and not (((enemy:hasSkill("jushou") or enemy:hasSkill("kuiwei")) and enemy:getPhase() == sgs.Player_Play) or enemy:hasSkill("jijiu")) then
 					target = enemy
 					break
 				end
