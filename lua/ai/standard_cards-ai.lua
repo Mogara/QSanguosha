@@ -168,7 +168,7 @@ function SmartAI:useCardSlash(card, use)
 						if use.card then return end
 					end
 				end
-				if target:isChained() and #(self:getChainedFriends()) < #(self:getChainedEnemies()) and not use.card then
+				if target:isChained() and self:isGoodChainTarget(target) and not use.card then
 					if self:isEquip("Crossbow") and card:inherits("NatureSlash") then
 						local slashes = self:getCards("Slash")
 						for _, slash in ipairs(slashes) do

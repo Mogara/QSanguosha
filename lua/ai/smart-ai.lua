@@ -1023,10 +1023,14 @@ function sgs.outputProcessValues(room)
 	global_room:writeToConsole(diff)
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		if aplayer:isLord() then
-		local lord_hp
-		if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
-		else lord_hp = aplayer:getHp() end
-		if lord_hp > 2 or (lord_hp == 2 and sgs.getDefense(aplayer) > 3) then health = true end
+			local lord_hp
+			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
+			else lord_hp = aplayer:getHp() end
+			if lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(aplayer) > 3) then 
+				health = true  
+				global_room:writeToConsole("lord is healthy")
+				global_room:writeToConsole("lord 's hp is " .. lord_hp)
+			end
 		end
 	end
 	if diff >= 0.6 then
@@ -1963,6 +1967,11 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	local cards = {}
 	for _, id in ipairs(ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
+	for _, card in ipairs(cards) do
+		if card:inherits("Peach") then return card:getEffectiveId() end
+		if card:inherits("Indulgence") and not (self.player:isWeak() and self:getCardsNum("Jink", self.player) == 0) then return card:getEffectiveId() end
+		if card:inherits("AOE") and not (self.player:isWeak() and self:getCardsNum("Jink", self.player) == 0) then return card:getEffectiveId() end
 	end
 	self:sortByCardNeed(cards)
 	return cards[#cards]:getEffectiveId()
