@@ -1639,7 +1639,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	local null_card
 	null_card = self:getCardId("Nullification")
 	if null_card then null_card = sgs.Card_Parse(null_card) else return end
-
+	if (from and from:isDead()) or (to and to:isDead()) then return nil end
 	if positive then
 		if from and self:isEnemy(from) and (sgs.evaluateRoleTrends(from) ~= "neutral" or sgs.isRolePredictable()) then
 			if trick:inherits("ExNihilo") and (self:isWeak(from) or self:hasSkills(sgs.cardneed_skill,from)) then return null_card end 
@@ -1666,7 +1666,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 
 		if self:isFriend(to) then
 		    if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
-				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or (trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to)) then
+				if (trick:inherits("Indulgence") and not to:hasSkill("tuxi")) or 
+					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and not to:getMark("@kuiwei") > 0) then
 					return null_card
 				end
 			end
@@ -2184,6 +2185,7 @@ function SmartAI:askForSinglePeach(dying)
 	local card_str
 
 	if self:isFriend(dying) then
+	    if self:needDeath(dying) then return "." end
 		local buqu = dying:getPile("buqu")
 		local weaklord = 0
 		if not buqu:isEmpty() then
@@ -2204,12 +2206,14 @@ function SmartAI:askForSinglePeach(dying)
 			for _, friend in ipairs(self:getFriends(player)) do
 				if friend:getHp() == 1 and friend:isLord() and not friend:hasSkill("buqu") then weaklord =1 end
 			end
+			for _, enemy in ipairs(self:getFriends(enemy)) do
+				if enemy:getHp() == 1 and enemy:isLord() and not enemy:hasSkill("buqu") and self.player:getRole() == "renegade" then weaklord =1 end
+			end
 			if weaklord ==0 or self:getAllPeachNum() > 1 then
-			card_str = self:getCardId("Peach") 
+				card_str = self:getCardId("Peach") 
 			end
 		end
 	end
-
 	return card_str or "."
 end
 
@@ -2446,9 +2450,9 @@ end
 function SmartAI:getRetrialCardId(cards, judge)
 	local can_use = {}
 	for _, card in ipairs(cards) do
-		if self:isFriend(judge.who) and judge:isGood(card) then
+		if self:isFriend(judge.who) and judge:isGood(card) and not (self:getFinalRetrial(judge.who) == 2 and card:inherits("Peach")) then
 			table.insert(can_use, card)
-		elseif self:isEnemy(judge.who) and not judge:isGood(card) then
+		elseif self:isEnemy(judge.who) and not judge:isGood(card) and not (self:getFinalRetrial(judge.who) == 2 and card:inherits("Peach")) then
 			table.insert(can_use, card)
 		end
 	end

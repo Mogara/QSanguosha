@@ -945,7 +945,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and not enemy:hasSkill("kongcheng") then
+		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and not self:needKongcheng(enemy) then
 			if enemy:getHandcardNum() == 1 then 
 				use.card = snatch
 				if use.to then
@@ -973,7 +973,7 @@ function SmartAI:useCardSnatch(snatch, use)
 			not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 			not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 			if enemy:getHandcardNum() == 1 then
-				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
+				if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
 			end
 			if  self:hasSkills(sgs.cardneed_skill, enemy) then
 				use.card = snatch
@@ -1095,7 +1095,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 	end
 	for _, enemy in ipairs(enemies) do
 		if not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) then 	
-			if 	not (enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying")) then
+			if 	not (self:needKongcheng(enemy) or enemy:hasSkill("lianying")) then
 				if enemy:getHandcardNum() == 1 then 
 					use.card = dismantlement
 					if use.to then
@@ -1125,7 +1125,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then 	
 					if enemy:getHandcardNum() == 1 then
-						if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
+						if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
 					end
 					if  self:hasSkills(sgs.cardneed_skill, enemy) then
 						use.card = dismantlement

@@ -200,6 +200,9 @@ function SmartAI:isGoodChainTarget(who)
 		end
 	end
 	for _, enemy in ipairs(self:getChainedEnemies(self.player)) do
+		if enemy:getHp() < 3 and not enemy:hasSkill("buqu") and enemy:getRole() == "lord" and self.player:getRole() == "renegade" then
+			return false
+		end
 		if self:isgoodChainPartner(enemy) then 
 			bad = bad+1 
 		end
