@@ -4,6 +4,7 @@
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
+#include "ai.h"
 
 HongyuanCard::HongyuanCard(){
 
@@ -47,20 +48,12 @@ public:
 
     QList<ServerPlayer *> getTeammates(ServerPlayer *zhugejin) const{
         Room *room = zhugejin->getRoom();
-        QStringList warm, cool, team;
-        warm << "lord" << "loyalist" ;
-        cool << "renegade"  << "rebel" ;
-        QString player_role = zhugejin->getRole();
-        if(warm.contains(player_role)){
-            team = warm;
-        }else
-            team = cool;
+        AI *ai = zhugejin->getAI();
+
         QList<ServerPlayer *> teammates;
-        foreach(QString role, team){
-            foreach(ServerPlayer *teammate, room->getAllPlayers()){
-                if(teammate->getRole() == role)
-                    teammates << teammate;
-            }
+        foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
+            if(ai->relationTo(other) == AI::Friend)
+                teammates << other;
         }
         return teammates;
     }
@@ -127,23 +120,14 @@ public:
 
         events << AskForRetrial;
     }
-
     QList<ServerPlayer *> getTeammates(ServerPlayer *zhugejin) const{
         Room *room = zhugejin->getRoom();
-        QStringList warm, cool, team;
-        warm << "lord" << "loyalist" ;
-        cool << "renegade"  << "rebel" ;
-        QString player_role = zhugejin->getRole();
-        if(warm.contains(player_role)){
-            team = warm;
-        }else
-            team = cool;
+        AI *ai = zhugejin->getAI();
+
         QList<ServerPlayer *> teammates;
-        foreach(QString role, team){
-            foreach(ServerPlayer *teammate, room->getAllPlayers()){
-                if(teammate->getRole() == role)
-                    teammates << teammate;
-            }
+        foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
+            if(ai->relationTo(other) == AI::Friend)
+                teammates << other;
         }
         return teammates;
     }

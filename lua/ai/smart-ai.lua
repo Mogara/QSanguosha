@@ -2011,6 +2011,238 @@ end
 
 function SmartAI:getCardNeedPlayer(cards)
 	cards = cards or sgs.QList2Table(self.player:getHandcards())
+	
+	
+	-- special move between liubei and xunyu and huatuo
+	local cardtogivespecial = {}
+	local specialnum = 0
+	local keptslash = 0
+	for _,player in ipairs(self.friends_noself) do
+		if player:hasSkill("jieming") or player:hasSkill("jijiu") then
+			specialnum = specialnum + 1
+		end
+	end
+	if specialnum > 1 and #cardtogivespecial == 0 then
+		local xunyu = self.room:findPlayerBySkillName("jieming")
+		local huatuo = self.room:findPlayerBySkillName("jijiu")
+		local no_distance = self.slash_distance_limit
+		local redcardnum = 0
+		for _,acard in ipairs(cards) do
+			if acard:inherits("Slash") then
+				if self.player:canSlash(xunyu, not no_distance) and self:slashIsEffective(acard, xunyu) then
+					keptslash = keptslash + 1
+				end
+				if keptslash > 0 then
+					table.insert(cardtogivespecial,acard)
+				end
+			elseif acard:inherits("Duel") then
+				table.insert(cardtogivespecial,acard)
+			end
+		end
+		for _, hcard in ipairs(cardtogivespecial) do
+			if hcard:isRed() then redcardnum = redcardnum + 1 end
+		end
+		if self.player:getHandcardNum() > #cardtogivespecial and redcardnum > 0 then
+			for _, hcard in ipairs(cardtogivespecial) do
+				if hcard:isRed() then return hcard, huatuo end
+				return hcard, xunyu
+			end
+		end
+	end
+
+	local cardtogive = {}
+	local keptjink = 0
+	for _,acard in ipairs(cards) do
+		if acard:inherits("Jink") and keptjink < 1 then
+			keptjink = keptjink+1
+		else
+			table.insert(cardtogive,acard)
+		end
+	end
+
+	for _,friend in ipairs(self.friends_noself) do
+		if (friend:hasSkill("haoshi") and not friend:containsTrick("supply_shortage")) and friend:faceUp() then
+			local lususeat = (friend:getSeat() - self.player:getSeat()) % (global_room:alivePlayerCount())
+			local tmpenemy = 999
+			local enemynum = 0
+			local lusu = self.room:findPlayerBySkillName("haoshi")
+			for _, aplayer in ipairs(self.enemies) do
+					tmpenemy = (aplayer:getSeat() - self.player:getSeat()) % (global_room:alivePlayerCount())
+					if tmpenemy < lususeat then enemynum = enemynum + 1 end
+			end
+			if enemynum < 2 then
+				for _, hcard in ipairs(cards) do
+					return hcard, friend
+				end
+			end
+		end
+	end
+
+	if self.player:getLostHp() < 2 then   
+		local cannulname = self.player:getGeneralName()
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:containsTrick("indulgence") and not friend:getGeneralName() == cannulname  and friend:faceUp() then
+				for _, hcard in ipairs(cardtogive) do
+					if hcard:inherits("Nullification") then
+						return hcard, friend
+					end
+				end
+
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			if not self:needKongcheng(friend) then
+				if self:isWeak(friend) and not (friend:containsTrick("indulgence") and not friend:getGeneralName() == cannulname) and 
+					friend:getHandcardNum() < 3 then
+					for _, hcard in ipairs(cards) do
+						if hcard:inherits("Peach") or hcard:inherits("Jink") or hcard:inherits("Analeptic") then
+							return hcard, friend
+						end
+					end
+				end
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:hasSkill("shuangxiong")  and not friend:containsTrick("indulgence") and not friend:containsTrick("supply_shortage") and friend:faceUp() then
+				for _, hcard in ipairs(cardtogive) do
+					if #cardtogive > 1 then 
+						return hcard, friend
+					end
+				end
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:hasSkill("xianzhen") or friend:hasSkill("tianyi")  and not friend:containsTrick("indulgence") and friend:faceUp() then
+				for _, hcard in ipairs(cardtogive) do
+					local givebigdone = 0
+					if #cardtogive > 1 and givebigdone ~= 1 and hcard:getNumber() > 10 then 
+						global_room:writeToConsole("Card given done!!!!!!!!!")
+						global_room:writeToConsole("The times we have used rendecard is " .. self.player:usedTimes("RendeCard"))
+						givebigdone = 1
+						return hcard, friend
+					end
+				end
+				for _, hcard in ipairs(cardtogive) do
+					if #cardtogive > 1 and givebigdone == 1 and (giveslashnum < 2 or friend:hasSkill("xianzhen")) and hcard:inherits("Slash") then
+						giveslashnum = giveslashnum + 1
+						return hcard, friend
+					end
+				end
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:hasSkill("paoxiao") and not friend:containsTrick("indulgence") and friend:faceUp() then
+			local noweapon
+				if not friend:getWeapon() and  giveweapondone ~= 1 then
+					noweapon = 1
+					for _, hcard in ipairs(cardtogive) do
+						if #cardtogive > 1  and hcard:inherits("Weapon") and not hcard:inherits("Crossbow") then 
+							giveweapondone = 1
+							noweapon = 0
+							return hcard, friend
+						end
+					end
+				end
+				for _, hcard in ipairs(cardtogive) do
+					if #cardtogive > 1 and (friend:getWeapon() or noweapon == 0) and  (self:isEquip("Spear", friend) or hcard:inherits("Slash")) then
+						return hcard, friend
+					end
+				end
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:hasSkill("jizhi") and not friend:containsTrick("indulgence") and friend:faceUp() then
+				for _, hcard in ipairs(cardtogive) do
+					if #cardtogive > 1 and hcard:inherits("TrickCard") then 
+						return hcard, friend
+					end
+				end
+			end
+		end
+
+		if self.role == "lord" then
+			for _, friend in ipairs(self.friends_noself) do
+				if friend:getKingdom() == "shu" and friend:getHandcardNum() < 3  then
+					for _, hcard in ipairs(cardtogive) do
+						if #cardtogive > 1 and hcard:inherits("Slash") then
+							return hcard, friend
+						end
+					end
+				end
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:hasSkill("zhiheng") and not friend:containsTrick("indulgence") and friend:faceUp() then
+				for _, hcard in ipairs(cardtogive) do
+					if #cardtogive > 1 and not hcard:inherits("Jink") then 
+						return hcard, friend
+					end
+				end
+			end
+		end
+
+	end
+
+	if (self.player:hasSkill("rende") and self.player:isWounded() and self.player:usedTimes("RendeCard") < 2) then 
+		if (self.player:getHandcardNum() == 2 and self.player:usedTimes("RendeCard") == 0) or
+			(self.player:getHandcardNum() == 1 and self.player:usedTimes("RendeCard") == 1) then
+			for _, enemy in ipairs(self.enemies) do
+				if self:isEquip("GudingBlade", enemy) and (enemy:canSlash(self.player, true) or enemy:hasSkill("shensu") or enemy:hasSkill("wushen")) then return end
+			end
+			for _, friend in ipairs(self.friends_noself) do
+				local card_id = self:getCardRandomly(self.player, "h")
+				return sgs.Sanguosha:getCard(card_id), friend
+			end
+		end
+		if self.player:getHandcardNum()> 2 or #cardtogive > 2 then
+			for _, friend in ipairs(self.friends_noself) do
+				if not self:needKongcheng(friend) or self.player:getHp() > 2 then
+				global_room:writeToConsole("give the  cards to recover")
+					for _, hcard in ipairs(cardtogive) do
+						if #cardtogive > 1  then 
+							return hcard, friend
+						end
+					end
+				end
+			end
+		end
+		for _, friend in ipairs(self.friends_noself) do
+			for _, hcard in ipairs(cardtogive) do
+				if self:getOverflow()>0	then
+					return hcard, friend
+				end
+			end
+		end
+	end
+
+	if #self.friends == 1 then  
+		for _,enemy in ipairs(self.enemies) do
+			if (self:needKongcheng(enemy) or (enemy:hasSkill("lianying") and enemy:getHandcardNum() == 1)) and enemy:faceUp() then
+				for _,acard in ipairs(cardtogive) do
+					if acard:inherits("Shit") or acard:inherits("Lightning") or acard:inherits("Collateral") or acard:inherits("GodSalvation") then
+						return acard, enemy
+					end
+				end
+			end
+		end
+	end
+
+	for _, friend in ipairs(self.friends_noself) do
+		if not self:needKongcheng(friend) then
+			for _, hcard in ipairs(cardtogive) do
+				if self:getOverflow()>0	then
+					return hcard, friend
+				end
+			end
+		end
+	end
+	
 	self:sortByUseValue(cards,true)
 	local name = self.player:objectName()
 	if #self.friends > 1 then
