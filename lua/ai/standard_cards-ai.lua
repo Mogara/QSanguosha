@@ -15,7 +15,7 @@ function SmartAI:slashProhibit(card,enemy)
 
 	if self:isFriend(enemy) then
 		if card:inherits("FireSlash") or self.player:hasWeapon("fan") or self.player:hasSkill("zonghuo") then
-			if self:isEquip("Vine", enemy) then return true end
+			if self:isEquip("Vine", enemy) and not (enemy:isChained() and self:isGoodChainTarget(enemy)) then return true end
 		end
 		if enemy:isChained() and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) and not self:isGoodChainTarget(enemy) and
 			self:slashIsEffective(card,enemy) then return true end
@@ -101,6 +101,7 @@ function SmartAI:useCardSlash(card, use)
 
 	self.predictedRange = self.player:getAttackRange()
 	if self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
+	local huatuo = self.room:findPlayerBySkillName("jijiu")
 	for _, friend in ipairs(self.friends_noself) do
 		local slash_prohibit = false
 		slash_prohibit = self:slashProhibit(card,friend)
@@ -110,6 +111,7 @@ function SmartAI:useCardSlash(card, use)
 		and (self:getCardsNum("Jink", friend) > 0 or (not self:isWeak(friend) and self:isEquip("EightDiagram",friend)))
 		and (hasExplicitRebel(self.room) or not friend:isLord()))
 		or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and self:getCardsNum("Jink", friend) == 0)
+		or (friend:hasSkill("jieming") and self.player:hasSkill("rende") and (huatuo and self:isFriend(huatuo)))
 		then
 			if not slash_prohibit then
 				if ((self.player:canSlash(friend, not no_distance)) or
@@ -276,6 +278,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	--if not target then self.room:writeToConsole(debug.traceback()) end
 	if not target then return end
 	if self:isFriend(target) then
+		if target:hasSkill("rende") and self.player:hasSkill("jieming") then return "." end
 		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
 		if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
 		if self.player:isChained() and self:isGoodChainTarget(self.player) then return "." end
@@ -305,7 +308,6 @@ function SmartAI:useCardPeach(card, use)
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("longhun") and not self.player:isLord() and
 		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
-	if not (self.player:hasSkill("rende") and self:getOverflow() > 1 and #self.friends_noself > 0) then
 		local peaches = 0
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
@@ -338,7 +340,6 @@ function SmartAI:useCardPeach(card, use)
 		end
 
 		use.card = card
-	end
 end
 
 sgs.ai_card_intention.Peach = -120
@@ -681,9 +682,20 @@ function SmartAI:useCardDuel(duel, use)
 	if self.player:hasSkill("wuyan") then return end
 	self:sort(self.enemies,"handcard")
 	local enemies = self:exclude(self.enemies, duel)
+	local friends = self:exclude(self.friends_noself, duel)
 	local target 
 	local n1 = self:getCardsNum("Slash")
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
+	local huatuo = self.room:findPlayerBySkillName("jijiu")
+	for _, friend in ipairs(friends) do
+		if friend:hasSkill("jieming") and self.player:hasSkill("rende") and (huatuo and self:isFriend(huatuo))then
+			use.card = duel
+			if use.to then
+				use.to:append(friend)
+			end
+			return
+		end
+	end
 	local ptarget = self:getPriorTarget()
 	if ptarget then
 		local target = ptarget
@@ -759,6 +771,7 @@ sgs.dynamic_value.damage_card.Duel = true
 
 sgs.ai_skill_cardask["duel-slash"] = function(self, data, pattern, target)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
+	if self:isFriend(target) and target:hasSkill("rende") and self.player:hasSkill("jieming") then return "." end
 	if (not self:isFriend(target) and self:getCardsNum("Slash")*2 >= target:getHandcardNum())
 		or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("Peach") == 0 and not self.player:hasSkill("buqu")) then
 		return self:getCardId("Slash")
@@ -776,7 +789,7 @@ sgs.ai_card_intention.ExNihilo = -80
 
 sgs.ai_keep_value.ExNihilo = 3.6
 sgs.ai_use_value.ExNihilo = 10
-sgs.ai_use_priority.ExNihilo = 4.6
+sgs.ai_use_priority.ExNihilo = 6
 
 sgs.dynamic_value.benefit.ExNihilo = true
 
@@ -1170,7 +1183,7 @@ function SmartAI:useCardLightning(card, use)
 		return false
 	end
 	if self:getFinalRetrial(self.player) == 2 then 
-		return
+	return
 	elseif self:getFinalRetrial(self.player) == 1 then
 		use.card = card
 		return
