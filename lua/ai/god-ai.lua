@@ -467,13 +467,20 @@ end
 sgs.ai_card_intention.KuangfengCard = 80
 
 sgs.ai_skill_use["@dawu"] = function(self, prompt)
-	self:sort(self.friends, "hp")
-	for _, friend in ipairs(self.friends) do
-		if friend:getHp()<=1 and not friend:hasSkill("buqu") or
-			(friend:getHp()==2 and (not friend:getArmor() or friend:getArmor():inherits("GaleShell")) and friend:getHandcardNum() < 2) then
-			return "@DawuCard=.->" .. friend:objectName()
+	self:sort(self.friends_noself, "hp")
+	local targets = {}
+	local choices = {}
+	local lord = self.room:getLord()
+	if self:isFriend(lord) and not sgs.isLordHealthy(self.room) then table.insert(targets, lord:objectName())
+	else
+		for _, friend in ipairs(self.friends_noself) do
+			if self:isWeak(friend) then table.insert(choices, friend:objectName()) end
 		end
+		self:sort(choices, "defense")
+		if #choices > 0 then table.insert(targets, choices[1]:objectName()) end
 	end
+	if self.player:getMark("@star") > 1 and self:isWeak() then table.insert(targets, self.player:objectName()) end
+	if #targets > 0 then return "@DawuCard=.->" .. table.concat(targets, "+") end
 	return "."
 end
 

@@ -984,10 +984,18 @@ function sgs.updateIntentions(from, tos, intention, card)
 	end
 end
 
+function sgs.isLordHealthy(room)
+	local lord = room:getLord()
+	local lord_hp
+	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4 
+	else lord_hp = lord:getHp() end
+	return lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(lord) > 3)
+end
+
 function sgs.outputProcessValues(room)
 	local loyal = 0
 	local rebel = 0
-	local health = false
+	local health = sgs.isLordHealthy(room)
 	local loyal_value, rebel_value = 0, 0, 0
 	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
@@ -1021,26 +1029,14 @@ function sgs.outputProcessValues(room)
 	end
 	local diff = loyal_value - rebel_value
 	global_room:writeToConsole(diff)
-	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
-		if aplayer:isLord() then
-			local lord_hp
-			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
-			else lord_hp = aplayer:getHp() end
-			if lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(aplayer) > 3) then 
-				health = true  
-				global_room:writeToConsole("lord is healthy")
-				global_room:writeToConsole("lord 's hp is " .. lord_hp)
-			end
-		end
-	end
 	if diff >= 0.6 then
-	global_room:writeToConsole("diff >= 0.6")
-	if health then global_room:writeToConsole("loyalist")
-	else global_room:writeToConsole("dilemma") end
+		global_room:writeToConsole("diff >= 0.6")
+		if health then global_room:writeToConsole("loyalist")
+		else global_room:writeToConsole("dilemma") end
 	elseif diff >= 0.3 then
-	global_room:writeToConsole("diff >= 0.3") 
-	if health then global_room:writeToConsole("loyalish")
-	else global_room:writeToConsole("rebelish") end
+		global_room:writeToConsole("diff >= 0.3") 
+		if health then global_room:writeToConsole("loyalish")
+		else global_room:writeToConsole("rebelish") end
 	elseif diff <= -0.6 then global_room:writeToConsole("diff <= -0.6") global_room:writeToConsole("rebel")
 	elseif diff <= -0.3 then 
 		global_room:writeToConsole("diff <= -0.3")
@@ -1085,14 +1081,6 @@ function sgs.gameProcess(room)
 		--end	
 	end
 	local diff = loyal_value - rebel_value
-	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
-		if aplayer:isLord() then
-			local lord_hp
-			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then lord_hp = 4 
-			else lord_hp = aplayer:getHp() end
-		if lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(aplayer) > 3) then health = true end
-		end
-	end
 
 	if diff >= 0.6 then
 	if health then return "loyalist"
