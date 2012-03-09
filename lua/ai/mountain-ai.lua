@@ -428,6 +428,13 @@ function sgs.ai_skill_pindian.zhiba(minusecard, self, requestor, maxcard)
 	return maxcard or cards[1]
 end
 
+function sgs.ai_card_intention.ZhibaCard(card, from, tos, source)
+	assert(#tos == 1)
+	local number = sgs.Sanguosha:getCard(card:getSubcards():first()):getNumber()
+	if number < 6 then sgs.updateIntention(from, tos[1], -60)
+	elseif number > 8 then sgs.updateIntention(from, tos[1], 60) end
+end 
+
 local zhijian_skill={}
 zhijian_skill.name="zhijian"
 table.insert(sgs.ai_skills, zhijian_skill)
