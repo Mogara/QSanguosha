@@ -97,6 +97,8 @@ function SmartAI:needDeath(player)
 			elseif maxenemymark == 0 then return false
 			else return true end
 		end
+	elseif player:hasSkill("niepan") and player:getMark("@@nirvana") > 0 and player:getCards("e"):length() < 2 then
+		return true
 	end
 	return false
 end
