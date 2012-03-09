@@ -310,7 +310,7 @@ function SmartAI:getUsePriority(card)
 		if v then return v else return sgs.ai_use_priority[class_name] end
 	end
 	if self.player:hasSkill("rende") then
-		if card:inherits("ExNihio") then v = 5.9 end
+		if card:inherits("ExNihio") then v = 25.9 end
 		return v or sgs.ai_use_priority[class_name]
 	end
 
@@ -359,6 +359,7 @@ function SmartAI:getDynamicUsePriority(card)
 			self:isEquip("GaleShell") then
 			value = value + 10
 		end
+		if use_card:getSkillName() == "rende" then value = value + 10 end
 
 		if sgs.dynamic_value.benefit[class_name] then
 			dynamic_value = 10
@@ -392,11 +393,8 @@ function SmartAI:getDynamicUsePriority(card)
 				dynamic_value = 7.85
 			elseif use_card:inherits("QingnangCard") and self:getCardsNum("Snatch") > 0 and good_null >= bad_null then
 				dynamic_value = 6.55
-			elseif use_card:inherits("RendeCard") and self.player:usedTimes("RendeCard") < 2 then
-				if not self.player:isWounded() then dynamic_value = 6.57
-				elseif self:isWeak() then dynamic_value = 7.9
-				else dynamic_value = 7.86
-				end
+			elseif use_card:inherits("RendeCard") then
+				dynamic_value = 18
 			elseif use_card:inherits("JujianCard") then
 				if not self.player:isWounded() then dynamic_value = 0
 				else dynamic_value = 7.5
@@ -3018,6 +3016,9 @@ end
 function SmartAI:useTrickCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain"):match(card:objectName()) then return end
+	if self.player:hasSkill("wumou") and player:getMark("@wrath") < 6 then
+		if not (card:inherits("AOE") or card:inherits("DelayedTrick")) then return end
+	end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
 		if self.role == "renegade" and not self:isWeak(self.room:getLord()) then use.card = card return end

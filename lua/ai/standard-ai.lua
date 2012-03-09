@@ -266,12 +266,6 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards,true)
 	local name = self.player:objectName()
-	--[[local card, friend = self:getCardNeedPlayer(cards)
-	if card and friend then
-		use.card = sgs.Card_Parse("@RendeCard=" .. card:getId())
-		if use.to then use.to:append(friend) end
-		return
-	end]]
 
 	-- special move between liubei and xunyu and huatuo
 	local cardtogivespecial = {}
@@ -413,7 +407,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 			end
 		end
 
-			for _, friend in ipairs(self.friends_noself) do
+		for _, friend in ipairs(self.friends_noself) do
 			if friend:hasSkill("paoxiao") and not friend:containsTrick("indulgence") and friend:faceUp() then
 			local noweapon
 				if not friend:getWeapon() and  giveweapondone ~= 1 then
@@ -448,6 +442,13 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 					end
 				end
 			end
+		end
+
+		local card, friend = self:getCardNeedPlayer(cards)
+			if card and friend then
+				use.card = sgs.Card_Parse("@RendeCard=" .. card:getId())
+				if use.to then use.to:append(friend) end
+			return
 		end
 
 		if self.role == "lord" then
@@ -491,27 +492,23 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 				return
 			end
 		end
-		if self.player:getHandcardNum()> 2 or #cardtogive > 2 then
+		if self.player:getHandcardNum()> 2 or #cardtogive > 1 then
 			for _, friend in ipairs(self.friends_noself) do
 				if not self:needKongcheng(friend) or self.player:getHp() > 2 then
 				global_room:writeToConsole("give the  cards to recover")
 					for _, hcard in ipairs(cardtogive) do
-						if #cardtogive > 1  then 
-							use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
-							if use.to then use.to:append(friend) end
-							return
-						end
+						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+						if use.to then use.to:append(friend) end
+						return
 					end
 				end
 			end
 		end
 		for _, friend in ipairs(self.friends_noself) do
 			for _, hcard in ipairs(cardtogive) do
-				if self:getOverflow()>0	then
-					use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
-					if use.to then use.to:append(friend) end
-					return
-				end
+				use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+				if use.to then use.to:append(friend) end
+				return
 			end
 		end
 	end
@@ -553,7 +550,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 end
 
 sgs.ai_use_value.RendeCard = 8.5
-sgs.ai_use_priority.RendeCard = 5.8
+sgs.ai_use_priority.RendeCard = 10
 
 sgs.ai_card_intention.RendeCard = -70
 
