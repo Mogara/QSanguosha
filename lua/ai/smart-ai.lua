@@ -2749,7 +2749,7 @@ local function isCompulsoryView(card, class_name, player, card_place)
 	local _, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
-		if callback and type(callback) == "function" and callback(card, card_place) and sgs.Card_Parse(callback(card)):inherits(class_name) then
+		if callback and type(callback) == "function" and callback(card, card_place, player) and sgs.Card_Parse(callback(card)):inherits(class_name) then
 			return callback(card, card_place)
 		end
 	end
