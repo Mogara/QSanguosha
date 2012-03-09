@@ -1055,7 +1055,7 @@ function sgs.gameProcess(room)
 	elseif rebel_num == 0 and loyal_num> 0 then return "loyalist"
 	elseif loyal_num == 0 and rebel_num > 1 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
-	local health = false
+	local health = sgs.isLordHealthy(room)
 	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		--if not (aplayer:objectName() == currentplayer:objectName() and aplayer:getRole() == "renegade") then 
