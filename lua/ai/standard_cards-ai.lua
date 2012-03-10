@@ -702,7 +702,7 @@ function SmartAI:useCardDuel(duel, use)
 		local n2 = target:getHandcardNum()
 		if target:hasSkill("wushuang") then n2 = n2*2 end
 		local useduel
-		if target and self:hasTrickEffective(duel, target) then
+		if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) then
 			if n1 >= n2 then
 				useduel = true
 			elseif n2 > n1*2 + 1 then
@@ -734,7 +734,7 @@ function SmartAI:useCardDuel(duel, use)
 	end
 	
 	local useduel
-	if target and self:hasTrickEffective(duel, target) then
+	if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) then
 		if n1 >= n2 then
 			useduel = true
 		elseif n2 > n1*2 + 1 then
