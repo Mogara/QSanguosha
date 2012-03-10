@@ -1108,7 +1108,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 				end
 			end
 
-			if first and second then
+			if first and second and first:objectName() ~= second:objectName() then
 				use.card = card
 				if use.to then 
 					use.to:append(first)
