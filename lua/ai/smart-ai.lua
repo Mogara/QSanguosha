@@ -3240,7 +3240,7 @@ end
 function SmartAI:useTrickCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain"):match(card:objectName()) then return end
-	if self.player:hasSkill("wumou") and player:getMark("@wrath") < 6 then
+	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 then
 		if not (card:inherits("AOE") or card:inherits("DelayedTrick")) then return end
 	end
 	if card:inherits("AOE") then
