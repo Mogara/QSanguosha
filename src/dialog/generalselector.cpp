@@ -46,12 +46,14 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
         default_value = 6.3;
 
     ServerPlayer *lord = player->getRoom()->getLord();
-    QString lord_kingdom;
-    if(lord->getGeneral() && lord->getGeneral()->isLord())
+    QString lord_kingdom, suffix = QString();
+    if(lord->getGeneral() && lord->getGeneral()->isLord()){
         lord_kingdom = lord->getKingdom();
+        suffix = lord->getGeneralName();
+    }
 
     foreach(QString candidate, candidates){
-        QString key = QString("%1:%2:%3").arg(candidate).arg(role).arg(index);
+        QString key = QString("%1:%2:%3:%4").arg(candidate).arg(role).arg(index).arg(suffix);
         qreal value = first_general_table.value(key, default_value);
 
         if(!lord_kingdom.isNull() && (role == "loyalist" || role == "renegade")){
@@ -160,24 +162,28 @@ void GeneralSelector::loadFirstGeneralTable(){
 }
 
 void GeneralSelector::loadFirstGeneralTable(const QString &role){
-    QFile file(QString("etc/%1.txt").arg(role));
-    if(file.open(QIODevice::ReadOnly)){
-        QTextStream stream(&file);
-        while(!stream.atEnd()){
-            QString name;
-            stream >> name;
+    QStringList prefix = Sanguosha->getLords();
+    prefix << QString();
+    foreach(QString lord, prefix){
+        QFile file(QString("etc/%1%2%3.txt").arg(lord).arg((lord.isEmpty()?"":"_")).arg(role));
+        if(file.open(QIODevice::ReadOnly)){
+            QTextStream stream(&file);
+            while(!stream.atEnd()){
+                QString name;
+                stream >> name;
 
-            int i;
-            for(i=0; i<7; i++){
-                qreal value;
-                stream >> value;
+                int i;
+                for(i=0; i<7; i++){
+                    qreal value;
+                    stream >> value;
 
-                QString key = QString("%1:%2:%3").arg(name).arg(role).arg(i+2);
-                first_general_table.insert(key, value);
+                    QString key = QString("%1:%2:%3:%4").arg(name).arg(role).arg(i+2).arg(lord);
+                    first_general_table.insert(key, value);
+                }
             }
-        }
 
-        file.close();
+            file.close();
+        }
     }
 }
 
