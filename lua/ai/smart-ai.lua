@@ -1636,6 +1636,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	null_card = self:getCardId("Nullification")
 	if null_card then null_card = sgs.Card_Parse(null_card) else return end
 	if (from and from:isDead()) or (to and to:isDead()) then return nil end
+	if self:needBear() then return nil end
+	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 then return nil end
 	if positive then
 		if from and self:isEnemy(from) and (sgs.evaluateRoleTrends(from) ~= "neutral" or sgs.isRolePredictable()) then
 			if trick:inherits("ExNihilo") and (self:isWeak(from) or self:hasSkills(sgs.cardneed_skill,from)) then return null_card end 
