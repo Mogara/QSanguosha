@@ -1651,7 +1651,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 						if trick:inherits("Duel") then
 							return null_card
 						elseif trick:inherits("FireAttack") then
-							if from:getHandcardNum() > 2 and from:objectName() ~= to:objectName() then return null_card end
+							if (from:getHandcardNum() > 2 or self:isEquip("Vine", to)) and from:objectName() ~= to:objectName() then return null_card end
 						end
 					end
 				end
