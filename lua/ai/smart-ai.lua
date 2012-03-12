@@ -1738,7 +1738,9 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		if card then return card:getEffectiveId() end
 	elseif type(cardchosen) == "number" then
 		sgs.ai_skill_cardchosen[string.gsub(reason, "%-", "_")] = nil
-		return cardchosen
+		for _, acard in sgs.qlist(who:getCards(flags)) do
+			if acard:getEffectiveId() == cardchosen then return cardchosen end
+		end
 	end
 
 	if self:isFriend(who) then
@@ -2912,12 +2914,29 @@ end
 function SmartAI:getCardsFromGame(class_name)
 	local ban = sgs.GetConfig("BanPackages", "")
 	local cards = {}
-	for i=0, sgs.Sanguosha:getCardCount() do
-		local card = sgs.Sanguosha:getCard(i)
+	for i=1, sgs.Sanguosha:getCardCount() do
+		local card = sgs.Sanguosha:getCard(i-1)
 		if card:inherits(class_name) and not ban:match(card:getPackage()) then table.insert(cards, card) end
 	end
 	
 	return cards
+end
+
+function SmartAI:getRestCardsNum(class_name)
+	local ban = sgs.GetConfig("BanPackages", "")
+	sgs.discard_pile = self.room:getDiscardPile()
+	local totalnum = 0
+	local discardnum = 0
+	local card
+	for i=1, sgs.Sanguosha:getCardCount() do
+		card = sgs.Sanguosha:getCard(i-1)
+		if card:inherits(class_name) and not ban:match(card:getPackage()) then totalnum = totalnum+1 end
+	end
+	for _, card_id in sgs.qlist(sgs.discard_pile) do
+		card = sgs.Sanguosha:getCard(card_id)
+		if card:inherits(class_name) then discardnum = discardnum +1 end
+	end
+	return totalnum - discardnum
 end
 
 function SmartAI:evaluatePlayerCardsNum(class_name, player)
