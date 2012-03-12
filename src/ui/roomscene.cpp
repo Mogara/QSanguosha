@@ -1433,6 +1433,25 @@ void RoomScene::removeWidgetFromSkillDock(QWidget *widget){
 }
 
 void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
+    QGraphicsObject *dest = getAnimationObject(player->objectName());
+    QGraphicsTextItem *item = new QGraphicsTextItem(Sanguosha->translate(skill_name), NULL, this);
+    item->setFont(Config.BigFont);
+
+    QGraphicsDropShadowEffect *drop = new QGraphicsDropShadowEffect;
+    drop->setBlurRadius(5);
+    drop->setOffset(0);
+    drop->setColor(Qt::yellow);
+    item->setGraphicsEffect(drop);
+
+    QPropertyAnimation *move = new QPropertyAnimation(item, "pos");
+    QRectF rect = item->boundingRect();
+    move->setStartValue(QPointF(- rect.width()/2, - rect.height()/2));
+    move->setEndValue(dest->scenePos());
+    move->setDuration(1500);
+
+    move->start(QAbstractAnimation::DeleteWhenStopped);
+    connect(move, SIGNAL(finished()), item, SLOT(deleteLater()));
+
     QString type = "#AcquireSkill";
     QString from_general = player->getGeneralName();
     QString arg = skill_name;
