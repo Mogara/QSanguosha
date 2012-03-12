@@ -376,14 +376,16 @@ table.insert(sgs.ai_global_flags, "questioner")
 local guhuo_filter = function(player, carduse)
 	if carduse.card:inherits("GuhuoCard") then
 		sgs.questioner = nil
-		sgs.guhuotype = carduse.card:toString():split(":")[2]
+		local guhuocard = sgs.Sanguosha:cloneCard(carduse.card:toString():split(":")[2], carduse.card:getSuit(), carduse.card:getNumber())
+		sgs.guhuotype = guhuocard:className()
 	end
 end
 
 table.insert(sgs.ai_choicemade_filter.cardUsed, guhuo_filter)
 
 sgs.ai_skill_choice.guhuo = function(self, choices)
-	if sgs.guhuotype and (sgs.guhuotype == "shit" or sgs.guhuotype == "amazing_grace") then return "noquestion" end
+	if sgs.guhuotype and self:getRestCardsNum(sgs.guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
+	if sgs.guhuotype and (sgs.guhuotype == "Shit" or sgs.guhuotype == "AmazingGrace") then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 	local yuji
@@ -448,6 +450,7 @@ guhuo_skill.getTurnUseCard=function(self)
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())
+				if self:getRestCardsNum(guhuocard:className()) == 0 then return end
 				local dummyuse = {isDummy = true}
 				if newguhuo == "peach" then self:useBasicCard(guhuocard,dummyuse,false) else self:useTrickCard(guhuocard,dummyuse) end
 				if dummyuse.card then
