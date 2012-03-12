@@ -1738,7 +1738,9 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		if card then return card:getEffectiveId() end
 	elseif type(cardchosen) == "number" then
 		sgs.ai_skill_cardchosen[string.gsub(reason, "%-", "_")] = nil
-		return cardchosen
+		for _, acard in sgs.qlist(who:getCards(flags)) do
+			if acard:getEffectiveId() == cardchosen then return cardchosen end
+		end
 	end
 
 	if self:isFriend(who) then
