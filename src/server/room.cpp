@@ -2572,12 +2572,21 @@ void Room::setEmotion(ServerPlayer *target, const QString &emotion){
                     QString("%1:%2").arg(target->objectName()).arg(emotion.isEmpty() ? "." : emotion));
 }
 
+#include <QElapsedTimer>
+
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     AI *ai = player->getAI();
     if(ai){
-        thread->delay(Config.AIDelay);
+        QElapsedTimer timer;
+        timer.start();
+
         card_use.from = player;
         ai->activate(card_use);
+
+        qint64 diff = Config.AIDelay - timer.elapsed();
+        if(diff > 0)
+            thread->delay(diff);
+
     }else{
         broadcastInvoke("activate", player->objectName());
         getResult("useCardCommand", player);
