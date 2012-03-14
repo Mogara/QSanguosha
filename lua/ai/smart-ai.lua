@@ -1647,7 +1647,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					if self:getDangerousCard(to) or self:getValuableCard(to) or (to:getHandcardNum() == 1 and not self:needKongcheng(to)) then return null_card end
 				else
 					if trick:inherits("Snatch") then return null_card end
-					if trick:inherits("FireAttack") and self:isEquip("Vine", to) and from:objectName() ~= to:objectName() then return null_card end
+					if trick:inherits("FireAttack") and (self:isEquip("Vine", to) or to:getMark("@kuangfeng") > 0 or (to:isChained() and self:isGoodChainTarget(to))) 
+						and from:objectName() ~= to:objectName() then return null_card end
 					if self:isWeak(to)  then 
 						if trick:inherits("Duel") then
 							return null_card
@@ -3419,6 +3420,7 @@ function SmartAI:useEquipCard(card, use)
 				if not friend:getWeapon() then return end
 			end
 		end
+		if self.player:hasSkill("paoxiao") and card:inherits("Crossbow") then return end
 		if self.player:getWeapon() and self.player:getWeapon():inherits("YitianSword") then use.card = card return end
 		if self:evaluateWeapon(card) > self:evaluateWeapon(self.player:getWeapon()) then
 			if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
