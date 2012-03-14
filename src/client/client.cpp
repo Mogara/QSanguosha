@@ -775,7 +775,7 @@ void Client::askForNullification(const QString &ask_str){
         source = getPlayer(source_name);
 
     if(Config.NeverNullifyMyTrick && source == Self){
-        if(trick_card->inherits("SingleTargetTrick")){
+        if(trick_card->inherits("SingleTargetTrick") || trick_card->objectName() == "iron_chain"){
             responseCard(NULL);
             return;
         }
