@@ -1647,7 +1647,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					if self:getDangerousCard(to) or self:getValuableCard(to) or (to:getHandcardNum() == 1 and not self:needKongcheng(to)) then return null_card end
 				else
 					if trick:inherits("Snatch") then return null_card end
-					if trick:inherits("FireAttack") and (self:isEquip("Vine", to) or to:getMark("@kuangfeng") > 0 or (to:isChained() and self:isGoodChainTarget(to))) 
+					if trick:inherits("FireAttack") and (self:isEquip("Vine", to) or to:getMark("@kuangfeng") > 0 or (to:isChained() and not self:isGoodChainTarget(to))) 
 						and from:objectName() ~= to:objectName() then return null_card end
 					if self:isWeak(to)  then 
 						if trick:inherits("Duel") then
