@@ -60,6 +60,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
             player.append(QString::number(i));
         player_mapping[i] = player;
         role_mapping[player] = "unknown";
+        set_nationality[player] = false;
 
         QListWidgetItem *item = new QListWidgetItem(text);
         item->setData(Qt::UserRole, player);
@@ -173,6 +174,21 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     set_turned = new QCheckBox(tr("Player Turned"));
     set_chained = new QCheckBox(tr("Player Chained"));
 
+    choose_nationality = new QCheckBox(tr("Customize Nationality"));
+    nationalities = new QComboBox;
+    nationalities->addItem(QIcon("image/kingdom/icon/wei.png"), tr("Wei"), "wei");
+    nationalities->addItem(QIcon("image/kingdom/icon/shu.png"), tr("Shu"), "shu");
+    nationalities->addItem(QIcon("image/kingdom/icon/wu.png"), tr("Wu"), "wu");
+    nationalities->addItem(QIcon("image/kingdom/icon/qun.png"), tr("Qun"), "qun");
+    nationalities->addItem(QIcon("image/kingdom/icon/god.png"), tr("God"), "god");
+    nationalities->setEnabled(false);
+
+    kingdom_index["wei"] = 0;
+    kingdom_index["shu"] = 1;
+    kingdom_index["wu"]  = 2;
+    kingdom_index["qun"] = 3;
+    kingdom_index["god"] = 4;
+
     extra_skill_set = new QPushButton(tr("Set Extra Skills"));
 
     single_turn_text = new QLabel(tr("After this turn "));
@@ -208,6 +224,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addLayout(HLay(max_hp_prompt,max_hp_spin));
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
     vlayout->addLayout(HLay(set_turned, set_chained));
+    vlayout->addLayout(HLay(choose_nationality, nationalities));
     vlayout->addWidget(random_roles_box);
     vlayout->addWidget(extra_skill_set);
     vlayout->addWidget(starter_group);
@@ -311,6 +328,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
     connect(set_turned, SIGNAL(toggled(bool)), this, SLOT(doPlayerTurns(bool)));
     connect(set_chained, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
+    connect(choose_nationality, SIGNAL(toggled(bool)), nationalities, SLOT(setEnabled(bool)));
+    connect(choose_nationality, SIGNAL(toggled(bool)), this, SLOT(setNationalityEnable(bool)));
+    connect(nationalities, SIGNAL(currentIndexChanged(int)), this, SLOT(setNationality(int)));
     connect(random_roles_box, SIGNAL(toggled(bool)), this, SLOT(updateAllRoles(bool)));
     connect(extra_skill_set, SIGNAL(clicked()), this, SLOT(doSkillSelect()));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
@@ -349,6 +369,8 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
             free_general = free_choose_general[first_name], free_general2 = free_choose_general2[first_name];
     QStringList ex_skills(player_exskills[first_name]);
     QMap<QString, int> marks(player_marks[first_name]);
+    bool setting_nationality = set_nationality.value(first_name, false);
+    QString assigned_nationality = assign_nationality.value(first_name, "");
 
     role_mapping[first_name] = role_mapping[second_name];
     general_mapping[first_name] = general_mapping[second_name];
@@ -370,6 +392,8 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     player_exskills[first_name].append(player_exskills[second_name]);
     player_marks[first_name].clear();
     player_marks[first_name] = player_marks[second_name];
+    set_nationality[first_name] = set_nationality[second_name];
+    assign_nationality[first_name] = set_nationality[second_name];
 
     role_mapping[second_name] = role;
     general_mapping[second_name] = general;
@@ -391,6 +415,8 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     player_exskills[second_name].append(ex_skills);
     player_marks[second_name].clear();
     player_marks[second_name] = marks;
+    set_nationality[second_name] = setting_nationality;
+    assign_nationality[second_name] = assigned_nationality;
 }
 
 QString CustomAssignDialog::setListText(QString name, QString role, int index){
@@ -545,6 +571,17 @@ void CustomAssignDialog::updateNumber(int num){
             list->addItem(item_map[i]);
         }
     }
+}
+
+void CustomAssignDialog::setNationalityEnable(bool toggled){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    set_nationality[name] = toggled;
+    assign_nationality[name] = nationalities->itemData(nationalities->currentIndex()).toString();
+}
+
+void CustomAssignDialog::setNationality(int index){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    assign_nationality[name] = nationalities->itemData(index).toString();
 }
 
 void CustomAssignDialog::updatePlayerInfo(QString name)
@@ -1018,6 +1055,12 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     else
         starter_box->setEnabled(true);
 
+    QString kingdom = assign_nationality.value(player_name, "");
+    if(!kingdom.isEmpty())
+        nationalities->setCurrentIndex(kingdom_index[kingdom]);
+
+    choose_nationality->setChecked(set_nationality.value(player_name, false));
+
     QString mark_name = marks_combobox->itemData(marks_combobox->currentIndex()).toString();
     if(!mark_name.isEmpty())
         marks_count->setValue(player_marks.value(player_name)[mark_name]);
@@ -1095,6 +1138,8 @@ void CustomAssignDialog::load()
     player_handcards.clear();
     player_equips.clear();
     player_judges.clear();
+    set_nationality.clear();
+    assign_nationality.clear();
 
     free_choose_general.clear();
     free_choose_general2.clear();
@@ -1183,6 +1228,13 @@ void CustomAssignDialog::load()
         if(player["starter"]!=NULL)starter = name;
         if(player["chained"]!=NULL)player_chained[name]=true;
         if(player["turned"]!=NULL)player_turned[name]=true;
+        if(player["nationality"] != NULL){
+            assign_nationality[name] = player["nationality"];
+            set_nationality[name] = true;
+        }
+        else{
+            set_nationality[name] = false;
+        }
         if(player["acquireSkills"] != NULL){
             QStringList skills;
             foreach(QString skill_name, player["acquireSkills"].split(","))
@@ -1389,9 +1441,10 @@ bool CustomAssignDialog::save(QString path)
             }
         }
         if(player_maxhp[name]>0)line.append(QString("maxhp:%1 ").arg(player_maxhp[name]));
-        if(player_hp[name]>0)line.append(QString("hp:%1 ").arg(player_hp[name]));
-        if(player_turned[name])line.append("turned:true ");
-        if(player_chained[name])line.append("chained:true ");
+        if(player_hp[name]>0) line.append(QString("hp:%1 ").arg(player_hp[name]));
+        if(player_turned[name]) line.append("turned:true ");
+        if(player_chained[name]) line.append("chained:true ");
+        if(set_nationality[name]) line.append(QString("nationality:%1 ").arg(assign_nationality[name]));
         if(player_exskills[name].length() > 0){
             line.append("acquireSkills:");
             foreach(QString skill_name, player_exskills[name]){

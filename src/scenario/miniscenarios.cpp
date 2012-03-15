@@ -232,6 +232,9 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             QVariant data = QVariant::fromValue(sp);
             room->setTag("Starter", data);
         }
+        if(this->players.at(i)["nationality"] != NULL){
+            room->setPlayerProperty(sp, "kingdom", this->players.at(i)["nationality"]);
+        }
 
         str = this->players.at(i)["draw"];
         if(str == NULL)str = "4";
