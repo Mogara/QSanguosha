@@ -1663,6 +1663,15 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     QHBoxLayout *layout = new QHBoxLayout;
     skill_list = new QListWidget;
 
+    input_skill = new QLineEdit;
+    #if QT_VERSION >= 0x040700
+    input_skill->setPlaceholderText(tr("Input the Skill Name"));
+    #endif
+    input_skill->setToolTip(tr("Internal skill name is a phonetic form, "
+                               "the rest of the special circumstances, "
+                               "please see the translation of documents in the lang directory."));
+    add_skill = new QPushButton(tr("Add Skill"));
+
     select_skill = new QPushButton(tr("Select Skill from Generals"));
     delete_skill = new QPushButton(tr("Delete Current Skill"));
 
@@ -1681,6 +1690,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     QVBoxLayout *sided_lay = new QVBoxLayout;
     sided_lay->addWidget(skill_info);
     sided_lay->addStretch();
+    sided_lay->addLayout(HLay(input_skill, add_skill));
     sided_lay->addLayout(HLay(select_skill, delete_skill));
     sided_lay->addLayout(HLay(ok_button, cancel_button));
     layout->addLayout(sided_lay);
@@ -1688,6 +1698,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     mainlayout->addLayout(layout);
     setLayout(mainlayout);
 
+    connect(add_skill, SIGNAL(clicked()), this, SLOT(addInputSkill()));
     connect(select_skill, SIGNAL(clicked()), this, SLOT(selectSkill()));
     connect(delete_skill, SIGNAL(clicked()), this, SLOT(deleteSkill()));
     connect(skill_list, SIGNAL(itemSelectionChanged()), this, SLOT(changeSkillInfo()));
@@ -1700,6 +1711,13 @@ void SkillAssignDialog::changeSkillInfo(){
     skill_info->clear();
 
     skill_info->setText(Sanguosha->translate(":" + skill_name));
+}
+
+void SkillAssignDialog::addInputSkill(){
+    QString name = input_skill->text();
+    update_skills << name;
+
+    updateSkillList();
 }
 
 void SkillAssignDialog::selectSkill(){

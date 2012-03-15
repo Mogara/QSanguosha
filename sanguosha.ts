@@ -3755,6 +3755,21 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>技能选择</translation>
     </message>
     <message>
+        <location filename="src/dialog/customassigndialog.cpp" line="1663"/>
+        <source>Input the Skill Name</source>
+        <translation>请输入内部技能名，如rende</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/customassigndialog.cpp" line="1663"/>
+        <source>Internal skill name is a phonetic form, the rest of the special circumstances, please see the translation of documents in the lang directory.</source>
+        <translation>内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/customassigndialog.cpp" line="1663"/>
+        <source>Add Skill</source>
+        <translation>增加</translation>
+    </message>
+    <message>
         <location filename="src/dialog/customassigndialog.cpp" line="1666"/>
         <source>Select Skill from Generals</source>
         <translation>从武将中选择技能</translation>
