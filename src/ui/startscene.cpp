@@ -120,10 +120,9 @@ void StartScene::printServerInfo(){
     server_log->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
     server_log->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
 
-    if(Config.OperationNoLimit)
-        server_log->append(tr("There is no time limit"));
-    else
-        server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));    
+    server_log->append( Config.OperationNoLimit ?
+                        tr("There is no time limit") :
+                        tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
 
     if(Config.ContestMode)
         server_log->append(tr("The contest mode is enabled"));
@@ -142,10 +141,9 @@ void StartScene::printServerInfo(){
     }else
         server_log->append(tr("Seconardary general is disabled"));
 
-    if(Config.EnableScene)
-        server_log->append(tr("Scene Mode is enabled"));
-    else
-        server_log->append(tr("Scene Mode is disabled"));
+    server_log->append( Config.EnableScene ?
+                        tr("Scene Mode is enabled") :
+                        tr("Scene Mode is disabled"));
 
     server_log->append( Config.EnableBasara ?
                         tr("Basara Mode is enabled") :
@@ -157,10 +155,9 @@ void StartScene::printServerInfo(){
 
     if(Config.EnableAI){
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-        if(Config.value("AIChat", true).toBool())
-            server_log->append(tr("This server is AI chat enabled"));
-        else
-            server_log->append(tr("This server is AI chat disabled"));
+        server_log->append( Config.value("AIChat", true).toBool() ?
+                            tr("This server is AI chat enabled") :
+                            tr("This server is AI chat disabled"));
     }
     else
         server_log->append(tr("This server is AI disabled"));

@@ -1670,7 +1670,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     input_skill->setToolTip(tr("Internal skill name is a phonetic form, "
                                "the rest of the special circumstances, "
                                "please see the translation of documents in the lang directory."));
-    add_skill = new QPushButton(tr("Add Skill"));
+    QPushButton *add_skill = new QPushButton(tr("Add Skill"));
 
     select_skill = new QPushButton(tr("Select Skill from Generals"));
     delete_skill = new QPushButton(tr("Delete Current Skill"));

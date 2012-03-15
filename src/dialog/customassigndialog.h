@@ -201,7 +201,7 @@ public:
 private:
     QListWidget *skill_list;
     QLineEdit *input_skill;
-    QPushButton *add_skill, *select_skill, *delete_skill;
+    QPushButton *select_skill, *delete_skill;
     QTextEdit *skill_info;
 
     QStringList update_skills;
