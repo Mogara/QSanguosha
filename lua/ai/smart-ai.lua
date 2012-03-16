@@ -1139,19 +1139,18 @@ function SmartAI:objectiveLevel(player)
 				if player:isLord() then
 					if rebel_num > 0 then
 						if loyal_num > 0 then
-						if self:isWeak(player) then return -1
-						elseif process == "loyalist" then return 3
-						else return 0 end
+							if not sgs.isLordHealthy(self.room) then return -1
+							elseif process == "loyalist" then return 3
+							else return 0 end
 						else 
-							if self:isWeak(player) then return -1
+							if not sgs.isLordHealthy(self.room) then return -1
 							else return 3.5 end
 						end    			        
 					elseif loyal_num > 0 then
-						if self:isWeak(player) then return 3
-						elseif process == "loyalish" then return 3
+						if not sgs.isLordHealthy(self.room) then  return 1
 						else return 4 end
 					else
-						if self:isWeak(player) then return 2
+						if not sgs.isLordHealthy(self.room) then return 1
 						else return 4 end
 					end
 				else
