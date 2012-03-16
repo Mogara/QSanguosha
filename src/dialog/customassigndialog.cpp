@@ -1724,6 +1724,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
                                "the rest of the special circumstances, "
                                "please see the translation of documents in the lang directory."));
     QPushButton *add_skill = new QPushButton(tr("Add Skill"));
+    add_skill->setObjectName("inline_add");
 
     select_skill = new QPushButton(tr("Select Skill from Generals"));
     delete_skill = new QPushButton(tr("Delete Current Skill"));
@@ -1751,7 +1752,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     mainlayout->addLayout(layout);
     setLayout(mainlayout);
 
-    connect(add_skill, SIGNAL(clicked()), this, SLOT(addInputSkill()));
+    connect(add_skill, SIGNAL(clicked()), this, SLOT(addSkill()));
     connect(select_skill, SIGNAL(clicked()), this, SLOT(selectSkill()));
     connect(delete_skill, SIGNAL(clicked()), this, SLOT(deleteSkill()));
     connect(skill_list, SIGNAL(itemSelectionChanged()), this, SLOT(changeSkillInfo()));
@@ -1764,13 +1765,6 @@ void SkillAssignDialog::changeSkillInfo(){
     skill_info->clear();
 
     skill_info->setText(Sanguosha->translate(":" + skill_name));
-}
-
-void SkillAssignDialog::addInputSkill(){
-    QString name = input_skill->text();
-    update_skills << name;
-
-    updateSkillList();
 }
 
 void SkillAssignDialog::selectSkill(){
@@ -1811,9 +1805,14 @@ void SkillAssignDialog::getSkillFromGeneral(QString general_name){
 
 void SkillAssignDialog::addSkill(){
     QString name = sender()->objectName();
-    update_skills << name;
+    if(name == "inline_add") name = input_skill->text();
 
-    updateSkillList();
+    if(!update_skills.contains(name)){
+        update_skills << name;
+        updateSkillList();
+    }
+
+    input_skill->clear();
 }
 
 void SkillAssignDialog::updateSkillList(){

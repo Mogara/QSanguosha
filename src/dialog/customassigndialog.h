@@ -215,7 +215,6 @@ private:
     QStringList update_skills;
 
 private slots:
-    void addInputSkill();
     void selectSkill();
     void deleteSkill();
     void addSkill();
