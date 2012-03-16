@@ -561,7 +561,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 			end
 		end
 		if self:isWeak() then
-			for _, askill in ipairs(("qingnang|jieyin|zaiqi|longhun|kuanggu|caizhaoji_hujia|jushou|buqu|jincui|yuwen"):split("|")) do
+			for _, askill in ipairs(("qingnang|jieyin|zaiqi|longhun|kuanggu|caizhaoji_hujia|jushou|jincui|yuwen"):split("|")) do
 				if str:match(askill) then return askill end
 			end
 		end
