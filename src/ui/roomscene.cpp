@@ -2366,7 +2366,12 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
     QStringList list = QString("%1:%2").arg(who).arg(delta).split(":");
     doAnimation("hpChange",list);
 
-    if(delta < 0 && !losthp){
+    if(delta < 0){
+        if(losthp){
+            Sanguosha->playAudio("hplost");
+            return;
+        }
+
         QString damage_effect;
         switch(delta){
         case -1: {
@@ -2404,7 +2409,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
         else if(nature == DamageStruct::Thunder)
             doAnimation("lightning", QStringList() << who);
 
-    }else if(delta > 0){
+    }else{
         QString type = "#Recover";
         QString from_general = ClientInstance->getPlayer(who)->getGeneralName();
         QString n = QString::number(delta);
