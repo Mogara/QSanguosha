@@ -176,18 +176,13 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     choose_nationality = new QCheckBox(tr("Customize Nationality"));
     nationalities = new QComboBox;
-    nationalities->addItem(QIcon("image/kingdom/icon/wei.png"), tr("Wei"), "wei");
-    nationalities->addItem(QIcon("image/kingdom/icon/shu.png"), tr("Shu"), "shu");
-    nationalities->addItem(QIcon("image/kingdom/icon/wu.png"), tr("Wu"), "wu");
-    nationalities->addItem(QIcon("image/kingdom/icon/qun.png"), tr("Qun"), "qun");
-    nationalities->addItem(QIcon("image/kingdom/icon/god.png"), tr("God"), "god");
+    int index = 0;
+    foreach(QString kingdom, Sanguosha->getKingdoms()){
+        nationalities->addItem(QIcon(QString("image/kingdom/icon/%1.png").arg(kingdom)), Sanguosha->translate(kingdom), kingdom);
+        kingdom_index[kingdom] = index;
+        index ++;
+    }
     nationalities->setEnabled(false);
-
-    kingdom_index["wei"] = 0;
-    kingdom_index["shu"] = 1;
-    kingdom_index["wu"]  = 2;
-    kingdom_index["qun"] = 3;
-    kingdom_index["god"] = 4;
 
     extra_skill_set = new QPushButton(tr("Set Extra Skills"));
 
