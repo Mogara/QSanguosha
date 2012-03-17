@@ -121,6 +121,7 @@ struct JudgeStruct{
     JudgeStructPattern pattern;
     bool good;
     QString reason;
+    bool time_consuming;
 };
 
 enum TriggerEvent{

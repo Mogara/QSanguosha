@@ -419,6 +419,7 @@ struct JudgeStruct{
 	QRegExp pattern;
 	bool good;
 	QString reason;
+	bool time_consuming;
 };
 
 typedef JudgeStruct *JudgeStar;

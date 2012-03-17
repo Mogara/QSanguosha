@@ -1800,7 +1800,15 @@ void SkillAssignDialog::getSkillFromGeneral(QString general_name){
 
 void SkillAssignDialog::addSkill(){
     QString name = sender()->objectName();
-    if(name == "inline_add") name = input_skill->text();
+    if(name == "inline_add"){
+        name = input_skill->text();
+
+        const Skill *skill = Sanguosha->getSkill(name);
+        if(skill == NULL){
+            QMessageBox::warning(this, tr("Warning"), tr("There is no skill that internal name is %1").arg(name));
+            return;
+        }
+    }
 
     if(!update_skills.contains(name)){
         update_skills << name;

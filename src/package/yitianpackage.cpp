@@ -932,6 +932,7 @@ public:
                 judge.good = true;
                 judge.reason = objectName();
                 judge.who = caizhaoji;
+                judge.time_consuming = true;
 
                 room->judge(judge);
 

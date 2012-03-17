@@ -365,6 +365,7 @@ public:
                 judge.good = true;
                 judge.reason = objectName();
                 judge.who = zhenji;
+                judge.time_consuming = true;
 
                 room->judge(judge);
                 if(judge.isBad())
