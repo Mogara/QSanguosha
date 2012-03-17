@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QCommandLinkButton>
+#include <QCompleter>
 
 static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
                      QWidget *rear = NULL, bool is_vertically = false){
@@ -1718,6 +1719,10 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     input_skill->setToolTip(tr("Internal skill name is a phonetic form, "
                                "the rest of the special circumstances, "
                                "please see the translation of documents in the lang directory."));
+
+    QCompleter *completer = new QCompleter(Sanguosha->getSkillNames(), input_skill);
+    input_skill->setCompleter(completer);
+
     QPushButton *add_skill = new QPushButton(tr("Add Skill"));
     add_skill->setObjectName("inline_add");
 
