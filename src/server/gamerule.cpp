@@ -496,7 +496,10 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             room->sendJudgeResult(judge);
 
-            room->getThread()->delay();
+            int delay = Config.AIDelay;
+            if(judge->reason == "luoshen")
+                delay /= 2;
+            room->getThread()->delay(delay);
 
             break;
         }
