@@ -560,14 +560,10 @@ end
 
 function sgs.ai_armor_value.eight_diagram(player, self)
 	local haszj = self:hasSkills("leiji", self:getEnemies(player))
-	if haszj and self:getFinalRetrial(player) == 2 then 
+	if haszj then 
 		return 2
 	end
-	if (not haszj and self:getFinalRetrial(player) == 2) or
-		(haszj and self:getFinalRetrial(player) == 1) then
-		return 3
-	end
-	if self:getFinalRetrial(player) == 1 or player:hasSkill("tiandu") then 
+	if player:hasSkill("tiandu") then 
 		return 5
 	end
 	return 4 
