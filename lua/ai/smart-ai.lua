@@ -2643,13 +2643,13 @@ function SmartAI:getFinalRetrial(player)
 	local maxenemyseat = -1
 	local tmpfriend
 	local tmpenemy
-	for _, aplayer in ipairs(self:getFriends(player)) do
+	for _, aplayer in ipairs(self:getFriends(self.player)) do
 		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
 			tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpfriend > maxfriendseat then maxfriendseat = tmpfriend end
 		end
 	end
-	for _, aplayer in ipairs(self:getEnemies(player)) do
+	for _, aplayer in ipairs(self:getEnemies(self.player)) do
 		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
 			tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpenemy > maxenemyseat then maxenemyseat = tmpenemy end
