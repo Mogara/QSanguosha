@@ -2643,13 +2643,14 @@ function SmartAI:getFinalRetrial(player)
 	local maxenemyseat = -1
 	local tmpfriend
 	local tmpenemy
-	for _, aplayer in ipairs(self:getFriends(player)) do
+	player = player or self.room:getCurrent()
+	for _, aplayer in ipairs(self:getFriends(self.player)) do
 		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
 			tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpfriend > maxfriendseat then maxfriendseat = tmpfriend end
 		end
 	end
-	for _, aplayer in ipairs(self:getEnemies(player)) do
+	for _, aplayer in ipairs(self:getEnemies(self.player)) do
 		if self:hasSkills(sgs.wizard_harm_skill, aplayer) and self:canRetrial(aplayer) then
 			tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpenemy > maxenemyseat then maxenemyseat = tmpenemy end
@@ -2667,9 +2668,9 @@ end
 function SmartAI:getRetrialCardId(cards, judge)
 	local can_use = {}
 	for _, card in ipairs(cards) do
-		if self:isFriend(judge.who) and judge:isGood(card) and not (self:getFinalRetrial(judge.who) == 2 and card:inherits("Peach")) then
+		if self:isFriend(judge.who) and judge:isGood(card) and not (self:getFinalRetrial() == 2 and card:inherits("Peach")) then
 			table.insert(can_use, card)
-		elseif self:isEnemy(judge.who) and not judge:isGood(card) and not (self:getFinalRetrial(judge.who) == 2 and card:inherits("Peach")) then
+		elseif self:isEnemy(judge.who) and not judge:isGood(card) and not (self:getFinalRetrial() == 2 and card:inherits("Peach")) then
 			table.insert(can_use, card)
 		end
 	end
