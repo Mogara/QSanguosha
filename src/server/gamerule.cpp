@@ -498,7 +498,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             int delay = Config.AIDelay;
             if(judge->time_consuming)
-                delay /= 2;
+                delay /= 4;
             room->getThread()->delay(delay);
 
             break;
