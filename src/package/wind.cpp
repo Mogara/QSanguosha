@@ -661,7 +661,7 @@ GuhuoCard::GuhuoCard(){
     mute = true;
 }
 
-bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
+bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
 
@@ -684,6 +684,8 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
             continue;
         }
 
+        if(player->getState()=="online")
+            player->invoke("log", message);
         QString choice = room->askForChoice(player, "guhuo", "question+noquestion");
         if(choice == "question"){
             room->setEmotion(player, "question");
@@ -882,7 +884,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
 
     room->sendLog(log);
 
-    if(guhuo(card_use->from)){
+    if(guhuo(card_use->from, log.toString())){
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
@@ -911,7 +913,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
     log.arg = to_guhuo;
     room->sendLog(log);
 
-    if(guhuo(yuji)){
+    if(guhuo(yuji,log.toString())){
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
