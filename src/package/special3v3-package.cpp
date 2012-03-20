@@ -48,11 +48,10 @@ public:
 
     QList<ServerPlayer *> getTeammates(ServerPlayer *zhugejin) const{
         Room *room = zhugejin->getRoom();
-        AI *ai = zhugejin->getAI();
 
         QList<ServerPlayer *> teammates;
         foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
-            if(ai->relationTo(other) == AI::Friend)
+            if(AI::GetRelation3v3(zhugejin, other) == AI::Friend)
                 teammates << other;
         }
         return teammates;
