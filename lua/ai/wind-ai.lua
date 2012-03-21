@@ -198,6 +198,7 @@ end
 sgs.ai_card_intention.LeijiCard = 80
 
 function sgs.ai_slash_prohibit.leiji(self, to, card)
+    if not to:hasSkill("leiji") then return false end
 	if self:isFriend(to) then return false end
 	local hcard = to:getHandcardNum()
 	if self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange()) then return false end

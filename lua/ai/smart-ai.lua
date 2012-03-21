@@ -2112,8 +2112,6 @@ function SmartAI:getCardNeedPlayer(cards)
 				for _, hcard in ipairs(cardtogive) do
 					local givebigdone = 0
 					if #cardtogive > 1 and givebigdone ~= 1 and hcard:getNumber() > 10 then 
-						global_room:writeToConsole("Card given done!!!!!!!!!")
-						global_room:writeToConsole("The times we have used rendecard is " .. self.player:usedTimes("RendeCard"))
 						givebigdone = 1
 						return hcard, friend
 					end
@@ -2196,7 +2194,6 @@ function SmartAI:getCardNeedPlayer(cards)
 		if self.player:getHandcardNum()> 2 or #cardtogive > 2 then
 			for _, friend in ipairs(self.friends_noself) do
 				if not self:needKongcheng(friend) or self.player:getHp() > 2 then
-				global_room:writeToConsole("give the  cards to recover")
 					for _, hcard in ipairs(cardtogive) do
 						if #cardtogive > 1  then 
 							return hcard, friend
