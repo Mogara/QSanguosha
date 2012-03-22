@@ -50,6 +50,7 @@ Engine::Engine()
                   << "God"
                   << "SP"
                   << "YJCM"
+                  << "YJCM2012"
                   << "BGM"
                   << "Yitian"
                   << "Wisdom"
