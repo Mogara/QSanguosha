@@ -1940,6 +1940,12 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
     broadcastProperty(victim, "maxhp");
     broadcastProperty(victim, "hp");
 
+    LogMessage log;
+    log.type = "#LoseMaxHp";
+    log.from = victim;
+    log.arg = QString::number(lose);
+    sendLog(log);
+
     if(victim->getMaxHP() == 0)
         killPlayer(victim);
 }
