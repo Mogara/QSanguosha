@@ -817,15 +817,13 @@ public:
 
             LogMessage log;
             log.from = dongzhuo;
-            if(result == "hp"){
-                log.type = "#BenghuaiLoseHp";
-                room->sendLog(log);
+            log.arg = objectName();
+            log.type = "#TriggerSkill";
+            room->sendLog(log);
+            if(result == "hp")
                 room->loseHp(dongzhuo);
-            }else{
-                log.type = "#BenghuaiLoseMaxHp";
-                room->sendLog(log);
+            else
                 room->loseMaxHp(dongzhuo);
-            }
         }
 
         return false;

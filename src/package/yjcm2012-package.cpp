@@ -174,6 +174,7 @@ public:
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
+
             room->loseMaxHp(damage.to, damage.damage);
             return true;
         }
@@ -285,30 +286,6 @@ public:
     }
 };
 
-class Shiyong: public TriggerSkill{
-public:
-    Shiyong():TriggerSkill("shiyong"){
-        events << Predamaged;
-    }
-
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-
-        if(damage.card && damage.card->inherits("Slash") && damage.card->isRed()){
-            Room *room = player->getRoom();
-
-            LogMessage log;
-            log.type = "#ShiyongLoseMaxHP";
-            log.from = player;
-            room->sendLog(log);
-
-            room->loseMaxHp(player);
-        }
-
-        return false;
-    }
- };
-
 class Zishou:public DrawCardsSkill{
 public:
     Zishou():DrawCardsSkill("zishou"){
@@ -336,16 +313,10 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *liubiao) const{
-        switch(liubiao->getPhase()){
-        case Player::Play: {
-                bool invoked = liubiao->hasFlag("zishou");
-                return invoked;
-            }
-
-         default:
-            break;
+        if(liubiao->getPhase() == Player::Play){
+            bool invoked = liubiao->hasFlag("zishou");
+            return invoked;
         }
-
         return false;
     }
 };
@@ -377,10 +348,34 @@ public:
                 liubiao->setMark("@zongshi", 0);
                 break;
             }
-         default:
-            break;
+        default:
+           break;
         }
 
+        return false;
+    }
+};
+
+class Shiyong: public TriggerSkill{
+public:
+    Shiyong():TriggerSkill("shiyong"){
+        events << Predamaged;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if(damage.card && damage.card->inherits("Slash") && damage.card->isRed()){
+            Room *room = player->getRoom();
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = objectName();
+            room->sendLog(log);
+
+            room->loseMaxHp(player);
+        }
         return false;
     }
 };

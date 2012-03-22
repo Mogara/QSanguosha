@@ -90,8 +90,6 @@ return {
 	[":benghuai:"] = "请选择减体力还是体力上限:",
 	["benghuai:hp"] = "体力",
 	["benghuai:maxhp"] = "体力上限",
-	["#BenghuaiLoseHp"] = "%from 的【崩坏】锁定技被触发，流失了一点体力",
-	["#BenghuaiLoseMaxHp"] = "%from 的【崩坏】锁定技被触发，流失了一点体力上限",
 	["baonue:yes"] = "你可进行一次判定，若判定结果为黑桃，则董卓回复一点体力",
 
 -- CV
