@@ -64,6 +64,30 @@ public:
     }
 };
 
+class Shiyong: public TriggerSkill{
+public:
+    Shiyong():TriggerSkill("shiyong"){
+        events << Predamaged;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if(damage.card && damage.card->inherits("Slash") && damage.card->isRed()){
+            Room *room = player->getRoom();
+
+            LogMessage log;
+            log.type = "#ShiyongLoseMaxHP";
+            log.from = player;
+            room->sendLog(log);
+
+            room->loseMaxHp(player);
+        }
+
+        return false;
+    }
+ };
+
 YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *xunyou = new General(this, "xunyou", "wei", 3);
     xunyou->addSkill(new Zhiyu);
@@ -76,6 +100,10 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 */
     General *madai = new General(this, "madai", "shu");
     madai->addSkill(new Fuji);
+
+    General *huaxiong = new General(this, "huaxiong", "qun", 6);
+    huaxiong->addSkill(new Shiyong);
+
 /*
     General *liaohua = new General(this, "liaohua", "shu");
 
