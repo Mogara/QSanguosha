@@ -1419,7 +1419,7 @@ function SmartAI:filterEvent(event, player, data)
 				sgs[aflag] = nil
 			end
 			for _, callback in ipairs(sgs.ai_choicemade_filter.cardUsed) do
-				if callback and type(callback) == "function" then
+				if type(callback) == "function" then
 					callback(player, carduse)
 				end
 			end
@@ -1430,7 +1430,7 @@ function SmartAI:filterEvent(event, player, data)
 				local index = 2
 				if promptlist[1] == "cardResponsed" then index = 3 end
 				local callback = callbacktable[promptlist[index]] or callbacktable.general
-				if callback and type(callback) == "function" then
+				if type(callback) == "function" then
 					callback(player, promptlist)
 				end
 			end
@@ -1549,7 +1549,7 @@ end
 function SmartAI:askForSuit(reason)
 	if not reason then return sgs.ai_skill_suit.fanjian() end -- this line is kept for back-compatibility
 	local callback = sgs.ai_skill_suit[reason]
-	if callback and type(callback) == "function" then
+	if type(callback) == "function" then
 		if callback() then return callback(self) end
 	end
 	return math.random(0,3)
@@ -1591,7 +1591,7 @@ end
 
 function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local callback = sgs.ai_skill_discard[reason]
-	if callback and type(callback) == "function" then
+	if type(callback) == "function" then
 		if callback(self, discard_num, optional, include_equip) then return callback(self, discard_num, optional, include_equip) end
 	elseif optional then return {} end
 
@@ -1922,7 +1922,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 		if card then return card:toString() end
 	end
 	local callback = sgs.ai_skill_cardask[parsedPrompt[1]]
-	if callback and type(callback) == "function" then
+	if type(callback) == "function" then
 		local ret = callback(self, data, pattern, target, target2)
 		if ret then return ret end
 	end
@@ -2249,7 +2249,7 @@ function SmartAI:getCardNeedPlayer(cards)
 					if not self:needKongcheng(friend) then
 						for _, askill in sgs.qlist(friend:getVisibleSkillList()) do
 							local callback = sgs.ai_cardneed[askill:objectName()]
-							if callback and type(callback)=="function" and callback(friend, hcard, self) then
+							if type(callback)=="function" and callback(friend, hcard, self) then
 								return hcard, friend
 							end
 						end
@@ -2387,7 +2387,7 @@ function SmartAI:askForPindian(requestor, reason)
 	maxcard = maxcard or minusecard
 	mincard = mincard or minusecard
 	local callback = sgs.ai_skill_pindian[reason]
-	if callback and type(callback) == "function" then
+	if type(callback) == "function" then
 		local ret = callback(minusecard, self, requestor, maxcard, mincard)
 		if ret then return ret end
 	end
@@ -2723,7 +2723,7 @@ local function prohibitUseDirectly(card, player)
 	local _, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
-		if callback and type(callback) == "function" and callback(card) then return true end
+		if type(callback) == "function" and callback(card) then return true end
 	end
 	return false
 end
@@ -2740,7 +2740,7 @@ local function isCompulsoryView(card, class_name, player, card_place)
 	local _, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
-		if callback and type(callback) == "function" and callback(card, card_place, player)
+		if type(callback) == "function" and callback(card, card_place, player)
 			and sgs.Card_Parse(callback(card, card_place, player)):inherits(class_name) then
 			return callback(card, card_place, player)
 		end
@@ -2753,7 +2753,7 @@ local function getSkillViewCard(card, class_name, player, card_place)
 	local vlist = sgs.getSkillLists(player)
 	for _, askill in ipairs(vlist) do
 		local callback = sgs.ai_view_as[askill]
-		if callback and type(callback) == "function" and callback(card, player, card_place, class_name)
+		if type(callback) == "function" and callback(card, player, card_place, class_name)
 			and sgs.Card_Parse(callback(card, player, card_place, class_name)):inherits(class_name) then
 			return callback(card, player, card_place, class_name)
 		end
@@ -3347,7 +3347,7 @@ function SmartAI:evaluateWeapon(card)
 		deltaSelfThreat = deltaSelfThreat + self:getCardsNum("Slash")*3-2
 	end
 	local callback = sgs.ai_weapon_value[card:objectName()]
-	if callback and type(callback) == "function" then
+	if type(callback) == "function" then
 		deltaSelfThreat = deltaSelfThreat + (callback(self) or 0)
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:distanceTo(enemy) <= currentRange and callback then
@@ -3366,13 +3366,13 @@ function SmartAI:evaluateArmor(card, player)
 	local ecard = card or player:getArmor()
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
 		local callback = sgs.ai_armor_value[askill:objectName()]
-		if callback and type(callback) == "function" then
+		if type(callback) == "function" then
 			return (callback(ecard, player, self) or 0)
 		end
 	end
 	if not ecard then return 0 end
 	local callback = sgs.ai_armor_value[ecard:objectName()]
-	if callback and type(callback) == "function" then
+	if type(callback) == "function" then
 		return (callback(player, self) or 0)
 	end
 	return 0.5
