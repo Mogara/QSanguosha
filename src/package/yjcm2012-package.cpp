@@ -384,6 +384,7 @@ public:
         return false;
     }
 };
+
 YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *wangyi = new General(this, "wangyi", "wei", 3, false);
@@ -415,9 +416,8 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *liubiao = new General(this, "liubiao", "qun", 4);
     liubiao->addSkill(new Zishou);
     liubiao->addSkill(new ZishouPass);
-    liubiao->addSkill(new Zongshi);
-
     related_skills.insertMulti("zishou", "#zishou-pass");
+    liubiao->addSkill(new Zongshi);
 	
     General *huaxiong = new General(this, "huaxiong", "qun", 6);
     huaxiong->addSkill(new Shiyong);
