@@ -295,64 +295,10 @@ public:
         Room *room = liubiao->getRoom();
         if(room->askForSkillInvoke(liubiao, objectName())){
             room->playSkillEffect(objectName());
-            liubiao->setFlags("zishou");
+            liubiao->skip(Player::Play);
             return n + liubiao->getLostHp();
         }else
             return n;
-    }
-};
-
-class ZishouPass: public PhaseChangeSkill{
-public:
-    ZishouPass():PhaseChangeSkill("#zishou-pass"){
-
-    }
-
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *liubiao) const{
-        if(liubiao->getPhase() == Player::Play){
-            bool invoked = liubiao->hasFlag("zishou");
-            return invoked;
-        }
-        return false;
-    }
-};
-
-class Zongshi: public PhaseChangeSkill{
-public:
-    Zongshi():PhaseChangeSkill("zongshi"){
-
-    }
-
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *liubiao) const{
-        switch(liubiao->getPhase()){
-        case Player::Discard: {
-                QSet<QString> kingdom_set;
-                int zongshi = 0;
-                Room *room = liubiao->getRoom();
-                foreach(ServerPlayer *p, room->getAlivePlayers()){
-                        kingdom_set << p->getKingdom();
-                }
-                zongshi = qMax(kingdom_set.size()-liubiao->getHp(),0);
-                liubiao->setMark("@zongshi", zongshi);
-                break;
-            }
-        case Player::Finish:{
-                liubiao->setMark("@zongshi", 0);
-                break;
-            }
-        default:
-           break;
-        }
-
-        return false;
     }
 };
 
@@ -410,9 +356,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *liubiao = new General(this, "liubiao", "qun", 4);
     liubiao->addSkill(new Zishou);
-    liubiao->addSkill(new ZishouPass);
-    related_skills.insertMulti("zishou", "#zishou-pass");
-    liubiao->addSkill(new Zongshi);
+    liubiao->addSkill(new Skill("zongshi", Skill::Compulsory));
 	
     General *huaxiong = new General(this, "huaxiong", "qun", 6);
     huaxiong->addSkill(new Shiyong);
