@@ -4,6 +4,7 @@
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
+#include "god.h"
 
 ZhenlieCard::ZhenlieCard(){
     target_fixed = true;
@@ -326,6 +327,87 @@ public:
     }
 };
 
+class Gongqi : public OneCardViewAsSkill{
+public:
+    Gongqi():OneCardViewAsSkill("gongqi"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "slash";
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->getTypeId() == Card::Equip;
+    }
+
+    const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getFilteredCard();
+        WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
+        slash->addSubcard(card);
+        return slash;
+    }
+};
+
+class Jiefan : public TriggerSkill{
+public:
+    Jiefan():TriggerSkill("jiefan"){
+        events << Dying << SlashHit;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+
+        ServerPlayer *handang = room->findPlayerBySkillName(objectName());
+
+        if(event == Dying){
+            if(!handang || !room->askForSkillInvoke(handang, objectName()))
+                return false;
+
+            DyingStruct dying = data.value<DyingStruct>();
+            const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.damage->from->objectName(), data);
+            room->setTag("JiefanTarget", data);
+            if(slash){
+                CardUseStruct use;
+                use.card = slash;
+                use.from = handang;
+                use.to << dying.damage->from;
+                room->useCard(use);
+            }
+        }
+        else{
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(!player->hasSkill(objectName())
+               || room->getTag("JiefanTarget").isNull()
+               || !room->askForSkillInvoke(handang, objectName()))
+                return false;
+
+            DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
+            ServerPlayer *target = dying.who;
+            room->removeTag("JiefanTarget");
+            Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
+            peach->setSkillName(objectName());
+            CardUseStruct use;
+            use.card = peach;
+            use.from = handang;
+            use.to << target;
+            room->useCard(use);
+
+            return true;
+        }
+
+        return false;
+    }
+};
+
 YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *wangyi = new General(this, "wangyi", "wei", 3, false);
@@ -353,6 +435,8 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *bulianshi = new General(this, "bulianshi", "wu", 3, false);
 
     General *handang = new General(this, "handang", "qun");
+    handang->addSkill(new Gongqi);
+    handang->addSkill(new Jiefan);
 
     General *liubiao = new General(this, "liubiao", "qun", 4);
     liubiao->addSkill(new Zishou);
