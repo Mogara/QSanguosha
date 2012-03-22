@@ -309,6 +309,81 @@ public:
     }
  };
 
+class Zishou:public DrawCardsSkill{
+public:
+    Zishou():DrawCardsSkill("zishou"){
+    }
+
+    virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
+        Room *room = liubiao->getRoom();
+        if(room->askForSkillInvoke(liubiao, objectName())){
+            room->playSkillEffect(objectName());
+            liubiao->setFlags("zishou");
+            return n + liubiao->getLostHp();
+        }else
+            return n;
+    }
+};
+
+class ZishouPass: public PhaseChangeSkill{
+public:
+    ZishouPass():PhaseChangeSkill("#zishou-pass"){
+
+    }
+
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *liubiao) const{
+        switch(liubiao->getPhase()){
+        case Player::Play: {
+                bool invoked = liubiao->hasFlag("zishou");
+                return invoked;
+            }
+
+         default:
+            break;
+        }
+
+        return false;
+    }
+};
+
+class Zongshi: public PhaseChangeSkill{
+public:
+    Zongshi():PhaseChangeSkill("zongshi"){
+
+    }
+
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *liubiao) const{
+        switch(liubiao->getPhase()){
+        case Player::Discard: {
+                QSet<QString> kingdom_set;
+                int zongshi = 0;
+                Room *room = liubiao->getRoom();
+                foreach(ServerPlayer *p, room->getAlivePlayers()){
+                        kingdom_set << p->getKingdom();
+                }
+                zongshi = qMax(kingdom_set.size()-liubiao->getHp(),0);
+                liubiao->setMark("@zongshi", zongshi);
+                break;
+            }
+        case Player::Finish:{
+                liubiao->setMark("@zongshi", 0);
+                break;
+            }
+         default:
+            break;
+        }
+
+        return false;
+    }
+};
 YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *wangyi = new General(this, "wangyi", "wei", 3, false);
@@ -337,8 +412,13 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *handang = new General(this, "handang", "qun");
 
-    General *liubiao = new General(this, "liubiao", "qun", 3);
+    General *liubiao = new General(this, "liubiao", "qun", 4);
+    liubiao->addSkill(new Zishou);
+    liubiao->addSkill(new ZishouPass);
+    liubiao->addSkill(new Zongshi);
 
+    related_skills.insertMulti("zishou", "#zishou-pass");
+	
     General *huaxiong = new General(this, "huaxiong", "qun", 6);
     huaxiong->addSkill(new Shiyong);
 
