@@ -79,6 +79,9 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         slash_targets ++;
     }
 
+    if(Self->hasSkill("lihuo") && inherits("FireSlash"))
+        slash_targets = 2;
+
     if(Self->hasSkill("shenji") && Self->getWeapon() == NULL)
         slash_targets = 3;
 
