@@ -172,11 +172,65 @@ public:
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = player;
-            log.to << damage.to;
             log.arg = objectName();
             room->sendLog(log);
             room->loseMaxHp(damage.to, damage.damage);
             return true;
+        }
+        return false;
+    }
+};
+
+class Dangxian: public TriggerSkill{
+public:
+    Dangxian():TriggerSkill("dangxian"){
+        events << TurnStart;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
+        Room *room = player->getRoom();
+
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
+
+        QList<Player::Phase> phases;
+        phases << Player::Play;
+        player->play(phases);
+        return false;
+    }
+};
+
+class Fuli: public TriggerSkill{
+public:
+    Fuli():TriggerSkill("fuli"){
+        events << Dying;
+        frequency = Limited;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getMark("@laoji") > 0;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *liaohua, QVariant &data) const{
+        DyingStruct dying_data = data.value<DyingStruct>();
+        if(dying_data.who != liaohua)
+            return false;
+
+        Room *room = liaohua->getRoom();
+        if(liaohua->askForSkillInvoke(objectName(), data)){
+            //room->broadcastInvoke("animate", "lightbox:$fuli");
+            room->playSkillEffect(objectName());
+
+            liaohua->loseMark("@laoji");
+            int x = qMin(5, room->getAlivePlayers().count());
+            RecoverStruct rev;
+            rev.recover = x;
+            room->recover(liaohua, rev);
+            liaohua->turnOver();
         }
         return false;
     }
@@ -259,14 +313,14 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *madai = new General(this, "madai", "shu");
     madai->addSkill(new Fuji);
 
-    General *huaxiong = new General(this, "huaxiong", "qun", 6);
-    huaxiong->addSkill(new Shiyong);
-
     General *liaohua = new General(this, "liaohua", "shu");
+    liaohua->addSkill(new Dangxian);
+    liaohua->addSkill(new MarkAssignSkill("@laoji", 1));
+    liaohua->addSkill(new Fuli);
 
     General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu");
     guanxingzhangbao->addSkill(new Fuhun);
-/*
+
     General *chengpu = new General(this, "chengpu", "wu");
 
     General *bulianshi = new General(this, "bulianshi", "wu", 3, false);
@@ -274,7 +328,10 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *handang = new General(this, "handang", "qun");
 
     General *liubiao = new General(this, "liubiao", "qun", 3);
-*/
+
+    General *huaxiong = new General(this, "huaxiong", "qun", 6);
+    huaxiong->addSkill(new Shiyong);
+
     addMetaObject<ZhenlieCard>();
 }
 
