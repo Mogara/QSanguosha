@@ -182,6 +182,45 @@ public:
     }
 };
 
+class Fuhun: public PhaseChangeSkill{
+public:
+    Fuhun():PhaseChangeSkill("fuhun"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *shuangying) const{
+        Room *room = shuangying->getRoom();
+        if(shuangying->getPhase() == Player::Draw){
+            if(!shuangying->askForSkillInvoke(objectName()))
+                return false;
+
+            room->playSkillEffect(objectName());
+
+            int card_id = room->drawCard();
+            room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
+            room->getThread()->delay();
+            const Card *card1 = Sanguosha->getCard(card_id);
+            room->obtainCard(shuangying, card1);
+
+            card_id = room->drawCard();
+            room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
+            room->getThread()->delay();
+            const Card *card2 = Sanguosha->getCard(card_id);
+            room->obtainCard(shuangying, card2);
+            if(card1->isRed() != card2->isRed()){
+                room->acquireSkill(shuangying, "wusheng");
+                room->acquireSkill(shuangying, "paoxiao");
+                shuangying->setFlags("fuhun");
+            }
+        }
+        else if(shuangying->getPhase() == Player::NotActive && shuangying->hasFlag("fuhun")){
+            room->detachSkillFromPlayer(shuangying, "wusheng");
+            room->detachSkillFromPlayer(shuangying, "paoxiao");
+        }
+        return false;
+    }
+};
+
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
@@ -223,11 +262,11 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *huaxiong = new General(this, "huaxiong", "qun", 6);
     huaxiong->addSkill(new Shiyong);
 
-/*
     General *liaohua = new General(this, "liaohua", "shu");
 
     General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu");
-
+    guanxingzhangbao->addSkill(new Fuhun);
+/*
     General *chengpu = new General(this, "chengpu", "wu");
 
     General *bulianshi = new General(this, "bulianshi", "wu", 3, false);
