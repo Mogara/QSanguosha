@@ -462,9 +462,9 @@ void Player::setFaceUp(bool face_up){
 }
 
 int Player::getMaxCards() const{
-    int extra = 0;
+    int extra = 0, total = 0;
     if(Config.MaxHpScheme == 2 && general2){
-        int total = general->getMaxHp() + general2->getMaxHp();
+        total = general->getMaxHp() + general2->getMaxHp();
         if(total % 2 != 0)
             extra = 1;
     }
@@ -483,11 +483,22 @@ int Player::getMaxCards() const{
     int shenwei = 0;
     if(hasSkill("shenwei"))
         shenwei = 2;
-    int zongshi = 0;
-    if(hasSkill("zongshi"))
-        zongshi = getMark("@zongshi");
 
-    return qMax(hp,0) + extra + juejing + xueyi + shenwei + zongshi;
+    total = qMax(hp,0) + extra + juejing + xueyi + shenwei;
+
+    int zongshi = 0;
+    QStringList kingdoms;
+    if(hasSkill("zongshi")){
+        foreach(const Player *player, this->getSiblings()){
+            if(player->isAlive() && !kingdoms.contains(player->getKingdom())){
+                zongshi++;
+                kingdoms << player->getKingdom();
+            }
+        }
+
+        total = qMax(total, zongshi);
+    }
+    return total;
 }
 
 QString Player::getKingdom() const{
