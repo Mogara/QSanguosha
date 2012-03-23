@@ -12,7 +12,7 @@
 #include <QVBoxLayout>
 #include <QCommandLinkButton>
 #include <QLayout>
-#include <QDialog>
+
 
 class YJCM2012Package: public Package{
     Q_OBJECT

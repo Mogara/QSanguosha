@@ -681,6 +681,7 @@ function SmartAI:useCardDuel(duel, use)
 	local friends = self:exclude(self.friends_noself, duel)
 	local target 
 	local n1 = self:getCardsNum("Slash")
+	if self.player:hasFlag("slash_lock") then n1 = 0 end
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
 	local huatuo = self.room:findPlayerBySkillName("jijiu")
 	for _, friend in ipairs(friends) do

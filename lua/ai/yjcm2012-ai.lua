@@ -3,10 +3,13 @@ sgs.ai_skill_invoke.zishou = function(self, data)
 end
 
 sgs.ai_skill_invoke.qianxi = function(self, data)
-	local effect = data:toSlashEffect()
-	local target = effect.to
-	return target:getLostHp() == 0 or self:hasSkills(sgs.masochism_skill,target)
+	local damage = data:toDamage()
+	local target = damage.to
+	return target:getLostHp() == 0 or self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill, target)
 end
+
+sgs.ai_skill_invoke.fuli = true
+
 sgs.ai_skill_invoke.fuhun = function(self, data)
 	local target = 0
 	for _,enemy in ipairs(self.enemies) do
@@ -17,19 +20,26 @@ end
 
 sgs.ai_skill_choice.jiangchi = function(self, choices)
 	local target = 0
+	local goodtarget = 0
 	local slashnum = 0
 	local needburst = 0
+	
+	for _, slash in ipairs(self:getCards("Slash")) do
+		for _,enemy in ipairs(self.enemies) do
+			if self:slashIsEffective(slash, enemy) then 
+				slashnum = slashnum + 1 break
+			end 
+		end
+	end
+
 	for _,enemy in ipairs(self.enemies) do
 		for _, slash in ipairs(self:getCards("Slash")) do
-			if self:slashIsEffective(slash, enemy) then 
-				slashnum = slashnum + 1  -- for chi
-			end 
 			if self:slashIsEffective(slash, enemy) and (self.player:distanceTo(enemy) <= self.player:getAttackRange())  then 
-				target = target + 1  -- for jiang
+				goodtarget = goodtarget + 1  break
 			end
 		end
 	end
-	if slashnum > 1 or (slashnum > 0 and target == 0) then needburst = 1 end
+	if slashnum > 1 or (slashnum > 0 and goodtarget == 0) then needburst = 1 end
 	self:sort(self.enemies,"defense")
 	
 	for _,enemy in ipairs(self.enemies) do
@@ -57,8 +67,70 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 		elseif eff and def<8 and needburst > 0 then return "chi"
 		end
 	end
-	if target == 0 then return "jiang" end
+	if goodtarget == 0 then return "jiang" end
 	return "cancel"
+end
+
+sgs.ai_view_as.gongqi = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:getTypeId() == sgs.Card_Equip then
+		return ("slash:gongqi[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
+
+local gongqi_skill={}
+gongqi_skill.name="gongqi"
+table.insert(sgs.ai_skills,wusheng_skill)
+gongqi_skill.getTurnUseCard=function(self,inclusive)
+	local cards = self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+	
+	local equip_card
+	
+	self:sortByUseValue(cards,true)
+	
+	for _,card in ipairs(cards) do
+		if card:getTypeId() == sgs.Card_Equip and ((self:getUseValue(card)<sgs.ai_use_value.Slash) or inclusive) then
+			equip_card = card
+			break
+		end
+	end
+
+	if equip_card then		
+		local suit = equip_card:getSuitString()
+		local number = equip_card:getNumberString()
+		local card_id = equip_card:getEffectiveId()
+		local card_str = ("slash:gongqi[%s:%s]=%d"):format(suit, number, card_id)
+		local slash = sgs.Card_Parse(card_str)
+		
+		assert(slash)
+		
+		return slash
+	end
+end
+
+sgs.ai_skill_invoke.jiefan = function(self, data)
+	local dying = data:toDying()
+	local slashnum = 0
+	local friend = dying.who
+	local currentplayer = self.room:getCurrent()
+	for _, slash in ipairs(self:getCards("Slash")) do
+		if self:slashIsEffective(slash, currentplayer) then 
+			slashnum = slashnum + 1  
+		end 
+	end
+	return self:isFriend(friend) and not (self:isFriend(currentplayer) and self:isWeak(currentplayer)) and slashnum > 0
+end
+
+sgs.ai_skill_cardask["jiefan-slash"] = function(self, data, pattern, target)
+	for _, slash in ipairs(self:getCards("Slash")) do
+		if self:slashIsEffective(slash, target) then 
+			return slash:toString()
+		end 
+	end
+	return "."
 end
 
 --[[local lihuo_skill={}
