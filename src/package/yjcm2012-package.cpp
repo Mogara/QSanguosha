@@ -184,7 +184,7 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName(), 2);
             room->setPlayerFlag(caozhang, "jiangchi_invoke");
-            return 0;
+            return n - 1;
         }
     }
 };
