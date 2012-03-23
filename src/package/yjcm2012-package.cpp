@@ -351,27 +351,36 @@ public:
     }
 };
 
-class Fuji: public TriggerSkill{
+class Qianxi: public TriggerSkill{
 public:
-    Fuji():TriggerSkill("fuji"){
+    Qianxi():TriggerSkill("qianxi"){
         events << Predamage;
-        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash")){
-            room->playSkillEffect(objectName());
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = player;
-            log.arg = objectName();
-            room->sendLog(log);
+        if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
+           player->askForSkillInvoke(objectName(), data)){
+            player->getRoom()->playSkillEffect(objectName());
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart):(.*)");
+            judge.good = false;
+            judge.who = player;
+            judge.reason = objectName();
 
-            room->loseMaxHp(damage.to, damage.damage);
-            return true;
+            room->judge(judge);
+            if(judge.isGood()){
+                LogMessage log;
+                log.type = "#Qianxi";
+                log.from = player;
+                log.arg = objectName();
+                log.to << damage.to;
+                room->sendLog(log);
+                room->loseMaxHp(damage.to);
+                return true;
+            }
         }
         return false;
     }
@@ -831,7 +840,8 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     related_skills.insertMulti("jiangchi", "#jiangchi-clear");
 
     General *madai = new General(this, "madai", "shu");
-    madai->addSkill(new Fuji);
+    madai->addSkill(new Qianxi);
+    madai->addSkill("mashu");
 
     General *liaohua = new General(this, "liaohua", "shu");
     liaohua->addSkill(new Dangxian);
