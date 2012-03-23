@@ -782,6 +782,22 @@ bool Player::isJilei(const Card *card) const{
     return false;
 }
 
+void Player::setCardLocked(const QString &name){
+    if(name == ".")
+        lock_card.clear();
+    else
+        lock_card << name;
+}
+
+bool Player::isLocked(const Card *card) const{
+    foreach(QString card_name, lock_card){
+        if(card->inherits(card_name.toStdString().c_str()))
+            return true;
+    }
+
+    return false;
+}
+
 bool Player::isCaoCao() const{
     QString general_name = getGeneralName();
     return general_name == "caocao" || general_name == "shencaocao" || general_name == "shencc";

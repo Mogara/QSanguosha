@@ -199,6 +199,9 @@ public:
     void jilei(const QString &type);
     bool isJilei(const Card *card) const;
 
+    void setCardLocked(const QString &name);
+    bool isLocked(const Card *card) const;
+
     bool isCaoCao() const;
     void copyFrom(Player* p);
 
@@ -236,6 +239,7 @@ private:
     QHash<const Player *, int> fixed_distance;
 
     QSet<QString> jilei_set;
+    QList<QString> lock_card;
 
 signals:
     void general_changed();
