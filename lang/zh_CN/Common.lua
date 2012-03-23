@@ -107,6 +107,7 @@ return {
 	["#IronChainDamage"] = "%from 处于铁锁连环状态，将受到铁锁的传导伤害",
 	["#LoseHp"] = "%from 流失了 %arg 点体力",
 	["#LoseMaxHp"] = "%from 流失了 %arg 点体力上限",
+	["#LostMaxHpPlus"] = "%from 流失了 %arg 点体力上限，并同时流失了 %arg2 点体力",
 	["#ChangeKingdom"] = "%from 把 %to 的国籍由原来的 %arg 改成了 %arg2",
 	["#AnalepticBuff"] = "%from 喝了【%arg】，对 %to 造成的杀伤害 +1",
 	["#GetMark"] = "%from 得到了 %arg2 枚 %arg 标记",

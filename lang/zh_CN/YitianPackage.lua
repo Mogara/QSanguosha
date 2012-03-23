@@ -129,9 +129,9 @@ return {
 	["zonghuo"] = "纵火",
 	[":zonghuo"] = "<b>锁定技</b>，你的杀始终带有火焰属性",
 	["#ShenjunChoose"] = "%from 选择了 %arg 作为初始性别",
-	["#ShenjunProtect"] = "%to 的【神君】锁定技被触发，异性(%from)的非雷电属性伤害无效",
-	["#ShenjunFlip"] = "%from 的【神君】锁定技被触发，性别倒置",
-	["#Zonghuo"] = "%from 的锁定技【纵火】技能被触发，【杀】变为火焰属性",
+	["#ShenjunProtect"] = "%to 的【%arg】锁定技被触发，异性(%from)的非雷电属性伤害无效",
+	["#ShenjunFlip"] = "%from 的【%arg】锁定技被触发，性别倒置",
+	["#Zonghuo"] = "%from 的锁定技【%arg】技能被触发，【杀】变为火焰属性",
 
 	-- 钟会
 	["#zhongshiji"] = "狠毒的野心家",
@@ -139,7 +139,7 @@ return {
 	["gongmou"] = "共谋",
 	["@conspiracy"] = "共谋",
 	[":gongmou"] = "回合结束阶段开始时，可指定一名其他角色：其在摸牌阶段摸牌后，须给你X张手牌（X为你手牌数与对方手牌数的较小值），然后你须选择X张手牌交给对方",
-	["#GongmouExchange"] = "%from 发动了【共谋】技能，与 %to 交换了 %arg 张手牌",
+	["#GongmouExchange"] = "%from 发动了【%arg2】技能，与 %to 交换了 %arg 张手牌",
 
 	-- 姜维
 	["#jiangboyue"] = "赤胆的贤将",
@@ -165,8 +165,8 @@ return {
 	[":sizhan"] = "<b>锁定技</b>，当你受到伤害时，防止该伤害并获得与伤害点数等量的死战标记；你的回合结束阶段开始时，你须弃掉所有的X个死战标记并流失X点体力",
 	["shenli"] = "神力",
 	[":shenli"] = "<b>锁定技</b>，出牌阶段，你使用【杀】造成的<font color='red'>第一次伤害</font>+X，X为当前死战标记数且最大为3",
-	["#SizhanPrevent"] = "%from 的锁定技【死战】被触发，防止了当前的 %arg 点伤害",
-	["#SizhanLoseHP"] = "%from 的锁定技【死战】被触发，流失了 %arg 点体力",
+	["#SizhanPrevent"] = "%from 的锁定技【%arg2】被触发，防止了当前的 %arg 点伤害",
+	["#SizhanLoseHP"] = "%from 的锁定技【%arg2】被触发，流失了 %arg 点体力",
 	["#ShenliBuff"] = "%from 的锁定技【神力】被触发，【杀】的伤害增加了 %arg, 达到了 %arg2 点",
 	["@struggle"] = "死战",
 

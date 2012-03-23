@@ -348,6 +348,7 @@ public:
         log.type = "#ZaoxianWake";
         log.from = dengai;
         log.arg = QString::number(dengai->getPile("field").length());
+        log.arg2 = objectName();
         room->sendLog(log);
 
         room->playSkillEffect("zaoxian", 1);
@@ -482,6 +483,7 @@ public:
         LogMessage log;
         log.type = "#HunziWake";
         log.from = sunce;
+        log.arg = objectName();
         room->sendLog(log);
 
         room->loseMaxHp(sunce);
@@ -639,6 +641,7 @@ public:
         LogMessage log;
         log.type = "#ZhijiWake";
         log.from = jiangwei;
+        log.arg = objectName();
         room->sendLog(log);
 
         room->playSkillEffect("zhiji");
@@ -804,6 +807,7 @@ public:
             log.type = "#Xiangle";
             log.from = effect.from;
             log.to << effect.to;
+            log.arg = objectName();
             room->sendLog(log);
 
             return !room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data);
@@ -900,6 +904,7 @@ public:
             log.type = "#RuoyuWake";
             log.from = liushan;
             log.arg = QString::number(liushan->getHp());
+            log.arg2 = objectName();
             room->sendLog(log);
 
             room->setPlayerMark(liushan, "ruoyu", 1);

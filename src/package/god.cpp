@@ -88,6 +88,7 @@ public:
             log.from = shenguanyu;
             log.to << foe;
             log.arg = QString::number(max);
+            log.arg2 = "wuhun";
             room->sendLog(log);
 
             room->killPlayer(foe);
@@ -424,6 +425,7 @@ public:
         log.type = event == Damage ? "#KuangbaoDamage" : "#KuangbaoDamaged";
         log.from = player;
         log.arg = QString::number(damage.damage);
+        log.arg2 = objectName();
         player->getRoom()->sendLog(log);
 
         player->gainMark("@wrath", damage.damage);
@@ -663,6 +665,7 @@ public:
         log.type = "#QixingExchange";
         log.from = shenzhuge;
         log.arg = QString::number(n);
+        log.arg2 = "qixing";
         room->sendLog(log);
 
         delete exchange_card;
@@ -1134,6 +1137,7 @@ public:
         log.type = "#LianpoCanInvoke";
         log.from = shensimayi;
         log.arg = QString::number(n);
+        log.arg2 = objectName();
         room->sendLog(log);
 
         shensimayi->gainAnExtraTurn(player);

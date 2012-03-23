@@ -216,6 +216,7 @@ public:
             log.type = "#SilverLion";
             log.from = player;
             log.arg = QString::number(damage.damage);
+            log.arg2 = objectName();
             player->getRoom()->sendLog(log);
 
             damage.damage = 1;

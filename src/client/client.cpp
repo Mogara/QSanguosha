@@ -68,6 +68,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setFixedDistance"] = &Client::setFixedDistance;
     callbacks["transfigure"] = &Client::transfigure;
     callbacks["jilei"] = &Client::jilei;
+    callbacks["cardLock"] = &Client::cardLock;
     callbacks["pile"] = &Client::pile;
 
     callbacks["updateStateItem"] = &Client::updateStateItem;
@@ -558,6 +559,10 @@ Client::Status Client::getStatus() const{
 
 void Client::jilei(const QString &jilei_str){
     Self->jilei(jilei_str);
+}
+
+void Client::cardLock(const QString &card_str){
+    Self->setCardLocked(card_str);
 }
 
 void Client::judgeResult(const QString &result_str){
