@@ -351,7 +351,7 @@ public:
 
         if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
            player->askForSkillInvoke(objectName(), data)){
-            player->getRoom()->playSkillEffect(objectName());
+            room->playSkillEffect(objectName());
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
             judge.good = false;
@@ -443,45 +443,50 @@ public:
 
     }
 
+    const Card *getCard(ServerPlayer *player){
+        Room *room = player->getRoom();
+        int card_id = room->drawCard();
+        const Card *card = Sanguosha->getCard(card_id);
+        room->moveCardTo(card, NULL, Player::Special, true);
+        room->getThread()->delay();
+
+        player->obtainCard(card);
+
+        return card;
+    }
+
     virtual bool onPhaseChange(ServerPlayer *shuangying) const{
-        Room *room = shuangying->getRoom();
-        if(shuangying->getPhase() == Player::Start){
-            if(shuangying->hasSkill("wusheng"))
-                shuangying->setFlags("has_wusheng");
-            if(shuangying->hasSkill("paoxiao"))
-                shuangying->setFlags("has_paoxiao");
-        }
-        else if(shuangying->getPhase() == Player::Draw){
-            if(!shuangying->askForSkillInvoke(objectName()))
-                return false;
+        switch(shuangying->getPhase()){
+        case Player::Draw:{
+            if(shuangying->askForSkillInvoke(objectName())){
+                const Card *first = getCard(shuangying);
+                const Card *second = getCard(shuangying);
+                if(first->getColor() != second->getColor()){
+                    Room *room = shuangying->getRoom();
+                    room->acquireSkill(shuangying, "wusheng");
+                    room->acquireSkill(shuangying, "paoxiao");
 
-            room->playSkillEffect(objectName());
-
-            const Card *first = NULL;
-            foreach(int card_id, room->getNCards(2)){
-                room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
-                room->getThread()->delay();
-                const Card *card = Sanguosha->getCard(card_id);
-                room->obtainCard(shuangying, card);
-                if(first == NULL)
-                    first = card;
-                else{
-                    if(first->isRed() != card->isRed()){
-                        room->acquireSkill(shuangying, "wusheng");
-                        room->acquireSkill(shuangying, "paoxiao");
-                        shuangying->setFlags("fuhun");
-                    }
+                    shuangying->setFlags(objectName());
                 }
+
+                return true;
             }
 
-            return true;
+            break;
         }
-        else if(shuangying->getPhase() == Player::NotActive && shuangying->hasFlag("fuhun")){
-            if(!shuangying->hasFlag("has_wusheng"))
+
+        case Player::NotActive:{
+            if(shuangying->hasFlag(objectName())){
+                Room *room = shuangying->getRoom();
                 room->detachSkillFromPlayer(shuangying, "wusheng");
-            if(!shuangying->hasFlag("has_paoxiao"))
                 room->detachSkillFromPlayer(shuangying, "paoxiao");
+            }
+
+            break;
+
         }
+        }
+
         return false;
     }
 };
