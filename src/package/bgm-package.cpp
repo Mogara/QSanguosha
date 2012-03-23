@@ -196,6 +196,7 @@ public:
                 log.type = "#KuiweiDiscard";
                 log.from = caoren;
                 log.arg = QString::number(n);
+                log.arg2 = objectName();
                 room->sendLog(log);
 
                 if(caoren->getCards("he").length() <= n){
@@ -240,6 +241,19 @@ public:
     }
 };
 
+class Manjuan: public TriggerSkill{
+public:
+    Manjuan(): TriggerSkill("manjuan"){
+        events << CardGot;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *pt, QVariant &) const{
+        Room *room = pt->getRoom();
+        room->askForSkillInvoke(pt, objectName());
+        return false;
+    }
+};
+
 BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3);
     bgm_zhaoyun->addSkill("longdan");
@@ -252,6 +266,9 @@ BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_caoren = new General(this, "bgm_caoren", "wei");
     bgm_caoren->addSkill(new Kuiwei);
     bgm_caoren->addSkill(new Yanzheng);
+
+    //General *bgm_pangtong = new General(this, "bgm_pangtong", "qun", 3);
+    //bgm_pangtong->addSkill(new Lihun);
 
     addMetaObject<LihunCard>();
 }
