@@ -82,4 +82,5 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
+
 #endif // YJCM2012PACKAGE_H
