@@ -140,7 +140,7 @@ QiceDialog *QiceDialog::GetInstance(){
 
 QiceDialog::QiceDialog()
 {
-    setWindowTitle(tr("qice"));
+    setWindowTitle(Sanguosha->translate("qice"));
 
     group = new QButtonGroup(this);
 
@@ -170,13 +170,13 @@ void QiceDialog::selectCard(QAbstractButton *button){
 }
 
 QGroupBox *QiceDialog::createRight(){
-    QGroupBox *box = new QGroupBox(tr("Non delayed tricks"));
+    QGroupBox *box = new QGroupBox(Sanguosha->translate("ndtrick"));
     QHBoxLayout *layout = new QHBoxLayout;
 
-    QGroupBox *box1 = new QGroupBox(tr("Single target"));
+    QGroupBox *box1 = new QGroupBox(Sanguosha->translate("single_target"));
     QVBoxLayout *layout1 = new QVBoxLayout;
 
-    QGroupBox *box2 = new QGroupBox(tr("Multiple targets"));
+    QGroupBox *box2 = new QGroupBox(Sanguosha->translate("multiple_targets"));
     QVBoxLayout *layout2 = new QVBoxLayout;
 
 
@@ -304,7 +304,6 @@ public:
 
             if(same_color && damage.from)
                 room->askForDiscard(damage.from, objectName(), 1);
-
         }
     }
 };
