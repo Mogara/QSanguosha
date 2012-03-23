@@ -248,6 +248,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
                 LogMessage log;
                 log.from = current;
+                log.arg = "wansha";
                 if(current != player){
                     savers << player;
                     log.type = "#WanshaTwo";

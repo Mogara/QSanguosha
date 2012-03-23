@@ -779,6 +779,7 @@ public:
                     log.type = "#JiuyuanExtraRecover";
                     log.from = sunquan;
                     log.to << effect.from;
+                    log.arg = objectName();
                     room->sendLog(log);
 
                     RecoverStruct recover;

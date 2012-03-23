@@ -15,7 +15,7 @@ return {
 	["$danlao"] = "一人一口，分而食之",
 	["~yangxiu"] = "恃才傲物，方有此命",
 	["cv:yangxiu"] = "幻象迷宫",
-	["#DanlaoAvoid"] = "%from 发动了技能【啖酪】，跳过了锦囊 %arg 对他的结算",
+	["#DanlaoAvoid"] = "%from 发动了技能【%arg2】，跳过了锦囊 %arg 对他的结算",
 	["#Jilei"] = "%from 鸡肋了 %to 的 %arg",
 	["#JileiClear"] = "%from 的鸡肋效果消失",
 
@@ -39,9 +39,9 @@ return {
 	["$yongsi4"] = "嗙啪~呜哈哈哈哈哈",
 	["~yuanshu"] = "呃呀~~~~~~~",
 	["cv:yuanshu"] = "名将三国",
-	["#YongsiGood"] = "%from 的锁定技【庸肆】被触发，额外摸了 %arg 张牌",
-	["#YongsiBad"] = "%from 的锁定技【庸肆】被触发，必须至少弃置 %arg 张牌",
-	["#YongsiWorst"] = "%from 的锁定技【庸肆】被触发，弃置了所有的装备和手牌（共 %arg 张）",
+	["#YongsiGood"] = "%from 的锁定技【%arg2】被触发，额外摸了 %arg 张牌",
+	["#YongsiBad"] = "%from 的锁定技【%arg2】被触发，必须至少弃置 %arg 张牌",
+	["#YongsiWorst"] = "%from 的锁定技【%arg2】被触发，弃置了所有的装备和手牌（共 %arg 张）",
 
 	["#sp_diaochan"] = "绝世的舞姬",
 	["sp_diaochan"] = "SP貂蝉",

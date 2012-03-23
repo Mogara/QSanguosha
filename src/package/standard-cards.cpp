@@ -374,6 +374,7 @@ public:
             log.type = "#AxeSkill";
             log.from = player;
             log.to << effect.to;
+            log.arg = objectName();
             room->sendLog(log);
 
             room->slashResult(effect, NULL);

@@ -19,12 +19,9 @@ return {
 	["duduan"] = "独断",
 	[":duduan"] = " 锁定技，你不能成为延时类锦囊的目标",
 
-	["#Baozou"] = "%from进入暴走状态，拥有无视防具效果",
-	["#BaozouOver"] = "%from的暴走状态消失，[绝境之战]事件触发。每名角色开始进行判定",
-	["#Jishi"] = "%from的技能【济世】被触发",
-	["#DajiSpec"] = "%from的【大吉】技能特效被触发",
-	["#DajiAvoid"] = "%to 的技能【大吉】被触发，%from 对 %to 使用的锦囊 %arg 无效",
-	["#PaoxiaoLose"] = "%from 失去了技能 【咆哮】",
+	["#Baozou"] = "%from 进入暴走状态，拥有无视防具效果",
+	["#BaozouOver"] = "%from 的暴走状态消失，[绝境之战]事件触发。每名角色开始进行判定",
+	["#DajiAvoid"] = "%to 的技能【%arg2】被触发，%from 对 %to 使用的锦囊 %arg 无效",
 
 	["@frantic"] = "暴走",
 }

@@ -73,6 +73,7 @@ return {
 	["#SkillAvoid"] = "%from 的 %arg 技能被触发，这张 %arg2 不能指定其作为目标",
 	["#Transfigure"] = "%from 变身为 %arg",
 	["#AcquireSkill"] = "%from 获得了技能 【%arg】",
+	["#LoseSkill"] = "%from 失去了技能 【%arg】",
 	["$InitialJudge"] = "%from 最初的判定结果为 %card",
 	["$ChangedJudge"] = "%from 把 %to 的判定结果改判成了 %card",
 	["$MoveCard"] = "%to 从 %from 处得到了 %card",

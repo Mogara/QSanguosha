@@ -10,7 +10,7 @@ return {
 	["wuhun"] = "武魂",
 	[":wuhun"] = "<b>锁定技</b>，任意角色每对你造成1点伤害，获得一个梦魇标记，你死亡时，令持有最多该标记的一名角色判定，除非结果为【桃】或【桃园结义】，否则该角色立即死亡。",
 	["@nightmare"] = "梦魇",
-	["#WuhunRevenge"] = "%from 的锁定技【武魂】被触发，持有最多梦魇标记的角色 %to(%arg个)将立即死亡",
+	["#WuhunRevenge"] = "%from 的锁定技【%arg2】被触发，持有最多梦魇标记的角色 %to(%arg个)将立即死亡",
 
 	["#shenlumeng"] = "圣光之国士",
 	["shenlumeng"] = "神吕蒙",
@@ -61,7 +61,7 @@ return {
 	["@qixing-exchange"] = "请选择 %arg 张用以交换的手牌",
 	["@@kuangfeng-card"] = "请选择一名角色，直到你的下回合开始，该角色每次受到的火焰伤害+1",
 	["@@dawu-card"] = "你可以弃掉X枚“星”指定X名角色：直到你的下回合开始，防止他们受到的除雷电伤害外的一切伤害",
-	["#QixingExchange"] = "%from 使用了【七星】，交换了 %arg 张手牌",
+	["#QixingExchange"] = "%from 使用了【%arg2】，交换了 %arg 张手牌",
 	["#FogProtect"] = "%from 受到大雾保护，防止了 %arg 点伤害[%arg2]",
 	["#GalePower"] = "由于狂风的影响，%from 的伤害从 %arg 点火焰伤害增加到 %arg2 点火焰伤害",
 
@@ -84,8 +84,8 @@ return {
 	[":wuqian"] = "出牌阶段你可以弃掉两个暴怒标记并指定一名角色，这名角色的防具无效且你获得“无双”的技能，直到回合结束",
 	["shenfen"] = "神愤",
 	[":shenfen"] = "出牌阶段，弃掉六个暴怒标记，你对每名其他角色各造成一点伤害，其他角色先弃置各自装备区里所有的牌，再各弃置四张手牌，然后将你的武将牌反面，每阶段限一次",
-	["#KuangbaoDamage"] = "%from 的锁定技【狂暴】被触发，造成 %arg 点伤害获得 %arg 枚暴怒标记",
-	["#KuangbaoDamaged"] = "%from 的锁定技【狂暴】被触发，受到 %arg 点伤害获得 %arg 枚暴怒标记",
+	["#KuangbaoDamage"] = "%from 的锁定技【%arg2】被触发，造成 %arg 点伤害获得 %arg 枚暴怒标记",
+	["#KuangbaoDamaged"] = "%from 的锁定技【%arg2】被触发，受到 %arg 点伤害获得 %arg 枚暴怒标记",
 	["wumou:discard"] = "弃掉一个“暴怒”标记",
 	["wumou:losehp"] = "失去一点体力",
 
@@ -109,7 +109,7 @@ return {
 	["lianpo"] = "连破",
 	[":lianpo"] = "若你于一回合内杀死至少一名角色，可于此回合结束后，进行一个额外的回合",
 	["@jilve-zhiheng"] = "请发动【制衡】技能",
-	["#LianpoCanInvoke"] = "%from 在本回合内杀死了 %arg 名角色，达成【连破】的发动条件",
+	["#LianpoCanInvoke"] = "%from 在本回合内杀死了 %arg 名角色，达成【%arg2】的发动条件",
 	["#LianpoRecord"] = "%from 在 %arg 的回合内杀死了 %to，将可在 %arg 回合结束后进行一个额外的回合",
 
 -- CV

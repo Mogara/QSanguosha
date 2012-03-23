@@ -234,6 +234,7 @@ public:
             log.type = "#ZaibianGood";
             log.from = zombie;
             log.arg = QString::number(x);
+            log.arg2 = objectName();
             room->sendLog(log);
             zombie->drawCards(x);
         }

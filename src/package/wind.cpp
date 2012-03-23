@@ -881,6 +881,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     log.from = card_use->from;
     log.to = card_use->to;
     log.arg = user_string;
+    log.arg2 = "guhuo";
 
     room->sendLog(log);
 
@@ -911,6 +912,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
     log.type = "#GuhuoNoTarget";
     log.from = yuji;
     log.arg = to_guhuo;
+    log.arg2 = "guhuo";
     room->sendLog(log);
 
     if(guhuo(yuji,log.toString())){

@@ -484,6 +484,12 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
             detachSkillFromPlayer(player, skill->objectName());
     }
+
+    LogMessage log;
+    log.type = "#LoseSkill";
+    log.from = player;
+    log.arg = skill_name;
+    sendLog(log);
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
@@ -1935,15 +1941,17 @@ void Room::loseHp(ServerPlayer *victim, int lose){
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){
+    int hp = victim->getHp();
     victim->setMaxHP(qMax(victim->getMaxHP() - lose, 0));
 
     broadcastProperty(victim, "maxhp");
     broadcastProperty(victim, "hp");
 
     LogMessage log;
-    log.type = "#LoseMaxHp";
+    log.type = hp - victim->getHp() == 0 ? "#LoseMaxHp" : "#LostMaxHpPlus";
     log.from = victim;
     log.arg = QString::number(lose);
+    log.arg2 = QString::number(hp - victim->getHp());
     sendLog(log);
 
     if(victim->getMaxHP() == 0)

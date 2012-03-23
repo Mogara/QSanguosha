@@ -1004,6 +1004,7 @@ public:
                 LogMessage log;
                 log.from = player;
                 log.type = "#ShenjunFlip";
+                log.arg = objectName();
                 room->sendLog(log);
 
                 QString new_general = "luboyan";
@@ -1021,6 +1022,7 @@ public:
                 log.type = "#ShenjunProtect";
                 log.to << player;
                 log.from = damage.from;
+                log.arg = objectName();
                 room->sendLog(log);
 
                 return true;
@@ -1049,6 +1051,7 @@ public:
             LogMessage log;
             log.type = "#Zonghuo";
             log.from = player;
+            log.arg = objectName();
             room->sendLog(log);
         }
 
@@ -1187,6 +1190,7 @@ public:
             log.from = zhongshiji;
             log.to << player;
             log.arg = QString::number(x);
+            log.arg2 = "gongmou";
             room->sendLog(log);
         }
 
@@ -1434,6 +1438,7 @@ public:
             log.type = "#SizhanPrevent";
             log.from = elai;
             log.arg = QString::number(damage.damage);
+            log.arg2 = objectName();
             elai->getRoom()->sendLog(log);
 
             elai->gainMark("@struggle", damage.damage);
@@ -1448,6 +1453,7 @@ public:
                 log.type = "#SizhanLoseHP";
                 log.from = elai;
                 log.arg = QString::number(x);
+                log.arg2 = objectName();
 
                 Room *room = elai->getRoom();
                 room->sendLog(log);

@@ -125,7 +125,7 @@ return {
 	[":zhiheng"] = "出牌阶段，你可以弃置任意数量的牌，然后摸等量的牌。每阶段限一次",
 	["jiuyuan"] = "救援",
 	[":jiuyuan"] = "<b>主公技</b>，<b>锁定技</b>，当其他吴势力角色在你濒死状态下对你使用【桃】时，你额外回复1点体力",
-	["#JiuyuanExtraRecover"] = "%from 的锁定技【救援】被触发，额外恢复一点体力",
+	["#JiuyuanExtraRecover"] = "%from 的锁定技【%arg】被触发，额外恢复一点体力",
 
 	["#zhouyu"] = "大都督",
 	["zhouyu"] = "周瑜",

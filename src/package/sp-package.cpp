@@ -147,6 +147,7 @@ public:
                 log.type = "#DanlaoAvoid";
                 log.from = player;
                 log.arg = effect.card->objectName();
+                log.arg2 = objectName();
 
                 room->sendLog(log);
 
@@ -187,6 +188,7 @@ public:
             log.type = "#YongsiGood";
             log.from = yuanshu;
             log.arg = QString::number(x);
+            log.arg2 = objectName();
             room->sendLog(log);
 
             room->playSkillEffect("yongsi", x);
@@ -204,6 +206,7 @@ public:
                 log.type = "#YongsiWorst";
                 log.from = yuanshu;
                 log.arg = QString::number(total);
+                log.arg2 = objectName();
                 room->sendLog(log);
 
             }else if(yuanshu->hasFlag("jilei")){
@@ -221,6 +224,7 @@ public:
                     log.type = "#YongsiBad";
                     log.from = yuanshu;
                     log.arg = QString::number(total);
+                    log.arg2 = objectName();
                     room->sendLog(log);
                     yuanshu->throwAllEquips();
                     foreach(const Card *card, handcards.toSet() - jilei_cards){

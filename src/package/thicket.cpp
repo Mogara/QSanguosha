@@ -209,6 +209,7 @@ public:
                 log.from = menghuo;
                 log.to << damage.to;
                 log.arg = player->getGeneralName();
+                log.arg2 = objectName();
                 room->sendLog(log);
 
                 room->playSkillEffect(objectName());
