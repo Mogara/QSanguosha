@@ -484,8 +484,6 @@ int Player::getMaxCards() const{
     if(hasSkill("shenwei"))
         shenwei = 2;
 
-    total = qMax(hp,0) + extra + juejing + xueyi + shenwei;
-
     int zongshi = 0;
     QStringList kingdoms;
     if(hasSkill("zongshi")){
@@ -495,9 +493,10 @@ int Player::getMaxCards() const{
                 kingdoms << player->getKingdom();
             }
         }
-
-        total = qMax(total, zongshi);
     }
+    total = qMax(hp,0) + extra + juejing + xueyi + shenwei + zongshi;
+
+
     return total;
 }
 
