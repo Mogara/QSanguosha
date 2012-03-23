@@ -461,13 +461,16 @@ public:
             if(shuangying->askForSkillInvoke(objectName())){
                 const Card *first = getCard(shuangying);
                 const Card *second = getCard(shuangying);
+
+                Room *room = shuangying->getRoom();
                 if(first->getColor() != second->getColor()){
-                    Room *room = shuangying->getRoom();
+                    room->setEmotion(shuangying, "good");
                     room->acquireSkill(shuangying, "wusheng");
                     room->acquireSkill(shuangying, "paoxiao");
 
                     shuangying->setFlags(objectName());
-                }
+                }else
+                    room->setEmotion(shuangying, "bad");
 
                 return true;
             }
