@@ -3,7 +3,7 @@
 return {
 	["YJCM2012"] = "一将成名2012",
 
-	["#xunyou"] = "",
+	["#xunyou"] = "曹魏的谋士",
 	["xunyou"] = "荀攸",
 	["designer:xunyou"] = "淬毒",
 	["illustrator:xunyou"] = "魔鬼鱼",
@@ -12,6 +12,7 @@ return {
 	["zhiyu"] = "智愚",
 	[":zhiyu"] = "每当你受到一次伤害后，可以摸一张牌，然后展示所有手牌，若均为同一颜色，则对伤害来源造成1点伤害。",
 
+	["#caozhang"] = "黄须儿",
 	["caozhang"] = "曹彰",
 	["designer:caozhang"] = "潜龙勿用",
 	["illustrator:caozhang"] = "Yi章",
@@ -23,6 +24,7 @@ return {
 	["jiangchi:chi"] = "将驰2：少摸一张牌，额外使用一张杀且无视距离",
 	["jiangchi:cancel"] = "不发动",
 
+	["#wangyi"] = "快意的巾帼",
 	["wangyi"] = "王异",
 	["designer:wangyi"] = "Virgopal",
 	["illustrator:wangyi"] = "木美人",
@@ -31,6 +33,7 @@ return {
 	["miji"] = "秘计",
 	[":miji"] = "回合开始阶段开始时及回合结束阶段开始时，若你已受伤，可以进行一次判定，若为黑色，你可摸X张牌并将其交给任意一名角色。X为你该次判定时已经损失的体力值。",
 
+	["#madai"] = "临危受命",
 	["madai"] = "马岱",
 	["designer:madai"] = "凌天翼",
 	["illustrator:madai"] = "大佬荣",
@@ -38,6 +41,7 @@ return {
 	[":qianxi"] = "当你使用【杀】对距离为1的目标角色造成伤害时，你可以进行一次判定，若判定结果不为红桃，你防止此伤害，改为令其减1点体力上限。",
 	["#Qianxi"] = "%from 的【%arg】生效，%to 将受到技能影响",
 
+	["#liaohua"] = "历尽沧桑",
 	["liaohua"] = "廖化",
 	["designer:liaohua"] = "桃花僧",
 	["illustrator:liaohua"] = "天空之城",
@@ -47,12 +51,14 @@ return {
 	[":fuli"] = "限定技，当你处于濒死状态时，你可以将体力回复至X点（X为现存势力数），然后将你的武将牌翻面。",
 	["@laoji"] = "老骥",
 
+	["#guanxingzhangbao"] = "将门虎子",
 	["guanxingzhangbao"] = "关兴张苞",
 	["designer:guanxingzhangbao"] = "诺思冥羽",
 	["illustrator:guanxingzhangbao"] = "HOOO",
 	["fuhun"] = "父魂",
 	[":fuhun"] = "摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的两张牌并获得之。若展示的牌不为同一颜色，则你获得“武圣”、“咆哮”直到回合结束。",
 
+	["#chengpu"] = "三朝之臣",
 	["chengpu"] = "程普",
 	["designer:chengpu"] = "仲达与孔明",
 	["illustrator:chengpu"] = "G.G.G.",
@@ -63,6 +69,7 @@ return {
 	["ChunlaoPile"] = "醇醪",
 	["@chunlao"] = "你要将一张【杀】置于武将牌上吗？",
 
+	["#bulianshi"] = "无冠之后",
 	["bulianshi"] = "步练师",
 	["designer:bulianshi"] = "猫月坊秋山",
 	["illustrator:bulianshi"] = "勺子妞",
@@ -74,6 +81,7 @@ return {
 	[":zhuiyi"] = "你死亡时，可指定一名杀死你之外的角色。你每有一张非黑桃牌，该角色便摸一张牌。",
 	["#ZhuiyiLog"] = "%from 用拥有非黑桃牌 %arg 张",
 
+	["#handang"] = "石城侯",
 	["handang"] = "韩当",
 	["designer:handang"] = "ByArt",
 	["illustrator:handang"] = "DH",
@@ -85,6 +93,7 @@ return {
 	["jiefan:damage"] = "继续伤害",
 	["jiefan:recover"] = "防止伤害",
 
+	["#liubiao"] = "跨蹈汉南",
 	["liubiao"] = "刘表",
 	["designer:liubiao"] = "管乐",
 	["illustrator:liubiao"] = "关东煮",
@@ -93,6 +102,7 @@ return {
 	["zongshi"] = "宗室",
 	[":zongshi"] = "<b>锁定技</b>，你的手牌上限最少为场上现存势力数。",
 
+	["#huaxiong"] = "魔将",
 	["huaxiong"] = "华雄",
 	["designer:huaxiong"] = "小立",
 	["illustrator:huaxiong"] = "地狱许",
