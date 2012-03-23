@@ -443,7 +443,7 @@ public:
 
     }
 
-    const Card *getCard(ServerPlayer *player){
+    const Card *getCard(ServerPlayer *player) const{
         Room *room = player->getRoom();
         int card_id = room->drawCard();
         const Card *card = Sanguosha->getCard(card_id);
@@ -485,6 +485,9 @@ public:
             break;
 
         }
+
+        default:
+            break;
         }
 
         return false;
