@@ -10,16 +10,15 @@
 
 ZhenlieCard::ZhenlieCard(){
     target_fixed = true;
-    will_throw = false;
 }
 
 void ZhenlieCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->showCard(source, getSubcards().first());
+
 }
 
-class ZhenlieViewAsSkill:public OneCardViewAsSkill{
+class ZhenlieViewAsSkill:public ZeroCardViewAsSkill{
 public:
-    ZhenlieViewAsSkill():OneCardViewAsSkill(""){
+    ZhenlieViewAsSkill():ZeroCardViewAsSkill("zhenlie"){
 
     }
 
@@ -28,20 +27,11 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@zhenlie";
+        return pattern == "@@zhenlie";
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        int card_id = Self->getMark("zhenliecard");
-        const Card *card = Sanguosha->getCard(card_id);
-        return to_select->getFilteredCard()->getSuit() != card->getSuit();
-    }
-
-    virtual const Card *viewAs(CardItem *card_item) const{
-        ZhenlieCard *card = new ZhenlieCard;
-        card->addSubcard(card_item->getFilteredCard());
-
-        return card;
+    virtual const Card *viewAs() const{
+        return new ZhenlieCard;
     }
 };
 
@@ -53,9 +43,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(!TriggerSkill::triggerable(target))
-            return false;
-        return !target->isKongcheng();
+        return target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -67,7 +55,7 @@ public:
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
         room->setPlayerMark(player, "zhenliecard", judge->card->getEffectiveId());
-        const Card *card = room->askForCard(player, "@zhenlie", prompt, data);
+        const Card *card = room->askForCard(player, "@@zhenlie", prompt, data);
 
         if(card){
             int card_id = room->drawCard();
@@ -420,6 +408,14 @@ public:
         return TriggerSkill::triggerable(target) && target->getMark("@laoji") > 0;
     }
 
+    int getKingdoms(Room *room) const{
+        QSet<QString> kingdom_set;
+        foreach(ServerPlayer *p, room->getAlivePlayers()){
+            kingdom_set << p->getKingdom();
+        }
+        return kingdom_set.size();
+    }
+
     virtual bool trigger(TriggerEvent , ServerPlayer *liaohua, QVariant &data) const{
         DyingStruct dying_data = data.value<DyingStruct>();
         if(dying_data.who != liaohua)
@@ -431,7 +427,7 @@ public:
             room->playSkillEffect(objectName());
 
             liaohua->loseMark("@laoji");
-            int x = qMin(5, room->getAlivePlayers().count());
+            int x = getKingdoms(room);
             RecoverStruct rev;
             rev.recover = x;
             room->recover(liaohua, rev);
