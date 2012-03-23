@@ -57,7 +57,7 @@ end
 
 sgs.ai_skill_invoke.songwei = function(self, data)
 	local who = data:toPlayer()
-	return self:isFriend(who)
+	return self:isFriend(who) and self.player:isAlive()
 end
 
 sgs.ai_card_intention.FangzhuCard = function(card, from, tos)
