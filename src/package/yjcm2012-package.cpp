@@ -159,6 +159,49 @@ public:
     }
 };
 
+class Jiangchi:public DrawCardsSkill{
+public:
+    Jiangchi():DrawCardsSkill("jiangchi"){
+    }
+
+    virtual int getDrawNum(ServerPlayer *caozhang, int n) const{
+        Room *room = caozhang->getRoom();
+        QString choice = room->askForChoice(caozhang, objectName(), "jiang+chi+cancel");
+        if(choice == "cancel")
+            return n;
+        LogMessage log;
+        log.from = caozhang;
+        log.arg = objectName();
+        if(choice == "jiang"){
+            log.type = "#Jiangchi1";
+            room->sendLog(log);
+            room->playSkillEffect(objectName(), 1);
+            caozhang->jilei("Slash");
+            caozhang->setFlags("jilei");
+            return n + 1;
+        }else{
+            log.type = "#Jiangchi2";
+            room->sendLog(log);
+            room->playSkillEffect(objectName(), 2);
+            room->setPlayerFlag(caozhang, "jiangchi_invoke");
+            return 0;
+        }
+    }
+};
+
+class JiangchiClear: public PhaseChangeSkill{
+public:
+    JiangchiClear():PhaseChangeSkill("#jiangchi-clear"){
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zhangzi) const{
+        if(zhangzi->getPhase() == Player::NotActive &&
+           zhangzi->hasFlag("jilei"))
+            zhangzi->jilei(".");
+        return false;
+    }
+};
+
 class Fuji: public TriggerSkill{
 public:
     Fuji():TriggerSkill("fuji"){
@@ -628,6 +671,9 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     xunyou->addSkill(new Zhiyu);
 
     General *caozhang = new General(this, "caozhang", "wei");
+    caozhang->addSkill(new Jiangchi);
+    caozhang->addSkill(new JiangchiClear);
+    related_skills.insertMulti("jiangchi", "#jiangchi-clear");
 
     General *madai = new General(this, "madai", "shu");
     madai->addSkill(new Fuji);

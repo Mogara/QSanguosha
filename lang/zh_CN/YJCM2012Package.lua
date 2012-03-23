@@ -17,6 +17,11 @@ return {
 	["illustrator:caozhang"] = "Yi章",
 	["jiangchi"] = "将驰",
 	[":jiangchi"] = "摸牌阶段，你可以执行下列一项： 1、额外摸一张牌，若如此做，你不能使用或打出【杀】，直到回合结束。 2、放弃摸牌，若如此做，出牌阶段你可以额外使用一张【杀】且你使用【杀】无距离限制，直到回合结束。",
+	["#Jiangchi1"] = "%from 发动了【%arg】第一项",
+	["#Jiangchi2"] = "%from 发动了【%arg】第二项",
+	["jiangchi:jiang"] = "将驰1：额外摸一张牌，不能使用或打出杀",
+	["jiangchi:chi"] = "将驰2：放弃摸牌，可额外使用一张杀且无视距离",
+	["jiangchi:cancel"] = "不发动",
 
 	["wangyi"] = "王异",
 	["designer:wangyi"] = "Virgopal",

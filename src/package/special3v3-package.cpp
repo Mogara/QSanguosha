@@ -35,7 +35,7 @@ protected:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@hongyuan";
+        return pattern == "@@hongyuan";
     }
 };
 
@@ -96,7 +96,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@huanshi";
+        return pattern == "@huanshi";
     }
 
     virtual bool viewFilter(const CardItem *) const{
@@ -153,8 +153,8 @@ public:
             return false;
 
         QStringList prompt_list;
-        prompt_list << "@huanshi-card" << judge->who->objectName()
-                << "" << judge->reason << judge->card->getEffectIdString();
+        prompt_list << "@askforretrial" << judge->who->objectName()
+                << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
 
         player->tag["Judge"] = data;

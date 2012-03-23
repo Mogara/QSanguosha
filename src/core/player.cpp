@@ -144,7 +144,7 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange() const{
-    if(hasFlag("tianyi_success"))
+    if(hasFlag("tianyi_success") || hasFlag("jiangchi_invoke"))
         return 1000;
 
     if(weapon)
@@ -731,7 +731,7 @@ bool Player::canSlashWithoutCrossbow() const{
         return true;
 
     int slash_count = getSlashCount();
-    if(hasFlag("tianyi_success"))
+    if(hasFlag("tianyi_success") || hasFlag("jiangchi_invoke"))
         return slash_count < 2;
     else
         return slash_count < 1;
