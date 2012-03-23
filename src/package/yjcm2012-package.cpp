@@ -568,7 +568,7 @@ public:
         ServerPlayer *handang = room->findPlayerBySkillName(objectName());
 
         if(event == Dying){
-            if(!handang || !room->askForSkillInvoke(handang, objectName()))
+            if(!handang || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
 
             DyingStruct dying = data.value<DyingStruct>();
@@ -578,15 +578,14 @@ public:
                 CardUseStruct use;
                 use.card = slash;
                 use.from = handang;
-                use.to << dying.damage->from;
+                use.to << room->getCurrent();
                 room->useCard(use);
             }
         }
         else{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(!player->hasSkill(objectName())
-               || room->getTag("JiefanTarget").isNull()
-               || room->askForChoice(handang, objectName(), "damage+recover") == "damage")
+               || room->getTag("JiefanTarget").isNull())
                 return false;
 
             DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
