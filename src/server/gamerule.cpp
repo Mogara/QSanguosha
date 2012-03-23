@@ -405,6 +405,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 log.type = "#AnalepticBuff";
                 log.from = effect.from;
                 log.to << effect.to;
+                log.arg = "analeptic";
                 room->sendLog(log);
 
                 damage.damage ++;

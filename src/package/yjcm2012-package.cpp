@@ -62,8 +62,8 @@ public:
         JudgeStar judge = data.value<JudgeStar>();
 
         QStringList prompt_list;
-        prompt_list << "@zhenlie-card" << judge->who->objectName()
-                << ":" << judge->reason << judge->card->getEffectIdString();
+        prompt_list << "@askforretrial" << judge->who->objectName()
+                << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
         room->setPlayerMark(player, "zhenliecard", judge->card->getEffectiveId());
         const Card *card = room->askForCard(player, "@zhenlie", prompt, data);
@@ -71,6 +71,7 @@ public:
         if(card){
             int card_id = room->drawCard();
             room->getThread()->delay();
+            room->throwCard(judge->card);
 
             judge->card = Sanguosha->getCard(card_id);
             room->moveCardTo(judge->card, NULL, Player::Special);
@@ -504,7 +505,7 @@ public:
         target->drawCards(n);
         return false;
     }
- };
+};
 
 class LihuoViewAsSkill:public OneCardViewAsSkill{
 public:
@@ -567,7 +568,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@@chunlao-slash";
+        return pattern == "@@chunlao";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -599,7 +600,7 @@ public:
         ServerPlayer *chengpu = room->findPlayerBySkillName(objectName());
         if(event == PhaseChange && chengpu->getPhase() == Player::Finish && !chengpu->isKongcheng()){
             //if(chengpu->askForSkillInvoke(objectName(), data))
-                room->askForUseCard(chengpu, "@@chunlao-slash", "@chunlao");
+                room->askForUseCard(chengpu, "@@chunlao", "@chunlao");
         }else if(event == Dying && !chengpu->getPile("ChunlaoPile").isEmpty()){
             DyingStruct dying = data.value<DyingStruct>();
             if(chengpu->askForSkillInvoke(objectName(), data)){
@@ -615,7 +616,7 @@ public:
         }
         return false;
     }
- };
+};
 
 YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 

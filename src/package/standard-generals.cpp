@@ -268,8 +268,8 @@ public:
         JudgeStar judge = data.value<JudgeStar>();
 
         QStringList prompt_list;
-        prompt_list << "@guicai-card" << judge->who->objectName()
-                << "" << judge->reason << judge->card->getEffectIdString();
+        prompt_list << "@askforretrial" << judge->who->objectName()
+                << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
         const Card *card = room->askForCard(player, "@guicai", prompt, data);
 
