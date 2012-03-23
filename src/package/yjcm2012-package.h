@@ -4,6 +4,13 @@
 #include "package.h"
 #include "card.h"
 
+#include <QGroupBox>
+#include <QAbstractButton>
+#include <QButtonGroup>
+#include <QCommandLinkButton>
+#include <QLayout>
+#include <QDialog>
+
 class YJCM2012Package: public Package{
     Q_OBJECT
 
@@ -39,5 +46,4 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
-
 #endif // YJCM2012PACKAGE_H

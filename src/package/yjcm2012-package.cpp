@@ -1,6 +1,7 @@
 #include "yjcm2012-package.h"
 #include "skill.h"
 #include "standard.h"
+#include "client.h"
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
@@ -387,14 +388,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getFilteredCard();
-        if (card->getTypeId() != Card::Equip)
-            return false;
-
-        if(card == Self->getWeapon() && card->objectName() == "crossbow")
-            return Self->canSlashWithoutCrossbow();
-        else
-            return true;
+        return to_select->getFilteredCard()->getTypeId() == Card::Equip;
     }
 
     const Card *viewAs(CardItem *card_item) const{
@@ -437,26 +431,22 @@ public:
         }
         else{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            QString choice;
-            if(!room->getTag("JiefanTarget").isNull())
-                choice = room->askForChoice(handang, objectName(), "damage+recover");
             if(!player->hasSkill(objectName())
                || room->getTag("JiefanTarget").isNull()
-               || choice == "damage")
+               || room->askForChoice(handang, objectName(), "damage+recover") == "damage")
                 return false;
-            else
-            if(choice == "recover"){
-                DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
-                ServerPlayer *target = dying.who;
-                room->removeTag("JiefanTarget");
-                Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
-                peach->setSkillName(objectName());
-                CardUseStruct use;
-                use.card = peach;
-                use.from = handang;
-             use.to << target;
-             room->useCard(use);
-            }
+
+            DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
+            ServerPlayer *target = dying.who;
+            room->removeTag("JiefanTarget");
+            Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
+            peach->setSkillName(objectName());
+            CardUseStruct use;
+            use.card = peach;
+            use.from = handang;
+            use.to << target;
+            room->useCard(use);
+
             return true;
         }
 
@@ -633,7 +623,6 @@ public:
         const Card *card = card_item->getCard();
         Card *acard = new ChunlaoCard;
         acard->addSubcard(card->getId());
-        //acard->setSkillName(objectName());
         return acard;
     }
 };
@@ -653,19 +642,25 @@ public:
         Room *room = player->getRoom();
         ServerPlayer *chengpu = room->findPlayerBySkillName(objectName());
         if(event == PhaseChange && chengpu->getPhase() == Player::Finish && !chengpu->isKongcheng()){
-            //if(chengpu->askForSkillInvoke(objectName(), data))
                 room->askForUseCard(chengpu, "@@chunlao", "@chunlao");
         }else if(event == Dying && !chengpu->getPile("ChunlaoPile").isEmpty()){
             DyingStruct dying = data.value<DyingStruct>();
             if(chengpu->askForSkillInvoke(objectName(), data)){
-                room->throwCard(chengpu->getPile("ChunlaoPile").first());
-                Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
-                analeptic->setSkillName(objectName());
-                CardUseStruct use;
-                use.card = analeptic;
-                use.from = dying.who;
-                use.to << dying.who;
-                room->useCard(use);
+                QList<int> cards = chengpu->getPile("ChulaoPile");
+                room->fillAG(cards, chengpu);
+                int card_id = room->askForAG(chengpu, cards, true, objectName());
+                room->broadcastInvoke("clearAG");
+                if(card_id != -1){
+                    room->throwCard(card_id);
+                    Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
+                    analeptic->setSkillName(objectName());
+                    CardUseStruct use;
+                    use.card = analeptic;
+                    use.from = dying.who;
+                    use.to << dying.who;
+                    room->useCard(use);
+                }
+
             }
         }
         return false;
