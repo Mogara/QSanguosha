@@ -126,6 +126,159 @@ public:
     }
 };
 
+QiceCard::QiceCard(){
+    will_throw = true;
+}
+
+QiceDialog *QiceDialog::GetInstance(){
+    static QiceDialog *instance;
+    if(instance == NULL)
+        instance = new QiceDialog;
+
+    return instance;
+}
+
+QiceDialog::QiceDialog()
+{
+    setWindowTitle(tr("qice"));
+
+    group = new QButtonGroup(this);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(createRight());
+
+    setLayout(layout);
+
+    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(selectCard(QAbstractButton*)));
+}
+
+void QiceDialog::popup(){
+    foreach(QAbstractButton *button, group->buttons()){
+        const Card *card = map[button->objectName()];
+        button->setEnabled(card->isAvailable(Self));
+    }
+
+    Self->tag.remove("Qice");
+    exec();
+}
+
+void QiceDialog::selectCard(QAbstractButton *button){
+    CardStar card = map.value(button->objectName());
+    Self->tag["Qice"] = QVariant::fromValue(card);
+
+    accept();
+}
+
+QGroupBox *QiceDialog::createRight(){
+    QGroupBox *box = new QGroupBox(tr("Non delayed tricks"));
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    QGroupBox *box1 = new QGroupBox(tr("Single target"));
+    QVBoxLayout *layout1 = new QVBoxLayout;
+
+    QGroupBox *box2 = new QGroupBox(tr("Multiple targets"));
+    QVBoxLayout *layout2 = new QVBoxLayout;
+
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards){
+        if(card->isNDTrick() && !map.contains(card->objectName())){
+            Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+            c->setSkillName("qice");
+            c->setParent(this);
+
+            QVBoxLayout *layout = c->inherits("SingleTargetTrick") ? layout1 : layout2;
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    box->setLayout(layout);
+    box1->setLayout(layout1);
+    box2->setLayout(layout2);
+
+    layout1->addStretch();
+    layout2->addStretch();
+
+    layout->addWidget(box1);
+    layout->addWidget(box2);
+    return box;
+}
+
+QAbstractButton *QiceDialog::createButton(const Card *card){
+    QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
+    button->setObjectName(card->objectName());
+    button->setToolTip(card->getDescription());
+
+    map.insert(card->objectName(), card);
+    group->addButton(button);
+
+    return button;
+}
+
+bool QiceCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    CardStar card = Self->tag.value("Qice").value<CardStar>();
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card);
+}
+
+bool QiceCard::targetFixed() const{
+    CardStar card = Self->tag.value("Qice").value<CardStar>();
+    return card && card->targetFixed();
+}
+
+bool QiceCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    CardStar card = Self->tag.value("Qice").value<CardStar>();
+    return card && card->targetsFeasible(targets, Self);
+}
+
+const Card *QiceCard::validate(const CardUseStruct *card_use) const{
+    Room *room = card_use->from->getRoom();
+    room->playSkillEffect("qice");
+    Card *use_card = Sanguosha->cloneCard(user_string, Card::NoSuit, 0);
+    use_card->setSkillName("qice");
+    room->throwCard(this);
+    return use_card;
+}
+
+class Qice: public ViewAsSkill{
+public:
+    Qice():ViewAsSkill("qice"){
+    }
+
+    virtual QDialog *getDialog() const{
+        return QiceDialog::GetInstance();
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() < Self->getHandcardNum())
+            return NULL;
+
+        CardStar c = Self->tag.value("Qice").value<CardStar>();
+        if(c){
+            QiceCard *card = new QiceCard;
+            card->setUserString(c->objectName());
+            card->addSubcards(cards);
+            return card;
+        }else
+            return NULL;
+    }
+
+protected:
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(player->isKongcheng())
+            return false;
+        else
+            return !player->hasUsed("QiceCard");
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  false;
+    }
+};
+
 class Zhiyu: public MasochismSkill{
 public:
     Zhiyu():MasochismSkill("zhiyu"){
@@ -149,13 +302,9 @@ public:
                 }
             }
 
-            if(same_color && damage.from){
-                DamageStruct zhiyu_damage;
-                zhiyu_damage.from = target;
-                zhiyu_damage.to = damage.from;
+            if(same_color && damage.from)
+                room->askForDiscard(damage.from, objectName(), 1);
 
-                room->damage(zhiyu_damage);
-            }
         }
     }
 };
@@ -674,6 +823,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     wangyi->addSkill(new Miji);
 
     General *xunyou = new General(this, "xunyou", "wei", 3);
+    xunyou->addSkill(new Qice);
     xunyou->addSkill(new Zhiyu);
 
     General *caozhang = new General(this, "caozhang", "wei");
@@ -712,6 +862,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     huaxiong->addSkill(new Shiyong);
 
     addMetaObject<ZhenlieCard>();
+    addMetaObject<QiceCard>();
     addMetaObject<ChunlaoCard>();
     addMetaObject<AnxuCard>();
 }

@@ -2184,7 +2184,9 @@ function SmartAI:getCardNeedPlayer(cards)
 		if (self.player:getHandcardNum() == 2 and self.player:usedTimes("RendeCard") == 0) or
 			(self.player:getHandcardNum() == 1 and self.player:usedTimes("RendeCard") == 1) then
 			for _, enemy in ipairs(self.enemies) do
-				if self:isEquip("GudingBlade", enemy) and (enemy:canSlash(self.player, true) or enemy:hasSkill("shensu") or enemy:hasSkill("wushen")) then return end
+				if self:isEquip("GudingBlade", enemy) and 
+				(enemy:canSlash(self.player, true) or enemy:hasSkill("shensu") or enemy:hasSkill("wushen") or enemy:hasSkill("jiangchi")) then return end
+				if enemy:canSlash(self.player, true) and enemy:hasSkill("qianxi") and enemy:distanceTo(self.player) == 1 then return end
 			end
 			for _, friend in ipairs(self.friends_noself) do
 				local card_id = self:getCardRandomly(self.player, "h")
