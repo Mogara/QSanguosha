@@ -387,7 +387,14 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->getTypeId() == Card::Equip;
+        const Card *card = to_select->getFilteredCard();
+        if (card->getTypeId() != Card::Equip)
+            return false;
+
+        if(card == Self->getWeapon() && card->objectName() == "crossbow")
+            return Self->canSlashWithoutCrossbow();
+        else
+            return true;
     }
 
     const Card *viewAs(CardItem *card_item) const{
@@ -430,22 +437,26 @@ public:
         }
         else{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            QString choice;
+            if(!room->getTag("JiefanTarget").isNull())
+                choice = room->askForChoice(handang, objectName(), "damage+recover");
             if(!player->hasSkill(objectName())
                || room->getTag("JiefanTarget").isNull()
-               || !room->askForSkillInvoke(handang, objectName()))
+               || choice == "damage")
                 return false;
-
-            DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
-            ServerPlayer *target = dying.who;
-            room->removeTag("JiefanTarget");
-            Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
-            peach->setSkillName(objectName());
-            CardUseStruct use;
-            use.card = peach;
-            use.from = handang;
-            use.to << target;
-            room->useCard(use);
-
+            else
+            if(choice == "recover"){
+                DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
+                ServerPlayer *target = dying.who;
+                room->removeTag("JiefanTarget");
+                Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
+                peach->setSkillName(objectName());
+                CardUseStruct use;
+                use.card = peach;
+                use.from = handang;
+             use.to << target;
+             room->useCard(use);
+            }
             return true;
         }
 
@@ -694,7 +705,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     bulianshi->addSkill(new Anxu);
     bulianshi->addSkill(new Zhuiyi);
 
-    General *handang = new General(this, "handang", "qun");
+    General *handang = new General(this, "handang", "wu");
     handang->addSkill(new Gongqi);
     handang->addSkill(new Jiefan);
 

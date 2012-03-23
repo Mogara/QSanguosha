@@ -81,6 +81,8 @@ return {
 	["jiefan"] = "解烦",
 	[":jiefan"] = "当有角色进入濒死状态时，你可对伤害来源使用一张【杀】，当此杀造成伤害时，你可防止此伤害，视为对该濒死角色使用了一张【桃】。",
 	["jiefan-slash"] = "请对目标角色使用一张【杀】以响应技能",
+	["jiefan:damage"] = "继续伤害",
+	["jiefan:recover"] = "防止伤害",
 
 	["liubiao"] = "刘表",
 	["designer:liubiao"] = "管乐",
