@@ -280,7 +280,6 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName(), 1);
             room->setPlayerCardLock(caozhang, "Slash");
-            room->setPlayerFlag(caozhang, "slash_lock");
             return n + 1;
         }else{
             log.type = "#Jiangchi2";

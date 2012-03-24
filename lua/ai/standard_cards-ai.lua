@@ -310,38 +310,40 @@ function SmartAI:useCardPeach(card, use)
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("longhun") and not self.player:isLord() and
 		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
-		local peaches = 0
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		for _,card in ipairs(cards) do
-			if card:inherits("Peach") then peaches = peaches+1 end
+	local peaches = 0
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	for _,card in ipairs(cards) do
+		if card:inherits("Peach") then peaches = peaches+1 end
+	end
+	if self.player:isLord() and (self.player:hasSkill("hunzi") and not self.player:hasSkill("yingzi")) 
+		and self.player:getHp() < 4 and self.player:getHp() > peaches then return end
+	for _, friend in ipairs(self.enemies) do
+		if self:hasSkills(sgs.drawpeach_skill,enemy) and self.player:getHandcardNum() < 3 then
+			mustusepeach = true
 		end
-		for _, friend in ipairs(self.enemies) do
-			if self:hasSkills(sgs.drawpeach_skill,enemy) and self.player:getHandcardNum() < 3 then
-				mustusepeach = true
-			end
+	end
+	for _, friend in ipairs(self.friends_noself) do
+		if not mustusepeach then
+			if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
+			if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
 		end
-		for _, friend in ipairs(self.friends_noself) do
-			if not mustusepeach then
-				if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
-				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
-			end
-		end
+	end
 
-		if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
-			self:sort(self.friends, "hp")
-			for _, friend in ipairs(self.friends) do
-				if friend:isWounded() and friend:getGeneral():isMale() then return end
-			end
+	if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
+		self:sort(self.friends, "hp")
+		for _, friend in ipairs(self.friends) do
+			if friend:isWounded() and friend:getGeneral():isMale() then return end
 		end
+	end
 		
-		if self.player:hasSkill("ganlu") and not self.player:hasUsed("GanluCard") then
-			local dummy_use = {isDummy = true}
-			self:useSkillCard(sgs.Card_Parse("@GanluCard=."),dummy_use)
-			if dummy_use.card then return end
-		end
+	if self.player:hasSkill("ganlu") and not self.player:hasUsed("GanluCard") then
+		local dummy_use = {isDummy = true}
+		self:useSkillCard(sgs.Card_Parse("@GanluCard=."),dummy_use)
+		if dummy_use.card then return end
+	end
 
-		use.card = card
+	use.card = card
 end
 
 sgs.ai_card_intention.Peach = -120
@@ -683,7 +685,7 @@ function SmartAI:useCardDuel(duel, use)
 	local friends = self:exclude(self.friends_noself, duel)
 	local target 
 	local n1 = self:getCardsNum("Slash")
-	if self.player:hasFlag("slash_lock") then n1 = 0 end
+	--if self.player:hasCardLock("slash") then n1 = 0 end
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
 	local huatuo = self.room:findPlayerBySkillName("jijiu")
 	for _, friend in ipairs(friends) do
