@@ -169,7 +169,6 @@ QGroupBox *QiceDialog::createRight(){
     foreach(const Card *card, cards){
         if(card->isNDTrick() && !map.contains(card->objectName())){
             Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-            c->addSubcard(card);
             c->setSkillName("qice");
             c->setParent(this);
 
@@ -220,6 +219,7 @@ const Card *QiceCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
     room->playSkillEffect("qice");
     Card *use_card = Sanguosha->cloneCard(user_string, Card::NoSuit, 0);
+    use_card->addSubcard(this);
     use_card->setSkillName("qice");
     room->throwCard(this);
     return use_card;
