@@ -314,7 +314,6 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName(), 1);
             room->setPlayerCardLock(caozhang, "Slash");
-            caozhang->setFlags("slash_lock");
             return n + 1;
         }else{
             log.type = "#Jiangchi2";
@@ -332,8 +331,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *zhangzi) const{
-        if(zhangzi->getPhase() == Player::NotActive &&
-           zhangzi->hasFlag("slash_lock"))
+        if(zhangzi->getPhase() == Player::NotActive && zhangzi->hasCardLock("Slash"));
             zhangzi->getRoom()->setPlayerCardLock(zhangzi, "-Slash");
         return false;
     }

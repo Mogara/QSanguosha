@@ -804,6 +804,10 @@ bool Player::isLocked(const Card *card) const{
     return false;
 }
 
+bool Player::hasCardLock(const QString &card_str) const{
+    return lock_card.contains(card_str);
+}
+
 bool Player::isCaoCao() const{
     QString general_name = getGeneralName();
     return general_name == "caocao" || general_name == "shencaocao" || general_name == "shencc";
