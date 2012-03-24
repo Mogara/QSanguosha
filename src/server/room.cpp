@@ -2273,6 +2273,11 @@ void Room::drawCards(ServerPlayer *player, int n){
         int card_id = drawCard();
         card_ids << card_id;
         const Card *card = Sanguosha->getCard(card_id);
+
+        QVariant data = QVariant::fromValue(card_id);
+        if(thread->trigger(CardDrawing, player, data))
+            continue;
+
         player->drawCard(card);
 
         cards_str << QString::number(card_id);
@@ -2280,6 +2285,8 @@ void Room::drawCards(ServerPlayer *player, int n){
         // update place_map & owner_map
         setCardMapping(card_id, player, Player::Hand);
     }
+    if(cards_str.isEmpty())
+        return;
 
     player->invoke("drawCards", cards_str.join("+"));
 
@@ -2308,7 +2315,7 @@ void Room::drawCards(ServerPlayer *player, int n){
     }else
         broadcastInvoke("drawNCards", draw_str, player);
 
-    QVariant data = QVariant::fromValue(card_ids);
+    QVariant data = QVariant::fromValue(n);
     thread->trigger(CardDrawnDone, player, data);
 }
 
