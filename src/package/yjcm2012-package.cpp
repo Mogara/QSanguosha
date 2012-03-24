@@ -334,7 +334,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *zhangzi) const{
         if(zhangzi->getPhase() == Player::NotActive &&
            zhangzi->hasFlag("slash_lock"))
-            zhangzi->getRoom()->setPlayerCardLock(zhangzi, ".");
+            zhangzi->getRoom()->setPlayerCardLock(zhangzi, "-Slash");
         return false;
     }
 };
