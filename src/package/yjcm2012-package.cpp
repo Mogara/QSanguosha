@@ -49,7 +49,7 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         JudgeStar judge = data.value<JudgeStar>();
-
+        if (judge->who != player) return false;
         QStringList prompt_list;
         prompt_list << "@askforretrial" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
@@ -643,19 +643,7 @@ void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     room->moveCardTo(cd, from, Player::Hand, true);
     room->showCard(from, id);
     if(cd->getSuit() != Card::Spade){
-        if(!source->isWounded())
-            source->drawCards(1);
-        else{
-            if(room->askForChoice(source, "anxu", "draw+recover") == "draw")
-                source->drawCards(1);
-            else{
-                RecoverStruct recover;
-                recover.card = this;
-                recover.who = source;
-                recover.recover = 1;
-                room->recover(source, recover, true);
-            }
-        }
+        source->drawCards(1);
     }
 }
 
@@ -690,24 +678,20 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        int n = 0;
-        foreach(const Card *cd, player->getCards("he")){
-            if(cd->getSuit() != Card::Spade)
-                n++;
-        }
-        if(n == 0)
-            return false;
         DamageStar damage = data.value<DamageStar>();
         if(!player->askForSkillInvoke(objectName(), data))
             return false;
-        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(damage->from), objectName());
+        ServerPlayer *target;
+        if (!damage || damage->from == NULL)
+            target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName());
+        else
+            target = room->askForPlayerChosen(player, room->getOtherPlayers(damage->from), objectName());
 
-        LogMessage log;
-        log.type = "#ZhuiyiLog";
-        log.from = player;
-        log.arg = QString::number(n);
-        room->sendLog(log);
-        target->drawCards(n);
+        target->drawCards(3);
+        RecoverStruct recover;
+        recover.who = target;
+        recover.recover = 1;
+        room->recover(target, recover, true);
         return false;
     }
 };
