@@ -331,7 +331,8 @@ public:
                     const Card *card = Sanguosha->getCard(id);
                     room->moveCardTo(card, player, Player::Hand, true);
                     player->addMark("zuixiangHasTrigger");
-                    room->setPlayerCardLock(player, ".");
+                    player->setCardLocked(".");
+                    player->invoke("cardLock", ".");
                 }
                 return;
             }
@@ -368,7 +369,8 @@ public:
 
                 foreach(int card_id, zuixiang){
                     const Card *card = Sanguosha->getCard(card_id);
-                    room->setPlayerCardLock(sp_pangtong, type[card->getTypeId()]);
+                    sp_pangtong->setCardLocked(type[card->getTypeId()]);
+                    sp_pangtong->invoke("cardLock", type[card->getTypeId()]);
                 }
             }
         }

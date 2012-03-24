@@ -791,7 +791,7 @@ void Player::setCardLocked(const QString &name){
     else if(name.startsWith(unset_symbol)){
         QString copy = name;
         copy.remove(unset_symbol);
-        lock_card.removeAll(copy);
+        lock_card.remove(copy);
     }
     else if(!lock_card.contains(name))
         lock_card << name;
