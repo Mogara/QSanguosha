@@ -354,10 +354,10 @@ public:
 
         if(event == PhaseChange && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
             if(sp_pangtong->getPhase() == Player::Start){
-                if(sp_pangtong->getMark("@zuixiang") == 1){
+                if(sp_pangtong->getMark("@sleep") == 1){
                     if(!sp_pangtong->askForSkillInvoke(objectName()))
                         return false;
-                    sp_pangtong->loseMark("@zuixiang", 1);
+                    sp_pangtong->loseMark("@sleep", 1);
                     doZuixiang(sp_pangtong);
                 }else
                     doZuixiang(sp_pangtong);
@@ -411,7 +411,7 @@ BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_pangtong = new General(this, "bgm_pangtong", "qun", 3);
     bgm_pangtong->addSkill(new Manjuan);
     bgm_pangtong->addSkill(new Zuixiang);
-    bgm_pangtong->addSkill(new MarkAssignSkill("@zuixiang", 1));
+    bgm_pangtong->addSkill(new MarkAssignSkill("@sleep", 1));
 
     addMetaObject<LihunCard>();
 }
