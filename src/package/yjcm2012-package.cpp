@@ -169,6 +169,7 @@ QGroupBox *QiceDialog::createRight(){
     foreach(const Card *card, cards){
         if(card->isNDTrick() && !map.contains(card->objectName())){
             Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+            c->addSubcard(card);
             c->setSkillName("qice");
             c->setParent(this);
 
@@ -310,8 +311,7 @@ public:
             log.type = "#Jiangchi1";
             room->sendLog(log);
             room->playSkillEffect(objectName(), 1);
-            caozhang->setCardLocked("Slash");
-            caozhang->invoke("cardLock", "Slash");
+            room->setPlayerCardLock(caozhang, "Slash");
             return n + 1;
         }else{
             log.type = "#Jiangchi2";
@@ -332,11 +332,9 @@ public:
         return PhaseChangeSkill::triggerable(target);
     }
 
-    virtual bool onPhaseChange(ServerPlayer *zhangzi) const{
-        if(zhangzi->getPhase() == Player::NotActive && zhangzi->hasCardLock("Slash")){
-            zhangzi->setCardLocked("-Slash");
-            zhangzi->invoke("cardLock", "-Slash");
-        }
+    virtual bool onPhaseChange(ServerPlayer *caozhang) const{
+        if(caozhang->getPhase() == Player::NotActive && caozhang->hasCardLock("Slash"))
+            caozhang->getRoom()->setPlayerCardLock(caozhang, "-Slash");
         return false;
     }
 };
