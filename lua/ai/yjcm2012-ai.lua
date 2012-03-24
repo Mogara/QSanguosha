@@ -5,7 +5,7 @@ end
 sgs.ai_skill_invoke.qianxi = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
-	return target:getLostHp() == 0 or self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill, target)
+	return not ((target:getHp() < 2 and target:getMaxHp() > 1) and not (target:hasSkill("longhun") or target:hasSkill("buqu")))
 end
 
 sgs.ai_skill_invoke.fuli = true
@@ -16,6 +16,20 @@ sgs.ai_skill_invoke.fuhun = function(self, data)
 		if (self.player:distanceTo(enemy) <= self.player:getAttackRange())  then target = target + 1 end
 	end
 	return target > 0 and not self.player:isSkipped(sgs.Player_Play)
+end
+
+sgs.ai_skill_invoke.zhenlie = function(self, data)
+	local judge = data:toJudge()
+	if not judge:isGood() then 
+	return true end
+	return false
+end
+
+sgs.ai_skill_playerchosen.miji = function(self)
+	self:sort(self.friends,"defense")
+	for _, target in ipairs(self.friends) do
+		return target 
+	end
 end
 
 sgs.ai_skill_choice.jiangchi = function(self, choices)
@@ -131,6 +145,66 @@ sgs.ai_skill_cardask["jiefan-slash"] = function(self, data, pattern, target)
 		end 
 	end
 	return "."
+end
+
+anxu_skill={}
+anxu_skill.name="anxu"
+table.insert(sgs.ai_skills,anxu_skill)
+anxu_skill.getTurnUseCard=function(self)
+	if self.player:hasUsed("AnxuCard") then return nil end
+	card=sgs.Card_Parse("@AnxuCard=.")
+	return card
+
+end
+
+sgs.ai_skill_use_func.AnxuCard=function(card,use,self)
+
+	self:sort(self.enemies,"handcard")
+	self:sort(self.friends_noself,"handcard")
+
+	local lowest_friend=self.friends_noself[1]
+
+	self:sort(self.enemies,"defense")
+	if lowest_friend then
+		for _,enemy in ipairs(self.enemies) do
+			local hand1=enemy:getHandcardNum()
+			local hand2=lowest_friend:getHandcardNum()
+
+			if (hand1 > hand2) then
+				use.card=card
+				if use.to then
+					use.to:append(enemy)
+					use.to:append(lowest_friend)
+					return
+				end
+			end
+		end
+	end
+end
+
+sgs.ai_card_intention.AnxuCard = function(card, from, to)
+	local compare_func = function(a, b)
+		return a:getHandcardNum() < b:getHandcardNum()
+	end
+	table.sort(to, compare_func)
+	if to[1]:getHandcardNum() < to[2]:getHandcardNum() then
+		sgs.updateIntention(from, to[1], (to[2]:getHandcardNum()-to[1]:getHandcardNum())*20+40)
+	end
+end
+
+sgs.ai_skill_invoke.zhuiyi = function(self, data)
+	local players = self.room:getOtherPlayers(self.player)
+	players = sgs.QList2Table(players)
+	local friendnum = 0
+	for _,player in ipairs(players) do
+		if self:isFriend(player) then friendnum = friendnum + 1 end
+	end
+	return friendnum > 0
+end
+
+sgs.ai_skill_playerchosen.zhuiyi = function(self)
+	self:sort(self.friends_noself,"defense")
+	return self.friends_noself[1]
 end
 
 --[[local lihuo_skill={}
