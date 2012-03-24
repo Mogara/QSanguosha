@@ -485,14 +485,14 @@ public:
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
-        events << Predamaged;
+        events << Damaged;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(damage.card && damage.card->inherits("Slash") && damage.card->isRed()){
+        if(damage.card && damage.card->inherits("Slash") && (damage.card->isRed() || damage.from->hasFlag("drank"))){
             Room *room = player->getRoom();
             LogMessage log;
             log.type = "#TriggerSkill";
