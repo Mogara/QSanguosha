@@ -958,7 +958,7 @@ void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
 
 void Room::setPlayerCardLock(ServerPlayer *player, const QString &name){
     player->setCardLocked(name);
-    broadcastInvoke("cardLock", name);
+    player->invoke("cardLock", name);
 }
 
 ServerPlayer *Room::addSocket(ClientSocket *socket){

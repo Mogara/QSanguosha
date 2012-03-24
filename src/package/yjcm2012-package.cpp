@@ -219,6 +219,7 @@ const Card *QiceCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
     room->playSkillEffect("qice");
     Card *use_card = Sanguosha->cloneCard(user_string, Card::NoSuit, 0);
+    use_card->addSubcard(this);
     use_card->setSkillName("qice");
     room->throwCard(this);
     return use_card;
@@ -331,9 +332,9 @@ public:
         return PhaseChangeSkill::triggerable(target);
     }
 
-    virtual bool onPhaseChange(ServerPlayer *zhangzi) const{
-        if(zhangzi->getPhase() == Player::NotActive && zhangzi->hasCardLock("Slash"))
-            zhangzi->getRoom()->setPlayerCardLock(zhangzi, "-Slash");
+    virtual bool onPhaseChange(ServerPlayer *caozhang) const{
+        if(caozhang->getPhase() == Player::NotActive && caozhang->hasCardLock("Slash"))
+            caozhang->getRoom()->setPlayerCardLock(caozhang, "-Slash");
         return false;
     }
 };
