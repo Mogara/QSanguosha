@@ -299,7 +299,7 @@ function sgs.ai_filterskill_filter.hongyan(card, card_place)
 	end
 end
 
-sgs.ai_skill_use["@tianxiang"]=function(self, data)
+sgs.ai_skill_use["@@tianxiang"] = function(self, data)
 	local friend_lost_hp = 10
 	local friend_hp = 0
 	local card_id
@@ -307,7 +307,7 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	local cant_use_skill
 	local dmg
 
-	if data=="@@tianxiang-card" then
+	if data == "@tianxiang-card" then
 		dmg = self.player:getTag("TianxiangDamage"):toDamage()
 	else
 		dmg = data
