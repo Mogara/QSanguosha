@@ -319,10 +319,10 @@ public:
             const Card *cd = Sanguosha->getCard(id);
             room->moveCardTo(cd, NULL, Player::Special, true);
             room->getThread()->delay();
-            player->addToPile("zuixiang", id, true);
+            player->addToPile("dream", id, true);
         }
 
-        QList<int> zuixiang = player->getPile("zuixiang");
+        QList<int> zuixiang = player->getPile("dream");
         QSet<int> numbers;
         foreach(int id, zuixiang){
             const Card *card = Sanguosha->getCard(id);
@@ -344,7 +344,7 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *sp_pangtong, QVariant &data) const{
         Room *room = sp_pangtong->getRoom();
 
-        QList<int> zuixiang = sp_pangtong->getPile("zuixiang");
+        QList<int> zuixiang = sp_pangtong->getPile("dream");
         static QMap<Card::CardType, QString> type;
         if(type.isEmpty()){
             type[Card::Basic] = "BasicCard";

@@ -54,15 +54,6 @@ private:
     QHash<QString, const Card *> map;
 };
 
-class ZhenlieCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ZhenlieCard();
-
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-};
-
 class AnxuCard: public SkillCard{
     Q_OBJECT
 
