@@ -784,21 +784,24 @@ bool Player::isJilei(const Card *card) const{
 
 void Player::setCardLocked(const QString &name){
     static QChar unset_symbol('-');
-    if(name == ".")
+    if(name.isEmpty())
+        return;
+    else if(name == ".")
         lock_card.clear();
     else if(name.startsWith(unset_symbol)){
         QString copy = name;
         copy.remove(unset_symbol);
-        lock_card.removeOne(copy);
+        lock_card.removeAll(copy);
     }
-    else
+    else if(!lock_card.contains(name))
         lock_card << name;
 }
 
 bool Player::isLocked(const Card *card) const{
     foreach(QString card_name, lock_card){
-        if(card->inherits(card_name.toStdString().c_str()))
+        if(card->inherits(card_name.toStdString().c_str())){
             return true;
+        }
     }
 
     return false;

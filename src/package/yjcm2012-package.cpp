@@ -327,8 +327,12 @@ public:
     JiangchiClear():PhaseChangeSkill("#jiangchi-clear"){
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target);
+    }
+
     virtual bool onPhaseChange(ServerPlayer *zhangzi) const{
-        if(zhangzi->getPhase() == Player::NotActive && zhangzi->hasCardLock("Slash"));
+        if(zhangzi->getPhase() == Player::NotActive && zhangzi->hasCardLock("Slash"))
             zhangzi->getRoom()->setPlayerCardLock(zhangzi, "-Slash");
         return false;
     }

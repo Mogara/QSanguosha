@@ -2308,7 +2308,7 @@ void Room::drawCards(ServerPlayer *player, int n){
     }else
         broadcastInvoke("drawNCards", draw_str, player);
 
-    QVariant data = QVariant::fromValue(n);
+    QVariant data = QVariant::fromValue(card_ids);
     thread->trigger(CardDrawnDone, player, data);
 }
 
