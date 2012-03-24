@@ -51,10 +51,10 @@ Engine::Engine()
                   << "SP"
                   << "YJCM"
                   << "YJCM2012"
+                  << "Special3v3"
                   << "BGM"
                   << "Yitian"
                   << "Wisdom"
-                  << "Special3v3"
                   << "Test"
 
                   << "StandardCard"

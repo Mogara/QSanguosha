@@ -240,7 +240,7 @@ private:
     QHash<const Player *, int> fixed_distance;
 
     QSet<QString> jilei_set;
-    QStringList lock_card;
+    QSet<QString> lock_card;
 
 signals:
     void general_changed();

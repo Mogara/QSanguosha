@@ -744,7 +744,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@kuangfeng";
+        return pattern == "@@kuangfeng";
     }
 
     virtual const Card *viewAs() const{
@@ -792,10 +792,10 @@ public:
         Room *room = target->getRoom();
         if(target->getPhase() == Player::Finish){
             if(target->getMark("@star") > 0 && target->hasSkill("kuangfeng"))
-                room->askForUseCard(target, "@kuangfeng", "@@kuangfeng-card");
+                room->askForUseCard(target, "@@kuangfeng", "@kuangfeng-card");
 
             if(target->getMark("@star") > 0 && target->hasSkill("dawu"))
-                room->askForUseCard(target, "@dawu", "@@dawu-card");
+                room->askForUseCard(target, "@@dawu", "@dawu-card");
         }else if(target->getPhase() == Player::Start){
             QList<ServerPlayer *> players = room->getAllPlayers();
             foreach(ServerPlayer *player, players){
@@ -861,7 +861,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@dawu";
+        return pattern == "@@dawu";
     }
 
     virtual const Card *viewAs() const{

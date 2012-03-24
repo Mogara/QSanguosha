@@ -582,7 +582,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@lianli";
+        return pattern == "@@lianli";
     }
 
     virtual const Card *viewAs() const{
@@ -599,7 +599,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Start){
             Room *room = target->getRoom();
-            bool used = room->askForUseCard(target, "@lianli", "@@lianli-card");
+            bool used = room->askForUseCard(target, "@@lianli", "@lianli-card");
             if(used){
                 if(target->getKingdom() != "shu")
                     room->setPlayerProperty(target, "kingdom", "shu");

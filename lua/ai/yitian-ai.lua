@@ -257,7 +257,7 @@ sgs.ai_skill_choice.wuling = function(self, choices)
 	return choices_table[math.random(1, #choices_table)]
 end
 
-sgs.ai_skill_use["@lianli"] = function(self, prompt)
+sgs.ai_skill_use["@@lianli"] = function(self, prompt)
 	self:sort(self.friends)
 	
 	for _, friend in ipairs(self.friends) do
