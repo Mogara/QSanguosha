@@ -483,7 +483,7 @@ enum TriggerEvent{
     CardLostDone,
     CardGot,
     CardGotDone,
-	CardDrawing,
+    CardDrawing,
     CardDrawnDone,
 
     CardEffect,
