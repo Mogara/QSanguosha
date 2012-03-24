@@ -42,19 +42,16 @@ public:
         view_as_skill = new ZhenlieViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
-    }
-
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         JudgeStar judge = data.value<JudgeStar>();
+        if(!judge->who->hasSkill(objectName()))
+            return false;
 
         QStringList prompt_list;
         prompt_list << "@askforretrial" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
-        room->setPlayerMark(player, "zhenliecard", judge->card->getEffectiveId());
         const Card *card = room->askForCard(player, "@@zhenlie", prompt, data);
 
         if(card){
@@ -69,7 +66,7 @@ public:
             log.type = "$ChangedJudge";
             log.from = player;
             log.to << judge->who;
-            log.card_str = card->getEffectIdString();
+            log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
             room->sendJudgeResult(judge);
@@ -427,7 +424,7 @@ public:
             liaohua->loseMark("@laoji");
             int x = getKingdoms(room);
             RecoverStruct rev;
-            rev.recover = x;
+            rev.recover = x - liaohua->getHp();
             room->recover(liaohua, rev);
             liaohua->turnOver();
         }
