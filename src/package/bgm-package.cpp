@@ -244,28 +244,27 @@ public:
 class Manjuan: public TriggerSkill{
 public:
     Manjuan(): TriggerSkill("manjuan"){
-        events << CardGot << CardDrawnDone;
+        events << CardGot << CardDrawing;
+        frequency = Frequent;
     }
 
-    void doManjuan(ServerPlayer *sp_pangtong, QList<int> card_ids) const{
+    void doManjuan(ServerPlayer *sp_pangtong, int card_id) const{
         Room *room = sp_pangtong->getRoom();
-        foreach(int card_id, card_ids){
-            sp_pangtong->setFlags("ManjuanInvoke");
-            QList<int> discardedPile = room->getDiscardPile(), toGainList;
-            const Card *card = Sanguosha->getCard(card_id);
-            foreach(int id, discardedPile){
-                const Card *cd = Sanguosha->getCard(id);
-                if(cd->getNumber() == card->getNumber())
-                    toGainList << id;
-            }
-
-            room->fillAG(toGainList, sp_pangtong);
-            int id = room->askForAG(sp_pangtong, toGainList, true, objectName());
-            if(id != -1)
-                room->moveCardTo(Sanguosha->getCard(id), sp_pangtong, Player::Hand, true);
-
-            sp_pangtong->invoke("clearAG");
+        sp_pangtong->setFlags("ManjuanInvoke");
+        QList<int> discardedPile = room->getDiscardPile(), toGainList;
+        const Card *card = Sanguosha->getCard(card_id);
+        foreach(int id, discardedPile){
+            const Card *cd = Sanguosha->getCard(id);
+            if(cd->getNumber() == card->getNumber())
+                toGainList << id;
         }
+
+        room->fillAG(toGainList, sp_pangtong);
+        int id = room->askForAG(sp_pangtong, toGainList, false, objectName());
+        if(id != -1)
+            room->moveCardTo(Sanguosha->getCard(id), sp_pangtong, Player::Hand, true);
+
+        sp_pangtong->invoke("clearAG");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *sp_pangtong, QVariant &data) const{
@@ -276,31 +275,34 @@ public:
             return false;
         }
 
-        QList<int> card_ids;
+        int card_id = -1;
         if(event == CardGot){
             CardMoveStar move = data.value<CardMoveStar>();
-            card_ids << move->card_id;
+            card_id = move->card_id;
             if(move->to_place == Player::Hand){
-                room->throwCard(move->card_id);
-                LogMessage log;
-                log.type = "$ManjuanGot";
-                log.from = sp_pangtong;
-                log.card_str = Sanguosha->getCard(move->card_id)->toString();
-                room->sendLog(log);
+                room->throwCard(card_id);
             }else
                 return false;
         }
-        else if(event == CardDrawnDone){
-            card_ids = data.value<QList<int> >();
-            foreach(int card_id, card_ids)
-                room->throwCard(card_id);
+        else if(event == CardDrawing){
+            if(room->getTag("FirstRound").toBool())
+                return false;
+
+            card_id = data.toInt();
+            room->throwCard(card_id);
         }
 
-        if(sp_pangtong->getPhase() == Player::NotActive || !sp_pangtong->askForSkillInvoke(objectName(), data))
-            return false;
+        LogMessage log;
+        log.type = "$ManjuanGot";
+        log.from = sp_pangtong;
+        log.card_str = Sanguosha->getCard(card_id)->toString();
+        room->sendLog(log);
 
-        doManjuan(sp_pangtong, card_ids);
-        return false;
+        if(sp_pangtong->getPhase() == Player::NotActive || !sp_pangtong->askForSkillInvoke(objectName(), data))
+            return event == CardGot ? false : true;
+
+        doManjuan(sp_pangtong, card_id);
+        return event == CardGot ? false : true;
     }
 };
 
