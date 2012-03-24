@@ -207,32 +207,35 @@ sgs.ai_skill_playerchosen.zhuiyi = function(self)
 	return self.friends_noself[1]
 end
 
---[[local lihuo_skill={}
+sgs.ai_view_as.lihuo = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
+		return ("fire_slash:lihuo[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
+
+local lihuo_skill={}
 lihuo_skill.name="lihuo"
 table.insert(sgs.ai_skills,lihuo_skill)
 lihuo_skill.getTurnUseCard=function(self)
 	local cards = self.player:getCards("h")	
 	cards=sgs.QList2Table(cards)
-	local target = 0
 	local slash_card
-	for _,enemy in ipairs(self.enemies) do
-		if (self.player:distanceTo(enemy) <= self.player:getAttackRange()) and enemy:getHandcardNum() < 3 then target = target + 1 end
-	end
-	self:sortByUseValue(cards,true)
-
 	
 	for _,card in ipairs(cards)  do
-		if card:inherits("Slash") then
+		if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
 			slash_card = card
 			break
 		end
 	end
 	
-	if not slash_card or target < 2 then return nil end
+	if not slash_card  then return nil end
 	local suit = slash_card:getSuitString()
 	local number = slash_card:getNumberString()
 	local card_id = slash_card:getEffectiveId()
-	local card_str = ("slash:lihuo[%s:%s]=%d"):format(suit, number, card_id)
+	local card_str = ("fire_slash:lihuo[%s:%s]=%d"):format(suit, number, card_id)
 	local fireslash = sgs.Card_Parse(card_str)
 	assert(fireslash)
 	
@@ -240,32 +243,21 @@ lihuo_skill.getTurnUseCard=function(self)
 		
 end
 
-function sgs.ai_skill_invoke.chunlao(self, data)
-	local slash_num
-	local weak = 0
-	local slash_card
+sgs.ai_skill_use["@@chunlao"] = function(self, prompt)
+	local slashcards={}
+	local chunlao = self.player:getPile("ChunlaoPile")
 	local cards = self.player:getCards("h")	
 	cards=sgs.QList2Table(cards)
 	for _,card in ipairs(cards)  do
 		if card:inherits("Slash") then
-			slash_num = slash_num + 1
+			table.insert(slashcards,card:getId()) 
 		end
 	end
-	for _,friend in ipairs(self.friends) do
-		if self:isWeak(friend) then weak = weak + 1 end
+	if #slashcards > 0 and chunlao:isEmpty() then 
+		return sgs.Card_Parse("@ChunlaoCard="..table.concat(slashcards,"+")) --FixMe
 	end
-	self:sortByUseValue(cards,true)
-	for _,card in ipairs(cards)  do
-		if card:inherits("Slash") then
-			slash_card = card
-			break
-		end
-	end
-	if slash_num > 1 or (slash_num > 0 and weak > 0) then return slash_card end
-	return false
+	return "."
 end
 
-sgs.ai_skill_cardask.ChunlaoCard = function(self, data)
-	local dying = data:toDying()
-	return self:isFriend(dying.who)
-end]]
+sgs.ai_skill_invoke.chunlao = sgs.ai_skill_invoke.buyi
+

@@ -1880,7 +1880,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if self:needBear() then return "." end
 	if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = 0}
-		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
+		local willTianxiang = sgs.ai_skill_use["@@tianxiang"](self, dmgStr)
 		if willTianxiang ~= "." then return "." end
 	elseif self.player:hasSkill("longhun") and self.player:getHp() > 1 then
 		return "."
@@ -2479,6 +2479,11 @@ function SmartAI:getTurnUse()
 		self.slash_distance_limit = true
 	end
 
+	if self.player:hasFlag("jiangchi_invoke") then
+		slashAvail = 2
+		self.slash_distance_limit = true
+	end
+
 	self:fillSkillCards(cards)
 
 	self:sortByUseValue(cards)
@@ -2509,6 +2514,7 @@ function SmartAI:getTurnUse()
 
 		if dummy_use.card then
 			if (card:inherits("Slash")) then
+			    if card:getSkillName() == "lihuo" then self.slash_targets = 2 end
 				if slashAvail > 0 then
 					slashAvail = slashAvail-1
 					table.insert(turnUse,card)

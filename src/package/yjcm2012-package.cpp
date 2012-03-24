@@ -280,6 +280,7 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName(), 1);
             room->setPlayerCardLock(caozhang, "Slash");
+            room->setPlayerFlag(caozhang, "slash_lock");
             return n + 1;
         }else{
             log.type = "#Jiangchi2";
@@ -695,15 +696,21 @@ public:
 class Lihuo: public TriggerSkill{
 public:
     Lihuo():TriggerSkill("lihuo"){
-        events << SlashHit ;
+        events << SlashHit << CardFinished;
         view_as_skill = new LihuoViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(effect.slash->getSkillName() == objectName())
-            room->loseHp(player, 1);
+        if(event == SlashHit){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(effect.slash->getSkillName() == objectName())
+                player->tag["Invokelihuo"] = true;
+        }
+        else if(player->tag.value("Invokelihuo", false).toBool()){
+                    room->loseHp(player, 1);
+                    player->tag["Invokelihuo"] = false;
+                }
         return false;
     }
 };
@@ -769,7 +776,7 @@ public:
         }else if(event == Dying && !chengpu->getPile("ChunlaoPile").isEmpty()){
             DyingStruct dying = data.value<DyingStruct>();
             if(chengpu->askForSkillInvoke(objectName(), data)){
-                QList<int> cards = chengpu->getPile("ChulaoPile");
+                QList<int> cards = chengpu->getPile("ChunlaoPile");
                 room->fillAG(cards, chengpu);
                 int card_id = room->askForAG(chengpu, cards, true, objectName());
                 room->broadcastInvoke("clearAG");

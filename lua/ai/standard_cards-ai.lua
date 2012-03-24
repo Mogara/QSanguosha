@@ -91,6 +91,8 @@ function SmartAI:useCardSlash(card, use)
 	end
 	local no_distance = self.slash_distance_limit
 	if card:getSkillName() == "wushen" then no_distance = true end
+	if card:getSkillName() == "gongqi" then no_distance = true end
+	if card:getSkillName() == "lihuo" then self.slash_targets = 2 end
 	if (self.player:getHandcardNum() == 1
 	and self.player:getHandcards():first():inherits("Slash")
 	and self.player:getWeapon()
