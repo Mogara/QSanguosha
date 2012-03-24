@@ -78,7 +78,7 @@ Engine::Engine()
                 << "Impasse"
                 << "Custom";
 
-    for(int i=1; i<=20; i++){
+    for(int i=1; i<=21; i++){
         scene_names << QString("MiniScene_%1").arg(i, 2, 10, QChar('0'));
     }
 

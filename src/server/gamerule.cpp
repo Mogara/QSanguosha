@@ -48,9 +48,10 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
     case Player::Draw: {
             QVariant num = 2;
-            if(room->getTag("FirstRound").toBool() && room->getMode() == "02_1v1"){
+            if(room->getTag("FirstRound").toBool()){
                 room->setTag("FirstRound", false);
-                num = 1;
+                if(room->getMode() == "02_1v1")
+                    num = 1;
             }
 
             room->getThread()->trigger(DrawNCards, player, num);
@@ -168,10 +169,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(player->isLord())
                 setGameProcess(room);
 
+            room->setTag("FirstRound", true);
             player->drawCards(4, false);
-
-            if(room->getMode() == "02_1v1")
-                room->setTag("FirstRound", true);
 
             break;
         }
