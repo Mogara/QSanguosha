@@ -429,7 +429,7 @@ sgs.ai_skill_askforag.qixing = function(self, card_ids)
 	return -1
 end
 
-sgs.ai_skill_use["@kuangfeng"]=function(self,prompt)
+sgs.ai_skill_use["@@kuangfeng"] = function(self,prompt)
 	local friendly_fire
 	for _, friend in ipairs(self.friends) do
 		if friend:hasSkill("huoji") or self:isEquip("Fan",friend) or (friend:hasSkill("smallyeyan") and friend:getMark("@flame")>0) then
@@ -466,7 +466,7 @@ end
 
 sgs.ai_card_intention.KuangfengCard = 80
 
-sgs.ai_skill_use["@dawu"] = function(self, prompt)
+sgs.ai_skill_use["@@dawu"] = function(self, prompt)
 	self:sort(self.friends_noself, "hp")
 	local targets = {}
 	local lord = self.room:getLord()
