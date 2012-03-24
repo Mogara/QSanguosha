@@ -49,7 +49,7 @@ public:
             return false;
 
         QStringList prompt_list;
-        prompt_list << "@askforretrial" << judge->who->objectName()
+        prompt_list << "@zhenlie-card" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
         const Card *card = room->askForCard(player, "@@zhenlie", prompt, data);
