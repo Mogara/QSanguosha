@@ -616,7 +616,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@tianxiang";
+        return pattern == "@@tianxiang";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -649,7 +649,7 @@ public:
             Room *room = xiaoqiao->getRoom();
 
             xiaoqiao->tag["TianxiangDamage"] = QVariant::fromValue(damage);
-            if(room->askForUseCard(xiaoqiao, "@tianxiang", "@@tianxiang-card"))
+            if(room->askForUseCard(xiaoqiao, "@@tianxiang", "@tianxiang-card"))
                 return true;
         }
 
