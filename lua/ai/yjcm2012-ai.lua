@@ -261,3 +261,15 @@ end
 
 sgs.ai_skill_invoke.chunlao = sgs.ai_skill_invoke.buyi
 
+sgs.ai_skill_invoke.zhiyu = function(self)
+	local cards = self.player:getCards("h")	
+	cards=sgs.QList2Table(cards)
+	local first
+	local difcolor = 0
+	for _,card in ipairs(cards)  do
+		if not first then first = card end
+		if (first:isRed() and card:isBlack()) or (card:isRed() and first:isBlack()) then difcolor = 1 end
+	end
+	return difcolor == 0
+end
+
