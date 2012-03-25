@@ -254,7 +254,7 @@ sgs.ai_skill_use["@@chunlao"] = function(self, prompt)
 		end
 	end
 	if #slashcards > 0 and chunlao:isEmpty() then 
-		return sgs.Card_Parse("@ChunlaoCard="..table.concat(slashcards,"+")) --FixMe
+		--return sgs.Card_Parse("@ChunlaoCard="..table.concat(slashcards,"+"))  --FixMe
 	end
 	return "."
 end
@@ -273,3 +273,102 @@ sgs.ai_skill_invoke.zhiyu = function(self)
 	return difcolor == 0
 end
 
+local qice_skill={}
+qice_skill.name="qice"
+table.insert(sgs.ai_skills,qice_skill)
+qice_skill.getTurnUseCard=function(self)
+	local cards = self.player:getHandcards()
+	local allcard = {}
+	cards = sgs.QList2Table(cards)
+	local aoename = "savage_assault|archery_attack"
+	local aoenames = aoename:split("|")
+	local aoe
+	local i
+	local good, bad = 0, 0
+	local caocao = self.room:findPlayerBySkillName("jianxiong") 
+	if  self.player:hasUsed("QiceCard") then return end
+	for _, friend in ipairs(self.friends) do
+		if friend:isWounded() then
+			good = good + 10/(friend:getHp())
+			if friend:isLord() then good = good + 10/(friend:getHp()) end
+		end
+	end
+
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:isWounded() then
+			bad = bad + 10/(enemy:getHp())
+			if enemy:isLord() then
+				bad = bad + 10/(enemy:getHp())
+			end
+		end
+	end
+
+	for _,card in ipairs(cards)  do
+		table.insert(allcard,card:getId()) 
+	end
+
+	if self.player:getHandcardNum() < 3 then
+		for i=1, #aoenames do
+			local newqice = aoenames[i]
+			aoe = sgs.Sanguosha:cloneCard(newqice, sgs.Card_NoSuit, 0)
+			if self:getAoeValue(aoe) > -5 then
+				local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. newqice)
+				return parsed_card
+			end
+		end
+		if good > bad then
+			local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. "god_salvation")
+			return parsed_card
+		end
+		if self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0 then
+			local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. "ex_nihilo")
+			return parsed_card
+		end
+	end
+
+	if self.player:getHandcardNum() == 3 then
+		for i=1, #aoenames do
+			local newqice = aoenames[i]
+			aoe = sgs.Sanguosha:cloneCard(newqice, sgs.Card_NoSuit, 0)
+			if self:getAoeValue(aoe) > 0 then
+				local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. newqice)
+				return parsed_card
+			end
+		end
+		if good > bad and self.player:isWounded() then
+			local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. "god_salvation")
+			return parsed_card
+		end
+		if self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0 and self:getCardsNum("Analeptic") == 0 and self:getCardsNum("Nullification") == 0 then
+			local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. "ex_nihilo")
+			return parsed_card
+		end
+	end
+	for i=1, #aoenames do
+		local newqice = aoenames[i]
+		aoe = sgs.Sanguosha:cloneCard(newqice, sgs.Card_NoSuit, 0)
+		if self:getAoeValue(aoe) > -5 and caocao and self:isFriend(caocao) and caocao:getHp()>1  and not caocao:containsTrick("indulgence") then
+			local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. newqice)
+			return parsed_card
+		end
+	end
+	if self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0 and self:getCardsNum("Analeptic") == 0 and self:getCardsNum("Nullification") == 0 then
+		if good > bad and self.player:isWounded() then
+			local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. "god_salvation")
+			return parsed_card
+		end
+		local parsed_card=sgs.Card_Parse("@QiceCard=" .. table.concat(allcard,"+") .. ":" .. "ex_nihilo")
+		return parsed_card
+	end
+end
+
+sgs.ai_skill_use_func.QiceCard=function(card,use,self)
+	local userstring=card:toString()
+	userstring=(userstring:split(":"))[2]
+	local qicecard=sgs.Sanguosha:cloneCard(userstring, card:getSuit(), card:getNumber())
+	self:useTrickCard(qicecard,use) 
+	if not use.card then return end
+	use.card=card
+end
+
+sgs.ai_use_priority.QiceCard = 3.5
