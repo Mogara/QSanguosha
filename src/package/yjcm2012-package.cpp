@@ -534,7 +534,7 @@ public:
 class Jiefan : public TriggerSkill{
 public:
     Jiefan():TriggerSkill("jiefan"){
-        events << Dying << SlashHit;
+        events << Dying << SlashHit << SlashMissed;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -561,7 +561,7 @@ public:
                 room->useCard(use);
             }
         }
-        else{
+        else if(event == SlashHit){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(!player->hasSkill(objectName())
                || room->getTag("JiefanTarget").isNull())
@@ -580,6 +580,8 @@ public:
 
             return true;
         }
+        else
+            room->removeTag("JiefanTarget");
 
         return false;
     }
