@@ -969,7 +969,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@liuli";
+        return pattern == "@@liuli";
     }
 
     virtual bool viewFilter(const CardItem *) const{

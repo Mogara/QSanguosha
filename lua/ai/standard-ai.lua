@@ -798,7 +798,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	end
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if self.player:canSlash(enemy,true) and not (source:objectName() == enemy:objectName()) then
+		if self.player:canSlash(enemy,true) and not (source and (source:objectName() == enemy:objectName())) then
 			local cards = self.player:getCards("he")
 			cards=sgs.QList2Table(cards)
 			for _,card in ipairs(cards) do

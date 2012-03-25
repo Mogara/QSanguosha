@@ -11,3 +11,5 @@ sgs.ai_skill_cardask["@huanshi-card"] = function(self, data)
 
 	return "."
 end
+
+sgs.ai_skill_invoke.mingzhe = true

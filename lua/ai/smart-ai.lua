@@ -3521,6 +3521,7 @@ for _, aextension in ipairs(sgs.Sanguosha:getExtensions()) do
 end
 
 dofile "lua/ai/sp-ai.lua"
+dofile "lua/ai/special3v3-ai.lua"
 
 for _, ascenario in ipairs(sgs.Sanguosha:getScenarioNames()) do
 	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then
