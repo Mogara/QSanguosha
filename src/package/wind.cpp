@@ -82,7 +82,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@@guidao";
+        return pattern == "@guidao";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -133,7 +133,7 @@ public:
         prompt_list << "@guidao-card" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
-        const Card *card = room->askForCard(player, "@@guidao", prompt, data);
+        const Card *card = room->askForCard(player, "@guidao", prompt, data);
 
         if(card){
             // the only difference for Guicai & Guidao
