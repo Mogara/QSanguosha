@@ -102,5 +102,5 @@ return {
 	["designer:huaxiong"] = "小立",
 	["illustrator:huaxiong"] = "地狱许",
 	["shiyong"] = "恃勇",
-	[":shiyong"] = "<b>锁定技</b>，每当你受到红杀所造成的伤害时，需自减一格体力上限。",
+	[":shiyong"] = "<b>锁定技</b>，每当你受到一次红色【杀】或【酒】【杀】造成的伤害后，减少一点体力上限。",
 }

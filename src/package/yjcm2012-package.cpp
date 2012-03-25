@@ -484,14 +484,14 @@ public:
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
-        events << Predamaged;
+        events << Damaged;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(damage.card && damage.card->inherits("Slash") && damage.card->isRed()){
+        if(damage.card && damage.card->inherits("Slash") && (damage.card->isRed() || damage.from->hasFlag("drank"))){
             Room *room = player->getRoom();
             LogMessage log;
             log.type = "#TriggerSkill";
@@ -695,15 +695,21 @@ public:
 class Lihuo: public TriggerSkill{
 public:
     Lihuo():TriggerSkill("lihuo"){
-        events << SlashHit ;
+        events << SlashHit << CardFinished;
         view_as_skill = new LihuoViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(effect.slash->getSkillName() == objectName())
-            room->loseHp(player, 1);
+        if(event == SlashHit){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(effect.slash->getSkillName() == objectName())
+                player->tag["Invokelihuo"] = true;
+        }
+        else if(player->tag.value("Invokelihuo", false).toBool()){
+                    room->loseHp(player, 1);
+                    player->tag["Invokelihuo"] = false;
+                }
         return false;
     }
 };
@@ -769,7 +775,7 @@ public:
         }else if(event == Dying && !chengpu->getPile("ChunlaoPile").isEmpty()){
             DyingStruct dying = data.value<DyingStruct>();
             if(chengpu->askForSkillInvoke(objectName(), data)){
-                QList<int> cards = chengpu->getPile("ChulaoPile");
+                QList<int> cards = chengpu->getPile("ChunlaoPile");
                 room->fillAG(cards, chengpu);
                 int card_id = room->askForAG(chengpu, cards, true, objectName());
                 room->broadcastInvoke("clearAG");
