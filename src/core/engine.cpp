@@ -469,24 +469,6 @@ void Engine::getRoles(const QString &mode, char *roles) const{
     }else if(mode == "04_1v3"){
         qstrcpy(roles, "ZFFF");
         return;
-    }else if(Config.EnableHegemony){
-        static const char *table[] = {
-            "",
-            "",
-
-            "ZN", // 2
-            "ZNN", // 3
-            "ZNNN", // 4
-            "ZNNNN", // 5
-            "ZNNNNN", // 6
-            "ZNNNNNN", // 7
-            "ZNNNNNNN", // 8
-            "ZNNNNNNNN", // 9
-            "ZNNNNNNNNN" // 10
-        };
-
-        qstrcpy(roles, table[n]);
-        return;
     }
 
     if(modes.contains(mode)){
@@ -520,16 +502,16 @@ void Engine::getRoles(const QString &mode, char *roles) const{
             "ZCCCFFFFNN" // 10
         };
 
-        const char *rolechar = "";
-        if(mode == "08pz")
-            rolechar = "ZCCCFFFF";
-        else if(mode == "10pz")
-            rolechar = "ZCCCCFFFFF";
-        else{
-            const char **table = mode.endsWith("d") ? table2 : table1;
-            rolechar = table[n];
+        const char **table = mode.endsWith("d") ? table2 : table1;
+        QString rolechar = table[n];
+        if(mode.endsWith("z"))
+            rolechar.replace("N", "C");
+        else if(Config.EnableHegemony){
+            rolechar.replace("F", "N");
+            rolechar.replace("C", "N");
         }
-        qstrcpy(roles, rolechar);
+
+        qstrcpy(roles, rolechar.toStdString().c_str());
     }else if(mode.startsWith("@")){
         if(n == 8)
             qstrcpy(roles, "ZCCCNFFF");
