@@ -254,7 +254,7 @@ sgs.ai_skill_use["@@chunlao"] = function(self, prompt)
 		end
 	end
 	if #slashcards > 0 and chunlao:isEmpty() then 
-		return sgs.Card_Parse("@ChunlaoCard="..table.concat(slashcards,"+")) --FixMe
+		--return sgs.Card_Parse("@ChunlaoCard="..table.concat(slashcards,"+"))  --FixMe
 	end
 	return "."
 end
@@ -286,6 +286,7 @@ qice_skill.getTurnUseCard=function(self)
 	local i
 	local good, bad = 0, 0
 	local caocao = self.room:findPlayerBySkillName("jianxiong") 
+	if  self.player:hasUsed("QiceCard") then return end
 	for _, friend in ipairs(self.friends) do
 		if friend:isWounded() then
 			good = good + 10/(friend:getHp())
