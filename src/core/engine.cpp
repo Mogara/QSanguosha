@@ -99,9 +99,12 @@ Engine::Engine()
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
+    modes["08pz"] = tr("8 players (0 renegade)");
     modes["08same"] = tr("8 players (same mode)");
     modes["09p"] = tr("9 players");
-    modes["10p"] = tr("10 players");
+    modes["10pd"] = tr("10 players");
+    modes["10p"] = tr("10 players (1 renegade)");
+    modes["10pz"] = tr("10 players (0 renegade)");
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
@@ -499,7 +502,7 @@ void Engine::getRoles(const QString &mode, char *roles) const{
             "ZCCFFFN", // 7
             "ZCCFFFFN", // 8
             "ZCCCFFFFN", // 9
-            "ZCCCFFFFNN" // 10
+            "ZCCCFFFFFN" // 10
         };
 
         static const char *table2[] = {
@@ -517,8 +520,16 @@ void Engine::getRoles(const QString &mode, char *roles) const{
             "ZCCCFFFFNN" // 10
         };
 
-        const char **table = mode.endsWith("d") ? table2 : table1;
-        qstrcpy(roles, table[n]);
+        const char *rolechar = "";
+        if(mode == "08pz")
+            rolechar = "ZCCCFFFF";
+        else if(mode == "10pz")
+            rolechar = "ZCCCCFFFFF";
+        else{
+            const char **table = mode.endsWith("d") ? table2 : table1;
+            rolechar = table[n];
+        }
+        qstrcpy(roles, rolechar);
     }else if(mode.startsWith("@")){
         if(n == 8)
             qstrcpy(roles, "ZCCCNFFF");
