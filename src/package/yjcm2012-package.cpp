@@ -723,7 +723,7 @@ ChunlaoCard::ChunlaoCard(){
 
 void ChunlaoCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     foreach(int id, this->subcards){
-        source->addToPile("ChunlaoPile", id, true);
+        source->addToPile("wine", id, true);
     }
 }
 
@@ -772,12 +772,12 @@ public:
         if(event == PhaseChange &&
                 chengpu->getPhase() == Player::Finish &&
                 !chengpu->isKongcheng() &&
-                chengpu->getPile("ChunlaoPile").isEmpty()){
+                chengpu->getPile("wine").isEmpty()){
             room->askForUseCard(chengpu, "@@chunlao", "@chunlao");
-        }else if(event == Dying && !chengpu->getPile("ChunlaoPile").isEmpty()){
+        }else if(event == Dying && !chengpu->getPile("wine").isEmpty()){
             DyingStruct dying = data.value<DyingStruct>();
             if(chengpu->askForSkillInvoke(objectName(), data)){
-                QList<int> cards = chengpu->getPile("ChunlaoPile");
+                QList<int> cards = chengpu->getPile("wine");
                 room->fillAG(cards, chengpu);
                 int card_id = room->askForAG(chengpu, cards, true, objectName());
                 room->broadcastInvoke("clearAG");
