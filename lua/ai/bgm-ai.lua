@@ -128,3 +128,6 @@ sgs.ai_view_as.yanzheng = function(card, player, card_place)
 	    return ("nullification:yanzheng[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
+
+sgs.ai_skill_invoke.manjuan = true
+sgs.ai_skill_invoke.zuixiang = true

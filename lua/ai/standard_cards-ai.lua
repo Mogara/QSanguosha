@@ -91,6 +91,8 @@ function SmartAI:useCardSlash(card, use)
 	end
 	local no_distance = self.slash_distance_limit
 	if card:getSkillName() == "wushen" then no_distance = true end
+	if card:getSkillName() == "gongqi" then no_distance = true end
+	if card:getSkillName() == "lihuo" then self.slash_targets = 2 end
 	if (self.player:getHandcardNum() == 1
 	and self.player:getHandcards():first():inherits("Slash")
 	and self.player:getWeapon()
@@ -308,38 +310,40 @@ function SmartAI:useCardPeach(card, use)
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("longhun") and not self.player:isLord() and
 		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
-		local peaches = 0
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		for _,card in ipairs(cards) do
-			if card:inherits("Peach") then peaches = peaches+1 end
+	local peaches = 0
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	for _,card in ipairs(cards) do
+		if card:inherits("Peach") then peaches = peaches+1 end
+	end
+	if self.player:isLord() and (self.player:hasSkill("hunzi") and not self.player:hasSkill("yingzi")) 
+		and self.player:getHp() < 4 and self.player:getHp() > peaches then return end
+	for _, friend in ipairs(self.enemies) do
+		if self:hasSkills(sgs.drawpeach_skill,enemy) and self.player:getHandcardNum() < 3 then
+			mustusepeach = true
 		end
-		for _, friend in ipairs(self.enemies) do
-			if self:hasSkills(sgs.drawpeach_skill,enemy) and self.player:getHandcardNum() < 3 then
-				mustusepeach = true
-			end
+	end
+	for _, friend in ipairs(self.friends_noself) do
+		if not mustusepeach then
+			if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
+			if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
 		end
-		for _, friend in ipairs(self.friends_noself) do
-			if not mustusepeach then
-				if friend:isLord() and friend:getHp() == 1 and not friend:hasSkill("buqu") and peaches < 2 then return end
-				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
-			end
-		end
+	end
 
-		if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
-			self:sort(self.friends, "hp")
-			for _, friend in ipairs(self.friends) do
-				if friend:isWounded() and friend:getGeneral():isMale() then return end
-			end
+	if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
+		self:sort(self.friends, "hp")
+		for _, friend in ipairs(self.friends) do
+			if friend:isWounded() and friend:getGeneral():isMale() then return end
 		end
+	end
 		
-		if self.player:hasSkill("ganlu") and not self.player:hasUsed("GanluCard") then
-			local dummy_use = {isDummy = true}
-			self:useSkillCard(sgs.Card_Parse("@GanluCard=."),dummy_use)
-			if dummy_use.card then return end
-		end
+	if self.player:hasSkill("ganlu") and not self.player:hasUsed("GanluCard") then
+		local dummy_use = {isDummy = true}
+		self:useSkillCard(sgs.Card_Parse("@GanluCard=."),dummy_use)
+		if dummy_use.card then return end
+	end
 
-		use.card = card
+	use.card = card
 end
 
 sgs.ai_card_intention.Peach = -120
@@ -681,7 +685,7 @@ function SmartAI:useCardDuel(duel, use)
 	local friends = self:exclude(self.friends_noself, duel)
 	local target 
 	local n1 = self:getCardsNum("Slash")
-	if self.player:hasFlag("slash_lock") then n1 = 0 end
+	--if self.player:hasCardLock("slash") then n1 = 0 end
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
 	local huatuo = self.room:findPlayerBySkillName("jijiu")
 	for _, friend in ipairs(friends) do
@@ -957,7 +961,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() and self:hasTrickEffective(card, enemy) and not self:needKongcheng(enemy) then
+		if not enemy:isNude() and self:hasTrickEffective(card, enemy) and not self:needKongcheng(enemy) and not enemy:hasSkill("kongcheng") then
 			if enemy:getHandcardNum() == 1 then 
 				use.card = card
 				if use.to then
@@ -986,7 +990,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 				if enemy:getHandcardNum() == 1 then
-					if self:needKongcheng(enemy) or enemy:hasSkill("lianying") then return end
+				if self:needKongcheng(enemy) or enemy:hasSkill("kongcheng|lianying") then return end
 				end
 				if self:hasSkills(sgs.cardneed_skill, enemy) then
 					use.card = card
