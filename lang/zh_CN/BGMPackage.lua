@@ -31,6 +31,8 @@ return {
 
 	["#bgm_pangtong"] = "荆楚之高俊",
 	["bgm_pangtong"] = "SP庞统",
+	["illustrator:bgm_pangtong"] = "LiuHeng",
+	["designer:bgm_pangtong"] = "桌游志",
 	["manjuan"] = "漫卷",
 	[":manjuan"] = "每当你将获得任何一张手牌，将之置于弃牌堆。若此情况处于你的回合中，你可依次将与该牌点数相同的一张牌从弃牌堆置于你的手上。",
 	["$ManjuanGot"] = "%from 即将获得 %card 并将该牌置于弃牌堆",
