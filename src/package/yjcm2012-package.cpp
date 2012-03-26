@@ -537,6 +537,10 @@ public:
         events << Dying << SlashHit << SlashMissed;
     }
 
+    virtual int getPriority() const{
+        return -1;
+    }
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return true;
     }
@@ -547,10 +551,10 @@ public:
         ServerPlayer *handang = room->findPlayerBySkillName(objectName());
 
         if(event == Dying){
-            if(!handang || !room->askForSkillInvoke(handang, objectName(), data))
+            DyingStruct dying = data.value<DyingStruct>();
+            if(dying.who->isDead() || !handang || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
 
-            DyingStruct dying = data.value<DyingStruct>();
             const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.damage->from->objectName(), data);
             room->setTag("JiefanTarget", data);
             if(slash){
