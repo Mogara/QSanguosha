@@ -135,7 +135,8 @@ sgs.ai_skill_invoke.jiefan = function(self, data)
 			slashnum = slashnum + 1  
 		end 
 	end
-	return self:isFriend(friend) and not (self:isFriend(currentplayer) and self:isWeak(currentplayer)) and slashnum > 0
+	return self:isFriend(friend) and not (self:isEnemy(currentplayer) and currentplayer:hasSkill("leiji") 
+		and (currentplayer:getHandcardNum() > 2 or self:isEquip("EightDiagram", currentplayer))) and slashnum > 0
 end
 
 sgs.ai_skill_cardask["jiefan-slash"] = function(self, data, pattern, target)
@@ -160,9 +161,15 @@ end
 sgs.ai_skill_use_func.AnxuCard=function(card,use,self)
 
 	self:sort(self.enemies,"handcard")
-	self:sort(self.friends_noself,"handcard")
+	local friends={}
+	for _,player in ipairs(self.friends_noself) do
+		if not player:hasSkill("manjuan") then
+			table.insert(friends, player)
+		end
+	end
+	self:sort(friends,"handcard")
 
-	local lowest_friend=self.friends_noself[1]
+	local lowest_friend=friends[1]
 
 	self:sort(self.enemies,"defense")
 	if lowest_friend then
@@ -245,7 +252,7 @@ end
 
 sgs.ai_skill_use["@@chunlao"] = function(self, prompt)
 	local slashcards={}
-	local chunlao = self.player:getPile("ChunlaoPile")
+	local chunlao = self.player:getPile("wine")
 	local cards = self.player:getCards("h")	
 	cards=sgs.QList2Table(cards)
 	for _,card in ipairs(cards)  do
@@ -254,7 +261,7 @@ sgs.ai_skill_use["@@chunlao"] = function(self, prompt)
 		end
 	end
 	if #slashcards > 0 and chunlao:isEmpty() then 
-		--return sgs.Card_Parse("@ChunlaoCard="..table.concat(slashcards,"+"))  --FixMe
+		return "@ChunlaoCard="..table.concat(slashcards,"+").."->".."." 
 	end
 	return "."
 end
@@ -371,4 +378,4 @@ sgs.ai_skill_use_func.QiceCard=function(card,use,self)
 	use.card=card
 end
 
-sgs.ai_use_priority.QiceCard = 3.5
+sgs.ai_use_priority.QiceCard = 1.5
