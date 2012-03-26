@@ -80,7 +80,7 @@ duanliang_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 
 	for _,acard in ipairs(cards)  do
-		if (acard:isBlack()) and (acard:inherits("BasicCard") or acard:inherits("EquipCard")) then
+		if (acard:isBlack()) and (acard:inherits("BasicCard") or acard:inherits("EquipCard")) and (self:getDynamicUsePriority(acard)<sgs.ai_use_value.SupplyShortage)then
 			card = acard
 			break
 		end
@@ -230,9 +230,15 @@ sgs.ai_skill_use_func.DimengCard=function(card,use,self)
 	local cardNum=self.player:getHandcardNum()
 
 	self:sort(self.enemies,"handcard")
-	self:sort(self.friends_noself,"handcard")
+	local friends={}
+	for _,player in ipairs(self.friends_noself) do
+		if not player:hasSkill("manjuan") then
+			table.insert(friends, player)
+		end
+	end
+	self:sort(friends,"handcard")
 
-	local lowest_friend=self.friends_noself[1]
+	local lowest_friend=friends[1]
 
 	self:sort(self.enemies,"defense")
 	if lowest_friend then

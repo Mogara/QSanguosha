@@ -527,6 +527,7 @@ public:
         const Card *card = card_item->getFilteredCard();
         WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
         slash->addSubcard(card);
+        slash->setSkillName(objectName());
         return slash;
     }
 };
@@ -767,7 +768,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getRoom()->findPlayerBySkillName(objectName());
+        return true;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
