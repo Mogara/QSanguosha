@@ -527,6 +527,7 @@ public:
         const Card *card = card_item->getFilteredCard();
         WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
         slash->addSubcard(card);
+        slash->setSkillName(objectName());
         return slash;
     }
 };
