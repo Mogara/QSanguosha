@@ -2013,11 +2013,6 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     }
 }
 
-void Room::playCardEffect(const QString &card_name, bool is_male){
-    QString gender = is_male ? "M" : "F";
-    broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
-}
-
 bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
     CardEffectStruct effect;
 

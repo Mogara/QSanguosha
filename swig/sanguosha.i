@@ -245,7 +245,8 @@ public:
 	void unicast(const char *message) const;
 	void drawCard(const Card *card);
 	Room *getRoom() const;
-	void playCardEffect(const Card *card);
+	void playCardEffect(const Card *card) const;
+	void playCardEffect(const char *card_name) const;
 	int getRandomHandCardId() const;
 	const Card *getRandomHandCard() const;
 	void obtainCard(const Card *card);
@@ -675,7 +676,6 @@ public:
 	void playAudio(const char *name) const;
 	void playEffect(const char *filename) const;
 	void playSkillEffect(const char *skill_name, int index) const;
-	void playCardEffect(const char *card_name, bool is_male) const;
 
 	const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 	int correctDistance(const Player *from, const Player *to) const;
@@ -701,7 +701,7 @@ public:
 	bool isVisible() const;
 
 	virtual QString getDefaultChoice(ServerPlayer *player) const;
-	virtual int getEffectIndex(ServerPlayer *player, const Card *card) const;
+	virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
 	virtual QDialog *getDialog() const;
 
 	void initMediaSource();
@@ -793,7 +793,6 @@ public:
 	void loseMaxHp(ServerPlayer *victim, int lose = 1);
 	void applyDamage(ServerPlayer *victim, const DamageStruct &damage);
 	void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
-	void playCardEffect(const char *card_name, bool is_male);
 	bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
 	bool cardEffect(const CardEffectStruct &effect);
 	void judge(JudgeStruct &judge_struct);

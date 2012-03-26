@@ -142,7 +142,7 @@ public:
         return analeptic;
     }
 
-    virtual int getEffectIndex(ServerPlayer *, const Card *) const{
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return qrand() % 2 + 1;
     }
 

@@ -1230,7 +1230,7 @@ public:
 
     }
 
-    virtual int getEffectIndex(ServerPlayer *, const Card *card) const{
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         if(card->getTypeId() == Card::Basic)
             return 2;
         else

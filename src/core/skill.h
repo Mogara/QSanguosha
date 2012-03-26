@@ -38,8 +38,7 @@ public:
     bool isVisible() const;
 
     virtual QString getDefaultChoice(ServerPlayer *player) const;
-    virtual int getEffectIndex(ServerPlayer *player, const Card *card) const;
-    virtual bool useCardSoundEffect() const;
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
 
     virtual Location getLocation() const;
