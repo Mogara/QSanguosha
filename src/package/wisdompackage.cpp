@@ -22,7 +22,7 @@ bool JuaoCard::targetFilter(const QList<const Player *> &targets, const Player *
 void JuaoCard::onEffect(const CardEffectStruct &effect) const{
     foreach(int cardid, this->getSubcards()){
         //source->getRoom()->moveCardTo(Sanguosha->getCard(cardid), targets.first(), Player::Special);
-        effect.to->addToPile("juaocd", cardid, false);
+        effect.to->addToPile("hautain", cardid, false);
     }
     effect.to->addMark("juao");
 }
@@ -68,7 +68,7 @@ public:
             Room *room = player->getRoom();
             player->setMark("juao", 0);
             ServerPlayer *xuyou = room->findPlayerBySkillName(objectName());
-            foreach(int card_id, player->getPile("juaocd")){
+            foreach(int card_id, player->getPile("hautain")){
                 if(!xuyou)
                     room->throwCard(card_id);
                 else
