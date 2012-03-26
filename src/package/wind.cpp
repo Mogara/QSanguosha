@@ -963,6 +963,10 @@ public:
     virtual QDialog *getDialog() const{
         return GuhuoDialog::GetInstance();
     }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        return 0;
+    }
 };
 
 WindPackage::WindPackage()

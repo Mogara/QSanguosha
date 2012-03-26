@@ -54,7 +54,7 @@ QString Skill::getDefaultChoice(ServerPlayer *) const{
     return default_choice;
 }
 
-int Skill::getEffectIndex(ServerPlayer *, const Card *) const{
+int Skill::getEffectIndex(const ServerPlayer *, const Card *) const{
     return -1;
 }
 
@@ -101,10 +101,6 @@ void Skill::playEffect(int index) const{
         if(ClientInstance)
             ClientInstance->setLines(filename);
     }
-}
-
-bool Skill::useCardSoundEffect() const{
-    return false;
 }
 
 void Skill::setFlag(ServerPlayer *player) const{

@@ -688,7 +688,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
     case CardUsed:{
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
-                room->playCardEffect("@recast", player->getGeneral()->isMale());
+                player->playCardEffect("@recast");
                 room->throwCard(use.card);
                 player->drawCards(1, false);
                 return false;

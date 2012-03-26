@@ -420,6 +420,7 @@ public:
 
 HaoshiCard::HaoshiCard(){
     will_throw = false;
+    mute = true;
 }
 
 bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -486,10 +487,8 @@ public:
             lusu->setFlags("-haoshi");
 
             Room *room = lusu->getRoom();
-            if(lusu->getHandcardNum() <= 5){
-                room->playSkillEffect("haoshi");
-                return false;
-            }
+            if(lusu->getHandcardNum() <= 5)
+                return false;            
 
             QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
             int least = 1000;
@@ -533,6 +532,7 @@ public:
     virtual int getDrawNum(ServerPlayer *lusu, int n) const{
         Room *room = lusu->getRoom();
         if(room->askForSkillInvoke(lusu, "haoshi")){
+            room->playSkillEffect("haoshi");
             lusu->setFlags("haoshi");
             return n + 2;
         }else

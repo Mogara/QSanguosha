@@ -510,7 +510,7 @@ public:
         return false;
     }
 
-    virtual int getEffectIndex(ServerPlayer *player, const Card *) const{
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
         int r = 1 + qrand() % 2;
         if(player->getGeneralName() == "liushan" || player->getGeneral2Name() == "liushan")
             r += 2;

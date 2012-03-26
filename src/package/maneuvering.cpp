@@ -315,7 +315,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.to.isEmpty()){
         room->throwCard(this);
-        room->playCardEffect("@recast", card_use.from->getGeneral()->isMale());
+        card_use.from->playCardEffect("@recast");
         card_use.from->drawCards(1);
     }else
         TrickCard::onUse(room, card_use);
@@ -324,7 +324,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
 void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
-    room->playCardEffect("@tiesuo", source->getGeneral()->isMale());
+    source->playCardEffect("@tiesuo");
     TrickCard::use(room, source, targets);
 }
 

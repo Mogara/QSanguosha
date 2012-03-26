@@ -1257,10 +1257,6 @@ public:
 
         return new_card;
     }
-
-    virtual bool useCardSoundEffect() const{
-        return true;
-    }
 };
 
 
