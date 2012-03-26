@@ -42,6 +42,7 @@ function SmartAI:canLiuli(other, another)
 end
 
 function SmartAI:slashIsEffective(slash, to)
+    if to:hasSkill("zuixiang") and to:isLocked(slash) then return false end
 	if to:hasSkill("yizhong") and not to:getArmor() then
 		if slash:isBlack() then
 			return false
@@ -685,7 +686,11 @@ function SmartAI:useCardDuel(duel, use)
 	local friends = self:exclude(self.friends_noself, duel)
 	local target 
 	local n1 = self:getCardsNum("Slash")
-	--if self.player:hasCardLock("slash") then n1 = 0 end
+	for _, slash in ipairs(self:getCards("Slash")) do
+		if self.player:isLocked(slash) then 
+			n1 = n1 - 1  
+		end 
+	end
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
 	local huatuo = self.room:findPlayerBySkillName("jijiu")
 	for _, friend in ipairs(friends) do

@@ -170,7 +170,7 @@ huoji_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 
 	for _,acard in ipairs(cards)  do
-		if (acard:isRed()) and not acard:inherits("Peach") then--and (self:getUseValue(acard)<sgs.ai_use_value.FireAttack) then
+		if (acard:isRed()) and not acard:inherits("Peach") and (self:getDynamicUsePriority(acard)<sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
 			card = acard
 			break
 		end
