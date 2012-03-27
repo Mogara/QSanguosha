@@ -491,6 +491,8 @@ int Player::getMaxCards() const{
             if(player->isAlive()){
                 kingdom_set << player->getKingdom();
             }
+            if (!kingdoms.contains(getKingdom()))
+                zongshi++;
         }
 
         zongshi = kingdom_set.size();

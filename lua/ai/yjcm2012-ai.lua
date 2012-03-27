@@ -1,5 +1,5 @@
 sgs.ai_skill_invoke.zishou = function(self, data)
-	return self.player:getHandcardNum() < 2
+	return self.player:getHandcardNum() < 2 and self.player:isWounded()
 end
 
 sgs.ai_skill_invoke.qianxi = function(self, data)
