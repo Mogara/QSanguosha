@@ -32,7 +32,7 @@ sgs.ai_skill_use_func.JujianCard = function(card, use, self)
 		end
 		local f
 		for _, friend in ipairs(self.friends_noself) do
-			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) then
+			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) and not friend:hasSkill("manjuan") then
 				for _, fcard in ipairs(cards) do
 					if fcard:inherits(result_class) and not fcard:inherits("ExNihilo") then
 						table.insert(abandon_handcard, fcard:getId())
