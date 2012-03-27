@@ -5,7 +5,11 @@ end
 sgs.ai_skill_invoke.qianxi = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
-	return not ((target:getHp() < 2 and target:getMaxHp() > 1) and not (target:hasSkill("longhun") or target:hasSkill("buqu")))
+	if self:isFriend(target) then return false end
+	if self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill,target) then return true
+	else
+		return not ((target:getHp() < 2 and target:getMaxHp() > 2) and not (target:hasSkill("longhun") or target:hasSkill("buqu")))
+	end
 end
 
 sgs.ai_skill_invoke.fuli = true
