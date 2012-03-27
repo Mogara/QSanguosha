@@ -487,8 +487,8 @@ void Card::clearSubcards(){
     subcards.clear();
 }
 
-bool Card::isAvailable(const Player *) const{
-    return true;
+bool Card::isAvailable(const Player *player) const{
+    return !player->isJilei(this) && !player->isLocked(this);
 }
 
 const Card *Card::validate(const CardUseStruct *) const{

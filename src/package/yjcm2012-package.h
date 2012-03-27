@@ -3,6 +3,8 @@
 
 #include "package.h"
 #include "card.h"
+#include "wind.h"
+
 #include <QMutex>
 #include <QGroupBox>
 #include <QAbstractButton>
@@ -33,25 +35,6 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
     virtual const Card *validate(const CardUseStruct *card_use) const;
-};
-
-class QiceDialog: public QDialog{
-    Q_OBJECT
-
-public:
-    static QiceDialog *GetInstance();
-
-public slots:
-    void popup();
-    void selectCard(QAbstractButton *button);
-
-private:
-    QiceDialog();
-
-    QGroupBox *createRight();
-    QAbstractButton *createButton(const Card *card);
-    QButtonGroup *group;
-    QHash<QString, const Card *> map;
 };
 
 class AnxuCard: public SkillCard{

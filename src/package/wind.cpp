@@ -744,23 +744,24 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     return success;
 }
 
-GuhuoDialog *GuhuoDialog::GetInstance(){
+GuhuoDialog *GuhuoDialog::GetInstance(const QString &object, bool left, bool right){
     static GuhuoDialog *instance;
     if(instance == NULL)
-        instance = new GuhuoDialog;
+        instance = new GuhuoDialog(object, left, right);
 
     return instance;
 }
 
-GuhuoDialog::GuhuoDialog()
+GuhuoDialog::GuhuoDialog(const QString &object, bool left, bool right):object_name(object)
 {
-    setWindowTitle(Sanguosha->translate("guhuo"));
-
+    setWindowTitle(Sanguosha->translate(object));
     group = new QButtonGroup(this);
 
     QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(createLeft());
-    layout->addWidget(createRight());
+    if(left)
+        layout->addWidget(createLeft());
+    if(right)
+        layout->addWidget(createRight());
 
     setLayout(layout);
 
@@ -776,13 +777,13 @@ void GuhuoDialog::popup(){
         button->setEnabled(card->isAvailable(Self));
     }
 
-    Self->tag.remove("Guhuo");
+    Self->tag.remove(object_name);
     exec();
 }
 
 void GuhuoDialog::selectCard(QAbstractButton *button){
     CardStar card = map.value(button->objectName());
-    Self->tag["Guhuo"] = QVariant::fromValue(card);
+    Self->tag[object_name] = QVariant::fromValue(card);
     accept();
 }
 
@@ -823,7 +824,7 @@ QGroupBox *GuhuoDialog::createRight(){
     foreach(const Card *card, cards){
         if(card->isNDTrick() && !map.contains(card->objectName())){
             Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-            c->setSkillName("guhuo");
+            c->setSkillName(object_name);
             c->setParent(this);
 
             QVBoxLayout *layout = c->inherits("SingleTargetTrick") ? layout1 : layout2;
@@ -855,7 +856,7 @@ QAbstractButton *GuhuoDialog::createButton(const Card *card){
 }
 
 bool GuhuoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    CardStar card = Self->tag.value("Guhuo").value<CardStar>();
+    CardStar card = Self->tag.value("guhuo").value<CardStar>();
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card);
 }
 
@@ -863,12 +864,12 @@ bool GuhuoCard::targetFixed() const{
     if(ClientInstance->getStatus() == Client::Responsing)
         return true;
 
-    CardStar card = Self->tag.value("Guhuo").value<CardStar>();
+    CardStar card = Self->tag.value("guhuo").value<CardStar>();
     return card && card->targetFixed();
 }
 
 bool GuhuoCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    CardStar card = Self->tag.value("Guhuo").value<CardStar>();
+    CardStar card = Self->tag.value("guhuo").value<CardStar>();
     return card && card->targetsFeasible(targets, Self);
 }
 
@@ -949,7 +950,7 @@ public:
             return card;
         }
 
-        CardStar c = Self->tag.value("Guhuo").value<CardStar>();
+        CardStar c = Self->tag.value("guhuo").value<CardStar>();
         if(c){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(c->objectName());
@@ -961,7 +962,7 @@ public:
     }
 
     virtual QDialog *getDialog() const{
-        return GuhuoDialog::GetInstance();
+        return GuhuoDialog::GetInstance("guhuo");
     }
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{

@@ -795,12 +795,7 @@ void Dashboard::disableAllCards(){
 
 void Dashboard::enableCards(){
     foreach(CardItem *card_item, card_items){
-        if(Self->isJilei(card_item->getFilteredCard()))
-            card_item->setEnabled(false);
-        else if(Self->isLocked(card_item->getFilteredCard()))
-            card_item->setEnabled(false);
-        else
-            card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
+        card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
     }
 }
 
