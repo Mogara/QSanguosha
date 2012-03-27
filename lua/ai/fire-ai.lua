@@ -75,6 +75,7 @@ sgs.ai_card_intention.QuhuCard = 30
 sgs.dynamic_value.control_card.QuhuCard = true
 
 sgs.ai_skill_use["@@jieming"] = function(self, prompt)
+	local friends = {}
 	for _,player in ipairs(self.friends) do
 		if not player:hasSkill("manjuan") then
 			table.insert(friends, player)
