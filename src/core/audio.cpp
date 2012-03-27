@@ -103,7 +103,7 @@ void Audio::stop(){
 }
 
 void Audio::playBGM(const QString &filename){
-    FMOD_RESULT result = FMOD_System_CreateStream(System, filename.toAscii(), FMOD_LOOP_NORMAL, NULL, &BGM);
+    FMOD_RESULT result = FMOD_System_CreateStream(System, filename.toLocal8Bit(), FMOD_LOOP_NORMAL, NULL, &BGM);
 
     if(result == FMOD_OK){
         FMOD_Sound_SetLoopCount(BGM, -1);
