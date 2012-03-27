@@ -93,7 +93,7 @@ function SmartAI:useCardSlash(card, use)
 	local no_distance = self.slash_distance_limit
 	if card:getSkillName() == "wushen" then no_distance = true end
 	if card:getSkillName() == "gongqi" then no_distance = true end
-	if card:getSkillName() == "lihuo" then self.slash_targets = 2 end
+	if card:getSkillName() == "lihuo" or (self.player:hasSkill("lihuo") and card:inherits("FireSlash")) then self.slash_targets = 2 end
 	if (self.player:getHandcardNum() == 1
 	and self.player:getHandcards():first():inherits("Slash")
 	and self.player:getWeapon()
@@ -277,7 +277,7 @@ sgs.ai_card_intention.Slash = function(card,from,tos)
 end
 
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
-	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
+	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) and not target:hasSkill("qianxi") then return "." end
 	--if not target then self.room:writeToConsole(debug.traceback()) end
 	if not target then return end
 	if self:isFriend(target) then
@@ -289,7 +289,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		if not target:hasFlag("drank") then
 			if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
 		end
-		if not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then
+		if not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) and not target:hasSkill("qianxi") then
 			if self:isEquip("Axe", target) then
 				if self:hasSkills(sgs.lose_equip_skill, target) and target:getEquips():length() > 1 then return "." end
 				if target:getHandcardNum() - target:getHp() > 2 then return "." end
