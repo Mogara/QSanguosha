@@ -90,11 +90,6 @@ Engine::Engine()
         mutable_skill->initMediaSource();
     }
 
-    const Skill *jixi = getSkill("jixi");
-    int length = jixi->getSources().length();
-
-    Q_ASSERT(length > 0);
-
     // available game modes
     modes["02p"] = tr("2 players");
     //modes["02pbb"] = tr("2 players (using blance beam)");
