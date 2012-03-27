@@ -2471,6 +2471,9 @@ function SmartAI:askForSinglePeach(dying)
 			end
 		end
 	end
+	local savecard
+	if card_str then savecard = sgs.Sanguosha:getCard(card_str) end
+	if self.player:isLocked(savecard) or dying:isLocked(savecard) then return "." end
 	return card_str or "."
 end
 
