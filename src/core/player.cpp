@@ -492,6 +492,8 @@ int Player::getMaxCards() const{
                 zongshi++;
                 kingdoms << player->getKingdom();
             }
+            if (!kingdoms.contains(getKingdom()))
+                zongshi++;
         }
     }
     total = qMax(hp,0) + extra + juejing + xueyi + shenwei + zongshi;
