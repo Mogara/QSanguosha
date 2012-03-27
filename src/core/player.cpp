@@ -485,17 +485,18 @@ int Player::getMaxCards() const{
         shenwei = 2;
 
     int zongshi = 0;
-    QStringList kingdoms;
     if(hasSkill("zongshi")){
+        QSet<QString> kingdom_set;
         foreach(const Player *player, this->getSiblings()){
-            if(player->isAlive() && !kingdoms.contains(player->getKingdom())){
-                zongshi++;
-                kingdoms << player->getKingdom();
+            if(player->isAlive()){
+                kingdom_set << player->getKingdom();
             }
         }
-    }
-    total = qMax(hp,0) + extra + juejing + xueyi + shenwei + zongshi;
 
+        zongshi = kingdom_set.size();
+    }
+
+    total = qMax(hp,0) + extra + juejing + xueyi + shenwei + zongshi;
 
     return total;
 }
