@@ -75,11 +75,16 @@ sgs.ai_card_intention.QuhuCard = 30
 sgs.dynamic_value.control_card.QuhuCard = true
 
 sgs.ai_skill_use["@@jieming"] = function(self, prompt)
-	self:sort(self.friends)
+	for _,player in ipairs(self.friends) do
+		if not player:hasSkill("manjuan") then
+			table.insert(friends, player)
+		end
+	end
+	self:sort(friends)
 	
 	local max_x = 0
 	local target
-	for _, friend in ipairs(self.friends) do
+	for _, friend in ipairs(friends) do
 		local x = math.min(friend:getMaxHP(), 5) - friend:getHandcardNum()
 
 		if x > max_x then
