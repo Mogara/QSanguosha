@@ -24,7 +24,7 @@ return {
 	["jiangchi:chi"] = "将驰2：少摸一张牌，额外使用一张杀且无视距离",
 	["jiangchi:cancel"] = "不发动",
 
-	["#wangyi"] = "快意的巾帼",
+	["#wangyi"] = "决意的巾帼",
 	["wangyi"] = "王异",
 	["designer:wangyi"] = "Virgopal",
 	["illustrator:wangyi"] = "木美人",
@@ -51,7 +51,7 @@ return {
 	[":fuli"] = "限定技，当你处于濒死状态时，你可以将体力回复至X点（X为现存势力数），然后将你的武将牌翻面。",
 	["@laoji"] = "老骥",
 
-	["#guanxingzhangbao"] = "将门虎子",
+	["#guanxingzhangbao"] = "龙门虎子",
 	["guanxingzhangbao"] = "关兴张苞",
 	["designer:guanxingzhangbao"] = "诺思冥羽",
 	["illustrator:guanxingzhangbao"] = "HOOO",
