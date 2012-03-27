@@ -351,7 +351,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-        room->playSkillEffect("zaoxian", 1);
+        room->playSkillEffect("zaoxian");
         room->broadcastInvoke("animate", "lightbox:$zaoxian1:4000");
         room->getThread()->delay(4000);
 
@@ -363,7 +363,6 @@ public:
 
 JixiCard::JixiCard(){
     target_fixed = true;
-    mute = true;
 }
 
 void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -412,7 +411,6 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     use.from = dengai;
     use.to << target;
 
-    room->playSkillEffect("zaoxian", qrand() % 2 + 2);
     room->useCard(use);
 }
 
@@ -1174,6 +1172,8 @@ MountainPackage::MountainPackage()
     dengai->addSkill(new Tuntian);
     dengai->addSkill(new TuntianGet);
     dengai->addSkill(new Zaoxian);
+
+    dengai->addRelateSkill("jixi");
 
     related_skills.insertMulti("tuntian", "#tuntian-get");
 

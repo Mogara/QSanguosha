@@ -72,7 +72,6 @@ QString General::getPixmapPath(const QString &category) const{
 
 void General::addSkill(Skill *skill){
     skill->setParent(this);
-    skill->initMediaSource();
     skill_set << skill->objectName();
 }
 
@@ -126,6 +125,14 @@ QSet<const TriggerSkill *> General::getTriggerSkills() const{
     }
 
     return skills;
+}
+
+void General::addRelateSkill(const QString &skill_name){
+    related_skills << skill_name;
+}
+
+QStringList General::getRelatedSkillNames() const{
+    return related_skills;
 }
 
 QString General::getPackage() const{

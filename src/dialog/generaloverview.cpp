@@ -178,6 +178,13 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     const General *general = Sanguosha->getGeneral(general_name);
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
     QList<const Skill *> skills = general->getVisibleSkillList();
+
+    foreach(QString skill_name, general->getRelatedSkillNames()){
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if(skill)
+            skills << skill;
+    }
+
     ui->skillTextEdit->clear();
 
     resetButtons();
