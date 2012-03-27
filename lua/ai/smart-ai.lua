@@ -1637,7 +1637,6 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	if null_card then null_card = sgs.Card_Parse(null_card) else return end
 	if (from and from:isDead()) or (to and to:isDead()) then return nil end
 	if self:needBear() then return nil end
-	if self.player:isLocked(null_card) then return nil end
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 then return nil end
 	if positive then
 		if from and self:isEnemy(from) and (sgs.evaluateRoleTrends(from) ~= "neutral" or sgs.isRolePredictable()) then
@@ -2473,7 +2472,6 @@ function SmartAI:askForSinglePeach(dying)
 	end
 	local savecard
 	if card_str then savecard = sgs.Sanguosha:getCard(card_str) end
-	if self.player:isLocked(savecard) or dying:isLocked(savecard) then return "." end
 	return card_str or "."
 end
 
@@ -2564,7 +2562,7 @@ function SmartAI:activate(use)
 	self.toUse  = self:getTurnUse()
 	self:sortByDynamicUsePriority(self.toUse)
 	for _, card in ipairs(self.toUse) do
-		if not self.player:isJilei(card) then
+		if not self.player:isJilei(card) and not self.player:isLocked(card) then
 			local type = card:getTypeId()
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
 
@@ -2747,6 +2745,8 @@ function SmartAI:getDamagedEffects(self, player)
 end
 
 local function prohibitUseDirectly(card, player)
+	if player:isLocked(card) then return true end
+	
 	local _, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
@@ -3082,7 +3082,6 @@ end
 function SmartAI:useBasicCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if not (card:inherits("Peach") and self.player:getLostHp() > 1) and self:needBear() then return end
-	if self.player:isLocked(card) then return end
 	self:useCardByClassName(card, use)
 end
 
@@ -3293,7 +3292,6 @@ function SmartAI:useTrickCard(card, use)
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 then
 		if not (card:inherits("AOE") or card:inherits("DelayedTrick")) then return end
 	end
-	if self.player:isLocked(card) then return end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
 		if self.role == "renegade" and not self:isWeak(self.room:getLord()) then use.card = card return end
@@ -3421,7 +3419,6 @@ function SmartAI:hasSameEquip(card, player) -- obsolete
 end
 
 function SmartAI:useEquipCard(card, use)
-	if self.player:isLocked(card) then return end
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:getSameEquip(card) then return end
 	if self:hasSkills(sgs.lose_equip_skill) and self:evaluateArmor(card)>-5 then
 		use.card = card
