@@ -1133,6 +1133,10 @@ public:
 
         return lijian_card;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return 0;
+    }
 };
 
 class Biyue: public PhaseChangeSkill{

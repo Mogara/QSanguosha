@@ -965,7 +965,7 @@ public:
         return GuhuoDialog::GetInstance("guhuo");
     }
 
-    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return 0;
     }
 };
