@@ -51,7 +51,7 @@ return {
 	[":fuli"] = "限定技，当你处于濒死状态时，你可以将体力回复至X点（X为现存势力数），然后将你的武将牌翻面。",
 	["@laoji"] = "老骥",
 
-	["#guanxingzhangbao"] = "将门虎子",
+	["#guanxingzhangbao"] = "龙门虎子",
 	["guanxingzhangbao"] = "关兴张苞",
 	["designer:guanxingzhangbao"] = "诺思冥羽",
 	["illustrator:guanxingzhangbao"] = "HOOO",
