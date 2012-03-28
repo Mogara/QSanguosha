@@ -2470,8 +2470,6 @@ function SmartAI:askForSinglePeach(dying)
 			end
 		end
 	end
-	local savecard
-	if card_str then savecard = sgs.Sanguosha:getCard(card_str) end
 	return card_str or "."
 end
 
