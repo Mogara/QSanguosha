@@ -134,15 +134,15 @@ sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 
 	if #self.friends > 1 then
 		for _, friend in ipairs(self.friends_noself) do
-			if self:hasSkills(sgs.lose_equip_skill, friend) and friend:getEquips():length() > x/2 then
+			if self:hasSkills(sgs.lose_equip_skill, friend) then
 				self.yinghun = friend
-				self.yinghunchoice = "d1tx"
+				self.yinghunchoice = "dxt1"
 				break
 			end
 		end
 		self:sort(self.friends_noself, "chaofeng")
 		for _, afriend in ipairs(self.friends_noself) do
-			if not afriend:isNude() then self.yinghun = afriend end
+			if not afriend:hasSkill("manjuan") then self.yinghun = afriend end
 		end
 		if self.yinghun and not self.yinghunchoice then self.yinghunchoice = "dxt1" end
 	else
