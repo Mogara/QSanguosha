@@ -144,6 +144,7 @@ sgs.ai_skill_invoke.jiefan = function(self, data)
 end
 
 sgs.ai_skill_cardask["jiefan-slash"] = function(self, data, pattern, target)
+	target = target or global_room:getCurrent()
 	for _, slash in ipairs(self:getCards("Slash")) do
 		if self:slashIsEffective(slash, target) then 
 			return slash:toString()
