@@ -19,6 +19,7 @@ function CloneAI(player)
 	return SmartAI(player).lua_ai
 end
 
+sgs.ais = {}
 sgs.ai_card_intention = 	{}
 sgs.ai_playerchosen_intention = {}
 sgs.role_evaluation = 		{}
@@ -118,6 +119,7 @@ function SmartAI:initialize(player)
 	self.kept = {}
 	if not sgs.initialized then
 		sgs.initialized = true
+		sgs.ais = {}
 		sgs.turncount = 0
 		global_room = self.room
 		global_room:writeToConsole(version .. ", Powered by " .. _VERSION)
@@ -130,6 +132,7 @@ function SmartAI:initialize(player)
 		end
 	end
 
+	sgs.ais[player:objectName()] = self
 	if self.player:isLord() and not sgs.GetConfig("EnableHegemony", false) then
 		if (sgs.ai_chaofeng[self.player:getGeneralName()] or 0) < 3 then
 			sgs.ai_chaofeng[self.player:getGeneralName()] = 3
