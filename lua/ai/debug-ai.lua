@@ -64,12 +64,12 @@ function sgs.checkMisjudge(player)
 		end
 		
 		if evaluate_renegade < 1 then 
-			if (evaluate_rebel >= rebel_num+renegade_num and not renegade_num == 0) or 
-				(evaluate_loyalist >= loyalist_num+renegade_num and not renegade_num == 0) or
+			if (evaluate_rebel >= rebel_num+renegade_num and evaluate_rebel > rebel_num) or 
+				(evaluate_loyalist >= loyalist_num+renegade_num and evaluate_loyalist > loyalist_num) or
 				(evaluate_rebel == rebel_num+1 and evaluate_loyalist == loyalist_num+1) then
 				outputPlayersEvaluation()
-				if evaluate_rebel >= rebel_num+renegade_num and not renegade_num == 0  then sgs.modifiedRoleTrends("rebel") 
-				elseif evaluate_loyalist >= loyalist_num+renegade_num and not renegade_num == 0 then sgs.modifiedRoleTrends("loyalist") 
+				if evaluate_rebel >= rebel_num+renegade_num and evaluate_rebel > rebel_num  then sgs.modifiedRoleTrends("rebel") 
+				elseif evaluate_loyalist >= loyalist_num+renegade_num and evaluate_loyalist > loyalist_num then sgs.modifiedRoleTrends("loyalist") 
 				elseif  evaluate_rebel > rebel_num and evaluate_loyalist > loyalist_num then
 					sgs.modifiedRoleTrends("rebel")
 					sgs.modifiedRoleTrends("loyalist")
