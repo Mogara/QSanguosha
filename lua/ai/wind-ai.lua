@@ -440,6 +440,11 @@ guhuo_skill.getTurnUseCard=function(self)
 			break
 		end
 	end
+	for i=1, #guhuos do
+		local forbiden = guhuos[i]
+		forbid = sgs.Sanguosha:cloneCard(forbiden, sgs.Card_NoSuit, 0)
+		if self.player:isLocked(forbid) then table.remove(forbiden, #guhuos) end
+	end
 
 	self:sortByUseValue(cards, true)
 	for _,card in ipairs(cards) do

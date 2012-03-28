@@ -297,6 +297,13 @@ qice_skill.getTurnUseCard=function(self)
 	local i
 	local good, bad = 0, 0
 	local caocao = self.room:findPlayerBySkillName("jianxiong") 
+	local qicetrick = "savage_assault|archery_attack|ex_nihilo|god_salvation"
+	local qicetricks = qicetrick:split("|")
+	for i=1, #qicetricks do
+		local forbiden = qicetricks[i]
+		forbid = sgs.Sanguosha:cloneCard(forbiden, sgs.Card_NoSuit, 0)
+		if self.player:isLocked(forbid) then return end
+	end
 	if  self.player:hasUsed("QiceCard") then return end
 	for _, friend in ipairs(self.friends) do
 		if friend:isWounded() then
