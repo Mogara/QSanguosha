@@ -487,9 +487,11 @@ int Player::getMaxCards() const{
     int zongshi = 0;
     if(hasSkill("zongshi")){
         QSet<QString> kingdom_set;
-        foreach(const Player *player, this->getSiblings()){
-            if(player->isAlive()){
-                kingdom_set << player->getKingdom();
+        if(parent()){
+            foreach(const Player *player, parent()->findChildren<const Player *>()){
+                if(player->isAlive()){
+                    kingdom_set << player->getKingdom();
+                }
             }
         }
 
