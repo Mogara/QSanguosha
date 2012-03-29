@@ -465,7 +465,7 @@ public:
 
         if(event == Dying){
             DyingStruct dying = data.value<DyingStruct>();
-            if(!handang || !dying.savers.contains(handang) || !room->askForSkillInvoke(handang, objectName(), data))
+            if(!handang || !dying.savers.contains(handang) || handang->isNude() || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
 
             const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data);
@@ -626,8 +626,8 @@ public:
                 player->tag["Invokelihuo"] = true;
         }
         else if(player->tag.value("Invokelihuo", false).toBool()){
-                    room->loseHp(player, 1);
                     player->tag["Invokelihuo"] = false;
+                    room->loseHp(player, 1);
                 }
         return false;
     }
@@ -686,6 +686,8 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         ServerPlayer *chengpu = room->findPlayerBySkillName(objectName());
+        if(!chengpu)
+            return false;
         if(event == PhaseChange &&
                 chengpu->getPhase() == Player::Finish &&
                 !chengpu->isKongcheng() &&

@@ -2492,13 +2492,13 @@ function SmartAI:getTurnUse()
 
 	if self.player:isLord() then self.retain_thresh = 6 end
 	if self.player:hasFlag("tianyi_success") then
-		slashAvail = 2
-		self.slash_targets = 2
+		slashAvail = slashAvail+1
+		self.slash_targets = self.slash_targets+1
 		self.slash_distance_limit = true
 	end
 
 	if self.player:hasFlag("jiangchi_invoke") then
-		slashAvail = 2
+		slashAvail = slashAvail+1
 		self.slash_distance_limit = true
 	end
 
@@ -2585,7 +2585,7 @@ function SmartAI:isWeak(player)
 	player = player or self.player
 	local hcard = player:getHandcardNum()
 	if player:hasSkill("longhun") then hcard = player:getCards("he"):length() end
-	return ((player:getHp() <= 2 and hcard <= 2) or player:getHp() <= 1) and not player:hasSkill("buqu")
+	return ((player:getHp() <= 2 and hcard <= 2) or (player:getHp() <= 1 and not (player:hasSkill("longhun") and hcard > 2))) and not player:hasSkill("buqu")
 end
 
 function SmartAI:useCardByClassName(card, use)
