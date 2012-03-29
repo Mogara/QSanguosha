@@ -261,11 +261,17 @@ public:
 class Dangxian: public TriggerSkill{
 public:
     Dangxian():TriggerSkill("dangxian"){
-        events << TurnStart;
+        events << PhaseChange;
         frequency = Compulsory;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
+        if(player->getPhase() != Player::Start)
+            return false;
         Room *room = player->getRoom();
 
         LogMessage log;
@@ -274,12 +280,13 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        QList<Player::Phase> phases;
-        phases << Player::Play;
+        QList<Player::Phase> phases = player->getPhases();
+        phases.prepend(Player::Play) ;
         player->play(phases);
         return false;
     }
 };
+
 
 class Fuli: public TriggerSkill{
 public:
