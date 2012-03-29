@@ -6,6 +6,7 @@ sgs.ai_skill_invoke.qianxi = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
 	if self:isFriend(target) then return false end
+	if self.player:hasFlag("drank") then return false end
 	if self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill,target) then return true
 	else
 		return not ((target:getHp() < 2 and target:getMaxHp() > 2) and not (target:hasSkill("longhun") or target:hasSkill("buqu")))

@@ -881,9 +881,16 @@ end
 
 sgs.ai_skill_use_func.JieyinCard=function(card,use,self)
 	self:sort(self.friends_noself, "hp")
-	
+	local lord = self.room:getLord()
+	if self:isFriend(lord) and not sgs.isLordHealthy(self.room)  and lord:getGeneral():isMale() then
+		use.card=card
+		if use.to then use.to:append(lord) end
+		return
+	end
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:getGeneral():isMale() and friend:isWounded() then
+		if friend:getGeneral():isMale() and friend:isWounded() and
+			not (friend:hasSkill("longhun") and friend:getCards("he"):length()>2 ) and
+			not (friend:hasSkill("hunzi") and friend:getMark("hunzi") == 0 and (friend:getSeat() - self.player:getSeat()) % (global_room:alivePlayerCount()) < 3) then 
 			use.card=card
 			if use.to then use.to:append(friend) end
 			return

@@ -686,10 +686,12 @@ function sgs.evaluatePlayerRole(player)
 	
 	if sgs.role_evaluation[player:objectName()]["loyalist"] == sgs.role_evaluation[player:objectName()]["renegade"] then
 		if sgs.role_evaluation[player:objectName()]["loyalist"] + 20 < sgs.role_evaluation[player:objectName()]["rebel"] then return "rebel"
+		elseif sgs.current_mode_players["loyalist"] == 0 then return "renegade"
 		else return "unknown"
 		end
 	elseif sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["renegade"] then
 		if sgs.role_evaluation[player:objectName()]["rebel"] + 20 < sgs.role_evaluation[player:objectName()]["loyalist"] then return "loyalist"
+		elseif sgs.current_mode_players["rebel"] == 0 then return "renegade"
 		else return "unknown"
 		end
 	elseif sgs.role_evaluation[player:objectName()]["rebel"] == sgs.role_evaluation[player:objectName()]["loyalist"] then
@@ -698,7 +700,8 @@ function sgs.evaluatePlayerRole(player)
 	
 	if max_value == sgs.role_evaluation[player:objectName()]["loyalist"] then
 		local rest = math.max(sgs.role_evaluation[player:objectName()]["rebel"], sgs.role_evaluation[player:objectName()]["renegade"])
-		if sgs.role_evaluation[player:objectName()]["loyalist"] - rest <= 20 then return "unknown"
+		if sgs.current_mode_players["loyalist"] == 0 then return "renegade"
+		elseif sgs.role_evaluation[player:objectName()]["loyalist"] - rest <= 20 then return "unknown"
 		else return "loyalist"
 		end
 	elseif max_value == sgs.role_evaluation[player:objectName()]["renegade"] then
@@ -708,7 +711,8 @@ function sgs.evaluatePlayerRole(player)
 		end
 	elseif max_value == sgs.role_evaluation[player:objectName()]["rebel"] then
 		local rest = math.max(sgs.role_evaluation[player:objectName()]["renegade"], sgs.role_evaluation[player:objectName()]["loyalist"])
-		if sgs.role_evaluation[player:objectName()]["rebel"] - rest <= 20 then return "unknown"
+		if sgs.current_mode_players["rebel"] == 0 then return "renegade"
+		elseif sgs.role_evaluation[player:objectName()]["rebel"] - rest <= 20 then return "unknown"
 		else return "rebel"
 		end
 	end
@@ -1123,8 +1127,61 @@ function SmartAI:objectiveLevel(player)
 
 	if self.role == "renegade" then
 		if self:isWeak() and #self.enemies > 1 then 
-		if #self.friends < 2 then return 5
-		else return -1 end
+			if #self.friends < 2 then return 5
+			else return -1 end
+		elseif rebel_num == 0 or loyal_num == 0 then
+			if rebel_num > 0 then
+				if rebel_num > 1 then
+					if player:isLord() then
+						return -2
+					elseif sgs.evaluatePlayerRole(player) == "rebel" or
+						sgs.evaluateRoleTrends(player) == "rebel" then
+						return 5
+					else
+						return 0
+					end
+				else
+					if process == "loyalist" then
+						if player:isLord() then
+							if not sgs.isLordHealthy(self.room) then return -1
+							else return 3.5 end
+						elseif sgs.evaluatePlayerRole(player) == "rebel" or
+							sgs.evaluateRoleTrends(player) == "rebel" then
+							return 0
+						else
+							return 5
+						end
+					elseif process:match("rebel") then
+						if sgs.evaluatePlayerRole(player) == "rebel" then 
+						if process == "rebel" then return 5 else return 3 end
+						elseif sgs.evaluateRoleTrends(player) == "rebel" then return 3
+						else return -1 end
+					else
+						if player:isLord() then
+							return 0
+						else
+							return 5
+						end
+					end
+				end
+			elseif loyal_num > 0 then
+				if player:isLord() then
+					if not sgs.isLordHealthy(self.room) then return 0
+					else return 3 end
+				elseif sgs.evaluatePlayerRole(player) == "loyalist" or
+					sgs.evaluateRoleTrends(player) == "loyalist" then
+					return 5
+				else
+					return 3
+				end
+			else
+				if player:isLord() then
+					if not sgs.isLordHealthy(self.room) then return 0
+					else return 3 end
+				else
+					return 5
+				end
+			end
 		elseif process == "neutral" then return 0
 		elseif process:match("rebel") then
 			if sgs.evaluatePlayerRole(player) == "rebel" then 
@@ -1135,28 +1192,15 @@ function SmartAI:objectiveLevel(player)
 			if sgs.evaluatePlayerRole(player) == "rebel" then return 5
 			elseif sgs.evaluateRoleTrends(player) == "rebel" then return 3
 			elseif player:isLord() then return -2
+			elseif sgs.evaluatePlayerRole(player) == "renegade" then return 0
 			else return 5 end
 		else
 			if sgs.evaluatePlayerRole(player) == "rebel" then return -2
 			elseif sgs.evaluateRoleTrends(player) == "rebel" then return -1
 			else
 				if player:isLord() then
-					if rebel_num > 0 then
-						if loyal_num > 0 then
-							if not sgs.isLordHealthy(self.room) then return -1
-							elseif process == "loyalist" then return 3
-							else return 0 end
-						else 
-							if not sgs.isLordHealthy(self.room) then return -1
-							else return 3.5 end
-						end    			        
-					elseif loyal_num > 0 then
-						if not sgs.isLordHealthy(self.room) then  return 1
-						else return 4 end
-					else
-						if not sgs.isLordHealthy(self.room) then return 1
-						else return 4 end
-					end
+					if not sgs.isLordHealthy(self.room) then  return 0
+						else return 3 end
 				else
 					if process == "loyalist" then return 5 else return 3 end
 				end
@@ -1169,7 +1213,6 @@ function SmartAI:objectiveLevel(player)
 		if rebel_num == 0 then
 			if sgs.evaluatePlayerRole(player) == "renegade" then
 				if self.player:isLord() and self:isWeak(player) then return 3
-				elseif self.role == "loyalist" then return 5 
 				else return 5
 				end
 			elseif sgs.evaluatePlayerRole(player) == "loyalist" then return -2
@@ -1179,11 +1222,11 @@ function SmartAI:objectiveLevel(player)
 			end
 		end
 		if loyal_num == 0 then
-		if rebel_num > 2 then
-			if sgs.evaluatePlayerRole(player) == "renegade" then return -1 end
-		elseif rebel_num > 1 then
-			if sgs.evaluatePlayerRole(player) == "renegade" then return 0 end
-		elseif sgs.evaluatePlayerRole(player) == "renegade" then return 4 end
+			if rebel_num > 2 then
+				if sgs.evaluatePlayerRole(player) == "renegade" then return -1 end
+			elseif rebel_num > 1 then
+				if sgs.evaluatePlayerRole(player) == "renegade" then return 0 end
+			elseif sgs.evaluatePlayerRole(player) == "renegade" then return 4 end
 		end
 
 		if sgs.evaluatePlayerRole(player) == "rebel" then return 5
@@ -2379,9 +2422,9 @@ function SmartAI:askForYiji(card_ids)
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend then return friend, card:getId() end
 	if #self.friends > 1 and self:getOverflow() > 0 then
-		self:sort(friends, "handcard")
+		self:sort(self.friends, "handcard")
 		for _, afriend in ipairs(friends) do
-			if not self:needKongcheng(afriend) then
+			if not self:needKongcheng(afriend) or afriend:hasSkill("manjuan") then
 				for _, acard_id in ipairs(card_ids) do
 					if not sgs.Sanguosha:getCard(acard_id):inherits("Shit") then return afriend, acard_id end
 				end
