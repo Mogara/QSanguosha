@@ -1131,10 +1131,7 @@ function SmartAI:objectiveLevel(player)
 	local process = sgs.gameProcess(self.room)
 
 	if self.role == "renegade" then
-		if self:isWeak() and #self.enemies > 1 then 
-			if #self.friends < 2 then return 5
-			else return -1 end
-		elseif rebel_num == 0 or loyal_num == 0 then
+		if rebel_num == 0 or loyal_num == 0 then
 			if rebel_num > 0 then
 				if rebel_num > 1 then
 					if player:isLord() then
