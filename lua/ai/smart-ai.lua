@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120220 (V0.74 Stable)"
+version = "QSanguosha AI 20120331 (V0.8 Stable)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -774,10 +774,12 @@ function sgs.modifiedRoleTrends(role)
 	local sort_func = 
 	{
 		rebel = function(a, b)
-			return sgs.role_evaluation[a:objectName()]["rebel"] < sgs.role_evaluation[b:objectName()]["rebel"]
+			return (sgs.role_evaluation[a:objectName()]["rebel"] - math.max(sgs.role_evaluation[a:objectName()]["loyalist"], sgs.role_evaluation[a:objectName()]["renegade"])) < 
+				(sgs.role_evaluation[b:objectName()]["rebel"] -math.max(sgs.role_evaluation[b:objectName()]["loyalist"], sgs.role_evaluation[b:objectName()]["renegade"]))
 		end,
 		loyalist = function(a, b)
-			return sgs.role_evaluation[a:objectName()]["loyalist"] < sgs.role_evaluation[b:objectName()]["loyalist"]
+			return (sgs.role_evaluation[a:objectName()]["loyalist"] - math.max(sgs.role_evaluation[a:objectName()]["renegade"], sgs.role_evaluation[a:objectName()]["rebel"])) < 
+				(sgs.role_evaluation[b:objectName()]["loyalist"] - math.max(sgs.role_evaluation[b:objectName()]["renegade"], sgs.role_evaluation[b:objectName()]["rebel"]))
 		end,
 		renegade = function(a, b)
 			return math.abs(sgs.role_evaluation[a:objectName()]["loyalist"] - sgs.role_evaluation[a:objectName()]["rebel"])
@@ -804,6 +806,7 @@ function sgs.modifiedRoleTrends(role)
 		elseif role == "loyalist" then
 			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["renegade"]) - 15
 		end
+		global_room:writeToConsole("The evaluation of " .. modifier:getGeneralName() .. " " .. role .. " is " .. sgs.role_evaluation[name][role])
 	end
 	
 	global_room:writeToConsole("Modified Role Trends Success!")
@@ -909,13 +912,15 @@ sgs.ai_card_intention.general=function(from,to,level)
 			elseif sgs.compareRoleEvaluation(from, "rebel", "loyalist") == "rebel" then
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level/2.5
 			elseif sgs.compareRoleEvaluation(from, "rebel", "loyalist") == "loyalist" then
-				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level/3
+				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level/3
 			elseif sgs.evaluateRoleTrends(from) == "renegade" then
 				level = level + (sgs.current_mode_players["rebel"] - sgs.current_mode_players["loyalist"])*15
 				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level/1.3
 			end
 		elseif sgs.evaluateRoleTrends(to) == "renegade" then
-			if sgs.current_mode_players["rebel"] <= sgs.current_mode_players["loyalist"] then
+			if sgs.evaluatePlayerRole(from) == "renegade" then
+				sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + level
+			elseif sgs.current_mode_players["rebel"] <= sgs.current_mode_players["loyalist"] then
 				sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level/2.5
 			else
 				sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level/3
@@ -2423,7 +2428,7 @@ function SmartAI:askForYiji(card_ids)
 	if card and friend then return friend, card:getId() end
 	if #self.friends > 1 and self:getOverflow() > 0 then
 		self:sort(self.friends, "handcard")
-		for _, afriend in ipairs(friends) do
+		for _, afriend in ipairs(self.friends) do
 			if not self:needKongcheng(afriend) or afriend:hasSkill("manjuan") then
 				for _, acard_id in ipairs(card_ids) do
 					if not sgs.Sanguosha:getCard(acard_id):inherits("Shit") then return afriend, acard_id end
