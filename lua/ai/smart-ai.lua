@@ -1005,6 +1005,14 @@ function sgs.isLordHealthy(room)
 	return lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(lord) > 3)
 end
 
+function sgs.isLordInDanger(room)
+	local lord = room:getLord()
+	local lord_hp
+	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4 
+	else lord_hp = lord:getHp() end
+	return lord_hp < 3 
+end
+
 function sgs.outputProcessValues(room)
 	local loyal = 0
 	local rebel = 0
@@ -1069,6 +1077,7 @@ function sgs.gameProcess(room)
 	elseif loyal_num == 0 and rebel_num > 1 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
 	local health = sgs.isLordHealthy(room)
+	local danger = sgs.isLordInDanger(room)
 	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		--if not (aplayer:objectName() == currentplayer:objectName() and aplayer:getRole() == "renegade") then 
@@ -1095,14 +1104,15 @@ function sgs.gameProcess(room)
 	end
 	local diff = loyal_value - rebel_value
 
-	if diff >= 0.6 then
+	if diff >= 2 then
 	if health then return "loyalist"
 	else return "dilemma" end
-	elseif diff >= 0.3 then 
+	elseif diff >= 1 then 
 	if health then return "loyalish"
+	elseif danger then return "dilemma" 
 	else return "rebelish" end
-	elseif diff <= -0.6 then return "rebel"
-	elseif diff <= -0.3 then 
+	elseif diff <= -2 then return "rebel"
+	elseif diff <= -1 then 
 		if health then return "rebelish"
 		else return "rebel" end
 	elseif not health then return "rebelish"
