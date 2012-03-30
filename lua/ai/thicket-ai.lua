@@ -197,7 +197,7 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 	end
 
 	local beggar = getBeggar(self)
-	return self:isFriend(beggar)
+	return self:isFriend(beggar) and not beggar:hasSkill("manjuan")
 end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
