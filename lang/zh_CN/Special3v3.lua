@@ -3,11 +3,11 @@
 return {
 	["Special3v3"] = "新3v3",
 	
-	["#zhugejin"] = "文武全才",
+	["#zhugejin"] = "联盟的维系者",
 	["zhugejin"] = "诸葛瑾",
-	["illustrator:zhugejin"] = "三国无双",
+	["illustrator:zhugejin"] = "LiuHeng",
 	["hongyuan"] = "弘援",
-	[":hongyuan"] = "摸牌阶段摸牌时，你可以少摸一张牌，然后令其他己方角色各摸一张牌。",
+	[":hongyuan"] = "摸牌阶段摸牌时，你可以少摸一张牌，若如此做，其他己方角色各摸一张牌。",
 	["@hongyuan"] = "你可以令其他己方角色各摸一张牌",
 	["huanshi"] = "缓释",
 	[":huanshi"] = "在己方角色的判定牌生效前，你可以打出一张牌代替之。",
