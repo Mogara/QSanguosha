@@ -1939,6 +1939,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if self:getDamagedEffects(self) then return "." end
 	if target and target:getWeapon() and target:getWeapon():inherits("IceSword") and self.player:getCards("he"):length() > 2 then return end
 	if self:needBear() and self.player:getLostHp() < 2 then return "." end
+	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 and self.player:getHp() > 2 then return "." end
 	if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = 0}
 		local willTianxiang = sgs.ai_skill_use["@@tianxiang"](self, dmgStr)
