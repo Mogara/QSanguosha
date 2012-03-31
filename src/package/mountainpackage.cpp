@@ -132,7 +132,6 @@ public:
         Room *room = zhanghe->getRoom();
 
         switch(zhanghe->getPhase()){
-        case Player::RoundStart:
         case Player::Start:
         case Player::Finish:
         case Player::NotActive: return false;
@@ -1112,7 +1111,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::RoundStart;
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Start;
     }
 
     virtual bool onPhaseChange(ServerPlayer *zuoci) const{

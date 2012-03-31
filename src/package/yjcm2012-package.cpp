@@ -265,7 +265,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *liaohua) const{
         Room *room = liaohua->getRoom();
-        if(liaohua->getPhase() == Player::RoundStart){
+        if(liaohua->getPhase() == Player::Start){
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = liaohua;

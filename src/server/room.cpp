@@ -507,13 +507,13 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
     if(skill && skill->isVisible()){
         foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
             detachSkillFromPlayer(player, skill->objectName());
-
-        LogMessage log;
-        log.type = "#LoseSkill";
-        log.from = player;
-        log.arg = skill_name;
-        sendLog(log);
     }
+
+    LogMessage log;
+    log.type = "#LoseSkill";
+    log.from = player;
+    log.arg = skill_name;
+    sendLog(log);
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
@@ -1944,16 +1944,8 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
         else
             key = card->metaObject()->className();
 
-        bool slash_record =
-                key.contains("Slash") &&
-                card_use.from->getSlashCount() > 0 &&
-                card_use.from->hasWeapon("crossbow");
-
-        if(!slash_record){
-            card_use.from->addHistory(key);
-            card_use.from->invoke("addHistory", key);
-        }
-
+        card_use.from->addHistory(key);
+        card_use.from->invoke("addHistory", key);
         broadcastInvoke("addHistory","pushPile");
     }
 

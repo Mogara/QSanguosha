@@ -31,9 +31,6 @@ int GameRule::getPriority() const{
 void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
     switch(player->getPhase()){
-    case Player::RoundStart:{
-            break;
-        }
     case Player::Start: {
             player->setMark("SlashCount", 0);
             break;
