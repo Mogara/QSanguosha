@@ -1322,10 +1322,10 @@ QList<const ClientPlayer*> Client::getPlayers() const{
 
 void Client::clearTurnTag(){
     switch(Self->getPhase()){
-    case Player::Start:{
-            Sanguosha->playAudio("your-turn");
-            QApplication::alert(QApplication::focusWidget());
-            break;
+    case Player::RoundStart:{
+        Sanguosha->playAudio("your-turn");
+        QApplication::alert(QApplication::focusWidget());
+        break;
     }
 
     case Player::Play:{
