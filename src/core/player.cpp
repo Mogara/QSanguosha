@@ -331,6 +331,7 @@ void Player::loseAllSkills(){
 
 QString Player::getPhaseString() const{
     switch(phase){
+    case RoundStart: return "round_start";
     case Start: return "start";
     case Judge: return "judge";
     case Draw: return "draw";
@@ -346,6 +347,7 @@ QString Player::getPhaseString() const{
 void Player::setPhaseString(const QString &phase_str){
     static QMap<QString, Phase> phase_map;
     if(phase_map.isEmpty()){
+        phase_map.insert("round_start", RoundStart);
         phase_map.insert("start",Start);
         phase_map.insert("judge", Judge);
         phase_map.insert("draw", Draw);

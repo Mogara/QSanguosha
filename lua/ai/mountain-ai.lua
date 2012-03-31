@@ -524,6 +524,7 @@ end
 
 sgs.ai_chaofeng.caiwenji = -5
 
+sgs.ai_skill_invoke.huashen = true
 function sgs.ai_skill_choice.huashen(self, choices)
 	local str = choices
 	choices = str:split("+")

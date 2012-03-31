@@ -50,7 +50,7 @@ class Player : public QObject
     Q_ENUMS(Role)
 
 public:
-    enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
+    enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive};
     enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
     enum Role {Lord, Loyalist, Rebel, Renegade};
 

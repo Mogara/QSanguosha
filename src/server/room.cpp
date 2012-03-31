@@ -507,13 +507,13 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
     if(skill && skill->isVisible()){
         foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
             detachSkillFromPlayer(player, skill->objectName());
-    }
 
-    LogMessage log;
-    log.type = "#LoseSkill";
-    log.from = player;
-    log.arg = skill_name;
-    sendLog(log);
+        LogMessage log;
+        log.type = "#LoseSkill";
+        log.from = player;
+        log.arg = skill_name;
+        sendLog(log);
+    }
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
@@ -879,9 +879,6 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
     if(ai)
         card = ai->askForCardShow(requestor, reason);
     else{
-        if(player->getHandcardNum() == 1)
-            card = player->getHandcards().first();
-        else{
             player->invoke("askForCardShow", requestor->getGeneralName());
             getResult("responseCardCommand", player);
 
@@ -890,7 +887,6 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
             else if(result == ".")
                 card = player->getRandomHandCard();
             else card = Card::Parse(result);
-        }
     }
 
     QVariant decisionData = QVariant::fromValue("cardShow:"+reason+":_"+card->toString()+"_");
@@ -1944,8 +1940,16 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
         else
             key = card->metaObject()->className();
 
-        card_use.from->addHistory(key);
-        card_use.from->invoke("addHistory", key);
+        bool slash_record =
+                key.contains("Slash") &&
+                card_use.from->getSlashCount() > 0 &&
+                card_use.from->hasWeapon("crossbow");
+
+        if(!slash_record){
+            card_use.from->addHistory(key);
+            card_use.from->invoke("addHistory", key);
+        }
+
         broadcastInvoke("addHistory","pushPile");
     }
 
