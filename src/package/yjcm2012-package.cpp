@@ -102,7 +102,6 @@ const Card *QiceCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
     room->playSkillEffect("qice");
     Card *use_card = Sanguosha->cloneCard(user_string, Card::NoSuit, 0);
-    use_card->addSubcard(this);
     use_card->setSkillName("qice");
     foreach(int id, this->getSubcards())
         use_card->addSubcard(id);
