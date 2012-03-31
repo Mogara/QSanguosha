@@ -1180,13 +1180,16 @@ function SmartAI:objectiveLevel(player)
 				if player:isLord() then
 					if not sgs.isLordHealthy(self.room) then return 0
 					else return 3 end
+				elseif sgs.evaluatePlayerRole(player) == "renegade" then
+					return 3
 				else
 					return 5
 				end
 			else
 				if player:isLord() then
-					if not sgs.isLordHealthy(self.room) then return 0
-					else return 3 end
+					if not sgs.isLordHealthy(self.room) then return 3
+					else return 5 end
+				elseif sgs.isLordHealthy(self.room) then return 3
 				else
 					return 5
 				end
