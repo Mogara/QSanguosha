@@ -646,7 +646,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         static QList<QPixmap> phase_pixmaps;
         if(phase_pixmaps.isEmpty()){
             QStringList names;
-            names << "start" << "judge" << "draw"
+            names << "round_start" << "start" << "judge" << "draw"
                     << "play" << "discard" << "finish";
 
             foreach(QString name, names)
