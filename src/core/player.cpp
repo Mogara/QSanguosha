@@ -10,7 +10,7 @@ Player::Player(QObject *parent)
     hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    face_up(true), chained(false)
+    face_up(true), chained(false), player_statistics(new StatisticsStruct())
 {
 }
 
@@ -814,6 +814,14 @@ bool Player::isLocked(const Card *card) const{
 
 bool Player::hasCardLock(const QString &card_str) const{
     return lock_card.contains(card_str);
+}
+
+StatisticsStruct *Player::getStatistics() const{
+    return player_statistics;
+}
+
+void Player::setStatistics(StatisticsStruct *statistics){
+    player_statistics = statistics;
 }
 
 bool Player::isCaoCao() const{

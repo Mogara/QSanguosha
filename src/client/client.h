@@ -117,6 +117,7 @@ public:
     void pile(const QString &pile_str);
     void transfigure(const QString &transfigure_tr);
     void updateStateItem(const QString &state_str);
+    void setStatistics(const QString &property_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);

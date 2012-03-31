@@ -981,6 +981,24 @@ void Room::setPlayerCardLock(ServerPlayer *player, const QString &name){
     player->invoke("cardLock", name);
 }
 
+void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value){
+    StatisticsStruct *statistics = player->getStatistics();
+    if(!statistics->setStatistics(property_name, value))
+        return;
+
+    player->setStatistics(statistics);
+    QString prompt = property_name + ":";
+
+    bool ok;
+    int add = value.toInt(&ok);
+    if(ok)
+        prompt += QString::number(add);
+    else
+        prompt += value.toString();
+
+    player->invoke("setStatistics", prompt);
+}
+
 ServerPlayer *Room::addSocket(ClientSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);

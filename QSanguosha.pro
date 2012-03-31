@@ -124,7 +124,8 @@ SOURCES += src/main.cpp \
 	src/lua/lbaselib.c \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
-	swig/sanguosha_wrap.cxx
+	swig/sanguosha_wrap.cxx \
+    src/core/statistics.cpp
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -234,7 +235,8 @@ HEADERS += src/client/aux-skills.h \
 	src/lua/ldebug.h \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
-	src/lua/lapi.h
+	src/lua/lapi.h \
+    src/core/statistics.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
