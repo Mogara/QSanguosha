@@ -53,7 +53,7 @@ void Settings::init(){
         QStringList banlist;
         banlist << "nostalgia" << "yitian" << "wisdom" << "test"
                 << "disaster" << "god" << "YJCM" << "yitian_cards"
-                << "sp" << "sp_cards" << "BGM"
+                << "sp" << "sp_cards" << "BGM" << "YJCM2012"
                 << "joy" << "joy_equip";
 
         setValue("BanPackages", banlist);
