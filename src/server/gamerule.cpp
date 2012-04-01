@@ -205,7 +205,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             RecoverStruct recover_struct = data.value<RecoverStruct>();
             int recover = recover_struct.recover;
 
-            room->setPlayerStatistics(recover_struct.who, "recover", recover);
+            room->setPlayerStatistics(player, "recover", recover);
 
             int new_hp = qMin(player->getHp() + recover, player->getMaxHP());
             room->setPlayerProperty(player, "hp", new_hp);

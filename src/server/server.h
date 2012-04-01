@@ -112,6 +112,7 @@ private:
     QCheckBox *ai_chat_checkbox;
     QSpinBox *ai_delay_spinbox;
     QRadioButton *standard_3v3_radiobutton;
+    QRadioButton *new_3v3_radiobutton;
     QComboBox *role_choose_combobox;
     QCheckBox *exclude_disaster_checkbox;
 
