@@ -572,7 +572,10 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
         return;
 
     if(killer->getRoom()->getMode() == "06_3v3"){
-        killer->drawCards(3);
+        if(Config.value("3v3/UsingNewMode", false).toBool())
+            killer->drawCards(2);
+        else
+            killer->drawCards(3);
     }
     else{
         if(victim->getRole() == "rebel" && killer != victim){
