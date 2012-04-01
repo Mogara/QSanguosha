@@ -125,44 +125,21 @@ public:
 class Mingzhe: public TriggerSkill{
 public:
     Mingzhe():TriggerSkill("mingzhe"){
-        events << CardUsed << CardResponsed << CardDiscarded;
+        events << CardLost;
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(ServerInfo.GameMode != "06_3v3" || player->getPhase() != Player::NotActive)
             return false;
-        bool can_invoke = false;
-        int n = 0;
-        const Card *card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }else if(event == CardResponsed){
-            CardStar card_star = data.value<CardStar>();
-            card = card_star;
-        }else if(event == CardDiscarded){
-            const Card *cd = data.value<CardStar>();
-            card = cd;
-        }
-        if(card){
-            if(card->isVirtualCard()){
-                foreach(int id, card->getSubcards()){
-                    const Card *cd = Sanguosha->getCard(id);
-                    if(cd->isRed()){
-                        can_invoke = true;
-                        n++;
-                    }
-                }
-            }else if(card->isRed()){
-                can_invoke = true;
-                n++;
-            }
 
-            if(can_invoke && player->askForSkillInvoke(objectName())){
-                player->drawCards(n);
-            }
-        }
+        CardMoveStar move = data.value<CardMoveStar>();
+        CardStar card = Sanguosha->getCard(move->card_id);
+        if(card->isRed() &&
+                (move->from_place == Player::Hand || move->from_place == Player::Equip) &&
+                (player->askForSkillInvoke(objectName(), data)))
+            player->drawCards(1);
+
         return false;
     }
 };
