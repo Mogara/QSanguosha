@@ -319,7 +319,11 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("SavageAssault")){
+        if((!use.card->isVirtualCard() &&
+                    use.card->inherits("SavageAssault")) ||
+                        (use.card->isVirtualCard() &&
+                         use.card->getSubcards().length() == 1 &&
+                         Sanguosha->getCard(use.card->getSubcards().first())->inherits("SavageAssault"))){
             Room *room = player->getRoom();
             if(room->getCardPlace(use.card->getEffectiveId()) == Player::DiscardedPile){
                 // finding zhurong;
