@@ -601,8 +601,20 @@ public:
             Room *room = target->getRoom();
             bool used = room->askForUseCard(target, "@@lianli", "@lianli-card");
             if(used){
-                if(target->getKingdom() != "shu")
-                    room->setPlayerProperty(target, "kingdom", "shu");
+                ServerPlayer *spouse = NULL;
+                foreach(ServerPlayer *p, room->getAlivePlayers()){
+                    if(p->getMark("@tied") > 0 && p != target){
+                        spouse = p;
+                        break;
+                    }
+                }
+
+                if(spouse){
+                    QString kingdom = spouse->getKingdom();
+                    if(target->getKingdom() != kingdom)
+                        room->setPlayerProperty(target, "kingdom", kingdom);
+                }
+
             }else{
                 if(target->getKingdom() != "wei")
                     room->setPlayerProperty(target, "kingdom", "wei");
@@ -678,32 +690,6 @@ public:
 };
 
 // -------- end of Lianli related skills
-
-QiaocaiCard::QiaocaiCard(){
-    once = true;
-}
-
-void QiaocaiCard::onEffect(const CardEffectStruct &effect) const{
-    QList<const Card *> cards = effect.to->getJudgingArea();
-    foreach(const Card *card, cards){
-        effect.from->obtainCard(card);
-    }
- }
-
-class Qiaocai: public ZeroCardViewAsSkill{
-public:
-    Qiaocai():ZeroCardViewAsSkill("qiaocai"){
-
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("@tied") == 0 && ! player->hasUsed("QiaocaiCard");
-    }
-
-    virtual const Card *viewAs() const{
-        return new QiaocaiCard;
-    }
-};
 
 class Jinshen: public ProhibitSkill{
 public:
@@ -1904,7 +1890,6 @@ YitianPackage::YitianPackage()
     xiahoujuan->addSkill(new LianliClear);
     xiahoujuan->addSkill(new Tongxin);
     xiahoujuan->addSkill(new Skill("liqian", Skill::Compulsory));
-    xiahoujuan->addSkill(new Qiaocai);
 
     related_skills.insertMulti("lianli", "#lianli-start");
     related_skills.insertMulti("lianli", "#lianli-slash");
@@ -1964,7 +1949,6 @@ YitianPackage::YitianPackage()
     addMetaObject<ChengxiangCard>();
     addMetaObject<JuejiCard>();
     addMetaObject<LianliCard>();
-    addMetaObject<QiaocaiCard>();
     addMetaObject<LianliSlashCard>();
     addMetaObject<GuihanCard>();
     addMetaObject<LexueCard>();

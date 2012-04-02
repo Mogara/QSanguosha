@@ -1695,6 +1695,12 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	self:sortByUseValue(cards, true)
 	local null_card
 	null_card = self:getCardId("Nullification")
+	local null_num = 0
+	for _, acard in ipairs(cards) do
+		if acard:inherits("Nullification") then
+			null_num = null_num + 1
+		end
+	end
 	if null_card then null_card = sgs.Card_Parse(null_card) else return end
 	if (from and from:isDead()) or (to and to:isDead()) then return nil end
 	if self:needBear() then return nil end
@@ -1731,12 +1737,31 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					(trick:inherits("SupplyShortage") and not self:hasSkills("guidao|tiandu",to) and to:getMark("@kuiwei") == 0) then
 					return null_card
 				end
-			end
-			if self:isWeak(to) then
-				if trick:inherits("ArcheryAttack") then
-					if self:getCardsNum("Jink", to) == 0 then return null_card end
-				elseif trick:inherits("SavageAssault") then
-					if self:getCardsNum("Slash", to) == 0 then return null_card end
+			end 
+			if trick:inherits("AOE") then
+				local lord = self.room:getLord()
+				local currentplayer = self.room:getCurrent()
+				if self:isFriend(lord) and self:isWeak(lord) and 
+					((lord:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
+					((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount()))	and not
+					(self.player:objectName() == to:objectName() and self.player:getHp() == 1 and not self:canAvoidAOE(trick)) then
+					return nil
+				end
+				if self.player:objectName() == to:objectName() then
+					if self:hasSkills("jieming|yiji|guixin", self.player) and 
+						(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
+						return nil
+					elseif not self:canAvoidAOE(trick) then
+						return null_card
+					end
+				end
+				if self:isWeak(to) then
+					if ((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
+					((self.player:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) or null_num > 1 then
+						return null_card
+					elseif self:canAvoidAOE(trick) or self.player:getHp() > 1 or (to:isLord() and self.role == "loyalist") then
+						return null_card
+					end
 				end
 			end
 		end
@@ -3173,6 +3198,38 @@ function SmartAI:aoeIsEffective(card, to)
 		end
 	end
 	return true
+end
+
+function SmartAI:canAvoidAOE(card)
+	local armor = self.player:getArmor()
+	local players = self.room:getAlivePlayers()
+	players = sgs.QList2Table(players)
+	if armor and armor:inherits("Vine") then
+		return true
+	end
+	if card:isBlack() and self.player:hasSkill("weimu") then
+		return true
+	end
+	if self.player:hasSkill("wuyan") then
+		return true
+	end
+	if self.player:hasSkill("danlao") and #players > 2 then 
+		return true
+	end
+	if (self.player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == self.player:objectName()) then
+		return true
+	end
+	if card:inherits("SavageAssault") then
+		if self.player:hasSkill("huoshou") or self.player:hasSkill("juxiang") or self:getCardsNum("Slash") > 0 then
+			return true
+		end
+	end
+	if card:inherits("ArcheryAttack") then
+		if self:getCardsNum("Jink") > 0 or (self:isEquip("EightDiagram") and self.player:getHp() > 1) then
+			return true
+		end
+	end
+	return false
 end
 
 function SmartAI:getDistanceLimit(card)
