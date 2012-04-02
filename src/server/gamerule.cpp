@@ -294,7 +294,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 DyingStruct dying = data.value<DyingStruct>();
                 room->killPlayer(player, dying.damage);
 
-                if(dying.damage->from)
+                if(dying.damage && dying.damage->from)
                     room->setPlayerStatistics(dying.damage->from, "kill", 1);
             }
 
