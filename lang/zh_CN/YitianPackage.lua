@@ -245,9 +245,9 @@ return {
 	["designer:xiahoujuan"] = "宇文天启，艾艾艾",
 	["illustrator:xiahoujuan"] = "三国志大战",
 	["cv:xiahoujuan"] = "妙妙",
-	["$lianli"] = "连理并蒂，比翼不移",
+	["$lianli1"] = "连理并蒂，比翼不移",
+	["$lianli2"] = "陟彼南山，言采其樵。未见君子，忧心惙惙",
 	["$tongxin"] = "执子之手，与子偕老",
-	["$qiaocai"] = "陟彼南山，言采其樵。未见君子，忧心惙惙",
 	["~xiahoujuan"] = "行与子逝兮，归于其室",
 
 	["designer:caizhaoji"] = "冢冢的青藤",
