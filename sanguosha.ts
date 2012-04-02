@@ -3351,18 +3351,17 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="src/server/server.cpp" line="494"/>
         <source>Standard mode</source>
-        <translation>标准模式</translation>
+        <translation>经典3v3</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="495"/>
         <source>New Mode</source>
-        <translatorcomment>新3v3</translatorcomment>
-        <translation></translation>
+        <translation>新版3v3</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="496"/>
         <source>Extension mode</source>
-        <translation>扩展模式</translation>
+        <translation>全扩3v3</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="497"/>
