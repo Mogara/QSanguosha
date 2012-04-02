@@ -138,6 +138,7 @@ public:
         CardStar card = Sanguosha->getCard(move->card_id);
         if(card->isRed() &&
                 (move->from_place == Player::Hand || move->from_place == Player::Equip) &&
+                (move->to_place == Player::DiscardedPile) &&
                 (player->askForSkillInvoke(objectName(), data)))
             player->drawCards(1);
 
