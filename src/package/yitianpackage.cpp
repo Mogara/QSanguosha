@@ -1051,6 +1051,14 @@ public:
         {
             Room *room = luboyan->getRoom();
 
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
+                if(damage.to->distanceTo(p) == 1)
+                    targets << p;
+            }
+
+            ServerPlayer *target = room->askForPlayerChosen(luboyan, targets, objectName());
+
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
             judge.good = true;
@@ -1063,8 +1071,8 @@ public:
                 room->playSkillEffect(objectName());
                 DamageStruct shaoying_damage;
                 shaoying_damage.nature = DamageStruct::Fire;
-                shaoying_damage.from = luboyan;
-                shaoying_damage.to = player->getNextAlive();
+                shaoying_damage.from = luboyan;                
+                shaoying_damage.to = target;
 
                 room->damage(shaoying_damage);
             }
