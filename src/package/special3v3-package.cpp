@@ -1,10 +1,11 @@
 #include "special3v3-package.h"
 #include "skill.h"
 #include "standard.h"
-#include "clientplayer.h"
+#include "server.h"
 #include "carditem.h"
 #include "engine.h"
 #include "ai.h"
+#include "maneuvering.h"
 
 class Hongyuan:public DrawCardsSkill{
 public:
@@ -146,6 +147,14 @@ public:
 
 Special3v3Package::Special3v3Package():Package("Special3v3")
 {
+    QList<Card *> cards;
+    cards << new SupplyShortage(Card::Spade, 1)
+          << new SupplyShortage(Card::Club, 12)
+          << new Nullification(Card::Heart, 12);
+
+    foreach(Card *card, cards)
+        card->setParent(this);
+
     General *zhugejin = new General(this, "zhugejin", "wu", 3, true);
     zhugejin->addSkill(new Hongyuan);
     zhugejin->addSkill(new Huanshi);
