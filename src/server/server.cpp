@@ -97,11 +97,13 @@ QWidget *ServerDialog::createPackageTab(){
     QGroupBox *box1 = new QGroupBox(tr("General package"));
     QGroupBox *box2 = new QGroupBox(tr("Card package"));
 
-    QVBoxLayout *layout1 = new QVBoxLayout;
-    QVBoxLayout *layout2 = new QVBoxLayout;
+    QGridLayout *layout1 = new QGridLayout;
+    QGridLayout *layout2 = new QGridLayout;
     box1->setLayout(layout1);
     box2->setLayout(layout2);
 
+    int i = 0, j = 0;
+    int row = 0, column = 0;
     foreach(QString extension, extensions){
         const Package *package = Sanguosha->findChild<const Package *>(extension);
         if(package == NULL)
@@ -116,12 +118,20 @@ QWidget *ServerDialog::createPackageTab(){
 
         switch(package->getType()){
         case Package::GeneralPack: {
-                layout1->addWidget(checkbox);
+                row = i / 5;
+                column = i % 5;
+                i++;
+
+                layout1->addWidget(checkbox, row, column+1);
                 break;
             }
 
         case Package::CardPack: {
-                layout2->addWidget(checkbox);
+                row = j / 5;
+                column = j % 5;
+                j++;
+
+                layout2->addWidget(checkbox, row, column+1);
                 break;
             }
 
@@ -130,11 +140,8 @@ QWidget *ServerDialog::createPackageTab(){
         }
     }
 
-    layout1->addStretch();
-    layout2->addStretch();
-
     QWidget *widget = new QWidget;
-    QHBoxLayout *layout = new QHBoxLayout;
+    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(box1);
     layout->addWidget(box2);
 
