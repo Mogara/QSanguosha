@@ -414,7 +414,7 @@ QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt){
 
     lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
 
-    lua_pushstring(L, __func__);
+    lua_pushstring(L, __FUNCTION__);
 
     lua_pushstring(L, pattern.toAscii());
 
@@ -436,7 +436,7 @@ QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt){
 QList<int> LuaAI::askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip){
     lua_State *L = room->getLuaState();
 
-    pushCallback(L, __func__);
+    pushCallback(L, __FUNCTION__);
     lua_pushstring(L, reason.toAscii());
     lua_pushinteger(L, discard_num);
     lua_pushboolean(L, optional);
@@ -478,7 +478,7 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
 
     lua_State *L = room->getLuaState();
 
-    pushCallback(L, __func__);
+    pushCallback(L, __FUNCTION__);
     lua_pushstring(L, skill_name.toAscii());
     lua_pushstring(L, choices.toAscii());
 
@@ -496,7 +496,7 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
 int LuaAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &reason){
     lua_State *L = room->getLuaState();
 
-    pushCallback(L, __func__);
+    pushCallback(L, __FUNCTION__);
     pushQIntList(L, card_ids);
     lua_pushboolean(L, refusable);
     lua_pushstring(L, reason.toAscii());
@@ -539,7 +539,7 @@ void LuaAI::reportError(lua_State *L){
 void LuaAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only){
     lua_State *L = room->getLuaState();
 
-    pushCallback(L, __func__);
+    pushCallback(L, __FUNCTION__);
     pushQIntList(L, cards);
     lua_pushboolean(L, up_only);
 

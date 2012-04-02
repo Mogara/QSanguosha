@@ -125,7 +125,8 @@ SOURCES += src/main.cpp \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
 	swig/sanguosha_wrap.cxx \
-    src/core/statistics.cpp
+    src/core/statistics.cpp \
+    src/ui/irregularbutton.cpp
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -236,7 +237,8 @@ HEADERS += src/client/aux-skills.h \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
 	src/lua/lapi.h \
-    src/core/statistics.h
+    src/core/statistics.h \
+    src/ui/irregularbutton.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -259,7 +261,7 @@ win32{
 	RC_FILE += resource/icon.rc
 }
 
-LIBS += -L. -lm
+LIBS += -L.
 
 CONFIG(audio){
 	DEFINES += AUDIO_SUPPORT
@@ -283,4 +285,6 @@ OTHER_FILES += \
 	acknowledgement/main.qml \
 	acknowledgement/list.png \
 	acknowledgement/back.png
+
+
 

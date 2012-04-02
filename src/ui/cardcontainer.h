@@ -82,12 +82,12 @@ private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
 
-    static const qreal start_x = 30;
-    static const qreal start_y1 = 40;
-    static const qreal start_y2 = 184;
-    static const qreal middle_y = 157;
-    static const qreal skip = 102;
-    static const qreal card_width = 93;
+    static const int start_x = 30;
+    static const int start_y1 = 40;
+    static const int start_y2 = 184;
+    static const int middle_y = 157;
+    static const int skip = 102;
+    static const int card_width = 93;
 };
 
 #endif // CARDCONTAINER_H

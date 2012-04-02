@@ -74,7 +74,7 @@ static int GetConfig(lua_State *lua){
 		}
 
 	default:
-		luaL_error(lua, "The second argument of %s should be a number, boolean or a string", __func__);
+		luaL_error(lua, "The second argument of %s should be a number, boolean or a string", __FUNCTION__);
 	}
 
 	return 1;
@@ -107,7 +107,7 @@ static int SetConfig(lua_State *lua){
 		}
 		
 	default:
-		luaL_error(lua, "The second argument of %s should be a number, boolean or a string", __func__);
+		luaL_error(lua, "The second argument of %s should be a number, boolean or a string", __FUNCTION__);
 	}
 	
 	return 0;

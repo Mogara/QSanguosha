@@ -150,7 +150,7 @@ void Client::roomBegin(const QString &begin_str){
 void Client::room(const QString &room_str){
     QRegExp rx("^(\\d+):(\\d+):(.+)$");
     if(!rx.exactMatch(room_str)){
-        commandFormatWarning(room_str, rx, __func__);
+        commandFormatWarning(room_str, rx, __FUNCTION__);
         return;
     }
 

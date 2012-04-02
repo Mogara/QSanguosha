@@ -45,7 +45,7 @@ QImage Recorder::TXT2PNG(QByteArray txtData){
     data.prepend((const char *)&actual_size, sizeof(qint32));
 
     // actual data = width * height - padding
-    int width = ceil(sqrt(data.size()));
+    int width = ceil(sqrt((double)data.size()));
     int height = width;
     int padding = width * height - data.size();
     QByteArray paddingData;

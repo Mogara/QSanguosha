@@ -104,8 +104,8 @@ QAbstractAnimation* CardItem::goBack(bool kieru,bool fadein,bool fadeout){
         disappear->setKeyValueAt(0.8, 1.0);
 
 
-        int dx = home_pos.x()-pos().x();
-        int dy = home_pos.y()-pos().y();
+        qreal dx = home_pos.x()-pos().x();
+        qreal dy = home_pos.y()-pos().y();
         int length = sqrt(dx*dx+dy*dy);
 
 

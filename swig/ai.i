@@ -95,7 +95,7 @@ bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
 
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	lua_pushstring(L, skill_name.toAscii());
 	SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
 
@@ -118,7 +118,7 @@ void LuaAI::activate(CardUseStruct &card_use) {
 
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	SWIG_NewPointerObj(L, &card_use, SWIGTYPE_p_CardUseStruct, 0);
 
 	int error = lua_pcall(L, 2, 0, 0);
@@ -166,7 +166,7 @@ ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, int &card_id){
 
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	lua_createtable(L, cards.length(), 0);
 
 	int i;
@@ -203,7 +203,7 @@ void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant
 
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	lua_pushinteger(L, event);
 	SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
 	SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
@@ -219,7 +219,7 @@ void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant
 const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt, const QVariant &data){
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	lua_pushstring(L, pattern.toAscii());
 	lua_pushstring(L, prompt.toAscii());
 	SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
@@ -241,7 +241,7 @@ const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt, con
 int LuaAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason){
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	SWIG_NewPointerObj(L, who, SWIGTYPE_p_ServerPlayer, 0);
 	lua_pushstring(L, flags.toAscii());
 	lua_pushstring(L, reason.toAscii());
@@ -261,7 +261,7 @@ int LuaAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QStri
 		return result;
 	}
 
-	room->output(QString("The result of function %1 should be an integer!").arg(__func__));
+	room->output(QString("The result of function %1 should be an integer!").arg(__FUNCTION__));
 	lua_pop(L, 1);
 	return TrustAI::askForCardChosen(who, flags, reason);
 }
@@ -269,7 +269,7 @@ int LuaAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QStri
 ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason){
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	SWIG_NewPointerObj(L, &targets, SWIGTYPE_p_QListT_ServerPlayer_p_t, 0);
 	lua_pushstring(L, reason.toAscii());
 
@@ -295,7 +295,7 @@ ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, co
 const Card *LuaAI::askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive){
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	SWIG_NewPointerObj(L, trick, SWIGTYPE_p_TrickCard, 0);
 	SWIG_NewPointerObj(L, from, SWIGTYPE_p_ServerPlayer, 0);
 	SWIG_NewPointerObj(L, to, SWIGTYPE_p_ServerPlayer, 0);
@@ -322,7 +322,7 @@ const Card *LuaAI::askForNullification(const TrickCard *trick, ServerPlayer *fro
 const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason){
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	SWIG_NewPointerObj(L, requestor, SWIGTYPE_p_ServerPlayer, 0);
 	lua_pushstring(L, reason.toAscii());
 
@@ -346,7 +346,7 @@ const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason
 const Card *LuaAI::askForSinglePeach(ServerPlayer *dying){
 	lua_State *L = room->getLuaState();
 
-		pushCallback(L, __func__);
+		pushCallback(L, __FUNCTION__);
 	SWIG_NewPointerObj(L, dying, SWIGTYPE_p_ServerPlayer, 0);
 
 	int error = lua_pcall(L, 2, 1, 0);
@@ -368,7 +368,7 @@ const Card *LuaAI::askForSinglePeach(ServerPlayer *dying){
 const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason){
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	SWIG_NewPointerObj(L, requestor, SWIGTYPE_p_ServerPlayer, 0);
 	lua_pushstring(L, reason.toAscii());
 
@@ -393,7 +393,7 @@ const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason)
 Card::Suit LuaAI::askForSuit(const QString &reason){
 	lua_State *L = room->getLuaState();
 
-	pushCallback(L, __func__);
+	pushCallback(L, __FUNCTION__);
 	lua_pushstring(L, reason.toAscii());
 	int error = lua_pcall(L, 2, 1, 0);
 	if(error){
