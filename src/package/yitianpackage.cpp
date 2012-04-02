@@ -1045,18 +1045,24 @@ public:
         if(!damage.from->hasSkill(objectName()))
             return false;
 
+        if(damage.to->isChained())
+            return false;
+
+        if(damage.nature != DamageStruct::Fire)
+            return false;
+
         ServerPlayer *luboyan = damage.from;
-        if(!damage.to->isChained() && damage.nature == DamageStruct::Fire
-           && luboyan->askForSkillInvoke(objectName(), data))
-        {
-            Room *room = luboyan->getRoom();
+        Room *room = luboyan->getRoom();
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *p, room->getAlivePlayers()){
+            if(damage.to->distanceTo(p) == 1)
+                targets << p;
+        }
 
-            QList<ServerPlayer *> targets;
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
-                if(damage.to->distanceTo(p) == 1)
-                    targets << p;
-            }
+        if(targets.isEmpty())
+            return false;
 
+        if(luboyan->askForSkillInvoke(objectName(), data)){
             ServerPlayer *target = room->askForPlayerChosen(luboyan, targets, objectName());
 
             JudgeStruct judge;
