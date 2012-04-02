@@ -276,14 +276,14 @@ void JuejiCard::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class JuejiViewAsSkill: public OneCardViewAsSkill{
+class Jueji: public OneCardViewAsSkill{
 public:
-    JuejiViewAsSkill():OneCardViewAsSkill("jueji"){
+    Jueji():OneCardViewAsSkill("jueji"){
 
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
+        return player->hasUsed("JuejiCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -294,25 +294,6 @@ public:
         JuejiCard *card = new JuejiCard;
         card->addSubcard(card_item->getCard());
         return card;
-    }
-};
-
-class Jueji: public PhaseChangeSkill{
-public:
-    Jueji():PhaseChangeSkill("jueji"){
-        view_as_skill = new JuejiViewAsSkill;
-    }
-
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Play){
-            Room *room = target->getRoom();
-            return room->askForUseCard(target, "@@jueji", "@jueji-pindian");
-        }else
-            return false;
     }
 };
 
