@@ -248,8 +248,12 @@ public:
 
             QList<const Skill *> skills = damage->from->getVisibleSkillList();
             foreach(const Skill *skill, skills){
-                if(skill->getLocation() == Skill::Right)
+                if(skill->getLocation() == Skill::Right){
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
+                    damage->from->clearPrivatePiles();
+                    if(damage->from->getHp() <= 0 )
+                        room->loseHp(damage->from,0);
+                }
             }
 
             QString kingdom = damage->from->getKingdom();
