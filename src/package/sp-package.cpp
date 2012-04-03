@@ -171,7 +171,7 @@ public:
             if(player->tag["Danlao"].isNull() || player->tag["Danlao"].toInt() != effect.card->getEffectiveId())
                 return false;
 
-            player->tag["Danlao"] = NULL;
+            player->tag["Danlao"] = QVariant(QString());
             return true;
         }
 
