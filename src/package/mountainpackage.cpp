@@ -988,8 +988,12 @@ public:
         PlayEffect(zuoci, "huashen");
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
-        if(!huashen_skill.isEmpty())
+        if(!huashen_skill.isEmpty()){
             room->detachSkillFromPlayer(zuoci, huashen_skill);
+            zuoci->clearPrivatePiles();
+            if(zuoci->getHp() <= 0 )
+                room->loseHp(zuoci,0);
+        }
 
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         if(huashens.isEmpty())
