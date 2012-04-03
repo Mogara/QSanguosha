@@ -371,8 +371,8 @@ public:
 
             pangtong->loseMark("@nirvana");
 
-            room->setPlayerProperty(pangtong, "hp", qMin(3, pangtong->getMaxHP()));
             pangtong->throwAllCards();
+            room->setPlayerProperty(pangtong, "hp", qMin(3, pangtong->getMaxHP()));
             pangtong->drawCards(3);
 
             if(pangtong->isChained()){

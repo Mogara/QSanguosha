@@ -123,6 +123,10 @@ public:
         view_as_skill = new SmallTuxiViewAsSkill;
     }
 
+    virtual int getPriority() const{
+        return 2;
+    }
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return target->getGeneralName() == "zhangliao"
                 && ! target->getRoom()->getTag("BurnWuchao").toBool();
@@ -181,6 +185,7 @@ public:
 
 
                     ServerPlayer *zhangliao = room->findPlayer("zhangliao");
+                    room->detachSkillFromPlayer(zhangliao, "tuxi");
                     room->acquireSkill(zhangliao, "smalltuxi");
                 }
 
@@ -286,6 +291,14 @@ AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlaye
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{
     bool zhanshuangxiong = room->getTag("ZhanShuangxiong").toBool();
     bool burnwuchao = room->getTag("BurnWuchao").toBool();
+
+    if(burnwuchao){
+        ServerPlayer *zhangliao = room->findPlayer("zhangliao");
+        if(zhangliao && !zhangliao->hasSkill("tuxi")){
+            room->acquireSkill(zhangliao, "tuxi");
+            room->detachSkillFromPlayer(zhangliao, "smalltuxi");
+        }
+    }
     if(zhanshuangxiong && burnwuchao){
         ServerPlayer *guojia = room->findPlayer("guojia");
         if(guojia && !guojia->hasSkill("greatyiji")){

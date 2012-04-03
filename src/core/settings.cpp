@@ -116,7 +116,7 @@ void Settings::init(){
 
     kof_ban << "sunquan" << "huatuo" << "zhangliao" << "liubei";
 
-    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu";
+    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu" << "zhanggongqi";
 
     hegemony_ban.append(basara_ban);
     hegemony_ban << "xiahoujuan";

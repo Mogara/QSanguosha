@@ -1120,6 +1120,7 @@ void CustomAssignDialog::load()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
+    set_pile.clear();
     item_map.clear();
     role_mapping.clear();
     general_mapping.clear();
@@ -1168,7 +1169,6 @@ void CustomAssignDialog::load()
 
         if(line.startsWith("setPile:"))
         {
-            set_pile.clear();
             QStringList list = line.replace("setPile:","").split(",");
             foreach(QString id,list)
             {

@@ -462,7 +462,7 @@ public:
                     target->drawCards(drawnum);
                 }
             }
-            else if(player->getPhase() == Player::Discard){
+            else if(player->getPhase() == Player::RoundStart){
                 player->setMark("longluo", 0);
             }
             return false;

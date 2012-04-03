@@ -805,6 +805,8 @@ BasaraMode::BasaraMode(QObject *parent)
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";
     skill_mark["luanwu"] = "@chaos";
+    skill_mark["laoji"] = "@laoji";
+    skill_mark["zuixiang"] = "@sleep";
 }
 
 QString BasaraMode::getMappedRole(const QString &role){
@@ -818,9 +820,8 @@ QString BasaraMode::getMappedRole(const QString &role){
     return roles[role];
 }
 
-int BasaraMode::getPriority() const
-{
-    return 5;
+int BasaraMode::getPriority() const{
+    return 1;
 }
 
 void BasaraMode::playerShowed(ServerPlayer *player) const{
@@ -862,16 +863,16 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
         room->setPlayerProperty(player,"general",general_name);
-    }else
-    {
+
+        foreach(QString skill_name, skill_mark.keys()){
+            if(player->hasSkill(skill_name))
+                room->setPlayerMark(player, skill_mark[skill_name], 1);
+        }
+    }
+    else{
         QString transfigure_str = QString("%1:%2").arg(player->getGeneral2Name()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
         room->setPlayerProperty(player,"general2",general_name);
-    }
-
-    foreach(QString skill_name, skill_mark.keys()){
-        if(player->hasSkill(skill_name))
-            room->setPlayerMark(player, skill_mark[skill_name], 1);
     }
 
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
@@ -979,7 +980,6 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
 
     case Death:{
         if(Config.EnableHegemony){
-
             DamageStar damage = data.value<DamageStar>();
             ServerPlayer *killer = damage ? damage->from : NULL;
             if(killer && killer->getKingdom() == damage->to->getKingdom()){
@@ -989,7 +989,6 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
             else if(killer && killer->isAlive()){
                 killer->drawCards(3);
             }
-
         }
 
         break;

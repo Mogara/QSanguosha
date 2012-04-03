@@ -577,6 +577,7 @@ QStringList Engine::getRandomLords() const{
     if(Config.GameMode == "zombie_mode")
         banlist_ban.append(Config.value("Banlist/zombie").toStringList());
     else if((Config.GameMode.endsWith("p") ||
+             Config.GameMode.endsWith("pz") ||
              Config.GameMode.endsWith("pd")))
         banlist_ban.append(Config.value("Banlist/Roles").toStringList());
 
