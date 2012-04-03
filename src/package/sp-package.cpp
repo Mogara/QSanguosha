@@ -238,6 +238,7 @@ public:
                 log.type = "#YongsiBad";
                 log.from = yuanshu;
                 log.arg = QString::number(x);
+                log.arg2 = objectName();
                 room->sendLog(log);
             }
         }
