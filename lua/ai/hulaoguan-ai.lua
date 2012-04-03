@@ -23,9 +23,3 @@ sgs.ai_skill_invoke.xiuluo = function(self, data)
 	return false
 end
 
-sgs.ai_skill_cardask["@xiuluo"] = function(self)
-	for _, card in sgs.qlist(self.player:getHandcards()) do
-		if card:getSuitString() == parsedPrompt[2] then return "$"..card:getEffectiveId() end
-	end
-	return "."
-end
