@@ -1056,6 +1056,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        player->setMark("JilveEvent",(int)event);
         if(event == CardUsed || event == CardResponsed){
             CardStar card = NULL;
             if(event == CardUsed)
@@ -1080,7 +1081,7 @@ public:
                 fangzhu->trigger(event, player, data);
             }
         }
-
+        player->setMark("JilveEvent",0);
         return false;
     }
 

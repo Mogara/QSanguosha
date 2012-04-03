@@ -601,18 +601,21 @@ end
 sgs.ai_skill_invoke.jilve=function(self,data)
 	local n=self.player:getMark("@bear")
 	local use=(n>2 or self:getOverflow()>0)
-	if sgs.lastevent == sgs.AskForRetrial or sgs.lastevent == sgs.StartJudge then
+	local event = self.player:getMark("JilveEvent")
+	if event == sgs.AskForRetrial then
 		local judge = data:toJudge()
 		if not self:needRetrial(judge) then return false end
 		return (use or judge.who == self.player or judge.reason == "lightning") and 
 		        self:getRetrialCardId(sgs.QList2Table(self.player:getHandcards()), judge) ~= -1
-	elseif sgs.lastevent == sgs.Damage then
+	elseif event == sgs.Damaged then
 		if #self.enemies == 0 then return false end
 		return use and self:askForUseCard("@@fangzhu","@fangzhu")~="."
-	else
+	elseif event == sgs.CardUsed or event == sgs.CardResponsed then
 		local card = data:toCard()
 		card = card or data:toCardUse().card
 		return use or card:inherits("ExNihilo")
+	else
+		assert(false)
 	end
 end
 
