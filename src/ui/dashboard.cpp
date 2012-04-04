@@ -12,9 +12,9 @@
 #include <QMenu>
 #include <QPixmapCache>
 
-Dashboard::Dashboard()
+Dashboard::Dashboard(QGraphicsItem *button_widget)
     :left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
-    selected(NULL), avatar(NULL),
+    button_widget(button_widget), selected(NULL), avatar(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     view_as_skill(NULL), filter(NULL)
 {
@@ -24,17 +24,20 @@ Dashboard::Dashboard()
 
     death_item = NULL;
 
+    if(button_widget)
+        button_widget->setParentItem(this);
+
     int left_width = left_pixmap.width();
     int middle_width = middle->rect().width();
+    int button_width = getButtonWidgetWidth();
     int right_width = right->rect().width();
-    min_width = left_width + middle_width + right_width;
+    min_width = left_width + middle_width + button_width + right_width;
 
     setMiddleWidth(middle_width);
 
     sort_type = 0;
 
     animations = new EffectAnimation();
-
 }
 
 void Dashboard::createLeft(){
@@ -48,6 +51,13 @@ void Dashboard::createLeft(){
         equip_rects[i] = new QGraphicsRectItem(rect, left);
         equip_rects[i]->setPen(Qt::NoPen);
     }
+}
+
+int Dashboard::getButtonWidgetWidth() const{
+    if(button_widget)
+        return button_widget->boundingRect().width();
+    else
+        return 0;
 }
 
 void Dashboard::createMiddle(){
@@ -86,8 +96,13 @@ void Dashboard::createRight(){
     small_avatar->setParentItem(right);
     small_avatar->setOpacity(0.75);
 
-    kingdom = new QGraphicsPixmapItem(right);
-    kingdom->setPos(91, 54);
+    if(button_widget){
+        kingdom = new QGraphicsPixmapItem(button_widget);
+        kingdom->setPos(57, 0);
+    }else{
+        kingdom = new QGraphicsPixmapItem(right);
+        kingdom->setPos(91, 54);
+    }
 
     ready_item = new QGraphicsPixmapItem(QPixmap("image/system/ready.png"), avatar);
     ready_item->setPos(2, 43);
@@ -213,7 +228,8 @@ void Dashboard::updateAvatar(){
         avatar->setPixmap(pixmap);
     }
 
-    kingdom->setPixmap(QPixmap(Self->getKingdomIcon()));
+    QString folder = button_widget ? "button" : "icon";
+    kingdom->setPixmap(QPixmap(QString("image/kingdom/%1/%2.png").arg(folder).arg(Self->getKingdom())));
 
     avatar->show();
     kingdom->show();
@@ -316,7 +332,9 @@ void Dashboard::unselectAll(){
 
 void Dashboard::hideAvatar(){
     avatar->hide();
-    kingdom->hide();
+
+    if(button_widget == NULL)
+        kingdom->hide();
 }
 
 void Dashboard::installDelayedTrick(CardItem *card){
@@ -340,7 +358,7 @@ void Dashboard::installDelayedTrick(CardItem *card){
 }
 
 QRectF Dashboard::boundingRect() const{
-    qreal width = left->boundingRect().width() + middle->rect().width() + right->boundingRect().width();
+    qreal width = left->boundingRect().width() + middle->rect().width() + getButtonWidgetWidth() + right->boundingRect().width();
     qreal height = middle->rect().height();
     return QRectF(0, 0, width, height);
 }
@@ -351,7 +369,11 @@ void Dashboard::setMiddleWidth(int middle_width){
 
     middle->setRect(0, 0, middle_width, middle_height);
     middle->setX(left_width);
-    right->setX(left_width + middle_width);
+
+    if(button_widget)
+        button_widget->setX(left_width + middle_width);
+
+    right->setX(left_width + middle_width + getButtonWidgetWidth());
 
     trusting_item->setRect(middle->rect());
     trusting_item->setX(left_width);
@@ -368,7 +390,8 @@ void Dashboard::setWidth(int width){
     }else if(width > min_width){
         qreal left_width = left->boundingRect().width();
         qreal right_width = right->boundingRect().width();
-        qreal middle_width = width - left_width - right_width;
+        qreal button_width = getButtonWidgetWidth();
+        qreal middle_width = width - left_width - right_width - button_width;
 
         setMiddleWidth(middle_width);
 
@@ -445,7 +468,7 @@ void Dashboard::drawHp(QPainter *painter) const{
 
     qreal total_width = magatama->width() * max_hp;
     qreal skip = (121 - total_width)/ (max_hp + 1);
-    qreal start_x = left_pixmap.width() + middle->rect().width();
+    qreal start_x = left_pixmap.width() + middle->rect().width() + getButtonWidgetWidth();
 
     int i;
     for(i=0; i<hp; i++)

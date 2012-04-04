@@ -172,12 +172,12 @@ bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 void LijianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
+    room->playSkillEffect("lijian");
 
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);
 
     Duel *duel = new Duel(Card::NoSuit, 0);
-    duel->setSkillName("lijian");
     duel->setCancelable(false);
 
     CardUseStruct use;

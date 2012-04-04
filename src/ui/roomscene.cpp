@@ -55,6 +55,8 @@ static QPointF DrawPilePos(-108, 8);
 
 RoomScene *RoomSceneInstance;
 
+#include "irregularbutton.h"
+
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
       main_window(main_window),game_started(false)
@@ -79,8 +81,19 @@ RoomScene::RoomScene(QMainWindow *main_window)
     }
 
     {
+        createControlButtons();
+        QGraphicsItem *button_widget = NULL;
+        if(ClientInstance->getReplayer() == NULL){
+            QString path = "image/system/button/irregular/background.png";
+            button_widget = new QGraphicsPixmapItem(QPixmap(path));
+
+            ok_button->setParentItem(button_widget);
+            cancel_button->setParentItem(button_widget);
+            discard_button->setParentItem(button_widget);
+        }
+
         // create dashboard
-        dashboard = new Dashboard;
+        dashboard = new Dashboard(button_widget);
         dashboard->setObjectName("dashboard");
         //dashboard->setZValue(0.8);
         addItem(dashboard);
@@ -111,7 +124,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     role_combobox->addItem(tr("Unknown"));
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
-    createButtons();
+    createExtraButtons();
     if(ClientInstance->getReplayer())
         createReplayControlBar();
 
@@ -389,40 +402,35 @@ RoomScene::RoomScene(QMainWindow *main_window)
     view_transform = QMatrix();
 }
 
-void RoomScene::createButtons(){
+void RoomScene::createControlButtons(){
+    ok_button = new IrregularButton("ok");
+    ok_button->setPos(5, 3);
+
+    cancel_button = new IrregularButton("cancel");
+    cancel_button->setPos(5, 92);
+
+    discard_button = new IrregularButton("discard");
+    discard_button->setPos(70, 45);
+
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
+    connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
+}
+
+void RoomScene::createExtraButtons(){
     trust_button = dashboard->createButton("trust");
     untrust_button = dashboard->createButton("untrust");
     reverse_button = dashboard->createButton("reverse-select");
     reverse_button->setEnabled(true);
 
-    ok_button = dashboard->createButton("ok");
-    cancel_button = dashboard->createButton("cancel");
-    discard_button = dashboard->createButton("discard");
-
     dashboard->addWidget(trust_button, 10, true);
     dashboard->addWidget(untrust_button, 10, true);
     dashboard->addWidget(reverse_button, 100, true);
-
-    // add buttons that above the avatar area of dashbaord
-    if(Config.value("CircularView", false).toBool()){
-        dashboard->addWidget(ok_button, -245-146, false);
-        dashboard->addWidget(cancel_button, -155-146, false);
-        dashboard->addWidget(discard_button, -70-146, false);
-
-        dashboard->setWidth(main_window->width()-10);
-    }else{
-        dashboard->addWidget(ok_button, -72, false);
-        dashboard->addWidget(cancel_button, -7, false);
-        dashboard->addWidget(discard_button, 75, false);
-    }
 
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
     connect(untrust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
     connect(reverse_button, SIGNAL(clicked()), dashboard, SLOT(reverseSelection()));
     connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
-    connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
 
     free_discard = NULL;
 }
@@ -4072,17 +4080,17 @@ void RoomScene::reLayout(QMatrix matrix)
     pos.rx()-= padding_left;
     pos.ry()+=padding_top;
 
-    alignTo(discard_button,pos,"xryb");
-    pos.rx()-=discard_button->width();
-    pos.rx()-=skip;
+//    alignTo(discard_button,pos,"xryb");
+//    pos.rx()-=discard_button->width();
+//    pos.rx()-=skip;
 
-    alignTo(cancel_button,pos,"xryb");
-    pos.rx()-=cancel_button->width();
-    pos.rx()-=skip;
+//    alignTo(cancel_button,pos,"xryb");
+//    pos.rx()-=cancel_button->width();
+//    pos.rx()-=skip;
 
-    alignTo(ok_button,pos,"xryb");
-    pos.rx()-=ok_button->width();
-    pos.rx()-=skip;
+//    alignTo(ok_button,pos,"xryb");
+//    pos.rx()-=ok_button->width();
+//    pos.rx()-=skip;
     //ok_button->move(-10,-10);
 
 

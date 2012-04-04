@@ -1,4 +1,5 @@
 #include "irregularbutton.h"
+#include "clientplayer.h"
 
 #include <QBitmap>
 #include <QPainter>
@@ -14,13 +15,18 @@ IrregularButton::IrregularButton(const QString &name)
     normal.load(MakePath(name, "normal"));
     hover.load(MakePath(name, "hover"));
     down.load(MakePath(name, "down"));
-    disabled.load(MakePath(name, "down"));
+    disabled.load(MakePath(name, "disabled"));
 
     QBitmap mask_bitmap(MakePath(name, "mask"));
     mask = QRegion(mask_bitmap);
 
     setAcceptsHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
+}
+
+void IrregularButton::click(){
+    if(isEnabled())
+        emit clicked();
 }
 
 QRectF IrregularButton::boundingRect() const{
@@ -50,19 +56,58 @@ void IrregularButton::changeState(IrregularButton::State state){
     }
 }
 
+bool IrregularButton::inMask(const QPointF &pos) const{
+    return mask.contains(QPoint(pos.x(), pos.y()));
+}
+
+#include <QGraphicsSceneHoverEvent>
+
 void IrregularButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
-    changeState(Hover);
+    QPointF point = mapToParent(event->pos());
+    if(inMask(point)){
+        changeState(Hover);
+    }
 }
 
 void IrregularButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     changeState(Normal);
 }
 
+void IrregularButton::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
+    QPointF point = mapToParent(event->pos());
+    changeState(inMask(point) ? Hover : Normal);
+}
+
 void IrregularButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    changeState(Down);
+    QPointF point = mapToParent(event->pos());
+    if(inMask(point)){
+        changeState(Down);
+    }
 }
 
 void IrregularButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    changeState(Normal);
-    emit clicked();
+    QPointF point = mapToParent(event->pos());
+    if(inMask(point)){
+        changeState(Normal);
+        emit clicked();
+    }
 }
+
+TrustButton::TrustButton(){
+    trust.load("image/system/button/irregular/trust.png");
+    untrust.load("image/system/button/irregular/untrust.png");
+    mask = QRegion(QBitmap("image/system/button/irregular/trust-mask.png"));
+}
+
+QRectF TrustButton::boundingRect(){
+    return QRectF(trust.rect());
+}
+
+void TrustButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
+    if(Self->getState() == "trust")
+        painter->drawPixmap(0, 0, untrust);
+    else
+        painter->drawPixmap(0, 0, trust);
+}
+
+
