@@ -109,7 +109,6 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
-    EffectEdition = value("EffectEdition", "qsanguosha/").toString();
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
 
