@@ -23,6 +23,7 @@ SOURCES += src/main.cpp \
 	src/core/player.cpp \
 	src/core/settings.cpp \
 	src/core/skill.cpp \
+	src/core/statistics.cpp \
 	src/dialog/cardeditor.cpp \
 	src/dialog/cardoverview.cpp \
 	src/dialog/choosegeneraldialog.cpp \
@@ -83,6 +84,7 @@ SOURCES += src/main.cpp \
 	src/ui/clientlogbox.cpp \
 	src/ui/dashboard.cpp \
 	src/ui/indicatoritem.cpp \
+	src/ui/irregularbutton.cpp \
 	src/ui/photo.cpp \
 	src/ui/pixmap.cpp \
 	src/ui/pixmapanimation.cpp \
@@ -124,9 +126,7 @@ SOURCES += src/main.cpp \
 	src/lua/lbaselib.c \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
-	swig/sanguosha_wrap.cxx \
-    src/core/statistics.cpp \
-    src/ui/irregularbutton.cpp
+	swig/sanguosha_wrap.cxx
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -141,6 +141,7 @@ HEADERS += src/client/aux-skills.h \
 	src/core/player.h \
 	src/core/settings.h \
 	src/core/skill.h \
+	src/core/statistics.h \
 	src/dialog/cardeditor.h \
 	src/dialog/cardoverview.h \
 	src/dialog/choosegeneraldialog.h \
@@ -201,6 +202,7 @@ HEADERS += src/client/aux-skills.h \
 	src/ui/clientlogbox.h \
 	src/ui/dashboard.h \
 	src/ui/indicatoritem.h \
+	src/ui/irregularbutton.h \
 	src/ui/photo.h \
 	src/ui/pixmap.h \
 	src/ui/pixmapanimation.h \
@@ -236,9 +238,7 @@ HEADERS += src/client/aux-skills.h \
 	src/lua/ldebug.h \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
-	src/lua/lapi.h \
-    src/core/statistics.h \
-    src/ui/irregularbutton.h
+	src/lua/lapi.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
