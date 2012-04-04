@@ -772,7 +772,7 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
         equips2->addSubcard(equip->getId());
 
     if(!equips1->getSubcards().isEmpty())
-        first->obtainCard(equips1);
+        room->moveCardTo(equips1, second, Player::Special);
 
     if(!equips2->getSubcards().isEmpty()){
         foreach(int equip_id, equips2->getSubcards()){
