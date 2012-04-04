@@ -839,10 +839,10 @@ function SmartAI:getValuableCard(who)
 	local equips = sgs.QList2Table(who:getEquips())
 	for _,equip in ipairs(equips) do
 		if who:hasSkill("shensu") then return equip:getEffectiveId() end
-		if who:hasSkill("longhun") and not equip:getSuit() == sgs.Card_Diomand then  return equip:getEffectiveId() end
+		if who:hasSkill("longhun") and not equip:getSuit() == sgs.Card_Diamond then  return equip:getEffectiveId() end
 		if who:hasSkill("qixi") and equip:isBlack() then  return equip:getEffectiveId() end
 		if who:hasSkill("guidao") and equip:isBlack() then  return equip:getEffectiveId() end
-		if who:hasSkill("guose") and equip:getSuit() == sgs.Card_Diomand then  return equip:getEffectiveId() end
+		if who:hasSkill("guose") and equip:getSuit() == sgs.Card_Diamond then  return equip:getEffectiveId() end
 		if who:hasSkill("jijiu") and equip:isRed() then  return equip:getEffectiveId() end
 		if who:hasSkill("wusheng") and equip:isRed() then  return equip:getEffectiveId() end
 		if who:hasSkill("duanliang") and equip:isBlack() then  return equip:getEffectiveId() end
@@ -991,7 +991,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 				if enemy:getHandcardNum() == 1 then
-				if self:needKongcheng(enemy) or enemy:hasSkill("kongcheng|lianying") then return end
+				if self:needKongcheng(enemy) or self:hasSkills("kongcheng|lianying", enemy) then return end
 				end
 				if self:hasSkills(sgs.cardneed_skill, enemy) then
 					use.card = card

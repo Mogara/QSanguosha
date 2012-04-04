@@ -355,7 +355,7 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect("zaoxian");
-        room->broadcastInvoke("animate", "lightbox:$zaoxian1:4000");
+        room->broadcastInvoke("animate", "lightbox:$zaoxian:4000");
         room->getThread()->delay(4000);
 
         room->acquireSkill(dengai, "jixi");

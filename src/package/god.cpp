@@ -1165,17 +1165,6 @@ public:
 
     }
 
-    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
-        switch(card->getSuit()){
-        case Card::Spade : return 1;
-        case Card::Club : return 2;
-        case Card::Heart : return 3;
-        case Card::Diamond : return 4;
-        default:
-            return qrand() % 4 + 1;
-        }
-    }
-
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         return pattern == "slash"
                 || pattern == "jink"
