@@ -1668,14 +1668,20 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
 void Room::chooseGenerals(){
 
     // for lord.
+    const int nonlord_prob = 5;
     if(!Config.EnableHegemony)
     {
         QStringList lord_list;
+        ServerPlayer *the_lord = getLord();
         if(mode == "08same")
             lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+        else if(the_lord->getState() == "robot")
+            if(qrand()%100 < nonlord_prob)
+                lord_list = Sanguosha->getRandomGenerals(1);
+            else
+                lord_list = Sanguosha->getLords();
         else
             lord_list = Sanguosha->getRandomLords();
-        ServerPlayer *the_lord = getLord();
         QString general = askForGeneral(the_lord, lord_list);
         the_lord->setGeneralName(general);
         if(!Config.EnableBasara)broadcastProperty(the_lord, "general", general);

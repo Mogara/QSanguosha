@@ -43,8 +43,6 @@ void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
         log.type = "#UnsetDrank";
         log.from = source;
         room->sendLog(log);
-
-        room->setPlayerFlag(source, "-drank");
     }
 }
 
@@ -59,6 +57,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     effect.to = card_effect.to;
     effect.drank = effect.from->hasFlag("drank");
 
+    room->setPlayerFlag(effect.from, "-drank");
     room->slashEffect(effect);
 }
 

@@ -251,7 +251,9 @@ public:
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
-
+            damage->from->clearPrivatePiles();
+            if(damage->from->getHp() <= 0 )
+                room->loseHp(damage->from,0);
             QString kingdom = damage->from->getKingdom();
 
             QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
@@ -988,8 +990,12 @@ public:
         PlayEffect(zuoci, "huashen");
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
-        if(!huashen_skill.isEmpty())
+        if(!huashen_skill.isEmpty()){
             room->detachSkillFromPlayer(zuoci, huashen_skill);
+            zuoci->clearPrivatePiles();
+            if(zuoci->getHp() <= 0 )
+                room->loseHp(zuoci,0);
+        }
 
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         if(huashens.isEmpty())

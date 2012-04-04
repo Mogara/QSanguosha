@@ -157,7 +157,7 @@ return {
 	["$shenfen2"] = "战神之怒，神挡杀神，佛挡杀佛！",
 	["~shenlubu"] = "大耳贼最叵信……啊！",
 
-	["cv:shenzhaoyun"] = "",
+	["cv:shenzhaoyun"] = "猎狐",
 	["$juejing"] = "龙战于野,其血玄黄",
 	["$longhun1"] = "金甲映日,驱邪祛秽", -- spade
 	["$longhun2"] = "腾龙行云,首尾不见", -- club

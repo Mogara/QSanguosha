@@ -72,9 +72,12 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->throwCard(this);
     effect.from->turnOver();
+
+    DummyCard *dummy_card = new DummyCard;
     foreach(const Card *cd, effect.to->getHandcards()){
-        room->moveCardTo(cd, effect.from, Player::Hand, false);
+        dummy_card->addSubcard(cd);
     }
+    room->moveCardTo(dummy_card, effect.from, Player::Hand, false);
     room->setTag("LihunTarget", QVariant::fromValue(effect.to));
 }
 
@@ -107,7 +110,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 3;
+        return 4;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -119,7 +122,7 @@ public:
 
         if(event == PhaseChange && diaochan->getPhase() == Player::Discard){
             ServerPlayer *target = room->getTag("LihunTarget").value<PlayerStar>();
-            if(!target)
+            if(!target || target->isDead())
                 return false;
 
             int hp = target->isAlive() ? target->getHp() : 0;
