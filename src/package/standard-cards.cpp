@@ -903,6 +903,7 @@ bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void Indulgence::takeEffect(ServerPlayer *target) const{
+    target->clearHistory();
     target->skip(Player::Play);
 }
 
@@ -916,7 +917,6 @@ bool Disaster::isAvailable(const Player *player) const{
     if(player->containsTrick(objectName()))
         return false;
 
-    target->clearHistory();
     return ! player->isProhibited(player, this);
 }
 
