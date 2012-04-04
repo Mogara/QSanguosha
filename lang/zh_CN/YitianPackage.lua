@@ -307,7 +307,7 @@ return {
 
 	["designer:panglingming"] = "太阳神上",
 	["illustrator:panglingming"] = "三国志大战",
-	["cv:panglingming"] = "Glory",
+	["cv:panglingming"] = "乱天乱外",
 	["$taichen"] = "良将不惧死以苟免，烈士不毁节以求生",
 	["~panglingming"] = "吾宁死于刀下，岂降汝乎",
 }

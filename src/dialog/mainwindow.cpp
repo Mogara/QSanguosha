@@ -1051,7 +1051,7 @@ void MainWindow::on_actionView_ban_list_triggered()
 void MainWindow::on_actionAbout_fmod_triggered()
 {
     QString content = tr("FMOD is a proprietary audio library made by Firelight Technologies");
-    content.append("<p align='center'> <img src='image/system/fmod.png' /> </p> <br/>");
+    content.append("<p align='center'> <img src='image/logo/fmod.png' /> </p> <br/>");
 
     QString address = "http://www.fmod.org";
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
@@ -1075,7 +1075,7 @@ void MainWindow::on_actionAbout_fmod_triggered()
 void MainWindow::on_actionAbout_Lua_triggered()
 {
     QString content = tr("Lua is a powerful, fast, lightweight, embeddable scripting language.");
-    content.append("<p align='center'> <img src='image/system/lua.png' /> </p> <br/>");
+    content.append("<p align='center'> <img src='image/logo/lua.png' /> </p> <br/>");
 
     QString address = "http://www.lua.org";
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));

@@ -10,7 +10,7 @@
 StartScene::StartScene()
 {
     // game logo
-    logo = new Pixmap("image/system/logo.png");
+    logo = new Pixmap("image/logo/logo.png");
     logo->shift();
     logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);
