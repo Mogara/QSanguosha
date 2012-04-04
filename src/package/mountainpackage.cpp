@@ -455,8 +455,10 @@ public:
             return false;
 
         if(card->inherits("Duel") || (card->inherits("Slash") && card->isRed())){
-            if(sunce->askForSkillInvoke(objectName(), data))
+            if(sunce->askForSkillInvoke(objectName(), data)){
+                sunce->getRoom()->playSkillEffect(objectName());
                 sunce->drawCards(1);
+            }
         }
 
         return false;
@@ -485,6 +487,10 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
+        room->playSkillEffect(objectName());
+        room->broadcastInvoke("animate", "lightbox:$hunzi:3000");
+        room->getThread()->delay(3000);
+
         room->loseMaxHp(sunce);
 
         room->acquireSkill(sunce, "yinghun");
@@ -498,6 +504,7 @@ public:
 
 ZhibaCard::ZhibaCard(){
     will_throw = false;
+    mute = true;
 }
 
 bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -509,9 +516,11 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     if(sunce->getMark("hunzi") > 0 &&
        room->askForChoice(sunce, "zhiba_pindian", "accept+reject") == "reject")
     {
+        room->playSkillEffect("sunce_zhiba", 4);
         return;
     }
 
+    room->playSkillEffect("sunce_zhiba", 1);
     source->pindian(sunce, "zhiba", this);
 }
 
@@ -552,24 +561,26 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
         if(event == GameStart){
             if(!player->hasLordSkill(objectName()))
                 return false;
 
-            Room *room = player->getRoom();
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if(!p->hasSkill("zhiba_pindian"))
                     room->attachSkillToPlayer(p, "zhiba_pindian");
             }
         }else if(event == Pindian){
             PindianStar pindian = data.value<PindianStar>();
-            if(pindian->reason == "zhiba" &&
-               pindian->to->hasLordSkill(objectName()) &&
-               !pindian->isSuccess())
-            {
+            if(pindian->reason != "zhiba" || !pindian->to->hasLordSkill(objectName()))
+                return false;
+            if(!pindian->isSuccess()){
+                room->playSkillEffect(objectName(), 2);
                 pindian->to->obtainCard(pindian->from_card);
                 pindian->to->obtainCard(pindian->to_card);
             }
+            else
+                room->playSkillEffect(objectName(), 3);
         }
 
         return false;
