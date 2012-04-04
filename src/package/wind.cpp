@@ -890,6 +890,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
+        use_card->addSubcard(this);
         room->throwCard(this);
 
         return use_card;

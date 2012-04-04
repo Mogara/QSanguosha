@@ -916,6 +916,7 @@ bool Disaster::isAvailable(const Player *player) const{
     if(player->containsTrick(objectName()))
         return false;
 
+    target->clearHistory();
     return ! player->isProhibited(player, this);
 }
 
