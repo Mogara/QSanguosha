@@ -1259,6 +1259,10 @@ public:
 
         return new_card;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        return static_cast<int>(card->getSuit()) + 1;
+    }
 };
 
 
