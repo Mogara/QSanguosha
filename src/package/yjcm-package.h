@@ -34,7 +34,7 @@ class GanluCard: public SkillCard{
 
 public:
     Q_INVOKABLE GanluCard();
-    void swapEquip(ServerPlayer *first, ServerPlayer *second, int index) const;
+    void swapEquip(ServerPlayer *first, ServerPlayer *second) const;
 
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
