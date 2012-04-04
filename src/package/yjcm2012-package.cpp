@@ -390,6 +390,7 @@ public:
         Room *room = liubiao->getRoom();
         if(room->askForSkillInvoke(liubiao, objectName())){
             room->playSkillEffect(objectName());
+            liubiao->clearHistory();
             liubiao->skip(Player::Play);
             return n + liubiao->getLostHp();
         }else
