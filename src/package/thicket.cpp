@@ -589,6 +589,14 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     DummyCard *card2 = b->wholeHandCards();
 
     if(card1){
+        room->moveCardTo(card1, a, Player::Special, false);
+    }
+
+    if(card2){
+        room->moveCardTo(card2, b, Player::Special, false);
+    }
+
+    if(card1){
         room->moveCardTo(card1, b, Player::Hand, false);
         delete card1;
     }
