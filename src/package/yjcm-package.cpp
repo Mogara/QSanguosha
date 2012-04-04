@@ -773,6 +773,8 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
 
     if(!equips1->getSubcards().isEmpty())
         room->moveCardTo(equips1, second, Player::Special);
+    if(!equips2->getSubcards().isEmpty())
+        room->moveCardTo(equips2, first, Player::Special);
 
     if(!equips2->getSubcards().isEmpty()){
         foreach(int equip_id, equips2->getSubcards()){
@@ -780,7 +782,6 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
             room->moveCardTo(equip, first, Player::Equip);
         }
     }
-
     if(!equips1->getSubcards().isEmpty()){
         foreach(int equip_id, equips1->getSubcards()){
             const Card *equip = Sanguosha->getCard(equip_id);
