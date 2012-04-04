@@ -54,13 +54,15 @@ void Settings::init(){
         banlist << "nostalgia" << "yitian" << "wisdom" << "test"
                 << "disaster" << "god" << "YJCM" << "yitian_cards"
                 << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                << "joy" << "joy_equip";
+                << "joy" << "joy_equip"
+                << "QHS" << "YJ1st" << "ghost" << "huangjin"  << "TBdiy" << "Yan"
+                << "ChangbanSlope" << "DishaCard" << "QHSEquip" << "Hide";
 
         setValue("BanPackages", banlist);
     }
 
     BanPackages = value("BanPackages").toStringList();
-    BanPackages << "Special3v3";
+    BanPackages << "Special3v3" << "Hide";
 
     ContestMode = value("ContestMode", false).toBool();
     FreeChoose = value("FreeChoose", false).toBool();
@@ -107,6 +109,7 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
+    EffectEdition = value("EffectEdition", "qsanguosha/").toString();
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
 
@@ -114,12 +117,12 @@ void Settings::init(){
 
     roles_ban << "zhugejin";
 
-    kof_ban << "sunquan" << "huatuo" << "zhangliao" << "liubei";
+    kof_ban << "sunquan" << "huatuo" << "zhangliao" << "liubei" << "zhugejin";
 
-    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu" << "zhanggongqi";
+    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu" << "zhanggongqi" << "zhugejin";
 
     hegemony_ban.append(basara_ban);
-    hegemony_ban << "xiahoujuan";
+    hegemony_ban << "xiahoujuan" << "zhugejin";
     foreach(QString general, Sanguosha->getLimitedGeneralNames()){
         if(Sanguosha->getGeneral(general)->getKingdom() == "god" && !hegemony_ban.contains(general))
             hegemony_ban << general;
@@ -136,7 +139,7 @@ void Settings::init(){
                 << "dengai+shenzhugeliang" << "dengai+shensimayi"
                 << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao"
                 << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun" << "jiangboyue+zhanggongqi"
-                << "weiyan+huanggai" << "jiangwei+zhangjiao" << "caoren+shenlubu"
+                << "weiyan+huanggai" << "caoren+shenlubu" << "bgm_pangtong+huanggai"
                 << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
                 << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
                 << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlubu"
@@ -144,7 +147,10 @@ void Settings::init(){
                 << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi"
                 << "lukang+liubei" << "lukang+wolong" << "lukang+yuji" << "jiangboyue+lukang"
                 << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlubu"
-                << "bgm_diaochan+caizhaoji" << "caozhi+shenlubu" << "caoren+caozhi";
+                << "bgm_diaochan+caizhaoji" << "caozhi+shenlubu" << "caoren+caozhi"
+                << "guanxingzhangbao+luxun" << "guanxingzhangbao+sunce" << "bgm_caoren+caoren"
+                << "bgm_caoren+caozhi" << "bgm_caoren+shenlubu" << "bgm_caoren+bgm_diaochan"
+                << "bgm_caoren+dengshizai" << "bgm_caoren+caizhaoji" ;
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     foreach(QString ban_general, roles_ban){
