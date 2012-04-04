@@ -42,10 +42,12 @@ class TrustButton : public QGraphicsObject{
 public:
     explicit TrustButton();
 
-    virtual QRectF boundingRect();
+    virtual QRectF boundingRect() const;
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     QPixmap trust, untrust;
