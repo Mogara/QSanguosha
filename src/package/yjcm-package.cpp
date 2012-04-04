@@ -763,20 +763,30 @@ GanluCard::GanluCard(){
     once = true;
 }
 
-void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second, int index) const{
-    const EquipCard *e1 = first->getEquip(index);
-    const EquipCard *e2 = second->getEquip(index);
-
+void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
     Room *room = first->getRoom();
+    DummyCard *equips1 = new DummyCard, *equips2 = new DummyCard;
+    foreach(const Card *equip, first->getEquips())
+        equips1->addSubcard(equip->getId());
+    foreach(const Card *equip, second->getEquips())
+        equips2->addSubcard(equip->getId());
 
-    if(e1)
-        first->obtainCard(e1);
+    if(!equips1->getSubcards().isEmpty())
+        first->obtainCard(equips1);
 
-    if(e2)
-        room->moveCardTo(e2, first, Player::Equip);
+    if(!equips2->getSubcards().isEmpty()){
+        foreach(int equip_id, equips2->getSubcards()){
+            const Card *equip = Sanguosha->getCard(equip_id);
+            room->moveCardTo(equip, first, Player::Equip);
+        }
+    }
 
-    if(e1)
-        room->moveCardTo(e1, second, Player::Equip);
+    if(!equips1->getSubcards().isEmpty()){
+        foreach(int equip_id, equips1->getSubcards()){
+            const Card *equip = Sanguosha->getCard(equip_id);
+            room->moveCardTo(equip, second, Player::Equip);
+        }
+    }
 }
 
 bool GanluCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
@@ -801,9 +811,7 @@ void GanluCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     ServerPlayer *first = targets.first();
     ServerPlayer *second = targets.at(1);
 
-    int i;
-    for(i=0; i<4; i++)
-        swapEquip(first, second, i);
+    swapEquip(first, second);
 
     LogMessage log;
     log.type = "#GanluSwap";

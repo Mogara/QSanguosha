@@ -569,13 +569,13 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         DamageStar damage = data.value<DamageStar>();
-        if(!player->askForSkillInvoke(objectName(), data))
+        QList<ServerPlayer *> targets = (damage && damage->from) ?
+                    room->getOtherPlayers(damage->from) : room->getAlivePlayers();
+
+        if(targets.isEmpty() || !player->askForSkillInvoke(objectName(), data))
             return false;
-        ServerPlayer *target;
-        if (!damage || damage->from == NULL)
-            target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName());
-        else
-            target = room->askForPlayerChosen(player, room->getOtherPlayers(damage->from), objectName());
+
+        ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
 
         target->drawCards(3);
         RecoverStruct recover;
