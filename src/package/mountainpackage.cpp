@@ -251,7 +251,9 @@ public:
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
-
+            damage->from->clearPrivatePiles();
+            if(damage->from->getHp() <= 0 )
+                room->loseHp(damage->from,0);
             QString kingdom = damage->from->getKingdom();
 
             QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
@@ -488,8 +490,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect(objectName());
-        room->broadcastInvoke("animate", "lightbox:$hunzi:3000");
-        room->getThread()->delay(3000);
+        room->broadcastInvoke("animate", "lightbox:$Hunzi:5000");
+        room->getThread()->delay(5000);
 
         room->loseMaxHp(sunce);
 
@@ -655,7 +657,7 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect("zhiji");
-        room->broadcastInvoke("animate", "lightbox:$zhiji:5000");
+        room->broadcastInvoke("animate", "lightbox:$Zhiji:5000");
         room->getThread()->delay(5000);
 
         if(room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover"){
@@ -999,8 +1001,12 @@ public:
         PlayEffect(zuoci, "huashen");
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
-        if(!huashen_skill.isEmpty())
+        if(!huashen_skill.isEmpty()){
             room->detachSkillFromPlayer(zuoci, huashen_skill);
+            zuoci->clearPrivatePiles();
+            if(zuoci->getHp() <= 0 )
+                room->loseHp(zuoci,0);
+        }
 
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         if(huashens.isEmpty())

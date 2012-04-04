@@ -524,7 +524,10 @@ end
 
 sgs.ai_chaofeng.caiwenji = -5
 
-sgs.ai_skill_invoke.huashen = true
+sgs.ai_skill_invoke.huashen = function(self)
+	return self.player:getHp() > 0
+end
+
 function sgs.ai_skill_choice.huashen(self, choices)
 	local str = choices
 	choices = str:split("+")

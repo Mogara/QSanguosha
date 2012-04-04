@@ -3,16 +3,20 @@
 #include <QBitmap>
 #include <QPainter>
 
+static inline QString MakePath(const QString &name, const QString &state){
+    return QString("image/system/button/irregular/%1-%2.png").arg(name).arg(state);
+}
+
 IrregularButton::IrregularButton(const QString &name)
 {
     state = Normal;
 
-    normal.load(QString("button/irregular/%1-normal.png").arg(name));
-    hover.load(QString("button/irregular/%1-hover.png").arg(name));
-    down.load(QString("button/irregular/%1-down.png").arg(name));
-    disabled.load(QString("button/irregular/%1-disabled.png").arg(name));
+    normal.load(MakePath(name, "normal"));
+    hover.load(MakePath(name, "hover"));
+    down.load(MakePath(name, "down"));
+    disabled.load(MakePath(name, "down"));
 
-    QBitmap mask_bitmap(QString("button/irregular/%1-mask.png").arg(name));
+    QBitmap mask_bitmap(MakePath(name, "mask"));
     mask = QRegion(mask_bitmap);
 
     setAcceptsHoverEvents(true);
@@ -48,6 +52,10 @@ void IrregularButton::changeState(IrregularButton::State state){
 
 void IrregularButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     changeState(Hover);
+}
+
+void IrregularButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+    changeState(Normal);
 }
 
 void IrregularButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
