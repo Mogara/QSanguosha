@@ -993,7 +993,7 @@ public:
                    << "jiangboyue" << "shenzhugeliang" << "shenlubu" << "zhugejin";
         }
 
-        return (all - banned - huashen_set - room_set - null_set).toList();
+        return (all - banned - huashen_set - room_set).toList();
     }
 
     static QString SelectSkill(ServerPlayer *zuoci, bool acquire_instant = true){
