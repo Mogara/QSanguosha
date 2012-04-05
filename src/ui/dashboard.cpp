@@ -468,7 +468,7 @@ void Dashboard::drawHp(QPainter *painter) const{
 
     qreal total_width = magatama->width() * max_hp;
     qreal skip = (121 - total_width)/ (max_hp + 1);
-    qreal start_x = left_pixmap.width() + middle->rect().width() + getButtonWidgetWidth();
+    qreal start_x = left_pixmap.width() + middle->rect().width();
 
     int i;
     for(i=0; i<hp; i++)
