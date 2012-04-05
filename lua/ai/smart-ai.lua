@@ -1189,7 +1189,8 @@ function SmartAI:objectiveLevel(player)
 				end
 			else
 				if player:isLord() then
-					if not sgs.isLordHealthy() then return 3
+					if sgs.isLordInDanger then return 0
+					elseif not sgs.isLordHealthy() then return 3
 					else return 5 end
 				elseif sgs.isLordHealthy() then return 3
 				else
