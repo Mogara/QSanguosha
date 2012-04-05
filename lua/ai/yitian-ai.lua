@@ -457,7 +457,7 @@ end
 sgs.ai_skill_playerchosen.shaoying = function(self)
 	local source
 	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if self.room:getTag("Zhichi"):toString() == p:objectName() then
+		if self.room:getTag("Shaoying"):toString() == p:objectName() then
 			source = p break
 		end
 	end
