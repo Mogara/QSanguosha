@@ -210,14 +210,24 @@ sgs.ai_skill_invoke.zhuiyi = function(self, data)
 	players = sgs.QList2Table(players)
 	local friendnum = 0
 	for _,player in ipairs(players) do
-		if self:isFriend(player) then friendnum = friendnum + 1 end
+		if self:isFriend(player) and self.room:getTag("ZhuiyiMurder"):toString() ~= player:objectName() then friendnum = friendnum + 1 end
 	end
 	return friendnum > 0
 end
 
 sgs.ai_skill_playerchosen.zhuiyi = function(self)
+	for _, friend in ipairs(self.friends_noself) do
+		if friend:isLord() and not sgs.isLordHealthy(self.room) and 
+			self.room:getTag("ZhuiyiMurder"):toString() ~= friend:objectName() then
+			return friend
+		end
+	end
 	self:sort(self.friends_noself,"defense")
-	return self.friends_noself[1]
+	for _, friend in ipairs(self.friends_noself) do
+		if self.room:getTag("ZhuiyiMurder"):toString() ~= friend:objectName() then
+			return friend
+		end
+	end
 end
 
 sgs.ai_view_as.lihuo = function(card, player, card_place)

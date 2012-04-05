@@ -353,25 +353,6 @@ end
 
 sgs.ai_skill_invoke.tongxin = true
 
-local qiaocai_skill = {name = "qiaocai"}
-table.insert(sgs.ai_skills, qiaocai_skill)
-function qiaocai_skill.getTurnUseCard(self)
-	if self.player:getMark("@tied")>0 or self.player:hasUsed("QiaocaiCard") then return end
-	return sgs.Card_Parse("@QiaocaiCard=.")
-end
-
-function sgs.ai_skill_use_func.QiaocaiCard(card, use, self)
-	local function compare_func(a,b)
-		return a:getCards("j"):length() > b:getCards("j"):length()
-	end
-	table.sort(self.friends, compare_func)
-	if not self.friends[1]:getCards("j"):isEmpty() then
-		use.card = card
-		if use.to then use.to:append(self.friends[1]) end
-	end
-end
-
-sgs.ai_card_intention.QiaocaiCard = -70
 
 local guihan_skill = {name = "guihan"}
 table.insert(sgs.ai_skills, guihan_skill)
@@ -456,7 +437,13 @@ end
 
 function sgs.ai_skill_invoke.shaoying(self, data)
 	local damage = data:toDamage()
-	if not self:isEnemy(damage.to:getNextAlive()) then return false end
+	local enemynum = 0
+	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+		if damage.to:distanceTo(p) <= 1 and self:isEnemy(p) then
+			enemynum = enemynum + 1
+		end
+	end
+	if enemynum < 1 then return false end
 	local zhangjiao = self.room:findPlayerBySkillName("guidao")
 	if not zhangjiao or self:isFriend(zhangjiao) then return true end
 	if not zhangjiao:getCards("e"):isEmpty() then
@@ -465,6 +452,20 @@ function sgs.ai_skill_invoke.shaoying(self, data)
 		end
 	end
 	return zhangjiao:getHandcardNum() <= 1
+end
+
+sgs.ai_skill_playerchosen.shaoying = function(self)
+	local source
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if self.room:getTag("Zhichi"):toString() == p:objectName() then
+			source = p break
+		end
+	end
+	for _, p in sgs.qlist(self.room:getOtherPlayers(source)) do
+		if source:distanceTo(p) <= 1 and self:isEnemy(p) then
+			return p break
+		end
+	end
 end
 
 sgs.ai_skill_invoke.gongmou = true

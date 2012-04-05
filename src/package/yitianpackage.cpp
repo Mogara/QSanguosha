@@ -1054,6 +1054,7 @@ public:
         ServerPlayer *luboyan = damage.from;
         Room *room = luboyan->getRoom();
         QList<ServerPlayer *> targets;
+        room->setTag("Shaoying", damage.to->objectName());
         foreach(ServerPlayer *p, room->getAlivePlayers()){
             if(damage.to->distanceTo(p) == 1)
                 targets << p;
@@ -1064,7 +1065,7 @@ public:
 
         if(luboyan->askForSkillInvoke(objectName(), data)){
             ServerPlayer *target = room->askForPlayerChosen(luboyan, targets, objectName());
-
+            room->setTag("Shaoying", "");
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
             judge.good = true;
