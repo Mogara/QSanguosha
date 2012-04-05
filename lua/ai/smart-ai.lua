@@ -997,16 +997,16 @@ function sgs.updateIntentions(from, tos, intention, card)
 	end
 end
 
-function sgs.isLordHealthy(room)
-	local lord = room:getLord()
+function sgs.isLordHealthy()
+	local lord = global_room:getLord()
 	local lord_hp
 	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4 
 	else lord_hp = lord:getHp() end
 	return lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(lord) > 3)
 end
 
-function sgs.isLordInDanger(room)
-	local lord = room:getLord()
+function sgs.isLordInDanger()
+	local lord = global_room:getLord()
 	local lord_hp
 	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4 
 	else lord_hp = lord:getHp() end
@@ -1016,7 +1016,7 @@ end
 function sgs.outputProcessValues(room)
 	local loyal = 0
 	local rebel = 0
-	local health = sgs.isLordHealthy(room)
+	local health = sgs.isLordHealthy()
 	local loyal_value, rebel_value = 0, 0, 0
 	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
@@ -1076,8 +1076,8 @@ function sgs.gameProcess(room)
 	elseif rebel_num == 0 and loyal_num> 0 then return "loyalist"
 	elseif loyal_num == 0 and rebel_num > 1 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
-	local health = sgs.isLordHealthy(room)
-	local danger = sgs.isLordInDanger(room)
+	local health = sgs.isLordHealthy()
+	local danger = sgs.isLordInDanger()
 	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		--if not (aplayer:objectName() == currentplayer:objectName() and aplayer:getRole() == "renegade") then 
@@ -1105,12 +1105,12 @@ function sgs.gameProcess(room)
 	local diff = loyal_value - rebel_value
 
 	if diff >= 2 then
-	if health then return "loyalist"
-	else return "dilemma" end
+		if health then return "loyalist"
+		else return "dilemma" end
 	elseif diff >= 1 then 
-	if health then return "loyalish"
-	elseif danger then return "dilemma" 
-	else return "rebelish" end
+		if health then return "loyalish"
+		elseif danger then return "dilemma" 
+		else return "rebelish" end
 	elseif diff <= -2 then return "rebel"
 	elseif diff <= -1 then 
 		if health then return "rebelish"
@@ -1155,7 +1155,7 @@ function SmartAI:objectiveLevel(player)
 				else
 					if process == "loyalist" then
 						if player:isLord() then
-							if not sgs.isLordHealthy(self.room) then return -1
+							if not sgs.isLordHealthy() then return -1
 							else return 3.5 end
 						elseif sgs.evaluatePlayerRole(player) == "rebel" or
 							sgs.evaluateRoleTrends(player) == "rebel" then
@@ -1178,7 +1178,7 @@ function SmartAI:objectiveLevel(player)
 				end
 			elseif loyal_num > 0 then
 				if player:isLord() then
-					if not sgs.isLordHealthy(self.room) then return 0
+					if not sgs.isLordHealthy() then return 0
 					else return 3 end
 				elseif sgs.evaluatePlayerRole(player) == "renegade" then
 					return 3
@@ -1187,9 +1187,9 @@ function SmartAI:objectiveLevel(player)
 				end
 			else
 				if player:isLord() then
-					if not sgs.isLordHealthy(self.room) then return 3
+					if not sgs.isLordHealthy() then return 3
 					else return 5 end
-				elseif sgs.isLordHealthy(self.room) then return 3
+				elseif sgs.isLordHealthy() then return 3
 				else
 					return 5
 				end
@@ -1211,7 +1211,7 @@ function SmartAI:objectiveLevel(player)
 			elseif sgs.evaluateRoleTrends(player) == "rebel" then return -1
 			else
 				if player:isLord() then
-					if not sgs.isLordHealthy(self.room) then  return 0
+					if not sgs.isLordHealthy() then  return 0
 						else return 3 end
 				else
 					if process == "loyalist" then return 5 else return 3 end
@@ -1286,6 +1286,7 @@ function SmartAI:isEnemy(other, another)
 end
 
 function SmartAI:getFriendsNoself(player)
+	player = player or self.player
 	if self:isFriend(self.player, player) then
 		return self.friends_noself
 	elseif self:isEnemy(self.player, player) then
@@ -1302,6 +1303,7 @@ function SmartAI:getFriendsNoself(player)
 end
 
 function SmartAI:getFriends(player)
+	player = player or self.player
 	if self:isFriend(self.player, player) then
 		return self.friends
 	elseif self:isEnemy(self.player, player) then

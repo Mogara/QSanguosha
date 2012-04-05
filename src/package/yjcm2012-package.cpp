@@ -571,8 +571,7 @@ public:
         DamageStar damage = data.value<DamageStar>();
         QList<ServerPlayer *> targets = (damage && damage->from) ?
                     room->getOtherPlayers(damage->from) : room->getAlivePlayers();
-        if(damage && damage->from)
-            room->setTag("ZhuiyiMurder", damage->from->objectName());
+
         if(targets.isEmpty() || !player->askForSkillInvoke(objectName(), data))
             return false;
 
