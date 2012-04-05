@@ -135,7 +135,7 @@ void Dashboard::createRight(){
     handcard_pixmap->hide();
 
     mark_item = new QGraphicsTextItem(right);
-    mark_item->setPos(-128, 0);
+    mark_item->setPos(-128 - getButtonWidgetWidth(), 0);
     mark_item->setDefaultTextColor(Qt::white);
 
     action_item = NULL;
