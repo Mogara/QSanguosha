@@ -529,44 +529,44 @@ sgs.ai_skill_invoke.huashen = function(self)
 end
 
 function sgs.ai_skill_choice.huashen(self, choices)
-	local str = choices .. "+"
+	local str = choices
 	choices = str:split("+")
-	if self.player:getHp() < 1 then return "buqu" end
-	if str:match("guixin2") then return "guixin2" end
+	if self.player:getHp() < 1 and str:matchOne("buqu") then return "buqu" end
+	if str:matchOne("guixin2") then return "guixin2" end
 	if self.player:getPhase() == sgs.Player_NotActive then
 		if self.player:getHp() == 1 then
-			if str:match("wuhun") then return "wuhun" end
+			if str:matchOne("wuhun") then return "wuhun" end
 			for _, askill in ipairs(("wuhun|duanchang|jijiu|longhun|jiushi|jiuchi|buyi|huilei|dushi|juejing|zhuiyi|jiefan"):split("|")) do
-				if str:match(askill .. "+") then return askill end
+				if str:matchOne(askill) then return askill end
 			end
 		end
-		if str:match("guixin") and (not self:isWeak() or self:getAllPeachNum() > 0) then return "guixin" end
+		if str:matchOne("guixin") and (not self:isWeak() or self:getAllPeachNum() > 0) then return "guixin" end
 		for _, askill in ipairs(sgs.masochism_skill:split("|")) do
-			if str:match(askill .. "+") and (self.player:getHp() > 1 or self:getAllPeachNum() > 0) then return askill end
+			if str:matchOne(askill) and (self.player:getHp() > 1 or self:getAllPeachNum() > 0) then return askill end
 		end
 
 		if self.player:isKongcheng() then
-			if str:match("kongcheng") then return "kongcheng" end
+			if str:matchOne("kongcheng") then return "kongcheng" end
 		end
 		for _, askill in ipairs(("yizhong|bazhen|wuyan|weimu|kanpo|liuli|qingguo|longdan|xiangle|jiang|" ..
 		"danlao|qianxun|juxiang|huoshou|zhichi|jilei|feiying|yicong|wusheng|wushuang|tianxiang|leiji|" ..
 		"xuanfeng|luoying|xiliang|guhuo|guidao|guicai|lianying|xiaoji|zhiyu|hongyan|tiandu|guzheng|xingshang|weidi|badao|gushou"):split("|")) do
-			if str:match(askill .. "+") then return askill end
+			if str:matchOne(askill) then return askill end
 		end
 	else
 		assert(self.player:getPhase() == sgs.Player_RoundStart)
-		if self.player:getHp() < 1 then return "buqu" end
+		if self.player:getHp() < 1 and str:matchOne("buqu") then return "buqu" end
 		if (self.player:getHandcardNum() < 20 and not self:isWeak()) or self.player:isSkipped(sgs.Player_Play) then
-			if str:match("keji") then return "keji" end
+			if str:matchOne("keji") then return "keji" end
 		end
 		if self.player:getHandcardNum() > 5 then
 			for _, askill in ipairs(("shuangxiong|fuhun|tianyi|xianzhen|paoxiao|huoji|luanji|qixi|duanliang|guose"):split("|")) do
-				if str:match(askill .. "+") then return askill end
+				if str:matchOne(askill) then return askill end
 			end
 		end
 		if self:isWeak() then
 			for _, askill in ipairs(("qingnang|jieyin|zaiqi|longhun|kuanggu|kuiwei|miji|caizhaoji_hujia|jushou|jincui|yuwen"):split("|")) do
-				if str:match(askill .. "+") then return askill end
+				if str:matchOne(askill) then return askill end
 			end
 		end
 		for _, askill in ipairs(("tuxi|dimeng|haoshi|guanxing|manjuan|zhiheng|rende|qiaobian|fangquan|qice|" ..
@@ -575,7 +575,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 		"jiushi|qixi|luoyi|wenjiu|jiuchi|longhun|wusheng|wushen|longdan|gongqi|lihuo|shensu|jiangchi|lianhuan|yinghun|houyuan|jujian|huoji|luanji|gongmou|" ..
 		"jueji|zhijian|shuangxiong|xinzhan|chouliang|zhenwei|guidao|guicai|zhenlie|lianpo|mashu|zhengfeng|yicong|jizhi|lianying|xuanfeng|xiaoji|tianyi" ..
 		"dangxian|qicai|xianzhen|wansha|zongshi|biyue|hongyan|lukang_weiyan|shipo|kurou|yicai|beifa|qinyin|zonghuo|shaoying|guihan|yishe|fuzuo|shouye"):split("|")) do
-			if str:match(askill .. "+") then return askill end
+			if str:matchOne(askill) then return askill end
 		end
 	end
 	for index = #choices, 1, -1 do
