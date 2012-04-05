@@ -253,3 +253,7 @@ function table.copyFrom(list)
 	end
 	return l
 end
+
+function string:matchOne(option)
+	return self:match("^" .. option .. "%p") or self:match("%p" .. option .. "%p") or self:match("%p" .. option .. "$")
+end
