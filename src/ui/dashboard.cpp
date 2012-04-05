@@ -645,7 +645,7 @@ void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
     if(list.isEmpty())
         return;
 
-    int max_width = middle->rect().width();
+    int max_width = middle->rect().width() - getButtonWidgetWidth();
     int start_x = left->boundingRect().width();
 
     if(list.length() == 1){
