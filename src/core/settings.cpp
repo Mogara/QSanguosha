@@ -125,7 +125,7 @@ void Settings::init(){
             hegemony_ban << general;
     }
 
-    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan"
+    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua"
               << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
                 << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
                 << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu" << "dengshizai+bgm_diaochan"
@@ -147,7 +147,8 @@ void Settings::init(){
                 << "bgm_diaochan+caizhaoji" << "caozhi+shenlubu" << "caoren+caozhi"
                 << "guanxingzhangbao+luxun" << "guanxingzhangbao+sunce" << "bgm_caoren+caoren"
                 << "bgm_caoren+caozhi" << "bgm_caoren+shenlubu" << "bgm_caoren+bgm_diaochan"
-                << "bgm_caoren+dengshizai" << "bgm_caoren+caizhaoji" ;
+                << "bgm_caoren+dengshizai" << "bgm_caoren+caizhaoji" << "bgm_pangtong+huanggai"
+                << "huanggai+guanxingzhangbao";
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     foreach(QString ban_general, roles_ban){

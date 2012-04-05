@@ -975,11 +975,11 @@ public:
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci){
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
-        QSet<QString> huashen_set, room_set;
+        QSet<QString> huashen_set, room_set , null_set;
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         foreach(QVariant huashen, huashens)
             huashen_set << huashen.toString();
-
+        null_set << "shenzhugeliang" << "shenlubu" << "zhugejin";
         Room *room = zuoci->getRoom();
         QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
         foreach(const ServerPlayer *player, players){
@@ -993,7 +993,7 @@ public:
             banned << "zuoci" << "zuocif" << "guzhielai" << "dengshizai" << "caochong" << "jiangboyue";
         }
 
-        return (all - banned - huashen_set - room_set).toList();
+        return (all - banned - huashen_set - room_set - null_set).toList();
     }
 
     static QString SelectSkill(ServerPlayer *zuoci, bool acquire_instant = true){
