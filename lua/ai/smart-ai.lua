@@ -46,6 +46,8 @@ sgs.ai_skills = 			{}
 sgs.ai_slash_weaponfilter = {}
 sgs.ai_slash_prohibit = 	{}
 sgs.ai_trick_prohibit =		{} -- obsolete
+sgs.ai_view_as = {}
+sgs.ai_zerocardview = {}
 sgs.dynamic_value = 		{
 	damage_card = 			{},
 	control_usecard = 		{},
@@ -2843,9 +2845,11 @@ local function prohibitUseDirectly(card, player)
 end
 
 local function zeroCardView(class_name, player)
-	if class_name == "Analeptic" then
-		if player:hasSkill("jiushi") and player:faceUp() then
-			return ("analeptic:jiushi[no_suit:0]=.")
+	local vlist = sgs.getSkillLists(player)
+	for _, askill in ipairs(vlist) do
+		local callback = sgs.ai_zerocardview[askill]
+		if type(callback) == "function" and callback(class_name, player) then
+			return callback(card, player)
 		end
 	end
 end
@@ -2860,8 +2864,6 @@ local function isCompulsoryView(card, class_name, player, card_place)
 		end
 	end
 end
-
-sgs.ai_view_as = {}
 
 local function getSkillViewCard(card, class_name, player, card_place)
 	local vlist = sgs.getSkillLists(player)
