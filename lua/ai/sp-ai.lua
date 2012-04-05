@@ -27,7 +27,7 @@ end
 sgs.ai_chaofeng.yuanshu = 3
 
 sgs.ai_skill_invoke.danlao = function(self, data)
-	local effect = data:toCardEffect()
+	local effect = data:toCardUse()
 	if effect.card:inherits("GodSalvation") and self.player:isWounded() then
 		return false
 	else
