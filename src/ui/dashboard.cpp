@@ -358,7 +358,7 @@ void Dashboard::installDelayedTrick(CardItem *card){
 }
 
 QRectF Dashboard::boundingRect() const{
-    qreal width = left->boundingRect().width() + middle->rect().width() + getButtonWidgetWidth() + right->boundingRect().width();
+    qreal width = left->boundingRect().width() + middle->rect().width() + right->boundingRect().width();
     qreal height = middle->rect().height();
     return QRectF(0, 0, width, height);
 }
@@ -367,7 +367,7 @@ void Dashboard::setMiddleWidth(int middle_width){
     int left_width = left_pixmap.width();
     qreal middle_height = middle->rect().height();
 
-    middle->setRect(0, 0, middle_width, middle_height);
+    middle->setRect(0, 0, middle_width + getButtonWidgetWidth(), middle_height);
     middle->setX(left_width);
 
     if(button_widget)
