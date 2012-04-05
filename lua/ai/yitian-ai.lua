@@ -454,17 +454,15 @@ function sgs.ai_skill_invoke.shaoying(self, data)
 	return zhangjiao:getHandcardNum() <= 1
 end
 
-sgs.ai_skill_playerchosen.shaoying = function(self)
-	local source
-	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if self.room:getTag("Shaoying"):toString() == p:objectName() then
-			source = p break
-		end
-	end
-	for _, p in sgs.qlist(self.room:getOtherPlayers(source)) do
-		if source:distanceTo(p) <= 1 and self:isEnemy(p) then
-			return p
-		end
+sgs.ai_skill_playerchosen.shaoying = function(self, targets)
+	local tos = {}
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) then table.insert(tos, target) end
+	end 
+	
+	if #tos > 0 then
+		self:sort(tos, "hp")
+		return tos[1]
 	end
 end
 
