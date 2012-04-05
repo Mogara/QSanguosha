@@ -171,7 +171,7 @@ public:
                 }
             }
 
-            if(same_color && damage.from)
+            if(same_color && damage.from && !damage.from->isKongcheng())
                 room->askForDiscard(damage.from, objectName(), 1);
         }
     }
