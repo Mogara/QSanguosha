@@ -106,46 +106,6 @@ QPushButton[game_control="true"]{
     padding: 6px 12px 6px 12px;
 }
 
-QPushButton#trust{
-    background-image: url(image/system/button/trust.png);
-}
-
-QPushButton#untrust{
-    background-image: url(image/system/button/untrust.png);
-}
-
-QPushButton#trust:disabled{
-    background-image: url(image/system/button/trust-disabled.png);
-}
-
-QPushButton#untrust:disabled{
-    background-image: url(image/system/button/untrust-disabled.png);
-}
-
-QPushButton#cancel[game_control="true"]{
-    background-image: url(image/system/button/cancel.png);
-}
-
-QPushButton#cancel:disabled[game_control="true"]{
-    background-image: url(image/system/button/cancel-disabled.png);
-}
-
-QPushButton#discard[game_control="true"]{
-    background-image: url(image/system/button/discard.png);
-}
-
-QPushButton#discard:disabled{
-    background-image: url(image/system/button/discard-disabled.png);
-}
-
-QPushButton#ok{
-    background-image: url(image/system/button/ok.png);
-}
-
-QPushButton#ok:disabled{
-    background-image: url(image/system/button/ok-disabled.png);
-}
-
 QPushButton#free-discard{
     background-image: url(image/system/button/free-discard.png);
 }

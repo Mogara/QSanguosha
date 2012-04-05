@@ -641,9 +641,6 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         positions << aposition;
     }
 
-
-
-
     return positions;
 }
 
