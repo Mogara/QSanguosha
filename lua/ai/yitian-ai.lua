@@ -463,7 +463,7 @@ sgs.ai_skill_playerchosen.shaoying = function(self)
 	end
 	for _, p in sgs.qlist(self.room:getOtherPlayers(source)) do
 		if source:distanceTo(p) <= 1 and self:isEnemy(p) then
-			return p break
+			return p
 		end
 	end
 end
