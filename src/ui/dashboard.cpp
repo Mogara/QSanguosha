@@ -27,12 +27,7 @@ Dashboard::Dashboard(QGraphicsItem *button_widget)
     if(button_widget)
         button_widget->setParentItem(this);
 
-    int left_width = left_pixmap.width();
     int middle_width = middle->rect().width();
-    int button_width = getButtonWidgetWidth();
-    int right_width = right->rect().width();
-    min_width = left_width + middle_width + button_width + right_width;
-
     setMiddleWidth(middle_width);
 
     sort_type = 0;
@@ -387,7 +382,7 @@ void Dashboard::setWidth(int width){
         prepareGeometryChange();
         adjustCards();
 
-    }else if(width > min_width){
+    }else if(width > 500){
         qreal left_width = left->boundingRect().width();
         qreal right_width = right->boundingRect().width();
         qreal button_width = getButtonWidgetWidth();

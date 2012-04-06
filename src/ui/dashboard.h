@@ -77,7 +77,6 @@ private:
     QPixmap left_pixmap, right_pixmap;
     QGraphicsRectItem *left, *middle, *right;
     QGraphicsItem *button_widget;
-    int min_width;
 
     QList<CardItem*> card_items;
     CardItem *selected;
