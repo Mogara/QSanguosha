@@ -14,10 +14,6 @@
 
 int main(int argc, char *argv[])
 {
-    QString dir_name = QDir::current().dirName();
-    if(dir_name == "release" || dir_name == "debug")
-        QDir::setCurrent("..");
-
     if(argc > 1 && strcmp(argv[1], "-server") == 0)
         new QCoreApplication(argc, argv);
     else
