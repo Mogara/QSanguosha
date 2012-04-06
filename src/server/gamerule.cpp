@@ -821,7 +821,7 @@ QString BasaraMode::getMappedRole(const QString &role){
 }
 
 int BasaraMode::getPriority() const{
-    return 1;
+    return 5;
 }
 
 void BasaraMode::playerShowed(ServerPlayer *player) const{
