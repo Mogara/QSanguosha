@@ -314,6 +314,10 @@ public:
     Zuixiang(): TriggerSkill("zuixiang"){
         events << PhaseChange << CardEffected ;
         frequency = Limited;
+
+        type[Card::Basic] = "BasicCard";
+        type[Card::Trick] = "TrickCard";
+        type[Card::Equip] = "EquipCard";
     }
 
     void doZuixiang(ServerPlayer *player) const{
@@ -325,6 +329,7 @@ public:
             room->moveCardTo(cd, NULL, Player::Special, true);
             room->getThread()->delay();
             player->addToPile("dream", id, true);
+            room->setPlayerCardLock(player, type[cd->getTypeId()]);
         }
 
         QList<int> zuixiang = player->getPile("dream");
@@ -348,14 +353,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *sp_pangtong, QVariant &data) const{
         Room *room = sp_pangtong->getRoom();
-
         QList<int> zuixiang = sp_pangtong->getPile("dream");
-        static QMap<Card::CardType, QString> type;
-        if(type.isEmpty()){
-            type[Card::Basic] = "BasicCard";
-            type[Card::Trick] = "TrickCard";
-            type[Card::Equip] = "EquipCard";
-        }
 
         if(event == PhaseChange && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
             if(sp_pangtong->getPhase() == Player::Start){
@@ -366,15 +364,6 @@ public:
                     doZuixiang(sp_pangtong);
                 }else
                     doZuixiang(sp_pangtong);
-            }
-            else if(sp_pangtong->getPhase() == Player::Play){
-                if(zuixiang.isEmpty())
-                    return false;
-
-                foreach(int card_id, zuixiang){
-                    const Card *card = Sanguosha->getCard(card_id);
-                    room->setPlayerCardLock(sp_pangtong, type[card->getTypeId()]);
-                }
             }
         }
         else if(event == CardEffected){
@@ -399,6 +388,9 @@ public:
         }
         return false;
     }
+
+private:
+    QMap<Card::CardType, QString> type;
 };
 
 BGMPackage::BGMPackage():Package("BGM"){
