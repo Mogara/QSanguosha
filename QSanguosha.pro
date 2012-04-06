@@ -290,6 +290,3 @@ OTHER_FILES += \
 	acknowledgement/main.qml \
 	acknowledgement/list.png \
 	acknowledgement/back.png
-
-
-QMAKE_CXXFLAGS += -wunused-parameter
