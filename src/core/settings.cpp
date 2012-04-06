@@ -58,9 +58,7 @@ void Settings::init(){
 
         setValue("BanPackages", banlist);
     }
-
     BanPackages = value("BanPackages").toStringList();
-    BanPackages << "Special3v3" ;
 
     ContestMode = value("ContestMode", false).toBool();
     FreeChoose = value("FreeChoose", false).toBool();
@@ -184,4 +182,8 @@ void Settings::init(){
                 banlist << ban_general;
     }
     setValue("Banlist/Pairs", banlist);
+
+    QStringList forbid_packages;
+    forbid_packages << "Special3v3";
+    setValue("ForbidPackages", forbid_packages.join("+"));
 }

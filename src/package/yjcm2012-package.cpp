@@ -401,22 +401,30 @@ public:
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
-        events << Damaged;
+        events << SlashEffected << Damaged;
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
 
-        if(damage.card && damage.card->inherits("Slash") && (damage.card->isRed() || damage.from->hasFlag("drank"))){
-            Room *room = player->getRoom();
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = player;
-            log.arg = objectName();
-            room->sendLog(log);
+        if(event == SlashEffected){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(effect.drank)
+                effect.to->setFlags("Dranked");
+        }
+        else{
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.card && damage.card->inherits("Slash") &&
+                    (damage.card->isRed() || damage.from->hasFlag("Dranked"))){
+                LogMessage log;
+                log.type = "#TriggerSkill";
+                log.from = player;
+                log.arg = objectName();
+                room->sendLog(log);
 
-            room->loseMaxHp(player);
+                room->loseMaxHp(player);
+            }
         }
         return false;
     }

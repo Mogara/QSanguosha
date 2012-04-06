@@ -373,7 +373,7 @@ QStringList Engine::getExtensions() const{
     QStringList extensions;
     QList<const Package *> packages = findChildren<const Package *>();
     foreach(const Package *package, packages){
-        if(package->inherits("Scenario")||package->objectName()=="Special3v3")
+        if(package->inherits("Scenario"))
             continue;
 
         extensions << package->objectName();
