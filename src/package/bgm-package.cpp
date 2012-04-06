@@ -384,9 +384,10 @@ public:
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(sp_pangtong->hasCardLock(type[effect.card->getTypeId()])){
                 LogMessage log;
-                log.type = "#ZuiXiang";
+                log.type = effect.from ? "#ZuiXiang1" : "#Zuixiang2";
                 log.from = effect.to;
-                log.to << effect.from;
+                if(effect.from)
+                    log.to << effect.from;
                 log.arg = effect.card->objectName();
                 log.arg2 = objectName();
 
