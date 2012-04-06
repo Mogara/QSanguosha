@@ -802,16 +802,20 @@ public:
 class Xiangle: public TriggerSkill{
 public:
     Xiangle():TriggerSkill("xiangle"){
-        events << CardEffected;
+        events << SlashEffected << CardFinished << CardEffected;
 
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
+    virtual bool trigger(TriggerEvent event, ServerPlayer *liushan, QVariant &data) const{
+        Room *room = liushan->getRoom();
+        if(!liushan)
+            return false;
 
-        if(effect.card->inherits("Slash")){
-            Room *room = player->getRoom();
+        if(event == CardEffected){
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if(!effect.card->inherits("Slash"))
+                return false;
 
             room->playSkillEffect(objectName());
 
@@ -822,8 +826,13 @@ public:
             log.arg = objectName();
             room->sendLog(log);
 
-            return !room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data);
+            if(!room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data))
+                room->setPlayerFlag(liushan, "xiangle_invoke");
         }
+        else if(event == CardFinished)
+            room->setPlayerFlag(liushan, "-xiangle_invoke");
+        else
+            return liushan->hasFlag("xiangle_invoke");
 
         return false;
     }
