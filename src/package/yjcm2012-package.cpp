@@ -608,7 +608,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->inherits("Slash");
+        return to_select->getFilteredCard()->objectName() == "slash";
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
