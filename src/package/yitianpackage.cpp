@@ -283,7 +283,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->hasUsed("JuejiCard");
+        return !player->hasUsed("JuejiCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
