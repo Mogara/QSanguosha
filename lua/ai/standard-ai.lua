@@ -868,7 +868,7 @@ end
 sgs.ai_skill_use_func.JieyinCard=function(card,use,self)
 	self:sort(self.friends_noself, "hp")
 	local lord = self.room:getLord()
-	if self:isFriend(lord) and not sgs.isLordHealthy()  and lord:getGeneral():isMale() then
+	if self:isFriend(lord) and not sgs.isLordHealthy()  and lord:getGeneral():isMale() and lord:isWounded() then
 		use.card=card
 		if use.to then use.to:append(lord) end
 		return

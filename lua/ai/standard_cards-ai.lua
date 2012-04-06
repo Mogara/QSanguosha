@@ -1042,7 +1042,8 @@ function SmartAI:useCardCollateral(card, use)
 	self:sort(self.enemies,"threat")
 
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:getWeapon() and self:hasSkills(sgs.lose_equip_skill, friend) then
+		if friend:getWeapon() and self:hasSkills(sgs.lose_equip_skill, friend) 
+			and not self.room:isProhibited(self.player, friend, card) then
 
 			for _, enemy in ipairs(self.enemies) do
 				if friend:canSlash(enemy) then
