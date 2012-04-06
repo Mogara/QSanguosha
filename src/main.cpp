@@ -13,11 +13,17 @@
 #include "audio.h"
 
 int main(int argc, char *argv[])
-{
+{    
     if(argc > 1 && strcmp(argv[1], "-server") == 0)
         new QCoreApplication(argc, argv);
     else
         new QApplication(argc, argv);
+
+#ifdef Q_OS_MAC
+
+    QDir::setCurrent(qApp->applicationDirPath());
+
+#endif
 
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));

@@ -261,6 +261,11 @@ win32{
 	RC_FILE += resource/icon.rc
 }
 
+macx{
+    ICON = resource/icon/sgs.icns
+}
+
+
 LIBS += -L.
 
 CONFIG(audio){
@@ -287,4 +292,4 @@ OTHER_FILES += \
 	acknowledgement/back.png
 
 
-
+QMAKE_CXXFLAGS += -wunused-parameter
