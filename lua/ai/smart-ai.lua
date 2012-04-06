@@ -1154,6 +1154,15 @@ function SmartAI:objectiveLevel(player)
 					else
 						return 0
 					end
+				elseif renegade_num > 1 then
+						if player:isLord() then
+							if not sgs.isLordHealthy() then return -1
+							else return 3 end
+						elseif sgs.evaluatePlayerRole(player) == "renegade" then
+							return 3 
+						else
+							return 5
+						end
 				else
 					if process == "loyalist" then
 						if player:isLord() then
