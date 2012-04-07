@@ -505,7 +505,6 @@ spear_skill.getTurnUseCard=function(self,inclusive)
 
 	if #cards<(self.player:getHp()+1) then return nil end
 	if #cards<2 then return nil end
-	if self:getCard("Slash") then return nil end
 
 	self:sortByUseValue(cards,true)
 

@@ -659,6 +659,11 @@ function SmartAI:getPriorTarget()
 		if enemy:isLord() and not inOneGroup(enemy) and sgs.isLordInDanger() then return enemy end
 	end
 
+	self:sort(self.enemies, "defense")
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getHp() < 2 and not inOneGroup(enemy) then return enemy end
+	end
+
 	for _, enemy in ipairs(self.enemies) do	
 		if not inOneGroup(enemy) and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(prior_targets, enemy)
@@ -2123,7 +2128,13 @@ end
 
 function SmartAI:getCardNeedPlayer(cards)
 	cards = cards or sgs.QList2Table(self.player:getHandcards())
-	
+
+	self:sort(self.enemies, "hp")
+	for _,acard in ipairs(cards) do
+		if acard:inherits("Shit") and #self.enemies > 0 then
+			return acard, self.enemies[1]
+		end
+	end	
 	
 	-- special move between liubei and xunyu and huatuo
 	local cardtogivespecial = {}
