@@ -517,6 +517,21 @@ bool Card::canJilei() const{
     return can_jilei;
 }
 
+void Card::setFlags(const QString &flag) const{
+    static char symbol_c = '-';
+
+    if(flag == ".")
+        flags.clear();
+    if(flag.startsWith(symbol_c))
+        flags.removeOne(flag);
+    else
+        flags << flag;
+}
+
+bool Card::hasFlag(const QString &flag) const{
+    return flags.contains(flag);
+}
+
 // ---------   Skill card     ------------------
 
 SkillCard::SkillCard()

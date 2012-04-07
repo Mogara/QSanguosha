@@ -12,7 +12,7 @@ GameRule::GameRule(QObject *parent)
 {
     setParent(parent);
 
-    events << GameStart << TurnStart << PhaseChange << CardUsed
+    events << GameStart << TurnStart << PhaseChange << CardUsed << CardFinished
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
             << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
@@ -200,6 +200,13 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             break;
         }
+
+    case CardFinished: {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.card->setFlags(".");
+
+            break;
+    }
 
     case HpRecover:{
             RecoverStruct recover_struct = data.value<RecoverStruct>();
