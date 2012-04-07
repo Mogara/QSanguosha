@@ -460,7 +460,7 @@ public:
 class Jiefan : public TriggerSkill{
 public:
     Jiefan():TriggerSkill("jiefan"){
-        events << Dying << SlashHit << SlashMissed;
+        events << Dying << SlashHit << SlashMissed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

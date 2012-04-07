@@ -77,7 +77,8 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     foreach(const Card *cd, effect.to->getHandcards()){
         dummy_card->addSubcard(cd);
     }
-    room->moveCardTo(dummy_card, effect.from, Player::Hand, false);
+    if (!effect.to->isKongcheng())
+        room->moveCardTo(dummy_card, effect.from, Player::Hand, false);
     room->setTag("LihunTarget", QVariant::fromValue(effect.to));
 }
 
