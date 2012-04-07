@@ -416,7 +416,7 @@ public:
         else{
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.card && damage.card->inherits("Slash") &&
-                    (damage.card->isRed() || damage.from->hasFlag("Dranked"))){
+                    (damage.card->isRed() || damage.to->hasFlag("Dranked"))){
                 LogMessage log;
                 log.type = "#TriggerSkill";
                 log.from = player;
@@ -424,6 +424,8 @@ public:
                 room->sendLog(log);
 
                 room->loseMaxHp(player);
+                if(damage.to->hasFlag("Dranked"))
+                    room->setPlayerFlag(damage.to, "-Dranked");
             }
         }
         return false;
