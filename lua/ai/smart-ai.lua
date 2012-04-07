@@ -75,8 +75,9 @@ function setInitialTables()
 	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu|guixin"
 	sgs.wizard_skill = 			"guicai|guidao|jilve|tiandu"
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve"
-	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jijiu|jizhi|guzheng|qixi|xiaoji|jieyin|guose"
-	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|leiji|buqu|jushou|yiji|ganglie|guixin"
+	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jizhi|guzheng|qixi|jieyin|guose|duanliang"
+	sgs.save_skill = 			"jijiu|buyi|jiefan|chunlao"
+	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|buqu|yiji|ganglie|guixin|jieming|miji"
 	sgs.cardneed_skill =        "paoxiao|tianyi|xianzhen|shuangxiong|jizhi|guose|duanliang|qixi|qingnang|" ..
 								"jieyin|renjie|zhiheng|rende|jujian|guicai|guidao|jilve|longhun|wusheng|longdan"
 	sgs.drawpeach_skill =       "tuxi|qiaobian"
@@ -642,6 +643,22 @@ function SmartAI:getPriorTarget()
 	end
 	if #self.enemies == 0 then return end
 	local prior_targets = {}
+
+	for _, enemy in ipairs(self.enemies) do	
+		if not inOneGroup(enemy) and self:hasSkills(sgs.save_skill, player) then
+			table.insert(prior_targets, enemy)
+		end
+	end
+	
+	if #prior_targets > 0 then
+		self:sort(prior_targets, "threat")
+		return prior_targets[1]
+	end
+
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:isLord() and not inOneGroup(enemy) and sgs.isLordInDanger() then return enemy end
+	end
+
 	for _, enemy in ipairs(self.enemies) do	
 		if not inOneGroup(enemy) and self:hasSkills(sgs.priority_skill, player) then
 			table.insert(prior_targets, enemy)
