@@ -126,6 +126,7 @@ public:
     void askForAG(const QString &);
     void takeAG(const QString &take_str);
     void clearAG(const QString &);
+    void disableAG(const QString &disable_str);
 
     void askForCard(const QString &request_str);
     void askForUseCard(const QString &request_str);
@@ -263,6 +264,7 @@ signals:
     void ag_filled(const QList<int> &card_ids);
     void ag_taken(const ClientPlayer *taker, int card_id);
     void ag_cleared();
+    void ag_disabled(bool);
 
     void generals_filled(const QStringList &general_names);
     void general_taken(const QString &who, const QString &name);

@@ -8,12 +8,18 @@
 #include <QGraphicsSceneMouseEvent>
 
 GrabCardItem::GrabCardItem(const Card *card)
-    :CardItem(card)
+    :CardItem(card), disable(false)
 {
 }
 
+void GrabCardItem::setDisabled(bool is_disable){
+    disable = is_disable;
+}
+
 void GrabCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
-    emit grabbed();
+    if(!disable)
+        emit grabbed();
+
     goBack();
 }
 
@@ -78,6 +84,12 @@ void CardContainer::clear(){
     items.clear();
     close_button->hide();
     hide();
+}
+
+void CardContainer::disableCards(bool is_disable){
+    foreach(GrabCardItem *item, items){
+        item->setDisabled(is_disable);
+    }
 }
 
 CardItem *CardContainer::take(const ClientPlayer *taker, int card_id){
