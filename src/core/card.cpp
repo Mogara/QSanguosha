@@ -470,7 +470,7 @@ void Card::onMove(const CardMoveStruct &move) const{
 
 void Card::addSubcard(int card_id){
     if(card_id < 0)
-        qWarning(qPrintable(tr("Subcard must not be virtual card!")));
+        qWarning("%s", qPrintable(tr("Subcard must not be virtual card!")));
     else
         subcards << card_id;
 }
