@@ -41,6 +41,9 @@ public:
     bool isPending() const;
     bool isEquipped() const;
 
+    void setDisabled(bool is_disable);
+    bool isDisabled() const;
+
     static const int NormalY = 36;
     static const int PendingY = NormalY - 40;
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
@@ -63,7 +66,7 @@ private:
     QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap, *owner_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
-    bool auto_back;
+    bool auto_back, disable;
 signals:
     void toggle_discards();
     void clicked();

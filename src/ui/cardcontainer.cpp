@@ -8,16 +8,12 @@
 #include <QGraphicsSceneMouseEvent>
 
 GrabCardItem::GrabCardItem(const Card *card)
-    :CardItem(card), disable(false)
+    :CardItem(card)
 {
 }
 
-void GrabCardItem::setDisabled(bool is_disable){
-    disable = is_disable;
-}
-
 void GrabCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
-    if(!disable)
+    if(!isDisabled())
         emit grabbed();
 
     goBack();

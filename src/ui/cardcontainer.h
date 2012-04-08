@@ -27,15 +27,10 @@ class GrabCardItem: public CardItem{
 public:
     GrabCardItem(const Card *card);
 
-    void setDisabled(bool is_disable);
-
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 signals:
     void grabbed();
-
-private:
-    bool disable;
 };
 
 class CardContainer : public Pixmap
