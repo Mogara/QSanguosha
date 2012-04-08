@@ -28,7 +28,11 @@ sgs.ai_chaofeng.yuanshu = 3
 
 sgs.ai_skill_invoke.danlao = function(self, data)
 	local effect = data:toCardUse()
+	local current = self.room:getCurrent()
 	if effect.card:inherits("GodSalvation") and self.player:isWounded() then
+		return false
+	elseif effect.card:inherits("AmazingGrace") and
+		(self.player:getSeat() - current:getSeat()) % (global_room:alivePlayerCount()) < global_room:alivePlayerCount()/2 then
 		return false
 	else
 		return true
@@ -43,7 +47,9 @@ sgs.ai_skill_invoke.jilei = function(self, data)
 end	
 
 sgs.ai_skill_choice.jilei = function(self, choices)
-	if self:isEquip("Crossbow",self.jilei_source) and self.jilei_source:inMyAttackRange(self.player) then
+	local tmptrick = sgs.Sanguosha:cloneCard("ex_nihilo", sgs.Card_NoSuit, 0)
+	if (self:isEquip("Crossbow",self.jilei_source) and self.jilei_source:inMyAttackRange(self.player)) or
+		 self.jilei_source:isJilei(tmptrick) then
 		return "basic"
 	else
 		return "trick"
