@@ -12,8 +12,28 @@ if [ ! -d "QSanguosha.app" ]; then
     exit 1
 fi
 
+# use here document to store items that should be copied
+items=`cat<<EOF
+acknowledgement 
+audio
+backdrop
+diy
+etc
+extension-doc
+font 
+gpl-3.0.txt 
+image 
+lang 
+lua 
+qt_zh_CN.qm 
+sanguosha.lua 
+sanguosha.qm 
+sanguosha.qss 
+scenarios
+EOF`
+
 # first, we copy all resource files into MacOS folder:
-for item in acknowledgement audio backdrop diy etc extension-doc font gpl-3.0.txt image lang lua qt_zh_CN.qm sanguosha.lua sanguosha.qm sanguosha.qss scenarios
+for item in $items 
 do
     echo "Copying $item ..."
     cp -R "$SRC_DIR/$item" "$BUILD_DIR/QSanguosha.app/Contents/MacOS"
