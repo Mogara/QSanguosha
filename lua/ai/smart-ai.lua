@@ -487,6 +487,7 @@ function SmartAI:cardNeed(card)
 		if self.player:getHp() < 2 then return 10 end
 	end
 	if card:inherits("Slash") and (self:getCardsNum("Slash") > 0) then return 4 end
+	if card:inherits("Crossbow") and  self:hasSkills("luoshen|yongsi|kurou|keji|wusheng|wushen",self.player) then return 20 end
 	if card:inherits("Weapon") and (not self.player:getWeapon()) and (self:getCardsNum("Slash") > 1) then return 6 end
 	if card:inherits("Nullification") and self:getCardsNum("Nullification") == 0 then
 		if self.player:containsTrick("indulgence") or self.player:containsTrick("supply_shortage") then return 10 end
@@ -1177,14 +1178,13 @@ function SmartAI:objectiveLevel(player)
 						return 0
 					end
 				elseif renegade_num > 1 then
-						if player:isLord() then
-							if not sgs.isLordHealthy() then return -1
-							else return 3 end
-						elseif sgs.evaluatePlayerRole(player) == "renegade" then
-							return 3 
-						else
-							return 5
-						end
+					if player:isLord() then
+						return 0
+					elseif sgs.evaluatePlayerRole(player) == "renegade" then
+						return 3
+					else
+						return 5
+					end
 				else
 					if process == "loyalist" then
 						if player:isLord() then
@@ -3605,7 +3605,7 @@ function SmartAI:useEquipCard(card, use)
 				if not friend:getWeapon() then return end
 			end
 		end
-		if self.player:hasSkill("paoxiao") and card:inherits("Crossbow") then return end
+		if self:hasSkill("paoxiao|fuhun",self.player) and card:inherits("Crossbow") then return end
 		if self.player:getWeapon() and self.player:getWeapon():inherits("YitianSword") then use.card = card return end
 		if self:evaluateWeapon(card) > self:evaluateWeapon(self.player:getWeapon()) then
 			if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
