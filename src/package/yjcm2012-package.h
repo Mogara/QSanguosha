@@ -8,13 +8,6 @@
 #include <QMutex>
 #include <QGroupBox>
 #include <QAbstractButton>
-#include <QButtonGroup>
-#include <QDialog>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QCommandLinkButton>
-#include <QLayout>
-
 
 class YJCM2012Package: public Package{
     Q_OBJECT
@@ -26,15 +19,17 @@ public:
 class QiceCard: public SkillCard{
     Q_OBJECT
 
-
 public:
     Q_INVOKABLE QiceCard();
 
+    virtual Card::Suit getSuit(QList<int> cardid_list) const;
+    virtual int getNumber(QList<int> cardid_list) const;
     virtual bool targetFixed() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
     virtual const Card *validate(const CardUseStruct *card_use) const;
+    virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
 };
 
 class AnxuCard: public SkillCard{
