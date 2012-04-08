@@ -480,6 +480,7 @@ public:
                 return false;
 
             const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data);
+            slash->setFlags("jiefan-slash");
             room->setTag("JiefanTarget", data);
             if(slash){
                 CardUseStruct use;

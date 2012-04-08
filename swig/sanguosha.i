@@ -574,6 +574,10 @@ public:
 	bool isOnce() const;
 	bool isMute() const;
 	bool willThrow() const;
+	bool canJilei() const;
+	
+    void setFlags(const QString &flag) const;
+    bool hasFlag(const QString &flag) const;
 
 	virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 	virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;

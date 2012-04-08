@@ -209,7 +209,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), card_container, SLOT(fillCards(QList<int>)));
         connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
         connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
-        connect(ClientInstance, SIGNAL(ag_disabled(bool)), card_container, SLOT(disableCards(bool)));
+        connect(ClientInstance, SIGNAL(ag_disabled(bool)), card_container, SLOT(freezeCards(bool)));
 
         if(circular)
             card_container->moveBy(-120, 0);

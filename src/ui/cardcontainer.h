@@ -49,7 +49,7 @@ public:
 public slots:
     void fillCards(const QList<int> &card_ids);
     void clear();
-    void disableCards(bool is_disable);
+    void freezeCards(bool is_disable);
 
 private:
     QList<GrabCardItem *> items;
