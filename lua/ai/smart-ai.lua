@@ -2507,7 +2507,7 @@ function SmartAI:askForYiji(card_ids)
 	if #self.friends > 1 and self:getOverflow() > 0 then
 		self:sort(self.friends, "handcard")
 		for _, afriend in ipairs(self.friends) do
-			if not self:needKongcheng(afriend) or afriend:hasSkill("manjuan") then
+			if not (self:needKongcheng(afriend) or afriend:hasSkill("manjuan")) then
 				for _, acard_id in ipairs(card_ids) do
 					if not sgs.Sanguosha:getCard(acard_id):inherits("Shit") then return afriend, acard_id end
 				end
@@ -2887,7 +2887,7 @@ local function zeroCardView(class_name, player)
 	for _, askill in ipairs(vlist) do
 		local callback = sgs.ai_zerocardview[askill]
 		if type(callback) == "function" and callback(class_name, player) then
-			return callback(card, player)
+			return callback(class_name, player)
 		end
 	end
 end
@@ -3420,6 +3420,11 @@ function SmartAI:getAoeValue(card, player)
 		bad = bad + self:getAoeValueTo(card, enemy, player)
 	end
 
+	for _, player in sgs.qlist(self.room:getAlivePlayers()) do
+		if self:cantbeHurt(player) then
+			bad = bad -1500
+		end
+	end
 	if player:hasSkill("jizhi") then
 		good = good + 40
 	end

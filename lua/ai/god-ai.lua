@@ -51,33 +51,56 @@ sgs.ai_skill_playerchosen.wuhun = function(self, targets)
 end
 
 function sgs.ai_slash_prohibit.wuhun(self, to)
-	if self:isEnemy(to) and self:isWeak(to) and not (to:isLord() and self.player:getRole() == "rebel") then
-		local mark = 0
-		local marks = {}
-		for _, player in sgs.qlist(self.room:getAlivePlayers()) do
-			local mymark = player:getMark("@nightmare")
-			if player:objectName() == self.player:objectName() then
-				mymark = mymark + 1
-				if self.player:hasFlag("drank") then mymark = mymark + 1 end
-			end
-			if mymark > mark then mark = mymark end
-			marks[player:objectName()] = mymark
-		end
-		if mark > 0 then
-			for _,friend in ipairs(self.friends) do
-				if marks[friend:objectName()] == mark and (not self:isWeak(friend) or friend:isLord()) and
-					not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
-			end
-			if self.player:getRole()~="rebel" and marks[self.room:getLord():objectName()] == mark and
-				not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then
-				local all_loyal = true
-				for _, aplayer in sgs.qlist(self.room:getOtherPlayers(to)) do
-					if  sgs.evaluatePlayerRole(aplayer) ~= "loyalist" and not aplayer:isLord() then all_loyal = false break end
-				end
-				if not all_loyal then return true end
+	local maxfriendmark = 0
+	local maxenemymark = 0
+	for _, friend in ipairs(self.friends) do
+		local friendmark = friend:getMark("@nightmare")
+		if friendmark > maxfriendmark then maxfriendmark = friendmark end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		local enemymark = enemy:getMark("@nightmare")
+		if enemymark > maxenemymark and enemy:objectName() ~= to:objectName() then maxenemymark = enemymark end
+	end
+	if self:isEnemy(to) and not (to:isLord() and self.player:getRole() == "rebel") then
+		if (maxfriendmark+2 > maxenemymark) and not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then 
+			if not (self.player:getMark("@nightmare") == maxfriendmark and self:isWeak() and not self.player:isLord() and not self.role == "renegade") then
+				return true
 			end
 		end
 	end
+end
+
+function SmartAI:cantbeHurt(player)
+	local maxfriendmark = 0
+	local maxenemymark = 0
+	if player:hasSkill("wuhun") then
+		for _, friend in ipairs(self.friends) do
+			local friendmark = friend:getMark("@nightmare")
+			if friendmark > maxfriendmark then maxfriendmark = friendmark end
+		end
+		for _, enemy in ipairs(self.enemies) do
+			local enemymark = enemy:getMark("@nightmare")
+			if enemymark > maxenemymark and enemy:objectName() ~= to:objectName() then maxenemymark = enemymark end
+		end
+		if self:isEnemy(player) and not (player:isLord() and self.player:getRole() == "rebel") then
+			if (maxfriendmark+2 > maxenemymark) and not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then 
+				if not (self.player:getMark("@nightmare") == maxfriendmark and self:isWeak() and not self.player:isLord() and not self.role == "renegade") then
+					return true
+				end
+			end
+		elseif maxfriendmark+1 > maxenemymark then 
+			return true
+		end
+	elseif player:hasSkill("beige") then
+		if player:getHp() < 2 then
+			if self:isFriend(player) then
+				return true
+			elseif #self.enemies > 2 then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function SmartAI:needDeath(player)
