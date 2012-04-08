@@ -14,7 +14,7 @@
 #include <QGraphicsDropShadowEffect>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true), disable(false)
+    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true), frozen(false)
 
 {
     Q_ASSERT(card != NULL);
@@ -38,7 +38,7 @@ CardItem::CardItem(const Card *card)
 }
 
 CardItem::CardItem(const QString &general_name)
-    :card(NULL), filtered_card(NULL), auto_back(true), disable(false)
+    :card(NULL), filtered_card(NULL), auto_back(true), frozen(false)
 {
     changeGeneral(general_name);
 }
@@ -206,12 +206,12 @@ bool CardItem::isEquipped() const{
     return Self->hasEquip(card);
 }
 
-void CardItem::setDisabled(bool is_disable){
-    disable = is_disable;
+void CardItem::setFrozen(bool is_frozen){
+    frozen = is_frozen;
 }
 
-bool CardItem::isDisabled() const{
-    return disable;
+bool CardItem::isFrozen() const{
+    return frozen;
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
@@ -234,7 +234,7 @@ void CardItem::promoteZ()
 }
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *){
-    if(isDisabled())
+    if(isFrozen())
         return;
 
     if(hasFocus())
@@ -242,7 +242,7 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *){
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
-    if(isDisabled())
+    if(isFrozen())
         return;
 
     if(auto_back){
@@ -266,7 +266,7 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
-    if(isDisabled())
+    if(isFrozen())
         return;
 
     if(hasFocus()){

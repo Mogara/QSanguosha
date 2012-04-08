@@ -41,8 +41,8 @@ public:
     bool isPending() const;
     bool isEquipped() const;
 
-    void setDisabled(bool is_disable);
-    bool isDisabled() const;
+    void setFrozen(bool is_frozen);
+    bool isFrozen() const;
 
     static const int NormalY = 36;
     static const int PendingY = NormalY - 40;
@@ -66,7 +66,7 @@ private:
     QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap, *owner_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
-    bool auto_back, disable;
+    bool auto_back, frozen;
 signals:
     void toggle_discards();
     void clicked();

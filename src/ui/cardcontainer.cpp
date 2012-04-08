@@ -13,7 +13,7 @@ GrabCardItem::GrabCardItem(const Card *card)
 }
 
 void GrabCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
-    if(!isDisabled())
+    if(!isFrozen())
         emit grabbed();
 
     goBack();
@@ -82,9 +82,9 @@ void CardContainer::clear(){
     hide();
 }
 
-void CardContainer::disableCards(bool is_disable){
+void CardContainer::freezeCards(bool is_frozen){
     foreach(GrabCardItem *item, items){
-        item->setDisabled(is_disable);
+        item->setFrozen(is_frozen);
     }
 }
 
