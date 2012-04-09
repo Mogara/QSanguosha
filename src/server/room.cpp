@@ -1792,6 +1792,10 @@ void Room::run(){
         names.removeOne("yuji");
 
         foreach(ServerPlayer *player, players){
+
+            //Ensure that the game starts with all player's mutex locked
+            player->getMutex()->tryLock();
+
             if(player == lord)
                 continue;
 
