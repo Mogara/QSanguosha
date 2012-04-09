@@ -9,7 +9,7 @@ class Recorder;
 #include "player.h"
 #include "socket.h"
 
-#include <QMutex>
+#include <QSemaphore>
 #include <QDateTime>
 
 class ServerPlayer : public Player
@@ -101,10 +101,27 @@ public:
 
     void startNetworkDelayTest();
     qint64 endNetworkDelayTest();
-    inline QMutex* getMutex(){return mutex;}
 
-protected:
-    QMutex *mutex;
+    //Synchronization helpers
+    enum SemaphoreType {SEMA_CHOOSE_GENERAL, SEMA_CHOOSE_GENERAL2, SEMA_COMMAND, SEMA_CHOOSE_ROLE};
+    inline QSemaphore* getSemaphore(SemaphoreType type){ return semas[type]; }
+    inline void acquireLock(SemaphoreType type){ semas[type]->acquire(); }
+    inline bool tryAcquireLock(SemaphoreType type, int timeout = 0){
+        return semas[type]->tryAcquire(1, timeout); 
+    }
+    inline void releaseLock(SemaphoreType type){ semas[type]->release(); }
+    inline void drainLock(SemaphoreType type){ while (semas[type]->tryAcquire()); }
+    inline void drainAllLocks(){
+        for(int i=0; i< S_NUM_SEMAPHORES; i++){
+            drainLock((SemaphoreType)i);
+        }
+    }
+
+
+protected:    
+    //Synchronization helpers
+    QSemaphore **semas;
+    static const int S_NUM_SEMAPHORES;    
 
 private:
     ClientSocket *socket;

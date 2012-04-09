@@ -968,7 +968,7 @@ void RoomScene::timerEvent(QTimerEvent *event){
 
     int timeout = ServerInfo.OperationTimeout;
     if(ClientInstance->getStatus() == Client::AskForGuanxing)
-        timeout = 20;
+        timeout = Config.S_GUANXING_TIMEOUT;
 
     int step = 100 / double(timeout * 5);
     int new_value = progress_bar->value() + step;

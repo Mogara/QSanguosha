@@ -71,6 +71,7 @@ public:
 
     // consts
     static const int S_CHOOSE_GENERAL_TIMEOUT;
+    static const int S_GUANXING_TIMEOUT;
 };
 
 extern Settings Config;

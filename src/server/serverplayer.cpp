@@ -8,11 +8,16 @@
 #include "banpair.h"
 #include "lua-wrapper.h"
 
+const int ServerPlayer::S_NUM_SEMAPHORES = 4;
+
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), socket(NULL), room(room),
-    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL), next(NULL), mutex(new QMutex)
+    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL), next(NULL)
 {
-    mutex->lock();
+    semas = new QSemaphore*[S_NUM_SEMAPHORES];
+    for(int i=0; i< S_NUM_SEMAPHORES; i++){
+        semas[i] = new QSemaphore(0);
+    }        
 }
 
 void ServerPlayer::drawCard(const Card *card){
