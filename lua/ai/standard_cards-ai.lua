@@ -710,7 +710,8 @@ function SmartAI:useCardDuel(duel, use)
 		local n2 = target:getHandcardNum()
 		if target:hasSkill("wushuang") then n2 = n2*2 end
 		local useduel
-		if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) then
+		if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) 
+			and not self:cantbeHurt(target) then
 			if n1 >= n2 then
 				useduel = true
 			elseif n2 > n1*2 + 1 then
@@ -819,13 +820,13 @@ function SmartAI:getValuableCard(who)
 	self:sort(self.friends, "hp")
 	local friend 
 	if #self.friends > 0 then friend = self.friends[1] end
-	if friend and self:isWeak(friend) and who:inMyAttackRange(friend) then
+	if friend and self:isWeak(friend) and who:inMyAttackRange(friend) and not who:hasSkill("xuanfeng") then
 		if weapon and who:distanceTo(friend) > 1 and not 
 			(weapon and weapon:inherits("MoonSpear") and who:hasSkill("keji") and who:getHandcardNum() > 5) then return weapon:getEffectiveId() end
 		if offhorse and who:distanceTo(friend) > 1 then return offhorse:getEffectiveId() end
 	end
 
-	if defhorse then
+	if defhorse and not who:hasSkill("xuanfeng") then
 		for _,friend in ipairs(self.friends) do
 			if friend:distanceTo(who) == friend:getAttackRange()+1 then
 				return defhorse:getEffectiveId()
@@ -833,7 +834,7 @@ function SmartAI:getValuableCard(who)
 		end
 	end
 
-	if armor and self:evaluateArmor(armor,who)>3 then
+	if armor and self:evaluateArmor(armor,who)>3 and not who:hasSkill("xuanfeng") then
 		return armor:getEffectiveId()
 	end
 
@@ -860,7 +861,7 @@ function SmartAI:getValuableCard(who)
 	end
 
 	if weapon then
-		if not (who:hasSkill("xiaoji") and (who:getHandcardNum() >= who:getHp())) and not self:isEquip("YitianSword",who) then
+		if not (self:hasSkills(sgs.lose_equip_skill,who) or self:isEquip("YitianSword",who)) then
 			for _,friend in ipairs(self.friends) do
 				if ((who:distanceTo(friend) <= who:getAttackRange()) and (who:distanceTo(friend) > 1)) or who:hasSkill("qiangxi") then
 					return weapon:getEffectiveId()
@@ -870,7 +871,7 @@ function SmartAI:getValuableCard(who)
 	end
 
 	if offhorse then
-		if who:hasSkill("xiaoji") and who:getHandcardNum() >= who:getHp() then
+		if self:hasSkills(sgs.lose_equip_skill,who) then
 		else
 			for _,friend in ipairs(self.friends) do
 				if who:distanceTo(friend) == who:getAttackRange() and
