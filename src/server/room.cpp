@@ -2770,19 +2770,23 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     if(to_discard.isEmpty())
         return false;
 
-    foreach(int card_id, to_discard){
-        throwCard(card_id);
-
-        LogMessage log;
-        log.type = "$DiscardCard";
-        log.from = target;
-        log.card_str = QString::number(card_id);
-        sendLog(log);
-    }
-
     DummyCard *dummy_card = new DummyCard;
     foreach(int card_id, to_discard)
         dummy_card->addSubcard(card_id);
+
+    throwCard(dummy_card);
+
+    LogMessage log;
+    log.type = "$DiscardCard";
+    log.from = target;
+    foreach(int card_id, to_discard){
+
+        if(log.card_str.isEmpty())
+            log.card_str = QString::number(card_id);
+        else
+            log.card_str += "+" + QString::number(card_id);
+    }
+    sendLog(log);
 
     CardStar card_star = dummy_card;
     QVariant data = QVariant::fromValue(card_star);

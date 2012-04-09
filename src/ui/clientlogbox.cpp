@@ -41,8 +41,14 @@ void ClientLogBox::appendLog(
     QString log;
 
     if(type.startsWith("$")){
-        const Card *card = Sanguosha->getCard(card_str.toInt());
-        QString log_name = card->getLogName();
+        QString log_name;
+        foreach(QString one_card, card_str.split("+")){
+            const Card *card = Sanguosha->getCard(one_card.toInt());
+            if(log_name.isEmpty())
+                log_name = card->getLogName();
+            else
+                log_name += ", " + card->getLogName();
+        }
         log_name = bold(log_name, Qt::yellow);
 
         log = Sanguosha->translate(type);
