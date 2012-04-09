@@ -3243,6 +3243,7 @@ function SmartAI:aoeIsEffective(card, to)
 	if to:hasSkill("danlao") and #players > 2 then
 		return false
 	end
+	return true
 end
 
 function SmartAI:canAvoidAOE(card)
@@ -3385,7 +3386,6 @@ function SmartAI:getAoeValueTo(card, to , from)
 	else
 		value = value + 20
 	end
-
 	return value
 end
 

@@ -92,7 +92,7 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equ
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local index = 0
 	local all_peaches = 0
-	for _, card in sgs.qlist(cards) do
+	for _, card in ipairs(cards) do
 		if card:inherits("Peach") then
 			all_peaches = all_peaches + 1
 		end
