@@ -3443,7 +3443,7 @@ function SmartAI:useTrickCard(card, use)
 	end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
-		if self.role == "renegade" and not self:isWeak(self.room:getLord()) then use.card = card return end
+		if not self.role == "rebel" and sgs.turncount < 2 and card:inherits("ArcheryAttack") then return end
 		if self.role == "rebel" and sgs.turncount < 2 and card:inherits("SavageAssault") then return end
 		local good = self:getAoeValue(card,self.player)
 		if good > 0 then
