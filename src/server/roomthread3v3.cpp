@@ -44,8 +44,6 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
               generals << Sanguosha->getGeneral(general_name);
     }
 
-    Q_ASSERT(generals.length() == 33);
-
     QStringList general_names;
     foreach(const General *general, generals)
         general_names << general->objectName();
