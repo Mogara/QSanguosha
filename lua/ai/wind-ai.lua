@@ -384,8 +384,9 @@ end
 table.insert(sgs.ai_choicemade_filter.cardUsed, guhuo_filter)
 
 sgs.ai_skill_choice.guhuo = function(self, choices)
+	local yuji = self.room:findPlayerBySkillName("guhuo")
 	if sgs.guhuotype and self:getRestCardsNum(sgs.guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
-	if sgs.guhuotype and (sgs.guhuotype == "Shit" or sgs.guhuotype == "AmazingGrace" or sgs.guhuotype == "Slash") then return "noquestion" end
+	if sgs.guhuotype and (sgs.guhuotype == "Shit" or sgs.guhuotype == "AmazingGrace" or (sgs.guhuotype == "Slash" and not self:isEquip("Crossbow",yuji))) then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 	local yuji
@@ -433,7 +434,7 @@ guhuo_skill.getTurnUseCard=function(self)
 	if card_str then return sgs.Card_Parse(card_str) end
 
 	local slash_str = self:getGuhuoCard("Slash", self.player, true) or self:getGuhuoCard("Analeptic", self.player, true)
-	if slash_str and self:slashIsAvailable() and self.player:canSlashWithoutCrossbow() then return sgs.Card_Parse(slash_str) end
+	if slash_str and self:slashIsAvailable() and (self.player:canSlashWithoutCrossbow() or self:isEquip("Crossbow")) then return sgs.Card_Parse(slash_str) end
 
 	local guhuo = "peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
 	local guhuos = guhuo:split("|")
