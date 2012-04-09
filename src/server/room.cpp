@@ -2309,7 +2309,7 @@ void Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
         broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
-void Room::drawCards(ServerPlayer *player, int n){
+void Room::drawCards(ServerPlayer *player, int n, const QString &reason){
     if(n <= 0)
         return;
 
@@ -2321,6 +2321,7 @@ void Room::drawCards(ServerPlayer *player, int n){
         int card_id = drawCard();
         card_ids << card_id;
         const Card *card = Sanguosha->getCard(card_id);
+        card->setFlags(reason);
 
         QVariant data = QVariant::fromValue(card_id);
         if(thread->trigger(CardDrawing, player, data))

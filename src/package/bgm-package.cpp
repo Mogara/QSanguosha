@@ -252,6 +252,10 @@ public:
         frequency = Frequent;
     }
 
+    virtual int getPriority() const{
+        return 2;
+    }
+
     void doManjuan(ServerPlayer *sp_pangtong, int card_id) const{
         Room *room = sp_pangtong->getRoom();
         sp_pangtong->setFlags("ManjuanInvoke");

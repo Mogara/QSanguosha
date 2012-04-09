@@ -158,8 +158,17 @@ public:
 
         int x = damage.damage, i;
         for(i=0; i<x; i++){
-            guojia->drawCards(2);
-            QList<int> yiji_cards = guojia->handCards().mid(guojia->getHandcardNum() - 2);
+            guojia->drawCards(2, true, objectName());
+            QList<int> yiji_cards;
+            foreach(const Card *card, guojia->getHandcards()){
+                if(card->hasFlag(objectName())){
+                    card->setFlags("-" + objectName());
+                    yiji_cards << card->getEffectiveId();
+                }
+            }
+
+            if(yiji_cards.isEmpty())
+                continue;
 
             while(room->askForYiji(guojia, yiji_cards))
                 ; // empty loop
