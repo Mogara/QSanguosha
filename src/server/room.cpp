@@ -26,8 +26,8 @@
 Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
       draw_pile(&pile1), discard_pile(&pile2),
-      game_started(false), game_finished(false), L(NULL),
-      thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL), has_provided(false), _virtual(false)
+      game_started(false), game_finished(false), L(NULL), sem(new QSemaphore),
+      thread(NULL), thread_3v3(NULL), provided(NULL), has_provided(false), _virtual(false)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -451,8 +451,9 @@ void Room::gameOver(const QString &winner){
 
     if(QThread::currentThread() == thread)
         thread->end();
-    else
-        sem->release();
+    //else
+        //@todo: release some kind of semaphore?
+        //mutex->unlock();
 }
 
 void Room::slashEffect(const SlashEffectStruct &effect){
@@ -1392,11 +1393,9 @@ void Room::reportDisconnection(){
     }else{
         if(!game_started){
             // third case
-            if(!QRegExp("^\\d\\d_\\dv\\d$").exactMatch(mode)){
-                if(player->getGeneral() == NULL)
-                    chooseCommand(player, QString());
-                else
-                    choose2Command(player, QString());
+            if(!QRegExp("^\\d\\d_\\dv\\d$").exactMatch(mode)){                
+                //@todo: possibility of releasing the mutex twice!!
+                player->getMutex()->unlock();                
             }
         }
 
@@ -1421,7 +1420,7 @@ void Room::reportDisconnection(){
             reply_func.clear();
             result.clear();
 
-            sem->release();
+            player->getMutex()->unlock();
         }
     }
 
@@ -1445,7 +1444,7 @@ void Room::trustCommand(ServerPlayer *player, const QString &){
             reply_func.clear();
             result.clear();
 
-            sem->release();
+            player->getMutex()->unlock();
         }
     }else
         player->setState("online");
@@ -1702,16 +1701,30 @@ void Room::chooseGenerals(){
     assignGeneralsForPlayers(to_assign);
     foreach(ServerPlayer *player, to_assign){
         askForGeneralAsync(player);
+    }    
+    foreach(ServerPlayer *player, to_assign){
+        if (Config.OperationNoLimit)
+            player->getMutex()->lock();
+        else
+            player->getMutex()->tryLock(Config.S_CHOOSE_GENERAL_TIMEOUT * 1000);
+        if(!player->getGeneral())
+            chooseCommand(player, QString());
     }
-    sem->acquire(to_assign.length());
 
     if(Config.Enable2ndGeneral){
         QList<ServerPlayer *> to_assign = players;
         assignGeneralsForPlayers(to_assign);
         foreach(ServerPlayer *player, to_assign){
             askForGeneralAsync(player);
+        }        
+        foreach(ServerPlayer *player, to_assign){
+            if (Config.OperationNoLimit)
+                player->getMutex()->lock();
+            else
+                player->getMutex()->tryLock(Config.S_CHOOSE_GENERAL_TIMEOUT * 1000);
+            if(!player->getGeneral2())
+                choose2Command(player, QString());        
         }
-        sem->acquire(to_assign.length());
     }
 
 
@@ -1888,6 +1901,8 @@ int Room::getCardFromPile(const QString &card_pattern){
 }
 
 void Room::choose2Command(ServerPlayer *player, const QString &general_name){
+    if (player->getGeneral2()) return;
+
     const General *general = Sanguosha->getGeneral(general_name);
     if(general == NULL){
         if(Config.EnableHegemony)
@@ -1910,10 +1925,13 @@ void Room::choose2Command(ServerPlayer *player, const QString &general_name){
     player->setGeneral2Name(general->objectName());
     player->sendProperty("general2");
 
-    sem->release();
+    player->getMutex()->unlock();
 }
 
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
+    
+    if (player->getGeneral()) return;
+
     const General *general = Sanguosha->getGeneral(general_name);
     if(general == NULL){
         if(Config.EnableHegemony && Config.Enable2ndGeneral)
@@ -1922,14 +1940,13 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
             {
                 foreach(QString other,player->getSelected())
                 {
-                    if(name == other)continue;
+                    if(name == other) continue;
                     if(Sanguosha->getGeneral(name)->getKingdom()
                             == Sanguosha->getGeneral(other)->getKingdom())
                         general = Sanguosha->getGeneral(name);
                 }
             }
-        }else
-        {
+        }else{
             GeneralSelector *selector = GeneralSelector::GetInstance();
             QString choice = selector->selectFirst(player, player->getSelected());
             general = Sanguosha->getGeneral(choice);
@@ -1939,20 +1956,20 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     player->setGeneral(general);
     player->sendProperty("general");
 
-    sem->release();
+    player->getMutex()->unlock();
 }
 
 void Room::speakCommand(ServerPlayer *player, const QString &arg){
     broadcastInvoke("speak", QString("%1:%2").arg(player->objectName()).arg(arg));
 }
 
-void Room::commonCommand(ServerPlayer *, const QString &arg){
+void Room::commonCommand(ServerPlayer *player, const QString &arg){
     result = arg;
 
     reply_player = NULL;
     reply_func.clear();
 
-    sem->release();
+    player->getMutex()->unlock();
 }
 
 void Room::useCard(const CardUseStruct &card_use, bool add_history){
@@ -2586,7 +2603,7 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool
     this->reply_func = reply_func;
     this->reply_player = reply_player;
 
-    sem->acquire();
+    reply_player->getMutex()->lock();
 
     if(game_finished)
         thread->end();
@@ -3345,7 +3362,7 @@ QString Room::askForOrder(ServerPlayer *player){
         player->invoke("askForOrder", reason);
         reply_player = player;
         reply_func = "selectOrderCommand";
-        sem->acquire();
+        player->getMutex()->lock();
     }else{
         result = qrand() % 2 == 0 ? "warm" : "cool";
     }
@@ -3353,9 +3370,9 @@ QString Room::askForOrder(ServerPlayer *player){
     return result;
 }
 
-void Room::selectOrderCommand(ServerPlayer *, const QString &arg){
+void Room::selectOrderCommand(ServerPlayer *player, const QString &arg){
     result = arg;
-    sem->release();
+    player->getMutex()->unlock();
 }
 
 QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme){
@@ -3363,7 +3380,7 @@ QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const Q
     player->invoke("askForRole", QString("%1:%2").arg(scheme).arg(squeezed.join("+")));
     reply_player = player;
     reply_func = "selectRoleCommand";
-    sem->acquire();
+    player->getMutex()->lock();
 
     return result;
 }
@@ -3373,7 +3390,7 @@ void Room::selectRoleCommand(ServerPlayer *player, const QString &arg){
     if(result.isEmpty())
         result = "abstained";
 
-    sem->release();
+    player->getMutex()->unlock();
 }
 
 void Room::networkDelayTestCommand(ServerPlayer *player, const QString &){

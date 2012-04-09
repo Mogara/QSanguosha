@@ -101,6 +101,10 @@ public:
 
     void startNetworkDelayTest();
     qint64 endNetworkDelayTest();
+    inline QMutex* getMutex(){return mutex;}
+
+protected:
+    QMutex *mutex;
 
 private:
     ClientSocket *socket;

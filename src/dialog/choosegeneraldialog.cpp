@@ -222,7 +222,7 @@ void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
     if(progress_bar == NULL)
         return;
 
-    static const int timeout = 15;
+    static const int timeout = Config.S_CHOOSE_GENERAL_TIMEOUT;
 
     int step = 100 / double(timeout * 5);
     int new_value = progress_bar->value() + step;

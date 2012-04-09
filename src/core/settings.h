@@ -68,6 +68,9 @@ public:
     float EffectVolume;
 
     QString BackgroundBrush;
+
+    // consts
+    static const int S_CHOOSE_GENERAL_TIMEOUT;
 };
 
 extern Settings Config;

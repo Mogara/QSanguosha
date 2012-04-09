@@ -10,8 +10,9 @@
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), socket(NULL), room(room),
-    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL), next(NULL)
+    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL), next(NULL), mutex(new QMutex)
 {
+    mutex->lock();
 }
 
 void ServerPlayer::drawCard(const Card *card){
