@@ -3216,9 +3216,6 @@ function SmartAI:aoeIsEffective(card, to)
 	local players = self.room:getAlivePlayers()
 	players = sgs.QList2Table(players)
 
-	if self.player == to then
-		return false
-	end
 	local armor = to:getArmor()
 	if armor and armor:inherits("Vine") then
 		return false
@@ -3448,6 +3445,9 @@ function SmartAI:useTrickCard(card, use)
 		local good = self:getAoeValue(card,self.player)
 		if good > 0 then
 			use.card = card
+		end
+		if self.role == "renegade" or self:hasSkill("jianxiong|luanji|manjuan",self.player) then
+			if good > -20 then use.card = card end
 		end
 	else
 		self:useCardByClassName(card, use)

@@ -442,13 +442,12 @@ sgs.ai_skill_askforag.qixing = function(self, card_ids)
 	for _, card_id in ipairs(card_ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
-	for _, card in ipairs(cards) do
-		if card:inherits("Slash") then if self:getCardsNum("Slash") == 0 then return card:getEffectiveId() end
-		elseif card:inherits("Jink") then if self:getCardsNum("Jink") == 0 then return card:getEffectiveId() end
-		elseif card:inherits("Peach") then if self.player:isWounded() and self:getCardsNum("Peach") < self.player:getLostHp() then return card:getEffectiveId() end
-		elseif card:inherits("Analeptic") then if self:getCardsNum("Analeptic") == 0 then return card:getEffectiveId() end
-		elseif card:getTypeId() == sgs.Card_Trick then return card:getEffectiveId()
-		else return -1 end
+	self:sortByCardNeed(cards)
+	if self.player:getPhase() == sgs.Player_Draw then
+		return cards[#cards]:getEffectiveId()
+	end
+	if self.player:getPhase() == sgs.Player_Finish then
+		return cards[1]:getEffectiveId()
 	end
 	return -1
 end
@@ -495,13 +494,13 @@ sgs.ai_skill_use["@@dawu"] = function(self, prompt)
 	local targets = {}
 	local lord = self.room:getLord()
 	self:sort(self.friends_noself,"defense")
-	if self:isFriend(lord) and not sgs.isLordHealthy() and not self.role == "lord" and not lord:hasSkill("buqu") then table.insert(targets, lord:objectName())
+	if self:isFriend(lord) and not sgs.isLordHealthy() and not self.player:isLord() and not lord:hasSkill("buqu") then table.insert(targets, lord:objectName())
 	else
 		for _, friend in ipairs(self.friends_noself) do
 			if self:isWeak(friend) and not friend:hasSkill("buqu") then table.insert(targets, friend:objectName()) break end
 		end	
 	end
-	if self.player:getMark("@star") > 1 and self:isWeak() then table.insert(targets, self.player:objectName()) end
+	if self.player:getMark("@star") > #targets and self:isWeak() then table.insert(targets, self.player:objectName()) end
 	if #targets > 0 then return "@DawuCard=.->" .. table.concat(targets, "+") end
 	return "."
 end
