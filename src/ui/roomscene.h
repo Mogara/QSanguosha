@@ -106,7 +106,7 @@ private:
     qreal speed;
 };
 
-#ifdef Q_OS_WIN32
+#ifdef CHAT_VOICE
 
 class QAxObject;
 
@@ -114,7 +114,7 @@ class SpeakThread: public QThread{
     Q_OBJECT
 
 public:
-    SpeakThread(QObject *parent);
+    SpeakThread();
 
 public slots:
     void speak(const QString &text);
