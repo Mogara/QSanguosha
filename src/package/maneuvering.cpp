@@ -2,6 +2,8 @@
 #include "client.h"
 #include "engine.h"
 #include "carditem.h"
+#include "general.h"
+#include "room.h"
 
 NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
     :Slash(suit, number)
@@ -86,32 +88,37 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class FanSkill: public WeaponSkill{
+class FanSkill: public OneCardViewAsSkill{
 public:
-    FanSkill():WeaponSkill("fan"){
-        events << SlashEffect;
+    FanSkill():OneCardViewAsSkill("fan"){
+
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(!effect.slash->getSkillName().isEmpty() && effect.slash->getSubcards().length() > 0)
-            return false;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
+    }
 
-        if(effect.nature == DamageStruct::Normal){
-            if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
-                effect.nature = DamageStruct::Fire;
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "slash";
+    }
 
-                data = QVariant::fromValue(effect);
-            }
-        }
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->objectName() == "slash";
+    }
 
-        return false;
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        Card *acard = new FireSlash(card->getSuit(), card->getNumber());
+        acard->addSubcard(card->getId());
+        acard->setSkillName(objectName());
+        return acard;
     }
 };
 
+
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("fan");
-    skill = new FanSkill;
+    attach_skill = true;
 }
 
 class GudingBladeSkill: public WeaponSkill{
@@ -443,6 +450,7 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 
     type = CardPack;
+    skills << new FanSkill;
 }
 
 ADD_PACKAGE(Maneuvering)
