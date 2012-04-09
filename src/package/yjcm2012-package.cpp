@@ -534,19 +534,21 @@ public:
 
         if(event == Dying){
             DyingStruct dying = data.value<DyingStruct>();
-            if(!handang || !dying.savers.contains(handang) || dying.who->getHp() > 0 || handang->isNude() || !room->askForSkillInvoke(handang, objectName(), data))
+            if(!handang || !dying.savers.contains(handang) || dying.who->getHp() > 0 ||
+               handang->isNude() || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
 
             const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data);
-            slash->setFlags("jiefan-slash");
-            room->setTag("JiefanTarget", data);
+           
             if(slash){
+                slash->setFlags("jiefan-slash");
+                room->setTag("JiefanTarget", data);
                 CardUseStruct use;
                 use.card = slash;
                 use.from = handang;
                 use.to << room->getCurrent();
                 room->useCard(use);
-            }
+            }            
         }
         else if(event == SlashHit){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
