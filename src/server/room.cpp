@@ -2309,7 +2309,7 @@ void Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
         broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
-void Room::drawCards(ServerPlayer *player, int n){
+void Room::drawCards(ServerPlayer *player, int n, const QString &reason){
     if(n <= 0)
         return;
 
@@ -2321,6 +2321,7 @@ void Room::drawCards(ServerPlayer *player, int n){
         int card_id = drawCard();
         card_ids << card_id;
         const Card *card = Sanguosha->getCard(card_id);
+        card->setFlags(reason);
 
         QVariant data = QVariant::fromValue(card_id);
         if(thread->trigger(CardDrawing, player, data))
@@ -2371,12 +2372,7 @@ void Room::throwCard(const Card *card){
     if(card == NULL)
         return;
 
-    if(card->isVirtualCard()){
-        QList<int> subcards = card->getSubcards();
-        foreach(int subcard, subcards)
-            throwCard(subcard);
-    }else
-        throwCard(card->getId());
+    moveCardTo(card, NULL, Player::DiscardedPile);
 }
 
 void Room::throwCard(int card_id){
@@ -2769,19 +2765,23 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     if(to_discard.isEmpty())
         return false;
 
-    foreach(int card_id, to_discard){
-        throwCard(card_id);
-
-        LogMessage log;
-        log.type = "$DiscardCard";
-        log.from = target;
-        log.card_str = QString::number(card_id);
-        sendLog(log);
-    }
-
     DummyCard *dummy_card = new DummyCard;
     foreach(int card_id, to_discard)
         dummy_card->addSubcard(card_id);
+
+    throwCard(dummy_card);
+
+    LogMessage log;
+    log.type = "$DiscardCard";
+    log.from = target;
+    foreach(int card_id, to_discard){
+
+        if(log.card_str.isEmpty())
+            log.card_str = QString::number(card_id);
+        else
+            log.card_str += "+" + QString::number(card_id);
+    }
+    sendLog(log);
 
     CardStar card_star = dummy_card;
     QVariant data = QVariant::fromValue(card_star);

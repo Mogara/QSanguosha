@@ -520,9 +520,11 @@ bool Card::canJilei() const{
 void Card::setFlags(const QString &flag) const{
     static char symbol_c = '-';
 
-    if(flag == ".")
+    if(flag.isEmpty())
+        return;
+    else if(flag == ".")
         flags.clear();
-    if(flag.startsWith(symbol_c))
+    else if(flag.startsWith(symbol_c))
         flags.removeOne(flag);
     else
         flags << flag;

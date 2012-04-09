@@ -169,10 +169,10 @@ function sgs.getDefense(player)
 		end
 	end
 	if player:getArmor() and player:getArmor():inherits("EightDiagram") and player:hasSkill("tiandu") then
-		defense = defense + 0.3
+		defense = defense + 0.5
 	end
-	if player:hasSkill("jieming") then
-		defense = defense + 1
+	if player:hasSkill("jieming") or player:hasSkill("yiji") or player:hasSkill("guixin") then
+		defense = defense + 4
 	end
 	if player:getMark("@tied")>0 then
 		defense = defense + 1
@@ -3213,9 +3213,9 @@ function SmartAI:useBasicCard(card, use)
 end
 
 function SmartAI:aoeIsEffective(card, to)
-	if self.player == to then
-		return false
-	end
+	local players = self.room:getAlivePlayers()
+	players = sgs.QList2Table(players)
+
 	local armor = to:getArmor()
 	if armor and armor:inherits("Vine") then
 		return false
@@ -3223,7 +3223,11 @@ function SmartAI:aoeIsEffective(card, to)
 	if self.room:isProhibited(self.player, to, card) then
 		return false
 	end
-	if self.player:hasSkill("wuyan") or self.player:hasSkill("danlao") then
+	if to:isLocked(card) then
+		return false
+	end
+
+	if self.player:hasSkill("wuyan") then
 		return false
 	end
 	if card:inherits("SavageAssault") then
@@ -3231,38 +3235,21 @@ function SmartAI:aoeIsEffective(card, to)
 			return false
 		end
 	end
+
 	if (to:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == to:objectName()) then
 		return false
 	end
-	if card:inherits("ArcheryAttack") then
-		if (to:hasSkill("leiji") and self:getCardsNum("Jink", to) > 0) or (self:isEquip("EightDiagram", to) and to:getHp() > 1) then
-			return false
-		end
+
+	if to:hasSkill("danlao") and #players > 2 then
+		return false
 	end
 	return true
 end
 
 function SmartAI:canAvoidAOE(card)
-	local armor = self.player:getArmor()
-	local players = self.room:getAlivePlayers()
-	players = sgs.QList2Table(players)
-	if armor and armor:inherits("Vine") then
-		return true
-	end
-	if card:isBlack() and self.player:hasSkill("weimu") then
-		return true
-	end
-	if self.player:hasSkill("wuyan") then
-		return true
-	end
-	if self.player:hasSkill("danlao") and #players > 2 then 
-		return true
-	end
-	if (self.player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == self.player:objectName()) then
-		return true
-	end
+	if not self:aoeIsEffective(card,self.player) then return true end
 	if card:inherits("SavageAssault") then
-		if self.player:hasSkill("huoshou") or self.player:hasSkill("juxiang") or self:getCardsNum("Slash") > 0 then
+		if self:getCardsNum("Slash") > 0 then
 			return true
 		end
 	end
@@ -3333,17 +3320,13 @@ function SmartAI:getAoeValueTo(card, to , from)
 	end
 
 	if to:hasSkill("longdan") then
-		value = value + 5
-	end
-
-	if to:hasSkill("danlao") then
-		value = value + 15
+		value = value + 10
 	end
 
 	if card:inherits("SavageAssault") then
 		sj_num = self:getCardsNum("Slash", to)
 		if to:hasSkill("juxiang") then
-			value = value + 20
+			value = value + 50
 		end
 	end
 	if card:inherits("ArcheryAttack") then
@@ -3356,7 +3339,7 @@ function SmartAI:getAoeValueTo(card, to , from)
 				value = value + 20
 			end
 			if to:hasSkill("jieming") then
-				value = value - self:getJiemingChaofeng(to) * 3
+				value = value + self:getJiemingChaofeng(to) * 3
 			end
 			if to:hasSkill("ganglie") or to:hasSkill("fankui") or to:hasSkill("enyuan") then
 				if not self:isFriend(from, to) then
@@ -3376,16 +3359,16 @@ function SmartAI:getAoeValueTo(card, to , from)
 				end
 			end
 			if to:hasSkill("qingguo") or self:isEquip("EightDiagram", to) then
-				value = value + 10
+				value = value + 20
 			end
 		end
 
 		if to:getHp() > 0 then
-			value = value - 24 / to:getHp() - 10
+			value = value - 20
 		end
 
 		if self:isFriend(from, to) then
-		if (to:isLord() or from:isLord()) and not (to:hasSkill("buqu") and to:getPile("buqu"):length() < 5) then
+			if (to:isLord() or from:isLord()) and not (to:hasSkill("buqu") and to:getPile("buqu"):length() < 5) then
 				if to:getHp() <= 1 and self:getCardsNum("Peach", from) == 0 and sj_num == 0 then
 					if sgs.evaluatePlayerRole(to) == "renegade" then
 						value = value - 50
@@ -3401,9 +3384,8 @@ function SmartAI:getAoeValueTo(card, to , from)
 			end
 		end
 	else
-		value = value + 10
+		value = value + 20
 	end
-
 	return value
 end
 
@@ -3421,8 +3403,8 @@ function SmartAI:getAoeValue(card, player)
 	end
 
 	for _, player in sgs.qlist(self.room:getAlivePlayers()) do
-		if self:cantbeHurt(player) then
-			bad = bad -1500
+		if self:cantbeHurt(player) and self:aoeIsEffective(card, player) then
+			bad = bad + 150
 		end
 	end
 	if player:hasSkill("jizhi") then
@@ -3458,36 +3440,14 @@ function SmartAI:useTrickCard(card, use)
 	end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
-		if self.role == "renegade" and not self:isWeak(self.room:getLord()) then use.card = card return end
-		if self.role == "rebel" and sgs.turncount < 2 and card:inherits("ArcheryAttack") then return end
-		local good, bad = 0, 0
-		for _, friend in ipairs(self.friends_noself) do
-			if self:aoeIsEffective(card, friend) then
-				bad = bad + 20/(friend:getHp())+10
-				if friend:isLord() and (friend:getHp() < 3) then
-					return
-				end
-
-				if (friend:getHp() < 2) and (self.player:isLord()) then
-					return
-				end
-			end
-			good = good + self:getCardsNum("Peach")
-		end
-
-		for _, enemy in ipairs(self.enemies) do
-			if self:aoeIsEffective(card, enemy) then
-				good = good + 20/(enemy:getHp())+10
-
-				if enemy:isLord() then
-					good = good + 20/(enemy:getHp())
-				end
-			end
-			bad = bad + self:getCardsNum("Peach")
-		end
-
-		if good > bad or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1) then
+		if not self.role == "rebel" and sgs.turncount < 2 and card:inherits("ArcheryAttack") then return end
+		if self.role == "rebel" and sgs.turncount < 2 and card:inherits("SavageAssault") then return end
+		local good = self:getAoeValue(card,self.player)
+		if good > 0 then
 			use.card = card
+		end
+		if self.role == "renegade" or self:hasSkill("jianxiong|luanji|manjuan",self.player) then
+			if good > -20 then use.card = card end
 		end
 	else
 		self:useCardByClassName(card, use)

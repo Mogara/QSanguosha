@@ -2,8 +2,14 @@
 
 # This script is used to create Mac OS X bundle as well as DMG file
 
+if [ $1 == "-help" -o $1 == "-h" ]; then
+    echo "Usage: $0 [-dmg]"
+    echo "Create a QSanguosha application bundle in build directory"
+    echo "If you provide the parameter '-dmg' is provided, then this script will also create a disk image"
+fi
+
 SRC_DIR="$HOME/Projects/QSanguosha"
-BUILD_DIR="$HOME/Projects/QSanguosha-build"
+BUILD_DIR="$HOME/Projects/QSanguosha-build-desktop"
 
 cd $BUILD_DIR
 

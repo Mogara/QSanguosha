@@ -220,6 +220,10 @@ public:
         view_as_skill = new LeijiViewAsSkill;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhangjiao, QVariant &data) const{
         if(event == CardAsked){
             if(data.toString() == "jink")

@@ -209,9 +209,9 @@ public:
 	void jilei(const char *type);
 	bool isJilei(const Card *card) const;
 
-    void setCardLocked(const QString &name);
+    void setCardLocked(const char *name);
     bool isLocked(const Card *card) const;
-    bool hasCardLock(const QString &card_str) const;
+    bool hasCardLock(const char *card_str) const;
 	
 	bool isCaoCao() const;
 	void copyFrom(Player* p);
@@ -256,7 +256,7 @@ public:
 	void bury();
 	void throwAllMarks();
 	void clearPrivatePiles();
-	void drawCards(int n, bool set_emotion = true);
+	void drawCards(int n, bool set_emotion = true, const char *reason = NULL);
 	bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant());
 	QList<int> forceToDiscard(int discard_num, bool include_equip);
 	QList<int> handCards() const;
@@ -857,7 +857,7 @@ public:
 	ServerPlayer *getCardOwner(int card_id) const;
 	void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
-	void drawCards(ServerPlayer *player, int n);
+	void drawCards(ServerPlayer *player, int n, const char *reason = NULL);
 	void obtainCard(ServerPlayer *target, const Card *card);
 	void obtainCard(ServerPlayer *target, int card_id);
 

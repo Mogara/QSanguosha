@@ -22,13 +22,40 @@ sgs.weapon_range.Fan = 4
 sgs.ai_use_priority.Fan = 2.655
 sgs.ai_use_priority.Vine = 0.6
 
-sgs.ai_skill_invoke.fan = function(self, data)
-    local target = data:toSlashEffect().to
-		if self:isFriend(target) then
-			return target:isChained() and self:isGoodChainTarget(target)
-		else
-			return not (target:isChained() and not self:isGoodChainTarget(target))
+sgs.ai_view_as.fan = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
+		return ("fire_slash:fan[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
+
+local fan_skill={}
+fan_skill.name="fan"
+table.insert(sgs.ai_skills,fan_skill)
+fan_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("h")	
+	cards=sgs.QList2Table(cards)
+	local slash_card
+	
+	for _,card in ipairs(cards)  do
+		if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
+			slash_card = card
+			break
 		end
+	end
+	
+	if not slash_card  then return nil end
+	local suit = slash_card:getSuitString()
+	local number = slash_card:getNumberString()
+	local card_id = slash_card:getEffectiveId()
+	local card_str = ("fire_slash:fan[%s:%s]=%d"):format(suit, number, card_id)
+	local fireslash = sgs.Card_Parse(card_str)
+	assert(fireslash)
+	
+	return fireslash
+		
 end
 
 function sgs.ai_weapon_value.fan(self, enemy)
@@ -192,6 +219,9 @@ function SmartAI:isGoodChainTarget(who)
 		if friend:objectName() == self.player:objectName() and not self:isGoodChainPartner(self.player) then
 			return false
 		end
+		if self:cantbeHurt(friend) then
+			return false
+		end
 		if self:isGoodChainPartner(friend) then 
 			good = good+1 
 		end
@@ -201,6 +231,9 @@ function SmartAI:isGoodChainTarget(who)
 	end
 	for _, enemy in ipairs(self:getChainedEnemies(self.player)) do
 		if enemy:getHp() < 3 and not enemy:hasSkill("buqu") and enemy:getRole() == "lord" and self.player:getRole() == "renegade" then
+			return false
+		end
+		if self:cantbeHurt(enemy) then
 			return false
 		end
 		if self:isGoodChainPartner(enemy) then 

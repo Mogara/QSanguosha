@@ -20,9 +20,11 @@ int main(int argc, char *argv[])
         new QApplication(argc, argv);
 
 #ifdef Q_OS_MAC
+#ifdef QT_NO_DEBUG
 
     QDir::setCurrent(qApp->applicationDirPath());
 
+#endif
 #endif
 
     // initialize random seed for later use

@@ -3128,10 +3128,10 @@ void KOFOrderBox::killPlayer(const QString &general_name){
     }
 }
 
-#ifdef Q_OS_WIN32
+#ifdef CHAT_VOICE
 
-SpeakThread::SpeakThread(QObject *parent)
-    :QThread(parent), voice_obj(NULL)
+SpeakThread::SpeakThread()
+    :voice_obj(NULL)
 {
 
 }
@@ -3165,10 +3165,10 @@ void SpeakThread::speak(const QString &text){
 #endif
 
 void RoomScene::onGameStart(){
-#ifdef Q_OS_WIN32
+#ifdef CHAT_VOICE
 
     if(Config.value("EnableVoice", false).toBool()){
-        SpeakThread *thread = new SpeakThread(this);
+        SpeakThread *thread = new SpeakThread;
         connect(ClientInstance, SIGNAL(text_spoken(QString)), thread, SLOT(speak(QString)));
         connect(this, SIGNAL(destroyed()), thread, SLOT(finish()));
 
