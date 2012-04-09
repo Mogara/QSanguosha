@@ -2372,12 +2372,7 @@ void Room::throwCard(const Card *card){
     if(card == NULL)
         return;
 
-    if(card->isVirtualCard()){
-        QList<int> subcards = card->getSubcards();
-        foreach(int subcard, subcards)
-            throwCard(subcard);
-    }else
-        throwCard(card->getId());
+    moveCardTo(card, NULL, Player::DiscardedPile);
 }
 
 void Room::throwCard(int card_id){
