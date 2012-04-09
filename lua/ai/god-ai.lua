@@ -477,7 +477,7 @@ sgs.ai_skill_use["@@kuangfeng"] = function(self,prompt)
 	if friendly_fire and is_chained > 1 then usecard=true end
 	self:sort(self.friends, "hp")
 	if target[1] and not self:isWeak(self.friends[1]) then
-		if target[1]:getArmor() and target[1]:getArmor():objectName() == "vine" then usecard=true end
+		if target[1]:getArmor() and target[1]:getArmor():objectName() == "vine" and friendly_fire then usecard=true end
 	end
 	if usecard then
 		if not target[1] then table.insert(target,self.enemies[1]) end
