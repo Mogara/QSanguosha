@@ -852,6 +852,9 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){
+    
+    Q_ASSERT(card_ids.length()>0);
+    
     if(card_ids.length() == 1 && !refusable)
         return card_ids.first();
 
@@ -2629,7 +2632,11 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, cons
         reply_player->acquireLock(ServerPlayer::SEMA_COMMAND);
     else if (!reply_player->tryAcquireLock(ServerPlayer::SEMA_COMMAND, getCommandTimeout(reply_func))) 
         result = defaultValue;
-    else if (reply_player->getState() != "online")
+    
+    //@todo: ylin - release all locks when the client disconnects, perhaps writing it
+    //into destructor of ServerPlayer
+    //The lock might be acquired because the client disconnects
+    if (reply_player->getState() != "online")
         result = defaultValue;
 
     if(game_finished)
