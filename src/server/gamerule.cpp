@@ -119,6 +119,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
 
             player->clearFlags();
+            player->clearHistory();
 
             return;
         }
