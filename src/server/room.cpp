@@ -1810,6 +1810,7 @@ void Room::run(){
 
         foreach(ServerPlayer *player, players){
 
+            //Ensure that the game starts with all player's mutex locked
             player->drainAllLocks();
 
             if(player == lord)
