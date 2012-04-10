@@ -110,7 +110,8 @@ void ClientPlayer::changePile(const QString &name, bool add, int card_id){
     else
         piles[name].removeOne(card_id);
 
-    emit pile_changed(name);
+    if(!name.startsWith("#"))
+        emit pile_changed(name);
 }
 
 QString ClientPlayer::getDeathPixmapPath() const{
