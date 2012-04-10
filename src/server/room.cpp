@@ -2514,7 +2514,9 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
     if(move.from){
         if(move.from_place == Player::Special){
             QString pile_name = move.from->getPileName(move.card_id);
-            Q_ASSERT(!pile_name.isEmpty());
+            
+            //@todo: if (pile_name.isEmpty());
+            
             QString pile_str = QString("%1:%2-%3")
                     .arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
 
@@ -2542,7 +2544,9 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
 
         if(move.to_place == Player::Special){
             QString pile_name = move.to->getPileName(move.card_id);
-            Q_ASSERT(!pile_name.isEmpty());
+            
+            //@todo: if (pile_name.isEmpty());
+            
             QString pile_str = QString("%1:%2+%3")
                     .arg(move.to->objectName()).arg(pile_name).arg(move.card_id);
 
