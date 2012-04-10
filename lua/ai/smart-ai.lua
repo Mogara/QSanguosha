@@ -1777,7 +1777,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			if trick:inherits("AOE") then
 				local lord = self.room:getLord()
 				local currentplayer = self.room:getCurrent()
-				if self:isFriend(lord) and self:isWeak(lord) and 
+				if self:isFriend(lord) and self:isWeak(lord) and self:aoeIsEffective(trick, lord)and 
 					((lord:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
 					((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount()))	and not
 					(self.player:objectName() == to:objectName() and self.player:getHp() == 1 and not self:canAvoidAOE(trick)) then
@@ -1791,7 +1791,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 						return null_card
 					end
 				end
-				if self:isWeak(to) then
+				if self:isWeak(to) and self:aoeIsEffective(trick, to) then
 					if ((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
 					((self.player:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) or null_num > 1 then
 						return null_card
@@ -3243,6 +3243,11 @@ function SmartAI:aoeIsEffective(card, to)
 	if to:hasSkill("danlao") and #players > 2 then
 		return false
 	end
+
+	if to:getMark("@fog") > 0 then
+		return false
+	end
+
 	return true
 end
 
