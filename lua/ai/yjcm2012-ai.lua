@@ -207,8 +207,6 @@ sgs.ai_card_intention.AnxuCard = function(card, from, to)
 end
 
 sgs.ai_skill_invoke.zhuiyi = function(self, data)
-	local players = self.room:getOtherPlayers(self.player)
-	players = sgs.QList2Table(players)
 	local damage = data:toDamageStar()
 	local exclude = self.player
 	if damage and damage.from then exclude = damage.from end
@@ -218,9 +216,7 @@ sgs.ai_skill_invoke.zhuiyi = function(self, data)
 	return #friends > 0
 end
 
-sgs.ai_skill_playerchosen.zhuiyi = function(self, targets)
-	if self:isFriend(self.room:getLord()) and sgs.isLordInDanger() then return self.room:getLord() end
-	
+sgs.ai_skill_playerchosen.zhuiyi = function(self, targets)	
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
 	for _, friend in ipairs(self.friends_noself) do

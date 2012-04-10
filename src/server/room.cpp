@@ -5,7 +5,7 @@
 #include "ai.h"
 #include "scenario.h"
 #include "gamerule.h"
-#include "scenerule.h"	//changjing
+#include "scenerule.h"
 #include "contestdb.h"
 #include "banpair.h"
 #include "roomthread3v3.h"
@@ -26,8 +26,8 @@
 Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
       draw_pile(&pile1), discard_pile(&pile2),
-      game_started(false), game_finished(false), L(NULL), sem(new QSemaphore),
-      thread(NULL), thread_3v3(NULL), provided(NULL), has_provided(false), _virtual(false)
+      game_started(false), game_finished(false), L(NULL), thread(NULL),
+      thread_3v3(NULL), sem(new QSemaphore), provided(NULL), has_provided(false), _virtual(false)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
