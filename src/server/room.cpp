@@ -5,7 +5,7 @@
 #include "ai.h"
 #include "scenario.h"
 #include "gamerule.h"
-#include "scenerule.h"	//changjing
+#include "scenerule.h"
 #include "contestdb.h"
 #include "banpair.h"
 #include "roomthread3v3.h"
@@ -26,8 +26,8 @@
 Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
       draw_pile(&pile1), discard_pile(&pile2),
-      game_started(false), game_finished(false), L(NULL), sem(new QSemaphore),
-      thread(NULL), thread_3v3(NULL), provided(NULL), has_provided(false), _virtual(false)
+      game_started(false), game_finished(false), L(NULL), thread(NULL),
+      thread_3v3(NULL), sem(new QSemaphore), provided(NULL), has_provided(false), _virtual(false)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -862,7 +862,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         thread->delay(Config.AIDelay);
         card_id = ai->askForAG(card_ids, refusable, reason);
     }else{
-        //player->invoke("disableAG", "false");
+        player->invoke("disableAG", "false");
         player->invoke("askForAG", refusable ? "?" : ".");
         getResult("chooseAGCommand", player, QString::number(card_ids.first()));
 
@@ -3240,7 +3240,7 @@ void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who){
         who->invoke("fillAG", card_str.join("+"));
     else{
         broadcastInvoke("fillAG", card_str.join("+"));
-        //broadcastInvoke("disableAG", "true");
+        broadcastInvoke("disableAG", "true");
     }
 }
 
@@ -3249,7 +3249,7 @@ void Room::takeAG(ServerPlayer *player, int card_id){
         player->addCard(Sanguosha->getCard(card_id), Player::Hand);
         setCardMapping(card_id, player, Player::Hand);
         broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
-        //player->invoke("disableAG", "true");
+        player->invoke("disableAG", "true");
         CardMoveStruct move;
         move.from = NULL;
         move.from_place = Player::DrawPile;
