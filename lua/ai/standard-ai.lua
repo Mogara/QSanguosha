@@ -934,7 +934,12 @@ end
 
 sgs.ai_skill_use_func.QingnangCard=function(card,use,self)
 	self:sort(self.friends, "defense")
-	
+	local lord = self.room:getLord()
+	if self:isFriend(lord) and not sgs.isLordHealthy()  and lord:isWounded() then
+		use.card=card
+		if use.to then use.to:append(lord) end
+		return
+	end	
 	for _, friend in ipairs(self.friends) do
 		if friend:isWounded() and
 			not (friend:hasSkill("longhun") and self:getAllPeachNum() > 0) and
