@@ -2995,7 +2995,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
     foreach(int handcard, handcards)
         handcards_str << QString::number(handcard);
 
-    QString & ask_str = QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+"));
+    const QString & ask_str = QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+"));
     executeCommand(shenlumeng, "doGongxin", "replyGongxinCommand", ask_str, ".");
     
 
