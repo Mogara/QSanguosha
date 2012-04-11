@@ -587,13 +587,18 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     DummyCard *card1 = a->wholeHandCards();
     DummyCard *card2 = b->wholeHandCards();
 
+    if(card1)
+        b->addToPile("#dimeng", card1, false);
+
+    room->getThread()->delay();
+
+    if(card2)
+        a->addToPile("#dimeng", card2, false);
+
     if(card1){
         room->moveCardTo(card1, b, Player::Hand, false);
         delete card1;
     }
-
-    room->getThread()->delay();
-
     if(card2){
         room->moveCardTo(card2, a, Player::Hand, false);
         delete card2;
