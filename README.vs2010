@@ -1,0 +1,16 @@
+To build QSanguosha with VS2010
+
+1. Download the following packages: 
+(1) QT libraries for Windows (Visual Studio 2010) http://qt.nokia.com/downloads/windows-cpp-vs2010
+(2) QT Visual Studio Add-in http://qt.nokia.com/downloads/visual-studio-add-in
+(3) Lateset swigwin (swig for Windows) http://www.swig.org/download.html
+
+2. Create a tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig. To make sure you copied them to the right directory hierachy, check if this file exists: <Your source direcotry>/QSanguosha/tools/swig/swig.exe
+
+3. Go to font directory, unzip font.7z.
+
+4. Install QT libraries for Windows and QT Visual Studio Add-in you downloaded in the first step.
+
+5. Open Qsanguosha.sln right under <Your source directory>/Qsanguosha.
+
+6. You are now able to build the solution.
