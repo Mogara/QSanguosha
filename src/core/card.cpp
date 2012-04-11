@@ -394,7 +394,7 @@ bool Card::targetFixed() const{
     return target_fixed;
 }
 
-bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     if(target_fixed)
         return true;
     else
