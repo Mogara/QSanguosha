@@ -1715,17 +1715,15 @@ void Room::chooseGenerals(){
         askForGeneralAsync(player);
     }    
     QTime timer;
-    time_t totalTime = getCommandTimeout("chooseGeneralCommand");
-    time_t remainTime = totalTime;
-    timer.start();
+    time_t remainTime = getCommandTimeout("chooseGeneralCommand");
     foreach(ServerPlayer *player, to_assign){
         if (Config.OperationNoLimit)
             player->acquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL);
         else
-        {            
-            if (remainTime < 0) remainTime = 0;
+        {
+            timer.start();
             player->tryAcquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL, remainTime);
-            remainTime = totalTime - timer.elapsed();
+            remainTime -= timer.elapsed();
         }
         if(!player->getGeneral())
             chooseCommand(player, QString());
@@ -1737,17 +1735,15 @@ void Room::chooseGenerals(){
         foreach(ServerPlayer *player, to_assign){
             askForGeneralAsync(player);
         }       
-        totalTime = getCommandTimeout("chooseGeneralCommand");
-        remainTime = totalTime;
-        timer.restart();
+        time_t remainTime = getCommandTimeout("chooseGeneralCommand");
         foreach(ServerPlayer *player, to_assign){
             if (Config.OperationNoLimit)
                 player->acquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL2);
             else
-            {                
-                if (remainTime < 0) remainTime = 0;
+            {
+                timer.restart();
                 player->tryAcquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL2, remainTime);
-                remainTime = totalTime - timer.elapsed();
+                remainTime -= timer.elapsed();
             }
             if(!player->getGeneral2())
                 choose2Command(player, QString());        
