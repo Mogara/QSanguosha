@@ -535,6 +535,17 @@ bool Room::obtainable(const Card *card, ServerPlayer *player){
     return true;
 }
 
+void Room::executeCommand(ServerPlayer* player, const char* invokeString, const QString &commandString,
+                    const QString &invokeArg, const QString &defaultValue, bool broadcast, bool move_focus, 
+                    bool supply_timeout, time_t timeout){
+    player->drainLock(ServerPlayer::SEMA_COMMAND);
+    if (broadcast)
+        broadcastInvoke(invokeString, invokeArg);
+    else
+        player->invoke(invokeString, invokeArg);
+    getResult(commandString, player, defaultValue, move_focus, supply_timeout, timeout);
+}
+
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
     bool invoked;
     AI *ai = player->getAI();
@@ -548,15 +559,15 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
             invoke_str = QString("%1:%2").arg(skill_name).arg(data.toString());
         else
             invoke_str = skill_name;
-        player->invoke("askForSkillInvoke", invoke_str);
-        getResult("invokeSkillCommand", player, "no");
+
+        executeCommand(player, "askForSkillInvoke", "invokeSkillCommand", invoke_str, "no");
+            
 
         //@todo: no need for recursive call at all...
         //if(result.isEmpty())
         //    return askForSkillInvoke(player, skill_name); // recursive call;
 
-        // result should be "yes" or "no"
-
+        // only "yes" will cause invocation
         if(result != "yes") invoked = false;
         else invoked = true; 
         
@@ -577,13 +588,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
         answer = ai->askForChoice(skill_name, choices);
     else{
         QString ask_str = QString("%1:%2").arg(skill_name).arg(choices);
-        player->invoke("askForChoice", ask_str);
-        getResult("selectChoiceCommand", player, ".");
-
-        //@no need for recursive call...
-        //if(result.isEmpty())
-        //    return askForChoice(player, skill_name, choices);
-
+        executeCommand(player, "askForChoice", "selectChoiceCommand", ask_str, ".");
         if(result == "."){
             const Skill *skill = Sanguosha->getSkill(skill_name);
             if(skill)
@@ -635,64 +640,63 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
     QString trick_name = trick->objectName();
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
+        
         if(!player->hasNullification())
             continue;
+        
+        while(true)
+        {
+            AI *ai = player->getAI();
+            const Card *card = NULL;
+            if(ai){
+                card = ai->askForNullification(trick, from, to, positive);
+                if(card)
+                    thread->delay(Config.AIDelay);
+            }else{
+                QString ask_str;
 
-trust:
-        AI *ai = player->getAI();
-        const Card *card = NULL;
-        if(ai){
-            card = ai->askForNullification(trick, from, to, positive);
-            if(card)
-                thread->delay(Config.AIDelay);
-        }else{
-            QString ask_str;
+                if(positive)
+                    ask_str = QString("%1:%2->%3").arg(trick_name)
+                            .arg(from ? from->objectName() : ".")
+                            .arg(to->objectName());
+                else
+                    ask_str = QString("nullification:.->%1").arg(to->objectName());
 
-            if(positive)
-                ask_str = QString("%1:%2->%3").arg(trick_name)
-                        .arg(from ? from->objectName() : ".")
-                        .arg(to->objectName());
-            else
-                ask_str = QString("nullification:.->%1").arg(to->objectName());
+                executeCommand(player, "askForNullification", "responseCardCommand", ask_str, ".", false, false);            
+                
+                if(result != ".")
+                    card = Card::Parse(result);
+            }
 
-            player->invoke("askForNullification", ask_str);
-            getResult("responseCardCommand", player, false);
+            if(card == NULL) break;
 
-            if(result.isEmpty())
-                goto trust;
+            bool continuable = false;
+            card = card->validateInResposing(player, &continuable);
+            if(card){
+                CardUseStruct use;
+                use.card = card;
+                use.from = player;
+                useCard(use);
 
-            if(result != ".")
-                card = Card::Parse(result);
+                LogMessage log;
+                log.type = "#NullificationDetails";
+                log.from = from;
+                log.to << to;
+                log.arg = trick_name;
+                sendLog(log);
+
+                broadcastInvoke("animate", QString("nullification:%1:%2")
+                                .arg(player->objectName()).arg(to->objectName()));
+
+                QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
+                thread->trigger(ChoiceMade, player, decisionData);
+                setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
+
+                return !askForNullification(trick, from, to, !positive);
+            }else if(continuable)
+                continue;
+            break;
         }
-
-        if(card == NULL)
-            continue;
-
-        bool continable = false;
-        card = card->validateInResposing(player, &continable);
-        if(card){
-            CardUseStruct use;
-            use.card = card;
-            use.from = player;
-            useCard(use);
-
-            LogMessage log;
-            log.type = "#NullificationDetails";
-            log.from = from;
-            log.to << to;
-            log.arg = trick_name;
-            sendLog(log);
-
-            broadcastInvoke("animate", QString("nullification:%1:%2")
-                            .arg(player->objectName()).arg(to->objectName()));
-
-            QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
-            thread->trigger(ChoiceMade, player, decisionData);
-            setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-
-            return !askForNullification(trick, from, to, !positive);
-        }else if(continable)
-            goto trust;
     }
 
     return false;
@@ -711,8 +715,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         thread->delay(Config.AIDelay);
         card_id = ai->askForCardChosen(who, flags, reason);
     }else{
-        player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
-        getResult("chooseCardCommand", player, ".");
+        const QString &ask_str = QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason);
+        executeCommand(player, "askForCardChosen", "chooseCardCommand", ask_str, ".");
 
         //@todo: again, no need for recursive call
         //if(result.isEmpty())
@@ -754,13 +758,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             if(card)
                 thread->delay(Config.AIDelay);
         }else{
-            player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
-            getResult("responseCardCommand", player, ".");
-
-            //@todo: no need for recursive call
-            //if(result.isEmpty())
-            //    return askForCard(player, pattern, prompt);
-
+            const QString & ask_str = QString("%1:%2").arg(pattern).arg(prompt);            
+            executeCommand(player, "askForCard", "responseCardCommand", ask_str, ".");
             if(result != ".")
                 card = Card::Parse(result);
         }
@@ -824,9 +823,8 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
         if(answer != ".")
             thread->delay(Config.AIDelay);
     }else{
-        player->invoke("askForUseCard", QString("%1:%2").arg(pattern).arg(prompt));
-        getResult("useCardCommand", player, ".");
-
+        const QString &ask_str = QString("%1:%2").arg(pattern).arg(prompt);        
+        executeCommand(player, "askForUseCard", "useCardCommand", ask_str, ".");
         if(result.isEmpty())
             return askForUseCard(player, pattern, prompt);
 
@@ -865,9 +863,11 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         thread->delay(Config.AIDelay);
         card_id = ai->askForAG(card_ids, refusable, reason);
     }else{
-        player->invoke("disableAG", "false");
-        player->invoke("askForAG", refusable ? "?" : ".");
-        getResult("chooseAGCommand", player, QString::number(card_ids.first()));
+        
+        player->invoke("disableAG", "false");        
+        executeCommand(player, "askForAG", "chooseAGCommand", refusable ? "?" : ".",
+                        QString::number(card_ids.first()));
+        
 
         if(result.isEmpty())
             return askForAG(player, card_ids, refusable, reason);
@@ -890,20 +890,15 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
     AI *ai = player->getAI();
     if(ai)
         card = ai->askForCardShow(requestor, reason);
-    else{
-            player->invoke("askForCardShow", requestor->getGeneralName());
-            getResult("responseCardCommand", player, ".");
-
-            //@todo: no need for recursive call...
-            //if(result.isEmpty())
-            //    return askForCardShow(player, requestor, reason);
-            //else 
-            if(result == ".")
-                card = player->getRandomHandCard();
-            else card = Card::Parse(result);
+    else{            
+        executeCommand(player, "askForCardShow", "responseCardCommand", requestor->getGeneralName(), ".");
+                        
+        if(result == ".")
+            card = player->getRandomHandCard();
+        else card = Card::Parse(result);
     }
 
-    QVariant decisionData = QVariant::fromValue("cardShow:"+reason+":_"+card->toString()+"_");
+    QVariant decisionData = QVariant::fromValue("cardShow:" + reason + ":_" + card->toString() + "_");
     thread->trigger(ChoiceMade, player, decisionData);
     return card;
 }
@@ -948,8 +943,8 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
         card= ai->askForSinglePeach(dying);
     else{
         int peaches = 1 - dying->getHp();
-        player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
-        getResult("responseCardCommand", player, ".");
+        executeCommand(player, "askForSinglePeach", "responseCardCommand",
+                       QString("%1:%2").arg(dying->objectName()).arg(peaches), ".");        
 
         //@todo: no need for recursive call...
         //if(result.isEmpty())
@@ -1197,9 +1192,8 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
     QString choice;
 
     if(player->getState() == "online"){
-        player->invoke("askForDirection");
-        getResult("selectChoiceCommand", player, ".");
-
+        executeCommand(player, "askForDirection", "selectChoiceCommand", ".", ".");
+        
         if(result.isEmpty() || result == ".")
             choice = "ccw";
         else
@@ -1311,10 +1305,8 @@ void Room::prepareForStart(){
         }
     }else if(Config.value("FreeAssign", false).toBool()){
         ServerPlayer *owner = getOwner();
-        if(owner && owner->getState() == "online"){
-            owner->invoke("askForAssign");
-            getResult("assignRolesCommand", owner, ".");
-
+        if(owner && owner->getState() == "online"){            
+            executeCommand(owner, "askForAssign", "assignRolesCommand", ".", ".");
             if(result.isEmpty() || result == ".")
                 assignRoles();
             else if(Config.FreeAssignSelf){
@@ -1722,11 +1714,17 @@ void Room::chooseGenerals(){
     foreach(ServerPlayer *player, to_assign){
         askForGeneralAsync(player);
     }    
+    QTime timer;
+    time_t remainTime = getCommandTimeout("chooseGeneralCommand");
     foreach(ServerPlayer *player, to_assign){
         if (Config.OperationNoLimit)
             player->acquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL);
         else
-            player->tryAcquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL, getCommandTimeout("chooseGeneralCommand"));
+        {
+            timer.start();
+            player->tryAcquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL, remainTime);
+            remainTime -= timer.elapsed();
+        }
         if(!player->getGeneral())
             chooseCommand(player, QString());
     }
@@ -1736,12 +1734,17 @@ void Room::chooseGenerals(){
         assignGeneralsForPlayers(to_assign);
         foreach(ServerPlayer *player, to_assign){
             askForGeneralAsync(player);
-        }        
+        }       
+        time_t remainTime = getCommandTimeout("chooseGeneralCommand");
         foreach(ServerPlayer *player, to_assign){
             if (Config.OperationNoLimit)
                 player->acquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL2);
             else
-                player->tryAcquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL2, getCommandTimeout("chooseGeneralCommand"));
+            {
+                timer.restart();
+                player->tryAcquireLock(ServerPlayer::SEMA_CHOOSE_GENERAL2, remainTime);
+                remainTime -= timer.elapsed();
+            }
             if(!player->getGeneral2())
                 choose2Command(player, QString());        
         }
@@ -2624,17 +2627,19 @@ void Room::startTest(const QString &to_test){
     setProperty("to_test", to_test);
 }
 
-void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, const QString& defaultValue, bool move_focus){
+void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, const QString& defaultValue, bool move_focus,
+                     bool supply_timeout, time_t timeout){
     if(move_focus)
         broadcastInvoke("moveFocus", reply_player->objectName(), reply_player);
 
     this->reply_func = reply_func;
     this->reply_player = reply_player;    
+    
+    int realTimeout = supply_timeout ? timeout : getCommandTimeout(reply_func);
 
-    reply_player->drainLock(ServerPlayer::SEMA_COMMAND);
     if (Config.OperationNoLimit)
         reply_player->acquireLock(ServerPlayer::SEMA_COMMAND);
-    else if (!reply_player->tryAcquireLock(ServerPlayer::SEMA_COMMAND, getCommandTimeout(reply_func))) 
+    else if (!reply_player->tryAcquireLock(ServerPlayer::SEMA_COMMAND, realTimeout)) 
         result = defaultValue;
     
     //@todo: ylin - release all locks when the client disconnects, perhaps writing it
@@ -2711,10 +2716,8 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         qint64 diff = Config.AIDelay - timer.elapsed();
         if(diff > 0)
             thread->delay(diff);
-
     }else{
-        broadcastInvoke("activate", player->objectName());
-        getResult("useCardCommand", player, ".");
+        executeCommand(player, "activate", "useCardCommand", player->objectName(), ".", true);       
 
         if(result.startsWith(":")){
             makeCheat(result);
@@ -2747,8 +2750,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString& reason){
     if(ai)
         return ai->askForSuit(reason);
 
-    player->invoke("askForSuit");
-    getResult("chooseSuitCommand", player, ".");
+    executeCommand(player, "askForSuit", "chooseSuitCommand", ".", ".");
 
     if(result.isEmpty())
         return askForSuit(player, reason);
@@ -2773,8 +2775,7 @@ QString Room::askForKingdom(ServerPlayer *player){
     if(ai)
         return ai->askForKingdom();
 
-    player->invoke("askForKingdom");
-    getResult("chooseKingdomCommand", player, ".");
+    executeCommand(player, "askForKingdom", "chooseKingdomCommand", ".", ".");    
 
     //@todo: no need for recursive call
     //if(result.isEmpty())
@@ -2797,9 +2798,8 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
             ask_str.append("o");
         if(include_equip)
             ask_str.append("e");
-
-        target->invoke("askForDiscard", ask_str);
-        getResult("discardCardsCommand", target, ".");
+                
+        executeCommand(target, "askForDiscard", "discardCardsCommand", ask_str, ".");
 
         if(result.isEmpty())
             return askForDiscard(target, reason, discard_num, optional, include_equip);
@@ -2859,12 +2859,8 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         // share the same callback interface
         to_exchange = ai->askForDiscard(reason, discard_num, false, false);
     }else{
-        player->invoke("askForExchange", QString::number(discard_num));
-        getResult("discardCardsCommand", player, ".");
-
-        if(result.isEmpty())
-            return askForExchange(player, reason, discard_num);
-
+        executeCommand(player, "askForExchange", "discardCardsCommand", QString::number(discard_num), ".");    
+        
         if(result == "."){
             to_exchange = player->forceToDiscard(discard_num, false);
         }else{
@@ -2917,11 +2913,9 @@ void Room::doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only
         top_cards = cards;
     }else{
         QString guanxing_str = Card::IdsToStrings(cards).join("+");
-        if(up_only)
-            guanxing_str.append("!");
-        zhuge->invoke("doGuanxing", guanxing_str);
-        getResult("replyGuanxingCommand", zhuge, QString());
-
+        if(up_only) guanxing_str.append("!");
+        executeCommand(zhuge, "doGuanxing", "replyGuanxingCommand", guanxing_str, QString());
+        
         if(result.isEmpty()){
             // the method "doGuanxing" without any arguments
             // means to clear all the guanxing items
@@ -2997,8 +2991,9 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
     foreach(int handcard, handcards)
         handcards_str << QString::number(handcard);
 
-    shenlumeng->invoke("doGongxin", QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+")));
-    getResult("replyGongxinCommand", shenlumeng, "");
+    QString & ask_str = QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+"));
+    executeCommand(shenlumeng, "doGongxin", "replyGongxinCommand", ask_str, ".");
+    
 
     if(result.isEmpty() || result == ".")
         return;
@@ -3033,12 +3028,8 @@ const Card *Room::askForPindian(ServerPlayer *player,
             .arg(from->objectName())
             .arg(to->objectName());
 
-    player->invoke("askForPindian", ask_str);
-    getResult("responseCardCommand", player, ".");
-
-    if(result.isEmpty())
-        return askForPindian(player, from, to, reason);
-    else if(result == "."){
+    executeCommand(player, "askForPindian", "responseCardCommand", ask_str, ".");
+    if(result == "."){
         int card_id = player->getRandomHandCardId();
         return Sanguosha->getCard(card_id);
     }else{
@@ -3067,12 +3058,8 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         foreach(ServerPlayer *target, targets)
             options << target->objectName();
 
-        player->invoke("askForPlayerChosen", options.join("+") + ":" + reason);
-
-        getResult("choosePlayerCommand", player, ".");
-
-        if(result.isEmpty())
-            return askForPlayerChosen(player, targets, reason);
+        const QString &ask_str = options.join("+") + ":" + reason;
+        executeCommand(player, "askForPlayerChosen", "choosePlayerCommand", ask_str, ".");
 
         QString player_name = result;
         if(player_name == ".")
@@ -3108,8 +3095,7 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
         default_choice = generals.at(qrand() % generals.length());
 
     if(player->getState() == "online"){
-        player->invoke("askForGeneral", generals.join("+"));
-        getResult("chooseGeneralCommand", player, ".", Config.S_CHOOSE_GENERAL_TIMEOUT);
+        executeCommand(player, "askForGeneral", "chooseGeneralCommand", generals.join("+"), ".");
 
         if(result.isEmpty() || result == ".")
             return default_choice;
@@ -3342,8 +3328,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
         foreach(int card_id, cards)
             card_str << QString::number(card_id);
 
-        guojia->invoke("askForYiji", card_str.join("+"));
-        getResult("replyYijiCommand", guojia, ".");
+        executeCommand(guojia, "askForYiji", "replyYijiCommand", card_str.join("+") , ".");
 
         if(result.isEmpty() || result == ".")
             return false;

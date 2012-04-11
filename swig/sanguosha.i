@@ -815,7 +815,11 @@ public:
 	void sendLog(const LogMessage &log);
 	void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
 	void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
-	void getResult(const char *reply_func, ServerPlayer *reply_player, const char *defaultValue, bool move_focus = true);
+	void getResult(const QString &reply_func, ServerPlayer *reply_player, const QString &defaultValue, bool move_focus = true,
+                   bool supply_timeout = false, time_t timeout = 0);
+	void executeCommand(ServerPlayer* player, const char *invokeString, const QString &commandString,
+                   const QString &invokeArg, const QString &defaultValue, bool broadcast = false, bool move_focus = true,
+                   bool supply_timeout = false, time_t timeout = 0);
 	void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
 	void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
 	void adjustSeats();
