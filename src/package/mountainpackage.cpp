@@ -1043,8 +1043,10 @@ public:
                     }
                 }
             }
-            skill_name = ai->askForChoice("huashen", skill_names.join("+"));
+            Q_ASSERT(skill_names.length() > 0);
+            skill_name = ai->askForChoice(skill_names.first(), skill_names.join("+"));
             const General* general = hash[skill_name];
+            Q_ASSERT(general != NULL);
             QString kingdom = general->getKingdom();
             if(zuoci->getKingdom() != kingdom){
                 if(kingdom == "god")
