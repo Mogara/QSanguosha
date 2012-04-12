@@ -7,6 +7,8 @@ class ClientPlayer;
 #include "pixmap.h"
 #include "carditem.h"
 
+#include <QStack>
+
 class CloseButton: public Pixmap{
     Q_OBJECT
 
@@ -54,6 +56,8 @@ public slots:
 private:
     QList<GrabCardItem *> items;
     CloseButton* close_button;
+
+    QStack<QList<GrabCardItem *> > items_stack;
 
     void addCardItem(int card_id, const QPointF &pos);
 
