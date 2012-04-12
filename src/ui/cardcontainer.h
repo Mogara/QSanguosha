@@ -49,7 +49,7 @@ public:
     void view(const ClientPlayer *player);
 
 public slots:
-    void fillCards(const QList<int> &card_ids);
+    void fillCards(const QList<int> &card_ids = QList<int>());
     void clear();
     void freezeCards(bool is_disable);
 
