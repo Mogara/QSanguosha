@@ -233,6 +233,8 @@ rende_skill.name="rende"
 table.insert(sgs.ai_skills, rende_skill)
 rende_skill.getTurnUseCard=function(self)
 	if self.player:isKongcheng() then return end
+	local mode = string.lower(global_room:getMode())
+	if self.player:usedTimes("RendeCard") > 1 and mode:find("04_1v3") then return end
 	for _, player in ipairs(self.friends_noself) do
 		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage")) 
 			or player:hasSkill("longluo") or (not player:containsTrick("indulgence") and  player:hasSkill("yishe"))
