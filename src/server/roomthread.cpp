@@ -157,8 +157,10 @@ QString EventTriplet::toString() const{
             .arg(data->toString()).arg(data->typeName());
 }
 
+//@todo: setParent here is illegitimate in QT and is equivalent to calling
+// setParent(NULL). Find another way to do it if we really need a parent.
 RoomThread::RoomThread(Room *room)
-    :QThread(room), room(room)
+    :room(room)
 {
 }
 
@@ -255,6 +257,7 @@ void RoomThread::action3v3(ServerPlayer *player){
 }
 
 void RoomThread::run(){
+
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     if(setjmp(env) == GameOver){

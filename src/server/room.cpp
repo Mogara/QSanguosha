@@ -825,8 +825,6 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     }else{
         const QString &ask_str = QString("%1:%2").arg(pattern).arg(prompt);        
         executeCommand(player, "askForUseCard", "useCardCommand", ask_str, ".");
-        if(result.isEmpty())
-            return askForUseCard(player, pattern, prompt);
 
         answer = result;
     }
@@ -867,10 +865,6 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         player->invoke("disableAG", "false");        
         executeCommand(player, "askForAG", "chooseAGCommand", refusable ? "?" : ".",
                         QString::number(card_ids.first()));
-        
-
-        if(result.isEmpty())
-            return askForAG(player, card_ids, refusable, reason);
 
         card_id = result.toInt();
     }
@@ -955,10 +949,12 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
 
         card = Card::Parse(result);
 
-        card = card->validateInResposing(player, &continuable);
+        if (card != NULL) 
+            card = card->validateInResposing(player, &continuable);
     }
     if(card){
-        QVariant decisionData = QVariant::fromValue("peach:"+QString("%1:%2:%3").arg(dying->objectName()).arg(1 - dying->getHp()).arg(card->toString()));
+        QVariant decisionData = QVariant::fromValue("peach:"+
+            QString("%1:%2:%3").arg(dying->objectName()).arg(1 - dying->getHp()).arg(card->toString()));
         thread->trigger(ChoiceMade, player, decisionData);
         return card;
     }else if(continuable)

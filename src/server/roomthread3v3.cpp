@@ -8,11 +8,11 @@
 
 #include <QDateTime>
 
+//@todo: setParent here is illegitimate in QT and is equivalent to calling
+// setParent(NULL). Find another way to do it if we really need a parent.
 RoomThread3v3::RoomThread3v3(Room *room)
-    :QThread(room), room(room)
-{
-
-}
+    :room(room)
+{}
 
 QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     QList<const General *> generals;

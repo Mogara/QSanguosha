@@ -6,13 +6,14 @@
 
 #include <QDateTime>
 
+//@todo: setParent here is illegitimate in QT and is equivalent to calling
+// setParent(NULL). Find another way to do it if we really need a parent.
 RoomThread1v1::RoomThread1v1(Room *room)
-    :QThread(room), room(room)
-{
-
-}
+    :room(room)
+{}
 
 void RoomThread1v1::run(){
+
     // initialize the random seed for this thread
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
