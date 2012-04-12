@@ -85,11 +85,6 @@ Engine::Engine()
     foreach(QString name, scene_names)
         addScenario(name);
 
-    foreach(const Skill *skill, skills.values()){
-        Skill *mutable_skill = const_cast<Skill *>(skill);
-        mutable_skill->initMediaSource();
-    }
-
     // available game modes
     modes["02p"] = tr("2 players");
     //modes["02pbb"] = tr("2 players (using blance beam)");
@@ -122,6 +117,11 @@ Engine::Engine()
 
     foreach(QString ban, getBanPackages()){
         addBanPackage(ban);
+    }
+
+    foreach(const Skill *skill, skills.values()){
+        Skill *mutable_skill = const_cast<Skill *>(skill);
+        mutable_skill->initMediaSource();
     }
 }
 
