@@ -201,8 +201,9 @@ function SmartAI:isGoodChainPartner(player)
 	if player:getRole() == "lord" then
 		return false
 	end
-	if player:hasSkill("buqu") or (self:hasSkills(sgs.masochism_skill,player) and player:getHp() > 1) or
-		(self.player:hasSkill("niepan") and self.player:getMark("@@nirvana") > 0) then  
+	if player:hasSkill("buqu") or (self:hasSkills("yiji|jieming|guixin",player) and player:getHp() > 1) or
+		(self.player:hasSkill("niepan") and self.player:getMark("@@nirvana") > 0) or 
+			player:hasSkill("fuli") and player:getMark("@laoji") > 0 then  
 		return true
 	end
 	return false
