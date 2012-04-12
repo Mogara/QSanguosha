@@ -1264,7 +1264,7 @@ function SmartAI:objectiveLevel(player)
 			else
 				if self.player:isLord() then return 0
 				elseif #players == loyal_num+1 and loyal_num == 1 and not player:isLord() then return 5 
-				elseif sgs.evaluatePlayerRole(player) == "loyalist" then return -2 end
+				elseif not player:isLord() then return 0.5 end
 			end
 		end
 		if loyal_num == 0 then
