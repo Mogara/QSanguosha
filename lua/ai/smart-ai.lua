@@ -1689,6 +1689,7 @@ end
 
 function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local callback = sgs.ai_skill_discard[reason]
+	self:assignKeep(self.player:getHp(),true)
 	if type(callback) == "function" then
 		if callback(self, discard_num, optional, include_equip) then return callback(self, discard_num, optional, include_equip) end
 	elseif optional then return {} end

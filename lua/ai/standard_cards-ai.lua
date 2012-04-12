@@ -435,7 +435,7 @@ sgs.ai_skill_cardask["@axe"] = function(self, data, pattern, target)
 	local effect = data:toSlashEffect()
 	local allcards = self.player:getCards("he")
 	allcards = sgs.QList2Table(allcards)
-	if self.player:hasFlag("drank") or #allcards-2 >= self.player:getHp() or (self.player:hasSkill("kuanggu") and self.player:isWounded()) then
+	if effect.slash:hasFlag("drank") or #allcards-2 >= self.player:getHp() or (self.player:hasSkill("kuanggu") and self.player:isWounded()) then
 		local cards = self.player:getCards("h")
 		cards = sgs.QList2Table(cards)
 		local index
@@ -479,6 +479,7 @@ function sgs.ai_slash_weaponfilter.axe(to, self)
 end
 
 function sgs.ai_weapon_value.axe(self, enemy)
+	if self:hasSkills("jiushi|jiuchi|luoyi|pojun",self.player) then return 6 end
 	if enemy and enemy:getHp() < 3 then return 3 - enemy:getHp() end
 end
 
