@@ -33,7 +33,7 @@ void PixmapAnimation::setPath(const QString &path)
     current = 0;
 }
 
-void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->drawPixmap(0,0,frames.at(current));
 }
@@ -48,7 +48,7 @@ bool PixmapAnimation::valid()
     return !frames.isEmpty();
 }
 
-void PixmapAnimation::timerEvent(QTimerEvent *e)
+void PixmapAnimation::timerEvent(QTimerEvent *)
 {
     advance(1);
 }

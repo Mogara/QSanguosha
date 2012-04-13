@@ -74,17 +74,6 @@ private:
     QList<RoomItem*> room_items;
 };
 
-class BackLoader: public QThread
-{
-    Q_OBJECT
-public:
-    BackLoader(QObject *parent =0 );
-signals:
-    void completed(int progress);
-protected:
-    virtual void run();
-};
-
 class AcknowledgementScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -148,7 +137,6 @@ private slots:
     void networkError(const QString &error_msg);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
-    void updateLoadingProgress(int progress);
     void gotoStartScene();
     void sendLowLevelCommand();
     void startGameInAnotherInstance();
