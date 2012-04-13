@@ -438,7 +438,7 @@ end
 function sgs.ai_skill_invoke.shaoying(self, data)
 	local damage = data:toDamage()
 	local enemynum = 0
-	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+	for _, p in sgs.qlist(self.room:getOtherPlayers(damage.to)) do
 		if damage.to:distanceTo(p) <= 1 and self:isEnemy(p) then
 			enemynum = enemynum + 1
 		end
