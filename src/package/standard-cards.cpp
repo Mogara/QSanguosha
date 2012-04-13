@@ -64,7 +64,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     room->slashEffect(effect);
 }
 
-bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return !targets.isEmpty();
 }
 
@@ -120,7 +120,7 @@ QString Peach::getSubtype() const{
     return "recover_card";
 }
 
-QString Peach::getEffectPath(bool is_male) const{
+QString Peach::getEffectPath(bool ) const{
     return Card::getEffectPath();
 }
 
@@ -207,7 +207,7 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         effect.to->addMark("qinggang");
 
@@ -274,7 +274,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern == "slash";
     }
 
@@ -645,7 +645,7 @@ bool Collateral::isAvailable(const Player *player) const{
     return false;
 }
 
-bool Collateral::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool Collateral::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() == 2;
 }
 
@@ -945,14 +945,10 @@ void Lightning::takeEffect(ServerPlayer *target) const{
 
 // EX cards
 
-class IceSwordSkill: public TriggerSkill{
+class IceSwordSkill: public WeaponSkill{
 public:
-    IceSwordSkill():TriggerSkill("ice_sword"){
+    IceSwordSkill():WeaponSkill("ice_sword"){
         events << SlashHit;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasWeapon(objectName());
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -989,7 +985,7 @@ public:
         events << SlashEffected;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.slash->isBlack()){
             LogMessage log;

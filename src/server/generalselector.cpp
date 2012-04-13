@@ -91,7 +91,7 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &c
     return max_general;
 }
 
-QString GeneralSelector::select3v3(ServerPlayer *player, const QStringList &candidates){
+QString GeneralSelector::select3v3(ServerPlayer *, const QStringList &candidates){
     return selectHighest(priority_3v3_table, candidates, 0);
 }
 

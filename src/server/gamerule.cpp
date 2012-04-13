@@ -7,7 +7,7 @@
 
 #include <QTime>
 
-GameRule::GameRule(QObject *parent)
+GameRule::GameRule(QObject *)
     :TriggerSkill("game_rule")
 {
     //@todo: this setParent is illegitimate in QT and is equivalent to calling
