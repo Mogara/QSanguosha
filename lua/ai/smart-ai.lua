@@ -2880,7 +2880,8 @@ local function prohibitUseDirectly(card, player)
 	local _, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
-		if type(callback) == "function" and callback(card) then return true end
+		local card_place = global_room:getCardPlace(card:getEffectiveId())
+		if type(callback) == "function" and callback(card, card_place, player) then return true end
 	end
 	return false
 end
