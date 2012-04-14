@@ -111,6 +111,7 @@ function SmartAI:initialize(player)
 				break
 			end			     
 		end
+		local method_name = string.sub(full_method_name, method_name_start)
 		local method = self[method_name]
 		if method then
 			local success, result1, result2
