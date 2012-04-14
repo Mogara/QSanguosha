@@ -47,7 +47,7 @@ sgs.ai_slash_weaponfilter = {}
 sgs.ai_slash_prohibit = 	{}
 sgs.ai_trick_prohibit =		{} -- obsolete
 sgs.ai_view_as = {}
-sgs.ai_zerocardview = {}
+sgs.ai_cardsview = {}
 sgs.dynamic_value = 		{
 	damage_card = 			{},
 	control_usecard = 		{},
@@ -2886,10 +2886,10 @@ local function prohibitUseDirectly(card, player)
 	return false
 end
 
-local function zeroCardView(class_name, player)
+local function cardsview(class_name, player)
 	local vlist = sgs.getSkillLists(player)
 	for _, askill in ipairs(vlist) do
-		local callback = sgs.ai_zerocardview[askill]
+		local callback = sgs.ai_cardsview[askill]
 		if type(callback) == "function" and callback(class_name, player) then
 			return callback(class_name, player)
 		end
@@ -2943,7 +2943,7 @@ function SmartAI:getCardId(class_name, player)
 	local cards = player:getCards("he")
 	cards = sgs.QList2Table(cards)
 	self:sortByUsePriority(cards)
-	local card_str = self:getGuhuoCard(class_name, player) or zeroCardView(class_name, player)
+	local card_str = self:getGuhuoCard(class_name, player) or cardsview(class_name, player)
 	if card_str then return card_str end
 
 	for _, card in ipairs(cards) do

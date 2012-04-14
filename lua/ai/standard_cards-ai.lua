@@ -499,6 +499,32 @@ function sgs.ai_weapon_value.blade(self, enemy)
 	if not enemy then return self:getCardsNum("Slash") end
 end
 
+function sgs.ai_cardsview.spear(class_name, player)
+	if class_name == "Slash" then
+		local cards = player:getCards("h")	
+		cards=sgs.QList2Table(cards)
+		local newcards = {}
+		for _, card in ipairs(cards) do
+			if not card:inherits("Peach") then table.insert(newcards, card) end
+		end
+		if #newcards<(player:getHp()+1) then return nil end
+		if #newcards<2 then return nil end
+
+		local suit1 = newcards[1]:getSuitString()
+		local card_id1 = newcards[1]:getEffectiveId()
+	
+		local suit2 = newcards[2]:getSuitString()
+		local card_id2 = newcards[2]:getEffectiveId()
+
+		local suit="no_suit"
+		if newcards[1]:isBlack() == newcards[2]:isBlack() then suit = suit1 end
+
+		local card_str = ("slash:spear[%s:%s]=%d+%d"):format(suit, 0, card_id1, card_id2)
+
+		return card_str
+	end
+end
+
 local spear_skill={}
 spear_skill.name="spear"
 table.insert(sgs.ai_skills,spear_skill)

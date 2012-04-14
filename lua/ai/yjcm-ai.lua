@@ -1,4 +1,4 @@
-function sgs.ai_zerocardview.jiushi(class_name, player)
+function sgs.ai_cardsview.jiushi(class_name, player)
 	if class_name == "Analeptic" then
 		if player:hasSkill("jiushi") and player:faceUp() then
 			return ("analeptic:jiushi[no_suit:0]=.")
