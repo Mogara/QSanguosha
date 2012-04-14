@@ -399,9 +399,9 @@ function sgs.ai_weapon_value.qinggang_sword(self, enemy)
 end
 
 sgs.ai_skill_invoke.ice_sword=function(self, data)
-	local effect = data:toSlashEffect() 
-	local target = effect.to
-	if effect.slash:hasFlag("drank") then return false end	
+	local damage = data:toDamage()
+	local target = damage.to
+	if damage.card:hasFlag("drank") then return false end	
 	if self:isFriend(target) then
 		if self:isWeak(target) then return true
 		elseif target:getLostHp()<1 then return false end
@@ -559,13 +559,13 @@ function sgs.ai_slash_weaponfilter.fan(to)
 end
 
 sgs.ai_skill_invoke.kylin_bow = function(self, data)
-	local effect = data:toSlashEffect()
+	local damage = data:toDamage()
 
-	if self:hasSkills(sgs.lose_equip_skill, effect.to) then
-		return self:isFriend(effect.to)
+	if self:hasSkills(sgs.lose_equip_skill, damage.to) then
+		return self:isFriend(damage.to)
 	end
 
-	return self:isEnemy(effect.to)
+	return self:isEnemy(damage.to)
 end
 
 function sgs.ai_slash_weaponfilter.kylin_bow(to)
