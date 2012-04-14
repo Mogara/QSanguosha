@@ -99,7 +99,18 @@ function SmartAI:initialize(player)
 	self.room = player:getRoom()
 	self.role  = player:getRole()
 	self.lua_ai = sgs.LuaAI(player)
-	self.lua_ai.callback = function(method_name, ...)
+	self.lua_ai.callback = function(full_method_name, ...)
+		--The __FUNCTION__ macro is defined as CLASS_NAME::SUBCLASS_NAME::FUNCTION_NAME 
+		--in MSVC, while in gcc only FUNCTION_NAME is in place.
+		local method_name_start = 1;
+		while true do		    
+			local found = string.find(full_method_name, "::", method_name_start);			
+			if found ~= nil then			    
+				method_name_start = found + 2;
+			else			    
+				break
+			end			     
+		end
 		local method = self[method_name]
 		if method then
 			local success, result1, result2
