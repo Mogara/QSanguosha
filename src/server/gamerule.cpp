@@ -343,7 +343,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 room->setPlayerProperty(player, "chained", false);
 
                 // iron chain effect
-                QList<ServerPlayer *> chained_players = room->getOtherPlayers(player);
+                QList<ServerPlayer *> chained_players = room->getAlivePlayers();
                 foreach(ServerPlayer *chained_player, chained_players){
                     if(chained_player->isChained()){
                         room->getThread()->delay();

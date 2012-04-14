@@ -757,7 +757,7 @@ public:
     Kuangfeng():TriggerSkill("kuangfeng"){
         view_as_skill = new KuangfengViewAsSkill;
 
-        events << Beforedamage;
+        events << DamageProceed;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -874,7 +874,7 @@ public:
     Dawu():TriggerSkill("dawu"){
         view_as_skill = new DawuViewAsSkill;
 
-        events << Beforedamage;
+        events << DamageProceed;
     }
 
     virtual int getPriority() const{
