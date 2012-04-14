@@ -417,12 +417,8 @@ QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt){
 
     lua_State *L = room->getLuaState();
 
-    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
-
-    lua_pushstring(L, __FUNCTION__);
-
+    pushCallback(L, __FUNCTION__);
     lua_pushstring(L, pattern.toAscii());
-
     lua_pushstring(L, prompt.toAscii());
 
     int error = lua_pcall(L, 3, 1, 0);
