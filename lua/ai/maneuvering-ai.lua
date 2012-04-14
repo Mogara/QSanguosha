@@ -84,20 +84,16 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:fillSkillCards(cards)
+	local allcards = self.player:getCards("he")
+	allcards = sgs.QList2Table(allcards)
 
-	if (sgs.getDefense(self.player) <sgs.getDefense(enemy)) and
-		(self.player:getHandcardNum() < 1+self.player:getHp()) or
-		self.player:hasFlag("drank") then
-			return
+	if enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion" then
+		return
 	end
 
-	if enemy:getArmor() then
-		if ((enemy:getArmor():objectName()) == "eight_diagram")
-			or ((enemy:getArmor():objectName()) == "silver_lion") then
-			if (self.player:getHandcardNum() <= 1+self.player:getHp()) then
-				return
-			end
-		end
+	if ((enemy:getArmor() and enemy:getArmor():objectName() == "eight_diagram") or enemy:getHandcardNum() > 2) 
+		and not ((self:isEquip("Axe") and #allcards > 4) or self.player:getHandcardNum() > 1+self.player:getHp()) then
+		return
 	end
 
 	if self.player:getPhase() == sgs.Player_Play then

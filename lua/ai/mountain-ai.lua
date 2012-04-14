@@ -258,6 +258,12 @@ end
 
 sgs.ai_skill_playerchosen.fangquan = function(self, targets)
 	for _, target in sgs.qlist(targets) do
+		if self:isFriend(target) and not target:hasSkill("dawu") and
+			self:hasSkills(sgs.priority_skill,target) and not target:containsTrick("indulgence") then
+			return target
+		end
+	end
+	for _, target in sgs.qlist(targets) do
 		if self:isFriend(target) and not target:hasSkill("dawu") then
 			return target
 		end
