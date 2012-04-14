@@ -501,6 +501,12 @@ bool ServerPlayer::hasNullification() const{
         if(skill->inherits("LuaViewAsSkill")){
             const LuaViewAsSkill* luaskill = qobject_cast<const LuaViewAsSkill*>(skill);
             if(luaskill->isEnabledAtNullification(this)) return true;
+        }else if(skill->inherits("TriggerSkill")){
+            const TriggerSkill* trigger_skill = qobject_cast<const TriggerSkill*>(skill);
+            if(trigger_skill && trigger_skill->getViewAsSkill()->inherits("LuaViewAsSkill")){
+                const LuaViewAsSkill* luaskill = qobject_cast<const LuaViewAsSkill*>(trigger_skill->getViewAsSkill());
+                if(luaskill && luaskill->isEnabledAtNullification(this)) return true;
+            }
         }
     }
 
