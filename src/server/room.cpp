@@ -2126,6 +2126,15 @@ void Room::damage(const DamageStruct &damage_data){
             return;
     }
 
+    // beforedamage
+    bool prevent = thread->trigger(Beforedamage, damage_data.to, data);
+    if(prevent)
+        return;
+
+    // justdamage
+    if(thread->trigger(Justdamage, damage_data.from, data))
+        return;
+
     // predamaged
     bool broken = thread->trigger(Predamaged, damage_data.to, data);
     if(broken)

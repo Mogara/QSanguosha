@@ -283,7 +283,7 @@ public:
 class Qianxi: public TriggerSkill{
 public:
     Qianxi():TriggerSkill("qianxi"){
-        events << Predamage;
+        events << Justdamage;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -520,7 +520,7 @@ public:
 class Jiefan : public TriggerSkill{
 public:
     Jiefan():TriggerSkill("jiefan"){
-        events << Dying << SlashHit << SlashMissed << CardFinished;
+        events << Dying << Justdamage << SlashMissed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -550,24 +550,25 @@ public:
                 room->useCard(use);
             }            
         }
-        else if(event == SlashHit){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(!player->hasSkill(objectName())
-               || room->getTag("JiefanTarget").isNull())
-                return false;
+        else if(event == Justdamage){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(player->hasSkill(objectName()) && damage.card && damage.card->inherits("Slash")
+                    && !room->getTag("JiefanTarget").isNull()){
+					
+                DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
+                ServerPlayer *target = dying.who;
+                room->removeTag("JiefanTarget");
+                Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
+                peach->setSkillName(objectName());
+                CardUseStruct use;
+                use.card = peach;
+                use.from = handang;
+                use.to << target;
+                room->useCard(use);
 
-            DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
-            ServerPlayer *target = dying.who;
-            room->removeTag("JiefanTarget");
-            Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
-            peach->setSkillName(objectName());
-            CardUseStruct use;
-            use.card = peach;
-            use.from = handang;
-            use.to << target;
-            room->useCard(use);
-
-            return true;
+                return true;
+            }
+            return false;
         }
         else if(event == SlashMissed)
             room->removeTag("JiefanTarget");
@@ -689,15 +690,15 @@ public:
 class Lihuo: public TriggerSkill{
 public:
     Lihuo():TriggerSkill("lihuo"){
-        events << SlashHit << CardFinished;
+        events << Justdamage << CardFinished;
         view_as_skill = new LihuoViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        if(event == SlashHit){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.slash->getSkillName() == objectName())
+        if(event == Justdamage){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName())
                 player->tag["Invokelihuo"] = true;
         }
         else if(player->tag.value("Invokelihuo", false).toBool()){

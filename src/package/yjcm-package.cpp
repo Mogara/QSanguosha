@@ -43,7 +43,7 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
-        events << CardDiscarded << CardUsed << FinishJudge;
+        events << CardDiscarded << CardUsed << CardLost << FinishJudge;
         frequency = Frequent;
         default_choice = "no";
     }
@@ -91,6 +91,11 @@ public:
                 return false;
 
             clubs = getClubs(card);
+        }else if (event == CardLost){
+                CardMoveStar move = data.value<CardMoveStar>();
+                const Card *card = Sanguosha->getCard(move->card_id);
+                if(move->from_place == Player::Equip && move->to_place == Player::DiscardedPile && card->getSuit() == Card::Club)
+                    clubs << card;
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DiscardedPile

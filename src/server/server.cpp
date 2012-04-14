@@ -262,7 +262,7 @@ QWidget *ServerDialog::createAITab(){
     ai_enable_checkbox->setChecked(Config.EnableAI);
 
     role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
-    role_predictable_checkbox->setChecked(Config.value("RolePredictable", true).toBool());
+    role_predictable_checkbox->setChecked(Config.value("RolePredictable", false).toBool());
 
     ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
     ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
