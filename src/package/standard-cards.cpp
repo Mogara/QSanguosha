@@ -406,7 +406,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         QStringList horses;
-    if(damage.card && damage.card->inherits("Slash")){
+    if(damage.card && damage.card->inherits("Slash") && !damage.chain){
         if(damage.to->getDefensiveHorse())
             horses << "dhorse";
         if(damage.to->getOffensiveHorse())
@@ -958,7 +958,8 @@ public:
 
         Room *room = player->getRoom();
 
-        if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude() && player->askForSkillInvoke("ice_sword", data)){
+        if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude()
+                && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
             int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
             room->throwCard(card_id);
 
