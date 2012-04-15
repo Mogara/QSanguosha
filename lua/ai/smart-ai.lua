@@ -2331,6 +2331,9 @@ function SmartAI:getCardNeedPlayer(cards)
 	end
 
 	if (self.player:hasSkill("rende") and self.player:isWounded() and self.player:usedTimes("RendeCard") < 2) then 
+		if (self.player:getHandcardNum() < 2 and self.player:usedTimes("RendeCard") == 0) then
+			return
+		end
 		if (self.player:getHandcardNum() == 2 and self.player:usedTimes("RendeCard") == 0) or
 			(self.player:getHandcardNum() == 1 and self.player:usedTimes("RendeCard") == 1) then
 			for _, enemy in ipairs(self.enemies) do
@@ -2351,18 +2354,19 @@ function SmartAI:getCardNeedPlayer(cards)
 				end
 			end
 		end
-		if self.player:getHandcardNum()> 2 or #cardtogive > 2 then
-			for _, friend in ipairs(self.friends_noself) do
-				if not self:needKongcheng(friend) or self.player:getHp() > 2 then
-					for _, hcard in ipairs(cardtogive) do
-						if #cardtogive > 1  then 
-							return hcard, friend
-						end
+		for _, friend in ipairs(self.friends_noself) do
+			if not self:needKongcheng(friend) or self.player:getHp() > 2 then
+				for _, hcard in ipairs(cardtogive) do
+					if #cardtogive > 1  then 
+						return hcard, friend
 					end
 				end
 			end
 		end
-		for _, friend in ipairs(self.friends_noself) do
+	end
+
+	for _, friend in ipairs(self.friends_noself) do
+		if not self:needKongcheng(friend) then
 			for _, hcard in ipairs(cardtogive) do
 				if self:getOverflow()>0	then
 					return hcard, friend
@@ -2383,15 +2387,6 @@ function SmartAI:getCardNeedPlayer(cards)
 		end
 	end
 
-	for _, friend in ipairs(self.friends_noself) do
-		if not self:needKongcheng(friend) then
-			for _, hcard in ipairs(cardtogive) do
-				if self:getOverflow()>0	then
-					return hcard, friend
-				end
-			end
-		end
-	end
 	
 	self:sortByUseValue(cards,true)
 	local name = self.player:objectName()
