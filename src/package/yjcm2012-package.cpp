@@ -283,7 +283,7 @@ public:
 class Qianxi: public TriggerSkill{
 public:
     Qianxi():TriggerSkill("qianxi"){
-        events << DamagedProceed;
+        events << DamageProceed;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -520,7 +520,7 @@ public:
 class Jiefan : public TriggerSkill{
 public:
     Jiefan():TriggerSkill("jiefan"){
-        events << Dying << DamagedProceed << SlashMissed << CardFinished;
+        events << Dying << DamageProceed << SlashMissed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -550,7 +550,7 @@ public:
                 room->useCard(use);
             }            
         }
-        else if(event == DamagedProceed){
+        else if(event == DamageProceed){
             DamageStruct damage = data.value<DamageStruct>();
             if(player->hasSkill(objectName()) && damage.card && damage.card->inherits("Slash")
                     && !room->getTag("JiefanTarget").isNull()){
@@ -690,13 +690,13 @@ public:
 class Lihuo: public TriggerSkill{
 public:
     Lihuo():TriggerSkill("lihuo"){
-        events << DamagedProceed << CardFinished;
+        events << DamageProceed << CardFinished;
         view_as_skill = new LihuoViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        if(event == DamagedProceed){
+        if(event == DamageProceed){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName())
                 player->tag["Invokelihuo"] = true;

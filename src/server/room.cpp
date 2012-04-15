@@ -2126,13 +2126,13 @@ void Room::damage(const DamageStruct &damage_data){
             return;
     }
 
-    // DamageProceed
-    bool prevent = thread->trigger(DamageProceed, damage_data.to, data);
+    // DamagedProceed
+    bool prevent = thread->trigger(DamagedProceed, damage_data.to, data);
     if(prevent)
         return;
 
-    // DamagedProceed
-    if(thread->trigger(DamagedProceed, damage_data.from, data))
+    // DamageProceed
+    if(thread->trigger(DamageProceed, damage_data.from, data))
         return;
 
     // predamaged
