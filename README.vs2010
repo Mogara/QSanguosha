@@ -11,6 +11,6 @@ To build QSanguosha with VS2010
 
 4. Install QT libraries for Windows and QT Visual Studio Add-in you downloaded in the first step.
 
-5. Open Qsanguosha.sln right under <Your source directory>/Qsanguosha.
+5. Open Qsanguosha.sln right under <Your source directory>/Qsanguosha/builds/vs2010.
 
 6. You are now able to build the solution.

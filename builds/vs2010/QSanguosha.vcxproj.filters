@@ -6,11 +6,6 @@
       <Extensions>ui</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
     <Filter Include="Generated Files">
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
@@ -22,14 +17,6 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
@@ -48,696 +35,549 @@
     <Filter Include="Swig Files">
       <UniqueIdentifier>{9981aa0b-e6a2-412b-95d7-2e22d217b648}</UniqueIdentifier>
     </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{c840cc0f-f927-42a6-98f7-1f7f92888d93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{e7089e6a-3089-4d67-a347-02cd2f214e05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog">
+      <UniqueIdentifier>{be9e2452-57ca-46f7-b067-be44fd16c604}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="package">
+      <UniqueIdentifier>{12921f3f-26ad-402c-a6a2-9865e25d3ec8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scenario">
+      <UniqueIdentifier>{6db79ca9-2e4f-498e-b52b-c59736aabf0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{ffa117bb-84ff-4371-9304-3f2c80af7d0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{41ea1f8d-ad6c-48cd-b070-6232f5788c09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="ui\form">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\server\ai.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\audio.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\client\aux-skills.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\banpair.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\bgm-package.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\boss-mode-scenario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\button.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\card.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\cardcontainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\cardeditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\carditem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\cardoverview.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\chatwidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\choosegeneraldialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\client\client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\clientlogbox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\client\clientplayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\client\clientstruct.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\configdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\connectiondialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\contestdb.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\couple-scenario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\customassigndialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\dashboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\detector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\distanceviewdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\exppattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\fancheng-scenario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\firepackage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\gamerule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\general.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\generaloverview.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\generalselector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\god.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\guandu-scenario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\halldialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\indicatoritem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\irregularbutton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\joypackage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lapi.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lauxlib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lbaselib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lcode.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\ldblib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\ldebug.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\ldo.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\ldump.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lfunc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lgc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\linit.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\liolib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\llex.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lmathlib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lmem.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\loadlib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lobject.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lopcodes.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\loslib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lparser.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lstate.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lstring.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lstrlib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\ltable.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\ltablib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\ltm.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\lua-wrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lundump.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lvm.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\lzio.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\mainwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\maneuvering.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\miniscenarios.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\mountainpackage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\nativesocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\nostalgia.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\package.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\packagingeditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\photo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\pixmap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\pixmapanimation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\playercarddialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lua\print.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\recorder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\roleassigndialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\rolecombobox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\room.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\roomscene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\roomthread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\roomthread1v1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\roomthread3v3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\scenario-overview.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\scenario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\scenerule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server\serverplayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\settings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\skill.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\sp-package.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\special3v3-package.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\standard-cards.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\standard-generals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\standard-skillcards.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\standard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\startscene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\statistics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\thicket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\wind.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\wisdompackage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\yitianpackage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\yjcm-package.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\package\yjcm2012-package.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenario\zombie-mode-scenario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="swig\sanguosha_wrap.cxx">
+    <ClCompile Include="..\..\swig\sanguosha_wrap.cxx">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\client\aux-skills.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\client\client.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\client\clientplayer.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\client\clientstruct.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\audio.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\banpair.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\card.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\engine.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\general.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\lua-wrapper.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\player.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\settings.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\skill.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\statistics.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\cardeditor.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\cardoverview.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\roleassigndialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\playercarddialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\packagingeditor.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\mainwindow.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\halldialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\generaloverview.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\distanceviewdialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\customassigndialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\connectiondialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\configdialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\choosegeneraldialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\bgm-package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\firepackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\god.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\joypackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\maneuvering.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\mountainpackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\nostalgia.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\special3v3-package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\sp-package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-cards.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-generals.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-skillcards.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\thicket.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\wind.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\wisdompackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\yitianpackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\yjcm-package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\yjcm2012-package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\exppattern.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\boss-mode-scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\couple-scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\fancheng-scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\guandu-scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\miniscenarios.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\scenerule.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\zombie-mode-scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\chatwidget.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\button.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\carditem.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\cardcontainer.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\clientlogbox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\dashboard.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\indicatoritem.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\irregularbutton.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\photo.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\pixmap.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\pixmapanimation.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\window.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\startscene.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\sprite.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\roomscene.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\detector.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\recorder.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\nativesocket.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\rolecombobox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\scenario-overview.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\ai.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\serverplayer.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\contestdb.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\gamerule.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\generalselector.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\main.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\room.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\roomthread.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\roomthread1v1.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\roomthread3v3.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\server.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\server\ai.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\server\ai.h">
+      <Filter>server</Filter>
     </CustomBuild>
-    <ClInclude Include="src\core\audio.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\server\contestdb.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\gamerule.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\generalselector.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\room.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\roomthread.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\roomthread1v1.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\roomthread3v3.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\server.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\serverplayer.h">
+      <Filter>server</Filter>
+    </CustomBuild>
+    <ClInclude Include="..\..\src\server\structs.h">
+      <Filter>server</Filter>
     </ClInclude>
-    <CustomBuild Include="src\client\aux-skills.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\client\aux-skills.h">
+      <Filter>client</Filter>
     </CustomBuild>
-    <ClInclude Include="src\core\banpair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="src\package\bgm-package.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\client\client.h">
+      <Filter>client</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\scenario\boss-mode-scenario.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\client\clientplayer.h">
+      <Filter>client</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\ui\button.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\client\clientstruct.h">
+      <Filter>client</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\core\card.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\core\card.h">
+      <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\ui\cardcontainer.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\core\engine.h">
+      <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\dialog\cardeditor.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\core\general.h">
+      <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\ui\carditem.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\core\lua-wrapper.h">
+      <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\dialog\cardoverview.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\core\player.h">
+      <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\ui\chatwidget.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\core\settings.h">
+      <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\dialog\choosegeneraldialog.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\core\skill.h">
+      <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\client\client.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\cardeditor.h">
+      <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\ui\clientlogbox.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\cardoverview.h">
+      <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\client\clientplayer.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\choosegeneraldialog.h">
+      <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\client\clientstruct.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\configdialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\connectiondialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\contestdb.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\scenario\couple-scenario.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\customassigndialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\dashboard.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\util\detector.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\distanceviewdialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\core\engine.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="src\package\exppattern.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="src\scenario\fancheng-scenario.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\firepackage.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\gamerule.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\core\general.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\generaloverview.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\generalselector.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\god.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\scenario\guandu-scenario.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\halldialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\indicatoritem.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\irregularbutton.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\joypackage.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="src\lua\lapi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lauxlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lcode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\ldebug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\ldo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lfunc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lgc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\llex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\llimits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lmem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lopcodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lparser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lstate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lstring.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\ltable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\ltm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="src\core\lua-wrapper.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="src\lua\lua.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lua.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\luaconf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lualib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lundump.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lvm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lua\lzio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="src\dialog\mainwindow.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\maneuvering.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\scenario\miniscenarios.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\mountainpackage.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\util\nativesocket.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\nostalgia.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\package.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\packagingeditor.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\photo.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\pixmap.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\pixmapanimation.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\core\player.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\playercarddialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\util\recorder.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\roleassigndialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\rolecombobox.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\room.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\roomscene.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\roomthread.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\roomthread1v1.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\roomthread3v3.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\dialog\scenario-overview.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\scenario\scenario.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="src\scenario\scenerule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="src\server\server.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\server\serverplayer.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\core\settings.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\core\skill.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\util\socket.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\sp-package.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\special3v3-package.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\sprite.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\standard-equips.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\standard-skillcards.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\standard.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\startscene.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="src\core\statistics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\server\structs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="src\package\thicket.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\wind.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\ui\window.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\wisdompackage.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\yitianpackage.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\yjcm-package.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\package\yjcm2012-package.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\scenario\zombie-mode-scenario.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\configdialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\connectiondialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\distanceviewdialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\generaloverview.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\halldialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\mainwindow.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\packagingeditor.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\playercarddialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\roleassigndialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\scenario-overview.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\bgm-package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\special3v3-package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\standard-equips.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\standard-skillcards.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\standard.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\wind.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\wisdompackage.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\yitianpackage.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\yjcm-package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\yjcm2012-package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\thicket.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\mountainpackage.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\maneuvering.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\joypackage.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\god.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\firepackage.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\sp-package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\zombie-mode-scenario.h">
+      <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\boss-mode-scenario.h">
+      <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\couple-scenario.h">
+      <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\scenario.h">
+      <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\miniscenarios.h">
+      <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\fancheng-scenario.h">
+      <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\guandu-scenario.h">
+      <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\button.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\cardcontainer.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\carditem.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\chatwidget.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\clientlogbox.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\dashboard.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\indicatoritem.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\irregularbutton.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\photo.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\pixmap.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\pixmapanimation.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\roomscene.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\sprite.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\startscene.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\window.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\nostalgia.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\util\socket.h">
+      <Filter>util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\util\detector.h">
+      <Filter>util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\util\nativesocket.h">
+      <Filter>util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\util\recorder.h">
+      <Filter>util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\rolecombobox.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\customassigndialog.h">
+      <Filter>dialog</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -1235,32 +1075,32 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\swig\sanguosha.i">
+      <Filter>Swig Files</Filter>
+    </None>
     <None Include="sanguosha.ts">
       <Filter>Translation Files</Filter>
     </None>
-    <None Include="swig\sanguosha.i">
-      <Filter>Swig Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\dialog\cardoverview.ui">
-      <Filter>Form Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
+      <Filter>ui\form</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\dialog\configdialog.ui">
-      <Filter>Form Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\configdialog.ui">
+      <Filter>ui\form</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\dialog\connectiondialog.ui">
-      <Filter>Form Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\connectiondialog.ui">
+      <Filter>ui\form</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\dialog\generaloverview.ui">
-      <Filter>Form Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\generaloverview.ui">
+      <Filter>ui\form</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\dialog\mainwindow.ui">
-      <Filter>Form Files</Filter>
+    <CustomBuild Include="..\..\src\dialog\mainwindow.ui">
+      <Filter>ui\form</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resource\icon.rc" />
+    <ResourceCompile Include="..\..\resource\icon.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_cardoverview.h">
@@ -1277,6 +1117,21 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\audio.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\banpair.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\statistics.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\package\exppattern.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scenario\scenerule.h">
+      <Filter>scenario</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
