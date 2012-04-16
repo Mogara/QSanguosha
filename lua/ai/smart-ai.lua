@@ -484,7 +484,7 @@ function SmartAI:cardNeed(card)
 		if (self.player:getHp() < 3 or self.player:getLostHp() > 1 and not self:hasSkill("longhun")) or self:hasSkills("kurou|benghuai") then return 14 end
 		return self:getUseValue(card)
 	end
-	if self:isWeak() and card:inherits("Jink") and self:getCardsNum("Jink") < self.player:getHp() then return 12 end
+	if self:isWeak() and card:inherits("Jink") and self:getCardsNum("Jink") < 1 then return 12 end
 	if sgs[self.player:getGeneralName().."_keep_value"] then
 		value = sgs[self.player:getGeneralName().."_keep_value"][class_name]
 		if value then return value+4 end
@@ -494,12 +494,13 @@ function SmartAI:cardNeed(card)
 		if value then return value+4 end
 	end
 
-	if card:inherits("Jink") and self:getCardsNum("Jink") == 0 then return 5.9 end
+	if card:inherits("Slash") and self:getCardsNum("Slash") == 0 then return 5.9 end
 	if card:inherits("Analeptic") then
 		if self.player:getHp() < 2 then return 10 end
 	end
 	if card:inherits("Slash") and (self:getCardsNum("Slash") > 0) then return 4 end
 	if card:inherits("Crossbow") and  self:hasSkills("luoshen|yongsi|kurou|keji|wusheng|wushen",self.player) then return 20 end
+	if card:inherits("Axe") and  self:hasSkills("luoyi|jiushi|jiuchi|pojun",self.player) then return 15 end
 	if card:inherits("Weapon") and (not self.player:getWeapon()) and (self:getCardsNum("Slash") > 1) then return 6 end
 	if card:inherits("Nullification") and self:getCardsNum("Nullification") == 0 then
 		if self.player:containsTrick("indulgence") or self.player:containsTrick("supply_shortage") then return 10 end
@@ -3462,8 +3463,8 @@ function SmartAI:useTrickCard(card, use)
 		if good > 0 then
 			use.card = card
 		end
-		if self.role == "renegade" or self:hasSkill("jianxiong|luanji|manjuan",self.player) then
-			if good > -20 then use.card = card end
+		if self:hasSkills("jianxiong|luanji|manjuan",self.player) then
+			if good > -10 then use.card = card end
 		end
 	else
 		self:useCardByClassName(card, use)
