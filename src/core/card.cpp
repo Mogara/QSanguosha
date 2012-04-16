@@ -527,7 +527,7 @@ void Card::setFlags(const QString &flag) const{
     else if(flag.startsWith(symbol_c)){
         QString copy = flag;
         copy.remove(symbol_c);
-        flags.removeOne(flag);
+        flags.removeOne(copy);
     }
     else
         flags << flag;
