@@ -748,7 +748,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     room->sendLog(log);
 
     room->setTag("Guhuoing", false);
-    room->setTag("GuhuoType", "");
+    room->removeTag("GuhuoType");
 
     if(!success)
         room->throwCard(this);
