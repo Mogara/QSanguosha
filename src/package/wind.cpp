@@ -674,6 +674,7 @@ GuhuoCard::GuhuoCard(){
 bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
+    room->setTag("GuhuoType", this->user_string);
 
     yuji->addToPile("#guhuo_pile", this->getEffectiveId(), false);
     room->moveCardTo(this, yuji, Player::Special, false);
@@ -747,6 +748,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     room->sendLog(log);
 
     room->setTag("Guhuoing", false);
+    room->setTag("GuhuoType", "");
 
     if(!success)
         room->throwCard(this);
