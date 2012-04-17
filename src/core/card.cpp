@@ -537,6 +537,10 @@ bool Card::hasFlag(const QString &flag) const{
     return flags.contains(flag);
 }
 
+void Card::clearFlags() const{
+    flags.clear();
+}
+
 // ---------   Skill card     ------------------
 
 SkillCard::SkillCard()

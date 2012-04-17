@@ -668,6 +668,8 @@ QList<int> Engine::getRandomCards() const{
 
     QList<int> list;
     foreach(Card *card, cards){
+        card->clearFlags();
+
         if(exclude_disaters && card->inherits("Disaster"))
             continue;
 
