@@ -348,8 +348,33 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
         return NULL;
 }
 
+static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
+    lua_getglobal(L, "config");
+    lua_getfield(L, -1, key);
+
+    QVariant data;
+    switch(lua_type(L, -1)){
+    case LUA_TSTRING: {
+        data = QString::fromUtf8(lua_tostring(L, -1));
+        return data;
+        break;
+    }
+
+    case LUA_TNUMBER:{
+        data = lua_tonumber(L, -1);
+        break;
+    }
+
+    default:
+        break;
+    }
+
+    lua_pop(L, 2);
+    return data;
+}
+
 QString Engine::getVersionNumber() const{
-    return "20120405";
+    return GetConfigFromLuaState(lua, "version").toString();
 }
 
 QString Engine::getVersion() const{
@@ -362,11 +387,11 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return tr("Taqing");
+    return GetConfigFromLuaState(lua, "version_name").toString();
 }
 
 QString Engine::getMODName() const{
-    return "official";
+    return GetConfigFromLuaState(lua, "mod_name").toString();
 }
 
 QStringList Engine::getExtensions() const{
