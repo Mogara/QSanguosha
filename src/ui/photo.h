@@ -72,7 +72,6 @@ private:
     QGraphicsPixmapItem *kingdom_item, *ready_item;
     QPixmap kingdom_frame;
     QPixmap handcard;
-    QPixmap chain;    
     RoleCombobox *role_combobox;
     QGraphicsProxyWidget  *pile_button;
     QGraphicsPixmapItem *action_item, *save_me_item;
@@ -93,7 +92,7 @@ private:
     QGraphicsPixmapItem *order_item;
     bool hide_avatar;
     QPixmap death_pixmap;
-    Pixmap *back_icon;
+    Pixmap *back_icon, *chain_icon;
     QProgressBar *progress_bar;
     int timer_id;
     QGraphicsPixmapItem *emotion_item, *frame_item;
