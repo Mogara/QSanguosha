@@ -131,7 +131,7 @@ lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
 
     luaopen_sgs(L);
 
-    int error = luaL_dofile(L, "sanguosha.lua");
+    int error = luaL_dofile(L, "lua/sanguosha.lua");
     if(error){
         error_msg = lua_tostring(L, -1);
         return NULL;
@@ -348,8 +348,48 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
         return NULL;
 }
 
+static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
+    lua_getglobal(L, "config");
+    lua_getfield(L, -1, key);
+
+    QVariant data;
+    switch(lua_type(L, -1)){
+    case LUA_TSTRING: {
+        data = QString::fromUtf8(lua_tostring(L, -1));
+        lua_pop(L, 1);
+        break;
+    }
+
+    case LUA_TNUMBER:{
+        data = lua_tonumber(L, -1);
+        lua_pop(L, 1);
+        break;
+    }
+
+    case LUA_TTABLE:{
+        QStringList list;
+
+        size_t size = lua_objlen(L, -1);
+        for(size_t i=0; i<size; i++){
+            lua_rawgeti(L, -1, i+1);
+            QString element = lua_tostring(L, -1);
+            lua_pop(L, 1);
+            list << element;
+        }
+
+        data = list;
+    }
+
+    default:
+        break;
+    }
+
+    lua_pop(L, 1);
+    return data;
+}
+
 QString Engine::getVersionNumber() const{
-    return "20120405";
+    return GetConfigFromLuaState(lua, "version").toString();
 }
 
 QString Engine::getVersion() const{
@@ -362,11 +402,11 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return tr("Taqing");
+    return GetConfigFromLuaState(lua, "version_name").toString();
 }
 
 QString Engine::getMODName() const{
-    return "official";
+    return GetConfigFromLuaState(lua, "mod_name").toString();
 }
 
 QStringList Engine::getExtensions() const{
@@ -382,11 +422,7 @@ QStringList Engine::getExtensions() const{
 }
 
 QStringList Engine::getKingdoms() const{
-    static QStringList kingdoms;
-    if(kingdoms.isEmpty())
-        kingdoms << "wei" << "shu" << "wu" << "qun" << "god";
-
-    return kingdoms;
+    return GetConfigFromLuaState(lua, "kingdoms").toStringList();
 }
 
 QColor Engine::getKingdomColor(const QString &kingdom) const{
@@ -668,6 +704,8 @@ QList<int> Engine::getRandomCards() const{
 
     QList<int> list;
     foreach(Card *card, cards){
+        card->clearFlags();
+
         if(exclude_disaters && card->inherits("Disaster"))
             continue;
 

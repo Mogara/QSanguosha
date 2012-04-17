@@ -26,7 +26,7 @@ Photo::Photo()
     :Pixmap("image/system/photo-back.png"),
     player(NULL),
     handcard("image/system/handcard.png"),
-    chain("image/system/chain.png"), action_item(NULL), save_me_item(NULL), permanent(false),
+    action_item(NULL), save_me_item(NULL), permanent(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     order_item(NULL), hide_avatar(false)
 {
@@ -37,6 +37,11 @@ Photo::Photo()
     back_icon->setPos(105, 67);
     back_icon->hide();
     back_icon->setZValue(1.0);
+
+    chain_icon = new Pixmap("image/system/chain.png");
+    chain_icon->setParentItem(this);
+    chain_icon->setPos(boundingRect().width() - 22, 5);
+    chain_icon->hide();
 
     progress_bar = new QProgressBar;
     progress_bar->setMinimum(0);
@@ -663,10 +668,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     drawEquip(painter, defensive_horse, 2);
     drawEquip(painter, offensive_horse, 3);
 
-    // draw iron chain
-    if(player->isChained())
-        painter->drawPixmap(this->boundingRect().width() - 22, 5, chain);
-
+    chain_icon->setVisible(player->isChained());
     back_icon->setVisible(! player->faceUp());
 }
 
