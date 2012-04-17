@@ -838,13 +838,25 @@ function sgs.modifiedRoleTrends(role)
 	for _, modifier in ipairs(min_trends) do
 		local name = modifier:objectName()
 		if role == "renegade" then
-			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["loyalist"]) - 15
+			if sgs.role_evaluation[name]["rebel"] > sgs.role_evaluation[name]["loyalist"] then
+				sgs.role_evaluation[name]["rebel"] = sgs.role_evaluation[name][role] + 15
+			else
+				sgs.role_evaluation[name]["loyalist"] = sgs.role_evaluation[name][role] + 15
+			end
 		elseif role == "rebel" then
-			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["renegade"], sgs.role_evaluation[name]["loyalist"]) - 15
+			if sgs.role_evaluation[name]["renegade"] >= sgs.role_evaluation[name]["loyalist"] then
+				sgs.role_evaluation[name]["renegade"] = sgs.role_evaluation[name][role] + 15
+			else
+				sgs.role_evaluation[name]["loyalist"] = sgs.role_evaluation[name][role] + 15	
+			end
 		elseif role == "loyalist" then
-			sgs.role_evaluation[name][role] = math.max(sgs.role_evaluation[name]["rebel"], sgs.role_evaluation[name]["renegade"]) - 15
+			if sgs.role_evaluation[name]["renegade"] >= sgs.role_evaluation[name]["rebel"] then
+				sgs.role_evaluation[name]["renegade"] = sgs.role_evaluation[name][role] + 15
+			else
+				sgs.role_evaluation[name]["rebel"] = sgs.role_evaluation[name][role] + 15	
+			end
 		end
-		global_room:writeToConsole("The evaluation of " .. modifier:getGeneralName() .. " " .. role .. " is " .. sgs.role_evaluation[name][role])
+		global_room:writeToConsole("The evaluation role of " .. modifier:getGeneralName() .. " " ..  " is " .. sgs.evaluatePlayerRole(modifier))
 	end
 	
 	global_room:writeToConsole("Modified Role Trends Success!")
