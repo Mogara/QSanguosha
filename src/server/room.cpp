@@ -879,7 +879,11 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 }
 
 const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason){
-    CardStar card;
+    if(player->getHandcardNum() == 1){
+        return player->getHandcards().first();
+    }
+
+    const Card *card = NULL;
 
     AI *ai = player->getAI();
     if(ai)
