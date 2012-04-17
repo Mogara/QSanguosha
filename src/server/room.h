@@ -13,6 +13,7 @@ struct LogMessage;
 
 #include "serverplayer.h"
 #include "roomthread.h"
+#include "protocol.h"
 
 class Room : public QThread{
     Q_OBJECT
@@ -83,11 +84,30 @@ public:
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
 
+    bool getResult(time_t timeOut);
     void getResult(const QString &reply_func, ServerPlayer *reply_player, const QString &defaultValue, bool move_focus = true,
                    bool supply_timeout = false, time_t timeout = 0);
     void executeCommand(ServerPlayer* player, const char *invokeString, const QString &commandString,
                      const QString &invokeArg, const QString &defaultValue, bool broadcast = false, bool move_focus = true,
                      bool supply_timeout = false, time_t timeout = 0);
+
+    // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
+    // server times out, whichever is earlier.
+    // @param player
+    //        The server player to carry out the command.
+    // @param packet
+    //        Packet to be forwarded to the client.
+    // @param timeOut
+    //        Maximum milliseconds that server should wait for client response before returning.
+    // @param broadcast
+    //        Specifies whether other players should also be notified about the event.
+    // @param moveFocus
+    //        Suggests whether the all clients' UI should move focus to the player specified.
+    // @return True if the a valid response is returned from client.
+    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, time_t timeOut, bool broadcast = false, bool moveFocus = true);
+    
+    // Ditto, except that default timeout from configuration is used.
+    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, bool broadcast = false, bool move_focus = true);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -166,6 +186,7 @@ public:
     //Get the timeout allowance for a command. Server countdown is more lenient than the client.
     //@param command: type of command
     //@return countdown for command in milliseconds.
+    time_t getCommandTimeout(QSanProtocol::CommandType command);
     time_t getCommandTimeout(const QString &command);
     void toggleReadyCommand(ServerPlayer *player, const QString &);
     void speakCommand(ServerPlayer *player, const QString &arg);
@@ -178,6 +199,7 @@ public:
     void chooseCommand(ServerPlayer *player, const QString &general_name);
     void choose2Command(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
+    void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void startTest(const QString &to_test);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
@@ -205,6 +227,8 @@ private:
     QSemaphore *sem;
     QString result;
     QString reply_func;
+    QSanProtocol::CommandType m_expectedReplyCommand;
+    ServerPlayer* m_expectedReplyPlayer;
 
     QHash<QString, Callback> callbacks;
 

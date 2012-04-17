@@ -6,6 +6,8 @@
 #include "choosegeneraldialog.h"
 #include "nativesocket.h"
 #include "recorder.h"
+#include "protocol.h"
+#include "jsonutils.h"
 
 #include <QApplication>
 #include <QCryptographicHash>
@@ -19,12 +21,17 @@
 #include <QTextDocument>
 #include <QTextCursor>
 
+using namespace std;
+using namespace QSanProtocol;
+using namespace QSanProtocol::Utils;
+
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
     :QObject(parent), refusable(true),
     status(NotActive), alive_count(1), swap_pile(0)
 {
+
     ClientInstance = this;
 
     callbacks["checkVersion"] = &Client::checkVersion;
@@ -58,9 +65,11 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["acquireSkill"] = &Client::acquireSkill;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
-    callbacks["moveFocus"] = &Client::moveFocus;
+    m_callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus; 
+    //callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
-    callbacks["skillInvoked"] = &Client::skillInvoked;
+    m_callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked; 
+    //callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["addHistory"] = &Client::addHistory;
     callbacks["animate"] = &Client::animate;
     callbacks["judgeResult"] = &Client::judgeResult;
@@ -86,7 +95,8 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setStatistics"] = &Client::setStatistics;
 
     // interactive methods
-    callbacks["activate"] = &Client::activate;
+    m_interactions[S_COMMAND_ACTIVATE] = &Client::activate;
+    // callbacks["activate"] = &Client::activate;
     callbacks["doChooseGeneral"] = &Client::doChooseGeneral;
     callbacks["doChooseGeneral2"] = &Client::doChooseGeneral2;
     callbacks["doGuanxing"] = &Client::doGuanxing;
@@ -99,7 +109,8 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForCardChosen"] = &Client::askForCardChosen;
     callbacks["askForCard"] = &Client::askForCard;
     callbacks["askForUseCard"] = &Client::askForUseCard;
-    callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
+    m_interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
+    //callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
     callbacks["askForChoice"] = &Client::askForChoice;
     callbacks["askForNullification"] = &Client::askForNullification;
     callbacks["askForCardShow"] = &Client::askForCardShow;
@@ -230,7 +241,28 @@ void Client::processCommand(const QString &cmd){
     processReply(cmd.toAscii().data());
 }
 
-void Client::processReply(char *reply){
+void Client::processReply(char *reply){    
+
+    QSanGeneralPacket packet;
+    if (packet.parse(reply))
+    {
+        if (packet.getPacketType() == S_SERVER_NOTIFICATION)
+        {
+            CallBack callback = m_callbacks[packet.getCommandType()];
+            if (callback) {            
+                (this->*callback)(packet.getMessageBody());
+            }
+        }
+        else if (packet.getPacketType() == S_SERVER_REQUEST)
+        {
+            CallBack callback = m_interactions[packet.getCommandType()];
+            if (callback) {    
+                (this->*callback)(packet.getMessageBody());
+            }
+        }
+        return;
+    }
+
     if(strlen(reply) <= 2)
         return;
 
@@ -453,8 +485,8 @@ void Client::notifyRoleChange(const QString &new_role){
     }
 }
 
-void Client::activate(const QString &focus_player){
-    if(focus_player == Self->objectName())
+void Client::activate(const Json::Value& playerId){    
+    if(toQString(playerId) == Self->objectName())
         setStatus(Playing);
     else
         setStatus(NotActive);
@@ -682,21 +714,16 @@ void Client::askForUseCard(const QString &request_str){
     askForCardOrUseCard(request_str);
 }
 
-void Client::askForSkillInvoke(const QString &invoke_str){
-    QString skill_name, data;
-    if(invoke_str.contains(QChar(':'))){
-        QStringList texts = invoke_str.split(":");
-        skill_name = texts.first();
-        data = texts.last();
-    }else
-        skill_name = invoke_str;
-    skill_to_invoke = skill_name;
-
+void Client::askForSkillInvoke(const Json::Value &arg){    
+    if (!isStringArray(arg, 0, 1)) return;
+    QString skill_name = toQString(arg[0]);
+    QString data = toQString(arg[1]);
+        
     QString text;
-    if(data.isNull())
+    if(data.isEmpty())
         text = tr("Do you want to invoke skill [%1] ?").arg(Sanguosha->translate(skill_name));
     else
-        text = Sanguosha->translate(invoke_str);
+        text = Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(data));
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill){
@@ -1557,8 +1584,9 @@ void Client::speak(const QString &speak_data){
     emit line_spoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
 }
 
-void Client::moveFocus(const QString &focus){
-    emit focus_moved(focus);
+void Client::moveFocus(const Json::Value &focus){
+    QString test = toQString(focus);
+    emit focus_moved(QString(focus.asCString()));
 }
 
 void Client::setEmotion(const QString &set_str){
@@ -1569,17 +1597,9 @@ void Client::setEmotion(const QString &set_str){
     emit emotion_set(target_name, emotion);
 }
 
-void Client::skillInvoked(const QString &invoke_str){
-    QRegExp rx("(\\w+):(\\w+)");
-
-    if(!rx.exactMatch(invoke_str))
-        return;
-
-    QStringList texts = rx.capturedTexts();
-    QString who = texts.at(1);
-    QString skill_name = texts.at(2);
-
-    emit skill_invoked(who, skill_name);
+void Client::skillInvoked(const Json::Value &arg){
+    if (!isStringArray(arg,0,1)) return;
+    emit skill_invoked(QString(arg[1].asCString()), QString(arg[0].asCString()));
 }
 
 void Client::acquireSkill(const QString &acquire_str){

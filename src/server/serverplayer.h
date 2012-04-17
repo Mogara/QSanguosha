@@ -8,6 +8,7 @@ class Recorder;
 
 #include "player.h"
 #include "socket.h"
+#include "protocol.h"
 
 #include <QSemaphore>
 #include <QDateTime>
@@ -22,6 +23,7 @@ public:
     explicit ServerPlayer(Room *room);
 
     void setSocket(ClientSocket *socket);
+    void invoke(const QSanProtocol::QSanPacket* packet);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
     void sendProperty(const char *property_name, const Player *player = NULL) const;
@@ -55,7 +57,7 @@ public:
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase);
     void skip();
-
+    
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);
     void loseAllMarks(const QString &mark_name);
@@ -63,6 +65,8 @@ public:
     void setAI(AI *ai);
     AI *getAI() const;
     AI *getSmartAI() const;
+
+    bool isOnline() const;
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;

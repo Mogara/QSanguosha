@@ -6,6 +6,7 @@
 #include "skill.h"
 #include "socket.h"
 #include "clientstruct.h"
+#include "protocol.h"
 
 class NullificationDialog;
 class Recorder;
@@ -66,12 +67,13 @@ public:
     QString getPlayerName(const QString &str);
     QString getPattern() const;
     QString getSkillNameToInvoke() const;
-    void invokeSkill(bool invoke) ;
+    void invokeSkill(bool invoke);
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
     typedef void (Client::*Callback)(const QString &);
+    typedef void (Client::*CallBack)(const Json::Value &);
 
     void checkVersion(const QString &server_version);
     void setup(const QString &setup_str);
@@ -84,7 +86,7 @@ public:
     void doChooseGeneral2(const QString &generals_str);
     void startInXs(const QString &);
     void arrangeSeats(const QString &seats);
-    void activate(const QString &focus_player);
+    void activate(const Json::Value &playerId);
     void startGame(const QString &);
     void hpChange(const QString &change_str);
     void playSkillEffect(const QString &play_str);
@@ -104,9 +106,9 @@ public:
     void log(const QString &log_str);
     void speak(const QString &speak_data);
     void addHistory(const QString &card);
-    void moveFocus(const QString &focus);
+    void moveFocus(const Json::Value &focus);
     void setEmotion(const QString &set_str);
-    void skillInvoked(const QString &invoke_str);
+    void skillInvoked(const Json::Value &invoke_str);
     void acquireSkill(const QString &acquire_str);
     void animate(const QString &animate_str);
     void jilei(const QString &jilei_str);
@@ -134,7 +136,7 @@ public:
 
     void askForSinglePeach(const QString &ask_str);
     void askForCardShow(const QString &requestor);
-    void askForSkillInvoke(const QString &skill_name);
+    void askForSkillInvoke(const Json::Value &arg);
     void askForChoice(const QString &ask_str);
     void askForDiscard(const QString &discard_str);
     void askForExchange(const QString &exchange_str);
@@ -192,6 +194,8 @@ private:
     Status status;
     int alive_count;
     QHash<QString, Callback> callbacks;
+    QHash<QSanProtocol::CommandType, CallBack> m_interactions;
+    QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
     QList<const ClientPlayer*> players;
     bool use_card;
     QStringList ban_packages;

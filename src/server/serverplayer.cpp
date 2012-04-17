@@ -8,6 +8,8 @@
 #include "banpair.h"
 #include "lua-wrapper.h"
 
+using namespace QSanProtocol;
+
 const int ServerPlayer::S_NUM_SEMAPHORES = 4;
 
 ServerPlayer::ServerPlayer(Room *room)
@@ -301,6 +303,11 @@ void ServerPlayer::castMessage(const QString &message){
         qDebug("%s: %s", qPrintable(objectName()), qPrintable(message));
 #endif
     }
+}
+
+void ServerPlayer::invoke(const QSanPacket* packet)
+{
+    unicast(QString(packet->toString().c_str()));
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg){
@@ -663,6 +670,10 @@ void ServerPlayer::loseAllMarks(const QString &mark_name){
     if(n > 0){
         loseMark(mark_name, n);
     }
+}
+
+bool ServerPlayer::isOnline() const {
+    return getState() == "online";
 }
 
 void ServerPlayer::setAI(AI *ai) {

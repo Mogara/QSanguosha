@@ -12,6 +12,8 @@
 #include "roomthread1v1.h"
 #include "server.h"
 #include "generalselector.h"
+#include "protocol.h"
+#include "jsonutils.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -22,6 +24,9 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
+
+using namespace QSanProtocol;
+using namespace QSanProtocol::Utils;
 
 Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
@@ -546,6 +551,93 @@ void Room::executeCommand(ServerPlayer* player, const char* invokeString, const 
     getResult(commandString, player, defaultValue, move_focus, supply_timeout, timeout);
 }
 
+bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, bool broadcast, bool moveFocus)
+{
+    time_t timeOut = getCommandTimeout(packet->getCommandType());
+    return executeCommand(player, packet, timeOut, broadcast, moveFocus);
+}
+
+bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, time_t timeOut, bool broadcast, bool moveFocus)
+{
+    player->drainLock(ServerPlayer::SEMA_COMMAND);    
+    m_expectedReplyPlayer = player;
+    m_expectedReplyCommand = packet->getCommandType();
+
+    if(moveFocus)
+    {
+        QSanGeneralPacket req(S_SERVER_NOTIFICATION, S_COMMAND_MOVE_FOCUS);
+        req.setMessageBody(player->objectName().toAscii().constData());
+        broadcastInvoke(&req, player);
+    }
+
+    if (broadcast)    
+        broadcastInvoke(packet);
+    else
+        player->invoke(packet);
+
+    if (packet->getPacketType() == S_SERVER_REQUEST)
+    {
+        return getResult(timeOut);
+    }
+    else return true;
+}
+
+void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except){
+    broadcast(QString("%1 %2").arg(method).arg(arg), except);
+}
+
+void Room::broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *excep)
+{
+    broadcast(QString(packet->toString().c_str()));
+}
+
+bool Room::getResult(time_t timeOut){  
+
+    if (Config.OperationNoLimit)
+        m_expectedReplyPlayer->acquireLock(ServerPlayer::SEMA_COMMAND);
+    else if (!m_expectedReplyPlayer->tryAcquireLock(ServerPlayer::SEMA_COMMAND, timeOut)) 
+        return false;
+    
+    //@todo: ylin - release all locks when the client disconnects, perhaps writing it
+    //into destructor of ServerPlayer
+    //The lock might be acquired because the client disconnects
+    if (m_expectedReplyPlayer->isOnline())
+        return false;
+
+    if(game_finished)
+    {
+        thread->end();
+        return false;
+    }
+
+    return true;
+}
+
+void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, const QString& defaultValue, bool move_focus,
+                     bool supply_timeout, time_t timeout){
+    if(move_focus)
+        broadcastInvoke("moveFocus", reply_player->objectName(), reply_player);
+
+    this->reply_func = reply_func;
+    this->reply_player = reply_player;    
+    
+    int realTimeout = supply_timeout ? timeout : getCommandTimeout(reply_func);
+
+    if (Config.OperationNoLimit)
+        reply_player->acquireLock(ServerPlayer::SEMA_COMMAND);
+    else if (!reply_player->tryAcquireLock(ServerPlayer::SEMA_COMMAND, realTimeout)) 
+        result = defaultValue;
+    
+    //@todo: ylin - release all locks when the client disconnects, perhaps writing it
+    //into destructor of ServerPlayer
+    //The lock might be acquired because the client disconnects
+    if (reply_player->getState() != "online")
+        result = defaultValue;
+
+    if(game_finished)
+        thread->end();
+}
+
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
     bool invoked;
     AI *ai = player->getAI();
@@ -554,18 +646,17 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
         if(invoked)
             thread->delay(Config.AIDelay);
     }else{
-        QString invoke_str;
+        QSanGeneralPacket req(S_SERVER_REQUEST, S_COMMAND_INVOKE_SKILL);
         if(data.type() == QVariant::String)
-            invoke_str = QString("%1:%2").arg(skill_name).arg(data.toString());
+            req.setMessageBody(toJsonArray(skill_name, data.toString()));
         else
-            invoke_str = skill_name;
-
-        executeCommand(player, "askForSkillInvoke", "invokeSkillCommand", invoke_str, "no");
-            
-
-        //@todo: no need for recursive call at all...
-        //if(result.isEmpty())
-        //    return askForSkillInvoke(player, skill_name); // recursive call;
+            req.setMessageBody(toJsonArray(skill_name, ""));
+        
+        if (!executeCommand(player, &req))
+        {
+            result = "no";
+        }
+        //executeCommand(player, "askForSkillInvoke", "invokeSkillCommand", invoke_str, "no");
 
         // only "yes" will cause invocation
         if(result != "yes") invoked = false;
@@ -574,7 +665,13 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     }
 
     if(invoked)
-        broadcastInvoke("skillInvoked", QString("%1:%2").arg(player->objectName()).arg(skill_name));
+    {
+        QSanGeneralPacket req(S_SERVER_NOTIFICATION, S_COMMAND_INVOKE_SKILL);
+        QString &s = player->objectName();
+        req.setMessageBody(toJsonArray(skill_name, player->objectName()));
+        
+    }
+    //broadcastInvoke("skillInvoked", QString("%1:%2").arg(player->objectName()).arg(skill_name));
 
     QVariant decisionData = QVariant::fromValue("skillInvoke:"+skill_name+":"+(invoked ? "yes" : "no"));
     thread->trigger(ChoiceMade, player, decisionData);
@@ -1666,6 +1763,14 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
     }
 }
 
+time_t Room::getCommandTimeout(QSanProtocol::CommandType command)
+{
+    if (Config.OperationNoLimit) return UINT_MAX;
+    else if (command == S_COMMAND_CHOOSE_GENERAL) return (Config.S_CHOOSE_GENERAL_TIMEOUT + 5) * 1000;
+    else if (command == S_COMMAND_GUANXING) return (Config.S_GUANXING_TIMEOUT + 5) * 1000;
+    else return Config.OperationTimeout * 2 * 1000;
+}
+
 time_t Room::getCommandTimeout(const QString &command){
     if (Config.OperationNoLimit) return UINT_MAX;
     else if (command == "chooseGeneralCommand") return (Config.S_CHOOSE_GENERAL_TIMEOUT + 5) * 1000;
@@ -2630,38 +2735,9 @@ void Room::playSkillEffect(const QString &skill_name, int index){
     broadcastInvoke("playSkillEffect", QString("%1:%2").arg(skill_name).arg(index));
 }
 
-void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except){
-    broadcast(QString("%1 %2").arg(method).arg(arg), except);
-}
-
 void Room::startTest(const QString &to_test){
     fillRobotsCommand(NULL, ".");
     setProperty("to_test", to_test);
-}
-
-void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, const QString& defaultValue, bool move_focus,
-                     bool supply_timeout, time_t timeout){
-    if(move_focus)
-        broadcastInvoke("moveFocus", reply_player->objectName(), reply_player);
-
-    this->reply_func = reply_func;
-    this->reply_player = reply_player;    
-    
-    int realTimeout = supply_timeout ? timeout : getCommandTimeout(reply_func);
-
-    if (Config.OperationNoLimit)
-        reply_player->acquireLock(ServerPlayer::SEMA_COMMAND);
-    else if (!reply_player->tryAcquireLock(ServerPlayer::SEMA_COMMAND, realTimeout)) 
-        result = defaultValue;
-    
-    //@todo: ylin - release all locks when the client disconnects, perhaps writing it
-    //into destructor of ServerPlayer
-    //The lock might be acquired because the client disconnects
-    if (reply_player->getState() != "online")
-        result = defaultValue;
-
-    if(game_finished)
-        thread->end();
 }
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
@@ -2729,7 +2805,11 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         if(diff > 0)
             thread->delay(diff);
     }else{
-        executeCommand(player, "activate", "useCardCommand", player->objectName(), ".", true);       
+        QSanGeneralPacket packet(S_SERVER_REQUEST, S_COMMAND_ACTIVATE);
+        packet.setMessageBody(toJsonString(player->objectName()));
+        executeCommand(player, &packet, true);
+
+        //executeCommand(player, "activate", "useCardCommand", player->objectName(), ".", true);
 
         if(result.startsWith(":")){
             makeCheat(result);
