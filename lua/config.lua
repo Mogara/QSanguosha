@@ -6,5 +6,6 @@ config = {
 	version = "20120405",
 	version_name = "踏青版",
 	mod_name = "official",
+	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 }
 
