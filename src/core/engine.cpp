@@ -131,7 +131,7 @@ lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
 
     luaopen_sgs(L);
 
-    int error = luaL_dofile(L, "sanguosha.lua");
+    int error = luaL_dofile(L, "lua/sanguosha.lua");
     if(error){
         error_msg = lua_tostring(L, -1);
         return NULL;
