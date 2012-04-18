@@ -578,6 +578,7 @@ public:
 	bool isMute() const;
 	bool willThrow() const;
 	bool canJilei() const;
+	bool isOwnerDiscarded() const;
 	
     void setFlags(const char *flag) const;
     bool hasFlag(const char *flag) const;

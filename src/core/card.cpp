@@ -518,6 +518,10 @@ bool Card::canJilei() const{
     return can_jilei;
 }
 
+bool Card::isOwnerDiscarded() const{
+    return owner_discarded;
+}
+
 void Card::setFlags(const QString &flag) const{
     static char symbol_c = '-';
 

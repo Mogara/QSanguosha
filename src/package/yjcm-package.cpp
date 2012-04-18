@@ -43,7 +43,7 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
-        events << CardDiscarded << CardUsed << CardLost << FinishJudge;
+        events << CardDiscarded << CardUsed << FinishJudge;
         frequency = Frequent;
         default_choice = "no";
     }
@@ -82,7 +82,10 @@ public:
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             const SkillCard *skill_card = qobject_cast<const SkillCard *>(use.card);
-            if(skill_card && skill_card->subcardsLength() > 0 && skill_card->willThrow()){
+            if(skill_card &&
+                    skill_card->subcardsLength() > 0 &&
+                    skill_card->willThrow() &&
+                    !skill_card->isOwnerDiscarded()){
                 clubs = getClubs(skill_card);
             }
         }else if(event == CardDiscarded){
