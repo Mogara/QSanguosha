@@ -131,7 +131,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(player->getPhase() != Player::NotActive)
+        if(ServerInfo.GameMode != "06_3v3" || player->getPhase() != Player::NotActive)
             return false;
 
         const Card *card = NULL;

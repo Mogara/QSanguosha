@@ -36,7 +36,7 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 }
 
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+    room->throwCard(this, zhanghe);
 
     if(zhanghe->getPhase() == Player::Draw){
         room->playSkillEffect("qiaobian", 2);
