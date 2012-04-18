@@ -229,6 +229,7 @@ public:
 
 JujianCard::JujianCard(){
     once = true;
+    owner_discarded = true;
 }
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{

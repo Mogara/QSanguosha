@@ -183,7 +183,6 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 }
 
 GreatYeyanCard::GreatYeyanCard(){
-
 }
 
 bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -194,7 +193,7 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
     room->broadcastInvoke("animate", "lightbox:$greatyeyan");
 
     shenzhouyu->loseMark("@flame");
-    room->throwCard(this);
+    room->throwCard(this, shenzhouyu);
     room->loseHp(shenzhouyu, 3);
 
     damage(shenzhouyu, targets.first(), 3);
@@ -212,7 +211,7 @@ void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serv
     room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
 
     shenzhouyu->loseMark("@flame");
-    room->throwCard(this);
+    room->throwCard(this, shenzhouyu);
     room->loseHp(shenzhouyu, 3);
 
     ServerPlayer *first = targets.first();

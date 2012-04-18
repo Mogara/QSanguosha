@@ -602,6 +602,7 @@ public:
 
 TianxiangCard::TianxiangCard()
 {
+    owner_discarded = true;
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{

@@ -149,6 +149,7 @@ public:
 
 QiangxiCard::QiangxiCard(){
     once = true;
+    owner_discarded = true;
 }
 
 bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
