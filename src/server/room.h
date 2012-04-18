@@ -91,6 +91,13 @@ public:
                      const QString &invokeArg, const QString &defaultValue, bool broadcast = false, bool move_focus = true,
                      bool supply_timeout = false, time_t timeout = 0);
 
+    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
+                            bool broadcast = false, bool moveFocus = true);
+    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
+                            bool broadcast = false, bool moveFocus = true);
+    bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
+                            bool broadcast = false);
+    
     // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
     // server times out, whichever is earlier.
     // @param player
@@ -104,7 +111,8 @@ public:
     // @param moveFocus
     //        Suggests whether the all clients' UI should move focus to the player specified.
     // @return True if the a valid response is returned from client.
-    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, time_t timeOut, bool broadcast = false, bool moveFocus = true);
+    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, time_t timeOut,
+        bool broadcast = false, bool moveFocus = true);
     
     // Ditto, except that default timeout from configuration is used.
     bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, bool broadcast = false, bool move_focus = true);
@@ -226,11 +234,13 @@ private:
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
     QString result;
+    Json::Value m_clientResponse;    
     QString reply_func;
     QSanProtocol::CommandType m_expectedReplyCommand;
     ServerPlayer* m_expectedReplyPlayer;
 
     QHash<QString, Callback> callbacks;
+    QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
 
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer*> owner_map;

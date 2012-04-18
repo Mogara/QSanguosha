@@ -3,9 +3,13 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "ai.h"
+#include "jsonutils.h"
 #include "settings.h"
 
 #include <QTime>
+#include <json/json.h>
+
+using namespace QSanProtocol::Utils;
 
 LogMessage::LogMessage()
     :from(NULL)
@@ -124,6 +128,23 @@ CardUseStruct::CardUseStruct()
 
 bool CardUseStruct::isValid() const{
     return card != NULL;
+}
+
+bool CardUseStruct::tryParse(const Json::Value &usage, Room *room){
+    std::string aaa = usage.toStyledString();
+    if (usage.size() < 2 || !usage[0].isString() || !usage[1].isArray())
+        return false;
+
+    card = Card::Parse(toQString(usage[0]));
+
+    const Json::Value &targets = usage[1];
+
+    for (int i = 0; i < targets.size(); i++)
+    {
+        if (!targets[i].isString()) return false;
+        this->to << room->findChild<ServerPlayer *>(toQString(targets[i]));
+    }
+    return true;
 }
 
 void CardUseStruct::parse(const QString &str, Room *room){

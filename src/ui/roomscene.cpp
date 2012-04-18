@@ -1557,7 +1557,7 @@ void RoomScene::enableTargets(const Card *card){
         return;
     }
 
-    if(card->targetFixed() || ClientInstance->noTargetResponsing()){
+    if(card->targetFixed() || ClientInstance->hasNoTargetResponsing()){
         foreach(QGraphicsItem *item, item2player.keys()){
             //item->setOpacity(1.0);
             animations->effectOut(item);
@@ -1640,10 +1640,10 @@ void RoomScene::useSelectedCard(){
     case Client::Responsing:{
             const Card *card = dashboard->getSelected();
             if(card){
-                if(ClientInstance->noTargetResponsing())
+                if(ClientInstance->hasNoTargetResponsing())
                     ClientInstance->responseCard(card);
                 else
-                    ClientInstance->useCard(card, selected_targets);
+                    ClientInstance->onPlayerUseCard(card, selected_targets);
                 prompt_box->disappear();
             }
 
@@ -1740,7 +1740,7 @@ void RoomScene::onEnabledChange()
 
 void RoomScene::useCard(const Card *card){
     if(card->targetFixed() || card->targetsFeasible(selected_targets, Self))
-        ClientInstance->useCard(card, selected_targets);
+        ClientInstance->onPlayerUseCard(card, selected_targets);
 
     enableTargets(NULL);
 }
@@ -2291,10 +2291,10 @@ void RoomScene::doCancelButton(){
                 }
             }
 
-            if(ClientInstance->noTargetResponsing())
+            if(ClientInstance->hasNoTargetResponsing())
                 ClientInstance->responseCard(NULL);
             else
-                ClientInstance->useCard(NULL);
+                ClientInstance->onPlayerUseCard(NULL);
             prompt_box->disappear();
             dashboard->stopPending();
             break;
@@ -2336,7 +2336,7 @@ void RoomScene::doDiscardButton(){
     dashboard->unselectAll();
 
     if(ClientInstance->getStatus() == Client::Playing){
-        ClientInstance->useCard(NULL);
+        ClientInstance->onPlayerUseCard(NULL);
     }
 }
 

@@ -45,13 +45,14 @@ public:
     void hallEntered(const QString &);
 
     void disconnectFromHost();
+    void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg);
     void request(const QString &message);
-    void useCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
+    void onPlayerUseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
     void responseCard(const Card *card);
-    bool noTargetResponsing() const;
+    bool hasNoTargetResponsing() const;
     void discardCards(const Card *card);
     void replyYiji(const Card *card, const Player *to);
     void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
@@ -100,7 +101,7 @@ public:
     void warn(const QString &);
     void setMark(const QString &mark_str);
     void doFilter(const QString &);
-    void showCard(const QString &show_str);
+    void showCard(const Json::Value &show_str);
     void doGuanxing(const QString &guanxing_str);
     void doGongxin(const QString &gongxin_str);
     void log(const QString &log_str);
@@ -130,19 +131,18 @@ public:
     void clearAG(const QString &);
     void disableAG(const QString &disable_str);
 
-    void askForCard(const QString &request_str);
-    void askForUseCard(const QString &request_str);
-    void askForCardOrUseCard(const QString &request_str);
-
+    void askForCard(const Json::Value&);
+    void askForUseCard(const Json::Value&);
+    
     void askForSinglePeach(const QString &ask_str);
-    void askForCardShow(const QString &requestor);
+    void askForCardShow(const Json::Value &requestor);
     void askForSkillInvoke(const Json::Value &arg);
-    void askForChoice(const QString &ask_str);
+    void askForChoice(const Json::Value &ask_str);
     void askForDiscard(const QString &discard_str);
     void askForExchange(const QString &exchange_str);
     void askForSuit(const QString &);
     void askForKingdom(const QString &);
-    void askForNullification(const QString &ask_str);
+    void askForNullification(const Json::Value &ask_str);
     void askForPindian(const QString &ask_str);
     void askForYiji(const QString &card_list);
     void askForCardChosen(const QString &ask_str);
@@ -177,8 +177,8 @@ public:
 public slots:
     void signup();
     void chooseItem(const QString &_name);
-    void selectChoice();
-    void chooseCard(int card_id = -2);
+    void onPlayerMakeChoice();
+    void onPlayerChooseCard(int card_id = -2);
     void choosePlayer(const Player *player);
     void trust();
     void requestCard(int card_id);
@@ -197,7 +197,7 @@ private:
     QHash<QSanProtocol::CommandType, CallBack> m_interactions;
     QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
     QList<const ClientPlayer*> players;
-    bool use_card;
+    bool m_isUseCard;
     QStringList ban_packages;
     Recorder *recorder;
     Replayer *replayer;
@@ -212,6 +212,8 @@ private:
     void updatePileNum();
     void setPromptList(const QStringList &text);
     void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
+
+    void _askForCardOrUseCard(const Json::Value&);
 
 private slots:
     void processCommand(const QString &cmd);

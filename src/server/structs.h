@@ -11,6 +11,7 @@ class GameRule;
 #include "player.h"
 
 #include <QVariant>
+#include <json/json.h>
 
 struct DamageStruct{
     DamageStruct();
@@ -58,6 +59,7 @@ struct CardUseStruct{
     CardUseStruct();
     bool isValid() const;
     void parse(const QString &str, Room *room);
+    bool tryParse(const Json::Value&, Room *room);
 
     const Card *card;
     ServerPlayer *from;

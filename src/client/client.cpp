@@ -57,7 +57,8 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["hpChange"] = &Client::hpChange;
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
-    callbacks["showCard"] = &Client::showCard;
+    m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
+    //callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["doFilter"] = &Client::doFilter;
     callbacks["log"] = &Client::log;
@@ -95,7 +96,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setStatistics"] = &Client::setStatistics;
 
     // interactive methods
-    m_interactions[S_COMMAND_ACTIVATE] = &Client::activate;
+    m_interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
     // callbacks["activate"] = &Client::activate;
     callbacks["doChooseGeneral"] = &Client::doChooseGeneral;
     callbacks["doChooseGeneral2"] = &Client::doChooseGeneral2;
@@ -107,13 +108,18 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForKingdom"] = &Client::askForKingdom;
     callbacks["askForSinglePeach"] = &Client::askForSinglePeach;
     callbacks["askForCardChosen"] = &Client::askForCardChosen;
-    callbacks["askForCard"] = &Client::askForCard;
-    callbacks["askForUseCard"] = &Client::askForUseCard;
+    m_interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCard;
+    //callbacks["askForCard"] = &Client::askForCard;
+    m_interactions[S_COMMAND_USE_CARD] = &Client::askForCard;
+    //callbacks["askForUseCard"] = &Client::askForUseCard;
     m_interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     //callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
-    callbacks["askForChoice"] = &Client::askForChoice;
-    callbacks["askForNullification"] = &Client::askForNullification;
-    callbacks["askForCardShow"] = &Client::askForCardShow;
+    m_interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
+    //callbacks["askForChoice"] = &Client::askForChoice;
+    m_interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
+    //callbacks["askForNullification"] = &Client::askForNullification;
+    m_interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
+    //callbacks["askForCardShow"] = &Client::askForCardShow;
     callbacks["askForPindian"] = &Client::askForPindian;
     callbacks["askForYiji"] = &Client::askForYiji;
     callbacks["askForPlayerChosen"] = &Client::askForPlayerChosen;
@@ -140,7 +146,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForAssign"] = &Client::askForAssign;
 
     ask_dialog = NULL;
-    use_card = false;
+    m_isUseCard = false;
 
     Self = new ClientPlayer(this);
     Self->setScreenName(Config.UserName);
@@ -195,6 +201,15 @@ void Client::signup(){
 
 void Client::networkDelayTest(const QString &){
     request("networkDelayTest .");
+}
+
+void Client::replyToServer(CommandType command, const Json::Value &arg){    
+    if(socket)
+    {
+        QSanGeneralPacket packet(S_CLIENT_REPLY, command);
+        packet.setMessageBody(arg);
+        socket->send(toQString(packet.toString()));
+    }
 }
 
 void Client::request(const QString &message){
@@ -394,7 +409,7 @@ void Client::chooseItem(const QString &item_name){
     }
 }
 
-void Client::requestCard(int card_id){
+void Client::requestCard(int card_id){    
     request(QString("useCard @CheatCard=%1->.").arg(card_id));
 }
 
@@ -417,18 +432,22 @@ void Client::arrange(const QStringList &order){
     request(QString("arrange %1").arg(order.join("+")));
 }
 
-void Client::useCard(const Card *card, const QList<const Player *> &targets){
-    if(card == NULL){
-        request("useCard .");
-    }else{
-        QStringList target_names;
-        foreach(const Player *target, targets)
-            target_names << target->objectName();
+void Client::onPlayerUseCard(const Card *card, const QList<const Player *> &targets){
 
-        if(target_names.isEmpty())
-            request(QString("useCard %1->.").arg(card->toString()));
-        else
-            request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
+    if(card == NULL){
+        replyToServer(S_COMMAND_USE_CARD, Json::Value::null);
+        // request("useCard .");
+    }else{
+        Json::Value targetNames(Json::arrayValue);
+        foreach(const Player *target, targets)
+            targetNames.append(toJsonString(target->objectName()));
+
+        replyToServer(S_COMMAND_USE_CARD, toJsonArray(card->toString(), targetNames));
+
+        //if(target_names.isEmpty())
+        //    request(QString("useCard %1->.").arg(card->toString()));
+        //else
+        //    request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
 
         if(status == Responsing)
             card_pattern.clear();
@@ -638,12 +657,8 @@ QString Client::getSkillNameToInvoke() const{
     return skill_to_invoke;
 }
 
-void Client::invokeSkill(bool invoke){
-    if(invoke)
-        request("invokeSkill yes");
-    else
-        request("invokeSkill no");
-
+void Client::invokeSkill(bool invoke){    
+    replyToServer(S_COMMAND_INVOKE_SKILL, invoke);
     setStatus(NotActive);
 }
 
@@ -674,18 +689,18 @@ void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const c
     QMessageBox::warning(NULL, tr("Command format warning"), text);
 }
 
-void Client::askForCardOrUseCard(const QString &request_str){
-    QStringList texts = request_str.split(":");
-    QString pattern = texts.takeFirst();
-
-    card_pattern = pattern;
+void Client::_askForCardOrUseCard(const Json::Value &cardUsage){
+    
+    Q_ASSERT(isStringArray(cardUsage, 0, 1));
+    card_pattern = toQString(cardUsage[0]);
+    QStringList texts = toQString(cardUsage[1]).split(":");
 
     if(texts.isEmpty()){
         return;
     }else
         setPromptList(texts);
 
-    if(pattern.endsWith("!"))
+    if(card_pattern.endsWith("!"))
         refusable = false;
     else
         refusable = true;
@@ -704,14 +719,15 @@ void Client::askForCardOrUseCard(const QString &request_str){
     setStatus(Responsing);
 }
 
-void Client::askForCard(const QString &request_str){
-    use_card = request_str.startsWith("@@");
-    askForCardOrUseCard(request_str);
+void Client::askForCard(const Json::Value &req){
+    if (!req.isArray() || req.size() == 0) return;
+    m_isUseCard = toQString(req[0]).startsWith("@@");
+    _askForCardOrUseCard(req);
 }
 
-void Client::askForUseCard(const QString &request_str){
-    use_card = true;
-    askForCardOrUseCard(request_str);
+void Client::askForUseCard(const Json::Value &req){
+    m_isUseCard = true;
+    _askForCardOrUseCard(req);
 }
 
 void Client::askForSkillInvoke(const Json::Value &arg){    
@@ -734,21 +750,17 @@ void Client::askForSkillInvoke(const Json::Value &arg){
     setStatus(AskForSkillInvoke);
 }
 
-void Client::selectChoice(){
+void Client::onPlayerMakeChoice(){
     QString option = sender()->objectName();
-    request("selectChoice " + option);
+    replyToServer(S_COMMAND_MULTIPLE_CHOICE, toJsonString(option));    
     setStatus(NotActive);
 }
 
-void Client::askForChoice(const QString &ask_str){
-    QRegExp rx("([\\w-]+):(.+)");
-
-    if(!rx.exactMatch(ask_str))
-        return;
-
-    QStringList words = rx.capturedTexts();
-    QString skill_name = words.at(1);
-    QStringList options = words.at(2).split("+");
+void Client::askForChoice(const Json::Value &ask_str){
+    if (!isStringArray(ask_str, 0, 1)) return;
+        
+    QString skill_name = toQString(ask_str[0]);
+    QStringList options =toQString(ask_str[1]).split("+");
 
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(Sanguosha->translate(skill_name));
@@ -767,13 +779,13 @@ void Client::askForChoice(const QString &ask_str){
         button->setText(translated);
 
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
-        connect(button, SIGNAL(clicked()), this, SLOT(selectChoice()));
+        connect(button, SIGNAL(clicked()), this, SLOT(onPlayerMakeChoice()));
 
         layout->addWidget(button);
     }
 
     dialog->setObjectName(options.first());
-    connect(dialog, SIGNAL(rejected()), this, SLOT(selectChoice()));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(onPlayerMakeChoice()));
 
     dialog->setLayout(layout);
 
@@ -794,18 +806,18 @@ void Client::playSkillEffect(const QString &play_str){
     Sanguosha->playSkillEffect(skill_name, index);
 }
 
-void Client::askForNullification(const QString &ask_str){
-    QRegExp rx("(\\w+):(.+)->(.+)");
-    if(!rx.exactMatch(ask_str))
-        return;
+void Client::askForNullification(const Json::Value &ask_str){
+    if (!isStringArray(ask_str, 0, 2)) return;
+    
+    QString trick_name = toQString(ask_str[0]);
+    QString source_name = toQString(ask_str[1]);
+    ClientPlayer* target_player = getPlayer(toQString(ask_str[2]));
 
-    QStringList texts = rx.capturedTexts();
-    QString trick_name = texts.at(1);
+    if (!target_player || !target_player->getGeneral()) return;
+
     const Card *trick_card = Sanguosha->findChild<const Card *>(trick_name);
-
-    QString source_name = texts.at(2);
     ClientPlayer *source = NULL;
-    if(source_name != ".")
+    if(source_name != "")
         source = getPlayer(source_name);
 
     if(Config.NeverNullifyMyTrick && source == Self){
@@ -816,7 +828,7 @@ void Client::askForNullification(const QString &ask_str){
     }
 
     QString trick_path = trick_card->getPixmapPath();
-    QString to = getPlayer(texts.at(3))->getGeneral()->getPixmapPath("big");
+    QString to = target_player->getGeneral()->getPixmapPath("big");
     if(source == NULL){
         prompt_doc->setHtml(QString("<img src='%1' /> ==&gt; <img src='%2' />").arg(trick_path).arg(to));
     }else{
@@ -826,7 +838,7 @@ void Client::askForNullification(const QString &ask_str){
 
     card_pattern = "nullification";
     refusable = true;
-    use_card = false;
+    m_isUseCard = false;
 
     setStatus(Responsing);
 }
@@ -849,8 +861,8 @@ void Client::askForCardChosen(const QString &ask_str){
     PlayerCardDialog *dialog = new PlayerCardDialog(player, flags);
     dialog->setWindowTitle(Sanguosha->translate(reason));
 
-    connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(chooseCard(int)));
-    connect(dialog, SIGNAL(rejected()), this, SLOT(chooseCard()));
+    connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(onPlayerChooseCard(int)));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(onPlayerChooseCard()));
 
     ask_dialog = dialog;
     setStatus(ExecDialog);
@@ -875,7 +887,7 @@ void Client::playCardEffect(const QString &play_str){
     }
 }
 
-void Client::chooseCard(int card_id){
+void Client::onPlayerChooseCard(int card_id){
     Q_ASSERT(ask_dialog->inherits("PlayerCardDialog"));
 
     if(card_id == -2){
@@ -952,16 +964,18 @@ int Client::alivePlayerCount() const{
 
 void Client::responseCard(const Card *card){
     if(card)
-        request(QString("responseCard %1").arg(card->toString()));
+        replyToServer(S_COMMAND_RESPONSE_CARD, toJsonString(card->toString()));
+        //request(QString("responseCard %1").arg(card->toString()));
     else
-        request("responseCard .");
+        replyToServer(S_COMMAND_RESPONSE_CARD, Json::Value::null);
+        //request("responseCard .");
 
     card_pattern.clear();
     setStatus(NotActive);
 }
 
-bool Client::noTargetResponsing() const{
-    return status == Responsing && !use_card;
+bool Client::hasNoTargetResponsing() const{
+    return status == Responsing && !m_isUseCard;
 }
 
 ClientPlayer *Client::getPlayer(const QString &name){
@@ -1344,17 +1358,18 @@ void Client::askForSinglePeach(const QString &ask_str){
     }
 
     refusable = true;
-    use_card = false;
+    m_isUseCard = false;
     setStatus(Responsing);
 }
 
-void Client::askForCardShow(const QString &requestor){
-    QString name = Sanguosha->translate(requestor);
+void Client::askForCardShow(const Json::Value &requestor){
+    if (!requestor.isString()) return;
+    QString name = Sanguosha->translate(toQString(requestor));
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
     card_pattern = ".";
     refusable = false;
-    use_card = false;
+    m_isUseCard = false;
     setStatus(Responsing);
 }
 
@@ -1396,14 +1411,14 @@ void Client::clearTurnTag(){
     }
 }
 
-void Client::showCard(const QString &show_str){
-    QRegExp rx("(.+):(\\d+)");
-    if(!rx.exactMatch(show_str))
+void Client::showCard(const Json::Value &show_str){
+    
+    if (!show_str.isArray() || show_str.size() != 2
+        || !show_str[0].isString() || !show_str[1].isInt())
         return;
 
-    QStringList texts = rx.capturedTexts();
-    QString player_name = texts.at(1);
-    int card_id = texts.at(2).toInt();
+    QString player_name = toQString(show_str[0]);
+    int card_id = show_str[1].asInt();
 
     ClientPlayer *player = getPlayer(player_name);
     if(player != Self)
@@ -1496,7 +1511,7 @@ void Client::askForPindian(const QString &ask_str){
         prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(requestor));
     }
 
-    use_card = false;
+    m_isUseCard = false;
     card_pattern = ".";
     refusable = false;
 
@@ -1825,11 +1840,11 @@ void Client::askForDirection(const QString &){
     dialog->setLayout(layout);
 
     dialog->setObjectName("ccw");
-    connect(ccw_button, SIGNAL(clicked()), this, SLOT(selectChoice()));
+    connect(ccw_button, SIGNAL(clicked()), this, SLOT(onPlayerMakeChoice()));
     connect(ccw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(cw_button, SIGNAL(clicked()), this, SLOT(selectChoice()));
+    connect(cw_button, SIGNAL(clicked()), this, SLOT(onPlayerMakeChoice()));
     connect(cw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(dialog, SIGNAL(rejected()), this, SLOT(selectChoice()));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(onPlayerMakeChoice()));
 
     ask_dialog = dialog;
 
