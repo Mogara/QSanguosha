@@ -91,11 +91,6 @@ public:
                 return false;
 
             clubs = getClubs(card);
-        }else if (event == CardLost){
-                CardMoveStar move = data.value<CardMoveStar>();
-                const Card *card = Sanguosha->getCard(move->card_id);
-                if(move->from_place == Player::Equip && move->to_place == Player::DiscardedPile && card->getSuit() == Card::Club)
-                    clubs << card;
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DiscardedPile
@@ -867,7 +862,7 @@ public:
                 room->showCard(player, card->getEffectiveId());
 
                 if(card->getTypeId() != Card::Basic){
-                    room->throwCard(card);
+                    room->throwCard(card, player);
 
                     room->playSkillEffect(objectName());
 

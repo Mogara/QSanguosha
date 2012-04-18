@@ -426,9 +426,9 @@ public:
             horse_type = horses.first();
 
         if(horse_type == "dhorse")
-            room->throwCard(damage.to->getDefensiveHorse());
+            room->throwCard(damage.to->getDefensiveHorse(), damage.to);
         else if(horse_type == "ohorse")
-            room->throwCard(damage.to->getOffensiveHorse());
+            room->throwCard(damage.to->getOffensiveHorse(), damage.to);
     }
 
         return false;
@@ -685,7 +685,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
             if (source->isDead()){
                 if(killer->isAlive() && killer->getWeapon()){
                     int card_id = weapon->getId();
-                    room->throwCard(card_id);
+                    room->throwCard(card_id, source);
                 }
             }
             else
@@ -707,7 +707,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                 else{
                     if(killer->getWeapon()){
                         int card_id = weapon->getId();
-                        room->throwCard(card_id);
+                        room->throwCard(card_id, source);
                     }
                 }
             }
@@ -873,7 +873,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-    room->throwCard(card_id);
+    room->throwCard(card_id, room->getCardPlace(card_id) == Player::Judge ? NULL : effect.to);
 
     LogMessage log;
     log.type = "$Dismantlement";
@@ -961,11 +961,11 @@ public:
         if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude()
                 && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
             int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
-            room->throwCard(card_id);
+            room->throwCard(card_id, damage.to);
 
             if(!damage.to->isNude()){
                 card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
-                room->throwCard(card_id);
+                room->throwCard(card_id, damage.to);
             }
 
             return true;

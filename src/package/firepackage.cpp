@@ -322,7 +322,7 @@ public:
             if(pangde->askForSkillInvoke(objectName(), data)){
                 room->playSkillEffect(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
-                room->throwCard(to_throw);
+                room->throwCard(to_throw, effect.to);
             }
         }
 

@@ -246,9 +246,11 @@ public:
                     log.arg2 = objectName();
                     room->sendLog(log);
                     yuanshu->throwAllEquips();
+                    DummyCard *dummy_card = new DummyCard;
                     foreach(const Card *card, handcards.toSet() - jilei_cards){
-                        room->throwCard(card);
+                        dummy_card->addSubcard(card);
                     }
+                    room->throwCard(dummy_card, yuanshu);
                 }
             }else{
                 room->askForDiscard(yuanshu, "yongsi", x, false, true);
