@@ -70,7 +70,7 @@ bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void LihunCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    room->throwCard(this);
+    room->throwCard(this,effect.from);
     effect.from->turnOver();
 
     DummyCard *dummy_card = new DummyCard;
