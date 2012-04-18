@@ -578,6 +578,7 @@ public:
 	bool isMute() const;
 	bool willThrow() const;
 	bool canJilei() const;
+	bool isOwnerDiscarded() const;
 	
     void setFlags(const char *flag) const;
     bool hasFlag(const char *flag) const;
@@ -869,8 +870,8 @@ public:
 	void obtainCard(ServerPlayer *target, const Card *card);
 	void obtainCard(ServerPlayer *target, int card_id);
 
-	void throwCard(const Card *card);
-	void throwCard(int card_id);
+	void throwCard(const Card *card, ServerPlayer *who = NULL);
+	void throwCard(int card_id, ServerPlayer *who = NULL);
 	void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
 	void doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope);
 

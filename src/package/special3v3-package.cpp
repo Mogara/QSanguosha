@@ -126,7 +126,7 @@ public:
 class Mingzhe: public TriggerSkill{
 public:
     Mingzhe():TriggerSkill("mingzhe"){
-        events << CardLost;
+        events << CardUsed << CardResponsed << CardDiscarded;
         frequency = Frequent;
     }
 
@@ -134,12 +134,17 @@ public:
         if(ServerInfo.GameMode != "06_3v3" || player->getPhase() != Player::NotActive)
             return false;
 
-        CardMoveStar move = data.value<CardMoveStar>();
-        CardStar card = Sanguosha->getCard(move->card_id);
-        if(card->isRed() &&
-                (move->from_place == Player::Hand || move->from_place == Player::Equip) &&
-                (move->to_place == Player::DiscardedPile || move->to_place == Player::Special) &&
-                (player->askForSkillInvoke(objectName(), data)))
+        const Card *card = NULL;
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            card = use.card;
+        }
+        else if(event == CardResponsed)
+            card = data.value<CardStar>();
+        else
+            card = data.value<CardStar>();
+
+        if(card->isRed() && player->askForSkillInvoke(objectName(), data))
             player->drawCards(1);
 
         return false;

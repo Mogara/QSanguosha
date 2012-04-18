@@ -15,7 +15,8 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), owner_discarded(false)
+    , suit(suit), number(number), id(-1)
 {
     can_jilei = will_throw;
 
@@ -430,7 +431,7 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     if(will_throw){
-        room->throwCard(this);
+        room->throwCard(this, owner_discarded ? source : NULL);
     }
 
     if(targets.length() == 1){
@@ -515,6 +516,10 @@ bool Card::willThrow() const{
 
 bool Card::canJilei() const{
     return can_jilei;
+}
+
+bool Card::isOwnerDiscarded() const{
+    return owner_discarded;
 }
 
 void Card::setFlags(const QString &flag) const{

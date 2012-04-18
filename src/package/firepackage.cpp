@@ -149,6 +149,7 @@ public:
 
 QiangxiCard::QiangxiCard(){
     once = true;
+    owner_discarded = true;
 }
 
 bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -322,7 +323,7 @@ public:
             if(pangde->askForSkillInvoke(objectName(), data)){
                 room->playSkillEffect(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
-                room->throwCard(to_throw);
+                room->throwCard(to_throw, effect.to);
             }
         }
 

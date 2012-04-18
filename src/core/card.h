@@ -116,6 +116,7 @@ public:
     bool isMute() const;
     bool willThrow() const;
     bool canJilei() const;
+    bool isOwnerDiscarded() const;
 
     void setFlags(const QString &flag) const;
     bool hasFlag(const QString &flag) const;
@@ -147,6 +148,7 @@ protected:
     bool mute;
     bool will_throw;
     bool can_jilei;
+    bool owner_discarded;
 
 private:
     Suit suit;

@@ -43,7 +43,7 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
-        events << CardDiscarded << CardUsed << CardLost << FinishJudge;
+        events << CardDiscarded << CardUsed << FinishJudge;
         frequency = Frequent;
         default_choice = "no";
     }
@@ -82,20 +82,15 @@ public:
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             const SkillCard *skill_card = qobject_cast<const SkillCard *>(use.card);
-            if(skill_card && skill_card->subcardsLength() > 0 && skill_card->willThrow()){
+            if(skill_card &&
+                    skill_card->subcardsLength() > 0 &&
+                    skill_card->willThrow() &&
+                    !skill_card->isOwnerDiscarded()){
                 clubs = getClubs(skill_card);
             }
         }else if(event == CardDiscarded){
             const Card *card = data.value<CardStar>();
-            if(card->subcardsLength() == 0)
-                return false;
-
             clubs = getClubs(card);
-        }else if (event == CardLost){
-                CardMoveStar move = data.value<CardMoveStar>();
-                const Card *card = Sanguosha->getCard(move->card_id);
-                if(move->from_place == Player::Equip && move->to_place == Player::DiscardedPile && card->getSuit() == Card::Club)
-                    clubs << card;
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DiscardedPile
@@ -237,6 +232,7 @@ public:
 
 JujianCard::JujianCard(){
     once = true;
+    owner_discarded = true;
 }
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
@@ -867,7 +863,7 @@ public:
                 room->showCard(player, card->getEffectiveId());
 
                 if(card->getTypeId() != Card::Basic){
-                    room->throwCard(card);
+                    room->throwCard(card, player);
 
                     room->playSkillEffect(objectName());
 

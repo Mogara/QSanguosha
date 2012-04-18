@@ -164,8 +164,8 @@ public:
     void obtainCard(ServerPlayer *target, const Card *card);
     void obtainCard(ServerPlayer *target, int card_id);
 
-    void throwCard(const Card *card);
-    void throwCard(int card_id);
+    void throwCard(const Card *card, ServerPlayer *who = NULL);
+    void throwCard(int card_id, ServerPlayer *who = NULL);
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope);
 
