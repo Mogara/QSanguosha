@@ -87,9 +87,6 @@ public:
             }
         }else if(event == CardDiscarded){
             const Card *card = data.value<CardStar>();
-            if(card->subcardsLength() == 0)
-                return false;
-
             clubs = getClubs(card);
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
