@@ -663,7 +663,7 @@ bool Room::getResult(time_t timeOut){
 }
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
-    bool invoked;
+    bool invoked = false;
     AI *ai = player->getAI();
     if(ai){
         invoked = ai->askForSkillInvoke(skill_name, data);

@@ -6,7 +6,6 @@
 #include "choosegeneraldialog.h"
 #include "nativesocket.h"
 #include "recorder.h"
-#include "protocol.h"
 #include "jsonutils.h"
 
 #include <QApplication>

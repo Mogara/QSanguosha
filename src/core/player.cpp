@@ -735,10 +735,13 @@ bool Player::canSlashWithoutCrossbow() const{
         return true;
 
     int slash_count = getSlashCount();
-    if(hasFlag("tianyi_success") || hasFlag("jiangchi_invoke"))
-        return slash_count < 2;
-    else
-        return slash_count < 1;
+    int valid_slash_count = 1;
+    if(hasFlag("tianyi_success"))
+        return valid_slash_count++;
+    else if(hasFlag("jiangchi_invoke"))
+        return valid_slash_count++;
+
+    return slash_count < valid_slash_count;
 }
 
 void Player::jilei(const QString &type){
