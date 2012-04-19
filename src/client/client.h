@@ -51,7 +51,7 @@ public:
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
-    void responseCard(const Card *card);
+    void onPlayerResponseCard(const Card *card);
     bool hasNoTargetResponsing() const;
     void onPlayerDiscardCards(const Card *card);
     void onPlayerReplyYiji(const Card *card, const Player *to);

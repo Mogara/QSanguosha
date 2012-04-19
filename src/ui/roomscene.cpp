@@ -1641,7 +1641,7 @@ void RoomScene::useSelectedCard(){
             const Card *card = dashboard->getSelected();
             if(card){
                 if(ClientInstance->hasNoTargetResponsing())
-                    ClientInstance->responseCard(card);
+                    ClientInstance->onPlayerResponseCard(card);
                 else
                     ClientInstance->onPlayerUseCard(card, selected_targets);
                 prompt_box->disappear();
@@ -2292,7 +2292,7 @@ void RoomScene::doCancelButton(){
             }
 
             if(ClientInstance->hasNoTargetResponsing())
-                ClientInstance->responseCard(NULL);
+                ClientInstance->onPlayerResponseCard(NULL);
             else
                 ClientInstance->onPlayerUseCard(NULL);
             prompt_box->disappear();

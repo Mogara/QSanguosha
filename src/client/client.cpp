@@ -127,7 +127,7 @@ Client::Client(QObject *parent, const QString &filename)
     //callbacks["askForKingdom"] = &Client::askForKingdom;    
     m_interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCard;
     //callbacks["askForCard"] = &Client::askForCard;
-    m_interactions[S_COMMAND_USE_CARD] = &Client::askForCard;
+    m_interactions[S_COMMAND_USE_CARD] = &Client::askForUseCard;
     //callbacks["askForUseCard"] = &Client::askForUseCard;
     m_interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     //callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
@@ -834,7 +834,7 @@ void Client::askForNullification(const Json::Value &arg){
 
     if(Config.NeverNullifyMyTrick && source == Self){
         if(trick_card->inherits("SingleTargetTrick") || trick_card->objectName() == "iron_chain"){
-            responseCard(NULL);
+            onPlayerResponseCard(NULL);
             return;
         }
     }
@@ -969,7 +969,7 @@ int Client::alivePlayerCount() const{
     return alive_count;
 }
 
-void Client::responseCard(const Card *card){
+void Client::onPlayerResponseCard(const Card *card){
     if(card)
         replyToServer(S_COMMAND_RESPONSE_CARD, toJsonString(card->toString()));
         //request(QString("responseCard %1").arg(card->toString()));
