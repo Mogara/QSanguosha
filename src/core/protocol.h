@@ -26,7 +26,7 @@ namespace QSanProtocol
 
     enum CommandType
     {
-        S_UNKOWN_COMMAND,
+        S_COMMAND_UNKNOWN,
         S_COMMAND_CHOOSE_CARD,
         S_COMMAND_PLAY_CARD,
         S_COMMAND_USE_CARD,        
@@ -76,7 +76,7 @@ namespace QSanProtocol
         //format: [global_serial,local_serial,packet_type,command_name,command_body]
         static unsigned int m_globalSerial;
         int m_localSerial;        
-        inline QSanGeneralPacket(PacketType packetType = S_UNKOWN_PACKET, CommandType command = S_UNKOWN_COMMAND)
+        inline QSanGeneralPacket(PacketType packetType = S_UNKOWN_PACKET, CommandType command = S_COMMAND_UNKNOWN)
         {
             m_globalSerial++;
             m_localSerial = 0;

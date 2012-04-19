@@ -59,7 +59,8 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 	end
 	if slashnum > 1 or (slashnum > 0 and goodtarget == 0) then needburst = 1 end
 	self:sort(self.enemies,"defense")
-	
+	if goodtarget == 0 or self.player:isSkipped(sgs.Player_Play) then return "jiang" end
+		
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
@@ -85,7 +86,7 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 		elseif eff and def<8 and needburst > 0 then return "chi"
 		end
 	end
-	if goodtarget == 0 then return "jiang" end
+
 	return "cancel"
 end
 

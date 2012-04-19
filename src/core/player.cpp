@@ -737,10 +737,16 @@ bool Player::canSlashWithoutCrossbow() const{
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
     if(hasFlag("tianyi_success"))
+<<<<<<< HEAD
         return valid_slash_count++;
     else if(hasFlag("jiangchi_invoke"))
         return valid_slash_count++;
 
+=======
+        valid_slash_count++;
+    if(hasFlag("jiangchi_invoke"))
+        valid_slash_count++;
+>>>>>>> 0cf8934b527bb0c71a7ba2fc8ca60302c48606c7
     return slash_count < valid_slash_count;
 }
 
