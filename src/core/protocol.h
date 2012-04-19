@@ -19,6 +19,7 @@ namespace QSanProtocol
         S_SERVER_REQUEST,
         S_SERVER_REPLY,
         S_SERVER_NOTIFICATION,
+        S_CLIENT_CHEAT_REQUEST,
         S_CLIENT_REQUEST,
         S_CLIENT_REPLY,
         S_CLIENT_NOTIFICATION
@@ -57,7 +58,8 @@ namespace QSanProtocol
         S_COMMAND_SKILL_GONGXIN,
         S_COMMAND_SET_PROPERTY,
         S_COMMAND_SET_HP,
-        S_COMMAND_SET_MAXHP
+        S_COMMAND_SET_MAXHP,
+        S_COMMAND_CHEAT_USECARD
     };
 
     enum Game3v3ChooseOrderCommand

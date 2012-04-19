@@ -280,8 +280,7 @@ void RoomThread::run(){
 
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
-    if(setjmp(env) == GameOver){
-        quit();
+    if(setjmp(env) == GameOver){        
         return;
     }
 
@@ -352,8 +351,9 @@ void RoomThread::run(){
         if(room->getMode() == "02_1v1")
             room->setCurrent(room->players.at(1));
 
-        forever{
+        forever {
             trigger(TurnStart, room->getCurrent());
+            if (room->isFinished()) break;
             room->setCurrent(room->getCurrent()->getNextAlive());
         }
     }

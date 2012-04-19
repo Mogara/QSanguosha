@@ -441,13 +441,6 @@ void Room::gameOver(const QString &winner){
             }
         }
     }
-
-
-    if(QThread::currentThread() == thread)
-        thread->end();
-    //else
-        //@todo: release some kind of semaphore?
-        //mutex->unlock();
 }
 
 void Room::slashEffect(const SlashEffectStruct &effect){
@@ -625,15 +618,6 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
         //The lock might be acquired because the client disconnects
         if (!player->isOnline())
             break;
-
-        if(game_finished)
-        {
-            _m_mutexInteractive.unlock();
-            player->releaseLock(ServerPlayer::SEMA_MUTEX);
-            player->m_isWaitingReply = false;
-            thread->end();
-            return false;
-        }
 
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
         _m_mutexInteractive.unlock();
@@ -1510,16 +1494,12 @@ void Room::reportDisconnection(){
 
             broadcastInvoke("removePlayer", player->objectName());
         }
-    }else{
-        if(!game_started){
-            // third case
-            if(!QRegExp("^\\d\\d_\\dv\\d$").exactMatch(mode)){                                                
-                //player->releaseLock(ServerPlayer::SEMA_CHOOSE_GENERAL); 
-                //player->releaseLock(ServerPlayer::SEMA_CHOOSE_GENERAL2); 
-            }
-        }
-
+    }else{ 
         // fourth case
+        if (player->m_isWaitingReply)
+        {
+            player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        }
         setPlayerProperty(player, "state", "offline");
 
         bool someone_is_online = false;
@@ -1551,9 +1531,7 @@ void Room::trustCommand(ServerPlayer *player, const QString &){
     _m_mutexInteractive.lock();
     if (player->isOnline()){
         player->setState("trust");
-        //@todo: get rid of this block when new protocol is fully deployed        
-        if (player->m_isWaitingReply) {
-            player->setClientReply(Json::Value::null);
+        if (player->m_isWaitingReply) {            
             _m_mutexInteractive.unlock();
             player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         }
@@ -1587,7 +1565,8 @@ void Room::processRequest(const QString &request){
             return;
 
         if(game_finished){
-            player->invoke("warn", "GAME_OVER");
+            if (player->isOnline())
+                player->invoke("warn", "GAME_OVER");
             return;
         }
 
@@ -2891,7 +2870,17 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         Json::Value clientReply = player->getClientReply();
         if (!success || clientReply.isNull()) return;
 
-        //@todo: fix this thing!!!!
+        // @todo: fix this thing!!!!
+        // Warning: READ THIS BEFORE YOU CHANGE
+        // Sending cheat via replyServer will seriously compromise the design of the new protocol and interactiveCommand,
+        // making the synchronization very difficult and code very hard to maintain. Here is what I suggest for 
+        // making cheat work. 
+        // 1. Instead of returning a string via doRequest, define a new packet type called S_CLIENT_REQUEST_CHEAT;
+        // 2. In processRequest, do not forward S_CLIENT_REQUEST_CHEAT to interactiveCommand; instead, create a new callback
+        //    function that write cheat code to a buffer, and then call player->releaseLock(ServerPlayer::SEMA_COMMANDINTERACTIVE)
+        // 3. Since the lock is released, you can first check if (1)cheat is allowed on this server, and if so, (2) whether the cheat
+        //    code buffer has been filled. If there is anything in the cheat code buffer, read cheat buffer instead.
+        // 4. If the cheat buffer is read, then do not read from clientReply any more.
         bool isCheat = false;
         QString cheatString;
         if (isCheat) {
