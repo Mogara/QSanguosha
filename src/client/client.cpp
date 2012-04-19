@@ -127,7 +127,7 @@ Client::Client(QObject *parent, const QString &filename)
     //callbacks["askForKingdom"] = &Client::askForKingdom;    
     m_interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCard;
     //callbacks["askForCard"] = &Client::askForCard;
-    m_interactions[S_COMMAND_USE_CARD] = &Client::askForCard;
+    m_interactions[S_COMMAND_USE_CARD] = &Client::askForUseCard;
     //callbacks["askForUseCard"] = &Client::askForUseCard;
     m_interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     //callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
