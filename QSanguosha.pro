@@ -130,7 +130,15 @@ SOURCES += src/main.cpp \
 	src/lua/lbaselib.c \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
-	swig/sanguosha_wrap.cxx
+	swig/sanguosha_wrap.cxx \
+    src/core/protocol.cpp \
+    src/core/jsonutils.cpp \
+    src/jsoncpp/src/json_writer.cpp \
+    src/jsoncpp/src/json_valueiterator.inl \
+    src/jsoncpp/src/json_value.cpp \
+    src/jsoncpp/src/json_reader.cpp \
+    src/jsoncpp/src/json_internalmap.inl \
+    src/jsoncpp/src/json_internalarray.inl
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -242,7 +250,20 @@ HEADERS += src/client/aux-skills.h \
 	src/lua/ldebug.h \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
-	src/lua/lapi.h
+	src/lua/lapi.h \
+    src/core/protocol.h \
+    src/core/jsonutils.h \
+    src/jsoncpp/src/json_tool.h \
+    src/jsoncpp/src/json_batchallocator.h \
+    src/jsoncpp/include/json/writer.h \
+    src/jsoncpp/include/json/value.h \
+    src/jsoncpp/include/json/reader.h \
+    src/jsoncpp/include/json/json.h \
+    src/jsoncpp/include/json/forwards.h \
+    src/jsoncpp/include/json/features.h \
+    src/jsoncpp/include/json/config.h \
+    src/jsoncpp/include/json/autolink.h \
+    src/jsoncpp/include/json/assertions.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -260,6 +281,7 @@ INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
 INCLUDEPATH += src/lua
+INCLUDEPATH += src/jsoncpp/include
 
 win32{
 	RC_FILE += resource/icon.rc

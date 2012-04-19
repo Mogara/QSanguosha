@@ -138,7 +138,7 @@ bool CardUseStruct::tryParse(const Json::Value &usage, Room *room){
 
     const Json::Value &targets = usage[1];
 
-    for (int i = 0; i < targets.size(); i++)
+    for (unsigned int i = 0; i < targets.size(); i++)
     {
         if (!targets[i].isString()) return false;
         this->to << room->findChild<ServerPlayer *>(toQString(targets[i]));

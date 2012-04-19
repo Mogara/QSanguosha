@@ -626,7 +626,7 @@ void Room::broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer 
 bool Room::getResult(time_t timeOut){  
     QTime timer;
     timer.start();
-    while(timeOut >= timer.elapsed())
+    while(Config.OperationNoLimit || timeOut >= timer.elapsed())
     {
         if (Config.OperationNoLimit)
             m_expectedReplyPlayer->acquireLock(ServerPlayer::SEMA_COMMAND);
@@ -2887,11 +2887,8 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         qint64 diff = Config.AIDelay - timer.elapsed();
         if(diff > 0)
             thread->delay(diff);
-    }else{
-        QSanGeneralPacket packet(S_SERVER_REQUEST, S_COMMAND_PLAY_CARD);        
+    }else{           
         bool success = doRequest(player, S_COMMAND_PLAY_CARD, toJsonString(player->objectName()), true);
-
-        //executeCommand(player, "activate", "useCardCommand", player->objectName(), ".", true);
         if (!success || m_clientResponse.isNull()) return;
 
         if(m_clientResponseString.startsWith(":")){
@@ -2967,7 +2964,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str);
                   
         //@todo: also check if the player does have that card!!!
-        if(!success || !m_clientResponse.isArray() || m_clientResponse.size() != discard_num
+        if(!success || !m_clientResponse.isArray() || (int)m_clientResponse.size() != discard_num
             || !tryParse(m_clientResponse, to_discard))
         {
             if(optional) return false;
@@ -3002,7 +2999,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
     }else{
         bool success = doRequest(player, S_COMMAND_EXCHANGE_CARD, discard_num);
         //@todo: also check if the player does have that card!!!
-        if(!success || !m_clientResponse.isArray() || m_clientResponse.size() != discard_num
+        if(!success || !m_clientResponse.isArray() || (int)m_clientResponse.size() != discard_num
            || !tryParse(m_clientResponse, to_exchange))
         {
             to_exchange = player->forceToDiscard(discard_num, false);
