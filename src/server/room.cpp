@@ -777,14 +777,13 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
             }else{
                 //@todo: does positive mean the card is not "nullifiction"? if so, chop the positive arg in
                 // ai->askForNullification and change the trick_name instead.
-                if(!positive) trick_name = "nullification";
-                Json::Value ask_str = toJsonArray(trick_name, from ? from->objectName() : ".", to->objectName());
-                    //ask_str = QString("%1:%2->%3").arg(trick_name)
-                            //.arg(from ? from->objectName() : ".")
-                            //.arg(to->objectName());                
-                    //ask_str = QString("nullification:.->%1").arg(to->objectName());
+                if(!positive) trick_name = "nullification";                
+                Json::Value arg(Json::arrayValue);
+                arg[0] = toJsonString(trick_name);
+                arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
+                arg[2] = toJsonString(to->objectName());
 
-                if(doRequest(player, S_COMMAND_NULLIFICATION, ask_str, false, false)
+                if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false, false)
                     && m_clientResponse.isString())
                     card = Card::Parse(toQString(m_clientResponse));
             }
@@ -825,7 +824,7 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
     
-    //@todo: whoever wrote this had better but a explantory comment here
+    //@todo: whoever wrote this had better put a explantory note here
     if(!who->hasFlag("dongchaee") && who != player){
         if(flags == "h" || (flags == "he" && !who->hasEquip()))
             return who->getRandomHandCardId();
@@ -985,7 +984,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         player->invoke("disableAG", "false");        
         
         bool success = doRequest(player, S_COMMAND_AMAZING_GRACE, refusable);
-        if (!success || !m_clientResponse.asInt() || !card_ids.contains(m_clientResponse.asInt()))
+        if (!success || !m_clientResponse.isInt() || !card_ids.contains(m_clientResponse.asInt()))
             card_id = refusable ? -1 : card_ids.first();
         else card_id = m_clientResponse.asInt();
     }   
@@ -2949,7 +2948,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
 
         card_use.from = player;
         if (!card_use.tryParse(m_clientResponse, this) || !card_use.isValid()){
-            emit room_message(tr("Card can not parse:\n %1").arg(QSanProtocol::Utils::toQString(m_clientResponse[0])));
+            emit room_message(tr("Card can not parse:\n %1").arg(toQString(m_clientResponse[0])));
             return;
         }
     }

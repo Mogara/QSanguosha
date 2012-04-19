@@ -816,19 +816,21 @@ void Client::playSkillEffect(const QString &play_str){
     Sanguosha->playSkillEffect(skill_name, index);
 }
 
-void Client::askForNullification(const Json::Value &ask_str){
-    if (!isStringArray(ask_str, 0, 2)) return;
+void Client::askForNullification(const Json::Value &arg){
+    if (!arg.isArray() || arg.size() != 3 || !arg[0].isString()
+        || !(arg[1].isNull() ||arg[1].isString())
+        || !arg[2].isString()) return;
     
-    QString trick_name = toQString(ask_str[0]);
-    QString source_name = toQString(ask_str[1]);
-    ClientPlayer* target_player = getPlayer(toQString(ask_str[2]));
+    QString trick_name = toQString(arg[0]);
+    Json::Value source_name = arg[1];
+    ClientPlayer* target_player = getPlayer(toQString(arg[2]));
 
     if (!target_player || !target_player->getGeneral()) return;
 
     const Card *trick_card = Sanguosha->findChild<const Card *>(trick_name);
     ClientPlayer *source = NULL;
-    if(source_name != "")
-        source = getPlayer(source_name);
+    if(source_name != Json::Value::null)
+        source = getPlayer(source_name.asCString());
 
     if(Config.NeverNullifyMyTrick && source == Self){
         if(trick_card->inherits("SingleTargetTrick") || trick_card->objectName() == "iron_chain"){
