@@ -29,9 +29,10 @@ using namespace QSanProtocol::Utils;
 
 Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
-    draw_pile(&pile1), discard_pile(&pile2), _m_mutexInteractive(QMutex::NonRecursive),
+    draw_pile(&pile1), discard_pile(&pile2),
     game_started(false), game_finished(false), L(NULL), thread(NULL),
-    thread_3v3(NULL), sem(new QSemaphore), provided(NULL), has_provided(false), _virtual(false)
+    thread_3v3(NULL), sem(new QSemaphore), _m_mutexInteractive(QMutex::NonRecursive),
+    provided(NULL), has_provided(false), _virtual(false)
 {       
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);

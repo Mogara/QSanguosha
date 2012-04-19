@@ -236,7 +236,7 @@ private:
     
     QSanProtocol::CommandType m_expectedReplyCommand;
     ServerPlayer* m_expectedReplyPlayer;
-    unsigned int m_expectedReplySerial;
+    int m_expectedReplySerial;
 
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
