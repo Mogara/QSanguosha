@@ -72,7 +72,7 @@ public:
     void sendJudgeResult(const JudgeStar judge);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
-    void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
+    void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
     void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
     int drawCard();
     const Card *peek();
@@ -85,11 +85,6 @@ public:
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
 
     bool getResult(time_t timeOut);
-    void getResult(const QString &reply_func, ServerPlayer *reply_player, const QString &defaultValue, bool move_focus = true,
-                   bool supply_timeout = false, time_t timeout = 0);
-    void executeCommand(ServerPlayer* player, const char *invokeString, const QString &commandString,
-                     const QString &invokeArg, const QString &defaultValue, bool broadcast = false, bool move_focus = true,
-                     bool supply_timeout = false, time_t timeout = 0);
 
     bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
                             bool broadcast = false, bool moveFocus = true);
@@ -195,7 +190,6 @@ public:
     //@param command: type of command
     //@return countdown for command in milliseconds.
     time_t getCommandTimeout(QSanProtocol::CommandType command);
-    time_t getCommandTimeout(const QString &command);
     void toggleReadyCommand(ServerPlayer *player, const QString &);
     void speakCommand(ServerPlayer *player, const QString &arg);
     void trustCommand(ServerPlayer *player, const QString &arg);
@@ -233,7 +227,7 @@ private:
     RoomThread3v3 *thread_3v3;
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
-    QString result;
+    QString m_clientResponseString;
     Json::Value m_clientResponse;    
     QString reply_func;
     QSanProtocol::CommandType m_expectedReplyCommand;

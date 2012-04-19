@@ -53,9 +53,10 @@ public:
     int alivePlayerCount() const;
     void responseCard(const Card *card);
     bool hasNoTargetResponsing() const;
-    void discardCards(const Card *card);
-    void replyYiji(const Card *card, const Player *to);
-    void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
+    void onPlayerDiscardCards(const Card *card);
+    void onPlayerReplyYiji(const Card *card, const Player *to);
+    void onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
+    void onPlayerAssignRole(const QList<QString> &names, const QList<QString> &roles);
     QList<const ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);
     ClientPlayer *getPlayer(const QString &name);
@@ -82,9 +83,7 @@ public:
     void addPlayer(const QString &player_info);
     void removePlayer(const QString &player_name);
     void drawCards(const QString &cards_str);
-    void drawNCards(const QString &draw_str);
-    void doChooseGeneral(const QString &generals_str);
-    void doChooseGeneral2(const QString &generals_str);
+    void drawNCards(const QString &draw_str);    
     void startInXs(const QString &);
     void arrangeSeats(const QString &seats);
     void activate(const Json::Value &playerId);
@@ -101,9 +100,7 @@ public:
     void warn(const QString &);
     void setMark(const QString &mark_str);
     void doFilter(const QString &);
-    void showCard(const Json::Value &show_str);
-    void doGuanxing(const QString &guanxing_str);
-    void doGongxin(const QString &gongxin_str);
+    void showCard(const Json::Value &show_str);    
     void log(const QString &log_str);
     void speak(const QString &speak_data);
     void addHistory(const QString &card);
@@ -125,29 +122,35 @@ public:
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
 
-    void fillAG(const QString &cards_str);
-    void askForAG(const QString &);
+    void fillAG(const QString &cards_str);    
     void takeAG(const QString &take_str);
     void clearAG(const QString &);
     void disableAG(const QString &disable_str);
 
+    //interactive server callbacks
     void askForCard(const Json::Value&);
     void askForUseCard(const Json::Value&);
-    
-    void askForSinglePeach(const QString &ask_str);
-    void askForCardShow(const Json::Value &requestor);
-    void askForSkillInvoke(const Json::Value &arg);
-    void askForChoice(const Json::Value &ask_str);
-    void askForDiscard(const QString &discard_str);
-    void askForExchange(const QString &exchange_str);
-    void askForSuit(const QString &);
-    void askForKingdom(const QString &);
-    void askForNullification(const Json::Value &ask_str);
-    void askForPindian(const QString &ask_str);
-    void askForYiji(const QString &card_list);
-    void askForCardChosen(const QString &ask_str);
-    void askForPlayerChosen(const QString &ask_str);
-    void askForGeneral(const QString &generals);
+    void askForAG(const Json::Value&);
+    void askForSinglePeach(const Json::Value &);
+    void askForCardShow(const Json::Value &);
+    void askForSkillInvoke(const Json::Value &);
+    void askForChoice(const Json::Value &);
+    void askForDiscard(const Json::Value &);
+    void askForExchange(const Json::Value &);
+    void askForSuit(const Json::Value &);
+    void askForKingdom(const Json::Value &);
+    void askForNullification(const Json::Value &);
+    void askForPindian(const Json::Value &);    
+    void askForCardChosen(const Json::Value &);
+    void askForPlayerChosen(const Json::Value &);
+    //todo: merge these 3 functions
+    void askForGeneral(const Json::Value &);
+    void askForGeneral1(const Json::Value &);
+    void askForGeneral2(const Json::Value &);
+    void askForYiji(const Json::Value &);
+    void askForGuanxing(const Json::Value &);
+    void askForGongxin(const Json::Value &);
+    void askForAssign(const Json::Value &); // Assign roles at the beginning of game
 
     // 3v3 & 1v1 methods
     void fillGenerals(const QString &generals);
@@ -156,18 +159,17 @@ public:
     void startArrange(const QString &);
     void askForOrder(const QString &reason);
     void askForRole(const QString &role_str);
-    void askForDirection(const QString &);
+    void askForDirection(const Json::Value &);
     void recoverGeneral(const QString &);
     void revealGeneral(const QString &);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
-
-    void askForAssign(const QString &);
+    
 
     // public fields
-    bool refusable;
-    bool include_equip;
+    bool m_isDiscardActionRefusable;
+    bool m_canDiscardEquip;
     int discard_num;
     QString skill_name;
     QList<const Card*> discarded_list;
@@ -176,18 +178,19 @@ public:
 
 public slots:
     void signup();
-    void chooseItem(const QString &_name);
-    void onPlayerMakeChoice();
+    void onPlayerChooseGeneral(const QString &_name);
+    void onPlayerMakeChoice();    
     void onPlayerChooseCard(int card_id = -2);
-    void choosePlayer(const Player *player);
+    void onPlayerChooseAG(int card_id);
+    void onPlayerChoosePlayer(const Player *player);
     void trust();
     void requestCard(int card_id);
     void changeGeneral(QString name);
     void addRobot();
     void fillRobots();
     void arrange(const QStringList &order);
-    void chooseAG(int card_id);
-    void replyGongxin(int card_id = -1);
+    
+    void onPlayerReplyGongxin(int card_id = -1);
 
 private:
     ClientSocket *socket;
@@ -204,7 +207,7 @@ private:
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_title, skill_line;
-    QString choose_command;
+    QSanProtocol::CommandType m_chooseGeneralCommandType;
     QString card_pattern;
     QString skill_to_invoke;
     int swap_pile;
@@ -219,8 +222,8 @@ private slots:
     void processCommand(const QString &cmd);
     void processReply(char *reply);
     void notifyRoleChange(const QString &new_role);
-    void chooseSuit();
-    void chooseKingdom();
+    void onPlayerChooseSuit();
+    void onPlayerChooseKingdom();
     void clearTurnTag();
     void selectOrder();
     void selectRole();

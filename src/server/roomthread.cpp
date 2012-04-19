@@ -131,7 +131,6 @@ bool CardUseStruct::isValid() const{
 }
 
 bool CardUseStruct::tryParse(const Json::Value &usage, Room *room){
-    std::string aaa = usage.toStyledString();
     if (usage.size() < 2 || !usage[0].isString() || !usage[1].isArray())
         return false;
 

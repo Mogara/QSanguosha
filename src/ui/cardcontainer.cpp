@@ -319,7 +319,7 @@ void GuanxingBox::reply(){
     foreach(CardItem *card_item, down_items)
         down_cards << card_item->getCard()->getId();
 
-    ClientInstance->replyGuanxing(up_cards, down_cards);
+    ClientInstance->onPlayerReplyGuanxing(up_cards, down_cards);
     clear();
 }
 
