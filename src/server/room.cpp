@@ -3262,7 +3262,8 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
         bool success = doRequest(player, S_COMMAND_CHOOSE_GENERAL, options);
         //executeCommand(player, "askForGeneral", "chooseGeneralCommand", generals.join("+"), ".");
 
-        if(!success || !m_clientResponse.isString() || !generals.contains(m_clientResponse.asCString()))
+        if(!success || !m_clientResponse.isString() 
+            || (!Config.FreeChoose && !generals.contains(m_clientResponse.asCString())))
             return default_choice;
         else
             return toQString(m_clientResponse);
