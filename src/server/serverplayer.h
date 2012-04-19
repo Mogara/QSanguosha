@@ -108,8 +108,7 @@ public:
     qint64 endNetworkDelayTest();
 
     //Synchronization helpers
-    enum SemaphoreType {SEMA_MUTEX, SEMA_CHOOSE_GENERAL, SEMA_CHOOSE_GENERAL2, 
-        SEMA_COMMAND, SEMA_COMMAND_INTERACTIVE, SEMA_CHOOSE_ROLE};
+    enum SemaphoreType {SEMA_MUTEX, SEMA_COMMAND, SEMA_COMMAND_INTERACTIVE, SEMA_CHOOSE_ROLE};
     inline QSemaphore* getSemaphore(SemaphoreType type){ return semas[type]; }
     inline void acquireLock(SemaphoreType type){ semas[type]->acquire(); }
     inline bool tryAcquireLock(SemaphoreType type, int timeout = 0){
@@ -122,6 +121,13 @@ public:
             drainLock((SemaphoreType)i);
         }
     }
+    inline QString getClientReplyString(){return m_clientResponseString;}
+    inline void setClientReplyString(const QString &val){m_clientResponseString = val;}
+    inline Json::Value getClientReply(){return m_clientResponse;}
+    inline void setClientReply(const Json::Value &val){m_clientResponse = val;}    
+    QSanProtocol::CommandType m_expectedReplyCommand;
+    bool m_isWaitingReply;
+    int m_expectedReplySerial;
 
 
 protected:    
@@ -141,6 +147,8 @@ private:
     ServerPlayer *next;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
+    QString m_clientResponseString;
+    Json::Value m_clientResponse;
 
 private slots:
     void getMessage(char *message);

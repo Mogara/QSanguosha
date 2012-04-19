@@ -143,10 +143,7 @@ public:
     void askForPindian(const Json::Value &);    
     void askForCardChosen(const Json::Value &);
     void askForPlayerChosen(const Json::Value &);
-    //todo: merge these 3 functions
     void askForGeneral(const Json::Value &);
-    void askForGeneral1(const Json::Value &);
-    void askForGeneral2(const Json::Value &);
     void askForYiji(const Json::Value &);
     void askForGuanxing(const Json::Value &);
     void askForGongxin(const Json::Value &);
@@ -207,7 +204,6 @@ private:
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_title, skill_line;
-    QSanProtocol::CommandType m_chooseGeneralCommandType;
     QString card_pattern;
     QString skill_to_invoke;
     int swap_pile;

@@ -181,7 +181,7 @@ void ZombieScenario::getRoles(char *roles) const{
     strcpy(roles, "ZCCCCCCC");
 }
 
-void ZombieScenario::onTagSet(Room *room, const QString &key) const{
+void ZombieScenario::onTagSet(Room *, const QString &) const{
     // dummy
 }
 
@@ -225,7 +225,7 @@ public:
             return x;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &) const{
         if(event == PhaseChange && zombie->getPhase() == Player::Play){
         int x = getNumDiff(zombie);
         if(x > 0){
@@ -252,7 +252,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *zombie, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         const Card *reason = damage.card;
@@ -295,7 +295,7 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return true;
     }
 

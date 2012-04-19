@@ -83,17 +83,8 @@ public:
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
-    void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
-
-    bool getResult(time_t timeOut);
-
-    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
-                            bool broadcast = false, bool moveFocus = true);
-    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
-                            bool broadcast = false, bool moveFocus = true);
-    bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
-                            bool broadcast = false);
-    
+    void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);   
+   
     // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
     // server times out, whichever is earlier.
     // @param player
@@ -106,12 +97,22 @@ public:
     //        Specifies whether other players should also be notified about the event.
     // @param moveFocus
     //        Suggests whether the all clients' UI should move focus to the player specified.
+    // @param wait
+    //        If ture, executeCommand will return immediately without waiting for client reply.
     // @return True if the a valid response is returned from client.
     bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, time_t timeOut,
-        bool broadcast = false, bool moveFocus = true);
+        bool broadcast = false, bool moveFocus = true, bool wait = true);
     
     // Ditto, except that default timeout from configuration is used.
-    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, bool broadcast = false, bool move_focus = true);
+    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet,
+        bool broadcast = false, bool move_focus = true, bool wait = true);
+    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
+                            bool broadcast = false, bool moveFocus = true, bool wait = true);
+    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
+                            bool broadcast = false, bool moveFocus = true, bool wait = true);
+    bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
+                            bool broadcast = false);    
+    bool getResult(ServerPlayer* player, time_t timeOut);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -184,7 +185,7 @@ public:
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
-    void askForGeneralAsync(ServerPlayer *player);
+    void askForGeneralAsync(ServerPlayer *player);    
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     
     //Get the timeout allowance for a command. Server countdown is more lenient than the client.
@@ -199,8 +200,8 @@ public:
     void interactiveCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
-    void chooseCommand(ServerPlayer *player, const QString &general_name);
-    void choose2Command(ServerPlayer *player, const QString &general_name);
+    //void chooseCommand(ServerPlayer *player, const QString &general_name);
+    //void choose2Command(ServerPlayer *player, const QString &general_name);    
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
@@ -211,6 +212,8 @@ protected:
     virtual void run();
 
 private:
+    QString _chooseDefaultGeneral(ServerPlayer* player) const;
+    bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);
     QString mode;
     QList<ServerPlayer*> players, alive_players;
     int player_count;
@@ -227,17 +230,12 @@ private:
     RoomThread3v3 *thread_3v3;
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
-    QMutex _m_mutexInteractive;
-    QString m_clientResponseString;
-    Json::Value m_clientResponse;    
+    QMutex _m_mutexInteractive;    
     //@todo: get rid of the following two legacy members
     QString reply_func;
     ServerPlayer *reply_player;
+    QString m_clientResponseString;
     
-    QSanProtocol::CommandType m_expectedReplyCommand;
-    ServerPlayer* m_expectedReplyPlayer;
-    int m_expectedReplySerial;
-
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
 

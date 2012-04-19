@@ -96,10 +96,6 @@ Client::Client(QObject *parent, const QString &filename)
 
     // interactive methods    
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
-    //callbacks["doChooseGeneral"] = &Client::doChooseGeneral;
-    m_interactions[S_COMMAND_CHOOSE_GENERAL_1] = &Client::askForGeneral1;
-    //callbacks["doChooseGeneral2"] = &Client::doChooseGeneral2;
-    m_interactions[S_COMMAND_CHOOSE_GENERAL_2] = &Client::askForGeneral2;
     //callbacks["askForGeneral"] = &Client::askForGeneral;
     m_interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
     //callbacks["askForPlayerChosen"] = &Client::askForPlayerChosen;
@@ -411,7 +407,7 @@ void Client::drawNCards(const QString &draw_str){
 
 void Client::onPlayerChooseGeneral(const QString &item_name){
     if(!item_name.isEmpty()){
-        replyToServer(m_chooseGeneralCommandType, toJsonString(item_name));        
+        replyToServer(S_COMMAND_CHOOSE_GENERAL, toJsonString(item_name));        
         Sanguosha->playAudio("choose-item");
     }
 }
@@ -1541,24 +1537,8 @@ void Client::askForPlayerChosen(const Json::Value &players){
 void Client::askForGeneral(const Json::Value &arg){
     QStringList generals;
     if (!tryParse(arg, generals)) return;
-    m_chooseGeneralCommandType = S_COMMAND_CHOOSE_GENERAL;
     emit generals_got(generals);
 }
-
-void Client::askForGeneral1(const Json::Value &arg){
-    QStringList generals;
-    if (!tryParse(arg, generals)) return;
-    m_chooseGeneralCommandType = S_COMMAND_CHOOSE_GENERAL_1;
-    emit generals_got(generals);
-}
-
-void Client::askForGeneral2(const Json::Value &arg){
-    QStringList generals;
-    if (!tryParse(arg, generals)) return;
-    m_chooseGeneralCommandType = S_COMMAND_CHOOSE_GENERAL_2;
-    emit generals_got(generals);
-}
-
 
 void Client::onPlayerReplyYiji(const Card *card, const Player *to){
     Json::Value req;
