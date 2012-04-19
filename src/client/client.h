@@ -148,15 +148,17 @@ public:
     void askForGuanxing(const Json::Value &);
     void askForGongxin(const Json::Value &);
     void askForAssign(const Json::Value &); // Assign roles at the beginning of game
+    //3v3 & 1v1
+    void askForOrder(const Json::Value &);
+    void askForRole3v3(const Json::Value &);
+    void askForDirection(const Json::Value &);
 
     // 3v3 & 1v1 methods
     void fillGenerals(const QString &generals);
     void askForGeneral3v3(const QString &);
     void takeGeneral(const QString &take_str);
-    void startArrange(const QString &);
-    void askForOrder(const QString &reason);
-    void askForRole(const QString &role_str);
-    void askForDirection(const Json::Value &);
+    void startArrange(const QString &);    
+    
     void recoverGeneral(const QString &);
     void revealGeneral(const QString &);
 
@@ -223,8 +225,8 @@ private slots:
     void onPlayerChooseSuit();
     void onPlayerChooseKingdom();
     void clearTurnTag();
-    void selectOrder();
-    void selectRole();
+    void onPlayerChooseOrder();
+    void onPlayerChooseRole3v3();
 
 signals:
     void version_checked(const QString &version_number, const QString &mod_name);

@@ -43,6 +43,7 @@ namespace QSanProtocol
         S_COMMAND_CHOOSE_ROLE_3V3,
         S_COMMAND_CHOOSE_DIRECTION,
         S_COMMAND_CHOOSE_PLAYER,
+        S_COMMAND_CHOOSE_ORDER,
         S_COMMAND_ASK_PEACH,
         S_COMMAND_CLAIM_GENERAL,
         S_COMMAND_CLAIM_SKILL_ADD,
@@ -57,6 +58,18 @@ namespace QSanProtocol
         S_COMMAND_SET_PROPERTY,
         S_COMMAND_SET_HP,
         S_COMMAND_SET_MAXHP
+    };
+
+    enum Game3v3ChooseOrderCommand
+    {
+        S_REASON_CHOOSE_ORDER_TURN,
+        S_REASON_CHOOSE_ORDER_SELECT,
+    };
+
+    enum Game3v3Camp
+    {
+        S_CAMP_WARM = 0,
+        S_CAMP_COOL = 1
     };
 
     class QSanPacket

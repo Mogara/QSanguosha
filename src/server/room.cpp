@@ -50,29 +50,8 @@ void Room::initCallbacks(){
     m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
     m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
     // init callback table
-    //callbacks["useCardCommand"] = &Room::interactiveCommand;
-    //callbacks["invokeSkillCommand"] = &Room::interactiveCommand;
-    //callbacks["replyNullificationCommand"] = &Room::interactiveCommand;
-    //callbacks["chooseCardCommand"] = &Room::interactiveCommand;
-    //callbacks["responseCardCommand"] = &Room::interactiveCommand;
-    //callbacks["discardCardsCommand"] = &Room::interactiveCommand;
-    //callbacks["chooseSuitCommand"] = &Room::interactiveCommand;
-    //callbacks["chooseKingdomCommand"] = &Room::interactiveCommand;
-    //callbacks["replyYijiCommand"] = &Room::interactiveCommand;
-    //callbacks["replyGuanxingCommand"] = &Room::interactiveCommand;
-    //callbacks["replyGongxinCommand"] = &Room::interactiveCommand;
-    //callbacks["chooseAGCommand"] = &Room::interactiveCommand;
-    //callbacks["choosePlayerCommand"] = &Room::interactiveCommand;
-    //callbacks["chooseGeneralCommand"] = &Room::interactiveCommand;
-    //callbacks["chooseCommand"] = &Room::chooseCommand;
-    //callbacks["choose2Command"] = &Room::choose2Command;
-    //callbacks["selectChoiceCommand"] = &Room::interactiveCommand;    
-    //callbacks["assignRolesCommand"] = &Room::interactiveCommand;
     callbacks["arrangeCommand"] = &Room::arrangeCommand;
     callbacks["takeGeneralCommand"] = &Room::takeGeneralCommand;
-    callbacks["selectOrderCommand"] = &Room::selectOrderCommand;
-    callbacks["selectRoleCommand"] = &Room::selectRoleCommand;
-
 
     // Client notifications
     callbacks["toggleReadyCommand"] = &Room::toggleReadyCommand;
@@ -1555,14 +1534,6 @@ void Room::reportDisconnection(){
             game_finished = true;
             return;
         }
-
-        if(reply_player == player){
-            reply_player = NULL;
-            reply_func.clear();
-            m_clientResponseString.clear();
-
-            player->releaseLock(ServerPlayer::SEMA_COMMAND);
-        }
     }
 
     if(player->isOwner()){
@@ -1580,15 +1551,7 @@ void Room::trustCommand(ServerPlayer *player, const QString &){
     _m_mutexInteractive.lock();
     if (player->isOnline()){
         player->setState("trust");
-        //@todo: get rid of this block when new protocol is fully deployed
-        if(reply_player == player){
-            reply_player = NULL;
-            reply_func.clear();
-            m_clientResponseString.clear();
-            player->setClientReply(Json::Value::null);
-            _m_mutexInteractive.unlock();
-            player->releaseLock(ServerPlayer::SEMA_COMMAND);
-        }
+        //@todo: get rid of this block when new protocol is fully deployed        
         if (player->m_isWaitingReply) {
             player->setClientReply(Json::Value::null);
             _m_mutexInteractive.unlock();
@@ -1605,7 +1568,6 @@ void Room::trustCommand(ServerPlayer *player, const QString &){
 void Room::processRequest(const QString &request){
     QSanGeneralPacket packet;
     //@todo: remove this thing after the new protocol is fully deployed
-    m_clientResponseString = request;
     if (packet.parse(request.toAscii().constData()))
     {     
         if (packet.getPacketType() == S_CLIENT_REPLY)
@@ -2930,8 +2892,10 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         if (!success || clientReply.isNull()) return;
 
         //@todo: fix this thing!!!!
-        if(m_clientResponseString.startsWith(":")){
-            makeCheat(m_clientResponseString);
+        bool isCheat = false;
+        QString cheatString;
+        if (isCheat) {
+            makeCheat(cheatString);
             if(player->isAlive())
                 return activate(player, card_use);
             return;
@@ -3256,7 +3220,6 @@ void Room::askForGeneralAsync(ServerPlayer *player){
     }
 }
 
-//@todo: merge this function with chooseCommand and choose2Command
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice){
     if(default_choice.isEmpty())
         default_choice = generals.at(qrand() % generals.length());
@@ -3537,8 +3500,8 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
 }
 
 QString Room::generatePlayerName(){
-    static int id = 0;
-    id ++;
+    static unsigned int id = 0;
+    id++;
     return QString("sgs%1").arg(id);
 }
 
@@ -3557,47 +3520,32 @@ void Room::takeGeneralCommand(ServerPlayer *player, const QString &arg){
 }
 
 QString Room::askForOrder(ServerPlayer *player){
-    QString reason;
-    if(thread_3v3->isFinished())
-        reason = "turn";
-    else
-        reason = "select";
 
-    if(player->getState() == "online"){
-        player->invoke("askForOrder", reason);
-        reply_player = player;
-        reply_func = "selectOrderCommand";
-        reply_player->drainLock(ServerPlayer::SEMA_COMMAND);
-        reply_player->acquireLock(ServerPlayer::SEMA_COMMAND);
-    }else{
-        m_clientResponseString = qrand() % 2 == 0 ? "warm" : "cool";
+    bool success = doRequest(player, S_COMMAND_CHOOSE_ORDER, (int)S_REASON_CHOOSE_ORDER_TURN, false, false);
+        
+    Game3v3Camp result = qrand() % 2 == 0 ? S_CAMP_WARM : S_CAMP_COOL;
+    Json::Value clientReply = player->getClientReply();
+    if (success && clientReply.isInt())
+    {
+        result = (Game3v3Camp)clientReply.asInt();
     }
-
-    return m_clientResponseString;
-}
-
-void Room::selectOrderCommand(ServerPlayer *player, const QString &arg){
-    m_clientResponseString = arg;
-    player->releaseLock(ServerPlayer::SEMA_COMMAND);
+    if (result == S_CAMP_WARM) return "warm";
+    else return "cool";    
 }
 
 QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme){
     QStringList squeezed = roles.toSet().toList();
-    player->invoke("askForRole", QString("%1:%2").arg(scheme).arg(squeezed.join("+")));
-    reply_player = player;
-    reply_func = "selectRoleCommand";
-    
-    reply_player->acquireLock(ServerPlayer::SEMA_CHOOSE_ROLE);
-
-    return m_clientResponseString;
-}
-
-void Room::selectRoleCommand(ServerPlayer *player, const QString &arg){
-    m_clientResponseString = arg;
-    if(m_clientResponseString.isEmpty())
-        m_clientResponseString = "abstained";
-
-    player->releaseLock(ServerPlayer::SEMA_CHOOSE_ROLE);
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(scheme);
+    arg[1] = toJsonStringArray(squeezed);
+    bool success = doRequest(player, S_COMMAND_CHOOSE_ROLE_3V3, arg, false, false);
+    Json::Value clientReply = player->getClientReply();
+    QString result = "abstained";
+    if (success && clientReply.isString())
+    {
+        result = clientReply.asCString();
+    }
+    return result;
 }
 
 void Room::networkDelayTestCommand(ServerPlayer *player, const QString &){

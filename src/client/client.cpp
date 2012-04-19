@@ -139,6 +139,8 @@ Client::Client(QObject *parent, const QString &filename)
     //callbacks["askForPindian"] = &Client::askForPindian;
     m_interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
     //callbacks["askForCardChosen"] = &Client::askForCardChosen;
+    m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
+    m_interactions[S_COMMAND_CHOOSE_ROLE_3V3] = &Client::askForRole3v3;
 
     callbacks["fillAG"] = &Client::fillAG;    
     callbacks["takeAG"] = &Client::takeAG;
@@ -150,9 +152,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForGeneral3v3"] = &Client::askForGeneral3v3;
     callbacks["askForGeneral1v1"] = &Client::askForGeneral3v3;
     callbacks["takeGeneral"] = &Client::takeGeneral;
-    callbacks["startArrange"] = &Client::startArrange;
-    callbacks["askForOrder"] = &Client::askForOrder;
-    callbacks["askForRole"] = &Client::askForRole;   
+    callbacks["startArrange"] = &Client::startArrange;    
     callbacks["recoverGeneral"] = &Client::recoverGeneral;
     callbacks["revealGeneral"] = &Client::revealGeneral;   
 
@@ -1716,12 +1716,13 @@ void Client::startArrange(const QString &){
     emit arrange_started();
 }
 
-void Client::askForOrder(const QString &reason){
+void Client::askForOrder(const Json::Value &arg){
+    if (!arg.isInt()) return;
     QDialog *dialog = new QDialog;
-
-    if(reason == "select")
+    Game3v3ChooseOrderCommand reason = (Game3v3ChooseOrderCommand)arg.asInt();
+    if (reason == S_REASON_CHOOSE_ORDER_SELECT)
         dialog->setWindowTitle(tr("The order who first choose general"));
-    else if(reason == "turn")
+    else if (reason == S_REASON_CHOOSE_ORDER_TURN)
         dialog->setWindowTitle(tr("The order who first in turn"));
 
     QLabel *prompt = new QLabel(tr("Please select the order"));
@@ -1739,21 +1740,25 @@ void Client::askForOrder(const QString &reason){
     layout->addLayout(hlayout);
     dialog->setLayout(layout);
 
-    connect(warm_button, SIGNAL(clicked()), this, SLOT(selectOrder()));
-    connect(cool_button, SIGNAL(clicked()), this, SLOT(selectOrder()));
+    connect(warm_button, SIGNAL(clicked()), this, SLOT(onPlayerChooseOrder()));
+    connect(cool_button, SIGNAL(clicked()), this, SLOT(onPlayerChooseOrder()));
     connect(warm_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(cool_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(dialog, SIGNAL(rejected()), this, SLOT(selectOrder()));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(onPlayerChooseOrder()));
 
     ask_dialog = dialog;
 
     setStatus(ExecDialog);
 }
 
-void Client::askForRole(const QString &role_str){
-    QRegExp rx("(\\w+):(.+)");
-    if(!rx.exactMatch(role_str))
-        return;
+void Client::askForRole3v3(const Json::Value &arg){
+    if (!arg.isArray() || arg.size() != 2
+        || !arg[0].isString() || !arg[1].isArray()) return;
+    QStringList roleList;
+    if (!tryParse(arg[1], roleList)) return;
+    
+    QString scheme = toQString(arg[0]);    
+    QSet<QString> role_set = roleList.toSet();
 
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Select role in 3v3 mode"));
@@ -1761,11 +1766,8 @@ void Client::askForRole(const QString &role_str){
     QLabel *prompt = new QLabel(tr("Please select a role"));
     QVBoxLayout *layout = new QVBoxLayout;
 
-    layout->addWidget(prompt);
-
-    QStringList texts = rx.capturedTexts();
-    QString scheme = texts.at(1);
-    QSet<QString> role_set = texts.at(2).split("+").toSet();
+    layout->addWidget(prompt);   
+    
     QStringList roles;
     if(scheme == "AllRoles")
         roles << "lord" << "loyalist" << "renegade" << "rebel";
@@ -1794,7 +1796,7 @@ void Client::askForRole(const QString &role_str){
 
         if(role_set.contains(role)){
             button->setObjectName(role);
-            connect(button, SIGNAL(clicked()), this, SLOT(selectRole()));
+            connect(button, SIGNAL(clicked()), this, SLOT(onPlayerChooseRole3v3()));
             connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
         }else
             button->setDisabled(true);
@@ -1805,7 +1807,7 @@ void Client::askForRole(const QString &role_str){
     layout->addWidget(abstain_button);
 
     dialog->setObjectName("abstain");
-    connect(dialog, SIGNAL(rejected()), this, SLOT(selectRole()));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(onPlayerChooseRole3v3()));
 
     dialog->setLayout(layout);
 
@@ -1814,9 +1816,8 @@ void Client::askForRole(const QString &role_str){
     setStatus(ExecDialog);
 }
 
-void Client::selectRole(){
-    request(QString("selectRole ") + sender()->objectName());
-
+void Client::onPlayerChooseRole3v3(){
+    replyToServer(S_COMMAND_CHOOSE_ROLE_3V3, toJsonString(sender()->objectName()));
     setStatus(NotActive);
 }
 
@@ -1877,9 +1878,8 @@ void Client::revealGeneral(const QString &reveal_str){
     emit general_revealed(self, general);
 }
 
-void Client::selectOrder(){
+void Client::onPlayerChooseOrder(){
     OptionButton *button = qobject_cast<OptionButton *>(sender());
-
     QString order;
     if(button){
         order = button->objectName();
@@ -1889,9 +1889,10 @@ void Client::selectOrder(){
         else
             order = "cool";
     }
-
-    request("selectOrder " + order);
-
+    int req;
+    if (order == "warm") req = (int)S_CAMP_WARM;
+    else req = (int)S_CAMP_COOL;
+    replyToServer(S_COMMAND_CHOOSE_ORDER, req);
     setStatus(NotActive);
 }
 

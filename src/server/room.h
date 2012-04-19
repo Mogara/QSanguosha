@@ -200,8 +200,6 @@ public:
     void interactiveCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
-    //void chooseCommand(ServerPlayer *player, const QString &general_name);
-    //void choose2Command(ServerPlayer *player, const QString &general_name);    
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
@@ -231,10 +229,7 @@ private:
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
     QMutex _m_mutexInteractive;    
-    //@todo: get rid of the following two legacy members
-    QString reply_func;
-    ServerPlayer *reply_player;
-    QString m_clientResponseString;
+
     
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
@@ -260,9 +255,7 @@ private:
     void arrangeCommand(ServerPlayer *player, const QString &arg);
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
     QString askForOrder(ServerPlayer *player);
-    void selectOrderCommand(ServerPlayer *player, const QString &arg);
     QString askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme);
-    void selectRoleCommand(ServerPlayer *player, const QString &arg);
 
     void makeCheat(const QString &cheat_str);
     void makeDamage(const QStringList &texts);

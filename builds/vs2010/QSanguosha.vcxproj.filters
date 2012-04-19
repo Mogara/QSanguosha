@@ -1134,9 +1134,6 @@
     <ClInclude Include="..\..\src\core\protocol.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\core\jsonutils.cpp">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\core\jsonutils.h">
       <Filter>core</Filter>
     </ClInclude>
