@@ -7,6 +7,8 @@
 #include "lua.hpp"
 #include "banpair.h"
 #include "audio.h"
+#include "protocol.h"
+#include "jsonutils.h"
 
 #include <QFile>
 #include <QTextStream>

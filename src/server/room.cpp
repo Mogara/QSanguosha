@@ -12,7 +12,6 @@
 #include "roomthread1v1.h"
 #include "server.h"
 #include "generalselector.h"
-#include "protocol.h"
 #include "jsonutils.h"
 
 #include <QStringList>
@@ -2917,7 +2916,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
 
         card_use.from = player;
         if (!card_use.tryParse(m_clientResponse, this) || !card_use.isValid()){
-            emit room_message(tr("Card can not parse:\n %1").arg(m_clientResponseString));
+            emit room_message(tr("Card can not parse:\n %1").arg(QSanProtocol::Utils::toQString(m_clientResponse[0])));
             return;
         }
     }

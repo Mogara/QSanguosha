@@ -416,13 +416,16 @@ void Client::onPlayerChooseGeneral(const QString &item_name){
 
 void Client::requestCard(int card_id){
     //@todo: fix this using the new protocol!!!
-    request(QString("useCard @CheatCard=%1->.").arg(card_id));
+    //   request(QString("useCard @CheatCard=%1->.").arg(card_id));
+    QString card_str = QString("@CheatCard=%1:.").arg(card_id);
+    replyToServer(S_COMMAND_USE_CARD, toJsonArray(card_str, Json::Value::null));
 }
 
 void Client::changeGeneral(QString name){
     Self->tag["GeneralName"] = name;
     //@todo: fix this using the new protocol!!!
-    request(QString("useCard @ChangeCard=.->."));
+    //request(QString("useCard @ChangeCard=.:."));
+    replyToServer(S_COMMAND_USE_CARD, toJsonArray("@ChangeCard=.->.", Json::Value::null));
 }
 
 void Client::addRobot(){
