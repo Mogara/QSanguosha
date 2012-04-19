@@ -14,6 +14,7 @@ struct LogMessage;
 #include "serverplayer.h"
 #include "roomthread.h"
 #include "protocol.h"
+#include <qmutex.h>
 
 class Room : public QThread{
     Q_OBJECT
@@ -106,11 +107,11 @@ public:
     // @param moveFocus
     //        Suggests whether the all clients' UI should move focus to the player specified.
     // @return True if the a valid response is returned from client.
-    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, time_t timeOut,
+    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, time_t timeOut,
         bool broadcast = false, bool moveFocus = true);
     
     // Ditto, except that default timeout from configuration is used.
-    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, bool broadcast = false, bool move_focus = true);
+    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, bool broadcast = false, bool move_focus = true);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -195,7 +196,7 @@ public:
     void trustCommand(ServerPlayer *player, const QString &arg);
     void kickCommand(ServerPlayer *player, const QString &arg);
     void surrenderCommand(ServerPlayer *player, const QString &);
-    void commonCommand(ServerPlayer *player, const QString &arg);
+    void interactiveCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
@@ -214,7 +215,6 @@ private:
     QList<ServerPlayer*> players, alive_players;
     int player_count;
     ServerPlayer *current;
-    ServerPlayer *reply_player;
     QList<int> pile1, pile2;
     QList<int> table_cards;
     QList<int> *draw_pile, *discard_pile;
@@ -227,11 +227,16 @@ private:
     RoomThread3v3 *thread_3v3;
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
+    QMutex _m_mutexInteractive;
     QString m_clientResponseString;
     Json::Value m_clientResponse;    
+    //@todo: get rid of the following two legacy members
     QString reply_func;
+    ServerPlayer *reply_player;
+    
     QSanProtocol::CommandType m_expectedReplyCommand;
     ServerPlayer* m_expectedReplyPlayer;
+    unsigned int m_expectedReplySerial;
 
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;

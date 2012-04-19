@@ -212,6 +212,8 @@ private:
     QString skill_to_invoke;
     int swap_pile;
 
+    unsigned int _m_lastServerSerial;
+
     void updatePileNum();
     void setPromptList(const QStringList &text);
     void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
