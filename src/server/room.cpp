@@ -986,7 +986,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         
         bool success = doRequest(player, S_COMMAND_AMAZING_GRACE, refusable);
         if (!success || !m_clientResponse.asInt() || !card_ids.contains(m_clientResponse.asInt()))
-            card_id = card_ids.first();
+            card_id = refusable ? -1 : card_ids.first();
         else card_id = m_clientResponse.asInt();
     }   
 
