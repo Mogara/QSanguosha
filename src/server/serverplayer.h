@@ -108,7 +108,7 @@ public:
     qint64 endNetworkDelayTest();
 
     //Synchronization helpers
-    enum SemaphoreType {SEMA_CHOOSE_GENERAL, SEMA_CHOOSE_GENERAL2, SEMA_COMMAND, SEMA_CHOOSE_ROLE};
+    enum SemaphoreType {SEMA_MUTEX, SEMA_CHOOSE_GENERAL, SEMA_CHOOSE_GENERAL2, SEMA_COMMAND, SEMA_CHOOSE_ROLE};
     inline QSemaphore* getSemaphore(SemaphoreType type){ return semas[type]; }
     inline void acquireLock(SemaphoreType type){ semas[type]->acquire(); }
     inline bool tryAcquireLock(SemaphoreType type, int timeout = 0){

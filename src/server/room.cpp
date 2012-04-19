@@ -626,28 +626,29 @@ void Room::broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer 
 bool Room::getResult(time_t timeOut){  
     QTime timer;
     timer.start();
+    bool validResult = false;
     while(Config.OperationNoLimit || timeOut >= timer.elapsed())
     {
         if (Config.OperationNoLimit)
             m_expectedReplyPlayer->acquireLock(ServerPlayer::SEMA_COMMAND);
         else if (!m_expectedReplyPlayer->tryAcquireLock(ServerPlayer::SEMA_COMMAND, timeOut - timer.elapsed())) 
-            return false;
+            break;
     
         //@todo: ylin - release all locks when the client disconnects, perhaps writing it
         //into destructor of ServerPlayer
         //The lock might be acquired because the client disconnects
         if (!m_expectedReplyPlayer->isOnline())
-            return false;
+            break;
 
         if(game_finished)
         {
             thread->end();
-            return false;
+            break;
         }
 
         QSanGeneralPacket packet;
         bool success = packet.parse(m_clientResponseString.toAscii().constData());
-        if (!success) return false;
+        if (!success) break;
         else if (packet.getPacketType() != S_CLIENT_REPLY 
             || packet.getCommandType() != m_expectedReplyCommand)
         {
@@ -656,10 +657,12 @@ bool Room::getResult(time_t timeOut){
         else
         {
             m_clientResponse = packet.getMessageBody();
-            return true;
+            validResult = true;
+            break;
         }
     }
-    return false;
+    m_expectedReplyCommand = S_COMMAND_UNKNOWN;
+    return validResult;
 }
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
@@ -1935,6 +1938,13 @@ void Room::run(){
         }
     }else
         broadcastInvoke("startInXs", "0");
+ 
+    foreach (ServerPlayer *player, players){
+
+            //Ensure that the game starts with all player's mutex locked
+            player->drainAllLocks();
+            player->releaseLock(ServerPlayer::SEMA_MUTEX);
+    }
 
     if(scenario && !scenario->generalSelection())
         startGame();
@@ -1966,11 +1976,7 @@ void Room::run(){
         names.removeOne("yuji");
 
         foreach(ServerPlayer *player, players){
-
-            //Ensure that the game starts with all player's mutex locked
-            player->drainAllLocks();
-
-            if(player == lord)
+            if (player == lord)
                 continue;
 
             qShuffle(names);
@@ -2079,16 +2085,21 @@ int Room::getCardFromPile(const QString &card_pattern){
 }
 
 void Room::choose2Command(ServerPlayer *player, const QString &general_name){
-    if (player->getGeneral2()) return;
+    player->acquireLock(ServerPlayer::SEMA_MUTEX);
+    if (player->getGeneral2())
+    {
+        player->releaseLock(ServerPlayer::SEMA_MUTEX);
+        return;
+    }
 
     const General *general = Sanguosha->getGeneral(general_name);
-    if(general == NULL){
-        if(Config.EnableHegemony)
+    if (general == NULL){
+        if (Config.EnableHegemony)
         {
             foreach(QString name,player->getSelected())
             {
-                if(name == player->getGeneralName())continue;
-                if(Sanguosha->getGeneral(name)->getKingdom()
+                if (name == player->getGeneralName()) continue;
+                if (Sanguosha->getGeneral(name)->getKingdom()
                         == player->getGeneral()->getKingdom())
                     general = Sanguosha->getGeneral(name);
             }
@@ -2104,12 +2115,17 @@ void Room::choose2Command(ServerPlayer *player, const QString &general_name){
     player->sendProperty("general2");
 
     player->releaseLock(ServerPlayer::SEMA_CHOOSE_GENERAL2);
+    player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
 
 //@todo: verify general name is contained in player->getSelected()!!!!!!
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
-    
-    if (player->getGeneral()) return;
+    player->acquireLock(ServerPlayer::SEMA_MUTEX);
+    if (player->getGeneral())
+    {
+        player->releaseLock(ServerPlayer::SEMA_MUTEX);
+        return;
+    }
     
     const General *general = Sanguosha->getGeneral(general_name);
     if(general == NULL){
@@ -2136,6 +2152,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     player->sendProperty("general");
 
     player->releaseLock(ServerPlayer::SEMA_CHOOSE_GENERAL);
+    player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
 
 void Room::speakCommand(ServerPlayer *player, const QString &arg){

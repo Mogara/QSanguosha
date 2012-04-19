@@ -10,7 +10,7 @@
 
 using namespace QSanProtocol;
 
-const int ServerPlayer::S_NUM_SEMAPHORES = 4;
+const int ServerPlayer::S_NUM_SEMAPHORES = 5;
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), socket(NULL), room(room),
