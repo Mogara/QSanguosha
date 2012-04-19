@@ -222,6 +222,7 @@ void Client::replyToServer(CommandType command, const Json::Value &arg){
     if(socket)
     {
         QSanGeneralPacket packet(S_CLIENT_REPLY, command);
+        packet.m_localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
         socket->send(toQString(packet.toString()));
     }
@@ -285,6 +286,7 @@ void Client::processReply(char *reply){
         }
         else if (packet.getPacketType() == S_SERVER_REQUEST)
         {
+            _m_lastServerSerial = packet.m_globalSerial;
             CallBack callback = m_interactions[packet.getCommandType()];
             if (callback) {    
                 (this->*callback)(packet.getMessageBody());

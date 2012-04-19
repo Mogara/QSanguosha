@@ -74,11 +74,12 @@ namespace QSanProtocol
     {
     public:
         //format: [global_serial,local_serial,packet_type,command_name,command_body]
-        static unsigned int m_globalSerial;
+        unsigned int m_globalSerial;
         int m_localSerial;        
         inline QSanGeneralPacket(PacketType packetType = S_UNKOWN_PACKET, CommandType command = S_COMMAND_UNKNOWN)
         {
-            m_globalSerial++;
+            _m_globalSerial++;
+            m_globalSerial = _m_globalSerial;
             m_localSerial = 0;
             m_packetType = packetType;
             m_command = command;
@@ -92,6 +93,7 @@ namespace QSanProtocol
         inline virtual PacketType getPacketType() const { return m_packetType; }
         inline virtual CommandType getCommandType() const { return m_command; }
     protected:
+        static unsigned int _m_globalSerial;
         CommandType m_command;
         PacketType m_packetType;
         Json::Value m_msgBody;

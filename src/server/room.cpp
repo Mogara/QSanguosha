@@ -28,11 +28,11 @@ using namespace QSanProtocol;
 using namespace QSanProtocol::Utils;
 
 Room::Room(QObject *parent, const QString &mode)
-    :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
-      draw_pile(&pile1), discard_pile(&pile2),
-      game_started(false), game_finished(false), L(NULL), thread(NULL),
-      thread_3v3(NULL), sem(new QSemaphore), provided(NULL), has_provided(false), _virtual(false)
-{
+    :QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
+    draw_pile(&pile1), discard_pile(&pile2), _m_mutexInteractive(QMutex::NonRecursive),
+    game_started(false), game_finished(false), L(NULL), thread(NULL),
+    thread_3v3(NULL), sem(new QSemaphore), provided(NULL), has_provided(false), _virtual(false)
+{       
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
 
@@ -49,24 +49,24 @@ void Room::initCallbacks(){
     m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
     m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
     // init callback table
-    //callbacks["useCardCommand"] = &Room::commonCommand;
-    //callbacks["invokeSkillCommand"] = &Room::commonCommand;
-    //callbacks["replyNullificationCommand"] = &Room::commonCommand;
-    //callbacks["chooseCardCommand"] = &Room::commonCommand;
-    //callbacks["responseCardCommand"] = &Room::commonCommand;
-    //callbacks["discardCardsCommand"] = &Room::commonCommand;
-    //callbacks["chooseSuitCommand"] = &Room::commonCommand;
-    //callbacks["chooseKingdomCommand"] = &Room::commonCommand;
-    //callbacks["replyYijiCommand"] = &Room::commonCommand;
-    //callbacks["replyGuanxingCommand"] = &Room::commonCommand;
-    //callbacks["replyGongxinCommand"] = &Room::commonCommand;
-    //callbacks["chooseAGCommand"] = &Room::commonCommand;
-    //callbacks["choosePlayerCommand"] = &Room::commonCommand;
-    //callbacks["chooseGeneralCommand"] = &Room::commonCommand;
+    //callbacks["useCardCommand"] = &Room::interactiveCommand;
+    //callbacks["invokeSkillCommand"] = &Room::interactiveCommand;
+    //callbacks["replyNullificationCommand"] = &Room::interactiveCommand;
+    //callbacks["chooseCardCommand"] = &Room::interactiveCommand;
+    //callbacks["responseCardCommand"] = &Room::interactiveCommand;
+    //callbacks["discardCardsCommand"] = &Room::interactiveCommand;
+    //callbacks["chooseSuitCommand"] = &Room::interactiveCommand;
+    //callbacks["chooseKingdomCommand"] = &Room::interactiveCommand;
+    //callbacks["replyYijiCommand"] = &Room::interactiveCommand;
+    //callbacks["replyGuanxingCommand"] = &Room::interactiveCommand;
+    //callbacks["replyGongxinCommand"] = &Room::interactiveCommand;
+    //callbacks["chooseAGCommand"] = &Room::interactiveCommand;
+    //callbacks["choosePlayerCommand"] = &Room::interactiveCommand;
+    //callbacks["chooseGeneralCommand"] = &Room::interactiveCommand;
     //callbacks["chooseCommand"] = &Room::chooseCommand;
     //callbacks["choose2Command"] = &Room::choose2Command;
-    //callbacks["selectChoiceCommand"] = &Room::commonCommand;    
-    //callbacks["assignRolesCommand"] = &Room::commonCommand;
+    //callbacks["selectChoiceCommand"] = &Room::interactiveCommand;    
+    //callbacks["assignRolesCommand"] = &Room::interactiveCommand;
 
     callbacks["toggleReadyCommand"] = &Room::toggleReadyCommand;
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
@@ -575,18 +575,19 @@ bool Room::obtainable(const Card *card, ServerPlayer *player){
      return true;
  }
 
- bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, bool broadcast, bool moveFocus)
+ bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, bool broadcast, bool moveFocus)
 {
     time_t timeOut = getCommandTimeout(packet->getCommandType());
     return executeCommand(player, packet, timeOut, broadcast, moveFocus);
 }
 
-bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanPacket* packet, time_t timeOut, bool broadcast, bool moveFocus)
+bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, time_t timeOut, bool broadcast, bool moveFocus)
 {
     if (packet->getPacketType() == S_SERVER_REQUEST)
     {
-        player->drainLock(ServerPlayer::SEMA_COMMAND);
+        player->drainLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         m_expectedReplyPlayer = player;
+        m_expectedReplySerial = packet->m_globalSerial;
         CommandType command = packet->getCommandType();
         if (m_requestResponsePair.contains(command))
             m_expectedReplyCommand = m_requestResponsePair[command];
@@ -627,12 +628,13 @@ bool Room::getResult(time_t timeOut){
     timer.start();
     bool validResult = false;
     while(Config.OperationNoLimit || timeOut >= timer.elapsed())
-    {
+    {        
         if (Config.OperationNoLimit)
-            m_expectedReplyPlayer->acquireLock(ServerPlayer::SEMA_COMMAND);
-        else if (!m_expectedReplyPlayer->tryAcquireLock(ServerPlayer::SEMA_COMMAND, timeOut - timer.elapsed())) 
+            m_expectedReplyPlayer->acquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        else if (!m_expectedReplyPlayer->tryAcquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE, timeOut - timer.elapsed())) 
             break;
-    
+        
+        _m_mutexInteractive.lock();
         //@todo: ylin - release all locks when the client disconnects, perhaps writing it
         //into destructor of ServerPlayer
         //The lock might be acquired because the client disconnects
@@ -641,26 +643,25 @@ bool Room::getResult(time_t timeOut){
 
         if(game_finished)
         {
+            _m_mutexInteractive.unlock();
             thread->end();
             break;
         }
 
-        QSanGeneralPacket packet;
-        bool success = packet.parse(m_clientResponseString.toAscii().constData());
-        if (!success) break;
-        else if (packet.getPacketType() != S_CLIENT_REPLY 
-            || packet.getCommandType() != m_expectedReplyCommand)
-        {
-            continue;
-        }
-        else
-        {
-            m_clientResponse = packet.getMessageBody();
-            validResult = true;
-            break;
-        }
+        // Note that we rely on interactiveCommand to filter out all unrelevant packet.
+        // By the time the lock is released, m_clientResponse must be the right message
+        // assuming the client side is not tampered.
+
+        // Also note that lock can be released when a player switch to trust or offline status.
+        // It is ensured by trustCommand and reportDisconnection that the player reports these status
+        // is the player waiting the lock. In these cases, the serial number and command type doesn't matter.
+        validResult = true;
+        break;
     }
     m_expectedReplyCommand = S_COMMAND_UNKNOWN;
+    m_expectedReplyPlayer = 0;
+    m_expectedReplySerial = -1;
+    _m_mutexInteractive.unlock();
     return validResult;
 }
 
@@ -1376,7 +1377,7 @@ void Room::prepareForStart(){
 
         bool expose_roles = scenario->exposeRoles();
         int i;
-        for(i=0; i<players.length(); i++){
+        for(i = 0; i < players.length(); i++){
             ServerPlayer *player = players.at(i);
             if(generals.length()>0)
             {
@@ -1552,24 +1553,35 @@ void Room::reportDisconnection(){
 }
 
 void Room::trustCommand(ServerPlayer *player, const QString &){
-    if(player->getState() == "online"){
+    _m_mutexInteractive.lock();
+    if (player->isOnline()){
         player->setState("trust");
-
+        //@todo: get rid of this block when new protocol is fully deployed
         if(reply_player == player){
             reply_player = NULL;
             reply_func.clear();
             m_clientResponseString.clear();
-
+            m_clientResponse = Json::Value::null;
+            _m_mutexInteractive.unlock();
             player->releaseLock(ServerPlayer::SEMA_COMMAND);
         }
+        if (m_expectedReplyPlayer == player) {
+            m_clientResponse = Json::Value::null;
+            _m_mutexInteractive.unlock();
+            player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        }
     }else
+    {
         player->setState("online");
-
+        _m_mutexInteractive.unlock();
+    }
     broadcastProperty(player, "state");
 }
 
 void Room::processRequest(const QString &request){
     QSanGeneralPacket packet;
+    //@todo: remove this thing after the new protocol is fully deployed
+    m_clientResponseString = request;
     if (packet.parse(request.toAscii().constData()))
     {
         ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());        
@@ -1589,7 +1601,12 @@ void Room::processRequest(const QString &request){
             else
                 choose2Command(player, toQString(generalName));
         }
-        else commonCommand(qobject_cast<ServerPlayer*>(sender()), request);
+        else
+        {
+            ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());
+            if (player == NULL) return;            
+            interactiveCommand(player, &packet);
+        }
     }
     else
     {
@@ -1607,20 +1624,6 @@ void Room::processRequest(const QString &request){
         command.append("Command");
         Callback callback = callbacks.value(command, NULL);
         if(callback){
-            if(callback == &Room::commonCommand){
-                if(!reply_func.isEmpty() && reply_func != command){
-                    // just report error message and do not block the game
-                    emit room_message(tr("Reply function should be %1 instead of %2").arg(reply_func).arg(command));
-                }
-
-                if(reply_player && reply_player != player){
-                    QString should_be = reply_player->objectName();
-                    QString instead_of = player->objectName();
-
-                    // just report error message and do not block the game
-                    emit room_message(tr("Reply player should be %1 instead of %2").arg(should_be).arg(instead_of));
-                }
-            }
 
             (this->*callback)(player, args.at(1));
 
@@ -1920,6 +1923,13 @@ void Room::run(){
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
+    _m_mutexInteractive.unlock();
+    foreach (ServerPlayer *player, players){
+        //Ensure that the game starts with all player's mutex locked
+        player->drainAllLocks();
+        player->releaseLock(ServerPlayer::SEMA_MUTEX);
+    }
+
     prepareForStart();
 
     bool using_countdown = true;
@@ -1937,13 +1947,7 @@ void Room::run(){
         }
     }else
         broadcastInvoke("startInXs", "0");
- 
-    foreach (ServerPlayer *player, players){
-
-            //Ensure that the game starts with all player's mutex locked
-            player->drainAllLocks();
-            player->releaseLock(ServerPlayer::SEMA_MUTEX);
-    }
+    
 
     if(scenario && !scenario->generalSelection())
         startGame();
@@ -2158,13 +2162,41 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg){
     broadcastInvoke("speak", QString("%1:%2").arg(player->objectName()).arg(arg));
 }
 
-void Room::commonCommand(ServerPlayer *player, const QString &arg){
-    m_clientResponseString = arg;
+void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *packet){
+    player->acquireLock(ServerPlayer::SEMA_MUTEX);
+    _m_mutexInteractive.lock();
+    bool success = false;
+    if (player != m_expectedReplyPlayer)
+    {
+        if (player != NULL && m_expectedReplyPlayer != NULL)
+            emit room_message(tr("Reply player should be %1 instead of %2")
+            .arg(m_expectedReplyPlayer->objectName()).arg(player->objectName()));
+    }
+    else if (packet->getCommandType() != m_expectedReplyCommand)
+    {
+        emit room_message(tr("Reply command should be %1 instead of %2")
+            .arg(m_expectedReplyCommand).arg(packet->getCommandType()));
+    }
+    else if (packet->m_localSerial != m_expectedReplySerial)
+    {
+        emit room_message(tr("Reply serial should be %1 instead of %2")
+            .arg(m_expectedReplySerial).arg(packet->m_localSerial));
+    }
+    else success = true; 
 
-    reply_player = NULL;
-    reply_func.clear();
-
-    player->releaseLock(ServerPlayer::SEMA_COMMAND);
+    if (!success)
+    {
+        _m_mutexInteractive.unlock();
+        player->releaseLock(ServerPlayer::SEMA_MUTEX);
+        return;
+    }
+    else
+    {
+        m_clientResponse = packet->getMessageBody();
+        _m_mutexInteractive.unlock();
+        player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        player->releaseLock(ServerPlayer::SEMA_MUTEX);
+    }
 }
 
 void Room::useCard(const CardUseStruct &card_use, bool add_history){
@@ -3074,8 +3106,8 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_
         if(!success){
             // the method "askForGuanxing" without any arguments
             // means to clear all the guanxing items
-            zhuge->invoke("doGuanxing");
-            foreach(int card_id, cards)
+            //zhuge->invoke("doGuanxing");
+            foreach (int card_id, cards)
                 draw_pile->prepend(card_id);
             return;
         }
@@ -3242,7 +3274,8 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
         bool success = doRequest(player, S_COMMAND_CHOOSE_GENERAL, options);
         //executeCommand(player, "askForGeneral", "chooseGeneralCommand", generals.join("+"), ".");
 
-        if(!success || !m_clientResponse.isString() || !generals.contains(m_clientResponse.asCString()))
+        if(!success || !m_clientResponse.isString() 
+            || (!Config.FreeChoose && !generals.contains(m_clientResponse.asCString())))
             return default_choice;
         else
             return toQString(m_clientResponse);

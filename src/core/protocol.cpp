@@ -6,7 +6,7 @@
 using namespace std;
 using namespace QSanProtocol;
 
-unsigned int QSanProtocol::QSanGeneralPacket::m_globalSerial = 0;
+unsigned int QSanProtocol::QSanGeneralPacket::_m_globalSerial = 0;
 const unsigned int QSanProtocol::QSanGeneralPacket::S_MAX_PACKET_SIZE = 1000;
 
 bool QSanProtocol::Utils::isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex)
