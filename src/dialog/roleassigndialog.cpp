@@ -11,6 +11,8 @@
 #include "roomscene.h"
 #include "settings.h"
 
+using namespace QSanProtocol;
+
 RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     :QDialog(parent)
 {
@@ -132,7 +134,7 @@ void RoleAssignDialog::accept(){
 }
 
 void RoleAssignDialog::reject(){
-    ClientInstance->request("assignRoles .");
+    ClientInstance->replyToServer(S_COMMAND_CHOOSE_ROLE, Json::Value::null);
     QDialog::reject();
 }
 
