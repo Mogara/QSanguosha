@@ -586,7 +586,7 @@ bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralP
 {
     if (packet->getPacketType() == S_SERVER_REQUEST)
     {
-        player->drainLock(ServerPlayer::SEMA_COMMAND);
+        player->drainLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         m_expectedReplyPlayer = player;
         m_expectedReplySerial = packet->m_globalSerial;
         CommandType command = packet->getCommandType();
@@ -631,8 +631,8 @@ bool Room::getResult(time_t timeOut){
     while(Config.OperationNoLimit || timeOut >= timer.elapsed())
     {        
         if (Config.OperationNoLimit)
-            m_expectedReplyPlayer->acquireLock(ServerPlayer::SEMA_COMMAND);
-        else if (!m_expectedReplyPlayer->tryAcquireLock(ServerPlayer::SEMA_COMMAND, timeOut - timer.elapsed())) 
+            m_expectedReplyPlayer->acquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        else if (!m_expectedReplyPlayer->tryAcquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE, timeOut - timer.elapsed())) 
             break;
         
         _m_mutexInteractive.lock();
@@ -652,6 +652,10 @@ bool Room::getResult(time_t timeOut){
         // Note that we rely on interactiveCommand to filter out all unrelevant packet.
         // By the time the lock is released, m_clientResponse must be the right message
         // assuming the client side is not tampered.
+
+        // Also note that lock can be released when a player switch to trust or offline status.
+        // It is ensured by trustCommand and reportDisconnection that the player reports these status
+        // is the player waiting the lock. In these cases, the serial number and command type doesn't matter.
         validResult = true;
         break;
     }
@@ -1550,19 +1554,28 @@ void Room::reportDisconnection(){
 }
 
 void Room::trustCommand(ServerPlayer *player, const QString &){
-    if(player->getState() == "online"){
+    _m_mutexInteractive.lock();
+    if (player->isOnline()){
         player->setState("trust");
-
+        //@todo: get rid of this block when new protocol is fully deployed
         if(reply_player == player){
             reply_player = NULL;
             reply_func.clear();
             m_clientResponseString.clear();
-
+            m_clientResponse = Json::Value::null;
+            _m_mutexInteractive.unlock();
             player->releaseLock(ServerPlayer::SEMA_COMMAND);
         }
+        if (m_expectedReplyPlayer == player) {
+            m_clientResponse = Json::Value::null;
+            _m_mutexInteractive.unlock();
+            player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        }
     }else
+    {
         player->setState("online");
-
+        _m_mutexInteractive.unlock();
+    }
     broadcastProperty(player, "state");
 }
 
@@ -2182,7 +2195,7 @@ void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *pac
     {
         m_clientResponse = packet->getMessageBody();
         _m_mutexInteractive.unlock();
-        player->releaseLock(ServerPlayer::SEMA_COMMAND);
+        player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
     }
 }
