@@ -188,7 +188,7 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
 	self:sort(self.enemies,"hp")
 	for _,enemy in ipairs(self.enemies) do
 		if not self:isEquip("SilverLion", enemy) and not enemy:hasSkill("hongyan") and
-			self:objectiveLevel(enemy) > 3 and not (enemy:isChained() and not self:isGoodChainTarget(enemy)) then
+			self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and not (enemy:isChained() and not self:isGoodChainTarget(enemy)) then
 			return "@LeijiCard=.->"..enemy:objectName()
 		end
 	end
@@ -363,6 +363,11 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data)
 	end
 
 	return "."
+end
+
+function sgs.ai_slash_prohibit.tianxiang(self, to)
+	if self:isFriend(to) then return false end
+	return self:cantbeHurt(to)
 end
 
 sgs.xiaoqiao_suit_value = 

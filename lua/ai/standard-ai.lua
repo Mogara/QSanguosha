@@ -117,7 +117,6 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equ
 end
 
 function sgs.ai_slash_prohibit.ganglie(self, to)
-	if self:isWeak() or self:isFriend(to) then return true end
 	return self.player:getHandcardNum()+self.player:getHp() < 5
 end
 
@@ -700,8 +699,9 @@ end
 sgs.ai_skill_use_func.FanjianCard=function(card,use,self)
 	self:sort(self.enemies, "hp")
 			
-	for _, enemy in ipairs(self.enemies) do								
-		if (not enemy:hasSkill("qingnang")) or (enemy:getHp() == 1 and enemy:getHandcardNum() == 0 and not enemy:getEquips()) then
+	for _, enemy in ipairs(self.enemies) do		
+		if self:objectiveLevel(enemy) <= 3 or self:cantbeHurt(enemy) or enemy:getMark("@fog") > 0 then						
+		elseif (not enemy:hasSkill("qingnang")) or (enemy:getHp() == 1 and enemy:getHandcardNum() == 0 and not enemy:getEquips()) then
 			use.card = card
 			if use.to then use.to:append(enemy) end
 			return
