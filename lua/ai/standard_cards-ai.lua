@@ -501,6 +501,11 @@ end
 
 function sgs.ai_cardsview.spear(class_name, player)
 	if class_name == "Slash" then
+		local cards = player:getCards("he")	
+		cards = sgs.QList2Table(cards)
+		for _, acard in ipairs(cards) do
+			if acard:inherits("Slash") then return end
+		end
 		local cards = player:getCards("h")	
 		cards=sgs.QList2Table(cards)
 		local newcards = {}

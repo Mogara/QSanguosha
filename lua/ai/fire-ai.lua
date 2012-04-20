@@ -127,30 +127,34 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		end
 		self:sort(self.enemies)
 		for _, enemy in ipairs(self.enemies) do
-			if hand_weapon and self.player:inMyAttackRange(enemy) then
-				use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId())
-				if use.to then
-					use.to:append(enemy)
+			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) then
+				if hand_weapon and self.player:inMyAttackRange(enemy) then
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId())
+					if use.to then
+						use.to:append(enemy)
+					end
+					break
 				end
-				break
-			end
-			if self.player:distanceTo(enemy) <= 1 then
-				use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId())
-				if use.to then
-					use.to:append(enemy)
+				if self.player:distanceTo(enemy) <= 1 then
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId())
+					if use.to then
+						use.to:append(enemy)
+					end
+					return
 				end
-				return
 			end
 		end
 	else
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
-			if self.player:inMyAttackRange(enemy) and self.player:getHp() > enemy:getHp() and self.player:getHp() > 2 then
-				use.card = sgs.Card_Parse("@QiangxiCard=.")
-				if use.to then
-					use.to:append(enemy)
+			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) then
+				if self.player:inMyAttackRange(enemy) and self.player:getHp() > enemy:getHp() and self.player:getHp() > 2 then
+					use.card = sgs.Card_Parse("@QiangxiCard=.")
+					if use.to then
+						use.to:append(enemy)
+					end
+					return
 				end
-				return
 			end
 		end
 	end
@@ -407,7 +411,7 @@ sgs.ai_skill_invoke.shuangxiong=function(self,data)
 	if self.player:isSkipped(sgs.Player_Play) or self.player:getHp() < 2 then
 		return false
 	end
-
+	local target = 0
 	local cards=self.player:getCards("h")
 	cards=sgs.QList2Table(cards)
 
@@ -422,10 +426,11 @@ sgs.ai_skill_invoke.shuangxiong=function(self,data)
 	handnum=handnum/2
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
-		if (self:getCardsNum("Slash", enemy)+enemy:getHp()<=handnum) and (self:getCardsNum("Slash")>=self:getCardsNum("Slash", enemy)) then return true end
+		if (self:getCardsNum("Slash", enemy)+enemy:getHp()<=handnum) and (self:getCardsNum("Slash")>=self:getCardsNum("Slash", enemy)) 
+			and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) then target = target + 1 end
 	end
-
-	return self.player:getHandcardNum()>=self.player:getHp()
+	
+	return self.player:getHandcardNum()>=self.player:getHp() and target > 0
 end
 
 local shuangxiong_skill={}
