@@ -100,6 +100,9 @@
     <PreBuildEvent>
       <Command>$(ProjectDir)\..\..\tools\swig\swig.exe -c++ -lua "$(ProjectDir)\..\..\swig\sanguosha.i"</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)sanguosha.qm $(ProjectDir)..\..\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

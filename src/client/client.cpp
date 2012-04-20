@@ -142,6 +142,7 @@ Client::Client(QObject *parent, const QString &filename)
     //callbacks["askForCardChosen"] = &Client::askForCardChosen;
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
     m_interactions[S_COMMAND_CHOOSE_ROLE_3V3] = &Client::askForRole3v3;
+    m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
 
     callbacks["fillAG"] = &Client::fillAG;    
     callbacks["takeAG"] = &Client::takeAG;
@@ -712,8 +713,11 @@ QString Client::getSkillNameToInvoke() const{
     return skill_to_invoke;
 }
 
-void Client::invokeSkill(bool invoke){    
-    replyToServer(S_COMMAND_INVOKE_SKILL, invoke);
+void Client::onPlayerInvokeSkill(bool invoke){    
+    if (skill_name == "surrender")
+        replyToServer(S_COMMAND_SURRENDER, invoke);
+    else
+        replyToServer(S_COMMAND_INVOKE_SKILL, invoke);
     setStatus(NotActive);
 }
 
@@ -811,6 +815,21 @@ void Client::onPlayerMakeChoice(){
     QString option = sender()->objectName();
     replyToServer(S_COMMAND_MULTIPLE_CHOICE, toJsonString(option));    
     setStatus(NotActive);
+}
+
+void Client::askForSurrender(const Json::Value &initiator){
+    
+    if (!initiator.isString()) return;    
+
+    QString text = tr("%1 initiated a vote for disadvataged side to claim "
+                        "capitulation. Click \"OK\" to surrender or \"Cancel\" to resist.")
+                            .arg(Sanguosha->translate(toQString(initiator)));
+    text.append(tr("<br/> <b>Noitce</b>: if all people on your side decides to surrender. "
+                   "You'll lose this game."));
+    skill_name = "surrender";
+
+    prompt_doc->setHtml(text);
+    setStatus(AskForSkillInvoke);
 }
 
 void Client::askForChoice(const Json::Value &ask_str){
@@ -975,9 +994,8 @@ void Client::trust(){
     setStatus(NotActive);
 }
 
-void Client::surrender(){
-    request("surrender .");
-
+void Client::requestSurrender(){
+    requestToServer(S_COMMAND_SURRENDER);
     setStatus(NotActive);
 }
 

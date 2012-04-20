@@ -1681,7 +1681,7 @@ void RoomScene::useSelectedCard(){
 
     case Client::AskForSkillInvoke:{
             prompt_box->disappear();
-            ClientInstance->invokeSkill(true);
+            ClientInstance->onPlayerInvokeSkill(true);
             break;
         }
 
@@ -2061,7 +2061,7 @@ void RoomScene::updateStatus(Client::Status status){
                 if(button->objectName() == skill_name){
                     QCheckBox *check_box = qobject_cast<QCheckBox *>(button);
                     if(check_box && check_box->isChecked()){
-                        ClientInstance->invokeSkill(true);
+                        ClientInstance->onPlayerInvokeSkill(true);
                         return;
                     }
                 }
@@ -2315,7 +2315,7 @@ void RoomScene::doCancelButton(){
         }
 
     case Client::AskForSkillInvoke:{
-            ClientInstance->invokeSkill(false);
+            ClientInstance->onPlayerInvokeSkill(false);
             prompt_box->disappear();
             break;
         }
@@ -3680,21 +3680,16 @@ void RoomScene::kick(){
 }
 
 void RoomScene::surrender(){
-    if(Self->getRole() != "lord"){
-        QMessageBox::warning(main_window, tr("Warning"), tr("Only lord can surrender!"));
-        return;
-    }
-
-    int alive_count = Self->aliveCount();
-    if(alive_count <= 2){
-        QMessageBox::warning(main_window, tr("Warning"), tr("When there are more than 2 players, the lord can surrender!"));
+    
+     if(Self->getPhase() != Player::Play){
+        QMessageBox::warning(main_window, tr("Warning"), tr("You can only initiate a surrender poll at your play phase!"));
         return;
     }
 
     QMessageBox::StandardButton button;
     button = QMessageBox::question(main_window, tr("Surrender"), tr("Are you sure to surrender ?"));
     if(button == QMessageBox::Ok){
-        ClientInstance->surrender();
+        ClientInstance->requestSurrender();
     }
 }
 

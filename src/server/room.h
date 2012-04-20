@@ -227,7 +227,6 @@ public:
     void speakCommand(ServerPlayer *player, const QString &arg);
     void trustCommand(ServerPlayer *player, const QString &arg);
     void kickCommand(ServerPlayer *player, const QString &arg);
-    void surrenderCommand(ServerPlayer *player, const QString &);
     void interactiveCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
@@ -252,6 +251,7 @@ private:
     QList<int> *draw_pile, *discard_pile;
     bool game_started;
     bool game_finished;
+    bool m_surrenderRequestReceived;
     lua_State *L;
     QList<AI *> ais;
 
@@ -259,7 +259,7 @@ private:
     RoomThread3v3 *thread_3v3;
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
-    QMutex _m_mutexInteractive;    
+    QMutex _m_mutexRoom;    
 
     
     QHash<QString, Callback> callbacks;
@@ -291,7 +291,9 @@ private:
 
     //process client requests
     bool processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
+    bool processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
 
+    bool makeSurrender(ServerPlayer* player);
     bool makeCheat(ServerPlayer* player);
     void makeDamage(const QString& source, const QString& target, QSanProtocol::CheatCategory nature, int point);
     void makeKilling(const QString& killer, const QString& victim);
