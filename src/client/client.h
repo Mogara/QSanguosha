@@ -45,6 +45,8 @@ public:
     void hallEntered(const QString &);
 
     // cheat functions
+    void requestCheatGetOneCard(int card_id);
+    void requestCheatChangeGeneral(QString name);
     void requestCheatKill(const QString& killer, const QString& victim);
     void requestCheatDamage(const QString& source, const QString& target, DamageStruct::Nature nature, int points);
     void requestCheatRevive(const QString& name);
@@ -190,8 +192,6 @@ public slots:
     void onPlayerChooseAG(int card_id);
     void onPlayerChoosePlayer(const Player *player);
     void trust();
-    void requestCard(int card_id);
-    void changeGeneral(QString name);
     void addRobot();
     void fillRobots();
     void arrange(const QStringList &order);

@@ -459,14 +459,14 @@ void Client::requestCheatKill(const QString& killer, const QString& victim)
     requestToServer(S_COMMAND_CHEAT, cheatArg);
 }
 
-void Client::requestCard(int card_id){
+void Client::requestCheatGetOneCard(int card_id){
     Json::Value cheatArg;
     cheatArg[0] = (int)S_CHEAT_GET_ONE_CARD;
     cheatArg[1] = card_id;
     requestToServer(S_COMMAND_CHEAT, cheatArg);
 }
 
-void Client::changeGeneral(QString name){
+void Client::requestCheatChangeGeneral(QString name){
     Json::Value cheatArg;
     cheatArg[0] = (int)S_CHEAT_CHANGE_GENERAL;
     cheatArg[1] = toJsonString(name);

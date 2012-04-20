@@ -98,7 +98,7 @@ void CardOverview::askCard(){
     int row = ui->tableWidget->currentRow();
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        ClientInstance->requestCard(card_id);
+        ClientInstance->requestCheatGetOneCard(card_id);
     }
 }
 
