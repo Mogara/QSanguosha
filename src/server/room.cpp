@@ -610,25 +610,21 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
     timer.start();
     bool validResult = false;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
-    _m_mutexInteractive.lock();
     while(Config.OperationNoLimit || timeOut >= timer.elapsed())
     {        
         if (!player->isOnline())
             break;
 
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
-        _m_mutexInteractive.unlock();
 
         if (Config.OperationNoLimit)
             player->acquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         else if (!player->tryAcquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE, timeOut - timer.elapsed())) 
         {
-            _m_mutexInteractive.lock();
             player->acquireLock(ServerPlayer::SEMA_MUTEX);
             break;
         }
 
-        _m_mutexInteractive.lock();
         player->acquireLock(ServerPlayer::SEMA_MUTEX);
         // Note that we rely on interactiveCommand to filter out all unrelevant packet.
         // By the time the lock is released, m_clientResponse must be the right message
@@ -643,7 +639,6 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
     player->m_expectedReplyCommand = S_COMMAND_UNKNOWN;
     player->m_isWaitingReply = false;
     player->m_expectedReplySerial = -1;
-    _m_mutexInteractive.unlock();
     player->releaseLock(ServerPlayer::SEMA_MUTEX);    
     return validResult;
 }
@@ -1527,18 +1522,18 @@ void Room::reportDisconnection(){
 }
 
 void Room::trustCommand(ServerPlayer *player, const QString &){
-    _m_mutexInteractive.lock();
+    player->acquireLock(ServerPlayer::SEMA_MUTEX);
     if (player->isOnline()){
         player->setState("trust");
         if (player->m_isWaitingReply) {            
-            _m_mutexInteractive.unlock();
+            player->releaseLock(ServerPlayer::SEMA_MUTEX);
             player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         }
     }else
     {
-        player->setState("online");
-        _m_mutexInteractive.unlock();
+        player->setState("online");        
     }
+    player->releaseLock(ServerPlayer::SEMA_MUTEX);
     broadcastProperty(player, "state");
 }
 
@@ -2091,7 +2086,6 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg){
 
 void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *packet){
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
-    _m_mutexInteractive.lock();
     bool success = false;
     if (player == NULL)
     {
@@ -2115,7 +2109,6 @@ void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *pac
 
     if (!success)
     {
-        _m_mutexInteractive.unlock();
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
         return;
     }
@@ -3408,22 +3401,17 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     show_str[1] = card_id;
     if(only_viewer)
         doNotify(player, S_COMMAND_SHOW_CARD, show_str);
-        //only_viewer->invoke("showCard", show_str);
     else
         doNotify(player, S_COMMAND_SHOW_CARD, show_str, true);
-        //broadcastInvoke("showCard", show_str);
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
-    QStringList handcards_str;
-    foreach(const Card *card, player->getHandcards())
-        handcards_str << QString::number(card->getId());
-    QString gongxin_str = QString("%1!:%2").arg(player->objectName()).arg(handcards_str.join("+"));
-
-    if(to)
-        to->invoke("doGongxin", gongxin_str);
-    else
-        broadcastInvoke("doGongxin", gongxin_str, player);
+    Json::Value gongxinArgs(Json::arrayValue);    
+    gongxinArgs[0] = toJsonString(player->objectName());
+    gongxinArgs[1] = false;
+    gongxinArgs[2] = toJsonIntArray(player->handCards());    
+    bool isBroadcast = (to == NULL);
+    doNotify(player, S_COMMAND_SKILL_GONGXIN, gongxinArgs, isBroadcast);    
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
