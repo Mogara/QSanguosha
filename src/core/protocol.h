@@ -83,7 +83,7 @@ namespace QSanProtocol
     enum Game3v3ChooseOrderCommand
     {
         S_REASON_CHOOSE_ORDER_TURN,
-        S_REASON_CHOOSE_ORDER_SELECT,
+        S_REASON_CHOOSE_ORDER_SELECT
     };
 
     enum Game3v3Camp
@@ -137,6 +137,6 @@ namespace QSanProtocol
 
         Json::Reader m_jsonReader;
     };    
-};
+}
 
 #endif
