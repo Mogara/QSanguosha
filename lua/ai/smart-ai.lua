@@ -1238,7 +1238,7 @@ function SmartAI:objectiveLevel(player)
 				if player:isLord() then
 					if not sgs.isLordHealthy() then return 0
 					else return 3 end
-				elseif sgs.evaluatePlayerRole(player) == "renegade" then
+				elseif sgs.evaluatePlayerRole(player) == "renegade" and renegade_num > 1 then
 					return 3
 				else
 					return 5
@@ -2859,9 +2859,6 @@ function SmartAI:damageIsEffective(player, nature, source)
 	player = player or self.player
 	source = source or self.player
 	nature = nature or sgs.DamageStruct_Normal
-	if player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName() then
-		return false
-	end
 
 	if player:hasSkill("shenjun") and player:getGender() ~= source:getGender() and nature ~= sgs.DamageStruct_Thunder then
 		return false
