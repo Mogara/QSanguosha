@@ -763,6 +763,8 @@ void Client::askForSkillInvoke(const Json::Value &arg){
     if (!isStringArray(arg, 0, 1)) return;
     QString skill_name = toQString(arg[0]);
     QString data = toQString(arg[1]);
+
+    skill_to_invoke = skill_name;
         
     QString text;
     if(data.isEmpty())
