@@ -2603,7 +2603,7 @@ void ScriptExecutor::doScript(){
     data = qCompress(data);
     script = data.toBase64();
 
-    ClientInstance->request("useCard :SCRIPT:" + script);
+    ClientInstance->requestCheatRunScript(script);
 }
 
 DeathNoteDialog::DeathNoteDialog(QWidget *parent)
@@ -2634,11 +2634,8 @@ DeathNoteDialog::DeathNoteDialog(QWidget *parent)
 
 void DeathNoteDialog::accept(){
     QDialog::accept();
-
-    ClientInstance->request(QString("useCard :KILL:%1->%2")
-                            .arg(killer->itemData(killer->currentIndex()).toString())
-                            .arg(victim->itemData(victim->currentIndex()).toString())
-                            );
+    ClientInstance->requestCheatKill(killer->itemData(killer->currentIndex()).toString(),
+                            victim->itemData(victim->currentIndex()).toString());
 }
 
 DamageMakerDialog::DamageMakerDialog(QWidget *parent)
@@ -2653,11 +2650,11 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     RoomScene::FillPlayerNames(damage_target, false);
 
     damage_nature = new QComboBox;
-    damage_nature->addItem(tr("Normal"), "N");
-    damage_nature->addItem(tr("Thunder"), "T");
-    damage_nature->addItem(tr("Fire"), "F");
-    damage_nature->addItem(tr("HP recover"), "R");
-    damage_nature->addItem(tr("Lose HP"), "L");
+    damage_nature->addItem(tr("Normal"), DamageStruct::Normal);
+    damage_nature->addItem(tr("Thunder"), DamageStruct::Thunder);
+    damage_nature->addItem(tr("Fire"), DamageStruct::Fire);
+    damage_nature->addItem(tr("HP recover"), DamageStruct::Recover);
+    damage_nature->addItem(tr("Lose HP"), DamageStruct::Lose);
 
     damage_point = new QSpinBox;
     damage_point->setRange(1, 1000);
@@ -2705,11 +2702,10 @@ void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
 void DamageMakerDialog::accept(){
     QDialog::accept();
 
-    ClientInstance->request(QString("useCard :%1->%2:%3%4")
-                            .arg(damage_source->itemData(damage_source->currentIndex()).toString())
-                            .arg(damage_target->itemData(damage_target->currentIndex()).toString())
-                            .arg(damage_nature->itemData(damage_nature->currentIndex()).toString())
-                            .arg(damage_point->value()));
+    ClientInstance->requestCheatDamage(damage_source->itemData(damage_source->currentIndex()).toString(),
+                            damage_target->itemData(damage_target->currentIndex()).toString(),
+                            (DamageStruct::Nature)damage_nature->itemData(damage_nature->currentIndex()).toInt(),
+                            damage_point->value());
 }
 
 void RoomScene::makeDamage(){
@@ -2758,7 +2754,7 @@ void RoomScene::makeReviving(){
                                          tr("Please select a player to revive"), items, 0, false, &ok);
     if(ok){
         int index = items.indexOf(item);
-        ClientInstance->request("useCard :REVIVE:" + victims.at(index)->objectName());
+        ClientInstance->requestCheatRevive(victims.at(index)->objectName());
     }
 }
 

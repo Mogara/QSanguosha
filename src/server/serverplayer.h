@@ -128,6 +128,9 @@ public:
     QSanProtocol::CommandType m_expectedReplyCommand;
     bool m_isWaitingReply;
     int m_expectedReplySerial;
+    Json::Value m_cheatCode;
+    bool m_isClientResponseReady;
+    Json::Value m_cheatArgs;
 
 
 protected:    
@@ -148,7 +151,7 @@ private:
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
     QString m_clientResponseString;
-    Json::Value m_clientResponse;
+    Json::Value m_clientResponse;    
 
 private slots:
     void getMessage(char *message);

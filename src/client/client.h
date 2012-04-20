@@ -44,8 +44,15 @@ public:
     void roomError(const QString &errorStr);
     void hallEntered(const QString &);
 
+    // cheat functions
+    void requestCheatKill(const QString& killer, const QString& victim);
+    void requestCheatDamage(const QString& source, const QString& target, DamageStruct::Nature nature, int points);
+    void requestCheatRevive(const QString& name);
+    void requestCheatRunScript(const QString& script);
+
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg);
+    void requestToServer(QSanProtocol::CommandType command, const Json::Value &arg);
     void request(const QString &message);
     void onPlayerUseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);

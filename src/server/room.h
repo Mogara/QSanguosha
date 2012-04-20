@@ -25,6 +25,7 @@ public:
     friend class RoomThread1v1;
 
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
+    typedef bool (Room::*CallBack)(ServerPlayer *, const QSanProtocol::QSanGeneralPacket*);
 
     explicit Room(QObject *parent, const QString &mode);
     QString createLuaState();
@@ -262,6 +263,7 @@ private:
 
     
     QHash<QString, Callback> callbacks;
+    QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
 
     QMap<int, Player::Place> place_map;
@@ -287,10 +289,13 @@ private:
     QString askForOrder(ServerPlayer *player);
     QString askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme);
 
-    void makeCheat(const QString &cheat_str);
-    void makeDamage(const QStringList &texts);
-    void makeKilling(const QStringList &texts);
-    void makeReviving(const QStringList &texts);
+    //process client requests
+    bool processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
+
+    bool makeCheat(ServerPlayer* player);
+    void makeDamage(const QString& source, const QString& target, DamageStruct::Nature nature, int point);
+    void makeKilling(const QString& killer, const QString& victim);
+    void makeReviving(const QString &name);
     void doScript(const QString &script);
 
 private slots:

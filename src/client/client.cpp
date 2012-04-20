@@ -225,6 +225,15 @@ void Client::replyToServer(CommandType command, const Json::Value &arg){
     }
 }
 
+void Client::requestToServer(CommandType command, const Json::Value &arg){    
+    if(socket)
+    {
+        QSanGeneralPacket packet(S_CLIENT_REQUEST, command);        
+        packet.setMessageBody(arg);
+        socket->send(toQString(packet.toString()));
+    }
+}
+
 void Client::request(const QString &message){
     if(socket)
         socket->send(message);
@@ -413,38 +422,55 @@ void Client::onPlayerChooseGeneral(const QString &item_name){
     }
 }
 
+void Client::requestCheatRunScript(const QString& script)
+{
+    Json::Value cheatReq(Json::arrayValue), cheatArg(Json::arrayValue);
+    cheatReq[0] = (int)S_CHEAT_RUN_SCRIPT;    
+    cheatReq[1] = toJsonString(script);
+    requestToServer(S_COMMAND_CHEAT, cheatReq);
+}
+
+void Client::requestCheatRevive(const QString& name)
+{
+    Json::Value cheatReq(Json::arrayValue), cheatArg(Json::arrayValue);
+    cheatReq[0] = (int)S_CHEAT_REVIVE_PLAYER;    
+    cheatReq[1] = toJsonString(name);
+    requestToServer(S_COMMAND_CHEAT, cheatReq);
+}
+
+void Client::requestCheatDamage(const QString& source, const QString& target, DamageStruct::Nature nature, int points)
+{
+    Json::Value cheatReq(Json::arrayValue), cheatArg(Json::arrayValue);
+    cheatArg[0] = toJsonString(source);
+    cheatArg[1] = toJsonString(target);
+    cheatArg[2] = (int)nature;
+    cheatArg[3] = points;    
+
+    cheatReq[0] = (int)S_CHEAT_MAKE_DAMAGE;    
+    cheatReq[1] = cheatArg;
+    requestToServer(S_COMMAND_CHEAT, cheatReq);
+}
+
+void Client::requestCheatKill(const QString& killer, const QString& victim)
+{
+    Json::Value cheatArg;
+    cheatArg[0] = (int)S_CHEAT_KILL_PLAYER;
+    cheatArg[1] = toJsonArray(killer, victim);
+    requestToServer(S_COMMAND_CHEAT, cheatArg);
+}
+
 void Client::requestCard(int card_id){
-    //   request(QString("useCard @CheatCard=%1->.").arg(card_id));
-    //QString card_str = QString("@CheatCard=%1:.").arg(card_id);
-    //replyToServer(S_COMMAND_USE_CARD, toJsonArray(card_str, Json::Value::null));
-    // @todo: fix this thing!!!!      
-    // Warning: READ THIS BEFORE YOU CHANGE
-    // Sending cheat via replyToServer will seriously compromise the design of the new protocol and interactiveCommand,
-    // making the synchronization very difficult and code very hard to maintain. Here is what I suggest for 
-    // making cheat work. 
-    // 1. Instead of returning a string via doRequest, define a new packet type called S_CLIENT_REQUEST_CHEAT;
-    // 2. In processRequest, do not forward S_CLIENT_REQUEST_CHEAT packets to interactiveCommand; instead, create a new callback
-    //    function that write cheat code to a buffer, and then call player->releaseLock(ServerPlayer::SEMA_COMMANDINTERACTIVE)
-    // 3. Since the lock is released, you can first check if (1)cheat is allowed on this server, and if so, (2) whether the cheat
-    //    code buffer has been filled. If there is anything in the cheat code buffer, read cheat buffer instead.
-    // 4. If the cheat buffer is read, then do not read from clientReply any more.
+    Json::Value cheatArg;
+    cheatArg[0] = (int)S_CHEAT_GET_ONE_CARD;
+    cheatArg[1] = card_id;
+    requestToServer(S_COMMAND_CHEAT, cheatArg);
 }
 
 void Client::changeGeneral(QString name){
-    //Self->tag["GeneralName"] = name;
-    //request(QString("useCard @ChangeCard=.->."));
-    //replyToServer(S_COMMAND_USE_CARD, toJsonArray("@ChangeCard=.:.", Json::Value::null));
-    // @todo: fix this thing!!!!
-    // Warning: READ THIS BEFORE YOU CHANGE
-    // Sending cheat via replyServer will seriously compromise the design of the new protocol and interactiveCommand,
-    // making the synchronization very difficult and code very hard to maintain. Here is what I suggest for 
-    // making cheat work. 
-    // 1. Instead of returning a string via doRequest, define a new packet type called S_CLIENT_REQUEST_CHEAT;
-    // 2. In processRequest, do not forward S_CLIENT_REQUEST_CHEAT to interactiveCommand; instead, create a new callback
-    //    function that write cheat code to a buffer, and then call player->releaseLock(ServerPlayer::SEMA_COMMANDINTERACTIVE)
-    // 3. Since the lock is released, you can first check if (1)cheat is allowed on this server, and if so, (2) whether the cheat
-    //    code buffer has been filled. If there is anything in the cheat code buffer, read cheat buffer instead.
-    // 4. If the cheat buffer is read, then do not read from clientReply any more.
+    Json::Value cheatArg;
+    cheatArg[0] = (int)S_CHEAT_CHANGE_GENERAL;
+    cheatArg[1] = toJsonString(name);
+    requestToServer(S_COMMAND_CHEAT, cheatArg);
 }
 
 void Client::addRobot(){
