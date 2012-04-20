@@ -2878,10 +2878,11 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
 
         //@todo: change FreeChoose to EnableCheat
         if (Config.FreeChoose) {
-            makeCheat(player);
-            if(player->isAlive())
-                return activate(player, card_use);
-            return;
+            if(makeCheat(player)){
+                if(player->isAlive())
+                    return activate(player, card_use);
+                return;
+            }
         }       
 
         if (!success || clientReply.isNull()) return;
@@ -3247,7 +3248,7 @@ bool Room::makeCheat(ServerPlayer* player){
             || !arg[1][2].isInt() || !arg[1][3].isInt())
             return false;
         makeDamage(toQString(arg[1][0]), toQString(arg[1][1]), 
-            (DamageStruct::Nature)arg[1][2].asInt(), arg[1][3].asInt());
+            (QSanProtocol::CheatCategory)arg[1][2].asInt(), arg[1][3].asInt());
     }
     else if (code == S_CHEAT_REVIVE_PLAYER)
     {
@@ -3263,14 +3264,22 @@ bool Room::makeCheat(ServerPlayer* player){
     }
     else if (code == S_CHEAT_GET_ONE_CARD)
     {
-        if (!arg[1].isString()) return false;
-        int card_id = arg[1].asInt();
-        //@TODO: put code here
+        if (!arg[1].isInt()) return false;
+        int card_id = (int)arg[1].asInt();
+
+        LogMessage log;
+        log.type = "$CheatCard";
+        log.from = player;
+        log.card_str = QString::number(card_id);
+        sendLog(log);
+
+        obtainCard(player, card_id);
     }
     else if (code == S_CHEAT_CHANGE_GENERAL)
     {
         if (!arg[1].isString()) return false;
         QString generalName = toQString(arg[1]);
+        transfigure(player, generalName, false, true);
     }
     arg = Json::Value::null;
     return true;
@@ -3294,27 +3303,40 @@ bool Room::makeCheat(ServerPlayer* player){
     }*/
 }
 
-void Room::makeDamage(const QString& source, const QString& target, DamageStruct::Nature nature, int point){    
+void Room::makeDamage(const QString& source, const QString& target, QSanProtocol::CheatCategory nature, int point){
     ServerPlayer* sourcePlayer = findChild<ServerPlayer *>(source);
     ServerPlayer* targetPlayer = findChild<ServerPlayer *>(target);    
     if (targetPlayer == NULL) return;
     // damage    
     switch(nature){ 
-    case DamageStruct::Lose:        
+    case S_CHEAT_HP_LOSE:{
         loseHp(targetPlayer, point);
         return;
-    case DamageStruct::Recover:
+    }
+    case S_CHEAT_HP_RECOVER:{
         RecoverStruct recover;        
         recover.who = sourcePlayer;        
         recover.recover = point;
         this->recover(targetPlayer, recover);
         return;
     }
+    default:
+        break;
+    }
+
+    static QMap<QSanProtocol::CheatCategory, DamageStruct::Nature> nature_map;
+    if(nature_map.isEmpty()){
+        nature_map[S_CHEAT_NORMAL_DAMAGE] = DamageStruct::Normal;
+        nature_map[S_CHEAT_THUNDER_DAMAGE] = DamageStruct::Thunder;
+        nature_map[S_CHEAT_FIRE_DAMAGE] = DamageStruct::Fire;
+    }
+
     if (targetPlayer == NULL) return;
     DamageStruct damage;    
     damage.from = sourcePlayer;
     damage.to = targetPlayer;
     damage.damage = point;
+    damage.nature = nature_map[nature];
     this->damage(damage);
 }
 

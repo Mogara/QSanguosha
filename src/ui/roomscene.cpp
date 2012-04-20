@@ -50,6 +50,8 @@
 
 #endif
 
+using namespace QSanProtocol;
+
 static QPointF DiscardedPos(-6, 8);
 static QPointF DrawPilePos(-108, 8);
 
@@ -2650,11 +2652,11 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     RoomScene::FillPlayerNames(damage_target, false);
 
     damage_nature = new QComboBox;
-    damage_nature->addItem(tr("Normal"), DamageStruct::Normal);
-    damage_nature->addItem(tr("Thunder"), DamageStruct::Thunder);
-    damage_nature->addItem(tr("Fire"), DamageStruct::Fire);
-    damage_nature->addItem(tr("HP recover"), DamageStruct::Recover);
-    damage_nature->addItem(tr("Lose HP"), DamageStruct::Lose);
+    damage_nature->addItem(tr("Normal"), S_CHEAT_NORMAL_DAMAGE);
+    damage_nature->addItem(tr("Thunder"), S_CHEAT_THUNDER_DAMAGE);
+    damage_nature->addItem(tr("Fire"), S_CHEAT_FIRE_DAMAGE);
+    damage_nature->addItem(tr("HP recover"), S_CHEAT_HP_RECOVER);
+    damage_nature->addItem(tr("Lose HP"), S_CHEAT_HP_LOSE);
 
     damage_point = new QSpinBox;
     damage_point->setRange(1, 1000);

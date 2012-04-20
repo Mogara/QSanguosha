@@ -34,6 +34,15 @@ namespace QSanProtocol
         S_CHEAT_RUN_SCRIPT
     };
 
+    enum CheatCategory
+    {
+        S_CHEAT_FIRE_DAMAGE,
+        S_CHEAT_THUNDER_DAMAGE,
+        S_CHEAT_NORMAL_DAMAGE,
+        S_CHEAT_HP_RECOVER,
+        S_CHEAT_HP_LOSE
+    };
+
     enum CommandType
     {
         S_COMMAND_UNKNOWN,

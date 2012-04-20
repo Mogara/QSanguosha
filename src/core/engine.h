@@ -6,6 +6,7 @@
 #include "skill.h"
 #include "package.h"
 #include "exppattern.h"
+#include "protocol.h"
 
 #include <QHash>
 #include <QStringList>

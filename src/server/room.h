@@ -293,7 +293,7 @@ private:
     bool processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
 
     bool makeCheat(ServerPlayer* player);
-    void makeDamage(const QString& source, const QString& target, DamageStruct::Nature nature, int point);
+    void makeDamage(const QString& source, const QString& target, QSanProtocol::CheatCategory nature, int point);
     void makeKilling(const QString& killer, const QString& victim);
     void makeReviving(const QString &name);
     void doScript(const QString &script);
