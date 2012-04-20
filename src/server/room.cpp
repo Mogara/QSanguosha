@@ -3281,24 +3281,6 @@ bool Room::makeCheat(ServerPlayer* player){
     }
     arg = Json::Value::null;
     return true;
-    /*QRegExp damage_rx(":(.+)->(\\w+):([NTFRL])(\\d+)");
-    QRegExp killing_rx(":KILL:(.+)->(\\w+)");
-    QRegExp revive_rx(":REVIVE:(.+)");
-    QRegExp doscript_rx(":SCRIPT:(.+)");
-
-    if(damage_rx.exactMatch(cheat_str))
-        makeDamage(damage_rx.capturedTexts());    
-    else if(revive_rx.exactMatch(cheat_str)){
-        makeReviving(revive_rx.capturedTexts());
-    }else if(doscript_rx.exactMatch(cheat_str)){
-        QString script = doscript_rx.capturedTexts().value(1);
-        if(!script.isEmpty()){
-            QByteArray data = QByteArray::fromBase64(script.toAscii());
-            data = qUncompress(data);
-            script = data;
-            doScript(script);
-        }
-    }*/
 }
 
 void Room::makeDamage(const QString& source, const QString& target, QSanProtocol::CheatCategory nature, int point){
