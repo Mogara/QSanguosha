@@ -99,19 +99,49 @@ public:
     //        Suggests whether the all clients' UI should move focus to the player specified.
     // @param wait
     //        If ture, executeCommand will return immediately without waiting for client reply.
-    // @return True if the a valid response is returned from client.
+    // @return True if the a valid response is returned from client.  
     bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, time_t timeOut,
         bool broadcast = false, bool moveFocus = true, bool wait = true);
     
     // Ditto, except that default timeout from configuration is used.
     bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet,
         bool broadcast = false, bool move_focus = true, bool wait = true);
+
+    // Ditto, a specialization of executeCommand for S_SERVER_REQUEST packets.
+    // Usage note: when you need a round trip request-response vector with a SINGLE client, use this command
+    // with wait = true and read the reponse from player->getClientReply(). If you want to initiate a poll 
+    // where more than one clients can respond simultaneously, you have to do it in two steps:
+    // 1. Use this command with wait = false once for each client involved in the poll (or you can call this
+    //    command only once in all with broadcast = true if the poll is to everypody).
+    // 2. Call getResult(player, timeout) on each player to retrieve the result. Read manual for getResults
+    //    before you use.
     bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
                             bool broadcast = false, bool moveFocus = true, bool wait = true);
     bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
                             bool broadcast = false, bool moveFocus = true, bool wait = true);
+    
+    // Ditto, a specialization of executeCommand for S_SERVER_NOTIFICATION packets. No reply should be expected from
+    // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
+    // will be rejected.
     bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
-                            bool broadcast = false);    
+                            bool broadcast = false); 
+
+
+    // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
+    // server times out, whichever is earlier.
+    // @param player
+    //        The server player to retrieve the client response.
+    // @param timeOut
+    //        Maximum milliseconds that server should wait for client response before returning.
+    // @return True if the a valid response is returned from client.
+    
+    // Usage note: this function is only supposed to be either internally used by executeCommand (wait = true) or externally
+    // used in pair with executeCommand (wait = false). Any other usage could result in unexpected synchronization errors. 
+    // When getResult returns true, it's guaranteed that the expected client response has been stored and can be accessed by
+    // calling player->getClientReply(). If getResult returns false, the value stored in player->getClientReply() could be
+    // corrupted or in response to an unrelevant server request. Therefore, if the return value is false, do not poke into
+    // player->getClientReply(), use the default value directly. If the return value is true, the reply value should still be
+    // examined as a malicious client can have tampered with the content of the package for cheating purposes.
     bool getResult(ServerPlayer* player, time_t timeOut);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);

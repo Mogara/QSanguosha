@@ -613,9 +613,6 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
     _m_mutexInteractive.lock();
     while(Config.OperationNoLimit || timeOut >= timer.elapsed())
     {        
-        //@todo: ylin - release all locks when the client disconnects, perhaps writing it
-        //into destructor of ServerPlayer
-        //The lock might be acquired because the client disconnects
         if (!player->isOnline())
             break;
 
@@ -625,7 +622,11 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
         if (Config.OperationNoLimit)
             player->acquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         else if (!player->tryAcquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE, timeOut - timer.elapsed())) 
+        {
+            _m_mutexInteractive.lock();
+            player->acquireLock(ServerPlayer::SEMA_MUTEX);
             break;
+        }
 
         _m_mutexInteractive.lock();
         player->acquireLock(ServerPlayer::SEMA_MUTEX);
@@ -926,24 +927,20 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
             card_use.parse(answer, this);
             thread->delay(Config.AIDelay);
         }
-    }else{
+    }
+    else if (doRequest(player, S_COMMAND_USE_CARD, toJsonArray(pattern, prompt)))
+    {
         Json::Value clientReply = player->getClientReply();
-        if (doRequest(player, S_COMMAND_USE_CARD, toJsonArray(pattern, prompt)))
-            isCardUsed = !clientReply.isNull();
-        if (isCardUsed)
-        {
-            card_use.tryParse(clientReply, this);
-            card_use.from = player;
-        }
+        isCardUsed = !clientReply.isNull();
+        if (isCardUsed && card_use.tryParse(clientReply, this))                    
+        card_use.from = player;                        
     }
 
-    if(isCardUsed){        
-        if(card_use.isValid()){
+    if (isCardUsed && card_use.isValid()){
             QVariant decisionData = QVariant::fromValue(card_use);
             thread->trigger(ChoiceMade, player, decisionData);
             useCard(card_use);
-            return true;
-        }
+            return true;        
     }else{
         QVariant decisionData = QVariant::fromValue("askForUseCard:"+pattern+":"+prompt+":nil");
         thread->trigger(ChoiceMade, player, decisionData);
@@ -965,11 +962,10 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     if(ai){
         thread->delay(Config.AIDelay);
         card_id = ai->askForAG(card_ids, refusable, reason);
-    }else{
-        
-        player->invoke("disableAG", "false");        
-        Json::Value clientReply = player->getClientReply();
+    }else{        
+        player->invoke("disableAG", "false");                
         bool success = doRequest(player, S_COMMAND_AMAZING_GRACE, refusable);
+        Json::Value clientReply = player->getClientReply();
         if (!success || !clientReply.isInt() || !card_ids.contains(clientReply.asInt()))
             card_id = refusable ? -1 : card_ids.first();
         else card_id = clientReply.asInt();
@@ -1763,15 +1759,15 @@ time_t Room::getCommandTimeout(QSanProtocol::CommandType command)
     if (Config.OperationNoLimit) return UINT_MAX;
     else if (command == S_COMMAND_CHOOSE_GENERAL)
     {
-        return (Config.S_CHOOSE_GENERAL_TIMEOUT + 5) * 1000;
+        return (Config.S_CHOOSE_GENERAL_TIMEOUT + 1) * 1000;
     }
     else if (command == S_COMMAND_SKILL_GUANXING)
     {
-        return (Config.S_GUANXING_TIMEOUT + 5) * 1000;
+        return (Config.S_GUANXING_TIMEOUT + 1) * 1000;
     }
     else
     {
-        return Config.OperationTimeout * 2 * 1000;
+        return (Config.OperationTimeout + 1) * 1000;
     }
 }
 
@@ -3191,22 +3187,12 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 }
 
 void Room::askForGeneralAsync(ServerPlayer *player){
-    if(!player->isOnline())
-    {
-        if(player->getGeneral() == NULL)
-            Q_ASSERT(_setPlayerGeneral(player, _chooseDefaultGeneral(player), true));
-        else
-            Q_ASSERT(_setPlayerGeneral(player, _chooseDefaultGeneral(player), false));
-    }
-    else
-    {
-        Json::Value options = toJsonStringArray(player->getSelected());
-        if(!Config.EnableBasara) 
-            options.append(toJsonString(QString("%1(lord)").arg(getLord()->getGeneralName())));
-        else 
-            options.append("anjiang(lord)");
-        doRequest(player, S_COMMAND_CHOOSE_GENERAL, options, false, false, false);
-    }
+    Json::Value options = toJsonStringArray(player->getSelected());
+    if(!Config.EnableBasara) 
+        options.append(toJsonString(QString("%1(lord)").arg(getLord()->getGeneralName())));
+    else 
+        options.append("anjiang(lord)");
+    doRequest(player, S_COMMAND_CHOOSE_GENERAL, options, false, false, false);    
 }
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice){
