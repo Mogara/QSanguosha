@@ -1873,7 +1873,6 @@ void Room::run(){
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
-    _m_mutexInteractive.unlock();
     foreach (ServerPlayer *player, players){
         //Ensure that the game starts with all player's mutex locked
         player->drainAllLocks();
@@ -2130,7 +2129,6 @@ void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *pac
     {
         player->setClientReply(packet->getMessageBody());
         player->m_isClientResponseReady = true;
-        _m_mutexInteractive.unlock();
         player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
     }
