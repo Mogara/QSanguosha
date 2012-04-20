@@ -766,10 +766,13 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
                 arg[0] = toJsonString(trick_name);
                 arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
                 arg[2] = toJsonString(to->objectName());
-                Json::Value clientReply = player->getClientReply();
-                if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false, false)
-                    && clientReply.isString())
-                    card = Card::Parse(toQString(clientReply));
+                
+                if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false, false))
+                {
+                    Json::Value clientReply = player->getClientReply();
+                    if (clientReply.isString())
+                        card = Card::Parse(toQString(clientReply));
+                }
             }
 
             if(card == NULL) break;
