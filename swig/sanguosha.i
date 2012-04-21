@@ -909,7 +909,7 @@ public:
 
 	void writeToConsole(const char *msg){
 		$self->output(msg);
-		qWarning(msg);
+		qWarning("%s", msg);
 	}
 };
 
