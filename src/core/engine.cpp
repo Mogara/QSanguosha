@@ -111,7 +111,7 @@ Engine::Engine()
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
     QString error_msg;
-    lua = createLuaState(false, error_msg);
+    lua = createLuaState(error_msg);
     if(lua == NULL){
         QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
         exit(1);
@@ -127,7 +127,7 @@ Engine::Engine()
     }
 }
 
-lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
+lua_State *Engine::createLuaState(QString &error_msg){
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
 
@@ -139,12 +139,19 @@ lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
         return NULL;
     }
 
-    if(load_ai){
-        error = luaL_dofile(L, "lua/ai/smart-ai.lua");
-        if(error){
-            error_msg = lua_tostring(L, -1);
-            return NULL;
-        }
+    return L;
+}
+
+lua_State *Engine::createLuaStateWithAI(QString &error_msg){
+    lua_State *L = createLuaState(error_msg);
+
+    if(L == NULL)
+        return NULL;
+
+    int error = luaL_dofile(L, "lua/ai/smart-ai.lua");
+    if(error){
+        error_msg = lua_tostring(L, -1);
+        return NULL;
     }
 
     return L;

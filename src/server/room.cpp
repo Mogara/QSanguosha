@@ -74,7 +74,7 @@ void Room::initCallbacks(){
 
 QString Room::createLuaState(){
     QString error_msg;
-    L = Sanguosha->createLuaState(true, error_msg);
+    L = Sanguosha->createLuaStateWithAI(error_msg);
     return error_msg;
 }
 
