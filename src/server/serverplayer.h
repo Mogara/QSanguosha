@@ -108,7 +108,10 @@ public:
     qint64 endNetworkDelayTest();
 
     //Synchronization helpers
-    enum SemaphoreType {SEMA_MUTEX, SEMA_COMMAND, SEMA_COMMAND_INTERACTIVE, SEMA_CHOOSE_ROLE};
+    enum SemaphoreType {
+        SEMA_MUTEX, // used to protect mutex access to member variables        
+        SEMA_COMMAND_INTERACTIVE // used to wait for response from client        
+    };
     inline QSemaphore* getSemaphore(SemaphoreType type){ return semas[type]; }
     inline void acquireLock(SemaphoreType type){ semas[type]->acquire(); }
     inline bool tryAcquireLock(SemaphoreType type, int timeout = 0){
@@ -123,14 +126,14 @@ public:
     }
     inline QString getClientReplyString(){return m_clientResponseString;}
     inline void setClientReplyString(const QString &val){m_clientResponseString = val;}
-    inline Json::Value getClientReply(){return m_clientResponse;}
-    inline void setClientReply(const Json::Value &val){m_clientResponse = val;}    
-    QSanProtocol::CommandType m_expectedReplyCommand;
-    bool m_isWaitingReply;
-    int m_expectedReplySerial;
-    Json::Value m_cheatCode;
-    bool m_isClientResponseReady;
-    Json::Value m_cheatArgs;
+    inline Json::Value getClientReply(){return _m_clientResponse;}
+    inline void setClientReply(const Json::Value &val){_m_clientResponse = val;}    
+    int m_expectedReplySerial; // Suggest the acceptable serial number of an expected response.
+    bool m_isClientResponseReady; //Suggest whether a valid player's reponse has been received.
+    bool m_isWaitingReply; // Suggest if the server player is waiting for client's response.
+    Json::Value m_cheatArgs; // Store the cheat code received from client.
+    QSanProtocol::CommandType m_expectedReplyCommand; // Store the command to be sent to the client.
+    Json::Value m_commandArgs; // Store the command args to be sent to the client.
 
 
 protected:    
@@ -151,7 +154,7 @@ private:
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
     QString m_clientResponseString;
-    Json::Value m_clientResponse;    
+    Json::Value _m_clientResponse;    
 
 private slots:
     void getMessage(char *message);

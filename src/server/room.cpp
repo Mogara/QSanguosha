@@ -49,7 +49,7 @@ void Room::initCallbacks(){
     m_requestResponsePair[S_COMMAND_PINDIAN] = S_COMMAND_RESPONSE_CARD;
     m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
     m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
-    
+
     // client request handlers
     m_callbacks[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
     m_callbacks[S_COMMAND_CHEAT] = &Room::processRequestCheat;
@@ -63,7 +63,7 @@ void Room::initCallbacks(){
     callbacks["toggleReadyCommand"] = &Room::toggleReadyCommand;
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
-    
+
     callbacks["speakCommand"] = &Room::speakCommand;
     callbacks["trustCommand"] = &Room::trustCommand;
     callbacks["kickCommand"] = &Room::kickCommand;
@@ -87,65 +87,65 @@ void Room::setCurrent(ServerPlayer *current){
 }
 
 int Room::alivePlayerCount() const{
-    return alive_players.count();
+    return m_alivePlayers.count();
 }
 
 QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except) const{
-    int index = alive_players.indexOf(except);
+    int index = m_alivePlayers.indexOf(except);
     QList<ServerPlayer *> other_players;
     int i;
 
     if(index == -1){
         // the "except" is dead
-        index = players.indexOf(except);
-        for(i=index+1; i<players.length(); i++){
-            if(players.at(i)->isAlive())
-                other_players << players.at(i);
+        index = m_players.indexOf(except);
+        for(i = index+1; i < m_players.length(); i++){
+            if(m_players.at(i)->isAlive())
+                other_players << m_players.at(i);
         }
 
         for(i=0; i<index; i++){
-            if(players.at(i)->isAlive())
-                other_players << players.at(i);
+            if(m_players.at(i)->isAlive())
+                other_players << m_players.at(i);
         }
 
         return other_players;
     }
 
-    for(i=index+1; i<alive_players.length(); i++)
-        other_players << alive_players.at(i);
+    for(i = index + 1; i < m_alivePlayers.length(); i++)
+        other_players << m_alivePlayers.at(i);
 
-    for(i=0; i<index; i++)
-        other_players << alive_players.at(i);
+    for(i = 0; i < index; i++)
+        other_players << m_alivePlayers.at(i);
 
     return other_players;
 }
 
 QList<ServerPlayer *> Room::getPlayers() const{
-    return players ;
+    return m_players;
 }
 
 QList<ServerPlayer *> Room::getAllPlayers() const{
     if(current == NULL)
-        return alive_players;
+        return m_alivePlayers;
 
-    int index = alive_players.indexOf(current);
+    int index = m_alivePlayers.indexOf(current);
 
     if(index == -1)
-        return alive_players;
+        return m_alivePlayers;
 
     QList<ServerPlayer *> all_players;
     int i;
-    for(i=index; i<alive_players.length(); i++)
-        all_players << alive_players.at(i);
+    for(i=index; i<m_alivePlayers.length(); i++)
+        all_players << m_alivePlayers.at(i);
 
     for(i=0; i<index; i++)
-        all_players << alive_players.at(i);
+        all_players << m_alivePlayers.at(i);
 
     return all_players;
 }
 
 QList<ServerPlayer *> Room::getAlivePlayers() const{
-    return alive_players;
+    return m_alivePlayers;
 }
 
 void Room::output(const QString &message){
@@ -210,16 +210,16 @@ void Room::revivePlayer(ServerPlayer *player){
     player->setAlive(true);
     broadcastProperty(player, "alive");
 
-    alive_players.clear();
-    foreach(ServerPlayer *player, players){
+    m_alivePlayers.clear();
+    foreach(ServerPlayer *player, m_players){
         if(player->isAlive())
-            alive_players << player;
+            m_alivePlayers << player;
     }
 
     int i;
-    for(i=0; i<alive_players.length(); i++){
-        alive_players.at(i)->setSeat(i+1);
-        broadcastProperty(alive_players.at(i), "seat");
+    for(i = 0; i < m_alivePlayers.length(); i++){
+        m_alivePlayers.at(i)->setSeat(i+1);
+        broadcastProperty(m_alivePlayers.at(i), "seat");
     }
 
     broadcastInvoke("revivePlayer", player->objectName());
@@ -237,7 +237,7 @@ static bool CompareByRole(ServerPlayer *player1, ServerPlayer *player2){
 }
 
 void Room::updateStateItem(){
-    QList<ServerPlayer *> players = this->players;
+    QList<ServerPlayer *> players = this->m_players;
     qSort(players.begin(), players.end(), CompareByRole);
     QString roles;
     foreach(ServerPlayer *p, players){
@@ -259,15 +259,15 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
 
     victim->setAlive(false);
 
-    int index = alive_players.indexOf(victim);
+    int index = m_alivePlayers.indexOf(victim);
     int i;
-    for(i=index+1; i<alive_players.length(); i++){
-        ServerPlayer *p = alive_players.at(i);
+    for(i=index+1; i<m_alivePlayers.length(); i++){
+        ServerPlayer *p = m_alivePlayers.at(i);
         p->setSeat(p->getSeat() - 1);
         broadcastProperty(p, "seat");
     }
 
-    alive_players.removeOne(victim);
+    m_alivePlayers.removeOne(victim);
 
     LogMessage log;
     log.to << victim;
@@ -302,7 +302,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
 
     if(Config.EnableAI){
         bool expose_roles = true;
-        foreach(ServerPlayer *player, alive_players){
+        foreach(ServerPlayer *player, m_alivePlayers){
             if(player->getState() != "robot" && player->getState() != "offline"){
                 expose_roles = false;
                 break;
@@ -310,7 +310,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
         }
 
         if(expose_roles){
-            foreach(ServerPlayer *player, alive_players){
+            foreach(ServerPlayer *player, m_alivePlayers){
                 if(Config.EnableHegemony){
                     QString role = player->getKingdom();
                     if(role == "god")
@@ -365,7 +365,7 @@ QList<int> Room::getNCards(int n, bool update_pile_number){
 
 QStringList Room::aliveRoles(ServerPlayer *except) const{
     QStringList roles;
-    foreach(ServerPlayer *player, alive_players){
+    foreach(ServerPlayer *player, m_alivePlayers){
         if(player != except)
             roles << player->getRole();
     }
@@ -375,19 +375,19 @@ QStringList Room::aliveRoles(ServerPlayer *except) const{
 
 void Room::gameOver(const QString &winner){
     QStringList all_roles;
-    foreach(ServerPlayer *player, players)
+    foreach(ServerPlayer *player, m_players)
         all_roles << player->getRole();
 
     game_finished = true;
 
     if(Config.ContestMode){
-        foreach(ServerPlayer *player, players){
+        foreach(ServerPlayer *player, m_players){
             QString screen_name = player->screenName().toUtf8().toBase64();
             broadcastInvoke("setScreenName", QString("%1:%2").arg(player->objectName()).arg(screen_name));
         }
 
         ContestDB *db = ContestDB::GetInstance();
-        db->saveResult(players, winner);
+        db->saveResult(m_players, winner);
     }
 
     broadcastInvoke("gameOver", QString("%1:%2").arg(winner).arg(all_roles.join("+")));
@@ -400,7 +400,7 @@ void Room::gameOver(const QString &winner){
         if(only_lord)
             getLord()->saveRecord(QString("records/%1.txt").arg(start_time));
         else{
-            foreach(ServerPlayer *player, players){
+            foreach(ServerPlayer *player, m_players){
                 QString filename = QString("records/%1-%2.txt").arg(start_time).arg(player->getGeneralName());
                 player->saveRecord(filename);
             }
@@ -417,12 +417,12 @@ void Room::gameOver(const QString &winner){
     {
         ServerPlayer * playerWinner = NULL;
         QStringList winners =winner.split("+");
-        foreach(ServerPlayer * sp, players)
+        foreach(ServerPlayer * sp, m_players)
         {
             if(sp->getState() != "robot" &&
-                    (winners.contains(sp->getRole()) ||
-                     winners.contains(sp->objectName()))
-                    )
+                (winners.contains(sp->getRole()) ||
+                winners.contains(sp->objectName()))
+                )
             {
                 playerWinner = sp;
                 break;
@@ -494,7 +494,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
 
     player->loseSkill(skill_name);
     broadcastInvoke("detachSkill",
-                    QString("%1:%2").arg(player->objectName()).arg(skill_name));
+        QString("%1:%2").arg(player->objectName()).arg(skill_name));
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill && skill->isVisible()){
@@ -527,78 +527,78 @@ bool Room::obtainable(const Card *card, ServerPlayer *player){
     return true;
 }
 
- bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
-                            bool broadcast, bool moveFocus, bool wait)
- {
-     QSanGeneralPacket packet(S_SERVER_REQUEST, command);
-     packet.setMessageBody(arg);
-     return executeCommand(player, &packet, broadcast, moveFocus, wait);
- }
- 
- bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
-                            bool broadcast, bool moveFocus, bool wait)
- {
-     QSanGeneralPacket packet(S_SERVER_REQUEST, command);
-     packet.setMessageBody(arg);
-     return executeCommand(player, &packet, timeOut, broadcast, moveFocus, wait);
- }
- 
- bool Room::doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, bool broadcast)
- {
-     QSanGeneralPacket packet(S_SERVER_NOTIFICATION, command);
-     packet.setMessageBody(arg);
-     if (broadcast)    
-        broadcastInvoke(&packet);
-    else
-        player->invoke(&packet);
-     return true;
- }
-
- bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet,
-                            bool broadcast, bool moveFocus, bool wait)
-{
-    time_t timeOut = getCommandTimeout(packet->getCommandType());
-    return executeCommand(player, packet, timeOut, broadcast, moveFocus, wait);
+bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
+    bool moveFocus, bool wait)
+{     
+    time_t timeOut = getCommandTimeout(command);
+    return doRequest(player, command, arg, timeOut, moveFocus, wait);
 }
 
-bool Room::executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, time_t timeOut,
-                            bool broadcast, bool moveFocus, bool wait)
+bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
+                        bool moveFocus, bool wait)
 {
-    player->acquireLock(ServerPlayer::SEMA_MUTEX);
-    if (packet->getPacketType() == S_SERVER_REQUEST)
-    {        
-        player->m_isClientResponseReady = false;
-        player->drainLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
-        player->setClientReply(Json::Value::null);
-        player->setClientReplyString(QString());
-        player->m_isWaitingReply = true;
-        player->m_expectedReplySerial = packet->m_globalSerial;
-        CommandType command = packet->getCommandType();
-        if (m_requestResponsePair.contains(command))
-            player->m_expectedReplyCommand = m_requestResponsePair[command];
-        else 
-            player->m_expectedReplyCommand = command;        
-        
-    }               
+    QSanGeneralPacket packet(S_SERVER_REQUEST, command);
+    packet.setMessageBody(arg);
+    player->acquireLock(ServerPlayer::SEMA_MUTEX);    
+    player->m_isClientResponseReady = false;
+    player->drainLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+    player->setClientReply(Json::Value::null);
+    player->setClientReplyString(QString());
+    player->m_isWaitingReply = true;
+    player->m_expectedReplySerial = packet.m_globalSerial;
+    if (m_requestResponsePair.contains(command))
+        player->m_expectedReplyCommand = m_requestResponsePair[command];
+    else 
+        player->m_expectedReplyCommand = command;             
 
-    if(moveFocus)
-    {
-        QSanGeneralPacket req(S_SERVER_NOTIFICATION, S_COMMAND_MOVE_FOCUS);
-        req.setMessageBody(player->objectName().toAscii().constData());
-        broadcastInvoke(&req, player);
-    }   
+    if(moveFocus)    
+        doBroadcastNotify(m_players, S_COMMAND_MOVE_FOCUS, toJsonString(player->objectName()));        
 
-    if (broadcast)    
-        broadcastInvoke(packet);
-    else
-        player->invoke(packet);
+    player->invoke(&packet);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
-
-    if (packet->getPacketType() == S_SERVER_REQUEST && wait)
-    {
-        return getResult(player, timeOut);
-    }
+    if (wait) return getResult(player, timeOut);
     else return true;
+}
+
+bool Room::doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command)
+{
+   time_t timeOut = getCommandTimeout(command);
+   return doBroadcastRequest(players, command, timeOut);
+}
+
+bool Room::doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut)
+{
+    foreach (ServerPlayer* player, players)
+    {
+        doRequest(player, command, player->m_commandArgs, timeOut, false, false);
+    }    
+    QTime timer;    
+    time_t remainTime = timeOut;
+    timer.start();    
+    foreach (ServerPlayer* player, players)
+    {        
+        remainTime = timeOut - timer.elapsed();
+        if (remainTime < 0) remainTime = 0;
+        getResult(player, remainTime);        
+    }
+    return true;
+}
+
+bool Room::doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg)
+{
+    QSanGeneralPacket packet(S_SERVER_NOTIFICATION, command);
+    packet.setMessageBody(arg);     
+    player->invoke(&packet);
+    return true;
+}
+
+bool Room::doBroadcastNotify(QList<ServerPlayer*> & players, QSanProtocol::CommandType command, const Json::Value &arg)
+{
+    foreach (ServerPlayer* player, players)
+    {
+        doNotify(player, command, arg);
+    }
+    return true;
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except){
@@ -615,7 +615,7 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
     QTime timer;
     bool validResult = false;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
-    
+
     if (player->isOnline())
     {
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
@@ -624,7 +624,7 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
             player->acquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         else
             player->tryAcquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE, timeOut) ;
-                
+
         // Note that we rely on interactiveCommand to filter out all unrelevant packet.
         // By the time the lock is released, m_clientResponse must be the right message
         // assuming the client side is not tampered.
@@ -672,7 +672,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     if(invoked)
     {        
         Json::Value msg = toJsonArray(skill_name, player->objectName());
-        doNotify(player, S_COMMAND_INVOKE_SKILL, msg, true); 
+        doBroadcastNotify(m_players, S_COMMAND_INVOKE_SKILL, msg); 
     }
 
     QVariant decisionData = QVariant::fromValue("skillInvoke:"+skill_name+":"+(invoked ? "yes" : "no"));
@@ -740,10 +740,9 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
     QString trick_name = trick->objectName();
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
-        
         if(!player->hasNullification())
             continue;
-        
+
         while(true)
         {
             AI *ai = player->getAI();
@@ -760,7 +759,7 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
                 arg[0] = toJsonString(trick_name);
                 arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
                 arg[2] = toJsonString(to->objectName());
-                
+
                 if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false, false))
                 {
                     Json::Value clientReply = player->getClientReply();
@@ -787,7 +786,7 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
                 sendLog(log);
 
                 broadcastInvoke("animate", QString("nullification:%1:%2")
-                                .arg(player->objectName()).arg(to->objectName()));
+                    .arg(player->objectName()).arg(to->objectName()));
 
                 QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
                 thread->trigger(ChoiceMade, player, decisionData);
@@ -804,7 +803,7 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
-    
+
     //@todo: whoever wrote this had better put a explantory note here
     if(!who->hasFlag("dongchaee") && who != player){
         if(flags == "h" || (flags == "he" && !who->hasEquip()))
@@ -930,14 +929,14 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
         Json::Value clientReply = player->getClientReply();
         isCardUsed = !clientReply.isNull();
         if (isCardUsed && card_use.tryParse(clientReply, this))                    
-        card_use.from = player;                        
+            card_use.from = player;                        
     }
 
     if (isCardUsed && card_use.isValid()){
-            QVariant decisionData = QVariant::fromValue(card_use);
-            thread->trigger(ChoiceMade, player, decisionData);
-            useCard(card_use);
-            return true;        
+        QVariant decisionData = QVariant::fromValue(card_use);
+        thread->trigger(ChoiceMade, player, decisionData);
+        useCard(card_use);
+        return true;        
     }else{
         QVariant decisionData = QVariant::fromValue("askForUseCard:"+pattern+":"+prompt+":nil");
         thread->trigger(ChoiceMade, player, decisionData);
@@ -947,9 +946,9 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){
-    
+
     Q_ASSERT(card_ids.length()>0);
-    
+
     if(card_ids.length() == 1 && !refusable)
         return card_ids.first();
 
@@ -975,7 +974,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 }
 
 const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason){
-    
+
     if(player->getHandcardNum() == 1){
         return player->getHandcards().first();
     }
@@ -1107,7 +1106,7 @@ void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_nam
 ServerPlayer *Room::addSocket(ClientSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
-    players << player;
+    m_players << player;
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(player, SIGNAL(request_got(QString)), this, SLOT(processRequest(QString)));
@@ -1116,7 +1115,7 @@ ServerPlayer *Room::addSocket(ClientSocket *socket){
 }
 
 bool Room::isFull() const{
-    return players.length() == player_count;
+    return m_players.length() == player_count;
 }
 
 bool Room::isFinished() const{
@@ -1124,7 +1123,7 @@ bool Room::isFinished() const{
 }
 
 int Room::getLack() const{
-    return player_count - players.length();
+    return player_count - m_players.length();
 }
 
 QString Room::getMode() const{
@@ -1136,7 +1135,7 @@ const Scenario *Room::getScenario() const{
 }
 
 void Room::broadcast(const QString &message, ServerPlayer *except){
-    foreach(ServerPlayer *player, players){
+    foreach(ServerPlayer *player, m_players){
         if(player != except){
             player->unicast(message);
         }
@@ -1180,7 +1179,7 @@ QList<int> Room::getDrawPile(){
 }
 
 ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) const{
-    const QList<ServerPlayer *> &list = include_dead ? players : alive_players;
+    const QList<ServerPlayer *> &list = include_dead ? m_players : m_alivePlayers;
 
     if(general_name.contains("+")){
         QStringList names = general_name.split("+");
@@ -1202,7 +1201,7 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
 
 QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, bool include_dead) const{
     QList<ServerPlayer *> list;
-    foreach(ServerPlayer *player, include_dead ? players : alive_players){
+    foreach(ServerPlayer *player, include_dead ? m_players : m_alivePlayers){
         if(player->hasSkill(skill_name))
             list << player;
     }
@@ -1210,7 +1209,7 @@ QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, boo
 }
 
 ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name, bool include_dead) const{
-    const QList<ServerPlayer *> &list = include_dead ? players : alive_players;
+    const QList<ServerPlayer *> &list = include_dead ? m_players : m_alivePlayers;
     foreach(ServerPlayer *player, list){
         if(player->hasSkill(skill_name))
             return player;
@@ -1356,8 +1355,8 @@ void Room::prepareForStart(){
 
         bool expose_roles = scenario->exposeRoles();
         int i;
-        for(i = 0; i < players.length(); i++){
-            ServerPlayer *player = players.at(i);
+        for(i = 0; i < m_players.length(); i++){
+            ServerPlayer *player = m_players.at(i);
             if(generals.length()>0)
             {
                 player->setGeneralName(generals.at(i));
@@ -1377,21 +1376,21 @@ void Room::prepareForStart(){
         return;
     }else if(mode == "02_1v1"){
         if(qrand() % 2 == 0)
-            players.swap(0, 1);
+            m_players.swap(0, 1);
 
-        players.at(0)->setRole("lord");
-        players.at(1)->setRole("renegade");
+        m_players.at(0)->setRole("lord");
+        m_players.at(1)->setRole("renegade");
 
         int i;
         for(i=0; i<2; i++){
-            broadcastProperty(players.at(i), "role");
+            broadcastProperty(m_players.at(i), "role");
         }
 
     }else if(mode == "04_1v3"){
-        ServerPlayer *lord = players.at(qrand() % 4);
+        ServerPlayer *lord = m_players.at(qrand() % 4);
         int i = 0;
         for(i=0; i<4; i++){
-            ServerPlayer *player = players.at(i);
+            ServerPlayer *player = m_players.at(i);
             if(player == lord)
                 player->setRole("lord");
             else
@@ -1414,7 +1413,7 @@ void Room::prepareForStart(){
                 if(role == "lord")
                     broadcastProperty(player_self, "role", "lord");
 
-                QList<ServerPlayer *> all_players = players;
+                QList<ServerPlayer *> all_players = m_players;
                 all_players.removeOne(player_self);
                 int n = all_players.count(), i;
                 QStringList roles = Sanguosha->getRoleList(mode);
@@ -1440,7 +1439,7 @@ void Room::prepareForStart(){
                     ServerPlayer *player = findChild<ServerPlayer *>(name);
                     setPlayerProperty(player, "role", role);
 
-                    players.swap(i, players.indexOf(player));
+                    m_players.swap(i, m_players.indexOf(player));
                 }
             }
         }else
@@ -1472,12 +1471,12 @@ void Room::reportDisconnection(){
     if(player->objectName().isEmpty()){
         // first case
         player->setParent(NULL);
-        players.removeOne(player);
+        m_players.removeOne(player);
     }else if(player->getRole().isEmpty()){
         // second case
-        if(players.length() < player_count){
+        if(m_players.length() < player_count){
             player->setParent(NULL);
-            players.removeOne(player);
+            m_players.removeOne(player);
 
             if(player->getState() != "robot"){
                 QString screen_name = Config.ContestMode ? tr("Contestant") : player->screenName();
@@ -1496,7 +1495,7 @@ void Room::reportDisconnection(){
         setPlayerProperty(player, "state", "offline");
 
         bool someone_is_online = false;
-        foreach(ServerPlayer *player, players){
+        foreach(ServerPlayer *player, m_players){
             if(player->getState() == "online" || player->getState() == "trust"){
                 someone_is_online = true;
                 break;
@@ -1510,7 +1509,7 @@ void Room::reportDisconnection(){
     }
 
     if(player->isOwner()){
-        foreach(ServerPlayer *p, players){
+        foreach(ServerPlayer *p, m_players){
             if(p->getState() == "online"){
                 p->setOwner(true);
                 broadcastProperty(p, "owner");
@@ -1555,7 +1554,7 @@ bool Room::makeSurrender(ServerPlayer* initiator)
 
     // broadcast polling request
     QList<ServerPlayer*> playersAlive;
-    foreach(ServerPlayer *player, players)
+    foreach(ServerPlayer *player, m_players)
     {
         QString playerRole = player->getRole();
         if ((playerRole == "loyalist" || playerRole == "lord") && player->isAlive()) loyalAlive++;        
@@ -1563,28 +1562,22 @@ bool Room::makeSurrender(ServerPlayer* initiator)
         else if (playerRole == "renegade" && player->isAlive()) renegadeAlive++;        
         if (player != initiator && player->isAlive() && player->isOnline())
         {
+            player->m_commandArgs = toJsonString(initiator->getGeneral()->objectName());
             playersAlive << player;
         }        
     }
-    foreach (ServerPlayer* player, playersAlive)
-    {
-        doRequest(player, S_COMMAND_SURRENDER, toJsonString(initiator->getGeneral()->objectName()), false, false, false);
-    }
+    doBroadcastRequest(playersAlive, S_COMMAND_SURRENDER);
+    
     // collect polls 
     foreach (ServerPlayer* player, playersAlive)
     {
         bool result = false;
-        if (player == initiator || !player->isAlive())
-            continue;
-        if (!getResult(player, getCommandTimeout(S_COMMAND_MULTIPLE_CHOICE))
-            || !player->getClientReply().isBool())
-        {
-            result = !player->isOnline();
-        }
-        else
-        {
+        if (!player->m_isClientResponseReady
+            || !player->getClientReply().isBool())        
+            result = !player->isOnline();        
+        else        
             result = player->getClientReply().asBool();
-        }
+        
         QString playerRole = player->getRole();
         if (playerRole == "loyalist" || playerRole == "lord")
         {
@@ -1602,7 +1595,7 @@ bool Room::makeSurrender(ServerPlayer* initiator)
             if (player->isAlive()) renegadeAlive++;
         }
     }
-    
+
     // vote counting
     if (loyalGiveup && renegadeGiveup && !rebelGiveup)
         gameOver("rebel");
@@ -1637,6 +1630,14 @@ bool Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSa
     //@todo: return false for 3v3 and 1v1!!!
     if (player == NULL || !player->m_isWaitingReply)
         return false;
+    if (!_m_isFirstSurrenderRequest
+        && _m_timeSinceLastSurrenderRequest.elapsed() <= Config.S_SURRNDER_REQUEST_MIN_INTERVAL)
+    {
+        //@todo: warn client here after new protocol has been enacted on the warn request
+        return false;
+    }
+    _m_isFirstSurrenderRequest = false;
+    _m_timeSinceLastSurrenderRequest.restart();
     m_surrenderRequestReceived = true;
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);    
     return true;
@@ -1683,10 +1684,10 @@ void Room::processRequest(const QString &request){
 
             (this->*callback)(player, args.at(1));
 
-            #ifndef QT_NO_DEBUG
+#ifndef QT_NO_DEBUG
             // output client command only in debug version
             emit room_message(player->reportHeader() + request);
-            #endif
+#endif
 
         }else
             emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
@@ -1701,7 +1702,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
         return;
 
     int n = 0;
-    foreach(ServerPlayer *player, players){
+    foreach(ServerPlayer *player, m_players){
         if(player->getState() == "robot")
             n++;
     }
@@ -1709,7 +1710,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
     ServerPlayer *robot = new ServerPlayer(this);
     robot->setState("robot");
 
-    players << robot;
+    m_players << robot;
 
     const QString robot_name = tr("Computer %1").arg(QChar('A' + n));
     const QString robot_avatar = Sanguosha->getRandomGeneralName();
@@ -1722,14 +1723,14 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
 }
 
 void Room::fillRobotsCommand(ServerPlayer *player, const QString &){
-    int left = player_count - players.length();
+    int left = player_count - m_players.length();
     for(int i=0; i<left; i++){
         addRobotCommand(player, QString());
     }
 }
 
 ServerPlayer *Room::getOwner() const{
-    foreach(ServerPlayer *player, players){
+    foreach(ServerPlayer *player, m_players){
         if(player->isOwner())
             return player;
     }
@@ -1745,7 +1746,7 @@ void Room::toggleReadyCommand(ServerPlayer *player, const QString &){
 
     if(player->isReady() && isFull()){
         bool allReady = true;
-        foreach(ServerPlayer *player, players){
+        foreach(ServerPlayer *player, m_players){
             if(!player->isReady()){
                 allReady = false;
                 break;
@@ -1753,7 +1754,7 @@ void Room::toggleReadyCommand(ServerPlayer *player, const QString &){
         }
 
         if(allReady){
-            foreach(ServerPlayer *player, players)
+            foreach(ServerPlayer *player, m_players)
                 setPlayerProperty(player, "ready", false);
 
             start();
@@ -1784,12 +1785,12 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     if(!is_robot){
         QString greetingStr = tr("<font color=#EEB422>Player <b>%1</b> joined the game</font>")
-                .arg(Config.ContestMode ? tr("Contestant") : screen_name);
+            .arg(Config.ContestMode ? tr("Contestant") : screen_name);
         speakCommand(player, greetingStr.toUtf8().toBase64());
         player->startNetworkDelayTest();
 
         // introduce all existing player to the new joined
-        foreach(ServerPlayer *p, players){
+        foreach(ServerPlayer *p, m_players){
             if(p != player)
                 p->introduceTo(player);
         }
@@ -1800,7 +1801,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
 
     QSet<QString> existed;
-    foreach(ServerPlayer *player, players){
+    foreach(ServerPlayer *player, m_players){
         if(player->getGeneral())
             existed << player->getGeneralName();
 
@@ -1809,7 +1810,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
     }
 
     const int max_choice = (Config.EnableHegemony && Config.Enable2ndGeneral) ? 5
-                                                                              : Config.value("MaxChoice", 5).toInt();
+        : Config.value("MaxChoice", 5).toInt();
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total-existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
@@ -1820,7 +1821,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
     {
         if(to_assign.first()->getGeneral())
         {
-            foreach(ServerPlayer *sp,players)
+            foreach(ServerPlayer *sp,m_players)
             {
                 QStringList old_list = sp->getSelected();
                 sp->clearSelected();
@@ -1830,9 +1831,9 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
                 foreach(QString name, old_list)
                 {
                     if(Sanguosha->getGeneral(name)->getKingdom()
-                            != sp->getGeneral()->getKingdom()
-                            || sp->findReasonable(old_list,true)
-                            == name)
+                        != sp->getGeneral()->getKingdom()
+                        || sp->findReasonable(old_list,true)
+                        == name)
                     {
                         sp->addToSelected(name);
                         old_list.removeOne(name);
@@ -1905,7 +1906,7 @@ void Room::chooseGenerals(){
             broadcastProperty(the_lord, "general", general);
 
         if(mode == "08same"){
-            foreach(ServerPlayer *p, players){
+            foreach(ServerPlayer *p, m_players){
                 if(!p->isLord())
                     p->setGeneralName(general);
             }
@@ -1914,42 +1915,33 @@ void Room::chooseGenerals(){
             return;
         }
     }
-    QList<ServerPlayer *> to_assign = players;
+    QList<ServerPlayer *> to_assign = m_players;
     if(!Config.EnableHegemony)to_assign.removeOne(getLord());
     assignGeneralsForPlayers(to_assign);
-    foreach(ServerPlayer *player, to_assign){
-        askForGeneralAsync(player);
+    foreach(ServerPlayer *player, to_assign){        
+        _setupChooseGeneralRequestArgs(player);
     }    
-    QTime timer;
-    time_t totalTime = getCommandTimeout(S_COMMAND_CHOOSE_GENERAL);
-    time_t remainTime = totalTime;
-    timer.start();
-    foreach(ServerPlayer *player, to_assign){
-        if (player->getGeneral() != NULL) continue;
-        remainTime = totalTime - timer.elapsed();
-        if (remainTime < 0) remainTime = 0;
-        bool success = getResult(player, remainTime);
+    doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+    foreach (ServerPlayer *player, to_assign)
+    {        
+        if (player->getGeneral() != NULL) continue;        
         Json::Value generalName = player->getClientReply();
-        if (!success || !generalName.isString()
+        if (!player->m_isClientResponseReady || !generalName.isString()
             || !_setPlayerGeneral(player, toQString(generalName), true))
             _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
     }
 
     if(Config.Enable2ndGeneral){
-        QList<ServerPlayer *> to_assign = players;
+        QList<ServerPlayer *> to_assign = m_players;
         assignGeneralsForPlayers(to_assign);
         foreach(ServerPlayer *player, to_assign){
-            askForGeneralAsync(player);
+            _setupChooseGeneralRequestArgs(player);
         }        
-        remainTime = totalTime;
-        timer.restart();
+        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
         foreach(ServerPlayer *player, to_assign){
             if (player->getGeneral2() != NULL) continue;
-            remainTime = totalTime - timer.elapsed();
-            if (remainTime < 0) remainTime = 0;
-            bool success = getResult(player, remainTime);
-            Json::Value generalName = player->getClientReply();
-            if (!success || !generalName.isString()
+            Json::Value generalName = player->getClientReply();        
+            if (!!player->m_isClientResponseReady || !generalName.isString()
                 || !_setPlayerGeneral(player, toQString(generalName), false))
                 _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
         }
@@ -1958,7 +1950,7 @@ void Room::chooseGenerals(){
 
     if(Config.EnableBasara)
     {
-        foreach(ServerPlayer *player, players)
+        foreach(ServerPlayer *player, m_players)
         {
             QStringList names;
             if(player->getGeneral())names.append(player->getGeneralName());
@@ -1972,7 +1964,7 @@ void Room::run(){
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
-    foreach (ServerPlayer *player, players){
+    foreach (ServerPlayer *player, m_players){
         //Ensure that the game starts with all player's mutex locked
         player->drainAllLocks();
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
@@ -1995,7 +1987,7 @@ void Room::run(){
         }
     }else
         broadcastInvoke("startInXs", "0");
-    
+
 
     if(scenario && !scenario->generalSelection())
         startGame();
@@ -2010,7 +2002,7 @@ void Room::run(){
 
         connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
     }else if(mode == "04_1v3"){
-        ServerPlayer *lord = players.first();
+        ServerPlayer *lord = m_players.first();
         setPlayerProperty(lord, "general", "shenlvbu1");
 
         const Package *stdpack = Sanguosha->findChild<const Package *>("standard");
@@ -2026,7 +2018,7 @@ void Room::run(){
 
         names.removeOne("yuji");
 
-        foreach(ServerPlayer *player, players){
+        foreach(ServerPlayer *player, m_players){
             if (player == lord)
                 continue;
 
@@ -2046,13 +2038,13 @@ void Room::run(){
 }
 
 void Room::assignRoles(){
-    int n = players.count(), i;
+    int n = m_players.count(), i;
 
     QStringList roles = Sanguosha->getRoleList(mode);
     qShuffle(roles);
 
     for(i = 0; i < n; i++){
-        ServerPlayer *player = players[i];
+        ServerPlayer *player = m_players[i];
         QString role = roles.at(i);
 
         player->setRole(role);
@@ -2064,48 +2056,48 @@ void Room::assignRoles(){
 }
 
 void Room::swapSeat(ServerPlayer *a, ServerPlayer *b){
-    int seat1 = players.indexOf(a);
-    int seat2 = players.indexOf(b);
+    int seat1 = m_players.indexOf(a);
+    int seat2 = m_players.indexOf(b);
 
-    players.swap(seat1, seat2);
+    m_players.swap(seat1, seat2);
 
     QStringList player_circle;
-    foreach(ServerPlayer *player, players)
+    foreach(ServerPlayer *player, m_players)
         player_circle << player->objectName();
     broadcastInvoke("arrangeSeats", player_circle.join("+"));
 
-    alive_players.clear();
+    m_alivePlayers.clear();
     int i;
-    for(i=0; i<players.length(); i++){
-        ServerPlayer *player = players.at(i);
+    for(i=0; i<m_players.length(); i++){
+        ServerPlayer *player = m_players.at(i);
         if(player->isAlive()){
-            alive_players << player;
-            player->setSeat(alive_players.length());
+            m_alivePlayers << player;
+            player->setSeat(m_alivePlayers.length());
         }else{
             player->setSeat(0);
         }
 
         broadcastProperty(player, "seat");
 
-        player->setNext(players.at((i+1) % players.length()));
+        player->setNext(m_players.at((i+1) % m_players.length()));
     }
 }
 
 void Room::adjustSeats(){
     int i;
-    for(i=0; i<players.length(); i++){
-        if(players.at(i)->getRoleEnum() == Player::Lord){
-            players.swap(0, i);
+    for(i=0; i<m_players.length(); i++){
+        if(m_players.at(i)->getRoleEnum() == Player::Lord){
+            m_players.swap(0, i);
             break;
         }
     }
 
-    for(i=0; i<players.length(); i++)
-        players.at(i)->setSeat(i+1);
+    for(i=0; i<m_players.length(); i++)
+        m_players.at(i)->setSeat(i+1);
 
     // tell the players about the seat, and the first is always the lord
     QStringList player_circle;
-    foreach(ServerPlayer *player, players)
+    foreach(ServerPlayer *player, m_players)
         player_circle << player->objectName();
 
     broadcastInvoke("arrangeSeats", player_circle.join("+"));
@@ -2137,7 +2129,7 @@ int Room::getCardFromPile(const QString &card_pattern){
 
 QString Room::_chooseDefaultGeneral(ServerPlayer* player) const
 {
-    
+
     Q_ASSERT(!player->getSelected().isEmpty());
     if(Config.EnableHegemony && Config.Enable2ndGeneral)
     {
@@ -2148,7 +2140,7 @@ QString Room::_chooseDefaultGeneral(ServerPlayer* player) const
             {
                 if (name == player->getGeneralName()) continue;
                 if (Sanguosha->getGeneral(name)->getKingdom()
-                        == player->getGeneral()->getKingdom())
+                    == player->getGeneral()->getKingdom())
                     return name;
             }
             else
@@ -2157,8 +2149,8 @@ QString Room::_chooseDefaultGeneral(ServerPlayer* player) const
                 {
                     if(name == other) continue;
                     if(Sanguosha->getGeneral(name)->getKingdom()
-                         == Sanguosha->getGeneral(other)->getKingdom())
-                    return name;
+                        == Sanguosha->getGeneral(other)->getKingdom())
+                        return name;
                 }
             }
         }
@@ -2244,9 +2236,9 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
             key = card->metaObject()->className();
 
         bool slash_record =
-                key.contains("Slash") &&
-                card_use.from->getSlashCount() > 0 &&
-                card_use.from->hasWeapon("crossbow");
+            key.contains("Slash") &&
+            card_use.from->getSlashCount() > 0 &&
+            card_use.from->hasWeapon("crossbow");
 
         if(!slash_record){
             card_use.from->addHistory(key);
@@ -2267,8 +2259,8 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
 
     /*
     if(card->isVirtualCard())
-        delete card;
-        */
+    delete card;
+    */
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){
@@ -2455,19 +2447,19 @@ void Room::marshal(ServerPlayer *player){
     player->sendProperty("role");
     player->unicast(".flags marshalling");
 
-    foreach(ServerPlayer *p, players){
+    foreach(ServerPlayer *p, m_players){
         if(p != player)
             p->introduceTo(player);
     }
 
     QStringList player_circle;
-    foreach(ServerPlayer *player, players)
+    foreach(ServerPlayer *player, m_players)
         player_circle << player->objectName();
 
     player->invoke("arrangeSeats", player_circle.join("+"));
     player->invoke("startInXs", "0");
 
-    foreach(ServerPlayer *p, players){
+    foreach(ServerPlayer *p, m_players){
         player->sendProperty("general", p);
 
         if(p->getGeneral2())
@@ -2476,7 +2468,7 @@ void Room::marshal(ServerPlayer *player){
 
     player->invoke("startGame");
 
-    foreach(ServerPlayer *p, players){
+    foreach(ServerPlayer *p, m_players){
         p->marshal(player);
     }
 
@@ -2492,7 +2484,7 @@ void Room::startGame(){
     if(!to_test.isEmpty()){
         bool found = false;
 
-        foreach(ServerPlayer *p, players){
+        foreach(ServerPlayer *p, m_players){
             if(p->getGeneralName() == to_test){
                 found = true;
                 break;
@@ -2500,8 +2492,8 @@ void Room::startGame(){
         }
 
         if(!found){
-            int r = qrand() % players.length();
-            players.at(r)->setGeneralName(to_test);
+            int r = qrand() % m_players.length();
+            m_players.at(r)->setGeneralName(to_test);
         }
     }
 
@@ -2511,30 +2503,30 @@ void Room::startGame(){
         if(mode == "06_3v3" || mode == "02_1v1")
             start_index = 0;
 
-        if(!Config.EnableBasara)for(i = start_index; i < players.count(); i++){
-            broadcastProperty(players.at(i), "general");
+        if(!Config.EnableBasara)for(i = start_index; i < m_players.count(); i++){
+            broadcastProperty(m_players.at(i), "general");
         }
 
         if(mode == "02_1v1"){
-            foreach(ServerPlayer *player, players){
+            foreach(ServerPlayer *player, m_players){
                 broadcastInvoke("revealGeneral",
-                                QString("%1:%2").arg(player->objectName()).arg(player->getGeneralName()),
-                                player);
+                    QString("%1:%2").arg(player->objectName()).arg(player->getGeneralName()),
+                    player);
             }
         }
     }
 
     if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && !Config.EnableBasara){
-        foreach(ServerPlayer *player, players)
+        foreach(ServerPlayer *player, m_players)
             broadcastProperty(player, "general2");
     }
 
-    alive_players = players;
+    m_alivePlayers = m_players;
     for(i=0; i<player_count-1; i++)
-        players.at(i)->setNext(players.at(i+1));
-    players.last()->setNext(players.first());
+        m_players.at(i)->setNext(m_players.at(i+1));
+    m_players.last()->setNext(m_players.first());
 
-    foreach(ServerPlayer *player, players){
+    foreach(ServerPlayer *player, m_players){
         player->setMaxHP(player->getGeneralMaxHP());
         player->setHp(player->getMaxHP());
 
@@ -2554,12 +2546,12 @@ void Room::startGame(){
     game_started = true;
 
     Server *server = qobject_cast<Server *>(parent());
-    foreach(ServerPlayer *player, players){
+    foreach(ServerPlayer *player, m_players){
         if(player->getState() == "online")
             server->signupPlayer(player);
     }
 
-    current = players.first();
+    current = m_players.first();
 
     // initialize the place_map and owner_map;
     foreach(int card_id, *draw_pile){
@@ -2647,7 +2639,7 @@ void Room::drawCards(ServerPlayer *player, int n, const QString &reason){
             dongchaer->invoke("moveCard", move.toString());
         }
 
-        foreach(ServerPlayer *p, players){
+        foreach(ServerPlayer *p, m_players){
             if(p != player && p != dongchaer)
                 p->invoke("drawNCards", draw_str);
         }
@@ -2735,11 +2727,11 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
 
         int n = card->isVirtualCard() ? card->subcardsLength() : 1;
         QString private_move = QString("%1:%2->%3")
-                .arg(n)
-                .arg(from_str)
-                .arg(to_str);
+            .arg(n)
+            .arg(from_str)
+            .arg(to_str);
 
-        foreach(ServerPlayer *player, players){
+        foreach(ServerPlayer *player, m_players){
             if(!scope.contains(player))
                 player->invoke("moveNCards", private_move);
         }
@@ -2799,11 +2791,11 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
     if(move.from){
         if(move.from_place == Player::Special){
             QString pile_name = move.from->getPileName(move.card_id);
-            
+
             //@todo: if (pile_name.isEmpty());
-            
+
             QString pile_str = QString("%1:%2-%3")
-                    .arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
+                .arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
 
             if(move.open)
                 broadcastInvoke("pile", pile_str);
@@ -2829,11 +2821,11 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
 
         if(move.to_place == Player::Special){
             QString pile_name = move.to->getPileName(move.card_id);
-            
+
             //@todo: if (pile_name.isEmpty());
-            
+
             QString pile_str = QString("%1:%2+%3")
-                    .arg(move.to->objectName()).arg(pile_name).arg(move.card_id);
+                .arg(move.to->objectName()).arg(pile_name).arg(move.card_id);
 
             if(move.open)
                 broadcastInvoke("pile", pile_str);
@@ -2891,9 +2883,9 @@ QString CardMoveStruct::toString() const{
     QString to_str = to ? to->objectName() : "_";
 
     return QString("%1:%2@%3->%4@%5")
-            .arg(card_id)
-            .arg(from_str).arg(place2str.value(from_place, "_"))
-            .arg(to_str).arg(place2str.value(to_place, "_"));
+        .arg(card_id)
+        .arg(from_str).arg(place2str.value(from_place, "_"))
+        .arg(to_str).arg(place2str.value(to_place, "_"));
 }
 
 void Room::playSkillEffect(const QString &skill_name, int index){
@@ -2952,7 +2944,7 @@ void Room::removeTag(const QString &key){
 
 void Room::setEmotion(ServerPlayer *target, const QString &emotion){
     broadcastInvoke("setEmotion",
-                    QString("%1:%2").arg(target->objectName()).arg(emotion.isEmpty() ? "." : emotion));
+        QString("%1:%2").arg(target->objectName()).arg(emotion.isEmpty() ? "." : emotion));
 }
 
 #include <QElapsedTimer>
@@ -3025,7 +3017,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString& reason){
         else if (suitStr == "diamond")
             suit = Card::Diamond;
     } 
-        
+
     return suit;
 }
 
@@ -3035,7 +3027,7 @@ QString Room::askForKingdom(ServerPlayer *player){
         return ai->askForKingdom();
 
     bool success = doRequest(player, S_COMMAND_CHOOSE_KINGDOM, Json::Value::null);
-    
+
     //@todo: check if the result is valid before return!!
     //@todo: make kingdom a enum or static const instead of variable QString
     Json::Value clientReply = player->getClientReply();
@@ -3059,7 +3051,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         ask_str[1] = optional;
         ask_str[2] = include_equip;
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str);
-                  
+
         //@todo: also check if the player does have that card!!!
         Json::Value clientReply = player->getClientReply();
         if(!success || !clientReply.isArray() || (int)clientReply.size() != discard_num
@@ -3099,11 +3091,11 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         //@todo: also check if the player does have that card!!!
         Json::Value clientReply = player->getClientReply();
         if(!success || !clientReply.isArray() || (int)clientReply.size() != discard_num
-           || !tryParse(clientReply, to_exchange))
+            || !tryParse(clientReply, to_exchange))
         {
             to_exchange = player->forceToDiscard(discard_num, false);
         }       
-                   
+
     }
 
     DummyCard *card = new DummyCard;
@@ -3127,11 +3119,11 @@ Player::Place Room::getCardPlace(int card_id) const{
 }
 
 ServerPlayer *Room::getLord() const{
-    ServerPlayer *the_lord = players.first();
+    ServerPlayer *the_lord = m_players.first();
     if(the_lord->getRole() == "lord")
         return the_lord;
 
-    foreach(ServerPlayer *player, players){
+    foreach(ServerPlayer *player, m_players){
         if(player->getRole() == "lord")
             return player;
     }
@@ -3152,7 +3144,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_
         guanxingArgs[0] = toJsonIntArray(cards);        
         guanxingArgs[1] = up_only;
         bool success = doRequest(zhuge, S_COMMAND_SKILL_GUANXING, guanxingArgs);
-        
+
         //@todo: sanity check if this logic is correct
         if(!success){
             // the method "askForGuanxing" without any arguments
@@ -3244,7 +3236,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
     }
 
     bool success = doRequest(player, S_COMMAND_PINDIAN, toJsonArray(from->objectName(), to->objectName()));
-    
+
     Json::Value clientReply = player->getClientReply();    
     if(!success || !clientReply.isString()){
         int card_id = player->getRandomHandCardId();
@@ -3277,7 +3269,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         foreach(ServerPlayer *target, targets)
             req[0].append(toJsonString(target->objectName()));
         bool success = doRequest(player, S_COMMAND_CHOOSE_PLAYER, req);
-        
+
         //executeCommand(player, "askForPlayerChosen", "choosePlayerCommand", ask_str, ".");
         choice = NULL;
         Json::Value clientReply = player->getClientReply();
@@ -3293,13 +3285,13 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     return choice;
 }
 
-void Room::askForGeneralAsync(ServerPlayer *player){
+void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player){
     Json::Value options = toJsonStringArray(player->getSelected());
     if(!Config.EnableBasara) 
         options.append(toJsonString(QString("%1(lord)").arg(getLord()->getGeneralName())));
     else 
         options.append("anjiang(lord)");
-    doRequest(player, S_COMMAND_CHOOSE_GENERAL, options, false, false, false);    
+    player->m_commandArgs = options;
 }
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice){
@@ -3400,14 +3392,14 @@ void Room::makeDamage(const QString& source, const QString& target, QSanProtocol
     case S_CHEAT_HP_LOSE:{
         loseHp(targetPlayer, point);
         return;
-    }
+                         }
     case S_CHEAT_HP_RECOVER:{
         RecoverStruct recover;        
         recover.who = sourcePlayer;        
         recover.recover = point;
         this->recover(targetPlayer, recover);
         return;
-    }
+                            }
     default:
         break;
     }
@@ -3499,7 +3491,7 @@ void Room::provide(const Card *card){
 
 QList<ServerPlayer *> Room::getLieges(const QString &kingdom, ServerPlayer *lord) const{
     QList<ServerPlayer *> lieges;
-    foreach(ServerPlayer *player, alive_players){
+    foreach(ServerPlayer *player, m_alivePlayers){
         if(player != lord && player->getKingdom() == kingdom)
             lieges << player;
     }
@@ -3521,7 +3513,7 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     if(only_viewer)
         doNotify(player, S_COMMAND_SHOW_CARD, show_str);
     else
-        doNotify(player, S_COMMAND_SHOW_CARD, show_str, true);
+        doBroadcastNotify(m_players, S_COMMAND_SHOW_CARD, show_str);
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
@@ -3529,8 +3521,11 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
     gongxinArgs[0] = toJsonString(player->objectName());
     gongxinArgs[1] = false;
     gongxinArgs[2] = toJsonIntArray(player->handCards());    
-    bool isBroadcast = (to == NULL);
-    doNotify(player, S_COMMAND_SKILL_GONGXIN, gongxinArgs, isBroadcast);    
+    bool isUnicast = (to != NULL);
+    if (isUnicast)
+        doNotify(player, S_COMMAND_SKILL_GONGXIN, gongxinArgs);
+    else
+        doBroadcastNotify(m_players, S_COMMAND_SHOW_CARD, gongxinArgs);
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
@@ -3548,7 +3543,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
         }else
             return false;
     }else{
-        
+
         bool success = doRequest(guojia, S_COMMAND_SKILL_YIJI, toJsonIntArray(cards));         
 
         //Validate client response
@@ -3556,14 +3551,14 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
         if(!success || !clientReply.isArray()
             || clientReply.size() != 2)
             return false;
-        
+
         QList<int> ids;
         if (!tryParse(clientReply[0], ids)
             || !clientReply[1].isString()) return false;
 
         foreach (int id, ids)        
             if (!cards.contains(id)) return false;
-        
+
         ServerPlayer *who = findChild<ServerPlayer *>(toQString(clientReply[1]));
 
         if (!who) return false;
@@ -3580,7 +3575,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
         setEmotion(who, "draw-card");
 
         return true;
-        
+
     }
 }
 
@@ -3607,7 +3602,7 @@ void Room::takeGeneralCommand(ServerPlayer *player, const QString &arg){
 QString Room::askForOrder(ServerPlayer *player){
 
     bool success = doRequest(player, S_COMMAND_CHOOSE_ORDER, (int)S_REASON_CHOOSE_ORDER_TURN, false, false);
-        
+
     Game3v3Camp result = qrand() % 2 == 0 ? S_CAMP_WARM : S_CAMP_COOL;
     Json::Value clientReply = player->getClientReply();
     if (success && clientReply.isInt())
@@ -3636,7 +3631,7 @@ QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const Q
 void Room::networkDelayTestCommand(ServerPlayer *player, const QString &){
     qint64 delay = player->endNetworkDelayTest();
     QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>")
-            .arg(Config.ContestMode ? tr("Contestant") : player->screenName()).arg(QString::number(delay));
+        .arg(Config.ContestMode ? tr("Contestant") : player->screenName()).arg(QString::number(delay));
     speakCommand(player, reportStr.toUtf8().toBase64());
 }
 
@@ -3654,27 +3649,27 @@ void Room::copyFrom(Room* rRoom)
 {
     QMap<ServerPlayer*, ServerPlayer*> player_map;
 
-    for(int i=0; i<players.length(); i++)
+    for(int i=0; i<m_players.length(); i++)
     {
 
-        ServerPlayer* a = rRoom->players.at(i);
-        ServerPlayer* b = players.at(i);
+        ServerPlayer* a = rRoom->m_players.at(i);
+        ServerPlayer* b = m_players.at(i);
         player_map.insert(a, b);
 
         transfigure(b, a->getGeneralName(), false);
 
         b->copyFrom(a);
     }
-    for(int i=0; i<players.length(); i++)
+    for(int i=0; i<m_players.length(); i++)
     {
-        ServerPlayer* a = rRoom->players.at(i);
-        ServerPlayer* b = players.at(i);
+        ServerPlayer* a = rRoom->m_players.at(i);
+        ServerPlayer* b = m_players.at(i);
         b->setNext(player_map.value(a->getNext()));
     }
 
-    foreach(ServerPlayer* a,alive_players)
+    foreach(ServerPlayer* a,m_alivePlayers)
     {
-        if(!a->isAlive())alive_players.removeOne(a);
+        if(!a->isAlive())m_alivePlayers.removeOne(a);
     }
     current = player_map.value(rRoom->getCurrent());
 

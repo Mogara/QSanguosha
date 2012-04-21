@@ -196,7 +196,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
 }
 
 void RoomThread::constructTriggerTable(const GameRule *rule){
-    foreach(ServerPlayer *player, room->players){
+    foreach(ServerPlayer *player, room->getPlayers()){
         addPlayerSkills(player, false);
     }
 
@@ -207,7 +207,7 @@ static const int GameOver = 1;
 
 void RoomThread::run3v3(){
     QList<ServerPlayer *> warm, cool;
-    foreach(ServerPlayer *player, room->players){
+    foreach(ServerPlayer *player, room->getPlayers()){
         switch(player->getRoleEnum()){
         case Player::Lord: warm.prepend(player); break;
         case Player::Loyalist: warm.append(player); break;
@@ -262,7 +262,7 @@ void RoomThread::action3v3(ServerPlayer *player){
     room->setPlayerFlag(player, "actioned");
 
     bool all_actioned = true;
-    foreach(ServerPlayer *player, room->alive_players){
+    foreach(ServerPlayer *player, room->m_alivePlayers){
         if(!player->hasFlag("actioned")){
             all_actioned = false;
             break;
@@ -270,7 +270,7 @@ void RoomThread::action3v3(ServerPlayer *player){
     }
 
     if(all_actioned){
-        foreach(ServerPlayer *player, room->alive_players){
+        foreach(ServerPlayer *player, room->m_alivePlayers){
             room->setPlayerFlag(player, "-actioned");
         }
     }
@@ -285,7 +285,7 @@ void RoomThread::run(){
     }
 
     // start game, draw initial 4 cards
-    foreach(ServerPlayer *player, room->players){
+    foreach(ServerPlayer *player, room->getPlayers()){
         trigger(GameStart, player);
     }
 
@@ -294,7 +294,7 @@ void RoomThread::run(){
     }else if(room->getMode() == "04_1v3"){
         ServerPlayer *shenlvbu = room->getLord();
         if(shenlvbu->getGeneralName() == "shenlvbu1"){
-            QList<ServerPlayer *> league = room->players;
+            QList<ServerPlayer *> league = room->getPlayers();
             league.removeOne(shenlvbu);
 
             forever{
@@ -326,7 +326,7 @@ void RoomThread::run(){
         }else{
             second_phase:
 
-            foreach(ServerPlayer *player, room->players){
+            foreach(ServerPlayer *player, room->getPlayers()){
                 if(player != shenlvbu){
                     if(player->hasFlag("actioned"))
                         room->setPlayerFlag(player, "-actioned");
@@ -349,7 +349,7 @@ void RoomThread::run(){
 
     }else{
         if(room->getMode() == "02_1v1")
-            room->setCurrent(room->players.at(1));
+            room->setCurrent(room->getPlayers().at(1));
 
         forever {
             trigger(TurnStart, room->getCurrent());

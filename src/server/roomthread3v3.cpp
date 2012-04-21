@@ -60,7 +60,7 @@ void RoomThread3v3::run()
     assignRoles(scheme);
     room->adjustSeats();
 
-    foreach(ServerPlayer *player, room->players){
+    foreach(ServerPlayer *player, room->getPlayers()){
         switch(player->getRoleEnum()){
         case Player::Lord: warm_leader = player; break;
         case Player::Renegade: cool_leader = player; break;
@@ -144,19 +144,19 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
     Q_ASSERT(arranged.length() == 3);
 
     if(player->isLord()){
-        room->players.at(5)->setGeneralName(arranged.at(0));
-        room->players.at(0)->setGeneralName(arranged.at(1));
-        room->players.at(1)->setGeneralName(arranged.at(2));
-        room->setTag(room->players.at(5)->objectName(),QStringList(arranged.at(0)));
-        room->setTag(room->players.at(0)->objectName(),QStringList(arranged.at(1)));
-        room->setTag(room->players.at(1)->objectName(),QStringList(arranged.at(2)));
+        room->getPlayers().at(5)->setGeneralName(arranged.at(0));
+        room->getPlayers().at(0)->setGeneralName(arranged.at(1));
+        room->getPlayers().at(1)->setGeneralName(arranged.at(2));
+        room->setTag(room->getPlayers().at(5)->objectName(),QStringList(arranged.at(0)));
+        room->setTag(room->getPlayers().at(0)->objectName(),QStringList(arranged.at(1)));
+        room->setTag(room->getPlayers().at(1)->objectName(),QStringList(arranged.at(2)));
     }else{
-        room->players.at(2)->setGeneralName(arranged.at(0));
-        room->players.at(3)->setGeneralName(arranged.at(1));
-        room->players.at(4)->setGeneralName(arranged.at(2));
-        room->setTag(room->players.at(2)->objectName(),QStringList(arranged.at(0)));
-        room->setTag(room->players.at(3)->objectName(),QStringList(arranged.at(1)));
-        room->setTag(room->players.at(4)->objectName(),QStringList(arranged.at(2)));
+        room->getPlayers().at(2)->setGeneralName(arranged.at(0));
+        room->getPlayers().at(3)->setGeneralName(arranged.at(1));
+        room->getPlayers().at(4)->setGeneralName(arranged.at(2));
+        room->setTag(room->getPlayers().at(2)->objectName(),QStringList(arranged.at(0)));
+        room->setTag(room->getPlayers().at(3)->objectName(),QStringList(arranged.at(1)));
+        room->setTag(room->getPlayers().at(4)->objectName(),QStringList(arranged.at(2)));
     }
 
     room->sem->release();
@@ -169,7 +169,7 @@ void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme)
     for(i=0; i<6; i++)
         new_players << NULL;
 
-    foreach(ServerPlayer *player, room->players){
+    foreach(ServerPlayer *player, room->getPlayers()){
         if(player->getState() == "online"){
             QString role = room->askForRole(player, all_roles, scheme);
             if(role != "abstain"){
@@ -201,7 +201,7 @@ void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme)
         }
     }
 
-    room->players = new_players;
+    room->getPlayers() = new_players;
 }
 
 // there are 3 scheme
@@ -215,11 +215,11 @@ void RoomThread3v3::assignRoles(const QString &scheme){
 
     if(scheme == "Random"){
         // the easiest way
-        qShuffle(room->players);
+        qShuffle(room->getPlayers());
 
         int i;
         for(i=0; i<roles.length(); i++)
-            room->setPlayerProperty(room->players.at(i), "role", roles.at(i));
+            room->setPlayerProperty(room->getPlayers().at(i), "role", roles.at(i));
     }else if(scheme == "AllRoles"){
         assignRoles(roles, scheme);
     }else{
@@ -240,16 +240,16 @@ void RoomThread3v3::assignRoles(const QString &scheme){
             map["leader2"] = "lord";
             map["guard2"] = "loyalist";
 
-            room->players.swap(0, 3);
-            room->players.swap(1, 4);
-            room->players.swap(2, 5);
+            room->getPlayers().swap(0, 3);
+            room->getPlayers().swap(1, 4);
+            room->getPlayers().swap(2, 5);
         }
 
-        foreach(ServerPlayer *player, room->players){
+        foreach(ServerPlayer *player, room->getPlayers()){
             player->setRole(map[player->getRole()]);
         }
     }
 
-    foreach(ServerPlayer *player, room->players)
+    foreach(ServerPlayer *player, room->getPlayers())
         room->broadcastProperty(player, "role");
 }

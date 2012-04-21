@@ -90,25 +90,17 @@ public:
     // server times out, whichever is earlier.
     // @param player
     //        The server player to carry out the command.
-    // @param packet
-    //        Packet to be forwarded to the client.
+    // @param command
+    //        Command to be executed on client side.
+    // @param arg
+    //        Command args.
     // @param timeOut
-    //        Maximum milliseconds that server should wait for client response before returning.
-    // @param broadcast
-    //        Specifies whether other players should also be notified about the event.
+    //        Maximum milliseconds that server should wait for client response before returning.    
     // @param moveFocus
     //        Suggests whether the all clients' UI should move focus to the player specified.
     // @param wait
-    //        If ture, executeCommand will return immediately without waiting for client reply.
+    //        If ture, return immediately after sending the request without waiting for client reply.
     // @return True if the a valid response is returned from client.  
-    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet, time_t timeOut,
-        bool broadcast = false, bool moveFocus = true, bool wait = true);
-    
-    // Ditto, except that default timeout from configuration is used.
-    bool executeCommand(ServerPlayer* player, const QSanProtocol::QSanGeneralPacket* packet,
-        bool broadcast = false, bool move_focus = true, bool wait = true);
-
-    // Ditto, a specialization of executeCommand for S_SERVER_REQUEST packets.
     // Usage note: when you need a round trip request-response vector with a SINGLE client, use this command
     // with wait = true and read the reponse from player->getClientReply(). If you want to initiate a poll 
     // where more than one clients can respond simultaneously, you have to do it in two steps:
@@ -116,16 +108,34 @@ public:
     //    command only once in all with broadcast = true if the poll is to everypody).
     // 2. Call getResult(player, timeout) on each player to retrieve the result. Read manual for getResults
     //    before you use.
-    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
-                            bool broadcast = false, bool moveFocus = true, bool wait = true);
     bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
-                            bool broadcast = false, bool moveFocus = true, bool wait = true);
+                            bool moveFocus = true, bool wait = true);
+    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
+                            bool moveFocus = true, bool wait = true);    
+
+    // Ask several server players to execute a command and get the client responses. Call is blocking until all client
+    // replies or server times out, whichever is earlier. Check each player's m_isClientResponseReady to see if a valid
+    // result has been received. The client response can be accessed by calling each player's getClientReply() function. 
+    // @param players
+    //        The list of server players to carry out the command.
+    // @param command
+    //        Command to be executed on client side. Command arguments should be stored in players->m_commandArgs.
+    // @param timeOut
+    //        Maximum total milliseconds that server will wait for all clients to respond before returning. Any client 
+    //        response after the timeOut will be rejected.
+    // @return True if the a valid response is returned from client.  
+    bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut);
+    bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command);
+
+    // @return The player that first send a legal request to the server. NULL if no such request is received.
+    ServerPlayer* doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, 
+                                            time_t timeOut, bool isRace = false);
     
     // Ditto, a specialization of executeCommand for S_SERVER_NOTIFICATION packets. No reply should be expected from
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
-    bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
-                            bool broadcast = false); 
+    bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg); 
+    bool doBroadcastNotify(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, const Json::Value &arg); 
 
 
     // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
@@ -215,8 +225,7 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
-    QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
-    void askForGeneralAsync(ServerPlayer *player);    
+    QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());    
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     
     //Get the timeout allowance for a command. Server countdown is more lenient than the client.
@@ -243,7 +252,7 @@ private:
     QString _chooseDefaultGeneral(ServerPlayer* player) const;
     bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);
     QString mode;
-    QList<ServerPlayer*> players, alive_players;
+    QList<ServerPlayer*> m_players, m_alivePlayers;
     int player_count;
     ServerPlayer *current;
     QList<int> pile1, pile2;
@@ -265,6 +274,8 @@ private:
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
+    bool _m_isFirstSurrenderRequest;
+    QTime _m_timeSinceLastSurrenderRequest;
 
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer*> owner_map;
@@ -299,6 +310,9 @@ private:
     void makeKilling(const QString& killer, const QString& victim);
     void makeReviving(const QString &name);
     void doScript(const QString &script);
+
+    //helper functions
+    void _setupChooseGeneralRequestArgs(ServerPlayer *player);    
 
 private slots:
     void reportDisconnection();

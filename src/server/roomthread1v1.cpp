@@ -32,7 +32,7 @@ void RoomThread1v1::run(){
 
     room->broadcastInvoke("fillGenerals", known_list.join("+") + unknown_str);
 
-    ServerPlayer *first = room->players.at(0), *next = room->players.at(1);
+    ServerPlayer *first = room->getPlayers().at(0), *next = room->getPlayers().at(1);
     askForTakeGeneral(first);
 
     while(general_names.length() > 1){

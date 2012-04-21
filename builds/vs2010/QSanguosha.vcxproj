@@ -1570,7 +1570,9 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_DECLARATIVE_LIB -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG  "-I." "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtDeclarative" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I$(QTDIR)\include\ActiveQt" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "..\..\src\scenario\scenerule.cpp" -o "$(ConfigurationName)\%(Filename).moc"</Command>
     </CustomBuild>
     <None Include="..\..\swig\sanguosha.i" />
-    <None Include="sanguosha.ts" />
+    <None Include="sanguosha.ts">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
