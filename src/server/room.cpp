@@ -740,64 +740,64 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
     QString trick_name = trick->objectName();
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
-        
         if(!player->hasNullification())
             continue;
-        
-        while(true)
-        {
-            AI *ai = player->getAI();
-            const Card *card = NULL;
-            if(ai){
-                card = ai->askForNullification(trick, from, to, positive);
-                if(card)
-                    thread->delay(Config.AIDelay);
-            }else{
-                //@todo: does positive mean the card is not "nullifiction"? if so, chop the positive arg in
-                // ai->askForNullification and change the trick_name instead.
-                if(!positive) trick_name = "nullification";                
-                Json::Value arg(Json::arrayValue);
-                arg[0] = toJsonString(trick_name);
-                arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
-                arg[2] = toJsonString(to->objectName());
-                
-                if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false, false))
-                {
-                    Json::Value clientReply = player->getClientReply();
-                    if (clientReply.isString())
+trust:
+        AI *ai = player->getAI();
+        const Card *card = NULL;
+        if(ai){
+            card = ai->askForNullification(trick, from, to, positive);
+            if(card)
+                thread->delay(Config.AIDelay);
+        }else{
+            //@todo: does positive mean the card is not "nullifiction"? if so, chop the positive arg in
+            // ai->askForNullification and change the trick_name instead.
+            if(!positive) trick_name = "nullification";
+            Json::Value arg(Json::arrayValue);
+            arg[0] = toJsonString(trick_name);
+            arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
+            arg[2] = toJsonString(to->objectName());
+
+            if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false, false))
+            {
+                Json::Value clientReply = player->getClientReply();
+                if (clientReply.isString()){
+                    if(toQString(clientReply).isEmpty())
+                        goto trust;
+                    else
                         card = Card::Parse(toQString(clientReply));
                 }
             }
 
-            if(card == NULL) break;
-
-            bool continuable = false;
-            card = card->validateInResposing(player, &continuable);
-            if(card){
-                CardUseStruct use;
-                use.card = card;
-                use.from = player;
-                useCard(use);
-
-                LogMessage log;
-                log.type = "#NullificationDetails";
-                log.from = from;
-                log.to << to;
-                log.arg = trick_name;
-                sendLog(log);
-
-                broadcastInvoke("animate", QString("nullification:%1:%2")
-                                .arg(player->objectName()).arg(to->objectName()));
-
-                QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
-                thread->trigger(ChoiceMade, player, decisionData);
-                setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-
-                return !askForNullification(trick, from, to, !positive);
-            }else if(continuable)
-                continue;
-            break;
         }
+
+        if(card == NULL) continue;
+
+        bool continuable = false;
+        card = card->validateInResposing(player, &continuable);
+        if(card){
+            CardUseStruct use;
+            use.card = card;
+            use.from = player;
+            useCard(use);
+
+            LogMessage log;
+            log.type = "#NullificationDetails";
+            log.from = from;
+            log.to << to;
+            log.arg = trick_name;
+            sendLog(log);
+
+            broadcastInvoke("animate", QString("nullification:%1:%2")
+                            .arg(player->objectName()).arg(to->objectName()));
+
+            QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
+            thread->trigger(ChoiceMade, player, decisionData);
+            setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
+
+            return !askForNullification(trick, from, to, !positive);
+        }else if(continuable)
+            goto trust;
     }
 
     return false;
