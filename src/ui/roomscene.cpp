@@ -37,8 +37,7 @@
 #include <QCommandLinkButton>
 #include <QFormLayout>
 #include <QStatusBar>
-#include <QMovie>
-#include <QtCore>
+#include <qmath.h>
 
 #ifdef Q_OS_WIN32
 #include <QAxObject>

@@ -32,7 +32,7 @@ Room::Room(QObject *parent, const QString &mode)
     draw_pile(&pile1), discard_pile(&pile2),
     game_started(false), game_finished(false), L(NULL), thread(NULL),
     thread_3v3(NULL), sem(new QSemaphore), _m_mutexRoom(QMutex::NonRecursive),
-    provided(NULL), has_provided(false), _virtual(false), m_surrenderRequestReceived(false)
+    provided(NULL), has_provided(false), m_surrenderRequestReceived(false), _virtual(false)
 {       
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -74,7 +74,7 @@ void Room::initCallbacks(){
 
 QString Room::createLuaState(){
     QString error_msg;
-    L = Sanguosha->createLuaState(true, error_msg);
+    L = Sanguosha->createLuaStateWithAI(error_msg);
     return error_msg;
 }
 
@@ -760,7 +760,7 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
                 arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
                 arg[2] = toJsonString(to->objectName());
 
-                if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false, false))
+                if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false))
                 {
                     Json::Value clientReply = player->getClientReply();
                     if (clientReply.isString())
