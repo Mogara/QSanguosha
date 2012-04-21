@@ -3388,7 +3388,7 @@ bool Room::makeCheat(ServerPlayer* player){
         transfigure(player, generalName, false, true);
     }
     arg = Json::Value::null;
-    return true;    
+    return true;
 }
 
 void Room::makeDamage(const QString& source, const QString& target, QSanProtocol::CheatCategory nature, int point){

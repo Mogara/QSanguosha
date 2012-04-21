@@ -286,24 +286,3 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer
     }
 }
 
-CheatCard::CheatCard(){
-    target_fixed = true;
-    will_throw = false;
-}
-
-void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(Config.FreeChoose)
-        room->obtainCard(source, subcards.first());
-}
-
-ChangeCard::ChangeCard(){
-    target_fixed = true;
-}
-
-void ChangeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(Config.FreeChoose){
-        QString name = Self->tag["GeneralName"].toString();
-        room->transfigure(source, name, false, true);
-    }
-}
-
