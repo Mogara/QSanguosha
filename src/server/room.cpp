@@ -32,7 +32,7 @@ Room::Room(QObject *parent, const QString &mode)
     draw_pile(&pile1), discard_pile(&pile2),
     game_started(false), game_finished(false), L(NULL), thread(NULL),
     thread_3v3(NULL), sem(new QSemaphore), _m_mutexRoom(QMutex::NonRecursive),
-    provided(NULL), has_provided(false), _virtual(false), m_surrenderRequestReceived(false)
+    provided(NULL), has_provided(false), m_surrenderRequestReceived(false), _virtual(false)
 {       
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);

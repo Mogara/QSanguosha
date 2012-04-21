@@ -251,7 +251,6 @@ private:
     QList<int> *draw_pile, *discard_pile;
     bool game_started;
     bool game_finished;
-    bool m_surrenderRequestReceived;
     lua_State *L;
     QList<AI *> ais;
 
@@ -275,6 +274,7 @@ private:
     QVariantMap tag;
     const Scenario *scenario;
 
+    bool m_surrenderRequestReceived;
     bool _virtual;
 
     static QString generatePlayerName();
