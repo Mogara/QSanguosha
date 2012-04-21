@@ -938,7 +938,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 	end
 
 	self:sort(self.enemies,"defense")
-	if sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
+	if #self.enemies > 0 and sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
 	local enemies = self:exclude(self.enemies, card)
 	self:sort(self.friends_noself,"defense")
 	local friends = self:exclude(self.friends_noself, card)
