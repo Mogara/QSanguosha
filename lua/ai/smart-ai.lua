@@ -276,6 +276,8 @@ function SmartAI:getUseValue(card)
 			v = v+self:getCardsNum("Slash")
 		elseif card:inherits("Jink") then
 			if self:getCardsNum("Jink") > 1 then v = v-6 end
+		elseif card:inherits("Peach") then
+			if self.player:isWounded() then v = v + 6 end
 		elseif card:inherits("Shit") and self.player:hasSkill("kuanggu") and card:getSuit()~= sgs.Card_Spade then
 			v = 0.1
 		end
