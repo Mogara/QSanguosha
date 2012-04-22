@@ -31,9 +31,9 @@ Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2),
     game_started(false), game_finished(false), L(NULL), thread(NULL),
-    thread_3v3(NULL), sem(new QSemaphore), _m_semRoomMutex(1), _m_semRaceRequest(0),
-    provided(NULL), has_provided(false), m_surrenderRequestReceived(false), _virtual(false),
-    _m_raceStarted(false)
+    thread_3v3(NULL), sem(new QSemaphore), _m_semRaceRequest(0), _m_semRoomMutex(1),
+    _m_raceStarted(false), provided(NULL), has_provided(false),
+    m_surrenderRequestReceived(false), _virtual(false)
 {       
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -808,18 +808,10 @@ bool Room::verifyNullificationResponse(ServerPlayer* player, const Json::Value& 
 }
 
 bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive){
-    _NullificationAiHelper aiHelper;
-    aiHelper.m_from = from;
-    aiHelper.m_to = to;
-    aiHelper.m_trick = trick;
-    return _askForNullification(trick, from, to, positive, aiHelper);
-}
-
-bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper aiHelper){
     QString trick_name = trick->objectName();
     QList<ServerPlayer *> validHumanPlayers;
     QList<ServerPlayer *> validAiPlayers;
-    
+
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(trick_name);
     arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
@@ -837,13 +829,13 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
                 validAiPlayers << player;
         }
     }
-    
+
     ServerPlayer* repliedPlayer = NULL;
     time_t timeOut = getCommandTimeout(S_COMMAND_NULLIFICATION);
     if (!validHumanPlayers.empty())
         repliedPlayer = doBroadcastRaceRequest(validHumanPlayers, S_COMMAND_NULLIFICATION, timeOut, &Room::verifyNullificationResponse);
 
-    const Card* card = NULL;        
+    const Card* card = NULL;
     if (repliedPlayer != NULL && repliedPlayer->getClientReply().isString())
         card = Card::Parse(toQString(repliedPlayer->getClientReply()));
     if (card == NULL)
@@ -853,15 +845,15 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
             AI *ai = player->getAI();
             if (ai == NULL) continue;
             card = ai->askForNullification(trick, from, to, positive);
-            if (card != NULL) 
+            if (card != NULL)
             {
                 repliedPlayer = player;
                 thread->delay(Config.AIDelay);
-                break;                
+                break;
             }
-        }        
+        }
     }
-    
+
     if (card == NULL) return false;
 
     bool continuable = false;
@@ -886,9 +878,8 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
     thread->trigger(ChoiceMade, repliedPlayer, decisionData);
     setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-    
-    return !_askForNullification((TrickCard*)card, from, to, !positive, aiHelper);
 
+    return !askForNullification((TrickCard*)card, from, to, !positive);
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){

@@ -329,14 +329,6 @@ private:
     void makeReviving(const QString &name);
     void doScript(const QString &script);
 
-    //helper functions and structs
-    struct _NullificationAiHelper
-    {
-        const TrickCard* m_trick;
-        ServerPlayer* m_from;
-        ServerPlayer* m_to;
-    };
-    bool _askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper helper);
     void _setupChooseGeneralRequestArgs(ServerPlayer *player);    
 
 private slots:
