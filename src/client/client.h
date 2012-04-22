@@ -129,6 +129,7 @@ public:
     void transfigure(const QString &transfigure_tr);
     void updateStateItem(const QString &state_str);
     void setStatistics(const QString &property_str);
+    void setCardFlag(const QString &pattern_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
