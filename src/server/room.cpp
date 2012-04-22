@@ -615,8 +615,7 @@ ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::C
             _m_semRaceRequest.acquire();
         else
             tryAcquireResult = _m_semRaceRequest.tryAcquire(1, timeRemain);
-        Q_ASSERT(_m_raceWinner != NULL);        
-        
+                
         if (!tryAcquireResult)
             _m_semRoomMutex.tryAcquire(1); 
         // So that interactiveCommand cannot update raceWinner when we are reading it.
@@ -808,10 +807,18 @@ bool Room::verifyNullificationResponse(ServerPlayer* player, const Json::Value& 
 }
 
 bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive){
+    _NullificationAiHelper aiHelper;
+    aiHelper.m_from = from;
+    aiHelper.m_to = to;
+    aiHelper.m_trick = trick;
+    return _askForNullification(trick, from, to, positive, aiHelper);
+}
+
+bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper aiHelper){
     QString trick_name = trick->objectName();
     QList<ServerPlayer *> validHumanPlayers;
     QList<ServerPlayer *> validAiPlayers;
-
+    
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(trick_name);
     arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
@@ -844,7 +851,7 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
         {
             AI *ai = player->getAI();
             if (ai == NULL) continue;
-            card = ai->askForNullification(trick, from, to, positive);
+            card = ai->askForNullification(aiHelper.m_trick, aiHelper.m_from, aiHelper.m_to, positive);
             if (card != NULL)
             {
                 repliedPlayer = player;
@@ -878,7 +885,6 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
     QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
     thread->trigger(ChoiceMade, repliedPlayer, decisionData);
     setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-
     return !askForNullification((TrickCard*)card, from, to, !positive);
 }
 
