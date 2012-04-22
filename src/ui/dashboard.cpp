@@ -382,6 +382,9 @@ void Dashboard::setWidth(int width){
         prepareGeometryChange();
         adjustCards();
 
+        qreal x = - boundingRect().width()/2;
+        setX(x);
+
     }else if(width > 500){
         qreal left_width = left->boundingRect().width();
         qreal right_width = right->boundingRect().width();
