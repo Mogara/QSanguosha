@@ -39,51 +39,64 @@ void Engine::addScenario(const QString &name){
         qWarning("Scenario %s cannot be loaded!", qPrintable(name));
 }
 
+
+static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
+    lua_getglobal(L, "config");
+    lua_getfield(L, -1, key);
+
+    QVariant data;
+    switch(lua_type(L, -1)){
+    case LUA_TSTRING: {
+        data = QString::fromUtf8(lua_tostring(L, -1));
+        lua_pop(L, 1);
+        break;
+    }
+
+    case LUA_TNUMBER:{
+        data = lua_tonumber(L, -1);
+        lua_pop(L, 1);
+        break;
+    }
+
+    case LUA_TTABLE:{
+        QStringList list;
+
+        size_t size = lua_objlen(L, -1);
+        for(size_t i=0; i<size; i++){
+            lua_rawgeti(L, -1, i+1);
+            QString element = lua_tostring(L, -1);
+            lua_pop(L, 1);
+            list << element;
+        }
+
+        data = list;
+    }
+
+    default:
+        break;
+    }
+
+    lua_pop(L, 1);
+    return data;
+}
+
+
 Engine::Engine()
 {
     Sanguosha = this;
 
-    QStringList package_names;
-    package_names << "StandardCard"
-            << "StandardExCard"
-            << "Maneuvering"
-            << "SPCard"
-            << "YitianCard"
-            << "Nostalgia"
-            << "Joy"
-            << "Disaster"
-            << "JoyEquip"
+    QString error_msg;
+    lua = createLuaState(error_msg);
+    if(lua == NULL){
+        QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
+        exit(1);
+    }
 
-            << "Standard"
-            << "Wind"
-            << "Fire"
-            << "Thicket"
-            << "Mountain"
-            << "God"
-            << "SP"
-            << "YJCM"
-            << "YJCM2012"
-            << "Special3v3"
-            << "BGM"
-            << "Yitian"
-            << "Wisdom"
-            << "Test";
-
+    QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
     foreach(QString name, package_names)
         addPackage(name);
 
-    QStringList scene_names;
-    scene_names << "Guandu"
-                << "Fancheng"
-                << "Couple"
-                << "Zombie"
-                << "Impasse"
-                << "Custom";
-
-    for(int i=1; i<=21; i++){
-        scene_names << QString("MiniScene_%1").arg(i, 2, 10, QChar('0'));
-    }
-
+    QStringList scene_names = GetConfigFromLuaState(lua, "scene_names").toStringList();
     foreach(QString name, scene_names)
         addScenario(name);
 
@@ -110,12 +123,7 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-    QString error_msg;
-    lua = createLuaState(error_msg);
-    if(lua == NULL){
-        QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
-        exit(1);
-    }
+
 
     foreach(QString ban, getBanPackages()){
         addBanPackage(ban);
@@ -355,46 +363,6 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
         return card;
     }else
         return NULL;
-}
-
-static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
-    lua_getglobal(L, "config");
-    lua_getfield(L, -1, key);
-
-    QVariant data;
-    switch(lua_type(L, -1)){
-    case LUA_TSTRING: {
-        data = QString::fromUtf8(lua_tostring(L, -1));
-        lua_pop(L, 1);
-        break;
-    }
-
-    case LUA_TNUMBER:{
-        data = lua_tonumber(L, -1);
-        lua_pop(L, 1);
-        break;
-    }
-
-    case LUA_TTABLE:{
-        QStringList list;
-
-        size_t size = lua_objlen(L, -1);
-        for(size_t i=0; i<size; i++){
-            lua_rawgeti(L, -1, i+1);
-            QString element = lua_tostring(L, -1);
-            lua_pop(L, 1);
-            list << element;
-        }
-
-        data = list;
-    }
-
-    default:
-        break;
-    }
-
-    lua_pop(L, 1);
-    return data;
 }
 
 QString Engine::getVersionNumber() const{

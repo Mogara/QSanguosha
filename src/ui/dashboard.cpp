@@ -393,6 +393,8 @@ void Dashboard::setWidth(int width){
         prepareGeometryChange();
         adjustCards();
     }
+
+    setX(- boundingRect().width()/2);
 }
 
 QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool from_left){
