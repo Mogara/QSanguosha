@@ -2027,7 +2027,7 @@ void Room::chooseGenerals(){
         foreach(ServerPlayer *player, to_assign){
             if (player->getGeneral2() != NULL) continue;
             Json::Value generalName = player->getClientReply();        
-            if (!!player->m_isClientResponseReady || !generalName.isString()
+            if (!player->m_isClientResponseReady || !generalName.isString()
                 || !_setPlayerGeneral(player, toQString(generalName), false))
                 _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
         }
