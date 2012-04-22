@@ -618,7 +618,7 @@ ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::C
                 
         if (!tryAcquireResult)
             _m_semRoomMutex.tryAcquire(1); 
-        // So that interactiveCommand cannot update raceWinner when we are reading it.
+        // So that processResponse cannot update raceWinner when we are reading it.
 
         if (validateFunc == NULL ||
             (this->*validateFunc)(_m_raceWinner, _m_raceWinner->getClientReply(), funcArg))        
@@ -687,7 +687,7 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
         else
             player->tryAcquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE, timeOut) ;
 
-        // Note that we rely on interactiveCommand to filter out all unrelevant packet.
+        // Note that we rely on processResponse to filter out all unrelevant packet.
         // By the time the lock is released, m_clientResponse must be the right message
         // assuming the client side is not tampered.
 
@@ -822,7 +822,7 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(trick_name);
     arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
-    arg[2] = toJsonString(to->objectName());
+    arg[2] = to ? toJsonString(to->objectName()) : Json::Value::null;
 
     foreach (ServerPlayer *player, m_players){
         if(player->hasNullification())
@@ -885,7 +885,7 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
     thread->trigger(ChoiceMade, repliedPlayer, decisionData);
     setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-    return !askForNullification((TrickCard*)card, from, to, !positive);
+    return !askForNullification((TrickCard*)card, repliedPlayer, from, !positive);
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
@@ -1195,7 +1195,7 @@ ServerPlayer *Room::addSocket(ClientSocket *socket){
     m_players << player;
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
-    connect(player, SIGNAL(request_got(QString)), this, SLOT(processRequest(QString)));
+    connect(player, SIGNAL(request_got(QString)), this, SLOT(processClientPacket(QString)));
 
     return player;
 }
@@ -1729,7 +1729,7 @@ bool Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSa
     return true;
 }
 
-void Room::processRequest(const QString &request){
+void Room::processClientPacket(const QString &request){
     QSanGeneralPacket packet;
     //@todo: remove this thing after the new protocol is fully deployed
     if (packet.parse(request.toAscii().constData()))
@@ -1739,7 +1739,7 @@ void Room::processRequest(const QString &request){
         {    
             if (player == NULL) return; 
             player->setClientReplyString(request);            
-            interactiveCommand(player, &packet);
+            processResponse(player, &packet);
         }
         //@todo: make sure that cheat is binded to Config.FreeChoose, better make
         // a seperate variable called EnableCheat
@@ -2274,7 +2274,7 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg){
     broadcastInvoke("speak", QString("%1:%2").arg(player->objectName()).arg(arg));
 }
 
-void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *packet){
+void Room::processResponse(ServerPlayer *player, const QSanGeneralPacket *packet){
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
     bool success = false;
     if (player == NULL)

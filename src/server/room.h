@@ -249,7 +249,7 @@ public:
     void speakCommand(ServerPlayer *player, const QString &arg);
     void trustCommand(ServerPlayer *player, const QString &arg);
     void kickCommand(ServerPlayer *player, const QString &arg);
-    void interactiveCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
+    void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
@@ -341,7 +341,7 @@ private:
 
 private slots:
     void reportDisconnection();
-    void processRequest(const QString &request);
+    void processClientPacket(const QString &packet);
     void assignRoles();
     void startGame();
 
