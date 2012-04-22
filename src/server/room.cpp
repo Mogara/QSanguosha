@@ -31,8 +31,9 @@ Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2),
     game_started(false), game_finished(false), L(NULL), thread(NULL),
-    thread_3v3(NULL), sem(new QSemaphore), _m_mutexRoom(QMutex::NonRecursive),
-    provided(NULL), has_provided(false), m_surrenderRequestReceived(false), _virtual(false)
+    thread_3v3(NULL), sem(new QSemaphore), _m_semRoomMutex(1), _m_semRaceRequest(0),
+    provided(NULL), has_provided(false), m_surrenderRequestReceived(false), _virtual(false),
+    _m_raceStarted(false)
 {       
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -562,7 +563,7 @@ bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, co
 
 bool Room::doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command)
 {
-   time_t timeOut = getCommandTimeout(command);
+   time_t timeOut = getCommandTimeout(command);   
    return doBroadcastRequest(players, command, timeOut);
 }
 
@@ -582,6 +583,69 @@ bool Room::doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::Comma
         getResult(player, remainTime);        
     }
     return true;
+}
+
+ServerPlayer* Room::doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, 
+                                            time_t timeOut, ResponseVerifyFunction validateFunc, void* funcArg)
+{
+    _m_semRoomMutex.acquire();
+    _m_raceStarted = true;
+    _m_raceWinner = NULL;
+    while (_m_semRaceRequest.tryAcquire(1)); //drain lock
+    _m_semRoomMutex.release();
+    foreach (ServerPlayer* player, players)
+    {
+        doRequest(player, command, player->m_commandArgs, timeOut, false, false);
+    }    
+    return getRaceResult(players, command, timeOut, validateFunc, funcArg);
+}
+
+ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut,
+                                    ResponseVerifyFunction validateFunc, void* funcArg)
+{    
+    QTime timer;
+    timer.start();
+    bool validResult = false;
+    for (int i = 0; i < players.size(); i++)
+    {
+        time_t timeRemain = timeOut - timer.elapsed();
+        if (timeRemain < 0) timeRemain = 0;
+        bool tryAcquireResult = true;
+        if (Config.OperationNoLimit)
+            _m_semRaceRequest.acquire();
+        else
+            tryAcquireResult = _m_semRaceRequest.tryAcquire(1, timeRemain);
+        Q_ASSERT(_m_raceWinner != NULL);        
+        
+        if (!tryAcquireResult)
+            _m_semRoomMutex.tryAcquire(1); 
+        // So that interactiveCommand cannot update raceWinner when we are reading it.
+
+        if (validateFunc == NULL ||
+            (this->*validateFunc)(_m_raceWinner, _m_raceWinner->getClientReply(), funcArg))        
+        {
+            validResult = true;
+            break;        
+        }
+        else
+        {
+            _m_raceWinner = NULL;
+            _m_semRoomMutex.release();
+        }
+    }
+
+    if (!validResult) _m_semRoomMutex.acquire();
+    _m_raceStarted = false;
+    foreach (ServerPlayer* player, players)
+    {
+        player->acquireLock(ServerPlayer::SEMA_MUTEX);
+        player->m_expectedReplyCommand = S_COMMAND_UNKNOWN;
+        player->m_isWaitingReply = false;
+        player->m_expectedReplySerial = -1;
+        player->releaseLock(ServerPlayer::SEMA_MUTEX);
+    }
+    _m_semRoomMutex.release();
+    return _m_raceWinner;
 }
 
 bool Room::doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg)
@@ -612,7 +676,6 @@ void Room::broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer 
 
 bool Room::getResult(ServerPlayer* player, time_t timeOut){  
     Q_ASSERT(player->m_isWaitingReply);
-    QTime timer;
     bool validResult = false;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
 
@@ -736,70 +799,96 @@ bool Room::isCanceled(const CardEffectStruct &effect){
         return false;
 }
 
+bool Room::verifyNullificationResponse(ServerPlayer* player, const Json::Value& response, void* arg)
+{
+    const Card* card = NULL;    
+    if (player != NULL && response.isString())
+        card = Card::Parse(toQString(response));
+    return card != NULL;
+}
+
 bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive){
+    _NullificationAiHelper aiHelper;
+    aiHelper.m_from = from;
+    aiHelper.m_to = to;
+    aiHelper.m_trick = trick;
+    return _askForNullification(trick, from, to, positive, aiHelper);
+}
+
+bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper aiHelper){
     QString trick_name = trick->objectName();
-    QList<ServerPlayer *> players = getAllPlayers();
-    foreach(ServerPlayer *player, players){
-        if(!player->hasNullification())
-            continue;
+    QList<ServerPlayer *> validHumanPlayers;
+    QList<ServerPlayer *> validAiPlayers;
+    
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(trick_name);
+    arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
+    arg[2] = toJsonString(to->objectName());
 
-        while(true)
+    foreach (ServerPlayer *player, m_players){
+        if(player->hasNullification())
         {
-            AI *ai = player->getAI();
-            const Card *card = NULL;
-            if(ai){
-                card = ai->askForNullification(trick, from, to, positive);
-                if(card)
-                    thread->delay(Config.AIDelay);
-            }else{
-                //@todo: does positive mean the card is not "nullifiction"? if so, chop the positive arg in
-                // ai->askForNullification and change the trick_name instead.
-                if(!positive) trick_name = "nullification";                
-                Json::Value arg(Json::arrayValue);
-                arg[0] = toJsonString(trick_name);
-                arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
-                arg[2] = toJsonString(to->objectName());
-
-                if(doRequest(player, S_COMMAND_NULLIFICATION, arg, false))
-                {
-                    Json::Value clientReply = player->getClientReply();
-                    if (clientReply.isString())
-                        card = Card::Parse(toQString(clientReply));
-                }
+            if (player->isOnline())
+            {
+                player->m_commandArgs = arg;
+                validHumanPlayers << player;
             }
-
-            if(card == NULL) break;
-
-            bool continuable = false;
-            card = card->validateInResposing(player, &continuable);
-            if(card){
-                CardUseStruct use;
-                use.card = card;
-                use.from = player;
-                useCard(use);
-
-                LogMessage log;
-                log.type = "#NullificationDetails";
-                log.from = from;
-                log.to << to;
-                log.arg = trick_name;
-                sendLog(log);
-
-                broadcastInvoke("animate", QString("nullification:%1:%2")
-                    .arg(player->objectName()).arg(to->objectName()));
-
-                QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
-                thread->trigger(ChoiceMade, player, decisionData);
-                setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-
-                return !askForNullification(trick, from, to, !positive);
-            }else if(continuable)
-                continue;
-            break;
+            else
+                validAiPlayers << player;
         }
     }
+    
+    ServerPlayer* repliedPlayer = NULL;
+    time_t timeOut = getCommandTimeout(S_COMMAND_NULLIFICATION);
+    if (!validHumanPlayers.empty())
+        repliedPlayer = doBroadcastRaceRequest(validHumanPlayers, S_COMMAND_NULLIFICATION, timeOut, &Room::verifyNullificationResponse);
 
-    return false;
+    const Card* card = NULL;        
+    if (repliedPlayer != NULL && repliedPlayer->getClientReply().isString())
+        card = Card::Parse(toQString(repliedPlayer->getClientReply()));
+    if (card == NULL)
+    {
+        foreach (ServerPlayer* player, validAiPlayers)
+        {
+            AI *ai = player->getAI();
+            if (ai == NULL) continue;
+            card = ai->askForNullification(trick, from, to, positive);
+            if (card != NULL) 
+            {
+                repliedPlayer = player;
+                thread->delay(Config.AIDelay);
+                break;                
+            }
+        }        
+    }
+    
+    if (card == NULL) return false;
+
+    bool continuable = false;
+    card = card->validateInResposing(repliedPlayer, &continuable);
+    if (card == NULL) return false;
+
+    CardUseStruct use;
+    use.card = card;
+    use.from = repliedPlayer;
+    useCard(use);
+
+    LogMessage log;
+    log.type = "#NullificationDetails";
+    log.from = from;
+    log.to << to;
+    log.arg = trick_name;
+    sendLog(log);
+
+    broadcastInvoke("animate", QString("nullification:%1:%2")
+        .arg(repliedPlayer->objectName()).arg(to->objectName()));
+
+    QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
+    thread->trigger(ChoiceMade, repliedPlayer, decisionData);
+    setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
+    
+    return !_askForNullification((TrickCard*)card, from, to, !positive, aiHelper);
+
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
@@ -2195,7 +2284,7 @@ void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *pac
     {
         emit room_message(tr("Unable to parse player"));            
     }
-    else if (!player->m_isWaitingReply)
+    else if (!player->m_isWaitingReply || player->m_isClientResponseReady)
     {
         emit room_message(tr("Server is not waiting for reply from %1").arg(player->objectName()));
     }
@@ -2217,10 +2306,25 @@ void Room::interactiveCommand(ServerPlayer *player, const QSanGeneralPacket *pac
         return;
     }
     else
-    {
-        player->setClientReply(packet->getMessageBody());
-        player->m_isClientResponseReady = true;
-        player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+    {               
+        _m_semRoomMutex.acquire();
+        if (_m_raceStarted)
+        {     
+
+            player->setClientReply(packet->getMessageBody());
+            player->m_isClientResponseReady = true; 
+            _m_raceWinner = player;
+            // the _m_semRoomMutex.release() signal is in getRaceResult();            
+            _m_semRaceRequest.release();
+        }
+        else
+        { 
+            _m_semRoomMutex.release();
+            player->setClientReply(packet->getMessageBody());
+            player->m_isClientResponseReady = true; 
+            player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);    
+        }  
+
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
     }
 }

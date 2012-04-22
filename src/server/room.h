@@ -26,6 +26,7 @@ public:
 
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
     typedef bool (Room::*CallBack)(ServerPlayer *, const QSanProtocol::QSanGeneralPacket*);
+    typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer*, const Json::Value&, void*);
 
     explicit Room(QObject *parent, const QString &mode);
     QString createLuaState();
@@ -127,9 +128,16 @@ public:
     bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut);
     bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command);
 
+    // Ask several server players to execute a command and get the client responses. Call is blocking until first client
+    // response is received or server times out, whichever is earlier. Any client response is verified by the validation
+    // function and argument passed in. When a response is verified to be invalid, the function will continue to wait for
+    // the next client response.
+    // @param validateFunc
+    //        Validation function that verifies whether the reply is a valid one. The first parameter passed to the function
+    //        is the response sender, the second parameter is the response content, the third parameter is funcArg passed in.
     // @return The player that first send a legal request to the server. NULL if no such request is received.
     ServerPlayer* doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, 
-                                            time_t timeOut, bool isRace = false);
+           time_t timeOut, ResponseVerifyFunction validateFunc = NULL, void* funcArg = NULL);
     
     // Ditto, a specialization of executeCommand for S_SERVER_NOTIFICATION packets. No reply should be expected from
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
@@ -154,6 +162,11 @@ public:
     // player->getClientReply(), use the default value directly. If the return value is true, the reply value should still be
     // examined as a malicious client can have tampered with the content of the package for cheating purposes.
     bool getResult(ServerPlayer* player, time_t timeOut);
+    ServerPlayer* getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut,
+                                ResponseVerifyFunction validateFunc = NULL, void* funcArg = NULL);
+
+    //Verification functions
+    bool verifyNullificationResponse(ServerPlayer*, const Json::Value&, void*);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -267,7 +280,8 @@ private:
     RoomThread3v3 *thread_3v3;
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
-    QMutex _m_mutexRoom;    
+    QSemaphore _m_semRaceRequest;
+    QSemaphore _m_semRoomMutex;
 
     
     QHash<QString, Callback> callbacks;
@@ -275,6 +289,10 @@ private:
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     bool _m_isFirstSurrenderRequest;
     QTime _m_timeSinceLastSurrenderRequest;
+    
+    //helper variables for race request function
+    bool _m_raceStarted; 
+    ServerPlayer* _m_raceWinner;
 
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer*> owner_map;
@@ -311,7 +329,14 @@ private:
     void makeReviving(const QString &name);
     void doScript(const QString &script);
 
-    //helper functions
+    //helper functions and structs
+    struct _NullificationAiHelper
+    {
+        const TrickCard* m_trick;
+        ServerPlayer* m_from;
+        ServerPlayer* m_to;
+    };
+    bool _askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper helper);
     void _setupChooseGeneralRequestArgs(ServerPlayer *player);    
 
 private slots:
