@@ -214,12 +214,12 @@ void RoomThread3v3::assignRoles(const QString &scheme){
             << "renegade"  << "rebel" << "loyalist";
 
     if(scheme == "Random"){
-        // the easiest way
-        qShuffle(room->getPlayers());
+        // the easiest way        
+        qShuffle(room->m_players);
 
         int i;
         for(i=0; i<roles.length(); i++)
-            room->setPlayerProperty(room->getPlayers().at(i), "role", roles.at(i));
+            room->setPlayerProperty(room->m_players.at(i), "role", roles.at(i));
     }else if(scheme == "AllRoles"){
         assignRoles(roles, scheme);
     }else{
