@@ -19,7 +19,7 @@ LogMessage::LogMessage()
 QString LogMessage::toString() const{
     QStringList tos;
     foreach(ServerPlayer *player, to)
-        tos << player->objectName();
+        if (player != NULL) tos << player->objectName();
 
     return QString("%1:%2->%3:%4:%5:%6")
             .arg(type)
