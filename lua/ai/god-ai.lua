@@ -158,7 +158,7 @@ sgs.ai_skill_use_func.GongxinCard=function(card,use,self)
 	self:sort(self.enemies,"handcard")
 
 	for index = #self.enemies, 1, -1 do
-		if not self.enemies[index]:isKongcheng() then
+		if not self.enemies[index]:isKongcheng() and self:objectiveLevel(self.enemies[index]) > 0 then
 			use.card = card
 			if use.to then
 				use.to:append(self.enemies[index])
