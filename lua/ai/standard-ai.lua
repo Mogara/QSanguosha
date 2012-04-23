@@ -985,7 +985,7 @@ sgs.ai_skill_cardask["@wushuang-jink-1"] = function(self, data, pattern, target)
 	if self:getCardsNum("Jink") < 2 and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end	
 end
 
-sgs.ai_chaofeng.lubu = 1
+sgs.ai_chaofeng.lvbu = 1
 
 local lijian_skill={}
 lijian_skill.name="lijian"

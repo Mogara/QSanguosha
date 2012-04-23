@@ -3288,9 +3288,9 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_
         draw_pile->append(i.next());
 }
 
-void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){    
+void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){    
     //@todo: this thing should be put in AI!!!!!!!!!!
-    if(!shenlumeng->isOnline()){
+    if(!shenlvmeng->isOnline()){
         // throw the first card whose suit is Heart
         QList<const Card *> cards = target->getHandcards();
         foreach(const Card *card, cards){
@@ -3308,8 +3308,8 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
     gongxinArgs[0] = toJsonString(target->objectName());
     gongxinArgs[1] = true;
     gongxinArgs[2] = toJsonIntArray(target->handCards());
-    bool success = doRequest(shenlumeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs);
-    Json::Value clientReply = shenlumeng->getClientReply();
+    bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs);
+    Json::Value clientReply = shenlvmeng->getClientReply();
     if (!success || !clientReply.isInt() 
         || !target->handCards().contains(clientReply.asInt()))
         return;
@@ -3317,7 +3317,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
     int card_id = clientReply.asInt();
     showCard(target, card_id);
 
-    QString result = askForChoice(shenlumeng, "gongxin", "discard+put");
+    QString result = askForChoice(shenlvmeng, "gongxin", "discard+put");
     if(result == "discard")
         throwCard(card_id, target);
     else

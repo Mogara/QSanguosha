@@ -293,8 +293,8 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 			if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
 		end
 		if self.player:hasFlag("DaheTarget") then
-			for _, card in ipairs(cards) do
-				if card:inherits("Jink") and card:getSuit() == sgs.Card_Heart then
+			for _, card in ipairs(self:getCards("Jink")) do
+				if card:getSuit() == sgs.Card_Heart or self.room:getCardPlace(card:getEffectiveId()) ~= sgs.Player_Hand then
 					return card:getId()
 				end
 			end
