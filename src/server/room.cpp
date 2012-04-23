@@ -476,7 +476,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
 
     QVariant data = QVariant::fromValue(result_effect);
 
-    if(jink == NULL || (effect.to->hasFlag("DaheTarget") && jink->getSuit() != Card::Heart))
+    if(jink == NULL)
         thread->trigger(SlashHit, effect.from, data);
     else{
         setEmotion(effect.to, "jink");
@@ -1192,7 +1192,8 @@ void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_nam
 void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who){
     card->setFlags(flag);
 
-    setCardFlag(card->getEffectiveId(), flag, who);
+    if(!card->isVirtualCard())
+        setCardFlag(card->getEffectiveId(), flag, who);
 }
 
 void Room::setCardFlag(int card_id, const QString &flag, ServerPlayer *who){
@@ -1208,13 +1209,14 @@ void Room::setCardFlag(int card_id, const QString &flag, ServerPlayer *who){
 void Room::clearCardFlag(const Card *card, ServerPlayer *who){
     card->clearFlags();
 
-    clearCardFlag(card->getEffectiveId(), who);
+    if(!card->isVirtualCard())
+        clearCardFlag(card->getEffectiveId(), who);
 }
 
 void Room::clearCardFlag(int card_id, ServerPlayer *who){
     Sanguosha->getCard(card_id)->clearFlags();
 
-    QString pattern = QString::number(card_id) + ":" +".";
+    QString pattern = QString::number(card_id) + ":.";
     if(who)
         who->invoke("setCardFlag", pattern);
     else

@@ -486,40 +486,49 @@ public:
 class DahePindian: public TriggerSkill{
 public:
     DahePindian():TriggerSkill("#dahe_pindian"){
-        events << Pindian;
+        events << Pindian << SlashProceed;
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        PindianStar pindian = data.value<PindianStar>();
-        if(pindian->reason != "dahe")
-            return false;
-        if(pindian->isSuccess()){
-            room->playSkillEffect("dahe");
-            QList<ServerPlayer *> targets = room->getAlivePlayers();
-            foreach(ServerPlayer *p, targets){
-                if(p->getHp() > pindian->from->getHp())
-                    targets.removeOne(p);
+        if(event == Pindian){
+            PindianStar pindian = data.value<PindianStar>();
+            if(pindian->reason != "dahe")
+                return false;
+
+            if(pindian->isSuccess()){
+                room->playSkillEffect("dahe");
+                QList<ServerPlayer *> targets = room->getAlivePlayers();
+                foreach(ServerPlayer *p, targets){
+                    if(p->getHp() > pindian->from->getHp())
+                        targets.removeOne(p);
+                }
+                ServerPlayer *target = room->askForPlayerChosen(player, targets, "dahe");
+                target->obtainCard(pindian->to_card);
+                pindian->to->setFlags("DaheTarget");
             }
-            ServerPlayer *target = room->askForPlayerChosen(player, targets, "dahe");
-            target->obtainCard(pindian->to_card);
-            pindian->to->setFlags("DaheTarget");
-        }
-        else
-            if(!pindian->from->isKongcheng()){
+            else if(!pindian->from->isKongcheng()){
                 room->showAllCards(pindian->from);
                 room->askForDiscard(pindian->from, objectName(), 1);
             }
+        }
+        else{
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            const Card *jink = room->askForCard(effect.to, "jink", "dahe:slash-jink", data);
+            if(jink->getSuit() != Card::Heart){
+                LogMessage log;
+                log.type = "$DaheEffect";
+                log.from = effect.from;
+                log.to << effect.to;
+                log.card_str = jink->getEffectIdString();
+                room->sendLog(log);
 
+                room->slashResult(effect, NULL);
+            }
+            room->slashResult(effect, jink);
 
+            return true;
+        }
 
         return false;
     }
