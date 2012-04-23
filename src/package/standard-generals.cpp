@@ -162,7 +162,7 @@ public:
             QList<int> yiji_cards;
             foreach(const Card *card, guojia->getHandcards()){
                 if(card->hasFlag(objectName())){
-                    card->setFlags("-" + objectName());
+                    room->setCardFlag(card, "-" + objectName());
                     yiji_cards << card->getEffectiveId();
                 }
             }

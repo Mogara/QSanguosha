@@ -795,6 +795,11 @@ public:
 	void setPlayerFlag(ServerPlayer *player, const char *flag);
 	void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
 	void setPlayerMark(ServerPlayer *player, const char *mark, int value);
+    void setPlayerStatistics(ServerPlayer *player, const char *property_name, const QVariant &value);
+    void setCardFlag(const Card *card, const char *flag, ServerPlayer *who = NULL);
+    void setCardFlag(int card_id, const char *flag, ServerPlayer *who = NULL);
+    void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
+    void clearCardFlag(int card_id, ServerPlayer *who = NULL);
 	void useCard(const CardUseStruct &card_use, bool add_history = true);
 	void damage(const DamageStruct &data);
 	void sendDamageLog(const DamageStruct &data);

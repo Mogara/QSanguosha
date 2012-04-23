@@ -1189,6 +1189,38 @@ void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_nam
     player->invoke("setStatistics", prompt);
 }
 
+void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who){
+    card->setFlags(flag);
+
+    setCardFlag(card->getEffectiveId(), flag, who);
+}
+
+void Room::setCardFlag(int card_id, const QString &flag, ServerPlayer *who){
+    Sanguosha->getCard(card_id)->setFlags(flag);
+
+    QString pattern = QString::number(card_id) + ":" + flag;
+    if(who)
+        who->invoke("setCardFlag", pattern);
+    else
+        broadcastInvoke("setCardFlag", pattern);
+}
+
+void Room::clearCardFlag(const Card *card, ServerPlayer *who){
+    card->clearFlags();
+
+    clearCardFlag(card->getEffectiveId(), who);
+}
+
+void Room::clearCardFlag(int card_id, ServerPlayer *who){
+    Sanguosha->getCard(card_id)->clearFlags();
+
+    QString pattern = QString::number(card_id) + ":" +".";
+    if(who)
+        who->invoke("setCardFlag", pattern);
+    else
+        broadcastInvoke("setCardFlag", pattern);
+}
+
 ServerPlayer *Room::addSocket(ClientSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
@@ -2704,7 +2736,7 @@ void Room::drawCards(ServerPlayer *player, int n, const QString &reason){
         int card_id = drawCard();
         card_ids << card_id;
         const Card *card = Sanguosha->getCard(card_id);
-        card->setFlags(reason);
+        player->getRoom()->setCardFlag(card, reason);
 
         QVariant data = QVariant::fromValue(card_id);
         if(thread->trigger(CardDrawing, player, data))

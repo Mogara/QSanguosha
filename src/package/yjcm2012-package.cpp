@@ -541,7 +541,7 @@ public:
             const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data);
            
             if(slash){
-                slash->setFlags("jiefan-slash");
+                room->setCardFlag(slash, "jiefan-slash");
                 room->setTag("JiefanTarget", data);
                 CardUseStruct use;
                 use.card = slash;
