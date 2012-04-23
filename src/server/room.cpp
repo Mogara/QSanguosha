@@ -628,6 +628,8 @@ ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::C
         }
         else
         {
+            if (_m_raceWinner != NULL) // Don't give this player any more chance for this race
+                _m_raceWinner->m_isWaitingReply = false;
             _m_raceWinner = NULL;
             _m_semRoomMutex.release();
         }
