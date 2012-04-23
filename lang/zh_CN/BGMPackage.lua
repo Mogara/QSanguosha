@@ -42,4 +42,19 @@ return {
 	["#ZuiXiang2"] = "%from 的技能【%arg2】被触发，【%arg】对其无效",
 	["@sleep"] = "醉乡",
 	["dream"] = "梦",
+	
+	["#bgm_zhangfei"] = "横矛立马",
+	["bgm_zhangfei"] = "SP张飞",
+	["illustrator:bgm_zhangfei"] = "LiuHeng",
+	["designer:bgm_zhangfei"] = "桌游志",
+	["jie"] = "嫉恶",
+	[":jie"] = "<b>锁定技</b>，你使用的红色【杀】造成的伤害+1。",
+	["#jie"] = "%from 的【嫉恶】技能被触发，伤害从 %arg 点上升至 %arg2 点",
+
+	["dahe"] = "大喝",
+	[":dahe"] = "出牌阶段，你可以与一名其他角色拼点；若你赢，该角色的非红心【闪】无效直到回合结束，你可将该角色拼点的牌交给场上一名体力不多于你的角色。若你没赢，你须展示手牌并选择一张弃置。每阶段限一次。",
+	["$dahe"] = "燕人张飞在此！",
+	["#dahe_pindian"] = "大喝",
+	
+	["$DaheEffect"] = "%from 的技能大喝被触发，%to 使用的 %card 无效",
 }

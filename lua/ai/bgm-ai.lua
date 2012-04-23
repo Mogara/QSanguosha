@@ -164,3 +164,61 @@ sgs.ai_skill_askforag.manjuan = function(self, card_ids)
 	self:sortByCardNeed(cards)
 	return cards[#cards]:getEffectiveId()
 end
+
+local dahe_skill={}
+dahe_skill.name="dahe"
+table.insert(sgs.ai_skills,dahe_skill)
+dahe_skill.getTurnUseCard=function(self)
+	if not self.player:hasUsed("DaheCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@DaheCard=.") end
+end
+
+sgs.ai_skill_use_func.DaheCard=function(card,use,self)	
+	self:sort(self.enemies, "handcard")
+	local max_card = self:getMaxCard(self.player)
+	local max_point = max_card:getNumber()
+	local slashcount = self:getCardsNum("Slash")
+	if max_card:inherits("Slash") then slashcount = slashcount - 1 end
+	if self.player:hasSkill("kongcheng") and self.player:getHandcardNum()==1 then
+		for _, enemy in ipairs(self.enemies) do
+			if not enemy:isKongcheng() then
+				use.card = sgs.Card_Parse("@DaheCard=" .. max_card:getId())
+				if use.to then use.to:append(enemy) end
+				return
+			end
+		end
+	end
+	if slashcount > 0 then
+		local slash = self:getCard("Slash")
+		assert(slash)
+		local dummy_use = {isDummy = true}
+		self:useBasicCard(slash, dummy_use)
+		for _, enemy in ipairs(self.enemies) do
+			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() 
+				and self.player:canSlash(enemy, true) then
+				local h = enemy:getHandcardNum()
+				local poss = ((max_card:getNumber() - 1)/13)^h
+				if math.random() < poss then
+					use.card = sgs.Card_Parse("@DaheCard=" .. max_card:getId())
+					if use.to then use.to:append(enemy) end
+					return
+				end
+			end
+		end
+	end
+end
+
+function sgs.ai_skill_pindian.dahe(minusecard, self, requestor)
+	if self:isFriend(requestor) then return end
+	if requestor:getHandcardNum() <= 2 then return minusecard end
+end
+
+sgs.ai_skill_playerchosen.dahe = sgs.ai_skill_playerchosen.miji
+
+sgs.ai_cardneed.dahe = sgs.ai_cardneed.bignumber
+
+sgs.ai_card_intention.DaheCard = 60
+
+sgs.dynamic_value.control_card.DaheCard = true
+
+sgs.ai_use_value.DaheCard = 8.5
+sgs.ai_use_priority.DaheCard = 4.2

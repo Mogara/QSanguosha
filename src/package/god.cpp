@@ -116,12 +116,12 @@ public:
 
     }
 
-    virtual bool onPhaseChange(ServerPlayer *shenlumeng) const{
-        if(shenlumeng->getPhase() != Player::Draw)
+    virtual bool onPhaseChange(ServerPlayer *shenlvmeng) const{
+        if(shenlvmeng->getPhase() != Player::Draw)
             return false;
 
-        Room *room = shenlumeng->getRoom();
-        if(!shenlumeng->askForSkillInvoke(objectName()))
+        Room *room = shenlvmeng->getRoom();
+        if(!shenlvmeng->askForSkillInvoke(objectName()))
             return false;
 
         room->playSkillEffect(objectName());
@@ -131,9 +131,9 @@ public:
         room->fillAG(card_ids);
 
         while(!card_ids.isEmpty()){
-            int card_id = room->askForAG(shenlumeng, card_ids, false, "shelie");
+            int card_id = room->askForAG(shenlvmeng, card_ids, false, "shelie");
             card_ids.removeOne(card_id);
-            room->takeAG(shenlumeng, card_id);
+            room->takeAG(shenlvmeng, card_id);
 
             // throw the rest cards that matches the same suit
             const Card *card = Sanguosha->getCard(card_id);
@@ -484,14 +484,14 @@ ShenfenCard::ShenfenCard(){
     once = true;
 }
 
-void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlayer *> &) const{
-    shenlubu->loseMark("@wrath", 6);
+void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, const QList<ServerPlayer *> &) const{
+    shenlvbu->loseMark("@wrath", 6);
 
-    QList<ServerPlayer *> players = room->getOtherPlayers(shenlubu);
+    QList<ServerPlayer *> players = room->getOtherPlayers(shenlvbu);
     foreach(ServerPlayer *player, players){
         DamageStruct damage;
         damage.card = this;
-        damage.from = shenlubu;
+        damage.from = shenlvbu;
         damage.to = player;
 
         room->damage(damage);
@@ -508,7 +508,7 @@ void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlay
             room->askForDiscard(player, "shenfen", 4);
     }
 
-    shenlubu->turnOver();
+    shenlvbu->turnOver();
 }
 
 WuqianCard::WuqianCard(){
@@ -1276,9 +1276,9 @@ GodPackage::GodPackage()
 
     related_skills.insertMulti("wuhun", "#wuhun");
 
-    General *shenlumeng = new General(this, "shenlumeng", "god", 3);
-    shenlumeng->addSkill(new Shelie);
-    shenlumeng->addSkill(new Gongxin);
+    General *shenlvmeng = new General(this, "shenlvmeng", "god", 3);
+    shenlvmeng->addSkill(new Shelie);
+    shenlvmeng->addSkill(new Gongxin);
 
     General *shenzhouyu = new General(this, "shenzhouyu", "god");
     shenzhouyu->addSkill(new Qinyin);
@@ -1303,12 +1303,12 @@ GodPackage::GodPackage()
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
 
-    General *shenlubu = new General(this, "shenlubu", "god", 5);
-    shenlubu->addSkill(new Kuangbao);
-    shenlubu->addSkill(new MarkAssignSkill("@wrath", 2));
-    shenlubu->addSkill(new Wumou);
-    shenlubu->addSkill(new Wuqian);
-    shenlubu->addSkill(new Shenfen);
+    General *shenlvbu = new General(this, "shenlvbu", "god", 5);
+    shenlvbu->addSkill(new Kuangbao);
+    shenlvbu->addSkill(new MarkAssignSkill("@wrath", 2));
+    shenlvbu->addSkill(new Wumou);
+    shenlvbu->addSkill(new Wuqian);
+    shenlvbu->addSkill(new Shenfen);
 
     related_skills.insertMulti("kuangbao", "#@wrath-2");
 

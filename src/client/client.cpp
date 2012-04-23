@@ -1125,7 +1125,7 @@ void Client::setStatistics(const QString &property_str){
 }
 
 void Client::setCardFlag(const QString &pattern_str){
-    QRegExp rx("(\\w+):(\\w+)");
+    QRegExp rx("(\\w+):(.+)");
     if(!rx.exactMatch(pattern_str))
         return;
 

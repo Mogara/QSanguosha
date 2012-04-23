@@ -278,6 +278,7 @@ end
 
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	local effect = data:toSlashEffect()
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	if (not target or self:isFriend(target)) and effect.slash:hasFlag("jiefan-slash") then return "." end
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) and not target:hasSkill("qianxi") then return "." end
 	--if not target then self.room:writeToConsole(debug.traceback()) end
@@ -290,6 +291,14 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	else
 		if not effect.slash:hasFlag("drank") then
 			if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
+		end
+		if self.player:hasFlag("DaheTarget") then
+			for _, card in ipairs(self:getCards("Jink")) do
+				if card:getSuit() == sgs.Card_Heart then
+					return card:getId()
+				end
+			end
+			return "."
 		end
 		if not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) and not target:hasSkill("qianxi") then
 			if self:isEquip("Axe", target) then

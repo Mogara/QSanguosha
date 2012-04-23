@@ -201,7 +201,8 @@ end
 
 sgs.ai_skill_playerchosen.xuanhuo = function(self, targets)
 	for _, player in sgs.qlist(targets) do
-		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) and not player:hasFlag("xuanhuo_target") then
+		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) 
+			and not player:hasFlag("xuanhuo_target") and not self:needKongcheng(player) and not player:hasSkill("manjuan") then
 			return player
 		end
 	end
