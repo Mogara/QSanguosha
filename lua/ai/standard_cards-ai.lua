@@ -294,7 +294,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		end
 		if self.player:hasFlag("DaheTarget") then
 			for _, card in ipairs(self:getCards("Jink")) do
-				if card:getSuit() == sgs.Card_Heart or self.room:getCardPlace(card:getEffectiveId()) ~= sgs.Player_Hand then
+				if card:getSuit() == sgs.Card_Heart then
 					return card:getId()
 				end
 			end

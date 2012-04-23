@@ -476,7 +476,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
 
     QVariant data = QVariant::fromValue(result_effect);
 
-    if(jink == NULL)
+    if(jink == NULL || (effect.to->hasFlag("DaheTarget") && jink->getSuit() != Card::Heart))
         thread->trigger(SlashHit, effect.from, data);
     else{
         setEmotion(effect.to, "jink");

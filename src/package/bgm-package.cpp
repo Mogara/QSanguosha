@@ -406,6 +406,125 @@ private:
     QMap<Card::CardType, QString> type;
 };
 
+class Jie: public TriggerSkill{
+public:
+    Jie():TriggerSkill("jie"){
+        events << Predamage;
+        frequency = Compulsory;
+    }
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *zhangfei = room->findPlayerBySkillName(objectName());
+        DamageStruct damage = data.value<DamageStruct>();
+        const Card *reason = damage.card;
+        if(!reason || damage.from != zhangfei)
+            return false;
+
+        if(reason->inherits("Slash") && reason->isRed()){
+            LogMessage log;
+            log.type = "#Jie";
+            log.from = zhangfei;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            room->sendLog(log);
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
+
+DaheCard::DaheCard(){
+    once = true;
+    mute = true;
+    will_throw = false;
+}
+
+bool DaheCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select->isKongcheng())
+        return false;
+
+    return true;
+}
+
+void DaheCard::use(Room *room, ServerPlayer *bgm_zhangfei, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.first();
+    bgm_zhangfei->pindian(target, "dahe", this);
+
+}
+
+class Dahe: public OneCardViewAsSkill{
+public:
+    Dahe():OneCardViewAsSkill("dahe"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("DaheCard") && !player->isKongcheng();
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        DaheCard *card = new DaheCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
+};
+
+class DahePindian: public TriggerSkill{
+public:
+    DahePindian():TriggerSkill("#dahe_pindian"){
+        events << Pindian;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        PindianStar pindian = data.value<PindianStar>();
+        if(pindian->reason != "dahe")
+            return false;
+        if(pindian->isSuccess()){
+            room->playSkillEffect("dahe");
+            QList<ServerPlayer *> targets = room->getAlivePlayers();
+            foreach(ServerPlayer *p, targets){
+                if(p->getHp() > pindian->from->getHp())
+                    targets.removeOne(p);
+            }
+            ServerPlayer *target = room->askForPlayerChosen(player, targets, "dahe");
+            target->obtainCard(pindian->to_card);
+            pindian->to->setFlags("DaheTarget");
+        }
+        else
+            if(!pindian->from->isKongcheng()){
+                room->showAllCards(pindian->from);
+                room->askForDiscard(pindian->from, objectName(), 1);
+            }
+
+
+
+        return false;
+    }
+};
+
 BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3);
     bgm_zhaoyun->addSkill("longdan");
@@ -424,7 +543,15 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_pangtong->addSkill(new Zuixiang);
     bgm_pangtong->addSkill(new MarkAssignSkill("@sleep", 1));
 
+    General *bgm_zhangfei = new General(this, "bgm_zhangfei", "shu");
+    bgm_zhangfei->addSkill(new Jie);
+    bgm_zhangfei->addSkill(new Dahe);
+    bgm_zhangfei->addSkill(new DahePindian);
+
+    related_skills.insertMulti("dahe", "#dahe_pindian");
+
     addMetaObject<LihunCard>();
+    addMetaObject<DaheCard>();
 }
 
 ADD_PACKAGE(BGM)
