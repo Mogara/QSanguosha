@@ -291,7 +291,7 @@ private:
     
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
-    QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
+    QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair, m_notifyInteractionPair;
     bool _m_isFirstSurrenderRequest;
     QTime _m_timeSinceLastSurrenderRequest;
     
