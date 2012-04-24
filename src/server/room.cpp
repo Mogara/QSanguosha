@@ -2350,7 +2350,15 @@ void Room::processResponse(ServerPlayer *player, const QSanGeneralPacket *packet
 
             player->setClientReply(packet->getMessageBody());
             player->m_isClientResponseReady = true; 
-            _m_raceWinner = player;
+            // Warning: the statement below must be the last one before releasing the lock!!!
+            // Any statement after this statement will totally compromise the synchronization
+            // because getRaceResult will then be able to acquire the lock, reading a non-null
+            // raceWinner and proceed with partial data. The current implementation is based on
+            // the assumption that the following line is ATOMIC!!! 
+            // @todo: Find a Qt atomic semantic or use _asm to ensure the following line is atomic
+            // on a multi-core machine. This is the core to the whole synchornization mechanism for
+            // broadcastRaceRequest.
+            _m_raceWinner = player;           
             // the _m_semRoomMutex.release() signal is in getRaceResult();            
             _m_semRaceRequest.release();
         }
@@ -3761,7 +3769,7 @@ QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const Q
     arg[1] = toJsonStringArray(squeezed);
     bool success = doRequest(player, S_COMMAND_CHOOSE_ROLE_3V3, arg, false, false);
     Json::Value clientReply = player->getClientReply();
-    QString result = "abstained";
+    QString result = "abstain";
     if (success && clientReply.isString())
     {
         result = clientReply.asCString();

@@ -92,8 +92,8 @@ public:
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);   
    
-    // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
-    // server times out, whichever is earlier.
+    // Ask a server player to send a server request and returns the client response. Call is blocking until client 
+    // replies or server times out, whichever is earlier.
     // @param player
     //        The server player to carry out the command.
     // @param command
@@ -119,7 +119,7 @@ public:
     bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
                             bool moveFocus = true, bool wait = true);    
 
-    // Ask several server players to execute a command and get the client responses. Call is blocking until all client
+    // Ask several server players to broadcast a request and get the client responses. Call is blocking until all client
     // replies or server times out, whichever is earlier. Check each player's m_isClientResponseReady to see if a valid
     // result has been received. The client response can be accessed by calling each player's getClientReply() function. 
     // @param players
@@ -133,7 +133,7 @@ public:
     bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut);
     bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command);
 
-    // Ask several server players to execute a command and get the client responses. Call is blocking until first client
+    // Ask several server players to broadcast a request and get the client responses. Call is blocking until the first client
     // response is received or server times out, whichever is earlier. Any client response is verified by the validation
     // function and argument passed in. When a response is verified to be invalid, the function will continue to wait for
     // the next client response.
@@ -151,16 +151,16 @@ public:
     bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
 
 
-    // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
-    // server times out, whichever is earlier.
+    // Ask a server player to wait for the client response. Call is blocking until client replies or server times out, 
+    // whichever is earlier.
     // @param player
     //        The server player to retrieve the client response.
     // @param timeOut
     //        Maximum milliseconds that server should wait for client response before returning.
     // @return True if the a valid response is returned from client.
     
-    // Usage note: this function is only supposed to be either internally used by executeCommand (wait = true) or externally
-    // used in pair with executeCommand (wait = false). Any other usage could result in unexpected synchronization errors. 
+    // Usage note: this function is only supposed to be either internally used by doRequest (wait = true) or externally
+    // used in pair with doRequest (wait = false). Any other usage could result in unexpected synchronization errors. 
     // When getResult returns true, it's guaranteed that the expected client response has been stored and can be accessed by
     // calling player->getClientReply(). If getResult returns false, the value stored in player->getClientReply() could be
     // corrupted or in response to an unrelevant server request. Therefore, if the return value is false, do not poke into
@@ -284,16 +284,19 @@ private:
     RoomThread *thread;
     RoomThread3v3 *thread_3v3;
     RoomThread1v1 *thread_1v1;
-    QSemaphore *sem;
-    QSemaphore _m_semRaceRequest;
-    QSemaphore _m_semRoomMutex;
+    QSemaphore *sem; // Legacy semaphore, expected to be reomved after new synchronization is fully deployed.
+    QSemaphore _m_semRaceRequest; // When race starts, server waits on his semaphore for the first replier
+    QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
 
     
-    QHash<QString, Callback> callbacks;
-    QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
-    QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
-    bool _m_isFirstSurrenderRequest;
-    QTime _m_timeSinceLastSurrenderRequest;
+    QHash<QString, Callback> callbacks; // Legacy protocol callbacks
+    QHash<QSanProtocol::CommandType, CallBack> m_callbacks; // Stores the callbacks for client request. Do not use this
+                                                            // this map for anything else but S_CLIENT_REQUEST!!!!!
+    QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair; 
+        // Stores the expected client response for each server request, any unmatched client response will be discarded.
+
+    QTime _m_timeSinceLastSurrenderRequest; // Timer used to ensure that surrender poll is not initiated to frequently
+    bool _m_isFirstSurrenderRequest; // We allow the first surrender poll to go through regardless of the timer.
     
     //helper variables for race request function
     bool _m_raceStarted; 
