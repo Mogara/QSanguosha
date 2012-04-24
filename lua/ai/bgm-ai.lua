@@ -193,11 +193,9 @@ sgs.ai_skill_use_func.DaheCard=function(card,use,self)
 		local dummy_use = {isDummy = true}
 		self:useBasicCard(slash, dummy_use)
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() 
-				and self.player:canSlash(enemy, true) then
-				local h = enemy:getHandcardNum()
-				local poss = ((max_card:getNumber() - 1)/13)^h
-				if math.random() < poss then
+			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1 and enemy:getHp() > self.player:getHp()) 
+				and not enemy:isKongcheng() and self.player:canSlash(enemy, true) then
+				if max_point > 10 then
 					use.card = sgs.Card_Parse("@DaheCard=" .. max_card:getId())
 					if use.to then use.to:append(enemy) end
 					return
@@ -208,11 +206,40 @@ sgs.ai_skill_use_func.DaheCard=function(card,use,self)
 end
 
 function sgs.ai_skill_pindian.dahe(minusecard, self, requestor)
-	if self:isFriend(requestor) then return end
-	if requestor:getHandcardNum() <= 2 then return minusecard end
+	if requestor:objectName() == self.player:objectName() then
+		return self:getMaxCard(self.player):getId()
+	end
+	if self:isFriend(requestor) then return minusecard end
 end
 
-sgs.ai_skill_playerchosen.dahe = sgs.ai_skill_playerchosen.miji
+sgs.ai_skill_choice.dahe = function(self, choices)
+	return "yes"
+end
+
+sgs.ai_skill_playerchosen.dahe = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	self:sort(targets, "defense")
+	for _, target in ipairs(targets) do
+		if target:hasSkill("kongcheng") and target:isKongcheng() 
+			and target:hasFlag("dahe") then 
+			return target 
+		end 
+	end
+	for _, target in ipairs(targets) do
+		if self:isFriend(target) then return target end 
+	end
+end
+
+sgs.ai_skill_cardask["@dahe-jink"] = function(self, data, pattern, target)
+	if self.player:hasFlag("dahe") then
+		for _, card in ipairs(self:getCards("Jink")) do
+			if card:getSuit() == sgs.Card_Heart then
+				return card:getId()
+			end
+		end
+			return "."
+	end
+end
 
 sgs.ai_cardneed.dahe = sgs.ai_cardneed.bignumber
 
@@ -221,4 +248,4 @@ sgs.ai_card_intention.DaheCard = 60
 sgs.dynamic_value.control_card.DaheCard = true
 
 sgs.ai_use_value.DaheCard = 8.5
-sgs.ai_use_priority.DaheCard = 4.2
+sgs.ai_use_priority.DaheCard = 8

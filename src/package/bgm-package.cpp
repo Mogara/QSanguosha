@@ -472,6 +472,7 @@ void DaheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
 
     if(success){
         room->setEmotion(source, "success");
+        room->setPlayerFlag(target, reason);
         QList<ServerPlayer *> to_givelist = room->getAlivePlayers();
         foreach(ServerPlayer *p, targets){
             if(p->getHp() > source->getHp())
@@ -482,7 +483,6 @@ void DaheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
             ServerPlayer *to_give = room->askForPlayerChosen(source, to_givelist, reason);
             to_give->obtainCard(card2);
         }
-        room->setPlayerFlag(target, reason);
     }else{
         room->setEmotion(source, "no-success");
         if(!source->isKongcheng()){
