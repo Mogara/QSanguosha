@@ -68,7 +68,8 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus; 
     //callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
-    m_callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked; 
+    m_callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
+    m_callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::askForGongxin;
     m_callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin; 
     //callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["addHistory"] = &Client::addHistory;

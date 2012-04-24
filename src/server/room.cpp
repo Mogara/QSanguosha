@@ -52,9 +52,6 @@ void Room::initCallbacks(){
     m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
     m_requestResponsePair[S_COMMAND_SHOW_ALL_CARDS] = S_COMMAND_SKILL_GONGXIN;
 
-    //init notify client pair
-    m_notifyInteractionPair[S_COMMAND_SHOW_ALL_CARDS] = S_COMMAND_SKILL_GONGXIN;
-
     // client request handlers
     m_callbacks[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
     m_callbacks[S_COMMAND_CHEAT] = &Room::processRequestCheat;
@@ -655,9 +652,6 @@ ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::C
 
 bool Room::doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg)
 {
-    if(m_notifyInteractionPair.contains(command))
-        command = m_notifyInteractionPair[command];
-
     QSanGeneralPacket packet(S_SERVER_NOTIFICATION, command);
     packet.setMessageBody(arg);     
     player->invoke(&packet);
