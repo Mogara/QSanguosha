@@ -539,7 +539,7 @@ public:
                 log.type = "#DaheEffect";
                 log.from = effect.from;
                 log.to << effect.to;
-                log.arg = jink->objectName();
+                log.arg = jink->getSuitString();
                 log.arg2 = objectName();
                 room->sendLog(log);
 

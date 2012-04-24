@@ -58,5 +58,5 @@ return {
 	["dahe:yes"] = "分配对方拼点牌",
 	["dahe:no"] = "不分配",
 	
-	["#DaheEffect"] = "%from 的技能【%arg2】被触发，%to 使用的 %arg 无效",
+	["#DaheEffect"] = "%from 的技能【%arg2】被触发，%to 使用的 %arg 【闪】无效",
 }
