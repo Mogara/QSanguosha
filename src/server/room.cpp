@@ -3660,7 +3660,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
     if (isUnicast)
         doNotify(player, S_COMMAND_SKILL_GONGXIN, gongxinArgs);
     else
-        doBroadcastNotify(S_COMMAND_SHOW_CARD, gongxinArgs);
+        doBroadcastNotify(S_COMMAND_SKILL_GONGXIN, gongxinArgs);
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
