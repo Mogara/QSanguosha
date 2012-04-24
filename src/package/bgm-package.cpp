@@ -412,29 +412,22 @@ public:
         events << Predamage;
         frequency = Compulsory;
     }
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        ServerPlayer *zhangfei = room->findPlayerBySkillName(objectName());
         DamageStruct damage = data.value<DamageStruct>();
-        const Card *reason = damage.card;
-        if(!reason || damage.from != zhangfei)
+        if(!damage.card || !damage.card->inherits("Slash") || !damage.card->isRed())
             return false;
 
-        if(reason->inherits("Slash") && reason->isRed()){
-            LogMessage log;
-            log.type = "#Jie";
-            log.from = zhangfei;
-            log.to << damage.to;
-            log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(damage.damage + 1);
-            room->sendLog(log);
-            damage.damage ++;
-            data = QVariant::fromValue(damage);
-        }
+        LogMessage log;
+        log.type = "#Jie";
+        log.from = player;
+        log.to << damage.to;
+        log.arg = QString::number(damage.damage);
+        log.arg2 = QString::number(damage.damage + 1);
+        room->sendLog(log);
+        damage.damage ++;
+        data = QVariant::fromValue(damage);
 
         return false;
     }
@@ -442,85 +435,112 @@ public:
 
 DaheCard::DaheCard(){
     once = true;
-    mute = true;
-    will_throw = false;
 }
 
 bool DaheCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
-        return false;
-
-    if(to_select->isKongcheng())
-        return false;
-
-    return true;
+    return to_select != Self && targets.isEmpty() && !to_select->isKongcheng();
 }
 
-void DaheCard::use(Room *room, ServerPlayer *bgm_zhangfei, const QList<ServerPlayer *> &targets) const{
+void DaheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    QString reason = "dahe";
     ServerPlayer *target = targets.first();
-    bgm_zhangfei->pindian(target, "dahe", this);
+    LogMessage log;
+    log.type = "#Pindian";
+    log.from = source;
+    log.to << target;
+    room->sendLog(log);
 
+    const Card *card1 = room->askForPindian(source, source, target, reason);
+    const Card *card2 = room->askForPindian(target, source, target, reason);
+
+    PindianStruct pindian_struct;
+    pindian_struct.from = source;
+    pindian_struct.to = target;
+    pindian_struct.from_card = card1;
+    pindian_struct.to_card = card2;
+    pindian_struct.reason = reason;
+
+    PindianStar pindian_star = &pindian_struct;
+    QVariant data = QVariant::fromValue(pindian_star);
+    room->getThread()->trigger(Pindian, source, data);
+
+    bool success = pindian_star->from_card->getNumber() > pindian_star->to_card->getNumber();
+    log.type = success ? "#PindianSuccess" : "#PindianFailure";
+    log.from = source;
+    log.to << target;
+    room->sendLog(log);
+
+    if(success){
+        room->setEmotion(source, "success");
+        QList<ServerPlayer *> to_givelist = room->getAlivePlayers();
+        foreach(ServerPlayer *p, targets){
+            if(p->getHp() > source->getHp())
+                to_givelist.removeOne(p);
+        }
+        QString choice = room->askForChoice(source, reason, "yes+no");
+        if(!to_givelist.isEmpty() && choice == "yes"){
+            ServerPlayer *to_give = room->askForPlayerChosen(source, to_givelist, reason);
+            to_give->obtainCard(card2);
+        }
+        room->setPlayerFlag(target, reason);
+    }else{
+        room->setEmotion(source, "no-success");
+        if(!source->isKongcheng()){
+            room->showAllCards(source);
+            room->askForDiscard(source, reason, 1, false, false);
+        }
+    }
 }
 
-class Dahe: public OneCardViewAsSkill{
+class DaheViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    Dahe():OneCardViewAsSkill("dahe"){
+    DaheViewAsSkill():ZeroCardViewAsSkill("dahe"){
 
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("DaheCard") && !player->isKongcheng();
+        return !player->hasUsed("DaheCard") && !player->isKongcheng();
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped();
+    virtual const Card *viewAs() const{
+        return new DaheCard;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        DaheCard *card = new DaheCard;
-        card->addSubcard(card_item->getFilteredCard());
-        return card;
-    }
 };
 
-class DahePindian: public TriggerSkill{
+class Dahe: public TriggerSkill{
 public:
-    DahePindian():TriggerSkill("#dahe_pindian"){
-        events << Pindian << SlashProceed;
+    Dahe():TriggerSkill("dahe"){
+        events << SlashProceed << PhaseChange;
+        view_as_skill = new DaheViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        if(event == Pindian){
-            PindianStar pindian = data.value<PindianStar>();
-            if(pindian->reason != "dahe")
-                return false;
-
-            if(pindian->isSuccess()){
-                room->playSkillEffect("dahe");
-                QList<ServerPlayer *> targets = room->getAlivePlayers();
-                foreach(ServerPlayer *p, targets){
-                    if(p->getHp() > pindian->from->getHp())
-                        targets.removeOne(p);
-                }
-                ServerPlayer *target = room->askForPlayerChosen(player, targets, "dahe");
-                target->obtainCard(pindian->to_card);
-                pindian->to->setFlags("DaheTarget");
-            }
-            else if(!pindian->from->isKongcheng()){
-                room->showAllCards(pindian->from);
-                room->askForDiscard(pindian->from, objectName(), 1);
-            }
-        }
-        else{
+        ServerPlayer *bgm_zhangfei = room->findPlayerBySkillName(objectName());
+        if(!bgm_zhangfei)
+            return false;
+        if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            const Card *jink = room->askForCard(effect.to, "jink", "dahe:slash-jink", data);
-            if(jink->getSuit() != Card::Heart){
+            if(!effect.to->hasFlag(objectName()))
+                return false;
+            const Card *jink = room->askForCard(effect.to, "jink",
+                                                QString("@dahe-jink:%1:%2:%3")
+                                                .arg(effect.from->objectName())
+                                                .arg(bgm_zhangfei->objectName())
+                                                .arg(objectName()),
+                                                data);
+            if(jink && jink->getSuit() != Card::Heart){
                 LogMessage log;
-                log.type = "$DaheEffect";
+                log.type = "#DaheEffect";
                 log.from = effect.from;
                 log.to << effect.to;
-                log.card_str = jink->getEffectIdString();
+                log.arg = jink->objectName();
+                log.arg2 = objectName();
                 room->sendLog(log);
 
                 room->slashResult(effect, NULL);
@@ -529,7 +549,11 @@ public:
 
             return true;
         }
-
+        else if(event == PhaseChange && bgm_zhangfei->getPhase() == Player::NotActive){
+            foreach(ServerPlayer *other, room->getOtherPlayers(player))
+                if(other->hasFlag(objectName()))
+                    room->setPlayerFlag(other, "-" + objectName());
+        }
         return false;
     }
 };
@@ -555,9 +579,6 @@ BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhangfei = new General(this, "bgm_zhangfei", "shu");
     bgm_zhangfei->addSkill(new Jie);
     bgm_zhangfei->addSkill(new Dahe);
-    bgm_zhangfei->addSkill(new DahePindian);
-
-    related_skills.insertMulti("dahe", "#dahe_pindian");
 
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();
