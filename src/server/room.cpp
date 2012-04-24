@@ -977,15 +977,14 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         CardStar card_ptr = card;
         QVariant card_star = QVariant::fromValue(card_ptr);
 
-        if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
+        if(trigger_event == CardResponsed){
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
             log.type = QString("#%1").arg(card->metaObject()->className());
             sendLog(log);
 
-            if(trigger_event == CardResponsed)
-                player->playCardEffect(card);
+            player->playCardEffect(card);
         }
 
         thread->trigger(trigger_event, player, card_star);
