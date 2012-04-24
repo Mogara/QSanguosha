@@ -207,7 +207,7 @@ static const int GameOver = 1;
 
 void RoomThread::run3v3(){
     QList<ServerPlayer *> warm, cool;
-    foreach(ServerPlayer *player, room->getPlayers()){
+    foreach(ServerPlayer *player, room->m_players){
         switch(player->getRoleEnum()){
         case Player::Lord: warm.prepend(player); break;
         case Player::Loyalist: warm.append(player); break;
@@ -277,7 +277,6 @@ void RoomThread::action3v3(ServerPlayer *player){
 }
 
 void RoomThread::run(){
-
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     if(setjmp(env) == GameOver){        
