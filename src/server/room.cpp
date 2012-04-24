@@ -984,7 +984,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         CardStar card_ptr = card;
         QVariant card_star = QVariant::fromValue(card_ptr);
 
-        if(trigger_event == CardResponsed){
+        if(trigger_event == CardResponsed || trigger_event == JinkUsed){
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;

@@ -90,6 +90,8 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         QString cmd = space + 1;
         int elapsed = atoi(line);
 
+        //@todo: add command translation here!!!
+
         Pair pair;
         pair.elapsed = elapsed;
         pair.cmd = cmd;
