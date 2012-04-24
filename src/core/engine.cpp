@@ -9,6 +9,7 @@
 #include "audio.h"
 #include "protocol.h"
 #include "jsonutils.h"
+#include "structs.h"
 
 #include <QFile>
 #include <QTextStream>

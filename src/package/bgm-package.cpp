@@ -514,7 +514,7 @@ public:
         }
         else{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            const Card *jink = room->askForCard(effect.to, "jink", "dahe:slash-jink", data);
+            const Card *jink = room->askForCard(effect.to, "jink", "dahe:slash-jink", data, JinkUsed);
             if(jink->getSuit() != Card::Heart){
                 LogMessage log;
                 log.type = "$DaheEffect";

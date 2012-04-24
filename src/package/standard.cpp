@@ -370,6 +370,10 @@ StandardPackage::StandardPackage()
     patterns["..H"] = new ExpPattern(".|heart");
     patterns["..D"] = new ExpPattern(".|diamond");
 
+    patterns[".Basic"] = new ExpPattern("BasicCard");
+    patterns[".Trick"] = new ExpPattern("TrickCard");
+    patterns[".Equip"] = new ExpPattern("EquipCard");
+
     patterns["slash"] = new ExpPattern("Slash");
     patterns["jink"] = new ExpPattern("Jink");
     patterns["peach"] = new  ExpPattern("Peach");

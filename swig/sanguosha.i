@@ -443,6 +443,8 @@ struct PindianStruct{
 typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{
+	NonTrigger,
+	
     GameStart,
     TurnStart,
     PhaseChange,
@@ -478,11 +480,14 @@ enum TriggerEvent{
     SlashProceed,
     SlashHit,
     SlashMissed,
+	
+	JinkUsed,
 
     CardAsked,
     CardUsed,
     CardResponsed,
     CardDiscarded,
+	CardMoving,
     CardLost,
     CardLostDone,
     CardGot,

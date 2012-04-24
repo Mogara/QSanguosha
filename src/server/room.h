@@ -147,7 +147,7 @@ public:
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
     bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg); 
-    bool doBroadcastNotify(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, const Json::Value &arg); 
+    bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
 
 
     // Ask a server player to execute a command and returns the client response. Call is blocking until client replies or
@@ -235,7 +235,7 @@ public:
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
-    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant());
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason);

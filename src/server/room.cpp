@@ -553,7 +553,7 @@ bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, co
         player->m_expectedReplyCommand = command;             
 
     if(moveFocus)    
-        doBroadcastNotify(m_players, S_COMMAND_MOVE_FOCUS, toJsonString(player->objectName()));        
+        doBroadcastNotify(S_COMMAND_MOVE_FOCUS, toJsonString(player->objectName()));
 
     player->invoke(&packet);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
@@ -657,9 +657,9 @@ bool Room::doNotify(ServerPlayer* player, QSanProtocol::CommandType command, con
     return true;
 }
 
-bool Room::doBroadcastNotify(QList<ServerPlayer*> & players, QSanProtocol::CommandType command, const Json::Value &arg)
+bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg)
 {
-    foreach (ServerPlayer* player, players)
+    foreach (ServerPlayer* player, m_players)
     {
         doNotify(player, command, arg);
     }
@@ -736,7 +736,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     if(invoked)
     {        
         Json::Value msg = toJsonArray(skill_name, player->objectName());
-        doBroadcastNotify(m_players, S_COMMAND_INVOKE_SKILL, msg); 
+        doBroadcastNotify(S_COMMAND_INVOKE_SKILL, msg);
     }
 
     QVariant decisionData = QVariant::fromValue("skillInvoke:"+skill_name+":"+(invoked ? "yes" : "no"));
@@ -926,7 +926,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data){
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
+                             const QVariant &data, TriggerEvent trigger_event){
     const Card *card = NULL;
 
     QVariant asked = pattern;
@@ -983,13 +984,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             log.type = QString("#%1").arg(card->metaObject()->className());
             sendLog(log);
 
-            player->playCardEffect(card);
-
-
-            thread->trigger(CardResponsed, player, card_star);
-        }else{
-            thread->trigger(CardDiscarded, player, card_star);
+            if(trigger_event == CardResponsed)
+                player->playCardEffect(card);
         }
+
+        thread->trigger(trigger_event, player, card_star);
 
     }else if(continuable)
         return askForCard(player, pattern, prompt);
@@ -3650,7 +3649,7 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     if(only_viewer)
         doNotify(player, S_COMMAND_SHOW_CARD, show_str);
     else
-        doBroadcastNotify(m_players, S_COMMAND_SHOW_CARD, show_str);
+        doBroadcastNotify(S_COMMAND_SHOW_CARD, show_str);
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
@@ -3662,7 +3661,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
     if (isUnicast)
         doNotify(player, S_COMMAND_SKILL_GONGXIN, gongxinArgs);
     else
-        doBroadcastNotify(m_players, S_COMMAND_SHOW_CARD, gongxinArgs);
+        doBroadcastNotify(S_COMMAND_SHOW_CARD, gongxinArgs);
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){

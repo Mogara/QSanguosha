@@ -376,7 +376,7 @@ public:
             QString suit_str = card->getSuitString();
             QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
             QString prompt = QString("@xiuluo:::%1").arg(suit_str);
-            if(room->askForCard(target, pattern, prompt)){
+            if(room->askForCard(target, pattern, prompt, NULL, CardDiscarded)){
                 room->throwCard(card);
                 once_success = true;
             }

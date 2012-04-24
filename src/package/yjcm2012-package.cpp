@@ -538,7 +538,7 @@ public:
                room->getCurrent()->isDead() || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
 
-            const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data);
+            const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data, NonTrigger);
            
             if(slash){
                 room->setCardFlag(slash, "jiefan-slash");
