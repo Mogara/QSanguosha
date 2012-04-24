@@ -128,6 +128,8 @@ void ServerPlayer::bury(){
     throwAllCards();
     throwAllMarks();
     clearPrivatePiles();
+
+    room->clearPlayerCardLock(this);
 }
 
 void ServerPlayer::throwAllCards(){

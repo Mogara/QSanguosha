@@ -50,6 +50,7 @@ void Room::initCallbacks(){
     m_requestResponsePair[S_COMMAND_PINDIAN] = S_COMMAND_RESPONSE_CARD;
     m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
     m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
+    m_requestResponsePair[S_COMMAND_SHOW_ALL_CARDS] = S_COMMAND_SKILL_GONGXIN;
 
     // client request handlers
     m_callbacks[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
@@ -1169,6 +1170,11 @@ void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
 void Room::setPlayerCardLock(ServerPlayer *player, const QString &name){
     player->setCardLocked(name);
     player->invoke("cardLock", name);
+}
+
+void Room::clearPlayerCardLock(ServerPlayer *player){
+    player->setCardLocked(".");
+    player->invoke("cardLock", ".");
 }
 
 void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value){
@@ -3658,7 +3664,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
     gongxinArgs[2] = toJsonIntArray(player->handCards());    
     bool isUnicast = (to != NULL);
     if (isUnicast)
-        doNotify(player, S_COMMAND_SKILL_GONGXIN, gongxinArgs);
+        doNotify(player, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
     else
         doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
 }
