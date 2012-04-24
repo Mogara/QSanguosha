@@ -167,8 +167,6 @@ QString &Replayer::commandTranslation(QString &cmd){
                     .arg(QString::number(packetTypeId))
                     .arg(QString::number(static_cast<int>(commandEnum)))
                     .arg(cmd);
-
-            QMessageBox::warning(NULL, "warning", cmd);
         }
     }
 
