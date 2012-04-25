@@ -92,7 +92,7 @@ public:
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);   
    
-    // Ask a server player to send a server request and returns the client response. Call is blocking until client 
+    // Ask a player to send a server request and returns the client response. Call is blocking until client 
     // replies or server times out, whichever is earlier.
     // @param player
     //        The server player to carry out the command.
@@ -119,7 +119,7 @@ public:
     bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
                             bool moveFocus = true, bool wait = true);    
 
-    // Ask several server players to broadcast a request and get the client responses. Call is blocking until all client
+    // Broadcast a request to a list of players and get the client responses. Call is blocking until all client
     // replies or server times out, whichever is earlier. Check each player's m_isClientResponseReady to see if a valid
     // result has been received. The client response can be accessed by calling each player's getClientReply() function. 
     // @param players
@@ -133,8 +133,8 @@ public:
     bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut);
     bool doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command);
 
-    // Ask several server players to broadcast a request and get the client responses. Call is blocking until the first client
-    // response is received or server times out, whichever is earlier. Any client response is verified by the validation
+    // Broadcast a request to a list of players and get the first valid client response. Call is blocking until the first
+    // client response is received or server times out, whichever is earlier. Any client response is verified by the validation
     // function and argument passed in. When a response is verified to be invalid, the function will continue to wait for
     // the next client response.
     // @param validateFunc
@@ -144,10 +144,13 @@ public:
     ServerPlayer* doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, 
            time_t timeOut, ResponseVerifyFunction validateFunc = NULL, void* funcArg = NULL);
     
-    // Ditto, a specialization of executeCommand for S_SERVER_NOTIFICATION packets. No reply should be expected from
+    // Notify a player of a event by sending S_SERVER_NOTIFICATION packets. No reply should be expected from
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
     bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg); 
+    // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
+    // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
+    // will be rejected.
     bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
 
 
