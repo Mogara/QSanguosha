@@ -372,7 +372,7 @@ struct SlashEffectStruct{
 	SlashEffectStruct();
 
 	const Slash *slash;
-	const Jink *jink;
+	const Card *jink;
 
 	ServerPlayer *from;
 	ServerPlayer *to;
