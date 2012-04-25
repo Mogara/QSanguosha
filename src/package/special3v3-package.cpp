@@ -139,13 +139,22 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
         }
-        else if(event == CardResponsed)
-            card = data.value<CardStar>();
         else
             card = data.value<CardStar>();
 
-        if(card->isRed() && player->askForSkillInvoke(objectName(), data))
-            player->drawCards(1);
+        int n = 0;
+        if(card->isVirtualCard()){
+            foreach(int card_id, card->getSubcards()){
+                const Card *subcard = Sanguosha->getCard(card_id);
+                if(subcard->isRed())
+                    n++;
+            }
+        }
+        else if(card->isRed())
+            n++;
+
+        if(n>0 && player->askForSkillInvoke(objectName(), data))
+            player->drawCards(n);
 
         return false;
     }
