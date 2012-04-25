@@ -140,8 +140,13 @@ QString &Replayer::commandProceed(QString &cmd){
             }
             cmd = "[" + message_analyse.join(",") + "]";
         }
-        else if(!cmd.startsWith("\"") && !cmd.startsWith("["))
-            cmd = "\"" + cmd +"\"";
+        else{
+            bool ok = false;
+            cmd.toInt(&ok);
+
+            if(!cmd.startsWith("\"") && !cmd.startsWith("[") && !ok)
+                cmd = "\"" + cmd +"\"";
+        }
     }
 
     return cmd;
