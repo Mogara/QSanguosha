@@ -143,15 +143,19 @@ public:
             card = data.value<CardStar>();
 
         int n = 0;
-        if(card->isVirtualCard()){
-            foreach(int card_id, card->getSubcards()){
-                const Card *subcard = Sanguosha->getCard(card_id);
-                if(subcard->isRed())
-                    n++;
+        if(event == CardDiscarded){
+            if(card->isVirtualCard()){
+                foreach(int card_id, card->getSubcards()){
+                    const Card *subcard = Sanguosha->getCard(card_id);
+                    if(subcard->isRed())
+                        n++;
+                }
             }
+            else if(card->isRed())
+                n++;
         }
-        else if(card->isRed())
-            n++;
+        else
+            n = card->isRed() ? 1 : 0;
 
         if(n>0 && player->askForSkillInvoke(objectName(), data))
             player->drawCards(n);
