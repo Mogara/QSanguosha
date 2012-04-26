@@ -40,47 +40,9 @@ void Engine::addScenario(const QString &name){
         qWarning("Scenario %s cannot be loaded!", qPrintable(name));
 }
 
-
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
-    lua_getglobal(L, "config");
-    lua_getfield(L, -1, key);
-
-    QVariant data;
-    switch(lua_type(L, -1)){
-    case LUA_TSTRING: {
-        data = QString::fromUtf8(lua_tostring(L, -1));
-        lua_pop(L, 1);
-        break;
-    }
-
-    case LUA_TNUMBER:{
-        data = lua_tonumber(L, -1);
-        lua_pop(L, 1);
-        break;
-    }
-
-    case LUA_TTABLE:{
-        QStringList list;
-
-        size_t size = lua_objlen(L, -1);
-        for(size_t i=0; i<size; i++){
-            lua_rawgeti(L, -1, i+1);
-            QString element = lua_tostring(L, -1);
-            lua_pop(L, 1);
-            list << element;
-        }
-
-        data = list;
-    }
-
-    default:
-        break;
-    }
-
-    lua_pop(L, 1);
-    return data;
+    return GetValueFromLuaState(L, "config", key);
 }
-
 
 Engine::Engine()
 {

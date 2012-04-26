@@ -138,7 +138,8 @@ SOURCES += src/main.cpp \
     src/jsoncpp/src/json_value.cpp \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl
+    src/jsoncpp/src/json_internalarray.inl \
+    src/core/util.cpp
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -263,7 +264,8 @@ HEADERS += src/client/aux-skills.h \
     src/jsoncpp/include/json/features.h \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h
+    src/jsoncpp/include/json/assertions.h \
+    src/core/util.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
