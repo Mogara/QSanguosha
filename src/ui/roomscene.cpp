@@ -4038,11 +4038,6 @@ void RoomScene::reLayout(QMatrix matrix)
     pos.rx()+= padding_left;
     pos.ry()+= padding_top;
 
-    //alignTo(trust_button,pos,"xlyb");
-//    alignTo(untrust_button,pos,"xlyb");
-//    pos.rx()+=trust_button->width();
-//    pos.rx()+=skip;
-
     alignTo(reverse_button,pos,"xlyb");
     pos.rx()+=reverse_button->width();
     pos.rx()+=skip*2;
@@ -4059,20 +4054,6 @@ void RoomScene::reLayout(QMatrix matrix)
 
     pos.rx()-= padding_left;
     pos.ry()+=padding_top;
-
-//    alignTo(discard_button,pos,"xryb");
-//    pos.rx()-=discard_button->width();
-//    pos.rx()-=skip;
-
-//    alignTo(cancel_button,pos,"xryb");
-//    pos.rx()-=cancel_button->width();
-//    pos.rx()-=skip;
-
-//    alignTo(ok_button,pos,"xryb");
-//    pos.rx()-=ok_button->width();
-//    pos.rx()-=skip;
-    //ok_button->move(-10,-10);
-
 
     if(!Config.value("circularView",false).toBool())
     {
