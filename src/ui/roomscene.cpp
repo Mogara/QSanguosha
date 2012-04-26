@@ -53,12 +53,15 @@ using namespace QSanProtocol;
 
 struct RoomLayout {
     QPointF discard, drawpile;
+    QPointF enemy_box, self_box;
 };
 
 struct NormalRoomLayout : public RoomLayout{
     NormalRoomLayout(){
         discard = QPointF(-6, 8);
         drawpile = QPointF(-108, 8);
+        enemy_box = QPointF(-216, -327);
+        self_box = QPointF(360, -90);
     }
 };
 
@@ -66,6 +69,8 @@ struct CircularRoomLayout : public RoomLayout{
     CircularRoomLayout(){
         discard = QPointF(-140, 30);
         drawpile = QPointF(-260, 30);
+        enemy_box = QPointF(-361, -343);
+        self_box = QPointF(201, -90);
     }
 };
 
@@ -261,14 +266,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
             enemy_box->hide();
             self_box->hide();
-
-            if(circular){
-                enemy_box->setPos(-361, -343);
-                self_box->setPos(201, -90);
-            }else{
-                enemy_box->setPos(-216, -327);
-                self_box->setPos(360, -90);
-            }
+            enemy_box->setPos(room_layout->enemy_box);
+            self_box->setPos(room_layout->self_box);
 
             connect(ClientInstance, SIGNAL(general_revealed(bool,QString)), this, SLOT(revealGeneral(bool,QString)));
         }
