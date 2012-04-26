@@ -80,13 +80,38 @@ void LuaSkillCard::setWillThrow(bool will_throw){
 
 LuaSkillCard *LuaSkillCard::Parse(const QString &str){
     QRegExp rx("#(\\w+):(.*):(.*)");
-    if(!rx.exactMatch(str))
-        return NULL;
+    QRegExp e_rx("#(\\w*)\\[(\\w+):(.+)\\]:(.*):(.*)");
 
-    QStringList texts = rx.capturedTexts();
-    QString name = texts.at(1);
-    QString subcard_str = texts.at(2);
-    QString user_string = texts.at(3);
+    static QMap<QString, Card::Suit> suit_map;
+    if(suit_map.isEmpty()){
+        suit_map.insert("spade", Card::Spade);
+        suit_map.insert("club", Card::Club);
+        suit_map.insert("heart", Card::Heart);
+        suit_map.insert("diamond", Card::Diamond);
+        suit_map.insert("no_suit", Card::NoSuit);
+    }
+
+    QStringList texts;
+    QString name, suit, number;
+    QString subcard_str;
+    QString user_string;
+
+    if(rx.exactMatch(str)){
+        texts = rx.capturedTexts();
+        name = texts.at(1);
+        subcard_str = texts.at(2);
+        user_string = texts.at(3);
+    }
+    else if(e_rx.exactMatch(str)){
+        texts = e_rx.capturedTexts();
+        name = texts.at(1);
+        suit = texts.at(2);
+        number = texts.at(3);
+        subcard_str = texts.at(4);
+        user_string = texts.at(5);
+    }
+    else
+        return NULL;
 
     const LuaSkillCard *c = LuaSkillCards.value(name, NULL);
     if(c == NULL)
@@ -99,6 +124,23 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str){
             new_card->addSubcard(subcard.toInt());
         }
     }
+    if(!suit.isEmpty())
+        new_card->setSuit(suit_map.value(suit, Card::NoSuit));
+    if(!number.isEmpty()){
+        int num = 0;
+        if(number == "A")
+            num = 1;
+        else if(number == "J")
+            num = 11;
+        else if(number == "Q")
+            num = 12;
+        else if(number == "K")
+            num = 13;
+        else
+            num = number.toInt();
+
+        new_card->setNumber(num);
+    }
 
     new_card->setUserString(user_string);
     new_card->setSkillName(name);
@@ -106,7 +148,8 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str){
 }
 
 QString LuaSkillCard::toString() const{
-    return QString("#%1:%2:%3").arg(objectName())
+    return QString("#%1[%2:%3]:%4:%5").arg(objectName())
+            .arg(getSuitString()).arg(getNumberString())
             .arg(subcardString()).arg(user_string);
 }
 
