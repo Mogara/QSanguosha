@@ -38,6 +38,7 @@ QString Card::Suit2String(Suit suit){
     }
 }
 
+
 QStringList Card::IdsToStrings(const QList<int> &ids){
     QStringList strings;
     foreach(int card_id, ids)
@@ -275,19 +276,46 @@ bool Card::isVirtualCard() const{
 }
 
 const Card *Card::Parse(const QString &str){
+    static QMap<QString, Card::Suit> suit_map;
+    if(suit_map.isEmpty()){
+        suit_map.insert("spade", Card::Spade);
+        suit_map.insert("club", Card::Club);
+        suit_map.insert("heart", Card::Heart);
+        suit_map.insert("diamond", Card::Diamond);
+        suit_map.insert("no_suit", Card::NoSuit);
+    }
+
     if(str.startsWith(QChar('@'))){
         // skill card
         QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
-        if(!pattern.exactMatch(str))
+        QRegExp ex_pattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?");
+
+        QStringList texts;
+        QString card_name, card_suit, card_number;
+        QStringList subcard_ids;
+        QString subcard_str;
+        QString user_string;
+
+        if(pattern.exactMatch(str)){
+            texts = pattern.capturedTexts();
+            card_name = texts.at(1);
+            subcard_str = texts.at(2);
+            user_string = texts.at(3);
+        }
+        else if(ex_pattern.exactMatch(str)){
+            texts = ex_pattern.capturedTexts();
+            card_name = texts.at(1);
+            card_suit = texts.at(2);
+            card_number = texts.at(3);
+            subcard_str = texts.at(4);
+            user_string = texts.at(5);
+        }
+        else
             return NULL;
 
-        QStringList texts = pattern.capturedTexts();
-        QString card_name = texts.at(1);
-        QStringList subcard_ids;
-        QString subcard_str = texts.at(2);
         if(subcard_str != ".")
            subcard_ids = subcard_str.split("+");
-        QString user_string = texts.at(3);
+
         SkillCard *card = Sanguosha->cloneSkillCard(card_name);
 
         if(card == NULL)
@@ -299,6 +327,23 @@ const Card *Card::Parse(const QString &str){
         // skill name
         QString skill_name = card_name.remove("Card").toLower();
         card->setSkillName(skill_name);
+        if(!card_suit.isEmpty())
+            card->setSuit(suit_map.value(card_suit, Card::NoSuit));
+        if(!card_number.isEmpty()){
+            int number = 0;
+            if(card_number == "A")
+                number = 1;
+            else if(card_number == "J")
+                number = 11;
+            else if(card_number == "Q")
+                number = 12;
+            else if(card_number == "K")
+                number = 13;
+            else
+                number = card_number.toInt();
+
+            card->setNumber(number);
+        }
 
         if(!user_string.isEmpty()){
             user_string.remove(0, 1);
@@ -333,15 +378,6 @@ const Card *Card::Parse(const QString &str){
         QStringList subcard_ids;
         if(subcard_str != ".")
             subcard_ids = subcard_str.split("+");
-
-        static QMap<QString, Card::Suit> suit_map;
-        if(suit_map.isEmpty()){
-            suit_map.insert("spade", Card::Spade);
-            suit_map.insert("club", Card::Club);
-            suit_map.insert("heart", Card::Heart);
-            suit_map.insert("diamond", Card::Diamond);
-            suit_map.insert("no_suit", Card::NoSuit);
-        }
 
         Suit suit = suit_map.value(suit_string, Card::NoSuit);
 
@@ -570,7 +606,10 @@ Card::CardType SkillCard::getTypeId() const{
 }
 
 QString SkillCard::toString() const{
-    QString str = QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
+    QString str = QString("@%1[%2:%3]=%4")
+            .arg(metaObject()->className()).arg(getSuitString())
+            .arg(getNumberString()).arg(subcardString());
+
     if(!user_string.isEmpty())
         return QString("%1:%2").arg(str).arg(user_string);
     else
