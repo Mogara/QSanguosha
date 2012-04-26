@@ -51,8 +51,33 @@
 
 using namespace QSanProtocol;
 
-static QPointF DiscardedPos(-6, 8);
-static QPointF DrawPilePos(-108, 8);
+struct RoomLayout {
+    QPointF discard, drawpile;
+};
+
+struct NormalRoomLayout : public RoomLayout{
+    NormalRoomLayout(){
+        discard = QPointF(-6, 8);
+        drawpile = QPointF(-108, 8);
+    }
+};
+
+struct CircularRoomLayout : public RoomLayout{
+    CircularRoomLayout(){
+        discard = QPointF(-140, 30);
+        drawpile = QPointF(-260, 30);
+    }
+};
+
+static RoomLayout *GetRoomLayout(){
+    static NormalRoomLayout normal;
+    static CircularRoomLayout circular;
+
+    if(Config.value("CircularView", false).toBool()){
+        return &circular;
+    }else
+        return &normal;
+}
 
 RoomScene *RoomSceneInstance;
 
@@ -66,11 +91,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
+    room_layout = GetRoomLayout();
+
     bool circular = Config.value("CircularView", false).toBool();
-    if(circular){
-        DiscardedPos = QPointF(-140, 30);
-        DrawPilePos = QPointF(-260, 30);
-    }
 
     // create photos
     int i;
@@ -730,7 +753,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 void RoomScene::drawCards(const QList<const Card *> &cards){
     foreach(const Card * card, cards){
         CardItem *item = new CardItem(card);
-        item->setPos(DrawPilePos);
+        item->setPos(room_layout->drawpile);
         item->setEnabled(false);
         dashboard->addCardItem(item);
     }
@@ -750,7 +773,7 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
         addItem(pixmap);
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
-        ugoku->setStartValue(DrawPilePos);
+        ugoku->setStartValue(room_layout->drawpile);
         ugoku->setDuration(800);
         ugoku->setEasingCurve(QEasingCurve::OutQuad);
         ugoku->setEndValue(photo->pos() + QPointF(20 *i, 0));
@@ -1030,12 +1053,12 @@ void RoomScene::viewDiscards(){
         width = qMax(width, 200);
 
         int start = (mid - width)/2;
-        int y     = DiscardedPos.y() - 140;
+        int y     = room_layout->discard.y() - 140;
         if(!Config.value("CircularView", false).toBool())
         {
             width = 0;
-            start = DiscardedPos.x();
-            y     = DiscardedPos.y();
+            start = room_layout->discard.x();
+            y     = room_layout->discard.y();
         }
 
         int i;
@@ -1077,7 +1100,7 @@ void RoomScene::hideDiscards(){
     int i = 1;
     foreach(CardItem *card_item, discarded_queue){
         card_item->setZValue(0.0001 * i++ - 0.8);
-        card_item->setHomePos(DiscardedPos);
+        card_item->setHomePos(room_layout->discard);
         card_item->goBack();
         card_item->setEnabled(true);
         card_item->setOpacity(1.0);
@@ -1129,7 +1152,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     // from draw pile
     if(src_place == Player::DrawPile){
         card_item = new CardItem(Sanguosha->getCard(card_id));
-        card_item->setPos(DrawPilePos);
+        card_item->setPos(room_layout->drawpile);
         return card_item;
     }
 
@@ -1151,7 +1174,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
 
     if(card_item == NULL){
         card_item = new CardItem(Sanguosha->getCard(card_id));
-        card_item->setPos(DiscardedPos);
+        card_item->setPos(room_layout->discard);
     }
 
     card_item->disconnect(this);
@@ -1292,11 +1315,11 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
 
         }else if(dest_place == Player::DrawPile){
-            card_item->setHomePos(DrawPilePos);
+            card_item->setHomePos(room_layout->drawpile);
             card_item->goBack(true);
         }else if(dest_place == Player::Special){
             special_card = card_item;
-            card_item->setHomePos(DrawPilePos);
+            card_item->setHomePos(room_layout->drawpile);
             card_item->goBack();
         }
 
@@ -3263,7 +3286,7 @@ void RoomScene::onGameStart(){
     drawPile = new Pixmap("image/system/card-back.png");
     addItem(drawPile);
     drawPile->setZValue(-2.0);
-    drawPile->setPos(DrawPilePos);
+    drawPile->setPos(room_layout->drawpile);
     QGraphicsDropShadowEffect *drp = new QGraphicsDropShadowEffect;
     drp->setOffset(6);
     drp->setColor(QColor(0,0,0));
