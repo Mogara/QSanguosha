@@ -333,7 +333,7 @@ public:
             if(source && source != player){
                 room->playSkillEffect(objectName(), qrand() % 2 + 3);
 
-                const Card *card = room->askForCard(source, ".enyuan", "@enyuan", NULL, NonTrigger);
+                const Card *card = room->askForCard(source, ".enyuan", "@enyuan", QVariant(), NonTrigger);
                 if(card){
                     room->showCard(source, card->getEffectiveId());
                     player->obtainCard(card);
@@ -548,7 +548,7 @@ void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(!card_use.from->canSlash(target, false))
         return;
 
-    const Card *slash = room->askForCard(card_use.from, "slash", "@xianzhen-slash", NULL, NonTrigger);
+    const Card *slash = room->askForCard(card_use.from, "slash", "@xianzhen-slash", QVariant(), NonTrigger);
     if(slash){
         CardUseStruct use;
         use.card = slash;

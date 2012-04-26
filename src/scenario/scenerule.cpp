@@ -475,12 +475,12 @@ bool SceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data
                 const Card *card;
                 foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                     while(!p->isKongcheng() &&
-                          (card = room->askForCard(p, "fire_slash", "scene_14_prompt_fs", NULL, CardDiscarded)) != NULL)
+                          (card = room->askForCard(p, "fire_slash", "scene_14_prompt_fs", QVariant(), CardDiscarded)) != NULL)
                         damage.damage++;
                 }
                 foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                     while(!p->isKongcheng() &&
-                          (card = room->askForCard(p, "fire_attack", "scene_14_prompt_fa", NULL, CardDiscarded)) != NULL)
+                          (card = room->askForCard(p, "fire_attack", "scene_14_prompt_fa", QVariant(), CardDiscarded)) != NULL)
                         damage.damage++;
                 }
             }
