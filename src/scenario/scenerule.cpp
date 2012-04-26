@@ -399,9 +399,6 @@ bool SceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data
             }
         }
 
-        switch(room->getTag("SceneID").toInt()) {
-        }
-
         break;
 
     case PhaseChange:

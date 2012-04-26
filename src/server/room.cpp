@@ -3537,20 +3537,18 @@ void Room::makeDamage(const QString& source, const QString& target, QSanProtocol
     ServerPlayer* targetPlayer = findChild<ServerPlayer *>(target);    
     if (targetPlayer == NULL) return;
     // damage    
-    switch(nature){ 
-    case S_CHEAT_HP_LOSE:{
+    if (nature == S_CHEAT_HP_LOSE)
+    {
         loseHp(targetPlayer, point);
         return;
-                         }
-    case S_CHEAT_HP_RECOVER:{
+    }
+    else if (nature == S_CHEAT_HP_RECOVER)
+    {
         RecoverStruct recover;        
         recover.who = sourcePlayer;        
         recover.recover = point;
         this->recover(targetPlayer, recover);
         return;
-                            }
-    default:
-        break;
     }
 
     static QMap<QSanProtocol::CheatCategory, DamageStruct::Nature> nature_map;
@@ -3603,6 +3601,7 @@ void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who){
         who->invoke("fillAG", card_str.join("+"));
     else{
         broadcastInvoke("fillAG", card_str.join("+"));
+        //@todo: move this to the client side!!!
         broadcastInvoke("disableAG", "true");
     }
 }
@@ -3612,6 +3611,7 @@ void Room::takeAG(ServerPlayer *player, int card_id){
         player->addCard(Sanguosha->getCard(card_id), Player::Hand);
         setCardMapping(card_id, player, Player::Hand);
         broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
+        //@todo: move this to the client side!!!
         player->invoke("disableAG", "true");
         CardMoveStruct move;
         move.from = NULL;
@@ -3750,7 +3750,7 @@ void Room::takeGeneralCommand(ServerPlayer *player, const QString &arg){
 
 QString Room::askForOrder(ServerPlayer *player){
 
-    bool success = doRequest(player, S_COMMAND_CHOOSE_ORDER, (int)S_REASON_CHOOSE_ORDER_TURN, false, false);
+    bool success = doRequest(player, S_COMMAND_CHOOSE_ORDER, (int)S_REASON_CHOOSE_ORDER_TURN, false);
 
     Game3v3Camp result = qrand() % 2 == 0 ? S_CAMP_WARM : S_CAMP_COOL;
     Json::Value clientReply = player->getClientReply();
@@ -3767,7 +3767,7 @@ QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const Q
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(scheme);
     arg[1] = toJsonStringArray(squeezed);
-    bool success = doRequest(player, S_COMMAND_CHOOSE_ROLE_3V3, arg, false, false);
+    bool success = doRequest(player, S_COMMAND_CHOOSE_ROLE_3V3, arg, false);
     Json::Value clientReply = player->getClientReply();
     QString result = "abstain";
     if (success && clientReply.isString())
