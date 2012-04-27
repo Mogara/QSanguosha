@@ -91,6 +91,7 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         GuidaoCard *card = new GuidaoCard;
+        card->setSuit(card_item->getFilteredCard()->getSuit());
         card->addSubcard(card_item->getFilteredCard());
 
         return card;

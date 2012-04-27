@@ -163,11 +163,12 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 		if self:needRetrial(judge) then
 			self:sortByUseValue(cards, true)
 			if self:getUseValue(judge.card) > self:getUseValue(cards[1]) then
-				return "@GuidaoCard=" .. cards[1]:getId()
+				return "@GuidaoCard[" .. cards[1]:getSuitString() .. ":" .. card:getNumberString() .."]=" .. cards[1]:getId()
 			end
 		end
 	elseif self:needRetrial(judge) or self:getUseValue(judge.card) > self:getUseValue(sgs.Sanguosha:getCard(card_id)) then
-		return "@GuidaoCard=" .. card_id
+		local card = sgs.Sanguosha:getCard(card_id)
+		return "@GuidaoCard[" .. card:getSuitString() .. ":" .. card:getNumberString() .. "]=" .. card_id
 	end
 	
 	return "."
