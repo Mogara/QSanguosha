@@ -149,7 +149,7 @@ sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 		self:sort(self.enemies, "handcard")
 		for index = #self.enemies, 1, -1 do
 			local enemy = self.enemies[index]
-			if not self:hasSkills(sgs.lose_equip_skill, enemy) or not enemy:isNude() and
+			if not self:hasSkills(sgs.lose_equip_skill, enemy) and not enemy:isNude() and
 			   not (enemy:getCards("he"):length() < x or sgs.getDefense(enemy) < 3) then
 				self.yinghun = enemy
 				self.yinghunchoice = "d1tx"
