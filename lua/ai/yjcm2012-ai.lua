@@ -279,6 +279,13 @@ end
 
 sgs.ai_skill_invoke.chunlao = sgs.ai_skill_invoke.buyi
 
+sgs.chengpu_keep_value = 
+{
+	Peach = 6,
+	Jink = 5.1,
+	Slash = 5.5,
+}
+
 sgs.ai_skill_invoke.zhiyu = function(self)
 	local cards = self.player:getCards("h")	
 	cards=sgs.QList2Table(cards)

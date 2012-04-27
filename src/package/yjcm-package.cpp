@@ -189,7 +189,7 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         Room *room = player->getRoom();
-        if(damage.card->getTypeId() == Card::Trick){
+        if(damage.card && damage.card->getTypeId() == Card::Trick){
             if(event == DamagedProceed && player->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanGood";
@@ -219,16 +219,19 @@ public:
     }
 };
 
-class Jujian: public PhaseChangeSkill{
+class Jujian: public TriggerSkill{
 public:
-    Jujian():PhaseChangeSkill("jujian"){
+    Jujian():TriggerSkill("jujian"){
+        events << PhaseChange;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *xushu) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *xushu, QVariant &data) const{
+        if(!xushu->hasSkill(objectName()))
+            return false;
         if(xushu->getPhase() == Player::Finish){
             Room *room = xushu->getRoom();
             if(!xushu->isKongcheng() && room->askForSkillInvoke(xushu, objectName())){
-                if(room->askForCard(xushu, ".NoBasic", "@jujian-discard", NULL, CardDiscarded)){
+                if(room->askForCard(xushu, ".NoBasic", "@jujian-discard", data, CardDiscarded)){
                     room->playSkillEffect(objectName());
                     ServerPlayer *target = room->askForPlayerChosen(xushu, room->getOtherPlayers(xushu), objectName());
                     QString choice = room->askForChoice(target, objectName(), "draw+recover+reset");
@@ -429,6 +432,7 @@ public:
                 }
 
                 ServerPlayer *first = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
+                ServerPlayer *second = NULL;
                 int first_id = -1;
                 int second_id = -1;
                 if(first != NULL){
@@ -437,7 +441,8 @@ public:
                     if(first->isNude())
                         targets.removeOne(first);
                 }
-                ServerPlayer *second = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
+                if(room->askForSkillInvoke(lingtong, objectName()))
+                    second = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
                 if(second != NULL){
                     second_id = room->askForCardChosen(lingtong, second, "he", "xuanfeng");
                     room->throwCard(second_id, second);
