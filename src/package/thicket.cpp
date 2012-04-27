@@ -194,6 +194,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return !target->hasSkill(objectName());
     }

@@ -202,7 +202,7 @@ public:
                 return true;
             }
 
-            if(event == Predamage && player->hasSkill(objectName())){
+            if(event == Predamage && damage.from && damage.from->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanBad";
                 log.from = player;
