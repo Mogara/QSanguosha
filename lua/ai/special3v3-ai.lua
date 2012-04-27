@@ -7,7 +7,7 @@ sgs.ai_skill_cardask["@huanshi-card"] = function(self, data)
 		local card = sgs.Sanguosha:getCard(card_id)
 		if card_id ~= -1 then
 			return "@HuanshiCard[" .. card:getSuitString() .. ":" .. card:getNumberString() .. "]=" .. card_id
-
+		end
 	end
 
 	return "."
