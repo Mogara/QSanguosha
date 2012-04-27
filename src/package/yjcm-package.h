@@ -11,15 +11,6 @@ public:
     YJCMPackage();
 };
 
-class JujianCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE JujianCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
 class MingceCard: public SkillCard{
     Q_OBJECT
 
