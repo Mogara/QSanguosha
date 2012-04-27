@@ -4,7 +4,6 @@ package.path = package.path .. ";./lua/lib/?.lua"
 package.cpath = package.cpath .. ";./lua/clib/?.dll"
 
 dofile "lua/sgs_ex.lua"
-dofile "lua/config.lua"
 
 function load_translation(file)
 	local t = dofile(file)

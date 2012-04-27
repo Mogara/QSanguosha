@@ -978,13 +978,6 @@ void Server::daemonize(){
 
 Room *Server::createNewRoom(){
     Room *new_room = new Room(this, Config.GameMode);
-    QString error_msg = new_room->createLuaState();
-
-    if(!error_msg.isEmpty()){
-        QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);
-        return NULL;
-    }
-
     current = new_room;
     rooms.insert(current);
 

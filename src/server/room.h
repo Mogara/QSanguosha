@@ -29,7 +29,6 @@ public:
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer*, const Json::Value&, void*);
 
     explicit Room(QObject *parent, const QString &mode);
-    QString createLuaState();
     ServerPlayer *addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;

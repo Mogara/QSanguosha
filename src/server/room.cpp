@@ -39,6 +39,11 @@ Room::Room(QObject *parent, const QString &mode)
     scenario = Sanguosha->getScenario(mode);
 
     initCallbacks();
+
+    L = CreateLuaState();
+    QStringList scripts;
+    scripts << "lua/sanguosha.lua" << "lua/ai/smart-ai.lua";
+    DoLuaScripts(L, scripts);
 }
 
 void Room::initCallbacks(){
@@ -72,12 +77,6 @@ void Room::initCallbacks(){
 
     //Client request
     callbacks["networkDelayTestCommand"] = &Room::networkDelayTestCommand;
-}
-
-QString Room::createLuaState(){
-    QString error_msg;
-    L = Sanguosha->createLuaStateWithAI(error_msg);
-    return error_msg;
 }
 
 ServerPlayer *Room::getCurrent() const{

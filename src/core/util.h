@@ -5,6 +5,7 @@ struct lua_State;
 class QVariant;
 
 #include <QList>
+#include <QStringList>
 
 template<typename T>
 void qShuffle(QList<T> &list){
@@ -14,6 +15,11 @@ void qShuffle(QList<T> &list){
         list.swap(i, r);
     }
 }
+
+// lua interpreter related
+lua_State *CreateLuaState();
+void DoLuaScript(lua_State *L, const char *script);
+void DoLuaScripts(lua_State *L, const QStringList &scripts);
 
 QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *key);
 

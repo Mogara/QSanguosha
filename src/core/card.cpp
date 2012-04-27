@@ -493,15 +493,15 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
     }
 }
 
-void Card::onEffect(const CardEffectStruct &effect) const{
+void Card::onEffect(const CardEffectStruct &) const{
 
 }
 
-bool Card::isCancelable(const CardEffectStruct &effect) const{
+bool Card::isCancelable(const CardEffectStruct &) const{
     return false;
 }
 
-void Card::onMove(const CardMoveStruct &move) const{
+void Card::onMove(const CardMoveStruct &) const{
     // usually dummy
 }
 

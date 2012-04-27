@@ -20,10 +20,6 @@
 
 Engine *Sanguosha = NULL;
 
-extern "C" {
-    int luaopen_sgs(lua_State *);
-}
-
 void Engine::addPackage(const QString &name){
     Package *pack = PackageAdder::packages()[name];
     if(pack)
@@ -48,12 +44,8 @@ Engine::Engine()
 {
     Sanguosha = this;
 
-    QString error_msg;
-    lua = createLuaState(error_msg);
-    if(lua == NULL){
-        QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
-        exit(1);
-    }
+    lua = CreateLuaState();
+    DoLuaScript(lua, "lua/config.lua");
 
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
     foreach(QString name, package_names)
@@ -62,6 +54,8 @@ Engine::Engine()
     QStringList scene_names = GetConfigFromLuaState(lua, "scene_names").toStringList();
     foreach(QString name, scene_names)
         addScenario(name);
+
+    DoLuaScript(lua, "lua/sanguosha.lua");
 
     // available game modes
     modes["02p"] = tr("2 players");
@@ -96,36 +90,6 @@ Engine::Engine()
         Skill *mutable_skill = const_cast<Skill *>(skill);
         mutable_skill->initMediaSource();
     }
-}
-
-lua_State *Engine::createLuaState(QString &error_msg){
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-
-    luaopen_sgs(L);
-
-    int error = luaL_dofile(L, "lua/sanguosha.lua");
-    if(error){
-        error_msg = lua_tostring(L, -1);
-        return NULL;
-    }
-
-    return L;
-}
-
-lua_State *Engine::createLuaStateWithAI(QString &error_msg){
-    lua_State *L = createLuaState(error_msg);
-
-    if(L == NULL)
-        return NULL;
-
-    int error = luaL_dofile(L, "lua/ai/smart-ai.lua");
-    if(error){
-        error_msg = lua_tostring(L, -1);
-        return NULL;
-    }
-
-    return L;
 }
 
 lua_State *Engine::getLuaState() const{

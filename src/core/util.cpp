@@ -3,6 +3,11 @@
 
 #include <QVariant>
 #include <QStringList>
+#include <QMessageBox>
+
+extern "C" {
+    int luaopen_sgs(lua_State *);
+}
 
 QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *key){
     lua_getglobal(L, table_name);
@@ -42,4 +47,27 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
 
     lua_pop(L, 1);
     return data;
+}
+
+lua_State *CreateLuaState(){
+    lua_State *L = luaL_newstate();
+    luaL_openlibs(L);
+    luaopen_sgs(L);
+
+    return L;
+}
+
+void DoLuaScript(lua_State *L, const char *script){
+    int error = luaL_dofile(L, script);
+    if(error){
+        QString error_msg = lua_tostring(L, -1);
+        QMessageBox::critical(NULL, QObject::tr("Lua script error"), error_msg);
+        exit(1);
+    }
+}
+
+void DoLuaScripts(lua_State *L, const QStringList &scripts){
+    foreach(QString script, scripts){
+        DoLuaScript(L, script.toLocal8Bit());
+    }
 }
