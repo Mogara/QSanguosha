@@ -250,7 +250,7 @@ function SmartAI:getUseValue(card)
 
 	if card:inherits("GuhuoCard") then
 		local userstring = card:toString()
-		userstring = (userstring:split(":"))[2]
+		userstring = (userstring:split(":"))[3]
 		local guhuocard = sgs.Sanguosha:cloneCard(userstring, card:getSuit(), card:getNumber())
 		local usevalue = self:getUseValue(guhuocard,player) + #self.enemies*0.3
 		if sgs.Sanguosha:getCard(card:getSubcards():first()):objectName() == userstring and card:getSuit() == sgs.Card_Heart then usevalue = usevalue + 3 end

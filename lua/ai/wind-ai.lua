@@ -474,7 +474,7 @@ end
 
 sgs.ai_skill_use_func.GuhuoCard=function(card,use,self)
 	local userstring=card:toString()
-	userstring=(userstring:split(":"))[2]
+	userstring=(userstring:split(":"))[3]
 	local guhuocard=sgs.Sanguosha:cloneCard(userstring, card:getSuit(), card:getNumber())
 	if guhuocard:getTypeId() == sgs.Card_Basic then self:useBasicCard(guhuocard,use,false) else assert(guhuocard) self:useTrickCard(guhuocard,use) end
 	if not use.card then return end
