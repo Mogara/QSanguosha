@@ -308,7 +308,7 @@ public:
                 move->from->setFlags("EnyuanTarget");
         }
         else if(event == CardGotDone){
-            if((player->getMark("enyuan") >= 2 || player->getMark("xuanhuo") >= 2) && room->askForSkillInvoke(player,objectName(),data)){
+            if(player->getMark("enyuan") >= 2 && room->askForSkillInvoke(player,objectName(),data)){
                 ServerPlayer *target = NULL;
                 foreach(ServerPlayer *other, room->getOtherPlayers(player)){
                     if(other->hasFlag("EnyuanTarget")){
@@ -322,7 +322,6 @@ public:
 
             }
             room->setPlayerMark(player, "enyuan", 0);
-            room->setPlayerMark(player, "xuanhuo", 0);
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
@@ -378,31 +377,24 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         }
         else{
             int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-            room->moveCardTo(Sanguosha->getCard(first_id), effect.from, Player::Hand, false);
-            // todo:fazheng shoule get two cards for one time,invoke enyuan,invoke tuntian once
-            //DummyCard *dummy = new DummyCard;
-            //dummy->addSubcard(first_id);
-            //target->addToPile("#xuanhuo", dummy, false);
+            DummyCard *dummy = new DummyCard;
+            dummy->addSubcard(first_id);
+            effect.to->addToPile("#xuanhuo", dummy, true);
             int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-            // a temp way ,but this will invoke tuntian twice
-            room->setPlayerMark(effect.from, "xuanhuo", 2);
-            room->moveCardTo(Sanguosha->getCard(second_id), effect.from, Player::Hand, false);
+            dummy->addSubcard(second_id);
+            room->moveCardTo(dummy, effect.from, Player::Hand, true);
+            delete dummy;
         }
     }
     else{
         int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-        room->moveCardTo(Sanguosha->getCard(first_id), effect.from, Player::Hand, false);
-        // todo:fazheng shoule get two cards for one time,invoke enyuan,invoke tuntian once
-        //DummyCard *dummy = new DummyCard;
-        //dummy->addSubcard(first_id);
-        //target->addToPile("#xuanhuo", dummy, false);
+        DummyCard *dummy = new DummyCard;
+        dummy->addSubcard(first_id);
+        effect.to->addToPile("#xuanhuo", dummy, true);
         int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-        // a temp way ,but this will invoke tuntian twice
-        room->setPlayerMark(effect.from, "xuanhuo", 2);
-        room->moveCardTo(Sanguosha->getCard(second_id), effect.from, Player::Hand, false);
-        //dummy->addSubcard(second_id);
-        //room->moveCardTo(dummy, effect.from, Player::Hand, false);
-        //delete dummy;
+        dummy->addSubcard(second_id);
+        room->moveCardTo(dummy, effect.from, Player::Hand, true);
+        delete dummy;
     }
 }
 
