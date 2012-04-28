@@ -308,7 +308,7 @@ public:
                 move->from->setFlags("EnyuanTarget");
         }
         else if(event == CardGotDone){
-            if(player->getMark("enyuan") >= 2 && room->askForSkillInvoke(player,objectName())){
+            if((player->getMark("enyuan") >= 2 || player->getMark("xuanhuo") >= 2) && room->askForSkillInvoke(player,objectName())){
                 ServerPlayer *target = NULL;
                 foreach(ServerPlayer *other, room->getOtherPlayers(player)){
                     if(other->hasFlag("EnyuanTarget")){
@@ -322,6 +322,7 @@ public:
 
             }
             room->setPlayerMark(player, "enyuan", 0);
+            room->setPlayerMark(player, "xuanhuo", 0);
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
@@ -356,22 +357,21 @@ bool XuanhuoCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    ServerPlayer *target = room->askForPlayerChosen(effect.from, room->getOtherPlayers(effect.from), objectName());
-    QString choice = room->askForChoice(target, "xuanhuo", "slash+give");
+    QString choice = room->askForChoice(effect.to, "xuanhuo", "slash+give");
     if(choice == "slash"){
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *victim, room->getOtherPlayers(effect.from)){
-            if(target->canSlash(victim))
+            if(effect.to->canSlash(victim))
                 targets << victim;
         }
         ServerPlayer *victim = room->askForPlayerChosen(effect.from, targets, "xuanhuo-slash");
         QString prompt = QString("xuanhuo-slash:%1:%2")
-                .arg(target->objectName()).arg(victim->objectName());
-        const Card *slash = room->askForCard(target, "slash", prompt, NonTrigger);
+                .arg(effect.to->objectName()).arg(victim->objectName());
+        const Card *slash = room->askForCard(effect.to, "slash", prompt, NonTrigger);
         if(slash){
             CardUseStruct use;
             use.card = slash;
-            use.from = target;
+            use.from = effect.to;
             use.to << victim;
             room->useCard(use);
         }
@@ -379,14 +379,19 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
             choice = "give";
     }
     else{
-        int first_id = room->askForCardChosen(effect.from, target, "he", "xuanhuo");
-        DummyCard *dummy = new DummyCard;
-        dummy->addSubcard(first_id);
-        target->addToPile("#xuanhuo", dummy, false);
-        int second_id = room->askForCardChosen(effect.from, target, "he", "xuanhuo");
-        dummy->addSubcard(second_id);
-        room->moveCardTo(dummy, effect.from, Player::Hand, false);
-        delete dummy;
+        int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
+        room->moveCardTo(Sanguosha->getCard(first_id), effect.from, Player::Hand, false);
+        // todo:fazheng shoule get two cards for one time,invoke enyuan,invoke tuntian once
+        //DummyCard *dummy = new DummyCard;
+        //dummy->addSubcard(first_id);
+        //target->addToPile("#xuanhuo", dummy, false);
+        int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
+        // a temp way ,but this will invoke tuntian twice
+        room->setPlayerMark(effect.from, "xuanhuo", 2);
+        room->moveCardTo(Sanguosha->getCard(second_id), effect.from, Player::Hand, false);
+        //dummy->addSubcard(second_id);
+        //room->moveCardTo(dummy, effect.from, Player::Hand, false);
+        //delete dummy;
     }
 }
 
