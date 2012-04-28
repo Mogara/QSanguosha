@@ -46,20 +46,6 @@ sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 	return "@JujianCard="..nobasiccard.."->"..self.friends_noself[1]:objectName()
 end
 
-sgs.ai_skill_cardask["@jujian-discard"] = function(self, data)
-	local effect = data:toCardEffect()
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-	self:sortByKeepValue(cards)
-	for _, card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_Basic then
-			return "$" .. card:getEffectiveId()
-		end
-	end
-	return "."
-end
-
-
 sgs.ai_skill_choice.jujian = function(self, choices)
 	if not self.player:faceUp() then return "reset" end
 	if self:isEquip("Vine") and self.player:isChained() and not self:isGoodChainPartner() then 
