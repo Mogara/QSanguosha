@@ -118,10 +118,11 @@ public:
         return target->hasUsed("LihunCard");
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *diaochan, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *diaochan, QVariant &data) const{
         Room *room = diaochan->getRoom();
+        PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
 
-        if(event == PhaseChange && diaochan->getPhase() == Player::Discard){
+        if(phase_change.from == Player::Play){
             ServerPlayer *target = NULL;
             foreach(ServerPlayer *other, room->getOtherPlayers(diaochan)){
                 if(other->hasFlag("LihunTarget")){

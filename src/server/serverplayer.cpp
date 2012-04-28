@@ -592,10 +592,17 @@ void ServerPlayer::play(QList<Player::Phase> set_phases){
 
     phases = set_phases;
     while(!phases.isEmpty()){
+        PhaseChangeStruct phase_change;
+
         Phase phase = phases.takeFirst();
+        phase_change.from = this->getPhase();
+        phase_change.to = phase;
+
         setPhase(phase);
         room->broadcastProperty(this, "phase");
-        room->getThread()->trigger(PhaseChange, this);
+
+        QVariant data = QVariant::fromValue(phase_change);
+        room->getThread()->trigger(PhaseChange, this, data);
 
         if(isDead() && phase != NotActive){
             phases.clear();

@@ -103,4 +103,12 @@ public:
 	PindianStruct *toPindian() const{
 		return $self->value<PindianStar>();
 	}
+	
+	PhaseChangeStruct toPhaseChange() const{
+		return $self->value<PhaseChangeStruct>();
+	}
+	
+	void setValue(PhaseChangeStruct *phase){
+		$self->setValue(QVariant::fromValue(*phase));
+	}
 };

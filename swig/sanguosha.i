@@ -440,6 +440,12 @@ struct PindianStruct{
 	QString reason;
 };
 
+struct PhaseChangeStruct{
+    PhaseChangeStruct();
+    Player::Phase from;
+    Player::Phase to;
+};
+
 typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{

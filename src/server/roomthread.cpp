@@ -121,6 +121,10 @@ bool JudgeStruct::isBad() const{
     return ! isGood();
 }
 
+PhaseChangeStruct::PhaseChangeStruct()
+    :from(Player::NotActive), to(Player::NotActive)
+{}
+
 CardUseStruct::CardUseStruct()
     :card(NULL), from(NULL)
 {
@@ -331,8 +335,12 @@ void RoomThread::run(){
                         room->setPlayerFlag(player, "-actioned");
 
                     if(player->getPhase() != Player::NotActive){
+                        PhaseChangeStruct phase;
+                        phase.from = player->getPhase();
                         room->setPlayerProperty(player, "phase", "not_active");
-                        trigger(PhaseChange, player);
+                        phase.to = player->getPhase();
+                        QVariant data = QVariant::fromValue(phase);
+                        trigger(PhaseChange, player, data);
                     }
                 }
             }
