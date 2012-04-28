@@ -68,6 +68,8 @@ sgs.ai_skill_choice.jujian = function(self, choices)
 	return "draw"
 end
 
+sgs.ai_card_intention.JujianCard = -100
+
 sgs.xushu_keep_value = 
 {
 	Peach = 6,
@@ -110,10 +112,21 @@ end
 
 sgs.ai_chaofeng.masu = -4
 
+sgs.ai_skill_invoke.enyuan = function(self, data)
+	local damage = data:toDamage()
+	local from = damage.from
+	local source = self.room:getCurrent()
+	if from then
+		return not self:isFriend(from)
+	else
+		return self:isFriend(source)
+	end
+end
+
 sgs.ai_skill_cardask["@enyuan"] = function(self)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:getSuit() == sgs.Card_Heart and not (card:inherits("Peach") or card:inherits("ExNihilo")) then
+		if  not (card:inherits("Peach") or card:inherits("ExNihilo")) then
 			return card:getEffectiveId()
 		end
 	end
@@ -124,69 +137,106 @@ function sgs.ai_slash_prohibit.enyuan(self)
 	if self:isWeak() then return true end
 end
 
-xuanhuo_skill={}
-xuanhuo_skill.name="xuanhuo"
-table.insert(sgs.ai_skills,xuanhuo_skill)
-xuanhuo_skill.getTurnUseCard=function(self)
-	if not self.player:hasUsed("XuanhuoCard") then
-		return sgs.Card_Parse("@XuanhuoCard=.")
+sgs.ai_skill_use["@@xuanhuo"] = function(self, prompt)
+	local lord = self.room:getLord()
+	local killloyal = 0
+	local robequip = 0
+	if self:isEnemy(lord) then 
+		for _, enemy in ipairs(self.enemies) do
+			if lord:canSlash(enemy) and (enemy:getHp() < 2 and not enemy:hasSkill("buqu"))
+			and sgs.getDefense(enemy) < 2 then
+				killloyal = killloyal + 1
+			end
+		end
 	end
-end
-
-sgs.ai_skill_use_func.XuanhuoCard = function(card, use, self)
-	local cards = self.player:getHandcards()
-	cards=sgs.QList2Table(cards)
-	self:sortByUseValue(cards,true)
-
-	local target
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getCards("e"):length() > 1 and self:getCardsNum("Slash", enemy) == 0 
+		and not self:hasSkills(sgs.lose_equip_skill,enemy) then
+			robequip = robequip + 1
+		end
+	end
+	if #self.enemies < 2 and killloyal < 1 and robequip < 1 then return "." end
+	if self:isEnemy(lord) and killloyal > 0 then
+		return "@XuanhuoCard=.->"..lord:objectName()
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getCards("e"):length() > 1 and self:getCardsNum("Slash", enemy) == 0 
+		and not self:hasSkills(sgs.lose_equip_skill,enemy) then
+			return "@XuanhuoCard=.->"..enemy:objectName()
+		end
+	end
+	self:sort(self.enemies,"defense")
+	for _, friend in ipairs(self.friends_noself) do
+		for _, enemy in ipairs(self.enemies) do
+			if friend:canSlash(enemy) and (enemy:getHp() < 2 and not enemy:hasSkill("buqu"))
+			and sgs.getDefense(enemy) < 2 then
+				return "@XuanhuoCard=.->"..friend:objectName()
+			end
+		end
+	end
 	for _, friend in ipairs(self.friends_noself) do
 		if self:hasSkills(sgs.lose_equip_skill, friend) and not friend:getEquips():isEmpty() then
-			for _, card in ipairs(cards) do
-				if card:getSuit() == sgs.Card_Heart and self.player:getHandcardNum() > 1 then
-					use.card = sgs.Card_Parse("@XuanhuoCard=" .. card:getEffectiveId())
-					target = friend
-					break
-				end
-			end
-		end
-		if target then break end
-	end
-	if not target then
-		for _, enemy in ipairs(self.enemies) do
-			if not enemy:isKongcheng() then
-				for _, card in ipairs(cards)do
-					if card:getSuit() == sgs.Card_Heart and not card:inherits("Peach")  and self.player:getHandcardNum() > 1 then
-						use.card = sgs.Card_Parse("@XuanhuoCard=" .. card:getEffectiveId())
-						target = enemy
-						break
-					end
-				end
-			end
-			if target then break end
+			return "@XuanhuoCard=.->"..friend:objectName()
 		end
 	end
+	self:sort(self.friends_noself,"defense")
+		return "@XuanhuoCard=.->"..self.friends_noself[1]:objectName()
+end
 
-	if target then
-		self.room:setPlayerFlag(target, "xuanhuo_target")
-		if use.to then
-			use.to:append(target)
+sgs.ai_skill_choice.xuanhuo = function(self, choices)
+	local fazheng = self.room:findPlayerBySkillName("xuanhuo")
+	if fazheng and not self:isFriend(fazheng) then 
+		for _, friend in ipairs(self.friends_noself) do
+			if self.player:canSlash(friend) and self:isWeak(friend) then
+				return "give"
+			end
+		end
+		return "slash"
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:canSlash(enemy) and (enemy:getHp() < 2 and not enemy:hasSkill("buqu"))
+		and sgs.getDefense(enemy) < 2 then
+			return "slash"
 		end
 	end
+	return "give"
 end
 
 sgs.ai_skill_playerchosen.xuanhuo = function(self, targets)
-	for _, player in sgs.qlist(targets) do
-		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) 
-			and not player:hasFlag("xuanhuo_target") and not self:needKongcheng(player) and not player:hasSkill("manjuan") then
-			return player
+	targets = sgs.QList2Table(targets)
+	self:sort(targets,"defense")
+	for _, target in ipairs(targets) do
+		if self:isEnemy(target) and not target:hasSkill("buqu") then
+			return target
 		end
 	end
 end
 
-sgs.fazheng_suit_value = 
-{
-	heart = 3.9
-}
+sgs.ai_skill_cardask["xuanhuo-slash"] = function(self, data, pattern, target, target2)
+	if target and target2  and self:isEnemy(target2) then
+		for _, slash in ipairs(self:getCards("Slash")) do
+			if self:slashIsEffective(slash, target2) then 
+				return slash:toString()
+			end 
+		end
+	end
+	if target and target2 and self:isFriend(target2) then
+		for _, slash in ipairs(self:getCards("Slash")) do
+			if not self:slashIsEffective(slash, target2) then
+				return slash:toString()
+			end 
+		end
+		if (target2:getHp() > 2 or self:getCardsNum("Jink", target2) > 1) and not target2:getRole() == "lord" and self.player:getHandcardNum() > 1 then
+			for _, slash in ipairs(self:getCards("Slash")) do
+				return slash:toString()
+			end 
+		end
+	end
+	return "."
+end
+
+sgs.ai_playerchosen_intention.xuanhuo = 80
+sgs.ai_card_intention.XuanhuoCard = -30
 
 sgs.ai_chaofeng.fazheng = -3
 

@@ -218,7 +218,7 @@ end
 sgs.ai_skill_playerchosen.zhuiyi = function(self, targets)	
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
-	for _, friend in ipairs(self.friends_noself) do
+	for _, friend in ipairs(targets) do
 		if self:isFriend(friend) then
 			return friend
 		end

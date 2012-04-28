@@ -26,6 +26,7 @@ return {
 	["@xuanhuo-card"] = "您是否想发动【眩惑】技能？",
 	["xuanhuo:slash"] = "对攻击范围内的一名角色使用一张【杀】",
 	["xuanhuo:give"] = "对方获得你2张牌",
+	["xuanhuo-slash"] = "请对已选定的目标使用一张【杀】",
 	["@enyuan"] = "请交给对方一张手牌",
 
 	["#masu"] = "怀才自负",

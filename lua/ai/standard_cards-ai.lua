@@ -656,6 +656,9 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, target2, name)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 	if not self:damageIsEffective(nil, nil, target) then return "." end
 	local aoe = sgs.Sanguosha:cloneCard(name, sgs.Card_NoSuit, 0)
+	local menghuo = self.room:findPlayerBySkillName("huoshou")
+	if self.player:hasSkill("wuyan") then return "." end
+	if target:hasSkill("wuyan") and not (menghuo and aoe:inherits("SavageAssault")) then return "." end
 	if self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10 and
 		(self.player:getHp()>1 or self:getAllPeachNum()>0) and not self.player:containsTrick("indulgence") then return "." end
 end
@@ -1145,7 +1148,7 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target,
 	if self:needBear() then return "." end
 	if target and target2 and not self:hasSkills(sgs.lose_equip_skill) and self:isEnemy(target2) then
 		for _, slash in ipairs(self:getCards("Slash")) do
-			if self:slashIsEffective(slash, target) then 
+			if self:slashIsEffective(slash, target2) then 
 				return slash:toString()
 			end 
 		end
