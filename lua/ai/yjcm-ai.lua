@@ -258,7 +258,8 @@ sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
 	for _, enemy in ipairs(self.enemies) do
-		if not self:needKongcheng(enemy) then
+		if not self:needKongcheng(enemy) and 
+		not (enemy:hasSkill("guzheng") and self.room:getCurrent():getPhase() == sgs.Player_Discard) then
 			return enemy
 		end
 	end

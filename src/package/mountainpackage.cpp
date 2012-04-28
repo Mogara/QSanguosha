@@ -716,27 +716,27 @@ public:
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
-        events << CardDiscarded;
+        events << CardLost;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill("guzheng");
+        return true;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         ServerPlayer *erzhang = room->findPlayerBySkillName(objectName());
+        ServerPlayer *current = room->getCurrent();
 
         if(erzhang == NULL)
             return false;
-
-        if(player->getPhase() == Player::Discard){
+        if(erzhang == current)
+            return false;
+        if(current->getPhase() == Player::Discard){
             QVariantList guzheng = erzhang->tag["Guzheng"].toList();
 
-            CardStar card = data.value<CardStar>();
-            foreach(int card_id, card->getSubcards()){
-                guzheng << card_id;
-            }
+            CardMoveStar move = data.value<CardMoveStar>();
+                guzheng << move->card_id;
 
             erzhang->tag["Guzheng"] = guzheng;
         }
