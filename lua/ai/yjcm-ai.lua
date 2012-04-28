@@ -11,7 +11,7 @@ function sgs.ai_skill_invoke.jiushi(self, data)
 end
 
 
-function sgs.ai_skill_invoke.jujian(self, data)
+sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 	local needfriend = 0
 	local nobasiccard = 0
 	local cards = self.player:getHandcards()
@@ -20,12 +20,29 @@ function sgs.ai_skill_invoke.jujian(self, data)
 		if card:getTypeId() ~= sgs.Card_Basic then nobasiccard = nobasiccard+1 end
 	end
 	for _, friend in ipairs(self.friends_noself) do
-		if self:isWeak(friend) or not friend:faceUp() 
+		if friend:isWounded() or not friend:faceUp() 
 		or (friend:getArmor() and friend:getArmor():objectName() == "vine" and (enemy:isChained() and not self:isGoodChainPartner(friend))) then
 			needfriend = needfriend + 1
 		end
 	end
-	return nobasiccard > 0 and needfriend > 0
+	if nobasiccard < 1 or needfriend < 1 then return "." end
+	self:sort(self.friends_noself,"defense")
+	for _, friend in ipairs(self.friends_noself) do
+		if not friend:faceUp() then
+			return "@JujianCard=.->"..friend:objectName()
+		end
+	end
+	for _, friend in ipairs(self.friends_noself) do
+		if friend:getArmor() and friend:getArmor():objectName() == "vine" and (enemy:isChained() and not self:isGoodChainPartner(friend)) then
+			return "@JujianCard=.->"..friend:objectName()
+		end
+	end
+	for _, friend in ipairs(self.friends_noself) do
+		if self:isWeak(friend) then
+			return "@JujianCard=.->"..friend:objectName()
+		end
+	end
+	return "@JujianCard=.->"..self.friends_noself[1]:objectName()
 end
 
 sgs.ai_skill_cardask["@jujian-discard"] = function(self, data)
@@ -41,26 +58,6 @@ sgs.ai_skill_cardask["@jujian-discard"] = function(self, data)
 	return "."
 end
 
-sgs.ai_skill_playerchosen.jujian = function(self, targets)	
-	targets = sgs.QList2Table(targets)
-	self:sort(targets,"defense")
-	for _, friend in ipairs(self.friends_noself) do
-		if not friend:faceUp() then
-			return friend
-		end
-	end
-	for _, friend in ipairs(self.friends_noself) do
-		if friend:getArmor() and friend:getArmor():objectName() == "vine" and (enemy:isChained() and not self:isGoodChainPartner(friend)) then
-			return friend
-		end
-	end
-	for _, friend in ipairs(self.friends_noself) do
-		if self:isWeak(friend) then
-			return friend
-		end
-	end
-	return self.friends_noself[1]
-end
 
 sgs.ai_skill_choice.jujian = function(self, choices)
 	if not self.player:faceUp() then return "reset" end
@@ -81,7 +78,8 @@ sgs.xushu_keep_value =
 	OffensiveHorse = 5,
 	Duel = 5,
 	FireAttack = 5,
-	AOE = 5
+	ArcheryAttack = 5,
+	SavageAssault = 5
 }
 
 function sgs.ai_armor_value.yizhong(card)
