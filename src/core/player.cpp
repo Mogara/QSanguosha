@@ -828,7 +828,7 @@ void Player::setStatistics(StatisticsStruct *statistics){
 
 bool Player::isCaoCao() const{
     QString general_name = getGeneralName();
-    return general_name == "caocao" || general_name == "shencaocao" || general_name == "shencc";
+    return general_name == "caocao" || general_name == "shencaocao" || general_name == "weiwudi";
 }
 
 void Player::copyFrom(Player* p)

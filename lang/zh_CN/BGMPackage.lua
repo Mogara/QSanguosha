@@ -45,7 +45,7 @@ return {
 	
 	["#bgm_zhangfei"] = "横矛立马",
 	["bgm_zhangfei"] = "SP张飞",
-	["illustrator:bgm_zhangfei"] = "LiuHeng",
+	["illustrator:bgm_zhangfei"] = "绿豆粥",
 	["designer:bgm_zhangfei"] = "桌游志",
 	["jie"] = "嫉恶",
 	[":jie"] = "<b>锁定技</b>，你使用的红色【杀】造成的伤害+1。",

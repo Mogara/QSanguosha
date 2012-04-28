@@ -234,40 +234,42 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    if(room->askForCard(effect.from, ".NoBasic", "@jujian-discard", CardDiscarded)){
-        room->playSkillEffect(objectName());
-        QString choice = room->askForChoice(effect.to, "jujian", "draw+recover+reset");
-        if(choice == "draw")
-            effect.to->drawCards(2);
-        else if(choice == "recover"){
-            RecoverStruct recover;
-            recover.who = effect.to;
-            room->recover(effect.to, recover);
-        }
-        else if(choice == "reset"){
-            room->setPlayerProperty(effect.to, "chained", false);
-            if(!effect.to->faceUp())
-                effect.to->turnOver();
-        }
+    QString choice = room->askForChoice(effect.to, "jujian", "draw+recover+reset");
+    if(choice == "draw")
+        effect.to->drawCards(2);
+    else if(choice == "recover"){
+        RecoverStruct recover;
+        recover.who = effect.to;
+        room->recover(effect.to, recover);
+    }
+    else if(choice == "reset"){
+        room->setPlayerProperty(effect.to, "chained", false);
+        if(!effect.to->faceUp())
+            effect.to->turnOver();
     }
 }
 
-class JujianViewAsSkill: public ZeroCardViewAsSkill{
+class JujianViewAsSkill: public OneCardViewAsSkill{
 public:
-    JujianViewAsSkill():ZeroCardViewAsSkill("jujian"){
+    JujianViewAsSkill():OneCardViewAsSkill("jujian"){
     }
 
-    virtual const Card *viewAs() const{
-        return new JujianCard;
+    virtual const Card *viewAs(CardItem *card_item) const{
+        JujianCard *card = new JujianCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
     }
 
-protected:
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->getCard()->inherits("BasicCard");
+    }
+
     virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@jujian";
+        return pattern == "@@jujian";
     }
 };
 
@@ -1033,6 +1035,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<XianzhenSlashCard>();
     addMetaObject<XuanhuoCard>();
     addMetaObject<XinzhanCard>();
+    addMetaObject<JujianCard>();
 }
 
 ADD_PACKAGE(YJCM)

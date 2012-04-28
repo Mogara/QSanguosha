@@ -189,9 +189,9 @@ void Replayer::initCommandPair(){
     if(m_nameTranslation.isEmpty()){
         m_nameTranslation["lubu"]               = "lvbu";
         m_nameTranslation["lumeng"]             = "lvmeng";
-  //      m_nameTranslation["shuangxiong"]        = "yanliangwenchou";
+        m_nameTranslation["shuangxiong"]        = "yanliangwenchou";
   //      m_nameTranslation["erzhang"]            = "zhangzhaozhanghong";
-  //      m_nameTranslation["shencc"]             = "weiwudi";
+        m_nameTranslation["shencc"]             = "weiwudi";
     }
 
     if(m_commandMapping.isEmpty()){

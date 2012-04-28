@@ -10,7 +10,7 @@ ZhanShuangxiongCard::ZhanShuangxiongCard(){
 }
 
 bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->getGeneralName() == "shuangxiong" && !to_select->isKongcheng();
+    return targets.isEmpty() && to_select->getGeneralName() == "yanliangwenchou" && !to_select->isKongcheng();
 }
 
 void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -218,7 +218,7 @@ public:
                     room->setTag("BurnWuchao", true);
 
                     QStringList tos;
-                    tos << "yuanshao" << "shuangxiong" << "zhenji" << "liubei";
+                    tos << "yuanshao" << "yanliangwenchou" << "zhenji" << "liubei";
 
                     foreach(QString name, tos){
                         ServerPlayer *to = room->findPlayer(name);
@@ -266,7 +266,7 @@ GuanduScenario::GuanduScenario()
     :Scenario("guandu")
 {
     lord = "yuanshao";
-    loyalists << "shuangxiong" << "zhenji";
+    loyalists << "yanliangwenchou" << "zhenji";
     rebels << "caocao" << "zhangliao" << "guojia";
     renegades << "liubei" << "guanyu";
 

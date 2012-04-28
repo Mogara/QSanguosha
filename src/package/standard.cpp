@@ -373,7 +373,6 @@ StandardPackage::StandardPackage()
     patterns[".Basic"] = new ExpPattern("BasicCard");
     patterns[".Trick"] = new ExpPattern("TrickCard");
     patterns[".Equip"] = new ExpPattern("EquipCard");
-    patterns[".NoBasic"] = new ExpPattern("TrickCard,EquipCard");
 
     patterns["slash"] = new ExpPattern("Slash");
     patterns["jink"] = new ExpPattern("Jink");
