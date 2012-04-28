@@ -214,9 +214,9 @@ return {
 	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
 
 -- CV&Designer
-	["designer:shencc"] = "官方内测第三版",
-	["illustrator:shencc"] = "三国志大战",
-	["cv:shencc"] = "",
+	["designer:weiwudi"] = "官方内测第三版",
+	["illustrator:weiwudi"] = "三国志大战",
+	["cv:weiwudi"] = "",
 
 	["designer:caochong"] = "太阳神上",
 	["illustrator:caochong"] = "三国志大战",

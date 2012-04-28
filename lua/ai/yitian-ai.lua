@@ -19,7 +19,7 @@ end
 
 sgs.weapon_range.YitianSword = 2
 
-sgs.ai_skill_invoke.guixin2 = true
+sgs.ai_skill_invoke.weiwudi_guixin = true
 
 local function findPlayerForModifyKingdom(self, players)
 	local lord = self.room:getLord()
@@ -66,7 +66,7 @@ local function chooseKingdomForPlayer(self, to_modify)
 	return "wei"
 end
 
-sgs.ai_skill_choice.guixin2 = function(self, choices)
+sgs.ai_skill_choice.weiwudi_guixin = function(self, choices)
 	if choices == "wei+shu+wu+qun" then
 		local to_modify = self.room:getTag("Guixin2Modify"):toPlayer()
 		return chooseKingdomForPlayer(self, to_modify)
@@ -108,7 +108,7 @@ sgs.ai_skill_choice.guixin2 = function(self, choices)
 	end
 end
 
-sgs.ai_skill_playerchosen.guixin2 = function(self, players)
+sgs.ai_skill_playerchosen.weiwudi_guixin = function(self, players)
 	local player = findPlayerForModifyKingdom(self, players)
 	return player or players:first()
 end

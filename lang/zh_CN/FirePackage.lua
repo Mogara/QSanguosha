@@ -54,7 +54,7 @@ return {
 	["xueyi"] = "血裔",
 	[":xueyi"] = "<b>主公技</b>，<b>锁定技</b>，场上每有一名其他群雄角色存活，你的手牌上限便+2",
 
-	["#shuangxiong"] = "虎狼兄弟",
+	["#yanliangwenchou"] = "虎狼兄弟",
 	["yanliangwenchou"] = "颜良文丑",
 	["shuangxiong"] = "双雄",
 	[":shuangxiong"] = "摸牌阶段，你可以放弃摸牌，改为进行一次判定，你获得此判定牌，且此回合你的每张与该判定牌不同颜色的手牌均可当【决斗】使用",
@@ -92,7 +92,7 @@ return {
 	["~yuanshao"] = "天不助袁哪！",
 	["~taishici"] = "今所志未遂，奈何死乎",
 	["~pangde"] = "宁做国家鬼，不为贼将也",
-	["~shuangxiong"] = "生不逢时啊……",
+	["~yanliangwenchou"] = "生不逢时啊……",
 
 	-- CV
 	["cv:xunyu"] = "听雨",
@@ -102,7 +102,7 @@ return {
 	["cv:taishici"] = "口渴口樂",
 	["cv:yuanshao"] = "耗子王",
 	["cv:pangde"] = "Glory",
-	["cv:shuangxiong"] = "墨染の飞猫，霸气爷们",
+	["cv:yanliangwenchou"] = "墨染の飞猫，霸气爷们",
 
 	-- illustrator
 	["illustrator:yuanshao"] = "Sonia Tang",
