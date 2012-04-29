@@ -3651,7 +3651,7 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
 }
 
 void RoomScene::adjustDashboard(bool expand){
-    dashboard->setWidth(expand ? main_window->width()-10 : 0);
+    dashboard->setWidth(expand ? 0 : main_window->width()-10);
     Config.setValue("UI/ExpandDashboard", expand);
 }
 

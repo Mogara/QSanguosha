@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -149,7 +149,7 @@
         <x>10</x>
         <y>130</y>
         <width>411</width>
-        <height>21</height>
+        <height>23</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -184,7 +184,7 @@
         <x>10</x>
         <y>160</y>
         <width>411</width>
-        <height>21</height>
+        <height>23</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_6">

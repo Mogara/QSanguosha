@@ -329,12 +329,14 @@ public:
             ServerPlayer *source = damage.from;
             if(source && source != player && room->askForSkillInvoke(player,objectName(),data)){
                 room->playSkillEffect(objectName(), qrand() % 2 + 3);
-
-                const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
-                if(card){
-                    player->obtainCard(card);
-                }else{
-                    room->loseHp(source);
+                int x = damage.damage, i;
+                for(i=0; i<x; i++){
+                    const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
+                    if(card){
+                        player->obtainCard(card);
+                    }else{
+                        room->loseHp(source);
+                    }
                 }
             }
         }
