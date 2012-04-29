@@ -260,7 +260,7 @@ public:
 
         boss_banlist << "yuanshao" << "yanliangwenchou" << "zhaoyun" << "guanyu" << "shencaocao";
 
-        boss_skillbanned << "luanji" << "yanliangwenchou" << "longdan" << "wusheng" << "guixin";
+        boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
 
         dummy_skills << "chujia" << "xuwei" << "tuoqiao" << "shenli" << "midao"
                      << "kuangfeng" << "dawu" << "kuangbao" << "shenfen" << "wuqian"
