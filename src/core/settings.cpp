@@ -197,4 +197,7 @@ void Settings::init(){
     QStringList forbid_packages;
     forbid_packages << "Special3v3";
     setValue("ForbidPackages", forbid_packages.join("+"));
+
+//ui
+    setValue("UI/ExpandDashboard", value("UI/ExpandDashboard", true).toBool());
 }
