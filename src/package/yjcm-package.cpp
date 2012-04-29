@@ -364,7 +364,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     QString choice = room->askForChoice(effect.to, "xuanhuo", "slash+give");
     if(choice == "slash"){
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *victim, room->getOtherPlayers(effect.from)){
+        foreach(ServerPlayer *victim, room->getOtherPlayers(effect.to)){
             if(effect.to->canSlash(victim))
                 targets << victim;
         }
