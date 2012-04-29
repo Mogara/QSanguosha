@@ -13,11 +13,12 @@ end
 
 sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 	local needfriend = 0
-	local nobasiccard = 0
+	local nobasiccard = -1
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards, true)
 	for _,card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_Basic then nobasiccard = nobasiccard+1 end
+		if card:getTypeId() ~= sgs.Card_Basic then nobasiccard = card:getEffectiveId() end
 	end
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:isWounded() or not friend:faceUp() 
@@ -25,39 +26,25 @@ sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 			needfriend = needfriend + 1
 		end
 	end
-	if nobasiccard < 1 or needfriend < 1 then return "." end
+	if nobasiccard < 0 or needfriend < 1 then return "." end
 	self:sort(self.friends_noself,"defense")
 	for _, friend in ipairs(self.friends_noself) do
 		if not friend:faceUp() then
-			return "@JujianCard=.->"..friend:objectName()
+			return "@JujianCard="..nobasiccard.."->"..friend:objectName()
 		end
 	end
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getArmor() and friend:getArmor():objectName() == "vine" and (enemy:isChained() and not self:isGoodChainPartner(friend)) then
-			return "@JujianCard=.->"..friend:objectName()
+			return "@JujianCard="..nobasiccard.."->"..friend:objectName()
 		end
 	end
 	for _, friend in ipairs(self.friends_noself) do
 		if self:isWeak(friend) then
-			return "@JujianCard=.->"..friend:objectName()
+			return "@JujianCard="..nobasiccard.."->"..friend:objectName()
 		end
 	end
-	return "@JujianCard=.->"..self.friends_noself[1]:objectName()
+	return "@JujianCard="..nobasiccard.."->"..self.friends_noself[1]:objectName()
 end
-
-sgs.ai_skill_cardask["@jujian-discard"] = function(self, data)
-	local effect = data:toCardEffect()
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-	self:sortByKeepValue(cards)
-	for _, card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_Basic then
-			return "$" .. card:getEffectiveId()
-		end
-	end
-	return "."
-end
-
 
 sgs.ai_skill_choice.jujian = function(self, choices)
 	if not self.player:faceUp() then return "reset" end
@@ -258,7 +245,8 @@ sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
 	for _, enemy in ipairs(self.enemies) do
-		if not self:needKongcheng(enemy) then
+		if not self:needKongcheng(enemy) and 
+		not (enemy:hasSkill("guzheng") and self.room:getCurrent():getPhase() == sgs.Player_Discard) then
 			return enemy
 		end
 	end

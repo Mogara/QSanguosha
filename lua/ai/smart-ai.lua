@@ -2786,6 +2786,7 @@ function SmartAI:needRetrial(judge)
 				return judge:isGood()
 			end
 		end
+		if self:hasSkills("wuyan|hongyan",judge.who) then return false end
 	end
 	if self:isFriend(judge.who) then
 		if judge.reason == "luoshen" and self:getOverflow(judge.who) > 1 and self.player:getHandcardNum() < 3
@@ -3257,6 +3258,11 @@ function SmartAI:aoeIsEffective(card, to)
 	if self.player:hasSkill("wuyan") then
 		return false
 	end
+
+	if to:hasSkill("wuyan") then
+		return false
+	end
+
 	if card:inherits("SavageAssault") then
 		if to:hasSkill("huoshou") or to:hasSkill("juxiang") then
 			return false

@@ -464,7 +464,7 @@ shuangxiong_skill.getTurnUseCard=function(self)
 
 end
 
-sgs.ai_chaofeng.shuangxiong = 1
+sgs.ai_chaofeng.yanliangwenchou = 1
 
 sgs.ai_skill_invoke.mengjin = function(self, data)
 	local effect = data:toSlashEffect()
