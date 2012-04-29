@@ -8,7 +8,7 @@ config = {
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
-		"StandardCard",
+	"StandardCard",
         "StandardExCard",
         "Maneuvering",
         "SPCard",
@@ -29,13 +29,14 @@ config = {
         "YJCM2012",
         "Special3v3",
         "BGM",
+	"NostalGeneral",
         "Yitian",
         "Wisdom",
         "Test";
 	},
 
 	scene_names = {
-		"Guandu",
+	"Guandu",
         "Fancheng",
         "Couple",
         "Zombie",
