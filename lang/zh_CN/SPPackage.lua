@@ -95,10 +95,10 @@ return {
 	["Hulaopass"] = "虎牢关模式",
 
 	["#shenlvbu1"] = "最强神话",
-	["shenlvbu1"] = "神吕布(1)",
+	["shenlvbu1"] = "虎牢关吕布",
 	["illustrator:shenlvbu1"] = "LiuHeng",
 	["#shenlvbu2"] = "暴怒的战神",
-	["shenlvbu2"] = "神吕布(2)",
+	["shenlvbu2"] = "虎牢关吕布",
 	["illustrator:shenlvbu2"] = "LiuHeng",
 	["xiuluo"] = "修罗",
 	[":xiuluo"] = "回合开始阶段，你可以弃置一张手牌来将你判定区里的一张延时类锦囊置入弃牌堆(必须花色相同)。",

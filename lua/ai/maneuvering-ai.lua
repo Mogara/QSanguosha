@@ -264,28 +264,28 @@ function SmartAI:useCardIronChain(card, use)
 			table.insert(enemytargets, enemy)
 		end
 	end
-
-	if #friendtargets > 1 then
-		if use.to then use.to:append(friendtargets[1]) end
-		if use.to then use.to:append(friendtargets[2]) end
-	elseif #friendtargets == 1 then
-		if #enemytargets > 0 then
+	if not self.player:hasSkill("nos_wuyan") then
+		if #friendtargets > 1 then
 			if use.to then use.to:append(friendtargets[1]) end
+			if use.to then use.to:append(friendtargets[2]) end
+		elseif #friendtargets == 1 then
+		    if #enemytargets > 0 then
+				if use.to then use.to:append(friendtargets[1]) end
+				if use.to then use.to:append(enemytargets[1]) end
+			elseif yangxiu and self:isFriend(yangxiu) then
+				if use.to then use.to:append(friendtargets[1]) end
+				if use.to then use.to:append(yangxiu) end
+			end
+		elseif #enemytargets > 1 then
 			if use.to then use.to:append(enemytargets[1]) end
-		elseif yangxiu and self:isFriend(yangxiu) then
-			if use.to then use.to:append(friendtargets[1]) end
-			if use.to then use.to:append(yangxiu) end
-		end
-	elseif #enemytargets > 1 then
-		if use.to then use.to:append(enemytargets[1]) end
-		if use.to then use.to:append(enemytargets[2]) end
-	elseif #friendtargets == 1 then
-		if yangxiu and self:isFriend(yangxiu) then
-			if use.to then use.to:append(enemytargets[1]) end
-			if use.to then use.to:append(yangxiu) end
+			if use.to then use.to:append(enemytargets[2]) end
+		elseif #friendtargets == 1 then
+			if yangxiu and self:isFriend(yangxiu) then
+				if use.to then use.to:append(enemytargets[1]) end
+				if use.to then use.to:append(yangxiu) end
+			end
 		end
 	end
-
 	if use.to then assert(use.to:length() < 3) end
 end
 
