@@ -3483,6 +3483,15 @@ function SmartAI:useTrickCard(card, use)
 		if self.player:hasSkill("wuyan") then return end
 		if self.role == "loyalist" and sgs.turncount < 2 and card:inherits("ArcheryAttack") then return end
 		if self.role == "rebel" and sgs.turncount < 2 and card:inherits("SavageAssault") then return end
+		local others = self.room:getOtherPlayers(self.player)
+		others = sgs.QList2Table(others)
+		local aval = #others
+		for _, other in ipairs(others) do
+			if self.room:isProhibited(self.player, other, card) then
+				aval = aval -1
+			end
+		end
+		if aval < 1 then return end
 		local good = self:getAoeValue(card,self.player)
 		if good > 0 then
 			use.card = card
