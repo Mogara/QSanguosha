@@ -22,7 +22,7 @@ sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 	end
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:isWounded() or not friend:faceUp() 
-		or (friend:getArmor() and friend:getArmor():objectName() == "vine" and (enemy:isChained() and not self:isGoodChainPartner(friend))) then
+		or (friend:getArmor() and friend:getArmor():objectName() == "vine" and (friend:isChained() and not self:isGoodChainPartner(friend))) then
 			needfriend = needfriend + 1
 		end
 	end
@@ -60,7 +60,7 @@ sgs.ai_card_intention.JujianCard = -100
 sgs.xushu_keep_value = 
 {
 	Peach = 6,
-	Jink = 5.1,
+	Jink = 5,
 	Weapon = 5,
 	Armor = 5,
 	DefensiveHorse = 5,
