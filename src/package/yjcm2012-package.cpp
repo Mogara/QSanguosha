@@ -520,7 +520,7 @@ public:
 class Jiefan : public TriggerSkill{
 public:
     Jiefan():TriggerSkill("jiefan"){
-        events << Dying << DamageProceed << SlashMissed << CardFinished;
+        events << Dying << DamageProceed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -570,11 +570,8 @@ public:
             }
             return false;
         }
-        else if(event == SlashMissed)
+        else if(!room->getTag("JiefanTarget").isNull())
             room->removeTag("JiefanTarget");
-        else
-            if(!room->getTag("JiefanTarget").isNull())
-                room->removeTag("JiefanTarget");
 
         return false;
     }

@@ -998,37 +998,46 @@ public:
     Liuli():TriggerSkill("liuli"){
         view_as_skill = new LiuliViewAsSkill;
 
-        events << CardEffected;
+        events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *daqiao, QVariant &data) const{
-        Room *room = daqiao->getRoom();
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
+    }
 
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(effect.card->inherits("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *daqiao = room->findPlayerBySkillName(objectName());
+        if(!daqiao || !use.to.contains(daqiao)) return false;
+
+        if(use.card->inherits("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
-            players.removeOne(effect.from);
+            players.removeOne(use.from);
 
             bool can_invoke = false;
-            foreach(ServerPlayer *player, players){
-                if(daqiao->inMyAttackRange(player)){
+            foreach(ServerPlayer *p, players){
+                if(daqiao->inMyAttackRange(p)){
                     can_invoke = true;
                     break;
                 }
             }
 
             if(can_invoke){
-                QString prompt = "@liuli:" + effect.from->objectName();
-                room->setPlayerFlag(effect.from, "slash_source");
+                QString prompt = "@liuli:" + use.from->objectName();
+                room->setPlayerFlag(use.from, "slash_source");
                 if(room->askForUseCard(daqiao, "@@liuli", prompt)){
-                    foreach(ServerPlayer *player, players){
-                        if(player->hasFlag("liuli_target")){
-                            effect.to = player;
-                            room->cardEffect(effect);
+                    foreach(ServerPlayer *p, players){
+                        if(p->hasFlag("liuli_target")){
+                            use.to.insert(use.to.indexOf(daqiao), p);
+                            use.to.removeOne(daqiao);
 
-                            room->setPlayerFlag(effect.from, "-slash_source");
-                            room->setPlayerFlag(player, "-liuli_target");
-                            return true;
+                            data = QVariant::fromValue(use);
+
+                            room->setPlayerFlag(use.from, "-slash_source");
+                            room->setPlayerFlag(p, "-liuli_target");
+                            break;
                         }
                     }
                 }

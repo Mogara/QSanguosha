@@ -805,6 +805,8 @@ public:
 	void setPlayerFlag(ServerPlayer *player, const char *flag);
 	void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
 	void setPlayerMark(ServerPlayer *player, const char *mark, int value);
+    void setPlayerCardLock(ServerPlayer *player, const char *name);
+    void clearPlayerCardLock(ServerPlayer *player);
     void setPlayerStatistics(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setCardFlag(const Card *card, const char *flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const char *flag, ServerPlayer *who = NULL);
