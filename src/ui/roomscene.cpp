@@ -54,6 +54,8 @@ using namespace QSanProtocol;
 struct RoomLayout {
     QPointF discard, drawpile;
     QPointF enemy_box, self_box;
+    QSize chat_box_size;
+    QPointF chat_box_pos;
 };
 
 struct NormalRoomLayout : public RoomLayout{
@@ -62,6 +64,8 @@ struct NormalRoomLayout : public RoomLayout{
         drawpile = QPointF(-108, 8);
         enemy_box = QPointF(-216, -327);
         self_box = QPointF(360, -90);
+        chat_box_size = QSize(230, 175);
+        chat_box_pos = QPointF(-343, -83);
     }
 };
 
@@ -71,6 +75,8 @@ struct CircularRoomLayout : public RoomLayout{
         drawpile = QPointF(-260, 30);
         enemy_box = QPointF(-361, -343);
         self_box = QPointF(201, -90);
+        chat_box_size = QSize(268, 165);
+        chat_box_pos = QPointF(367, -38);
     }
 };
 
@@ -277,17 +283,21 @@ RoomScene::RoomScene(QMainWindow *main_window)
     if(player_count != 6 && player_count <= 8)
         widen_width = 148;
 
-    if(ServerInfo.GameMode == "02_1v1" && !circular)
+    if(ServerInfo.GameMode == "02_1v1" || circular)
         widen_width = 0;
 
     {
         // chat box
         chat_box = new QTextEdit;
-        chat_box->resize(230 + widen_width, 175);
+        QSize chat_box_size = room_layout->chat_box_size;
+        chat_box_size.rwidth() += widen_width;
+        chat_box->resize(chat_box_size);
         chat_box->setObjectName("chat_box");
 
         chat_box_widget = addWidget(chat_box);
-        chat_box_widget->setPos(-343 - widen_width, -83);
+        QPointF chat_box_pos = room_layout->chat_box_pos;
+        chat_box_pos.rx() -= widen_width;
+        chat_box_widget->setPos(chat_box_pos);
         chat_box_widget->setZValue(-2.0);
         chat_box_widget->setObjectName("chat_box_widget");
 
@@ -320,23 +330,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_edit_widget->setObjectName("chat_edit_widget");
         connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
-        if(circular){
-            chat_box->resize(268, 165);
-            chat_box_widget->setPos(367 , -38);
-
-            chat_edit->setFixedWidth(chat_box->width());
-            chat_edit_widget->setX(0);
-            chat_edit_widget->setY(chat_box->height()+1);
-
-            chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
-            chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
-        }
-
         if(ServerInfo.DisableChat)
             chat_edit_widget->hide();
-
-        chat_box->setEnabled(false);
-        chat_box_widget->setFlag(QGraphicsItem::ItemIsMovable);
     }
 
     {
@@ -921,10 +916,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_D:{
             // for debugging use
 
-            if(enemy_box && self_box){
-                QString msg = QString("enemy:(%1, %2), self:(%3, %4)")
-                              .arg(enemy_box->x()).arg(enemy_box->y())
-                              .arg(self_box->x()).arg(self_box->y());
+            if(chat_box_widget){
+                QString msg = QString("chat_box_widget (%1, %2)")
+                              .arg(chat_box_widget->x()).arg(chat_box_widget->y());
 
                 QMessageBox::information(main_window, "", msg);
             }
@@ -4077,7 +4071,7 @@ void RoomScene::reLayout(QMatrix matrix)
     pos.rx()-= padding_left;
     pos.ry()+=padding_top;
 
-    if(!Config.value("circularView",false).toBool())
+    if(!Config.value("CircularView",false).toBool())
     {
         pos.ry() = state_item->y();
         pos.rx() = state_item->x()-padding_left;
