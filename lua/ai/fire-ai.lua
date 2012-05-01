@@ -18,7 +18,8 @@ sgs.ai_skill_use_func.QuhuCard = function(card, use, self)
 			local enemy_max_card = self:getMaxCard(enemy)
 			if enemy_max_card and max_point > enemy_max_card:getNumber() then
 				for _, enemy2 in ipairs(self.enemies) do
-					if (enemy:objectName() ~= enemy2:objectName()) and enemy:inMyAttackRange(enemy2) then
+					if (enemy:objectName() ~= enemy2:objectName()) 
+					and enemy:distanceTo(enemy2) <= enemy:getAttackRange() then
 						local card_id = max_card:getEffectiveId()
 						local card_str = "@QuhuCard=" .. card_id
 						if use.to then
@@ -128,7 +129,7 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		self:sort(self.enemies)
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then
-				if hand_weapon and self.player:inMyAttackRange(enemy) then
+				if hand_weapon and self.player:distanceTo(enemy) <= self.player:getAttackRange() then
 					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId())
 					if use.to then
 						use.to:append(enemy)
@@ -148,7 +149,7 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then
-				if self.player:inMyAttackRange(enemy) and self.player:getHp() > enemy:getHp() and self.player:getHp() > 2 then
+				if self.player:distanceTo(enemy) <= self.player:getAttackRange() and self.player:getHp() > enemy:getHp() and self.player:getHp() > 2 then
 					use.card = sgs.Card_Parse("@QiangxiCard=.")
 					if use.to then
 						use.to:append(enemy)

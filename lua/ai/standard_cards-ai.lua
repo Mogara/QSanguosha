@@ -858,7 +858,7 @@ function SmartAI:getValuableCard(who)
 	self:sort(self.friends, "hp")
 	local friend 
 	if #self.friends > 0 then friend = self.friends[1] end
-	if friend and self:isWeak(friend) and who:inMyAttackRange(friend) and not who:hasSkill("nos_xuanfeng") then
+	if friend and self:isWeak(friend) and who:distanceTo(friend) <= who:getAttackRange() and not who:hasSkill("nos_xuanfeng") then
 		if weapon and who:distanceTo(friend) > 1 and not 
 			(weapon and weapon:inherits("MoonSpear") and who:hasSkill("keji") and who:getHandcardNum() > 5) then return weapon:getEffectiveId() end
 		if offhorse and who:distanceTo(friend) > 1 then return offhorse:getEffectiveId() end
@@ -1142,7 +1142,7 @@ sgs.ai_card_intention.Collateral = function(card, from, tos)
 		sgs.updateIntention(from, tos[1], 80)
 	elseif sgs.compareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.compareRoleEvaluation(tos[2], "rebel", "loyalist") then
 		sgs.updateIntention(from, tos[2], 80)
-	elseif from:getWeapon() and from:inMyAttackRange(tos[2]) then
+	elseif from:getWeapon() and from:distanceTo(tos[2]) <= from:getAttackRange() then
 		sgs.updateIntention(from, tos[1], 80)
 	elseif tos[1]:isKongcheng() then
 		sgs.updateIntention(from, tos[1], 80)
