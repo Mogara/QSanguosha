@@ -306,9 +306,12 @@ void CardItem::writeCardDesc(QString card_owner)
          owner_pixmap = new QPixmap(pixmap.size());
          owner_pixmap->fill(QColor(0,0,0,0));
          QPainter painter(owner_pixmap);
+
+#ifdef Q_OS_WIN32
          static QFont card_desc_font("SimSun", 9, QFont::Normal);
          painter.setFont(card_desc_font);
          painter.setPen(Qt::black);
+#endif
 
          painter.drawText(x, y-1, card_owner);
          painter.drawText(x, y+1, card_owner);
