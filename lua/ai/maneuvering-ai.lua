@@ -358,7 +358,8 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	if #targets_succ > 0 then
 		use.card = fire_attack
 		if use.to then use.to:append(targets_succ[1]) end
-	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and self:isGoodChainPartner(self.player) and self.player:getHandcardNum() > 1 then
+	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and (self:isGoodChainPartner(self.player) 
+	or (self:isEquip("SilverLion") and self:hasSkill("fankui"))) and self.player:getHandcardNum() > 1 then
 		use.card = fire_attack
 		if use.to then use.to:append(self.player) end
 	elseif #targets_fail > 0 and self:getOverflow(self.player) > 0 then

@@ -2821,7 +2821,7 @@ void Room::throwCard(const Card *card, ServerPlayer *who){
             to_discard << card->getEffectiveId();
 
         foreach(int card_id, to_discard){
-            setCardFlag(Sanguosha->getCard(card_id), "visible");
+            setCardFlag(card_id, "visible");
             if(log.card_str.isEmpty())
                 log.card_str = QString::number(card_id);
             else
@@ -3670,7 +3670,7 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     if(only_viewer)
         doNotify(player, S_COMMAND_SHOW_CARD, show_str);
     else{
-        setCardFlag(Sanguosha->getCard(card_id), "visible");
+        setCardFlag(card_id, "visible");
         doBroadcastNotify(S_COMMAND_SHOW_CARD, show_str);
     }
 }
@@ -3685,7 +3685,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
         doNotify(player, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
     else{
         foreach(int card_id, player->handCards())
-            setCardFlag(Sanguosha->getCard(card_id), "visible");
+            setCardFlag(card_id, "visible");
         doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
     }
 }

@@ -63,6 +63,9 @@ void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
     ServerPlayer *zhangjiao = targets.first();
     if(zhangjiao->hasLordSkill("huangtian")){
         zhangjiao->obtainCard(this);
+        QList<int> subcards = this->getSubcards();
+        foreach(int card_id, subcards)
+            room->setCardFlag(card_id,"visible");
         room->setEmotion(zhangjiao, "good");
     }
 }
