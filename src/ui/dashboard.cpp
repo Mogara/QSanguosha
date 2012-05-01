@@ -359,7 +359,7 @@ QRectF Dashboard::boundingRect() const{
 }
 
 int Dashboard::getTextureWidth() const{
-    return middle->brush().texture().width();
+    return middle->brush().texture().width() + left_pixmap.width() + right_pixmap.width();
 }
 
 void Dashboard::setMiddleWidth(int middle_width){
@@ -378,8 +378,6 @@ void Dashboard::setMiddleWidth(int middle_width){
     trusting_item->setX(left_width);
     trusting_text->setPos(middle_width/2, middle_height/2);
 }
-
-
 
 void Dashboard::setWidth(int width){
     qreal left_width = left->boundingRect().width();
