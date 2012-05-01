@@ -164,7 +164,7 @@ function sgs.getValue(player)
 end
 
 function sgs.getDefense(player)
-	local defense = player:getHp() * 2
+	local defense = math.min(sgs.getValue(player), player:getHp() * 3)
 	if player:getArmor() and not player:getArmor():inherits("GaleShell") then
 		defense = defense + 2
 	end
@@ -189,7 +189,15 @@ function sgs.getDefense(player)
 	if player:getMark("@tied")>0 then
 		defense = defense + 1
 	end
-	defense = defense + self:getCardsNum("Jink",player) + self:getCardsNum("Slash",player)/2 + self:getCardsNum("Nullification",player)
+	if player:hasSkill("qingguo") and player:getHandcardNum()>1 then
+		defense = defense + 0.5
+	end
+	if player:hasSkill("longhun") and player:getHp() == 1 and player:getHandcardNum()>1 then
+		defense = defense + 0.4
+	end
+	if player:hasSkill("longdan") and player:getHandcardNum()>2 then
+		defense = defense + 0.3
+	end
 	return defense
 end
 
