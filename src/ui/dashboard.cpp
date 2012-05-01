@@ -358,6 +358,10 @@ QRectF Dashboard::boundingRect() const{
     return QRectF(0, 0, width, height);
 }
 
+int Dashboard::getTextureWidth() const{
+    return middle->brush().texture().width();
+}
+
 void Dashboard::setMiddleWidth(int middle_width){
     int left_width = left_pixmap.width();
     qreal middle_height = middle->rect().height();
@@ -375,24 +379,18 @@ void Dashboard::setMiddleWidth(int middle_width){
     trusting_text->setPos(middle_width/2, middle_height/2);
 }
 
+
+
 void Dashboard::setWidth(int width){
-    if(width == 0){
-        setMiddleWidth(middle->brush().texture().width());
+    qreal left_width = left->boundingRect().width();
+    qreal right_width = right->boundingRect().width();
+    qreal button_width = getButtonWidgetWidth();
+    qreal middle_width = width - left_width - right_width - button_width;
 
-        prepareGeometryChange();
-        adjustCards();
+    setMiddleWidth(middle_width);
 
-    }else if(width > 500){
-        qreal left_width = left->boundingRect().width();
-        qreal right_width = right->boundingRect().width();
-        qreal button_width = getButtonWidgetWidth();
-        qreal middle_width = width - left_width - right_width - button_width;
-
-        setMiddleWidth(middle_width);
-
-        prepareGeometryChange();
-        adjustCards();
-    }
+    prepareGeometryChange();
+    adjustCards();
 
     setX(- boundingRect().width()/2);
 }

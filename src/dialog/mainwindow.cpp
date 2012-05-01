@@ -276,6 +276,9 @@ void MainWindow::enterRoom(){
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
     connect(ui->actionExpand_dashboard, SIGNAL(toggled(bool)), room_scene, SLOT(adjustDashboard(bool)));
 
+    bool expand = Config.value("UI/ExpandDashboard", true).toBool();
+    ui->actionExpand_dashboard->setChecked(expand);
+
     if(ServerInfo.FreeChoose){
         ui->menuCheat->setEnabled(true);
 

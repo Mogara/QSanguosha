@@ -591,7 +591,7 @@ ServerPlayer* Room::doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanPr
     _m_semRoomMutex.acquire();
     _m_raceStarted = true;
     _m_raceWinner = NULL;
-    while (_m_semRaceRequest.tryAcquire(1)); //drain lock
+    while (_m_semRaceRequest.tryAcquire(1)) ; //drain lock
     _m_semRoomMutex.release();
     foreach (ServerPlayer* player, players)
     {
@@ -600,7 +600,7 @@ ServerPlayer* Room::doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanPr
     return getRaceResult(players, command, timeOut, validateFunc, funcArg);
 }
 
-ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut,
+ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::CommandType , time_t timeOut,
                                     ResponseVerifyFunction validateFunc, void* funcArg)
 {    
     QTime timer;
@@ -800,7 +800,7 @@ bool Room::isCanceled(const CardEffectStruct &effect){
         return false;
 }
 
-bool Room::verifyNullificationResponse(ServerPlayer* player, const Json::Value& response, void* arg)
+bool Room::verifyNullificationResponse(ServerPlayer* player, const Json::Value& response, void* )
 {
     const Card* card = NULL;    
     if (player != NULL && response.isString())
@@ -1757,7 +1757,7 @@ bool Room::makeSurrender(ServerPlayer* initiator)
     return true;
 }
 
-bool Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet)
+bool Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *)
 {    
     //@todo: Strictly speaking, the client must be in the PLAY phase
     //@todo: return false for 3v3 and 1v1!!!

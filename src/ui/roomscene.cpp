@@ -3644,8 +3644,12 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         (this->*func)(name, args);
 }
 
-void RoomScene::adjustDashboard(bool expand){
-    dashboard->setWidth(expand ? 0 : main_window->width()-10);
+void RoomScene::adjustDashboard(bool expand){   
+    int texture_width = dashboard->getTextureWidth();
+    int window_width = main_window->width()-10;
+
+    int width = expand ? qMax(texture_width, window_width) : qMin(texture_width, window_width);
+    dashboard->setWidth(width);
     Config.setValue("UI/ExpandDashboard", expand);
 }
 
@@ -4040,6 +4044,8 @@ void RoomScene::adjustPrompt()
 
 void RoomScene::reLayout(QMatrix matrix)
 {
+    return;
+
     if(matrix.m11()>1)matrix.setMatrix(1,0,0,1,matrix.dx(),matrix.dy());
     view_transform = matrix;
     //if(!Config.value("circularView",false).toBool())
@@ -4075,10 +4081,10 @@ void RoomScene::reLayout(QMatrix matrix)
     {
         pos.ry() = state_item->y();
         pos.rx() = state_item->x()-padding_left;
-        alignTo(chat_box_widget,pos,"xryt");
+        //alignTo(chat_box_widget,pos,"xryt");
 
         pos.rx() = state_item->x() + state_item->boundingRect().width() + padding_left;
-        alignTo(log_box,pos,"xlyt");
+        //alignTo(log_box,pos,"xlyt");
 
         log_box->setFixedHeight(chat_box->height() + chat_edit->height());
     }
