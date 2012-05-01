@@ -391,7 +391,7 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 		local lord_min_num = 14, lord_min_card
 		local lord_cards = lord:getHandcards()
 		for _, lcard in sgs.qlist(lord_cards) do
-			if lcard:getNumber() > lord_max_num then
+			if lcard:hasFlag("visible") and lcard:getNumber() > lord_max_num then
 				lord_max_card = lcard
 				lord_max_num = lcard:getNumber()
 			end
@@ -401,10 +401,10 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 			end
 		end
 
-		if self:isEnemy(lord) and max_num > 9 then
+		if self:isEnemy(lord) and max_num > 9 and max_num > lord_max_num then
 			zhiba_str = "@ZhibaCard=" .. max_card:getEffectiveId()
 		end
-		if self:isFriend(lord) and min_num < 8 then
+		if self:isFriend(lord) and ((lord_max_num > 0 and min_num <= lord_max_num) or min_num < 8) then
 			zhiba_str = "@ZhibaCard=" .. min_card:getEffectiveId()
 		end
 
