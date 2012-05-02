@@ -56,6 +56,8 @@ struct RoomLayout {
     QPointF enemy_box, self_box;
     QSize chat_box_size;
     QPointF chat_box_pos;
+    QPointF button1_pos, button2_pos;
+    QPointF state_item_pos;
 };
 
 struct NormalRoomLayout : public RoomLayout{
@@ -66,6 +68,9 @@ struct NormalRoomLayout : public RoomLayout{
         self_box = QPointF(360, -90);
         chat_box_size = QSize(230, 175);
         chat_box_pos = QPointF(-343, -83);
+        button1_pos = QPointF(15, 5);
+        button2_pos = QPointF(15, 60);
+        state_item_pos = QPointF(-110, -80);
     }
 };
 
@@ -77,6 +82,9 @@ struct CircularRoomLayout : public RoomLayout{
         self_box = QPointF(201, -90);
         chat_box_size = QSize(268, 165);
         chat_box_pos = QPointF(367, -38);
+        button1_pos = QPointF(-565,205);
+        button2_pos = QPointF(-565, 260);
+        state_item_pos = QPointF(367, -320);
     }
 };
 
@@ -3011,12 +3019,10 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 }
 
 void RoomScene::createStateItem(){
-    bool circular = Config.value("CircularView", false).toBool();
-
     QPixmap state("image/system/state.png");
 
     state_item = addPixmap(state);//QPixmap("image/system/state.png"));
-    state_item->setPos(-110, -80);
+    state_item->setPos(room_layout->state_item_pos);
     state_item->setZValue(-1.0);
     char roles[100] = {0};
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
@@ -3029,9 +3035,6 @@ void RoomScene::createStateItem(){
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
 
-    if(circular)
-        state_item->setPos(367, -320);
-
     add_robot = NULL;
     fill_robots = NULL;
     if(ServerInfo.EnableAI){
@@ -3043,20 +3046,15 @@ void RoomScene::createStateItem(){
 
         add_robot = new Button(tr("Add a robot"));
         add_robot->setParentItem(control_panel);
-        add_robot->setPos(15, 5);
+        add_robot->setPos(room_layout->button1_pos);
 
         fill_robots = new Button(tr("Fill robots"));
         fill_robots->setParentItem(control_panel);
-        fill_robots->setPos(15, 60);
+        fill_robots->setPos(room_layout->button2_pos);
 
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));
         connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
-
-        if(circular){
-            add_robot->setPos(-565,205);
-            fill_robots->setPos(-565, 260);
-        }
     }else
         control_panel = NULL;
 }
@@ -3069,8 +3067,6 @@ void RoomScene::showOwnerButtons(bool owner){
 void RoomScene::showJudgeResult(const QString &who, const QString &result){
     if(special_card){
         const ClientPlayer *player = ClientInstance->getPlayer(who);
-
-        special_card->showAvatar(player->getGeneral());
         QString desc = QString(tr("%1's judge")).arg(Sanguosha->translate(player->getGeneralName()));
         special_card->writeCardDesc(desc);
 

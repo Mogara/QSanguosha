@@ -33,7 +33,7 @@ public:
     void hideFrame();
     void setAutoBack(bool auto_back);
     void changeGeneral(const QString &general_name);
-    void writeCardDesc(QString card_owner);
+    void writeCardDesc(QString desc);
     void deleteCardDesc();
 
     void select();
@@ -57,13 +57,14 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
 
 private:
     const Card *card, *filtered_card;
-    QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap, *owner_pixmap;
+    QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap;
+    QGraphicsSimpleTextItem *owner_text;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
     bool auto_back, frozen;

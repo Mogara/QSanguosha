@@ -34,7 +34,13 @@ CardItem::CardItem(const Card *card)
     frame->hide();
 
     avatar = NULL;
-    owner_pixmap = NULL;
+
+    owner_text = new QGraphicsSimpleTextItem(this);
+    QPen pen(Qt::black);
+    pen.setWidthF(0.5);
+    owner_text->setPen(pen);
+    owner_text->setBrush(Qt::yellow);
+    owner_text->hide();
 }
 
 CardItem::CardItem(const QString &general_name)
@@ -276,12 +282,12 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
     else emit toggle_discards();
 }
 
-void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     emit enter_hover();
 }
 
-void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     emit leave_hover();
 }
@@ -292,38 +298,24 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if(card){
         painter->drawPixmap(0, 14, cardsuit_pixmap);
         painter->drawPixmap(0, 2, number_pixmap);
-        if(owner_pixmap)painter->drawPixmap(0,0,*owner_pixmap);
     }
 }
 
 
-void CardItem::writeCardDesc(QString card_owner)
+void CardItem::writeCardDesc(QString desc)
 {
      if(card){
-         int x, y;
-         x=(93-card_owner.toLocal8Bit().length()*6)/2;
-         y=115;
-         owner_pixmap = new QPixmap(pixmap.size());
-         owner_pixmap->fill(QColor(0,0,0,0));
-         QPainter painter(owner_pixmap);
+         owner_text->setText(desc);
 
-#ifdef Q_OS_WIN32
-         static QFont card_desc_font("SimSun", 9, QFont::Normal);
-         painter.setFont(card_desc_font);
-         painter.setPen(Qt::black);
-#endif
+         QRectF owner_rect = owner_text->boundingRect();
+         qreal x = (pixmap.width() - owner_rect.width())/2;
+         qreal y = pixmap.height() - owner_rect.height() - 7;
 
-         painter.drawText(x, y-1, card_owner);
-         painter.drawText(x, y+1, card_owner);
-         painter.drawText(x-1, y, card_owner);
-         painter.drawText(x+1, y, card_owner);
-
-         painter.setPen(Qt::yellow);
-         painter.drawText(x, y, card_owner);
+         owner_text->setPos(x, y);
+         owner_text->show();
      }
 }
 
 void CardItem::deleteCardDesc(){
-    delete owner_pixmap;
-    owner_pixmap = NULL;
+    owner_text->hide();
 }

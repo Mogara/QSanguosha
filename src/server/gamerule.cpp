@@ -240,8 +240,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             room->sendLog(log);
 
             room->setPlayerProperty(player, "hp", player->getHp() - lose);
-            QString str = QString("%1:%2").arg(player->objectName()).arg(-lose);
-            str.append("L");
+            QString str = QString("%1:%2L").arg(player->objectName()).arg(-lose);
             room->broadcastInvoke("hpChange", str);
 
             if(player->getHp() <= 0)
