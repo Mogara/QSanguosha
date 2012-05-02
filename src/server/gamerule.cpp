@@ -210,6 +210,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case CardFinished: {
             CardUseStruct use = data.value<CardUseStruct>();
             room->clearCardFlag(use.card);
+            if(!room->getTag("Invoked").isNull())
+                room->removeTag("Invoked");
 
             break;
     }
