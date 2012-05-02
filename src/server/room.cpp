@@ -3670,7 +3670,8 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     if(only_viewer)
         doNotify(player, S_COMMAND_SHOW_CARD, show_str);
     else{
-        setCardFlag(card_id, "visible");
+        if(card_id>0)
+            setCardFlag(card_id, "visible");
         doBroadcastNotify(S_COMMAND_SHOW_CARD, show_str);
     }
 }
