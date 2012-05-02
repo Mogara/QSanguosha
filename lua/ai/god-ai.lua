@@ -131,7 +131,12 @@ function SmartAI:needDeath(player)
 			elseif maxenemymark == 0 then return false
 			else return true end
 		end
-	elseif (player:hasSkill("niepan") and player:getMark("@nirvana") > 0 and player:getCards("e"):length() < 2) or 
+	end
+	return false
+end
+
+function SmartAI:doNotSave(player)
+	if (player:hasSkill("niepan") and player:getMark("@nirvana") > 0 and player:getCards("e"):length() < 2) or 
 		(player:hasSkill("fuli") and player:getMark("@laoji") > 0 and player:getCards("e"):length() < 2) then
 		return true
 	end
