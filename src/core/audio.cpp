@@ -3,7 +3,6 @@
 #include "settings.h"
 
 #include <QCache>
-#include <QtDebug>
 
 class Sound;
 

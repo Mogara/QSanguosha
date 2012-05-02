@@ -3021,7 +3021,7 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 void RoomScene::createStateItem(){
     QPixmap state("image/system/state.png");
 
-    state_item = addPixmap(state);//QPixmap("image/system/state.png"));
+    state_item = addPixmap(state);
     state_item->setPos(room_layout->state_item_pos);
     state_item->setZValue(-1.0);
     char roles[100] = {0};
