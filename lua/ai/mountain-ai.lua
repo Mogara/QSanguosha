@@ -321,7 +321,7 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 			end
 		end
 
-		if self.player:distanceTo(enemy) <= self.player:getAttackRange() and
+		if enemy:distanceTo(self.player) <= enemy:getAttackRange() and
 			(self:getCardsNum("Slash", enemy) == 0 or slash_useless or self:getCardsNum("Jink") > 0) and
 			not enemy:isNude() then
 			table.insert(targets, enemy)

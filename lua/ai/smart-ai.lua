@@ -1132,8 +1132,7 @@ end
 function sgs.gameProcess(room)
 	local rebel_num = sgs.current_mode_players["rebel"]
 	local loyal_num = sgs.current_mode_players["loyalist"]
-	if sgs.turncount < 2 then return "neutral"
-	elseif rebel_num == 0 and loyal_num> 0 then return "loyalist"
+	if rebel_num == 0 and loyal_num> 0 then return "loyalist"
 	elseif loyal_num == 0 and rebel_num > 1 then return "rebel" end
 	local loyal_value, rebel_value = 0, 0, 0
 	local health = sgs.isLordHealthy()
@@ -1262,8 +1261,8 @@ function SmartAI:objectiveLevel(player)
 				else
 					return 5
 				end
-			end
-		elseif process == "neutral" then return 0
+			end	
+		elseif process == "neutral" or sgs.turncount < 2 then return 0
 		elseif process:match("rebel") then
 			if sgs.evaluatePlayerRole(player) == "rebel" then 
 				if process == "rebel" then return 5 else return 3 end
