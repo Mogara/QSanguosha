@@ -620,16 +620,22 @@ ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::C
             _m_semRoomMutex.tryAcquire(1); 
         // So that processResponse cannot update raceWinner when we are reading it.
 
-        if (validateFunc == NULL ||
-            (this->*validateFunc)(_m_raceWinner, _m_raceWinner->getClientReply(), funcArg))        
+        if (_m_raceWinner == NULL) 
+        {
+            _m_semRoomMutex.release();
+            continue;
+        }
+
+        if (validateFunc == NULL || (_m_raceWinner->m_isClientResponseReady &&
+            (this->*validateFunc)(_m_raceWinner, _m_raceWinner->getClientReply(), funcArg)))     
         {
             validResult = true;
             break;        
         }
         else
         {
-            if (_m_raceWinner != NULL) // Don't give this player any more chance for this race
-                _m_raceWinner->m_isWaitingReply = false;
+            // Don't give this player any more chance for this race
+            _m_raceWinner->m_isWaitingReply = false;
             _m_raceWinner = NULL;
             _m_semRoomMutex.release();
         }
