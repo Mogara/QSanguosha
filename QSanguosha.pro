@@ -14,7 +14,8 @@ CONFIG += warn_on audio
 # CONFIG += chatvoice
 # Also, this function can only enabled under Windows system as it make use of Microsoft TTS
 
-SOURCES += src/main.cpp \
+SOURCES +=
+	src/main.cpp \
 	src/client/aux-skills.cpp \
 	src/client/client.cpp \
 	src/client/clientplayer.cpp \
@@ -23,11 +24,14 @@ SOURCES += src/main.cpp \
 	src/core/card.cpp \
 	src/core/engine.cpp \
 	src/core/general.cpp \
+	src/core/jsonutils.cpp \
 	src/core/lua-wrapper.cpp \
 	src/core/player.cpp \
+	src/core/protocol.cpp \
 	src/core/settings.cpp \
 	src/core/skill.cpp \
 	src/core/statistics.cpp \
+	src/core/util.cpp \
 	src/dialog/cardeditor.cpp \
 	src/dialog/cardoverview.cpp \
 	src/dialog/choosegeneraldialog.cpp \
@@ -74,7 +78,7 @@ SOURCES += src/main.cpp \
 	src/server/ai.cpp \
 	src/server/contestdb.cpp \
 	src/server/gamerule.cpp \
-        src/server/generalselector.cpp \
+	src/server/generalselector.cpp \
 	src/server/room.cpp \
 	src/server/roomthread.cpp \
 	src/server/roomthread1v1.cpp \
@@ -130,18 +134,16 @@ SOURCES += src/main.cpp \
 	src/lua/lbaselib.c \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
-	swig/sanguosha_wrap.cxx \
-    src/core/protocol.cpp \
-    src/core/jsonutils.cpp \
-    src/jsoncpp/src/json_writer.cpp \
-    src/jsoncpp/src/json_valueiterator.inl \
-    src/jsoncpp/src/json_value.cpp \
-    src/jsoncpp/src/json_reader.cpp \
-    src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \
-    src/core/util.cpp
+	src/jsoncpp/src/json_writer.cpp \
+	src/jsoncpp/src/json_valueiterator.inl \
+	src/jsoncpp/src/json_value.cpp \
+	src/jsoncpp/src/json_reader.cpp \
+	src/jsoncpp/src/json_internalmap.inl \
+	src/jsoncpp/src/json_internalarray.inl \
+	swig/sanguosha_wrap.cxx
 
-HEADERS += src/client/aux-skills.h \
+HEADERS +=
+	src/client/aux-skills.h \
 	src/client/client.h \
 	src/client/clientplayer.h \
 	src/client/clientstruct.h \
@@ -150,11 +152,14 @@ HEADERS += src/client/aux-skills.h \
 	src/core/card.h \
 	src/core/engine.h \
 	src/core/general.h \
+	src/core/jsonutils.h \
 	src/core/lua-wrapper.h \
 	src/core/player.h \
+	src/core/protocol.h \
 	src/core/settings.h \
 	src/core/skill.h \
 	src/core/statistics.h \
+	src/core/util.h \
 	src/dialog/cardeditor.h \
 	src/dialog/cardoverview.h \
 	src/dialog/choosegeneraldialog.h \
@@ -252,22 +257,20 @@ HEADERS += src/client/aux-skills.h \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
 	src/lua/lapi.h \
-    src/core/protocol.h \
-    src/core/jsonutils.h \
-    src/jsoncpp/src/json_tool.h \
-    src/jsoncpp/src/json_batchallocator.h \
-    src/jsoncpp/include/json/writer.h \
-    src/jsoncpp/include/json/value.h \
-    src/jsoncpp/include/json/reader.h \
-    src/jsoncpp/include/json/json.h \
-    src/jsoncpp/include/json/forwards.h \
-    src/jsoncpp/include/json/features.h \
-    src/jsoncpp/include/json/config.h \
-    src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h \
-    src/core/util.h
+	src/jsoncpp/src/json_tool.h \
+	src/jsoncpp/src/json_batchallocator.h \
+	src/jsoncpp/include/json/writer.h \
+	src/jsoncpp/include/json/value.h \
+	src/jsoncpp/include/json/reader.h \
+	src/jsoncpp/include/json/json.h \
+	src/jsoncpp/include/json/forwards.h \
+	src/jsoncpp/include/json/features.h \
+	src/jsoncpp/include/json/config.h \
+	src/jsoncpp/include/json/autolink.h \
+	src/jsoncpp/include/json/assertions.h
 	
-FORMS += src/dialog/cardoverview.ui \
+FORMS +=
+	src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
 	src/dialog/connectiondialog.ui \
 	src/dialog/generaloverview.ui \
@@ -290,7 +293,7 @@ win32{
 }
 
 macx{
-    ICON = resource/icon/sgs.icns
+	ICON = resource/icon/sgs.icns
 }
 
 
@@ -312,10 +315,10 @@ CONFIG(joystick){
 }
 
 CONFIG(chatvoice){
-    win32{
-        CONFIG += qaxcontainer
-        DEFINES += CHAT_VOICE
-    }
+	win32{
+		CONFIG += qaxcontainer
+		DEFINES += CHAT_VOICE
+	}
 }
 
 TRANSLATIONS += sanguosha.ts
