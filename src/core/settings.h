@@ -33,7 +33,7 @@ public:
         {
             timeOut = OperationTimeout * 1000;
         }
-        if (instance = QSanProtocol::S_SERVER_INSTANCE)
+        if (instance == QSanProtocol::S_SERVER_INSTANCE)
             timeOut += S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
         return timeOut;
     }
