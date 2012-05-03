@@ -14,7 +14,7 @@ CONFIG += warn_on audio
 # CONFIG += chatvoice
 # Also, this function can only enabled under Windows system as it make use of Microsoft TTS
 
-SOURCES +=
+SOURCES += \
 	src/main.cpp \
 	src/client/aux-skills.cpp \
 	src/client/client.cpp \
@@ -142,7 +142,7 @@ SOURCES +=
 	src/jsoncpp/src/json_internalarray.inl \
 	swig/sanguosha_wrap.cxx
 
-HEADERS +=
+HEADERS += \
 	src/client/aux-skills.h \
 	src/client/client.h \
 	src/client/clientplayer.h \
@@ -269,7 +269,7 @@ HEADERS +=
 	src/jsoncpp/include/json/autolink.h \
 	src/jsoncpp/include/json/assertions.h
 	
-FORMS +=
+FORMS += \
 	src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
 	src/dialog/connectiondialog.ui \
