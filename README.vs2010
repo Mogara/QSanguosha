@@ -13,8 +13,8 @@ To build QSanguosha with VS2010
 
 5. Open Qsanguosha.sln right under <Your source directory>/Qsanguosha/builds/vs2010.
 
-7. Right click project "QSanguosha" in your Solution Explorer, select "Properties", go to "Debugging" tab, set "Working Directory" to "$(ProjectDir)..\..\" (do not enter the quote marks). Then select "OK".
+6. Right click project "QSanguosha" in your Solution Explorer, select "Properties", go to "Debugging" tab, set "Working Directory" to "$(ProjectDir)..\..\" (do not enter the quote marks). Then select "OK".
 
-6. You are now able to build the solution.
+7. You are now able to build the solution.
 
 
