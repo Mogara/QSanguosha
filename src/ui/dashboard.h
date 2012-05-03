@@ -116,7 +116,7 @@ private:
     EffectAnimation *animations;
 
     // UI control creation
-    void Dashboard::_addProgressBar();
+    void _addProgressBar();
 
     // for parts creation
     void createLeft();
