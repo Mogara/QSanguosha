@@ -937,6 +937,11 @@ end
 
 sgs.ai_skill_use_func.QingnangCard=function(card,use,self)
 	self:sort(self.friends, "defense")
+	if self.player:isWounded() and self:getOverflow()>1 then 
+		use.card=card
+		if use.to then use.to:append(self.player) end
+		return
+	end
 	local lord = self.room:getLord()
 	if self:isFriend(lord) and not sgs.isLordHealthy()  and lord:isWounded() then
 		use.card=card

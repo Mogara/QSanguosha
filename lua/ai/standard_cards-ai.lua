@@ -1213,7 +1213,7 @@ sgs.dynamic_value.control_usecard.Indulgence = true
 
 function SmartAI:useCardLightning(card, use)
 	if self.player:containsTrick("lightning") then return end
-	--if self.player:hasSkill("weimu") and card:isBlack() then return end
+	if self.player:hasSkill("weimu") and card:isBlack() then return end
 	if self.room:isProhibited(self.player, self.player, card) then end
 
 	--if not self:hasWizard(self.enemies) then--and self.room:isProhibited(self.player, self.player, card) then
