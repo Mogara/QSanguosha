@@ -1426,7 +1426,7 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
     if(player->isOnline()){
         bool success = doRequest(player, S_COMMAND_CHOOSE_DIRECTION, Json::Value::null);
         Json::Value clientReply = player->getClientReply();       
-        if (!success || !clientReply.isString())
+        if (success && clientReply.isString())
         {
             isClockwise = (clientReply.asString() == "cw");
         }        
@@ -3384,7 +3384,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
     bool success = doRequest(player, S_COMMAND_PINDIAN, toJsonArray(from->objectName(), to->objectName()));
 
     Json::Value clientReply = player->getClientReply();    
-    if(success && clientReply.isString()){
+    if(!success || !clientReply.isString()){
         int card_id = player->getRandomHandCardId();
         return Sanguosha->getCard(card_id);
     }else{        
