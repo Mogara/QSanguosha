@@ -11,7 +11,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QPixmapCache>
-#include <QStyleFactory>
 
 using namespace QSanProtocol;
 
@@ -437,7 +436,6 @@ void Dashboard::_addProgressBar()
 {    
     m_progressBar.setFixedSize(300, 15);
     m_progressBar.setTextVisible(false);
-    m_progressBar.setStyle(QStyleFactory::create("macintosh"));
     QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(right);
     widget->setWidget(&m_progressBar);
     widget->setParentItem(middle);

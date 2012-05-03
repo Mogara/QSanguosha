@@ -2205,7 +2205,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             {
                 if (m_choiceDialog != NULL && m_choiceDialog->isVisible())
                 {
-                    m_choiceDialog->reject();
+                    m_choiceDialog->hide();
                 }
             }
             else if (oldStatus == Client::AskForGuanxing ||
