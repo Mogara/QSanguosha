@@ -24,6 +24,12 @@ namespace QSanProtocol
         S_CLIENT_NOTIFICATION
     };
 
+    enum ProcessInstanceType
+    {
+        S_SERVER_INSTANCE,
+        S_CLIENT_INSTANCE
+    };
+
     enum CheatCode
     {
         S_CHEAT_GET_ONE_CARD,
@@ -94,6 +100,71 @@ namespace QSanProtocol
         S_CAMP_COOL = 1
     };
 
+    class Countdown
+    {
+    public:
+        enum CountdownType
+        {            
+            S_COUNTDOWN_NO_LIMIT,
+            S_COUNTDOWN_USE_SPECIFIED,
+            S_COUNTDOWN_USE_DEFAULT           
+        } m_type;
+        static const std::string S_COUNTDOWN_MAGIC;
+        time_t m_current;
+        time_t m_max;
+        inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0):
+            m_type(type), m_current(current), m_max(max) {}
+        inline bool tryParse(Json::Value val)
+        {
+            if (!val.isArray() || (val.size() != 2 && val.size() != 3) || 
+                !val[0].isString() || val[0].asString() != S_COUNTDOWN_MAGIC)
+                return false;
+            if (val.size() == 3)
+            {
+                if (!Utils::isIntArray(val, 0, 1)) return false;
+                m_current = (time_t)val[1].asInt();
+                m_max = (time_t)val[2].asInt();
+                m_type = S_COUNTDOWN_USE_SPECIFIED;
+                return true;
+            }
+            else if (val.size() == 2)
+            {
+                CountdownType type = (CountdownType)val[1].asInt();
+                if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
+                    return false;
+                else m_type = type;
+                return true;
+            }
+            else return false;            
+        }
+        inline Json::Value toJsonValue()
+        {
+            if (m_type == S_COUNTDOWN_NO_LIMIT
+                || m_type == S_COUNTDOWN_USE_SPECIFIED)
+            {
+                Json::Value val(Json::arrayValue);
+                val[0] = S_COUNTDOWN_MAGIC;
+                val[1] = (int)m_type;                
+                return val;                
+            }
+            else
+            {
+                Json::Value val(Json::arrayValue);
+                val[0] = S_COUNTDOWN_MAGIC;
+                val[1] = (int)m_current;
+                val[2] = (int)m_max;
+                return val;
+            }
+        }
+        inline bool hasTimedOut()
+        {
+            if (m_type == S_COUNTDOWN_NO_LIMIT)
+                return false;
+            else
+                return m_current >= m_max;
+        }
+    };
+
     class QSanPacket
     {
     public:
@@ -108,7 +179,7 @@ namespace QSanProtocol
     public:
         //format: [global_serial,local_serial,packet_type,command_name,command_body]
         unsigned int m_globalSerial;
-        int m_localSerial;        
+        unsigned int m_localSerial;        
         inline QSanGeneralPacket(PacketType packetType = S_UNKNOWN_PACKET, CommandType command = S_COMMAND_UNKNOWN)
         {
             _m_globalSerial++;

@@ -1,6 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include "protocol.h"
 #include <QSettings>
 #include <QFont>
 #include <QRectF>
@@ -13,6 +14,29 @@ class Settings : public QSettings{
 public:
     explicit Settings();
     void init();
+    //Get the timeout allowance for a command. Server countdown is more lenient than the client.
+    //@param command: type of command
+    //@return countdown for command in milliseconds.
+    inline time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance)
+    {
+        time_t timeOut;
+        if (OperationNoLimit) return UINT_MAX;
+        else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
+        {
+            timeOut = S_CHOOSE_GENERAL_TIMEOUT * 1000;
+        }
+        else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING)
+        {
+            timeOut = S_GUANXING_TIMEOUT * 1000;
+        }
+        else
+        {
+            timeOut = OperationTimeout * 1000;
+        }
+        if (instance = QSanProtocol::S_SERVER_INSTANCE)
+            timeOut += S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+        return timeOut;
+    }
 
     const QRectF Rect;
     QFont BigFont;
@@ -73,6 +97,8 @@ public:
     static const int S_CHOOSE_GENERAL_TIMEOUT;
     static const int S_GUANXING_TIMEOUT;
     static const int S_SURRNDER_REQUEST_MIN_INTERVAL;
+    static const int S_PROGRESS_BAR_UPDATE_INTERVAL;
+    static const int S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
 };
 
 extern Settings Config;

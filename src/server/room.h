@@ -248,10 +248,6 @@ public:
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());    
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     
-    //Get the timeout allowance for a command. Server countdown is more lenient than the client.
-    //@param command: type of command
-    //@return countdown for command in milliseconds.
-    time_t getCommandTimeout(QSanProtocol::CommandType command);
     void toggleReadyCommand(ServerPlayer *player, const QString &);
     void speakCommand(ServerPlayer *player, const QString &arg);
     void trustCommand(ServerPlayer *player, const QString &arg);

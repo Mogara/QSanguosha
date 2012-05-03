@@ -164,13 +164,16 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
 
 void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme){
     QStringList all_roles = roles;
+    QStringList roleChoices = all_roles;
+    roleChoices.removeDuplicates();
     QList<ServerPlayer *> new_players, abstained;
     for (int i = 0; i < 6; i++)
         new_players << NULL;
 
     foreach(ServerPlayer *player, room->m_players){
         if(player->isOnline()){
-            QString role = room->askForRole(player, all_roles, scheme);
+            
+            QString role = room->askForRole(player, roleChoices, scheme);
             if(role != "abstain"){
                 player->setRole(role);
                 all_roles.removeOne(role);

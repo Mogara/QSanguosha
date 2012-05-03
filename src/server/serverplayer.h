@@ -128,7 +128,7 @@ public:
     inline void setClientReplyString(const QString &val){m_clientResponseString = val;}
     inline Json::Value getClientReply(){return _m_clientResponse;}
     inline void setClientReply(const Json::Value &val){_m_clientResponse = val;}    
-    int m_expectedReplySerial; // Suggest the acceptable serial number of an expected response.
+    unsigned int m_expectedReplySerial; // Suggest the acceptable serial number of an expected response.
     bool m_isClientResponseReady; //Suggest whether a valid player's reponse has been received.
     bool m_isWaitingReply; // Suggest if the server player is waiting for client's response.
     Json::Value m_cheatArgs; // Store the cheat code received from client.

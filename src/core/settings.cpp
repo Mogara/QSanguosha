@@ -20,6 +20,8 @@ static const qreal ViewHeight = 800 * 0.8;
 const int Settings::S_CHOOSE_GENERAL_TIMEOUT = 15;
 const int Settings::S_GUANXING_TIMEOUT = 20;
 const int Settings::S_SURRNDER_REQUEST_MIN_INTERVAL = 60;
+const int Settings::S_PROGRESS_BAR_UPDATE_INTERVAL = 200;
+const int Settings::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
 
 Settings::Settings()
 

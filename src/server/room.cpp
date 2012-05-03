@@ -531,7 +531,7 @@ bool Room::obtainable(const Card *card, ServerPlayer *player){
 bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
     bool moveFocus, bool wait)
 {     
-    time_t timeOut = getCommandTimeout(command);
+    time_t timeOut = Config.getCommandTimeout(command, S_SERVER_INSTANCE);
     return doRequest(player, command, arg, timeOut, moveFocus, wait);
 }
 
@@ -563,7 +563,7 @@ bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, co
 
 bool Room::doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command)
 {
-   time_t timeOut = getCommandTimeout(command);   
+   time_t timeOut = Config.getCommandTimeout(command, S_SERVER_INSTANCE);   
    return doBroadcastRequest(players, command, timeOut);
 }
 
@@ -840,7 +840,7 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     }
 
     ServerPlayer* repliedPlayer = NULL;
-    time_t timeOut = getCommandTimeout(S_COMMAND_NULLIFICATION);
+    time_t timeOut = Config.getCommandTimeout(S_COMMAND_NULLIFICATION, S_SERVER_INSTANCE);
     if (!validHumanPlayers.empty())
         repliedPlayer = doBroadcastRaceRequest(validHumanPlayers, S_COMMAND_NULLIFICATION, timeOut, &Room::verifyNullificationResponse);
 
@@ -1996,23 +1996,6 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
             player->addToSelected(choice);
             choices.removeOne(choice);
         }
-    }
-}
-
-time_t Room::getCommandTimeout(QSanProtocol::CommandType command)
-{
-    if (Config.OperationNoLimit) return UINT_MAX;
-    else if (command == S_COMMAND_CHOOSE_GENERAL)
-    {
-        return (Config.S_CHOOSE_GENERAL_TIMEOUT + 1) * 1000;
-    }
-    else if (command == S_COMMAND_SKILL_GUANXING)
-    {
-        return (Config.S_GUANXING_TIMEOUT + 1) * 1000;
-    }
-    else
-    {
-        return (Config.OperationTimeout + 1) * 1000;
     }
 }
 
@@ -3395,7 +3378,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
     bool success = doRequest(player, S_COMMAND_PINDIAN, toJsonArray(from->objectName(), to->objectName()));
 
     Json::Value clientReply = player->getClientReply();    
-    if(!success || !clientReply.isString()){
+    if(success && clientReply.isString()){
         int card_id = player->getRandomHandCardId();
         return Sanguosha->getCard(card_id);
     }else{        

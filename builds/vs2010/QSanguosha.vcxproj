@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\core\jsonutils.cpp" />
     <ClCompile Include="..\..\src\core\protocol.cpp" />
+    <ClCompile Include="..\..\src\core\util.cpp" />
     <ClCompile Include="Debug\moc_ai.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>

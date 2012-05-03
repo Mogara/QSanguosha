@@ -8,6 +8,7 @@ using namespace QSanProtocol;
 
 unsigned int QSanProtocol::QSanGeneralPacket::_m_globalSerial = 0;
 const unsigned int QSanProtocol::QSanGeneralPacket::S_MAX_PACKET_SIZE = 1000;
+const string QSanProtocol::Countdown::S_COUNTDOWN_MAGIC = "MG_COUNTDOWN";
 
 bool QSanProtocol::Utils::isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex)
 {
@@ -62,8 +63,8 @@ bool QSanProtocol::QSanGeneralPacket::parse(const string &s)
         return false;
     }    
 
-    m_globalSerial = result[0].asInt();
-    m_localSerial = result[1].asInt();
+    m_globalSerial = (unsigned int)result[0].asInt();
+    m_localSerial = (unsigned int)result[1].asInt();
     m_packetType = (PacketType)result[2].asInt();
     m_command = (CommandType)result[3].asInt();
 
