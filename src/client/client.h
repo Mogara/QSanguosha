@@ -137,7 +137,6 @@ public:
     void fillAG(const QString &cards_str);    
     void takeAG(const QString &take_str);
     void clearAG(const QString &);
-    void disableAG(const QString &disable_str);
 
     //interactive server callbacks
     void askForCard(const Json::Value&);
@@ -180,15 +179,15 @@ public:
     
     inline void setCountdown(QSanProtocol::Countdown countdown) 
     {
-        m_mutexCountdown.lockInline();
+        m_mutexCountdown.lock();
         m_countdown = countdown;
-        m_mutexCountdown.unlockInline();
+        m_mutexCountdown.unlock();
     }
     inline QSanProtocol::Countdown getCountdown()
     {
-        m_mutexCountdown.lockInline();
+        m_mutexCountdown.lock();
         QSanProtocol::Countdown countdown = m_countdown;
-        m_mutexCountdown.unlockInline();
+        m_mutexCountdown.unlock();
         return countdown;
     }
 
@@ -286,7 +285,7 @@ signals:
     void log_received(const QString &log_str);
     void guanxing(const QList<int> &card_ids, bool up_only);
     void gongxin(const QList<int> &card_ids, bool enable_heart);
-    void focus_moved(const QString &focus);
+    void focus_moved(const QString &focus, QSanProtocol::Countdown countdown);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
     void skill_acquired(const ClientPlayer *player, const QString &skill_name);
@@ -313,7 +312,6 @@ signals:
     void ag_filled(const QList<int> &card_ids);
     void ag_taken(const ClientPlayer *taker, int card_id);
     void ag_cleared();
-    void ag_disabled(bool);
 
     void generals_filled(const QStringList &general_names);
     void general_taken(const QString &who, const QString &name);

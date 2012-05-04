@@ -181,7 +181,6 @@ protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    virtual void timerEvent(QTimerEvent *event);
 
 private:
     Button* add_robot, *fill_robots;
@@ -316,7 +315,7 @@ private slots:
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
-    void moveFocus(const QString &who);
+    void moveFocus(const QString &who, QSanProtocol::Countdown);
     void setEmotion(const QString &who, const QString &emotion,bool permanent = false);
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);

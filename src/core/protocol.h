@@ -85,7 +85,8 @@ namespace QSanProtocol
         S_COMMAND_SET_HP,
         S_COMMAND_SET_MAXHP,
         S_COMMAND_CHEAT,
-        S_COMMAND_SURRENDER
+        S_COMMAND_SURRENDER,
+        S_COMMAND_CHANGE_PHASE
     };
 
     enum Game3v3ChooseOrderCommand
@@ -114,33 +115,11 @@ namespace QSanProtocol
         time_t m_max;
         inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0):
             m_type(type), m_current(current), m_max(max) {}
-        inline bool tryParse(Json::Value val)
-        {
-            if (!val.isArray() || (val.size() != 2 && val.size() != 3) || 
-                !val[0].isString() || val[0].asString() != S_COUNTDOWN_MAGIC)
-                return false;
-            if (val.size() == 3)
-            {
-                if (!Utils::isIntArray(val, 0, 1)) return false;
-                m_current = (time_t)val[1].asInt();
-                m_max = (time_t)val[2].asInt();
-                m_type = S_COUNTDOWN_USE_SPECIFIED;
-                return true;
-            }
-            else if (val.size() == 2)
-            {
-                CountdownType type = (CountdownType)val[1].asInt();
-                if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
-                    return false;
-                else m_type = type;
-                return true;
-            }
-            else return false;            
-        }
+        bool tryParse(Json::Value val);        
         inline Json::Value toJsonValue()
         {
             if (m_type == S_COUNTDOWN_NO_LIMIT
-                || m_type == S_COUNTDOWN_USE_SPECIFIED)
+                || m_type == S_COUNTDOWN_USE_DEFAULT)
             {
                 Json::Value val(Json::arrayValue);
                 val[0] = S_COUNTDOWN_MAGIC;

@@ -148,7 +148,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["fillAG"] = &Client::fillAG;    
     callbacks["takeAG"] = &Client::takeAG;
     callbacks["clearAG"] = &Client::clearAG;
-    callbacks["disableAG"] = &Client::disableAG;
 
     // 3v3 mode & 1v1 mode
     callbacks["fillGenerals"] = &Client::fillGenerals;
@@ -1372,10 +1371,6 @@ void Client::clearAG(const QString &){
     emit ag_cleared();
 }
 
-void Client::disableAG(const QString &disable_str){
-    emit ag_disabled(disable_str == "true");
-}
-
 void Client::askForSinglePeach(const Json::Value &arg){
     
     if (!arg.isArray() || arg.size() != 2 || !arg[0].isString() || !arg[1].isInt()) return;
@@ -1632,8 +1627,28 @@ void Client::speak(const QString &speak_data){
 }
 
 void Client::moveFocus(const Json::Value &focus){
-    QString test = toQString(focus);
-    emit focus_moved(QString(focus.asCString()));
+    QString who;
+    Countdown countdown;
+    if (focus.isString())
+    {
+        who = toQString(focus);
+        countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
+    }
+    else
+    {
+        Q_ASSERT(focus.isArray() && focus.size() == 2);
+        who = toQString(focus[0]);
+    
+        bool success = countdown.tryParse(focus[1]);
+        if (!success)
+        {
+            Q_ASSERT(focus[1].isInt());
+            CommandType command = (CommandType)focus[1].asInt();
+            countdown.m_max = Config.getCommandTimeout(command, S_CLIENT_INSTANCE);
+            countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
+        }
+    }
+    emit focus_moved(who, countdown);
 }
 
 void Client::setEmotion(const QString &set_str){

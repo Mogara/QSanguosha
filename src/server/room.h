@@ -100,11 +100,9 @@ public:
     // @param arg
     //        Command args.
     // @param timeOut
-    //        Maximum milliseconds that server should wait for client response before returning.    
-    // @param moveFocus
-    //        Suggests whether the all clients' UI should move focus to the player specified.
+    //        Maximum milliseconds that server should wait for client response before returning.        
     // @param wait
-    //        If ture, return immediately after sending the request without waiting for client reply.
+    //        If true, return immediately after sending the request without waiting for client reply.
     // @return True if the a valid response is returned from client.  
     // Usage note: when you need a round trip request-response vector with a SINGLE client, use this command
     // with wait = true and read the reponse from player->getClientReply(). If you want to initiate a poll 
@@ -113,10 +111,8 @@ public:
     //    command only once in all with broadcast = true if the poll is to everypody).
     // 2. Call getResult(player, timeout) on each player to retrieve the result. Read manual for getResults
     //    before you use.
-    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut,
-                            bool moveFocus = true, bool wait = true);
-    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, 
-                            bool moveFocus = true, bool wait = true);    
+    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut, bool wait);
+    bool doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, bool wait);
 
     // Broadcast a request to a list of players and get the client responses. Call is blocking until all client
     // replies or server times out, whichever is earlier. Check each player's m_isClientResponseReady to see if a valid
@@ -147,6 +143,7 @@ public:
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
     bool doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg); 
+
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
@@ -172,8 +169,12 @@ public:
     ServerPlayer* getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, time_t timeOut,
                                 ResponseVerifyFunction validateFunc = NULL, void* funcArg = NULL);
 
-    //Verification functions
+    // Verification functions
     bool verifyNullificationResponse(ServerPlayer*, const Json::Value&, void*);
+
+    // Notification functions
+    bool notifyMoveFocus(ServerPlayer* player);
+    bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);

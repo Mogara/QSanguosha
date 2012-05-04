@@ -15,6 +15,8 @@
 #include <QCheckBox>
 #include <QTabWidget>
 
+using namespace QSanProtocol;
+
 OptionButton::OptionButton(QString icon_path, const QString &caption, QWidget *parent)
     :QToolButton(parent)
 {
@@ -180,10 +182,9 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     if(ServerInfo.OperationTimeout == 0){
         progress_bar = NULL;
     }else{
-        progress_bar = new QProgressBar;
-        progress_bar->setMinimum(0);
-        progress_bar->setMaximum(Config.getCommandTimeout(QSanProtocol::S_COMMAND_CHOOSE_GENERAL, QSanProtocol::S_CLIENT_INSTANCE));
-        progress_bar->setTextVisible(false);
+        progress_bar = new QSanCommandProgressBar();
+        progress_bar->setTimerEnabled(true);
+        progress_bar->setCountdown(S_COMMAND_CHOOSE_GENERAL);
         last_layout->addWidget(progress_bar);
     }
 
@@ -203,8 +204,6 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     setLayout(dialog_layout);
 
-    if(ServerInfo.OperationTimeout != 0)
-        startTimer(Config.S_PROGRESS_BAR_UPDATE_INTERVAL);
 }
 
 void ChooseGeneralDialog::done(int result)
@@ -228,20 +227,6 @@ void ChooseGeneralDialog::freeChoose(){
 
     dialog->exec();
 }
-
-void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
-    if (progress_bar == NULL) return;    
-    int new_value = progress_bar->value() + Config.S_PROGRESS_BAR_UPDATE_INTERVAL;
-    new_value = qMin(progress_bar->maximum(), new_value);
-    progress_bar->setValue(new_value);
-
-    if(new_value <= progress_bar->maximum())       
-        progress_bar->setValue(new_value);
-    else
-        progress_bar->setValue(progress_bar->maximum());
-}
-
-// -------------------------------------
 
 FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     :QDialog(parent), pair_choose(pair_choose)

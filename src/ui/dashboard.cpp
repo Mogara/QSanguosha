@@ -440,31 +440,19 @@ void Dashboard::_addProgressBar()
     widget->setWidget(&m_progressBar);
     widget->setParentItem(middle);
     widget->setPos(300, - 25);
-
+    connect(&m_progressBar, SIGNAL(timedOut()), this, SLOT(onProgressBarTimedOut()));
     m_progressBar.hide();    
 }
 
 void Dashboard::hideProgressBar()
 {
-    m_mutex.lock();
     m_progressBar.hide();
-    m_mutex.unlock();
-    
 }
 
-void Dashboard::showProgressBar()
+void Dashboard::showProgressBar(Countdown countdown)
 {
-    m_mutex.lock();
+    m_progressBar.setCountdown(countdown);
     m_progressBar.show();
-    m_mutex.unlock();
-}
-
-void Dashboard::changeProgress(Countdown countdown)
-{
-    m_mutex.lock();
-    m_progressBar.setValue(countdown.m_current);
-    m_progressBar.setMaximum(countdown.m_max);    
-    m_mutex.unlock();
 }
 
 void Dashboard::drawHp(QPainter *painter) const{

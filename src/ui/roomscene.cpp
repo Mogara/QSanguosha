@@ -118,7 +118,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     // create photos
     int i;
-    for(i=0;i<player_count-1;i++){
+    for(i = 0; i < player_count - 1;i++){
         Photo *photo = new Photo;
         photos << photo;
         addItem(photo);
@@ -213,7 +213,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
-    connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
+    connect(ClientInstance, SIGNAL(focus_moved(QString, QSanProtocol::Countdown)), this, SLOT(moveFocus(QString, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
@@ -261,7 +261,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), card_container, SLOT(fillCards(QList<int>)));
         connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
         connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
-        connect(ClientInstance, SIGNAL(ag_disabled(bool)), card_container, SLOT(freezeCards(bool)));
 
         if(circular)
             card_container->moveBy(-120, 0);
@@ -997,20 +996,6 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
             change_general_menu->popup(event->screenPos());
         }
     }
-}
-
-void RoomScene::timerEvent(QTimerEvent *event) {
-    Countdown countdown = ClientInstance->getCountdown();
-    countdown.m_current += Config.S_PROGRESS_BAR_UPDATE_INTERVAL;    
-    ClientInstance->setCountdown(countdown);
-    if(countdown.hasTimedOut()){
-        killTimer(event->timerId());
-        timer_id = 0;
-        tick = 0;        
-        doTimeout();
-    }else{
-        dashboard->changeProgress(countdown);
-    }    
 }
 
 void RoomScene::chooseGeneral(const QStringList &generals){
@@ -2231,6 +2216,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 photo->setOpacity(photo->getPlayer()->isAlive() ? 1.0 : 0.7);
             }
 
+            dashboard->hideProgressBar();
+
             break;
         }
 
@@ -2384,29 +2371,15 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             button->setEnabled(true);
     }
 
-    if(newStatus != Client::NotActive){
-        if(focused)
-            focused->hideProcessBar();
-
-        QApplication::alert(main_window);
-    }
-
     if(ServerInfo.OperationTimeout == 0)
         return;
 
     // do timeout    
-    dashboard->changeProgress(ClientInstance->getCountdown());
-    if(timer_id != 0){
-        killTimer(timer_id);
-        timer_id = 0;
-    }
-
-    if(newStatus == Client::NotActive){
-        dashboard->hideProgressBar();
-    }else{
-        timer_id = startTimer(Config.S_PROGRESS_BAR_UPDATE_INTERVAL);
-        tick = 0;
-        dashboard->showProgressBar();
+    if(newStatus != Client::NotActive){    
+        if(focused) focused->hideProgressBar();
+        QApplication::alert(main_window);
+        connect(dashboard, SIGNAL(progressBarTimedOut()), this, SLOT(doTimeout()));        
+        dashboard->showProgressBar(ClientInstance->getCountdown());
     }
 }
 
@@ -3512,17 +3485,17 @@ void RoomScene::freeze(){
     main_window->setStatusBar(NULL);
 }
 
-void RoomScene::moveFocus(const QString &who){
+void RoomScene::moveFocus(const QString &who, Countdown countdown){
     Photo *photo = name2photo[who];
     if(photo){
         if(focused != photo && focused){
-            focused->hideProcessBar();
+            focused->hideProgressBar();
             if(focused->getPlayer()->getPhase() == Player::NotActive)
                 focused->setFrame(Photo::NoFrame);
         }
 
         focused = photo;
-        focused->showProcessBar();
+        focused->showProgressBar(countdown);
         if(focused->getPlayer()->getPhase() == Player::NotActive)
             focused->setFrame(Photo::Responsing);
     }

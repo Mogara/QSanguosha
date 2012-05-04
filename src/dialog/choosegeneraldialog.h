@@ -3,8 +3,9 @@
 
 class General;
 
+#include "TimedProgressBar.h"
+
 #include <QDialog>
-#include <QProgressBar>
 #include <QGroupBox>
 #include <QButtonGroup>
 
@@ -35,11 +36,10 @@ public slots:
     void done(int);
 
 protected:
-    virtual void timerEvent(QTimerEvent *);    
     QDialog *m_freeChooseDialog;
 
 private:
-    QProgressBar *progress_bar;    
+    QSanCommandProgressBar *progress_bar;    
 
 private slots:
     void freeChoose();   
