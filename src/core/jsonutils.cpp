@@ -25,7 +25,7 @@ Json::Value QSanProtocol::Utils::toJsonArray(const QString& s1, const Json::Valu
     return val;
 }
 
-Json::Value QSanProtocol::Utils::toJsonIntArray(const QList<int>& arg)
+Json::Value QSanProtocol::Utils::toJsonArray(const QList<int>& arg)
 {
     Json::Value val(Json::arrayValue);
     foreach(int i, arg)
@@ -47,7 +47,7 @@ bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QList<int>& result)
     return true;
 }
 
-Json::Value QSanProtocol::Utils:: toJsonStringArray(const QList<QString>& arg)
+Json::Value QSanProtocol::Utils:: toJsonArray(const QList<QString>& arg)
 {
     Json::Value val(Json::arrayValue);
     foreach(QString s, arg)
@@ -55,7 +55,7 @@ Json::Value QSanProtocol::Utils:: toJsonStringArray(const QList<QString>& arg)
     return val;
 }
 
-Json::Value QSanProtocol::Utils:: toJsonStringArray(const QStringList& arg)
+Json::Value QSanProtocol::Utils:: toJsonArray(const QStringList& arg)
 {
     Json::Value val(Json::arrayValue);
     foreach(QString s, arg)

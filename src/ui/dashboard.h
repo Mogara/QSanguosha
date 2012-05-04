@@ -68,7 +68,6 @@ public:
     int getTextureWidth() const;
 
 public slots:
-    inline void onProgressBarTimedOut() { emit progressBarTimedOut(); }
     void updateAvatar();
     void updateSmallAvatar();
     void updateReadyItem(bool visible);

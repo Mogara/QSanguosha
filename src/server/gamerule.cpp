@@ -435,7 +435,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
-    case GameOverJudge:{
+    case GameOverJudge:{            
             if(room->getMode() == "02_1v1"){
                 QStringList list = player->tag["1v1Arrange"].toStringList();
 
@@ -445,6 +445,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             QString winner = getWinner(player);
             if(!winner.isNull()){
+                player->bury();
                 room->gameOver(winner);
                 return true;
             }

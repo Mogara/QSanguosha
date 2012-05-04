@@ -24,9 +24,9 @@ namespace QSanProtocol
         Json::Value toJsonArray(const QString& s1, const QString& s2);
         Json::Value toJsonArray(const QString& s1, const Json::Value& s2);
         Json::Value toJsonArray(const QString& s1, const QString& s2, const QString& s3);
-        Json::Value toJsonIntArray(const QList<int>&);
-        Json::Value toJsonStringArray(const QList<QString>&);
-        Json::Value toJsonStringArray(const QStringList&);
+        Json::Value toJsonArray(const QList<int>&);
+        Json::Value toJsonArray(const QList<QString>&);
+        Json::Value toJsonArray(const QStringList&);
         bool tryParse(const Json::Value&, QList<int> &);
         bool tryParse(const Json::Value&, QStringList &);
     }

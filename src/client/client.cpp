@@ -31,6 +31,7 @@ Client::Client(QObject *parent, const QString &filename)
 {
 
     ClientInstance = this;
+    m_isGameOver = false;
 
     callbacks["checkVersion"] = &Client::checkVersion;
 
@@ -50,7 +51,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["warn"] = &Client::warn;
 
     callbacks["startGame"] = &Client::startGame;
-    callbacks["gameOver"] = &Client::gameOver;
+    m_callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
 
     callbacks["hpChange"] = &Client::hpChange;
     callbacks["killPlayer"] = &Client::killPlayer;
@@ -279,6 +280,7 @@ void Client::processServerPacket(const QString &cmd){
 }
 
 void Client::processServerPacket(char *cmd){
+    if (m_isGameOver) return;
     QSanGeneralPacket packet;
     if (packet.parse(cmd))
     {
@@ -1139,15 +1141,16 @@ void Client::askForExchange(const Json::Value &exchange_str){
     setStatus(Discarding);
 }
 
-void Client::gameOver(const QString &result_str){
-    QStringList texts = result_str.split(":");
-    QString winner = texts.at(0);
-    QStringList roles = texts.at(1).split("+");
+void Client::gameOver(const Json::Value &arg){
+    m_isGameOver = true;
+    setStatus(Client::NotActive);
+    QString winner = toQString(arg[0]);
+    QStringList roles;
+    tryParse(arg[1], roles);
 
     Q_ASSERT(roles.length() == players.length());
 
-    int i;
-    for(i=0; i<roles.length(); i++){
+    for(int i = 0; i < roles.length(); i++){
         QString name = players.at(i)->objectName();
         getPlayer(name)->setRole(roles.at(i));
     }
@@ -1488,8 +1491,8 @@ void Client::onPlayerAssignRole(const QList<QString> &names, const QList<QString
 {
     Q_ASSERT(names.size() == roles.size());
     Json::Value reply(Json::arrayValue);
-    reply[0] = toJsonStringArray(names);
-    reply[1] = toJsonStringArray(roles);    
+    reply[0] = toJsonArray(names);
+    reply[1] = toJsonArray(roles);    
     replyToServer(S_COMMAND_CHOOSE_ROLE, reply);
 }
 
@@ -1571,7 +1574,7 @@ void Client::onPlayerReplyYiji(const Card *card, const Player *to){
     else 
     {
         req = Json::Value(Json::arrayValue);
-        req[0] = toJsonIntArray(card->getSubcards());
+        req[0] = toJsonArray(card->getSubcards());
         req[1] = toJsonString(to->objectName());
     }        
     replyToServer(S_COMMAND_SKILL_YIJI, req);
@@ -1581,8 +1584,8 @@ void Client::onPlayerReplyYiji(const Card *card, const Player *to){
 
 void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards){
     Json::Value decks(Json::arrayValue);
-    decks[0] = toJsonIntArray(up_cards);
-    decks[1] = toJsonIntArray(down_cards);
+    decks[0] = toJsonArray(up_cards);
+    decks[1] = toJsonArray(down_cards);
 
     replyToServer(S_COMMAND_SKILL_GUANXING, decks);
     //request(QString("replyGuanxing %1:%2").arg(up_items.join("+")).arg(down_items.join("+")));
