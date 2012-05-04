@@ -346,7 +346,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 QList<ServerPlayer *> chained_players = room->getAlivePlayers();
                 foreach(ServerPlayer *chained_player, chained_players){
                     if(chained_player->isChained()){
-                        room->getThread()->delay();
                         room->setPlayerProperty(chained_player, "chained", false);
 
                         LogMessage log;
@@ -501,10 +500,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             room->sendLog(log);
 
             room->sendJudgeResult(judge);
-            int delay = Config.AIDelay;
-            if(judge->time_consuming)
-                delay /= 4;
-            room->getThread()->delay(delay);
+
             break;
         }
 
@@ -532,14 +528,12 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             log.from = pindian->from;
             log.card_str = pindian->from_card->getEffectIdString();
             room->sendLog(log);
-            room->getThread()->delay();
 
             room->throwCard(pindian->to_card);
             log.type = "$PindianResult";
             log.from = pindian->to;
             log.card_str = pindian->to_card->getEffectIdString();
             room->sendLog(log);
-            room->getThread()->delay();
 
             break;
         }
