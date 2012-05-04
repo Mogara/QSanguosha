@@ -247,7 +247,7 @@ private:
     void _askForCardOrUseCard(const Json::Value&);
 
 private slots:
-    void processServerPacket(QString &cmd);
+    void processServerPacket(const QString &cmd);
     void processServerPacket(char *cmd);
     bool processServerRequest(const QSanProtocol::QSanGeneralPacket& packet);
     void processReply(char *reply);
