@@ -143,7 +143,6 @@ void Photo::showProgressBar(Countdown countdown){
 }
 
 void Photo::hideProgressBar(){
-    progress_bar->setValue(0);
     progress_bar->hide();
 }
 
