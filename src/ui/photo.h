@@ -95,7 +95,6 @@ private:
     QPixmap death_pixmap;
     Pixmap *back_icon, *chain_icon;
     QSanCommandProgressBar *progress_bar;
-    int timer_id;
     QGraphicsPixmapItem *emotion_item, *frame_item;
     QGraphicsSimpleTextItem *skill_name_item;
     QGraphicsRectItem *avatar_area, *small_avatar_area;

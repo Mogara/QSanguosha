@@ -145,11 +145,6 @@ void Photo::showProgressBar(Countdown countdown){
 void Photo::hideProgressBar(){
     progress_bar->setValue(0);
     progress_bar->hide();
-
-    if(timer_id != 0){
-        killTimer(timer_id);
-        timer_id = 0;
-    }
 }
 
 void Photo::setEmotion(const QString &emotion, bool permanent){
