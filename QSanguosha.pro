@@ -100,6 +100,7 @@ SOURCES += \
 	src/ui/roomscene.cpp \
 	src/ui/sprite.cpp \
 	src/ui/startscene.cpp \
+	src/ui/TimedProgressBar.cpp \
 	src/ui/window.cpp \
 	src/util/detector.cpp \
 	src/util/nativesocket.cpp \
@@ -140,8 +141,7 @@ SOURCES += \
 	src/jsoncpp/src/json_reader.cpp \
 	src/jsoncpp/src/json_internalmap.inl \
 	src/jsoncpp/src/json_internalarray.inl \
-	swig/sanguosha_wrap.cxx \
-    src/ui/TimedProgressBar.cpp
+	swig/sanguosha_wrap.cxx
 
 HEADERS += \
 	src/client/aux-skills.h \
@@ -229,6 +229,7 @@ HEADERS += \
 	src/ui/roomscene.h \
 	src/ui/sprite.h \
 	src/ui/startscene.h \
+	src/ui/TimedProgressBar.h \
 	src/ui/window.h \
 	src/util/detector.h \
 	src/util/nativesocket.h \
@@ -268,8 +269,7 @@ HEADERS += \
 	src/jsoncpp/include/json/features.h \
 	src/jsoncpp/include/json/config.h \
 	src/jsoncpp/include/json/autolink.h \
-	src/jsoncpp/include/json/assertions.h \
-    src/ui/TimedProgressBar.h
+	src/jsoncpp/include/json/assertions.h
 	
 FORMS += \
 	src/dialog/cardoverview.ui \
