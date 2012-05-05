@@ -363,6 +363,8 @@ QString Engine::getSetupString() const{
         flags.append("S");
     if(Config.EnableScene)
         flags.append("C");
+    if(Config.EnableSame)
+        flags.append("T");
     if(Config.EnableBasara)
         flags.append("B");
     if(Config.EnableHegemony)
