@@ -2029,7 +2029,7 @@ void Room::chooseGenerals(){
     {
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
-        if(mode == "08same")
+        if(Config.EnableSame)
             lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
         else if(the_lord->getState() == "robot")
             if(qrand()%100 < nonlord_prob)
@@ -2043,7 +2043,7 @@ void Room::chooseGenerals(){
         if (!Config.EnableBasara)
             broadcastProperty(the_lord, "general", general);
 
-        if(mode == "08same"){
+        if(Config.EnableSame){
             foreach(ServerPlayer *p, m_players){
                 if(!p->isLord())
                     p->setGeneralName(general);

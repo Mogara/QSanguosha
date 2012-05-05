@@ -2940,26 +2940,6 @@
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="1512"/>
-        <source>Boss</source>
-        <translation>魔王</translation>
-    </message>
-    <message>
-        <location filename="src/ui/roomscene.cpp" line="1513"/>
-        <source>Hero</source>
-        <translation>英雄</translation>
-    </message>
-    <message>
-        <location filename="src/ui/roomscene.cpp" line="1514"/>
-        <source>Citizen</source>
-        <translation>平民</translation>
-    </message>
-    <message>
-        <location filename="src/ui/roomscene.cpp" line="1515"/>
-        <source>Guard</source>
-        <translation>护卫</translation>
-    </message>
-    <message>
         <location filename="src/ui/roomscene.cpp" line="1517"/>
         <source>Marshal</source>
         <translation>主帅</translation>
@@ -3439,6 +3419,11 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="src/server/server.cpp" line="185"/>
         <source>Enable Scene</source>
         <translation>启用场景模式</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="187"/>
+        <source>Enable Same</source>
+        <translation>启用同将模式</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="193"/>
