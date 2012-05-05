@@ -508,7 +508,7 @@ xianzhen_skill.getTurnUseCard=function(self)
 
 	for _, enemy in ipairs(self.enemies) do
 		local enemy_max_card = self:getMaxCard(enemy)
-		if enemy_max_card and max_point and max_point > enemy_max_card:getNumber() and slashNum > 1 then
+		if enemy_max_card and max_point and max_point > enemy_max_card:getNumber() and slashNum > 0 then
 
 			local slash=self:getCard("Slash")
 			local dummy_use={}

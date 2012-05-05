@@ -440,7 +440,7 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
 void HaoshiCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *beggar = targets.first();
 
-    room->obtainCard(beggar, this, false);
+    room->moveCardTo(this, beggar, Player::Hand, false);
     room->setEmotion(beggar, "draw-card");
 }
 
@@ -597,11 +597,11 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
         a->addToPile("#dimeng", card2, false);
 
     if(card1){
-        room->obtainCard(b, card1, false);
+        room->moveCardTo(card1, b, Player::Hand, false);
         delete card1;
     }
     if(card2){
-        room->obtainCard(a, card2, false);
+        room->moveCardTo(card2, a, Player::Hand, false);
         delete card2;
     }
 

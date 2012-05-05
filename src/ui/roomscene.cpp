@@ -2660,6 +2660,7 @@ void RoomScene::onStandoff(){
 }
 
 void RoomScene::onGameOver(){
+    m_roomMutex.lock();
     freeze();
 
     bool victory = Self->property("win").toBool();
@@ -2722,8 +2723,9 @@ void RoomScene::onGameOver(){
     fillTable(loser_table, loser_list);
 
     addRestartButton(dialog);
-
+    m_roomMutex.unlock();
     dialog->exec();
+    
 }
 
 void RoomScene::addRestartButton(QDialog *dialog){
@@ -3055,7 +3057,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
 
 void RoomScene::killPlayer(const QString &who){
     const General *general = NULL;
-
+    m_roomMutex.lock();
     if(who == Self->objectName()){
         dashboard->killPlayer();
         general = Self->getGeneral();
@@ -3079,6 +3081,7 @@ void RoomScene::killPlayer(const QString &who){
 
     if(Config.EnableLastWord && !Self->hasFlag("marshalling"))
         general->lastWord();
+    m_roomMutex.unlock();
 }
 
 void RoomScene::revivePlayer(const QString &who){
@@ -3464,12 +3467,13 @@ void RoomScene::onGameStart(){
 }
 
 void RoomScene::freeze(){
-
-    ClientInstance->disconnectFromHost();
     dashboard->setEnabled(false);
     avatar->setEnabled(false);
     foreach(Photo *photo, photos)
+    {
+        photo->hideProgressBar();
         photo->setEnabled(false);
+    }
     item2player.clear();
 
     chat_edit->setEnabled(false);

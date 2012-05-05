@@ -1158,12 +1158,12 @@ public:
             else
                 to_exchange = room->askForExchange(player, "gongmou", x);
 
-            room->obtainCard(zhongshiji, to_exchange, false);
+            room->moveCardTo(to_exchange, zhongshiji, Player::Hand, false);
 
             delete to_exchange;
 
             to_exchange = room->askForExchange(zhongshiji, "gongmou", x);
-            room->obtainCard(player, to_exchange, false);
+            room->moveCardTo(to_exchange, player, Player::Hand, false);
 
             delete to_exchange;
 

@@ -33,6 +33,7 @@ struct RoomLayout;
 #include <QGraphicsProxyWidget>
 #include <QThread>
 #include <QHBoxLayout>
+#include <QMutex>
 
 class ScriptExecutor: public QDialog{
     Q_OBJECT
@@ -183,6 +184,7 @@ protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
+    QMutex m_roomMutex;
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;

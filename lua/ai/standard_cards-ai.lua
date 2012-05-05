@@ -48,6 +48,9 @@ function SmartAI:slashIsEffective(slash, to)
 			return false
 		end
 	end
+	if (to:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == to:objectName()) then
+		return false
+	end
 
 	local natures = {
 		Slash = sgs.DamageStruct_Normal,
