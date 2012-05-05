@@ -225,10 +225,7 @@ public:
         QVariant data = QVariant::fromValue(from);
         if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui", data)){
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
-            if(room->getCardPlace(card_id) == Player::Hand)
-                room->moveCardTo(Sanguosha->getCard(card_id), simayi, Player::Hand, false);
-            else
-                room->obtainCard(simayi, card_id);
+            room->obtainCard(simayi, card_id, room->getCardPlace(card_id) != Player::Hand);
             room->playSkillEffect(objectName());
         }
     }

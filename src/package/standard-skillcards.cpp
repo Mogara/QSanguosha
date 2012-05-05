@@ -34,7 +34,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     }else
         target = targets.first();
 
-    room->moveCardTo(this, target, Player::Hand, false);
+    room->obtainCard(target, this, false);
 
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
@@ -102,8 +102,7 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
 void TuxiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
-    const Card *card = Sanguosha->getCard(card_id);
-    room->moveCardTo(card, effect.from, Player::Hand, false);
+    room->obtainCard(effect.from, card_id, false);
 
     room->setEmotion(effect.to, "bad");
     room->setEmotion(effect.from, "good");

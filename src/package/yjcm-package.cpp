@@ -386,7 +386,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
             effect.to->addToPile("#xuanhuo", dummy, true);
             int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             dummy->addSubcard(second_id);
-            room->moveCardTo(dummy, effect.from, Player::Hand, true);
+            room->obtainCard(effect.from, dummy);
             delete dummy;
         }
     }
@@ -397,7 +397,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->addToPile("#xuanhuo", dummy, true);
         int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
         dummy->addSubcard(second_id);
-        room->moveCardTo(dummy, effect.from, Player::Hand, true);
+        room->obtainCard(effect.from, dummy);
         delete dummy;
     }
 }

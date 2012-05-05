@@ -67,8 +67,8 @@ const Card *ServerPlayer::getRandomHandCard() const{
     return handcards.at(index);
 }
 
-void ServerPlayer::obtainCard(const Card *card){
-    room->obtainCard(this, card);
+void ServerPlayer::obtainCard(const Card *card, bool unhide){
+    room->obtainCard(this, card, unhide);
 }
 
 void ServerPlayer::throwAllEquips(){

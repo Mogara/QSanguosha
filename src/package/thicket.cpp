@@ -41,7 +41,7 @@ public:
 
                 DummyCard *all_cards = player->wholeHandCards();
                 if(all_cards){
-                    room->moveCardTo(all_cards, caopi, Player::Hand, false);
+                    room->obtainCard(caopi, all_cards, false);
                     delete all_cards;
                 }
                 break;
@@ -253,10 +253,7 @@ public:
 
                 if(!target->isNude()){
                     int card_id = room->askForCardChosen(zhurong, target, "he", objectName());
-                    if(room->getCardPlace(card_id) == Player::Hand)
-                        room->moveCardTo(Sanguosha->getCard(card_id), zhurong, Player::Hand, false);
-                    else
-                        room->obtainCard(zhurong, card_id);
+                    room->obtainCard(zhurong, card_id, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
         }
@@ -443,7 +440,7 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
 void HaoshiCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *beggar = targets.first();
 
-    room->moveCardTo(this, beggar, Player::Hand, false);
+    room->obtainCard(beggar, this, false);
     room->setEmotion(beggar, "draw-card");
 }
 
@@ -600,11 +597,11 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
         a->addToPile("#dimeng", card2, false);
 
     if(card1){
-        room->moveCardTo(card1, b, Player::Hand, false);
+        room->obtainCard(b, card1, false);
         delete card1;
     }
     if(card2){
-        room->moveCardTo(card2, a, Player::Hand, false);
+        room->obtainCard(a, card2, false);
         delete card2;
     }
 

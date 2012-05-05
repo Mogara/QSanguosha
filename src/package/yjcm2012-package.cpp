@@ -8,7 +8,6 @@
 #include "god.h"
 #include "maneuvering.h"
 
-
 class Zhenlie: public TriggerSkill{
 public:
     Zhenlie():TriggerSkill("zhenlie"){
@@ -72,7 +71,7 @@ public:
 
                 QList<const Card *> miji_cards = wangyi->getHandcards().mid(wangyi->getHandcardNum() - x);
                 foreach(const Card *card, miji_cards)
-                    room->moveCardTo(card, target, Player::Hand, false);
+                    room->obtainCard(target, card, false);
             }
         }
         return false;
@@ -602,7 +601,7 @@ void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     ServerPlayer *to = selecteds.takeFirst();
     int id = room->askForCardChosen(from, to, "h", "anxu");
     const Card *cd = Sanguosha->getCard(id);
-    room->moveCardTo(cd, from, Player::Hand, true);
+    room->obtainCard(from, cd);
     room->showCard(from, id);
     if(cd->getSuit() != Card::Spade){
         source->drawCards(1);

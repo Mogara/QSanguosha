@@ -34,7 +34,7 @@ public:
     void playCardEffect(const QString &card_name) const;
     int getRandomHandCardId() const;
     const Card *getRandomHandCard() const;
-    void obtainCard(const Card *card);
+    void obtainCard(const Card *card, bool unhide = true);
     void throwAllEquips();
     void throwAllHandCards();
     void throwAllCards();

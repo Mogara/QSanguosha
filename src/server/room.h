@@ -220,8 +220,8 @@ public:
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
     void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
-    void obtainCard(ServerPlayer *target, const Card *card);
-    void obtainCard(ServerPlayer *target, int card_id);
+    void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
+    void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
 
     void throwCard(const Card *card, ServerPlayer *who = NULL);
     void throwCard(int card_id, ServerPlayer *who = NULL);
