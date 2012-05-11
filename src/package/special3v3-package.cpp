@@ -13,15 +13,15 @@ public:
 
     }
 
-    QList<ServerPlayer *> getTeammates(ServerPlayer *zhugejin) const{
+    QStringList getTeammateNames(ServerPlayer *zhugejin) const{
         Room *room = zhugejin->getRoom();
 
-        QList<ServerPlayer *> teammates;
+        QStringList names;
         foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
             if(AI::GetRelation3v3(zhugejin, other) == AI::Friend)
-                teammates << other;
+                names << other->getGeneralName();
         }
-        return teammates;
+        return names;
     }
 
     virtual int getDrawNum(ServerPlayer *zhugejin, int n) const{
@@ -30,13 +30,34 @@ public:
             return n;
         if(room->askForSkillInvoke(zhugejin, objectName())){
             room->playSkillEffect(objectName());
-            foreach(ServerPlayer *teammate, getTeammates(zhugejin)){
-                if(teammate->objectName() != zhugejin->objectName())
-                    teammate->drawCards(1);
-            }
+            QStringList names = getTeammateNames(zhugejin);
+            room->setTag("HongyuanTargets", QVariant::fromValue(names));
             return n - 1;
         }else
             return n;
+    }
+};
+
+class HongyuanDraw: public TriggerSkill{
+public:
+    HongyuanDraw():TriggerSkill("#hongyuan"){
+        events << PhaseChange;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
+        Room *room = player->getRoom();
+        if(player->getPhase() != Player::Draw)
+            return false;
+        QStringList names = room->getTag("HongyuanTargets").toStringList();
+        room->removeTag("HongyuanTargets");
+        if(!names.isEmpty())
+            foreach(QString name, names)
+                room->findPlayer(name)->drawCards(1);
+        return false;
     }
 };
 
@@ -176,8 +197,11 @@ Special3v3Package::Special3v3Package():Package("Special3v3")
 
     General *zhugejin = new General(this, "zhugejin", "wu", 3, true);
     zhugejin->addSkill(new Hongyuan);
+    zhugejin->addSkill(new HongyuanDraw);
     zhugejin->addSkill(new Huanshi);
     zhugejin->addSkill(new Mingzhe);
+
+    related_skills.insertMulti("hongyuan", "#hongyuan");
 
     addMetaObject<HuanshiCard>();
 }
