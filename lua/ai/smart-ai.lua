@@ -2602,9 +2602,6 @@ function SmartAI:askForSinglePeach(dying)
 	if self.player:isLocked(forbid) or dying:isLocked(forbid) then return "." end
 	if self:isFriend(dying) then
 		if self:needDeath(dying) then return "." end
-		if (self.player:objectName() == dying:objectName()) then
-			card_str = self:getCardId("Analeptic") or self:getCardId("Peach")
-		end
 		local buqu = dying:getPile("buqu")
 		local weaklord = 0
 		if not buqu:isEmpty() then
@@ -2619,7 +2616,10 @@ function SmartAI:askForSinglePeach(dying)
 			end
 			if not same then return "." end
 		end
-
+		if (self.player:objectName() == dying:objectName()) then
+			card_str = self:getCardId("Analeptic")
+			if not card_str then  card_str = self:getCardId("Peach") end
+		end
 		if dying:isLord() then
 			card_str = self:getCardId("Peach")
 		elseif self:doNotSave(dying) then return "." 

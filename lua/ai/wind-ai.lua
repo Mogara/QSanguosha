@@ -203,7 +203,7 @@ function sgs.ai_slash_prohibit.leiji(self, to, card)
 	local hcard = to:getHandcardNum()
 	if self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange()) then return false end
 
-	if to:getHandcardNum() >= 2 then return true end
+	if self:getCardsNum("Jink", to) > 0 then return true end
 	if self:isEquip("EightDiagram", to) then
 		local equips = to:getEquips()
 		for _, equip in sgs.qlist(equips) do
