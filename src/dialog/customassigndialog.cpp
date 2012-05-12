@@ -664,6 +664,9 @@ void CustomAssignDialog::updatePileInfo(int row){
         return;
     }
 
+    if(row == -1)
+        return;
+
     pile_list->clear();
 
     if(set_pile.isEmpty())
@@ -683,7 +686,8 @@ void CustomAssignDialog::updatePileInfo(int row){
         name_item->setData(Qt::UserRole, card->getId());
     }
 
-    pile_list->setCurrentRow(0);
+    if(pile_list->count() > 0)
+        pile_list->setCurrentRow(0);
 }
 
 void CustomAssignDialog::updatePlayerHpInfo(QString name){

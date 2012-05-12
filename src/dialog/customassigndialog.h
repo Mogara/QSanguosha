@@ -99,7 +99,7 @@ private slots:
     void updateRole(int index);
     void updateNumber(int num);
     void updateListItems();
-    void updatePileInfo(int row = -1);
+    void updatePileInfo(int row = -2);
     void updatePlayerInfo(QString name);
     void updatePlayerHpInfo(QString name);
     void updateAllRoles(bool toggled = false);

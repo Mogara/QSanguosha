@@ -11,7 +11,7 @@ void TimedProgressBar::showEvent(QShowEvent*)
 
 void TimedProgressBar::hide()
 {
-    if (m_timer != NULL)
+    if (m_timer)
     {        
         killTimer(m_timer);
         m_timer = NULL;

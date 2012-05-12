@@ -254,8 +254,8 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
             if(Config.EnableHegemony)
             {
                 if(getGeneral())
-                    if(getGeneral()->getKingdom()
-                            != Sanguosha->getGeneral(name)->getKingdom())
+                    if((getGeneral()->getKingdom()
+                            != Sanguosha->getGeneral(name)->getKingdom()));
                         continue;
             }
         }
