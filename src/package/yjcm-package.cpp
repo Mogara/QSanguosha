@@ -380,25 +380,25 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
             room->useCard(use);
         }
         else{
+            bool nothand = false;
             int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-            DummyCard *dummy = new DummyCard;
-            dummy->addSubcard(first_id);
-            effect.to->addToPile("#xuanhuo", dummy, true);
+            if(room->getCardPlace(first_id) != Player::Hand)
+                nothand = true;
+            effect.to->addToPile("#xuanhuo", first_id, true);
             int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-            dummy->addSubcard(second_id);
-            room->moveCardTo(dummy, effect.from, Player::Hand, true);
-            delete dummy;
+            room->obtainCard(effect.from, first_id, nothand);
+            room->obtainCard(effect.from, second_id, room->getCardPlace(second_id) != Player::Hand);
         }
     }
     else{
+        bool nothand = false;
         int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-        DummyCard *dummy = new DummyCard;
-        dummy->addSubcard(first_id);
-        effect.to->addToPile("#xuanhuo", dummy, true);
+        if(room->getCardPlace(first_id) != Player::Hand)
+            nothand = true;
+        effect.to->addToPile("#xuanhuo", first_id, true);
         int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-        dummy->addSubcard(second_id);
-        room->moveCardTo(dummy, effect.from, Player::Hand, true);
-        delete dummy;
+        room->obtainCard(effect.from, first_id, nothand);
+        room->obtainCard(effect.from, second_id, room->getCardPlace(second_id) != Player::Hand);
     }
 }
 
