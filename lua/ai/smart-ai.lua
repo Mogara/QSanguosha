@@ -2615,7 +2615,6 @@ function SmartAI:askForSinglePeach(dying)
 				end
 			end
 			if not same then return "." end
-			if buqu:length()+dying:getHp() > 1 then return "." end
 		end
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic")
