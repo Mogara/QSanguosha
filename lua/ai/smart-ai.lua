@@ -1682,7 +1682,7 @@ function SmartAI:askForSuit(reason)
 	if not reason then return sgs.ai_skill_suit.fanjian() end -- this line is kept for back-compatibility
 	local callback = sgs.ai_skill_suit[reason]
 	if type(callback) == "function" then
-		if callback() then return callback(self) end
+		if callback(self) then return callback(self) end
 	end
 	return math.random(0,3)
 end
