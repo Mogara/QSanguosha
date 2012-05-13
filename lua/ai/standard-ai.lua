@@ -171,7 +171,7 @@ sgs.ai_skill_invoke.luoyi=function(self,data)
 	for _,card in ipairs(cards) do
 		if card:inherits("Slash") then
 			for _,enemy in ipairs(self.enemies) do
-				if self.player:canSlash(enemy, true) and self:slashIsEffective(card, enemy) then
+				if self.player:canSlash(enemy, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
 					if self:getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
 						slashtarget = slashtarget + 1
 					end
