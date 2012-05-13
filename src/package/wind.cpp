@@ -504,7 +504,6 @@ public:
 
                 if(duplicate_numbers.isEmpty()){
                     room->setTag("Buqu", QVariant());
-                    room->playSkillEffect(objectName());
                     return true;
                 }
             }

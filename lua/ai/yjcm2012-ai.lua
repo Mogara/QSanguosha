@@ -165,8 +165,6 @@ anxu_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func.AnxuCard=function(card,use,self)
-
-	self:sort(self.enemies,"handcard")
 	local friends={}
 	for _,player in ipairs(self.friends_noself) do
 		if not player:hasSkill("manjuan") then
@@ -190,6 +188,32 @@ sgs.ai_skill_use_func.AnxuCard=function(card,use,self)
 					use.to:append(lowest_friend)
 					return
 				end
+			end
+		end
+		for _,friend in ipairs(self.friends_noself) do
+			local hand1=friend:getHandcardNum()
+			local hand2=lowest_friend:getHandcardNum()
+			if hand1 > hand2 and hand1 > 2 then
+				use.card=card
+				if use.to then
+					use.to:append(friend)
+					use.to:append(lowest_friend)
+					return
+				end
+			end
+		end
+	end
+	self:sort(self.enemies,"handcard",true)
+	local much_enemy = self.enemies[1]
+	for _,enemy in ipairs(self.enemies) do
+		local hand1=enemy:getHandcardNum()
+		local hand2=much_enemy:getHandcardNum()
+		if hand1 < hand2 and hand1 > 1 then
+			use.card=card
+			if use.to then
+				use.to:append(enemy)
+				use.to:append(much_enemy)
+				return
 			end
 		end
 	end
