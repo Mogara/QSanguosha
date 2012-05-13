@@ -2615,12 +2615,13 @@ function SmartAI:askForSinglePeach(dying)
 				end
 			end
 			if not same then return "." end
+			if buqu:length()+dying:getHp() > 1 then return "." end
 		end
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic")
-			if not card_str then  card_str = self:getCardId("Peach") end
-		end
-		if dying:isLord() then
+			if not card_str then 
+			 card_str = self:getCardId("Peach") end
+		elseif dying:isLord() then
 			card_str = self:getCardId("Peach")
 		elseif self:doNotSave(dying) then return "." 
 		else
