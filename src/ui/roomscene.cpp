@@ -279,7 +279,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(onPlayerChooseAG(int)));
         connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(onPlayerReplyGongxin(int)));
 
-        connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), card_container, SLOT(fillCards(QList<int>)));
+        connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillCards(QList<int>)));
         connect(ClientInstance, SIGNAL(ag_taken(ClientPlayer*,int)), this, SLOT(takeAmazingGrace(ClientPlayer*,int)));
         connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
 
@@ -1198,7 +1198,7 @@ PlayerCardContainer* RoomScene::_getPlayerCardContainer(Player::Place place, Pla
         return m_discardPile;
     else if (place == Player::DrawPile)
         return m_drawPile;
-    else if (place == Player::Special)
+    else if (player == NULL && place == Player::Special)
         return card_container;
     else if (player == Self)
         return dashboard;
@@ -2844,8 +2844,9 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
         QString card_str = QString::number(card_id);
         log_box->appendLog(type, from_general, QStringList(), card_str);
         PlayerCardContainer* container = _getPlayerCardContainer(Player::Hand, taker);
+        bringToFront(container);
         container->addCardItems(items, Player::Hand);
-    }else{        
+    }else{
         m_discardPile->addCardItems(items, Player::DiscardPile);
     }
 }
@@ -2928,13 +2929,20 @@ void RoomScene::speak(){
     chat_edit->clear();
 }
 
-void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
+void RoomScene::fillCards(const QList<int> &card_ids)
+{
+    bringToFront(card_container);
     card_container->fillCards(card_ids);
+    card_container->show();
+}
+
+void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
+    fillCards(card_ids);
     if(enable_heart)
         card_container->startGongxin();
     else
         card_container->addCloseButton();
-    card_container->show();
+    
 }
 
 void RoomScene::createStateItem(){

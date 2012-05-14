@@ -28,7 +28,7 @@ bool Slash::IsAvailable(const Player *player){
 }
 
 bool Slash::isAvailable(const Player *player) const{
-    return IsAvailable(player);
+    return IsAvailable(player) && BasicCard::isAvailable(player);;
 }
 
 QString Slash::getSubtype() const{

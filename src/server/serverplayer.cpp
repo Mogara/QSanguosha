@@ -892,6 +892,15 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
 }
 
+void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open){
+    piles[pile_name].append(card_ids);
+    CardsMoveStruct move;
+    move.card_ids = card_ids;
+    move.to = this;
+    move.to_place = Player::Special;
+    room->moveCards(move, open, false);
+}
+
 void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){
     ServerPlayer *current = room->getCurrent();
 

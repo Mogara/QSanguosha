@@ -302,6 +302,7 @@ private:
     void alignTo(QGraphicsItem *object, QPoint pos, const QString &flags);
 
 private slots:
+    void fillCards(const QList<int>& card_ids);
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
     void updateRoleComboBox(const QString &new_role);

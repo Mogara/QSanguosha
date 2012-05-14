@@ -712,7 +712,7 @@ public:
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
-        events << CardLostOneTime;
+        events << CardLostDone;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

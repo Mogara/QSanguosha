@@ -330,31 +330,34 @@ public:
         Room *room = player->getRoom();
 
         QList<int> ids = room->getNCards(3);
+        player->addToPile("dream", ids, true);
         foreach(int id, ids){
-            const Card *cd = Sanguosha->getCard(id);
-            room->moveCardTo(cd, NULL, Player::Special, true);
-            room->getThread()->delay();
-            player->addToPile("dream", id, true);
+            const Card *cd = Sanguosha->getCard(id);            
             room->setPlayerCardLock(player, type[cd->getTypeId()]);
         }
+        room->getThread()->delay();
 
         QList<int> zuixiang = player->getPile("dream");
         QSet<int> numbers;
+        bool zuixiangDone = false;
         foreach(int id, zuixiang){
             const Card *card = Sanguosha->getCard(id);
             if(numbers.contains(card->getNumber())){
-                foreach(int id, zuixiang){
-                    const Card *card = Sanguosha->getCard(id);
-                    room->moveCardTo(card, player, Player::Hand, true);
-                    player->addMark("zuixiangHasTrigger");
-                    room->setPlayerCardLock(player, ".");
-                }
-                return;
-            }
-
+                zuixiangDone = true;
+                break;
+            }            
             numbers.insert(card->getNumber());
         }
-
+        if (zuixiangDone)
+        {
+            foreach(int id, zuixiang){
+                const Card *card = Sanguosha->getCard(id);
+                player->addMark("zuixiangHasTrigger");
+                room->setPlayerCardLock(player, ".");
+            }
+            CardsMoveStruct move(zuixiang, player, Player::Hand);
+            room->moveCards(move, true);
+        }
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *sp_pangtong, QVariant &data) const{

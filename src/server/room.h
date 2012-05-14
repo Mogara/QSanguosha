@@ -230,6 +230,7 @@ public:
 
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
         bool forceMoveVisible = false, bool phaseByPhase = false);
+    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool phaseByPhase = true);
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase = true);
     void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase);
     

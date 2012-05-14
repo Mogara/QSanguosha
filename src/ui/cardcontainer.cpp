@@ -20,10 +20,7 @@ CardContainer::CardContainer()
 }
 
 void CardContainer::fillCards(const QList<int> &card_ids){
-    if(card_ids.isEmpty()){
-        show();
-        return;
-    }
+    if(card_ids.isEmpty()) return;
     else if(!items.isEmpty()){
         items_stack.push(items);
         items.clear();
@@ -67,8 +64,6 @@ void CardContainer::fillCards(const QList<int> &card_ids){
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
     }    
-
-    show();
 }
 
 bool CardContainer::_addCardItems(QList<CardItem*> &card_items, Player::Place place){
@@ -100,32 +95,31 @@ void CardContainer::freezeCards(bool is_frozen){
 }
 
 QList<CardItem*> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place place){
-    Q_ASSERT(card_ids.size() == 1);
-    int card_id = card_ids.first();
     QList<CardItem*> result;
-    CardItem *to_take = NULL;
+    foreach (int card_id, card_ids)
+    {
+        CardItem *to_take = NULL;
 
-    foreach (CardItem *item, items){
-        if(item->getCard()->getId() == card_id){
-            to_take = item;
-            break;
+        foreach (CardItem *item, items){
+            if(item->getCard()->getId() == card_id){
+                to_take = item;
+                break;
+            }
+        }
+
+        if(to_take == NULL) continue;
+
+        to_take->setEnabled(false);
+
+        CardItem *copy = new CardItem(to_take->getCard());
+        copy->setPos(mapToScene(to_take->pos()));
+        copy->setEnabled(false);
+        result.append(copy);
+
+        if(m_currentPlayer){
+            to_take->showAvatar(m_currentPlayer->getGeneral());
         }
     }
-
-    if(to_take == NULL)
-        return result;
-
-    to_take->setEnabled(false);
-
-    CardItem *copy = new CardItem(to_take->getCard());
-    copy->setPos(mapToScene(to_take->pos()));
-    copy->setEnabled(false);
-    result.append(copy);
-
-    if(m_currentPlayer){
-        to_take->showAvatar(m_currentPlayer->getGeneral());
-    }
-
     return result;
 }
 
@@ -141,7 +135,7 @@ int CardContainer::getFirstEnabled() const{
 void CardContainer::startChoose(){
     close_button->hide();
     foreach (CardItem *item, items){
-        connect(item, SIGNAL(grabbed()), this, SLOT(grabItem()));
+        connect(item, SIGNAL(leave_hover()), this, SLOT(grabItem()));
         connect(item, SIGNAL(double_clicked()), this, SLOT(chooseItem()));
     }
 }

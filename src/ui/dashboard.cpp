@@ -190,6 +190,15 @@ bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
         _disperseCards(card_items, m_cardTakeOffRegion, Qt::AlignCenter, true);
         return false;
     }
+    else if (place == Player::Special)
+    {
+        foreach(CardItem* card, card_items)
+        {
+            card->setHomeOpacity(0.0);
+            card->setHomePos(mapFromItem(avatar, 0, 0));
+        }
+        return true;
+    }
 
     foreach (CardItem* card_item, card_items)
     {
@@ -805,6 +814,11 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
                 const Card* card = Sanguosha->getCard(card_id);
                 card_item->setCard(card);
             }
+            card_item->setOpacity(1.0);
+        }else if (place == Player::Special){
+            card_item = _createCard(card_id);
+            card_item->setOpacity(0.0);
+            card_item->setPos(mapFromItem(avatar, 0, 0));
         }
         if(card_item)
         {

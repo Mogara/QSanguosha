@@ -96,6 +96,14 @@ struct CardsMoveStruct{
         from = NULL;
         to = NULL;
     }
+    inline CardsMoveStruct(const QList<int> &ids, Player* to, Player::Place to_place)
+    {
+        this->card_ids = ids;
+        this->from_place = Player::PlaceUnknown;
+        this->to_place = to_place;
+        this->from = NULL;
+        this->to = to;
+    }
     QList<int> card_ids;
     Player::Place from_place, to_place;
     QString from_player_name, to_player_name;
@@ -218,6 +226,8 @@ enum TriggerEvent{
     CardLostOneTime,
     CardGotOnePiece,
     CardGotOneTime,
+    CardLostDone,
+    CardGotDone,
     CardDrawing,
     CardDrawnDone,
 
