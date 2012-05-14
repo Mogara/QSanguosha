@@ -255,7 +255,7 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
             {
                 if(getGeneral())
                     if((getGeneral()->getKingdom()
-                            != Sanguosha->getGeneral(name)->getKingdom()));
+                            != Sanguosha->getGeneral(name)->getKingdom()))
                         continue;
             }
         }
