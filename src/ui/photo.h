@@ -6,6 +6,7 @@
 #include "carditem.h"
 #include "protocol.h"
 #include "TimedProgressBar.h"
+#include "GeneralCardContainerUI.h"
 
 #include <QGraphicsObject>
 #include <QPixmap>
@@ -16,7 +17,7 @@ class ClientPlayer;
 class RoleCombobox;
 class QPushButton;
 
-class Photo : public Pixmap
+class Photo : public PlayerCardContainer
 {
     Q_OBJECT
 
@@ -25,10 +26,9 @@ public:
     void setPlayer(const ClientPlayer *player);
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
-    CardItem *takeCardItem(int card_id, Player::Place place);
+    QList<CardItem*> removeCardItems(const QList<int> &card_id, Player::Place place);    
     void installEquip(CardItem *equip);
-    void installDelayedTrick(CardItem *trick);
-    void addCardItem(CardItem *card_item);
+    void installDelayedTrick(CardItem *trick);    
     void hideAvatar();
     void showCard(int card_id);
     void showProgressBar(QSanProtocol::Countdown countdown);
@@ -64,9 +64,11 @@ public slots:
     void killPlayer();
 
 protected:
+    bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
+    static const QRect S_CARD_MOVE_REGION;
+    QList<CardItem*> m_takenOffCards;
 private:
     const ClientPlayer *player;
     QPixmap avatar, small_avatar;

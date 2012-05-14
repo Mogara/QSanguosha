@@ -5,11 +5,17 @@
 #include <QMessageBox>
 #include <QImageReader>
 
-Pixmap::Pixmap(const QString &filename, bool center_as_origin)
-    :pixmap(filename), markable(false), marked(false)
+Pixmap::Pixmap(const QString &filename, bool center_as_origin)    
 {
+    load(filename, center_as_origin);
+    markable = false;
+    marked = false;
+}
 
-#ifndef QT_NO_DEBUG
+void Pixmap::load(const QString& filename, bool center_as_origin)
+{
+    pixmap.load(filename);
+    #ifndef QT_NO_DEBUG
 //only complains about pixmap loading errors under debug mode
     if(pixmap.isNull()){
         QImageReader reader(filename);

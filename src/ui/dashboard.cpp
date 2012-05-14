@@ -11,8 +11,14 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QPixmapCache>
+#include <QParallelAnimationGroup>
 
 using namespace QSanProtocol;
+
+const QRect Dashboard::S_EQUIP_CARD_MOVE_REGION(0, 0,
+    CardItem::S_NORMAL_CARD_WIDTH * 1.5, CardItem::S_NORMAL_CARD_HEIGHT);
+const QRect Dashboard::S_JUDGE_CARD_MOVE_REGION(0, 0, 
+    CardItem::S_NORMAL_CARD_WIDTH * 1.5, CardItem::S_NORMAL_CARD_HEIGHT);
 
 Dashboard::Dashboard(QGraphicsItem *button_widget)
     :left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
@@ -159,7 +165,7 @@ const FilterSkill *Dashboard::getFilter() const{
 }
 
 void Dashboard::doFilter(){
-    foreach(CardItem *card_item, card_items)
+    foreach(CardItem *card_item, m_handCards)
         card_item->filter(filter);
 }
 
@@ -168,32 +174,56 @@ void Dashboard::setTrust(bool trust){
     trusting_text->setVisible(trust);
 }
 
-void Dashboard::addCardItem(CardItem *card_item){
+bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
+{
+    if (place == Player::Equip)
+        _disperseCards(card_items, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, true);
+    else if (place == Player::Judging)
+        _disperseCards(card_items, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, true);
+    else if (place == Player::PlaceTakeoff)
+    {
+        m_takenOffCards.append(card_items);
+        foreach (CardItem* card, card_items)
+        {
+            card->setHomeOpacity(1.0);
+        }
+        _disperseCards(card_items, m_cardTakeOffRegion, Qt::AlignCenter, true);
+        return false;
+    }
+
+    foreach (CardItem* card_item, card_items)
+    {
+        if (place == Player::Equip)        
+            _installEquip(card_item);
+        else if (place == Player::Judging)
+            _installDelayedTrick(card_item);
+        else if (place == Player::Hand)
+            _addHandCard(card_item);
+    }
+    
+    if (place == Player::Hand)
+        sortCards(sort_type, true);        
+    return false;
+}
+
+void Dashboard::_addHandCard(CardItem* card_item){
     card_item->filter(filter);
 
     if(ClientInstance->getStatus() == Client::Playing)
         card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
-    else{
-        card_item->setEnabled(true);
+    else
         card_item->setEnabled(false);
-    }
-
-    card_item->setPos(mapFromScene(card_item->pos()));
-    card_item->setParentItem(this);
+    
+    card_item->setHomeOpacity(1.0); // @todo: it's 1.0 even if disabled?
     card_item->setRotation(0.0);
     card_item->setFlags(ItemIsFocusable);
     card_item->setZValue(0.1);
-    card_items << card_item;
+    m_handCards << card_item;
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
     connect(card_item, SIGNAL(enter_hover()), this, SLOT(onCardItemHover()));
-    connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));
-
-    sortCards(sort_type);
-
-    handcard_num->setText(QString::number(Self->getHandcardNum()));
-    //handcard_num->parentItem()->show();
+    connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));      
 }
 
 void Dashboard::setPlayer(const ClientPlayer *player){
@@ -274,12 +304,12 @@ Pixmap *Dashboard::getAvatar(){
 
 void Dashboard::selectCard(const QString &pattern, bool forward){
     if(selected)
-        selected->select(); // adjust the position
+        selectCard(selected, true); // adjust the position
 
     // find all cards that match the card type
     QList<CardItem*> matches;
 
-    foreach(CardItem *card_item, card_items){
+    foreach(CardItem *card_item, m_handCards){
         if(card_item->isEnabled()){
             if(pattern == "." || card_item->getFilteredCard()->match(pattern))
                 matches << card_item;
@@ -302,8 +332,8 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
 
     if(to_select != selected){
         if(selected)
-            selected->unselect();
-        to_select->select();
+            selectCard(selected, false);
+        selectCard(to_select, true);
         selected = to_select;
 
         emit card_selected(selected->getFilteredCard());
@@ -319,11 +349,31 @@ const Card *Dashboard::getSelected() const{
         return NULL;
 }
 
+void Dashboard::selectCard(CardItem* item, bool isSelected){
+    //if(Self && Self->getHandcardNum() > Config.MaxCards)
+    //    frame->show();    
+    bool oldState = item->isSelected();
+    if (oldState == isSelected) return;
+    m_mutex.lock();     
+    item->setSelected(isSelected);
+    QPointF oldPos = item->homePos();
+    QPointF newPos = oldPos;
+    if (isSelected)
+        newPos.setY(newPos.y() + S_PENDING_OFFSET_Y);
+    else 
+        newPos.setY(newPos.y() - S_PENDING_OFFSET_Y);
+    item->setHomePos(newPos);    
+    item->setHomeOpacity(item->isEnabled() ? 1.0 : 0.7);
+    //setY(PendingY);
+    if (!hasFocus()) item->goBack(true);    
+    m_mutex.unlock();
+}
+
 void Dashboard::unselectAll(){
     selected = NULL;
 
-    foreach(CardItem *card_item, card_items){
-        card_item->unselect();
+    foreach(CardItem *card_item, m_handCards){
+        selectCard(card_item, false);
         //card_item->goBack();
     }
 }
@@ -335,7 +385,8 @@ void Dashboard::hideAvatar(){
         kingdom->hide();
 }
 
-void Dashboard::installDelayedTrick(CardItem *card){
+void Dashboard::_installDelayedTrick(CardItem *card){
+    card->setHomeOpacity(0.0);
     judging_area << card;
     const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard());
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
@@ -348,11 +399,6 @@ void Dashboard::installDelayedTrick(CardItem *card){
     item->setToolTip(tooltip);
     item->setPos(3 + delayed_tricks.length() * 27, 5);
     delayed_tricks << item;
-
-    card->setHomePos(mapToScene(QPointF(34, 37)));
-    card->goBack(true,false);
-
-    update();
 }
 
 QRectF Dashboard::boundingRect() const{
@@ -387,13 +433,14 @@ void Dashboard::setWidth(int width){
     qreal right_width = right->boundingRect().width();
     qreal button_width = getButtonWidgetWidth();
     qreal middle_width = width - left_width - right_width - button_width;
-
+    
     setMiddleWidth(middle_width);
-
     prepareGeometryChange();
     adjustCards();
-
-    setX(- boundingRect().width()/2);
+    setX(-boundingRect().width()/2);
+    m_cardTakeOffRegion = middle->boundingRect();    
+    m_cardTakeOffRegion.setY(middle->pos().y() - CardItem::S_NORMAL_CARD_HEIGHT * 1.5);
+    m_cardTakeOffRegion.setHeight(CardItem::S_NORMAL_CARD_HEIGHT);
 }
 
 QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool from_left){
@@ -504,6 +551,13 @@ void Dashboard::revivePlayer(){
 }
 
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
+    
+    if(Self->isKongcheng())
+        handcard_num->parentItem()->hide();
+    else{
+        handcard_num->setText(QString::number(Self->getHandcardNum()));
+    }
+
     // draw the left side and right side
     painter->drawPixmap(left->pos(), left_pixmap);
     painter->drawPixmap(right->pos(), right_pixmap);
@@ -595,12 +649,26 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
     if(equip->isMarked()){
         painter->drawRect(8,y + 2,label.width(),label.height());
     }
+}    
+
+void Dashboard::adjustCards(bool playAnimation){
+    _adjustCards();
+    foreach (CardItem* card, m_handCards)
+    {
+        card->goBack(playAnimation);
+    }        
 }
 
-void Dashboard::adjustCards(){
+void Dashboard::_adjustCards(){
     int MaxCards = Config.MaxCards;
 
-    int n = card_items.length();
+    foreach (CardItem* card, m_handCards)
+    {
+        card->setSelected(false);
+        card->setHomeOpacity(card->isEnabled() ? 1.0 : 0.7);
+    }
+
+    int n = m_handCards.length();
 
     if(n > MaxCards){
         if(n > MaxCards * 2)
@@ -612,16 +680,16 @@ void Dashboard::adjustCards(){
         QList<CardItem *> all_items;
 
         int i, j, row_count = (n-1) / MaxCards + 1;
-        int diff = (CardItem::NormalY - CardItem::PendingY) / (row_count -1);
+        int diff = (int) -((double)S_PENDING_OFFSET_Y / (row_count -1));
 
-        for(i=0; i<row_count; i ++){
+        for(i = 0; i < row_count; i ++){
             QList<CardItem *> row;
             for(j=0; j<MaxCards; j++){
                 int index = i*MaxCards + j;
                 if(index >= n)
                     break;
 
-                row << card_items.at(index);
+                row << m_handCards.at(index);
             }
 
             QListIterator<CardItem *> itor(row);
@@ -629,54 +697,51 @@ void Dashboard::adjustCards(){
             while(itor.hasPrevious())
                 all_items.prepend(itor.previous());
 
-            adjustCards(row, CardItem::NormalY - diff * i);
+            _adjustCards(row, S_CARD_NORMAL_Y - diff * i);
         }
 
         // reset Z value
-        for(i=0; i<n; i++)
+        for(int i = 0; i < n; i++)
             all_items.at(i)->setZValue(2.0 + 0.0001 * i);
     }else{
-        adjustCards(card_items, CardItem::NormalY);
+        _adjustCards(m_handCards, S_CARD_NORMAL_Y);
 
         if(view_as_skill)
-            adjustCards(pendings, CardItem::PendingY);
+        {
+            _adjustCards(pendings, S_CARD_NORMAL_Y);
+        }
     }
 }
 
-void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
-    if(list.isEmpty())
-        return;
+void Dashboard::_adjustCards(const QList<CardItem *> &list, int y){    
+    if (list.isEmpty()) return;
 
     int max_width = middle->rect().width() - getButtonWidgetWidth();
     int start_x = left->boundingRect().width();
-
+    
     if(list.length() == 1){
         list.first()->setHomePos(QPointF(start_x, y));
-        list.first()->goBack();
-        return;
     }
 
     int n = list.size();
     int card_width = list.first()->boundingRect().width();
     int total_width = qMin(card_width * n, max_width);
-    int card_skip = (total_width - n * card_width ) / (n-1) + card_width;
-
-    int i;
-    for(i=0; i<n; i++){
-        if(card_items.length() <= Config.MaxCards)
+    int card_skip = 0;
+    if (n > 1)
+        card_skip = (total_width - n * card_width ) / (n - 1) + card_width;
+        
+    for(int i = 0; i < n; i++){
+        if(m_handCards.length() <= Config.MaxCards)
             list[i]->setZValue(2.0 + 0.0001 * i);
 
         QPointF home_pos(start_x + i * card_skip, y);
         list[i]->setHomePos(home_pos);
-        list[i]->goBack();
     }
 }
 
-void Dashboard::installEquip(CardItem *equip){
-    equip->setHomePos(mapToScene(QPointF(34, 37)));
-    equip->goBack(true,false);
-
+void Dashboard::_installEquip(CardItem *equip){    
     int index = -1;
+    equip->setHomeOpacity(0.0);
     const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
     switch(equip_card->location()){
     case EquipCard::WeaponLocation: weapon = equip; index = 0; break;
@@ -687,60 +752,76 @@ void Dashboard::installEquip(CardItem *equip){
 
     if(index >= 0)
         equip_rects[index]->setToolTip(equip_card->getDescription());
-
-    update();
 }
 
-CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
+QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::Place place){
     CardItem *card_item = NULL;
-
-    if(place == Player::Hand){
-        card_item = CardItem::FindItem(card_items, card_id);
-        if(card_item == selected)
-            selected = NULL;
-        card_items.removeOne(card_item);
-        adjustCards();
-
-        if(Self->isKongcheng())
-            handcard_num->parentItem()->hide();
-        else{
-            handcard_num->setText(QString::number(Self->getHandcardNum()));
-        }
-
-        card_item->hideFrame();
-    }else if(place == Player::Equip){
-        foreach(CardItem **equip_ptr, equips){
-            CardItem *equip = *equip_ptr;
-            if(equip && equip->getCard()->getId() == card_id){
-                card_item = equip;
-                *equip_ptr = NULL;
-
-                int index = equips.indexOf(equip_ptr);
-                equip_rects[index]->setToolTip(QString());
-                break;
-            }
-        }
-
-    }else if(place == Player::Judging){
-        card_item = CardItem::FindItem(judging_area, card_id);
-        if(card_item){
+    QList<CardItem*> result;
+    foreach (int card_id, card_ids)
+    {
+        if(place == Player::Hand){
+            card_item = CardItem::FindItem(m_handCards, card_id);
+            if (card_item == selected) selected = NULL;
+            m_handCards.removeOne(card_item);            
             card_item->hideFrame();
-            int index = judging_area.indexOf(card_item);
-            judging_area.removeAt(index);
-            delete delayed_tricks.takeAt(index);
-            for(int i=0; i<delayed_tricks.count(); i++){
-                delayed_tricks.at(i)->setPos(3 + i * 27, 5);
+        }
+        else if(place == Player::Equip){
+            foreach(CardItem **equip_ptr, equips){
+                CardItem *equip = *equip_ptr;
+                if(equip && equip->getCard()->getId() == card_id){
+                    card_item = equip;
+                    *equip_ptr = NULL;
+                    card_item->setParent(this);
+                    int index = equips.indexOf(equip_ptr);
+                    equip_rects[index]->setToolTip(QString());
+                    break;
+                }
+            }
+        }else if(place == Player::Judging){
+            card_item = CardItem::FindItem(judging_area, card_id);
+            if(card_item){
+                card_item->hideFrame();
+                card_item->setParent(this);
+                int index = judging_area.indexOf(card_item);
+                judging_area.removeAt(index);
+                delete delayed_tricks.takeAt(index);
+                for(int i=0; i<delayed_tricks.count(); i++){
+                    delayed_tricks.at(i)->setPos(3 + i * 27, 5);
+                }
+            }
+        }else if(place == Player::PlaceTakeoff){
+            card_item = CardItem::FindItem(m_takenOffCards, card_id);
+            if (card_item == NULL)
+                card_item = CardItem::FindItem(m_takenOffCards, -1);
+            if (card_item == NULL)
+            {
+                Q_ASSERT(!m_takenOffCards.isEmpty());
+                card_item = m_takenOffCards.first();
+            }
+            int index = m_takenOffCards.indexOf(card_item);
+            m_takenOffCards.removeAt(index);
+            if (card_item->getId() == Card::S_UNKNOWN_CARD_ID)
+            {
+                const Card* card = Sanguosha->getCard(card_id);
+                card_item->setCard(card);
             }
         }
+        if(card_item)
+        {
+            card_item->disconnect(this);
+            result.append(card_item);            
+        }
     }
-
-    if(card_item){
-        card_item->disconnect(this);
-        update();
-        return card_item;
-    }else{
-        return NULL;
-    }
+    if (place == Player::Hand)    
+        adjustCards();
+    else if (place == Player::Equip)
+        _disperseCards(result, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, false);
+    else if (place == Player::Judging)
+        _disperseCards(result, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, false);
+    else if (place == Player::PlaceTakeoff)
+        _disperseCards(result, m_cardTakeOffRegion, Qt::AlignCenter, false);
+    update();
+    return result;
 }
 
 typedef bool (*CompareFunc)(const CardItem *, const CardItem *);
@@ -766,7 +847,7 @@ static bool CompareByAvailability(const CardItem *a, const CardItem *b){
         return CompareBySuitNumber(a, b);
 }
 
-void Dashboard::sortCards(int sort_type){
+void Dashboard::sortCards(int sort_type, bool doAnimation){
     this->sort_type = sort_type;
 
     static CompareFunc compare_funcs[] = {
@@ -779,26 +860,27 @@ void Dashboard::sortCards(int sort_type){
 
     CompareFunc func = compare_funcs[sort_type];
     if(func)
-        qSort(card_items.begin(), card_items.end(), func);
-
-    adjustCards();
+        qSort(m_handCards.begin(), m_handCards.end(), func);    
+    if (doAnimation)
+        adjustCards();
 }
 
 void Dashboard::reverseSelection(){
+    m_mutexEnableCards.lock();
     if(view_as_skill == NULL)
         return;
 
     QSet<CardItem *> selected_set = pendings.toSet();
     unselectAll();
 
-    foreach(CardItem *item, card_items)
+    foreach(CardItem *item, m_handCards)
         item->setEnabled(false);
 
     pendings.clear();
 
-    foreach(CardItem *item, card_items){
+    foreach(CardItem *item, m_handCards){
         if(view_as_skill->viewFilter(pendings, item) && !selected_set.contains(item)){
-            item->select();
+            selectCard(item, false);
             pendings << item;
 
             item->setEnabled(true);
@@ -808,28 +890,35 @@ void Dashboard::reverseSelection(){
     if(pending_card && pending_card->isVirtualCard() && pending_card->parent() == NULL)
         delete pending_card;
     pending_card = view_as_skill->viewAs(pendings);
-
+    m_mutexEnableCards.unlock();
     emit card_selected(pending_card);
 }
 
 void Dashboard::disableAllCards(){
-    foreach(CardItem *card_item, card_items){
+    m_mutexEnableCards.lock();
+    foreach(CardItem *card_item, m_handCards){
         card_item->setEnabled(false);
     }
+    m_mutexEnableCards.unlock();
 }
 
 void Dashboard::enableCards(){
-    foreach(CardItem *card_item, card_items){
+    m_mutexEnableCards.lock();
+    foreach(CardItem *card_item, m_handCards){
         card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
     }
+    m_mutexEnableCards.unlock();
 }
 
 void Dashboard::enableAllCards(){
-    foreach(CardItem *card_item, card_items)
+    m_mutexEnableCards.lock();
+    foreach(CardItem *card_item, m_handCards)
         card_item->setEnabled(true);
+    m_mutexEnableCards.unlock();
 }
 
 void Dashboard::startPending(const ViewAsSkill *skill){
+    m_mutexEnableCards.lock();
     view_as_skill = skill;
     pendings.clear();
 
@@ -840,13 +929,20 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     }
 
     updatePending();
-    adjustCards();
+    adjustCards(false);
+    m_mutexEnableCards.unlock();
 }
 
 void Dashboard::stopPending(){
+    m_mutexEnableCards.lock();
     view_as_skill = NULL;
     pending_card = NULL;
     emit card_selected(NULL);
+
+    foreach (CardItem* item, m_handCards)
+    {
+        item->setEnabled(false);
+    }
 
     foreach(CardItem **equip_ptr, equips){
         CardItem *equip = *equip_ptr;
@@ -854,11 +950,10 @@ void Dashboard::stopPending(){
             equip->setMarkable(false);
             disconnect(equip, SIGNAL(mark_changed()));
         }
-
     }
-
     pendings.clear();
-    adjustCards();
+    adjustCards(false);
+    m_mutexEnableCards.unlock();
 }
 
 void Dashboard::onCardItemClicked(){
@@ -867,24 +962,23 @@ void Dashboard::onCardItemClicked(){
         return;
 
     if(view_as_skill){
-        if(card_item->isPending()){
-            card_item->unselect();
+        if(card_item->isSelected()){
+            selectCard(card_item, false);
             pendings.removeOne(card_item);
         }else{
-            card_item->select();
+            selectCard(card_item, true);
             pendings << card_item;
         }
 
         updatePending();
 
     }else{
-        if(card_item->isPending()){
+        if(card_item->isSelected()){
             unselectAll();
             emit card_selected(NULL);
         }else{
             unselectAll();
-            card_item->select();
-            //card_item->goBack();
+            selectCard(card_item, true);          
             selected = card_item;
 
             emit card_selected(selected->getFilteredCard());
@@ -893,8 +987,8 @@ void Dashboard::onCardItemClicked(){
 }
 
 void Dashboard::updatePending(){
-    foreach(CardItem *c, card_items){
-        if(!c->isPending()||pendings.isEmpty()){
+    foreach(CardItem *c, m_handCards){
+        if(!c->isSelected()||pendings.isEmpty()){
             c->setEnabled(view_as_skill->viewFilter(pendings, c));
         }
     }

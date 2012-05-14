@@ -185,7 +185,7 @@ public:
 class Beifa: public TriggerSkill{
 public:
     Beifa():TriggerSkill("beifa"){
-        events << CardLost;
+        events << CardLostOnePiece;
         frequency = Compulsory;
     }
     virtual bool trigger(TriggerEvent , ServerPlayer *jiangwei, QVariant &data) const{
@@ -266,7 +266,7 @@ public:
            && room->askForSkillInvoke(player, objectName())){
             for(int i = 0; i < 4 - handcardnum; i++){
                 int card_id = room->drawCard();
-                room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
+                room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::PlaceTakeoff, true);
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);
@@ -448,7 +448,7 @@ public:
 class Longluo: public TriggerSkill{
 public:
     Longluo():TriggerSkill("longluo"){
-        events << CardLost << PhaseChange;
+        events << CardLostOnePiece << PhaseChange;
         frequency = Frequent;
     }
 
@@ -469,7 +469,7 @@ public:
         }
         if(player->getPhase() == Player::Discard){
             CardMoveStar move = data.value<CardMoveStar>();
-            if(move->to_place == Player::DiscardedPile){
+            if(move->to_place == Player::DiscardPile){
                 player->addMark("longluo");
             }
         }

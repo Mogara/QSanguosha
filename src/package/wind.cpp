@@ -144,7 +144,7 @@ public:
             player->obtainCard(judge->card);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::Special);
+            room->moveCardTo(judge->card, NULL, Player::DiscardPile);
 
             LogMessage log;
             log.type = "$ChangedJudge";
@@ -675,8 +675,8 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     room->setTag("Guhuoing", true);
     room->setTag("GuhuoType", this->user_string);
 
-    yuji->addToPile("#guhuo_pile", this->getEffectiveId(), false);
-    room->moveCardTo(this, yuji, Player::Special, false);
+    // yuji->addToPile("#guhuo_pile", this->getEffectiveId(), false);
+    room->moveCardTo(this, yuji, Player::PlaceTakeoff, false);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
@@ -711,6 +711,14 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
         room->sendLog(log);
     }
 
+    room->moveCardTo(this, NULL, Player::DiscardPile, true, false);
+    
+    LogMessage log;
+    log.type = "$GuhuoResult";
+    log.from = yuji;
+    log.card_str = QString::number(subcards.first());
+    room->sendLog(log);
+
     bool success = false;
     if(questioned.isEmpty()){
         success = true;
@@ -739,18 +747,9 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
             }
         }
     }
-
-    LogMessage log;
-    log.type = "$GuhuoResult";
-    log.from = yuji;
-    log.card_str = QString::number(subcards.first());
-    room->sendLog(log);
-
+    
     room->setTag("Guhuoing", false);
     room->removeTag("GuhuoType");
-
-    if(!success)
-        room->throwCard(this);
 
     return success;
 }
@@ -928,12 +927,10 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
     log.arg2 = "guhuo";
     room->sendLog(log);
 
-    if(guhuo(yuji,log.toString())){
+    if (guhuo(yuji,log.toString())){
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
-        room->throwCard(this);
-
         return use_card;
     }else
         return NULL;

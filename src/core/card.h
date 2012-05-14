@@ -139,7 +139,7 @@ public:
     static QString Number2String(int number);
     static QStringList IdsToStrings(const QList<int> &ids);
     static QList<int> StringsToIds(const QStringList &strings);
-
+    static const int S_UNKNOWN_CARD_ID;
 protected:
     QList<int> subcards;
     bool target_fixed;

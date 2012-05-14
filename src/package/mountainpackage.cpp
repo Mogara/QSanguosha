@@ -286,7 +286,7 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardLost << CardLostDone << FinishJudge;
+        events << CardLostOnePiece << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -294,17 +294,13 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == CardLost){
+        if(event == CardLostOnePiece){
             CardMoveStar move = data.value<CardMoveStar>();
 
-            if((move->from_place == Player::Hand || move->from_place == Player::Equip) && move->to!=player)
-                player->tag["InvokeTuntian"] = true;
-        }else if(event == CardLostDone){
-            if(!player->tag.value("InvokeTuntian", false).toBool())
-                return false;
-            player->tag.remove("InvokeTuntian");
+            if((move->from_place == Player::Hand || move->from_place == Player::Equip) && 
+                player->getRoom()->getCurrent() != player
+                && player->askForSkillInvoke("tuntian", data)){
 
-            if(player->askForSkillInvoke("tuntian", data)){
                 Room *room = player->getRoom();
                 room->playSkillEffect("tuntian");
 
@@ -716,7 +712,7 @@ public:
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
-        events << CardLost;
+        events << CardLostOneTime;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -734,9 +730,10 @@ public:
             return false;
         if(current->getPhase() == Player::Discard){
             QVariantList guzheng = erzhang->tag["Guzheng"].toList();
-
-            CardMoveStar move = data.value<CardMoveStar>();
-                guzheng << move->card_id;
+            
+            CardsMoveStar move = data.value<CardsMoveStar>();
+            foreach (int card_id, move->card_ids)
+                guzheng << card_id;
 
             erzhang->tag["Guzheng"] = guzheng;
         }
@@ -774,7 +771,7 @@ public:
         QList<int> cards;
         foreach(QVariant card_data, guzheng_cards){
             int card_id = card_data.toInt();
-            if(room->getCardPlace(card_id) == Player::DiscardedPile)
+            if(room->getCardPlace(card_id) == Player::DiscardPile)
                 cards << card_id;
         }
 

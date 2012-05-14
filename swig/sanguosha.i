@@ -69,7 +69,7 @@ class Player: public QObject
 {
 public:
 	enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive};
-	enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
+	enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile};
 	enum Role {Lord, Loyalist, Rebel, Renegade};
 
 	explicit Player(QObject *parent);
@@ -393,11 +393,11 @@ struct CardUseStruct{
 };
 
 struct CardMoveStruct{
+	CardMoveStruct();
+	
 	int card_id;
 	Player::Place from_place, to_place;
 	ServerPlayer *from, *to;
-
-	QString toString() const;
 };
 
 struct DyingStruct{
@@ -493,11 +493,10 @@ enum TriggerEvent{
     CardUsed,
     CardResponsed,
     CardDiscarded,
-	CardMoving,
-    CardLost,
-    CardLostDone,
-    CardGot,
-    CardGotDone,
+    CardLostOnePiece,
+    CardGotOnePiece,
+	CardLostOneTime,
+    CardGotOneTime,
     CardDrawing,
     CardDrawnDone,
 
@@ -885,7 +884,6 @@ public:
 	void throwCard(const Card *card, ServerPlayer *who = NULL);
 	void throwCard(int card_id, ServerPlayer *who = NULL);
 	void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
-	void doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope);
 
 	// interactive methods
 	void activate(ServerPlayer *player, CardUseStruct &card_use);

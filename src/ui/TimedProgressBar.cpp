@@ -1,17 +1,21 @@
 #include "TimedProgressBar.h"
+#include "clientstruct.h"
 
-void TimedProgressBar::showEvent(QShowEvent*)
+void TimedProgressBar::showEvent(QShowEvent* showEvent)
 {
-    if (!m_hasTimer) return;
+    if (!m_hasTimer || m_max <= 0) 
+    {
+        showEvent->setAccepted(false);
+        return;
+    }
     m_timer = startTimer(m_step);
     this->setMaximum(m_max);
-    this->setValue(m_val);
-    QProgressBar::show();    
+    this->setValue(m_val);    
 }
 
 void TimedProgressBar::hide()
 {
-    if (m_timer != NULL)
+    if (m_timer != 0)
     {        
         killTimer(m_timer);
         m_timer = NULL;
@@ -40,13 +44,13 @@ using namespace QSanProtocol;
 QSanCommandProgressBar::QSanCommandProgressBar()
 {
     m_step = Config.S_PROGRESS_BAR_UPDATE_INTERVAL;
-    m_hasTimer = !Config.OperationNoLimit;
+    m_hasTimer = (ServerInfo.OperationTimeout != 0);
     m_instanceType = S_CLIENT_INSTANCE;
 }
 
 void QSanCommandProgressBar::setCountdown(CommandType command)
 {
-    m_max = Config.getCommandTimeout(command, m_instanceType);
+    m_max = ServerInfo.getCommandTimeout(command, m_instanceType);
 }
 
 void QSanCommandProgressBar::setCountdown(Countdown countdown)

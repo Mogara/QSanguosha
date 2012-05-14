@@ -7,6 +7,8 @@
 #include "lua-wrapper.h"
 #include <QFile>
 
+const int Card::S_UNKNOWN_CARD_ID = -1;
+
 const Card::Suit Card::AllSuits[4] = {
     Card::Spade,
     Card::Club,

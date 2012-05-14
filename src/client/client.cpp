@@ -88,11 +88,12 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["playCardEffect"] = &Client::playCardEffect;
     callbacks["playAudio"] = &Client::playAudio;
 
-    callbacks["moveNCards"] = &Client::moveNCards;
-    callbacks["moveCard"] = &Client::moveCard;
-    callbacks["drawNCards"] = &Client::drawNCards;
-    callbacks["drawCards"] = &Client::drawCards;
-    callbacks["clearPile"] = &Client::clearPile;
+    // callbacks["moveNCards"] = &Client::moveNCards;
+    // callbacks["moveCard"] = &Client::moveCard;
+    // callbacks["drawNCards"] = &Client::drawNCards;
+    // callbacks["drawCards"] = &Client::drawCards;
+    m_callbacks[S_COMMAND_MOVE_CARD] = &Client::moveCards;
+    callbacks["clearPile"] = &Client::resetPiles;
     callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["setStatistics"] = &Client::setStatistics;
     callbacks["setCardFlag"] = &Client::setCardFlag;
@@ -309,7 +310,7 @@ bool Client::processServerRequest(const QSanGeneralPacket& packet)
         || !countdown.tryParse(msg[msg.size()-1]))
     {
         countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;    
-        countdown.m_max = Config.getCommandTimeout(command, S_CLIENT_INSTANCE);
+        countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     }
     setCountdown(countdown);
     CallBack callback = m_interactions[command];
@@ -397,40 +398,74 @@ void Client::removePlayer(const QString &player_name){
     }
 }
 
-void Client::drawCards(const QString &cards_str){
-    QList<const Card*> cards;
-    QStringList card_list = cards_str.split("+");
-    foreach(QString card_str, card_list){
-        int card_id = card_str.toInt();
-        const Card *card = Sanguosha->getCard(card_id);
-        cards << card;
-        Self->addCard(card, Player::Hand);
+bool Client::_moveSingleCard(int card_id, CardsMoveStruct move)
+{    
+    const Card *card = Sanguosha->getCard(card_id);
+    if(move.from)
+        move.from->removeCard(card, move.from_place);
+    else
+    {
+        // @todo: synchronize discard pile when "marshal"
+        if(move.from_place == Player::DiscardPile)
+            discarded_list.removeOne(card);
+        else if(move.from_place == Player::DrawPile && !Self->hasFlag("marshalling"))
+                pile_num--;        
     }
 
-    pile_num -= cards.length();
-    updatePileNum();
+    if(move.to)
+        move.to->addCard(card, move.to_place);
+    else
+    {
+        if(move.to_place == Player::DrawPile)
+            pile_num++;
+        // @todo: synchronize discard pile when "marshal"
+        else if(move.to_place == Player::DiscardPile)
+            discarded_list.prepend(card);        
+    }
 
-    emit cards_drawed(cards);
+    updatePileNum();
+    return true;
 }
 
-void Client::drawNCards(const QString &draw_str){
-    QRegExp pattern("(\\w+):(\\d+)");
-    if(!pattern.exactMatch(draw_str))
-        return;
-
-    QStringList texts = pattern.capturedTexts();
-    ClientPlayer *player = findChild<ClientPlayer*>(texts.at(1));
-    int n = texts.at(2).toInt();
-
-    if(player && n>0){
-        if(!Self->hasFlag("marshalling")){
-            pile_num -= n;
-            updatePileNum();
+// S = Special, D1 = Draw, D2 = Discard, H = Hand, E = Equip, J = Judge
+// from/to  S      D1/D2/H      E/J   
+// S        pile    pile       pile        
+// D1/D2/H  pile    Move       Move
+// E/J      pile    Move       Move
+//
+void Client::moveCards(const Json::Value& arg)
+{
+    Q_ASSERT(arg.isArray());
+    QList<CardsMoveStruct> moves;
+    for (unsigned int i = 0; i < arg.size(); i++)
+    {
+        CardsMoveStruct move;
+        if (!move.tryParse(arg[i])) return;
+        move.from = getPlayer(move.from_player_name);
+        move.to = getPlayer(move.to_player_name);    
+        Player::Place srcPlace = move.from_place;
+        Player::Place dstPlace = move.to_place;        
+    
+        bool moved = false;
+        // S->x / x->S
+        if (srcPlace == Player::Special)
+        {
+            moved = true;
+            ((ClientPlayer*)move.from)->changePile(move.from_pile_name, false, move.card_ids);
         }
-
-        player->handCardChange(n);
-        emit n_cards_drawed(player, n);
+        if (dstPlace == Player::Special)
+        {
+            moved = true;
+            ((ClientPlayer*)move.to)->changePile(move.to_pile_name, true, move.card_ids);
+        }
+        if (!moved)
+        {
+            foreach (int card_id, move.card_ids)
+                _moveSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
+        }
+        moves.append(move);
     }
+    emit cards_moved(moves);    
 }
 
 void Client::onPlayerChooseGeneral(const QString &item_name){
@@ -584,65 +619,6 @@ void Client::activate(const Json::Value& playerId){
         setStatus(Playing);
     else
         setStatus(NotActive);
-}
-
-void Client::moveCard(const QString &move_str){
-    CardMoveStructForClient move;
-
-    if(move.parse(move_str)){
-        const Card *card = Sanguosha->getCard(move.card_id);
-        if(move.from)
-            move.from->removeCard(card, move.from_place);
-        else{
-            if(move.from_place == Player::DiscardedPile)
-                ClientInstance->discarded_list.removeOne(card);
-
-            if(!Self->hasFlag("marshalling")){
-                if(move.from_place == Player::DrawPile)
-                    pile_num --;
-
-                updatePileNum();
-            }
-        }
-
-        if(move.to)
-            move.to->addCard(card, move.to_place);
-        else{
-            if(move.to_place == Player::DrawPile)
-                pile_num ++;
-            else if(move.to_place == Player::DiscardedPile)
-                ClientInstance->discarded_list.prepend(card);
-
-            updatePileNum();
-        }
-        emit card_moved(move);
-    }else{
-        QMessageBox::warning(NULL, tr("Warning"), tr("Card moving response string is not well formatted"));
-    }
-}
-
-void Client::moveNCards(const QString &move_str){
-    QRegExp rx("(\\d+):(\\w+)(@special)?->(\\w+)(@special)?");
-    if(rx.exactMatch(move_str)){
-        QStringList texts = rx.capturedTexts();
-        int n = texts.at(1).toInt();
-
-        QString from = texts.at(2);
-        QString to = texts.at(4);
-
-        ClientPlayer *src = getPlayer(from);
-        ClientPlayer *dest = getPlayer(to);
-
-        if(texts.at(3).isEmpty())
-            src->handCardChange(-n);
-
-        if(texts.at(5).isEmpty())
-            dest->handCardChange(n);
-
-        emit n_cards_moved(n, from, to);
-    }else{
-        QMessageBox::warning(NULL, tr("Warning"), tr("moveNCards string is not well formatted!"));
-    }
 }
 
 void Client::startGame(const QString &){
@@ -1011,7 +987,8 @@ bool Client::hasNoTargetResponsing() const{
 }
 
 ClientPlayer *Client::getPlayer(const QString &name){
-    return findChild<ClientPlayer *>(name);
+    if (name == Self->objectName()) return Self;
+    else return findChild<ClientPlayer *>(name);
 }
 
 void Client::kick(const QString &to_kick){
@@ -1049,12 +1026,11 @@ QTextDocument *Client::getPromptDoc() const{
     return prompt_doc;
 }
 
-void Client::clearPile(const QString &){
+void Client::resetPiles(const QString &){
     discarded_list.clear();
-    swap_pile ++;
+    swap_pile++;
     updatePileNum();
-
-    emit pile_cleared();
+    emit pile_reset();
 }
 
 void Client::setPileNumber(const QString &pile_str){
@@ -1647,7 +1623,7 @@ void Client::moveFocus(const Json::Value &focus){
         {
             Q_ASSERT(focus[1].isInt());
             CommandType command = (CommandType)focus[1].asInt();
-            countdown.m_max = Config.getCommandTimeout(command, S_CLIENT_INSTANCE);
+            countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
             countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
         }
     }
@@ -1722,9 +1698,11 @@ void Client::pile(const QString &pile_str){
     QString name = texts.at(2);
     bool add = texts.at(3) == "+";
     int card_id = texts.at(4).toInt();
+    QList<int> card_ids;
+    card_ids.append(card_id);
 
     if(player)
-        player->changePile(name, add, card_id);
+        player->changePile(name, add, card_ids);
 }
 
 void Client::transfigure(const QString &transfigure_tr){

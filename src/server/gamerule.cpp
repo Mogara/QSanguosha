@@ -81,31 +81,34 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
 
     case Player::Discard:{
-            int discard_num = player->getHandcardNum() - player->getMaxCards();
-            if(player->hasFlag("jilei")){
-                QSet<const Card *> jilei_cards;
-                QList<const Card *> handcards = player->getHandcards();
-                foreach(const Card *card, handcards){
-                    if(player->isJilei(card))
-                        jilei_cards << card;
-                }
-
-                if(jilei_cards.size() > player->getMaxCards()){
-                    // show all his cards
-                    room->showAllCards(player);
-
-                    DummyCard *dummy_card = new DummyCard;
-                    foreach(const Card *card, handcards.toSet() - jilei_cards){
-                        dummy_card->addSubcard(card);
+            while (player->getHandcardNum() > player->getMaxCards())
+            {
+                int discard_num = player->getHandcardNum() - player->getMaxCards();
+                if(player->hasFlag("jilei")){
+                    QSet<const Card *> jilei_cards;
+                    QList<const Card *> handcards = player->getHandcards();
+                    foreach(const Card *card, handcards){
+                        if(player->isJilei(card))
+                            jilei_cards << card;
                     }
-                    room->throwCard(dummy_card, player);
 
-                    return;
+                    if(jilei_cards.size() > player->getMaxCards()){
+                        // show all his cards
+                        room->showAllCards(player);
+
+                        DummyCard *dummy_card = new DummyCard;
+                        foreach(const Card *card, handcards.toSet() - jilei_cards){
+                            dummy_card->addSubcard(card);
+                        }
+                        room->throwCard(dummy_card, player);
+
+                        return;
+                    }
                 }
-            }
 
-            if(discard_num > 0)
-                room->askForDiscard(player, "gamerule", discard_num);
+                if(discard_num > 0)
+                    room->askForDiscard(player, "gamerule", discard_num);
+            }
             break;
         }
     case Player::Finish: {
@@ -154,6 +157,8 @@ void GameRule::setGameProcess(Room *room) const{
 }
 
 bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    if (player == NULL) return false;
+
     Room *room = player->getRoom();
 
     if(room->getTag("SkipGameRule").toBool()){
@@ -163,22 +168,24 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     switch(event){
     case GameStart: {
-        if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
-                QString new_kingdom = room->askForKingdom(player);
-                room->setPlayerProperty(player, "kingdom", new_kingdom);
+            foreach (ServerPlayer* player, room->getPlayers())
+            {
+                if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
+                        QString new_kingdom = room->askForKingdom(player);
+                        room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-                LogMessage log;
-                log.type = "#ChooseKingdom";
-                log.from = player;
-                log.arg = new_kingdom;
-                room->sendLog(log);
+                        LogMessage log;
+                        log.type = "#ChooseKingdom";
+                        log.from = player;
+                        log.arg = new_kingdom;
+                        room->sendLog(log);
+                }
+
+                if(player->isLord())
+                    setGameProcess(room);
             }
-
-            if(player->isLord())
-                setGameProcess(room);
-
             room->setTag("FirstRound", true);
-            player->drawCards(4, false);
+            room->drawCards(room->getPlayers(), 4, false);
 
             break;
         }
@@ -411,11 +418,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 log.arg = "analeptic";
                 room->sendLog(log);
 
-                damage.damage ++;
+                damage.damage++;
             }
 
             if(effect.to->hasSkill("jueqing") || effect.to->getGeneralName() == "zhangchunhua")
-                damage.damage ++;
+                damage.damage++;
 
             damage.from = effect.from;
             damage.to = effect.to;
@@ -491,7 +498,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
-            room->moveCardTo(judge->card, NULL, Player::Special);
+            room->moveCardTo(judge->card, NULL, Player::DiscardPile);
 
             LogMessage log;
             log.type = "$InitialJudge";
@@ -801,7 +808,7 @@ BasaraMode::BasaraMode(QObject *parent)
 {
     setObjectName("basara_mode");
 
-    events << CardLost << Predamaged;
+    events << CardLostOnePiece << Predamaged;
 
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";

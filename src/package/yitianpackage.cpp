@@ -32,15 +32,16 @@ YitianSword::YitianSword(Suit suit, int number)
 
 void YitianSword::onMove(const CardMoveStruct &move) const{
     if(move.from_place == Player::Equip && move.from->isAlive()){
-        Room *room = move.from->getRoom();
+        ServerPlayer* from = (ServerPlayer*) move.from;
+        Room *room = from->getRoom();
 
-        bool invoke = move.from->askForSkillInvoke("yitian-lost");
+        bool invoke = from->askForSkillInvoke("yitian-lost");
         if(!invoke)
             return;
 
-        ServerPlayer *target = room->askForPlayerChosen(move.from, room->getAllPlayers(), "yitian-lost");
+        ServerPlayer *target = room->askForPlayerChosen(from, room->getAllPlayers(), "yitian-lost");
         DamageStruct damage;
-        damage.from = move.from;
+        damage.from = from;
         damage.to = target;
         damage.card = this;
 

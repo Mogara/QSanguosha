@@ -257,7 +257,7 @@ public:
 class Manjuan: public TriggerSkill{
 public:
     Manjuan(): TriggerSkill("manjuan"){
-        events << CardGot << CardDrawing;
+        events << CardGotOnePiece << CardDrawing;
         frequency = Frequent;
     }
 
@@ -268,9 +268,9 @@ public:
     void doManjuan(ServerPlayer *sp_pangtong, int card_id) const{
         Room *room = sp_pangtong->getRoom();
         sp_pangtong->setFlags("ManjuanInvoke");
-        QList<int> discardedPile = room->getDiscardPile(), toGainList;
+        QList<int> DiscardPile = room->getDiscardPile(), toGainList;
         const Card *card = Sanguosha->getCard(card_id);
-        foreach(int id, discardedPile){
+        foreach(int id, DiscardPile){
             const Card *cd = Sanguosha->getCard(id);
             if(cd->getNumber() == card->getNumber())
                 toGainList << id;
@@ -293,7 +293,7 @@ public:
         }
 
         int card_id = -1;
-        if(event == CardGot){
+        if(event == CardGotOnePiece){
             CardMoveStar move = data.value<CardMoveStar>();
             card_id = move->card_id;
             if(move->to_place == Player::Hand){
@@ -316,10 +316,10 @@ public:
         room->sendLog(log);
 
         if(sp_pangtong->getPhase() == Player::NotActive || !sp_pangtong->askForSkillInvoke(objectName(), data))
-            return event == CardGot ? false : true;
+            return event == CardGotOnePiece ? false : true;
 
         doManjuan(sp_pangtong, card_id);
-        return event == CardGot ? false : true;
+        return event == CardGotOnePiece ? false : true;
     }
 };
 

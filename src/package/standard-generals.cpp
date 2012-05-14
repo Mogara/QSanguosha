@@ -287,7 +287,7 @@ public:
             room->throwCard(judge->card);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::Special);
+            room->moveCardTo(judge->card, NULL, Player::DiscardPile);
 
             LogMessage log;
             log.type = "$ChangedJudge";
@@ -685,12 +685,12 @@ public:
     KongchengEffect():TriggerSkill("#kongcheng-effect"){
         frequency = Compulsory;
 
-        events << CardLost;
+        events << CardLostOneTime;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         if(player->isKongcheng()){
-            CardMoveStar move = data.value<CardMoveStar>();
+            CardsMoveStar move = data.value<CardsMoveStar>();
             if(move->from_place == Player::Hand)
                 player->getRoom()->playSkillEffect("kongcheng");
         }
@@ -895,14 +895,14 @@ public:
 class Lianying: public TriggerSkill{
 public:
     Lianying():TriggerSkill("lianying"){
-        events << CardLost;
+        events << CardLostOneTime;
 
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *luxun, QVariant &data) const{
         if(luxun->isKongcheng()){
-            CardMoveStar move = data.value<CardMoveStar>();
+            CardsMoveStar move = data.value<CardsMoveStar>();
 
             if(move->from_place == Player::Hand){
                 Room *room = luxun->getRoom();
@@ -1079,7 +1079,7 @@ public:
 class Xiaoji: public TriggerSkill{
 public:
     Xiaoji():TriggerSkill("xiaoji"){
-        events << CardLost;
+        events << CardLostOnePiece;
 
         frequency = Frequent;
     }

@@ -279,7 +279,7 @@ public:
 class NosXuanfeng: public TriggerSkill{
 public:
     NosXuanfeng():TriggerSkill("nos_xuanfeng"){
-        events << CardLost << CardLostDone;
+        events << CardLostOnePiece;
     }
 
     virtual QString getDefaultChoice(ServerPlayer *) const{
@@ -287,49 +287,48 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *lingtong, QVariant &data) const{
-        if(event == CardLost){
+        if(event == CardLostOnePiece){
             CardMoveStar move = data.value<CardMoveStar>();
             if(move->from_place == Player::Equip)
-                lingtong->tag["InvokeNosXuanfeng"] = true;
-        }else if(event == CardLostDone && lingtong->tag.value("InvokeNosXuanfeng", false).toBool()){
-            lingtong->tag.remove("InvokeNosXuanfeng");
-            Room *room = lingtong->getRoom();
+            {
+                Room *room = lingtong->getRoom();
 
-            QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
+                QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
 
 
-            if(choice == "slash"){
-                QList<ServerPlayer *> targets;
-                foreach(ServerPlayer *target, room->getAlivePlayers()){
-                    if(lingtong->canSlash(target, false))
-                        targets << target;
+                if(choice == "slash"){
+                    QList<ServerPlayer *> targets;
+                    foreach(ServerPlayer *target, room->getAlivePlayers()){
+                        if(lingtong->canSlash(target, false))
+                            targets << target;
+                    }
+
+                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-slash");
+
+                    Slash *slash = new Slash(Card::NoSuit, 0);
+                    slash->setSkillName("xuanfeng");
+
+                    CardUseStruct card_use;
+                    card_use.card = slash;
+                    card_use.from = lingtong;
+                    card_use.to << target;
+                    room->useCard(card_use, false);
+                }else if(choice == "damage"){
+                    room->playSkillEffect("xuanfeng");
+
+                    QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
+                    foreach(ServerPlayer *p, players){
+                        if(lingtong->distanceTo(p) <= 1)
+                            targets << p;
+                    }
+
+                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-damage");
+
+                    DamageStruct damage;
+                    damage.from = lingtong;
+                    damage.to = target;
+                    room->damage(damage);
                 }
-
-                ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-slash");
-
-                Slash *slash = new Slash(Card::NoSuit, 0);
-                slash->setSkillName("xuanfeng");
-
-                CardUseStruct card_use;
-                card_use.card = slash;
-                card_use.from = lingtong;
-                card_use.to << target;
-                room->useCard(card_use, false);
-            }else if(choice == "damage"){
-                room->playSkillEffect("xuanfeng");
-
-                QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
-                foreach(ServerPlayer *p, players){
-                    if(lingtong->distanceTo(p) <= 1)
-                        targets << p;
-                }
-
-                ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-damage");
-
-                DamageStruct damage;
-                damage.from = lingtong;
-                damage.to = target;
-                room->damage(damage);
             }
         }
 

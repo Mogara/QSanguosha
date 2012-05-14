@@ -86,7 +86,8 @@ namespace QSanProtocol
         S_COMMAND_SET_MAXHP,
         S_COMMAND_CHEAT,
         S_COMMAND_SURRENDER,
-        S_COMMAND_GAME_OVER
+        S_COMMAND_GAME_OVER, 
+        S_COMMAND_MOVE_CARD
     };
 
     enum Game3v3ChooseOrderCommand

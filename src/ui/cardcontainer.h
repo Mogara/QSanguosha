@@ -6,6 +6,7 @@ class ClientPlayer;
 
 #include "pixmap.h"
 #include "carditem.h"
+#include "GeneralCardContainerUI.h"
 
 #include <QStack>
 
@@ -23,43 +24,36 @@ signals:
     void clicked();
 };
 
-class GrabCardItem: public CardItem{
-    Q_OBJECT
 
-public:
-    GrabCardItem(const Card *card);
-
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-signals:
-    void grabbed();
-};
-
-class CardContainer : public Pixmap
+class CardContainer : public PlayerCardContainer
 {
     Q_OBJECT
 
 public:
     explicit CardContainer();
-    CardItem *take(const ClientPlayer *taker, int card_id);
+    virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);    
     int getFirstEnabled() const;
     void startChoose();
     void startGongxin();
     void addCloseButton(bool dispose = false);
     void view(const ClientPlayer *player);
-
+    ClientPlayer* m_currentPlayer;
 public slots:
     void fillCards(const QList<int> &card_ids = QList<int>());
     void clear();
     void freezeCards(bool is_disable);
 
+protected:
+    
+    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+
 private:
-    QList<GrabCardItem *> items;
+    QList<CardItem *> items;
     CloseButton* close_button;
 
-    QStack<QList<GrabCardItem *> > items_stack;
+    QStack<QList<CardItem *> > items_stack;
 
-    void addCardItem(int card_id, const QPointF &pos);
+    void _addCardItem(int card_id, const QPointF &pos);
 
 private slots:
     void grabItem();

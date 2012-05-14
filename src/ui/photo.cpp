@@ -24,13 +24,14 @@
 
 using namespace QSanProtocol;
 
-Photo::Photo()
-    :Pixmap("image/system/photo-back.png"),
-    player(NULL),
-    handcard("image/system/handcard.png"),
-    action_item(NULL), save_me_item(NULL), permanent(false),
-    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    order_item(NULL), hide_avatar(false)
+const QRect Photo::S_CARD_MOVE_REGION(-50, -50, 200, CardItem::S_NORMAL_CARD_HEIGHT);
+
+Photo::Photo(): PlayerCardContainer("image/system/photo-back.png"),
+                player(NULL),
+                handcard("image/system/handcard.png"),
+                action_item(NULL), save_me_item(NULL), permanent(false),
+                weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+                order_item(NULL), hide_avatar(false)
 {
     setAcceptHoverEvents(true);
 
@@ -139,7 +140,8 @@ void Photo::updateRoleComboboxPos()
 
 void Photo::showProgressBar(Countdown countdown){
     progress_bar->setCountdown(countdown);
-    progress_bar->show();
+    if (countdown.m_max != 0 && countdown.m_type != Countdown::S_COUNTDOWN_NO_LIMIT)
+        progress_bar->show();
 }
 
 void Photo::hideProgressBar(){
@@ -350,38 +352,6 @@ void Photo::speak(const QString &content)
 
 }
 
-CardItem *Photo::takeCardItem(int card_id, Player::Place place){
-    CardItem *card_item = NULL;
-
-    if(place == Player::Hand || place == Player::Special){
-        card_item = new CardItem(Sanguosha->getCard(card_id));
-        card_item->setPos(pos());
-        card_item->shift();
-    }else if(place == Player::Equip){
-        foreach(CardItem **equip_ptr, equips){
-            CardItem *equip = *equip_ptr;
-            if(equip && equip->getCard()->getId() == card_id){
-                card_item = equip;
-                *equip_ptr = NULL;
-
-                int index = equips.indexOf(equip_ptr);
-                equip_rects[index]->setToolTip(QString());
-                break;
-            }
-        }
-    }else if(place == Player::Judging){
-        card_item = CardItem::FindItem(judging_area, card_id);
-        if(card_item){
-            int index = judging_area.indexOf(card_item);
-            delete judging_pixmaps.takeAt(index);
-            judging_area.removeAt(index);
-        }
-    }
-
-    update();
-    return card_item;
-}
-
 void Photo::installEquip(CardItem *equip){
     const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
     int index = -1;
@@ -395,16 +365,10 @@ void Photo::installEquip(CardItem *equip){
     if(index >= 0)
         equip_rects[index]->setToolTip(equip_card->getDescription());
 
-    equip->setHomePos(pos());
-    equip->goBack(true);
-
     update();
 }
 
 void Photo::installDelayedTrick(CardItem *trick){
-    trick->setHomePos(pos());
-    trick->goBack(true);
-
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
     item->setPixmap(QPixmap(player->topDelayedTrick()->getIconPath()));
     QString tooltip;
@@ -419,11 +383,84 @@ void Photo::installDelayedTrick(CardItem *trick){
     judging_pixmaps << item;
 }
 
-void Photo::addCardItem(CardItem *card_item){
-    card_item->setHomePos(pos());
-    card_item->goBack(true);
-
+QList<CardItem*> Photo::removeCardItems(const QList<int> &card_ids, Player::Place place)
+{
+    QList<CardItem*> result;    
+    if(place == Player::Hand || place == Player::Special){
+         result = _createCards(card_ids);
+    }else if(place == Player::Equip){
+        foreach(CardItem **equip_ptr, equips){
+            CardItem *equip = *equip_ptr;
+            if(equip && card_ids.contains(equip->getCard()->getId())){
+                result.append(equip);
+                *equip_ptr = NULL;
+                int index = equips.indexOf(equip_ptr);
+                equip_rects[index]->setToolTip(QString());                
+            }
+        }
+    }else if(place == Player::Judging){
+        foreach (int card_id, card_ids)
+        {
+            CardItem* card_item = CardItem::FindItem(judging_area, card_id);
+            if(card_item){
+                result.append(card_item);
+                int index = judging_area.indexOf(card_item);
+                delete judging_pixmaps.takeAt(index);
+                judging_area.removeAt(index);
+            }
+        }
+    }else if (place == Player::PlaceTakeoff){
+        foreach (int card_id, card_ids)
+        {
+            CardItem* card_item = CardItem::FindItem(m_takenOffCards, card_id);
+             if (card_item == NULL)
+                 card_item = CardItem::FindItem(m_takenOffCards, Card::S_UNKNOWN_CARD_ID);
+            if (card_item == NULL)
+            {
+                Q_ASSERT(!m_takenOffCards.isEmpty());
+                card_item = m_takenOffCards.first();
+            }
+            int index = m_takenOffCards.indexOf(card_item);
+            m_takenOffCards.removeAt(index);
+            if (card_item->getId() == Card::S_UNKNOWN_CARD_ID)
+            {
+                const Card* card = Sanguosha->getCard(card_id);
+                card_item->setCard(card);
+            }
+            result.append(card_item);
+        }    
+    }
+    _disperseCards(result, S_CARD_MOVE_REGION, Qt::AlignCenter, true);
     update();
+    return result;
+}
+
+bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
+{
+    _disperseCards(card_items, S_CARD_MOVE_REGION, Qt::AlignCenter, true);
+    double homeOpacity = 0.0;
+    bool destroy = true;
+    if (place == Player::PlaceTakeoff)
+    {
+        homeOpacity = 1.0;
+        destroy  = false;
+        m_takenOffCards.append(card_items);
+    }
+    foreach (CardItem* card_item, card_items)
+        card_item->setHomeOpacity(homeOpacity);
+    if (place == Player::Equip)
+    {
+        foreach (CardItem* card, card_items)
+            installEquip(card);
+        destroy = false;
+    }
+    else if (place == Player::Judging)
+    {
+        foreach (CardItem* card, card_items)
+            installDelayedTrick(card);
+        destroy = false;
+    }
+    return destroy;
 }
 
 void Photo::drawMagatama(QPainter *painter, int index, const QPixmap &pixmap){

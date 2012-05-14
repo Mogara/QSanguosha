@@ -107,7 +107,7 @@ public:
             room->throwCard(judge->card);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::Special);
+            room->moveCardTo(judge->card, NULL, Player::DiscardPile);
 
             LogMessage log;
             log.type = "$ChangedJudge";

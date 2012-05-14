@@ -131,7 +131,7 @@ void HallDialog::room(int room_id, int joined, const QString &setup_string){
     item = new QTableWidgetItem(QString("%1/%2").arg(joined).arg(total));
     table->setItem(room_row, 2, item);
 
-    room_row ++;
+    room_row++;
 }
 
 void HallDialog::roomEnd(){

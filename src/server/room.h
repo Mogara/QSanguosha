@@ -146,10 +146,10 @@ public:
 
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
-    // will be rejected.
+    // will be rejected.    
     bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
-
-
+    bool doBroadcastNotify(const QList<ServerPlayer*> &players, QSanProtocol::CommandType command, const Json::Value &arg);
+    
     // Ask a server player to wait for the client response. Call is blocking until client replies or server times out, 
     // whichever is earlier.
     // @param player
@@ -175,6 +175,7 @@ public:
     // Notification functions
     bool notifyMoveFocus(ServerPlayer* player);
     bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);
+    bool notifyMoveCards(QList<CardsMoveStruct> move, bool isCardFaceUp);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -220,14 +221,18 @@ public:
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
     void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
+    void drawCards(QList<ServerPlayer*> players, int n, const QString &reason);
     void obtainCard(ServerPlayer *target, const Card *card);
     void obtainCard(ServerPlayer *target, int card_id);
 
     void throwCard(const Card *card, ServerPlayer *who = NULL);
     void throwCard(int card_id, ServerPlayer *who = NULL);
-    void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
-    void doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope);
 
+    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
+        bool forceMoveVisible = false, bool phaseByPhase = false);
+    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase = true);
+    void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase);
+    
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
     Card::Suit askForSuit(ServerPlayer *player, const QString &reason);
@@ -265,7 +270,7 @@ public:
 protected:
     virtual void run();
 
-private:
+private:    
     QString _chooseDefaultGeneral(ServerPlayer* player) const;
     bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);
     QString mode;

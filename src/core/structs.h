@@ -67,12 +67,48 @@ struct CardUseStruct{
 };
 
 struct CardMoveStruct{
+    inline CardMoveStruct()
+    {
+        from_place = Player::PlaceUnknown;
+        to_place = Player::PlaceUnknown;
+        from = NULL;
+        to = NULL;
+    }
     int card_id;
     Player::Place from_place, to_place;
-    ServerPlayer *from, *to;
-    bool open;
+    QString from_player_name, to_player_name;
+    QString from_pile_name, to_pile_name;
+    Player *from, *to;
+    bool open;    
+    bool tryParse(const Json::Value&);
+    Json::Value toJsonValue() const;
+    inline bool isRelevant(Player* player)
+    {
+        return (player != NULL && (from == player || to == player));
+    }
+};
 
-    QString toString() const;
+struct CardsMoveStruct{
+    inline CardsMoveStruct()
+    {
+        from_place = Player::PlaceUnknown;
+        to_place = Player::PlaceUnknown;
+        from = NULL;
+        to = NULL;
+    }
+    QList<int> card_ids;
+    Player::Place from_place, to_place;
+    QString from_player_name, to_player_name;
+    QString from_pile_name, to_pile_name;
+    Player *from, *to;
+    bool open;    
+    bool tryParse(const Json::Value&);
+    Json::Value toJsonValue() const;
+    inline bool isRelevant(Player* player)
+    {
+        return (player != NULL && (from == player || to == player));
+    }
+    QList<CardMoveStruct> flatten();    
 };
 
 struct DyingStruct{
@@ -178,11 +214,10 @@ enum TriggerEvent{
     CardUsed,
     CardResponsed,
     CardDiscarded,
-    CardMoving,
-    CardLost,
-    CardLostDone,
-    CardGot,
-    CardGotDone,
+    CardLostOnePiece,
+    CardLostOneTime,
+    CardGotOnePiece,
+    CardGotOneTime,
     CardDrawing,
     CardDrawnDone,
 
@@ -201,11 +236,14 @@ typedef JudgeStruct *JudgeStar;
 typedef DamageStruct *DamageStar;
 typedef PindianStruct *PindianStar;
 typedef const CardMoveStruct *CardMoveStar;
+typedef const CardsMoveStruct *CardsMoveStar;
 
 Q_DECLARE_METATYPE(DamageStruct)
 Q_DECLARE_METATYPE(CardEffectStruct)
 Q_DECLARE_METATYPE(SlashEffectStruct)
 Q_DECLARE_METATYPE(CardUseStruct)
+Q_DECLARE_METATYPE(CardsMoveStruct)
+Q_DECLARE_METATYPE(CardsMoveStar)
 Q_DECLARE_METATYPE(CardMoveStruct)
 Q_DECLARE_METATYPE(CardMoveStar)
 Q_DECLARE_METATYPE(CardStar)

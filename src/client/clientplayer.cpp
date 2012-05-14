@@ -104,11 +104,12 @@ QTextDocument *ClientPlayer::getMarkDoc() const{
     return mark_doc;
 }
 
-void ClientPlayer::changePile(const QString &name, bool add, int card_id){
+void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids){
     if(add)
-        piles[name] << card_id;
+        piles[name].append(card_ids);
     else
-        piles[name].removeOne(card_id);
+        foreach (int card_id, card_ids)
+            piles[name].removeOne(card_id);
 
     if(!name.startsWith("#"))
         emit pile_changed(name);
