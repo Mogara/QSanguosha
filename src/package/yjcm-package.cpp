@@ -1031,6 +1031,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     gaoshun->addSkill(new Xianzhen);
     gaoshun->addSkill(new Jiejiu);
 
+    General *zhonghui = new General(this, "zhonghui", "wei");
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();

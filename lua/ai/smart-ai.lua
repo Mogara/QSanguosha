@@ -72,7 +72,7 @@ function setInitialTables()
 	sgs.draw_pile = 			global_room:getDrawPile()
 	sgs.lose_equip_skill = 		"xiaoji|xuanfeng|nos_xuanfeng"
 	sgs.need_kongcheng = 		"lianying|kongcheng"
-	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu|guixin"
+	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu|guixin|quanji"
 	sgs.wizard_skill = 			"guicai|guidao|jilve|tiandu"
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve"
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jizhi|guzheng|qixi|jieyin|guose|duanliang|jujian|fanjian|lijian|manjuan|lihun"
@@ -2036,6 +2036,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if self:getDamagedEffects(self) then return "." end
 	if target and target:getWeapon() and target:getWeapon():inherits("IceSword") and self.player:getCards("he"):length() > 2 then return end
 	if self:needBear() and self.player:getLostHp() < 2 then return "." end
+	if self.player:hasSkill("zili") and not self.player:hasSkill("paiyi") and self.player:getLostHp() < 2 then return "." end
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 and self.player:getHp() > 2 then return "." end
 	if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = 0}
@@ -2862,7 +2863,7 @@ function SmartAI:getRetrialCardId(cards, judge)
 	end
 
 	if next(can_use) then
-		self:sortByKeepValue(can_use, true)
+		self:sortByKeepValue(can_use)
 		return can_use[1]:getEffectiveId()
 	else
 		return -1
