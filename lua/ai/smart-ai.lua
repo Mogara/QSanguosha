@@ -3037,51 +3037,129 @@ function getCardsNum(class_name, player)
 		local cards = sgs.QList2Table(player:getHandcards())
 		local num = 0
 		local shownum = 0
+		local redpeach = 0
+		local redslash = 0
+		local blackcard = 0
+		local blacknull = 0
+		local equipnull = 0
+		local equipcard = 0
+		local heartslash = 0
+		local heartpeach = 0
+		local spadenull = 0
+		local spadewine = 0
+		local diamondcard = 0
+		local clubcard = 0
+		local slashjink = 0
 		for _, card in ipairs(cards) do
 			if card:hasFlag("visible") then
 				shownum = shownum + 1
 				if card:inherits(class_name) then
 					num = num + 1
 				end
+				if card:inherits("EquipCard") then
+					equipcard = equipcard + 1
+				end
+				if card:inherits("Slash") or card:inherits("Jink") then
+					slashjink = slashjink + 1
+				end
+				if card:isRed() then
+					if not card:inherits("Slash") then
+						redslash = redslash + 1
+					end
+					if not card:inherits("Peach") then
+						redpeach = redpeach + 1
+					end
+				end
+				if card:isBlack() then
+					blackcard = blackcard + 1
+					if not card:inherits("Nullification") then
+						blacknull = blacknull + 1
+					end
+				end
+				if card:getSuit() == sgs.Card_Heart then
+					if not card:inherits("Slash") then
+						heartslash = heartslash + 1
+					end
+					if not card:inherits("Peach") then
+						heartpeach = heartpeach + 1
+					end
+				end
+				if card:getSuit() == sgs.Card_Spade then
+					if not card:inherits("Nullification") then
+						spadenull = spadenull + 1
+					end
+					if not card:inherits("Analeptic") then
+						spadewine = spadewine + 1
+					end		
+				end
+				if card:getSuit() == sgs.Card_Diamond and not card:inherits("Slash") then
+					diamondcard = diamondcard + 1
+				end
+				if card:getSuit() == sgs.Card_Club then
+					clubcard = clubcard + 1
+				end
 			end
 		end
 	end
-	local redequip = 0
 	local ecards = player:getCards("e")
 	for _, card in sgs.qlist(ecards) do
-		if card:isRed() then redequip = redequip + 1 end
+		equipcard = equipcard + 1
+		if player:getHandcardNum() > player:getHp() then
+			equipnull = equipnull + 1
+		end			
+		if card:isRed() then 
+			redpeach = redpeach + 1
+			redslash = redslash + 1 
+		end
+		if card:getSuit() == sgs.Card_Heart then
+			heartpeach = heartpeach + 1
+		end
+		if card:getSuit() == sgs.Card_Spade then
+			spadecard = spadecard + 1
+		end
+		if card:getSuit() == sgs.Card_Diamond  then
+			diamondcard = diamondcard + 1
+		end
+		if card:getSuit() == sgs.Card_Club then
+			clubcard = clubcard + 1
+		end
 	end
+
 	if class_name == "Slash" then
 		if player:hasSkill("wusheng") then
-			return player:getHandcardNum()+ redequip
+			return redslash + num + (player:getHandcardNum()-shownum)/1.2
+		elseif player:hasSkill("wushen") then
+			return heartslash + num + (player:getHandcardNum()-shownum)/1.5
+		elseif player:hasSkill("longhun") then
+			return diamondcard + num + (player:getHandcardNum()-shownum)/3
 		elseif player:hasSkill("gongqi") then
-			return num+(player:getHandcardNum()-shownum)/2+player:getEquips():length()
+			return num+(player:getHandcardNum()-shownum)/2+equipcard
 		elseif player:hasSkill("longdan") then
-			return player:getHandcardNum()-1
+			return slashjink+(player:getHandcardNum()-shownum)/1.5
 		else
 			return num+(player:getHandcardNum()-shownum)/2
 		end
 	elseif class_name == "Jink" then
 		if player:hasSkill("qingguo") then 
-			return player:getHandcardNum()
+			return blackcard + num + (player:getHandcardNum()-shownum)/1.2
 		elseif player:hasSkill("longdan") then
-			return player:getHandcardNum()-1
+			return slashjink+(player:getHandcardNum()-shownum)/1.5
 		elseif player:hasSkill("longhun") then
-			return num+(player:getHandcardNum()-shownum)/3
+			return clubcard + num + (player:getHandcardNum()-shownum)/3
 		else 
 			return num+(player:getHandcardNum()-shownum)/3
 		end
 	elseif class_name == "Peach" then
 		if player:hasSkill("jijiu") then
-			return player:getHandcardNum()-1+redequip
+			return num + redpeach + (player:getHandcardNum()-shownum)/1.2
 		elseif player:hasSkill("longhun") then
-			return num+(player:getHandcardNum()-shownum)/3
+			return num+heartpeach+(player:getHandcardNum()-shownum)/3
 		else 
 			return num
 		end 
 	elseif class_name == "Analeptic" then
 		if player:hasSkill("jiuchi") then
-			return num+(player:getHandcardNum()-shownum)/3
+			return num+spadewine+(player:getHandcardNum()-shownum)/3
 		elseif player:hasSkill("jiushi") then
 			return num+1
 		else
@@ -3089,9 +3167,9 @@ function getCardsNum(class_name, player)
 		end
 	elseif class_name == "Nullification" then
 		if player:hasSkill("kanpo") then
-			return num+(player:getHandcardNum()-shownum)/2
+			return num+blacknull+(player:getHandcardNum()-shownum)/2
 		elseif player:hasSkill("yanzheng") then
-			return num+player:getEquips():length()
+			return num+equipnull
 		else
 			return num
 		end
