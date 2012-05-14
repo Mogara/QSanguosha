@@ -26,7 +26,7 @@ public:
             return;
 
         int card_id = room->askForCardChosen(player, target, "h", objectName());
-        room->obtainCard(player, Sanguosha->getCard(card_id), false);
+        room->obtainCard(player, card_id, false);
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -147,7 +147,7 @@ public:
                         return false;
 
                     int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
-                    room->obtainCard(target, Sanguosha->getCard(card_id), room->getCardPlace(card_id) != Player::Hand);
+                    room->obtainCard(target, card_id, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
             room->removeTag("LihunTarget");

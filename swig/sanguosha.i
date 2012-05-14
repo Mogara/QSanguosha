@@ -880,6 +880,7 @@ public:
 
 	void drawCards(ServerPlayer *player, int n, const char *reason = NULL);
 	void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
+	void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
 
 	void throwCard(const Card *card, ServerPlayer *who = NULL);
 	void throwCard(int card_id, ServerPlayer *who = NULL);

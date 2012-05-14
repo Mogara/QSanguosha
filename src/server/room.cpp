@@ -786,11 +786,15 @@ void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide){
     if(card == NULL)
         return;
 
-    moveCardTo(card, target, Player::Hand, unhide);
+    if(card->isVirtualCard()){
+        moveCardTo(card, target, Player::Hand, unhide);
+
+    }else
+        obtainCard(target, card->getId(), unhide);
 }
 
 void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
-    obtainCard(target, Sanguosha->getCard(card_id), unhide);
+    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, unhide);
 }
 
 bool Room::isCanceled(const CardEffectStruct &effect){
@@ -3539,7 +3543,7 @@ bool Room::makeCheat(ServerPlayer* player){
         log.card_str = QString::number(card_id);
         sendLog(log);
 
-        obtainCard(player, Sanguosha->getCard(card_id));
+        obtainCard(player, card_id);
     }
     else if (code == S_CHEAT_CHANGE_GENERAL)
     {

@@ -253,7 +253,7 @@ public:
 
                 if(!target->isNude()){
                     int card_id = room->askForCardChosen(zhurong, target, "he", objectName());
-                    room->obtainCard(zhurong, Sanguosha->getCard(card_id), room->getCardPlace(card_id) != Player::Hand);
+                    room->obtainCard(zhurong, card_id, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
         }
@@ -292,7 +292,7 @@ public:
                         room->throwCard(card_id);
                         has_heart = true;
                     }else
-                        room->obtainCard(menghuo, Sanguosha->getCard(card_id));
+                        room->obtainCard(menghuo, card_id);
                 }
 
                 if(has_heart)

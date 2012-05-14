@@ -197,7 +197,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             QStringList hands = str.split(",");
             foreach(QString hand,hands)
             {
-                room->obtainCard(sp,Sanguosha->getCard(hand.toInt()));
+                room->obtainCard(sp,hand.toInt());
             }
 
         }
