@@ -42,7 +42,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         room->playSkillEffect("qiaobian", 2);
         foreach(ServerPlayer *target, targets){
             int card_id = room->askForCardChosen(zhanghe, target, "h", "qiaobian");
-            room->obtainCard(zhanghe, card_id, false);
+            room->obtainCard(zhanghe, Sanguosha->getCard(card_id), false);
         }
     }else if(zhanghe->getPhase() == Player::Play){
         room->playSkillEffect("qiaobian", 3);

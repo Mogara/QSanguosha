@@ -786,17 +786,9 @@ void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide){
     if(card == NULL)
         return;
 
-    if(card->isVirtualCard()){
-        QList<int> subcards = card->getSubcards();
-        foreach(int card_id, subcards)
-            obtainCard(target, card_id, unhide);
-    }else
-        obtainCard(target, card->getId(), unhide);
+    moveCardTo(card, target, Player::Hand, unhide);
 }
 
-void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
-    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, unhide);
-}
 
 bool Room::isCanceled(const CardEffectStruct &effect){
     if(!effect.card->isCancelable(effect))
@@ -3544,7 +3536,7 @@ bool Room::makeCheat(ServerPlayer* player){
         log.card_str = QString::number(card_id);
         sendLog(log);
 
-        obtainCard(player, card_id);
+        obtainCard(player, Sanguosha->getCard(card_id));
     }
     else if (code == S_CHEAT_CHANGE_GENERAL)
     {

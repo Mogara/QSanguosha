@@ -91,7 +91,7 @@ public:
         Room *room = effect.to->getRoom();
         int card_id = room->askForCardChosen(effect.from, effect.to, "hej", "scene_27_effect");
 
-        room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
+        room->obtainCard(effect.from, Sanguosha->getCard(card_id), room->getCardPlace(card_id) != Player::Hand);
     }
 };
 

@@ -843,7 +843,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
 
-    room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
+    room->obtainCard(effect.from, Sanguosha->getCard(card_id), room->getCardPlace(card_id) != Player::Hand);
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)

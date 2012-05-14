@@ -26,7 +26,7 @@ public:
                 if(target->getCards("he").length() == 0)
                     continue;
                 int card_id = room->askForCardChosen(player, target, "he", objectName());
-                room->obtainCard(player, card_id, room->getCardPlace(card_id) != Player::Hand);
+                room->obtainCard(player, Sanguosha->getCard(card_id), room->getCardPlace(card_id) != Player::Hand);
             }
             return true;
         }
@@ -106,7 +106,7 @@ public:
                 }
                 else{
                     int card_id = room->askForCardChosen(target, player, "h", objectName());
-                    room->obtainCard(target, card_id, false);
+                    room->obtainCard(target, Sanguosha->getCard(card_id), false);
                 }
             }
         }
