@@ -789,6 +789,9 @@ void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide){
     moveCardTo(card, target, Player::Hand, unhide);
 }
 
+void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
+    obtainCard(target, Sanguosha->getCard(card_id), unhide);
+}
 
 bool Room::isCanceled(const CardEffectStruct &effect){
     if(!effect.card->isCancelable(effect))
