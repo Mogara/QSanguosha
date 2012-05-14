@@ -509,9 +509,9 @@ sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 	end
 
 	if self:isFriend(who) then
-		self:sortByKeepValue(cards)
+		self:sortByKeepValue(cards,true)
 	else
-		self:sortByKeepValue(cards, true)
+		self:sortByKeepValue(cards)
 	end
 
 	return cards[1]:getEffectiveId()

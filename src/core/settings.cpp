@@ -81,8 +81,9 @@ void Settings::init(){
     FreeAssignSelf = value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     EnableScene = value("EnableScene", false).toBool();	//changjing
-    EnableBasara= value("EnableBasara",false).toBool();
-    EnableHegemony = value("EnableHegemony",false).toBool();
+    EnableSame = value("EnableSame", false).toBool();
+    EnableBasara = value("EnableBasara", false).toBool();
+    EnableHegemony = value("EnableHegemony", false).toBool();
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
@@ -163,39 +164,43 @@ void Settings::init(){
                 << "huanggai+guanxingzhangbao";
 
     QStringList banlist = value("Banlist/Roles").toStringList();
-    foreach(QString ban_general, roles_ban){
-        if(!banlist.contains(ban_general))
-            banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, roles_ban)
+                banlist << ban_general;
+
+        setValue("Banlist/Roles", banlist);
     }
-    setValue("Banlist/Roles", banlist);
 
     banlist = value("Banlist/1v1").toStringList();
-    foreach(QString ban_general, kof_ban){
-        if(!banlist.contains(ban_general))
-            banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, kof_ban)
+                banlist << ban_general;
+
+        setValue("Banlist/1v1", banlist);
     }
-    setValue("Banlist/1v1", banlist);
 
     banlist = value("Banlist/Basara").toStringList();
-    foreach(QString ban_general, basara_ban){
-        if(!banlist.contains(ban_general))
-                banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, basara_ban)
+                    banlist << ban_general;
+
+        setValue("Banlist/Basara", banlist);
     }
-    setValue("Banlist/Basara", banlist);
 
     banlist = value("Banlist/Hegemony").toStringList();
-    foreach(QString ban_general, hegemony_ban){
-        if(!banlist.contains(ban_general))
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, hegemony_ban)
                 banlist << ban_general;
+        setValue("Banlist/Hegemony", banlist);
     }
-    setValue("Banlist/Hegemony", banlist);
 
     banlist = value("Banlist/Pairs").toStringList();
-    foreach(QString ban_general, pairs_ban){
-        if(!banlist.contains(ban_general))
-                banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, pairs_ban)
+                    banlist << ban_general;
+
+        setValue("Banlist/Pairs", banlist);
     }
-    setValue("Banlist/Pairs", banlist);
 
     QStringList forbid_packages;
     forbid_packages << "Special3v3";

@@ -322,8 +322,6 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
             }
         }
     }
-
-
 }
 
 void Room::judge(JudgeStruct &judge_struct){
@@ -337,7 +335,8 @@ void Room::judge(JudgeStruct &judge_struct){
 
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
-        thread->trigger(AskForRetrial, player, data);
+        if(thread->trigger(AskForRetrial, player, data))
+            break; //if a skill break retrial.
     }
 
     thread->trigger(FinishJudge, judge_star->who, data);
@@ -790,15 +789,15 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     return answer;
 }
 
-void Room::obtainCard(ServerPlayer *target, const Card *card){
+void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide){
     if(card == NULL)
         return;
 
     moveCardTo(card, target, Player::Hand, true);
 }
 
-void Room::obtainCard(ServerPlayer *target, int card_id){
-    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, true);
+void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
+    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, unhide);
 }
 
 bool Room::isCanceled(const CardEffectStruct &effect){
@@ -1130,7 +1129,8 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
                     break;
                 }
             }
-            if(!has_red) return NULL;
+            if(!has_red)
+                return NULL;
         }else if(player->hasSkill("jiushi")){
             if(!player->faceUp())
                 return NULL;
@@ -1142,8 +1142,10 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
                     break;
                 }
             }
-            if(!has_heart) return NULL;
-        }else return NULL;
+            if(!has_heart)
+                return NULL;
+        }else
+            return NULL;
     }
 
     const Card * card;
@@ -2033,7 +2035,7 @@ void Room::chooseGenerals(){
     {
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
-        if(mode == "08same")
+        if(Config.EnableSame)
             lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
         else if(the_lord->getState() == "robot")
             if(qrand()%100 < nonlord_prob)
@@ -2047,7 +2049,7 @@ void Room::chooseGenerals(){
         if (!Config.EnableBasara)
             broadcastProperty(the_lord, "general", general);
 
-        if(mode == "08same"){
+        if(Config.EnableSame){
             foreach(ServerPlayer *p, m_players){
                 if(!p->isLord())
                     p->setGeneralName(general);

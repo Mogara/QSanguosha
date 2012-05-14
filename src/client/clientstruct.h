@@ -21,6 +21,7 @@ struct ServerInfoStruct{
     bool FreeChoose;
     bool Enable2ndGeneral;
     bool EnableScene;
+    bool EnableSame;
     bool EnableBasara;
     bool EnableHegemony;
     bool EnableAI;
@@ -50,6 +51,7 @@ private:
     QLabel *player_count_label;
     QLabel *two_general_label;
     QLabel *scene_label;
+    QLabel *same_label;
     QLabel *basara_label;
     QLabel *hegemony_label;
     QLabel *max_hp_label;

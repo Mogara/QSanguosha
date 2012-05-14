@@ -370,7 +370,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
             effect.to->addToPile("#xuanhuo", dummy, true);
             int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             dummy->addSubcard(second_id);
-            room->moveCardTo(dummy, effect.from, Player::Hand, true);
+            room->moveCardTo(dummy, effect.from, Player::Hand, false);
             delete dummy;
         }
     }
@@ -381,7 +381,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->addToPile("#xuanhuo", dummy, true);
         int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
         dummy->addSubcard(second_id);
-        room->moveCardTo(dummy, effect.from, Player::Hand, true);
+        room->moveCardTo(dummy, effect.from, Player::Hand, false);
         delete dummy;
     }
 }
@@ -1001,6 +1001,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     gaoshun->addSkill(new Xianzhen);
     gaoshun->addSkill(new Jiejiu);
 
+    // General *zhonghui = new General(this, "zhonghui", "wei");
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();

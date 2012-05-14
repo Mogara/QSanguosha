@@ -32,7 +32,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 }
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCBHAM12]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCTBHAM12]*)");
     if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -67,6 +67,7 @@ bool ServerInfoStruct::parse(const QString &str){
     FreeChoose = flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
     EnableScene = flags.contains("C");
+    EnableSame = flags.contains("T");
     EnableBasara= flags.contains("B");
     EnableHegemony = flags.contains("H");
     EnableAI = flags.contains("A");
@@ -91,6 +92,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     player_count_label = new QLabel;
     two_general_label = new QLabel;
     scene_label = new QLabel;
+    same_label = new QLabel;
     basara_label = new QLabel;
     hegemony_label = new QLabel;
     free_choose_label = new QLabel;
@@ -110,6 +112,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     layout->addRow(tr("Player count"), player_count_label);
     layout->addRow(tr("2nd general mode"), two_general_label);
     layout->addRow(tr("Scene Mode"), scene_label);
+    layout->addRow(tr("Same Mode"), same_label);
     layout->addRow(tr("Basara Mode"), basara_label);
     layout->addRow(tr("Hegemony Mode"), hegemony_label);
     layout->addRow(tr("Max HP scheme"), max_hp_label);
@@ -136,6 +139,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     port_label->setText(QString::number(Config.ServerPort));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
     scene_label->setText(info.EnableScene ? tr("Enabled") : tr("Disabled"));
+    same_label->setText(info.EnableSame ? tr("Enabled") : tr("Disabled"));
     basara_label->setText(info.EnableBasara ? tr("Enabled") : tr("Disabled"));
     hegemony_label->setText(info.EnableHegemony ? tr("Enabled") : tr("Disabled"));
 
@@ -191,6 +195,7 @@ void ServerInfoWidget::clear(){
     player_count_label->clear();
     two_general_label->clear();
     scene_label->clear();
+    same_label->clear();
     basara_label->clear();
     hegemony_label->clear();
     free_choose_label->clear();

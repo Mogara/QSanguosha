@@ -382,10 +382,7 @@ public:
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){
                         int card_id = room->askForCardChosen(shencc, player, "hej", objectName());
-                        if(room->getCardPlace(card_id) == Player::Hand)
-                            room->moveCardTo(Sanguosha->getCard(card_id), shencc, Player::Hand, false);
-                        else
-                            room->obtainCard(shencc, card_id);
+                        room->obtainCard(shencc, card_id, room->getCardPlace(card_id) != Player::Hand);
                     }
                 }
 
@@ -645,7 +642,7 @@ public:
             stars.removeOne(card_id);
             ++n;
 
-            room->moveCardTo(Sanguosha->getCard(card_id), shenzhuge, Player::Hand, false);
+            room->obtainCard(shenzhuge, card_id, false);
         }
 
         Config.AIDelay = ai_delay;

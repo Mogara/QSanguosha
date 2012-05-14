@@ -8,7 +8,6 @@
 #include "god.h"
 #include "maneuvering.h"
 
-
 class Zhenlie: public TriggerSkill{
 public:
     Zhenlie():TriggerSkill("zhenlie"){
@@ -72,7 +71,7 @@ public:
 
                 QList<const Card *> miji_cards = wangyi->getHandcards().mid(wangyi->getHandcardNum() - x);
                 foreach(const Card *card, miji_cards)
-                    room->moveCardTo(card, target, Player::Hand, false);
+                    room->obtainCard(target, card, false);
             }
         }
         return false;
@@ -292,7 +291,6 @@ public:
 
         if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
            player->askForSkillInvoke(objectName(), data)){
-            room->playSkillEffect(objectName());
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
             judge.good = false;
@@ -301,6 +299,7 @@ public:
 
             room->judge(judge);
             if(judge.isGood()){
+                room->playSkillEffect(objectName(), 1);
                 LogMessage log;
                 log.type = "#Qianxi";
                 log.from = player;
@@ -310,6 +309,8 @@ public:
                 room->loseMaxHp(damage.to);
                 return true;
             }
+            else
+                room->playSkillEffect(objectName(), qrand() % 2 + 2);
         }
         return false;
     }
@@ -602,7 +603,7 @@ void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     ServerPlayer *to = selecteds.takeFirst();
     int id = room->askForCardChosen(from, to, "h", "anxu");
     const Card *cd = Sanguosha->getCard(id);
-    room->moveCardTo(cd, from, Player::Hand, true);
+    room->obtainCard(from, cd);
     room->showCard(from, id);
     if(cd->getSuit() != Card::Spade){
         source->drawCards(1);

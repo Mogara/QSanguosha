@@ -165,22 +165,31 @@ sgs.ai_skill_invoke.luoyi=function(self,data)
 	if self.player:isSkipped(sgs.Player_Play) then return false end
 	local cards=self.player:getHandcards()
 	cards=sgs.QList2Table(cards)
-
+	local slashtarget = 0
+	local dueltarget = 0
+	self:sort(self.enemies,"hp")
 	for _,card in ipairs(cards) do
 		if card:inherits("Slash") then
-
 			for _,enemy in ipairs(self.enemies) do
-				if self.player:canSlash(enemy, true) and
-				self:slashIsEffective(card, enemy) and
-				( (not enemy:getArmor()) or (enemy:getArmor():objectName()=="renwang_shield") or (enemy:getArmor():objectName()=="vine") ) and
-				enemy:getHandcardNum()< 2 then
-					if not self.player:containsTrick("indulgence") then
-						self:speak("luoyi")
-						return true
+				if self.player:canSlash(enemy, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
+					if self:getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
+						slashtarget = slashtarget + 1
 					end
 				end
 			end
 		end
+		if card:inherits("Duel") then
+			for _, enemy in ipairs(self.enemies) do
+				if self:getCardsNum("Slash") >= self:getCardsNum("Slash", enemy) 
+				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then 
+					dueltarget = dueltarget + 1 
+				end
+			end
+		end
+	end		
+	if (slashtarget+dueltarget) > 0 then
+		self:speak("luoyi")
+		return true
 	end
 	return false
 end
@@ -189,7 +198,8 @@ sgs.xuchu_keep_value =
 {
 	Peach 			= 6,
 	Analeptic 		= 5.8,
-	Jink 			= 5.7,
+	Jink 			= 5.2,
+	Duel            = 5.5,
 	FireSlash 		= 5.6,
 	Slash 			= 5.4,
 	ThunderSlash 	= 5.5,	

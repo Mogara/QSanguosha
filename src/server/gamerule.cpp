@@ -813,7 +813,7 @@ BasaraMode::BasaraMode(QObject *parent)
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";
     skill_mark["luanwu"] = "@chaos";
-    skill_mark["laoji"] = "@laoji";
+    skill_mark["fuli"] = "@laoji";
     skill_mark["zuixiang"] = "@sleep";
 }
 

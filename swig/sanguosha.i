@@ -209,10 +209,10 @@ public:
 	void jilei(const char *type);
 	bool isJilei(const Card *card) const;
 
-    void setCardLocked(const char *name);
-    bool isLocked(const Card *card) const;
-    bool hasCardLock(const char *card_str) const;
-	
+	void setCardLocked(const char *name);
+	bool isLocked(const Card *card) const;
+	bool hasCardLock(const char *card_str) const;
+
 	bool isCaoCao() const;
 	void copyFrom(Player* p);
 
@@ -249,7 +249,7 @@ public:
 	void playCardEffect(const char *card_name) const;
 	int getRandomHandCardId() const;
 	const Card *getRandomHandCard() const;
-	void obtainCard(const Card *card);
+	void obtainCard(const Card *card, bool unhide = true);
 	void throwAllEquips();
 	void throwAllHandCards();
 	void throwAllCards();
@@ -878,8 +878,8 @@ public:
 	void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
 	void drawCards(ServerPlayer *player, int n, const char *reason = NULL);
-	void obtainCard(ServerPlayer *target, const Card *card);
-	void obtainCard(ServerPlayer *target, int card_id);
+	void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
+	void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
 
 	void throwCard(const Card *card, ServerPlayer *who = NULL);
 	void throwCard(int card_id, ServerPlayer *who = NULL);

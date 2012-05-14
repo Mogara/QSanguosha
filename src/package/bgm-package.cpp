@@ -26,7 +26,7 @@ public:
             return;
 
         int card_id = room->askForCardChosen(player, target, "h", objectName());
-        room->moveCardTo(Sanguosha->getCard(card_id), player, Player::Hand, false);
+        room->obtainCard(player, card_id, false);
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -137,12 +137,8 @@ public:
 
             int hp = target->isAlive() ? target->getHp() : 0;
             if(diaochan->getCards("he").length() <= hp){
-                foreach(const Card *card, diaochan->getCards("he")){
-                    room->moveCardTo(card,
-                                     target,
-                                     Player::Hand,
-                                     room->getCardPlace(card->getEffectiveId()) == Player::Hand ? false : true);
-                }
+                foreach(const Card *card, diaochan->getCards("he"))
+                    room->obtainCard(target, card, room->getCardPlace(card->getEffectiveId()) != Player::Hand);
             }
             else{
                 int i;
@@ -151,11 +147,7 @@ public:
                         return false;
 
                     int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
-                    const Card *card = Sanguosha->getCard(card_id);
-                    room->moveCardTo(card,
-                                     target,
-                                     Player::Hand,
-                                     room->getCardPlace(card_id) == Player::Hand ? false : true);
+                    room->obtainCard(target, card_id, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
             room->removeTag("LihunTarget");

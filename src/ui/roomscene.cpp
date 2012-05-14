@@ -1456,16 +1456,11 @@ void RoomScene::updateSkillButtons(){
 }
 
 void RoomScene::updateRoleComboBox(const QString &new_role){
-    QMap<QString, QString> normal_mode, boss_mode, threeV3_mode, hegemony_mode;
+    QMap<QString, QString> normal_mode, threeV3_mode, hegemony_mode;
     normal_mode["lord"] = tr("Lord");
     normal_mode["loyalist"] = tr("Loyalist");
     normal_mode["rebel"] = tr("Rebel");
     normal_mode["renegade"] = tr("Renegade");
-
-    boss_mode["lord"] = tr("Boss");
-    boss_mode["loyalist"] = tr("Hero");
-    boss_mode["rebel"] = tr("Citizen");
-    boss_mode["renegade"] = tr("Guard");
 
     threeV3_mode["lord"] = threeV3_mode["renegade"] = tr("Marshal");
     threeV3_mode["loyalist"] = threeV3_mode["rebel"] = tr("Vanguard");
@@ -1477,7 +1472,6 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
 
     QMap<QString, QString> *map = NULL;
     switch(Sanguosha->getRoleIndex()){
-    case 2: map = &boss_mode; break;
     case 4: map = &threeV3_mode; break;
     case 5: map = &hegemony_mode; break;
     default:
@@ -3706,7 +3700,6 @@ void RoomScene::fillGenerals(const QStringList &names){
 void RoomScene::bringToFront(QGraphicsItem* front_item)
 {
     m_zValueMutex.lock();
-    static bool firstTime = false;
     static QGraphicsItem* last_item = NULL;
     static double lastZValue = 0;
     if (last_item != NULL)

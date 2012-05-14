@@ -588,7 +588,7 @@ public:
 class Wenjiu: public TriggerSkill{
 public:
     Wenjiu():TriggerSkill("wenjiu"){
-        events << Predamage << SlashProceed;
+        events << DamageProceed << SlashProceed;
         frequency = Compulsory;
     }
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -598,7 +598,8 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         ServerPlayer *hua = room->findPlayerBySkillName(objectName());
-        if(!hua) return false;
+        if(!hua)
+            return false;
         if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.to == hua && effect.slash->isRed()){
@@ -613,7 +614,7 @@ public:
                 return true;
             }
         }
-        else if(event == Predamage){
+        else if(event == DamageProceed){
             DamageStruct damage = data.value<DamageStruct>();
             const Card *reason = damage.card;
             if(!reason || damage.from != hua)
