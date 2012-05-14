@@ -54,21 +54,27 @@ using namespace QSanProtocol;
 
 struct RoomLayout {
     QPointF discard, drawpile;
+    QSize discard_size;
     QPointF enemy_box, self_box;
     QSize chat_box_size;
     QPointF chat_box_pos;
+    QSize log_box_size;
+    QPointF log_box_pos;
     QPointF button1_pos, button2_pos;
     QPointF state_item_pos;
 };
 
 struct NormalRoomLayout : public RoomLayout{
     NormalRoomLayout(){
-        discard = QPointF(-140, 12);
+        discard = QPointF(-250, 12);
+        discard_size = QSize(500, 132);
         drawpile = QPointF(0, 0);
         enemy_box = QPointF(-216, -327);
         self_box = QPointF(360, -90);
-        chat_box_size = QSize(230, 175);
+        chat_box_size = QSize(230, 100);// QSize(230, 175);
         chat_box_pos = QPointF(-343, -83);
+        log_box_size = QSize(230, 150);
+        log_box_pos = QPointF(114, -83);
         button1_pos = QPointF(15, 5);
         button2_pos = QPointF(15, 60);
         state_item_pos = QPointF(-110, -80);
@@ -78,11 +84,14 @@ struct NormalRoomLayout : public RoomLayout{
 struct CircularRoomLayout : public RoomLayout{
     CircularRoomLayout(){
         discard = QPointF(-140, 30);
+        discard_size = QSize(500, 132);
         drawpile = QPointF(-260, 30);
         enemy_box = QPointF(-361, -343);
         self_box = QPointF(201, -90);
         chat_box_size = QSize(268, 165);
         chat_box_pos = QPointF(367, -38);
+        log_box_size = QSize(268, 210);
+        log_box_pos = QPointF(367, -246);
         button1_pos = QPointF(-565,205);
         button2_pos = QPointF(-565, 260);
         state_item_pos = QPointF(367, -320);
@@ -151,7 +160,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
         m_discardPile = new DiscardPile;
         m_discardPile->setPos(room_layout->discard);
-        m_discardPile->setSize(500, 132);
+        m_discardPile->setSize(room_layout->discard_size);
         addItem(m_discardPile);
 
         // create dashboard
@@ -365,21 +374,17 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // log box
         log_box = new ClientLogBox;
-        log_box->resize(chat_box->width(), 205);
+        room_layout->log_box_size.setWidth(chat_box->width());
+        log_box->resize(room_layout->log_box_size);
         log_box->setTextColor(Config.TextEditColor);
         log_box->setObjectName("log_box");
 
         QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
-        log_box_widget->setPos(114, -83);
+        log_box_widget->setPos(room_layout->log_box_pos);
         log_box_widget->setZValue(-2.0);
         log_box_widget->setObjectName("log_box_widget");
         connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
-
-        if(circular){
-            log_box->resize(chat_box->width(), 210);
-            log_box_widget->setPos(367, -246);
-        }
-
+        
         log_box_widget->setFlag(QGraphicsItem::ItemIsMovable);
     }
 
@@ -1210,10 +1215,7 @@ void RoomScene::moveCards(QList<CardsMoveStruct> card_moves)
         PlayerCardContainer* from_container = _getPlayerCardContainer(movement.from_place, movement.from);
         PlayerCardContainer* to_container = _getPlayerCardContainer(movement.to_place, movement.to);
         QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
-        foreach (CardItem* card, cards)
-        {
-            card->promoteZ();
-        }
+        bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
         keepMoveLog(movement);
         /*if (movement.from_place == Player::Special){
@@ -2938,6 +2940,7 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
         card_container->startGongxin();
     else
         card_container->addCloseButton();
+    card_container->show();
 }
 
 void RoomScene::createStateItem(){
@@ -3700,6 +3703,20 @@ void RoomScene::fillGenerals(const QStringList &names){
         fillGenerals1v1(names);
 }
 
+void RoomScene::bringToFront(QGraphicsItem* front_item)
+{
+    m_zValueMutex.lock();
+    static bool firstTime = false;
+    static QGraphicsItem* last_item = NULL;
+    static double lastZValue = 0;
+    if (last_item != NULL)
+        last_item->setZValue(lastZValue);
+    last_item = front_item;
+    lastZValue = front_item->zValue();
+    front_item->setZValue(10000);    
+    m_zValueMutex.unlock();
+}
+
 void RoomScene::takeGeneral(const QString &who, const QString &name){
     bool self_taken;
     if(who == "warm")
@@ -3731,7 +3748,7 @@ void RoomScene::takeGeneral(const QString &who, const QString &name){
         y = self_taken ? 60+120*3 : 60;
     }
 
-    general_item->setHomePos(QPointF(x, y));
+    general_item->setHomePos(QPointF(x, y));    
     general_item->goBack(true);
 }
 

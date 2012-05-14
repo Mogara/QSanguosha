@@ -160,6 +160,7 @@ public slots:
     void chooseRole(const QString &scheme, const QStringList &roles);
     void chooseDirection();
 
+    void bringToFront(QGraphicsItem* item);
     void arrangeSeats(const QList<const ClientPlayer*> &seats);
     void toggleDiscards();
     void enableTargets(const Card *card);
@@ -187,6 +188,7 @@ protected:
 private:
     PlayerCardContainer* _getPlayerCardContainer(Player::Place place, Player* player);
     QMutex m_roomMutex;
+    QMutex m_zValueMutex;
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;

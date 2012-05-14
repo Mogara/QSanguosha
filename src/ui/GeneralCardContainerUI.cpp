@@ -97,7 +97,7 @@ void PlayerCardContainer::addCardItems(QList<CardItem*> &card_items, Player::Pla
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);
         card_item->promoteZ();
-    }
+    }    
     bool destroy = _addCardItems(card_items, place);
     _playMoveCardsAnimation(card_items, destroy);
 }

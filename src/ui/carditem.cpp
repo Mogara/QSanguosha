@@ -36,7 +36,7 @@ CardItem::CardItem(const Card *card)
     owner_text->setPen(pen);
     owner_text->setBrush(Qt::yellow);
     owner_text->hide();
-
+    m_opacityAtHome = 1.0;
     m_currentAnimation = NULL;
 }
 
@@ -71,13 +71,16 @@ void CardItem::setEnabled(bool enabled)
         setHomeOpacity(0.7);
         setOpacity(0.7);
     }    
-    Pixmap::setEnabled(enabled);
+    Pixmap::setEnabled(enabled);    
+    goBack(true);
 }
 
 CardItem::CardItem(const QString &general_name)
     :m_card(NULL), filtered_card(NULL), auto_back(true), frozen(false)
 {
     changeGeneral(general_name);
+    m_currentAnimation = NULL;
+    m_opacityAtHome = 1.0;
 }
 
 CardItem::~CardItem()
@@ -262,12 +265,12 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
 
 void CardItem::reduceZ()
 {
-    if(this->zValue()>0)this->setZValue(this->zValue()-0.8);
+    if (this->zValue()>0) this->setZValue(this->zValue()-0.8);
 }
 
 void CardItem::promoteZ()
 {
-    if(this->zValue()<0)this->setZValue(this->zValue()+0.8);
+    if (this->zValue()<0) this->setZValue(this->zValue()+0.8);
 }
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *){

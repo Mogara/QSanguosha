@@ -351,9 +351,6 @@
     <ClCompile Include="Release\moc_TimedProgressBar.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="structs.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\GeneralCardContainerUI.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -1187,9 +1184,6 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\jsonutils.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\server\structs.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\structs.h">

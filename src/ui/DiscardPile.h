@@ -14,6 +14,10 @@ class DiscardPile: public PlayerCardContainer
     Q_OBJECT
 public:    
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);
+    inline void setSize(QSize newSize) 
+    {
+        setSize(newSize.width(), newSize.height());
+    }
     inline void setSize(double width, double height) 
     {
         m_cardsDisplayRegion = QRect(0, 0, width,height);

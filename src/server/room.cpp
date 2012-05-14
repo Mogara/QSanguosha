@@ -794,12 +794,7 @@ void Room::obtainCard(ServerPlayer *target, const Card *card){
     if(card == NULL)
         return;
 
-    if(card->isVirtualCard()){
-        QList<int> subcards = card->getSubcards();
-        foreach(int card_id, subcards)
-            obtainCard(target, card_id);
-    }else
-        obtainCard(target, card->getId());
+    moveCardTo(card, target, Player::Hand, true);
 }
 
 void Room::obtainCard(ServerPlayer *target, int card_id){
@@ -3688,11 +3683,12 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
-    notifyMoveFocus(player);
+    // notifyMoveFocus(player);
     Json::Value gongxinArgs(Json::arrayValue);    
     gongxinArgs[0] = toJsonString(player->objectName());
     gongxinArgs[1] = false;
     gongxinArgs[2] = toJsonArray(player->handCards());    
+
     bool isUnicast = (to != NULL);
     if (isUnicast)
         doNotify(player, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);

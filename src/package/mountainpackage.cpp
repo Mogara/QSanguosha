@@ -286,7 +286,7 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardLostOnePiece << FinishJudge;
+        events << CardLostOneTime << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -294,7 +294,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == CardLostOnePiece){
+        if(event == CardLostOneTime){
             CardMoveStar move = data.value<CardMoveStar>();
 
             if((move->from_place == Player::Hand || move->from_place == Player::Equip) && 
@@ -787,9 +787,14 @@ public:
             cards.removeOne(to_back);
 
             erzhang->invoke("clearAG");
-
-            foreach(int card_id, cards)
-                erzhang->obtainCard(Sanguosha->getCard(card_id));
+            
+            CardsMoveStruct move;
+            move.card_ids = cards;
+            move.to = erzhang;
+            move.to_place = Player::Hand;
+            QList<CardsMoveStruct> moves;
+            moves.append(move);
+            room->moveCards(moves, true, true);
         }
 
         return false;

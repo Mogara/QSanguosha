@@ -279,7 +279,7 @@ public:
 class NosXuanfeng: public TriggerSkill{
 public:
     NosXuanfeng():TriggerSkill("nos_xuanfeng"){
-        events << CardLostOnePiece;
+        events << CardLostOneTime;
     }
 
     virtual QString getDefaultChoice(ServerPlayer *) const{
@@ -287,7 +287,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *lingtong, QVariant &data) const{
-        if(event == CardLostOnePiece){
+        if(event == CardLostOneTime){
             CardMoveStar move = data.value<CardMoveStar>();
             if(move->from_place == Player::Equip)
             {

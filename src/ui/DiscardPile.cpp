@@ -34,7 +34,9 @@ bool DiscardPile::_addCardItems(QList<CardItem*> &card_items, Player::Place plac
     int numRemoved = m_visibleCards.size() - qMax(m_numCardsVisible, numAdded + 1);
     for (int i = 0; i <  numRemoved; i++)
     {
-        m_dyingCards.append(m_visibleCards.first());
+        CardItem* toRemove = m_visibleCards.first();
+        toRemove->setZValue(0.0);
+        m_dyingCards.append(toRemove);
         m_visibleCards.removeFirst();
     }
     foreach (CardItem* card_item, m_visibleCards)
