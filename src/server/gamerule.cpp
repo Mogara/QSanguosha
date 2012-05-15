@@ -168,24 +168,21 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     switch(event){
     case GameStart: {
-            foreach (ServerPlayer* player, room->getPlayers())
-            {
-                if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
-                        QString new_kingdom = room->askForKingdom(player);
-                        room->setPlayerProperty(player, "kingdom", new_kingdom);
+            if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
+                    QString new_kingdom = room->askForKingdom(player);
+                    room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-                        LogMessage log;
-                        log.type = "#ChooseKingdom";
-                        log.from = player;
-                        log.arg = new_kingdom;
-                        room->sendLog(log);
-                }
-
-                if(player->isLord())
-                    setGameProcess(room);
+                    LogMessage log;
+                    log.type = "#ChooseKingdom";
+                    log.from = player;
+                    log.arg = new_kingdom;
+                    room->sendLog(log);
             }
+
+            if(player->isLord())
+                setGameProcess(room);
             room->setTag("FirstRound", true);
-            room->drawCards(room->getPlayers(), 4, false);
+            room->drawCards(player, 4, false);
 
             break;
         }
