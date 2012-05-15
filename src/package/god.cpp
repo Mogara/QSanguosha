@@ -702,14 +702,13 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *shenzhuge) const{
-        shenzhuge->gainMark("@star", 7);
-        shenzhuge->drawCards(7);
-
-        QList<int> stars = shenzhuge->handCards().mid(0, 7);
-
-        foreach(int card_id, stars)
-            shenzhuge->addToPile("stars", card_id, false);
-
+        shenzhuge->gainMark("@star", 7); 
+        QList<int> stars;
+        for (int i = 0; i < 7; i++)
+        {
+            stars.push_back(shenzhuge->getRoom()->drawCard());
+        }
+        shenzhuge->addToPile("stars", stars, false);
         Qixing::Exchange(shenzhuge);
     }
 };

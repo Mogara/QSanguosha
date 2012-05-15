@@ -208,7 +208,7 @@ int TriggerSkill::getPriority() const{
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
-    return target!=NULL && target->isAlive() && target->hasSkill(objectName());
+    return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
 ScenarioRule::ScenarioRule(Scenario *scenario)
