@@ -22,7 +22,7 @@ class Player : public QObject
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
     Q_PROPERTY(int hp READ getHp WRITE setHp)
-    Q_PROPERTY(int maxhp READ getMaxHP WRITE setMaxHP)
+    Q_PROPERTY(int maxhp READ getMaxHp WRITE setMaxHp)
     Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
     Q_PROPERTY(bool wounded READ isWounded STORED false)
     Q_PROPERTY(QString role READ getRole WRITE setRole)
@@ -64,9 +64,7 @@ public:
     int getHp() const;
     void setHp(int hp);
     int getMaxHp() const;
-    int getMaxHP() const;
     void setMaxHp(int max_hp);
-    void setMaxHP(int max_hp);
     int getLostHp() const;
     bool isWounded() const;
     General::Gender getGender() const;

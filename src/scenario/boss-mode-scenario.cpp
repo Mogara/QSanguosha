@@ -81,7 +81,7 @@ public:
         if(target->getPhase() == Player::Start){
             bool invoke_skill = false;
             if(has_frantic){
-                if(target->getHandcardNum()<=(target->getMaxHP()+players.length()))
+                if(target->getHandcardNum()<=(target->getMaxHp()+players.length()))
                     invoke_skill = true;
             }
             else{
@@ -140,7 +140,7 @@ public:
             if(has_frantic)
                 player->drawCards(players.length());
             else
-                player->drawCards(player->getMaxHP());
+                player->drawCards(player->getMaxHp());
         }
 
         if(has_frantic && (event == CardEffected)){
@@ -222,7 +222,7 @@ public:
         if(player->getPhase() != Player::Play) return false;
 
         Room *room = player->getRoom();
-        if(player->getHp() != player->getMaxHP() && event == Damage){
+        if(player->getHp() != player->getMaxHp() && event == Damage){
             RecoverStruct recover;
             recover.who = player;
             recover.recover = 1;
@@ -377,7 +377,7 @@ public:
                         room->acquireSkill(player, "daji");
                     }
 
-                    int maxhp = 8-((player->getMaxHP()%3)%2);
+                    int maxhp = 8-((player->getMaxHp()%3)%2);
                     room->setPlayerProperty(player, "maxhp", maxhp);
                     room->setPlayerProperty(player, "hp", maxhp);
                 }
@@ -422,8 +422,8 @@ public:
                     hasRebel = true;
                 if(each->getRole() == "lord"){
                     hasLord = true;
-                    if(each->getMaxHP() > 3)
-                        room->setPlayerProperty(each, "maxhp", each->getMaxHP()-1);
+                    if(each->getMaxHp() > 3)
+                        room->setPlayerProperty(each, "maxhp", each->getMaxHp()-1);
 
                     if(each->getMark("@frantic") > (players.length()-1))
                         each->loseMark("@frantic");

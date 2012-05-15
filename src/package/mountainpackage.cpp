@@ -931,7 +931,7 @@ public:
             room->sendLog(log);
 
             room->setPlayerMark(liushan, "ruoyu", 1);
-            room->setPlayerProperty(liushan, "maxhp", liushan->getMaxHP() + 1);
+            room->setPlayerProperty(liushan, "maxhp", liushan->getMaxHp() + 1);
 
             RecoverStruct recover;
             recover.who = liushan;

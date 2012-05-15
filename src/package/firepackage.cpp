@@ -78,12 +78,12 @@ bool JiemingCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty())
         return false;
 
-    int upper = qMin(5, to_select->getMaxHP());
+    int upper = qMin(5, to_select->getMaxHp());
     return to_select->getHandcardNum() < upper;
 }
 
 void JiemingCard::onEffect(const CardEffectStruct &effect) const{
-    int upper = qMin(5, effect.to->getMaxHP());
+    int upper = qMin(5, effect.to->getMaxHp());
     int x = upper - effect.to->getHandcardNum();
     if(x <= 0)
         return;
@@ -373,7 +373,7 @@ public:
             pangtong->loseMark("@nirvana");
 
             pangtong->throwAllCards();
-            room->setPlayerProperty(pangtong, "hp", qMin(3, pangtong->getMaxHP()));
+            room->setPlayerProperty(pangtong, "hp", qMin(3, pangtong->getMaxHp()));
             pangtong->drawCards(3);
 
             if(pangtong->isChained()){

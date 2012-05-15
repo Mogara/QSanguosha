@@ -81,9 +81,7 @@ public:
 	// property setters/getters
 	int getHp() const;
 	void setHp(int hp);    
-	int getMaxHP() const;
 	int getMaxHp() const;
-	void setMaxHP(int max_hp);
 	void setMaxHp(int max_hp);
 	int getLostHp() const;
 	bool isWounded() const;
@@ -302,7 +300,6 @@ public:
 	QString findReasonable(const QStringList &generals, bool no_unreasonable = false);
 	void clearSelected();
 
-	int getGeneralMaxHP() const;
 	int getGeneralMaxHp() const;
 	virtual QString getGameMode() const;
 

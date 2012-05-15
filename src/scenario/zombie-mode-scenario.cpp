@@ -21,9 +21,9 @@ public:
         room->setPlayerProperty(player, "general2", "zombie");
         room->getThread()->addPlayerSkills(player, false);
 
-        int maxhp = killer ? (killer->getMaxHP() + 1)/2 : 5;
+        int maxhp = killer ? (killer->getMaxHp() + 1)/2 : 5;
         room->setPlayerProperty(player, "maxhp", maxhp);
-        room->setPlayerProperty(player, "hp", player->getMaxHP());
+        room->setPlayerProperty(player, "hp", player->getMaxHp());
         room->setPlayerProperty(player, "role", "renegade");
         player->loseSkill("peaching");
 
@@ -60,7 +60,7 @@ public:
                     if(p->getRoleEnum()==Player::Loyalist){
                         room->setPlayerProperty(player, "role", "loyalist");
                         room->setPlayerProperty(p, "role", "lord");
-                        room->setPlayerProperty(p, "maxhp",  p->getMaxHP()+1);
+                        room->setPlayerProperty(p, "maxhp",  p->getMaxHp()+1);
 
                         RecoverStruct recover;
                         recover.who = p;

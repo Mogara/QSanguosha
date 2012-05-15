@@ -325,7 +325,7 @@ void Photo::updateReadyItem(bool visible){
 }
 
 void Photo::refresh(){
-    if(player && player->getHp() <= 0 && player->isAlive() && player->getMaxHP() > 0){
+    if(player && player->getHp() <= 0 && player->isAlive() && player->getMaxHp() > 0){
         setFrame(SOS);
 
         if(save_me_item == NULL){
@@ -492,7 +492,7 @@ void Photo::drawHp(QPainter *painter){
     QPixmap *magatama = MagatamaWidget::GetSmallMagatama(index);
     QPixmap *zero_magatama = MagatamaWidget::GetSmallMagatama(0);
 
-    int max_hp = player->getMaxHP();
+    int max_hp = player->getMaxHp();
     int i;
     for(i=0; i< hp; i++)
         drawMagatama(painter, i, *magatama);
@@ -600,7 +600,7 @@ void Photo::updatePile(const QString &pile_name){
     }
     if(active>1)button->setText(QString(tr("Multiple")));
 
-    if(who->getMaxHP()>5)
+    if(who->getMaxHp()>5)
     {
         button_widget->setPos(pos());
         button_widget->moveBy(100, 68);

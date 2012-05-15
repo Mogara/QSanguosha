@@ -949,7 +949,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("XinzhanCard") && player->getHandcardNum() > player->getMaxHP();
+        return ! player->hasUsed("XinzhanCard") && player->getHandcardNum() > player->getMaxHp();
     }
 
     virtual const Card *viewAs() const{

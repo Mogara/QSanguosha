@@ -793,7 +793,7 @@ public:
     }
 
     virtual QString getDefaultChoice(ServerPlayer *player) const{
-        if(player->getMaxHP() >= player->getHp() + 2)
+        if(player->getMaxHp() >= player->getHp() + 2)
             return "maxhp";
         else
             return "hp";

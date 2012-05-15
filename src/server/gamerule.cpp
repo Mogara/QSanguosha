@@ -170,8 +170,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     // Handle global events
     if (player == NULL)
-    {
-        RoomThread *thread = room->getThread();                
+    {      
         if (event == GameStart) {
             foreach (ServerPlayer* player, room->getPlayers())
             {
@@ -230,7 +229,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             room->setPlayerStatistics(player, "recover", recover);
 
-            int new_hp = qMin(player->getHp() + recover, player->getMaxHP());
+            int new_hp = qMin(player->getHp() + recover, player->getMaxHp());
             room->setPlayerProperty(player, "hp", new_hp);
             room->broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
 

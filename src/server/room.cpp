@@ -1419,11 +1419,11 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     }
     thread->addPlayerSkills(player, invoke_start);
 
-    player->setMaxHP(player->getGeneralMaxHP());
+    player->setMaxHp(player->getGeneralMaxHp());
     broadcastProperty(player, "maxhp");
 
     if(full_state)
-        player->setHp(player->getMaxHP());
+        player->setHp(player->getMaxHp());
     broadcastProperty(player, "hp");
 
     resetAI(player);
@@ -2437,7 +2437,7 @@ void Room::loseHp(ServerPlayer *victim, int lose){
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){
     int hp = victim->getHp();
-    victim->setMaxHP(qMax(victim->getMaxHP() - lose, 0));
+    victim->setMaxHp(qMax(victim->getMaxHp() - lose, 0));
 
     broadcastProperty(victim, "maxhp");
     broadcastProperty(victim, "hp");
@@ -2449,7 +2449,7 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
     log.arg2 = QString::number(hp - victim->getHp());
     sendLog(log);
 
-    if(victim->getMaxHP() == 0)
+    if(victim->getMaxHp() == 0)
         killPlayer(victim);
 }
 
@@ -2664,49 +2664,36 @@ void Room::startGame(){
         }
     }
 
-    int i;
-    if(true){
-        int start_index = 1;
-        if(mode == "06_3v3" || mode == "02_1v1")
-            start_index = 0;
-
-        if(!Config.EnableBasara)for(i = start_index; i < m_players.count(); i++){
-            broadcastProperty(m_players.at(i), "general");
-        }
-
-        if(mode == "02_1v1"){
-            foreach(ServerPlayer *player, m_players){
-                broadcastInvoke("revealGeneral",
-                    QString("%1:%2").arg(player->objectName()).arg(player->getGeneralName()),
-                    player);
-            }
-        }
-    }
-
-    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && !Config.EnableBasara){
-        foreach(ServerPlayer *player, m_players)
-            broadcastProperty(player, "general2");
-    }
-
     m_alivePlayers = m_players;
-    for(i=0; i<player_count-1; i++)
-        m_players.at(i)->setNext(m_players.at(i+1));
+    for(int i = 0; i < player_count - 1; i++)
+        m_players.at(i)->setNext(m_players.at(i + 1));
     m_players.last()->setNext(m_players.first());
+    
+    foreach (ServerPlayer *player, m_players){
+        player->setMaxHp(player->getGeneralMaxHp());
+        player->setHp(player->getMaxHp());
+        // setup AI
+        AI *ai = cloneAI(player);
+        ais << ai;
+        player->setAI(ai);
+    }
 
-    foreach(ServerPlayer *player, m_players){
-        player->setMaxHP(player->getGeneralMaxHP());
-        player->setHp(player->getMaxHP());
+    foreach (ServerPlayer *player, m_players){
+        if(!Config.EnableBasara && (mode == "06_3v3" || mode == "02_1v1" || !player->isLord()))
+            broadcastProperty(player, "general");
+
+        if(mode == "02_1v1")
+            broadcastInvoke("revealGeneral", QString("%1:%2").arg(player->objectName()).arg(player->getGeneralName()), player);
+        
+        if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" 
+            && mode != "04_1v3" && !Config.EnableBasara)
+            broadcastProperty(player, "general2");        
 
         broadcastProperty(player, "maxhp");
         broadcastProperty(player, "hp");
 
         if(mode == "06_3v3")
-            broadcastProperty(player, "role");
-
-        // setup AI
-        AI *ai = cloneAI(player);
-        ais << ai;
-        player->setAI(ai);
+            broadcastProperty(player, "role"); 
     }
 
     broadcastInvoke("startGame");
@@ -2729,24 +2716,7 @@ void Room::startGame(){
 
     thread = new RoomThread(this);
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
-
-    GameRule *game_rule;
-    if(mode == "04_1v3")
-        game_rule = new HulaoPassMode(this);
-    else if(Config.EnableScene)	//changjing
-        game_rule = new SceneRule(this);	//changjing
-    else
-        game_rule = new GameRule(this);
-
-    thread->addTriggerSkill(game_rule);
-    if(Config.EnableBasara)thread->addTriggerSkill(new BasaraMode(this));
-
-    if(scenario){
-        const ScenarioRule *rule = scenario->getRule();
-        if(rule)
-            thread->addTriggerSkill(rule);
-    }
-
+    
     if(!_virtual)thread->start();
 }
 
@@ -3647,8 +3617,8 @@ void Room::makeReviving(const QString &name){
     ServerPlayer *player = findChild<ServerPlayer *>(name);
     Q_ASSERT(player);
     revivePlayer(player);
-    setPlayerProperty(player, "maxhp", player->getGeneralMaxHP());
-    setPlayerProperty(player, "hp", player->getMaxHP());
+    setPlayerProperty(player, "maxhp", player->getGeneralMaxHp());
+    setPlayerProperty(player, "hp", player->getMaxHp());
 }
 
 void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who){

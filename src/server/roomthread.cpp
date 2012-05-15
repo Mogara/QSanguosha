@@ -287,6 +287,23 @@ void RoomThread::run(){
         return;
     }
 
+    GameRule *game_rule;
+    if(room->getMode() == "04_1v3")
+        game_rule = new HulaoPassMode(this);
+    else if(Config.EnableScene)	//changjing
+        game_rule = new SceneRule(this);	//changjing
+    else
+        game_rule = new GameRule(this);
+
+    addTriggerSkill(game_rule);
+    if (Config.EnableBasara) addTriggerSkill(new BasaraMode(this));
+
+    if(room->getScenario() != NULL){
+        const ScenarioRule *rule = room->getScenario()->getRule();
+        if(rule)
+            addTriggerSkill(rule);
+    }
+
     // start game, draw initial 4 cards
     trigger(GameStart, NULL, QVariant::fromValue<RoomStar>(room));
     constructTriggerTable();

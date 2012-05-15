@@ -159,13 +159,13 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());
 
         QString str = this->players.at(i)["maxhp"];
-        if (str == NULL) str = QString::number(sp->getGeneralMaxHP());
+        if (str == NULL) str = QString::number(sp->getGeneralMaxHp());
         room->setPlayerProperty(sp,"maxhp",str.toInt());
 
         str = this->players.at(i)["hpadj"];
         if(str != NULL)
-            room->setPlayerProperty(sp,"maxhp",sp->getMaxHP()+str.toInt());
-        str=QString::number(sp->getMaxHP());
+            room->setPlayerProperty(sp,"maxhp",sp->getMaxHp()+str.toInt());
+        str=QString::number(sp->getMaxHp());
 
         QString str2 = this->players.at(i)["hp"];
         if(str2 != NULL)str = str2;

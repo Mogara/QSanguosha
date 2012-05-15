@@ -253,7 +253,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(cards_moved(QList<CardsMoveStruct>)), this, SLOT(moveCards(QList<CardsMoveStruct>)));    
 
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
-    connect(ClientInstance, SIGNAL(card_used()), this, SLOT(hideDiscards()));
     connect(ClientInstance, SIGNAL(start_in_xs()), this, SLOT(startInXs()));
 
     {
@@ -3314,12 +3313,12 @@ void RoomScene::animateHpChange(const QString &, const QStringList &args)
     int delta = - args.at(1).toInt();
     int hp = qMax(0, player->getHp() + delta);
     int index = 5;
-    if(player->getHp() + delta < player->getMaxHP())
+    if(player->getHp() + delta < player->getMaxHp())
         index = qBound(0, hp, 5);
 
     if(player == Self)
     {
-        int max_hp = Self->getMaxHP();
+        int max_hp = Self->getMaxHp();
 
         qreal width = max_hp > 6 ? 14 : 22;
         qreal total_width = width*max_hp;

@@ -1087,7 +1087,7 @@ function sgs.outputProcessValues(room)
 			rebel = rebel+1
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
 			else rebel_hp = aplayer:getHp() end
-			if aplayer:getMaxHP() == 3 then rebel_value = rebel_value + 0.5 end
+			if aplayer:getMaxHp() == 3 then rebel_value = rebel_value + 0.5 end
 			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer) - rebel_hp * 2, 0) * 0.7
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
@@ -1099,7 +1099,7 @@ function sgs.outputProcessValues(room)
 			loyal = loyal+1
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
 			else loyal_hp = aplayer:getHp() end
-			if aplayer:getMaxHP() == 3 then loyal_value = loyal_value + 0.5 end
+			if aplayer:getMaxHp() == 3 then loyal_value = loyal_value + 0.5 end
 			loyal_value = loyal_value + (loyal_hp + math.max(sgs.getDefense(aplayer) - loyal_hp * 2, 0) * 0.7)
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
@@ -1144,7 +1144,7 @@ function sgs.gameProcess(room)
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
 			else rebel_hp = aplayer:getHp() end
-			if aplayer:getMaxHP() == 3 then rebel_value = rebel_value + 0.5 end
+			if aplayer:getMaxHp() == 3 then rebel_value = rebel_value + 0.5 end
 			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer) - rebel_hp * 2, 0) * 0.7
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
@@ -1153,7 +1153,7 @@ function sgs.gameProcess(room)
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
 			else loyal_hp = aplayer:getHp() end
-			if aplayer:getMaxHP() == 3 then loyal_value = loyal_value + 0.5 end
+			if aplayer:getMaxHp() == 3 then loyal_value = loyal_value + 0.5 end
 			loyal_value = loyal_value + (loyal_hp + math.max(sgs.getDefense(aplayer) - loyal_hp * 2, 0) * 0.7)
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
@@ -2896,7 +2896,7 @@ function SmartAI:getDamagedEffects(self, player)
 		
 		if player:hasSkill("jieming") then
 			for _, friend in ipairs(self:getFriends(player)) do
-				if math.min(friend:getMaxHP(), 5) - friend:getHandcardNum() >= 3 then return true end
+				if math.min(friend:getMaxHp(), 5) - friend:getHandcardNum() >= 3 then return true end
 			end
 		elseif player:hasSkill("fangzhu") then
 			if player:getLostHp() <= 1 then return true end
@@ -3494,7 +3494,7 @@ end
 function SmartAI:getJiemingChaofeng(player)
 	local max_x , chaofeng = 0 , 0
 	for _, friend in ipairs(self:getFriends(player)) do
-		local x = math.min(friend:getMaxHP(), 5) - friend:getHandcardNum()
+		local x = math.min(friend:getMaxHp(), 5) - friend:getHandcardNum()
 		if x > max_x then
 			max_x = x
 		end

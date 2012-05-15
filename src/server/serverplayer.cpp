@@ -730,7 +730,7 @@ ServerPlayer *ServerPlayer::getNextAlive() const{
     return next;
 }
 
-int ServerPlayer::getGeneralMaxHP() const{
+int ServerPlayer::getGeneralMaxHp() const{
     int max_hp = 0;
 
     if(getGeneral2() == NULL)
@@ -759,9 +759,6 @@ int ServerPlayer::getGeneralMaxHP() const{
     return max_hp;
 }
 
-int ServerPlayer::getGeneralMaxHp() const{
-    return getGeneralMaxHP();
-}
 QString ServerPlayer::getGameMode() const{
     return room->getMode();
 }
