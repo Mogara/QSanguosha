@@ -168,24 +168,24 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     switch(event){
     case GameStart: {
-            if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
-                    QString new_kingdom = room->askForKingdom(player);
-                    room->setPlayerProperty(player, "kingdom", new_kingdom);
+            foreach (ServerPlayer* player, room->getPlayers())
+            {
+                if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
+                        QString new_kingdom = room->askForKingdom(player);
+                        room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-                    LogMessage log;
-                    log.type = "#ChooseKingdom";
-                    log.from = player;
-                    log.arg = new_kingdom;
-                    room->sendLog(log);
+                        LogMessage log;
+                        log.type = "#ChooseKingdom";
+                        log.from = player;
+                        log.arg = new_kingdom;
+                        room->sendLog(log);
+                }
             }
-
-            if(player->isLord())
-                setGameProcess(room);
+            setGameProcess(room);
             room->setTag("FirstRound", true);
-            room->drawCards(player, 4, false);
-
+            room->drawCards(room->getPlayers(), 4, false);
             break;
-        }
+                    }
 
     case TurnStart:{
             player = room->getCurrent();
@@ -684,24 +684,27 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
 
     switch(event){
     case GameStart:{
-            if(player->isLord()){
-                if(setjmp(env) == Transfiguration){
-                    player = room->getLord();
-                    room->transfigure(player, "shenlvbu2", true, true);
+            foreach (ServerPlayer* player, room->getPlayers())
+            {
+                if(player->isLord()){
+                    if(setjmp(env) == Transfiguration){
+                        player = room->getLord();
+                        room->transfigure(player, "shenlvbu2", true, true);
 
-                    QList<const Card *> tricks = player->getJudgingArea();
-                    foreach(const Card *trick, tricks)
-                        room->throwCard(trick);
+                        QList<const Card *> tricks = player->getJudgingArea();
+                        foreach(const Card *trick, tricks)
+                            room->throwCard(trick);
 
-                }else{
-                    player->drawCards(8, false);
+                    }else{
+                        player->drawCards(8, false);
+                    }
+                }else
+                    player->drawCards(player->getSeat() + 1, false);
+
+                if(player->getGeneralName() == "zhangchunhua"){
+                    if(qrand() % 3 == 0)
+                        room->killPlayer(player);
                 }
-            }else
-                player->drawCards(player->getSeat() + 1, false);
-
-            if(player->getGeneralName() == "zhangchunhua"){
-                if(qrand() % 3 == 0)
-                    room->killPlayer(player);
             }
 
             return false;
@@ -903,33 +906,36 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
 
     switch(event){
     case GameStart:{
-        if(player->isLord()){
-            if(Config.EnableHegemony)
-                room->setTag("SkipNormalDeathProcess", true);
+        foreach (ServerPlayer* player, room->getPlayers())
+        {
+            if(player->isLord()){
+                if(Config.EnableHegemony)
+                    room->setTag("SkipNormalDeathProcess", true);
 
-            foreach(ServerPlayer* sp, room->getAlivePlayers())
-            {
-                QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
-                sp->invoke("transfigure", transfigure_str);
-                room->setPlayerProperty(sp,"general","anjiang");
-                room->setPlayerProperty(sp,"kingdom","god");
-
-                LogMessage log;
-                log.type = "#BasaraGeneralChosen";
-                log.arg = room->getTag(sp->objectName()).toStringList().at(0);
-
-                if(Config.Enable2ndGeneral)
+                foreach(ServerPlayer* sp, room->getAlivePlayers())
                 {
-
-                    transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
+                    QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
                     sp->invoke("transfigure", transfigure_str);
-                    room->setPlayerProperty(sp,"general2","anjiang");
+                    room->setPlayerProperty(sp,"general","anjiang");
+                    room->setPlayerProperty(sp,"kingdom","god");
 
-                    log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
+                    LogMessage log;
+                    log.type = "#BasaraGeneralChosen";
+                    log.arg = room->getTag(sp->objectName()).toStringList().at(0);
+
+                    if(Config.Enable2ndGeneral)
+                    {
+
+                        transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
+                        sp->invoke("transfigure", transfigure_str);
+                        room->setPlayerProperty(sp,"general2","anjiang");
+
+                        log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
+                    }
+
+                    sp->invoke("log",log.toString());
+                    sp->tag["roles"] = room->getTag(sp->objectName()).toStringList().join("+");
                 }
-
-                sp->invoke("log",log.toString());
-                sp->tag["roles"] = room->getTag(sp->objectName()).toStringList().join("+");
             }
         }
 
