@@ -331,10 +331,13 @@ public:
 
         QList<int> ids = room->getNCards(3);
         player->addToPile("dream", ids, true);
+        QSet<QString> lockedCategories;
         foreach(int id, ids){
-            const Card *cd = Sanguosha->getCard(id);            
-            room->setPlayerCardLock(player, type[cd->getTypeId()]);
+            const Card *cd = Sanguosha->getCard(id);
+            lockedCategories.insert(type[cd->getTypeId()]);            
         }
+        foreach (QString s, lockedCategories)
+            room->setPlayerCardLock(player, s);
         room->getThread()->delay();
 
         QList<int> zuixiang = player->getPile("dream");
@@ -350,11 +353,8 @@ public:
         }
         if (zuixiangDone)
         {
-            foreach(int id, zuixiang){
-                const Card *card = Sanguosha->getCard(id);
-                player->addMark("zuixiangHasTrigger");
-                room->setPlayerCardLock(player, ".");
-            }
+            player->addMark("zuixiangHasTrigger");
+            room->setPlayerCardLock(player, ".");            
             CardsMoveStruct move(zuixiang, player, Player::Hand);
             room->moveCards(move, true);
         }
