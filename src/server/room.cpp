@@ -3026,8 +3026,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 }
 
 bool Room::notifyMoveCards(QList<CardsMoveStruct> cards_moves, bool forceVisible)
-{
-   
+{   
     // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   
@@ -3702,7 +3701,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
 
     bool isUnicast = (to != NULL);
     if (isUnicast)
-        doNotify(player, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+        doNotify(to, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
     else{
         foreach(int card_id, player->handCards())
             setCardFlag(card_id, "visible");
