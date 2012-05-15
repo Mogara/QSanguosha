@@ -264,7 +264,7 @@ function SmartAI:useCardIronChain(card, use)
 			table.insert(enemytargets, enemy)
 		end
 	end
-	if not self.player:hasSkill("nos_wuyan") then
+	if not self.player:hasSkill("noswuyan") then
 		if #friendtargets > 1 then
 			if use.to then use.to:append(friendtargets[1]) end
 			if use.to then use.to:append(friendtargets[2]) end

@@ -1,10 +1,10 @@
 sgs.weapon_range.MoonSpear = 3
 sgs.ai_use_priority.MoonSpear = 2.635
 
-nos_jujian_skill={}
-nos_jujian_skill.name="nos_jujian"
-table.insert(sgs.ai_skills,nos_jujian_skill)
-nos_jujian_skill.getTurnUseCard=function(self)
+nosjujian_skill={}
+nosjujian_skill.name="nosjujian"
+table.insert(sgs.ai_skills,nosjujian_skill)
+nosjujian_skill.getTurnUseCard=function(self)
 	if not self.player:hasUsed("NosJujianCard") then return sgs.Card_Parse("@NosJujianCard=.") end
 end
 
@@ -108,14 +108,14 @@ sgs.ai_skill_cardask["@enyuanheart"] = function(self)
 	return "."
 end
 
-function sgs.ai_slash_prohibit.nos_enyuan(self)
+function sgs.ai_slash_prohibit.nosenyuan(self)
 	if self:isWeak() then return true end
 end
 
-nos_xuanhuo_skill={}
-nos_xuanhuo_skill.name="nos_xuanhuo"
-table.insert(sgs.ai_skills,nos_xuanhuo_skill)
-nos_xuanhuo_skill.getTurnUseCard=function(self)
+nosxuanhuo_skill={}
+nosxuanhuo_skill.name="nosxuanhuo"
+table.insert(sgs.ai_skills,nosxuanhuo_skill)
+nosxuanhuo_skill.getTurnUseCard=function(self)
 	if not self.player:hasUsed("NosXuanhuoCard") then
 		return sgs.Card_Parse("@NosXuanhuoCard=.")
 	end
@@ -162,7 +162,7 @@ sgs.ai_skill_use_func.NosXuanhuoCard = function(card, use, self)
 	end
 end
 
-sgs.ai_skill_playerchosen.nos_xuanhuo = function(self, targets)
+sgs.ai_skill_playerchosen.nosxuanhuo = function(self, targets)
 	for _, player in sgs.qlist(targets) do
 		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) 
 			and not player:hasFlag("xuanhuo_target") and not self:needKongcheng(player) and not player:hasSkill("manjuan") then
@@ -171,14 +171,14 @@ sgs.ai_skill_playerchosen.nos_xuanhuo = function(self, targets)
 	end
 end
 
-sgs.nos_fazheng_suit_value = 
+sgs.nosfazheng_suit_value = 
 {
 	heart = 3.9
 }
 
-sgs.ai_chaofeng.nos_fazheng = -3
+sgs.ai_chaofeng.nosfazheng = -3
 
-sgs.ai_skill_choice.nos_xuanfeng = function(self, choices)
+sgs.ai_skill_choice.nosxuanfeng = function(self, choices)
 	self:sort(self.enemies, "defense")
 	local slash = sgs.Card_Parse(("slash[%s:%s]"):format(sgs.Card_NoSuit, 0))
 	for _, enemy in ipairs(self.enemies) do
@@ -191,6 +191,6 @@ sgs.ai_skill_choice.nos_xuanfeng = function(self, choices)
 	return "nothing"
 end
 
-sgs.ai_skill_playerchosen.nos_xuanfeng_damage = sgs.ai_skill_playerchosen.damage
+sgs.ai_skill_playerchosen.nosxuanfeng_damage = sgs.ai_skill_playerchosen.damage
 
-sgs.ai_skill_playerchosen.nos_xuanfeng_slash = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_skill_playerchosen.nosxuanfeng_slash = sgs.ai_skill_playerchosen.zero_card_as_slash

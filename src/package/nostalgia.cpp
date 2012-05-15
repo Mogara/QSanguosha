@@ -61,7 +61,7 @@ NostalgiaPackage::NostalgiaPackage()
 
 class NosWuyan: public TriggerSkill{
 public:
-    NosWuyan():TriggerSkill("nos_wuyan"){
+    NosWuyan():TriggerSkill("noswuyan"){
         events << CardEffect << CardEffected;
         frequency = Compulsory;
     }
@@ -153,7 +153,7 @@ void NosJujianCard::onEffect(const CardEffectStruct &effect) const{
 
 class NosJujian: public ViewAsSkill{
 public:
-    NosJujian():ViewAsSkill("nos_jujian"){
+    NosJujian():ViewAsSkill("nosjujian"){
 
     }
 
@@ -188,7 +188,7 @@ public:
 
 class NosEnyuan: public TriggerSkill{
 public:
-    NosEnyuan():TriggerSkill("nos_enyuan"){
+    NosEnyuan():TriggerSkill("nosenyuan"){
         events << HpRecover << Damaged;
         frequency = Compulsory;
     }
@@ -255,7 +255,7 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
 
 class NosXuanhuo: public OneCardViewAsSkill{
 public:
-    NosXuanhuo():OneCardViewAsSkill("nos_xuanhuo"){
+    NosXuanhuo():OneCardViewAsSkill("nosxuanhuo"){
 
     }
 
@@ -276,7 +276,7 @@ public:
 
 class NosXuanfeng: public TriggerSkill{
 public:
-    NosXuanfeng():TriggerSkill("nos_xuanfeng"){
+    NosXuanfeng():TriggerSkill("nosxuanfeng"){
         events << CardLostOneTime;
     }
 
@@ -337,17 +337,17 @@ public:
 NostalGeneralPackage::NostalGeneralPackage()
     :Package("nostal_general")
 {
-    General *nos_xushu = new General(this, "nos_xushu", "shu", 3);
-    nos_xushu->addSkill(new NosWuyan);
-    nos_xushu->addSkill(new NosJujian);
+    General *nosxushu = new General(this, "nosxushu", "shu", 3);
+    nosxushu->addSkill(new NosWuyan);
+    nosxushu->addSkill(new NosJujian);
 
-    General *nos_fazheng = new General(this, "nos_fazheng", "shu", 3);
-    nos_fazheng->addSkill(new NosEnyuan);
+    General *nosfazheng = new General(this, "nosfazheng", "shu", 3);
+    nosfazheng->addSkill(new NosEnyuan);
     patterns.insert(".enyuan", new EnyuanPattern);
-    nos_fazheng->addSkill(new NosXuanhuo);
+    nosfazheng->addSkill(new NosXuanhuo);
 
-    General *nos_lingtong = new General(this, "nos_lingtong", "wu");
-    nos_lingtong->addSkill(new NosXuanfeng);
+    General *noslingtong = new General(this, "noslingtong", "wu");
+    noslingtong->addSkill(new NosXuanfeng);
 
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();

@@ -70,7 +70,7 @@ function setInitialTables()
 	sgs.target = 				{loyalist = nil, rebel = nil, renegade = nil } -- obsolete
 	sgs.discard_pile =			global_room:getDiscardPile()
 	sgs.draw_pile = 			global_room:getDrawPile()
-	sgs.lose_equip_skill = 		"xiaoji|xuanfeng|nos_xuanfeng"
+	sgs.lose_equip_skill = 		"xiaoji|xuanfeng|nosxuanfeng"
 	sgs.need_kongcheng = 		"lianying|kongcheng"
 	sgs.masochism_skill = 		"fankui|jieming|yiji|ganglie|enyuan|fangzhu|guixin|quanji"
 	sgs.wizard_skill = 			"guicai|guidao|jilve|tiandu"
@@ -324,7 +324,7 @@ function SmartAI:getUsePriority(card)
 		end
 		if v then return v else return sgs.ai_use_priority[class_name] end
 	end
-	if self.player:hasSkill("nos_wuyan") then
+	if self.player:hasSkill("noswuyan") then
 		if card:inherits("Slash") then
 			v = 4
 
@@ -3418,7 +3418,7 @@ function SmartAI:aoeIsEffective(card, to)
 		return false
 	end
 
-	if self.player:hasSkill("nos_wuyan") then
+	if self.player:hasSkill("noswuyan") then
 		return false
 	end
 	
@@ -3615,7 +3615,7 @@ end
 function SmartAI:hasTrickEffective(card, player)
 	if player then
 		if self.room:isProhibited(self.player, player, card) then return false end
-		if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("nos_wuyan") then
+		if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("noswuyan") then
 			if card and not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
 		end
 		if player:hasSkill("wuyan") then
@@ -3630,7 +3630,7 @@ function SmartAI:hasTrickEffective(card, player)
 				(card:inherits("Duel") or card:inherits("FireAttack") or card:inherits("ArcheryAttack") or card:inherits("SavageAssault")) then
 			return false end
 		end
-		if self.player:hasSkill("nos_wuyan") then
+		if self.player:hasSkill("noswuyan") then
 			if card:inherits("TrickCard") and not
 				(card:inherits("DelayedTrick") or card:inherits("GodSalvation") or card:inherits("AmazingGrace")) then
 			return false end
