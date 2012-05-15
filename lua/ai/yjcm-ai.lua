@@ -38,7 +38,7 @@ sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 		end
 	end
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:getArmor() and friend:getArmor():objectName() == "vine" and (enemy:isChained() and not self:isGoodChainPartner(friend)) then
+		if friend:getArmor() and friend:getArmor():objectName() == "vine" and (friend:isChained() and not self:isGoodChainPartner(friend)) then
 			return "@JujianCard="..nobasiccard.."->"..friend:objectName()
 		end
 	end
