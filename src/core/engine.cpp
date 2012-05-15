@@ -417,15 +417,13 @@ int Engine::getPlayerCount(const QString &mode) const{
     return -1;
 }
 
-void Engine::getRoles(const QString &mode, char *roles) const{
+QString Engine::getRoles(const QString &mode) const{
     int n = getPlayerCount(mode);
 
-    if(mode == "02_1v1"){
-        qstrcpy(roles, "ZN");
-        return;
-    }else if(mode == "04_1v3"){
-        qstrcpy(roles, "ZFFF");
-        return;
+    if(mode == "02_1v1"){        
+        return "ZN";
+    }else if(mode == "04_1v3"){        
+        return "ZFFF";
     }
 
     if(modes.contains(mode)){
@@ -468,28 +466,28 @@ void Engine::getRoles(const QString &mode, char *roles) const{
             rolechar.replace("C", "N");
         }
 
-        qstrcpy(roles, rolechar.toStdString().c_str());
+        return rolechar;
     }else if(mode.startsWith("@")){
         if(n == 8)
-            qstrcpy(roles, "ZCCCNFFF");
+            return "ZCCCNFFF";
         else if(n == 6)
-            qstrcpy(roles, "ZCCNFF");
+            return "ZCCNFF";
 
     }else{
         const Scenario *scenario = getScenario(mode);
         if(scenario)
-            scenario->getRoles(roles);
+            return scenario->getRoles();
     }
+    return QString();
 }
 
 QStringList Engine::getRoleList(const QString &mode) const{
-    char roles[100];
-    getRoles(mode, roles);
+    QString roles = getRoles(mode);
 
     QStringList role_list;
     for(int i=0; roles[i] != '\0'; i++){
         QString role;
-        switch(roles[i]){
+        switch(roles[i].toAscii()){
         case 'Z': role = "lord"; break;
         case 'C': role = "loyalist"; break;
         case 'N': role = "renegade"; break;

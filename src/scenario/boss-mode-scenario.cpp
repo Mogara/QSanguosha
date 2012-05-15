@@ -511,8 +511,8 @@ int ImpasseScenario::getPlayerCount() const{
     return 8;
 }
 
-void ImpasseScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZFFFFFFF");
+QString ImpasseScenario::getRoles() const{
+    return "ZFFFFFFF";
 }
 
 void ImpasseScenario::onTagSet(Room *room, const QString &key) const{

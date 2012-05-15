@@ -2950,9 +2950,8 @@ void RoomScene::createStateItem(){
 
     state_item = addPixmap(state);
     state_item->setPos(room_layout->state_item_pos);
-    state_item->setZValue(-1.0);
-    char roles[100] = {0};
-    Sanguosha->getRoles(ServerInfo.GameMode, roles);
+    state_item->setZValue(-1.0);    
+    QString roles = Sanguosha->getRoles(ServerInfo.GameMode);
     updateStateItem(roles);
 
     QGraphicsTextItem *text_item = addText("");
