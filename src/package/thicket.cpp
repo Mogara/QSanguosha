@@ -279,7 +279,7 @@ public:
 
                 for(i = 0; i < x; i++){
                     int card_id = room->drawCard();
-                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::PlaceTakeoff, true);
+                    room->moveCardTo(Sanguosha->getCard(card_id), menghuo, Player::PlaceTakeoff, true);
 
                     room->getThread()->delay();
 

@@ -389,7 +389,7 @@ public:
         Room *room = player->getRoom();
         int card_id = room->drawCard();
         const Card *card = Sanguosha->getCard(card_id);
-        room->moveCardTo(card, NULL, Player::PlaceTakeoff, true);
+        room->moveCardTo(card, player, Player::PlaceTakeoff, true);
         room->getThread()->delay();
 
         player->obtainCard(card);
