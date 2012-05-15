@@ -66,7 +66,8 @@ public:
     AI *getAI() const;
     AI *getSmartAI() const;
 
-    bool isOnline() const;
+    bool isOnline() const; // @todo: better rename this to be re
+    inline bool isOffline() const { return getState() == "robot" || getState() == "offline"; }
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;

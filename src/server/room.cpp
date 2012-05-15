@@ -302,7 +302,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     if(Config.EnableAI){
         bool expose_roles = true;
         foreach(ServerPlayer *player, m_alivePlayers){
-            if(player->getState() != "robot" && player->getState() != "offline"){
+            if(player->isOffline()){
                 expose_roles = false;
                 break;
             }
@@ -2874,35 +2874,48 @@ void Room::moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool pha
 }
 
 void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase){
-    // avoid useless operation
+    
+    QMap<_MoveSourceClassifier, QList<int> > moveMap;
+    QList<CardsMoveStruct> all_sub_moves;
     for (int i = 0; i < cards_moves.size(); i++)
     {
-        CardsMoveStruct& move = cards_moves[i];        
-        int card_id = move.card_ids[0];
-        move.from = getCardOwner(card_id);
-        move.from_place = getCardPlace(card_id);
-        if (move.from) // Hand/Equip/Judge
-        {
-            if (move.from_place == Player::Special) move.from_pile_name = move.from->getPileName(card_id);
-            move.from_player_name = move.from->objectName();            
-        }
-        
+        CardsMoveStruct& move = cards_moves[i];
+        if (move.card_ids.size() == 0) continue;
+        // First, read dst information
         if(move.to) // Hand/Equip/Judge
         {
-            move.to_player_name = move.to->objectName();        
+            move.to_player_name = move.to->objectName(); 
+            int card_id = move.card_ids[0];
             if (move.to_place == Player::Special) move.to_pile_name = move.to->getPileName(card_id);
         }
-
-        if ((move.from == move.to && move.from_place == move.to_place)
-            || move.card_ids.size() == 0)
+                
+        // reassemble move sources
+        for (int j = 0; j < move.card_ids.size(); j++)
         {
-            cards_moves.removeAt(i);
-            i--;
-            continue;
-        }     
+            int card_id = move.card_ids[j];
+            move.from = getCardOwner(card_id);
+            move.from_place = getCardPlace(card_id);
+            if (move.from) // Hand/Equip/Judge
+            {
+                if (move.from_place == Player::Special) move.from_pile_name = move.from->getPileName(card_id);
+                move.from_player_name = move.from->objectName();            
+            }
+            _MoveSourceClassifier classifier(move);
+            moveMap[classifier].append(card_id);
+        }
+        foreach (_MoveSourceClassifier cls, moveMap.keys())
+        {
+            CardsMoveStruct sub_move = move;
+            cls.copyTo(sub_move);
+            if ((sub_move.from == sub_move.to && sub_move.from_place == sub_move.to_place)
+                || sub_move.card_ids.size() == 0)
+                continue;            
+            sub_move.card_ids = moveMap[cls]; 
+            all_sub_moves.append(sub_move);
+        }        
     }
-    _moveCards(cards_moves, forceMoveVisible, phaseByPhase);
-    foreach (CardsMoveStruct cards_move, cards_moves)
+    _moveCards(all_sub_moves, forceMoveVisible, phaseByPhase);
+    foreach (CardsMoveStruct cards_move, all_sub_moves)
     {
         if (cards_move.from && cards_move.from_place != Player::PlaceTakeoff){
             CardsMoveStar move_star = &cards_move;
@@ -3051,7 +3064,7 @@ bool Room::notifyMoveCards(QList<CardsMoveStruct> cards_moves, bool forceVisible
     // Notify clients
     foreach (ServerPlayer* player, m_players)
     {
-        if (!player->isOnline()) continue;
+        if (player->isOffline()) continue;
         Json::Value arg(Json::arrayValue);
         for (int i = 0; i < cards_moves.size(); i++)
         {

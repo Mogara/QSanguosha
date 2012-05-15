@@ -271,7 +271,34 @@ public:
 protected:
     virtual void run();
 
-private:    
+private:
+    struct _MoveSourceClassifier
+    {
+        inline _MoveSourceClassifier(const CardsMoveStruct &move)
+        {
+            m_from = move.from; m_from_place = move.from_place; 
+            m_from_pile_name = move.from_pile_name; m_from_player_name = move.from_player_name;
+        }
+        inline void copyTo(CardsMoveStruct & move)
+        {
+            move.from = m_from; move.from_place = m_from_place;
+            move.from_pile_name = m_from_pile_name; move.from_player_name = m_from_player_name;
+        }
+        inline bool operator == (const _MoveSourceClassifier &other) const
+        {
+            return (m_from == other.m_from && m_from_place == other.m_from_place &&
+                m_from_pile_name == other.m_from_pile_name && m_from_player_name == other.m_from_player_name);
+        }
+        inline bool operator < (const _MoveSourceClassifier &other) const
+        {
+            return ((int)m_from < (int)other.m_from || m_from_place < other.m_from_place ||
+                m_from_pile_name < other.m_from_pile_name || m_from_player_name < other.m_from_player_name);
+        }
+        Player* m_from;
+        Player::Place m_from_place;
+        QString m_from_pile_name;
+        QString m_from_player_name; 
+    };
     QString _chooseDefaultGeneral(ServerPlayer* player) const;
     bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);
     QString mode;
