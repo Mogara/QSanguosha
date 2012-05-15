@@ -14,14 +14,18 @@ end
 sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 	local needfriend = 0
 	local nobasiccard = -1
-	local cards = self.player:getHandcards()
+	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
-	self:sortByKeepValue(cards)
-	for _,card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_Basic then nobasiccard = card:getEffectiveId() end
+	if self:isEquip("SilverLion") and self.player:isWounded() then
+			nobasiccard = self.player:getArmor():getId()
+	else
+		self:sortByKeepValue(cards)
+		for _,card in ipairs(cards) do
+			if card:getTypeId() ~= sgs.Card_Basic then nobasiccard = card:getEffectiveId() end
+		end
 	end
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:isWounded() or not friend:faceUp() 
+		if self:isWeak(friend) or friend:getHandcardNum() < 2 or not friend:faceUp() 
 		or (friend:getArmor() and friend:getArmor():objectName() == "vine" and (friend:isChained() and not self:isGoodChainPartner(friend))) then
 			needfriend = needfriend + 1
 		end

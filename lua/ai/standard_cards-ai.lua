@@ -992,7 +992,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			return
 		end
 		if self:isEquip("SilverLion", friend) and self:hasTrickEffective(card, friend) and 
-		friend:isWounded() and not self:hasSkills("longhun|duanliang|qixi|guidao",friend) then
+		friend:isWounded() and not self:hasSkills("longhun|duanliang|qixi|guidao|lijian|jujian",friend) then
 			hasLion = true
 			target = friend
 		end
