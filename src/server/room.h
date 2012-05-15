@@ -391,4 +391,7 @@ signals:
     void game_over(const QString &winner);
 };
 
+typedef Room *RoomStar;
+Q_DECLARE_METATYPE(RoomStar)
+
 #endif // ROOM_H

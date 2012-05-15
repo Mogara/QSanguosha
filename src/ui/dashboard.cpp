@@ -29,7 +29,6 @@ Dashboard::Dashboard(QGraphicsItem *button_widget)
     createLeft();
     createMiddle();
     createRight();
-
     death_item = NULL;
 
     if(button_widget)
@@ -41,6 +40,12 @@ Dashboard::Dashboard(QGraphicsItem *button_widget)
     sort_type = 0;
 
     animations = new EffectAnimation();
+    
+    QPointF specialCenter = mapFromItem(avatar, avatar->boundingRect().width() / 2, 0);
+    m_cardSpecialRegion = QRectF(specialCenter.x() - CardItem::S_NORMAL_CARD_WIDTH * 1.5,
+                                  specialCenter.y() - CardItem::S_NORMAL_CARD_HEIGHT,
+                                  CardItem::S_NORMAL_CARD_WIDTH * 3,
+                                  CardItem::S_NORMAL_CARD_HEIGHT);
     _addProgressBar();
 }
 
@@ -194,9 +199,9 @@ bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
     {
         foreach(CardItem* card, card_items)
         {
-            card->setHomeOpacity(0.0);
-            card->setHomePos(mapFromItem(avatar, 0, 0));
+            card->setHomeOpacity(0.0);            
         }
+        _disperseCards(card_items, m_cardSpecialRegion, Qt::AlignCenter, true);
         return true;
     }
 
@@ -817,8 +822,7 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
             card_item->setOpacity(1.0);
         }else if (place == Player::Special){
             card_item = _createCard(card_id);
-            card_item->setOpacity(0.0);
-            card_item->setPos(mapFromItem(avatar, 0, 0));
+            card_item->setOpacity(0.0);            
         }
         if(card_item)
         {
@@ -834,6 +838,8 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
         _disperseCards(result, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, false);
     else if (place == Player::PlaceTakeoff)
         _disperseCards(result, m_cardTakeOffRegion, Qt::AlignCenter, false);
+    else if (place == Player::Special)
+        _disperseCards(result, m_cardSpecialRegion, Qt::AlignCenter, false);
     update();
     return result;
 }

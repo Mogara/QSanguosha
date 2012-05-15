@@ -93,6 +93,7 @@ protected:
     const static QRect S_EQUIP_CARD_MOVE_REGION;
     const static QRect S_JUDGE_CARD_MOVE_REGION;
     QRectF m_cardTakeOffRegion;
+    QRectF m_cardSpecialRegion;
 
     // sync objects
     QMutex m_mutex;

@@ -157,36 +157,43 @@ void GameRule::setGameProcess(Room *room) const{
 }
 
 bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    if (player == NULL) return false;
-
-    Room *room = player->getRoom();
+    Room *room;
+    if (player == NULL)    
+        room = data.value<RoomStar>();    
+    else
+        room = player->getRoom();
 
     if(room->getTag("SkipGameRule").toBool()){
         room->removeTag("SkipGameRule");
         return false;
     }
 
-    switch(event){
-    case GameStart: {
+    // Handle global events
+    if (player == NULL)
+    {
+        RoomThread *thread = room->getThread();                
+        if (event == GameStart) {
             foreach (ServerPlayer* player, room->getPlayers())
             {
                 if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
-                        QString new_kingdom = room->askForKingdom(player);
-                        room->setPlayerProperty(player, "kingdom", new_kingdom);
+                    QString new_kingdom = room->askForKingdom(player);
+                    room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-                        LogMessage log;
-                        log.type = "#ChooseKingdom";
-                        log.from = player;
-                        log.arg = new_kingdom;
-                        room->sendLog(log);
-                }
+                    LogMessage log;
+                    log.type = "#ChooseKingdom";
+                    log.from = player;
+                    log.arg = new_kingdom;
+                    room->sendLog(log);
+                }                
             }
             setGameProcess(room);
             room->setTag("FirstRound", true);
             room->drawCards(room->getPlayers(), 4, false);
-            break;
-                    }
+        }
+        return false;
+    }
 
+    switch(event){
     case TurnStart:{
             player = room->getCurrent();
             if(!player->faceUp())
@@ -680,10 +687,15 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
 static int Transfiguration = 1;
 
 bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room = player->getRoom();
-
-    switch(event){
-    case GameStart:{
+    Room *room;
+    if (player == NULL)    
+        room = data.value<RoomStar>();    
+    else
+        room = player->getRoom();
+    // Handle global events
+    if (player == NULL)
+    {
+        if (event == GameStart){
             foreach (ServerPlayer* player, room->getPlayers())
             {
                 if(player->isLord()){
@@ -709,7 +721,9 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
 
             return false;
         }
+    }
 
+    switch(event){
     case CardUsed:{
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
@@ -900,47 +914,51 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 }
 
 bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room = player->getRoom();
+    Room *room;
+    if (player == NULL)    
+        room = data.value<RoomStar>();    
+    else
+        room = player->getRoom();
+
+    // Handle global events
+    if (player == NULL)
+    {
+        if (event == GameStart)
+        {
+            if(Config.EnableHegemony)
+                room->setTag("SkipNormalDeathProcess", true);
+            foreach(ServerPlayer* sp, room->getAlivePlayers())
+            {
+                QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
+                sp->invoke("transfigure", transfigure_str);
+                room->setPlayerProperty(sp,"general","anjiang");
+                room->setPlayerProperty(sp,"kingdom","god");
+
+                LogMessage log;
+                log.type = "#BasaraGeneralChosen";
+                log.arg = room->getTag(sp->objectName()).toStringList().at(0);
+
+                if(Config.Enable2ndGeneral)
+                {
+
+                    transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
+                    sp->invoke("transfigure", transfigure_str);
+                    room->setPlayerProperty(sp,"general2","anjiang");
+
+                    log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
+                }
+
+                sp->invoke("log",log.toString());
+                sp->tag["roles"] = room->getTag(sp->objectName()).toStringList().join("+");
+            }
+        }
+    }
+
+
     player->tag["event"] = event;
     player->tag["event_data"] = data;
 
-    switch(event){
-    case GameStart:{
-        foreach (ServerPlayer* player, room->getPlayers())
-        {
-            if(player->isLord()){
-                if(Config.EnableHegemony)
-                    room->setTag("SkipNormalDeathProcess", true);
-
-                foreach(ServerPlayer* sp, room->getAlivePlayers())
-                {
-                    QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
-                    sp->invoke("transfigure", transfigure_str);
-                    room->setPlayerProperty(sp,"general","anjiang");
-                    room->setPlayerProperty(sp,"kingdom","god");
-
-                    LogMessage log;
-                    log.type = "#BasaraGeneralChosen";
-                    log.arg = room->getTag(sp->objectName()).toStringList().at(0);
-
-                    if(Config.Enable2ndGeneral)
-                    {
-
-                        transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
-                        sp->invoke("transfigure", transfigure_str);
-                        room->setPlayerProperty(sp,"general2","anjiang");
-
-                        log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
-                    }
-
-                    sp->invoke("log",log.toString());
-                    sp->tag["roles"] = room->getTag(sp->objectName()).toStringList().join("+");
-                }
-            }
-        }
-
-        break;
-    }
+    switch(event){    
     case CardEffected:{
         if(player->getPhase() == Player::NotActive){
             CardEffectStruct ces = data.value<CardEffectStruct>();

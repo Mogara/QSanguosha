@@ -2738,7 +2738,7 @@ void Room::startGame(){
     else
         game_rule = new GameRule(this);
 
-    thread->constructTriggerTable(game_rule);
+    thread->addTriggerSkill(game_rule);
     if(Config.EnableBasara)thread->addTriggerSkill(new BasaraMode(this));
 
     if(scenario){

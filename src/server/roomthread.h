@@ -38,7 +38,7 @@ class RoomThread : public QThread{
 
 public:
     explicit RoomThread(Room *room);
-    void constructTriggerTable(const GameRule *rule);
+    void constructTriggerTable();
     bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
     bool trigger(TriggerEvent event, ServerPlayer *target);
 

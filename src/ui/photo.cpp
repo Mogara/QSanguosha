@@ -587,11 +587,11 @@ void Photo::updatePile(const QString &pile_name){
         QList<const Card *> cards;
         foreach(int card_id, pile){
             const Card *card = Sanguosha->getCard(card_id);
-            cards << card;
+            if (card != NULL) cards << card;
         }
 
         qSort(cards.begin(), cards.end(), CompareByNumber);
-        foreach(const Card *card, cards){
+        foreach(const Card *card, cards){            
             menu->addAction(card->getSuitIcon(),
                             QString("%1 (%2)").arg(card->getFullName())
                             .arg(Sanguosha->translate(pile_name)));

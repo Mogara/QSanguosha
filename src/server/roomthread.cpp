@@ -2,6 +2,8 @@
 #include "room.h"
 #include "engine.h"
 #include "gamerule.h"
+#include "scenerule.h"
+#include "scenario.h"
 #include "ai.h"
 #include "jsonutils.h"
 #include "settings.h"
@@ -199,12 +201,10 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
     }
 }
 
-void RoomThread::constructTriggerTable(const GameRule *rule){
+void RoomThread::constructTriggerTable(){
     foreach(ServerPlayer *player, room->getPlayers()){
-        addPlayerSkills(player, false);
-    }
-
-    addTriggerSkill(rule);
+        addPlayerSkills(player, true);
+    }    
 }
 
 static const int GameOver = 1;
@@ -288,8 +288,8 @@ void RoomThread::run(){
     }
 
     // start game, draw initial 4 cards
-    trigger(GameStart, room->getPlayers().first());
-    
+    trigger(GameStart, NULL, QVariant::fromValue<RoomStar>(room));
+    constructTriggerTable();
 
     if(room->mode == "06_3v3"){
         run3v3();
@@ -370,7 +370,7 @@ static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
 }
 
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
-    Q_ASSERT(QThread::currentThread() == this);
+    // Q_ASSERT(QThread::currentThread() == this);
 
     // push it to event stack
     EventTriplet triplet(event, target, &data);

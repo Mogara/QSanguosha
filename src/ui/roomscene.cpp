@@ -3476,15 +3476,14 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
 
 void RoomScene::doHuashen(const QString &, const QStringList &args){
     QVariantList huashen_list = Self->tag["Huashens"].toList();
+    QList<CardItem*> generals;
     foreach(QString arg, args){
         huashen_list << arg;
         CardItem *item = new CardItem(arg);
         item->scaleSmoothly(0.5);
-
-        addItem(item);
-        item->setHomePos(avatar->scenePos());
-        item->goBack(true);
-    }
+        generals.append(item);
+    }    
+    dashboard->addCardItems(generals, Player::Special);
 
     Self->tag["Huashens"] = huashen_list;
 }
