@@ -286,7 +286,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *lingtong, QVariant &data) const{
         if(event == CardLostOneTime){
-            CardMoveStar move = data.value<CardMoveStar>();
+            CardsMoveStar move = data.value<CardsMoveStar>();
             if(move->from_place == Player::Equip)
             {
                 Room *room = lingtong->getRoom();

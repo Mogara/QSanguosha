@@ -295,7 +295,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == CardLostOneTime){
-            CardMoveStar move = data.value<CardMoveStar>();
+            CardsMoveStar move = data.value<CardsMoveStar>();
 
             if((move->from_place == Player::Hand || move->from_place == Player::Equip) && 
                 player->getRoom()->getCurrent() != player

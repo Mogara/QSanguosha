@@ -449,8 +449,8 @@ struct PhaseChangeStruct{
 typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{
-	NonTrigger,
-	
+    NonTrigger,
+
     GameStart,
     TurnStart,
     PhaseChange,
@@ -486,17 +486,19 @@ enum TriggerEvent{
     SlashProceed,
     SlashHit,
     SlashMissed,
-	
-	JinkUsed,
+
+    JinkUsed,
 
     CardAsked,
     CardUsed,
     CardResponsed,
     CardDiscarded,
     CardLostOnePiece,
+    CardLostOneTime,
     CardGotOnePiece,
-	CardLostOneTime,
     CardGotOneTime,
+    CardLostDone,
+    CardGotDone,
     CardDrawing,
     CardDrawnDone,
 
@@ -505,8 +507,9 @@ enum TriggerEvent{
     CardFinished,
 
     ChoiceMade,
-};
 
+    NumOfEvents,
+};
 class Card: public QObject
 {
 
