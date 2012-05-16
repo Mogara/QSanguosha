@@ -305,7 +305,8 @@ void RoomThread::run(){
     }
 
     // start game, draw initial 4 cards
-    trigger(GameStart, NULL, QVariant::fromValue<RoomStar>(room));
+    QVariant roomdata = QVariant::fromValue<RoomStar>(room);
+    trigger(GameStart, NULL, roomdata);
     constructTriggerTable();
 
     if(room->mode == "06_3v3"){
