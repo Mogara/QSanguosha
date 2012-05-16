@@ -830,9 +830,9 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
             result.append(card_item);            
         }
     }
-    if (place == Player::Hand)    
+    /*if (place == Player::Hand)    
         adjustCards();
-    else if (place == Player::Equip)
+    else*/ if (place == Player::Equip)
         _disperseCards(result, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, false);
     else if (place == Player::Judging)
         _disperseCards(result, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, false);
@@ -972,7 +972,6 @@ void Dashboard::stopPending(){
         }
     }
     pendings.clear();
-    adjustCards(false);
     m_mutexEnableCards.unlock();
 }
 

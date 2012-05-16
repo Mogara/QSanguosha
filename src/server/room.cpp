@@ -2848,22 +2848,13 @@ void Room::moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ign
 
 void Room::_fillMoveInfo(CardMoveStruct &move)
 {
-    
     int card_id = move.card_id;
     move.from = getCardOwner(card_id);
     move.from_place = getCardPlace(card_id);
     if (move.from) // Hand/Equip/Judge
     {
-        if (move.from->isAlive())
-        {
-            if (move.from_place == Player::Special) move.from_pile_name = move.from->getPileName(card_id);
-            move.from_player_name = move.from->objectName();
-        }
-        else
-        {
-            move = CardMoveStruct();
-            return;
-        }
+        if (move.from_place == Player::Special) move.from_pile_name = move.from->getPileName(card_id);
+        move.from_player_name = move.from->objectName();
     }
     if (move.to)
     {
@@ -2875,7 +2866,8 @@ void Room::_fillMoveInfo(CardMoveStruct &move)
         }
         else
         {
-            move = CardMoveStruct();
+            move.to = NULL;
+            move.to_place = Player::DiscardPile;
             return;
         }
     }
@@ -2883,7 +2875,6 @@ void Room::_fillMoveInfo(CardMoveStruct &move)
 
 void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index)
 {
-    
     int card_id = moves.card_ids[card_index];
     moves.from = getCardOwner(card_id);
     moves.from_place = getCardPlace(card_id);

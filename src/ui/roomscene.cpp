@@ -1222,6 +1222,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 
 void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
+    bool doAdjust = false;
     for (int i = 0; i < card_moves.size(); i++) 
     {
         CardsMoveStruct &movement = card_moves[i];
@@ -1240,8 +1241,11 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
         }
         bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
+        if (to_container == dashboard) doAdjust = true;
         keepGetCardLog(movement);
     }
+    if (doAdjust)
+        dashboard->adjustCards();
     _m_cardsMoveStash[moveId].clear();
 }
 
