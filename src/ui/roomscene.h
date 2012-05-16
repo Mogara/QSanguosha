@@ -194,7 +194,7 @@ private:
     QGraphicsItem* _m_last_front_item;
     double _m_last_front_ZValue;
     PlayerCardContainer* _getPlayerCardContainer(Player::Place place, Player* player);
-    QMap<int, QList<QList<CardItem*>> > _m_cardsMoveStash;
+    QMap<int, QList<QList<CardItem*> > > _m_cardsMoveStash;
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
