@@ -85,12 +85,14 @@ CardItem::CardItem(const QString &general_name)
 
 CardItem::~CardItem()
 {
+    m_animationMutex.lock();
     if (m_currentAnimation != NULL)
     {
         m_currentAnimation->stop();
         delete m_currentAnimation;
         m_currentAnimation = NULL;
     }
+    m_animationMutex.unlock();
 }
 
 void CardItem::changeGeneral(const QString &general_name){

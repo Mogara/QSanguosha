@@ -27,7 +27,8 @@ void PlayerCardContainer::_destroyCards()
     _mutex_cardsToBeDestroyed.lock();
     foreach (CardItem* card, _cardsToBeDestroyed)
     {
-        card->deleteLater();
+        card->setVisible(false);
+        this->scene()->removeItem(card);
     }
     _cardsToBeDestroyed.clear();
     _mutex_cardsToBeDestroyed.unlock();
@@ -59,6 +60,7 @@ void PlayerCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillReg
             card->setHomePos(newPos);
         else
             card->setPos(newPos);
+        card->setZValue(i);
     }
 }
 

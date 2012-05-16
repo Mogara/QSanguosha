@@ -83,9 +83,9 @@ struct NormalRoomLayout : public RoomLayout{
 
 struct CircularRoomLayout : public RoomLayout{
     CircularRoomLayout(){
-        discard = QPointF(-350, -120);
+        discard = QPointF(-400, -120);
         discard_size = QSize(500, 132);
-        drawpile = QPointF(0, 0);
+        drawpile = QPointF(0, -120);
         enemy_box = QPointF(-361, -343);
         self_box = QPointF(201, -90);
         chat_box_size = QSize(268, 165);
@@ -1213,8 +1213,13 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
     {
         CardsMoveStruct &movement = card_moves[i];
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
-        PlayerCardContainer* from_container = _getPlayerCardContainer(movement.from_place, movement.from);        
+        PlayerCardContainer* from_container = _getPlayerCardContainer(movement.from_place, movement.from);
         QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
+        foreach (CardItem* card, cards)
+        {            
+            // card->setPos(card->mapToScene(0, 0));
+            card->setParent(this);
+        }
         _m_cardsMoveStash[moveId].append(cards);
         keepLoseCardLog(movement);
     }
@@ -1958,6 +1963,12 @@ void RoomScene::doTimeout(){
     }
 }
 
+void RoomScene::showPromptBox()
+{
+    bringToFront(prompt_box);
+    prompt_box->appear();
+}
+
 void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus){    
     switch(newStatus){
     case Client::NotActive:{
@@ -1997,7 +2008,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         }
 
     case Client::Responsing: {
-            prompt_box->appear();
+            showPromptBox();
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
@@ -2020,7 +2031,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     case Client::Playing:{
             dashboard->enableCards();
-
+            bringToFront(dashboard);
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
             discard_button->setEnabled(true);
@@ -2028,7 +2039,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         }
 
     case Client::Discarding:{
-            prompt_box->appear();
+            showPromptBox();
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
@@ -2063,7 +2074,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     }
                 }
             }
-            prompt_box->appear();
+            showPromptBox();
             ok_button->setEnabled(true);
             cancel_button->setEnabled(true);
             discard_button->setEnabled(false);
@@ -2071,7 +2082,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         }
 
     case Client::AskForPlayerChoose:{
-            prompt_box->appear();
+            showPromptBox();
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
@@ -2116,7 +2127,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             yiji_skill->setCards(ClientInstance->getPattern());
             dashboard->startPending(yiji_skill);
 
-            prompt_box->appear();
+            showPromptBox();
 
             break;
         }

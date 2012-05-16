@@ -3072,6 +3072,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }    
 
     // Now, process add cards
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
     for (int i = 0; i <  cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -3113,8 +3114,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             QVariant data = QVariant::fromValue(move_star);
             thread->trigger(CardGotOneTime, (ServerPlayer*)cards_move.to, data);
         }
-    }
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
+    }    
 }
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
@@ -3128,6 +3128,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         moveId = _m_lastMovementId++;
     else
         moveId = --_m_lastMovementId;
+    Q_ASSERT(_m_lastMovementId >= 0);
     foreach (ServerPlayer* player, m_players)
     {
         if (player->isOffline()) continue;

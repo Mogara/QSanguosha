@@ -949,7 +949,7 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     }
 
     updatePending();
-    adjustCards(false);
+    // adjustCards(false);
     m_mutexEnableCards.unlock();
 }
 
