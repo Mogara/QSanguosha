@@ -341,7 +341,7 @@ sgs.ai_card_intention.TiaoxinCard = 80
 sgs.ai_use_priority.TiaoxinCard = 8
 
 sgs.ai_skill_choice.zhiji = function(self, choice)
-	if self.player:getHp() < self.player:getMaxHP()-1 then return "recover" end
+	if self.player:getHp() < self.player:getMaxHp()-1 then return "recover" end
 	return "draw"
 end
 

@@ -35,7 +35,7 @@ sgs.ai_skill_use_func.QuhuCard = function(card, use, self)
 	if not self.player:isWounded() or (self.player:getHp() == 1 and self:getCardsNum("Analeptic") > 0) then
 		local use_quhu
 		for _, friend in ipairs(self.friends) do
-			if math.min(5, friend:getMaxHP()) - friend:getHandcardNum() >= 2 then
+			if math.min(5, friend:getMaxHp()) - friend:getHandcardNum() >= 2 then
 				self:sort(self.enemies, "handcard")
 				if self.enemies[#self.enemies]:getHandcardNum() > 0 then use_quhu = true break end
 			end
@@ -87,7 +87,7 @@ sgs.ai_skill_use["@@jieming"] = function(self, prompt)
 	local max_x = 0
 	local target
 	for _, friend in ipairs(friends) do
-		local x = math.min(friend:getMaxHP(), 5) - friend:getHandcardNum()
+		local x = math.min(friend:getMaxHp(), 5) - friend:getHandcardNum()
 
 		if x > max_x then
 			max_x = x

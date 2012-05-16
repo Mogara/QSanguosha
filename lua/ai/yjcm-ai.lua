@@ -83,7 +83,7 @@ local xinzhan_skill={}
 xinzhan_skill.name="xinzhan"
 table.insert(sgs.ai_skills,xinzhan_skill)
 xinzhan_skill.getTurnUseCard=function(self)
-	if not self.player:hasUsed("XinzhanCard") and self.player:getHandcardNum() > self.player:getMaxHP() then
+	if not self.player:hasUsed("XinzhanCard") and self.player:getHandcardNum() > self.player:getMaxHp() then
 		return sgs.Card_Parse("@XinzhanCard=.")
 	end
 end
@@ -622,7 +622,7 @@ sgs.ai_cardshow.quanji = function(self, requestor)
 end
 
 sgs.ai_skill_choice.zili = function(self, choice)
-	if self.player:getHp() < self.player:getMaxHP()-1 then return "recover" end
+	if self.player:getHp() < self.player:getMaxHp()-1 then return "recover" end
 	return "draw"
 end
 
