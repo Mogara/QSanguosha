@@ -177,8 +177,8 @@ int ZombieScenario::getPlayerCount() const{
     return 8;
 }
 
-void ZombieScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZCCCCCCC");
+QString ZombieScenario::getRoles() const{
+    return "ZCCCCCCC";
 }
 
 void ZombieScenario::onTagSet(Room *, const QString &) const{

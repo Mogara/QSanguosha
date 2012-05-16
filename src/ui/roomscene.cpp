@@ -67,7 +67,7 @@ struct RoomLayout {
 struct NormalRoomLayout : public RoomLayout{
     NormalRoomLayout(){
         discard = QPointF(-250, 12);
-        discard_size = QSize(500, 32);
+        discard_size = QSize(500, 132);
         drawpile = QPointF(0, 0);
         enemy_box = QPointF(-216, -327);
         self_box = QPointF(360, -90);
@@ -84,8 +84,8 @@ struct NormalRoomLayout : public RoomLayout{
 struct CircularRoomLayout : public RoomLayout{
     CircularRoomLayout(){
         discard = QPointF(-350, -120);
-        discard_size = QSize(500, -30);
-        drawpile = QPointF(-450, -120);
+        discard_size = QSize(500, 132);
+        drawpile = QPointF(0, 0);
         enemy_box = QPointF(-361, -343);
         self_box = QPointF(201, -90);
         chat_box_size = QSize(268, 165);
@@ -1222,6 +1222,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 
 void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
+    bool doAdjust = false;
     for (int i = 0; i < card_moves.size(); i++) 
     {
         CardsMoveStruct &movement = card_moves[i];
@@ -1241,8 +1242,11 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
         bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
         keepGetCardLog(movement);
+        if (movement.from == Self || movement.to == Self)
+            doAdjust = true;
     }
-    dashboard->adjustCards();
+    if (doAdjust)
+        dashboard->adjustCards();
     _m_cardsMoveStash[moveId].clear();
 }
 

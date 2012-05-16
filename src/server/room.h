@@ -174,8 +174,20 @@ public:
 
     // Notification functions
     bool notifyMoveFocus(ServerPlayer* player);
-    bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);    
-    bool notifyMoveCards(QSanProtocol::CommandType command, int moveId, QList<CardsMoveStruct> move, bool isCardFaceUp);
+    bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);
+    // Notify client side to move cards from one place to another place. A movement should always be completed by
+    // calling notifyMoveCards in pairs, one with isLostPhase equaling true followed by one with isLostPhase
+    // equaling false. The tow phase design is needed because the target player doesn't necessarily gets the 
+    // cards that the source player lost. Any trigger during the movement can cause either the target player to
+    // be dead or some of the cards to be moved to another place before the target player actually gets it. 
+    // @param isLostPhase
+    //        Specify whether this is a S_COMMAND_LOSE_CARD notification.
+    // @param move
+    //        Specify all movements need to be broadcasted.
+    // @param forceVisible
+    //        If true, all players will be able to see the face of card regardless of whether the movement is
+    //        relevant or not.
+    bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);

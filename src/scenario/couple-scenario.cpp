@@ -235,8 +235,8 @@ int CoupleScenario::getPlayerCount() const{
     return 9;
 }
 
-void CoupleScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZNNNNNNNN");
+QString CoupleScenario::getRoles() const{
+    return "ZNNNNNNNN";
 }
 
 void CoupleScenario::onTagSet(Room *room, const QString &key) const{

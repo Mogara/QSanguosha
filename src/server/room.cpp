@@ -2772,9 +2772,8 @@ void Room::drawCards(QList<ServerPlayer*> players, int n, const QString &reason)
         move.to = player; move.to_place = Player::Hand; move.to_player_name = player->objectName();     
         moves.append(move);
     }
-    int moveId = _m_lastMovementId++;
-    notifyMoveCards(S_COMMAND_LOSE_CARD, moveId, moves, false);  
-    notifyMoveCards(S_COMMAND_GET_CARD, moveId, moves, false);  
+    notifyMoveCards(true, moves, false);  
+    notifyMoveCards(false, moves, false);  
     foreach (ServerPlayer* player, players) {
         QVariant data = QVariant::fromValue(n);
         thread->trigger(CardDrawnDone, player, data);
@@ -2987,8 +2986,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }
     */
     // First, process remove card
-    int moveId = _m_lastMovementId++;
-    notifyMoveCards(S_COMMAND_LOSE_CARD, moveId, cards_moves, forceMoveVisible);
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
     for (int i = 0; i < cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -3116,19 +3114,24 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             thread->trigger(CardGotOneTime, (ServerPlayer*)cards_move.to, data);
         }
     }
-    notifyMoveCards(S_COMMAND_GET_CARD, moveId, cards_moves, forceMoveVisible);
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 }
 
-bool Room::notifyMoveCards(CommandType command, int moveId, QList<CardsMoveStruct> cards_moves, bool forceVisible)
+bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
 {   
     // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   
     // Notify clients
+    int moveId;
+    if (isLostPhase)
+        moveId = _m_lastMovementId++;
+    else
+        moveId = --_m_lastMovementId;
     foreach (ServerPlayer* player, m_players)
     {
         if (player->isOffline()) continue;
-        Json::Value arg(Json::arrayValue);
+        Json::Value arg(Json::arrayValue);        
         arg[0] = moveId;
         for (int i = 0; i < cards_moves.size(); i++)
         {
@@ -3143,7 +3146,10 @@ bool Room::notifyMoveCards(CommandType command, int moveId, QList<CardsMoveStruc
                 // card from/to dongchaee is also visible to dongchaer
             arg[i + 1] = cards_moves[i].toJsonValue();        
         }
-        doNotify(player, command, arg);
+        if (isLostPhase)
+            doNotify(player, S_COMMAND_LOSE_CARD, arg);
+        else
+            doNotify(player, S_COMMAND_GET_CARD, arg);
     }    
     return true;
 }

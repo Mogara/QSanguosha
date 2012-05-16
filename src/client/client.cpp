@@ -442,6 +442,7 @@ void Client::getCards(const Json::Value& arg)
     {
         CardsMoveStruct move;
         if (!move.tryParse(arg[i])) return;
+        move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
         Player::Place dstPlace = move.to_place;        
     
