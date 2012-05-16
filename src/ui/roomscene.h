@@ -35,6 +35,7 @@ struct RoomLayout;
 #include <QThread>
 #include <QHBoxLayout>
 #include <QMutex>
+#include <QStack>
 
 class ScriptExecutor: public QDialog{
     Q_OBJECT
@@ -147,9 +148,11 @@ public:
 
 public slots:
     void addPlayer(ClientPlayer *player);
-    void removePlayer(const QString &player_name);    
-    void moveCards(QList<CardsMoveStruct> moves);
-    void keepMoveLog(CardsMoveStruct move);
+    void removePlayer(const QString &player_name);
+    void loseCards(int moveId, QList<CardsMoveStruct> moves);
+    void getCards(int moveId, QList<CardsMoveStruct> moves);
+    void keepLoseCardLog(const CardsMoveStruct &move);
+    void keepGetCardLog(const CardsMoveStruct &move);
     // choice dialog
     void chooseGeneral(const QStringList &generals);
     void chooseSuit(const QStringList &suits);
@@ -184,11 +187,14 @@ protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);    
-
-private:
-    PlayerCardContainer* _getPlayerCardContainer(Player::Place place, Player* player);
     QMutex m_roomMutex;
     QMutex m_zValueMutex;
+
+private:
+    QGraphicsItem* _m_last_front_item;
+    double _m_last_front_ZValue;
+    PlayerCardContainer* _getPlayerCardContainer(Player::Place place, Player* player);
+    QMap<int, QList<QList<CardItem*>> > _m_cardsMoveStash;
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;

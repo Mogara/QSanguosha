@@ -87,7 +87,9 @@ namespace QSanProtocol
         S_COMMAND_CHEAT,
         S_COMMAND_SURRENDER,
         S_COMMAND_GAME_OVER, 
-        S_COMMAND_MOVE_CARD
+        S_COMMAND_MOVE_CARD,
+        S_COMMAND_GET_CARD,
+        S_COMMAND_LOSE_CARD
     };
 
     enum Game3v3ChooseOrderCommand

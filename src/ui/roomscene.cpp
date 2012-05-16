@@ -123,7 +123,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
-
+    _m_last_front_item = NULL;
+    _m_last_front_ZValue = 0;
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
     room_layout = GetRoomLayout();
@@ -250,7 +251,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(game_over()), this, SLOT(onGameOver()));
     connect(ClientInstance, SIGNAL(standoff()), this, SLOT(onStandoff()));
 
-    connect(ClientInstance, SIGNAL(cards_moved(QList<CardsMoveStruct>)), this, SLOT(moveCards(QList<CardsMoveStruct>)));    
+    connect(ClientInstance, SIGNAL(move_cards_lost(int, QList<CardsMoveStruct>)), this, SLOT(loseCards(int, QList<CardsMoveStruct>)));
+    connect(ClientInstance, SIGNAL(move_cards_got(int, QList<CardsMoveStruct>)), this, SLOT(getCards(int, QList<CardsMoveStruct>)));
 
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
     connect(ClientInstance, SIGNAL(start_in_xs()), this, SLOT(startInXs()));
@@ -1205,19 +1207,59 @@ PlayerCardContainer* RoomScene::_getPlayerCardContainer(Player::Place place, Pla
         return name2photo.value(player->objectName(), NULL);
 }
 
-void RoomScene::moveCards(QList<CardsMoveStruct> card_moves)
+void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
     for (int i = 0; i < card_moves.size(); i++) 
     {
         CardsMoveStruct &movement = card_moves[i];
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
-        PlayerCardContainer* from_container = _getPlayerCardContainer(movement.from_place, movement.from);
-        PlayerCardContainer* to_container = _getPlayerCardContainer(movement.to_place, movement.to);
+        PlayerCardContainer* from_container = _getPlayerCardContainer(movement.from_place, movement.from);        
         QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
+        _m_cardsMoveStash[moveId].append(cards);
+        keepLoseCardLog(movement);
+    }
+}
+
+void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
+{
+    for (int i = 0; i < card_moves.size(); i++) 
+    {
+        CardsMoveStruct &movement = card_moves[i];
+        card_container->m_currentPlayer = (ClientPlayer*)movement.to;
+        PlayerCardContainer* to_container = _getPlayerCardContainer(movement.to_place, movement.to);
+        QList<CardItem*> cards = _m_cardsMoveStash[moveId][i];
+        for (int j = 0; j < cards.size(); j++)
+        {            
+            CardItem* card = cards[j];
+            int card_id = card->getId();
+            if (!card_moves[i].card_ids.contains(card_id))
+            {
+                cards.removeAt(j);
+                j--;
+            }
+        }
         bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
-        keepMoveLog(movement);
-        /*if (movement.from_place == Player::Special){
+        keepGetCardLog(movement);
+    }
+    _m_cardsMoveStash[moveId].clear();
+}
+
+void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
+{
+}
+
+void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
+{
+    if (move.card_ids.isEmpty()) return;
+    //DrawNCards
+    if (move.from_place == Player::DrawPile && move.to_place == Player::Hand)
+    {
+        QString to_general = move.to->getGeneralName();
+        log_box->appendLog("#DrawNCards", to_general, QStringList(), QString(),
+                            QString::number(move.card_ids.length()));
+    }
+            /*if (movement.from_place == Player::Special){
             CardItem *card_item = card_container->take(NULL, card_id);
             if (card_item != NULL);
             else if (movement.from == Self)
@@ -1302,20 +1344,6 @@ void RoomScene::moveCards(QList<CardsMoveStruct> card_moves)
         QString n_str = QString::number(card_ids.size());
         log_box->appendLog(type, from_general, tos, QString(), n_str);
     }*/
-        
-    }
-}
-
-void RoomScene::keepMoveLog(CardsMoveStruct move)
-{
-    if (move.card_ids.isEmpty()) return;
-    //DrawNCards
-    if (move.from_place == Player::DrawPile && move.to_place == Player::Hand)
-    {
-        QString to_general = move.to->getGeneralName();
-        log_box->appendLog("#DrawNCards", to_general, QStringList(), QString(),
-                            QString::number(move.card_ids.length()));
-    }
 }
 
 inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }
@@ -3224,6 +3252,12 @@ void RoomScene::freeze(){
 }
 
 void RoomScene::moveFocus(const QString &who, Countdown countdown){
+    if (who == Self->objectName() && focused != NULL)
+    {
+        focused->hideProgressBar();
+        if (focused->getPlayer()->getPhase() == Player::NotActive)
+            focused->setFrame(Photo::NoFrame);        
+    }
     Photo *photo = name2photo[who];
     if(photo){
         if(focused != photo && focused){
@@ -3704,13 +3738,11 @@ void RoomScene::fillGenerals(const QStringList &names){
 
 void RoomScene::bringToFront(QGraphicsItem* front_item)
 {
-    m_zValueMutex.lock();
-    static QGraphicsItem* last_item = NULL;
-    static double lastZValue = 0;
-    if (last_item != NULL)
-        last_item->setZValue(lastZValue);
-    last_item = front_item;
-    lastZValue = front_item->zValue();
+    m_zValueMutex.lock();    
+    if (_m_last_front_item != NULL)
+        _m_last_front_item->setZValue(_m_last_front_ZValue);
+    _m_last_front_item = front_item;
+    _m_last_front_ZValue = front_item->zValue();
     front_item->setZValue(10000);    
     m_zValueMutex.unlock();
 }

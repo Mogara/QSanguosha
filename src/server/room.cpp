@@ -35,6 +35,7 @@ Room::Room(QObject *parent, const QString &mode)
     _m_raceStarted(false), provided(NULL), has_provided(false),
     m_surrenderRequestReceived(false), _virtual(false)
 {       
+    _m_lastMovementId = 0;
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
 
@@ -2771,7 +2772,9 @@ void Room::drawCards(QList<ServerPlayer*> players, int n, const QString &reason)
         move.to = player; move.to_place = Player::Hand; move.to_player_name = player->objectName();     
         moves.append(move);
     }
-    notifyMoveCards(moves, false);  
+    int moveId = _m_lastMovementId++;
+    notifyMoveCards(S_COMMAND_LOSE_CARD, moveId, moves, false);  
+    notifyMoveCards(S_COMMAND_GET_CARD, moveId, moves, false);  
     foreach (ServerPlayer* player, players) {
         QVariant data = QVariant::fromValue(n);
         thread->trigger(CardDrawnDone, player, data);
@@ -2820,7 +2823,7 @@ RoomThread *Room::getThread() const{
 }
 
 void Room::moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
-    bool forceMoveVisible, bool phaseByPhase)
+    bool forceMoveVisible, bool ignoreChanged)
 {
     CardsMoveStruct move;    
     if(card->isVirtualCard())
@@ -2834,16 +2837,79 @@ void Room::moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place d
     move.to_place = dstPlace;
     QList<CardsMoveStruct> moves;
     moves.append(move);
-    moveCards(moves, forceMoveVisible, phaseByPhase);
+    moveCards(moves, forceMoveVisible, ignoreChanged);
 }
 
-void Room::moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool phaseByPhase){
+void Room::moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanged){
     QList<CardsMoveStruct> cards_moves;
     cards_moves.append(cards_move);
-    moveCards(cards_moves, forceMoveVisible, phaseByPhase);
+    moveCards(cards_moves, forceMoveVisible, ignoreChanged);
 }
 
-void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase){
+void Room::_fillMoveInfo(CardMoveStruct &move)
+{
+    
+    int card_id = move.card_id;
+    move.from = getCardOwner(card_id);
+    move.from_place = getCardPlace(card_id);
+    if (move.from) // Hand/Equip/Judge
+    {
+        if (move.from->isAlive())
+        {
+            if (move.from_place == Player::Special) move.from_pile_name = move.from->getPileName(card_id);
+            move.from_player_name = move.from->objectName();
+        }
+        else
+        {
+            move = CardMoveStruct();
+            return;
+        }
+    }
+    if (move.to)
+    {
+        if (move.to->isAlive())
+        {
+            move.to_player_name = move.to->objectName(); 
+            int card_id = move.card_id;
+            if (move.to_place == Player::Special) move.to_pile_name = move.to->getPileName(card_id);        
+        }
+        else
+        {
+            move = CardMoveStruct();
+            return;
+        }
+    }
+}
+
+void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index)
+{
+    
+    int card_id = moves.card_ids[card_index];
+    moves.from = getCardOwner(card_id);
+    moves.from_place = getCardPlace(card_id);
+    if (moves.from) // Hand/Equip/Judge
+    {
+        if (moves.from_place == Player::Special) moves.from_pile_name = moves.from->getPileName(card_id);
+        moves.from_player_name = moves.from->objectName();
+    }
+    if (moves.to)
+    {
+        if (moves.to->isAlive())
+        {
+            moves.to_player_name = moves.to->objectName(); 
+            int card_id = moves.card_ids[card_index];
+            if (moves.to_place == Player::Special) moves.to_pile_name = moves.to->getPileName(card_id);        
+        }
+        else
+        {
+            moves.to = NULL;
+            moves.to_place = Player::DiscardPile;
+            return;
+        }
+    }
+}
+
+void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin){
     
     QMap<_MoveSourceClassifier, QList<int> > moveMap;
     QList<CardsMoveStruct> all_sub_moves;
@@ -2851,27 +2917,13 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
     {
         CardsMoveStruct& move = cards_moves[i];
         if (move.card_ids.size() == 0) continue;
-        // First, read dst information
-        if(move.to) // Hand/Equip/Judge
-        {
-            move.to_player_name = move.to->objectName(); 
-            int card_id = move.card_ids[0];
-            if (move.to_place == Player::Special) move.to_pile_name = move.to->getPileName(card_id);
-        }
                 
         // reassemble move sources
         for (int j = 0; j < move.card_ids.size(); j++)
-        {
-            int card_id = move.card_ids[j];
-            move.from = getCardOwner(card_id);
-            move.from_place = getCardPlace(card_id);
-            if (move.from) // Hand/Equip/Judge
-            {
-                if (move.from_place == Player::Special) move.from_pile_name = move.from->getPileName(card_id);
-                move.from_player_name = move.from->objectName();            
-            }
+        {            
+            _fillMoveInfo(move, j);
             _MoveSourceClassifier classifier(move);
-            moveMap[classifier].append(card_id);
+            moveMap[classifier].append(move.card_ids[j]);
         }
         foreach (_MoveSourceClassifier cls, moveMap.keys())
         {
@@ -2884,7 +2936,7 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
             all_sub_moves.append(sub_move);
         }        
     }
-    _moveCards(all_sub_moves, forceMoveVisible, phaseByPhase);
+    _moveCards(all_sub_moves, forceMoveVisible, enforceOrigin);
     foreach (CardsMoveStruct cards_move, all_sub_moves)
     {
         if (cards_move.from && cards_move.from_place != Player::PlaceTakeoff){
@@ -2900,8 +2952,13 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
     }    
 }
 
-void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase)
+void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin)
 {
+    /*
+    // phaseByPhase is a pure UI consideration. With phaseByPhase, source client will see his card
+    // moved to a "takeoff" area, then moved to the target client's "takeoff" area, and then to
+    // the target's right area. Cards will be pending at the "takeoff" area if any trigger is asking
+    // for the client's decision. For now it's commented out because nobody is using it.
     if (phaseByPhase)
     {
         // Split phases
@@ -2937,15 +2994,37 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
         }
         return;
     }
-    
-
+    */
     // First, process remove card
+    int moveId = _m_lastMovementId++;
+    notifyMoveCards(S_COMMAND_LOSE_CARD, moveId, cards_moves, forceMoveVisible);
     for (int i = 0; i < cards_moves.size(); i++)
     {   
-        CardsMoveStruct &cards_move = cards_moves[i];        
+        CardsMoveStruct &cards_move = cards_moves[i];
         QList<CardMoveStruct> moves = cards_move.flatten();
+        if (enforceOrigin)
+        {
+            if (cards_move.to && !cards_move.to->isAlive())
+            {
+                cards_move.to = NULL;
+                cards_move.to_place = Player::DiscardPile;
+            }
+        }
         for (int j = 0; j < cards_move.card_ids.size(); j++)
-        {            
+        {              
+            // If the trigger
+            if (enforceOrigin)
+            {
+                CardMoveStruct new_move = moves[j];
+                _fillMoveInfo(new_move);
+                if (!new_move.hasSameSourceAs(moves[j]))
+                {
+                    cards_move.card_ids.removeAt(j);
+                    j--;
+                    continue;
+                }                
+            }
+
             int card_id = cards_move.card_ids[j];
             const Card *card = Sanguosha->getCard(card_id);
             
@@ -2977,8 +3056,31 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             thread->trigger(CardLostOneTime, (ServerPlayer*)cards_move.from, data);
         }
     }
-    
-    notifyMoveCards(cards_moves, forceMoveVisible);
+
+    if (enforceOrigin)
+    {
+        // check again here as CardLostOneTime may also kill target, all remove cards from source
+        // If the trigger        
+        for (int i = 0; i < cards_moves.size(); i++)
+        {   
+            CardsMoveStruct &cards_move = cards_moves[i];
+            QList<CardMoveStruct> moves = cards_move.flatten();        
+            if (cards_move.to && !cards_move.to->isAlive())
+            {
+                cards_move.to = NULL;
+                cards_move.to_place = Player::DiscardPile;
+            }        
+        }
+        for (int i = 0; i < cards_moves.size(); i++)
+        {   
+            CardsMoveStruct &cards_move = cards_moves[i];
+            if (cards_move.card_ids.size() == 0)
+            {
+                cards_moves.removeAt(i);
+                i--;
+            }
+        }
+    }    
 
     // Now, process add cards
     for (int i = 0; i <  cards_moves.size(); i++)
@@ -3022,10 +3124,11 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             QVariant data = QVariant::fromValue(move_star);
             thread->trigger(CardGotOneTime, (ServerPlayer*)cards_move.to, data);
         }
-    }    
+    }
+    notifyMoveCards(S_COMMAND_GET_CARD, moveId, cards_moves, forceMoveVisible);
 }
 
-bool Room::notifyMoveCards(QList<CardsMoveStruct> cards_moves, bool forceVisible)
+bool Room::notifyMoveCards(CommandType command, int moveId, QList<CardsMoveStruct> cards_moves, bool forceVisible)
 {   
     // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
@@ -3035,6 +3138,7 @@ bool Room::notifyMoveCards(QList<CardsMoveStruct> cards_moves, bool forceVisible
     {
         if (player->isOffline()) continue;
         Json::Value arg(Json::arrayValue);
+        arg[0] = moveId;
         for (int i = 0; i < cards_moves.size(); i++)
         {
             cards_moves[i].open = (forceVisible || cards_moves[i].isRelevant(player) ||
@@ -3046,9 +3150,9 @@ bool Room::notifyMoveCards(QList<CardsMoveStruct> cards_moves, bool forceVisible
                 // any card from/to discard pile should be visible
                 (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee))));
                 // card from/to dongchaee is also visible to dongchaer
-            arg[i] = cards_moves[i].toJsonValue();        
+            arg[i + 1] = cards_moves[i].toJsonValue();        
         }
-        doNotify(player, S_COMMAND_MOVE_CARD, arg);
+        doNotify(player, command, arg);
     }    
     return true;
 }

@@ -91,8 +91,9 @@ Client::Client(QObject *parent, const QString &filename)
     // callbacks["moveNCards"] = &Client::moveNCards;
     // callbacks["moveCard"] = &Client::moveCard;
     // callbacks["drawNCards"] = &Client::drawNCards;
-    // callbacks["drawCards"] = &Client::drawCards;
-    m_callbacks[S_COMMAND_MOVE_CARD] = &Client::moveCards;
+    // callbacks["drawCards"] = &Client::drawCards;    
+    m_callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
+    m_callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
     callbacks["clearPile"] = &Client::resetPiles;
     callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["setStatistics"] = &Client::setStatistics;
@@ -398,7 +399,7 @@ void Client::removePlayer(const QString &player_name){
     }
 }
 
-bool Client::_moveSingleCard(int card_id, CardsMoveStruct move)
+bool Client::_loseSingleCard(int card_id, CardsMoveStruct move)
 {    
     const Card *card = Sanguosha->getCard(card_id);
     if(move.from)
@@ -411,7 +412,13 @@ bool Client::_moveSingleCard(int card_id, CardsMoveStruct move)
         else if(move.from_place == Player::DrawPile && !Self->hasFlag("marshalling"))
                 pile_num--;        
     }
+    updatePileNum();
+    return true;
+}
 
+bool Client::_getSingleCard(int card_id, CardsMoveStruct move)
+{
+    const Card *card = Sanguosha->getCard(card_id);
     if(move.to)
         move.to->addCard(card, move.to_place);
     else
@@ -426,46 +433,51 @@ bool Client::_moveSingleCard(int card_id, CardsMoveStruct move)
     updatePileNum();
     return true;
 }
-
-// S = Special, D1 = Draw, D2 = Discard, H = Hand, E = Equip, J = Judge
-// from/to  S      D1/D2/H      E/J   
-// S        pile    pile       pile        
-// D1/D2/H  pile    Move       Move
-// E/J      pile    Move       Move
-//
-void Client::moveCards(const Json::Value& arg)
+void Client::getCards(const Json::Value& arg)
 {
-    Q_ASSERT(arg.isArray());
+    Q_ASSERT(arg.isArray() && arg.size() >= 1);
+    int moveId = arg[0].asInt();
     QList<CardsMoveStruct> moves;
-    for (unsigned int i = 0; i < arg.size(); i++)
+    for (unsigned int i = 1; i < arg.size(); i++)
+    {
+        CardsMoveStruct move;
+        if (!move.tryParse(arg[i])) return;
+        move.to = getPlayer(move.to_player_name);
+        Player::Place dstPlace = move.to_place;        
+    
+        if (dstPlace == Player::Special)
+            ((ClientPlayer*)move.to)->changePile(move.to_pile_name, true, move.card_ids);
+        else{
+            foreach (int card_id, move.card_ids)
+                _getSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
+        }
+        moves.append(move);
+    }
+    emit move_cards_got(moveId, moves);
+}
+
+void Client::loseCards(const Json::Value& arg)
+{
+    Q_ASSERT(arg.isArray() && arg.size() >= 1);
+    int moveId = arg[0].asInt();
+    QList<CardsMoveStruct> moves;
+    for (unsigned int i = 1; i < arg.size(); i++)
     {
         CardsMoveStruct move;
         if (!move.tryParse(arg[i])) return;
         move.from = getPlayer(move.from_player_name);
-        move.to = getPlayer(move.to_player_name);    
-        Player::Place srcPlace = move.from_place;
-        Player::Place dstPlace = move.to_place;        
-    
-        bool moved = false;
-        // S->x / x->S
-        if (srcPlace == Player::Special)
-        {
-            moved = true;
+        move.to = getPlayer(move.to_player_name);
+        Player::Place srcPlace = move.from_place;   
+        
+        if (srcPlace == Player::Special)        
             ((ClientPlayer*)move.from)->changePile(move.from_pile_name, false, move.card_ids);
-        }
-        if (dstPlace == Player::Special)
-        {
-            moved = true;
-            ((ClientPlayer*)move.to)->changePile(move.to_pile_name, true, move.card_ids);
-        }
-        if (!moved)
-        {
+        else {
             foreach (int card_id, move.card_ids)
-                _moveSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
+                _loseSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
         }
         moves.append(move);
     }
-    emit cards_moved(moves);    
+    emit move_cards_lost(moveId, moves);    
 }
 
 void Client::onPlayerChooseGeneral(const QString &item_name){

@@ -106,7 +106,8 @@ public:
     void resetPiles(const QString &);
     void setPileNumber(const QString &pile_num);
     void gameOver(const Json::Value &);
-    void moveCards(const Json::Value &);
+    void loseCards(const Json::Value &);
+    void getCards(const Json::Value &);
     void killPlayer(const QString &player_name);
     void revivePlayer(const QString &player_name);
     void warn(const QString &);
@@ -244,7 +245,8 @@ private:
     void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
 
     void _askForCardOrUseCard(const Json::Value&);
-    bool _moveSingleCard(int card_id, CardsMoveStruct move);
+    bool _loseSingleCard(int card_id, CardsMoveStruct move);
+    bool _getSingleCard(int card_id, CardsMoveStruct move);
 
 private slots:
     void processServerPacket(const QString &cmd);
@@ -298,8 +300,9 @@ signals:
     void game_started();
     void game_over();
     void standoff();
-
-    void cards_moved(QList<CardsMoveStruct> moves);
+        
+    void move_cards_lost(int moveId, QList<CardsMoveStruct> moves);
+    void move_cards_got(int moveId, QList<CardsMoveStruct> moves);
 
     void skill_attached(const QString &skill_name, bool from_left);
     void skill_detached(const QString &skill_name);

@@ -174,8 +174,8 @@ public:
 
     // Notification functions
     bool notifyMoveFocus(ServerPlayer* player);
-    bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);
-    bool notifyMoveCards(QList<CardsMoveStruct> move, bool isCardFaceUp);
+    bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);    
+    bool notifyMoveCards(QSanProtocol::CommandType command, int moveId, QList<CardsMoveStruct> move, bool isCardFaceUp);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -229,10 +229,10 @@ public:
     void throwCard(int card_id, ServerPlayer *who = NULL);
 
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
-        bool forceMoveVisible = false, bool phaseByPhase = false);
-    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool phaseByPhase = true);
-    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase = true);
-    void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool phaseByPhase);
+        bool forceMoveVisible = false, bool ignoreChanged = true);
+    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanged = true);
+    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged = true);
+    void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged);
     
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -299,6 +299,9 @@ private:
         QString m_from_pile_name;
         QString m_from_player_name; 
     };
+    int _m_lastMovementId;
+    void _fillMoveInfo(CardMoveStruct &move);
+    void _fillMoveInfo(CardsMoveStruct &moves, int card_index);
     QString _chooseDefaultGeneral(ServerPlayer* player) const;
     bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);
     QString mode;
