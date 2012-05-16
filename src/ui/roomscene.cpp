@@ -67,7 +67,7 @@ struct RoomLayout {
 struct NormalRoomLayout : public RoomLayout{
     NormalRoomLayout(){
         discard = QPointF(-250, 12);
-        discard_size = QSize(500, 132);
+        discard_size = QSize(500, 32);
         drawpile = QPointF(0, 0);
         enemy_box = QPointF(-216, -327);
         self_box = QPointF(360, -90);
@@ -83,9 +83,9 @@ struct NormalRoomLayout : public RoomLayout{
 
 struct CircularRoomLayout : public RoomLayout{
     CircularRoomLayout(){
-        discard = QPointF(-140, 30);
-        discard_size = QSize(500, 132);
-        drawpile = QPointF(-260, 30);
+        discard = QPointF(-350, -120);
+        discard_size = QSize(500, -30);
+        drawpile = QPointF(-450, -120);
         enemy_box = QPointF(-361, -343);
         self_box = QPointF(201, -90);
         chat_box_size = QSize(268, 165);

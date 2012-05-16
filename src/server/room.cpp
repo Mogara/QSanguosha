@@ -794,7 +794,7 @@ void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide){
     if(card == NULL)
         return;
 
-    moveCardTo(card, target, Player::Hand, true);
+    moveCardTo(card, target, Player::Hand, unhide);
 }
 
 void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
