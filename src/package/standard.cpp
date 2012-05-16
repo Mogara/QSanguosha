@@ -74,7 +74,7 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     const EquipCard *equipped = NULL;
     ServerPlayer *target = targets.value(0, source);
-    
+    if (room->getCardOwner(getId()) != source) return;
     switch(location()){
     case WeaponLocation: equipped = target->getWeapon(); break;
     case ArmorLocation: equipped = target->getArmor(); break;
@@ -85,7 +85,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     if(equipped)
         room->throwCard(equipped, source);
 
-    if (source->handCards().contains(this->getId()))
+    if (room->getCardOwner(getId()) == source && room->getCardPlace(getId()) == Player::Hand)
     {
         LogMessage log;
         log.from = target;
