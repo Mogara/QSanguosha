@@ -82,18 +82,39 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     case OffensiveHorseLocation: equipped = target->getOffensiveHorse(); break;
     }
 
-    if(equipped)
-        room->throwCard(equipped, source);
-
     if (room->getCardOwner(getId()) == source && room->getCardPlace(getId()) == Player::Hand)
     {
-        LogMessage log;
-        log.from = target;
-        log.type = "$Install";
-        log.card_str = QString::number(getEffectiveId());
-        room->sendLog(log);
-    
-        room->moveCardTo(this, target, Player::Equip, true);
+        if(equipped)
+        {
+            QList<CardsMoveStruct> exchangeMove;
+            CardsMoveStruct move1;
+            move1.card_ids << getEffectiveId();
+            move1.to = source;
+            move1.to_place = Player::Equip;
+            CardsMoveStruct move2;
+            move2.card_ids << equipped->getEffectiveId();
+            move2.to = NULL;
+            move2.to_place = Player::DiscardPile;
+            exchangeMove.push_back(move1);
+            exchangeMove.push_back(move2);
+
+            LogMessage log;
+            log.from = target;
+            log.type = "$Install";
+            log.card_str = QString::number(getEffectiveId());
+            room->sendLog(log);
+
+            room->moveCards(exchangeMove, true);
+        }
+        else
+        {
+            LogMessage log;
+            log.from = target;
+            log.type = "$Install";
+            log.card_str = QString::number(getEffectiveId());
+            room->sendLog(log);
+            room->moveCardTo(this, target, Player::Equip, true);
+        }
     }
 }
 

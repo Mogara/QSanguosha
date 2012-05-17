@@ -466,7 +466,7 @@ public:
 class Xuanfeng: public TriggerSkill{
 public:
     Xuanfeng():TriggerSkill("xuanfeng"){
-        events << CardLostOneTime;
+        events << CardLostDone;
     }
 
     virtual QString getDefaultChoice(ServerPlayer *) const{

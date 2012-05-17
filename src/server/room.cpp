@@ -2901,13 +2901,13 @@ void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index)
 
 void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin){
     
-    QMap<_MoveSourceClassifier, QList<int> > moveMap;
     QList<CardsMoveStruct> all_sub_moves;
     for (int i = 0; i < cards_moves.size(); i++)
     {
         CardsMoveStruct& move = cards_moves[i];
         if (move.card_ids.size() == 0) continue;
                 
+        QMap<_MoveSourceClassifier, QList<int> > moveMap;
         // reassemble move sources
         for (int j = 0; j < move.card_ids.size(); j++)
         {            
