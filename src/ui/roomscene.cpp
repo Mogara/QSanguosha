@@ -1269,6 +1269,64 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         log_box->appendLog("#DrawNCards", to_general, QStringList(), QString(),
                             QString::number(move.card_ids.length()));
     }
+    if(move.from_place == Player::DiscardPile && move.to_place == Player::Hand)
+    {
+        QString to_general = move.to->getGeneralName();
+        log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(move.card_ids.first()));
+    }
+    if(move.from && move.from_place != Player::Hand && move.to)
+    {
+        QString from_general = move.from->getGeneralName();
+        QStringList tos;
+        tos << move.to->getGeneralName();
+        log_box->appendLog("$MoveCard", from_general, tos, QString::number(move.card_ids.first()));
+    }
+    if(move.from_place == Player::Hand && move.to_place == Player::Hand)
+    {
+        QString from_general = move.from->getGeneralName();
+        QStringList tos;
+        tos << move.to->getGeneralName();
+        bool hiden = false;
+        foreach(int card_id, move.card_ids)
+            if(card_id == Card::S_UNKNOWN_CARD_ID)
+                hiden = true;
+        if(hiden)
+            log_box->appendLog("#MoveNCards", from_general, tos, QString(),
+                               QString::number(move.card_ids.length()));
+        else
+        {
+            foreach(int card_id, move.card_ids)
+            log_box->appendLog("$MoveCard", from_general, tos, QString::number(card_id));
+        }
+    }
+    if(move.from && move.to){
+        // both src and dest are player
+        QString type;
+        if(move.to_place == Player::Judging){
+            const Card *trick = Sanguosha->getCard(move.card_ids.first());
+            if(trick->objectName() == "lightning")
+                type = "$LightningMove";
+            else
+                type = "$PasteCard";
+        }
+        if(!type.isNull()){
+            QString from_general = move.from->objectName();
+            QStringList tos;
+            tos << move.to->objectName();
+            log_box->appendLog(type, from_general, tos, QString::number(move.card_ids.first()));
+        }
+    }
+    if(move.from && move.to_place == Player::DrawPile){
+        QString type = "$PutCard";
+        QString from_general = move.from->getGeneralName();
+        log_box->appendLog(type, from_general, QStringList(), QString::number(move.card_ids.first()));
+    }
+    if(move.from && move.to && move.from_place == Player::Equip && move.to_place == Player::Equip){
+        QString type = "$Install";
+        QString to_general = move.to->getGeneralName();
+        foreach(int card_id, move.card_ids)
+            log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
+    }
             /*if (movement.from_place == Player::Special){
             CardItem *card_item = card_container->take(NULL, card_id);
             if (card_item != NULL);
@@ -1306,54 +1364,8 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         if(src_place == Player::DiscardPile || dest_place == Player::Hand){
             card_item->deleteCardDescription();
         }        
-    }   
+    }   */
     
-    QString card_str = QString::number(card_id);
-    if(src && dest){
-        if(src == dest)
-            return;
-
-        // both src and dest are player
-        QString type;
-        if(dest_place == Player::Judging){
-            const Card *trick = Sanguosha->getCard(card_id);
-            if(trick->objectName() == "lightning")
-                type = "$LightningMove";
-            else
-                type = "$PasteCard";
-        }else if(dest_place == Player::Hand)
-            type = "$MoveCard";
-
-        if(!type.isNull()){
-            QString from_general = src->objectName();
-            QStringList tos;
-            tos << dest->objectName();
-            log_box->appendLog(type, from_general, tos, card_str);
-        }
-
-    }else if(src){
-        // src throw card
-        if(dest_place == Player::DrawPile){
-            QString type = "$PutCard";
-            QString from_general = src->getGeneralName();
-            log_box->appendLog(type, from_general, QStringList(), card_str);
-        }
-    }else if(dest){
-        if(src_place == Player::DiscardPile){
-            QString type = "$RecycleCard";
-            QString to_general = dest->getGeneralName();
-            log_box->appendLog(type, to_general, QStringList(), card_str);
-        }
-    }    
-    else 
-    {
-        QString type = "#MoveNCards";
-        QString from_general = move.from->getGeneralName();
-        QStringList tos;
-        tos << move.to->getGeneralName();
-        QString n_str = QString::number(card_ids.size());
-        log_box->appendLog(type, from_general, tos, QString(), n_str);
-    }*/
 }
 
 inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }
