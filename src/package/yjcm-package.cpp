@@ -1008,8 +1008,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect("zili");
-        room->broadcastInvoke("animate", "lightbox:$zili:4000");
-        room->getThread()->delay(4000);
+        //room->broadcastInvoke("animate", "lightbox:$zili:4000");
+        //room->getThread()->delay(4000);
 
         if(room->askForChoice(zhonghui, objectName(), "recover+draw") == "recover"){
             RecoverStruct recover;
