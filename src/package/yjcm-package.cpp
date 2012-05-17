@@ -303,11 +303,13 @@ public:
 
         if(event == CardGotOneTime){
             CardsMoveStar move = data.value<CardsMoveStar>();
-            if (move->from != NULL && move->card_ids.size() >= 2 
+            if ((move->from != NULL && move->card_ids.size() >= 2  ||
+                 player->getMark("xuanhuo") > 0)
                 && room->askForSkillInvoke(player,objectName(),data)){
                 room->drawCards((ServerPlayer*)move->from,1);
                 room->playSkillEffect(objectName(), qrand() % 2 + 1);
             }
+            room->setPlayerMark(player, "xuanhuo", 0);
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
@@ -370,6 +372,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
             effect.to->addToPile("#xuanhuo", dummy, true);
             int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             dummy->addSubcard(second_id);
+            room->setPlayerMark(effect.from, "xuanhuo", 1);
             room->moveCardTo(dummy, effect.from, Player::Hand, false);
             delete dummy;
         }
@@ -381,6 +384,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->addToPile("#xuanhuo", dummy, true);
         int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
         dummy->addSubcard(second_id);
+        room->setPlayerMark(effect.from, "xuanhuo", 1);
         room->moveCardTo(dummy, effect.from, Player::Hand, false);
         delete dummy;
     }
