@@ -286,7 +286,7 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardLostOneTime << FinishJudge;
+        events << CardLostDone << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -294,7 +294,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == CardLostOneTime){
+        if(event == CardLostDone){
             CardsMoveStar move = data.value<CardsMoveStar>();
 
             if((move->from_place == Player::Hand || move->from_place == Player::Equip) && 
@@ -712,7 +712,7 @@ public:
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
-        events << CardLostDone;
+        events << CardLostOneTime;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
