@@ -957,6 +957,131 @@ public:
     }
 };
 
+class Quanji:public MasochismSkill{
+public:
+    Quanji():MasochismSkill("quanji"){
+        frequency = Frequent;
+    }
+
+    virtual void onDamaged(ServerPlayer *zhonghui, const DamageStruct &damage) const{
+        Room *room = zhonghui->getRoom();
+
+        if(!room->askForSkillInvoke(zhonghui, objectName()))
+            return;
+
+        room->playSkillEffect(objectName());
+
+        int x = damage.damage, i;
+        for(i=0; i<x; i++){
+            room->drawCards(zhonghui,1);
+            const Card *card = room->askForCardShow(zhonghui, zhonghui, objectName());
+            zhonghui->addToPile("power", card->getEffectiveId());
+        }
+
+    }
+};
+
+class Zili: public PhaseChangeSkill{
+public:
+    Zili():PhaseChangeSkill("zili"){
+        frequency = Wake;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMark("zili") == 0
+                && target->getPile("power").length() >= 3;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zhonghui) const{
+        Room *room = zhonghui->getRoom();
+
+        room->setPlayerMark(zhonghui, "zili", 1);
+        room->loseMaxHp(zhonghui);
+
+        LogMessage log;
+        log.type = "#ZiliWake";
+        log.from = zhonghui;
+        log.arg = QString::number(zhonghui->getPile("power").length());
+        log.arg2 = objectName();
+        room->sendLog(log);
+
+        room->playSkillEffect("zili");
+        room->broadcastInvoke("animate", "lightbox:$zili:4000");
+        room->getThread()->delay(4000);
+
+        if(room->askForChoice(zhonghui, objectName(), "recover+draw") == "recover"){
+            RecoverStruct recover;
+            recover.who = zhonghui;
+            room->recover(zhonghui, recover);
+        }else
+            room->drawCards(zhonghui, 2);
+        room->acquireSkill(zhonghui, "paiyi");
+
+        return false;
+    }
+};
+
+PaiyiCard::PaiyiCard(){
+    once = true;
+}
+
+bool PaiyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    return true;
+}
+
+void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *zhonghui = card_use.from;
+    ServerPlayer *target = card_use.to.first();
+    QList<int> powers = zhonghui->getPile("power");
+    if(powers.isEmpty())
+        return ;
+
+    int card_id;
+    if(powers.length() == 1)
+        card_id = powers.first();
+    else{
+        room->fillAG(powers, zhonghui);
+        card_id = room->askForAG(zhonghui, powers, true, "paiyi");
+        zhonghui->invoke("clearAG");
+
+        if(card_id == -1)
+            return;
+    }
+
+    room->throwCard(card_id);
+    room->drawCards(target, 2,"paiyi");
+    if(target->getHandcardNum() > zhonghui->getHandcardNum()){
+        DamageStruct damage;
+        damage.card = NULL;
+        damage.from = zhonghui;
+        damage.to = target;
+
+        room->damage(damage);
+    }
+}
+
+class Paiyi:public ZeroCardViewAsSkill{
+public:
+    Paiyi():ZeroCardViewAsSkill("paiyi"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->getPile("power").isEmpty()&&!player->hasUsed("PaiyiCard");
+    }
+
+    virtual const Card *viewAs() const{
+        return new PaiyiCard;
+    }
+
+    virtual Location getLocation() const{
+        return Right;
+    }
+};
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
     caozhi->addSkill(new Luoying);
@@ -1001,7 +1126,11 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     gaoshun->addSkill(new Xianzhen);
     gaoshun->addSkill(new Jiejiu);
 
-    // General *zhonghui = new General(this, "zhonghui", "wei");
+    General *zhonghui = new General(this, "zhonghui", "wei");
+    zhonghui->addSkill(new Quanji);
+    zhonghui->addSkill(new Zili);
+    zhonghui->addRelateSkill("paiyi");
+
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();
@@ -1009,6 +1138,9 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<XuanhuoCard>();
     addMetaObject<XinzhanCard>();
     addMetaObject<JujianCard>();
+    addMetaObject<PaiyiCard>();
+
+    skills << new Paiyi;
 }
 
 ADD_PACKAGE(YJCM)
