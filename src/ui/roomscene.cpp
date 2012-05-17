@@ -1274,12 +1274,19 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         QString to_general = move.to->getGeneralName();
         log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(move.card_ids.first()));
     }
-    if(move.from && move.from_place != Player::Hand && move.to)
+	if(move.from && move.from_place != Player::Hand && move.to && move.from != move.to)
     {
         QString from_general = move.from->getGeneralName();
         QStringList tos;
         tos << move.to->getGeneralName();
-        log_box->appendLog("$MoveCard", from_general, tos, QString::number(move.card_ids.first()));
+        foreach(int card_id, move.card_ids)
+		{
+            if(card_id != Card::S_UNKNOWN_CARD_ID)
+				log_box->appendLog("$MoveCard", from_general, tos, QString::number(card_id));
+			else
+				log_box->appendLog("#MoveNCards", from_general, tos, QString(),
+                               QString::number(move.card_ids.length()));
+		}
     }
     if(move.from_place == Player::Hand && move.to_place == Player::Hand)
     {
