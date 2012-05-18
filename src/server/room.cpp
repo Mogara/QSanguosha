@@ -3323,6 +3323,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     notifyMoveFocus(player, S_COMMAND_DISCARD_CARD);
     AI *ai = player->getAI();
     QList<int> to_discard;
+	int min_num = 1;
     if (ai) {
         to_discard = ai->askForDiscard(reason, discard_num, optional, include_equip);
     }else{
@@ -3330,11 +3331,18 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         ask_str[0] = discard_num;
         ask_str[1] = optional;
         ask_str[2] = include_equip;
+        if(reason != "gamerule")
+		{
+            ask_str[3] = discard_num;
+			min_num = discard_num;
+		}
+        else
+            ask_str[3] = 1;
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str, true);
 
         //@todo: also check if the player does have that card!!!
         Json::Value clientReply = player->getClientReply();
-        if(!success || !clientReply.isArray() || (int)clientReply.size() != discard_num
+        if(!success || !clientReply.isArray() || ((int)clientReply.size() > discard_num || (int)clientReply.size() < min_num)
             || !tryParse(clientReply, to_discard))
         {
             if(optional) return false;

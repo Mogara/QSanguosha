@@ -10,6 +10,7 @@ public:
     explicit DiscardSkill();
 
     void setNum(int num);
+	void setMinNum(int minnum);
     void setIncludeEquip(bool include_equip);
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
@@ -18,6 +19,7 @@ public:
 private:
     DummyCard *card;
     int num;
+	int minnum;
     bool include_equip;
 };
 

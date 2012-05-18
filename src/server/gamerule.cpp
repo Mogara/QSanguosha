@@ -107,16 +107,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
                 }
                 if(discard_num > 0)
                 {
-                    if(discard_num > 1 && player->getMark("nofirstdiscard") < 1)
-                    {
-                        room->askForDiscard(player, "gamerule", 2);
-                        room->setPlayerMark(player, "nofirstdiscard", 1);
-                    }
-                    else
-                    {
-                        room->askForDiscard(player, "gamerule", discard_num);
-                        room->setPlayerMark(player, "nofirstdiscard", 0);
-                    }
+					room->askForDiscard(player, "gamerule", discard_num);
                 }
             }
             break;

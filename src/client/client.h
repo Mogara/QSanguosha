@@ -194,6 +194,7 @@ public:
     bool m_isDiscardActionRefusable;
     bool m_canDiscardEquip;
     int discard_num;
+    int min_num;
     QString skill_name;
     QList<const Card*> discarded_list;
     QStringList players_to_choose;    
