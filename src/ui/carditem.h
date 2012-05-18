@@ -94,6 +94,7 @@ signals:
     void released();
     void enter_hover();
     void leave_hover();
+    void movement_animation_finished();
 };
 
 #endif // CARDITEM_H

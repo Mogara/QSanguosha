@@ -26,7 +26,7 @@ protected slots:
     virtual void onAnimationFinished();
 private slots:
     void _doUpdate();
-    void _destroyCards();
+    void _destroyCard();
 private:
     QList<CardItem*> _cardsToBeDestroyed;
     QMutex _mutex_cardsToBeDestroyed;

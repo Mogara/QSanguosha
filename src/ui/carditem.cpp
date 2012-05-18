@@ -192,6 +192,7 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade)
         m_currentAnimation = goback;
     }
     m_animationMutex.unlock();
+    connect(m_currentAnimation, SIGNAL(finished()), this, SIGNAL(movement_animation_finished()));
     return m_currentAnimation;
 }
 

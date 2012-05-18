@@ -22,17 +22,10 @@ CardItem* PlayerCardContainer::_createCard(int card_id)
     return item;
 }
 
-void PlayerCardContainer::_destroyCards()
+void PlayerCardContainer::_destroyCard()
 {
-    _mutex_cardsToBeDestroyed.lock();
-    foreach (CardItem* card, _cardsToBeDestroyed)
-    {
-        card->setVisible(false);
-        this->scene()->removeItem(card);
-    }
-    _cardsToBeDestroyed.clear();
-    _mutex_cardsToBeDestroyed.unlock();
-    update();
+    CardItem* card = (CardItem*)sender();
+    delete card;
 }
 
 void PlayerCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRegion,
@@ -84,10 +77,13 @@ void PlayerCardContainer::_playMoveCardsAnimation(QList<CardItem*> &cards, bool 
     
     QParallelAnimationGroup* animation = new QParallelAnimationGroup;
     foreach (CardItem* card_item, cards)
+    {
+        if (destroyCards)        
+            connect(card_item, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCards()));
         animation->addAnimation(card_item->getGoBackAnimation(true));
-    if (destroyCards)
-        connect(animation, SIGNAL(finished()), this, SLOT(_destroyCards())); 
-    connect(animation, SIGNAL(finished()), this, SLOT(_doUpdate()));
+    }
+    
+    connect(animation, SIGNAL(finished()), this, SLOT(_doUpdate())); 
     connect(animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
     animation->start();
 }

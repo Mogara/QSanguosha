@@ -29,12 +29,9 @@ public:
 protected:
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
     QList<CardItem*> m_visibleCards;
-    QList<CardItem*> m_dyingCards;
     QMutex _m_mutex_pileCards;
     int m_numCardsVisible;
     QRect m_cardsDisplayRegion;
-protected slots:    
-    void onAnimationFinished();
 };
 
 class DrawPile: public PlayerCardContainer
