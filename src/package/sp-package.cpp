@@ -253,7 +253,7 @@ public:
                     room->throwCard(dummy_card, yuanshu);
                 }
             }else{
-                room->askForDiscard(yuanshu, "yongsi", x, false, true);
+                room->askForDiscard(yuanshu, "yongsi", x, x, false, true);
 
                 LogMessage log;
                 log.type = "#YongsiBad";

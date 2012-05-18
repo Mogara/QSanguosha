@@ -2931,9 +2931,18 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
     {
         if (cards_move.from && cards_move.from_place != Player::PlaceTakeoff){
             CardsMoveStar move_star = &cards_move;
+            QVariant data = QVariant::fromValue(move_star);
+            thread->trigger(CardLostDone, (ServerPlayer*)cards_move.from, data);
+            break;
+        }
+    }
+    foreach (CardsMoveStruct cards_move, all_sub_moves)
+    {
+        /*if (cards_move.from && cards_move.from_place != Player::PlaceTakeoff){
+            CardsMoveStar move_star = &cards_move;
             QVariant data = QVariant::fromValue(move_star);            
             thread->trigger(CardLostDone, (ServerPlayer*)cards_move.from, data);
-        }
+        }*/
         if (cards_move.to && cards_move.to_place != Player::PlaceTakeoff){
             CardsMoveStar move_star = &cards_move;
             QVariant data = QVariant::fromValue(move_star);            
@@ -3310,7 +3319,7 @@ QString Room::askForKingdom(ServerPlayer *player){
     return "wei";    
 }
 
-bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, bool optional, bool include_equip){
+bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool optional, bool include_equip){
     notifyMoveFocus(player, S_COMMAND_DISCARD_CARD);
     AI *ai = player->getAI();
     QList<int> to_discard;
@@ -3319,13 +3328,14 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     }else{
         Json::Value ask_str(Json::arrayValue);
         ask_str[0] = discard_num;
-        ask_str[1] = optional;
-        ask_str[2] = include_equip;
+        ask_str[1] = min_num;
+        ask_str[2] = optional;
+        ask_str[3] = include_equip;;
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str, true);
 
         //@todo: also check if the player does have that card!!!
         Json::Value clientReply = player->getClientReply();
-        if(!success || !clientReply.isArray() || (int)clientReply.size() != discard_num
+        if(!success || !clientReply.isArray() || ((int)clientReply.size() > discard_num || (int)clientReply.size() < min_num)
             || !tryParse(clientReply, to_discard))
         {
             if(optional) return false;

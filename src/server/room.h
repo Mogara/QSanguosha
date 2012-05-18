@@ -241,7 +241,7 @@ public:
     void throwCard(int card_id, ServerPlayer *who = NULL);
 
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
-        bool forceMoveVisible = false, bool ignoreChanged = true);
+    bool forceMoveVisible = false, bool ignoreChanged = true);
     void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanged = true);
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged = true);
     void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged);
@@ -252,7 +252,7 @@ public:
     QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
-    bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, bool optional = false, bool include_equip = false);
+    bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, int min_num, bool optional = false, bool include_equip = false);
     const Card *askForExchange(ServerPlayer *player, const QString &reason, int discard_num);
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);

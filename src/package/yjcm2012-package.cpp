@@ -216,6 +216,7 @@ public:
             target->drawCards(1);
 
             Room *room = target->getRoom();
+            room->playSkillEffect(objectName());
             room->showAllCards(target);
 
             QList<const Card *> cards = target->getHandcards();
@@ -229,7 +230,7 @@ public:
             }
 
             if(same_color && damage.from && !damage.from->isKongcheng())
-                room->askForDiscard(damage.from, objectName(), 1);
+                room->askForDiscard(damage.from, objectName(), 1, 1);
         }
     }
 };

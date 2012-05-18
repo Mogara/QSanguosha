@@ -561,7 +561,8 @@ public:
             if (room->askForChoice(player, objectName(), "draw+throw") == "draw")
                 target->drawCards(3);
             else
-                room->askForDiscard(target, objectName(), qMin(3,target->getCardCount(true)), false, true);
+                room->askForDiscard(target, objectName(), qMin(3,target->getCardCount(true)),
+                                    qMin(3,target->getCardCount(true)), false, true);
         }
         return false;
     }
@@ -655,7 +656,7 @@ public:
         foreach(ServerPlayer *tianfeng, tians){
             if(tianfeng->getCardCount(true)>=2
                && room->askForSkillInvoke(tianfeng, objectName(), QVariant::fromValue(player))
-                && room->askForDiscard(tianfeng, objectName(), 2, false, true)){
+                && room->askForDiscard(tianfeng, objectName(), 2, 2, false, true)){
 
                 foreach(const Card *jcd, player->getJudgingArea())
                     tianfeng->obtainCard(jcd);

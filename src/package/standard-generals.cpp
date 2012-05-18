@@ -199,7 +199,7 @@ public:
 
             room->judge(judge);
             if(judge.isGood()){
-                if(!room->askForDiscard(from, objectName(), 2, true)){
+                if(!room->askForDiscard(from, objectName(), 2, 2, true)){
                     DamageStruct damage;
                     damage.from = xiahou;
                     damage.to = from;

@@ -1836,6 +1836,16 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					end
 				end
 			end
+			if trick:inherits("Duel") and not from:hasSkill("wuyan") then
+				if self.player:objectName() == to:objectName() then
+					if self:hasSkills(sgs.masochism_skill, self.player) and 
+						(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
+						return nil
+					elseif self:getCardsNum("Slash") == 0 then
+						return null_card
+					end
+				end
+			end
 		end
 		if from then
 			if self:isEnemy(to) then

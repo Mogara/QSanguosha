@@ -17,6 +17,10 @@ void DiscardSkill::setNum(int num){
     this->num = num;
 }
 
+void DiscardSkill::setMinNum(int minnum){
+    this->minnum = minnum;
+}
+
 void DiscardSkill::setIncludeEquip(bool include_equip){
     this->include_equip = include_equip;
 }
@@ -35,7 +39,7 @@ bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem 
 }
 
 const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{
-    if(cards.length() == num){
+    if(cards.length() >= minnum){
         card->clearSubcards();
         card->addSubcards(cards);
         return card;

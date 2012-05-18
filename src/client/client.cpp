@@ -1096,12 +1096,13 @@ void Client::updatePileNum(){
 
 void Client::askForDiscard(const Json::Value &req){
     
-    if (!req.isArray() || !req[0].isInt() || !req[1].isBool() || !req[2].isBool())
+    if (!req.isArray() || !req[0].isInt() || !req[2].isBool() || !req[3].isBool() || !req[1].isInt())
         return;
 
     discard_num = req[0].asInt();    
-    m_isDiscardActionRefusable = req[1].asBool();
-    m_canDiscardEquip = req[2].asBool();
+    m_isDiscardActionRefusable = req[2].asBool();
+    m_canDiscardEquip = req[3].asBool();
+    min_num = req[1].asInt();
 
     QString prompt;
     if(m_canDiscardEquip)

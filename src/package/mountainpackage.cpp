@@ -166,7 +166,7 @@ public:
         QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *caiwenji, cais){
             if(!caiwenji->isNude() && caiwenji->askForSkillInvoke(objectName(), data)){
-                room->askForDiscard(caiwenji, "beige", 1, false, true);
+                room->askForDiscard(caiwenji, "beige", 1, 1, false, true);
 
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(.*):(.*)");
@@ -197,7 +197,7 @@ public:
                         if(damage.from && damage.from->isAlive()){
                             int to_discard = qMin(2, damage.from->getCardCount(true));
                             if(to_discard != 0)
-                                room->askForDiscard(damage.from, "beige", to_discard, false, true);
+                                room->askForDiscard(damage.from, "beige", to_discard, to_discard, false, true);
                         }
 
                         break;
@@ -286,7 +286,7 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardLostOneTime << FinishJudge;
+        events << CardLostDone << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -294,7 +294,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == CardLostOneTime){
+        if(event == CardLostDone){
             CardsMoveStar move = data.value<CardsMoveStar>();
 
             if((move->from_place == Player::Hand || move->from_place == Player::Equip) && 
@@ -712,7 +712,7 @@ public:
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
-        events << CardLostDone;
+        events << CardLostOneTime;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -866,7 +866,7 @@ public:
                     if(liushan->isKongcheng())
                         return false;
 
-                    room->askForDiscard(liushan, "fangquan", 1);
+                    room->askForDiscard(liushan, "fangquan", 1, 1);
 
                     ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
 

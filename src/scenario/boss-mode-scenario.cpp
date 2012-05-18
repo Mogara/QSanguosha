@@ -115,7 +115,7 @@ public:
                 int n = 0;
                 n = target->getHandcardNum() - players.length();
                 if(n > 0){
-                    room->askForDiscard(target, objectName(), n, false);
+                    room->askForDiscard(target, objectName(), n, n, false);
                     return true;
                 }
             }
