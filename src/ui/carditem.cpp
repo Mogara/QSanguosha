@@ -68,8 +68,8 @@ void CardItem::setEnabled(bool enabled)
     else
     {
        QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
-       effect->setColor(QColor(0x100, 0x100, 0x100, 0));
-       effect->setStrength(0.5);
+       effect->setColor(QColor(0x200, 0x200, 0x200, 0));
+       effect->setStrength(0.8);
        this->setGraphicsEffect(effect);
     }    
     Pixmap::setEnabled(enabled);    

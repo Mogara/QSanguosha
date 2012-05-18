@@ -1243,6 +1243,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
                 cards.removeAt(j);
                 j--;
             }
+            else card->setEnabled(true);
         }
         bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
