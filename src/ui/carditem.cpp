@@ -174,7 +174,8 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade)
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
 
         QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity");        
-        double middleOpacity = (m_opacityAtHome == 0.0) ? 1.0 : m_opacityAtHome;        
+        double middleOpacity = qMax(opacity(), m_opacityAtHome);
+        if (middleOpacity == 0) middleOpacity = 1.0;        
         disappear->setEndValue(m_opacityAtHome);
         disappear->setKeyValueAt(0.2, middleOpacity);
         disappear->setKeyValueAt(0.8, middleOpacity);
