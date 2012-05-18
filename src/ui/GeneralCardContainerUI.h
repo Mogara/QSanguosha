@@ -11,8 +11,8 @@ class PlayerCardContainer: public Pixmap
 {    
     Q_OBJECT
 public:
-    inline PlayerCardContainer() {}
-    inline PlayerCardContainer(QString filename):Pixmap(filename){}
+    inline PlayerCardContainer() { _m_highestZ = 10000; }
+    inline PlayerCardContainer(QString filename):Pixmap(filename){ _m_highestZ = 10000; }
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids,  Player::Place place) = 0;
     virtual void addCardItems(QList<CardItem*> &card_items, Player::Place place);
 protected:
@@ -21,15 +21,16 @@ protected:
     QList<CardItem*> _createCards(QList<int> card_ids);
     CardItem* _createCard(int card_id);
     void _disperseCards(QList<CardItem*> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos);
-    void _playMoveCardsAnimation(QList<CardItem*> &cards, bool destroyCards);    
+    void _playMoveCardsAnimation(QList<CardItem*> &cards, bool destroyCards);
 protected slots:
     virtual void onAnimationFinished();
 private slots:
     void _doUpdate();
     void _destroyCard();
 private:
+    int _m_highestZ;
     QList<CardItem*> _cardsToBeDestroyed;
-    QMutex _mutex_cardsToBeDestroyed;
+    QMutex _mutex_cardsToBeDestroyed;    
 signals:
     void animation_finished();
 };

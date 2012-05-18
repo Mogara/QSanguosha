@@ -29,7 +29,7 @@ CardItem::CardItem(const Card *card)
     frame->hide();
 
     avatar = NULL;
-
+    setCacheMode(QGraphicsItem::ItemCoordinateCache);
     owner_text = new QGraphicsSimpleTextItem(this);
     QPen pen(Qt::black);
     pen.setWidthF(0.5);
@@ -61,19 +61,7 @@ void CardItem::setCard(const Card* card)
 
 void CardItem::setEnabled(bool enabled)
 {
-    if (enabled) 
-    {        
-        this->setGraphicsEffect(NULL);     
-    }
-    else
-    {
-       QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
-       effect->setColor(QColor(0x200, 0x200, 0x200, 0));
-       effect->setStrength(0.8);
-       this->setGraphicsEffect(effect);
-    }    
-    Pixmap::setEnabled(enabled);    
-    goBack(true);
+     Pixmap::setEnabled(enabled);    
 }
 
 CardItem::CardItem(const QString &general_name)
@@ -177,8 +165,7 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade)
         double middleOpacity = qMax(opacity(), m_opacityAtHome);
         if (middleOpacity == 0) middleOpacity = 1.0;        
         disappear->setEndValue(m_opacityAtHome);
-        disappear->setKeyValueAt(0.2, middleOpacity);
-        disappear->setKeyValueAt(0.8, middleOpacity);
+        disappear->setKeyValueAt(0.5, middleOpacity);
         disappear->setDuration(Config.S_MOVE_CARD_ANIMATION_DURAION);
 
         group->addAnimation(goback);
@@ -325,6 +312,12 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 }
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    if (!isEnabled())
+    {       
+        painter->fillRect(this->boundingRect(), QColor(100, 100, 100, 255 * opacity()));
+        painter->setOpacity(0.7);
+    }
+
     Pixmap::paint(painter, option, widget);
 
     if (m_card) {

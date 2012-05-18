@@ -4,7 +4,7 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class Pixmap : public QGraphicsObject{
+class Pixmap : public QGraphicsObject {
     Q_OBJECT
 
 public:

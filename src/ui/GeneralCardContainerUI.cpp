@@ -53,7 +53,7 @@ void PlayerCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillReg
             card->setHomePos(newPos);
         else
             card->setPos(newPos);
-        card->setZValue(i);
+        card->setZValue(_m_highestZ++);
     }
 }
 
@@ -93,8 +93,7 @@ void PlayerCardContainer::addCardItems(QList<CardItem*> &card_items, Player::Pla
     foreach (CardItem* card_item, card_items)
     {        
         card_item->setPos(mapFromScene(card_item->scenePos()));
-        card_item->setParentItem(this);
-        card_item->promoteZ();
+        card_item->setParentItem(this);        
     }
     bool destroy = _addCardItems(card_items, place);
     _playMoveCardsAnimation(card_items, destroy);
