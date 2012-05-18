@@ -124,13 +124,13 @@ Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
 class GudingBladeSkill: public WeaponSkill{
 public:
     GudingBladeSkill():WeaponSkill("guding_blade"){
-        events << Predamage;
+        events << DamageProceed;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
-            damage.to->isKongcheng())
+            damage.to->isKongcheng() && !damage.chain)
         {
             Room *room = damage.to->getRoom();
 
