@@ -15,7 +15,6 @@ DiscardSkill::DiscardSkill()
 
 void DiscardSkill::setNum(int num){
     this->num = num;
-	this->minnum = num;
 }
 
 void DiscardSkill::setMinNum(int minnum){

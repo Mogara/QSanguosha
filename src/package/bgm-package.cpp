@@ -209,7 +209,7 @@ public:
                     caoren->throwAllHandCards();
                 }
                 else{
-                    room->askForDiscard(caoren, objectName(), n, false, true);
+                    room->askForDiscard(caoren, objectName(), n, n, false, true);
                 }
             }
 
@@ -483,7 +483,7 @@ void DaheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
         room->setEmotion(source, "no-success");
         if(!source->isKongcheng()){
             room->showAllCards(source);
-            room->askForDiscard(source, reason, 1, false, false);
+            room->askForDiscard(source, reason, 1, 1, false, false);
         }
     }
 }

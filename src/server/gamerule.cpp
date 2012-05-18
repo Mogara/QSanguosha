@@ -107,7 +107,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
                 }
                 if(discard_num > 0)
                 {
-					room->askForDiscard(player, "gamerule", discard_num);
+                    room->askForDiscard(player, "gamerule", discard_num, 1);
                 }
             }
             break;

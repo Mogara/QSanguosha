@@ -128,7 +128,7 @@ void FloodCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->throwAllEquips();
 
     Room *room = effect.to->getRoom();
-    if(!room->askForDiscard(effect.to, "flood", 2, true)){
+    if(!room->askForDiscard(effect.to, "flood", 2, 2, true)){
         DamageStruct damage;
         damage.from = effect.from;
         damage.to = effect.to;

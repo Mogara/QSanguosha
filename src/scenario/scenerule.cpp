@@ -251,7 +251,7 @@ bool SceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data
                             if(p->getHandcardNum() == 1)
                                 p->throwAllHandCards();
                             else
-                                room->askForDiscard(p, "scene_18_eff", 1);
+                                room->askForDiscard(p, "scene_18_eff", 1, 1);
                         }
                     }
                     break;
@@ -333,7 +333,7 @@ bool SceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data
                                         if(p->getHandcardNum() == 1)
                                             p->throwAllHandCards();
                                         else
-                                            room->askForDiscard(nextAlivePlayer, "Scene29", 1);
+                                            room->askForDiscard(nextAlivePlayer, "Scene29", 1, 1);
                                     }
                                 }
                             } else {
@@ -349,7 +349,7 @@ bool SceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data
                                         if(p->getHandcardNum() == 1)
                                             p->throwAllHandCards();
                                         else
-                                            room->askForDiscard(p, "Scene29", 1);
+                                            room->askForDiscard(p, "Scene29", 1, 1);
                                     }
                                 }
                             }
@@ -575,7 +575,7 @@ bool SceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data
                     if(player->getHandcardNum() == 1)
                         player->throwAllHandCards();
                     else
-                        room->askForDiscard(player, "scene_15_eff", 1);
+                        room->askForDiscard(player, "scene_15_eff", 1, 1);
                 }
             break;
         }

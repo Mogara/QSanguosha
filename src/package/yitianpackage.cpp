@@ -1544,7 +1544,7 @@ public:
 
         Room *room = dengshizai->getRoom();
 
-        if(!room->askForDiscard(dengshizai, "toudu", 1, false, false))
+        if(!room->askForDiscard(dengshizai, "toudu", 1, 1, false, false))
             return;
 
         dengshizai->turnOver();

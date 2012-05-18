@@ -141,7 +141,7 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
                 room->broadcastInvoke("animate", "typhoon:" + player->objectName());
                 room->broadcastInvoke("playAudio", "typhoon");
 
-                room->askForDiscard(player, objectName(), discard_num);
+                room->askForDiscard(player, objectName(), discard_num, discard_num);
             }
 
             room->getThread()->delay();
