@@ -377,7 +377,6 @@ void Dashboard::selectCard(CardItem* item, bool isSelected){
     else 
         newPos.setY(newPos.y() - S_PENDING_OFFSET_Y);
     item->setHomePos(newPos);    
-    item->setHomeOpacity(item->isEnabled() ? 1.0 : 0.7);
     //setY(PendingY);
     if (!hasFocus()) item->goBack(true);    
     m_mutex.unlock();
@@ -679,7 +678,6 @@ void Dashboard::_adjustCards(){
     foreach (CardItem* card, m_handCards)
     {
         card->setSelected(false);
-        card->setHomeOpacity(card->isEnabled() ? 1.0 : 0.7);
     }
 
     int n = m_handCards.length();

@@ -62,14 +62,15 @@ void CardItem::setCard(const Card* card)
 void CardItem::setEnabled(bool enabled)
 {
     if (enabled) 
-    {
-        setHomeOpacity(1.0);
-        setOpacity(1.0);
+    {        
+        this->setGraphicsEffect(NULL);     
     }
     else
     {
-        setHomeOpacity(0.7);
-        setOpacity(0.7);
+       QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
+       effect->setColor(QColor(0x100, 0x100, 0x100, 0));
+       effect->setStrength(0.5);
+       this->setGraphicsEffect(effect);
     }    
     Pixmap::setEnabled(enabled);    
     goBack(true);
@@ -187,8 +188,7 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade)
         m_currentAnimation = group;
     }
     else
-    {
-        setOpacity(this->isEnabled() ? 1.0 : 0.7);        
+    {      
         m_currentAnimation = goback;
     }
     m_animationMutex.unlock();
