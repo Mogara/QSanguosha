@@ -77,8 +77,7 @@ CardItem::~CardItem()
     m_animationMutex.lock();
     if (m_currentAnimation != NULL)
     {
-        m_currentAnimation->stop();
-        delete m_currentAnimation;
+        m_currentAnimation->deleteLater();
         m_currentAnimation = NULL;
     }
     m_animationMutex.unlock();

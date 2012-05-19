@@ -1573,10 +1573,7 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card == NULL){
         foreach(QGraphicsItem *item, item2player.keys()){
-            //if(!inactive)
-                animations->effectOut(item);
-                //item->setOpacity(0.7);
-
+            animations->effectOut(item);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
             item->setEnabled(true);
         }
@@ -1587,7 +1584,6 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card->targetFixed() || ClientInstance->hasNoTargetResponsing()){
         foreach(QGraphicsItem *item, item2player.keys()){
-            //item->setOpacity(1.0);
             animations->effectOut(item);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
@@ -1620,7 +1616,6 @@ void RoomScene::updateTargetsEnablity(const Card *card){
                        && card->targetFilter(selected_targets, player, Self);
         else enabled = true;
 
-        //item->setOpacity(enabled ? 1.0 : 0.7);
         if(enabled)animations->effectOut(item);
         else
         {
