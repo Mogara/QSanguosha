@@ -768,7 +768,6 @@ public:
 
 	void addTriggerSkill(const TriggerSkill *skill);
 	void delay(unsigned long msecs = 1000);
-	void end();
 	void run3v3();
 	void action3v3(ServerPlayer *player);
 };

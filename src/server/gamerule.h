@@ -26,11 +26,7 @@ class HulaoPassMode: public GameRule{
 
 public:
     HulaoPassMode(QObject *parent);
-
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
-
-private:
-    mutable jmp_buf env;
 };
 
 class BasaraMode: public GameRule{

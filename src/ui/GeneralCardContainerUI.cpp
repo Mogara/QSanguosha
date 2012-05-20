@@ -25,7 +25,8 @@ CardItem* PlayerCardContainer::_createCard(int card_id)
 void PlayerCardContainer::_destroyCard()
 {
     CardItem* card = (CardItem*)sender();
-    delete card;
+    card->setVisible(false);
+    card->deleteLater();
 }
 
 void PlayerCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRegion,

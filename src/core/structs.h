@@ -229,6 +229,7 @@ enum TriggerEvent{
     AskForPeachesDone,
     Death,
     GameOverJudge,
+    GameFinished,
 
     SlashEffect,
     SlashEffected,
@@ -257,7 +258,10 @@ enum TriggerEvent{
 
     ChoiceMade,
 
-    NumOfEvents,
+    // For hulao pass only
+    StageChange,
+
+    NumOfEvents
 };
 
 typedef const Card *CardStar;

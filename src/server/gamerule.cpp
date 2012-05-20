@@ -680,11 +680,9 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
 {
     setObjectName("hulaopass_mode");
 
-    events << HpChanged;
+    events << HpChanged << StageChange;
     default_choice = "recover";
 }
-
-static int Transfiguration = 1;
 
 bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
     Room *room;
@@ -692,53 +690,49 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         room = data.value<RoomStar>();    
     else
         room = player->getRoom();
-    // Handle global events
-    if (player == NULL)
-    {
-        if (event == GameStart){
+    
+    switch(event) {
+    case StageChange: {
+        ServerPlayer* lord = room->getLord();
+        room->transfigure(lord, "shenlvbu2", true, true);
+
+        QList<const Card *> tricks = lord->getJudgingArea();
+        foreach(const Card *trick, tricks)
+            room->throwCard(trick);
+        break;
+                      }
+    case GameStart: {
+        // Handle global events
+        if (player == NULL)
+        {            
+            ServerPlayer* lord = room->getLord();
+            lord->drawCards(8, false);
             foreach (ServerPlayer* player, room->getPlayers())
             {
-                if(player->isLord()){
-                    if(setjmp(env) == Transfiguration){
-                        player = room->getLord();
-                        room->transfigure(player, "shenlvbu2", true, true);
-
-                        QList<const Card *> tricks = player->getJudgingArea();
-                        foreach(const Card *trick, tricks)
-                            room->throwCard(trick);
-
-                    }else{
-                        player->drawCards(8, false);
-                    }
-                }else
+                if(player->isLord())
+                    continue;
+                else
                     player->drawCards(player->getSeat() + 1, false);
-
-                if(player->getGeneralName() == "zhangchunhua"){
-                    if(qrand() % 3 == 0)
-                        room->killPlayer(player);
-                }
             }
-
             return false;
         }
-    }
-
-    switch(event){
+        break;
+                    }
     case CardUsed:{
-            CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
-                player->playCardEffect("@recast");
-                room->throwCard(use.card);
-                player->drawCards(1, false);
-                return false;
-            }
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
+            player->playCardEffect("@recast");
+            room->throwCard(use.card);
+            player->drawCards(1, false);
+            return false;
+        }
 
             break;
         }
 
     case HpChanged:{
             if(player->getGeneralName() == "shenlvbu1" && player->getHp() <= 4){
-                longjmp(env, Transfiguration);
+                throw StageChange;
             }
 
             return false;

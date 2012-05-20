@@ -13,6 +13,7 @@
 #include "server.h"
 #include "generalselector.h"
 #include "jsonutils.h"
+#include "structs.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -447,6 +448,7 @@ void Room::gameOver(const QString &winner){
     arg[0] = toJsonString(winner);
     arg[1] = toJsonArray(all_roles);
     doBroadcastNotify(S_COMMAND_GAME_OVER, arg);
+    throw GameFinished;
 }
 
 void Room::slashEffect(const SlashEffectStruct &effect){
