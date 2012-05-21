@@ -80,12 +80,3 @@ bool DrawPile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
     _disperseCards(card_items, S_DISPLAY_CARD_REGION, Qt::AlignCenter, true);    
     return false;
 }
-/*
-    drawPile = new Pixmap("image/system/card-back.png");
-    addItem(drawPile);
-    drawPile->setZValue(-2.0);
-    drawPile->setPos(room_layout->drawpile);
-    QGraphicsDropShadowEffect *drp = new QGraphicsDropShadowEffect;
-    drp->setOffset(6);
-    drp->setColor(QColor(0,0,0));
-    drawPile->setGraphicsEffect(drp); */

@@ -607,7 +607,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 QList<int> Engine::getRandomCards() const{
     bool exclude_disaters = false, using_new_3v3 = false;
 
-    if(Config.GameMode == "06_3v3"){
+    if(Config.GameMode == "zz"){
         using_new_3v3 = Config.value("3v3/UsingNewMode", false).toBool();
         exclude_disaters = Config.value("3v3/ExcludeDisasters", true).toBool() ||
                             using_new_3v3;

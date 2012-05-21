@@ -21,7 +21,7 @@ const QRect Dashboard::S_JUDGE_CARD_MOVE_REGION(0, -20,
     CardItem::S_NORMAL_CARD_WIDTH * 1.5, CardItem::S_NORMAL_CARD_HEIGHT);
 
 Dashboard::Dashboard(QGraphicsItem *button_widget)
-    :left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
+    :PlayerCardContainer(false), left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
     button_widget(button_widget), selected(NULL), avatar(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     view_as_skill(NULL), filter(NULL)
@@ -54,9 +54,8 @@ void Dashboard::createLeft(){
 
     equips << &weapon << &armor << &defensive_horse << &offensive_horse;
 
-    int i;
-    for(i=0; i<4; i++){
-        QRectF rect(8, 40 + 32 *i, 117, 25);
+    for(int i = 0; i < 4; i++){
+        QRectF rect(8, 40 + 32 * i, 117, 25);
         equip_rects[i] = new QGraphicsRectItem(rect, left);
         equip_rects[i]->setPen(Qt::NoPen);
     }
@@ -137,7 +136,7 @@ void Dashboard::createRight(){
     handcard_num = new QGraphicsSimpleTextItem(handcard_pixmap);
     handcard_num->setPos(6,8);
 
-     QFont serifFont("Times", 10, QFont::Bold);
+    QFont serifFont("Times", 10, QFont::Bold);
     handcard_num->setFont(serifFont);
     handcard_num->setBrush(Qt::white);
 
@@ -450,7 +449,6 @@ void Dashboard::setWidth(int width){
     setMiddleWidth(middle_width);
     prepareGeometryChange();
     adjustCards();
-    setX(-boundingRect().width()/2);
     m_cardTakeOffRegion = middle->boundingRect();    
     m_cardTakeOffRegion.setY(middle->pos().y() - CardItem::S_NORMAL_CARD_HEIGHT * 1.5);
     m_cardTakeOffRegion.setHeight(CardItem::S_NORMAL_CARD_HEIGHT);

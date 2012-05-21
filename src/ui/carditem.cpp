@@ -164,7 +164,8 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade)
         double middleOpacity = qMax(opacity(), m_opacityAtHome);
         if (middleOpacity == 0) middleOpacity = 1.0;        
         disappear->setEndValue(m_opacityAtHome);
-        disappear->setKeyValueAt(0.5, middleOpacity);
+        disappear->setKeyValueAt(0.2, middleOpacity);
+        disappear->setKeyValueAt(0.8, middleOpacity);
         disappear->setDuration(Config.S_MOVE_CARD_ANIMATION_DURAION);
 
         group->addAnimation(goback);

@@ -40,17 +40,16 @@ protected:
         QGraphicsView::resizeEvent(event);
         if(Config.FitInView)
             fitInView(sceneRect(), Qt::KeepAspectRatio);
-
-        if(matrix().m11()>1)setMatrix(QMatrix());
-
+        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
         if(scene()->inherits("RoomScene")){
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            room_scene->adjustItems(matrix());
+            setSceneRect(0, 0, event->size().width(), event->size().height());
+            room_scene->setSceneRect(sceneRect());            
+            room_scene->adjustItems();
+            main_window->setBackgroundBrush(false);
         }
-
-        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
-        if(main_window)
-            main_window->setBackgroundBrush();
+        else if(main_window)
+            main_window->setBackgroundBrush(true);           
     }
 };
 
@@ -264,7 +263,6 @@ void MainWindow::enterRoom(){
 	ui->actionAI_Melee->setEnabled(false);
 
     RoomScene *room_scene = new RoomScene(this);
-
     ui->actionView_Discarded->setEnabled(true);
     ui->actionView_distance->setEnabled(true);
     ui->actionServerInformation->setEnabled(true);
@@ -278,10 +276,6 @@ void MainWindow::enterRoom(){
     connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
     connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
-    connect(ui->actionExpand_dashboard, SIGNAL(toggled(bool)), room_scene, SLOT(adjustDashboard(bool)));
-
-    bool expand = Config.value("UI/ExpandDashboard", true).toBool();
-    ui->actionExpand_dashboard->setChecked(expand);
 
     if(ServerInfo.FreeChoose){
         ui->menuCheat->setEnabled(true);
@@ -305,8 +299,7 @@ void MainWindow::enterRoom(){
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
-
-    room_scene->adjustItems();
+    
     gotoScene(room_scene);
 }
 
@@ -429,38 +422,27 @@ void MainWindow::on_actionAbout_triggered()
     window->appear();
 }
 
-void MainWindow::setBackgroundBrush(){
+void MainWindow::setBackgroundBrush(bool centerAsOrigin){
     if(scene){
         QPixmap pixmap(Config.BackgroundBrush);
         QBrush brush(pixmap);
 
-        if(pixmap.width() > 100 && pixmap.height() > 100){
-            qreal _width = width()/view->matrix().m11();
-            qreal _height= height()/view->matrix().m22();
+        qreal sx = width() / qreal(pixmap.width());
+        qreal sy = height() / qreal(pixmap.height());
 
-            qreal dx = -_width/2.0;
-            qreal dy = -_height/2.0;
-            qreal sx = _width / qreal(pixmap.width());
-            qreal sy = _height / qreal(pixmap.height());
-
-
-            QTransform transform;
-            transform.translate(dx, dy);
-            transform.scale(sx, sy);
-            brush.setTransform(transform);
-        }
-
+        QTransform transform;
+        if (centerAsOrigin)
+            transform.translate(-width() / 2, -height() / 2);
+        transform.scale(sx, sy);
+        brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
     }
 }
 
 void MainWindow::changeBackground(){
-    setBackgroundBrush();
+    setBackgroundBrush(false);
 
-    if(scene->inherits("RoomScene")){
-        RoomScene *room_scene = qobject_cast<RoomScene *>(scene);
-        room_scene->changeTextEditBackground();
-    }else if(scene->inherits("StartScene")){
+    if(scene->inherits("StartScene")){
         StartScene *start_scene = qobject_cast<StartScene *>(scene);
         start_scene->setServerLogBackground();
     }

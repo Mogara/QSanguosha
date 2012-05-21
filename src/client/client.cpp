@@ -581,7 +581,10 @@ void Client::onPlayerUseCard(const Card *card, const QList<const Player *> &targ
 
 void Client::startInXs(const QString &left_seconds){
     int seconds = left_seconds.toInt();
-    lines_doc->setHtml(tr("Game will start in <b>%1</b> seconds").arg(left_seconds));
+    if (seconds > 0)
+        lines_doc->setHtml(tr("<p align = \"center\">Game will start in <b>%1</b> seconds...</p>").arg(left_seconds));
+    else
+        lines_doc->setHtml(QString());
 
     emit start_in_xs();
     if(seconds == 0 && Sanguosha->getScenario(ServerInfo.GameMode) == NULL){
@@ -592,14 +595,13 @@ void Client::startInXs(const QString &left_seconds){
 void Client::arrangeSeats(const QString &seats_str){
     QStringList player_names = seats_str.split("+");
     players.clear();
-
-    int i;
-    for(i=0; i<player_names.length(); i++){
+    
+    for (int i = 0; i < player_names.length(); i++){
         ClientPlayer *player = findChild<ClientPlayer*>(player_names.at(i));
 
         Q_ASSERT(player != NULL);
 
-        player->setSeat(i+1);
+        player->setSeat(i + 1);
         players << player;
     }
 
@@ -608,12 +610,12 @@ void Client::arrangeSeats(const QString &seats_str){
 
     Q_ASSERT(self_index != -1);
 
-    for(i=self_index+1; i<players.length(); i++)
-        seats.prepend(players.at(i));
-    for(i=0; i<self_index; i++)
-        seats.prepend(players.at(i));
+    for (int i = self_index+1; i < players.length(); i++)
+        seats.append(players.at(i));
+    for(int i = 0; i < self_index; i++)
+        seats.append(players.at(i));
 
-    Q_ASSERT(seats.length() == players.length()-1);
+    Q_ASSERT(seats.length() == players.length() - 1);
 
     emit seats_arranged(seats);
 }
@@ -1087,11 +1089,7 @@ void Client::setCardFlag(const QString &pattern_str){
 void Client::updatePileNum(){
     QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>, swap times: <b>%3</b>")
                        .arg(pile_num).arg(discarded_list.length()).arg(swap_pile);
-
-    if(skill_title.isEmpty())
-        lines_doc->setHtml(pile_str);
-    else
-        lines_doc->setHtml(QString("%1 <br/> <b>%2</b>: %3").arg(pile_str).arg(skill_title).arg(skill_line));
+    lines_doc->setHtml("<p align = \"center\">" + pile_str + "</p>");
 }
 
 void Client::askForDiscard(const Json::Value &req){

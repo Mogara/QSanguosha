@@ -141,10 +141,11 @@ class RoomScene : public QGraphicsScene{
 public:
     RoomScene(QMainWindow *main_window);
     void changeTextEditBackground();
-    void adjustItems(QMatrix transform = QMatrix());
+    void adjustItems();
     void showIndicator(const QString &from, const QString &to);
     void showPromptBox();
     static void FillPlayerNames(QComboBox *combobox, bool add_none);
+    void updateTable();
 
 public slots:
     void addPlayer(ClientPlayer *player);
@@ -209,7 +210,7 @@ private:
     QComboBox *role_combobox;
     IrregularButton *ok_button, *cancel_button, *discard_button;
     TrustButton *trust_button;
-    QPushButton *reverse_button, *free_discard;
+    QPushButton *m_reverseSelectionButton, *m_freeDiscardButton;
     QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;
     QGraphicsItem *control_panel;
@@ -220,9 +221,8 @@ private:
     int timer_id;
     int tick;
 
-    QGraphicsItem *state_item;
+    
     QList<QGraphicsPixmapItem *> role_items;
-
     CardContainer *card_container;
 
     QList<QAbstractButton *> skill_buttons;
@@ -243,9 +243,15 @@ private:
     QTextEdit *chat_box;
     QLineEdit *chat_edit;
     QGraphicsProxyWidget *chat_box_widget;
+    QGraphicsProxyWidget *log_box_widget;
+    QGraphicsProxyWidget *chat_edit_widget;
+    QGraphicsTextItem *prompt_box_widget;
     ChatWidget *chat_widget;
     RoomLayout *room_layout;
-
+    QPixmap m_rolesBoxBackground;
+    QGraphicsPixmapItem *m_rolesBox;
+    QGraphicsTextItem *m_pileCardNumInfoTextBox;
+    
 #ifdef AUDIO_SUPPORT
     QSharedMemory *memory;
 #endif
@@ -258,7 +264,8 @@ private:
     QList<CardItem *> arrange_items;
     Button *arrange_button;
     KOFOrderBox *enemy_box, *self_box;
-
+    QPointF m_tableCenterPos;
+ 
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
     void chooseSkillButton();
@@ -276,8 +283,6 @@ private:
     void addSkillButton(const Skill *skill, bool from_left = false);
     void addWidgetToSkillDock(QWidget *widget, bool from_left = false);
     void removeWidgetFromSkillDock(QWidget *widget);
-    QList<QPointF> getPhotoPositions() const;
-    void createStateItem();
     void createControlButtons();
     void createExtraButtons();
     void createReplayControlBar();
@@ -301,11 +306,8 @@ private:
 
     // re-layout attempts
     bool game_started;
-    QMatrix view_transform;
-    void reLayout(QMatrix matrix = QMatrix());
-    void alignTo(Pixmap *object, QPoint pos, const QString &flags);
-    void alignTo(QWidget *object, QPoint pos, const QString &flags);
-    void alignTo(QGraphicsItem *object, QPoint pos, const QString &flags);
+    void _dispersePhotos(QList<Photo*> &photos, QRectF disperseRegion, int minDistanceBetweenPhotos, Qt::Alignment align);
+
 
 private slots:
     void fillCards(const QList<int>& card_ids);
@@ -327,11 +329,11 @@ private slots:
     void setEmotion(const QString &who, const QString &emotion,bool permanent = false);
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);
-    void adjustDashboard(bool expand);
     void showOwnerButtons(bool owner);
     void showJudgeResult(const QString &who, const QString &result);
     void showPlayerCards();
-    void updateStateItem(const QString &roles);
+    void updateRolesBox();
+    void updateRoles(const QString &roles);
     void adjustPrompt();
 
     void resetPiles();

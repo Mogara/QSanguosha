@@ -8,13 +8,12 @@ class Pixmap : public QGraphicsObject {
     Q_OBJECT
 
 public:
-    Pixmap(const QString &filename, bool center_as_origin = true);
-    Pixmap();
+    Pixmap(const QString &filename, bool center_as_origin = false);
+    Pixmap(bool center_as_origin = false);
     virtual QRectF boundingRect() const;
-    void load(const QString &filename, bool center_as_origin = true);
+    void load(const QString &filename, bool center_as_origin = false);
     bool changePixmap(const QString &name);
     void setPixmap(const QPixmap &pixmap);
-    void shift();
     void makeGray();
     void scaleSmoothly(qreal ratio);
 

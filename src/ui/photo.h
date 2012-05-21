@@ -48,7 +48,8 @@ public:
     };
 
     void setFrame(FrameType type);
-
+    static const int S_NORMAL_PHOTO_WIDTH = 143;
+    static const int S_NORMAL_PHOTO_HEIGHT = 195;
 public slots:
     void updateAvatar();    
     void updateSmallAvatar();

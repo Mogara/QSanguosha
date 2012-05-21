@@ -27,12 +27,20 @@ void Pixmap::load(const QString& filename, bool center_as_origin)
     }
 #endif
     if(center_as_origin)
-        setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
+    {
+        resetTransform();
+        this->translate(-pixmap.width() / 2, -pixmap.height() / 2);
+    }
 }
 
-Pixmap::Pixmap()
+Pixmap::Pixmap(bool center_as_origin)
     :markable(false), marked(false)
 {
+    if(center_as_origin)
+    {
+        resetTransform();
+        this->translate(-pixmap.width() / 2, -pixmap.height()/2);
+    }
 }
 
 QRectF Pixmap::boundingRect() const{
@@ -50,10 +58,6 @@ bool Pixmap::changePixmap(const QString &filename){
 void Pixmap::setPixmap(const QPixmap &pixmap){
     this->pixmap = pixmap;
     prepareGeometryChange();
-}
-
-void Pixmap::shift(){
-    moveBy(-pixmap.width()/2, -pixmap.height()/2);
 }
 
 void Pixmap::MakeGray(QPixmap &pixmap){

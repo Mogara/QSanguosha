@@ -24,9 +24,9 @@
 
 using namespace QSanProtocol;
 
-const QRect Photo::S_CARD_MOVE_REGION(-50, -50, 200, CardItem::S_NORMAL_CARD_HEIGHT);
+const QRect Photo::S_CARD_MOVE_REGION(-50, 100, 200, CardItem::S_NORMAL_CARD_HEIGHT);
 
-Photo::Photo(): PlayerCardContainer("image/system/photo-back.png"),
+Photo::Photo(): PlayerCardContainer("image/system/photo-back.png", true),
                 player(NULL),
                 handcard("image/system/handcard.png"),
                 action_item(NULL), save_me_item(NULL), permanent(false),
@@ -83,8 +83,7 @@ Photo::Photo(): PlayerCardContainer("image/system/photo-back.png"),
     small_avatar_area->setPen(Qt::NoPen);
 
     equips << &weapon << &armor << &defensive_horse << &offensive_horse;
-    int i;
-    for(i=0; i<4; i++){
+    for(int i = 0; i < 4; i++){
         equip_rects[i] = new QGraphicsRectItem(QRect(1, 118 + 17 * i, 129, 16), this);
         equip_rects[i]->setPen(Qt::NoPen);
     }

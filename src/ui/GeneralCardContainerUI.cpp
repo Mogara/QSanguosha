@@ -29,11 +29,17 @@ void PlayerCardContainer::_destroyCard()
     card->deleteLater();
 }
 
+bool PlayerCardContainer::_horizontalPosLessThan(const CardItem* card1, const CardItem* card2)
+{
+    return (card1->x() < card2->x());
+}
+
 void PlayerCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRegion,
                                             Qt::Alignment align, bool useHomePos)
 {
     int numCards = cards.size();
     if (numCards == 0) return;
+    qSort(cards.begin(), cards.end(), PlayerCardContainer::_horizontalPosLessThan);
     double maxWidth = fillRegion.width();
     double step = qMin(cards.first()->boundingRect().width(), maxWidth / numCards);
     align &= Qt::AlignHorizontal_Mask;
@@ -49,7 +55,7 @@ void PlayerCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillReg
         else if (align == Qt::AlignRight)
             newX = fillRegion.right() + step * (i - numCards);
         else continue;
-        QPointF newPos = QPointF(newX, fillRegion.center().y());
+        QPointF newPos = QPointF(newX, fillRegion.center().y() - card->boundingRect().height());
         if (useHomePos)
             card->setHomePos(newPos);
         else
