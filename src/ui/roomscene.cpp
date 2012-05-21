@@ -716,7 +716,7 @@ void RoomScene::updateTable()
     {
         seatToRegion = regularSeatIndex[photos.length() - 1];
     }
-    QList<Photo*> photosInRegion[7];
+    QList<Photo*> photosInRegion[8];
     int n = photos.length();
     for (int i = 0; i < n; i++)
     {
@@ -726,7 +726,7 @@ void RoomScene::updateTable()
         else
             photosInRegion[regionIndex].prepend(photos[i]);
     }
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 8; i++)
     {
         if (photosInRegion[i].isEmpty()) continue;
         Qt::Alignment align;
