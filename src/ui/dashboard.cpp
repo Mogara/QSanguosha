@@ -181,9 +181,9 @@ void Dashboard::setTrust(bool trust){
 bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {
     if (place == Player::Equip)
-        _disperseCards(card_items, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, true);
+        _disperseCards(card_items, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
     else if (place == Player::Judging)
-        _disperseCards(card_items, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, true);
+        _disperseCards(card_items, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
     else if (place == Player::PlaceTakeoff)
     {
         m_takenOffCards.append(card_items);
@@ -191,7 +191,7 @@ bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
         {
             card->setHomeOpacity(1.0);
         }
-        _disperseCards(card_items, m_cardTakeOffRegion, Qt::AlignCenter, true);
+        _disperseCards(card_items, m_cardTakeOffRegion, Qt::AlignCenter, true, false);
         return false;
     }
     else if (place == Player::Special)
@@ -200,7 +200,7 @@ bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
         {
             card->setHomeOpacity(0.0);            
         }
-        _disperseCards(card_items, m_cardSpecialRegion, Qt::AlignCenter, true);
+        _disperseCards(card_items, m_cardSpecialRegion, Qt::AlignCenter, true, false);
         return true;
     }
 
@@ -829,13 +829,13 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
     /*if (place == Player::Hand)    
         adjustCards();
     else*/ if (place == Player::Equip)
-        _disperseCards(result, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, false);
+        _disperseCards(result, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, false, false);
     else if (place == Player::Judging)
-        _disperseCards(result, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, false);
+        _disperseCards(result, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, false, false);
     else if (place == Player::PlaceTakeoff)
-        _disperseCards(result, m_cardTakeOffRegion, Qt::AlignCenter, false);
+        _disperseCards(result, m_cardTakeOffRegion, Qt::AlignCenter, false, false);
     else if (place == Player::Special)
-        _disperseCards(result, m_cardSpecialRegion, Qt::AlignCenter, false);
+        _disperseCards(result, m_cardSpecialRegion, Qt::AlignCenter, false, false);
     update();
     return result;
 }

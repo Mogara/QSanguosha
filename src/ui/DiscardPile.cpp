@@ -6,7 +6,7 @@ QList<CardItem*> DiscardPile::removeCardItems(const QList<int> &card_ids, Player
     QList<CardItem*> result;
     _m_mutex_pileCards.lock();    
     result = _createCards(card_ids);
-    _disperseCards(result, m_cardsDisplayRegion, Qt::AlignCenter, false);
+    _disperseCards(result, m_cardsDisplayRegion, Qt::AlignCenter, false, true);
     foreach (CardItem* card, result)
     {        
         for (int i = m_visibleCards.size() - 1; i >= 0; i--)
@@ -54,7 +54,7 @@ bool DiscardPile::_addCardItems(QList<CardItem*> &card_items, Player::Place plac
     
 void DiscardPile::adjustCards()
 {        
-    _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true);
+    _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);
     QParallelAnimationGroup* animation = new QParallelAnimationGroup;
     foreach (CardItem* card_item, m_visibleCards)
         animation->addAnimation(card_item->getGoBackAnimation(true));
@@ -67,7 +67,7 @@ const QRect DrawPile::S_DISPLAY_CARD_REGION(0, 0, CardItem::S_NORMAL_CARD_WIDTH,
 QList<CardItem*> DrawPile::removeCardItems(const QList<int> &card_ids, Player::Place place)
 {
     QList<CardItem*> result = _createCards(card_ids);
-    _disperseCards(result, S_DISPLAY_CARD_REGION, Qt::AlignCenter, false);
+    _disperseCards(result, S_DISPLAY_CARD_REGION, Qt::AlignCenter, false, true);
     return result;
 }
 
@@ -75,8 +75,7 @@ bool DrawPile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {    
     foreach (CardItem* card_item, card_items)
     {
-        card_item->setHomeOpacity(1.0);
+        card_item->setHomeOpacity(0.0);
     }
-    _disperseCards(card_items, S_DISPLAY_CARD_REGION, Qt::AlignCenter, true);    
-    return false;
+    return true;
 }

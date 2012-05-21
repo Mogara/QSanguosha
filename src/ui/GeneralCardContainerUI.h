@@ -20,7 +20,7 @@ protected:
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place) = 0;
     QList<CardItem*> _createCards(QList<int> card_ids);
     CardItem* _createCard(int card_id);    
-    void _disperseCards(QList<CardItem*> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos);
+    void _disperseCards(QList<CardItem*> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);
     void _playMoveCardsAnimation(QList<CardItem*> &cards, bool destroyCards);
 protected slots:
     virtual void onAnimationFinished();

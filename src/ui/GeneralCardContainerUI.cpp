@@ -35,11 +35,12 @@ bool PlayerCardContainer::_horizontalPosLessThan(const CardItem* card1, const Ca
 }
 
 void PlayerCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRegion,
-                                            Qt::Alignment align, bool useHomePos)
+                                            Qt::Alignment align, bool useHomePos, bool keepOrder)
 {
     int numCards = cards.size();
     if (numCards == 0) return;
-    qSort(cards.begin(), cards.end(), PlayerCardContainer::_horizontalPosLessThan);
+    if (!keepOrder)
+        qSort(cards.begin(), cards.end(), PlayerCardContainer::_horizontalPosLessThan);
     double maxWidth = fillRegion.width();
     double step = qMin(cards.first()->boundingRect().width(), maxWidth / numCards);
     align &= Qt::AlignHorizontal_Mask;

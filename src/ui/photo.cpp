@@ -428,14 +428,14 @@ QList<CardItem*> Photo::removeCardItems(const QList<int> &card_ids, Player::Plac
             result.append(card_item);
         }    
     }
-    _disperseCards(result, S_CARD_MOVE_REGION, Qt::AlignCenter, true);
+    _disperseCards(result, S_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
     update();
     return result;
 }
 
 bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {
-    _disperseCards(card_items, S_CARD_MOVE_REGION, Qt::AlignCenter, true);
+    _disperseCards(card_items, S_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
     double homeOpacity = 0.0;
     bool destroy = true;
     if (place == Player::PlaceTakeoff)
