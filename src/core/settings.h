@@ -69,7 +69,7 @@ public:
     float BGMVolume;
     float EffectVolume;
 
-    QString BackgroundBrush;
+    QString BackgroundImage;
 
     // consts
     static const int S_CHOOSE_GENERAL_TIMEOUT;

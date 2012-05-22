@@ -121,7 +121,7 @@ void Settings::init(){
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
+    BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 

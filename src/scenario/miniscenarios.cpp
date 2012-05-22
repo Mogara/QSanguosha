@@ -39,7 +39,11 @@ QStringList MiniSceneRule::existedGenerals() const
 
 bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const
 {
-    Room* room = player->getRoom();
+    Room* room;        
+    if (player == NULL)
+        room = data.value<RoomStar>();
+    else
+        room = player->getRoom();
 
     if(event == PhaseChange)
     {
@@ -75,17 +79,16 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             return false;
         room->gameOver(this->players.first()["singleTurn"]);
     }
-    if(player->getRoom()->getTag("WaitForPlayer").toBool())
+    if(room->getTag("WaitForPlayer").toBool())
         return true;
 
     QList<ServerPlayer*> players = room->getAllPlayers();
     while(players.first()->getState() == "robot")
         players.append(players.takeFirst());
 
-    QStringList cards= setup.split(",");
+    QStringList cards= setup.split(",", QString::SkipEmptyParts);
     foreach(QString id,cards)
     {
-        room->moveCardTo(Sanguosha->getCard(id.toInt()),NULL,Player::Special,true);
         room->moveCardTo(Sanguosha->getCard(id.toInt()),NULL,Player::DrawPile,true);
         room->broadcastInvoke("addHistory","pushPile");
     }

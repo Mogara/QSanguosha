@@ -62,21 +62,23 @@ struct RoomLayout {
     double m_chatBoxHeightPercentage;
     double m_infoPlaneWidthPercentage;
     double m_photoRoomPadding;
-    double m_photoPhotoPadding;
+    double m_photoPhotoPadding;    
+    QSize m_minimumSceneSize;    
 };
 
 struct CircularRoomLayout : public RoomLayout{
     CircularRoomLayout(){
-        m_scenePadding = 5;
+        m_scenePadding = 0;
         m_roleBoxHeight = 60;
         m_chatTextBoxHeight = 30;
         m_logBoxHeightPercentage = 0.6;
         m_chatBoxHeightPercentage = 0.4;
-        m_infoPlaneWidthPercentage = 0.2;
+        m_infoPlaneWidthPercentage = 0.22;
         m_photoRoomPadding = 10;
-        m_photoPhotoPadding = 10;
+        m_photoPhotoPadding = 5;
         m_discardPileMinWidth = CardItem::S_NORMAL_CARD_WIDTH * 5;
         m_discardPilePadding = 50;
+        m_minimumSceneSize = QSize(971, 774);
     }
 };
 
@@ -460,7 +462,8 @@ void RoomScene::createExtraButtons(){
     m_reverseSelectionButton = dashboard->createButton("reverse-select");
     m_reverseSelectionButton->setEnabled(true);
 
-    dashboard->addWidget(m_reverseSelectionButton, room_layout->m_scenePadding, true);
+    dashboard->addWidget(m_reverseSelectionButton, room_layout->m_scenePadding 
+        + room_layout->m_photoRoomPadding * 3 + Photo::S_NORMAL_PHOTO_WIDTH, true);
     connect(m_reverseSelectionButton, SIGNAL(clicked()), dashboard, SLOT(reverseSelection()));
 
     m_freeDiscardButton = NULL;
@@ -546,7 +549,16 @@ void RoomScene::createReplayControlBar(){
 }
 
 void RoomScene::adjustItems(){
-    QRectF displayRegion = sceneRect();        
+    QRectF displayRegion = sceneRect();
+    if (displayRegion.left() != 0 || displayRegion.right() != 0 ||
+        displayRegion.bottom() < room_layout->m_minimumSceneSize.height() ||
+        displayRegion.right() < room_layout->m_minimumSceneSize.width())
+    {
+        displayRegion.setLeft(0); displayRegion.setTop(0);
+        displayRegion.setBottom(qMax((int)displayRegion.bottom(), room_layout->m_minimumSceneSize.height()));
+        displayRegion.setRight(qMax((int)displayRegion.right(), room_layout->m_minimumSceneSize.width()));
+        setSceneRect(displayRegion);
+    }
     int padding = room_layout->m_scenePadding;
     displayRegion.moveLeft(displayRegion.x() + padding);
     displayRegion.moveTop(displayRegion.y() + padding);
@@ -595,7 +607,7 @@ void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion, int mi
     {
         double maxWidth = fillRegion.width();
         double photoWidth = Photo::S_NORMAL_PHOTO_WIDTH; 
-        double step = qMax(photoWidth + minDistanceBetweenPhotos, maxWidth / numPhotos);
+        double step = qMax(photoWidth  + minDistanceBetweenPhotos, maxWidth / numPhotos);
         for (int i = 0; i < numPhotos; i++)
         {
             Photo* photo = photos[i];
@@ -608,7 +620,7 @@ void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion, int mi
     {
         double maxHeight = fillRegion.height();
         double photoHeight = Photo::S_NORMAL_PHOTO_HEIGHT; 
-        double step = qMax(photoHeight + minDistanceBetweenPhotos, (maxHeight - photoHeight) / numPhotos);
+        double step = qMax(photoHeight + minDistanceBetweenPhotos, maxHeight / numPhotos);
         for (int i = 0; i < numPhotos; i++)
         {
             Photo* photo = photos[i];
@@ -635,7 +647,7 @@ void RoomScene::updateTable()
 {
     int &pad = room_layout->m_scenePadding;
     int tablew = log_box_widget->x() - pad;
-    int tableh = sceneRect().height() - pad * 2 - dashboard->boundingRect().height() - m_reverseSelectionButton->height() - pad;
+    int tableh = sceneRect().height() - pad * 2 - dashboard->boundingRect().height() - room_layout->m_photoRoomPadding;
    
     // Layout:
     //    col1           col2
@@ -647,6 +659,7 @@ void RoomScene::updateTable()
     // |      dashboard       |
     // ------------------------
     // region 5 = 0 + 3, region 6 = 2 + 4, region 7 = 0 + 1 + 2
+    // region 8 = heightened 3, region 9 = heightened 4    
     static int regularSeatIndex[][9] = 
     {
         {1},    // 2 players
@@ -655,9 +668,9 @@ void RoomScene::updateTable()
         {3, 1, 1, 4},
         {3, 1, 1, 1, 4},
         {5, 5, 1, 1, 6, 6},
-        {5, 5, 1, 1, 1, 6, 6}, // 8 players
+        {8, 8, 1, 1, 1, 9, 9}, // 8 players
         {3, 3, 7, 7, 7, 7, 4, 4}, // 9 players
-        {3, 3, 7, 7, 7, 7, 7, 4, 4} // 10 players
+        {3, 3, 1, 1, 1, 1, 1, 4, 4} // 10 players
     };
     static int hulaoSeatIndex[][3] =
     {
@@ -670,7 +683,7 @@ void RoomScene::updateTable()
     {
         {3, 1, 1, 1, 4}, // lord        
         {1, 1, 1, 4, 4}, // rebel (left), same with loyalist (left)
-        {3, 3, 1, 1, 1}, // loyalist (right), same with rebel (right)
+        {3, 3, 1, 1, 1} // loyalist (right), same with rebel (right)
     };
     
     double col1 = Photo::S_NORMAL_PHOTO_WIDTH + 2 * room_layout->m_photoRoomPadding;
@@ -678,6 +691,7 @@ void RoomScene::updateTable()
     double row1 = Photo::S_NORMAL_PHOTO_HEIGHT + 2 * room_layout->m_photoRoomPadding;
     double row2 = tableh;
 
+    const int C_NUM_REGIONS = 10;
     QRectF seatRegions[] = 
     {
         QRectF(col2, 0, col1, row1),
@@ -687,7 +701,9 @@ void RoomScene::updateTable()
         QRectF(0, row1, col1, row2 - row1),
         QRectF(col2, 0, col1, row2),
         QRectF(0, 0, col1, row2),
-        QRectF(0, 0, col1 + col2, row1)
+        QRectF(0, 0, col1 + col2, row1),
+        QRectF(col2, row1 - Photo::S_NORMAL_PHOTO_HEIGHT * 0.2, col1, row2 - row1 + Photo::S_NORMAL_PHOTO_HEIGHT * 0.2),
+        QRectF(0, row1 - Photo::S_NORMAL_PHOTO_HEIGHT * 0.2, col1, row2 - row1 + Photo::S_NORMAL_PHOTO_HEIGHT * 0.2)
     };
 
     QRectF tableRect(col1, row1, col2 - col1, row2 - row1);
@@ -717,23 +733,23 @@ void RoomScene::updateTable()
     {
         seatToRegion = regularSeatIndex[photos.length() - 1];
     }
-    QList<Photo*> photosInRegion[8];
+    QList<Photo*> photosInRegion[C_NUM_REGIONS];
     int n = photos.length();
     for (int i = 0; i < n; i++)
     {
         int regionIndex = seatToRegion[i];
-        if (regionIndex == 4 || regionIndex == 6)
+        if (regionIndex == 4 || regionIndex == 6 || regionIndex == 9)
             photosInRegion[regionIndex].append(photos[i]);            
         else
             photosInRegion[regionIndex].prepend(photos[i]);
     }
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < C_NUM_REGIONS; i++)
     {
         if (photosInRegion[i].isEmpty()) continue;
         Qt::Alignment align;
         if (i < 3 || i == 7) align = Qt::AlignHCenter;
         else if (pkMode) align = Qt::AlignBottom;
-        else align = Qt::AlignVCenter;        
+        else align = Qt::AlignVCenter;  
         _dispersePhotos(photosInRegion[i], seatRegions[i], room_layout->m_photoPhotoPadding, align);
     }
 
@@ -3197,7 +3213,9 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
-        m_freeDiscardButton = dashboard->addButton("free-discard", m_reverseSelectionButton->width() + room_layout->m_scenePadding * 1.5, true);
+        m_freeDiscardButton = dashboard->addButton("free-discard",
+            m_reverseSelectionButton->pos().x() + m_reverseSelectionButton->width()
+            + room_layout->m_scenePadding, true);
         m_freeDiscardButton->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(m_freeDiscardButton, discard_skill);

@@ -14,7 +14,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->setupUi(this);
 
     // tab 1
-    QString bg_path = Config.value("BackgroundBrush").toString();
+    QString bg_path = Config.value("BackgroundImage").toString();
     if(!bg_path.startsWith(":"))
         ui->bgPathLineEdit->setText(bg_path);
 
@@ -77,8 +77,8 @@ void ConfigDialog::on_browseBgButton_clicked()
     if(!filename.isEmpty()){
         ui->bgPathLineEdit->setText(filename);
 
-        Config.BackgroundBrush = filename;
-        Config.setValue("BackgroundBrush", filename);
+        Config.BackgroundImage = filename;
+        Config.setValue("BackgroundImage", filename);
 
         emit bg_changed();
     }
@@ -89,8 +89,8 @@ void ConfigDialog::on_resetBgButton_clicked()
     ui->bgPathLineEdit->clear();
 
     QString filename = "backdrop/new-version.jpg";
-    Config.BackgroundBrush = filename;
-    Config.setValue("BackgroundBrush", filename);
+    Config.BackgroundImage = filename;
+    Config.setValue("BackgroundImage", filename);
 
     emit bg_changed();
 }

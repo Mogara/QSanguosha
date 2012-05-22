@@ -26,6 +26,7 @@
 #include <QSystemTrayIcon>
 #include <QInputDialog>
 #include <QLabel>
+#include <QStatusBar>
 
 class FitView : public QGraphicsView
 {
@@ -36,18 +37,22 @@ public:
     }
 
     virtual void resizeEvent(QResizeEvent *event) {
-        QGraphicsView::resizeEvent(event);
+        QGraphicsView::resizeEvent(event);        
+        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
+        if(scene()->inherits("RoomScene")){            
+            RoomScene *room_scene = qobject_cast<RoomScene *>(scene());            
+            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
+            room_scene->setSceneRect(newSceneRect);            
+            room_scene->adjustItems();
+            setSceneRect(room_scene->sceneRect());
+            if(Config.FitInView)
+                fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
+            main_window->setBackgroundBrush(false);
+            return;
+        }
         if(Config.FitInView)
             fitInView(sceneRect(), Qt::KeepAspectRatio);
-        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
-        if(scene()->inherits("RoomScene")){
-            RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            setSceneRect(0, 0, event->size().width(), event->size().height());
-            room_scene->setSceneRect(sceneRect());            
-            room_scene->adjustItems();
-            main_window->setBackgroundBrush(false);
-        }
-        else if(main_window)
+        if(main_window)
             main_window->setBackgroundBrush(true);           
     }
 };
@@ -84,7 +89,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);
-
     view = new FitView(scene);
 
     setCentralWidget(view);
@@ -425,15 +429,16 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::setBackgroundBrush(bool centerAsOrigin){
     if(scene){
-        QPixmap pixmap(Config.BackgroundBrush);
+        QPixmap pixmap(Config.BackgroundImage);        
         QBrush brush(pixmap);
-
-        qreal sx = width() / qreal(pixmap.width());
-        qreal sy = height() / qreal(pixmap.height());
+        qreal sx = qMax((qreal)width(), scene->width()) / qreal(pixmap.width());
+        qreal sy = qMax((qreal)height(), scene->height()) / qreal(pixmap.height());
+               
 
         QTransform transform;
         if (centerAsOrigin)
-            transform.translate(-width() / 2, -height() / 2);
+            transform.translate(-qMax((qreal)width(), scene->width()) / 2,
+                -qMax((qreal)height(), scene->height()) / 2);        
         transform.scale(sx, sy);
         brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
