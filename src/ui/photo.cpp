@@ -49,17 +49,17 @@ Photo::Photo(): PlayerCardContainer("image/system/photo-back.png", true),
     progress_bar = new QSanCommandProgressBar;
     progress_bar->setAutoHide(true);
     progress_bar->hide();
-    progress_bar->setMaximumHeight(15);
-    progress_bar->setMaximumWidth(pixmap.width());
+    progress_bar->setOrientation(Qt::Vertical);
+    progress_bar->setFixedHeight(S_NORMAL_PHOTO_HEIGHT);
+    progress_bar->setFixedWidth(15);
+    QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
+    widget->setWidget(progress_bar);
+    widget->setPos(S_NORMAL_PHOTO_WIDTH, 0);
 
     frame_item = new QGraphicsPixmapItem(this);
     frame_item->setPos(-6, -6);
     frame_item->setZValue(-1.0);
-
-    QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
-    widget->setWidget(progress_bar);
-    widget->setPos( -6 , - 25);
-
+    
     skill_name_item = new QGraphicsSimpleTextItem(this);
     skill_name_item->setBrush(Qt::white);
     skill_name_item->setFont(Config.SmallFont);

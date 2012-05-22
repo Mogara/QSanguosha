@@ -34,7 +34,7 @@ bool DiscardPile::_addCardItems(QList<CardItem*> &card_items, Player::Place plac
         CardItem* toRemove = m_visibleCards.first();
         toRemove->setZValue(0.0);
         toRemove->setHomeOpacity(0.0);
-        connect(toRemove, SIGNAL(onAnimationFinished), this, SLOT(_destroyCard()));
+        connect(toRemove, SIGNAL(onAnimationFinished()), this, SLOT(_destroyCard()));
         toRemove->goBack(true);
         m_visibleCards.removeFirst();
     }
