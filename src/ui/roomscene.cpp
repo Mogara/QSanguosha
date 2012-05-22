@@ -393,6 +393,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     main_window->statusBar()->setObjectName("skill_bar_container");
     //main_window->statusBar()->setLayout(skill_dock_layout);
     addWidgetToSkillDock(sort_combobox, true);
+    main_window->statusBar()->show();
 
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
