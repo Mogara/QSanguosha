@@ -302,7 +302,7 @@ public:
         Room *room = player->getRoom();
 
         if(event == CardGotOneTime){
-            CardsMoveStar move = data.value<CardsMoveStar>();
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if ((move->from != NULL && move->card_ids.size() >= 2  ||
                  player->getMark("xuanhuo") > 0)
                 && room->askForSkillInvoke(player,objectName(),data)){
@@ -492,8 +492,8 @@ public:
         }
         else if(event == CardLostOneTime)
         {
-            CardsMoveStar move = data.value<CardsMoveStar>();
-            if(move->from_place == Player::Equip ||
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from_places.contains(Player::Equip) ||
                 lingtong->tag.value("InvokeXuanfeng", false).toBool())
             {
                 lingtong->tag.remove("InvokeXuanfeng");

@@ -98,6 +98,13 @@ struct CardMoveStruct{
     } 
 };
 
+struct CardsMoveOneTimeStruct{
+    QList<int> card_ids;
+    QList<Player::Place> from_places;
+    Player::Place to_place;
+    Player *from, *to;
+};
+
 struct CardsMoveStruct{
     inline CardsMoveStruct()
     {
@@ -105,6 +112,7 @@ struct CardsMoveStruct{
         to_place = Player::PlaceUnknown;
         from = NULL;
         to = NULL;
+        countAsOneTime = false;
     }
     inline CardsMoveStruct(const QList<int> &ids, Player* to, Player::Place to_place)
     {
@@ -129,7 +137,8 @@ struct CardsMoveStruct{
     QString from_player_name, to_player_name;
     QString from_pile_name, to_pile_name;
     Player *from, *to;
-    bool open;    
+    bool open; // helper to prevent sending card_id to unrelevant clients
+    bool countAsOneTime; // helper to identify distinct move counted as one time
     bool tryParse(const Json::Value&);
     Json::Value toJsonValue() const;
     inline bool isRelevant(const Player* player)
@@ -247,8 +256,6 @@ enum TriggerEvent{
     CardLostOneTime,
     CardGotOnePiece,
     CardGotOneTime,
-    CardLostDone,
-    CardGotDone,
     CardDrawing,
     CardDrawnDone,
 
@@ -270,6 +277,7 @@ typedef JudgeStruct *JudgeStar;
 typedef DamageStruct *DamageStar;
 typedef PindianStruct *PindianStar;
 typedef const CardMoveStruct *CardMoveStar;
+typedef const CardsMoveOneTimeStruct *CardsMoveOneTimeStar;
 typedef const CardsMoveStruct *CardsMoveStar;
 
 Q_DECLARE_METATYPE(DamageStruct)
@@ -278,6 +286,7 @@ Q_DECLARE_METATYPE(SlashEffectStruct)
 Q_DECLARE_METATYPE(CardUseStruct)
 Q_DECLARE_METATYPE(CardsMoveStruct)
 Q_DECLARE_METATYPE(CardsMoveStar)
+Q_DECLARE_METATYPE(CardsMoveOneTimeStar)
 Q_DECLARE_METATYPE(CardMoveStruct)
 Q_DECLARE_METATYPE(CardMoveStar)
 Q_DECLARE_METATYPE(CardStar)

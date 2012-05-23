@@ -86,14 +86,14 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
         {
             QList<CardsMoveStruct> exchangeMove;
             CardsMoveStruct move1;
-            move1.card_ids << getEffectiveId();
+            move1.card_ids << getId();
             move1.to = source;
             move1.to_place = Player::Equip;
             exchangeMove.push_back(move1);
             if(equipped)
             {
                 CardsMoveStruct move2;
-                move2.card_ids << equipped->getEffectiveId();
+                move2.card_ids << equipped->getId();
                 move2.to = NULL;
                 move2.to_place = Player::DiscardPile;
                 exchangeMove.push_back(move2);
@@ -104,7 +104,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
             log.card_str = QString::number(getEffectiveId());
             room->sendLog(log);
 
-            room->moveCards(exchangeMove, true);
+            room->moveCardsAtomic(exchangeMove, true);
         }
 
 }

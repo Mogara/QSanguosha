@@ -687,8 +687,8 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         if(player->isKongcheng()){
-            CardsMoveStar move = data.value<CardsMoveStar>();
-            if(move->from_place == Player::Hand)
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from_places.contains(Player::Hand))
                 player->getRoom()->playSkillEffect("kongcheng");
         }
 
@@ -899,9 +899,9 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *luxun, QVariant &data) const{
         if(luxun->isKongcheng()){
-            CardsMoveStar move = data.value<CardsMoveStar>();
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
 
-            if(move->from_place == Player::Hand){
+            if(move->from_places.contains(Player::Hand)){
                 Room *room = luxun->getRoom();
                 if(room->askForSkillInvoke(luxun, objectName())){
                     room->playSkillEffect(objectName());
