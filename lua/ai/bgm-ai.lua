@@ -275,7 +275,7 @@ sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
 		use.card = sgs.Card_Parse(card_str)
 		return
 	end
-	self:sort(self.enemies, "handcard")
+	self:sort(self.enemies, "defense")
 
 	for _, enemy in ipairs(self.enemies) do
 		if self:getCardsNum("Snatch") > 0 and not enemy:isKongcheng() then
@@ -302,6 +302,15 @@ sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
 	self:sortByUseValue(cards, true)
 	if self:getUseValue(cards[1]) >= 6 or self:getKeepValue(cards[1]) >= 6 then return end
 	if self:getOverflow() > 0 then
+		if not ptarget:isKongcheng() then
+			local card_id = max_card:getEffectiveId()
+			local card_str = "@TanhuCard=" .. card_id
+			if use.to then
+				use.to:append(ptarget)
+			end
+			use.card = sgs.Card_Parse(card_str)
+			return
+		end
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() and not enemy:hasSkill("tuntian") then
 				use.card = sgs.Card_Parse("@TanhuCard=" .. cards[1]:getId())
@@ -317,7 +326,7 @@ sgs.ai_card_intention.TanhuCard = 30
 sgs.dynamic_value.control_card.TanhuCard = true
 sgs.ai_use_priority.TanhuCard = 8
 
-sgs.ai_skill_invoke.mouduan = funtion(self, data)
+sgs.ai_skill_invoke.mouduan = function(self, data)
 	return self:isEquip("EightDiagram") or self:getCardsNum("Crossbow") > 0
 end
 	
