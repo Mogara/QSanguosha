@@ -550,13 +550,16 @@ void RoomScene::createReplayControlBar(){
 
 void RoomScene::adjustItems(){
     QRectF displayRegion = sceneRect();
-    if (displayRegion.left() != 0 || displayRegion.right() != 0 ||
+    if (displayRegion.left() != 0 || displayRegion.top() != 0 ||
         displayRegion.bottom() < room_layout->m_minimumSceneSize.height() ||
         displayRegion.right() < room_layout->m_minimumSceneSize.width())
     {
         displayRegion.setLeft(0); displayRegion.setTop(0);
-        displayRegion.setBottom(qMax((int)displayRegion.bottom(), room_layout->m_minimumSceneSize.height()));
-        displayRegion.setRight(qMax((int)displayRegion.right(), room_layout->m_minimumSceneSize.width()));
+        double sy = room_layout->m_minimumSceneSize.height() / displayRegion.height();
+        double sx = room_layout->m_minimumSceneSize.width() / displayRegion.width();
+        double scale = qMax(sx, sy);
+        displayRegion.setBottom(scale * displayRegion.height());
+        displayRegion.setRight(scale * displayRegion.width());
         setSceneRect(displayRegion);
     }
     int padding = room_layout->m_scenePadding;

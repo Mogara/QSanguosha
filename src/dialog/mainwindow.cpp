@@ -50,8 +50,6 @@ public:
             main_window->setBackgroundBrush(false);
             return;
         }
-        if(Config.FitInView)
-            fitInView(sceneRect(), Qt::KeepAspectRatio);
         if(main_window)
             main_window->setBackgroundBrush(true);           
     }
