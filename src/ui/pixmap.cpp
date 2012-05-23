@@ -103,15 +103,7 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
 
         emit selected_changed();
     }else if(change == ItemEnabledHasChanged){
-        if(this->inherits("CardItem"))
-        {
-            if(value.toBool()){
-                setOpacity(1.0);
-            }else{
-                setOpacity(0.7);
-            }
-        }
-        else emit enable_changed();
+        emit enable_changed();
     }
 
     return QGraphicsObject::itemChange(change, value);

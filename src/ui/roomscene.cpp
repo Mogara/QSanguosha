@@ -1263,8 +1263,10 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
         PlayerCardContainer* from_container = _getPlayerCardContainer(movement.from_place, movement.from);
         QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach (CardItem* card, cards)
-        {            
-            card->setPos(card->mapToScene(0, 0));
+        {      
+            card->setHomePos(from_container->mapToScene(card->homePos()));
+            card->setPos(from_container->mapToScene(card->pos()));
+            card->goBack(true);
             card->setParentItem(NULL);
         }
         _m_cardsMoveStash[moveId].append(cards);
@@ -3129,7 +3131,7 @@ void KOFOrderBox::revealGeneral(const QString &name){
 
 void KOFOrderBox::killPlayer(const QString &general_name){
     int i;
-    for(i=0; i<revealed; i++){
+    for(i = 0; i < revealed; i++){
         Pixmap *avatar = avatars[i];
         if(avatar->isEnabled() && avatar->objectName() == general_name){
             QPixmap pixmap("image/system/death/unknown.png");
@@ -3535,7 +3537,6 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
     QGraphicsRectItem *lightbox = addRect(main_window->rect());
 
     lightbox->setBrush(QColor(0x20, 0x20, 0x20));
-    lightbox->setOpacity(0.8);
     lightbox->moveBy(-main_window->width()/2, -main_window->height()/2);
 
     QGraphicsTextItem *line = addText(word, Config.BigFont);

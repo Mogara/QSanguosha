@@ -3037,6 +3037,7 @@ QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_m
             _MoveSourceClassifier classifier(move);
             moveMap[classifier].append(move.card_ids[j]);
         }
+        int numMoves = 0;
         foreach (_MoveSourceClassifier cls, moveMap.keys())
         {
             CardsMoveStruct sub_move = move;
@@ -3046,8 +3047,10 @@ QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_m
                 continue;            
             sub_move.card_ids = moveMap[cls]; 
             all_sub_moves.append(sub_move);
+            numMoves++;
         }
-        all_sub_moves.last().countAsOneTime = true;
+        if (numMoves > 0)
+            all_sub_moves.last().countAsOneTime = true;
     }
     return all_sub_moves;
 }
@@ -3131,8 +3134,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 
     if (enforceOrigin)
     {
-        // check again here as CardLostOneTime may also kill target, all remove cards from source
-        // If the trigger        
+        // check again here as CardLostOneTime may also kill target, or remove cards from source
         for (int i = 0; i < cards_moves.size(); i++)
         {   
             CardsMoveStruct &cards_move = cards_moves[i];

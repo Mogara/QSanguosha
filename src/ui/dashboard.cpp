@@ -102,7 +102,6 @@ void Dashboard::createRight(){
     small_avatar = new Pixmap;
     small_avatar->setPos(21, 63);
     small_avatar->setParentItem(right);
-    small_avatar->setOpacity(0.75);
 
     if(button_widget){
         kingdom = new QGraphicsPixmapItem(button_widget);

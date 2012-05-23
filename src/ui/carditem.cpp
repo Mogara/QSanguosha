@@ -29,7 +29,6 @@ CardItem::CardItem(const Card *card)
     frame->hide();
 
     avatar = NULL;
-    setCacheMode(QGraphicsItem::ItemCoordinateCache);
     owner_text = new QGraphicsSimpleTextItem(this);
     QPen pen(Qt::black);
     pen.setWidthF(0.5);
@@ -311,11 +310,13 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
     emit leave_hover();
 }
 
+
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    
     if (!isEnabled())
-    {       
+    {
         painter->fillRect(this->boundingRect(), QColor(100, 100, 100, 255 * opacity()));
-        painter->setOpacity(0.7);
+        painter->setOpacity(0.7 * opacity());
     }
 
     Pixmap::paint(painter, option, widget);
