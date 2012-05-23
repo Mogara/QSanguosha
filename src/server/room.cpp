@@ -806,6 +806,8 @@ void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
 bool Room::isCanceled(const CardEffectStruct &effect){
     if(!effect.card->isCancelable(effect))
         return false;
+    if(effect.from && effect.from->hasSkill("tanhu") && effect.to && effect.to->hasFlag("TanhuTarget"))
+        return false;
 
     const TrickCard *trick = qobject_cast<const TrickCard *>(effect.card);
     if(trick){
