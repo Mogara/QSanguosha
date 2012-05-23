@@ -605,8 +605,10 @@ public:
             QList<ServerPlayer *> players = room->getAlivePlayers();
 
             foreach(ServerPlayer *player, players){
-                if(player->hasFlag("TanhuTarget"))
+                if(player->hasFlag("TanhuTarget")){
                     room->setPlayerFlag(player, "-TanhuTarget");
+                    room->setFixedDistance(target, player, -1);
+                }
             }
         }
 

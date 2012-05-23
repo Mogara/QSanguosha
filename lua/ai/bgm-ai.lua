@@ -249,3 +249,75 @@ sgs.dynamic_value.control_card.DaheCard = true
 
 sgs.ai_use_value.DaheCard = 8.5
 sgs.ai_use_priority.DaheCard = 8
+
+local tanhu_skill={}
+tanhu_skill.name="tanhu"
+table.insert(sgs.ai_skills,tanhu_skill)
+tanhu_skill.getTurnUseCard=function(self)
+	if not self.player:hasUsed("TanhuCard") and not self.player:isKongcheng() then
+		local max_card = self:getMaxCard()
+		return sgs.Card_Parse("@TanhuCard=" .. max_card:getEffectiveId())
+	end
+end
+
+sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
+	local max_card = self:getMaxCard()
+	local max_point = max_card:getNumber()
+	local ptarget = self:getPriorTarget()
+	local slashcount = self:getCardsNum("Slash")
+	if max_card:inherits("Slash") then slashcount = slashcount - 1 end
+	if not ptarget:isKongcheng() and slashcount > 0 and self.player:canSlash(ptarget, true) then
+		local card_id = max_card:getEffectiveId()
+		local card_str = "@TanhuCard=" .. card_id
+		if use.to then
+			use.to:append(ptarget)
+		end
+		use.card = sgs.Card_Parse(card_str)
+		return
+	end
+	self:sort(self.enemies, "handcard")
+
+	for _, enemy in ipairs(self.enemies) do
+		if self:getCardsNum("Snatch") > 0 and not enemy:isKongcheng() then
+			local enemy_max_card = self:getMaxCard(enemy)
+			local allknown = 0
+			if self:getKnownNum(enemy) == enemy:getHandcardNum() then
+				allknown = allknown + 1
+			end
+			if (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown > 0)
+				or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10) 
+				or (not enemy_max_card and max_point > 10) and
+				(self:getDangerousCard(enemy) or self:getValuableCard(enemy)) then
+					local card_id = max_card:getEffectiveId()
+					local card_str = "@TanhuCard=" .. card_id
+					if use.to then
+						use.to:append(enemy)
+					end
+					use.card = sgs.Card_Parse(card_str)
+					return
+			end
+		end
+	end
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByUseValue(cards, true)
+	if self:getUseValue(cards[1]) >= 6 or self:getKeepValue(cards[1]) >= 6 then return end
+	if self:getOverflow() > 0 then
+		for _, enemy in ipairs(self.enemies) do
+			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() and not enemy:hasSkill("tuntian") then
+				use.card = sgs.Card_Parse("@TanhuCard=" .. cards[1]:getId())
+				if use.to then use.to:append(enemy) end
+				return
+			end
+		end
+	end
+
+
+sgs.ai_cardneed.tanhuhu = sgs.ai_cardneed.bignumber
+sgs.ai_card_intention.TanhuCard = 30
+sgs.dynamic_value.control_card.TanhuCard = true
+sgs.ai_use_priority.TanhuCard = 8
+
+sgs.ai_skill_invoke.mouduan = funtion(self, data)
+	return self:isEquip("EightDiagram") or self:getCardsNum("Crossbow") > 0
+end
+	
