@@ -319,7 +319,7 @@ sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
 			end
 		end
 	end
-
+end
 
 sgs.ai_cardneed.tanhuhu = sgs.ai_cardneed.bignumber
 sgs.ai_card_intention.TanhuCard = 30
