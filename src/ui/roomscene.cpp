@@ -78,7 +78,7 @@ struct CircularRoomLayout : public RoomLayout{
         m_photoPhotoPadding = 5;
         m_discardPileMinWidth = CardItem::S_NORMAL_CARD_WIDTH * 5;
         m_discardPilePadding = 50;
-        m_minimumSceneSize = QSize(971, 774);
+        m_minimumSceneSize = QSize(971, 745);
     }
 };
 
@@ -673,7 +673,7 @@ void RoomScene::updateTable()
         {5, 5, 1, 1, 6, 6},
         {8, 8, 1, 1, 1, 9, 9}, // 8 players
         {3, 3, 7, 7, 7, 7, 4, 4}, // 9 players
-        {3, 3, 1, 1, 1, 1, 1, 4, 4} // 10 players
+        {3, 3, 7, 7, 7, 7, 7, 4, 4} // 10 players
     };
     static int hulaoSeatIndex[][3] =
     {

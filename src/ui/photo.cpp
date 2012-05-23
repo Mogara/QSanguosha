@@ -35,16 +35,7 @@ Photo::Photo(): PlayerCardContainer("image/system/photo-back.png", true),
 {
     setAcceptHoverEvents(true);
 
-    back_icon = new Pixmap("image/system/small-back.png");
-    back_icon->setParentItem(this);
-    back_icon->setPos(105, 67);
-    back_icon->hide();
-    back_icon->setZValue(1.0);
-
-    chain_icon = new Pixmap("image/system/chain.png");
-    chain_icon->setParentItem(this);
-    chain_icon->setPos(boundingRect().width() - 22, 5);
-    chain_icon->hide();
+    chain_icon = QPixmap("image/system/chain.png");
 
     progress_bar = new QSanCommandProgressBar;
     progress_bar->setAutoHide(true);
@@ -78,6 +69,8 @@ Photo::Photo(): PlayerCardContainer("image/system/photo-back.png", true),
     avatar_area->setPos(5, 15);
     avatar_area->setPen(Qt::NoPen);
 
+    back_icon = QPixmap("image/generals/small/faceturned.png");
+
     small_avatar_area = new QGraphicsRectItem(0, 0, 42, 36, this);
     small_avatar_area->setPos(86, 30);
     small_avatar_area->setPen(Qt::NoPen);
@@ -96,7 +89,7 @@ Photo::Photo(): PlayerCardContainer("image/system/photo-back.png", true),
     ready_item->hide();
 
     mark_item = new QGraphicsTextItem(this);
-    mark_item->setPos(2, 99);
+    mark_item->setPos(2, 69);
     mark_item->setDefaultTextColor(Qt::white);
 
     role_combobox = NULL;
@@ -461,23 +454,11 @@ bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
     return destroy;
 }
 
-void Photo::drawMagatama(QPainter *painter, int index, const QPixmap &pixmap){
-    static const QPoint first_row(42, 69);
-    static const QPoint second_row(26, 86);
-    static const int skip =  16;
-
-    // index is count from 0
-    if(index >= 5){
-        // draw magatama at first row
-        QPoint pos = first_row;
-        pos.rx() += (index - 5) * skip;
-        painter->drawPixmap(pos, pixmap);
-    }else{
-        // draw magatama at second row
-        QPoint pos = second_row;
-        pos.rx() += index * skip;
-        painter->drawPixmap(pos, pixmap);
-    }
+void Photo::drawMagatama(QPainter *painter, int index, int total, const QPixmap &pixmap){
+    const int first_row_y = 69;
+    int centerx = S_NORMAL_PHOTO_WIDTH / 2 - pixmap.width() / 2;
+    const int step =  16;
+    painter->drawPixmap(centerx + (index - (double)total / 2) * step, first_row_y, pixmap);
 }
 
 void Photo::drawHp(QPainter *painter){
@@ -491,11 +472,19 @@ void Photo::drawHp(QPainter *painter){
     QPixmap *zero_magatama = MagatamaWidget::GetSmallMagatama(0);
 
     int max_hp = player->getMaxHp();
-    int i;
-    for(i=0; i< hp; i++)
-        drawMagatama(painter, i, *magatama);
-    for(i=hp; i< max_hp; i++)
-        drawMagatama(painter, i, *zero_magatama);
+    if (max_hp <= 5)
+    {
+        for(int i = 0; i< hp; i++)
+            drawMagatama(painter, i, max_hp, *magatama);
+        for(int i = hp; i< max_hp; i++)
+            drawMagatama(painter, i, max_hp, *zero_magatama);
+    }
+    else
+    {
+        const QRectF textArea(69, S_NORMAL_PHOTO_WIDTH / 2, 40, 20);
+        drawMagatama(painter, 0, 3, *magatama);
+        painter->drawText(textArea, tr("%1 / %2").arg(hp).arg(max_hp));
+    }
 }
 
 void Photo::setFrame(FrameType type){
@@ -621,14 +610,11 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     if(kingdom_frame.isNull())
         painter->drawPixmap(3, 13, wait_frame);
 
-    if(hide_avatar)
-        return;
+    if(hide_avatar) return;
 
     // avatar related
     painter->drawPixmap(5, 15, avatar);
     painter->drawPixmap(86, 30, small_avatar);
-
-    // kingdom related
     painter->drawPixmap(3, 13, kingdom_frame);
 
     if(player->isDead()){
@@ -646,7 +632,16 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
         painter->drawPixmap(death_x, 25, death_pixmap);
     }
-
+    else
+    {
+        qreal oldOpacity = painter->opacity();
+        painter->setOpacity(0.7);
+        if (!player->faceUp())
+            painter->drawPixmap(5, 15, back_icon);
+        painter->setOpacity(oldOpacity);
+        if (player->isChained())
+            painter->drawPixmap(-8, 15, chain_icon);
+    }
     int n = player->getHandcardNum();
     if(n > 0){
         painter->drawPixmap(2, 68, handcard);
@@ -655,7 +650,9 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     QString state_str = player->getState();
     if(!state_str.isEmpty() && state_str != "online"){
-        painter->drawText(1, 100, Sanguosha->translate(state_str));
+        const QRectF stateArea(S_NORMAL_PHOTO_WIDTH - 20, 55, 26, 15);
+        painter->fillRect(stateArea, Qt::black);
+        painter->drawText(stateArea, Sanguosha->translate(state_str));
     }
 
     drawHp(painter);
@@ -673,7 +670,8 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
         int index = static_cast<int>(player->getPhase());
         QPixmap phase_pixmap = phase_pixmaps.at(index);
-        painter->drawPixmap(115, 120, phase_pixmap);
+        QRect phaseArea(S_NORMAL_PHOTO_WIDTH - 16, S_NORMAL_PHOTO_HEIGHT - 63, 16, 63);
+        painter->drawPixmap(phaseArea, phase_pixmap);
     }
 
     drawEquip(painter, weapon, 0);
@@ -681,15 +679,13 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     drawEquip(painter, defensive_horse, 2);
     drawEquip(painter, offensive_horse, 3);
 
-    chain_icon->setVisible(player->isChained());
-    back_icon->setVisible(! player->faceUp());
 }
 
 void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
     if(!equip)
         return;
 
-    QRect suit_rect(2, 104 + 15 + order * 17, 13, 13);
+    QRect suit_rect(2, 103 + order * 17, 13, 13);
     painter->drawPixmap(suit_rect, equip->getSuitPixmap());
 
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getCard());
@@ -697,8 +693,8 @@ void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
     QFont bold_font;
     bold_font.setBold(true);
     painter->setFont(bold_font);
-    painter->drawText(20, 115 + 15 + order * 17, card->getNumberString());
-    painter->drawText(35, 115 + 15 + order * 17, card->label());
+    painter->drawText(20, 112 + order * 17, card->getNumberString());
+    painter->drawText(35, 112 + order * 17, card->label());
 }
 
 QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){

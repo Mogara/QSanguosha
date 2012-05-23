@@ -48,8 +48,8 @@ public:
     };
 
     void setFrame(FrameType type);
-    static const int S_NORMAL_PHOTO_WIDTH = 143;
-    static const int S_NORMAL_PHOTO_HEIGHT = 195;
+    static const int S_NORMAL_PHOTO_WIDTH = 129;
+    static const int S_NORMAL_PHOTO_HEIGHT = 167;
 public slots:
     void updateAvatar();    
     void updateSmallAvatar();
@@ -96,7 +96,7 @@ private:
     QGraphicsPixmapItem *order_item;
     bool hide_avatar;
     QPixmap death_pixmap;
-    Pixmap *back_icon, *chain_icon;
+    QPixmap back_icon, chain_icon;
     QSanCommandProgressBar *progress_bar;
     QGraphicsPixmapItem *emotion_item, *frame_item;
     QGraphicsSimpleTextItem *skill_name_item;
@@ -104,7 +104,7 @@ private:
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
     void drawHp(QPainter *painter);
-    void drawMagatama(QPainter *painter, int index, const QPixmap &pixmap);
+    void drawMagatama(QPainter *painter, int index, int total, const QPixmap &pixmap);
 };
 
 #endif // PHOTOBACK_H
