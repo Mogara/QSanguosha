@@ -45,15 +45,21 @@ public:
 class Miji: public PhaseChangeSkill{
 public:
     Miji():PhaseChangeSkill("miji"){
-        frequency = Frequent;
     }
 
     virtual bool onPhaseChange(ServerPlayer *wangyi) const{
         if(!wangyi->isWounded())
             return false;
         if(wangyi->getPhase() == Player::Start || wangyi->getPhase() == Player::Finish){
+            if(wangyi->getPhase() == Player::Finish && wangyi->tag.value("InvokeMiji", false).toBool()){
+                wangyi->tag.remove("InvokeMiji");
+                return false;
+            }
             if(!wangyi->askForSkillInvoke(objectName()))
                 return false;
+            if(wangyi->getPhase() == Player::Start)
+                wangyi->tag["InvokeMiji"] = true;
+
             Room *room = wangyi->getRoom();
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(club|spade):(.*)");

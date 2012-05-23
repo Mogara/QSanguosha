@@ -122,6 +122,15 @@ sgs.ai_skill_invoke.lieren = function(self, data)
 	return false
 end
 
+function sgs.ai_skill_pindian.lieren(minusecard, self, requestor)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	if requestor:objectName() == self.player:objectName() then
+		return cards[1]:getId()
+	end
+	return self:getMaxCard(self.player):getId()
+end
+
 sgs.ai_skill_choice.yinghun = function(self, choices)
 	return self.yinghunchoice
 end
