@@ -1079,3 +1079,4 @@ int Dashboard::getMidPosition()
 {
     return left_pixmap.width();
 }
+

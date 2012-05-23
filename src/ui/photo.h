@@ -75,7 +75,7 @@ private:
     QPixmap avatar, small_avatar;
     QGraphicsPixmapItem *kingdom_item, *ready_item;
     QPixmap kingdom_frame;
-    QPixmap handcard;
+    QPixmap _m_handCardIcon;
     RoleCombobox *role_combobox;
     QGraphicsProxyWidget  *pile_button;
     QGraphicsPixmapItem *action_item, *save_me_item;

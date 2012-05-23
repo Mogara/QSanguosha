@@ -129,3 +129,4 @@ void Pixmap::mark(bool marked){
 void Pixmap::setMarkable(bool markable){
     this->markable = markable;
 }
+

@@ -28,7 +28,7 @@ const QRect Photo::S_CARD_MOVE_REGION(-50, 100, 200, CardItem::S_NORMAL_CARD_HEI
 
 Photo::Photo(): PlayerCardContainer("image/system/photo-back.png", true),
                 player(NULL),
-                handcard("image/system/handcard.png"),
+                _m_handCardIcon("image/system/handcard.png"),
                 action_item(NULL), save_me_item(NULL), permanent(false),
                 weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
                 order_item(NULL), hide_avatar(false)
@@ -456,9 +456,9 @@ bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 
 void Photo::drawMagatama(QPainter *painter, int index, int total, const QPixmap &pixmap){
     const int first_row_y = 69;
-    int centerx = S_NORMAL_PHOTO_WIDTH / 2 - pixmap.width() / 2;
-    const int step =  16;
-    painter->drawPixmap(centerx + (index - (double)total / 2) * step, first_row_y, pixmap);
+    int centerx = S_NORMAL_PHOTO_WIDTH / 2 + _m_handCardIcon.width() / 2 - pixmap.width() / 2;
+    const int step = pixmap.width();
+    painter->drawPixmap(centerx + (index - (double)(total - 1) / 2) * step, first_row_y, pixmap);
 }
 
 void Photo::drawHp(QPainter *painter){
@@ -481,8 +481,11 @@ void Photo::drawHp(QPainter *painter){
     }
     else
     {
-        const QRectF textArea(69, S_NORMAL_PHOTO_WIDTH / 2, 40, 20);
-        drawMagatama(painter, 0, 3, *magatama);
+        const QRectF textArea(S_NORMAL_PHOTO_WIDTH / 2, 68, 40, 20);
+        drawMagatama(painter, 0, 4, *magatama);
+        QFont hpFont("Arial", 12);
+        hpFont.setBold(true);
+        painter->setFont(hpFont);
         painter->drawText(textArea, tr("%1 / %2").arg(hp).arg(max_hp));
     }
 }
@@ -644,13 +647,13 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     }
     int n = player->getHandcardNum();
     if(n > 0){
-        painter->drawPixmap(2, 68, handcard);
+        painter->drawPixmap(2, 68, _m_handCardIcon);
         painter->drawText(8, 86, QString::number(n));
     }
 
     QString state_str = player->getState();
     if(!state_str.isEmpty() && state_str != "online"){
-        const QRectF stateArea(S_NORMAL_PHOTO_WIDTH - 20, 55, 26, 15);
+        const QRectF stateArea(S_NORMAL_PHOTO_WIDTH - 22, 53, 23, 15);
         painter->fillRect(stateArea, Qt::black);
         painter->drawText(stateArea, Sanguosha->translate(state_str));
     }
