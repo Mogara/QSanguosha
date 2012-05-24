@@ -78,6 +78,7 @@ public:
     static const int S_PROGRESS_BAR_UPDATE_INTERVAL;
     static const int S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
     static const int S_MOVE_CARD_ANIMATION_DURAION;
+    static const int S_REGULAR_ANIMATION_SLOW_DURAION;
 };
 
 extern Settings Config;

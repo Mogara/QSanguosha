@@ -253,7 +253,7 @@ void Dashboard::setPlayer(const ClientPlayer *player){
 void Dashboard::updateAvatar(){
     const General *general = Self->getAvatarGeneral();
     avatar->setToolTip(general->getSkillDescription());
-    if(!avatar->changePixmap(general->getPixmapPath("big"))){
+    if(!avatar->load(general->getPixmapPath("big"))){
         QPixmap pixmap(General::BigIconSize);
         pixmap.fill(Qt::black);
 
@@ -281,7 +281,7 @@ void Dashboard::updateSmallAvatar(){
     const General *general2 = Self->getGeneral2();
     if(general2){
         small_avatar->setToolTip(general2->getSkillDescription());
-        bool success = small_avatar->changePixmap(general2->getPixmapPath("tiny"));
+        bool success = small_avatar->load(general2->getPixmapPath("tiny"));
 
         if(!success){
             QPixmap pixmap(General::TinyIconSize);

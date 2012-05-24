@@ -78,7 +78,7 @@ struct CircularRoomLayout : public RoomLayout{
         m_photoPhotoPadding = 5;
         m_discardPileMinWidth = CardItem::S_NORMAL_CARD_WIDTH * 5;
         m_discardPilePadding = 50;
-        m_minimumSceneSize = QSize(971, 745);
+        m_minimumSceneSize = QSize(900, 650);
     }
 };
 
@@ -1529,10 +1529,9 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
     item->setGraphicsEffect(drop);
 
     QPropertyAnimation *move = new QPropertyAnimation(item, "pos");
-    QRectF rect = item->boundingRect();
-    move->setStartValue(QPointF(- rect.width()/2, - rect.height()/2));
+    move->setStartValue(m_tableCenterPos);
     move->setEndValue(dest->scenePos());
-    move->setDuration(1500);
+    move->setDuration(Config.S_REGULAR_ANIMATION_SLOW_DURAION);
 
     move->start(QAbstractAnimation::DeleteWhenStopped);
     connect(move, SIGNAL(finished()), item, SLOT(deleteLater()));
@@ -2833,14 +2832,12 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         else
             labels << tr("Role");
 
-    //    labels << tr("Designation") << tr("Kill") << tr("Damage") << tr("Save") << tr("Recover");
     }
     table->setHorizontalHeaderLabels(labels);
 
     table->setSelectionBehavior(QTableWidget::SelectRows);
-
-    int i;
-    for(i=0; i<players.length(); i++){
+        
+    for(int i = 0; i < players.length(); i++){
         const ClientPlayer *player = players.at(i);
 
         QTableWidgetItem *item = new QTableWidgetItem;
@@ -2872,32 +2869,6 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         if(!player->isAlive())
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         table->setItem(i, 3, item);
-/*
-        StatisticsStruct *statistics = player->getStatistics();
-        item = new QTableWidgetItem;
-        QString designations;
-        foreach(QString designation, statistics->designation){
-            designations.append(Sanguosha->translate(designation) + ", ");
-        }
-        designations.remove(designations.length()-3, 2);
-        table->setItem(i, 4, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(statistics->kill));
-        table->setItem(i, 5, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(statistics->damage));
-        table->setItem(i, 6, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(statistics->save));
-        table->setItem(i, 7, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(statistics->recover));
-        table->setItem(i, 8, item);
-*/
     }
 }
 
@@ -3123,7 +3094,7 @@ void KOFOrderBox::revealGeneral(const QString &name){
         const General *general = Sanguosha->getGeneral(name);
         if(general){
             Pixmap *avatar = avatars[revealed ++];
-            avatar->changePixmap(general->getPixmapPath("small"));
+            avatar->load(general->getPixmapPath("small"));
             avatar->setObjectName(name);
         }
     }
@@ -3885,7 +3856,7 @@ void RoomScene::startArrange(){
                 << QPointF(344, 269);
     }
 
-    selector_box->changePixmap(QString("image/system/%1/arrange.png").arg(mode));
+    selector_box->load(QString("image/system/%1/arrange.png").arg(mode));
 
     foreach(CardItem *item, down_generals){
         item->setFlag(QGraphicsItem::ItemIsFocusable);

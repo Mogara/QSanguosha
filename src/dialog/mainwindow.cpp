@@ -700,7 +700,7 @@ QGroupBox *MeleeDialog::createGeneralBox(){
 class RoomItem: public Pixmap{
 public:
     RoomItem(Room *room){
-        changePixmap("image/system/frog/playing.png");
+        load("image/system/frog/playing.png");
 
         const qreal radius = 50;
         const qreal pi = 3.1415926;
@@ -792,11 +792,11 @@ void MeleeDialog::onGameOver(const QString &winner){
         if(p->getGeneralName() == to_test){
 
             if(won){
-                if(room_item) room_item->changePixmap("image/system/frog/good.png");
+                if(room_item) room_item->load("image/system/frog/good.png");
                 updateResultBox(p->getRole(),1);
             }
             else{
-                if(room_item) room_item->changePixmap("image/system/frog/bad.png");
+                if(room_item) room_item->load("image/system/frog/bad.png");
                 updateResultBox(p->getRole(),0);
             }
         }

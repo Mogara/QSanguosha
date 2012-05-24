@@ -10,27 +10,56 @@ Pixmap::Pixmap(const QString &filename, bool center_as_origin)
     load(filename, center_as_origin);
     markable = false;
     marked = false;
+    _m_width = pixmap.width();
+    _m_height = pixmap.height();
 }
 
-void Pixmap::load(const QString& filename, bool center_as_origin)
+bool Pixmap::load(const QString& filename, bool center_as_origin)
 {
-    pixmap.load(filename);
-    #ifndef QT_NO_DEBUG
-//only complains about pixmap loading errors under debug mode
-    if(pixmap.isNull()){
+    return _load(filename, QSize(), false, center_as_origin);
+}
+
+bool Pixmap::load(const QString &filename, QSize size, bool center_as_origin)
+{
+    return _load(filename, size, true, center_as_origin);
+}
+
+bool Pixmap::_load(const QString &filename, QSize size, bool useNewSize, bool center_as_origin)
+{    
+    bool success = pixmap.load(filename);
+
+    if (!success){
         QImageReader reader(filename);
         QString error_string = reader.errorString();
 
         QString warning = tr("Can not load image %1[%2], error string is %3")
-                          .arg(filename).arg(metaObject()->className()).arg(error_string);
-        QMessageBox::warning(NULL, tr("Warning"), warning);
+                          .arg(filename).arg(metaObject()->className()).arg(error_string);        
+        QMessageBox::warning(NULL, tr("Warning"), warning);        
+    } else {
+        if (useNewSize)
+        {
+            _m_width = size.width();
+            _m_height = size.height();
+        }
+        else
+        {
+            _m_width = pixmap.width();
+            _m_height = pixmap.height();
+        }
+        if(center_as_origin)
+        {
+            resetTransform();
+            this->translate(-_m_width / 2, -_m_height / 2);
+        }
+        else
+            this->prepareGeometryChange();
     }
-#endif
-    if(center_as_origin)
-    {
-        resetTransform();
-        this->translate(-pixmap.width() / 2, -pixmap.height() / 2);
-    }
+    return success; 
+}
+
+void Pixmap::setPixmap(const QPixmap &pixmap){
+    this->pixmap = pixmap;
+    prepareGeometryChange();
 }
 
 Pixmap::Pixmap(bool center_as_origin)
@@ -41,31 +70,19 @@ Pixmap::Pixmap(bool center_as_origin)
         resetTransform();
         this->translate(-pixmap.width() / 2, -pixmap.height()/2);
     }
+    _m_width = _m_height = 0;
 }
 
 QRectF Pixmap::boundingRect() const{
-    return QRectF(0, 0, pixmap.width(), pixmap.height());
+    return QRectF(0, 0, _m_width, _m_height);
 }
 
-bool Pixmap::changePixmap(const QString &filename){
-    bool success = pixmap.load(filename);
-    if(success)
-        prepareGeometryChange();
-
-    return success;
-}
-
-void Pixmap::setPixmap(const QPixmap &pixmap){
-    this->pixmap = pixmap;
-    prepareGeometryChange();
-}
 
 void Pixmap::MakeGray(QPixmap &pixmap){
     QImage img = pixmap.toImage();
 
-    int i,j;
-    for(i=0; i<img.width(); i++){
-        for(j=0; j<img.height(); j++){
+    for(int i = 0; i < img.width(); i++){
+        for(int j = 0; j < img.height(); j++){
             QRgb color = img.pixel(i, j);
             int gray = qGray(color);
             color = qRgba(gray, gray, gray, qAlpha(color));
@@ -89,7 +106,7 @@ void Pixmap::scaleSmoothly(qreal ratio){
 }
 
 void Pixmap::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    painter->drawPixmap(0, 0, pixmap);
+    painter->drawPixmap(QRect(0, 0, _m_width, _m_height), pixmap);
 }
 
 QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){

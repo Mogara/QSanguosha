@@ -48,8 +48,11 @@ public:
     };
 
     void setFrame(FrameType type);
-    static const int S_NORMAL_PHOTO_WIDTH = 129;
-    static const int S_NORMAL_PHOTO_HEIGHT = 167;
+    virtual QRectF boundingRect() const;
+    static const int S_NORMAL_PHOTO_WIDTH = 130;
+    static const int S_NORMAL_PHOTO_HEIGHT = 150;
+    static const int S_SHADOW_INCLUSIVE_PHOTO_WIDTH = 139;
+    static const int S_SHADOW_INCLUSIVE_PHOTO_HEIGHT = 155;
 public slots:
     void updateAvatar();    
     void updateSmallAvatar();
@@ -73,12 +76,14 @@ protected:
 private:
     const ClientPlayer *player;
     QPixmap avatar, small_avatar;
-    QGraphicsPixmapItem *kingdom_item, *ready_item;
-    QPixmap kingdom_frame;
+    QGraphicsPixmapItem *ready_item;    
+    QPixmap _m_mainFrame;
     QPixmap _m_handCardIcon;
+    QPixmap _m_kingdomIcon;
+    QPixmap _m_kindomColorMaskIcon;
     RoleCombobox *role_combobox;
     QGraphicsProxyWidget  *pile_button;
-    QGraphicsPixmapItem *action_item, *save_me_item;
+    QGraphicsPixmapItem *action_item, *save_me_item;    
     bool permanent;
 
     QGraphicsTextItem *mark_item;
@@ -104,7 +109,7 @@ private:
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
     void drawHp(QPainter *painter);
-    void drawMagatama(QPainter *painter, int index, int total, const QPixmap &pixmap);
+    void drawMagatama(QPainter *painter, int index, const QPixmap &pixmap);
 };
 
 #endif // PHOTOBACK_H

@@ -87,10 +87,10 @@ void CardItem::changeGeneral(const QString &general_name){
 
     const General *general = Sanguosha->getGeneral(general_name);
     if(general){
-        changePixmap(general->getPixmapPath("card"));
+        load(general->getPixmapPath("card"));
         setToolTip(general->getSkillDescription());
     }else{
-        changePixmap("image/system/unknown.png");
+        load("image/system/unknown.png");
         setToolTip(QString());
     }
 }

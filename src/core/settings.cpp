@@ -22,8 +22,8 @@ const int Settings::S_GUANXING_TIMEOUT = 20;
 const int Settings::S_SURRNDER_REQUEST_MIN_INTERVAL = 60;
 const int Settings::S_PROGRESS_BAR_UPDATE_INTERVAL = 200;
 const int Settings::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
-const int Settings::S_MOVE_CARD_ANIMATION_DURAION = 800;
-
+const int Settings::S_MOVE_CARD_ANIMATION_DURAION = 600;
+const int Settings::S_REGULAR_ANIMATION_SLOW_DURAION = 1200;
 Settings::Settings()
 
 #ifdef Q_OS_WIN32

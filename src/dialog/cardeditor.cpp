@@ -569,7 +569,7 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
 }
 
 void CardScene::setGeneralPhoto(const QString &filename){
-    photo->changePixmap(filename);
+    photo->load(filename);
 
     Config.setValue("CardEditor/Photo", filename);
 }
