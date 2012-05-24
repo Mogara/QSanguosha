@@ -560,14 +560,16 @@ public:
                 DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
                 ServerPlayer *target = dying.who;
                 room->removeTag("JiefanTarget");
-                Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
-                peach->setSkillName(objectName());
-                CardUseStruct use;
-                use.card = peach;
-                use.from = handang;
-                use.to << target;
-                room->useCard(use);
-
+                if(target->getHp() < 1)
+                {
+                    Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
+                    peach->setSkillName(objectName());
+                    CardUseStruct use;
+                    use.card = peach;
+                    use.from = handang;
+                    use.to << target;
+                    room->useCard(use);
+                }
                 return true;
             }
             return false;
