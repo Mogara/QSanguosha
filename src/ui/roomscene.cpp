@@ -751,7 +751,7 @@ void RoomScene::updateTable()
         if (photosInRegion[i].isEmpty()) continue;
         Qt::Alignment align;
         if (i < 3 || i == 7) align = Qt::AlignHCenter;
-        else if (pkMode) align = Qt::AlignBottom;
+        // else if (pkMode) align = Qt::AlignBottom;
         else align = Qt::AlignVCenter;  
         _dispersePhotos(photosInRegion[i], seatRegions[i], room_layout->m_photoPhotoPadding, align);
     }
@@ -3716,8 +3716,8 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
     const static int width = 148-62;
     const static int row_y[4] = {85, 206, 329, 451};
 
-    int i, n=names.length();
-    for(i=0; i<n; i++){
+    int n = names.length();
+    for(int i = 0; i < n; i++){
 
         int row, column;
         if(i < 8){

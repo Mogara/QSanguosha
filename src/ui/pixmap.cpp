@@ -98,9 +98,9 @@ void Pixmap::makeGray(){
 }
 
 void Pixmap::scaleSmoothly(qreal ratio){
-    qreal width = pixmap.width() * ratio;
-    qreal height = pixmap.height() * ratio;
-    pixmap = pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    _m_width *= ratio;
+    _m_height *= ratio;
+    pixmap = pixmap.scaled(_m_width, _m_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     prepareGeometryChange();
 }
