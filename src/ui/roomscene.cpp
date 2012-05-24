@@ -3207,9 +3207,6 @@ void RoomScene::onGameStart(){
         connect(player, SIGNAL(phase_changed()), log_box, SLOT(appendSeparator()));
     }
 
-    foreach(Photo *photo, photos)
-        photo->createRoleCombobox();
-
     trust_button->setEnabled(true);
 
 
