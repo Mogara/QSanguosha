@@ -93,10 +93,10 @@ void RoleCombobox::onItemClicked(){
 
 void RoleCombobox::fix(const QString &role){
     // create the only one
-    QPointF first_pos = items.first()->pos();
     QSize size(S_ROLE_COMBO_BOX_WIDTH, S_ROLE_COMBO_BOX_HEIGHT);
     RoleComboboxItem *fixed = new RoleComboboxItem(role, Sanguosha->getRoleIndex(), size);
-    fixed->setPos(first_pos);
+    fixed->setPos(QPointF(_m_posX, _m_posY));
+    hide();
     fixed->show();
     fixed->setEnabled(false);
     fixed->setParentItem(qobject_cast<QGraphicsObject *>(parent()));
