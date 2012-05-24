@@ -266,7 +266,8 @@ sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
 	local ptarget = self:getPriorTarget()
 	local slashcount = self:getCardsNum("Slash")
 	if max_card:inherits("Slash") then slashcount = slashcount - 1 end
-	if not ptarget:isKongcheng() and slashcount > 0 and self.player:canSlash(ptarget, true) then
+	if not ptarget:isKongcheng() and slashcount > 0 and self.player:canSlash(ptarget, true) 
+	and not ptarget:hasSkill("kongcheng") and ptarget:getHandcardNum() == 1 then
 		local card_id = max_card:getEffectiveId()
 		local card_str = "@TanhuCard=" .. card_id
 		if use.to then
@@ -327,6 +328,6 @@ sgs.dynamic_value.control_card.TanhuCard = true
 sgs.ai_use_priority.TanhuCard = 8
 
 sgs.ai_skill_invoke.mouduan = function(self, data)
-	return self:isEquip("EightDiagram") or self:getCardsNum("Crossbow") > 0
+	return self:isEquip("Crossbow") or self:getCardsNum("Crossbow") > 0
 end
 	
