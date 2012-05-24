@@ -534,7 +534,7 @@ public:
 
         ServerPlayer *handang = room->findPlayerBySkillName(objectName());
 
-        if(event == AskForPeaches && player->hasSkill(objectName())){
+        if(event == AskForPeaches && player->hasSkill(objectName()) && room->getCurrent()->objectName() != handang->objectName()){
             DyingStruct dying = data.value<DyingStruct>();
             if(!handang || !dying.savers.contains(handang) || dying.who->getHp() > 0 || handang->isNude() ||
                room->getCurrent()->isDead() || !room->askForSkillInvoke(handang, objectName(), data))
