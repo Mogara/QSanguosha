@@ -28,17 +28,6 @@ sgs.ai_skill_invoke.zhenlie = function(self, data)
 	return false
 end
 
-sgs.ai_skill_invoke.miji = function(self)
-	if self.player:getPhase() == sgs.Player_Start then 
-		if self.player:getHp() > 1 and  self.player:getHandcardNum() < 3 then
-			return true
-		else
-			return false
-		end
-	end
-	return true
-end
-
 sgs.ai_skill_playerchosen.miji = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets, "defense")
