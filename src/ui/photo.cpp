@@ -126,11 +126,6 @@ void Photo::createRoleCombobox(){
     connect(player, SIGNAL(role_changed(QString)), role_combobox, SLOT(fix(QString)));
 }
 
-void Photo::updateRoleComboboxPos()
-{
-    //if(pile_button)pile_button->setPos(46, 48);
-}
-
 void Photo::showProgressBar(Countdown countdown){
     progress_bar->setCountdown(countdown);
     if (countdown.m_max != 0 && countdown.m_type != Countdown::S_COUNTDOWN_NO_LIMIT)

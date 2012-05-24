@@ -804,9 +804,9 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     for(int i = 0; i < photos.length(); i++){
         Photo *photo = photos.at(i);
         photo->setOrder(photo->getPlayer()->getSeat());
-        photos.at(i)->updateRoleComboboxPos();
+        photo->createRoleCombobox();
     }
-
+        
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     // set item to player mapping

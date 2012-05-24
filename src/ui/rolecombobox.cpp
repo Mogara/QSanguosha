@@ -32,7 +32,7 @@ RoleCombobox::RoleCombobox(Photo *photo):QObject(photo)
           << new RoleComboboxItem("renegade", index, size);
 
     setPos(0, 0);
-    
+    _m_expanded = false;
     foreach(RoleComboboxItem *item, items){
         item->setParentItem(photo);
         item->hide();
@@ -68,13 +68,11 @@ void RoleCombobox::show(){
 }
 
 void RoleCombobox::onItemClicked(){
-    if(items.length() < 2)
-        return;
+    if (items.length() < 2) return;
 
-    bool expand = items.at(1)->isVisible();
     RoleComboboxItem *clicked_item = qobject_cast<RoleComboboxItem *>(sender());
 
-    if(expand){
+    if(_m_expanded){
         int i = 0;
         foreach (RoleComboboxItem *item, items){
             if  (item == clicked_item) continue;
@@ -90,6 +88,7 @@ void RoleCombobox::onItemClicked(){
         foreach(RoleComboboxItem *item, items)
             item->show();
     }
+    _m_expanded = !_m_expanded;
 }
 
 void RoleCombobox::fix(const QString &role){

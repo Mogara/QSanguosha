@@ -42,6 +42,7 @@ public slots:
     void fix(const QString &role);
 protected:
     qreal _m_posX, _m_posY;
+    bool _m_expanded;
 private:
     QList<RoleComboboxItem *> items;
 

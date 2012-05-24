@@ -64,7 +64,6 @@ public slots:
     void hideSkillName();
     void setDrankState();
     void setActionState();
-    void updateRoleComboboxPos();
     void killPlayer();
 
 protected:
