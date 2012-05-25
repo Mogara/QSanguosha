@@ -12,7 +12,7 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual int getPriority() const;
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 
 private:
     void onPhaseChange(ServerPlayer *player) const;
@@ -26,7 +26,7 @@ class HulaoPassMode: public GameRule{
 
 public:
     HulaoPassMode(QObject *parent);
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 };
 
 class BasaraMode: public GameRule{
@@ -35,7 +35,7 @@ class BasaraMode: public GameRule{
 public:
     BasaraMode(QObject *parent);
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
     virtual int getPriority() const;
     void playerShowed(ServerPlayer *player) const;
     void generalShowed(ServerPlayer *player,QString general_name) const;

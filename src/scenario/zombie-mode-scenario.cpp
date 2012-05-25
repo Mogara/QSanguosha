@@ -1,4 +1,3 @@
-
 #include "zombie-mode-scenario.h"
 #include "engine.h"
 #include "standard-skillcards.h"
@@ -39,9 +38,7 @@ public:
         player->tag.remove("zombie");
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
                 room->acquireSkill(player, "peaching");
@@ -225,7 +222,7 @@ public:
             return x;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zombie, QVariant &) const{
         if(event == PhaseChange && zombie->getPhase() == Player::Play){
         int x = getNumDiff(zombie);
         if(x > 0){
@@ -252,7 +249,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *zombie, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zombie, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         const Card *reason = damage.card;

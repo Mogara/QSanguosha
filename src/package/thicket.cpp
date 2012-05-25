@@ -19,11 +19,9 @@ public:
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->isNude())
             return false;
-
-        Room *room = player->getRoom();
         QList<ServerPlayer *> caopis = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *caopi, caopis){
             if(caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)){
@@ -115,12 +113,12 @@ public:
         return target->getKingdom() == "wei";
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         CardStar card = judge->card;
 
         if(card->isBlack()){
-            Room *room = player->getRoom();
+            if (player == NULL) return false;
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
             foreach(ServerPlayer *p, players){
                 QVariant who = QVariant::fromValue(p);
@@ -168,7 +166,7 @@ public:
         events << CardEffected;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.card->inherits("SavageAssault")){
             LogMessage log;
@@ -202,10 +200,10 @@ public:
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("SavageAssault")){
-            Room *room = player->getRoom();
+            if (player == NULL) return false;
             ServerPlayer *menghuo = room->findPlayerBySkillName(objectName());
             if(menghuo){
                 LogMessage log;
@@ -234,7 +232,7 @@ public:
         events << Damage;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *zhurong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
         if(damage.card && damage.card->inherits("Slash") && !zhurong->isKongcheng()
@@ -318,13 +316,13 @@ public:
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("SavageAssault") &&
                 ((!use.card->isVirtualCard()) ||
                   (use.card->getSubcards().length() == 1 &&
                   Sanguosha->getCard(use.card->getSubcards().first())->inherits("SavageAssault")))){
-            Room *room = player->getRoom();
+            if (player == NULL) return false;
             if(room->getCardPlace(use.card->getEffectiveId()) == Player::DiscardPile){
                 // finding zhurong;
                 QList<ServerPlayer *> players = room->getAllPlayers();
@@ -755,7 +753,7 @@ public:
         return target->hasSkill(objectName()) || target->getGeneral()->isFemale();
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.from->hasSkill(objectName()) && effect.to->getGeneral()->isFemale()){
             // dongzhuo slash female
@@ -845,8 +843,8 @@ public:
         return target->getKingdom() == "qun";
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+        if (player == NULL) return false;
         QList<ServerPlayer *> dongzhuos;
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         foreach(ServerPlayer *p, players){

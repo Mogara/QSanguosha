@@ -30,6 +30,7 @@ public:
 
     explicit Room(QObject *parent, const QString &mode);
     ServerPlayer *addSocket(ClientSocket *socket);
+    inline int getId() const { return _m_Id; } 
     bool isFull() const;
     bool isFinished() const;
     int getLack() const;
@@ -284,6 +285,7 @@ public:
 
 protected:
     virtual void run();
+    int _m_Id;
 
 private:
     struct _MoveSourceClassifier

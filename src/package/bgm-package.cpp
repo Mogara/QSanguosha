@@ -29,7 +29,7 @@ public:
         room->obtainCard(player, card_id, false);
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == CardFinished){
             player->tag["ChongZhenTarget"] = QVariant::fromValue(NULL);
         }
@@ -118,8 +118,7 @@ public:
         return target->hasUsed("LihunCard");
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *diaochan, QVariant &data) const{
-        Room *room = diaochan->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *diaochan, QVariant &data) const{
         PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
 
         if(phase_change.from == Player::Play){
@@ -177,9 +176,7 @@ public:
         return n;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *caoren, QVariant &) const{
-        Room *room = caoren->getRoom();
-
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *caoren, QVariant &) const{
         if(caoren->getPhase() == Player::Finish){
             if(!caoren->askForSkillInvoke(objectName()))
                 return false;
@@ -276,9 +273,7 @@ public:
         sp_pangtong->invoke("clearAG");
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *sp_pangtong, QVariant &data) const{
-        Room *room = sp_pangtong->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sp_pangtong, QVariant &data) const{
         if(sp_pangtong->hasFlag("ManjuanInvoke")){
             sp_pangtong->setFlags("-ManjuanInvoke");
             return false;
@@ -360,8 +355,7 @@ public:
         }
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *sp_pangtong, QVariant &data) const{
-        Room *room = sp_pangtong->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sp_pangtong, QVariant &data) const{
         QList<int> zuixiang = sp_pangtong->getPile("dream");
 
         if(event == PhaseChange && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
@@ -409,8 +403,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(!damage.card || !damage.card->inherits("Slash") || !damage.card->isRed())
             return false;
@@ -459,7 +452,7 @@ void DaheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
 
     PindianStar pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
-    room->getThread()->trigger(Pindian, source, data);
+    room->getThread()->trigger(Pindian, room, source, data);
 
     bool success = pindian_star->from_card->getNumber() > pindian_star->to_card->getNumber();
     log.type = success ? "#PindianSuccess" : "#PindianFailure";
@@ -516,8 +509,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *bgm_zhangfei = room->findPlayerBySkillName(objectName());
         if(!bgm_zhangfei)
             return false;
@@ -644,8 +636,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *lvmeng = room->findPlayerBySkillName(objectName());
 
         if(event == CardLostOneTime){

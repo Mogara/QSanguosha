@@ -131,7 +131,7 @@ void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
         room->cardEffect(this, source, source);
     else
         foreach(ServerPlayer *tmp, targets)
-            room->cardEffect(this, source, tmp);
+        room->cardEffect(this, source, tmp);
 }
 
 void Peach::onEffect(const CardEffectStruct &effect) const{
@@ -139,8 +139,8 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
 
     // do animation
     room->broadcastInvoke("animate", QString("peach:%1:%2")
-                          .arg(effect.from->objectName())
-                          .arg(effect.to->objectName()));
+        .arg(effect.from->objectName())
+        .arg(effect.to->objectName()));
 
     // recover hp
     RecoverStruct recover;
@@ -166,9 +166,8 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        Room *room = player->getRoom();
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
             if(effect.from->askForSkillInvoke(objectName())){
@@ -207,7 +206,7 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         effect.to->addMark("qinggang");
 
@@ -233,13 +232,12 @@ public:
         return -1;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
             return false;
 
-        Room *room = player->getRoom();
         const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), QVariant(), NonTrigger);
         if(card){
             // if player is drank, unset his flag
@@ -352,10 +350,9 @@ public:
         events << SlashMissed;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-        Room *room = player->getRoom();
         CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
             QList<int> card_ids = card->getSubcards();
@@ -402,34 +399,34 @@ public:
         events << DamageProceed;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         QStringList horses;
-    if(damage.card && damage.card->inherits("Slash") && !damage.chain){
-        if(damage.to->getDefensiveHorse())
-            horses << "dhorse";
-        if(damage.to->getOffensiveHorse())
-            horses << "ohorse";
+        if(damage.card && damage.card->inherits("Slash") && !damage.chain){
+            if(damage.to->getDefensiveHorse())
+                horses << "dhorse";
+            if(damage.to->getOffensiveHorse())
+                horses << "ohorse";
 
-        if(horses.isEmpty())
-            return false;
+            if(horses.isEmpty())
+                return false;
 
-        Room *room = player->getRoom();
-        if(!player->askForSkillInvoke(objectName(), data))
-            return false;
+            if (player == NULL) return false;
+            if(!player->askForSkillInvoke(objectName(), data))
+                return false;
 
-        QString horse_type;
-        if(horses.length() == 2)
-            horse_type = room->askForChoice(player, objectName(), horses.join("+"));
-        else
-            horse_type = horses.first();
+            QString horse_type;
+            if(horses.length() == 2)
+                horse_type = room->askForChoice(player, objectName(), horses.join("+"));
+            else
+                horse_type = horses.first();
 
-        if(horse_type == "dhorse")
-            room->throwCard(damage.to->getDefensiveHorse(), damage.to);
-        else if(horse_type == "ohorse")
-            room->throwCard(damage.to->getOffensiveHorse(), damage.to);
-    }
+            if(horse_type == "dhorse")
+                room->throwCard(damage.to->getDefensiveHorse(), damage.to);
+            else if(horse_type == "ohorse")
+                room->throwCard(damage.to->getOffensiveHorse(), damage.to);
+        }
 
         return false;
     }
@@ -461,11 +458,12 @@ public:
         return 2;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         QString asked = data.toString();
+        if (player == NULL) return false;
         if(asked == "jink"){
-            Room *room = player->getRoom();
-                if(room->askForSkillInvoke(player, objectName())){
+
+            if(room->askForSkillInvoke(player, objectName())){
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
                 judge.good = true;
@@ -492,8 +490,8 @@ public:
 
 EightDiagram::EightDiagram(Suit suit, int number)
     :Armor(suit, number){
-    setObjectName("eight_diagram");
-    skill = EightDiagramSkill::GetInstance();
+        setObjectName("eight_diagram");
+        skill = EightDiagramSkill::GetInstance();
 }
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
@@ -681,7 +679,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     bool on_effect = room->cardEffect(this, source, killer);
     if(on_effect){
         QString prompt = QString("collateral-slash:%1:%2")
-                .arg(source->objectName()).arg(victims.first()->objectName());
+            .arg(source->objectName()).arg(victims.first()->objectName());
         const Card *slash = room->askForCard(killer, "slash", prompt, QVariant(), NonTrigger);
         if (victims.first()->isDead()){
             if (source->isDead()){
@@ -848,7 +846,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
 
 Dismantlement::Dismantlement(Suit suit, int number)
     :SingleTargetTrick(suit, number, false) {
-    setObjectName("dismantlement");
+        setObjectName("dismantlement");
 }
 
 bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -952,22 +950,20 @@ public:
         events << DamageProceed;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        Room *room = player->getRoom();
-
         if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude()
-                && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
-            int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
-            room->throwCard(card_id, damage.to);
-
-            if(!damage.to->isNude()){
-                card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+            && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
+                int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
                 room->throwCard(card_id, damage.to);
-            }
 
-            return true;
+                if(!damage.to->isNude()){
+                    card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+                    room->throwCard(card_id, damage.to);
+                }
+
+                return true;
         }
 
         return false;
@@ -987,7 +983,7 @@ public:
         events << SlashEffected;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.slash->isBlack()){
             LogMessage log;
@@ -1035,89 +1031,89 @@ StandardCardPackage::StandardCardPackage()
     QList<Card*> cards;
 
     cards << new Slash(Card::Spade, 7)
-          << new Slash(Card::Spade, 8)
-          << new Slash(Card::Spade, 8)
-          << new Slash(Card::Spade, 9)
-          << new Slash(Card::Spade, 9)
-          << new Slash(Card::Spade, 10)
-          << new Slash(Card::Spade, 10)
+        << new Slash(Card::Spade, 8)
+        << new Slash(Card::Spade, 8)
+        << new Slash(Card::Spade, 9)
+        << new Slash(Card::Spade, 9)
+        << new Slash(Card::Spade, 10)
+        << new Slash(Card::Spade, 10)
 
-          << new Slash(Card::Club, 2)
-          << new Slash(Card::Club, 3)
-          << new Slash(Card::Club, 4)
-          << new Slash(Card::Club, 5)
-          << new Slash(Card::Club, 6)
-          << new Slash(Card::Club, 7)
-          << new Slash(Card::Club, 8)
-          << new Slash(Card::Club, 8)
-          << new Slash(Card::Club, 9)
-          << new Slash(Card::Club, 9)
-          << new Slash(Card::Club, 10)
-          << new Slash(Card::Club, 10)
-          << new Slash(Card::Club, 11)
-          << new Slash(Card::Club, 11)
+        << new Slash(Card::Club, 2)
+        << new Slash(Card::Club, 3)
+        << new Slash(Card::Club, 4)
+        << new Slash(Card::Club, 5)
+        << new Slash(Card::Club, 6)
+        << new Slash(Card::Club, 7)
+        << new Slash(Card::Club, 8)
+        << new Slash(Card::Club, 8)
+        << new Slash(Card::Club, 9)
+        << new Slash(Card::Club, 9)
+        << new Slash(Card::Club, 10)
+        << new Slash(Card::Club, 10)
+        << new Slash(Card::Club, 11)
+        << new Slash(Card::Club, 11)
 
-          << new Slash(Card::Heart, 10)
-          << new Slash(Card::Heart, 10)
-          << new Slash(Card::Heart, 11)
+        << new Slash(Card::Heart, 10)
+        << new Slash(Card::Heart, 10)
+        << new Slash(Card::Heart, 11)
 
-          << new Slash(Card::Diamond, 6)
-          << new Slash(Card::Diamond, 7)
-          << new Slash(Card::Diamond, 8)
-          << new Slash(Card::Diamond, 9)
-          << new Slash(Card::Diamond, 10)
-          << new Slash(Card::Diamond, 13)
+        << new Slash(Card::Diamond, 6)
+        << new Slash(Card::Diamond, 7)
+        << new Slash(Card::Diamond, 8)
+        << new Slash(Card::Diamond, 9)
+        << new Slash(Card::Diamond, 10)
+        << new Slash(Card::Diamond, 13)
 
-          << new Jink(Card::Heart, 2)
-          << new Jink(Card::Heart, 2)
-          << new Jink(Card::Heart, 13)
+        << new Jink(Card::Heart, 2)
+        << new Jink(Card::Heart, 2)
+        << new Jink(Card::Heart, 13)
 
-          << new Jink(Card::Diamond, 2)
-          << new Jink(Card::Diamond, 2)
-          << new Jink(Card::Diamond, 3)
-          << new Jink(Card::Diamond, 4)
-          << new Jink(Card::Diamond, 5)
-          << new Jink(Card::Diamond, 6)
-          << new Jink(Card::Diamond, 7)
-          << new Jink(Card::Diamond, 8)
-          << new Jink(Card::Diamond, 9)
-          << new Jink(Card::Diamond, 10)
-          << new Jink(Card::Diamond, 11)
-          << new Jink(Card::Diamond, 11)
+        << new Jink(Card::Diamond, 2)
+        << new Jink(Card::Diamond, 2)
+        << new Jink(Card::Diamond, 3)
+        << new Jink(Card::Diamond, 4)
+        << new Jink(Card::Diamond, 5)
+        << new Jink(Card::Diamond, 6)
+        << new Jink(Card::Diamond, 7)
+        << new Jink(Card::Diamond, 8)
+        << new Jink(Card::Diamond, 9)
+        << new Jink(Card::Diamond, 10)
+        << new Jink(Card::Diamond, 11)
+        << new Jink(Card::Diamond, 11)
 
-          << new Peach(Card::Heart, 3)
-          << new Peach(Card::Heart, 4)
-          << new Peach(Card::Heart, 6)
-          << new Peach(Card::Heart, 7)
-          << new Peach(Card::Heart, 8)
-          << new Peach(Card::Heart, 9)
-          << new Peach(Card::Heart, 12)
+        << new Peach(Card::Heart, 3)
+        << new Peach(Card::Heart, 4)
+        << new Peach(Card::Heart, 6)
+        << new Peach(Card::Heart, 7)
+        << new Peach(Card::Heart, 8)
+        << new Peach(Card::Heart, 9)
+        << new Peach(Card::Heart, 12)
 
-          << new Peach(Card::Diamond, 12)
+        << new Peach(Card::Diamond, 12)
 
-          << new Crossbow(Card::Club)
-          << new Crossbow(Card::Diamond)
-          << new DoubleSword
-          << new QinggangSword
-          << new Blade
-          << new Spear
-          << new Axe
-          << new Halberd
-          << new KylinBow
+        << new Crossbow(Card::Club)
+        << new Crossbow(Card::Diamond)
+        << new DoubleSword
+        << new QinggangSword
+        << new Blade
+        << new Spear
+        << new Axe
+        << new Halberd
+        << new KylinBow
 
-          << new EightDiagram(Card::Spade)
-          << new EightDiagram(Card::Club);
+        << new EightDiagram(Card::Spade)
+        << new EightDiagram(Card::Club);
 
     skills << EightDiagramSkill::GetInstance();
 
     {
         QList<Card *> horses;
         horses << new DefensiveHorse(Card::Spade, 5)
-               << new DefensiveHorse(Card::Club, 5)
-               << new DefensiveHorse(Card::Heart, 13)
-               << new OffensiveHorse(Card::Heart, 5)
-               << new OffensiveHorse(Card::Spade, 13)
-               << new OffensiveHorse(Card::Diamond, 13);
+            << new DefensiveHorse(Card::Club, 5)
+            << new DefensiveHorse(Card::Heart, 13)
+            << new OffensiveHorse(Card::Heart, 5)
+            << new OffensiveHorse(Card::Spade, 13)
+            << new OffensiveHorse(Card::Diamond, 13);
 
         horses.at(0)->setObjectName("jueying");
         horses.at(1)->setObjectName("dilu");
@@ -1132,39 +1128,39 @@ StandardCardPackage::StandardCardPackage()
     }
 
     cards << new AmazingGrace(Card::Heart, 3)
-          << new AmazingGrace(Card::Heart, 4)
-          << new GodSalvation
-          << new SavageAssault(Card::Spade, 7)
-          << new SavageAssault(Card::Spade, 13)
-          << new SavageAssault(Card::Club, 7)
-          << new ArcheryAttack
-          << new Duel(Card::Spade, 1)
-          << new Duel(Card::Club, 1)
-          << new Duel(Card::Diamond, 1)
-          << new ExNihilo(Card::Heart, 7)
-          << new ExNihilo(Card::Heart, 8)
-          << new ExNihilo(Card::Heart, 9)
-          << new ExNihilo(Card::Heart, 11)
-          << new Snatch(Card::Spade, 3)
-          << new Snatch(Card::Spade, 4)
-          << new Snatch(Card::Spade, 11)
-          << new Snatch(Card::Diamond, 3)
-          << new Snatch(Card::Diamond, 4)
-          << new Dismantlement(Card::Spade, 3)
-          << new Dismantlement(Card::Spade, 4)
-          << new Dismantlement(Card::Spade, 12)
-          << new Dismantlement(Card::Club, 3)
-          << new Dismantlement(Card::Club, 4)
-          << new Dismantlement(Card::Heart, 12)
-          << new Collateral(Card::Club, 12)
-          << new Collateral(Card::Club, 13)
-          << new Nullification(Card::Spade, 11)
-          << new Nullification(Card::Club, 12)
-          << new Nullification(Card::Club, 13)
-          << new Indulgence(Card::Spade, 6)
-          << new Indulgence(Card::Club, 6)
-          << new Indulgence(Card::Heart, 6)
-          << new Lightning(Card::Spade, 1);
+        << new AmazingGrace(Card::Heart, 4)
+        << new GodSalvation
+        << new SavageAssault(Card::Spade, 7)
+        << new SavageAssault(Card::Spade, 13)
+        << new SavageAssault(Card::Club, 7)
+        << new ArcheryAttack
+        << new Duel(Card::Spade, 1)
+        << new Duel(Card::Club, 1)
+        << new Duel(Card::Diamond, 1)
+        << new ExNihilo(Card::Heart, 7)
+        << new ExNihilo(Card::Heart, 8)
+        << new ExNihilo(Card::Heart, 9)
+        << new ExNihilo(Card::Heart, 11)
+        << new Snatch(Card::Spade, 3)
+        << new Snatch(Card::Spade, 4)
+        << new Snatch(Card::Spade, 11)
+        << new Snatch(Card::Diamond, 3)
+        << new Snatch(Card::Diamond, 4)
+        << new Dismantlement(Card::Spade, 3)
+        << new Dismantlement(Card::Spade, 4)
+        << new Dismantlement(Card::Spade, 12)
+        << new Dismantlement(Card::Club, 3)
+        << new Dismantlement(Card::Club, 4)
+        << new Dismantlement(Card::Heart, 12)
+        << new Collateral(Card::Club, 12)
+        << new Collateral(Card::Club, 13)
+        << new Nullification(Card::Spade, 11)
+        << new Nullification(Card::Club, 12)
+        << new Nullification(Card::Club, 13)
+        << new Indulgence(Card::Spade, 6)
+        << new Indulgence(Card::Club, 6)
+        << new Indulgence(Card::Heart, 6)
+        << new Lightning(Card::Spade, 1);
 
     foreach(Card *card, cards)
         card->setParent(this);
@@ -1177,9 +1173,9 @@ StandardExCardPackage::StandardExCardPackage()
 {
     QList<Card *> cards;
     cards << new IceSword(Card::Spade, 2)
-          << new RenwangShield(Card::Club, 2)
-          << new Lightning(Card::Heart, 12)
-          << new Nullification(Card::Diamond, 12);
+        << new RenwangShield(Card::Club, 2)
+        << new Lightning(Card::Heart, 12)
+        << new Nullification(Card::Diamond, 12);
 
     foreach(Card *card, cards)
         card->setParent(this);
@@ -1188,4 +1184,4 @@ StandardExCardPackage::StandardExCardPackage()
 }
 
 ADD_PACKAGE(StandardCard)
-ADD_PACKAGE(StandardExCard)
+    ADD_PACKAGE(StandardExCard)

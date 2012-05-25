@@ -93,7 +93,7 @@ public:
     FireFanSkill():WeaponSkill("fan"){
         events << SlashEffect;
     }
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(!effect.slash->getSkillName().isEmpty() && effect.slash->getSubcards().length() > 0)
             return false;
@@ -147,7 +147,7 @@ public:
         events << DamageProceed;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
             damage.to->isKongcheng() && !damage.chain)
@@ -181,7 +181,7 @@ public:
         events << Predamaged << SlashEffected << CardEffected;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.nature == DamageStruct::Normal){
@@ -236,7 +236,7 @@ public:
         events << Predamaged;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.damage > 1){
             LogMessage log;

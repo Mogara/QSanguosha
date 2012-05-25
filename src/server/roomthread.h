@@ -23,14 +23,15 @@ struct LogMessage{
 
 class EventTriplet{
 public:
-    EventTriplet(TriggerEvent event, ServerPlayer *target, QVariant *data)
-        :event(event), target(target), data(data){}
+    inline EventTriplet(TriggerEvent event, Room* room, ServerPlayer *target, QVariant *data)
+        :_m_event(event), _m_room(room), _m_target(target), _m_data(data){}
     QString toString() const;
 
 private:
-    TriggerEvent event;
-    ServerPlayer *target;
-    QVariant *data;
+    TriggerEvent _m_event;
+    Room* _m_room;
+    ServerPlayer *_m_target;
+    QVariant *_m_data;
 };
 
 class RoomThread : public QThread{
@@ -39,8 +40,8 @@ class RoomThread : public QThread{
 public:
     explicit RoomThread(Room *room);
     void constructTriggerTable();
-    bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
-    bool trigger(TriggerEvent event, ServerPlayer *target);
+    bool trigger(TriggerEvent event, Room* room, ServerPlayer *target, QVariant &data);
+    bool trigger(TriggerEvent event, Room* room, ServerPlayer *target);
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 

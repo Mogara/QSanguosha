@@ -548,7 +548,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     PindianStar pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
-    room->getThread()->trigger(Pindian, this, data);
+    room->getThread()->trigger(Pindian, room, this, data);
 
     bool success = pindian_star->from_card->getNumber() > pindian_star->to_card->getNumber();
     log.type = success ? "#PindianSuccess" : "#PindianFailure";
@@ -576,7 +576,7 @@ void ServerPlayer::turnOver(){
     log.arg = faceUp() ? "face_up" : "face_down";
     room->sendLog(log);
 
-    room->getThread()->trigger(TurnedOver, this);
+    room->getThread()->trigger(TurnedOver, room, this);
 }
 
 void ServerPlayer::play(QList<Player::Phase> set_phases){
@@ -600,7 +600,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases){
         room->broadcastProperty(this, "phase");
 
         QVariant data = QVariant::fromValue(phase_change);
-        room->getThread()->trigger(PhaseChange, this, data);
+        room->getThread()->trigger(PhaseChange, room, this, data);
 
         if(isDead() && phase != NotActive){
             phases.clear();
@@ -896,7 +896,7 @@ void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){
     room->removeTag("Zhichi");
     if(clearflag)
         clearflag->clearFlags();
-    room->getThread()->trigger(TurnStart, this);
+    room->getThread()->trigger(TurnStart, room, this);
     if(clearflag)
         clearflag->clearHistory();
     room->setCurrent(current);

@@ -177,10 +177,11 @@ void CardUseStruct::parse(const QString &str, Room *room){
 }
 
 QString EventTriplet::toString() const{
-    return QString("event = %1, target = %2[%3], data = %4[%5]")
-            .arg(event)
-            .arg(target->objectName()).arg(target->getGeneralName())
-            .arg(data->toString()).arg(data->typeName());
+    return QString("event = %1, room = %2, target = %3[%4], data = %5[%6]")
+            .arg(_m_event)
+            .arg(_m_room->getId())
+            .arg(_m_target->objectName()).arg(_m_target->getGeneralName())
+            .arg(_m_data->toString()).arg(_m_data->typeName());
 }
 
 //@todo: setParent here is illegitimate in QT and is equivalent to calling
@@ -197,7 +198,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
         addTriggerSkill(skill);
 
         if(invoke_game_start && skill->getTriggerEvents().contains(GameStart))
-            skill->trigger(GameStart, player, void_data);
+            skill->trigger(GameStart, room, player, void_data);
     }
 }
 
@@ -260,7 +261,7 @@ void RoomThread::run3v3(){
 
 void RoomThread::action3v3(ServerPlayer *player){
     room->setCurrent(player);
-    trigger(TurnStart, room->getCurrent());
+    trigger(TurnStart, room, room->getCurrent());
     room->setPlayerFlag(player, "actioned");
 
     bool all_actioned = true;
@@ -299,9 +300,8 @@ void RoomThread::run(){
     }
 
     // start game, draw initial 4 cards
-    try {
-        QVariant roomdata = QVariant::fromValue<RoomStar>(room);
-        trigger(GameStart, NULL, roomdata);
+    try {        
+        trigger(GameStart, room, NULL, QVariant());
         constructTriggerTable();
 
         if(room->mode == "06_3v3"){
@@ -320,21 +320,21 @@ void RoomThread::run(){
 
                     foreach(ServerPlayer *player, league){
                         room->setCurrent(player);
-                        trigger(TurnStart, room->getCurrent());
+                        trigger(TurnStart, room, room->getCurrent());
 
                         if(!player->hasFlag("actioned"))
                             room->setPlayerFlag(player, "actioned");                                       
 
                         if(player->isAlive()){
                             room->setCurrent(shenlvbu);
-                            trigger(TurnStart, room->getCurrent());
+                            trigger(TurnStart, room, room->getCurrent());
                         }
                     }
                 }
             }
             catch (TriggerEvent event)
             {
-                trigger(event, NULL, roomdata);
+                trigger(event, room, NULL, QVariant());
                 foreach(ServerPlayer *player, room->getPlayers()){
                     if(player != shenlvbu){
                         if(player->hasFlag("actioned"))
@@ -346,7 +346,7 @@ void RoomThread::run(){
                             room->setPlayerProperty(player, "phase", "not_active");
                             phase.to = player->getPhase();
                             QVariant data = QVariant::fromValue(phase);
-                            trigger(PhaseChange, player, data);
+                            trigger(PhaseChange, room, player, data);
                         }
                     }
                 }
@@ -354,7 +354,7 @@ void RoomThread::run(){
                 room->setCurrent(shenlvbu);
 
                 forever{
-                    trigger(TurnStart, room->getCurrent());
+                    trigger(TurnStart, room, room->getCurrent());
                     room->setCurrent(room->getCurrent()->getNext());
                 }
             }
@@ -363,7 +363,7 @@ void RoomThread::run(){
                 room->setCurrent(room->getPlayers().at(1));
 
             forever {
-                trigger(TurnStart, room->getCurrent());
+                trigger(TurnStart, room, room->getCurrent());
                 if (room->isFinished()) break;
                 room->setCurrent(room->getCurrent()->getNextAlive());
             }
@@ -378,17 +378,17 @@ static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
     return a->getPriority() > b->getPriority();
 }
 
-bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
+bool RoomThread::trigger(TriggerEvent event, Room* room, ServerPlayer *target, QVariant &data){
     // Q_ASSERT(QThread::currentThread() == this);
 
     // push it to event stack
-    EventTriplet triplet(event, target, &data);
+    EventTriplet triplet(event, room, target, &data);
     event_stack.push_back(triplet);
 
     bool broken = false;
     foreach(const TriggerSkill *skill, skill_table[event]){
         if(skill->triggerable(target)){
-            broken = skill->trigger(event, target, data);
+            broken = skill->trigger(event, room, target, data);
             if(broken)
                 break;
         }
@@ -410,9 +410,9 @@ const QList<EventTriplet> *RoomThread::getEventStack() const{
     return &event_stack;
 }
 
-bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target){
+bool RoomThread::trigger(TriggerEvent event, Room* room, ServerPlayer *target){
     QVariant data;
-    return trigger(event, target, data);
+    return trigger(event, room, target, data);
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){

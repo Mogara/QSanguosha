@@ -59,7 +59,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
                     num = 1;
             }
 
-            room->getThread()->trigger(DrawNCards, player, num);
+            room->getThread()->trigger(DrawNCards, room, player, num);
             int n = num.toInt();
             if(n > 0)
                 player->drawCards(n, false);
@@ -157,13 +157,7 @@ void GameRule::setGameProcess(Room *room) const{
     room->setTag("GameProcess", process);
 }
 
-bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room;
-    if (player == NULL)    
-        room = data.value<RoomStar>();    
-    else
-        room = player->getRoom();
-
+bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
     if(room->getTag("SkipGameRule").toBool()){
         room->removeTag("SkipGameRule");
         return false;
@@ -279,11 +273,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 if(player->getHp() > 0)
                     break;
 
-                thread->trigger(AskForPeaches, saver, data);
+                thread->trigger(AskForPeaches, room, saver, data);
             }
 
             player->setFlags("-dying");
-            thread->trigger(AskForPeachesDone, player, data);
+            thread->trigger(AskForPeachesDone, room, player, data);
 
             break;
         }
@@ -392,7 +386,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
             QVariant data = QVariant::fromValue(effect);
-            room->getThread()->trigger(SlashProceed, effect.from, data);
+            room->getThread()->trigger(SlashProceed, room, effect.from, data);
 
             break;
         }
@@ -684,13 +678,7 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
     default_choice = "recover";
 }
 
-bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room;
-    if (player == NULL)    
-        room = data.value<RoomStar>();    
-    else
-        room = player->getRoom();
-    
+bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
     switch(event) {
     case StageChange: {
         ServerPlayer* lord = room->getLord();
@@ -808,7 +796,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         break;
     }
 
-    return GameRule::trigger(event, player, data);
+    return GameRule::trigger(event, room, player, data);
 }
 
 BasaraMode::BasaraMode(QObject *parent)
@@ -863,7 +851,7 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
         QString general_name = room->askForGeneral(player,names);
 
         generalShowed(player,general_name);
-        if(Config.EnableHegemony)room->getThread()->trigger(GameOverJudge, player);
+        if (Config.EnableHegemony) room->getThread()->trigger(GameOverJudge, room, player);
         playerShowed(player);
     }
 }
@@ -907,13 +895,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     room->broadcastInvoke("playAudio","choose-item");
 }
 
-bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room;
-    if (player == NULL)    
-        room = data.value<RoomStar>();    
-    else
-        room = player->getRoom();
-
+bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
     // Handle global events
     if (player == NULL)
     {

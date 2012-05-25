@@ -162,9 +162,7 @@ public:
         events << GameStart << PhaseChange << Damaged << GameOverJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
                 if(player->isLord()){

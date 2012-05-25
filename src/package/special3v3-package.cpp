@@ -48,8 +48,7 @@ public:
         return -1;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
         if(player->getPhase() != Player::Draw)
             return false;
         QStringList names = room->getTag("HongyuanTargets").toStringList();
@@ -109,8 +108,7 @@ public:
         return TriggerSkill::triggerable(target) && !target->isKongcheng();
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         if(ServerInfo.GameMode != "06_3v3" || AI::GetRelation3v3(player, judge->who) != AI::Friend)
             return false;
@@ -151,7 +149,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(ServerInfo.GameMode != "06_3v3" || player->getPhase() != Player::NotActive)
             return false;
 

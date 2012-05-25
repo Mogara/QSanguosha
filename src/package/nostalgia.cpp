@@ -12,7 +12,7 @@ public:
         events << CardFinished << CardResponsed;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
@@ -32,7 +32,6 @@ public:
         if(card == NULL || !card->isBlack())
             return false;
 
-        Room *room = player->getRoom();
         room->askForUseCard(player, "slash", "@moon-spear-slash");
 
         return false;
@@ -70,7 +69,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
 
         if(effect.to == effect.from)
@@ -193,9 +192,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == HpRecover){
             RecoverStruct recover = data.value<RecoverStruct>();
             if(recover.who && recover.who != player){
@@ -284,7 +281,7 @@ public:
         return "nothing";
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *lingtong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lingtong, QVariant &data) const{
         if(event == CardLostOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->from_places.contains(Player::Equip))

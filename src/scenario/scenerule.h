@@ -8,7 +8,7 @@ class SceneRule : public GameRule {
 public:
 	SceneRule(QObject *parent);
 
-	virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+	virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 };
 
 #endif // SCENERULE_H

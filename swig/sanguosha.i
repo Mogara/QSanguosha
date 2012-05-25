@@ -737,7 +737,7 @@ public:
 
 	virtual int getPriority() const;
 	virtual bool triggerable(const ServerPlayer *target) const;    
-	virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const = 0;
+	virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const = 0;
 };
 
 class QThread: public QObject{
@@ -759,8 +759,8 @@ class RoomThread : public QThread{
 public:
 	explicit RoomThread(Room *room);
 	void constructTriggerTable();
-	bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
-	bool trigger(TriggerEvent event, ServerPlayer *target);
+	bool trigger(TriggerEvent event, Room* room, ServerPlayer *target, QVariant &data);
+	bool trigger(TriggerEvent event, Room* room, ServerPlayer *target);
 
 	void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
