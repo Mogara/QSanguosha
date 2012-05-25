@@ -141,10 +141,14 @@ public:
 
         if(card){
             // the only difference for Guicai & Guidao
-            player->obtainCard(judge->card);
-
+            const Card* oldJudge = judge->card;
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::DiscardPile);
+            CardsMoveStruct move(QList<int>(), NULL, Player::DiscardPile);
+            move.card_ids.append(card->getEffectiveId());
+            QList<CardsMoveStruct> moves;
+            moves.append(move);
+            room->moveCardsAtomic(moves, true);
+            player->obtainCard(oldJudge);
 
             LogMessage log;
             log.type = "$ChangedJudge";
