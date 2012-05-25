@@ -356,7 +356,8 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	if #to<2 then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
-				if enemy:isChained() and self:isGoodChainTarget(enemy) then
+				if enemy:isChained() and self:isGoodChainTarget(enemy) 
+				and not (enemy:getArmor() and enemy:getArmor():objectName() == "vine") then
 					if use.to then 
 						table.insert(to, enemy) 
 						if #to == 2 then break end 
@@ -382,7 +383,7 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	if #to<2 then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
-				if not enemy:isChained() then
+				if not enemy:isChained() and not (enemy:getArmor() and enemy:getArmor():objectName() == "vine") then
 					if use.to then 
 						table.insert(to, enemy) 
 						if #to == 2 then break end
@@ -423,7 +424,7 @@ sgs.ai_skill_use_func.SmallYeyanCard=function(card,use,self)
 	if num < 3 then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and enemy:getMark("@fog") < 1 then
-				if enemy:isChained() and self:isGoodChainTarget(enemy) then
+				if enemy:isChained() and self:isGoodChainTarget(enemy) and not (enemy:getArmor() and enemy:getArmor():objectName() == "vine") then
 					if use.to then use.to:append(enemy) end
 					num = num + 1
 					if num >=3 then break end
@@ -447,7 +448,7 @@ sgs.ai_skill_use_func.SmallYeyanCard=function(card,use,self)
 	if num < 3 then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and enemy:getMark("@fog") < 1 then
-				if not enemy:isChained() then
+				if not enemy:isChained() and not (enemy:getArmor() and enemy:getArmor():objectName() == "vine") then
 					if use.to then use.to:append(enemy) end
 					num = num + 1
 					if num >=3 then break end
