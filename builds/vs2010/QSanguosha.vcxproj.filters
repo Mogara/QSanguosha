@@ -372,6 +372,9 @@
     <ClCompile Include="..\..\src\core\structs.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\SkinBank.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1128,6 +1131,27 @@
     <None Include="sanguosha.ts">
       <Filter>Translation Files</Filter>
     </None>
+    <None Include="..\..\swig\ai.i">
+      <Filter>Swig Files</Filter>
+    </None>
+    <None Include="..\..\swig\card.i">
+      <Filter>Swig Files</Filter>
+    </None>
+    <None Include="..\..\swig\list.i">
+      <Filter>Swig Files</Filter>
+    </None>
+    <None Include="..\..\swig\luaskills.i">
+      <Filter>Swig Files</Filter>
+    </None>
+    <None Include="..\..\swig\native.i">
+      <Filter>Swig Files</Filter>
+    </None>
+    <None Include="..\..\swig\naturalvar.i">
+      <Filter>Swig Files</Filter>
+    </None>
+    <None Include="..\..\swig\qvariant.i">
+      <Filter>Swig Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
@@ -1188,6 +1212,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\core\structs.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ui\SkinBank.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

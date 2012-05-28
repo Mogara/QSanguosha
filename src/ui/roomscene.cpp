@@ -13,6 +13,7 @@
 #include "indicatoritem.h"
 #include "pixmapanimation.h"
 #include "audio.h"
+#include "SkinBank.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -51,41 +52,6 @@
 #endif
 
 using namespace QSanProtocol;
-
-struct RoomLayout {
-    int m_scenePadding;
-    int m_roleBoxHeight;
-    int m_chatTextBoxHeight;
-    int m_discardPileMinWidth;
-    int m_discardPilePadding;
-    double m_logBoxHeightPercentage;
-    double m_chatBoxHeightPercentage;
-    double m_infoPlaneWidthPercentage;
-    double m_photoRoomPadding;
-    double m_photoPhotoPadding;    
-    QSize m_minimumSceneSize;    
-};
-
-struct CircularRoomLayout : public RoomLayout{
-    CircularRoomLayout(){
-        m_scenePadding = 0;
-        m_roleBoxHeight = 60;
-        m_chatTextBoxHeight = 30;
-        m_logBoxHeightPercentage = 0.6;
-        m_chatBoxHeightPercentage = 0.4;
-        m_infoPlaneWidthPercentage = 0.22;
-        m_photoRoomPadding = 10;
-        m_photoPhotoPadding = 5;
-        m_discardPileMinWidth = CardItem::S_NORMAL_CARD_WIDTH * 5;
-        m_discardPilePadding = 50;
-        m_minimumSceneSize = QSize(900, 650);
-    }
-};
-
-static RoomLayout *GetRoomLayout(){    
-    static CircularRoomLayout circular;   
-    return &circular;    
-}
 
 RoomScene *RoomSceneInstance;
 

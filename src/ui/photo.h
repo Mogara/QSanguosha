@@ -7,7 +7,6 @@
 #include "protocol.h"
 #include "TimedProgressBar.h"
 #include "GeneralCardContainerUI.h"
-
 #include <QGraphicsObject>
 #include <QPixmap>
 #include <QComboBox>
@@ -49,10 +48,6 @@ public:
 
     void setFrame(FrameType type);
     virtual QRectF boundingRect() const;
-    static const int S_NORMAL_PHOTO_WIDTH = 130;
-    static const int S_NORMAL_PHOTO_HEIGHT = 150;
-    static const int S_SHADOW_INCLUSIVE_PHOTO_WIDTH = 139;
-    static const int S_SHADOW_INCLUSIVE_PHOTO_HEIGHT = 155;
 public slots:
     void updateAvatar();    
     void updateSmallAvatar();
@@ -72,7 +67,7 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     static const QRect S_CARD_MOVE_REGION;
     QList<CardItem*> m_takenOffCards;
-private:
+private:    
     const ClientPlayer *player;
     QPixmap avatar, small_avatar;
     QGraphicsPixmapItem *ready_item;    

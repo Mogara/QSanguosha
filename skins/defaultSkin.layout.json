@@ -1,0 +1,27 @@
+[
+"roomlayout":
+{
+	"scenePadding": 0,
+  "roleBoxHeight": 60,
+  "chatTextBoxHeight": 30,
+  "logBoxHeightPercentage": 0.6,
+  "chatBoxHeightPercentage": 0.4,
+  "infoPlaneWidthPercentage": 0.22,
+  "photoRoomPadding": 10,
+  "photoPhotoPadding": 5,
+  "discardPileMinWidth": CardItem::S_NORMAL_CARD_WIDTH * 5,
+  "discardPilePadding": 50,
+  "minimumSceneSize": [900, 650]
+},
+"photolayout":
+{
+	"normalWidth": 130,
+	"normalHeight": 150,
+	"widthIncludeShadow": 139,
+	"heightIncludeShadow": 155,
+	"widthIncludeMarkAndControl": 139,
+	"heightIncludeMarkAndControl": 155,
+	"avatarArea": [6, 26, 120, 50],
+	"smallAvatarArea": [82, 36, 42, 36]
+}
+]

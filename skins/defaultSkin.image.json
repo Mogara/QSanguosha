@@ -1,0 +1,9 @@
+[
+"photo":
+{
+"mainFrame": "image/system/photo-back.png",
+"handCardNum": "image/system/handcard.png"
+"faceTurnedMask": "image/generals/small/faceturned.png",
+"chain": "image/system/chain.png"
+}
+]

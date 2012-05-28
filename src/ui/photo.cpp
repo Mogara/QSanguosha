@@ -7,6 +7,7 @@
 #include "client.h"
 #include "playercarddialog.h"
 #include "rolecombobox.h"
+#include "SkinBank.h"
 
 #include <QPainter>
 #include <QDrag>
@@ -24,20 +25,20 @@
 
 using namespace QSanProtocol;
 
-const QRect Photo::S_CARD_MOVE_REGION(-50, Photo::S_NORMAL_PHOTO_HEIGHT / 2,
+const QRect Photo::S_CARD_MOVE_REGION(-50, g_currentSkin->getPhotoLayout().m_normalWidth / 2,
                                         200, CardItem::S_NORMAL_CARD_HEIGHT);
 
 Photo::Photo(): player(NULL),
-                _m_mainFrame("image/system/photo-back.png"),
-                _m_handCardIcon("image/system/handcard.png"),
-                action_item(NULL), save_me_item(NULL), permanent(false),
-                weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-                order_item(NULL), hide_avatar(false)
+    _m_mainFrame(g_currentSkin->getPixmap(QSanSkin::PhotoSkin::S_SKIN_KEY_MAINFRAME)),
+    _m_handCardIcon(g_currentSkin->getPixmap(QSanSkin::PhotoSkin::S_SKIN_KEY_HANDCARDNUM)),
+    action_item(NULL), save_me_item(NULL), permanent(false),
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+    order_item(NULL), hide_avatar(false)
 {
     setAcceptHoverEvents(true);
     translate(-S_NORMAL_PHOTO_WIDTH / 2, -S_NORMAL_PHOTO_HEIGHT / 2);
 
-    chain_icon = QPixmap("image/system/chain.png");
+    chain_icon = QPixmap(g_currentSkin->getPixmap(QSanSkin::PhotoSkin::S_SKIN_KEY_CHAIN));
 
     progress_bar = new QSanCommandProgressBar;
     progress_bar->setAutoHide(true);
@@ -70,7 +71,7 @@ Photo::Photo(): player(NULL),
     avatar_area = new QGraphicsRectItem(6, 26, 120, 50, this);
     avatar_area->setPen(Qt::NoPen);
 
-    back_icon = QPixmap("image/generals/small/faceturned.png");
+    back_icon = QPixmap(g_currentSkin->getPixmap(QSanSkin::PhotoSkin::S_SKIN_KEY_FACETURNEDMASK));
 
     small_avatar_area = new QGraphicsRectItem(124 - 42, 72 - 36, 42, 36, this);
     small_avatar_area->setPen(Qt::NoPen);
