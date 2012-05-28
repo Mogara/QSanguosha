@@ -1204,40 +1204,30 @@ MountainPackage::MountainPackage()
     dengai->addSkill(new Tuntian);
     dengai->addSkill(new TuntianGet);
     dengai->addSkill(new Zaoxian);
-
     dengai->addRelateSkill("jixi");
-
     related_skills.insertMulti("tuntian", "#tuntian-get");
+
+    General *jiangwei = new General(this, "jiangwei", "shu");
+    jiangwei->addSkill(new Tiaoxin);
+    jiangwei->addSkill(new Zhiji);
+    related_skills.insertMulti("zhiji", "guanxing");
 
     General *liushan = new General(this, "liushan$", "shu", 3);
     liushan->addSkill(new Xiangle);
     liushan->addSkill(new Fangquan);
     liushan->addSkill(new Ruoyu);
 
-    General *jiangwei = new General(this, "jiangwei", "shu");
-    jiangwei->addSkill(new Tiaoxin);
-    jiangwei->addSkill(new Zhiji);
-
-    related_skills.insertMulti("zhiji", "guanxing");
-
     General *sunce = new General(this, "sunce$", "wu");
     sunce->addSkill(new Jiang);
     sunce->addSkill(new Hunzi);
     sunce->addSkill(new SunceZhiba);
-
     related_skills.insertMulti("hunzi", "yinghun");
 
     General *erzhang = new General(this, "erzhang", "wu", 3);
     erzhang->addSkill(new Zhijian);
     erzhang->addSkill(new Guzheng);
     erzhang->addSkill(new GuzhengGet);
-
     related_skills.insertMulti("guzheng", "#guzheng-get");
-
-    General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
-    caiwenji->addSkill(new Beige);
-    caiwenji->addSkill(new Duanchang);
-    caiwenji->addSkill(new SPConvertSkill("guixiang", "caiwenji", "sp_caiwenji"));
 
     General *zuoci = new General(this, "zuoci", "qun", 3);
     zuoci->addSkill(new Huashen);
@@ -1253,6 +1243,11 @@ MountainPackage::MountainPackage()
 
     related_skills.insertMulti("huashen", "#huashen-begin");
     related_skills.insertMulti("huashen", "#huashen-end");
+
+    General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
+    caiwenji->addSkill(new Beige);
+    caiwenji->addSkill(new Duanchang);
+    caiwenji->addSkill(new SPConvertSkill("guixiang", "caiwenji", "sp_caiwenji"));
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();

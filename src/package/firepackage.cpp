@@ -537,26 +537,25 @@ public:
 FirePackage::FirePackage()
     :Package("fire")
 {
-    General *xunyu, *dianwei, *wolong, *pangtong, *taishici, *yuanshao, *yanliangwenchou, *pangde;
+    General *dianwei, *xunyu, *pangtong, *wolong, *taishici, *yuanshao, *yanliangwenchou, *pangde;
+
+    dianwei = new General(this, "dianwei", "wei");
+    dianwei->addSkill(new Qiangxi);
 
     xunyu = new General(this, "xunyu", "wei", 3);
     xunyu->addSkill(new Quhu);
     xunyu->addSkill(new Jieming);
 
-    dianwei = new General(this, "dianwei", "wei");
-    dianwei->addSkill(new Qiangxi);
+    pangtong = new General(this, "pangtong", "shu", 3);
+    pangtong->addSkill(new Lianhuan);
+    pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
+    pangtong->addSkill(new Niepan);
+    related_skills.insertMulti("niepan", "#@nirvana-1");
 
     wolong = new General(this, "wolong", "shu", 3);
     wolong->addSkill(new Huoji);
     wolong->addSkill(new Kanpo);
     wolong->addSkill(new Bazhen);
-
-    pangtong = new General(this, "pangtong", "shu", 3);
-    pangtong->addSkill(new Lianhuan);
-    pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
-    pangtong->addSkill(new Niepan);
-
-    related_skills.insertMulti("niepan", "#@nirvana-1");
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);

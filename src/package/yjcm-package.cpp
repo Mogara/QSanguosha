@@ -1101,44 +1101,42 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     caozhi->addSkill(new Luoying);
     caozhi->addSkill(new Jiushi);
     caozhi->addSkill(new JiushiFlip);
-
     related_skills.insertMulti("jiushi", "#jiushi-flip");
-
-    General *yujin = new General(this, "yujin", "wei");
-    yujin->addSkill(new Yizhong);
-
-    General *xushu = new General(this, "xushu", "shu", 3);
-    xushu->addSkill(new Wuyan);
-    xushu->addSkill(new Jujian);
-
-    General *masu = new General(this, "masu", "shu", 3);
-    masu->addSkill(new Xinzhan);
-    masu->addSkill(new Huilei);
-
-    General *fazheng = new General(this, "fazheng", "shu", 3);
-    fazheng->addSkill(new Enyuan);
-    fazheng->addSkill(new Xuanhuo);
-
-    General *lingtong = new General(this, "lingtong", "wu");
-    lingtong->addSkill(new Xuanfeng);
-
-    General *xusheng = new General(this, "xusheng", "wu");
-    xusheng->addSkill(new Pojun);
-
-    General *wuguotai = new General(this, "wuguotai", "wu", 3, false);
-    wuguotai->addSkill(new Ganlu);
-    wuguotai->addSkill(new Buyi);
 
     General *chengong = new General(this, "chengong", "qun", 3);
     chengong->addSkill(new Zhichi);
     chengong->addSkill(new ZhichiClear);
     chengong->addSkill(new Mingce);
-
     related_skills.insertMulti("zhichi", "#zhichi-clear");
+
+    General *fazheng = new General(this, "fazheng", "shu", 3);
+    fazheng->addSkill(new Enyuan);
+    fazheng->addSkill(new Xuanhuo);
 
     General *gaoshun = new General(this, "gaoshun", "qun");
     gaoshun->addSkill(new Xianzhen);
     gaoshun->addSkill(new Jiejiu);
+
+    General *lingtong = new General(this, "lingtong", "wu");
+    lingtong->addSkill(new Xuanfeng);
+
+    General *masu = new General(this, "masu", "shu", 3);
+    masu->addSkill(new Xinzhan);
+    masu->addSkill(new Huilei);
+
+    General *wuguotai = new General(this, "wuguotai", "wu", 3, false);
+    wuguotai->addSkill(new Ganlu);
+    wuguotai->addSkill(new Buyi);
+
+    General *xusheng = new General(this, "xusheng", "wu");
+    xusheng->addSkill(new Pojun);
+
+    General *xushu = new General(this, "xushu", "shu", 3);
+    xushu->addSkill(new Wuyan);
+    xushu->addSkill(new Jujian);
+
+    General *yujin = new General(this, "yujin", "wei");
+    yujin->addSkill(new Yizhong);
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new Quanji);
