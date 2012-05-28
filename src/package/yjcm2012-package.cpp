@@ -789,6 +789,42 @@ public:
 
 YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
+    General *bulianshi = new General(this, "bulianshi", "wu", 3, false);
+    bulianshi->addSkill(new Anxu);
+    bulianshi->addSkill(new Zhuiyi);
+
+    General *caozhang = new General(this, "caozhang", "wei");
+    caozhang->addSkill(new Jiangchi);
+    caozhang->addSkill(new JiangchiClear);
+    related_skills.insertMulti("jiangchi", "#jiangchi-clear");
+
+    General *chengpu = new General(this, "chengpu", "wu");
+    chengpu->addSkill(new Lihuo);
+    chengpu->addSkill(new Chunlao);
+
+    General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu");
+    guanxingzhangbao->addSkill(new Fuhun);
+
+    General *handang = new General(this, "handang", "wu");
+    handang->addSkill(new Gongqi);
+    handang->addSkill(new Jiefan);
+
+    General *huaxiong = new General(this, "huaxiong", "qun", 6);
+    huaxiong->addSkill(new Shiyong);
+
+    General *liaohua = new General(this, "liaohua", "shu");
+    liaohua->addSkill(new Dangxian);
+    liaohua->addSkill(new MarkAssignSkill("@laoji", 1));
+    liaohua->addSkill(new Fuli);
+
+    General *liubiao = new General(this, "liubiao", "qun", 4);
+    liubiao->addSkill(new Zishou);
+    liubiao->addSkill(new Skill("zongshi", Skill::Compulsory));
+
+    General *madai = new General(this, "madai", "shu");
+    madai->addSkill(new Qianxi);
+    madai->addSkill("mashu");
+
     General *wangyi = new General(this, "wangyi", "wei", 3, false);
     wangyi->addSkill(new Zhenlie);
     wangyi->addSkill(new Miji);
@@ -796,42 +832,6 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *xunyou = new General(this, "xunyou", "wei", 3);
     xunyou->addSkill(new Qice);
     xunyou->addSkill(new Zhiyu);
-
-    General *caozhang = new General(this, "caozhang", "wei");
-    caozhang->addSkill(new Jiangchi);
-    caozhang->addSkill(new JiangchiClear);
-    related_skills.insertMulti("jiangchi", "#jiangchi-clear");
-
-    General *madai = new General(this, "madai", "shu");
-    madai->addSkill(new Qianxi);
-    madai->addSkill("mashu");
-
-    General *liaohua = new General(this, "liaohua", "shu");
-    liaohua->addSkill(new Dangxian);
-    liaohua->addSkill(new MarkAssignSkill("@laoji", 1));
-    liaohua->addSkill(new Fuli);
-
-    General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu");
-    guanxingzhangbao->addSkill(new Fuhun);
-
-    General *chengpu = new General(this, "chengpu", "wu");
-    chengpu->addSkill(new Lihuo);
-    chengpu->addSkill(new Chunlao);
-
-    General *bulianshi = new General(this, "bulianshi", "wu", 3, false);
-    bulianshi->addSkill(new Anxu);
-    bulianshi->addSkill(new Zhuiyi);
-
-    General *handang = new General(this, "handang", "wu");
-    handang->addSkill(new Gongqi);
-    handang->addSkill(new Jiefan);
-
-    General *liubiao = new General(this, "liubiao", "qun", 4);
-    liubiao->addSkill(new Zishou);
-    liubiao->addSkill(new Skill("zongshi", Skill::Compulsory));
-	
-    General *huaxiong = new General(this, "huaxiong", "qun", 6);
-    huaxiong->addSkill(new Shiyong);
 
     addMetaObject<QiceCard>();
     addMetaObject<ChunlaoCard>();

@@ -881,28 +881,26 @@ public:
 ThicketPackage::ThicketPackage()
     :Package("thicket")
 {
-    General *caopi, *xuhuang, *menghuo, *zhurong, *sunjian, *lusu, *jiaxu, *dongzhuo;
+    General *xuhuang, *caopi, *menghuo, *zhurong, *sunjian, *lusu, *dongzhuo, *jiaxu;
+
+    xuhuang = new General(this, "xuhuang", "wei");
+    xuhuang->addSkill(new Duanliang);
 
     caopi = new General(this, "caopi$", "wei", 3);
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     caopi->addSkill(new Songwei);
 
-    xuhuang = new General(this, "xuhuang", "wei");
-    xuhuang->addSkill(new Duanliang);
-
     menghuo = new General(this, "menghuo", "shu");
     menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
     menghuo->addSkill(new Huoshou);
     menghuo->addSkill(new Zaiqi);
-
     related_skills.insertMulti("huoshou", "#sa_avoid_huoshou");
 
     zhurong = new General(this, "zhurong", "shu", 4, false);
     zhurong->addSkill(new SavageAssaultAvoid("juxiang"));
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
-
     related_skills.insertMulti("juxiang", "#sa_avoid_juxiang");
 
     sunjian = new General(this, "sunjian", "wu");
@@ -913,9 +911,14 @@ ThicketPackage::ThicketPackage()
     lusu->addSkill(new HaoshiViewAsSkill);
     lusu->addSkill(new HaoshiGive);
     lusu->addSkill(new Dimeng);
-
     related_skills.insertMulti("haoshi", "#haoshi");
     related_skills.insertMulti("haoshi", "#haoshi-give");
+
+    dongzhuo = new General(this, "dongzhuo$", "qun", 8);
+    dongzhuo->addSkill(new Jiuchi);
+    dongzhuo->addSkill(new Roulin);
+    dongzhuo->addSkill(new Benghuai);
+    dongzhuo->addSkill(new Baonue);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
@@ -923,14 +926,7 @@ ThicketPackage::ThicketPackage()
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new SPConvertSkill("guiwei", "jiaxu", "sp_jiaxu"));
-
     related_skills.insertMulti("luanwu", "#@chaos-1");
-
-    dongzhuo = new General(this, "dongzhuo$", "qun", 8);
-    dongzhuo->addSkill(new Jiuchi);
-    dongzhuo->addSkill(new Roulin);
-    dongzhuo->addSkill(new Benghuai);
-    dongzhuo->addSkill(new Baonue);
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

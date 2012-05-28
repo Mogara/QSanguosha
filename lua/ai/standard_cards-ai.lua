@@ -1095,7 +1095,8 @@ function SmartAI:useCardCollateral(card, use)
 
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getWeapon() and self:hasSkills(sgs.lose_equip_skill, friend) 
-			and not self.room:isProhibited(self.player, friend, card) then
+			and not self.room:isProhibited(self.player, friend, card) 
+			and not friend:hasSkill("weimu") then
 
 			for _, enemy in ipairs(self.enemies) do
 				if friend:canSlash(enemy) then
@@ -1114,6 +1115,7 @@ function SmartAI:useCardCollateral(card, use)
 		if not self.room:isProhibited(self.player, enemy, card)
 			and self:hasTrickEffective(card, enemy)
 			and not self:hasSkills(sgs.lose_equip_skill, enemy)
+			and not enemy:hasSkill("weimu")
 			and enemy:getWeapon() then
 
 			for _, enemy2 in ipairs(self.enemies) do

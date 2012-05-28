@@ -334,10 +334,6 @@ public:
 NostalGeneralPackage::NostalGeneralPackage()
     :Package("nostal_general")
 {
-    General *nosxushu = new General(this, "nosxushu", "shu", 3);
-    nosxushu->addSkill(new NosWuyan);
-    nosxushu->addSkill(new NosJujian);
-
     General *nosfazheng = new General(this, "nosfazheng", "shu", 3);
     nosfazheng->addSkill(new NosEnyuan);
     patterns.insert(".enyuan", new EnyuanPattern);
@@ -345,6 +341,10 @@ NostalGeneralPackage::NostalGeneralPackage()
 
     General *noslingtong = new General(this, "noslingtong", "wu");
     noslingtong->addSkill(new NosXuanfeng);
+
+    General *nosxushu = new General(this, "nosxushu", "shu", 3);
+    nosxushu->addSkill(new NosWuyan);
+    nosxushu->addSkill(new NosJujian);
 
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();
