@@ -45,8 +45,7 @@ public:
             room_scene->setSceneRect(newSceneRect);            
             room_scene->adjustItems();
             setSceneRect(room_scene->sceneRect());
-            if(Config.FitInView)
-                fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
+            fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
             main_window->setBackgroundBrush(false);
             return;
         }

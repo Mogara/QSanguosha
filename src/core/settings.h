@@ -55,7 +55,6 @@ public:
     ushort DetectorPort;
     int MaxCards;
 
-    bool FitInView;
     bool EnableHotKey;
     bool EnableMinimizeDialog;
     bool NeverNullifyMyTrick;
