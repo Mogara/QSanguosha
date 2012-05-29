@@ -1,0 +1,7 @@
+{
+"default":
+{
+"roomLayoutConfigFile": "skins\\defaultSkin.layout.json",
+"roomImageConfigFile": "skins\\defaultSkin.image.json"
+}
+}
