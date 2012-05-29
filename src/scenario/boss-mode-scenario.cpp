@@ -355,30 +355,33 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
-                if(player->isLord()){
-                    if(boss_banlist.contains(player->getGeneralName()))
-                        getRandomSkill(player, true);
+            player = room->getLord();
+            if (boss_banlist.contains(player->getGeneralName()))
+                getRandomSkill(player, true);
 
-                    removeLordSkill(player);
+            removeLordSkill(player);
 
-                    room->installEquip(player, "silver_lion");
-                    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-                    if((qrand() % 2) == 1){
-                        room->acquireSkill(player, "silue");
-                        room->acquireSkill(player, "kedi");
-                    }
-                    else{
-                        room->acquireSkill(player, "jishi");
-                        room->acquireSkill(player, "daji");
-                    }
+            room->installEquip(player, "silver_lion");
+            qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+            if((qrand() % 2) == 1){
+                room->acquireSkill(player, "silue");
+                room->acquireSkill(player, "kedi");
+            }
+            else{
+                room->acquireSkill(player, "jishi");
+                room->acquireSkill(player, "daji");
+            }
 
-                    int maxhp = 8-((player->getMaxHp()%3)%2);
-                    room->setPlayerProperty(player, "maxhp", maxhp);
-                    room->setPlayerProperty(player, "hp", maxhp);
-                }
+            int maxhp = 8-((player->getMaxHp()%3)%2);
+            room->setPlayerProperty(player, "maxhp", maxhp);
+            room->setPlayerProperty(player, "hp", maxhp);
 
-                getRandomSkill(player);
-                room->setTag("FirstRound", true);
+            foreach (ServerPlayer* serverPlayer, room->getPlayers())
+            {
+                getRandomSkill(serverPlayer);
+            }
+
+            room->setTag("FirstRound", true);
                 break;
             }
 

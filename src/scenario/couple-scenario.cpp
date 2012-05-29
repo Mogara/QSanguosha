@@ -16,6 +16,8 @@ public:
 
         switch(event){
         case GameStart:{
+            foreach (ServerPlayer* player, room->getPlayers())
+            {
                 if(player->isLord()){
                     scenario->marryAll(room);
                     room->setTag("SkipNormalDeathProcess", true);
@@ -29,8 +31,8 @@ public:
                     if(player->askForSkillInvoke("reselect"))
                         room->transfigure(player, "caozhi", true);
                 }
-
-                break;
+            }
+            break;
             }
 
         case GameOverJudge:{

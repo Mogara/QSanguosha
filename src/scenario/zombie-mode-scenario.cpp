@@ -41,8 +41,11 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
+            foreach (ServerPlayer* player, room->getPlayers())
+            {
                 room->acquireSkill(player, "peaching");
                 break;
+            }
             }
 
         case GameOverJudge:{

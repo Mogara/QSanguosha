@@ -165,30 +165,30 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
-                if(player->isLord()){
-                    room->installEquip(player, "renwang_shield");
-                    room->installEquip(player, "hualiu");
+            player = room->getLord();
+            room->installEquip(player, "renwang_shield");
+            room->installEquip(player, "hualiu");
 
-                    ServerPlayer *caocao = room->findPlayer("caocao");
-                    room->installEquip(caocao, "qinggang_sword");
-                    room->installEquip(caocao, "zhuahuangfeidian");
+            ServerPlayer *caocao = room->findPlayer("caocao");
+            room->installEquip(caocao, "qinggang_sword");
+            room->installEquip(caocao, "zhuahuangfeidian");
 
-                    ServerPlayer *liubei = room->findPlayer("liubei");
-                    room->installEquip(liubei, "double_sword");
+            ServerPlayer *liubei = room->findPlayer("liubei");
+            room->installEquip(liubei, "double_sword");
 
-                    ServerPlayer *guanyu = room->findPlayer("guanyu");
-                    room->installEquip(guanyu, "blade");
-                    room->installEquip(guanyu, "chitu");
-                    room->acquireSkill(guanyu, "zhanshuangxiong");
+            ServerPlayer *guanyu = room->findPlayer("guanyu");
+            room->installEquip(guanyu, "blade");
+            room->installEquip(guanyu, "chitu");
+            room->acquireSkill(guanyu, "zhanshuangxiong");
 
 
-                    ServerPlayer *zhangliao = room->findPlayer("zhangliao");
-                    room->detachSkillFromPlayer(zhangliao, "tuxi");
-                    room->acquireSkill(zhangliao, "smalltuxi");
-                }
+            ServerPlayer *zhangliao = room->findPlayer("zhangliao");
+            room->detachSkillFromPlayer(zhangliao, "tuxi");
+            room->acquireSkill(zhangliao, "smalltuxi");
 
-                break;
-            }
+
+            break;
+                       }
 
         case PhaseChange:{
                 if(player->getPhase() == Player::Draw){
