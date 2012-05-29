@@ -241,8 +241,10 @@ public:
     void throwCard(const Card *card, ServerPlayer *who = NULL);
     void throwCard(int card_id, ServerPlayer *who = NULL);
 
-    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
-    bool forceMoveVisible = false, bool ignoreChanged = true);
+    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, 
+        bool forceMoveVisible = false, bool ignoreChanged = true);
+    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
+        bool forceMoveVisible = false, bool ignoreChanged = true);
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
     void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanged = true);
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged = true);

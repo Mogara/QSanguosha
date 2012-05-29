@@ -5,6 +5,9 @@
 #include <QString>
 #include <QPixmap>
 #include <QHash>
+#include <QFont>
+#include <QPen>
+#include <QPainter>
 
 class QSanPixmapCache
 {
@@ -31,7 +34,15 @@ protected:
 
 class QSanRoomSkin : public IQSanComponentSkin
 {
-public:    
+public:
+    struct QSanTextFont {
+        QFont m_font;
+        QPen m_backgroundPen;
+        QPen m_foregroundPen;
+        bool m_drawShadow;
+        bool tryParse(Json::Value arg);
+        void paintText(QPainter* painter, QRect pos, Qt::AlignmentFlag align, const QString &text) const;
+    };
     struct RoomLayout {
         int m_scenePadding;
         int m_roleBoxHeight;
@@ -63,6 +74,10 @@ public:
     {
         int m_cardNormalWidth;
         int m_cardNormalHeight;
+        QRect m_cardSuitArea;
+        QRect m_cardNumberArea;
+        QRect m_cardFootnoteArea;
+        QSanTextFont m_cardFootnoteFont;
     };
     const RoomLayout& getRoomLayout() const;
     const PhotoLayout& getPhotoLayout() const;
@@ -76,6 +91,7 @@ public:
     static const char S_SKIN_KEY_PHOTO_FACETURNEDMASK[];
     static const char S_SKIN_KEY_PHOTO_CHAIN[];
     static const char S_SKIN_KEY_PHOTO_PHASE[];
+    static const char S_SKIN_KEY_HAND_CARD_BACK[];
 protected:
     RoomLayout _m_roomLayout;
     PhotoLayout _m_photoLayout;
@@ -95,15 +111,15 @@ protected:
     QSanRoomSkin _m_roomSkin;
 };
 
-class SkinBankFactory
+class QSanSkinFactory
 {
 public:
-    static SkinBankFactory& getInstance();
+    static QSanSkinFactory& getInstance();
     const QSanSkinScheme& getCurrentSkinScheme() const;
     bool switchSkin(QString skinName);
 protected:
-    SkinBankFactory(const char* fileName);
-    static SkinBankFactory* _sm_singleton;
+    QSanSkinFactory(const char* fileName);
+    static QSanSkinFactory* _sm_singleton;
     QSanSkinScheme _sm_currentSkin;
     Json::Value _m_skinList;
 };

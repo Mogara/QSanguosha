@@ -32,7 +32,7 @@ Photo::Photo(): player(NULL),
 {
     setAcceptHoverEvents(true);
     
-    _m_roomSkin = &SkinBankFactory::getInstance().getCurrentSkinScheme().getRoomSkin();
+    _m_roomSkin = &QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin();
     _m_photoLayout = &_m_roomSkin->getPhotoLayout();
     _m_commonLayout = &_m_roomSkin->getCommonLayout();
     _m_mainFrame = _m_roomSkin->getPixmap(QSanRoomSkin::S_SKIN_KEY_PHOTO_MAINFRAME);

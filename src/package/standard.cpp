@@ -89,6 +89,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
             move1.card_ids << getId();
             move1.to = source;
             move1.to_place = Player::Equip;
+            move1.reason = CardMoveReason(CardMoveReason::S_REASON_USE, source->getGeneralName());
             exchangeMove.push_back(move1);
             if(equipped)
             {
@@ -96,6 +97,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
                 move2.card_ids << equipped->getId();
                 move2.to = NULL;
                 move2.to_place = Player::DiscardPile;
+                move2.reason = CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, source->getGeneralName());
                 exchangeMove.push_back(move2);
             }
             LogMessage log;

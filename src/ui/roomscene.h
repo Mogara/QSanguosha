@@ -269,7 +269,11 @@ private:
     Button *arrange_button;
     KOFOrderBox *enemy_box, *self_box;
     QPointF m_tableCenterPos;
- 
+
+    // @todo: this function shouldn't be here. But it's here anyway, before someone find a better
+    // home for it.
+    QString _translateMovementReason(const CardMoveReason& reason);
+
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
     void chooseSkillButton();

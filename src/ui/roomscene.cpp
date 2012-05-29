@@ -63,9 +63,9 @@ void RoomScene::resetPiles()
 #include "irregularbutton.h"
 
 RoomScene::RoomScene(QMainWindow *main_window):
-    _m_roomLayout(&(SkinBankFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getRoomLayout())),
-    _m_photoLayout(&(SkinBankFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getPhotoLayout())),
-    _m_commonLayout(&(SkinBankFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getCommonLayout())),
+    _m_roomLayout(&(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getRoomLayout())),
+    _m_photoLayout(&(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getPhotoLayout())),
+    _m_commonLayout(&(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getCommonLayout())),
     focused(NULL), special_card(NULL), 
     main_window(main_window),game_started(false)
 {
@@ -76,7 +76,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
     // @todo: for now, just load the default skin. We'll have to build some UI to allow user to change skin
-    SkinBankFactory::getInstance().switchSkin("default");
+    QSanSkinFactory::getInstance().switchSkin("default");
 
     bool circular = Config.value("CircularView", false).toBool();
 
@@ -1212,7 +1212,7 @@ void RoomScene::toggleDiscards(){
 
 PlayerCardContainer* RoomScene::_getPlayerCardContainer(Player::Place place, Player* player)
 {
-    if (place == Player::DiscardPile)
+    if (place == Player::DiscardPile || place == Player::PlaceTakeoff)
         return m_discardPile;
     else if (place == Player::DrawPile)
         return m_drawPile;
@@ -1244,6 +1244,31 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
     }
 }
 
+QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
+{
+    if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN) return QString();
+    QString result = Sanguosha->translate(reason.m_playerName);
+    result.append(Sanguosha->translate(reason.m_eventName));
+    result.append(Sanguosha->translate(reason.m_skillName));
+    if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLED)
+        result.append(Sanguosha->translate("dismantled"));
+    else if (reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP)
+        result.append(Sanguosha->translate("change equip"));
+    else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) 
+        result.append(Sanguosha->translate("discard"));
+    else if (reason.m_reason == CardMoveReason::S_REASON_JUDGE)
+        result.append(Sanguosha->translate("judge"));
+    else if (reason.m_reason == CardMoveReason::S_REASON_USE && reason.m_skillName.isEmpty())
+        result.append(Sanguosha->translate("use"));
+    else if (reason.m_reason == CardMoveReason::S_REASON_RESPONSE && reason.m_skillName.isEmpty())
+        result.append(Sanguosha->translate("response"));
+    else if (reason.m_reason == CardMoveReason::S_REASON_RECAST)
+        result.append(Sanguosha->translate("recast"));
+    return result;
+    //QString("%1:%2:%3:%4").arg(movement.reason.m_reason)
+    //            .arg(movement.reason.m_skillName).arg(movement.reason.m_eventName
+}
+
 void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
     bool doAdjust = false;
@@ -1263,6 +1288,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
                 j--;
             }
             else card->setEnabled(true);
+            card->setFootnote(_translateMovementReason(movement.reason));
         }
         bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
@@ -3016,7 +3042,7 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result){
     if(special_card){
         const ClientPlayer *player = ClientInstance->getPlayer(who);
         QString desc = QString(tr("%1's judge")).arg(Sanguosha->translate(player->getGeneralName()));
-        special_card->writeCardDesc(desc);
+        special_card->setFootnote(desc);
 
         special_card->setFrame(result);
     }

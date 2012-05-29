@@ -6,7 +6,7 @@ using namespace QSanProtocol::Utils;
 
 bool CardMoveStruct::tryParse(const Json::Value &arg)
 {
-    if (!arg.isArray() || arg.size() != 7) return false;
+    if (!arg.isArray() || arg.size() != 8) return false;
     if (!arg[0].isInt() || !isIntArray(arg, 1, 2) || !isStringArray(arg, 3, 6)) return false;
     card_id = arg[0].asInt();    
     from_place = (Player::Place)arg[1].asInt();
@@ -15,6 +15,7 @@ bool CardMoveStruct::tryParse(const Json::Value &arg)
     to_player_name = toQString(arg[4]);
     from_pile_name = toQString(arg[5]);
     to_pile_name = toQString(arg[6]);
+    reason.tryParse(arg[7]);
     return true;
 }
 
@@ -29,12 +30,13 @@ Json::Value CardMoveStruct::toJsonValue() const
     arg[4] = toJsonString(to_player_name);
     arg[5] = toJsonString(from_pile_name);
     arg[6] = toJsonString(to_pile_name);
+    arg[7] = reason.toJsonValue();
     return arg;
 }
 
 bool CardsMoveStruct::tryParse(const Json::Value &arg)
 {
-    if (!arg.isArray() || arg.size() != 7) return false;
+    if (!arg.isArray() || arg.size() != 8) return false;
     if ((!arg[0].isInt() && !arg[0].isArray()) ||
         !isIntArray(arg, 1, 2) || !isStringArray(arg, 3, 6)) return false;
     if (arg[0].isInt())
@@ -51,6 +53,7 @@ bool CardsMoveStruct::tryParse(const Json::Value &arg)
     to_player_name = toQString(arg[4]);
     from_pile_name = toQString(arg[5]);
     to_pile_name = toQString(arg[6]);
+    reason.tryParse(arg[7]);
     return true;
 }
 
@@ -65,6 +68,7 @@ Json::Value CardsMoveStruct::toJsonValue() const
     arg[4] = toJsonString(to_player_name);
     arg[5] = toJsonString(from_pile_name);
     arg[6] = toJsonString(to_pile_name);
+    arg[7] = reason.toJsonValue();
     return arg;
 }
 
@@ -84,7 +88,27 @@ QList<CardMoveStruct> CardsMoveStruct::flatten()
         move.from_player_name = from_player_name;
         move.to_player_name = to_player_name;
         move.open = open;
+        move.reason = reason;
         result.append(move);
     }
+    return result;
+}
+
+bool CardMoveReason::tryParse(const Json::Value& arg)
+{        
+    m_reason = arg[0].asInt();
+    m_playerName = arg[1].asCString(); 
+    m_skillName = arg[2].asCString(); 
+    m_eventName = arg[3].asCString();
+    return true; // @todo: fix this
+}
+
+Json::Value CardMoveReason::toJsonValue() const
+{
+    Json::Value result;
+    result[0] = m_reason;
+    result[1] = toJsonString(m_playerName); 
+    result[2] = toJsonString(m_skillName); 
+    result[3] = toJsonString(m_eventName);
     return result;
 }

@@ -9,5 +9,7 @@
 "photoPhase3": "image/system/phase/draw.png",
 "photoPhase4": "image/system/phase/play.png",
 "photoPhase5": "image/system/phase/discard.png",
-"photoPhase6": "image/system/phase/finish.png"
+"photoPhase6": "image/system/phase/finish.png",
+// card relevant
+"handCardBack": "image/system/card-back.png"
 }

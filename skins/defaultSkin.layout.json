@@ -2,7 +2,11 @@
 "common":
 {
 	"cardNormalWidth": 93,
-    "cardNormalHeight": 130
+    "cardNormalHeight": 130,
+	"cardSuitArea": [0, 14, 28, 35],
+	"cardNumberArea": [0, 2, 28, 30],
+	"cardFootnoteArea": [0, 90, 93, 50],
+	"cardFootnoteFont": ["SimSun", 20, 50, [255, 255, 255, 255], [20, 20, 20, 255]]
 },
 "room":
 {

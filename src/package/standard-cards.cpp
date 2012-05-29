@@ -501,7 +501,8 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
 }
 
 void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->getGeneralName());
+    room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 
     QList<ServerPlayer *> players = targets.isEmpty() ? room->getAllPlayers() : targets;
     QList<int> card_ids = room->getNCards(players.length());
@@ -615,7 +616,9 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
 }
 
 void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->getGeneralName());
+    reason.m_skillName = this->getSkillName();
+    room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 
     CardEffectStruct effect;
     effect.card = this;
@@ -739,9 +742,10 @@ Nullification::Nullification(Suit suit, int number)
     setObjectName("nullification");
 }
 
-void Nullification::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &) const{
+void Nullification::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     // does nothing, just throw it
-    room->throwCard(this);
+    CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, source->getGeneralName());
+    room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 }
 
 bool Nullification::isAvailable(const Player *) const{
@@ -872,7 +876,9 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-    room->throwCard(card_id, room->getCardPlace(card_id) == Player::Judging ? NULL : effect.to);
+    CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLED, effect.to->getGeneralName());
+    room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DiscardPile, reason);
+    // room->throwCard(card_id, room->getCardPlace(card_id) == Player::Judging ? NULL : effect.to);
 
     LogMessage log;
     log.type = "$Dismantlement";

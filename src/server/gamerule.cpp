@@ -496,7 +496,8 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
-            room->moveCardTo(judge->card, NULL, Player::DiscardPile);
+            room->moveCardTo(judge->card, NULL, Player::DiscardPile,
+                CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->getGeneralName(), QString(), judge->reason));
 
             LogMessage log;
             log.type = "$InitialJudge";

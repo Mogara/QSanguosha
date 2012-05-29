@@ -798,11 +798,11 @@ void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide){
     if(card == NULL)
         return;
 
-    moveCardTo(card, target, Player::Hand, unhide);
+    moveCardTo(card, target, Player::Hand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()), unhide);
 }
 
 void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
-    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, unhide);
+    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()), unhide);
 }
 
 bool Room::isCanceled(const CardEffectStruct &effect){
@@ -997,12 +997,17 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card = card->validateInResposing(player, &continuable);
 
     if(card){
+        CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->getGeneralName());
         if(card->getTypeId() != Card::Skill){
             const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
             if(card_pattern == NULL || card_pattern->willThrow())
-                throwCard(card);
-        }else if(card->willThrow())
-            throwCard(card);
+                moveCardTo(card, NULL, Player::DiscardPile, reason);
+        }
+        else if(card->willThrow())
+        {
+            reason.m_skillName = card->getSkillName();
+            moveCardTo(card, NULL, Player::DiscardPile, reason);
+        }
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, this, player, decisionData);
@@ -2811,7 +2816,10 @@ void Room::throwCard(const Card *card, ServerPlayer *who){
         sendLog(log);
     }
 
-    CardsMoveStruct move(to_discard, NULL, Player::DiscardPile);
+    CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, who ? who->getGeneralName() : QString());
+    if (card->getTypeId() == Card::Skill)
+        reason.m_skillName = card->getSkillName();
+    CardsMoveStruct move(to_discard, NULL, Player::DiscardPile, reason);
     QList<CardsMoveStruct> moves;
     moves.append(move);
     moveCardsAtomic(moves, true);
@@ -2834,6 +2842,12 @@ RoomThread *Room::getThread() const{
 void Room::moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
     bool forceMoveVisible, bool ignoreChanged)
 {
+    moveCardTo(card, dstPlayer, dstPlace, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()), forceMoveVisible, ignoreChanged);
+}
+
+void Room::moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
+    bool forceMoveVisible, bool ignoreChanged)
+{
     CardsMoveStruct move;    
     if(card->isVirtualCard())
     {
@@ -2844,6 +2858,7 @@ void Room::moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place d
         move.card_ids.append(card->getId());
     move.to = dstPlayer;
     move.to_place = dstPlace;
+    move.reason = reason;
     QList<CardsMoveStruct> moves;
     moves.append(move);
     moveCards(moves, forceMoveVisible, ignoreChanged);

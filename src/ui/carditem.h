@@ -7,6 +7,7 @@
 #include <QAbstractAnimation>
 #include <QMutex>
 #include <QSize>
+#include "SkinBank.h"
 
 class FilterSkill;
 class General;
@@ -48,8 +49,7 @@ public:
     void hideFrame();
     void setAutoBack(bool auto_back);
     void changeGeneral(const QString &general_name);
-    void writeCardDesc(QString desc);
-    void deleteCardDescription();
+    void setFootnote(QString desc);
 
     bool isSelected() const { return m_isSelected; }
     inline void setSelected(bool selected) { m_isSelected = selected; }
@@ -57,6 +57,9 @@ public:
 
     void setFrozen(bool is_frozen);
     bool isFrozen() const;
+
+    inline void setFootnoteVisible(bool visible) { m_isDescriptionVisible = visible; }
+    bool isFootnoteVisible() { return m_isDescriptionVisible; }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
     static const int S_NORMAL_CARD_WIDTH = 93.0;
@@ -67,10 +70,12 @@ public slots:
     void promoteZ();
 
 protected:
+    void _initialize();
     QAbstractAnimation* m_currentAnimation;
     QMutex m_animationMutex;
     double m_opacityAtHome;
     bool m_isSelected;
+    bool m_isDescriptionVisible;
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -82,9 +87,11 @@ protected:
 private:    
     const Card *m_card, *filtered_card;
     QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap;
-    QGraphicsSimpleTextItem *owner_text;
+    QString owner_text;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
+    const QSanRoomSkin* _m_roomSkin;
+    const QSanRoomSkin::CommonLayout* _m_layout;
     bool auto_back, frozen;
 signals:
     void toggle_discards();

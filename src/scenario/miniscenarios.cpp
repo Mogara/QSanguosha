@@ -89,7 +89,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
     QStringList cards= setup.split(",", QString::SkipEmptyParts);
     foreach(QString id,cards)
     {
-        room->moveCardTo(Sanguosha->getCard(id.toInt()),NULL,Player::DrawPile,true);
+        room->moveCardTo(Sanguosha->getCard(id.toInt()), NULL, Player::DrawPile, true);
         room->broadcastInvoke("addHistory","pushPile");
     }
 
@@ -180,8 +180,8 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
         {
             bool ok;
             equip.toInt(&ok);
-            if(!ok)room->installEquip(sp,equip);
-            else room->moveCardTo(Sanguosha->getCard(equip.toInt()),sp,Player::Equip);
+            if (!ok) room->installEquip(sp,equip);
+            else room->moveCardTo(Sanguosha->getCard(equip.toInt()), sp, Player::Equip, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
         }
 
         str = this->players.at(i)["judge"];
@@ -190,7 +190,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
             QStringList judges = str.split(",");
             foreach(QString judge,judges)
             {
-                room->moveCardTo(Sanguosha->getCard(judge.toInt()),sp,Player::Judging);
+                room->moveCardTo(Sanguosha->getCard(judge.toInt()),sp,Player::Judging, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
             }
         }
 

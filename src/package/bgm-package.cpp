@@ -78,7 +78,8 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
         dummy_card->addSubcard(cd);
     }
     if (!effect.to->isKongcheng())
-        room->moveCardTo(dummy_card, effect.from, Player::Hand, false);
+        room->moveCardTo(dummy_card, effect.from, Player::Hand,
+            CardMoveReason(CardMoveReason::S_REASON_TRANSFER, effect.from->getGeneralName(), "lihun", QString()), false);
     effect.to->setFlags("LihunTarget");
 }
 
@@ -350,7 +351,8 @@ public:
         {
             player->addMark("zuixiangHasTrigger");
             room->setPlayerCardLock(player, ".");            
-            CardsMoveStruct move(zuixiang, player, Player::Hand);
+            CardsMoveStruct move(zuixiang, player, Player::Hand, 
+                CardMoveReason(CardMoveReason::S_REASON_PUT, player->getGeneralName(), this->objectName(), ""));
             room->moveCards(move, true);
         }
     }
@@ -633,7 +635,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{

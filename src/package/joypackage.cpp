@@ -403,7 +403,8 @@ public:
             room->removeTag("YxSwordVictim");
             damage.from = target;
             data = QVariant::fromValue(damage);
-            room->moveCardTo(player->getWeapon(), damage.from, Player::Hand);
+            room->moveCardTo(player->getWeapon(), damage.from, Player::Hand, 
+                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->getGeneralName(), objectName(), QString()));
         }
         return damage.to->isDead();
     }

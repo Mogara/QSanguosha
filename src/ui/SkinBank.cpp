@@ -12,9 +12,42 @@ const char QSanRoomSkin::S_SKIN_KEY_PHOTO_HANDCARDNUM[]("photoHandCardNum");
 const char QSanRoomSkin::S_SKIN_KEY_PHOTO_FACETURNEDMASK[]("photoFaceTurnedMask");
 const char QSanRoomSkin::S_SKIN_KEY_PHOTO_CHAIN[]("photoChain");
 const char QSanRoomSkin::S_SKIN_KEY_PHOTO_PHASE[]("photoPhase%1");
+const char QSanRoomSkin::S_SKIN_KEY_HAND_CARD_BACK[]("handCardBack");
 
-SkinBankFactory* SkinBankFactory::_sm_singleton = NULL;
+QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
+
+bool QSanRoomSkin::QSanTextFont::tryParse(Json::Value arg)
+{
+    if (!arg.isArray()) return false;
+    m_drawShadow = false;
+    m_font = QFont(arg[0].asCString(), arg[1].asInt(), arg[2].asInt());
+    m_foregroundPen = QPen(QColor(arg[3][0].asInt(), arg[3][1].asInt(), arg[3][2].asInt(), arg[3][3].asInt()));
+    if (arg.size() == 5)
+    {
+        m_backgroundPen = QPen(QColor(arg[4][0].asInt(), arg[4][1].asInt(), arg[4][2].asInt(), arg[4][3].asInt()));
+        m_drawShadow = true;
+    }
+    return true;
+}
+void QSanRoomSkin::QSanTextFont::paintText(QPainter* painter, QRect pos, Qt::AlignmentFlag align, const QString &text) const
+{
+    if (m_drawShadow)
+    {
+        painter->setPen(m_backgroundPen);
+        pos.translate(-1, -1);
+        painter->drawText(pos, align, text);
+        pos.translate(2, 2);
+        painter->drawText(pos, align, text);
+        pos.translate(-2, 0);
+        painter->drawText(pos, align, text);
+        pos.translate(2, -2);
+        painter->drawText(pos, align, text);
+        pos.translate(-1, 1);
+    }    
+    painter->setPen(m_foregroundPen);
+    painter->drawText(pos, align, text);
+}
 
 // Load pixmap from a file and map it to the given key.
 const QPixmap& QSanPixmapCache::getPixmap(const QString &key, const QString &fileName)
@@ -97,6 +130,10 @@ bool QSanRoomSkin::_loadLayoutConfig()
     config = _m_layoutConfig[S_SKIN_KEY_COMMON];
     _m_commonLayout.m_cardNormalHeight = config["cardNormalHeight"].asInt();
     _m_commonLayout.m_cardNormalWidth = config["cardNormalWidth"].asInt();
+    QSanProtocol::Utils::tryParse(config["cardSuitArea"], _m_commonLayout.m_cardSuitArea);
+    QSanProtocol::Utils::tryParse(config["cardNumberArea"], _m_commonLayout.m_cardNumberArea);
+    QSanProtocol::Utils::tryParse(config["cardFootnoteArea"], _m_commonLayout.m_cardFootnoteArea);
+    _m_commonLayout.m_cardFootnoteFont.tryParse(config["cardFootnoteFont"]);
     return true;
 }
 
@@ -113,24 +150,24 @@ const QSanRoomSkin& QSanSkinScheme::getRoomSkin() const
     return _m_roomSkin;
 }
 
-SkinBankFactory& SkinBankFactory::getInstance()
+QSanSkinFactory& QSanSkinFactory::getInstance()
 {
     if (_sm_singleton == NULL)
-        _sm_singleton = new SkinBankFactory("skins\\skinList.json");
+        _sm_singleton = new QSanSkinFactory("skins\\skinList.json");
     return *_sm_singleton;
 }
 
-const QSanSkinScheme& SkinBankFactory::getCurrentSkinScheme() const
+const QSanSkinScheme& QSanSkinFactory::getCurrentSkinScheme() const
 {
     return this->_sm_currentSkin;
 }
 
-bool SkinBankFactory::switchSkin(QString skinName)
+bool QSanSkinFactory::switchSkin(QString skinName)
 {
     return _sm_currentSkin.load(_m_skinList[skinName.toAscii().constData()]);
 }
 
-SkinBankFactory::SkinBankFactory(const char* fileName)
+QSanSkinFactory::QSanSkinFactory(const char* fileName)
 {
     Json::Reader reader;
     reader.parse(ifstream(fileName), this->_m_skinList);
