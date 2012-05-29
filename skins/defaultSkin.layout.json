@@ -1,19 +1,24 @@
-[
-"roomlayout":
+{
+"common":
+{
+	"cardNormalWidth": 93,
+    "cardNormalHeight": 130
+},
+"room":
 {
 	"scenePadding": 0,
-  "roleBoxHeight": 60,
-  "chatTextBoxHeight": 30,
-  "logBoxHeightPercentage": 0.6,
-  "chatBoxHeightPercentage": 0.4,
-  "infoPlaneWidthPercentage": 0.22,
-  "photoRoomPadding": 10,
-  "photoPhotoPadding": 5,
-  "discardPileMinWidth": CardItem::S_NORMAL_CARD_WIDTH * 5,
-  "discardPilePadding": 50,
-  "minimumSceneSize": [900, 650]
+	"roleBoxHeight": 60,
+	"chatTextBoxHeight": 30,
+	"logBoxHeightPercentage": 0.6,
+	"chatBoxHeightPercentage": 0.4,
+	"infoPlaneWidthPercentage": 0.22,
+	"photoRoomPadding": 10,
+	"photoPhotoPadding": 5,
+	"discardPileMinWidth": 465,
+	"discardPilePadding": 50,
+	"minimumSceneSize": [900, 650]
 },
-"photolayout":
+"photo":
 {
 	"normalWidth": 130,
 	"normalHeight": 150,
@@ -22,6 +27,11 @@
 	"widthIncludeMarkAndControl": 139,
 	"heightIncludeMarkAndControl": 155,
 	"avatarArea": [6, 26, 120, 50],
-	"smallAvatarArea": [82, 36, 42, 36]
+	"smallAvatarArea": [82, 36, 42, 36],
+	"cardMoveArea": [-50, 65, 200, 130],
+	"phaseArea": [114, 87, 16, 63],
+	"mainFrameArea": [0, 0, 139, 155],
+	"progressBarArea": [139, 0, 15, 150],
+	"progressBarHorizontal": false
 }
-]
+}

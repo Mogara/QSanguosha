@@ -11,6 +11,7 @@
 #include <QPixmap>
 #include <QComboBox>
 #include <QProgressBar>
+#include "SkinBank.h"
 
 class ClientPlayer;
 class RoleCombobox;
@@ -65,9 +66,11 @@ protected:
     bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    static const QRect S_CARD_MOVE_REGION;
     QList<CardItem*> m_takenOffCards;
-private:    
+private:
+    const QSanRoomSkin* _m_roomSkin;
+    const QSanRoomSkin::CommonLayout* _m_commonLayout;
+    const QSanRoomSkin::PhotoLayout* _m_photoLayout;
     const ClientPlayer *player;
     QPixmap avatar, small_avatar;
     QGraphicsPixmapItem *ready_item;    

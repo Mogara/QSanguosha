@@ -76,3 +76,12 @@ bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QStringList& result)
     }    
     return true;
 }
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QRect& result)
+{
+    if (!arg.isArray() || arg.size() != 4) return false;
+    result.setLeft(arg[0].asInt());
+    result.setTop(arg[1].asInt());
+    result.setWidth(arg[2].asInt());
+    result.setHeight(arg[3].asInt());
+}

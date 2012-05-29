@@ -10,6 +10,7 @@
 #include "clientlogbox.h"
 #include "sprite.h"
 #include "chatwidget.h"
+#include "SkinBank.h"
 
 class Window;
 class Button;
@@ -192,6 +193,9 @@ protected:
     QMutex m_zValueMutex;
 
 private:
+    const QSanRoomSkin::RoomLayout* _m_roomLayout;
+    const QSanRoomSkin::PhotoLayout* _m_photoLayout;
+    const QSanRoomSkin::CommonLayout* _m_commonLayout;
     QGraphicsItem* _m_last_front_item;
     double _m_last_front_ZValue;
     PlayerCardContainer* _getPlayerCardContainer(Player::Place place, Player* player);

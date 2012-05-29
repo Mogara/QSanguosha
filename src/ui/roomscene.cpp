@@ -62,9 +62,12 @@ void RoomScene::resetPiles()
 
 #include "irregularbutton.h"
 
-RoomScene::RoomScene(QMainWindow *main_window)
-    :focused(NULL), special_card(NULL), 
-      main_window(main_window),game_started(false)
+RoomScene::RoomScene(QMainWindow *main_window):
+    _m_roomLayout(&(SkinBankFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getRoomLayout())),
+    _m_photoLayout(&(SkinBankFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getPhotoLayout())),
+    _m_commonLayout(&(SkinBankFactory::getInstance().getCurrentSkinScheme().getRoomSkin().getCommonLayout())),
+    focused(NULL), special_card(NULL), 
+    main_window(main_window),game_started(false)
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
@@ -72,7 +75,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_last_front_ZValue = 0;
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
-    room_layout = GetRoomLayout();
+    // @todo: for now, just load the default skin. We'll have to build some UI to allow user to change skin
+    SkinBankFactory::getInstance().switchSkin("default");
 
     bool circular = Config.value("CircularView", false).toBool();
 
@@ -428,8 +432,8 @@ void RoomScene::createExtraButtons(){
     m_reverseSelectionButton = dashboard->createButton("reverse-select");
     m_reverseSelectionButton->setEnabled(true);
 
-    dashboard->addWidget(m_reverseSelectionButton, room_layout->m_scenePadding 
-        + room_layout->m_photoRoomPadding * 3 + Photo::S_NORMAL_PHOTO_WIDTH, true);
+    dashboard->addWidget(m_reverseSelectionButton, _m_roomLayout->m_scenePadding 
+        + _m_roomLayout->m_photoRoomPadding * 3 + _m_photoLayout->m_normalWidth, true);
     connect(m_reverseSelectionButton, SIGNAL(clicked()), dashboard, SLOT(reverseSelection()));
 
     m_freeDiscardButton = NULL;
@@ -517,18 +521,18 @@ void RoomScene::createReplayControlBar(){
 void RoomScene::adjustItems(){
     QRectF displayRegion = sceneRect();
     if (displayRegion.left() != 0 || displayRegion.top() != 0 ||
-        displayRegion.bottom() < room_layout->m_minimumSceneSize.height() ||
-        displayRegion.right() < room_layout->m_minimumSceneSize.width())
+        displayRegion.bottom() < _m_roomLayout->m_minimumSceneSize.height() ||
+        displayRegion.right() < _m_roomLayout->m_minimumSceneSize.width())
     {
         displayRegion.setLeft(0); displayRegion.setTop(0);
-        double sy = room_layout->m_minimumSceneSize.height() / displayRegion.height();
-        double sx = room_layout->m_minimumSceneSize.width() / displayRegion.width();
+        double sy = _m_roomLayout->m_minimumSceneSize.height() / displayRegion.height();
+        double sx = _m_roomLayout->m_minimumSceneSize.width() / displayRegion.width();
         double scale = qMax(sx, sy);
         displayRegion.setBottom(scale * displayRegion.height());
         displayRegion.setRight(scale * displayRegion.width());
         setSceneRect(displayRegion);
     }
-    int padding = room_layout->m_scenePadding;
+    int padding = _m_roomLayout->m_scenePadding;
     displayRegion.moveLeft(displayRegion.x() + padding);
     displayRegion.moveTop(displayRegion.y() + padding);
     displayRegion.setWidth(displayRegion.width() - padding * 2);
@@ -541,22 +545,22 @@ void RoomScene::adjustItems(){
     
     // set infoplane
     QRectF infoPlane;
-    infoPlane.setWidth(displayRegion.width() * room_layout->m_infoPlaneWidthPercentage);    
+    infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);    
     infoPlane.moveRight(displayRegion.right());
-    infoPlane.setTop(displayRegion.top() + room_layout->m_roleBoxHeight);
-    infoPlane.setBottom(dashboard->y() - room_layout->m_chatTextBoxHeight);    
-    m_rolesBoxBackground = m_rolesBoxBackground.scaled(infoPlane.width(), room_layout->m_roleBoxHeight);
+    infoPlane.setTop(displayRegion.top() + _m_roomLayout->m_roleBoxHeight);
+    infoPlane.setBottom(dashboard->y() - _m_roomLayout->m_chatTextBoxHeight);    
+    m_rolesBoxBackground = m_rolesBoxBackground.scaled(infoPlane.width(), _m_roomLayout->m_roleBoxHeight);
     m_rolesBox->setPixmap(m_rolesBoxBackground);
     m_rolesBox->setPos(infoPlane.left(), displayRegion.top());
 
     log_box_widget->setPos(infoPlane.topLeft());
-    log_box->resize(infoPlane.width(), infoPlane.height() * room_layout->m_logBoxHeightPercentage);
-    chat_box_widget->setPos(infoPlane.left(), infoPlane.bottom() - infoPlane.height() * room_layout->m_chatBoxHeightPercentage);
+    log_box->resize(infoPlane.width(), infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
+    chat_box_widget->setPos(infoPlane.left(), infoPlane.bottom() - infoPlane.height() * _m_roomLayout->m_chatBoxHeightPercentage);
     chat_box->resize(infoPlane.width(), infoPlane.bottom() - chat_box_widget->y());
     chat_edit_widget->setPos(infoPlane.left(), infoPlane.bottom());
-    chat_edit->resize(infoPlane.width() - chat_widget->boundingRect().width(), room_layout->m_chatTextBoxHeight);
+    chat_edit->resize(infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
     chat_widget->setPos(infoPlane.right() - chat_widget->boundingRect().width(),
-        chat_edit_widget->y() + (room_layout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
+        chat_edit_widget->y() + (_m_roomLayout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
     
      if (self_box)
          self_box->setPos(infoPlane.left() - padding - self_box->boundingRect().width(), 
@@ -570,12 +574,13 @@ void RoomScene::adjustItems(){
 
 void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion, int minDistanceBetweenPhotos, Qt::Alignment align)
 {
+    double photoWidth = _m_photoLayout->m_normalWidth;
+    double photoHeight = _m_photoLayout->m_normalHeight; 
     int numPhotos = photos.size();
     if (numPhotos == 0) return;
     if (align == Qt::AlignHCenter)
     {
         double maxWidth = fillRegion.width();
-        double photoWidth = Photo::S_NORMAL_PHOTO_WIDTH; 
         double step = qMax(photoWidth  + minDistanceBetweenPhotos, maxWidth / numPhotos);
         for (int i = 0; i < numPhotos; i++)
         {
@@ -588,7 +593,6 @@ void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion, int mi
     else if (align == Qt::AlignVCenter)
     {
         double maxHeight = fillRegion.height();
-        double photoHeight = Photo::S_NORMAL_PHOTO_HEIGHT; 
         double step = qMax(photoHeight + minDistanceBetweenPhotos, maxHeight / numPhotos);
         for (int i = 0; i < numPhotos; i++)
         {
@@ -600,7 +604,6 @@ void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion, int mi
     }
     else if (align == Qt::AlignBottom)
     {
-        double photoHeight = Photo::S_NORMAL_PHOTO_HEIGHT; 
         double step = minDistanceBetweenPhotos + photoHeight;
         for (int i = 0; i < numPhotos; i++)
         {
@@ -614,10 +617,11 @@ void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion, int mi
 
 void RoomScene::updateTable()
 {
-    int &pad = room_layout->m_scenePadding;
+    int pad = _m_roomLayout->m_scenePadding;
     int tablew = log_box_widget->x() - pad;
-    int tableh = sceneRect().height() - pad * 2 - dashboard->boundingRect().height() - room_layout->m_photoRoomPadding;
-   
+    int tableh = sceneRect().height() - pad * 2 - dashboard->boundingRect().height() - _m_roomLayout->m_photoRoomPadding;
+    int photow = _m_photoLayout->m_normalWidth;
+    int photoh = _m_photoLayout->m_normalHeight;
     // Layout:
     //    col1           col2
     // _______________________
@@ -655,9 +659,9 @@ void RoomScene::updateTable()
         {3, 3, 1, 1, 1} // loyalist (right), same with rebel (right)
     };
     
-    double col1 = Photo::S_NORMAL_PHOTO_WIDTH + 2 * room_layout->m_photoRoomPadding;
+    double col1 = photow + 2 * _m_roomLayout->m_photoRoomPadding;
     double col2 = tablew - col1;
-    double row1 = Photo::S_NORMAL_PHOTO_HEIGHT + 2 * room_layout->m_photoRoomPadding;
+    double row1 = photoh + 2 * _m_roomLayout->m_photoRoomPadding;
     double row2 = tableh;
 
     const int C_NUM_REGIONS = 10;
@@ -671,8 +675,8 @@ void RoomScene::updateTable()
         QRectF(col2, 0, col1, row2),
         QRectF(0, 0, col1, row2),
         QRectF(0, 0, col1 + col2, row1),
-        QRectF(col2, row1 - Photo::S_NORMAL_PHOTO_HEIGHT * 0.2, col1, row2 - row1 + Photo::S_NORMAL_PHOTO_HEIGHT * 0.2),
-        QRectF(0, row1 - Photo::S_NORMAL_PHOTO_HEIGHT * 0.2, col1, row2 - row1 + Photo::S_NORMAL_PHOTO_HEIGHT * 0.2)
+        QRectF(col2, row1 - photoh * 0.2, col1, row2 - row1 + photoh * 0.2),
+        QRectF(0, row1 - photoh * 0.2, col1, row2 - row1 + photoh * 0.2)
     };
 
     QRectF tableRect(col1, row1, col2 - col1, row2 - row1);
@@ -680,7 +684,7 @@ void RoomScene::updateTable()
     control_panel->setPos(m_tableCenterPos);
     m_drawPile->setPos(m_tableCenterPos);
     m_discardPile->setPos(m_tableCenterPos);
-    m_discardPile->setSize(qMax((int)tableRect.width() - room_layout->m_discardPilePadding * 2, room_layout->m_discardPileMinWidth),
+    m_discardPile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2, _m_roomLayout->m_discardPileMinWidth),
         CardItem::S_NORMAL_CARD_HEIGHT);
     card_container->setPos(m_tableCenterPos);
     guanxing_box->setPos(m_tableCenterPos);
@@ -719,7 +723,7 @@ void RoomScene::updateTable()
         if (i < 3 || i == 7) align = Qt::AlignHCenter;
         // else if (pkMode) align = Qt::AlignBottom;
         else align = Qt::AlignVCenter;  
-        _dispersePhotos(photosInRegion[i], seatRegions[i], room_layout->m_photoPhotoPadding, align);
+        _dispersePhotos(photosInRegion[i], seatRegions[i], _m_roomLayout->m_photoPhotoPadding, align);
     }
 
 }
@@ -3157,7 +3161,7 @@ void RoomScene::onGameStart(){
     if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
         m_freeDiscardButton = dashboard->addButton("free-discard",
             m_reverseSelectionButton->pos().x() + m_reverseSelectionButton->width()
-            + room_layout->m_scenePadding, true);
+            + _m_roomLayout->m_scenePadding, true);
         m_freeDiscardButton->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(m_freeDiscardButton, discard_skill);

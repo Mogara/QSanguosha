@@ -374,20 +374,20 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 }
 
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
+    if (!targets.isEmpty())
         return false;
 
-    if(to_select == Self)
+    if (to_select == Self)
         return false;
 
-    if(to_select->containsTrick(objectName()))
+    if (to_select->containsTrick(objectName()))
         return false;
 
-    if(Self->hasSkill("qicai"))
+    if (Self->hasSkill("qicai"))
         return true;
 
     int distance = Self->distanceTo(to_select);
-    if(Self->hasSkill("duanliang"))
+    if (Self->hasSkill("duanliang"))
         return distance <= 2;
     else
         return distance <= 1;

@@ -1,13 +1,37 @@
-//#ifndef _SKIN_BANK_H
-//#define _SKIN_BANK_H
+#ifndef _SKIN_BANK_H
+#define _SKIN_BANK_H
 
 #include <json/json.h>
 #include <QString>
 #include <QPixmap>
 #include <QHash>
 
-namespace QSanLayout
+class QSanPixmapCache
 {
+public:
+    // Load pixmap from a file and map it to the given key.
+    static const QPixmap& getPixmap(const QString &key, const QString &fileName);
+    // Load pixmap from a existing key.
+    static const QPixmap& getPixmap(const QString &key);
+    static bool contains(const QString &key); 
+private:
+    static QHash<QString, QPixmap> _m_pixmapBank;
+};
+
+class IQSanComponentSkin // interface class
+{
+public:
+    bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName);
+    QPixmap getPixmap(const QString &key) const;
+protected:
+    virtual bool _loadLayoutConfig() = 0;
+    Json::Value _m_layoutConfig;
+    Json::Value _m_imageConfig;
+};
+
+class QSanRoomSkin : public IQSanComponentSkin
+{
+public:    
     struct RoomLayout {
         int m_scenePadding;
         int m_roleBoxHeight;
@@ -29,44 +53,59 @@ namespace QSanLayout
         int m_heightIncludeShadow;
         int m_widthIncludeMarkAndControl;
         int m_heightIncludeMarkAndControl;
+        QRect m_cardMoveRegion;
+        QRect m_phaseArea;
+        QRect m_mainFrameArea;
+        QRect m_progressBarArea;
+        bool m_isProgressBarHorizontal;
     };
-}
-
-class QSanSkin
-{
-public:
-    QSanSkin();
-    void load(QString layoutConfigName, QString skinConfigName);
-    const QSanLayout::RoomLayout& getRoomLayout() const;
-    const QSanLayout::PhotoLayout& getPhotoLayout() const;
-    const QPixmap& getPixmap(const QString &key) const;
-
-    //static consts
-    struct PhotoSkin
+    struct CommonLayout
     {
-        static const QString S_SKIN_KEY_MAINFRAME;
-        static const QString S_SKIN_KEY_HANDCARDNUM;
-        static const QString S_SKIN_KEY_FACETURNEDMASK;
-        static const QString S_SKIN_KEY_CHAIN;
+        int m_cardNormalWidth;
+        int m_cardNormalHeight;
     };
-
+    const RoomLayout& getRoomLayout() const;
+    const PhotoLayout& getPhotoLayout() const;
+    const CommonLayout& getCommonLayout() const;
+    // static consts
+    static const char S_SKIN_KEY_PHOTO[];
+    static const char S_SKIN_KEY_COMMON[];
+    static const char S_SKIN_KEY_ROOM[];
+    static const char S_SKIN_KEY_PHOTO_MAINFRAME[];
+    static const char S_SKIN_KEY_PHOTO_HANDCARDNUM[];
+    static const char S_SKIN_KEY_PHOTO_FACETURNEDMASK[];
+    static const char S_SKIN_KEY_PHOTO_CHAIN[];
+    static const char S_SKIN_KEY_PHOTO_PHASE[];
 protected:
-    QSanLayout::RoomLayout layout;
-    QHash<QString, QPixmap> _m_pixmapBank;
+    RoomLayout _m_roomLayout;
+    PhotoLayout _m_photoLayout;
+    CommonLayout _m_commonLayout;
+    virtual bool _loadLayoutConfig();
+
+};
+
+class QSanSkinScheme
+{
+// Why do we need another layer above room skin? Because we may add lobby, login interface
+// in the future; and we may need to assemble a set of different skins into a scheme.
+public:
+    bool load(Json::Value configs);
+    const QSanRoomSkin& getRoomSkin() const;
+protected:
+    QSanRoomSkin _m_roomSkin;
 };
 
 class SkinBankFactory
 {
 public:
-    static const SkinBankFactory& getInstance();
-    QSanSkin getQSanSkin(QString skinName) const;
-    const QSanSkin& getCurrentSkin() const;
-    void switchSkin(QString skinName);
+    static SkinBankFactory& getInstance();
+    const QSanSkinScheme& getCurrentSkinScheme() const;
+    bool switchSkin(QString skinName);
 protected:
-    SkinBankFactory();
+    SkinBankFactory(const char* fileName);
     static SkinBankFactory* _sm_singleton;
-    static QSanSkin _sm_currentSkin;
+    QSanSkinScheme _sm_currentSkin;
+    Json::Value _m_skinList;
 };
 
-QSanSkin* g_currentSkin;
-//#endif
+#endif
