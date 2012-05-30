@@ -1262,7 +1262,7 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
             .append(Sanguosha->translate(dstPhoto->getPlayer()->getGeneralName()));
     else if (reason.m_targetId == Self->objectName())
         targetName = QString("%1%2(%3)").arg(Sanguosha->translate("use upon"))
-        .arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate("(yourself)"));
+        .arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate("yourself"));
 
     QString result(playerName + targetName);
     result.append(Sanguosha->translate(reason.m_eventName));

@@ -32,6 +32,7 @@ bool QSanRoomSkin::QSanTextFont::tryParse(Json::Value arg)
 }
 void QSanRoomSkin::QSanTextFont::paintText(QPainter* painter, QRect pos, Qt::AlignmentFlag align, const QString &text) const
 {
+    painter->setFont(m_font);
     if (m_drawShadow)
     {
         painter->setPen(m_backgroundPen);

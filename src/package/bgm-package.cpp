@@ -297,7 +297,7 @@ public:
         else if(event == CardDrawing){
             if(room->getTag("FirstRound").toBool())
                 return false;
-
+            card_id = data.toInt();
             const Card* card = Sanguosha->getCard(card_id);
             room->moveCardTo(card, NULL, Player::DiscardPile, reason);
         }

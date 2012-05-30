@@ -898,12 +898,7 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
         if (continuable) return _askForNullification(trick, from, to, positive, aiHelper);
         else return false;
     }
-
-    CardUseStruct use;
-    use.card = card;
-    use.from = repliedPlayer;
-    useCard(use);
-
+    
     LogMessage log;
     log.type = "#NullificationDetails";
     log.from = from;
@@ -913,6 +908,11 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
 
     broadcastInvoke("animate", QString("nullification:%1:%2")
         .arg(repliedPlayer->objectName()).arg(to->objectName()));
+
+    CardUseStruct use;
+    use.card = card;
+    use.from = repliedPlayer;
+    useCard(use);
 
     QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
     thread->trigger(ChoiceMade, this, repliedPlayer, decisionData);
