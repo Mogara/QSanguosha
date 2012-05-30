@@ -1065,7 +1065,9 @@ void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
             return;
     }
 
-    room->throwCard(card_id);
+    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, zhonghui->objectName(),
+        target->objectName(), "paiyi", QString());
+    room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
     room->drawCards(target, 2,"paiyi");
     if(target->getHandcardNum() > zhonghui->getHandcardNum()){
         DamageStruct damage;

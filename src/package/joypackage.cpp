@@ -92,7 +92,7 @@ void Deluge::takeEffect(ServerPlayer *target) const{
     QList<int> card_ids;
     foreach(const Card *card, cards){
         card_ids << card->getEffectiveId();
-        room->throwCard(card);
+        room->throwCard(card, NULL);
     }
 
     room->fillAG(card_ids);
@@ -239,9 +239,10 @@ void MudSlide::takeEffect(ServerPlayer *target) const{
             damage.to = player;
             room->damage(damage);
         }else{
-            int i, n = qMin(equips.length(), to_destroy);
-            for(i=0; i<n; i++){
-                room->throwCard(equips.at(i));
+            int n = qMin(equips.length(), to_destroy);
+            for(int i = 0; i < n; i++){
+                CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, QString(), QString(), "mudslide");
+                room->throwCard(equips.at(i), reason, player);
             }
 
             to_destroy -= n;
@@ -271,7 +272,8 @@ public:
                 if(p->getOffensiveHorse() == parent() &&
                    p->askForSkillInvoke("grab_peach", data))
                 {
-                    room->throwCard(p->getOffensiveHorse());
+                    // @todo: if you wish this to trigger card discarded event, please modify this!!!
+                    room->throwCard(p->getOffensiveHorse(), NULL);
                     p->playCardEffect(objectName());
                     p->obtainCard(use.card);
 

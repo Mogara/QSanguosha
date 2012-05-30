@@ -512,7 +512,8 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
     case FinishJudge:{
             JudgeStar judge = data.value<JudgeStar>();
-            room->throwCard(judge->card);
+            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+            room->throwCard(judge->card, reason, NULL);
 
             LogMessage log;
             log.type = "$JudgeResult";
@@ -690,7 +691,10 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
 
         QList<const Card *> tricks = lord->getJudgingArea();
         foreach(const Card *trick, tricks)
-            room->throwCard(trick);
+        {
+            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+            room->throwCard(trick, reason, NULL);
+        }
         break;
                       }
     case GameStart: {
@@ -714,7 +718,8 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
             player->playCardEffect("@recast");
-            room->throwCard(use.card);
+            CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
+            room->throwCard(use.card, reason, NULL);
             player->drawCards(1, false);
             return false;
         }

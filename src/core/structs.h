@@ -112,9 +112,12 @@ public:
     static const int S_REASON_DRAW = 0x08;
     static const int S_REASON_PUT = 0x09; // Theoretically, this should not be here because "put" will not
                                           // trigger event such as "manjuan". But let's do a dirty fix for
-                                          // now.
+                                          // now.    
     static const int S_REASON_SHOW = 0x0A; // For "fire attack" and "fuhun"
     static const int S_REASON_RECAST = 0x0B; // Tiesuolianhuan
+    static const int S_REASON_NATURAL_ENTER = 0x0C;
+    static const int S_REASON_REMOVE_FROM_PILE = 0x0D;
+
     //subcategory of transfer
     static const int S_REASON_SWAP = 0x16; // for "dimeng", "ganlu"
     static const int S_REASON_OVERRIDE = 0x26; // for "guidao"

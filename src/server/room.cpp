@@ -2792,6 +2792,12 @@ void Room::drawCards(QList<ServerPlayer*> players, int n, const QString &reason)
 }
 
 void Room::throwCard(const Card *card, ServerPlayer *who){
+    CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, who ? who->objectName() : QString());
+    reason.m_skillName = card->getSkillName();
+    throwCard(card, reason, who);
+}
+
+void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who){
     if(card == NULL)
         return;
 
@@ -2816,8 +2822,6 @@ void Room::throwCard(const Card *card, ServerPlayer *who){
         sendLog(log);
     }
 
-    CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, who ? who->objectName() : QString());
-    reason.m_skillName = card->getSkillName();
     CardsMoveStruct move(to_discard, NULL, Player::DiscardPile, reason);
     QList<CardsMoveStruct> moves;
     moves.append(move);

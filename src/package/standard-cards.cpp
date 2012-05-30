@@ -125,13 +125,9 @@ QString Peach::getEffectPath(bool ) const{
 }
 
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
-
     if(targets.isEmpty())
         room->cardEffect(this, source, source);
-    else
-        foreach(ServerPlayer *tmp, targets)
-        room->cardEffect(this, source, tmp);
+    BasicCard::use(room, source, targets);    
 }
 
 void Peach::onEffect(const CardEffectStruct &effect) const{
@@ -179,7 +175,7 @@ public:
                     QString prompt = "double-sword-card:" + effect.from->getGeneralName();
                     const Card *card = room->askForCard(effect.to, ".", prompt, QVariant(), CardDiscarded);
                     if(card){
-                        room->throwCard(card);
+                        room->throwCard(card, effect.to);
                     }else
                         draw_card = true;
                 }
@@ -669,9 +665,10 @@ bool Collateral::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), targets[0]->objectName(), QString(), QString());
+    room->throwCard(this, reason, NULL);
 
-    ServerPlayer *killer = targets.at(0);
+    ServerPlayer *killer = targets[0];
     QList<ServerPlayer *> victims = targets;
     if(victims.length() > 1)
         victims.removeAt(0);

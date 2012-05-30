@@ -114,7 +114,8 @@ void ServerPlayer::clearPrivatePiles(){
         QList<int> &pile = piles[pile_name];
 
         foreach(int card_id, pile){
-            room->throwCard(card_id);
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
+            room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
             QString pile_command = QString("%1:%2-%3").arg(objectName()).arg(pile_name).arg(card_id);
             room->broadcastInvoke("pile", pile_command);
         }
@@ -138,7 +139,10 @@ void ServerPlayer::throwAllCards(){
 
     QList<const Card *> tricks = getJudgingArea();
     foreach(const Card *trick, tricks)
-        room->throwCard(trick);
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, this->objectName());
+        room->throwCard(trick, NULL);
+    }
 }
 
 void ServerPlayer::drawCards(int n, bool set_emotion, const QString &reason){

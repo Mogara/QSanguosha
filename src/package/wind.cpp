@@ -443,21 +443,21 @@ public:
         Room *room = zhoutai->getRoom();
         const QList<int> buqu(zhoutai->getPile("buqu"));
 
+        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, zhoutai->objectName(), "buqu", QString());
         int need = 1 - zhoutai->getHp();
         if(need <= 0){
             // clear all the buqu cards
-            foreach(int card_id, buqu){
-                room->throwCard(card_id);
+            foreach(int card_id, buqu) {                
+                room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
             }
         }else{
             int to_remove = buqu.length() - need;
 
             room->fillAG(buqu);
-
-            int i;
-            for(i=0; i<to_remove; i++){
-                int card_id = room->askForAG(zhoutai, buqu, false, "buqu");
-                room->throwCard(card_id);
+                        
+            for(int i = 0; i < to_remove; i++){
+                int card_id = room->askForAG(zhoutai, buqu, false, "buqu");                
+                room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
             }
 
             room->broadcastInvoke("clearAG");
@@ -932,7 +932,9 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
         use_card->addSubcard(this);
-        room->throwCard(this);
+        // @todo: verify this...
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, card_use->from->objectName());
+        room->throwCard(this, reason, NULL);
 
         return use_card;
     }else

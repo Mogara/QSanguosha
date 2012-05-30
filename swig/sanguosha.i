@@ -889,8 +889,8 @@ public:
 	void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
 	void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
 
-	void throwCard(const Card *card, ServerPlayer *who = NULL);
-	void throwCard(int card_id, ServerPlayer *who = NULL);
+	void throwCard(const Card *card, ServerPlayer *who);
+	void throwCard(int card_id, ServerPlayer *who);
 	void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
 
 	// interactive methods

@@ -372,7 +372,7 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
                     }
 
                     foreach(int card, cardList) {
-                        room->throwCard(card);
+                        room->throwCard(card, NULL);
                     }
 
                     room->fillAG(cardList);
@@ -422,7 +422,7 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
                 log.to << effectTo;
                 room->sendLog(log);
 
-                room->throwCard(use.card);
+                room->throwCard(use.card, NULL);
                 room->recover(effectTo, recover);
                 return true;
             }
