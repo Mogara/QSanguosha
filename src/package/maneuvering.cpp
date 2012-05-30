@@ -341,7 +341,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
 
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.to.isEmpty()){
-        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->getGeneralName());
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
         reason.m_skillName = this->getSkillName();
         room->moveCardTo(this, NULL, Player::DiscardPile, reason);
         card_use.from->playCardEffect("@recast");
@@ -351,8 +351,6 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
-
     source->playCardEffect("@tiesuo");
     TrickCard::use(room, source, targets);
 }

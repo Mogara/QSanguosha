@@ -501,7 +501,7 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
 }
 
 void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->getGeneralName());
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
     room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 
     QList<ServerPlayer *> players = targets.isEmpty() ? room->getAllPlayers() : targets;
@@ -616,8 +616,9 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
 }
 
 void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->getGeneralName());
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
     reason.m_skillName = this->getSkillName();
+    if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
     room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 
     CardEffectStruct effect;
@@ -744,7 +745,7 @@ Nullification::Nullification(Suit suit, int number)
 
 void Nullification::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     // does nothing, just throw it
-    CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, source->getGeneralName());
+    CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, source->objectName());
     room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 }
 
@@ -876,7 +877,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-    CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLED, effect.to->getGeneralName());
+    CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLED, effect.to->objectName());
     room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DiscardPile, reason);
     // room->throwCard(card_id, room->getCardPlace(card_id) == Player::Judging ? NULL : effect.to);
 

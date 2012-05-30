@@ -70,22 +70,36 @@ class CardMoveReason
 {
 public:
     int m_reason;
-    QString m_playerName; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
+    QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
+    QString m_targetId; // To keep this structure lightweight, currently this is only used for UI purpose.
+                        // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
+                        // judgement!!! It will not accurately reflect the real reason.
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
     inline CardMoveReason(){ m_reason = S_REASON_UNKNOWN; }
-    inline CardMoveReason(int moveReason, QString playerName)
+    inline CardMoveReason(int moveReason, QString playerId)
     {
         m_reason = moveReason;
-        m_playerName = playerName;
+        m_playerId = playerId;
     }
-    inline CardMoveReason(int moveReason, QString playerName, QString skillName, QString eventName)
+
+    inline CardMoveReason(int moveReason, QString playerId, QString skillName, QString eventName)
     {
         m_reason = moveReason;
-        m_playerName = playerName;
+        m_playerId = playerId;
         m_skillName = skillName;
         m_eventName = eventName;
     }
+
+    inline CardMoveReason(int moveReason, QString playerId, QString targetId, QString skillName, QString eventName)
+    {
+        m_reason = moveReason;
+        m_playerId = playerId;
+        m_targetId = targetId;
+        m_skillName = skillName;
+        m_eventName = eventName;
+    }
+
     bool tryParse(const Json::Value&);
     Json::Value toJsonValue() const;
     static const int S_REASON_UNKNOWN = 0x00;

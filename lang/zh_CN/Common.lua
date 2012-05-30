@@ -30,6 +30,7 @@ return {
 	["response"] = "打出",
 	["dismantled"] = "被拆",
 	["recast"] = "重铸",
+	["pindian"] = "拼点",
 	["change equip"] = "更换武器",
 	["online"] = "在线",
 	["offline"] = "离线",
@@ -42,6 +43,9 @@ return {
 	["no"] = "否",
 	["male"] = "男性",
 	["female"] = "女性",
+
+	["use upon"] = "对",
+	["yourself"] = "你";
 
 	["attack_card"] = "进攻牌",
 	["defense_card"] = "防御牌",

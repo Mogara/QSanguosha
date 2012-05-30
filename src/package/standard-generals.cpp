@@ -282,7 +282,7 @@ public:
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
             room->moveCardTo(judge->card, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->getGeneralName(), this->objectName(), QString()));
+                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "guicai", QString()));
 
             LogMessage log;
             log.type = "$ChangedJudge";

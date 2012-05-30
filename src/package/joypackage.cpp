@@ -404,7 +404,7 @@ public:
             damage.from = target;
             data = QVariant::fromValue(damage);
             room->moveCardTo(player->getWeapon(), damage.from, Player::Hand, 
-                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->getGeneralName(), objectName(), QString()));
+                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->objectName(), objectName(), QString()));
         }
         return damage.to->isDead();
     }

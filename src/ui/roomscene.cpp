@@ -1247,7 +1247,24 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
 {
     if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN) return QString();
-    QString result = Sanguosha->translate(reason.m_playerName);
+    Photo* srcPhoto = name2photo[reason.m_playerId];
+    Photo* dstPhoto = name2photo[reason.m_targetId];
+    QString playerName, targetName;
+    
+    if (srcPhoto != NULL)
+        playerName = Sanguosha->translate(srcPhoto->getPlayer()->getGeneralName());
+    else if (reason.m_playerId == Self->objectName())
+        playerName = QString("%1(%2)").arg(Sanguosha->translate(Self->getGeneralName()))
+                        .arg(Sanguosha->translate("yourself"));
+    
+    if (dstPhoto != NULL)
+        targetName = Sanguosha->translate("use upon")
+            .append(Sanguosha->translate(dstPhoto->getPlayer()->getGeneralName()));
+    else if (reason.m_targetId == Self->objectName())
+        targetName = QString("%1%2(%3)").arg(Sanguosha->translate("use upon"))
+        .arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate("(yourself)"));
+
+    QString result(playerName + targetName);
     result.append(Sanguosha->translate(reason.m_eventName));
     result.append(Sanguosha->translate(reason.m_skillName));
     if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLED)
@@ -1264,6 +1281,8 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         result.append(Sanguosha->translate("response"));
     else if (reason.m_reason == CardMoveReason::S_REASON_RECAST)
         result.append(Sanguosha->translate("recast"));
+    else if (reason.m_reason == CardMoveReason::S_REASON_PINDIAN)
+        result.append(Sanguosha->translate("pindian"));
     return result;
     //QString("%1:%2:%3:%4").arg(movement.reason.m_reason)
     //            .arg(movement.reason.m_skillName).arg(movement.reason.m_eventName

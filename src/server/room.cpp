@@ -997,7 +997,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card = card->validateInResposing(player, &continuable);
 
     if(card){
-        CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->getGeneralName());
+        CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
         if(card->getTypeId() != Card::Skill){
             const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
             if(card_pattern == NULL || card_pattern->willThrow())
@@ -2816,9 +2816,8 @@ void Room::throwCard(const Card *card, ServerPlayer *who){
         sendLog(log);
     }
 
-    CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, who ? who->getGeneralName() : QString());
-    if (card->getTypeId() == Card::Skill)
-        reason.m_skillName = card->getSkillName();
+    CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, who ? who->objectName() : QString());
+    reason.m_skillName = card->getSkillName();
     CardsMoveStruct move(to_discard, NULL, Player::DiscardPile, reason);
     QList<CardsMoveStruct> moves;
     moves.append(move);

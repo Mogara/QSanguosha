@@ -144,11 +144,11 @@ public:
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 
             CardsMoveStruct move1(QList<int>(), NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->getGeneralName(), this->objectName(), QString()));
+                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), this->objectName(), QString()));
             move1.card_ids.append(card->getEffectiveId());
             
             CardsMoveStruct move2(QList<int>(), player, Player::Hand,
-                CardMoveReason(CardMoveReason::S_REASON_OVERRIDE, player->getGeneralName(), this->objectName(), QString()));
+                CardMoveReason(CardMoveReason::S_REASON_OVERRIDE, player->objectName(), this->objectName(), QString()));
             move2.card_ids.append(oldJudge->getEffectiveId());
 
             QList<CardsMoveStruct> moves;
@@ -706,7 +706,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
 
     // yuji->addToPile("#guhuo_pile", this->getEffectiveId(), false);
     room->moveCardTo(this, yuji, Player::PlaceTakeoff, 
-        CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, yuji->getGeneralName(), "guhuo", user_string), false);
+        CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, yuji->objectName(), "guhuo", user_string), false);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
@@ -742,7 +742,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     }
 
     room->moveCardTo(this, NULL, Player::DiscardPile,
-        CardMoveReason(CardMoveReason::S_REASON_SHOW, yuji->getGeneralName(), "guhuo", user_string), true, false);
+        CardMoveReason(CardMoveReason::S_REASON_SHOW, yuji->objectName(), "guhuo", user_string), true, false);
     
     LogMessage log;
     log.type = "$GuhuoResult";

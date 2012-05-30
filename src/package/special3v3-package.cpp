@@ -126,11 +126,11 @@ public:
             const Card* oldJudge = judge->card;
             judge->card = Sanguosha->getCard(card->getEffectiveId());
             CardsMoveStruct move1(QList<int>(), NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->getGeneralName(), this->objectName(), QString()));
+                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "huanshi", QString()));
             move1.card_ids.append(card->getEffectiveId());
             
             CardsMoveStruct move2(QList<int>(), player, Player::Hand,
-                CardMoveReason(CardMoveReason::S_REASON_OVERRIDE, player->getGeneralName(), this->objectName(), QString()));
+                CardMoveReason(CardMoveReason::S_REASON_OVERRIDE, player->objectName(), "huanshi", QString()));
             move2.card_ids.append(oldJudge->getEffectiveId());
 
             QList<CardsMoveStruct> moves;

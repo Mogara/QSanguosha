@@ -81,7 +81,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian");
         if(to)
             room->moveCardTo(card, to, place, 
-                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, zhanghe->getGeneralName(), "qiaobian", QString()));
+                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, zhanghe->objectName(), "qiaobian", QString()));
         room->removeTag("QiaobianTarget");
     }
     else if(zhanghe->getPhase() == Player::Judge)
@@ -684,7 +684,7 @@ bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Playe
 void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *erzhang = effect.from;
     erzhang->getRoom()->moveCardTo(this, effect.to, Player::Equip, 
-        CardMoveReason(CardMoveReason::S_REASON_USE, erzhang->getGeneralName(), "zhijian", QString()));
+        CardMoveReason(CardMoveReason::S_REASON_USE, erzhang->objectName(), "zhijian", QString()));
     erzhang->drawCards(1);
 }
 

@@ -470,8 +470,9 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     if(will_throw){
-        room->moveCardTo(this, NULL, Player::DiscardPile,
-            CardMoveReason(CardMoveReason::S_REASON_USE, source->getGeneralName(), this->getSkillName(), QString()));
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        room->moveCardTo(this, NULL, Player::DiscardPile, reason);
     }
 
     if(targets.length() == 1){

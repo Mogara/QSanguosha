@@ -14,12 +14,15 @@ class RoleComboboxItem : public Pixmap{
 public:
     RoleComboboxItem(const QString &role, int number, QSize size);
     QString getRole() const;
+    void setRole(const QString &role);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    QString role;
+    QString m_role;
+    int m_number;
+    QSize m_size;
 
 signals:
     void clicked();
@@ -42,12 +45,12 @@ public slots:
     void fix(const QString &role);
 protected:
     qreal _m_posX, _m_posY;
-    bool _m_expanded;
 private:
     QList<RoleComboboxItem *> items;
-
+    RoleComboboxItem* m_currentRole;
 private slots:
-    void onItemClicked();
+    void collapse();
+    void expand();
 };
 
 #endif // ROLECOMBOBOX_H

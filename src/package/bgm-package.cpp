@@ -78,8 +78,11 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
         dummy_card->addSubcard(cd);
     }
     if (!effect.to->isKongcheng())
-        room->moveCardTo(dummy_card, effect.from, Player::Hand,
-            CardMoveReason(CardMoveReason::S_REASON_TRANSFER, effect.from->getGeneralName(), "lihun", QString()), false);
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, effect.from->objectName(),
+            effect.to->objectName(), "lihun", QString());
+        room->moveCardTo(dummy_card, effect.from, Player::Hand, reason, false);
+    }
     effect.to->setFlags("LihunTarget");
 }
 
@@ -281,11 +284,13 @@ public:
         }
 
         int card_id = -1;
+        CardMoveReason reason(CardMoveReason::S_REASON_PUT, sp_pangtong->objectName(), "manjuan", QString());
         if(event == CardGotOnePiece){
             CardMoveStar move = data.value<CardMoveStar>();
             card_id = move->card_id;
             if(move->to_place == Player::Hand){
-                room->throwCard(card_id);
+                const Card* card = Sanguosha->getCard(card_id);
+                room->moveCardTo(card, NULL, Player::DiscardPile, reason);
             }else
                 return false;
         }
@@ -293,8 +298,8 @@ public:
             if(room->getTag("FirstRound").toBool())
                 return false;
 
-            card_id = data.toInt();
-            room->throwCard(card_id);
+            const Card* card = Sanguosha->getCard(card_id);
+            room->moveCardTo(card, NULL, Player::DiscardPile, reason);
         }
 
         LogMessage log;
@@ -350,9 +355,9 @@ public:
         if (zuixiangDone)
         {
             player->addMark("zuixiangHasTrigger");
-            room->setPlayerCardLock(player, ".");            
-            CardsMoveStruct move(zuixiang, player, Player::Hand, 
-                CardMoveReason(CardMoveReason::S_REASON_PUT, player->getGeneralName(), this->objectName(), ""));
+            room->setPlayerCardLock(player, ".");
+            CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", "");
+            CardsMoveStruct move(zuixiang, player, Player::Hand, reason);
             room->moveCards(move, true);
         }
     }

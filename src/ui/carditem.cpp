@@ -331,7 +331,8 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         {
             // first, draw shadow
             const QSanRoomSkin::QSanTextFont& font = _m_layout->m_cardFootnoteFont;
-            font.paintText(painter, _m_layout->m_cardFootnoteArea, Qt::AlignCenter, owner_text);            
+            font.paintText(painter, _m_layout->m_cardFootnoteArea, 
+                (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), owner_text);            
         }
     }
 }
