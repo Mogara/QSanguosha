@@ -19,6 +19,7 @@ SOURCES += \
 	src/client/aux-skills.cpp \
 	src/ui/GeneralCardContainerUI.cpp \
 	src/ui/DiscardPile.cpp \
+	src/ui/SkinBank.cpp \
 	src/core/structs.cpp \
 	src/client/client.cpp \
 	src/client/clientplayer.cpp \
@@ -150,9 +151,10 @@ HEADERS += \
 	src/client/client.h \
 	src/client/clientplayer.h \
 	src/client/clientstruct.h \
-	 src/ui/GeneralCardContainerUI.h \
-    src/ui/DiscardPile.h \
-    src/core/structs.h \
+	src/ui/GeneralCardContainerUI.h \
+    	src/ui/DiscardPile.h \
+	src/ui/SkinBank.h \
+    	src/core/structs.h \
 	src/core/audio.h \
 	src/core/banpair.h \
 	src/core/card.h \
