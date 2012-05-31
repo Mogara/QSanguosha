@@ -1012,7 +1012,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 		end
 	end
 
-	for _, enemy in ipairs(enemies) do
+	--[[for _, enemy in ipairs(enemies) do
 		if not enemy:isNude() and self:hasTrickEffective(card, enemy) and not self:needKongcheng(enemy) and not enemy:hasSkill("kongcheng") then
 			if enemy:getHandcardNum() == 1 then 
 				use.card = card
@@ -1024,7 +1024,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 				return	
 			end
 		end
-	end
+	end]]
 
 	if hasLion then
 		use.card = card

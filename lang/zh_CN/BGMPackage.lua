@@ -60,8 +60,8 @@ return {
 	
 	["#bgm_lvmeng"] = "国士之风",
 	["bgm_lvmeng"] = "SP吕蒙",
-	["illustrator:bgm_lvmeng"] = "桌游志",
-	["designer:bgm_lvmeng"] = "桌游志",
+	["illustrator:bgm_lvmeng"] = "yellowkiss",
+	["designer:bgm_lvmeng"] = "如水法师卞程",
 	["tanhu"] = "探虎",	
 	[":tanhu"] = "出牌阶段，你可以与一名其他角色拼点。若你赢，你获得以下技能直到会和结束：你与该角色的距离为1.你对该角色使用的非延时类锦囊不能被【无懈可击】抵消，每阶段限一次。",
 	["mouduan"] = "谋断",
