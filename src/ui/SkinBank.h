@@ -83,15 +83,15 @@ public:
     const PhotoLayout& getPhotoLayout() const;
     const CommonLayout& getCommonLayout() const;
     // static consts
-    static const char S_SKIN_KEY_PHOTO[];
-    static const char S_SKIN_KEY_COMMON[];
-    static const char S_SKIN_KEY_ROOM[];
-    static const char S_SKIN_KEY_PHOTO_MAINFRAME[];
-    static const char S_SKIN_KEY_PHOTO_HANDCARDNUM[];
-    static const char S_SKIN_KEY_PHOTO_FACETURNEDMASK[];
-    static const char S_SKIN_KEY_PHOTO_CHAIN[];
-    static const char S_SKIN_KEY_PHOTO_PHASE[];
-    static const char S_SKIN_KEY_HAND_CARD_BACK[];
+    static const char* S_SKIN_KEY_PHOTO;
+    static const char* S_SKIN_KEY_COMMON;
+    static const char* S_SKIN_KEY_ROOM;
+    static const char* S_SKIN_KEY_PHOTO_MAINFRAME;
+    static const char* S_SKIN_KEY_PHOTO_HANDCARDNUM;
+    static const char* S_SKIN_KEY_PHOTO_FACETURNEDMASK;
+    static const char* S_SKIN_KEY_PHOTO_CHAIN;
+    static const char* S_SKIN_KEY_PHOTO_PHASE;
+    static const char* S_SKIN_KEY_HAND_CARD_BACK;
 protected:
     RoomLayout _m_roomLayout;
     PhotoLayout _m_photoLayout;

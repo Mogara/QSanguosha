@@ -4,15 +4,16 @@
 
 using namespace std;
 
-const char QSanRoomSkin::S_SKIN_KEY_PHOTO[]("photo");
-const char QSanRoomSkin::S_SKIN_KEY_ROOM[]("room");
-const char QSanRoomSkin::S_SKIN_KEY_COMMON[]("common");
-const char QSanRoomSkin::S_SKIN_KEY_PHOTO_MAINFRAME[]("photoMainFrame");
-const char QSanRoomSkin::S_SKIN_KEY_PHOTO_HANDCARDNUM[]("photoHandCardNum");
-const char QSanRoomSkin::S_SKIN_KEY_PHOTO_FACETURNEDMASK[]("photoFaceTurnedMask");
-const char QSanRoomSkin::S_SKIN_KEY_PHOTO_CHAIN[]("photoChain");
-const char QSanRoomSkin::S_SKIN_KEY_PHOTO_PHASE[]("photoPhase%1");
-const char QSanRoomSkin::S_SKIN_KEY_HAND_CARD_BACK[]("handCardBack");
+const char* QSanRoomSkin::S_SKIN_KEY_PHOTO = "photo";
+const char* QSanRoomSkin::S_SKIN_KEY_ROOM = "room";
+const char* QSanRoomSkin::S_SKIN_KEY_COMMON = "common";
+const char* QSanRoomSkin::S_SKIN_KEY_PHOTO_MAINFRAME = "photoMainFrame";
+const char* QSanRoomSkin::S_SKIN_KEY_PHOTO_HANDCARDNUM = "photoHandCardNum";
+const char* QSanRoomSkin::S_SKIN_KEY_PHOTO_FACETURNEDMASK = "photoFaceTurnedMask";
+const char* QSanRoomSkin::S_SKIN_KEY_PHOTO_CHAIN = "photoChain";
+const char* QSanRoomSkin::S_SKIN_KEY_PHOTO_PHASE = "photoPhase%1";
+const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_BACK = "handCardBack";
+
 
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
@@ -171,5 +172,7 @@ bool QSanSkinFactory::switchSkin(QString skinName)
 QSanSkinFactory::QSanSkinFactory(const char* fileName)
 {
     Json::Reader reader;
-    reader.parse(ifstream(fileName), this->_m_skinList);
+    ifstream file(fileName);
+    reader.parse(file, this->_m_skinList, false);
+    file.close();
 }
