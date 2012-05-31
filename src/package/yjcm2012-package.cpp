@@ -23,7 +23,8 @@ public:
         if(player->askForSkillInvoke(objectName(), data)){
             int card_id = room->drawCard();
             room->getThread()->delay();
-            room->throwCard(judge->card);
+            CardMoveReason reason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "zhenlie", QString());
+            room->throwCard(judge->card, reason, NULL);
 
             judge->card = Sanguosha->getCard(card_id);
             room->moveCardTo(judge->card, NULL, Player::DiscardPile,
@@ -774,7 +775,8 @@ public:
                 int card_id = room->askForAG(chengpu, cards, true, objectName());
                 room->broadcastInvoke("clearAG");
                 if(card_id != -1){
-                    room->throwCard(card_id);
+                    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, chengpu->objectName(), "chunlao", QString());
+                    room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
                     Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
                     analeptic->setSkillName(objectName());
                     CardUseStruct use;

@@ -301,7 +301,7 @@ void RoomThread::run(){
 
     // start game, draw initial 4 cards
     try {        
-        trigger(GameStart, room, NULL, QVariant());
+        trigger(GameStart, (Room*)room, NULL);
         constructTriggerTable();
 
         if(room->mode == "06_3v3"){
@@ -334,7 +334,7 @@ void RoomThread::run(){
             }
             catch (TriggerEvent event)
             {
-                trigger(event, room, NULL, QVariant());
+                trigger(event, (Room*)room, NULL);
                 foreach(ServerPlayer *player, room->getPlayers()){
                     if(player != shenlvbu){
                         if(player->hasFlag("actioned"))
