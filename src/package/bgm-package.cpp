@@ -657,14 +657,17 @@ public:
             }
         }
         else{
-            if((lvmeng && lvmeng->getMark("@wen") > 0) && lvmeng->getHandcardNum() > 3 && lvmeng->askForSkillInvoke(objectName())){
+            if((lvmeng && lvmeng->getMark("@wen") > 0) && !lvmeng->isNude() && lvmeng->askForSkillInvoke(objectName())){
                 room->askForDiscard(lvmeng, "mouduan", 1, 1, false, true);
-                lvmeng->loseMark("@wen");
-                lvmeng->gainMark("@wu");
-                room->detachSkillFromPlayer(lvmeng, "yingzi");
-                room->detachSkillFromPlayer(lvmeng, "keji");
-                room->acquireSkill(lvmeng, "jiang");
-                room->acquireSkill(lvmeng, "qianxun");
+                if(lvmeng->getHandcardNum() > 2)
+                {
+                    lvmeng->loseMark("@wen");
+                    lvmeng->gainMark("@wu");
+                    room->detachSkillFromPlayer(lvmeng, "yingzi");
+                    room->detachSkillFromPlayer(lvmeng, "keji");
+                    room->acquireSkill(lvmeng, "jiang");
+                    room->acquireSkill(lvmeng, "qianxun");
+                }
             }
         }
         return false;
