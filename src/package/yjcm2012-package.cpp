@@ -24,7 +24,7 @@ public:
             int card_id = room->drawCard();
             room->getThread()->delay();
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "zhenlie", QString());
-            room->throwCard(judge->card, reason, NULL);
+            room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card_id);
             room->moveCardTo(judge->card, NULL, Player::DiscardPile,
