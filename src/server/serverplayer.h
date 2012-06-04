@@ -26,7 +26,6 @@ public:
     void invoke(const QSanProtocol::QSanPacket* packet);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
-    void sendProperty(const char *property_name, const Player *player = NULL) const;
     void unicast(const QString &message) const;
     void drawCard(const Card *card);
     Room *getRoom() const;
@@ -159,7 +158,7 @@ private:
     Json::Value _m_clientResponse;    
 
 private slots:
-    void getMessage(char *message);
+    void getMessage(const char *message);
     void castMessage(const QString &message);
 
 signals:

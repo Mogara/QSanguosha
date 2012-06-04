@@ -108,6 +108,7 @@ public:
     void gameOver(const Json::Value &);
     void loseCards(const Json::Value &);
     void getCards(const Json::Value &);
+	void updateProperty(const Json::Value &);
     void killPlayer(const QString &player_name);
     void revivePlayer(const QString &player_name);
     void warn(const QString &);
@@ -251,9 +252,9 @@ private:
 
 private slots:
     void processServerPacket(const QString &cmd);
-    void processServerPacket(char *cmd);
+    void processServerPacket(const char *cmd);
     bool processServerRequest(const QSanProtocol::QSanGeneralPacket& packet);
-    void processReply(char *reply);
+    void processObsoleteServerPacket(const QString &cmd);
     void notifyRoleChange(const QString &new_role);
     void onPlayerChooseSuit();
     void onPlayerChooseKingdom();

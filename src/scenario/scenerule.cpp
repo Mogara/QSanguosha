@@ -1,7 +1,5 @@
 #include "engine.h"
 #include "standard-skillcards.h"
-#include "clientplayer.h"
-#include "client.h"
 #include "carditem.h"
 #include "scenerule.h"
 

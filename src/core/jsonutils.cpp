@@ -84,4 +84,5 @@ bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QRect& result)
     result.setTop(arg[1].asInt());
     result.setWidth(arg[2].asInt());
     result.setHeight(arg[3].asInt());
+	return true;
 }

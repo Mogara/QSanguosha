@@ -1542,7 +1542,7 @@ void Room::prepareForStart(){
             if(expose_roles)
                 broadcastProperty(player, "role");
             else
-                player->sendProperty("role");
+                notifyProperty(player, player, "role");
         }
     }else if(mode == "06_3v3"){
         return;
@@ -1553,8 +1553,7 @@ void Room::prepareForStart(){
         m_players.at(0)->setRole("lord");
         m_players.at(1)->setRole("renegade");
 
-        int i;
-        for(i=0; i<2; i++){
+        for(int i = 0; i < 2; i++){
             broadcastProperty(m_players.at(i), "role");
         }
 
@@ -1601,7 +1600,7 @@ void Room::prepareForStart(){
                     if(role == "lord")
                         broadcastProperty(player, "role", "lord");
                     else
-                        player->sendProperty("role");
+                        notifyProperty(player, player, "role");
                 }
             }
             else{                
@@ -1944,12 +1943,12 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         player->startRecord();
 
     if(!is_robot){
-        player->sendProperty("objectName");
+        notifyProperty(player, player, "objectName");
 
         ServerPlayer *owner = getOwner();
         if(owner == NULL){
             player->setOwner(true);
-            broadcastProperty(player, "owner");
+            notifyProperty(player, player, "owner");
         }
     }
 
@@ -2207,7 +2206,7 @@ void Room::assignRoles(){
         if(role == "lord")
             broadcastProperty(player, "role", "lord");
         else
-            player->sendProperty("role");
+            notifyProperty(player, player, "role");
     }
 }
 
@@ -2330,12 +2329,12 @@ bool Room::_setPlayerGeneral(ServerPlayer* player, const QString& generalName, b
     if (isFirst)
     {
         player->setGeneralName(general->objectName());
-        player->sendProperty("general");
+        notifyProperty(player, player, "general");
     }
     else
     {
         player->setGeneral2Name(general->objectName());
-        player->sendProperty("general2");
+        notifyProperty(player, player, "general2");
     }
     return true;
 }
@@ -2622,8 +2621,8 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
 }
 
 void Room::marshal(ServerPlayer *player){
-    player->sendProperty("objectName");
-    player->sendProperty("role");
+    notifyProperty(player, player, "objectName");
+    notifyProperty(player, player, "role");
     player->unicast(".flags marshalling");
 
     foreach(ServerPlayer *p, m_players){
@@ -2639,10 +2638,10 @@ void Room::marshal(ServerPlayer *player){
     player->invoke("startInXs", "0");
 
     foreach(ServerPlayer *p, m_players){
-        player->sendProperty("general", p);
+        notifyProperty(player, p, "general");
 
         if(p->getGeneral2())
-            player->sendProperty("general2", p);
+            notifyProperty(player, p, "general2");
     }
 
     player->invoke("startGame");
@@ -2732,12 +2731,30 @@ void Room::startGame(){
     if(!_virtual)thread->start();
 }
 
-void Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value){
-    if(value.isNull()){
-        QString real_value = player->property(property_name).toString();
-        broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(real_value));
-    }else
-        broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
+bool Room::notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value)
+{
+	if (propertyOwner == NULL) return false;
+	QString real_value = value;
+	if (real_value.isNull()) real_value = propertyOwner->property(propertyName).toString();
+	Json::Value arg(Json::arrayValue);
+	if (propertyOwner == playerToNotify)
+		arg[0] = toJsonString(QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID));
+	else
+		arg[0] = toJsonString(propertyOwner->objectName());
+	arg[1] = propertyName;
+	arg[2] = toJsonString(real_value);
+	return doNotify(playerToNotify, S_COMMAND_SET_PROPERTY, arg);
+}
+
+bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value){
+	if (player == NULL) return false;
+	QString real_value = value;
+	if (real_value.isNull()) real_value = player->property(property_name).toString();
+	Json::Value arg(Json::arrayValue);
+	arg[0] = toJsonString(player->objectName());
+	arg[1] = property_name;
+	arg[2] = toJsonString(real_value);
+	return doBroadcastNotify(S_COMMAND_SET_PROPERTY, arg);
 }
 
 void Room::drawCards(ServerPlayer* player, int n, const QString &reason)

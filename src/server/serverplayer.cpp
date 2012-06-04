@@ -185,7 +185,7 @@ int ServerPlayer::getHandcardNum() const{
 void ServerPlayer::setSocket(ClientSocket *socket){
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(message_got(char*)), this, SLOT(getMessage(char*)));
+        connect(socket, SIGNAL(message_got(const char*)), this, SLOT(getMessage(const char*)));
 
         connect(this, SIGNAL(message_cast(QString)), this, SLOT(castMessage(QString)));
     }else{
@@ -202,7 +202,7 @@ void ServerPlayer::setSocket(ClientSocket *socket){
     this->socket = socket;
 }
 
-void ServerPlayer::getMessage(char *message){
+void ServerPlayer::getMessage(const char *message){
     QString request = message;
     if(request.endsWith("\n"))
         request.chop(1);
@@ -319,17 +319,6 @@ void ServerPlayer::invoke(const char *method, const QString &arg){
 QString ServerPlayer::reportHeader() const{
     QString name = objectName();
     return QString("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
-}
-
-void ServerPlayer::sendProperty(const char *property_name, const Player *player) const{
-    if(player == NULL)
-        player = this;
-
-    QString value = player->property(property_name).toString();
-    if(player == this)
-        unicast(QString(".%1 %2").arg(property_name).arg(value));
-    else
-        unicast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
 void ServerPlayer::removeCard(const Card *card, Place place){
@@ -784,27 +773,27 @@ void ServerPlayer::introduceTo(ServerPlayer *player){
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const{
-    player->sendProperty("maxhp", this);
-    player->sendProperty("hp", this);
+    room->notifyProperty(player, this, "maxhp") ;
+    room->notifyProperty(player, this, "hp") ;
 
     if(getKingdom() != getGeneral()->getKingdom())
-        player->sendProperty("kingdom", this);
+        room->notifyProperty(player, this, "kingdom") ;
 
     if(isAlive()){
-        player->sendProperty("seat", this);
+        room->notifyProperty(player, this, "seat") ;
         if(getPhase() != Player::NotActive)
-            player->sendProperty("phase", this);
+            room->notifyProperty(player, this, "phase") ;
     }else{
-        player->sendProperty("alive", this);
-        player->sendProperty("role", this);
+        room->notifyProperty(player, this, "alive") ;
+        room->notifyProperty(player, this, "role") ;
         player->invoke("killPlayer", objectName());
     }
 
     if(!faceUp())
-        player->sendProperty("faceup", this);
+        room->notifyProperty(player, this, "faceup");
 
     if(isChained())
-        player->sendProperty("chained", this);
+        room->notifyProperty(player, this, "chained");
 
     if(!isKongcheng()){
         if(player != this){

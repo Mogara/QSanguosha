@@ -158,7 +158,7 @@ private:
 
 private slots:
     void processNewConnection(ClientSocket *socket);
-    void processRequest(char *request);
+    void processRequest(const char *request);
     void cleanup();
     void gameOver();
 
