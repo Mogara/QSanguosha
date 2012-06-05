@@ -232,7 +232,17 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    QString choice = room->askForChoice(effect.to, "jujian", "draw+recover+reset");
+    QStringList choicelist;
+    choicelist << "draw";
+    if (effect.to->getLostHp() != 0)
+        choicelist << "recover";
+    if (!effect.to->faceUp() || effect.to->isChained())
+        choicelist << "reset";
+        QString choice;
+    if (choicelist.length() >=2)
+        choice = room->askForChoice(effect.to, "jujian", choicelist.join("+"));
+    else
+        choice = "draw";
     if(choice == "draw")
         effect.to->drawCards(2);
     else if(choice == "recover"){
@@ -1022,8 +1032,16 @@ public:
         room->playSkillEffect("zili");
         //room->broadcastInvoke("animate", "lightbox:$zili:4000");
         //room->getThread()->delay(4000);
-
-        if(room->askForChoice(zhonghui, objectName(), "recover+draw") == "recover"){
+        QStringList choicelist;
+        choicelist << "draw";
+        if (zhonghui->getLostHp() != 0)
+            choicelist << "recover";
+        QString choice;
+        if (choicelist.length() >=2)
+            choice = room->askForChoice(zhonghui, "objectName()", choicelist.join("+"));
+        else
+            choice = "draw";
+        if(choice == "recover"){
             RecoverStruct recover;
             recover.who = zhonghui;
             room->recover(zhonghui, recover);

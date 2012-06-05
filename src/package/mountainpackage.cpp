@@ -650,8 +650,16 @@ public:
         room->playSkillEffect("zhiji");
         room->broadcastInvoke("animate", "lightbox:$Zhiji:5000");
         room->getThread()->delay(5000);
-
-        if(room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover"){
+        QStringList choicelist;
+        choicelist << "draw";
+        if (jiangwei->getLostHp() != 0)
+            choicelist << "recover";
+        QString choice;
+        if (choicelist.length() >=2)
+            choice = room->askForChoice(jiangwei, "objectName()", choicelist.join("+"));
+        else
+            choice = "draw";
+        if(choice == "recover"){
             RecoverStruct recover;
             recover.who = jiangwei;
             room->recover(jiangwei, recover);

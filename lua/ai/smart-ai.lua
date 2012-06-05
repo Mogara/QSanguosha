@@ -2389,9 +2389,9 @@ function SmartAI:getCardNeedPlayer(cards)
 			end
 		end
 		for _, friend in ipairs(self.friends_noself) do
-			if not self:needKongcheng(friend) or self.player:getHp() > 2 then
+			if not self:needKongcheng(friend) then
 				for _, hcard in ipairs(cardtogive) do
-					if #cardtogive > 1  then 
+					if #cardtogive > 0 then 
 						return hcard, friend
 					end
 				end
@@ -3442,6 +3442,7 @@ end
 function SmartAI:useBasicCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if not (card:inherits("Peach") and self.player:getLostHp() > 1) and self:needBear() then return end
+	if self:needRende() then return end
 	self:useCardByClassName(card, use)
 end
 
@@ -3695,6 +3696,7 @@ function SmartAI:useTrickCard(card, use)
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 then
 		if not (card:inherits("AOE") or card:inherits("DelayedTrick")) then return end
 	end
+	if self:needRende() then return end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
 		if self.player:hasSkill("noswuyan") then return end
@@ -3821,7 +3823,7 @@ function SmartAI:useEquipCard(card, use)
 	end
 	local same = self:getSameEquip(card)
 	if same then
-		if (self.player:hasSkill("rende") or self.player:hasSkill("qingnang"))
+		if (self:hasSkills("rende|qingnang|gongqi"))
 		or (self.player:hasSkill("yongsi") and self:getOverflow() < 3)
 		or (self:hasSkills("qixi|duanliang") and (card:isBlack() or same:isBlack()))
 		or (self:hasSkills("guose|longhun") and (card:getSuit() == sgs.Card_Diamond or same:getSuit() == sgs.Card_Diamond))
@@ -3909,6 +3911,11 @@ function SmartAI:damageMinusHp(self, enemy, type)
 		if type == 0 then return (trick_effectivenum + slash_damagenum - effectivefireattacknum - enemy:getHp()) 
 		else return  (trick_effectivenum + slash_damagenum - enemy:getHp()) end
 	return -10
+end
+
+function SmartAI:needRende()
+	return self.player:hasSkill("rende") and self.player:getLostHp() > 1 
+		and self.player:usedTimes("RendeCard") < 2 and #self.friends > 1
 end
 
 dofile "lua/ai/debug-ai.lua"

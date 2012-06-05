@@ -459,33 +459,24 @@ public:
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
-        events << SlashEffected << Damaged;
+        events << Damaged;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 
-        if(event == SlashEffected){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.drank)
-                effect.to->setFlags("Dranked");
-        }
-        else{
-            DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->inherits("Slash") &&
-                    (damage.card->isRed() || damage.to->hasFlag("Dranked"))){
-                if(damage.to->hasFlag("Dranked"))
-                    damage.to->setFlags("-Dranked");
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card && damage.card->inherits("Slash") &&
+                (damage.card->isRed() || damage.card->hasFlag("Drank"))){
 
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = player;
-                log.arg = objectName();
-                room->sendLog(log);
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = objectName();
+            room->sendLog(log);
 
-                room->loseMaxHp(player);
-            }
+            room->loseMaxHp(player);
         }
         return false;
     }

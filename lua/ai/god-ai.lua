@@ -64,7 +64,7 @@ function sgs.ai_slash_prohibit.wuhun(self, to)
 	end
 	if self:isEnemy(to) and not (to:isLord() and self.player:getRole() == "rebel") then
 		if (maxfriendmark+2 > maxenemymark) and not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then 
-			if not (self.player:getMark("@nightmare") == maxfriendmark and self:isWeak() and not self.player:isLord() and not self.role == "renegade") then
+			if not (self.player:getMark("@nightmare") == maxfriendmark and  self.role == "loyalist") then
 				return true
 			end
 		end
@@ -86,7 +86,7 @@ function SmartAI:cantbeHurt(player)
 		end
 		if self:isEnemy(player) and not (player:isLord() and self.player:getRole() == "rebel") then
 			if (maxfriendmark+2 > maxenemymark) and not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then 
-				if not (self.player:getMark("@nightmare") == maxfriendmark and self:isWeak() and not self.player:isLord() and not self.role == "renegade") then
+				if not (self.player:getMark("@nightmare") == maxfriendmark and self.role == "loyalist") then
 					return true
 				end
 			end
