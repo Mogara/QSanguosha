@@ -55,10 +55,10 @@ bool Analeptic::isAvailable(const Player *player) const{
     return IsAvailable(player);
 }
 
-void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{    
+void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    BasicCard::use(room, source, targets);
     if(targets.isEmpty())
         room->cardEffect(this, source, source);
-    BasicCard::use(room, source, targets);
 }
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
