@@ -123,21 +123,12 @@ public:
 
         if(card){
             // the only difference for Guicai & Guidao
-            const Card* oldJudge = judge->card;
+            CardMoveReason reason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "huanshi", QString());
+            room->throwCard(judge->card, reason, judge->who);
+
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            CardsMoveStruct move1(QList<int>(), NULL, Player::DiscardPile,
+            room->moveCardTo(judge->card, NULL, Player::DiscardPile,
                 CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "huanshi", QString()));
-            move1.card_ids.append(card->getEffectiveId());
-            
-            CardsMoveStruct move2(QList<int>(), player, Player::Hand,
-                CardMoveReason(CardMoveReason::S_REASON_OVERRIDE, player->objectName(), "huanshi", QString()));
-            move2.card_ids.append(oldJudge->getEffectiveId());
-
-            QList<CardsMoveStruct> moves;
-            moves.append(move1);
-            moves.append(move2);
-
-            room->moveCardsAtomic(moves, true);   
             LogMessage log;
             log.type = "$ChangedJudge";
             log.from = player;
