@@ -468,7 +468,7 @@ public:
 
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
-                (damage.card->isRed() || damage.card->hasFlag("Drank"))){
+                (damage.card->isRed() || damage.card->hasFlag("drank"))){
 
             LogMessage log;
             log.type = "#TriggerSkill";
