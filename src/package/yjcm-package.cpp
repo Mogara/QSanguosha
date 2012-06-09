@@ -446,13 +446,19 @@ bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Play
     if(to_select == Self)
         return false;
 
-    return !to_select->isNude();
+    return true;
+}
+
+bool XuanfengCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
+    return targets.length() == 2;
 }
 
 void XuanfengCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    int card_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanfeng");
-    room->throwCard(card_id, effect.to);
+    if(!effect.to->isNude()){
+        int card_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanfeng");
+        room->throwCard(card_id, effect.to);
+    }
 }
 
 class XuanfengViewAsSkill: public ZeroCardViewAsSkill{
@@ -514,29 +520,35 @@ public:
                         break;
                     }
                 }
-                QString choice = "nothing";
-                if(can_invoke)
-                    choice = room->askForChoice(lingtong, objectName(), "first+second+nothing");
-                if(choice == "first")
-                {
-                    room->playSkillEffect(objectName());
-                    QList<ServerPlayer *> targets;
-                    foreach(ServerPlayer *target, room->getOtherPlayers(lingtong)){
-                        if(!target->isNude())
-                            targets << target;
-                    }
+                QStringList choicelist;
+                if(can_invoke){
+                    choicelist << "first";
+                    if (room->getOtherPlayers(lingtong).length() > 1)
+                        choicelist << "second";
+                    choicelist << "nothing";
+                    QString choice = room->askForChoice(lingtong, objectName(), choicelist.join("+"));
 
-                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
-                    int card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
-                    room->throwCard(card_id, target);
+                    if(choice == "first")
+                    {
+                        room->playSkillEffect(objectName());
+                        QList<ServerPlayer *> targets;
+                        foreach(ServerPlayer *target, room->getOtherPlayers(lingtong)){
+                            if(!target->isNude())
+                                targets << target;
+                        }
 
-                    if(!target->isNude()){
-                        card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
+                        ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
+                        int card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
                         room->throwCard(card_id, target);
+
+                        if(!target->isNude()){
+                            card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
+                            room->throwCard(card_id, target);
+                        }
                     }
-                }
-                else if(choice == "second"){
-                    room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
+                    else if(choice == "second"){
+                        room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
+                    }
                 }
             }
         }
