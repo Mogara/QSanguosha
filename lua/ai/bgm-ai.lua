@@ -195,7 +195,14 @@ sgs.ai_skill_use_func.DaheCard=function(card,use,self)
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1 and enemy:getHp() > self.player:getHp()) 
 				and not enemy:isKongcheng() and self.player:canSlash(enemy, true) then
-				if max_point > 10 then
+				local enemy_max_card = self:getMaxCard(enemy)
+				local allknown = 0
+				if self:getKnownNum(enemy) == enemy:getHandcardNum() then
+					allknown = allknown + 1
+				end
+				if (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown > 0)
+					or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10) 
+					or (not enemy_max_card and max_point > 10) then
 					use.card = sgs.Card_Parse("@DaheCard=" .. max_card:getId())
 					if use.to then use.to:append(enemy) end
 					return

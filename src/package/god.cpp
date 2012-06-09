@@ -11,7 +11,7 @@ GongxinCard::GongxinCard(){
 }
 
 bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && !to_select->isKongcheng();
+    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self ; 
 }
 
 void GongxinCard::onEffect(const CardEffectStruct &effect) const{
@@ -512,7 +512,7 @@ WuqianCard::WuqianCard(){
 }
 
 bool WuqianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty();
+    return targets.isEmpty() && to_select != Self ; 
 }
 
 void WuqianCard::onEffect(const CardEffectStruct &effect) const{

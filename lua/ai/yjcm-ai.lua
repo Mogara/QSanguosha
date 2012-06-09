@@ -246,18 +246,9 @@ sgs.ai_card_intention.XuanhuoCard = -30
 
 sgs.ai_chaofeng.fazheng = -3
 
-function sgs.ai_skill_invoke.xuanfeng(self, data)
-	local enemynum = 0
-	for _, enemy in ipairs(self.enemies) do
-		if not self:needKongcheng(enemy) then
-			enemynum = enemynum + 1
-		end
-	end
-	return enemynum > 0 
-end
 
 sgs.ai_skill_choice.xuanfeng = function(self, choices)
-	return "discard"
+	return "first"
 end
 
 sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)	

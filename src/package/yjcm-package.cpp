@@ -436,10 +436,49 @@ public:
     }
 };
 
+XuanfengCard::XuanfengCard(){
+}
+
+bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(targets.length() >= 2)
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    return !to_select->isNude();
+}
+
+void XuanfengCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    int card_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanfeng");
+    room->throwCard(card_id, effect.to);
+}
+
+class XuanfengViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    XuanfengViewAsSkill():ZeroCardViewAsSkill("tuxi"){
+    }
+
+    virtual const Card *viewAs() const{
+        return new XuanfengCard;
+    }
+
+protected:
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@@xuanfeng";
+    }
+};
+
 class Xuanfeng: public TriggerSkill{
 public:
     Xuanfeng():TriggerSkill("xuanfeng"){
         events << CardLostOnePiece << CardLostOneTime << PhaseChange;
+        view_as_skill = new XuanfengViewAsSkill;
     }
 
     virtual QString getDefaultChoice(ServerPlayer *) const{
@@ -467,10 +506,18 @@ public:
             {
                 lingtong->tag.remove("InvokeXuanfeng");
                 Room *room = lingtong->getRoom();
-                QString choice = room->askForChoice(lingtong, objectName(), "discard+nothing");
-
-
-                if(choice == "discard")
+                bool can_invoke = false;
+                QList<ServerPlayer *> other_players = room->getOtherPlayers(lingtong);
+                foreach(ServerPlayer *player, other_players){
+                    if(!player->isNude()){
+                        can_invoke = true;
+                        break;
+                    }
+                }
+                QString choice = "nothing";
+                if(can_invoke)
+                    choice = room->askForChoice(lingtong, objectName(), "first+second+nothing");
+                if(choice == "first")
                 {
                     room->playSkillEffect(objectName());
                     QList<ServerPlayer *> targets;
@@ -479,22 +526,17 @@ public:
                             targets << target;
                     }
 
-                    ServerPlayer *first = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
-                    ServerPlayer *second = NULL;
-                    int first_id = -1;
-                    int second_id = -1;
-                    if(first != NULL){
-                        first_id = room->askForCardChosen(lingtong, first, "he", "xuanfeng");
-                        room->throwCard(first_id, first);
-                        if(first->isNude())
-                            targets.removeOne(first);
+                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
+                    int card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
+                    room->throwCard(card_id, target);
+
+                    if(!target->isNude()){
+                        card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
+                        room->throwCard(card_id, target);
                     }
-                    if(room->askForSkillInvoke(lingtong, objectName()))
-                        second = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
-                    if(second != NULL){
-                        second_id = room->askForCardChosen(lingtong, second, "he", "xuanfeng");
-                        room->throwCard(second_id, second);
-                    }
+                }
+                else if(choice == "second"){
+                    room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
                 }
             }
         }
@@ -1130,6 +1172,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();
     addMetaObject<XianzhenSlashCard>();
+    addMetaObject<XuanfengCard>();
     addMetaObject<XuanhuoCard>();
     addMetaObject<XinzhanCard>();
     addMetaObject<JujianCard>();
