@@ -58,7 +58,6 @@ public:
 	QSet<const Skill *> getVisibleSkills() const;
 	QSet<const TriggerSkill *> getTriggerSkills() const;
 
-	QString getPixmapPath(const char *category) const;
 	QString getPackage() const;
 	QString getSkillDescription() const;
 	
@@ -242,8 +241,8 @@ public:
 	void unicast(const char *message) const;
 	void drawCard(const Card *card);
 	Room *getRoom() const;
-	void playCardEffect(const Card *card) const;
-	void playCardEffect(const char *card_name) const;
+	void broadcastSkillInvoke(const Card *card) const;
+	void broadcastSkillInvoke(const char *card_name) const;
 	int getRandomHandCardId() const;
 	const Card *getRandomHandCard() const;
 	void obtainCard(const Card *card, bool unhide = true);
@@ -553,17 +552,13 @@ public:
 	bool sameColorWith(const Card *other) const;
 	bool isEquipped() const;
 
-	QString getPixmapPath() const;
-	QString getIconPath() const;
 	QString getPackage() const;    
-	QIcon getSuitIcon() const;
 	QString getFullName(bool include_suit = false) const;
 	QString getLogName() const;
 	QString getName() const;
 	QString getSkillName() const;   
 	void setSkillName(const char *skill_name);
 	QString getDescription() const;
-	QString getEffectPath() const;
 
 	bool isVirtualCard() const;
 	virtual bool match(const char *pattern) const;
@@ -580,7 +575,6 @@ public:
 	virtual QString getSubtype() const = 0;
 	virtual CardType getTypeId() const = 0;
 	virtual QString toString() const;
-	virtual QString getEffectPath(bool is_male) const;
 	bool isNDTrick() const;
 
 	// card target selection
@@ -699,10 +693,7 @@ public:
 	QList<int> getRandomCards() const;
 	QString getRandomGeneralName() const;
 	QStringList getLimitedGeneralNames() const;
-
-	void playAudio(const char *name) const;
-	void playEffect(const char *filename) const;
-	void playSkillEffect(const char *skill_name, int index) const;
+	void playAudioEffect(const char *filename) const;
 
 	const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 	int correctDistance(const Player *from, const Player *to) const;
@@ -732,7 +723,7 @@ public:
 	virtual QDialog *getDialog() const;
 
 	void initMediaSource();
-	void playEffect(int index = -1) const;
+	void playAudioEffect(int index = -1) const;
 	void setFlag(ServerPlayer *player) const;
 	void unsetFlag(ServerPlayer *player) const;
 	Frequency getFrequency() const;
@@ -790,7 +781,6 @@ public:
 	QString getMode() const;
 	const Scenario *getScenario() const;
 	RoomThread *getThread() const;
-	void playSkillEffect(const char *skill_name, int index = -1);
 	ServerPlayer *getCurrent() const;
 	void setCurrent(ServerPlayer *current);
 	int alivePlayerCount() const;

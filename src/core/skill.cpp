@@ -81,7 +81,7 @@ Skill::Location Skill::getLocation() const{
     return parent() ? Right : Left;
 }
 
-void Skill::playEffect(int index) const{
+void Skill::playAudioEffect(int index) const{
     if(!sources.isEmpty()){
         if(index == -1)
             index = qrand() % sources.length();
@@ -95,7 +95,7 @@ void Skill::playEffect(int index) const{
         else
             filename = sources.first();
 
-        Sanguosha->playEffect(filename);
+        Sanguosha->playAudioEffect(filename);
         if(ClientInstance)
             ClientInstance->setLines(filename);
     }

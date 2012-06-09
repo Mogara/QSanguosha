@@ -3,10 +3,15 @@
 {
 	"cardNormalWidth": 93,
 	"cardNormalHeight": 130,
+	"cardMainArea": [0, 0, 93, 130],
 	"cardSuitArea": [0, 14, 28, 30],
 	"cardNumberArea": [0, 2, 28, 30],
 	"cardFootnoteArea": [0, 70, 93, 50],
-	"cardFootnoteFont": ["SimSun", 9, 50, [255, 255, 255, 255], [20, 20, 20, 255]]
+	"cardAvatarArea": [44, 87, 42, 36],
+	"cardFootnoteFont": ["SimSun", 9, 50, [255, 255, 255, 255], 2, 10, [0, 0], [20, 20, 20, 255]],
+	"chooseGeneralBoxSwitchIconSizeThreshold": 10,
+	"chooseGeneralBoxSparseIconSize": [160, 232],
+	"chooseGeneralBoxDenseIconSize": [94, 96]
 },
 "room":
 {
@@ -36,6 +41,11 @@
 	"phaseArea": [114, 87, 16, 63],
 	"mainFrameArea": [0, 0, 139, 155],
 	"progressBarArea": [139, 0, 15, 150],
-	"progressBarHorizontal": false
+	"progressBarHorizontal": false,
+	"delayedTrickStartPos": [-10, 16],
+	"delayedTrickStep": [0, 19],
+	"privatePileStartPos": [6, 26],
+	"privatePileStep": [80, 0],
+	"privatePileButtonSize": [80, 16]
 }
 }

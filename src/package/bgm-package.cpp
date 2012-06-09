@@ -391,8 +391,7 @@ public:
                 log.arg2 = objectName();
 
                 room->sendLog(log);
-
-                room->playSkillEffect(objectName());
+				room->broadcastSkillInvoke(objectName());
                 return true;
             }
         }

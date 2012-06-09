@@ -68,7 +68,7 @@ public:
     int getMidPosition();
     int getButtonWidgetWidth() const;
     int getTextureWidth() const;
-    static const int S_CARD_NORMAL_Y = 36;
+    static const int S_CARD_NORMAL_Y = 105;
     static const int S_PENDING_OFFSET_Y = - 40;
 public slots:
     void updateAvatar();

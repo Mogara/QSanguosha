@@ -30,7 +30,7 @@ public:
 
         if(damage.from && damage.from != player){
             damage.from->gainMark("@nightmare", damage.damage);
-            damage.from->getRoom()->playSkillEffect(objectName(), 1);
+            damage.from->getRoom()->broadcastSkillInvoke(objectName(), 1);
         }
 
         return false;
@@ -91,9 +91,9 @@ public:
             room->sendLog(log);
 
             room->killPlayer(foe);
-            room->playSkillEffect("wuhun", 2);
+            room->broadcastSkillInvoke("wuhun", 2);
         }else
-            room->playSkillEffect("wuhun", 3);
+            room->broadcastSkillInvoke("wuhun", 3);
 
         return false;
     }
@@ -123,7 +123,7 @@ public:
         if(!shenlvmeng->askForSkillInvoke(objectName()))
             return false;
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
 
         QList<int> card_ids = room->getNCards(5);
         qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
@@ -321,7 +321,7 @@ public:
         QString result = room->askForChoice(shenzhouyu, objectName(), "up+down");
         QList<ServerPlayer *> all_players = room->getAllPlayers();
         if(result == "up"){
-            room->playSkillEffect(objectName(), 2);
+            room->broadcastSkillInvoke(objectName(), 2);
             foreach(ServerPlayer *player, all_players){
                 RecoverStruct recover;
                 recover.who = shenzhouyu;
@@ -336,7 +336,7 @@ public:
             if(room->findPlayer("caocao+shencaocao+weiwudi"))
                 index = 3;
 
-            room->playSkillEffect(objectName(), index);
+            room->broadcastSkillInvoke(objectName(), index);
         }
     }
 
@@ -372,7 +372,7 @@ public:
         int i, x = damage.damage;
         for(i=0; i<x; i++){
             if(shencc->askForSkillInvoke(objectName())){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
                 if(players.length() >=5)
@@ -424,7 +424,7 @@ public:
         player->getRoom()->sendLog(log);
 
         player->gainMark("@wrath", damage.damage);
-        player->getRoom()->playSkillEffect(objectName());
+        player->getRoom()->broadcastSkillInvoke(objectName());
 
         return false;
     }
@@ -447,7 +447,7 @@ public:
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
             Room *room = player->getRoom();
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             int num = player->getMark("@wrath");
             if(num >= 1 && room->askForChoice(player, objectName(), "discard+losehp") == "discard"){
@@ -625,7 +625,7 @@ public:
             return;
 
         Room *room = shenzhuge->getRoom();
-        room->playSkillEffect("qixing");
+        room->broadcastSkillInvoke("qixing");
         room->fillAG(stars, shenzhuge);
 
         int ai_delay = Config.AIDelay;
@@ -1147,7 +1147,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         if(player->isWounded())
-            player->getRoom()->playSkillEffect(objectName());
+            player->getRoom()->broadcastSkillInvoke(objectName());
         return n + player->getLostHp();
     }
 };

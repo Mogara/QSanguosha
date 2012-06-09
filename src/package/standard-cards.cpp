@@ -120,10 +120,6 @@ QString Peach::getSubtype() const{
     return "recover_card";
 }
 
-QString Peach::getEffectPath(bool ) const{
-    return Card::getEffectPath();
-}
-
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     if(targets.isEmpty())
         room->cardEffect(this, source, source);
@@ -442,7 +438,7 @@ private:
     }
 
 public:
-    static EightDiagramSkill *GetInstance(){
+    static EightDiagramSkill *getInstance(){
         static EightDiagramSkill *instance = NULL;
         if(instance == NULL)
             instance = new EightDiagramSkill;
@@ -487,7 +483,7 @@ public:
 EightDiagram::EightDiagram(Suit suit, int number)
     :Armor(suit, number){
         setObjectName("eight_diagram");
-        skill = EightDiagramSkill::GetInstance();
+        skill = EightDiagramSkill::getInstance();
 }
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
@@ -787,7 +783,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
 
     forever{
         if(second->hasSkill("wushuang")){
-            room->playSkillEffect("wushuang");
+			room->broadcastSkillInvoke("wushuang");
             const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
             if(slash == NULL)
                 break;
@@ -1110,7 +1106,7 @@ StandardCardPackage::StandardCardPackage()
         << new EightDiagram(Card::Spade)
         << new EightDiagram(Card::Club);
 
-    skills << EightDiagramSkill::GetInstance();
+    skills << EightDiagramSkill::getInstance();
 
     {
         QList<Card *> horses;

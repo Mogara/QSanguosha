@@ -79,7 +79,6 @@ private:
     QPixmap _m_kingdomIcon;
     QPixmap _m_kindomColorMaskIcon;
     RoleCombobox *role_combobox;
-    QGraphicsProxyWidget  *pile_button;
     QGraphicsPixmapItem *action_item, *save_me_item;    
     bool permanent;
 
@@ -88,6 +87,8 @@ private:
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QList<CardItem **> equips;
     QGraphicsRectItem *equip_rects[4];
+
+	QMap<QString, QGraphicsProxyWidget*> _m_privatePiles; 
 
     QList<QGraphicsPixmapItem *> judging_pixmaps;    
     QList<CardItem *> judging_area;

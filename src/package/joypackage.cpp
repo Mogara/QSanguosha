@@ -139,7 +139,7 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
             else{
                 room->setEmotion(player, "bad");
                 room->broadcastInvoke("animate", "typhoon:" + player->objectName());
-                room->broadcastInvoke("playAudio", "typhoon");
+                room->broadcastInvoke("playSystemAudioEffect", "typhoon");
 
                 room->askForDiscard(player, objectName(), discard_num, discard_num);
             }
@@ -171,7 +171,7 @@ void Earthquake::takeEffect(ServerPlayer *target) const{
                 room->setEmotion(player, "good");
             }else{
                 room->setEmotion(player, "bad");
-                room->broadcastInvoke("playAudio", "earthquake");
+                room->broadcastInvoke("playSystemAudioEffect", "earthquake");
                 player->throwAllEquips();
             }
 
@@ -208,7 +208,7 @@ void Volcano::takeEffect(ServerPlayer *target) const{
             damage.to = player;
             damage.nature = DamageStruct::Fire;
 
-            room->broadcastInvoke("playAudio", "volcano");
+            room->broadcastInvoke("playSystemAudioEffect", "volcano");
             room->damage(damage);
         }
     }
@@ -230,7 +230,7 @@ void MudSlide::takeEffect(ServerPlayer *target) const{
     QList<ServerPlayer *> players = room->getAllPlayers();
     int to_destroy = 4;
     foreach(ServerPlayer *player, players){
-        room->broadcastInvoke("playAudio", "mudslide");
+        room->broadcastInvoke("playSystemAudioEffect", "mudslide");
 
         QList<const Card *> equips = player->getEquips();
         if(equips.isEmpty()){
@@ -274,7 +274,7 @@ public:
                 {
                     // @todo: if you wish this to trigger card discarded event, please modify this!!!
                     room->throwCard(p->getOffensiveHorse(), NULL);
-                    p->playCardEffect(objectName());
+                    p->broadcastSkillInvoke(objectName());
                     p->obtainCard(use.card);
 
                     return true;
@@ -301,10 +301,6 @@ void Monkey::onInstall(ServerPlayer *player) const{
 
 void Monkey::onUninstall(ServerPlayer *player) const{
 
-}
-
-QString Monkey::getEffectPath(bool ) const{
-    return "audio/card/common/monkey.ogg";
 }
 
 class GaleShellSkill: public ArmorSkill{

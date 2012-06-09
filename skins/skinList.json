@@ -2,6 +2,7 @@
 "default":
 {
 "roomLayoutConfigFile": "skins\\defaultSkin.layout.json",
-"roomImageConfigFile": "skins\\defaultSkin.image.json"
+"roomImageConfigFile": "skins\\defaultSkin.image.json",
+"roomAudioConfigFile": "skins\\defaultSkin.audio.json"
 }
 }

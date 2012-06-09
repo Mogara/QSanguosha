@@ -29,11 +29,11 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
 void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *tiger = targets.first();
 
-    room->playSkillEffect("quhu", 1);
+    room->broadcastSkillInvoke("quhu");
 
     bool success = xunyu->pindian(tiger, "quhu", this);
     if(success){
-        room->playSkillEffect("quhu", 2);
+        room->broadcastSkillInvoke("quhu");
 
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
         foreach(ServerPlayer *player, players){
@@ -51,7 +51,7 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> 
             return;
         }
 
-        room->playSkillEffect("#tunlang");
+        room->broadcastSkillInvoke("#tunlang");
         ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves, "quhu");
 
         DamageStruct damage;
@@ -319,7 +319,7 @@ public:
         if(!effect.to->isNude()){
             Room *room = pangde->getRoom();
             if(pangde->askForSkillInvoke(objectName(), data)){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
                 room->throwCard(to_throw, effect.to);
             }
@@ -365,7 +365,7 @@ public:
 
         if(pangtong->askForSkillInvoke(objectName(), data)){
             room->broadcastInvoke("animate", "lightbox:$niepan");
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             pangtong->loseMark("@nirvana");
 

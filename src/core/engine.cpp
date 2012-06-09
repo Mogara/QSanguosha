@@ -640,11 +640,11 @@ QString Engine::getRandomGeneralName() const{
     return generals.keys().at(qrand() % generals.size());
 }
 
-void Engine::playAudio(const QString &name) const{
-    playEffect(QString("audio/system/%1.ogg").arg(name));
+void Engine::playSystemAudioEffect(const QString &name) const{
+    playAudioEffect(QString("audio/system/%1.ogg").arg(name));
 }
 
-void Engine::playEffect(const QString &filename) const{
+void Engine::playAudioEffect(const QString &filename) const{
 #ifdef AUDIO_SUPPORT
 
     if(!Config.EnableEffects)
@@ -658,24 +658,10 @@ void Engine::playEffect(const QString &filename) const{
 #endif
 }
 
-void Engine::playSkillEffect(const QString &skill_name, int index) const{
+void Engine::playSkillAudioEffect(const QString &skill_name, int index) const{
     const Skill *skill = skills.value(skill_name, NULL);
     if(skill)
-        skill->playEffect(index);
-}
-
-void Engine::playCardEffect(const QString &card_name, bool is_male) const{
-    QString path;
-    if(card_name.startsWith("@")){
-        QString gender = is_male ? "male" : "female";
-        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(card_name);
-    }else{
-        const Card *card = findChild<const Card *>(card_name);
-        if(card)
-            path = card->getEffectPath(is_male);
-    }
-
-    playEffect(path);
+        skill->playAudioEffect(index);
 }
 
 const Skill *Engine::getSkill(const QString &skill_name) const{

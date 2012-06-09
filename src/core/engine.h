@@ -80,10 +80,9 @@ public:
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
 
-    void playAudio(const QString &name) const;
-    void playEffect(const QString &filename) const;
-    void playSkillEffect(const QString &skill_name, int index) const;
-    void playCardEffect(const QString &card_name, bool is_male) const;
+    void playSystemAudioEffect(const QString &name) const;
+    void playAudioEffect(const QString &filename) const;
+    void playSkillAudioEffect(const QString &skill_name, int index) const;
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;

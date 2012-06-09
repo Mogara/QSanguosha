@@ -203,11 +203,7 @@ void CardContainer::view(const ClientPlayer *player){
     foreach(const Card *card, cards)
         card_ids << card->getEffectiveId();
 
-    fillCards(card_ids);
-
-    QGraphicsPixmapItem *avatar = new QGraphicsPixmapItem(this);
-    avatar->setPixmap(QPixmap(player->getGeneral()->getPixmapPath("tiny")));
-    avatar->setPos(496, 288);    
+    fillCards(card_ids);    
 }
 
 GuanxingBox::GuanxingBox()

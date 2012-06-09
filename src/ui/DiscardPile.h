@@ -19,13 +19,7 @@ public:
     {
         setSize(newSize.width(), newSize.height());
     }
-    inline void setSize(double width, double height) 
-    {
-        m_cardsDisplayRegion = QRect(0, 0, width, height);
-        m_numCardsVisible = width / CardItem::S_NORMAL_CARD_WIDTH + 1;
-        resetTransform();
-        translate(-width / 2, -height / 2);
-    }
+    void setSize(double width, double height);
     inline void setNumCardsVisible(int num) { m_numCardsVisible = num; }
     inline int getNumCardsVisible() { return m_numCardsVisible; }
     void adjustCards();
@@ -44,7 +38,6 @@ public:
     inline DrawPile() : PlayerCardContainer(true) {}
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);    
 protected:
-    static const QRect S_DISPLAY_CARD_REGION;
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
 };
 

@@ -26,7 +26,6 @@ class Card : public QObject
     Q_PROPERTY(int number READ getNumber WRITE setNumber)
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
-    Q_PROPERTY(QString pixmap_path READ getPixmapPath)
     Q_PROPERTY(bool target_fixed READ targetFixed)
     Q_PROPERTY(bool once READ isOnce CONSTANT)
     Q_PROPERTY(bool mute READ isMute CONSTANT)
@@ -74,17 +73,13 @@ public:
     Color getColor() const;
     bool isEquipped() const;
 
-    QString getPixmapPath() const;
-    QString getIconPath() const;
     QString getPackage() const;
-    QIcon getSuitIcon() const;
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
     QString getName() const;
     QString getSkillName() const;
     void setSkillName(const QString &skill_name);
     QString getDescription() const;
-    QString getEffectPath() const;
 
     bool isVirtualCard() const;
     virtual bool match(const QString &pattern) const;
@@ -101,7 +96,6 @@ public:
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;
     virtual QString toString() const;
-    virtual QString getEffectPath(bool is_male) const;
     bool isNDTrick() const;
 
     // card target selection

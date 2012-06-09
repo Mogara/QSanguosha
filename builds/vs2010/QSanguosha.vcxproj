@@ -158,6 +158,7 @@
     <ClCompile Include="..\..\src\ui\GeneralCardContainerUI.cpp" />
     <ClCompile Include="..\..\src\ui\SkinBank.cpp" />
     <ClCompile Include="..\..\src\ui\TimedProgressBar.cpp" />
+    <ClCompile Include="..\..\src\ui\uiUtils.cpp" />
     <ClCompile Include="Debug\moc_ai.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -772,6 +773,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ai.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
+    <ClInclude Include="..\..\src\core\compiler-specific.h" />
     <ClInclude Include="..\..\src\core\jsonutils.h" />
     <ClInclude Include="..\..\src\core\protocol.h" />
     <CustomBuild Include="..\..\src\ui\DiscardPile.h">
@@ -796,6 +798,7 @@
     </CustomBuild>
     <ClInclude Include="..\..\src\core\structs.h" />
     <ClInclude Include="..\..\src\ui\SkinBank.h" />
+    <ClInclude Include="..\..\src\ui\uiUtils.h" />
     <ClInclude Include="GeneratedFiles\ui_cardoverview.h" />
     <ClInclude Include="GeneratedFiles\ui_configdialog.h" />
     <ClInclude Include="GeneratedFiles\ui_connectiondialog.h" />

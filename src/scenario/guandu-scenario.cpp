@@ -38,7 +38,7 @@ public:
     virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         Room *room = guojia->getRoom();
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         int n = damage.damage * 3;
         guojia->drawCards(n);
         QList<int> yiji_cards = guojia->handCards().mid(guojia->getHandcardNum() - n);
@@ -95,7 +95,7 @@ bool SmallTuxiCard::targetFilter(const QList<const Player *> &targets, const Pla
 void SmallTuxiCard::onEffect(const CardEffectStruct &effect) const{
     TuxiCard::onEffect(effect);
 
-    effect.from->getRoom()->playSkillEffect("tuxi");
+    effect.from->getRoom()->broadcastSkillInvoke("tuxi");
 }
 
 class SmallTuxiViewAsSkill: public ZeroCardViewAsSkill{

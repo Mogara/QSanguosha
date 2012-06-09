@@ -54,10 +54,6 @@ Card::CardType EquipCard::getTypeId() const{
     return Equip;
 }
 
-QString EquipCard::getEffectPath(bool is_male) const{
-    return "audio/card/common/equip.ogg";
-}
-
 void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.to.isEmpty()){
         ServerPlayer *player = card_use.from;
@@ -164,7 +160,7 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const{
             log.arg2 = objectName();
             room->sendLog(log);
 
-            room->playSkillEffect(skill->objectName());
+            room->broadcastSkillInvoke(skill->objectName());
         }else
             targets << player;
     }
@@ -320,10 +316,6 @@ Horse::Horse(Suit suit, int number, int correct)
 
 int Horse::getCorrect() const{
     return correct;
-}
-
-QString Horse::getEffectPath(bool) const{
-    return "audio/card/common/horse.ogg";
 }
 
 void Horse::onInstall(ServerPlayer *) const{

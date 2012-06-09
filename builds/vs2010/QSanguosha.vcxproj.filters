@@ -375,6 +375,9 @@
     <ClCompile Include="..\..\src\ui\SkinBank.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\uiUtils.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1214,6 +1217,12 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\ui\SkinBank.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\compiler-specific.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ui\uiUtils.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>

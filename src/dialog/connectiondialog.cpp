@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "engine.h"
 #include "detector.h"
+#include "SkinBank.h"
 
 #include <QMessageBox>
 #include <QTimer>
@@ -13,168 +14,163 @@ static const int ShrinkWidth = 285;
 static const int ExpandWidth = 826;
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
-    QDialog(parent), ui(new Ui::ConnectionDialog)
+	QDialog(parent), ui(new Ui::ConnectionDialog)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
-    ui->nameLineEdit->setText(Config.UserName);
-    ui->nameLineEdit->setMaxLength(32);
+	ui->nameLineEdit->setText(Config.UserName);
+	ui->nameLineEdit->setMaxLength(32);
 
-    ui->hostComboBox->addItems(Config.HistoryIPs);
-    ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
+	ui->hostComboBox->addItems(Config.HistoryIPs);
+	ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
 
-    ui->connectButton->setFocus();
+	ui->connectButton->setFocus();
 
-    const General *avatar_general = Sanguosha->getGeneral(Config.UserAvatar);
-    if(avatar_general){
-        QPixmap avatar(avatar_general->getPixmapPath("big"));
-        ui->avatarPixmap->setPixmap(avatar);
-    }
+	ui->avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar,
+								QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+	
 
-    QList<const General*> generals = Sanguosha->findChildren<const General*>();
-    foreach(const General *general, generals){
-        QIcon icon(general->getPixmapPath("big"));
-        QString text = Sanguosha->translate(general->objectName());
-        QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
-        item->setData(Qt::UserRole, general->objectName());
-    }
+	QList<const General*> generals = Sanguosha->findChildren<const General*>();
+	foreach(const General *general, generals){
+		QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+		QString text = Sanguosha->translate(general->objectName());
+		QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
+		item->setData(Qt::UserRole, general->objectName());
+	}
 
-    ui->avatarList->hide();
+	ui->avatarList->hide();
 
-    ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
+	ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
 
-    setFixedHeight(height());
-    setFixedWidth(ShrinkWidth);
+	setFixedHeight(height());
+	setFixedWidth(ShrinkWidth);
 }
 
 ConnectionDialog::~ConnectionDialog()
 {
-    delete ui;
+	delete ui;
 }
 
 void ConnectionDialog::on_connectButton_clicked()
 {
-    QString username = ui->nameLineEdit->text();
+	QString username = ui->nameLineEdit->text();
 
-    if(username.isEmpty()){
-        QMessageBox::warning(this, tr("Warning"), tr("The user name can not be empty!"));
-        return;
-    }
+	if(username.isEmpty()){
+		QMessageBox::warning(this, tr("Warning"), tr("The user name can not be empty!"));
+		return;
+	}
 
-    Config.UserName = username;
-    Config.HostAddress = ui->hostComboBox->lineEdit()->text();
-    Config.Password = ui->passwordLineEdit->text();
+	Config.UserName = username;
+	Config.HostAddress = ui->hostComboBox->lineEdit()->text();
+	Config.Password = ui->passwordLineEdit->text();
 
-    Config.setValue("UserName", Config.UserName);
-    Config.setValue("HostAddress", Config.HostAddress);
-    Config.setValue("EnableReconnection", ui->reconnectionCheckBox->isChecked());
+	Config.setValue("UserName", Config.UserName);
+	Config.setValue("HostAddress", Config.HostAddress);
+	Config.setValue("EnableReconnection", ui->reconnectionCheckBox->isChecked());
 
-    accept();
+	accept();
 }
 
 void ConnectionDialog::on_changeAvatarButton_clicked()
 {
-    if(ui->avatarList->isVisible()){
-        QListWidgetItem *selected = ui->avatarList->currentItem();
-        if(selected)
-            on_avatarList_itemDoubleClicked(selected);
-        else{
-            ui->avatarList->hide();
-            setFixedWidth(ShrinkWidth);
-        }
-    }else{
-        ui->avatarList->show();
-        setFixedWidth(ExpandWidth);
-    }
+	if(ui->avatarList->isVisible()){
+		QListWidgetItem *selected = ui->avatarList->currentItem();
+		if(selected)
+			on_avatarList_itemDoubleClicked(selected);
+		else{
+			ui->avatarList->hide();
+			setFixedWidth(ShrinkWidth);
+		}
+	}else{
+		ui->avatarList->show();
+		setFixedWidth(ExpandWidth);
+	}
 }
 
 void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
 {
-    QString general_name = item->data(Qt::UserRole).toString();
-    const General *general = Sanguosha->getGeneral(general_name);
-    if(general){
-        QPixmap avatar(general->getPixmapPath("big"));
-        ui->avatarPixmap->setPixmap(avatar);
-        Config.UserAvatar = general_name;
-        Config.setValue("UserAvatar", general_name);
-        ui->avatarList->hide();
+	QString general_name = item->data(Qt::UserRole).toString();
+	QPixmap avatar(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+	ui->avatarPixmap->setPixmap(avatar);
+	Config.UserAvatar = general_name;
+	Config.setValue("UserAvatar", general_name);
+	ui->avatarList->hide();
 
-        setFixedWidth(ShrinkWidth);
-    }
+	setFixedWidth(ShrinkWidth);
 }
 
 void ConnectionDialog::on_clearHistoryButton_clicked()
 {
-    ui->hostComboBox->clear();
-    ui->hostComboBox->lineEdit()->clear();
+	ui->hostComboBox->clear();
+	ui->hostComboBox->lineEdit()->clear();
 
-    Config.HistoryIPs.clear();
-    Config.remove("HistoryIPs");
+	Config.HistoryIPs.clear();
+	Config.remove("HistoryIPs");
 }
 
 void ConnectionDialog::on_detectLANButton_clicked()
 {
-    UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
-    connect(detector_dialog, SIGNAL(address_chosen(QString)),
-            ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+	UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
+	connect(detector_dialog, SIGNAL(address_chosen(QString)),
+			ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
 
-    detector_dialog->exec();
+	detector_dialog->exec();
 }
 
 // -----------------------------------
 
 UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
-    :QDialog(parent)
+	:QDialog(parent)
 {
-    setWindowTitle(tr("Detect available server's addresses at LAN"));
-    detect_button = new QPushButton(tr("Refresh"));
+	setWindowTitle(tr("Detect available server's addresses at LAN"));
+	detect_button = new QPushButton(tr("Refresh"));
 
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
-    hlayout->addWidget(detect_button);
+	QHBoxLayout *hlayout = new QHBoxLayout;
+	hlayout->addStretch();
+	hlayout->addWidget(detect_button);
 
-    list = new QListWidget;
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(list);
-    layout->addLayout(hlayout);
+	list = new QListWidget;
+	QVBoxLayout *layout = new QVBoxLayout;
+	layout->addWidget(list);
+	layout->addLayout(hlayout);
 
-    setLayout(layout);
+	setLayout(layout);
 
-    detector = NULL;
-    connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
-    connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseAddress(QListWidgetItem*)));
+	detector = NULL;
+	connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
+	connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseAddress(QListWidgetItem*)));
 
-    detect_button->click();
+	detect_button->click();
 }
 
 void UdpDetectorDialog::startDetection(){
-    list->clear();
-    detect_button->setEnabled(false);
+	list->clear();
+	detect_button->setEnabled(false);
 
-    detector = new UdpDetector;
-    connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
-    QTimer::singleShot(2000, this, SLOT(stopDetection()));
+	detector = new UdpDetector;
+	connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
+	QTimer::singleShot(2000, this, SLOT(stopDetection()));
 
-    detector->detect();
+	detector->detect();
 }
 
 void UdpDetectorDialog::stopDetection(){
-    detect_button->setEnabled(true);
-    detector->stop();
-    detector = NULL;
+	detect_button->setEnabled(true);
+	detector->stop();
+	detector = NULL;
 }
 
 void UdpDetectorDialog::addServerAddress(const QString &server_name, const QString &address){
-    QString label = QString("%1 [%2]").arg(server_name).arg(address);
-    QListWidgetItem *item = new QListWidgetItem(label);
-    item->setData(Qt::UserRole, address);
+	QString label = QString("%1 [%2]").arg(server_name).arg(address);
+	QListWidgetItem *item = new QListWidgetItem(label);
+	item->setData(Qt::UserRole, address);
 
-    list->addItem(item);
+	list->addItem(item);
 }
 
 void UdpDetectorDialog::chooseAddress(QListWidgetItem *item){
-    accept();
+	accept();
 
-    QString address = item->data(Qt::UserRole).toString();
-    emit address_chosen(address);
+	QString address = item->data(Qt::UserRole).toString();
+	emit address_chosen(address);
 }

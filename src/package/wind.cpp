@@ -354,7 +354,7 @@ public:
                 target->drawCards(3);
                 target->turnOver();
 
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
             }
         }
 
@@ -377,7 +377,7 @@ public:
         int num = effect.to->getHandcardNum();
         if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
             if(huangzhong->askForSkillInvoke(objectName(), QVariant::fromValue(effect))){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 room->slashResult(effect, NULL);
 
                 return true;
@@ -410,7 +410,7 @@ public:
             if(invoke){
                 Room *room = player->getRoom();
 
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
 
                 LogMessage log;
                 log.type = "#TriggerSkill";
@@ -484,7 +484,7 @@ public:
             QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
             if(choice == "alive"){
                 room->setTag("Buqu", zhoutai->objectName());
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 const QList<int> &buqu = zhoutai->getPile("buqu");
 
                 int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
@@ -537,7 +537,7 @@ public:
             }
 
             if(duplicate_numbers.isEmpty()){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 zhoutai->setFlags("-dying");
                 return true;
             }else{
@@ -785,7 +785,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     return success;
 }
 
-GuhuoDialog *GuhuoDialog::GetInstance(const QString &object, bool left, bool right){
+GuhuoDialog *GuhuoDialog::getInstance(const QString &object, bool left, bool right){
     static GuhuoDialog *instance;
     if(instance == NULL)
         instance = new GuhuoDialog(object, left, right);
@@ -916,7 +916,7 @@ bool GuhuoCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
 const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
-    room->playSkillEffect("guhuo");
+    room->broadcastSkillInvoke("guhuo");
 
     LogMessage log;
     log.type = card_use->to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
@@ -945,7 +945,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
     *continuable = true;
 
     Room *room = yuji->getRoom();
-    room->playSkillEffect("guhuo");
+    room->broadcastSkillInvoke("guhuo");
 
     QString to_guhuo;
     if(user_string == "peach+analeptic")
@@ -1004,7 +1004,7 @@ public:
     }
 
     virtual QDialog *getDialog() const{
-        return GuhuoDialog::GetInstance("guhuo");
+        return GuhuoDialog::getInstance("guhuo");
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{

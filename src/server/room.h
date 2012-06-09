@@ -37,7 +37,6 @@ public:
     QString getMode() const;
     const Scenario *getScenario() const;
     RoomThread *getThread() const;
-    void playSkillEffect(const QString &skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
     void setCurrent(ServerPlayer *current);
     int alivePlayerCount() const;
@@ -176,6 +175,7 @@ public:
     // Notification functions
     bool notifyMoveFocus(ServerPlayer* player);
     bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);
+
     // Notify client side to move cards from one place to another place. A movement should always be completed by
     // calling notifyMoveCards in pairs, one with isLostPhase equaling true followed by one with isLostPhase
     // equaling false. The tow phase design is needed because the target player doesn't necessarily gets the 
@@ -189,6 +189,11 @@ public:
     //        If true, all players will be able to see the face of card regardless of whether the movement is
     //        relevant or not.
     bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible);
+	bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
+    bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
+	bool broadcastSkillInvoke(const QString &skillName);
+	bool broadcastSkillInvoke(const QString &skillName, int type);
+	bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -280,9 +285,7 @@ public:
     void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
-	bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
-    bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
-    void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
+	void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void startTest(const QString &to_test);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);

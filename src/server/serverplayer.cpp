@@ -31,17 +31,16 @@ Room *ServerPlayer::getRoom() const{
     return room;
 }
 
-void ServerPlayer::playCardEffect(const QString &card_name) const{
-    QString gender = getGender() == General::Male ? "M" : "F";
-    room->broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
+void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const{
+	room->broadcastSkillInvoke(card_name, getGeneral()->isMale());
 }
 
-void ServerPlayer::playCardEffect(const Card *card) const{
+void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
     if(card->isMute())
         return;
 
     if(!card->isVirtualCard())
-        playCardEffect(card->objectName());
+        broadcastSkillInvoke(card->objectName());
 
     QString skill_name = card->getSkillName();
     const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -53,9 +52,9 @@ void ServerPlayer::playCardEffect(const Card *card) const{
         return;
 
     if(index == -1 && skill->getSources().isEmpty())
-        playCardEffect(card->objectName());
+        broadcastSkillInvoke(card->objectName());
     else
-        room->playSkillEffect(skill_name, index);
+        room->broadcastSkillInvoke(skill_name, index);
 }
 
 int ServerPlayer::getRandomHandCardId() const{

@@ -686,7 +686,7 @@ public:
 
         if(card->inherits("BasicCard") && !card->isVirtualCard()){
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 tianfeng->drawCards(1);
             }
         }

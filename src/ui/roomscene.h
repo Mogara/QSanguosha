@@ -182,6 +182,8 @@ public slots:
     void makeReviving();
     void doScript();
 
+	void handleEventEffect(const Json::Value &arg);
+
     EffectAnimation * getEA() const{return animations;}
     
 protected:    
@@ -190,12 +192,13 @@ protected:
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);    
     QMutex m_roomMutex;
-    QMutex m_zValueMutex;
+    QMutex m_zValueMutex;	
 
 private:
     const QSanRoomSkin::RoomLayout* _m_roomLayout;
     const QSanRoomSkin::PhotoLayout* _m_photoLayout;
     const QSanRoomSkin::CommonLayout* _m_commonLayout;
+	const QSanRoomSkin* _m_roomSkin;
     QGraphicsItem* _m_last_front_item;
     double _m_last_front_ZValue;
     PlayerCardContainer* _getPlayerCardContainer(Player::Place place, Player* player);

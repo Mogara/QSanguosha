@@ -29,7 +29,7 @@ public:
         if(ServerInfo.GameMode != "06_3v3")
             return n;
         if(room->askForSkillInvoke(zhugejin, objectName())){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
             QStringList names = getTeammateNames(zhugejin);
             room->setTag("HongyuanTargets", QVariant::fromValue(names));
             return n - 1;

@@ -32,7 +32,7 @@ public:
         room->sendLog(log);
 
         QString gender = player->getGeneral()->isMale() ? "male" : "female";
-        room->broadcastInvoke("playAudio", QString("zombify-%1").arg(gender));
+        room->broadcastInvoke("playSystemAudioEffect", QString("zombify-%1").arg(gender));
         room->updateStateItem();
 
         player->tag.remove("zombie");

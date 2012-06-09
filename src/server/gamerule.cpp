@@ -204,7 +204,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
 
-                card_use.from->playCardEffect(card);
+                card_use.from->broadcastSkillInvoke(card);
                 card->use(room, card_use.from, card_use.to);
             }
 
@@ -418,9 +418,6 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
                 damage.damage++;
             }
-
-            if(effect.to->hasSkill("jueqing") || effect.to->getGeneralName() == "zhangchunhua")
-                damage.damage++;
 
             damage.from = effect.from;
             damage.to = effect.to;
@@ -717,7 +714,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
     case CardUsed:{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
-            player->playCardEffect("@recast");
+            player->broadcastSkillInvoke("@recast");
             CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
             room->throwCard(use.card, reason, NULL);
             player->drawCards(1, false);
@@ -901,7 +898,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     log.arg2 = player->getGeneral2Name();
 
     room->sendLog(log);
-    room->broadcastInvoke("playAudio","choose-item");
+    room->broadcastInvoke("playSystemAudioEffect","choose-item");
 }
 
 bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

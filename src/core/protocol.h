@@ -89,8 +89,16 @@ namespace QSanProtocol
         S_COMMAND_GAME_OVER, 
         S_COMMAND_MOVE_CARD,
         S_COMMAND_GET_CARD,
-        S_COMMAND_LOSE_CARD
+        S_COMMAND_LOSE_CARD,
+		S_COMMAND_LOG_EVENT,
+		S_COMMAND_LOG_SKILL
     };
+
+	enum GameEventType
+	{
+		S_GAME_EVENT_PLAYER_DYING,
+		S_GAME_EVENT_SKILL_INVOKED
+	};
 
     enum Game3v3ChooseOrderCommand
     {
