@@ -463,7 +463,7 @@ void XuanfengCard::onEffect(const CardEffectStruct &effect) const{
 
 class XuanfengViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    XuanfengViewAsSkill():ZeroCardViewAsSkill("tuxi"){
+    XuanfengViewAsSkill():ZeroCardViewAsSkill("xuanfeng"){
     }
 
     virtual const Card *viewAs() const{
