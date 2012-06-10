@@ -3592,15 +3592,68 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
     notifyMoveFocus(shenlvmeng, S_COMMAND_SKILL_GONGXIN);
     //@todo: this thing should be put in AI!!!!!!!!!!
     if(!shenlvmeng->isOnline()){
-        // throw the first card whose suit is Heart
+        //@todo: when we do like this,ai of gongxin in god-ai.lua does not work
+        /*int gongxin_id = -1;
+        gongxin_id = askForCardChosen(shenlvmeng, target, "h", "gongxin");
+        if(gongxin_id > -1 && Sanguosha->getCard(gongxin_id)->getSuit() == Card::Heart){
+            if(askForChoice(shenlvmeng, "gongxin", "discard+put") == "put")
+                moveCardTo(Sanguosha->getCard(gongxin_id), NULL, Player::DrawPile, true);
+            else
+                throwCard(gongxin_id, target);
+        }*/
+
+        // a better way of using gongxin for ai, but we still want to move this to god-ai.lua
         QList<const Card *> cards = target->getHandcards();
-        foreach(const Card *card, cards){
-            if(card->getSuit() == Card::Heart && !card->inherits("Shit")){
-                showCard(target, card->getEffectiveId());
-                thread->delay();
-                throwCard(card, target);
-                return;
+        const Card *has_jink = NULL;
+        const Card *has_peach = NULL;
+        const Card *has_null = NULL;
+        const Card *has_shit = NULL;
+        int heartnum = 0;
+        ServerPlayer *nextplayer = shenlvmeng->getNextAlive();
+        bool nextfriend = false;
+        bool hasindul = false;
+        nextfriend = (shenlvmeng->getRole() == nextplayer->getRole());
+        QList<const DelayedTrick *> tricks = nextplayer->delayedTricks();
+        if(!tricks.isEmpty()){
+            const DelayedTrick *trick = tricks.takeLast();
+            if(trick->objectName() == "indulgence"){
+                hasindul = true;
             }
+        }
+
+        foreach(const Card *card, cards){
+            if(card->getSuit() == Card::Heart){
+                has_null = card;
+                if(card->inherits("Jink"))
+                    has_jink = card;
+                else if(card->inherits("Peach"))
+                    has_peach = card;
+                else if(card->inherits("Shit"))
+                    has_shit = card;
+                heartnum++;
+            }
+        }
+        if(nextfriend && has_peach){
+            showCard(target, has_peach->getEffectiveId());
+            thread->delay();
+            moveCardTo(has_peach, NULL, Player::DrawPile, true);
+        }else if(nextplayer->objectName() == target->objectName() && has_jink){
+            showCard(target, has_jink->getEffectiveId());
+            thread->delay();
+            moveCardTo(has_jink, NULL, Player::DrawPile, true);
+        }else if(nextfriend && hasindul && heartnum > 0){
+            showCard(target, has_null->getEffectiveId());
+            thread->delay();
+            moveCardTo(has_null, NULL, Player::DrawPile, true);
+        }else if(has_shit && heartnum == 1){
+        }else if(has_peach){
+            showCard(target, has_peach->getEffectiveId());
+            thread->delay();
+            throwCard(has_peach, target);
+        }else if(has_null){
+            showCard(target, has_null->getEffectiveId());
+            thread->delay();
+            throwCard(has_peach, target);
         }
         return;
     }
