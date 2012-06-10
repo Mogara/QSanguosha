@@ -132,7 +132,7 @@ public:
 	void setFaceUp(bool face_up);
 
 	virtual int aliveCount() const = 0;
-	int distanceTo(const Player *other) const;
+	int distanceTo(const Player *other, int distanse_fix = 0) const;
 	void setFixedDistance(const Player *player, int distance);
 	const General *getAvatarGeneral() const;
 	const General *getGeneral() const;
@@ -183,7 +183,7 @@ public:
 	void setChained(bool chained);
 	bool isChained() const;
 
-	bool canSlash(const Player *other, bool distance_limit = true) const;
+	bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0) const;
 	int getCardCount(bool include_equip) const;
 
 	QList<int> getPile(const char *pile_name);

@@ -73,9 +73,19 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(Self->hasWeapon("halberd") && Self->isLastHandCard(this)){
         slash_targets = 3;
     }
-
     bool distance_limit = true;
-
+    int rangefix = 0;
+    if(isVirtualCard() && getSubcards().length() > 0){
+        foreach(int card_id, getSubcards()){
+            if(Self->getWeapon())
+                if(card_id == Self->getWeapon()->getId())
+                    if(Self->getWeapon()->getRange() > 1)
+                        rangefix = qMax((Self->getWeapon()->getRange()), rangefix);
+            if(Self->getOffensiveHorse())
+                if(card_id == Self->getOffensiveHorse()->getId())
+                    rangefix = qMax(rangefix, 1);
+        }
+    }
     if(Self->hasFlag("tianyi_success")){
         distance_limit = false;
         slash_targets ++;
@@ -94,7 +104,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         distance_limit = false;
     }
 
-    return Self->canSlash(to_select, distance_limit);
+    return Self->canSlash(to_select, distance_limit, rangefix);
 }
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){
@@ -688,7 +698,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
             if (source->isDead()){
                 if(killer->isAlive() && killer->getWeapon()){
                     int card_id = weapon->getId();
-                    room->throwCard(card_id, source);
+                    room->throwCard(card_id, killer);
                 }
             }
             else
@@ -698,7 +708,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                 }
             }
         }
-        if (source->isDead()){
+        else if (source->isDead()){
             if (killer->isAlive()){
                 if(slash){
                     CardUseStruct use;
@@ -710,13 +720,22 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                 else{
                     if(killer->getWeapon()){
                         int card_id = weapon->getId();
-                        room->throwCard(card_id, source);
+                        room->throwCard(card_id, killer);
                     }
                 }
             }
         }
         else{
             if(killer->isDead()) ;
+            else if(!killer->getWeapon()){
+                if(slash){
+                    CardUseStruct use;
+                    use.card = slash;
+                    use.from = killer;
+                    use.to = victims;
+                    room->useCard(use);
+                }
+            }
             else{
                 if(slash){
                     CardUseStruct use;

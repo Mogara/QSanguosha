@@ -158,7 +158,7 @@ void Player::setFixedDistance(const Player *player, int distance){
         fixed_distance.insert(player, distance);
 }
 
-int Player::distanceTo(const Player *other) const{
+int Player::distanceTo(const Player *other, int distance_fix) const{
     if(this == other)
         return 0;
 
@@ -170,6 +170,7 @@ int Player::distanceTo(const Player *other) const{
     int distance = qMin(left, right);
 
     distance += Sanguosha->correctDistance(this, other);
+    distance += distance_fix;
 
     // keep the distance >=1
     if(distance < 1)
@@ -600,15 +601,19 @@ int Player::getMark(const QString &mark) const{
     return marks.value(mark, 0);
 }
 
-bool Player::canSlash(const Player *other, bool distance_limit) const{
+bool Player::canSlash(const Player *other, bool distance_limit, int rangefix) const{
     if(other->hasSkill("kongcheng") && other->isKongcheng())
         return false;
 
     if(other == this)
         return false;
 
-    if(distance_limit)
-        return distanceTo(other) <= getAttackRange();
+    if(distance_limit){
+        if(rangefix > 1)
+            return distanceTo(other) <= (getAttackRange() - rangefix + 1);
+        else
+            return distanceTo(other,rangefix) <= getAttackRange();
+    }
     else
         return true;
 }

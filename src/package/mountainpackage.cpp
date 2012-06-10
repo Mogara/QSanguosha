@@ -389,7 +389,8 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     foreach(ServerPlayer *p, room->getAlivePlayers()){
         if(!snatch->targetFilter(empty_list, p, dengai))
             continue;
-
+        if(dengai->distanceTo(p,1) > 1)
+            continue;
         if(dengai->isProhibited(p, snatch))
             continue;
 
