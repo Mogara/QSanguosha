@@ -326,7 +326,7 @@ void BawangCard::onEffect(const CardEffectStruct &effect) const{
 
 class BawangViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    BawangViewAsSkill():ZeroCardViewAsSkill("tuxi"){
+    BawangViewAsSkill():ZeroCardViewAsSkill("bawang"){
     }
 
     virtual const Card *viewAs() const{

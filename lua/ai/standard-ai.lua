@@ -598,7 +598,7 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 	local has_weapon=false
 	
 	for _,card in ipairs(cards)  do
-		if card:inherits("Weapon") and card:isRed() then has_weapon=true end
+		if card:inherits("Weapon") and card:isBlack() then has_weapon=true end
 	end
 	
 	for _,card in ipairs(cards)  do
