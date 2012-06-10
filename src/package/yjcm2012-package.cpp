@@ -515,10 +515,6 @@ public:
         events << AskForPeaches << DamageProceed << CardFinished;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 

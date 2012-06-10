@@ -502,7 +502,8 @@ ZhibaCard::ZhibaCard(){
 }
 
 bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->hasLordSkill("sunce_zhiba") && to_select != Self && !to_select->isKongcheng();
+    return targets.isEmpty() && to_select->hasLordSkill("sunce_zhiba") && to_select != Self
+            && !to_select->isKongcheng() && !to_select->hasFlag("ZhibaInvoked");
 }
 
 void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -516,6 +517,16 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     room->playSkillEffect("sunce_zhiba", 1);
     source->pindian(sunce, "zhiba", this);
+    room->setPlayerFlag(sunce, "ZhibaInvoked");
+    QList<ServerPlayer *> sunces;
+    QList<ServerPlayer *> players = room->getOtherPlayers(source);
+    foreach(ServerPlayer *p, players){
+        if(p->hasLordSkill("sunce_zhiba") && !p->hasFlag("ZhibaInvoked")){
+            sunces << p;
+        }
+    }
+    if(sunces.empty())
+        room->setPlayerFlag(source, "ForbidZhiba");
 }
 
 class ZhibaPindian: public OneCardViewAsSkill{
@@ -525,7 +536,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("ZhibaCard") && player->getKingdom() == "wu" && !player->isKongcheng();
+        return player->getKingdom() == "wu" && !player->isKongcheng() && !player->hasFlag("ForbidZhiba");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -543,7 +554,7 @@ public:
 class SunceZhiba: public TriggerSkill{
 public:
     SunceZhiba():TriggerSkill("sunce_zhiba$"){
-        events << GameStart << Pindian;
+        events << GameStart << Pindian << PhaseChange;
     }
 
     virtual int getPriority() const{
@@ -555,13 +566,10 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart){
-            if(!player->hasLordSkill(objectName()))
-                return false;
-
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-                if(!p->hasSkill("zhiba_pindian"))
-                    room->attachSkillToPlayer(p, "zhiba_pindian");
+        if(event == GameStart && player->isLord()){
+            QList<ServerPlayer *> players = room->getAlivePlayers();
+            foreach(ServerPlayer *p, players){
+                room->attachSkillToPlayer(p, "zhiba_pindian");
             }
         }else if(event == Pindian){
             PindianStar pindian = data.value<PindianStar>();
@@ -574,6 +582,16 @@ public:
             }
             else
                 room->playSkillEffect(objectName(), 3);
+        }else if(event == PhaseChange && player->getPhase() == Player::NotActive){
+            if(player->hasFlag("ForbidZhiba")){
+                room->setPlayerFlag(player, "-ForbidZhiba");
+            }
+            QList<ServerPlayer *> players = room->getOtherPlayers(player);
+            foreach(ServerPlayer *p, players){
+                if(p->hasFlag("ZhibaInvoked")){
+                    room->setPlayerFlag(p, "-ZhibaInvoked");
+                }
+            }
         }
 
         return false;

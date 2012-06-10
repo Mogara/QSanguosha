@@ -56,22 +56,31 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
 }
 
 HuangtianCard::HuangtianCard(){
-    once = true;
 }
 
-void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
+void HuangtianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *zhangjiao = targets.first();
     if(zhangjiao->hasLordSkill("huangtian")){
+        room->setPlayerFlag(zhangjiao, "HuangtianInvoked");
         zhangjiao->obtainCard(this);
         QList<int> subcards = this->getSubcards();
         foreach(int card_id, subcards)
             room->setCardFlag(card_id,"visible");
         room->setEmotion(zhangjiao, "good");
+        QList<ServerPlayer *> zhangjiaos;
+        QList<ServerPlayer *> players = room->getOtherPlayers(source);
+        foreach(ServerPlayer *p, players){
+            if(p->hasLordSkill("huangtian") && !p->hasFlag("HuangtianInvoked")){
+                zhangjiaos << p;
+            }
+        }
+        if(zhangjiaos.empty())
+            room->setPlayerFlag(source, "ForbidHuangtian");
     }
 }
 
 bool HuangtianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->hasLordSkill("huangtian") && to_select != Self;
+    return targets.isEmpty() && to_select->hasLordSkill("huangtian") && to_select != Self && !to_select->hasFlag("HuangtianInvoked");
 }
 
 class GuidaoViewAsSkill:public OneCardViewAsSkill{
@@ -177,11 +186,11 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("HuangtianCard") && player->getKingdom() == "qun";
+        return player->getKingdom() == "qun" && !player->hasFlag("ForbidHuangtian");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getCard();
+        const Card *card = to_select->getFilteredCard();
         return card->objectName() == "jink" || card->objectName() == "lightning";
     }
 
@@ -193,18 +202,35 @@ public:
     }
 };
 
-class Huangtian: public GameStartSkill{
+class Huangtian: public TriggerSkill{
 public:
-    Huangtian():GameStartSkill("huangtian$"){
-
+    Huangtian():TriggerSkill("huangtian$"){
+        events << GameStart << PhaseChange;
     }
 
-    virtual void onGameStart(ServerPlayer *zhangjiao) const{
-        Room *room = zhangjiao->getRoom();
-        QList<ServerPlayer *> players = room->getAlivePlayers();
-        foreach(ServerPlayer *player, players){
-            room->attachSkillToPlayer(player, "huangtianv");
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(event == GameStart && player->isLord()){
+            QList<ServerPlayer *> players = room->getAlivePlayers();
+            foreach(ServerPlayer *p, players){
+                room->attachSkillToPlayer(p, "huangtianv");
+            }
         }
+        else if(event == PhaseChange && player->getPhase() == Player::NotActive){
+            if(player->hasFlag("ForbidHuangtian")){
+                room->setPlayerFlag(player, "-ForbidHuangtian");
+            }
+            QList<ServerPlayer *> players = room->getOtherPlayers(player);
+            foreach(ServerPlayer *p, players){
+                if(p->hasFlag("HuangtianInvoked")){
+                    room->setPlayerFlag(p, "-HuangtianInvoked");
+                }
+            }
+        }
+        return false;
     }
 };
 
