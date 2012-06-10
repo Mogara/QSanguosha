@@ -3637,7 +3637,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
             showCard(target, has_peach->getEffectiveId());
             thread->delay();
             moveCardTo(has_peach, NULL, Player::DrawPile, true);
-        }else if(nextplayer->objectName() == target->objectName() && has_jink){
+        }else if(nextplayer->objectName() == target->objectName() && has_jink && !hasindul){
             showCard(target, has_jink->getEffectiveId());
             thread->delay();
             moveCardTo(has_jink, NULL, Player::DrawPile, true);

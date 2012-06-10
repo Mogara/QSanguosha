@@ -217,7 +217,7 @@ global_room:writeToConsole("we are in !!!!!!!!!")
 		self.room:setPlayerFlag(self.player, "gongxin_put")
 		global_room:writeToConsole("help friend  !!!!!!!!!")
 		return has_peach:getEffectiveId()
-	elseif who:objectName() == nextplayer:objectName() and has_jink then
+	elseif who:objectName() == nextplayer:objectName() and has_jink and hasindul < 1 then
 		self.room:setPlayerFlag(self.player, "gongxin_put")
 		global_room:writeToConsole("jink cycle  !!!!!!!!!")
 		return has_jink:getEffectiveId()

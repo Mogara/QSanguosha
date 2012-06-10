@@ -1214,7 +1214,7 @@ function SmartAI:useCardIndulgence(card, use)
 end
 
 sgs.ai_use_value.Indulgence = 8
-
+sgs.ai_use_priority.Indulgence = 8.9
 sgs.ai_card_intention.Indulgence = 120
 
 sgs.dynamic_value.control_usecard.Indulgence = true
