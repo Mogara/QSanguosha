@@ -256,8 +256,8 @@ public:
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
-            if(damage->from->getHp() <= 0 )
-                room->loseHp(damage->from,0);
+            if(damage->from->getHp() <= 0)
+                room->enterDying(damage->from,NULL);
             damage->from->clearPrivatePiles();
             if(damage->from->hasSkill("qixing")){
                 if(damage->from->getMark("@star") > 0)

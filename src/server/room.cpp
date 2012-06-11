@@ -3984,8 +3984,11 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
     gongxinArgs[2] = toJsonArray(player->handCards());    
 
     bool isUnicast = (to != NULL);
-    if (isUnicast)
-        doNotify(to, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+    if (isUnicast){
+        notifyMoveFocus(to, S_COMMAND_SKILL_GONGXIN);
+        doRequest(to, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
+        //doNotify(to, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+    }
     else{
         foreach(int card_id, player->handCards())
             setCardFlag(card_id, "visible");
