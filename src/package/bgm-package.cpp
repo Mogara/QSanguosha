@@ -518,7 +518,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *bgm_zhangfei = room->findPlayerBySkillName(objectName());
-        if(!bgm_zhangfei)
+        if(!bgm_zhangfei || bgm_zhangfei->loseTriggerSkills())
             return false;
         if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -645,7 +645,8 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *lvmeng = room->findPlayerBySkillName(objectName());
-
+        if(lvmeng && lvmeng->loseTriggerSkills())
+            return false;
         if(event == CardLostOneTime){
             if((player->getMark("@wu") > 0) && player->getHandcardNum() <= 2){
                 player->loseMark("@wu");

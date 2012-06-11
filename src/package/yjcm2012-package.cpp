@@ -456,6 +456,28 @@ public:
     }
 };
 
+class Zongshi: public MaxCardsSkill{
+public:
+    Zongshi():MaxCardsSkill("zongshi"){
+    }
+    virtual int getExtra(const Player *target) const{
+        int extra = 0;
+        QSet<QString> kingdom_set;
+        if(parent()){
+            foreach(const Player *player, parent()->findChildren<const Player *>()){
+                if(player->isAlive()){
+                    kingdom_set << player->getKingdom();
+                }
+            }
+        }
+        extra = kingdom_set.size();
+        if(target->hasLordSkill(objectName()) && !target->loseOtherSkills())
+            return extra;
+        else
+            return 0;
+    }
+};
+
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
@@ -626,7 +648,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target->hasSkill(objectName()) && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -741,13 +763,13 @@ public:
         view_as_skill = new ChunlaoViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *) const{
+    virtual bool triggerable(const ServerPlayer *target) const{
         return true;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *chengpu = room->findPlayerBySkillName(objectName());
-        if(!chengpu)
+        if(!chengpu || chengpu->loseTriggerSkills())
             return false;
         if(event == PhaseChange &&
                 chengpu->getPhase() == Player::Finish &&
@@ -811,7 +833,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *liubiao = new General(this, "liubiao", "qun", 4);
     liubiao->addSkill(new Zishou);
-    liubiao->addSkill(new Skill("zongshi", Skill::Compulsory));
+    liubiao->addSkill(new Zongshi);
 
     General *madai = new General(this, "madai", "shu");
     madai->addSkill(new Qianxi);

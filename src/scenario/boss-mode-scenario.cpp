@@ -69,7 +69,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->isLord();
+        return target->isLord() && !target->loseTriggerSkills();
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -240,6 +240,8 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        if(to->loseProhibitSkills())
+            return false;
         return card->inherits("DelayedTrick");
     }
 };

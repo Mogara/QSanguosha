@@ -165,7 +165,7 @@ public:
 
         QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *caiwenji, cais){
-            if(!caiwenji->isNude() && caiwenji->askForSkillInvoke(objectName(), data)){
+            if(!caiwenji->isNude() && !caiwenji->loseTriggerSkills() && caiwenji->askForSkillInvoke(objectName(), data)){
                 room->askForDiscard(caiwenji, "beige", 1, 1, false, true);
 
                 JudgeStruct judge;
@@ -229,12 +229,16 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target->hasSkill(objectName()) && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
 
+        if(Config.EnableBasara){
+            // @:todo if the killer is anjiang,do nothing;else turn him to anjiang again
+            return false;
+        }
         if(damage && damage->from && damage->from->getGeneralName() != "anjiang"){
             if (player == NULL) return false;
 
@@ -246,22 +250,33 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName());
 
+            damage->from->gainMark("@duanchang");
             QList<const Skill *> skills = damage->from->getVisibleSkillList();
             foreach(const Skill *skill, skills){
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
-            damage->from->clearPrivatePiles();
             if(damage->from->getHp() <= 0 )
                 room->loseHp(damage->from,0);
-            QString kingdom = damage->from->getKingdom();
-
-            QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
-            room->setPlayerProperty(damage->from, "general", to_transfigure);
-            if(damage->from->getGeneral2())
-                room->setPlayerProperty(damage->from, "general2", to_transfigure);
-            room->setPlayerProperty(damage->from, "kingdom", kingdom);
-
+            damage->from->clearPrivatePiles();
+            if(damage->from->hasSkill("qixing")){
+                if(damage->from->getMark("@star") > 0)
+                    damage->from->loseAllMarks("@star");
+                QList<ServerPlayer *> players = room->getAllPlayers();
+                foreach(ServerPlayer *player, players){
+                    player->loseAllMarks("@gale");
+                    player->loseAllMarks("@fog");
+                }
+            }
+            else if(damage->from->hasSkill("wuhun")){
+                QList<ServerPlayer *> players = room->getAllPlayers();
+                foreach(ServerPlayer *player, players){
+                    player->loseAllMarks("@nightmare");
+                }
+            }
+            else if(damage->from->hasSkill("renjie")){
+                damage->from->loseAllMarks("@bear");
+            }
             room->resetAI(damage->from);
         }
 
@@ -276,7 +291,7 @@ public:
     }
 
     virtual int getCorrect(const Player *from, const Player *) const{
-        if(from->hasSkill(objectName()))
+        if(from->hasSkill(objectName()) && !from->loseDistanceSkills())
             return -from->getPile("field").length();
         else
             return 0;
@@ -347,8 +362,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect("zaoxian");
-        room->broadcastInvoke("animate", "lightbox:$zaoxian:4000");
-        room->getThread()->delay(4000);
+        //room->broadcastInvoke("animate", "lightbox:$zaoxian:4000");
+        //room->getThread()->delay(4000);
 
         room->acquireSkill(dengai, "jixi");
 
@@ -483,8 +498,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect(objectName());
-        room->broadcastInvoke("animate", "lightbox:$Hunzi:5000");
-        room->getThread()->delay(5000);
+        //room->broadcastInvoke("animate", "lightbox:$Hunzi:5000");
+        //room->getThread()->delay(5000);
 
         room->loseMaxHp(sunce);
 
@@ -504,7 +519,8 @@ ZhibaCard::ZhibaCard(){
 
 bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select->hasLordSkill("sunce_zhiba") && to_select != Self
-            && !to_select->isKongcheng() && !to_select->hasFlag("ZhibaInvoked");
+            && !to_select->isKongcheng() && !to_select->hasFlag("ZhibaInvoked")
+            && !to_select->loseViewasSkills();
 }
 
 void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -521,12 +537,17 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     room->setPlayerFlag(sunce, "ZhibaInvoked");
     QList<ServerPlayer *> sunces;
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
+    ServerPlayer *lordplayer = NULL;
+    if(source->isLord())
+        lordplayer = source;
     foreach(ServerPlayer *p, players){
-        if(p->hasLordSkill("sunce_zhiba") && !p->hasFlag("ZhibaInvoked")){
+        if(p->hasLordSkill("sunce_zhiba") && !p->hasFlag("ZhibaInvoked") && !p->loseViewasSkills()){
             sunces << p;
         }
+        if(p->isLord())
+            lordplayer = p;
     }
-    if(sunces.empty())
+    if(sunces.empty() && lordplayer->loseViewasSkills())
         room->setPlayerFlag(source, "ForbidZhiba");
 }
 
@@ -537,7 +558,16 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getKingdom() == "wu" && !player->isKongcheng() && !player->hasFlag("ForbidZhiba");
+        const Player *lord = NULL;
+        if(player->isLord())
+            lord = player;
+        QList<const Player *> players = player->getSiblings();
+        foreach(const Player *p, players){
+            if(p->isLord())
+                lord = p;
+        }
+        return player->getKingdom() == "wu" && !player->isKongcheng() && !player->hasFlag("ForbidZhiba")
+                                        && !lord->loseViewasSkills();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -667,8 +697,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect("zhiji");
-        room->broadcastInvoke("animate", "lightbox:$Zhiji:5000");
-        room->getThread()->delay(5000);
+        //room->broadcastInvoke("animate", "lightbox:$Zhiji:5000");
+        //room->getThread()->delay(5000);
         QStringList choicelist;
         choicelist << "draw";
         if (jiangwei->getLostHp() != 0)
@@ -745,7 +775,8 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *erzhang = room->findPlayerBySkillName(objectName());
         ServerPlayer *current = room->getCurrent();
-
+        if(erzhang && erzhang->loseTriggerSkills())
+            return false;
         if(erzhang == NULL)
             return false;
         if(erzhang == current)
@@ -924,10 +955,13 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
+        ServerPlayer *lord = target->getRoom()->getLord();
         return target->getPhase() == Player::Start
                 && target->hasLordSkill("ruoyu")
                 && target->isAlive()
-                && target->getMark("ruoyu") == 0;
+                && target->getMark("ruoyu") == 0
+                && !target->loseTriggerSkills()
+                && !lord->loseTriggerSkills();
     }
 
     virtual bool onPhaseChange(ServerPlayer *liushan) const{

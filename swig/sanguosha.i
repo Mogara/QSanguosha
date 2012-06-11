@@ -145,6 +145,12 @@ public:
 	bool hasLordSkill(const char *skill_name) const;
 	bool hasInnateSkill(const char *skill_name) const;
 
+	bool loseTriggerSkills() const;
+    bool loseViewasSkills() const;
+    bool loseProhibitSkills() const;
+    bool loseDistanceSkills() const;
+    bool loseOtherSkills() const;
+
 	void setEquip(const EquipCard *card);
 	void removeEquip(const EquipCard *equip);
 	bool hasEquip(const Card *card) const;

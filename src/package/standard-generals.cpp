@@ -36,7 +36,8 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("hujia");
+        return target->hasLordSkill("hujia") && !target->loseTriggerSkills()
+                && !(target->getRoom()->getLord()->loseTriggerSkills());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *caocao, QVariant &data) const{
@@ -148,7 +149,6 @@ public:
 
     virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         Room *room = guojia->getRoom();
-
         if(!room->askForSkillInvoke(guojia, objectName()))
             return;
 
@@ -484,7 +484,9 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasLordSkill("jijiang");
+        return target != NULL && target->hasLordSkill("jijiang")
+                && !target->loseTriggerSkills()
+                && !(target->getRoom()->getLord()->loseTriggerSkills());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *liubei, QVariant &data) const{
@@ -667,8 +669,10 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        if(card->inherits("Slash") || card->inherits("Duel"))
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card) const{
+        if(to->loseProhibitSkills())
+            return false;
+        else if(card->inherits("Slash") || card->inherits("Duel"))
             return to->isKongcheng();
         else
             return false;
@@ -754,7 +758,8 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("jiuyuan");
+        return target->hasLordSkill("jiuyuan") && !target->loseTriggerSkills()
+                && !(target->getRoom()->getLord()->loseTriggerSkills());
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sunquan, QVariant &data) const{
@@ -1002,6 +1007,8 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *daqiao = room->findPlayerBySkillName(objectName());
+        if(daqiao && daqiao->loseTriggerSkills())
+            return false;
         if(!daqiao || !use.to.contains(daqiao)) return false;
 
         if(use.card->inherits("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
@@ -1222,7 +1229,9 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card) const{
+        if(to->loseProhibitSkills())
+            return false;
         return card->inherits("Snatch") || card->inherits("Indulgence");
     }
 };
@@ -1234,7 +1243,7 @@ public:
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
-        if(from->hasSkill(objectName()))
+        if(from->hasSkill(objectName()) && !from->loseDistanceSkills())
             return -1;
         else
             return 0;

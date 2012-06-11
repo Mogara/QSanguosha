@@ -58,6 +58,8 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
+        if(caozhi && caozhi->loseTriggerSkills())
+            return false;
         if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DiscardPile
@@ -151,6 +153,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *xushu = room->findPlayerBySkillName(objectName());
+        if(xushu && xushu->loseTriggerSkills())
+            return false;
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->getTypeId() == Card::Trick){
             if(event == DamagedProceed && player->hasSkill(objectName())){
@@ -406,10 +411,11 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target->hasSkill(objectName()) && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *masu = room->findPlayerBySkillName(objectName());
         DamageStar damage = data.value<DamageStar>();
         ServerPlayer *killer = damage ? damage->from : NULL;
         if(killer){
@@ -916,6 +922,8 @@ public:
         if (player == NULL) return false;
         QList<ServerPlayer *> wuguots = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *wuguotai, wuguots){
+            if(wuguotai->loseTriggerSkills())
+                continue;
             if(player->getHp() < 1 && wuguotai->askForSkillInvoke(objectName(), data)){
                 const Card *card = NULL;
                 if(player == wuguotai)
@@ -1019,6 +1027,19 @@ public:
             zhonghui->addToPile("power", card->getEffectiveId());
         }
 
+    }
+};
+
+class QuanjiKeep: public MaxCardsSkill{
+public:
+    QuanjiKeep():MaxCardsSkill("#quanji"){
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if(target->hasSkill(objectName()) && !target->loseOtherSkills())
+            return target->getPile("power").length();
+        else
+            return 0;
     }
 };
 
@@ -1177,8 +1198,10 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new Quanji);
+    zhonghui->addSkill(new QuanjiKeep);
     zhonghui->addSkill(new Zili);
     zhonghui->addRelateSkill("paiyi");
+    related_skills.insertMulti("quanji", "#quanji");
 
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
@@ -1189,7 +1212,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<XinzhanCard>();
     addMetaObject<JujianCard>();
     addMetaObject<PaiyiCard>();
-
     skills << new Paiyi;
 }
 

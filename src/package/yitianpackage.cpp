@@ -678,6 +678,8 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        if(to->loseProhibitSkills())
+            return false;
         return card->inherits("Indulgence") || card->inherits("SupplyShortage");
     }
 };
@@ -698,7 +700,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
-        if(xuandi == NULL)
+        if(!xuandi || xuandi->loseTriggerSkills())
             return false;
 
         QString wuling = xuandi->tag.value("wuling").toString();
@@ -748,7 +750,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
-        if(xuandi == NULL)
+        if(!xuandi || xuandi->loseTriggerSkills())
             return false;
 
         QString wuling = xuandi->tag.value("wuling").toString();
@@ -1038,7 +1040,9 @@ public:
             || damage.nature != DamageStruct::Fire)
             return false;
 
-        ServerPlayer *luboyan = damage.from;        
+        ServerPlayer *luboyan = damage.from;
+        if(luboyan->loseTriggerSkills())
+            return false;
         QList<ServerPlayer *> targets;
         room->setTag("Shaoying", damage.to->objectName());
         foreach(ServerPlayer *p, room->getAlivePlayers()){
@@ -1133,7 +1137,7 @@ public:
 
         Room *room = player->getRoom();
         ServerPlayer *zhongshiji = room->findPlayerBySkillName("gongmou");
-        if(zhongshiji){
+        if(zhongshiji && !zhongshiji->loseTriggerSkills()){
             int x = qMin(zhongshiji->getHandcardNum(), player->getHandcardNum());
             if(x == 0)
                 return false;
@@ -1373,7 +1377,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target->hasSkill(objectName()) && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1481,7 +1485,7 @@ public:
         if (player == NULL) return false;
         ServerPlayer *dengshizai = room->findPlayerBySkillName(objectName());
 
-        if(dengshizai && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
+        if(dengshizai && !dengshizai->loseTriggerSkills() && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName());
 
             dengshizai->turnOver();
@@ -1703,7 +1707,7 @@ public:
 
         ServerPlayer *zhanglu = room->findPlayerBySkillName(objectName());
 
-        if(zhanglu == NULL)
+        if(!zhanglu || zhanglu->loseTriggerSkills())
             return false;
 
         CardStar card = data.value<CardStar>();

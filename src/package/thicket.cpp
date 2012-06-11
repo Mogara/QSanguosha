@@ -24,6 +24,8 @@ public:
             return false;
         QList<ServerPlayer *> caopis = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *caopi, caopis){
+            if(caopi->loseTriggerSkills())
+                continue;
             if(caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)){
                 if(player->isCaoCao()){
                     room->playSkillEffect(objectName(), 3);
@@ -110,7 +112,15 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "wei";
+        QList<ServerPlayer *> players = target->getRoom()->getAlivePlayers();
+        ServerPlayer *lord = NULL;
+        foreach(ServerPlayer *player, players){
+            if(player->isLord())
+                lord = player;
+            if(!player->hasLordSkill(objectName()) || player->loseTriggerSkills())
+                players.removeOne(player);
+        }
+        return target->getKingdom() == "wei" && !lord->loseTriggerSkills() && !players.empty();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -122,7 +132,7 @@ public:
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
             foreach(ServerPlayer *p, players){
                 QVariant who = QVariant::fromValue(p);
-                if(p->hasLordSkill("songwei") && player->askForSkillInvoke("songwei", who)){
+                if(p->hasLordSkill("songwei") && !p->loseTriggerSkills() && player->askForSkillInvoke("songwei", who)){
                     if(player->getGeneral()->isMale())
                         room->playSkillEffect(objectName(), 1);
                     else
@@ -205,6 +215,8 @@ public:
         if(damage.card && damage.card->inherits("SavageAssault")){
             if (player == NULL) return false;
             ServerPlayer *menghuo = room->findPlayerBySkillName(objectName());
+            if(menghuo && menghuo->loseTriggerSkills())
+                return false;
             if(menghuo){
                 LogMessage log;
                 log.type = "#HuoshouTransfer";
@@ -319,6 +331,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *zhurong = room->findPlayerBySkillName(objectName());
+        if(zhurong && zhurong->loseTriggerSkills())
+            return false;
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("SavageAssault") &&
                 ((!use.card->isVirtualCard()) ||
@@ -645,7 +660,7 @@ LuanwuCard::LuanwuCard(){
 
 void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     source->loseMark("@chaos");
-    room->broadcastInvoke("animate", "lightbox:$luanwu");
+    //room->broadcastInvoke("animate", "lightbox:$luanwu");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){
@@ -694,6 +709,8 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        if(to->loseProhibitSkills())
+            return false;
         return card->inherits("TrickCard") && card->isBlack() && !card->inherits("Collateral");
     }
 };
@@ -756,6 +773,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
+        ServerPlayer *dongzhuo = room->findPlayerBySkillName(objectName());
+        if(dongzhuo && dongzhuo->loseTriggerSkills())
+            return false;
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.from->hasSkill(objectName()) && effect.to->getGeneral()->isFemale()){
             // dongzhuo slash female
@@ -842,7 +862,15 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "qun";
+        QList<ServerPlayer *> players = target->getRoom()->getAlivePlayers();
+        ServerPlayer *lord = NULL;
+        foreach(ServerPlayer *player, players){
+            if(player->isLord())
+                lord = player;
+            if(!player->hasLordSkill(objectName()) || player->loseTriggerSkills())
+                players.removeOne(player);
+        }
+        return target->getKingdom() == "qun" && !lord->loseTriggerSkills() && !players.empty();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
@@ -850,11 +878,12 @@ public:
         QList<ServerPlayer *> dongzhuos;
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         foreach(ServerPlayer *p, players){
-            if(p->hasLordSkill("baonue")){
+            if(p->hasLordSkill(objectName()) && !p->loseTriggerSkills()){
                 dongzhuos << p;
             }
         }
-
+        if(dongzhuos.empty())
+            return false;
         foreach(ServerPlayer *dongzhuo, dongzhuos){
             QVariant who = QVariant::fromValue(dongzhuo);
             if(player->askForSkillInvoke(objectName(), who)){

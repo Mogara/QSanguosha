@@ -231,6 +231,29 @@ public:
     }
 };
 
+class Xueyi: public MaxCardsSkill{
+public:
+    Xueyi():MaxCardsSkill("xueyi$"){
+    }
+    virtual int getExtra(const Player *target) const{
+        int extra = 0;
+        const Player *lord = NULL;
+        if(target->isLord())
+            lord = target;
+        QList<const Player *> players = target->getSiblings();
+        foreach(const Player *player, players){
+            if(player->isAlive() && player->getKingdom() == "qun")
+                extra += 2;
+            if(player->isLord())
+                lord = player;
+        }
+        if(target->hasLordSkill(objectName()) && !target->loseOtherSkills() && !lord->loseOtherSkills())
+            return extra;
+        else
+            return 0;
+    }
+};
+
 class ShuangxiongViewAsSkill: public OneCardViewAsSkill{
 public:
     ShuangxiongViewAsSkill():OneCardViewAsSkill("shuangxiong"){
@@ -364,7 +387,7 @@ public:
             return false;
 
         if(pangtong->askForSkillInvoke(objectName(), data)){
-            room->broadcastInvoke("animate", "lightbox:$niepan");
+            //room->broadcastInvoke("animate", "lightbox:$niepan");
             room->playSkillEffect(objectName());
 
             pangtong->loseMark("@nirvana");
@@ -558,7 +581,7 @@ FirePackage::FirePackage()
 
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);
-    yuanshao->addSkill(new Skill("xueyi$", Skill::Compulsory));
+    yuanshao->addSkill(new Xueyi);
 
     yanliangwenchou = new General(this, "yanliangwenchou", "qun");
     yanliangwenchou->addSkill(new Shuangxiong);

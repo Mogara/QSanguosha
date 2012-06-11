@@ -663,7 +663,7 @@ bool Collateral::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 bool Collateral::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.isEmpty()){
-        if(to_select->hasSkill("weimu") && isBlack())
+        if(to_select->hasSkill("weimu") && isBlack() && !to_select->loseProhibitSkills())
             return false;
 
         return to_select->getWeapon() && to_select != Self;
@@ -787,9 +787,6 @@ Duel::Duel(Suit suit, int number)
 }
 
 bool Duel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
-        return false;
-
     if(to_select == Self)
         return false;
 

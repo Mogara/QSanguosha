@@ -29,7 +29,7 @@ function SmartAI:slashProhibit(card,enemy)
 		end
 	end
 
-	return not self:slashIsEffective(card, enemy)
+	return self.room:isProhibited(self.player, enemy, card) or not self:slashIsEffective(card, enemy) 
 end
 
 function SmartAI:canLiuli(other, another)
@@ -753,7 +753,8 @@ function SmartAI:useCardDuel(duel, use)
 		if target:hasSkill("wushuang") then n2 = n2*2 end
 		local useduel
 		if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) 
-			and not self:cantbeHurt(target) then
+			and not self.room:isProhibited(self.player, target, duel)
+				and not self:cantbeHurt(target) then
 			if n1 >= n2 then
 				useduel = true
 			elseif n2 > n1*2 + 1 then
@@ -786,7 +787,8 @@ function SmartAI:useCardDuel(duel, use)
 	
 	local useduel
 	if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) 
-	and not self:cantbeHurt(target) then
+		and not self.room:isProhibited(self.player, target, duel)
+			and not self:cantbeHurt(target) then
 		if n1 >= n2 then
 			useduel = true
 		elseif n2 > n1*2 + 1 then

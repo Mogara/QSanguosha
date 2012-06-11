@@ -44,7 +44,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill("wuhun");
+        return target->hasSkill("wuhun") && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *shenguanyu, QVariant &) const{
@@ -192,7 +192,7 @@ bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+    //room->broadcastInvoke("animate", "lightbox:$greatyeyan");
 
     shenzhouyu->loseMark("@flame");
     room->throwCard(this, shenzhouyu);
@@ -210,7 +210,7 @@ bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const P
 }
 
 void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
+    //room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
 
     shenzhouyu->loseMark("@flame");
     room->throwCard(this, shenzhouyu);
@@ -234,7 +234,7 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 }
 
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$smallyeyan");
+    //room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
 
     Card::use(room, shenzhouyu, targets);
@@ -402,7 +402,7 @@ public:
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
-        if(to->hasSkill(objectName()))
+        if(to->hasSkill(objectName()) && !to->loseDistanceSkills())
             return +1;
         else
             return 0;
@@ -937,6 +937,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
+        ServerPlayer *sima = room->findPlayerBySkillName("lianpo");
+        if(sima && sima->loseTriggerSkills())
+            return false;
         ServerPlayer *killer = damage ? damage->from : NULL;
 
         if(killer && killer->hasSkill("lianpo")){
@@ -1114,7 +1117,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getPhase() == Player::NotActive;
+        return target->getPhase() == Player::NotActive && !target->loseTriggerSkills();
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
@@ -1152,6 +1155,19 @@ public:
         if(player->isWounded())
             player->getRoom()->playSkillEffect(objectName());
         return n + player->getLostHp();
+    }
+};
+
+class JuejingKeep: public MaxCardsSkill{
+public:
+    JuejingKeep():MaxCardsSkill("#juejing"){
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if(target->hasSkill(objectName()) && !target->loseOtherSkills())
+            return 2;
+        else
+            return 0;
     }
 };
 
@@ -1310,7 +1326,9 @@ GodPackage::GodPackage()
 
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
     shenzhaoyun->addSkill(new Juejing);
+    shenzhaoyun->addSkill(new JuejingKeep);
     shenzhaoyun->addSkill(new Longhun);
+    related_skills.insertMulti("juejing", "#juejing");
 
     General *shensimayi = new General(this, "shensimayi", "god", 4);
     shensimayi->addSkill(new Renjie);

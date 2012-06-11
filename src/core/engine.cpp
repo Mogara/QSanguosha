@@ -137,11 +137,17 @@ void Engine::addSkills(const QList<const Skill *> &all_skills){
             prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
         else if(skill->inherits("DistanceSkill"))
             distance_skills << qobject_cast<const DistanceSkill *>(skill);
+        else if(skill->inherits("MaxCardsSkill"))
+            maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
     }
 }
 
 QList<const DistanceSkill *> Engine::getDistanceSkills() const{
     return distance_skills;
+}
+
+QList<const MaxCardsSkill *> Engine::getMaxCardsSkills() const{
+    return maxcards_skills;
 }
 
 void Engine::addPackage(Package *package){
@@ -725,4 +731,14 @@ int Engine::correctDistance(const Player *from, const Player *to) const{
     }
 
     return correct;
+}
+
+int Engine::correctMaxCards(const Player *target) const{
+    int extra = 0;
+
+    foreach(const MaxCardsSkill *skill, maxcards_skills){
+        extra += skill->getExtra(target);
+    }
+
+    return extra;
 }

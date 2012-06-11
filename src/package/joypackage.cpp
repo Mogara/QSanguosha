@@ -138,7 +138,7 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
                 room->setEmotion(player, "good");
             else{
                 room->setEmotion(player, "bad");
-                room->broadcastInvoke("animate", "typhoon:" + player->objectName());
+                //room->broadcastInvoke("animate", "typhoon:" + player->objectName());
                 room->broadcastInvoke("playAudio", "typhoon");
 
                 room->askForDiscard(player, objectName(), discard_num, discard_num);

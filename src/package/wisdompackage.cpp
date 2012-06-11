@@ -142,7 +142,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
         ServerPlayer *xuyou = room->findPlayerBySkillName(objectName());
-        if(!xuyou) return false;
+        if(!xuyou || xuyou->loseTriggerSkills()) return false;
         PindianStar pindian = data.value<PindianStar>();
         if(pindian->from != xuyou && pindian->to != xuyou)
             return false;
@@ -436,7 +436,8 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("weidai");
+        ServerPlayer *lord = target->getRoom()->getLord();
+        return target->hasLordSkill("weidai") && !target->loseTriggerSkills() && !lord->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *sunce, QVariant &data) const{
@@ -497,7 +498,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *zhangzhao = room->findPlayerBySkillName(objectName());
-        if(!zhangzhao)
+        if(!zhangzhao || zhangzhao->loseTriggerSkills())
             return false;
         PindianStar pindian = data.value<PindianStar>();
         QStringList choices;
@@ -554,7 +555,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target->hasSkill(objectName()) && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -600,7 +601,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *hua = room->findPlayerBySkillName(objectName());
-        if(!hua)
+        if(!hua || hua->loseTriggerSkills())
             return false;
         if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -654,6 +655,8 @@ public:
             return false;
         QList<ServerPlayer *> tians = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *tianfeng, tians){
+            if(tianfeng->loseTriggerSkills())
+                continue;
             if(tianfeng->getCardCount(true)>=2
                && room->askForSkillInvoke(tianfeng, objectName(), QVariant::fromValue(player))
                 && room->askForDiscard(tianfeng, objectName(), 2, 2, false, true)){
@@ -707,7 +710,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target->hasSkill(objectName()) && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *tianfeng, QVariant &data) const{
@@ -787,7 +790,8 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return target->getMark("jiehuo") == 0
-                && target->getMark("@shouye") > 6;
+                && target->getMark("@shouye") > 6
+                && !target->loseTriggerSkills();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -824,6 +828,9 @@ public:
         if (player == NULL) return false;
         if (player->getMark("forbid_shien") > 0)
             return false;
+        ServerPlayer *sima = room->findPlayerBySkillName(objectName());
+            if(sima && sima->loseTriggerSkills())
+                return false;
         CardStar card = NULL;
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();

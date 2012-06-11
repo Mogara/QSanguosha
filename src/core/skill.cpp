@@ -129,8 +129,17 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 bool ViewAsSkill::isAvailable() const{
     switch(ClientInstance->getStatus()){
-    case Client::Playing: return isEnabledAtPlay(Self);
-    case Client::Responsing: return isEnabledAtResponse(Self, ClientInstance->getPattern());
+    case Client::Playing: return isEnabledAtPlay(Self) && (!Self->loseViewasSkills()
+                                                           || this->objectName() == "free-discard"
+                                                           || this->objectName() == "fan"
+                                                           || this->objectName() == "spear"
+                                                           || this->objectName() == "huangtianv"
+                                                           || this->objectName() == "zhiba_pindian"
+                                                           || this->objectName() == "liangshangjunzi"
+                                                           || this->objectName() == "peaching");
+    case Client::Responsing: return isEnabledAtResponse(Self, ClientInstance->getPattern())
+                                        && (!Self->loseViewasSkills()
+                                        || this->objectName() == "wuliu_sword");
     default:
         return false;
     }
@@ -208,7 +217,8 @@ int TriggerSkill::getPriority() const{
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
-    return target != NULL && target->isAlive() && target->hasSkill(objectName());
+    return target != NULL && target->isAlive() && target->hasSkill(objectName())
+                && !target->loseTriggerSkills();
 }
 
 ScenarioRule::ScenarioRule(Scenario *scenario)
@@ -332,7 +342,11 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 DistanceSkill::DistanceSkill(const QString &name)
     :Skill(name, Skill::Compulsory)
 {
+}
 
+MaxCardsSkill::MaxCardsSkill(const QString &name)
+    :Skill(name, Skill::Compulsory)
+{
 }
 
 WeaponSkill::WeaponSkill(const QString &name)

@@ -69,18 +69,25 @@ void HuangtianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlay
         room->setEmotion(zhangjiao, "good");
         QList<ServerPlayer *> zhangjiaos;
         QList<ServerPlayer *> players = room->getOtherPlayers(source);
+        ServerPlayer *lordplayer = NULL;
+        if(source->isLord())
+            lordplayer = source;
         foreach(ServerPlayer *p, players){
-            if(p->hasLordSkill("huangtian") && !p->hasFlag("HuangtianInvoked")){
+            if(p->hasLordSkill("huangtian") && !p->hasFlag("HuangtianInvoked") && !p->loseViewasSkills()){
                 zhangjiaos << p;
             }
+            if(p->isLord())
+                lordplayer = p;
         }
-        if(zhangjiaos.empty())
+        if(zhangjiaos.empty() && lordplayer->loseViewasSkills())
             room->setPlayerFlag(source, "ForbidHuangtian");
     }
 }
 
 bool HuangtianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->hasLordSkill("huangtian") && to_select != Self && !to_select->hasFlag("HuangtianInvoked");
+    return targets.isEmpty() && to_select->hasLordSkill("huangtian")
+            && to_select != Self && !to_select->hasFlag("HuangtianInvoked")
+            && !to_select->loseViewasSkills();
 }
 
 class GuidaoViewAsSkill:public OneCardViewAsSkill{
@@ -186,7 +193,16 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getKingdom() == "qun" && !player->hasFlag("ForbidHuangtian");
+        const Player *lord = NULL;
+        if(player->isLord())
+            lord = player;
+        QList<const Player *> players = player->getSiblings();
+        foreach(const Player *p, players){
+            if(p->isLord())
+                lord = p;
+        }
+        return player->getKingdom() == "qun" && !player->hasFlag("ForbidHuangtian")
+                && !lord->loseViewasSkills();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -427,7 +443,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-
+        ServerPlayer *weiyan = room->findPlayerBySkillName(objectName());
+        if(weiyan && weiyan->loseTriggerSkills())
+            return false;
         if(event == DamageDone && damage.from && damage.from->hasSkill("kuanggu") && damage.from->isAlive()){
             ServerPlayer *weiyan = damage.from;
             weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;

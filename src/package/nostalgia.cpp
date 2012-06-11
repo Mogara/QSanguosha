@@ -71,7 +71,9 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
-
+        ServerPlayer *xushu = room->findPlayerBySkillName(objectName());
+        if(xushu && xushu->loseTriggerSkills())
+            return false;
         if(effect.to == effect.from)
             return false;
 

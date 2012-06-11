@@ -140,7 +140,7 @@ public:
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             ServerPlayer *yangxiu = room->findPlayerBySkillName(objectName());
-            if(!yangxiu || use.to.length() <= 1 ||
+            if(!yangxiu || yangxiu->loseTriggerSkills() || use.to.length() <= 1 ||
                     !use.to.contains(yangxiu) ||
                     !use.card->inherits("TrickCard") || use.card->inherits("Collateral") ||
                     !room->askForSkillInvoke(yangxiu, objectName(), data))
@@ -271,7 +271,6 @@ WeidiCard::WeidiCard(){
 
 void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *yuanshu = card_use.from;
-
     QStringList choices;
     if(yuanshu->hasLordSkill("jijiang")&&Slash::IsAvailable(yuanshu))
         choices << "jijiang";
@@ -336,9 +335,9 @@ public:
 
     virtual int getCorrect(const Player *from, const Player *to) const{
         int correct = 0;
-        if(from->hasSkill(objectName()) && from->getHp() > 2)
+        if(from->hasSkill(objectName()) && from->getHp() > 2 && !from->loseDistanceSkills())
             correct --;
-        if(to->hasSkill(objectName()) && to->getHp() <= 2)
+        if(to->hasSkill(objectName()) && to->getHp() <= 2 && !to->loseDistanceSkills())
             correct ++;
 
         return correct;
@@ -391,6 +390,19 @@ public:
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         return n + 2;
+    }
+};
+
+class ShenweiKeep: public MaxCardsSkill{
+public:
+    ShenweiKeep():MaxCardsSkill("#shenwei"){
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if(target->hasSkill(objectName()) && !target->loseOtherSkills())
+            return 2;
+        else
+            return 0;
     }
 };
 
@@ -479,7 +491,9 @@ SPPackage::SPPackage()
     shenlvbu2->addSkill("wushuang");
     shenlvbu2->addSkill(new Xiuluo);
     shenlvbu2->addSkill(new Shenwei);
+    shenlvbu2->addSkill(new ShenweiKeep);
     shenlvbu2->addSkill(new Skill("shenji"));
+    related_skills.insertMulti("shenwei", "#shenwei");
 
     General *sp_caiwenji = new General(this, "sp_caiwenji", "wei", 3, false, true);
     sp_caiwenji->addSkill("beige");
