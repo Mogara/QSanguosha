@@ -311,7 +311,7 @@ public:
                 return true;
             }
             else
-                room->playSkillEffect(objectName(), qrand() % 2 + 2);
+                room->playSkillEffect(objectName(), 2);
         }
         return false;
     }

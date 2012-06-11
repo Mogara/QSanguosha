@@ -56,8 +56,10 @@ return {
 	["xuanfeng"] = "旋风",
 	[":xuanfeng"] = "当你失去装备区里的牌时，或于弃牌阶段弃置了两张或更多的手牌后，你可以依次弃置一至两名其他角色的共计两张牌。",
 	["xuanfeng:nothing"] = "不发动",
-	["xuanfeng:discard"] = "弃置其他一至两名角色总计2张牌",
-
+	["xuanfeng:second"] = "弃置其他一至两名角色各1张牌",
+	["xuanfeng:first"] = "弃置其他一名角色2张牌",
+	["@xuanfeng-card"] = "请选择一至两名角色",
+	
 	["#wuguotai"] = "武烈皇后",
 	["wuguotai"] = "吴国太",
 	["ganlu"] = "甘露",

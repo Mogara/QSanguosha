@@ -78,6 +78,7 @@ return {
 	["duanchang"] = "断肠",
 	[":duanchang"] = "<b>锁定技</b>，杀死你的角色失去当前的所有武将技能。",
 	["#DuanchangLoseSkills"] = "%from 的锁定技【%arg】被触发，杀死他的角色 %to 将失去所有的技能",
+	["@duanchang"] = "断肠",
 
 	["#zuoci"] = "迷之仙人",
 	["zuoci"] = "左慈",
