@@ -73,13 +73,13 @@ void HuangtianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlay
         if(source->isLord())
             lordplayer = source;
         foreach(ServerPlayer *p, players){
-            if(p->hasLordSkill("huangtian") && !p->hasFlag("HuangtianInvoked") && !p->loseViewasSkills()){
+            if(p->hasLordSkill("huangtian") && !p->hasFlag("HuangtianInvoked") && !p->loseViewAsSkills()){
                 zhangjiaos << p;
             }
             if(p->isLord())
                 lordplayer = p;
         }
-        if(zhangjiaos.empty() && lordplayer->loseViewasSkills())
+        if(zhangjiaos.empty() && lordplayer->loseViewAsSkills())
             room->setPlayerFlag(source, "ForbidHuangtian");
     }
 }
@@ -87,7 +87,7 @@ void HuangtianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlay
 bool HuangtianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select->hasLordSkill("huangtian")
             && to_select != Self && !to_select->hasFlag("HuangtianInvoked")
-            && !to_select->loseViewasSkills();
+            && !to_select->loseViewAsSkills();
 }
 
 class GuidaoViewAsSkill:public OneCardViewAsSkill{
@@ -202,7 +202,7 @@ public:
                 lord = p;
         }
         return player->getKingdom() == "qun" && !player->hasFlag("ForbidHuangtian")
-                && !lord->loseViewasSkills();
+                && !lord->loseViewAsSkills();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

@@ -134,7 +134,7 @@ public:
     bool hasInnateSkill(const QString &skill_name) const;
     bool hasLordSkill(const QString &skill_name) const;
     bool loseTriggerSkills() const;
-    bool loseViewasSkills() const;
+    bool loseViewAsSkills() const;
     bool loseProhibitSkills() const;
     bool loseDistanceSkills() const;
     bool loseOtherSkills() const;

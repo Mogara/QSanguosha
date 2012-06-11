@@ -314,7 +314,7 @@ bool Player::loseTriggerSkills() const{
     return (getMark("@duanchang") + getMark("@huoshui") + getMark("@qingcheng1")) > 0;
 }
 
-bool Player::loseViewasSkills() const{
+bool Player::loseViewAsSkills() const{
     return (getMark("@duanchang") + getMark("@huoshui") + getMark("@qingcheng2")) > 0;
 }
 

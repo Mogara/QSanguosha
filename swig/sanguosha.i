@@ -146,7 +146,7 @@ public:
 	bool hasInnateSkill(const char *skill_name) const;
 
 	bool loseTriggerSkills() const;
-    bool loseViewasSkills() const;
+    bool loseViewAsSkills() const;
     bool loseProhibitSkills() const;
     bool loseDistanceSkills() const;
     bool loseOtherSkills() const;

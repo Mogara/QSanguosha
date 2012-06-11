@@ -520,7 +520,7 @@ ZhibaCard::ZhibaCard(){
 bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select->hasLordSkill("sunce_zhiba") && to_select != Self
             && !to_select->isKongcheng() && !to_select->hasFlag("ZhibaInvoked")
-            && !to_select->loseViewasSkills();
+            && !to_select->loseViewAsSkills();
 }
 
 void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -541,13 +541,13 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     if(source->isLord())
         lordplayer = source;
     foreach(ServerPlayer *p, players){
-        if(p->hasLordSkill("sunce_zhiba") && !p->hasFlag("ZhibaInvoked") && !p->loseViewasSkills()){
+        if(p->hasLordSkill("sunce_zhiba") && !p->hasFlag("ZhibaInvoked") && !p->loseViewAsSkills()){
             sunces << p;
         }
         if(p->isLord())
             lordplayer = p;
     }
-    if(sunces.empty() && lordplayer->loseViewasSkills())
+    if(sunces.empty() && lordplayer->loseViewAsSkills())
         room->setPlayerFlag(source, "ForbidZhiba");
 }
 
@@ -567,7 +567,7 @@ public:
                 lord = p;
         }
         return player->getKingdom() == "wu" && !player->isKongcheng() && !player->hasFlag("ForbidZhiba")
-                                        && !lord->loseViewasSkills();
+                                        && !lord->loseViewAsSkills();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

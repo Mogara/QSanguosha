@@ -129,7 +129,7 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 bool ViewAsSkill::isAvailable() const{
     switch(ClientInstance->getStatus()){
-    case Client::Playing: return isEnabledAtPlay(Self) && (!Self->loseViewasSkills()
+    case Client::Playing: return isEnabledAtPlay(Self) && (!Self->loseViewAsSkills()
                                                            || this->objectName() == "free-discard"
                                                            || this->objectName() == "fan"
                                                            || this->objectName() == "spear"
@@ -138,7 +138,7 @@ bool ViewAsSkill::isAvailable() const{
                                                            || this->objectName() == "liangshangjunzi"
                                                            || this->objectName() == "peaching");
     case Client::Responsing: return isEnabledAtResponse(Self, ClientInstance->getPattern())
-                                        && (!Self->loseViewasSkills()
+                                        && (!Self->loseViewAsSkills()
                                         || this->objectName() == "wuliu_sword");
     default:
         return false;
