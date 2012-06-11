@@ -1147,7 +1147,7 @@ public:
 
 class Juejing: public DrawCardsSkill{
 public:
-    Juejing():DrawCardsSkill("juejing"){
+    Juejing():DrawCardsSkill("#juejing-draw"){
         frequency = Compulsory;
     }
 
@@ -1160,7 +1160,7 @@ public:
 
 class JuejingKeep: public MaxCardsSkill{
 public:
-    JuejingKeep():MaxCardsSkill("#juejing"){
+    JuejingKeep():MaxCardsSkill("juejing"){
     }
 
     virtual int getExtra(const Player *target) const{
@@ -1325,10 +1325,10 @@ GodPackage::GodPackage()
     related_skills.insertMulti("kuangbao", "#@wrath-2");
 
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
-    shenzhaoyun->addSkill(new Juejing);
     shenzhaoyun->addSkill(new JuejingKeep);
+    shenzhaoyun->addSkill(new Juejing);
     shenzhaoyun->addSkill(new Longhun);
-    related_skills.insertMulti("juejing", "#juejing");
+    related_skills.insertMulti("juejing", "#juejing-draw");
 
     General *shensimayi = new General(this, "shensimayi", "god", 4);
     shensimayi->addSkill(new Renjie);

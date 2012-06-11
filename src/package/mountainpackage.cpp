@@ -1070,7 +1070,7 @@ public:
             room->detachSkillFromPlayer(zuoci, huashen_skill);
             zuoci->clearPrivatePiles();
             if(zuoci->getHp() <= 0 )
-                room->loseHp(zuoci,0);
+                room->enterDying(zuoci, NULL);
         }
 
         QVariantList huashens = zuoci->tag["Huashens"].toList();

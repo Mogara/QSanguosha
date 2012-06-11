@@ -415,7 +415,6 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *masu = room->findPlayerBySkillName(objectName());
         DamageStar damage = data.value<DamageStar>();
         ServerPlayer *killer = damage ? damage->from : NULL;
         if(killer){
@@ -1008,7 +1007,7 @@ public:
 
 class Quanji:public MasochismSkill{
 public:
-    Quanji():MasochismSkill("quanji"){
+    Quanji():MasochismSkill("#quanji"){
         frequency = Frequent;
     }
 
@@ -1032,7 +1031,7 @@ public:
 
 class QuanjiKeep: public MaxCardsSkill{
 public:
-    QuanjiKeep():MaxCardsSkill("#quanji"){
+    QuanjiKeep():MaxCardsSkill("quanji"){
     }
 
     virtual int getExtra(const Player *target) const{
@@ -1197,8 +1196,8 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     yujin->addSkill(new Yizhong);
 
     General *zhonghui = new General(this, "zhonghui", "wei");
-    zhonghui->addSkill(new Quanji);
     zhonghui->addSkill(new QuanjiKeep);
+    zhonghui->addSkill(new Quanji);
     zhonghui->addSkill(new Zili);
     zhonghui->addRelateSkill("paiyi");
     related_skills.insertMulti("quanji", "#quanji");

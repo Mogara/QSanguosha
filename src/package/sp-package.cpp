@@ -384,7 +384,7 @@ public:
 
 class Shenwei: public DrawCardsSkill{
 public:
-    Shenwei():DrawCardsSkill("shenwei"){
+    Shenwei():DrawCardsSkill("#shenwei-draw"){
         frequency = Compulsory;
     }
 
@@ -395,7 +395,7 @@ public:
 
 class ShenweiKeep: public MaxCardsSkill{
 public:
-    ShenweiKeep():MaxCardsSkill("#shenwei"){
+    ShenweiKeep():MaxCardsSkill("shenwei"){
     }
 
     virtual int getExtra(const Player *target) const{
@@ -490,10 +490,10 @@ SPPackage::SPPackage()
     shenlvbu2->addSkill("mashu");
     shenlvbu2->addSkill("wushuang");
     shenlvbu2->addSkill(new Xiuluo);
-    shenlvbu2->addSkill(new Shenwei);
     shenlvbu2->addSkill(new ShenweiKeep);
+    shenlvbu2->addSkill(new Shenwei);
     shenlvbu2->addSkill(new Skill("shenji"));
-    related_skills.insertMulti("shenwei", "#shenwei");
+    related_skills.insertMulti("shenwei", "#shenwei-draw");
 
     General *sp_caiwenji = new General(this, "sp_caiwenji", "wei", 3, false, true);
     sp_caiwenji->addSkill("beige");
