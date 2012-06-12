@@ -942,7 +942,7 @@ public:
             return false;
         ServerPlayer *killer = damage ? damage->from : NULL;
 
-        if(killer && killer->hasSkill("lianpo")){
+        if(killer && killer->hasSkill("lianpo") && room->getCurrent()->isAlive()){
             killer->addMark("lianpo");
 
             LogMessage log;
@@ -1107,40 +1107,63 @@ public:
     }
 };
 
-class Lianpo: public PhaseChangeSkill{
+class Lianpo: public TriggerSkill{
 public:
-    Lianpo():PhaseChangeSkill("lianpo"){
+    Lianpo():TriggerSkill("lianpo"){
+        events << PhaseChange;
     }
 
     virtual int getPriority() const{
-        return -1;
+        return -2;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getPhase() == Player::NotActive && !target->loseTriggerSkills();
+        return true;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *shensimayi = room->findPlayerBySkillName("lianpo");
-        if(shensimayi == NULL || shensimayi->getMark("lianpo") <= 0)
+        if(shensimayi == NULL || shensimayi->loseTriggerSkills())
             return false;
+        if(player->getPhase() == Player::Finish && shensimayi->getMark("lianpo") > 0 ){
+            if(shensimayi->askForSkillInvoke("lianpo")){
+                int n = shensimayi->getMark("lianpo");
+                LogMessage log;
+                log.type = "#LianpoCanInvoke";
+                log.from = shensimayi;
+                log.arg = QString::number(n);
+                log.arg2 = objectName();
+                room->sendLog(log);
+            }
+            else
+                shensimayi->setMark("lianpo", 0);
+        }
+        return false;
+    }
+};
 
-        int n = shensimayi->getMark("lianpo");
-        shensimayi->setMark("lianpo", 0);
+class LianpoDo: public TriggerSkill{
+public:
+    LianpoDo():TriggerSkill("#lianpo-do"){
+        events << PhaseChange;
+    }
 
-        if(!shensimayi->askForSkillInvoke("lianpo"))
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *shensimayi = room->findPlayerBySkillName("lianpo");
+        if(shensimayi == NULL || shensimayi->loseTriggerSkills())
             return false;
-
-        LogMessage log;
-        log.type = "#LianpoCanInvoke";
-        log.from = shensimayi;
-        log.arg = QString::number(n);
-        log.arg2 = objectName();
-        room->sendLog(log);
-
-        shensimayi->gainAnExtraTurn(player);
-
+        if(player->getPhase() == Player::NotActive && shensimayi->getMark("lianpo") > 0){
+            shensimayi->setMark("lianpo", 0);
+            shensimayi->gainAnExtraTurn(player);
+        }
         return false;
     }
 };
@@ -1335,9 +1358,11 @@ GodPackage::GodPackage()
     shensimayi->addSkill(new Baiyin);
     shensimayi->addSkill(new Lianpo);
     shensimayi->addSkill(new LianpoCount);
+    shensimayi->addSkill(new LianpoDo);
 
     related_skills.insertMulti("jilve", "#jilve-clear");
     related_skills.insertMulti("lianpo", "#lianpo-count");
+    related_skills.insertMulti("lianpo", "#lianpo-do");
 
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();

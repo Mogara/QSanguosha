@@ -463,15 +463,15 @@ public:
     virtual int getExtra(const Player *target) const{
         int extra = 0;
         QSet<QString> kingdom_set;
-        if(parent()){
-            foreach(const Player *player, parent()->findChildren<const Player *>()){
+        if(target->parent()){
+            foreach(const Player *player, target->parent()->findChildren<const Player *>()){
                 if(player->isAlive()){
                     kingdom_set << player->getKingdom();
                 }
             }
         }
         extra = kingdom_set.size();
-        if(target->hasLordSkill(objectName()) && !target->loseOtherSkills())
+        if(target->hasSkill(objectName()) && !target->loseOtherSkills())
             return extra;
         else
             return 0;

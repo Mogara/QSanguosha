@@ -892,60 +892,70 @@ public:
     }
 };
 
-class Fangquan: public PhaseChangeSkill{
+class Fangquan: public TriggerSkill{
 public:
-    Fangquan():PhaseChangeSkill("fangquan"){
-
+    Fangquan():TriggerSkill("fangquan"){
+        events << PhaseChange;
     }
 
     virtual int getPriority() const{
         return 3;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *liushan) const{
-        switch(liushan->getPhase()){
-        case Player::Play: {
-                bool invoked = liushan->askForSkillInvoke(objectName());
-                if(invoked)
-                    liushan->setFlags("fangquan");
-                return invoked;
-            }
-
-        case Player::Finish: {
-                if(liushan->hasFlag("fangquan")){
-                    Room *room = liushan->getRoom();
-
-                    if(liushan->isKongcheng())
-                        return false;
-
-                    room->askForDiscard(liushan, "fangquan", 1, 1);
-
-                    ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
-
-                    QString name = player->getGeneralName();
-                    if(name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
-                        room->playSkillEffect("fangquan", 1);
-                    else
-                        room->playSkillEffect("fangquan", 2);
-
-                    LogMessage log;
-                    log.type = "#Fangquan";
-                    log.from = liushan;
-                    log.to << player;
-                    room->sendLog(log);
-
-                    player->gainAnExtraTurn(liushan);
-                }
-
-                break;
-            }
-
-        default:
-            break;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *liushan, QVariant &data) const{
+        if(liushan->getPhase() == Player::Play){
+            bool invoked = liushan->askForSkillInvoke(objectName());
+            if(invoked)
+                liushan->gainMark("fangquan");
+            return invoked;
         }
-
+        else if(liushan->getPhase() == Player::NotActive){
+                foreach(ServerPlayer* p, room->getAlivePlayers()){
+                    if(p->getMark("fangquan") > 0){
+                        p->setMark("fangquan", 0);
+                        p->gainAnExtraTurn(liushan);
+                    }
+                }
+        }
         return false;
     }
+};
+
+class FangquanGive: public TriggerSkill{
+public:
+    FangquanGive():TriggerSkill("#fangquan-give"){
+        events << PhaseChange;
+    }
+
+    virtual int getPriority() const{
+        return -2;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *liushan, QVariant &data) const{
+        if(liushan->getPhase() == Player::Finish){
+            if(liushan->getMark("fangquan") > 0){
+                liushan->setMark("fangquan", 0);
+                Room *room = liushan->getRoom();
+                if(liushan->isKongcheng())
+                    return false;
+                room->askForDiscard(liushan, "fangquan", 1, 1);
+                ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), "fangquan");
+                QString name = player->getGeneralName();
+                if(name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
+                    room->playSkillEffect("fangquan", 1);
+                else
+                room->playSkillEffect("fangquan", 2);
+
+                LogMessage log;
+                log.type = "#Fangquan";
+                log.from = liushan;
+                log.to << player;
+                room->sendLog(log);
+                player->gainMark("fangquan");
+             }
+        }
+        return false;
+ }
 };
 
 class Ruoyu: public PhaseChangeSkill{
@@ -1185,21 +1195,16 @@ void HuashenDialog::popup(){
     show();
 }
 
-class HuashenBegin: public PhaseChangeSkill{
+class HuashenBegin: public TriggerSkill{
 public:
-    HuashenBegin():PhaseChangeSkill("#huashen-begin"){
-
+    HuashenBegin():TriggerSkill("#huashen-begin"){
+        events << TurnStart;
     }
 
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::RoundStart;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *zuoci) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *zuoci = room->findPlayerBySkillName(objectName());
+        if(!zuoci || player->objectName() != zuoci->objectName() || !zuoci->faceUp() || zuoci->loseTriggerSkills())
+            return false;
         if(zuoci->askForSkillInvoke("huashen")){
             QString skill_name = Huashen::SelectSkill(zuoci, false);
             if(!skill_name.isEmpty())
@@ -1209,24 +1214,20 @@ public:
     }
 };
 
-class HuashenEnd: public PhaseChangeSkill{
+class HuashenEnd: public TriggerSkill{
 public:
-    HuashenEnd():PhaseChangeSkill("#huashen-end"){
-
+    HuashenEnd():TriggerSkill("#huashen-end"){
+        events << PhaseChange;
     }
 
     virtual int getPriority() const{
         return -2;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::NotActive;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *zuoci) const{
-        if(zuoci->askForSkillInvoke("huashen"))
-        Huashen::SelectSkill(zuoci);
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zuoci, QVariant &data) const{
+        PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+        if(phase_change.from == Player::Finish && zuoci->askForSkillInvoke("huashen"))
+            Huashen::SelectSkill(zuoci);
         return false;
     }
 };
@@ -1270,7 +1271,9 @@ MountainPackage::MountainPackage()
     General *liushan = new General(this, "liushan$", "shu", 3);
     liushan->addSkill(new Xiangle);
     liushan->addSkill(new Fangquan);
+    liushan->addSkill(new FangquanGive);
     liushan->addSkill(new Ruoyu);
+    related_skills.insertMulti("fangquan", "#fangquan-give");
 
     General *sunce = new General(this, "sunce$", "wu");
     sunce->addSkill(new Jiang);
