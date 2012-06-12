@@ -27,6 +27,7 @@ public:
 
         int card_id = room->askForCardChosen(player, target, "h", objectName());
         room->obtainCard(player, card_id, false);
+        room->playSkillEffect("chongzhen"); 
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

@@ -629,7 +629,7 @@ QList<int> Engine::getRandomCards() const{
         if(exclude_disaters && card->inherits("Disaster"))
             continue;
 
-        if(card->getPackage() == "Special3v3" && using_new_3v3){
+        if(card->getPackage() == "New3v3Card" && using_new_3v3){
             list << card->getId();
             list.removeOne(98);
         }

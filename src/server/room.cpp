@@ -3004,6 +3004,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             }
         }
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
+        moveOneTimeStruct.reason = cards_move.reason;
         for (int i = 0; i < cards_move.card_ids.size(); i++)
             moveOneTimeStruct.from_places.append(cards_move.from_place);
         if (cards_move.countAsOneTime && moveOneTimeStruct.card_ids.size() > 0){
@@ -3037,6 +3038,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             }
         }
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
+        moveOneTimeStruct.reason = cards_move.reason;
         for (int i = 0; i < cards_move.card_ids.size(); i++)
             moveOneTimeStruct.from_places.append(cards_move.from_place);
         if(cards_move.countAsOneTime && moveOneTimeStruct.card_ids.size() > 0){
@@ -3046,6 +3048,9 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             QVariant data = QVariant::fromValue(move_star);
             if(cards_move.to)
                 thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
+            else if(cards_move.to_place == Player::DiscardPile)
+                    foreach(ServerPlayer *p, getAlivePlayers())
+                        thread->trigger(CardGotOneTime, this, p, data);
         }
         if (cards_move.countAsOneTime) moveOneTimeStruct = CardsMoveOneTimeStruct();
     }
@@ -3232,6 +3237,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             Sanguosha->getCard(card_id)->onMove(moves[j]);
         }
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
+        moveOneTimeStruct.reason = cards_move.reason;
         for (int i = 0; i < cards_move.card_ids.size(); i++)
             moveOneTimeStruct.from_places.append(cards_move.from_place);        
         if(cards_move.countAsOneTime && moveOneTimeStruct.card_ids.size() > 0){
@@ -3241,6 +3247,9 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             QVariant data = QVariant::fromValue(move_star);
             if(cards_move.to)
                 thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
+            else if(cards_move.to_place == Player::DiscardPile)
+                foreach(ServerPlayer *p, getAlivePlayers())
+                    thread->trigger(CardGotOneTime, this, p, data);
         }
         if (cards_move.countAsOneTime) moveOneTimeStruct = CardsMoveOneTimeStruct();
     }    
@@ -3623,7 +3632,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         }
 
         foreach(const Card *card, cards){
-            if(card->getSuit() == Card::Heart){
+            if(card->getSuit() == Card::Heart || (card->getSuit() == Card::Spade && target->hasSkill("hongyan"))){
                 has_null = card;
                 if(card->inherits("Jink"))
                     has_jink = card;

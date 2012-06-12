@@ -497,7 +497,7 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
     if(will_throw){
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(this, NULL, Player::PlaceTakeoff, reason, true);
+		room->moveCardTo(this, NULL, Player::DiscardPile, reason, true);
     }
 }
 
