@@ -466,18 +466,16 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     RoomThread *thread = room->getThread();
     CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
     if (card_use.to.size() == 1) reason.m_targetId = card_use.to.first()->objectName();
-    room->moveCardTo(this, NULL, Player::PlaceTakeoff, reason);
+    if(will_throw)
+        room->moveCardTo(this, NULL, Player::DiscardPile, reason);
+    else
+        room->moveCardTo(this, NULL, Player::PlaceTakeoff, reason);
     thread->trigger(CardUsed, room, player, data);
 
     thread->trigger(CardFinished, room, player, data);
 }
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(will_throw){
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(this, NULL, Player::DiscardPile, reason);
-    }
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
     }else{

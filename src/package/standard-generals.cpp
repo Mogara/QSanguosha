@@ -894,27 +894,17 @@ public:
 class Lianying: public TriggerSkill{
 public:
     Lianying():TriggerSkill("lianying"){
-        events << CardUsed << CardLostOneTime;
+        events << CardLostOneTime;
 
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *luxun, QVariant &data) const{
-        if(!luxun->isKongcheng())
-            return false;
-        if(event == CardUsed && room->askForSkillInvoke(luxun, objectName())){
-            room->playSkillEffect(objectName());
-            luxun->drawCards(1);
-        }
-        else {
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
-                return false;
-            if(move->from_places.contains(Player::Hand)){
-                if(room->askForSkillInvoke(luxun, objectName())){
-                    room->playSkillEffect(objectName());
-                    luxun->drawCards(1);
-                }
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *luxun, QVariant &data) const{
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if(luxun->isKongcheng() && move->from_places.contains(Player::Hand)){
+            if(room->askForSkillInvoke(luxun, objectName(), data)){
+                room->playSkillEffect(objectName());
+                luxun->drawCards(1);
             }
         }
         return false;
