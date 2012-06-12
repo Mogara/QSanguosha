@@ -15,7 +15,8 @@ GameRule::GameRule(QObject *)
     // a way to do it.
     //setParent(parent);
 
-    events << GameStart << TurnStart << PhaseChange << CardUsed << CardFinished
+    events << GameStart << TurnStart << PhaseChange << CardUsed
+            << CardFinished << TargetConfirm << TargetConfirmed
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
             << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
@@ -203,14 +204,38 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             if(data.canConvert<CardUseStruct>()){
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
-
+                RoomThread *thread = room->getThread();
+                bool targetfix = false;
+                QList<int> changelist;
                 card_use.from->playCardEffect(card);
+                if(card_use.from && !card_use.to.empty()){
+                    foreach(ServerPlayer *to, card_use.to){
+                        if(true == thread->trigger(TargetConfirm, room, to, data)){
+                            targetfix = true;
+                            changelist << card_use.to.indexOf(to);
+                        }
+                    }
+                    foreach(ServerPlayer *p, room->getAlivePlayers())
+                        thread->trigger(TargetConfirmed, room, p, data);
+                }
+                if(targetfix){
+                    card_use = data.value<CardUseStruct>();
+                    foreach(int tmp, changelist){
+                        thread->trigger(TargetConfirm, room, card_use.to.at(tmp), data);
+                    }
+                }
+                card_use = data.value<CardUseStruct>();
                 card->use(room, card_use.from, card_use.to);
             }
 
             break;
         }
-
+    case TargetConfirm:{
+            break;
+        }
+    case TargetConfirmed:{
+            break;
+        }
     case CardFinished: {
             CardUseStruct use = data.value<CardUseStruct>();
             room->clearCardFlag(use.card);
@@ -813,7 +838,7 @@ BasaraMode::BasaraMode(QObject *parent)
 {
     setObjectName("basara_mode");
 
-    events << CardLostOnePiece << Predamaged;
+    events << CardLostOnePiece << DamagedProceed;
 
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";
@@ -975,7 +1000,7 @@ bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, Q
 
         break;
     }
-    case Predamaged:{
+    case DamagedProceed:{
         playerShowed(player);
         break;
     }

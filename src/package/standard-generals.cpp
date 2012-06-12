@@ -997,21 +997,13 @@ public:
     Liuli():TriggerSkill("liuli"){
         view_as_skill = new LiuliViewAsSkill;
 
-        events << CardUsed;
+        events << TargetConfirm;
     }
 
-    virtual bool triggerable(const ServerPlayer *) const{
-        return true;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *daqiao, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *daqiao = room->findPlayerBySkillName(objectName());
-        if(daqiao && daqiao->loseTriggerSkills())
-            return false;
-        if(!daqiao || !use.to.contains(daqiao)) return false;
 
-        if(use.card->inherits("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
+		if(use.card && use.card->inherits("Slash") && use.to.contains(daqiao) && !daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(use.from);
 
@@ -1036,7 +1028,7 @@ public:
 
                             room->setPlayerFlag(use.from, "-slash_source");
                             room->setPlayerFlag(p, "-liuli_target");
-                            break;
+                            return true;
                         }
                     }
                 }

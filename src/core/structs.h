@@ -295,9 +295,9 @@ enum TriggerEvent{
     TurnedOver,
 
     Predamage,
-    DamagedProceed,
-    DamageProceed,
     Predamaged,
+    DamageProceed,
+    DamagedProceed,
     DamageDone,
     Damage,
     Damaged,
@@ -319,7 +319,6 @@ enum TriggerEvent{
     JinkUsed,
 
     CardAsked,
-    CardUsed,
     CardResponsed,
     CardDiscarded,
     CardLostOnePiece,
@@ -329,6 +328,9 @@ enum TriggerEvent{
     CardDrawing,
     CardDrawnDone,
 
+    CardUsed,
+    TargetConfirm,
+    TargetConfirmed,
     CardEffect,
     CardEffected,
     CardFinished,

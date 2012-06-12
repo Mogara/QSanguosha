@@ -175,7 +175,7 @@ GudingBlade::GudingBlade(Suit suit, int number):Weapon(suit, number, 2){
 class VineSkill: public ArmorSkill{
 public:
     VineSkill():ArmorSkill("vine"){
-        events << Predamaged << SlashEffected << CardEffected;
+        events << DamagedProceed << SlashEffected << CardEffected;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -203,7 +203,7 @@ public:
 
                 return true;
             }
-        }else if(event == Predamaged){
+        }else if(event == DamagedProceed){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
                 LogMessage log;
@@ -230,7 +230,7 @@ Vine::Vine(Suit suit, int number):Armor(suit, number){
 class SilverLionSkill: public ArmorSkill{
 public:
     SilverLionSkill():ArmorSkill("silver_lion"){
-        events << Predamaged;
+        events << DamagedProceed;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

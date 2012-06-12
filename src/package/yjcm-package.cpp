@@ -119,7 +119,7 @@ private:
 class JiushiFlip: public TriggerSkill{
 public:
     JiushiFlip():TriggerSkill("#jiushi-flip"){
-        events << CardUsed << Predamaged << Damaged;
+        events << CardUsed << DamagedProceed << Damaged;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -127,7 +127,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->getSkillName() == "jiushi")
                 player->turnOver();
-        }else if(event == Predamaged){
+        }else if(event == DamagedProceed){
             player->tag["PredamagedFace"] = player->faceUp();
         }else if(event == Damaged){
             bool faceup = player->tag.value("PredamagedFace").toBool();
@@ -144,7 +144,7 @@ public:
 class Wuyan: public TriggerSkill{
 public:
     Wuyan():TriggerSkill("wuyan"){
-        events << DamagedProceed << Predamage;
+        events << Predamaged << Predamage;
         frequency = Compulsory;
     }
 
@@ -158,7 +158,7 @@ public:
             return false;
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->getTypeId() == Card::Trick){
-            if(event == DamagedProceed && player->hasSkill(objectName())){
+            if(event == Predamaged && player->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanGood";
                 log.from = player;
