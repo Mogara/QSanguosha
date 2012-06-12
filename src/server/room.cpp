@@ -3148,6 +3148,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             }
         }
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
+		moveOneTimeStruct.reason = cards_move.reason;
         for (int i = 0; i < cards_move.card_ids.size(); i++)
             moveOneTimeStruct.from_places.append(cards_move.from_place);        
         if (cards_move.countAsOneTime && moveOneTimeStruct.card_ids.size() > 0){
