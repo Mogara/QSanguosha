@@ -43,7 +43,7 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
-        events << CardGotOneTime << FinishJudge;
+        events << CardGotOneTime;
         frequency = Frequent;
         default_choice = "no";
     }
@@ -52,54 +52,43 @@ public:
         return -1;
     }
 
-    /*virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }*/
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *caozhi, QVariant &data) const{
-        //ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *caozhi, QVariant &data) const{
 
-        /*if(event == FinishJudge){
-            JudgeStar judge = data.value<JudgeStar>();
-            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DiscardPile
-               && judge->card->getSuit() == Card::Club)
-               caozhi->obtainCard(judge->card);
-        }
-        else */
-        if(event == CardGotOneTime){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->to_place == Player::DiscardPile && move->from->objectName() != caozhi->objectName() &&
-                (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
-                QList<CardsMoveStruct> exchangeMove;
-                CardsMoveStruct luoyingget;
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if(move->to_place == Player::DiscardPile && move->from->objectName() != caozhi->objectName() &&
+            ((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
+                || (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_JUDGEDONE)){
+            QList<CardsMoveStruct> exchangeMove;
+            CardsMoveStruct luoyingget;
 
-                foreach(int card_id, move->card_ids){
-                    if(Sanguosha->getCard(card_id)->getSuit() == Card::Club){
-                            luoyingget.card_ids << card_id;
-                            luoyingget.to = caozhi;
-                            luoyingget.to_place = Player::Hand;
-                    }
-                }
-                if(luoyingget.card_ids.empty())
-                    return false;
-                else
-                if(caozhi->askForSkillInvoke(objectName(), data)){
-                    foreach(int card_id, luoyingget.card_ids){
-                        if(Sanguosha->getCard(card_id)->objectName() == "shit"
-                           && room->askForChoice(caozhi, objectName(), "yes+no") == "no")
-                            luoyingget.card_ids.removeOne(card_id);
-                    }
-                    if(!luoyingget.card_ids.empty()){
-                        exchangeMove.push_back(luoyingget);
-                        if(move->from->getGeneralName() == "zhenji")
-                            room->playSkillEffect("luoying", 2);
-                        else
-                            room->playSkillEffect("luoying", 1);
-
-                        room->moveCards(exchangeMove, true);
-                    }
+            foreach(int card_id, move->card_ids){
+                if(Sanguosha->getCard(card_id)->getSuit() == Card::Club){
+                        luoyingget.card_ids << card_id;
+                        luoyingget.to = caozhi;
+                        luoyingget.to_place = Player::Hand;
                 }
             }
+            if(luoyingget.card_ids.empty())
+                return false;
+            else
+            if(caozhi->askForSkillInvoke(objectName(), data)){
+                foreach(int card_id, luoyingget.card_ids){
+                    if(Sanguosha->getCard(card_id)->objectName() == "shit"
+                       && room->askForChoice(caozhi, objectName(), "yes+no") == "no")
+                        luoyingget.card_ids.removeOne(card_id);
+                }
+                if(!luoyingget.card_ids.empty()){
+                    exchangeMove.push_back(luoyingget);
+                    if(move->from->getGeneralName() == "zhenji")
+                        room->playSkillEffect("luoying", 2);
+                    else
+                        room->playSkillEffect("luoying", 1);
+
+                    room->moveCards(exchangeMove, true);
+                }
+            }
+
         }
         return false;
     }

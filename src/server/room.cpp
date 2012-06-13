@@ -3646,15 +3646,21 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         if(nextfriend && has_peach){
             showCard(target, has_peach->getEffectiveId());
             thread->delay();
-            moveCardTo(has_peach, NULL, Player::DrawPile, true);
+            CardMoveReason reason(CardMoveReason::S_REASON_PUT, shenlvmeng->objectName(),
+                                  QString(), Sanguosha->getCard(has_peach->getEffectiveId())->getSkillName(), QString());
+            moveCardTo(has_peach, NULL, Player::DrawPile, reason, true);
         }else if(nextplayer->objectName() == target->objectName() && has_jink && !hasindul){
             showCard(target, has_jink->getEffectiveId());
             thread->delay();
-            moveCardTo(has_jink, NULL, Player::DrawPile, true);
+            CardMoveReason reason(CardMoveReason::S_REASON_PUT, shenlvmeng->objectName(),
+                                  QString(), Sanguosha->getCard(has_jink->getEffectiveId())->getSkillName(), QString());
+            moveCardTo(has_jink, NULL, Player::DrawPile, reason, true);
         }else if(nextfriend && hasindul && heartnum > 0){
             showCard(target, has_null->getEffectiveId());
             thread->delay();
-            moveCardTo(has_null, NULL, Player::DrawPile, true);
+            CardMoveReason reason(CardMoveReason::S_REASON_PUT, shenlvmeng->objectName(),
+                                  QString(), Sanguosha->getCard(has_null->getEffectiveId())->getSkillName(), QString());
+            moveCardTo(has_null, NULL, Player::DrawPile, reason, true);
         }else if(has_shit && heartnum == 1){
         }else if(has_peach){
             showCard(target, has_peach->getEffectiveId());
@@ -3684,8 +3690,11 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
     QString result = askForChoice(shenlvmeng, "gongxin", "discard+put");
     if(result == "discard")
         throwCard(card_id, target);
-    else
-        moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DrawPile, true);    
+    else{
+        CardMoveReason reason(CardMoveReason::S_REASON_PUT, shenlvmeng->objectName(),
+                              QString(), Sanguosha->getCard(card_id)->getSkillName(), QString());
+        moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DrawPile, reason, true);
+    }
 }
 
 const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason)

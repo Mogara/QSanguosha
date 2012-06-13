@@ -17,13 +17,13 @@ function SmartAI:slashProhibit(card,enemy)
 		if card:inherits("FireSlash") or self.player:hasWeapon("fan") or self.player:hasSkill("zonghuo") then
 			if self:isEquip("Vine", enemy) and not (enemy:isChained() and self:isGoodChainTarget(enemy)) then return true end
 		end
-		if enemy:isChained() and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) and not self:isGoodChainTarget(enemy) and
+		if enemy:isChained() and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) and (not self:isGoodChainTarget(enemy) and not self.player:hasSkill("jueqing")) and
 			self:slashIsEffective(card,enemy) then return true end
 		if self:getCardsNum("Jink",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card,enemy) then return true end
 		if self:isEquip("GudingBlade") and enemy:isKongcheng() then return true end
 	else
-		if enemy:isChained() and not self:isGoodChainTarget(enemy) and self:slashIsEffective(card,enemy) 
+		if enemy:isChained() and not self:isGoodChainTarget(enemy) and not self.player:hasSkill("jueqing") and self:slashIsEffective(card,enemy) 
 			and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) then
 			return true
 		end
@@ -289,10 +289,12 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	--if not target then self.room:writeToConsole(debug.traceback()) end
 	if not target then return end
 	if self:isFriend(target) then
-		if target:hasSkill("rende") and self.player:hasSkill("jieming") then return "." end
-		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
-		if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
-		if self.player:isChained() and self:isGoodChainTarget(self.player) then return "." end
+		if not target:hasSkill("jueqing") then
+			if target:hasSkill("rende") and self.player:hasSkill("jieming") then return "." end
+			if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
+			if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
+			if self.player:isChained() and self:isGoodChainTarget(self.player) then return "." end
+		end
 	else
 		if not effect.slash:hasFlag("drank") then
 			if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
@@ -1044,7 +1046,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 				if enemy:getHandcardNum() == 1 then
-				if self:needKongcheng(enemy) or self:hasSkills("kongcheng|lianying", enemy) then return end
+					if self:needKongcheng(enemy) or self:hasSkills("kongcheng|lianying|shangshi",enemy) then return end
 				end
 				if self:hasSkills(sgs.cardneed_skill, enemy) then
 					use.card = card

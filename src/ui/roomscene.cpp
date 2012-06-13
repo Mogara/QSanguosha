@@ -1240,7 +1240,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
             card->setParentItem(NULL);
         }
         _m_cardsMoveStash[moveId].append(cards);
-        keepLoseCardLog(movement);
+        keepMoveCardLog(movement);
     }
 }
 
@@ -1275,6 +1275,12 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         result.append(Sanguosha->translate("discard"));
     else if (reason.m_reason == CardMoveReason::S_REASON_JUDGE)
         result.append(Sanguosha->translate("judge"));
+    else{
+        if (reason.m_reason == CardMoveReason::S_REASON_JUDGE && reason.m_playerId)
+            result.append(Sanguosha->translate("rejudge"));
+        else
+            result.append(Sanguosha->translate("judgedone"));
+    }
     else if (reason.m_reason == CardMoveReason::S_REASON_USE && reason.m_skillName.isEmpty())
         result.append(Sanguosha->translate("use"));
     else if (reason.m_reason == CardMoveReason::S_REASON_RESPONSE && reason.m_skillName.isEmpty())
@@ -1283,6 +1289,8 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         result.append(Sanguosha->translate("recast"));
     else if (reason.m_reason == CardMoveReason::S_REASON_PINDIAN)
         result.append(Sanguosha->translate("pindian"));
+    else if (reason.m_reason == CardMoveReason::S_REASON_PUT)
+        result.append(Sanguosha->translate("put"));
     return result;
     //QString("%1:%2:%3:%4").arg(movement.reason.m_reason)
     //            .arg(movement.reason.m_skillName).arg(movement.reason.m_eventName
@@ -1320,11 +1328,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
     _m_cardsMoveStash[moveId].clear();
 }
 
-void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
-{
-}
-
-void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
+void RoomScene::keepMoveCardLog(const CardsMoveStruct &move)
 {
     if (move.card_ids.isEmpty()) return;
     //DrawNCards

@@ -51,7 +51,7 @@ sgs.ai_skill_playerchosen.wuhun = function(self, targets)
 end
 
 function sgs.ai_slash_prohibit.wuhun(self, to)
-    if self.player:hasSkill("qianxi") then return false end
+    if self:hasSkills("jueqing|qianxi") then return false end
 	local maxfriendmark = 0
 	local maxenemymark = 0
 	for _, friend in ipairs(self.friends) do
@@ -72,6 +72,7 @@ function sgs.ai_slash_prohibit.wuhun(self, to)
 end
 
 function SmartAI:cantbeHurt(player)
+	if self.player:hasSkill("jueqing") then return false end
 	local maxfriendmark = 0
 	local maxenemymark = 0
 	local dyingfriend = 0

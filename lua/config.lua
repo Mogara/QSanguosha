@@ -12,11 +12,8 @@ config = {
         "StandardExCard",
         "Maneuvering",
         "SPCard",
-        "YitianCard",
         "Nostalgia",
-        "Joy",
-        "Disaster",
-        "JoyEquip",
+	"New3v3Card",
 
         "Standard",
         "Wind",

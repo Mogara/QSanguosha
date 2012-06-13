@@ -236,7 +236,8 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             if(room->isProhibited(target, player, this))
                 continue;
 
-            room->moveCardTo(this, player, Player::Judging, true);
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
+            room->moveCardTo(this, player, Player::Judging, reason, true);
             break;
         }
     }

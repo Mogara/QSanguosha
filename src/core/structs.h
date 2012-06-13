@@ -109,6 +109,7 @@ public:
     static const int S_REASON_JUDGE = 0x04;
     static const int S_REASON_PINDIAN = 0x05;
     static const int S_REASON_TRANSFER = 0x06;
+    static const int S_REASON_JUDGEDONE = 0x07;
     static const int S_REASON_DRAW = 0x08;
     static const int S_REASON_PUT = 0x09; // Theoretically, this should not be here because "put" will not
                                           // trigger event such as "manjuan". But let's do a dirty fix for
