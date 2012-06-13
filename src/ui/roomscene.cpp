@@ -1275,12 +1275,6 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         result.append(Sanguosha->translate("discard"));
     else if (reason.m_reason == CardMoveReason::S_REASON_JUDGE)
         result.append(Sanguosha->translate("judge"));
-    else{
-        if (reason.m_reason == CardMoveReason::S_REASON_JUDGE && reason.m_playerId)
-            result.append(Sanguosha->translate("rejudge"));
-        else
-            result.append(Sanguosha->translate("judgedone"));
-    }
     else if (reason.m_reason == CardMoveReason::S_REASON_USE && reason.m_skillName.isEmpty())
         result.append(Sanguosha->translate("use"));
     else if (reason.m_reason == CardMoveReason::S_REASON_RESPONSE && reason.m_skillName.isEmpty())
@@ -1291,6 +1285,12 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         result.append(Sanguosha->translate("pindian"));
     else if (reason.m_reason == CardMoveReason::S_REASON_PUT)
         result.append(Sanguosha->translate("put"));
+	else{
+        if (reason.m_reason == CardMoveReason::S_REASON_JUDGE && reason.m_playerId == QString())
+            result.append(Sanguosha->translate("judgedone"));
+        else
+            result.append(Sanguosha->translate("rejudge"));
+    }
     return result;
     //QString("%1:%2:%3:%4").arg(movement.reason.m_reason)
     //            .arg(movement.reason.m_skillName).arg(movement.reason.m_eventName
@@ -1319,7 +1319,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
         }
         bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
-        keepGetCardLog(movement);
+        keepMoveCardLog(movement);
         if (movement.from == Self || movement.to == Self)
             doAdjust = true;
     }
