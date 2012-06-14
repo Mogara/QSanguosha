@@ -244,7 +244,7 @@ public:
         if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
             return false;
 
-        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), QVariant(), NonTrigger);
+        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), QVariant(), JinkUsed);
         if(card){
             // if player is drank, unset his flag
             if(player->hasFlag("drank"))
@@ -622,10 +622,6 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
 }
 
 void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
-    reason.m_skillName = this->getSkillName();
-    if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-    room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 
     CardEffectStruct effect;
     effect.card = this;
@@ -640,6 +636,10 @@ void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<Server
         effect.to = source;
         room->cardEffect(effect);
     }
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
+    reason.m_skillName = this->getSkillName();
+    if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+    room->moveCardTo(this, NULL, Player::DiscardPile, reason);
 }
 
 Collateral::Collateral(Card::Suit suit, int number)
@@ -693,7 +693,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                 .arg(source->objectName()).arg(victims.first()->objectName());
         const Card *slash = NULL;
         if(killer->canSlash(victims.first()))
-            slash = room->askForCard(killer, "slash", prompt, QVariant(), NonTrigger);
+            slash = room->askForCard(killer, "slash", prompt, QVariant(), JinkUsed);
         if (victims.first()->isDead()){
             if (source->isDead()){
                 if(killer->isAlive() && killer->getWeapon()){
@@ -860,8 +860,8 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-
-    room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
+    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+    room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)
@@ -890,7 +890,9 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-    CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLED, effect.to->objectName());
+    CardMoveReason reason(CardMoveReason::S_REASON_THROW, effect.to->objectName());
+    reason.m_playerId = effect.from->objectName();
+    reason.m_targetId = effect.to->objectName();
     room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DiscardPile, reason);
     // room->throwCard(card_id, room->getCardPlace(card_id) == Player::Judging ? NULL : effect.to);
 
@@ -978,11 +980,17 @@ public:
         if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude()
             && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
                 int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
-                room->throwCard(card_id, damage.to);
+                CardMoveReason reason(CardMoveReason::S_REASON_THROW, damage.to->objectName());
+                reason.m_playerId = damage.from->objectName();
+                reason.m_targetId = damage.to->objectName();
+                room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DiscardPile, reason);
 
                 if(!damage.to->isNude()){
                     card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
-                    room->throwCard(card_id, damage.to);
+                    CardMoveReason reason(CardMoveReason::S_REASON_THROW, damage.to->objectName());
+                    reason.m_playerId = damage.from->objectName();
+                    reason.m_targetId = damage.to->objectName();
+                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DiscardPile, reason);
                 }
 
                 return true;

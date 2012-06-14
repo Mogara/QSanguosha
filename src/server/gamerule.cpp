@@ -158,6 +158,12 @@ void GameRule::setGameProcess(Room *room) const{
     room->setTag("GameProcess", process);
 }
 
+static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
+    Room *room = a->getRoom();
+
+    return room->getFront(a, b) == a;
+}
+
 bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
     if(room->getTag("SkipGameRule").toBool()){
         room->removeTag("SkipGameRule");
@@ -205,23 +211,49 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
                 RoomThread *thread = room->getThread();
-                bool targetfix = false;
-                QList<int> changelist;
+                QList<int> changelist1, changelist2;
                 card_use.from->playCardEffect(card);
+                int targetfix = 0;
+                // sort the order accord to the seat
+                if(card_use.from && card_use.to.length() > 1){
+                    qSort(card_use.to.begin(), card_use.to.end(), CompareByActionOrder);
+
+                }
                 if(card_use.from && !card_use.to.empty()){
                     foreach(ServerPlayer *to, card_use.to){
                         if(true == thread->trigger(TargetConfirm, room, to, data)){
-                            targetfix = true;
-                            changelist << card_use.to.indexOf(to);
+                            changelist1 << card_use.to.indexOf(to);
                         }
                     }
-                    foreach(ServerPlayer *p, room->getAlivePlayers())
-                        thread->trigger(TargetConfirmed, room, p, data);
                 }
-                if(targetfix){
-                    card_use = data.value<CardUseStruct>();
-                    foreach(int tmp, changelist){
-                        thread->trigger(TargetConfirm, room, card_use.to.at(tmp), data);
+                targetfix = changelist1.length();
+                while(targetfix > 0){
+                    if(!changelist1.empty()){
+                        card_use = data.value<CardUseStruct>();
+                        foreach(int tmp, changelist1){
+                            if(true == thread->trigger(TargetConfirm, room, card_use.to.at(tmp), data)){
+                                changelist2 << card_use.to.indexOf(card_use.to.at(tmp));
+                            }
+                        }
+                        changelist1.clear();
+                    }
+                    targetfix--;
+                    if(!changelist2.empty()){
+                        targetfix++;
+                        card_use = data.value<CardUseStruct>();
+                        foreach(int tmp, changelist2){
+                            if(true == thread->trigger(TargetConfirm, room, card_use.to.at(tmp) , data)){
+                                changelist1 << card_use.to.indexOf(card_use.to.at(tmp));
+                            }
+                        }
+                        changelist2.clear();
+                    }
+                    if(changelist1.empty())
+                        targetfix--;
+                }
+                if(card_use.from && !card_use.to.empty()){
+                    foreach(ServerPlayer *p, room->getAlivePlayers()){
+                        thread->trigger(TargetConfirmed, room, p, data);
                     }
                 }
                 card_use = data.value<CardUseStruct>();
@@ -309,9 +341,16 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
     case AskForPeaches:{
             DyingStruct dying = data.value<DyingStruct>();
-
+            ServerPlayer *current = room->getCurrent();
+            ServerPlayer *jiaxu = NULL;
+            const Card *peach = NULL;
+            if(current->hasSkill("wansha"))
+                jiaxu = current;
             while(dying.who->getHp() <= 0){
-                const Card *peach = room->askForSinglePeach(player, dying.who);
+                if(!current->hasSkill("wansha") || current->isDead()
+                        || dying.who->objectName() == player->objectName()
+                        || player->objectName() == jiaxu->objectName())
+                    peach = room->askForSinglePeach(player, dying.who);
                 if(peach == NULL)
                     break;
 
@@ -521,7 +560,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
-            room->moveCardTo(judge->card, NULL, Player::PlaceTakeoff,
+            room->moveCardTo(judge->card, NULL, Player::DealingArea,
                 CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
 
             LogMessage log;
@@ -537,11 +576,6 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
     case FinishJudge:{
             JudgeStar judge = data.value<JudgeStar>();
-            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTakeoff){
-                CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, QString());
-                room->throwCard(judge->card, reason, NULL);
-            }
-
             LogMessage log;
             log.type = "$JudgeResult";
             log.from = player;
@@ -549,6 +583,11 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             room->sendLog(log);
 
             room->sendJudgeResult(judge);
+
+            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DealingArea){
+                CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, QString());
+                room->throwCard(judge->card, reason, judge->who);
+            }
             break;
         }
 

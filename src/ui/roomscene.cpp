@@ -1210,7 +1210,7 @@ void RoomScene::toggleDiscards(){
     overview->show();
 }
 
-PlayerCardContainer* RoomScene::_getPlayerCardContainer(Player::Place place, Player* player)
+PlayerCardContainer* RoomScene::_getPlayerCardContainer(Player::Place place, Player* player)////////////
 {
     if (place == Player::DiscardPile || place == Player::PlaceTakeoff)
         return m_discardPile;
@@ -1240,7 +1240,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
             card->setParentItem(NULL);
         }
         _m_cardsMoveStash[moveId].append(cards);
-        keepMoveCardLog(movement);
+        keepLoseCardLog(movement);
     }
 }
 
@@ -1267,8 +1267,12 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
     QString result(playerName + targetName);
     result.append(Sanguosha->translate(reason.m_eventName));
     result.append(Sanguosha->translate(reason.m_skillName));
-    if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLED)
-        result.append(Sanguosha->translate("dismantled"));
+    if (reason.m_reason == CardMoveReason::S_REASON_THROW){
+        if(reason.m_playerId != QString() && reason.m_targetId != QString())
+            result.append(Sanguosha->translate("dismantled"));
+        else
+            result.append(Sanguosha->translate("discard"));
+    }
     else if (reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP)
         result.append(Sanguosha->translate("change equip"));
     else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) 
@@ -1285,8 +1289,8 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         result.append(Sanguosha->translate("pindian"));
     else if (reason.m_reason == CardMoveReason::S_REASON_PUT)
         result.append(Sanguosha->translate("put"));
-	else{
-        if (reason.m_reason == CardMoveReason::S_REASON_JUDGE && reason.m_playerId == QString())
+    else if (reason.m_reason == CardMoveReason::S_REASON_JUDGE){
+        if(reason.m_playerId == QString())
             result.append(Sanguosha->translate("judgedone"));
         else
             result.append(Sanguosha->translate("rejudge"));
@@ -1319,7 +1323,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
         }
         bringToFront(to_container);
         to_container->addCardItems(cards, movement.to_place);
-        keepMoveCardLog(movement);
+        keepGetCardLog(movement);
         if (movement.from == Self || movement.to == Self)
             doAdjust = true;
     }
@@ -1328,7 +1332,16 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
     _m_cardsMoveStash[moveId].clear();
 }
 
-void RoomScene::keepMoveCardLog(const CardsMoveStruct &move)
+void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
+{
+    if(move.from && move.to_place == Player::DrawPile){
+        QString type = "$PutCard";
+        QString from_general = move.from->getGeneralName();
+        log_box->appendLog(type, from_general, QStringList(), QString::number(move.card_ids.first()));
+    }
+}
+
+void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 {
     if (move.card_ids.isEmpty()) return;
     //DrawNCards
@@ -1344,23 +1357,28 @@ void RoomScene::keepMoveCardLog(const CardsMoveStruct &move)
 		foreach(int card_id, move.card_ids)
 			log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(card_id));
     }
-	if(move.from && move.from_place != Player::Hand && move.to && move.from != move.to)
-	{
-		QString from_general = move.from->getGeneralName();
-		QStringList tos;
-		tos << move.to->getGeneralName();
-		int hide = 0;
-		foreach(int card_id, move.card_ids)
-		{
-			if(card_id != Card::S_UNKNOWN_CARD_ID)
-				log_box->appendLog("$MoveCard", from_general, tos, QString::number(card_id));
-			else
-				hide++;
-		}
-		if(hide > 0)
-			log_box->appendLog("#MoveNCards", from_general, tos, QString(),
-			QString::number(hide));
-	}
+    if(move.from_place == Player::PlaceTakeoff && move.to_place == Player::Hand)
+    {
+        QString to_general = move.to->getGeneralName();
+                foreach(int card_id, move.card_ids)
+                        log_box->appendLog("$GotCardBack", to_general, QStringList(), QString::number(card_id));
+    }
+    if(move.from && move.from_place != Player::Hand && move.to && move.from != move.to)
+    {
+        QString from_general = move.from->getGeneralName();
+        QStringList tos;
+        tos << move.to->getGeneralName();
+        int hide = 0;
+        foreach(int card_id, move.card_ids)
+        {
+            if(card_id != Card::S_UNKNOWN_CARD_ID)
+                log_box->appendLog("$MoveCard", from_general, tos, QString::number(card_id));
+            else
+                hide++;
+        }
+        if(hide > 0)
+            log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(hide));
+    }
     if(move.from_place == Player::Hand && move.to_place == Player::Hand)
     {
         QString from_general = move.from->getGeneralName();
@@ -1395,11 +1413,6 @@ void RoomScene::keepMoveCardLog(const CardsMoveStruct &move)
             tos << move.to->objectName();
             log_box->appendLog(type, from_general, tos, QString::number(move.card_ids.first()));
         }
-    }
-    if(move.from && move.to_place == Player::DrawPile){
-        QString type = "$PutCard";
-        QString from_general = move.from->getGeneralName();
-        log_box->appendLog(type, from_general, QStringList(), QString::number(move.card_ids.first()));
     }
     if(move.from && move.to && move.from_place == Player::Equip && move.to_place == Player::Equip){
         QString type = "$Install";

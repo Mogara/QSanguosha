@@ -9,6 +9,7 @@
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
     once = true;
+    will_throw = true;
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -34,7 +35,9 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     }else
         target = targets.first();
 
-    room->obtainCard(target, this, false);
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
+    reason.m_playerId = target->objectName();
+    room->obtainCard(target, this, reason, false);
 
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
@@ -102,7 +105,8 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
 void TuxiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
-    room->obtainCard(effect.from, card_id, false);
+    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+    room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, false);
 
     room->setEmotion(effect.to, "bad");
     room->setEmotion(effect.from, "good");
@@ -231,7 +235,7 @@ void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
 LiuliCard::LiuliCard()
 {
-    owner_discarded = true;
+    will_throw = true;
 }
 
 

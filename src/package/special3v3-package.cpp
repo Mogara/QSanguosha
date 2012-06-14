@@ -165,7 +165,7 @@ public:
             room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::PlaceTakeoff,
+            room->moveCardTo(judge->card, NULL, Player::DealingArea,
                 CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "huanshi", QString()), true);
             LogMessage log;
             log.type = "$ChangedJudge";
@@ -241,8 +241,8 @@ ADD_PACKAGE(New3v3Card)
 Special3v3Package::Special3v3Package():Package("Special3v3")
 {
     General *zhugejin = new General(this, "zhugejin", "wu", 3, true);
-    zhugejin->addSkill(new Hongyuan);
     zhugejin->addSkill(new Huanshi);
+    zhugejin->addSkill(new Hongyuan);
     zhugejin->addSkill(new Mingzhe);
 
     addMetaObject<HuanshiCard>();

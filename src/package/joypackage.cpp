@@ -274,7 +274,7 @@ public:
                 {
                     // @todo: if you wish this to trigger card discarded event, please modify this!!!
                     room->throwCard(p->getOffensiveHorse(), NULL);
-                    p->playCardEffect(objectName());
+                    p->playCardEffect(objectName());       
                     p->obtainCard(use.card);
 
                     return true;

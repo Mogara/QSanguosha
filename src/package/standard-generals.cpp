@@ -17,7 +17,7 @@ public:
     virtual void onDamaged(ServerPlayer *caocao, const DamageStruct &damage) const{
         Room *room = caocao->getRoom();
         const Card *card = damage.card;
-        if(!room->obtainable(card, caocao))
+        if(room->getCardPlace(card->getEffectiveId()) != Player::DealingArea)
             return;
 
         QVariant data = QVariant::fromValue(card);
@@ -223,7 +223,8 @@ public:
         QVariant data = QVariant::fromValue(from);
         if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui", data)){
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
-            room->obtainCard(simayi, card_id, room->getCardPlace(card_id) != Player::Hand);
+            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
+            room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
             room->playSkillEffect(objectName());
         }
     }
@@ -283,7 +284,7 @@ public:
             room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::PlaceTakeoff,
+            room->moveCardTo(judge->card, NULL, Player::DealingArea,
                 CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "guicai", QString()), true);
 
             LogMessage log;
@@ -613,32 +614,58 @@ public:
     }
 };
 
-class Tieji:public SlashBuffSkill{
+class Tieji:public TriggerSkill{
 public:
-    Tieji():SlashBuffSkill("tieji"){
-
+    Tieji():TriggerSkill("tieji"){
+        events << TargetConfirmed << SlashProceed << CardFinished;
     }
 
-    virtual bool buff(const SlashEffectStruct &effect) const{
-        ServerPlayer *machao = effect.from;
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill(objectName());
+    }
 
-        Room *room = machao->getRoom();
-        if(effect.from->askForSkillInvoke("tieji", QVariant::fromValue(effect))){
-            room->playSkillEffect(objectName());
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(event == TargetConfirmed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            ServerPlayer *machao = room->findPlayerBySkillName(objectName());
+            bool istarget = false;
+            if(!machao || machao->loseTriggerSkills() || !use.card->inherits("Slash"))
+                return false;
+            foreach(ServerPlayer *p, use.to){
+                if(player->objectName() == p->objectName()){
+                    istarget = true;
+                    break;
+                }
+            }
+            if(istarget && machao->askForSkillInvoke("tieji", QVariant::fromValue(player))){
+                room->playSkillEffect(objectName());
 
-            JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
-            judge.good = true;
-            judge.reason = objectName();
-            judge.who = machao;
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+                judge.good = true;
+                judge.reason = objectName();
+                judge.who = machao;
 
-            room->judge(judge);
-            if(judge.isGood()){
+                room->judge(judge);
+                if(judge.isGood()){
+                    room->setPlayerFlag(player, "TiejiTarget");
+                }
+            }
+        }
+        else if(event == SlashProceed){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(effect.to->hasFlag("TiejiTarget")){
                 room->slashResult(effect, NULL);
                 return true;
             }
-        }
+        }else if(event == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach(ServerPlayer *to, use.to){
+                if(to->hasFlag("TiejiTarget"))
+                    room->setPlayerFlag(to, "-TiejiTarget");
+            }
 
+        }
         return false;
     }
 };
@@ -707,6 +734,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *yueying, QVariant &data) const{
+        if (yueying == NULL) return false;
         CardStar card = NULL;
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
@@ -900,6 +928,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *luxun, QVariant &data) const{
+        if (luxun == NULL) return false;
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         if(luxun->isKongcheng() && move->from_places.contains(Player::Hand)){
             if(room->askForSkillInvoke(luxun, objectName(), data)){
@@ -1380,7 +1409,7 @@ public:
             Room *room = zhuge->getRoom();
             room->playSkillEffect("guanxing");
 
-            room->askForGuanxing(zhuge, room->getNCards(5, false), false);
+            room->askForGuanxing(zhuge, room->getNCards(10, false), false);
         }
 
         return false;

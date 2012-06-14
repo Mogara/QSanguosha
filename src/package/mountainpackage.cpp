@@ -42,7 +42,8 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         room->playSkillEffect("qiaobian", 2);
         foreach(ServerPlayer *target, targets){
             int card_id = room->askForCardChosen(zhanghe, target, "h", "qiaobian");
-            room->obtainCard(zhanghe, card_id, false);
+            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, zhanghe->objectName());
+            room->obtainCard(zhanghe, Sanguosha->getCard(card_id), reason, false);
         }
     }else if(zhanghe->getPhase() == Player::Play){
         room->playSkillEffect("qiaobian", 3);
@@ -646,7 +647,7 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     else
         room->playSkillEffect("tiaoxin", qrand() % 2 + 1);
 
-    const Card *slash = room->askForCard(effect.to, "slash", "@tiaoxin-slash:" + effect.from->objectName(), QVariant(), NonTrigger);
+    const Card *slash = room->askForCard(effect.to, "slash", "@tiaoxin-slash:" + effect.from->objectName(), QVariant(), JinkUsed);
 
     if(slash){
         CardUseStruct use;
@@ -726,6 +727,7 @@ public:
 
 ZhijianCard::ZhijianCard(){
     will_throw = false;
+    as_equip = true;
 }
 
 bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

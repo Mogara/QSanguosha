@@ -28,7 +28,7 @@ public:
             room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card_id);
-            room->moveCardTo(judge->card, NULL, Player::PlaceTakeoff,
+            room->moveCardTo(judge->card, NULL, Player::DealingArea,
                 CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->getGeneralName(), this->objectName(), QString()), true);
 
             LogMessage log;
@@ -72,8 +72,11 @@ public:
                 ServerPlayer *target = room->askForPlayerChosen(wangyi, room->getAllPlayers(), objectName());
 
                 QList<const Card *> miji_cards = wangyi->getHandcards().mid(wangyi->getHandcardNum() - x);
-                foreach(const Card *card, miji_cards)
-                    room->obtainCard(target, card, false);
+                foreach(const Card *card, miji_cards){
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, wangyi->objectName());
+                    reason.m_playerId == target->objectName();
+                    room->obtainCard(target, card, reason, false);
+                }
             }
         }
         return false;
@@ -81,7 +84,7 @@ public:
 };
 
 QiceCard::QiceCard(){
-    will_throw = true;
+    will_throw = false;
 }
 
 bool QiceCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -389,8 +392,8 @@ public:
         Room *room = player->getRoom();
         int card_id = room->drawCard();
         const Card *card = Sanguosha->getCard(card_id);
-        room->moveCardTo(card, player, Player::PlaceTakeoff, 
-            CardMoveReason(CardMoveReason::S_REASON_SHOW, player->getGeneralName(), "fuhun", QString()), true);
+        room->moveCardTo(card, player, Player::DealingArea,
+            CardMoveReason(CardMoveReason::S_REASON_LETKNOWN, player->getGeneralName(), "fuhun", QString()), true);
         room->getThread()->delay();
 
         player->obtainCard(card, true);
@@ -550,7 +553,7 @@ public:
                 || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
 
-            const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data, NonTrigger);
+            const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data, JinkUsed);
            
             if(slash){
                 room->setCardFlag(slash, "jiefan-slash");
@@ -616,7 +619,8 @@ void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     ServerPlayer *to = selecteds.takeFirst();
     int id = room->askForCardChosen(from, to, "h", "anxu");
     const Card *cd = Sanguosha->getCard(id);
-    room->obtainCard(from, cd);
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
+    room->obtainCard(from, cd, reason);
     room->showCard(from, id);
     if(cd->getSuit() != Card::Spade){
         source->drawCards(1);

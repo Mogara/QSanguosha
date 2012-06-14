@@ -26,7 +26,8 @@ public:
             return;
 
         int card_id = room->askForCardChosen(player, target, "h", objectName());
-        room->obtainCard(player, card_id, false);
+        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+        room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
         room->playSkillEffect("chongzhen"); 
     }
 
@@ -57,7 +58,7 @@ public:
 };
 
 LihunCard::LihunCard(){
-    owner_discarded = true;
+    will_throw = true;
 }
 
 bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -141,8 +142,11 @@ public:
 
             int hp = target->isAlive() ? target->getHp() : 0;
             if(diaochan->getCards("he").length() <= hp){
-                foreach(const Card *card, diaochan->getCards("he"))
-                    room->obtainCard(target, card, room->getCardPlace(card->getEffectiveId()) != Player::Hand);
+                foreach(const Card *card, diaochan->getCards("he")){
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
+                    reason.m_playerId = target->objectName();
+                    room->obtainCard(target, card, reason, room->getCardPlace(card->getEffectiveId()) != Player::Hand);
+                }
             }
             else{
                 int i;
@@ -151,7 +155,9 @@ public:
                         return false;
 
                     int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
-                    room->obtainCard(target, card_id, room->getCardPlace(card_id) != Player::Hand);
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
+                    reason.m_playerId = target->objectName();
+                    room->obtainCard(target, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
             room->removeTag("LihunTarget");
@@ -479,6 +485,8 @@ void DaheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
         QString choice = room->askForChoice(source, reason, "yes+no");
         if(!to_givelist.isEmpty() && choice == "yes"){
             ServerPlayer *to_give = room->askForPlayerChosen(source, to_givelist, reason);
+            CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
+            reason.m_playerId = to_give->objectName();
             to_give->obtainCard(card2);
         }
     }else{
@@ -530,7 +538,7 @@ public:
                                                 .arg(effect.from->objectName())
                                                 .arg(bgm_zhangfei->objectName())
                                                 .arg(objectName()),
-                                                data);
+                                                data, JinkUsed);
             if(jink && jink->getSuit() != Card::Heart){
                 LogMessage log;
                 log.type = "#DaheEffect";

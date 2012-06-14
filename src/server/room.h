@@ -56,7 +56,6 @@ public:
     void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
-    bool obtainable(const Card *card, ServerPlayer *player);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
@@ -196,6 +195,7 @@ public:
     void swapPile();
     QList<int> getDiscardPile();
     QList<int> getDrawPile();
+    QList<int> getDealingArea();
     int getCardFromPile(const QString &card_name);
     QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_dead = false) const;
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
@@ -237,6 +237,8 @@ public:
     void drawCards(QList<ServerPlayer*> players, int n, const QString &reason);
     void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
     void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
+    void obtainCard(ServerPlayer *target, const Card *card,  const CardMoveReason &reason, bool unhide = true);
+
 
     void throwCard(int card_id, ServerPlayer *who);
     void throwCard(const Card *card, ServerPlayer *who);    
@@ -327,9 +329,9 @@ private:
     QList<ServerPlayer*> m_players, m_alivePlayers;
     int player_count;
     ServerPlayer *current;
-    QList<int> pile1, pile2;
+    QList<int> pile1, pile2, pile3;
     QList<int> table_cards;
-    QList<int> *draw_pile, *discard_pile;
+    QList<int> *draw_pile, *discard_pile, *deal_pile;
     bool game_started;
     bool game_finished;
     lua_State *L;

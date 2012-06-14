@@ -373,21 +373,31 @@ public:
     virtual void onDamaged(ServerPlayer *shencc, const DamageStruct &damage) const{
         Room *room = shencc->getRoom();
         int i, x = damage.damage;
+        bool can_invoke = false;
+        QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
         for(i=0; i<x; i++){
-            if(shencc->askForSkillInvoke(objectName())){
+            foreach(ServerPlayer *player, players){
+                if(!player->isAllNude()){
+                    can_invoke = true;
+                    break;
+                }
+            }
+            if(can_invoke && shencc->askForSkillInvoke(objectName())){
                 room->playSkillEffect(objectName());
 
-                QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
+
                 if(players.length() >=5)
                     room->broadcastInvoke("animate", "lightbox:$guixin");
 
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){
+                        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, shencc->objectName());
                         int card_id = room->askForCardChosen(shencc, player, "hej", objectName());
-                        room->obtainCard(shencc, card_id, room->getCardPlace(card_id) != Player::Hand);
+
+                        room->obtainCard(shencc, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
                     }
                 }
-
+                can_invoke = false;
                 shencc->turnOver();
             }else
                 break;
@@ -643,7 +653,8 @@ public:
             stars.removeOne(card_id);
             ++n;
 
-            room->obtainCard(shenzhuge, card_id, false);
+            CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, shenzhuge->objectName());
+            room->obtainCard(shenzhuge, Sanguosha->getCard(card_id), reason, false);
         }
 
         Config.AIDelay = ai_delay;

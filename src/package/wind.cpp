@@ -159,7 +159,7 @@ public:
             const Card* oldJudge = judge->card;
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 
-            CardsMoveStruct move1(QList<int>(), NULL, Player::PlaceTakeoff,
+            CardsMoveStruct move1(QList<int>(), NULL, Player::DealingArea,
                 CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), this->objectName(), QString()));
             move1.card_ids.append(card->getEffectiveId());
             
@@ -404,31 +404,53 @@ public:
     }
 };
 
-class Liegong: public SlashBuffSkill{
+class Liegong:public TriggerSkill{
 public:
-    Liegong():SlashBuffSkill("liegong"){
-
+    Liegong():TriggerSkill("liegong"){
+        events << TargetConfirmed << SlashProceed << CardFinished;
     }
 
-    virtual bool buff(const SlashEffectStruct &effect) const{
-        ServerPlayer *huangzhong = effect.from;
-        Room *room = huangzhong->getRoom();
-        if(huangzhong->getPhase() != Player::Play)
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *huangzhong = room->findPlayerBySkillName(objectName());
+        int handcardnum = player->getHandcardNum();
+        bool istarget = false;
+        if(!huangzhong || huangzhong->loseTriggerSkills() || huangzhong->getPhase() != Player::Play ||
+           !use.card->inherits("Slash"))
             return false;
-
-        int num = effect.to->getHandcardNum();
-        if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
-            if(huangzhong->askForSkillInvoke(objectName(), QVariant::fromValue(effect))){
-                room->playSkillEffect(objectName());
-                room->slashResult(effect, NULL);
-
-                return true;
+        foreach(ServerPlayer *p, use.to){
+            if(player->objectName() == p->objectName()){
+                istarget = true;
+                break;
             }
         }
+        if(istarget && (handcardnum >= huangzhong->getHp() || handcardnum <= huangzhong->getAttackRange()) &&
+           huangzhong->askForSkillInvoke("liegong", QVariant::fromValue(player))){
+            room->playSkillEffect(objectName());
+            room->setPlayerFlag(player, "LiegongTarget");
+        }
+        else if(event == SlashProceed){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(effect.to->hasFlag("LiegongTarget")){
+                room->slashResult(effect, NULL);
+                return true;
+            }
+        }else if(event == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach(ServerPlayer *to, use.to){
+                if(to->hasFlag("LiegongTarget"))
+                    room->setPlayerFlag(to, "-LiegongTarget");
+            }
 
+        }
         return false;
     }
 };
+
 
 class Kuanggu: public TriggerSkill{
 public:
@@ -525,8 +547,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhoutai, QVariant &) const{
         if(event == Dying){
-            QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
-            if(choice == "alive"){
+            if(room->askForSkillInvoke(zhoutai, objectName())){
                 room->setTag("Buqu", zhoutai->objectName());
                 room->playSkillEffect(objectName());
                 const QList<int> &buqu = zhoutai->getPile("buqu");
@@ -674,7 +695,7 @@ public:
 
 TianxiangCard::TianxiangCard()
 {
-    owner_discarded = true;
+    will_throw = true;
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
@@ -749,7 +770,8 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     room->setTag("GuhuoType", this->user_string);
 
     // yuji->addToPile("#guhuo_pile", this->getEffectiveId(), false);
-    room->moveCardTo(this, yuji, Player::PlaceTakeoff, 
+    // this card should put in to the DealingArea with the back on top(for UI)
+    room->moveCardTo(this, yuji, Player::DealingArea,
         CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), "guhuo", user_string), false);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
@@ -1085,9 +1107,9 @@ WindPackage::WindPackage()
     weiyan->addSkill(new Kuanggu);
 
     General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false);
+    xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new Hongyan);
     xiaoqiao->addSkill(new HongyanRetrial);
-    xiaoqiao->addSkill(new Tianxiang);
     related_skills.insertMulti("hongyan", "#hongyan-retrial");
 
     zhoutai = new General(this, "zhoutai", "wu");

@@ -129,49 +129,35 @@ public:
 class Danlao: public TriggerSkill{
 public:
     Danlao():TriggerSkill("danlao"){
-        events << CardUsed << CardEffected;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        events << TargetConfirmed << CardEffected;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
-            ServerPlayer *yangxiu = room->findPlayerBySkillName(objectName());
-            if(!yangxiu || yangxiu->loseTriggerSkills() || use.to.length() <= 1 ||
-                    !use.to.contains(yangxiu) ||
-                    !use.card->inherits("TrickCard") || use.card->inherits("Collateral") ||
-                    !room->askForSkillInvoke(yangxiu, objectName(), data))
-                return false;
+            if(use.to.length() <= 1 || !use.to.contains(player) ||
+               !use.card->inherits("TrickCard") || use.card->inherits("Collateral") ||
+               !room->askForSkillInvoke(player, objectName(), data))
+                    return false;
 
-            yangxiu->tag["Danlao"] = use.card->getEffectiveId();
-
+            room->setPlayerFlag(player, "DanlaoInvoked");
             room->playSkillEffect(objectName());
 
             LogMessage log;
             log.type = "#DanlaoAvoid";
-            log.from = yangxiu;
+            log.from = player;
             log.arg = use.card->objectName();
             log.arg2 = objectName();
 
             room->sendLog(log);
-
-            yangxiu->drawCards(1);
+            player->drawCards(1);
         }
         else{
-            if(!player->isAlive() || !player->hasSkill(objectName()))
-                return false;
+            if(player->hasFlag("DanlaoInvoked"))
+                room->setPlayerFlag(player, "-DanlaoInvoked");
 
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(player->tag["Danlao"].isNull() || player->tag["Danlao"].toInt() != effect.card->getEffectiveId())
-                return false;
-
-            player->tag["Danlao"] = QVariant(QString());
             return true;
         }
-
         return false;
     }
 };

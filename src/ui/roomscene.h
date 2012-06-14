@@ -153,7 +153,8 @@ public slots:
     void removePlayer(const QString &player_name);
     void loseCards(int moveId, QList<CardsMoveStruct> moves);
     void getCards(int moveId, QList<CardsMoveStruct> moves);
-    void keepMoveCardLog(const CardsMoveStruct &move);
+    void keepLoseCardLog(const CardsMoveStruct &move);
+    void keepGetCardLog(const CardsMoveStruct &move);
     // choice dialog
     void chooseGeneral(const QStringList &generals);
     void chooseSuit(const QStringList &suits);

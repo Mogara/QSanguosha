@@ -105,16 +105,18 @@ public:
     static const int S_REASON_UNKNOWN = 0x00;
     static const int S_REASON_USE = 0x01;
     static const int S_REASON_RESPONSE = 0x02;
-    static const int S_REASON_DISCARD = 0x03;
+    static const int S_REASON_DISCARD = 0x03; // Official Put to DiscardPile (sp pangtong's put is a fake one)
+                                              // (ZhiRuQiPaiDui)
     static const int S_REASON_JUDGE = 0x04;
     static const int S_REASON_PINDIAN = 0x05;
     static const int S_REASON_TRANSFER = 0x06;
-    static const int S_REASON_JUDGEDONE = 0x07;
+    static const int S_REASON_GOTCARD = 0x07;
     static const int S_REASON_DRAW = 0x08;
     static const int S_REASON_PUT = 0x09; // Theoretically, this should not be here because "put" will not
                                           // trigger event such as "manjuan". But let's do a dirty fix for
-                                          // now.    
-    static const int S_REASON_SHOW = 0x0A; // For "fire attack" and "fuhun"
+                                          // now.
+                                          // We use this for gongxin too.
+    static const int S_REASON_SHOW = 0x0A; // For "fire attack"
     static const int S_REASON_RECAST = 0x0B; // Tiesuolianhuan
     static const int S_REASON_NATURAL_ENTER = 0x0C;
     static const int S_REASON_REMOVE_FROM_PILE = 0x0D;
@@ -123,8 +125,19 @@ public:
     static const int S_REASON_SWAP = 0x16; // for "dimeng", "ganlu"
     static const int S_REASON_OVERRIDE = 0x26; // for "guidao"
     //subcategory of discard
-    static const int S_REASON_DISMANTLED = 0x13; // for "guohechaiqiao"
+    static const int S_REASON_THROW = 0x13; // for "guohechaiqiao" "mengjin" "ice_sword"
+                                                     // Qizhi(A Special Kind of ZRQPD)
     static const int S_REASON_CHANGE_EQUIP = 0x23; // for replacing existing equips
+    static const int S_REASON_JUDGEDONE = 0x43;
+    //subcategory of show
+    static const int S_REASON_LETKNOWN = 0x1A; // For "zaiqi" "fuhun" "amazinggrace" (LiangChu)
+    //subcategory of gotcard
+    static const int S_REASON_GIVE = 0x17;  //from hand to hand ,actually only this two know the card
+    static const int S_REASON_EXTRACTION = 0x27;  //from hand to hand ,card unknown for the one got
+    static const int S_REASON_GOTBACK = 0x37;  //from DealingArea to hand
+    static const int S_REASON_RECYCLE = 0x47;  //from DiscardPile to hand
+    static const int S_REASON_ROB = 0x57;  //a special from hand to hand(for nosxuanhuo and cheatcard)
+    static const int S_REASON_EXCHANGE_FROM_PILE = 0x67; //for qixing only now
 
     static const int S_MASK_BASIC_REASON = 0x0F;
 };
@@ -278,7 +291,8 @@ struct PhaseChangeStruct{
 };
 
 enum TriggerEvent{
-    NonTrigger,
+    NonTrigger, //those two events actually trigger nothing
+    JinkUsed,  // just a dirty fix before we find better way
 
     GameStart,
     TurnStart,
@@ -295,11 +309,11 @@ enum TriggerEvent{
     Pindian,
     TurnedOver,
 
-    Predamage,
-    Predamaged,
-    DamageProceed,
-    DamagedProceed,
-    DamageDone,
+    Predamage,        // assure the num of damage,check all buff(ancaletic luoyi...)
+    Predamaged,       // Damage begun! The first moment when you enter "Real Damage Process" (kuangfeng dawu)
+    DamageProceed,    // The moment you just damage to someone(qianxi kylinbow ice_sword...)
+    DamagedProceed,   // The moment you are just damaged by someone,but can still change(silverlion jilei tianxiang!)
+    DamageDone,       // Always trigger,from this one,the damage is assertain,hp changed.
     Damage,
     Damaged,
     DamageComplete,
@@ -316,8 +330,6 @@ enum TriggerEvent{
     SlashProceed,
     SlashHit,
     SlashMissed,
-
-    JinkUsed,
 
     CardAsked,
     CardResponsed,

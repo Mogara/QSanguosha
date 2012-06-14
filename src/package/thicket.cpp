@@ -41,7 +41,8 @@ public:
 
                 DummyCard *all_cards = player->wholeHandCards();
                 if(all_cards){
-                    room->obtainCard(caopi, all_cards, false);
+                    CardMoveReason reason(CardMoveReason::S_REASON_RECYCLE, caopi->objectName());
+                    room->obtainCard(caopi, all_cards, reason, false);
                     delete all_cards;
                 }
                 break;
@@ -198,7 +199,7 @@ private:
 class Huoshou: public TriggerSkill{
 public:
     Huoshou():TriggerSkill("huoshou"){
-        events << Predamage;
+        events << TargetConfirmed;
         frequency = Compulsory;
     }
 
@@ -263,7 +264,8 @@ public:
 
                 if(!target->isNude()){
                     int card_id = room->askForCardChosen(zhurong, target, "he", objectName());
-                    room->obtainCard(zhurong, card_id, room->getCardPlace(card_id) != Player::Hand);
+                    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, zhurong->objectName());
+                    room->obtainCard(zhurong, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
         }
@@ -289,8 +291,8 @@ public:
 
                 for(i = 0; i < x; i++){
                     int card_id = room->drawCard();
-                    room->moveCardTo(Sanguosha->getCard(card_id), menghuo, Player::PlaceTakeoff,
-                        CardMoveReason(CardMoveReason::S_REASON_SHOW, menghuo->objectName(), QString(), "zaiqi", QString()), true);
+                    room->moveCardTo(Sanguosha->getCard(card_id), menghuo, Player::DealingArea,
+                        CardMoveReason(CardMoveReason::S_REASON_LETKNOWN, menghuo->objectName(), QString(), "zaiqi", QString()), true);
 
                     room->getThread()->delay();
 
@@ -303,8 +305,10 @@ public:
                         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, menghuo->objectName(), "zaiqi", QString());
                         room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
                         has_heart = true;
-                    }else
-                        room->obtainCard(menghuo, card_id);
+                    }else{
+                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, menghuo->objectName());
+                        room->obtainCard(menghuo, Sanguosha->getCard(card_id), reason);
+                    }
                 }
 
                 if(has_heart)
@@ -328,6 +332,10 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return !target->hasSkill(objectName());
+    }
+
+    virtual int getPriority() const{
+        return -1;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -691,7 +699,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     const Card *slash = NULL;
-    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "@luanwu-slash", QVariant(), NonTrigger))){
+    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "@luanwu-slash", QVariant(), JinkUsed))){
         ServerPlayer *to_slash;
         if(luanwu_targets.length() == 1)
             to_slash = luanwu_targets.first();
@@ -953,9 +961,9 @@ ThicketPackage::ThicketPackage()
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
-    jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);
+    jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new SPConvertSkill("guiwei", "jiaxu", "sp_jiaxu"));
     related_skills.insertMulti("luanwu", "#@chaos-1");
 
