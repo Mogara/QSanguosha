@@ -196,6 +196,7 @@ public:
     QList<int> getDiscardPile();
     QList<int> getDrawPile();
     QList<int> getDealingArea();
+    QList<int> getTopDrawPile();
     int getCardFromPile(const QString &card_name);
     QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_dead = false) const;
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
@@ -246,8 +247,8 @@ public:
 
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, 
         bool forceMoveVisible = false, bool ignoreChanged = true);
-    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
-        bool forceMoveVisible = false, bool ignoreChanged = true);
+    void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace,
+                    const CardMoveReason &reason, bool forceMoveVisible = false, bool ignoreChanged = true);
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
     void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanged = true);
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged = true);
@@ -329,9 +330,12 @@ private:
     QList<ServerPlayer*> m_players, m_alivePlayers;
     int player_count;
     ServerPlayer *current;
-    QList<int> pile1, pile2, pile3;
+    QList<int> pile1, pile2, pile3, pile4;
     QList<int> table_cards;
-    QList<int> *draw_pile, *discard_pile, *deal_pile;
+    QList<int> *draw_pile, *discard_pile, *deal_pile, *top_drawpile;
+    /* @todo: modify this
+    QMap<> _m_tablePiles;
+    QList getTablePile(const QString &pile_name); */
     bool game_started;
     bool game_finished;
     lua_State *L;

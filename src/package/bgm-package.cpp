@@ -83,7 +83,7 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     {
         CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, effect.from->objectName(),
             effect.to->objectName(), "lihun", QString());
-        room->moveCardTo(dummy_card, effect.from, Player::Hand, reason, false);
+        room->moveCardTo(dummy_card, effect.to, effect.from, Player::Hand, reason, false);
     }
     effect.to->setFlags("LihunTarget");
 }
@@ -297,7 +297,7 @@ public:
             card_id = move->card_id;
             if(move->to_place == Player::Hand){
                 const Card* card = Sanguosha->getCard(card_id);
-                room->moveCardTo(card, NULL, Player::DiscardPile, reason);
+                room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
             }else
                 return false;
         }
@@ -306,7 +306,7 @@ public:
                 return false;
             card_id = data.toInt();
             const Card* card = Sanguosha->getCard(card_id);
-            room->moveCardTo(card, NULL, Player::DiscardPile, reason);
+            room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
         }
 
         LogMessage log;
@@ -439,6 +439,7 @@ public:
 DaheCard::DaheCard(){
     once = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool DaheCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -538,7 +539,7 @@ public:
                                                 .arg(effect.from->objectName())
                                                 .arg(bgm_zhangfei->objectName())
                                                 .arg(objectName()),
-                                                data, JinkUsed);
+                                                data, CardUsed);
             if(jink && jink->getSuit() != Card::Heart){
                 LogMessage log;
                 log.type = "#DaheEffect";
@@ -566,6 +567,7 @@ public:
 TanhuCard::TanhuCard(){
     once = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool TanhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

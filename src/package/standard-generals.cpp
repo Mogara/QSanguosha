@@ -17,13 +17,17 @@ public:
     virtual void onDamaged(ServerPlayer *caocao, const DamageStruct &damage) const{
         Room *room = caocao->getRoom();
         const Card *card = damage.card;
-        if(room->getCardPlace(card->getEffectiveId()) != Player::DealingArea)
-            return;
+        /* revive this after DealingArea works
+        if(room->getCardPlace(card->getEffectiveId()) == Player::DealingArea){  */
+        ServerPlayer *owner = room->getCardOwner(card->getEffectiveId());
+        if((!card->isVirtualCard() || card->getSubcards().length() > 0)
+            && (!owner || owner->objectName() != caocao->objectName())){
 
-        QVariant data = QVariant::fromValue(card);
-        if(room->askForSkillInvoke(caocao, "jianxiong", data)){
-            room->playSkillEffect(objectName());
-            caocao->obtainCard(card);
+            QVariant data = QVariant::fromValue(card);
+            if(room->askForSkillInvoke(caocao, "jianxiong", data)){
+                room->playSkillEffect(objectName());
+                caocao->obtainCard(card);
+            }
         }
     }
 };
@@ -118,6 +122,7 @@ public:
         default_choice = "no";
         events << FinishJudge;
     }
+
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *guojia, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
@@ -279,14 +284,18 @@ public:
 
         if(card){
             // the only difference for Guicai & Guidao
-            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), "guicai", QString());
-            reason.m_targetId = player->objectName();
+            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
+            // remove below after TopDrawPile works
+            if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile
+               || room->getCardPlace(judge->card->getEffectiveId()) != Player::Hand)
             room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::DealingArea,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "guicai", QString()), true);
-
+            /* revive this after TopDrawPile works
+            room->moveCardTo(judge->card, player, NULL, Player::TopDrawPile,
+                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), "guicai", QString()), true);  */
+            room->moveCardTo(judge->card, player, judge->who, Player::Special,
+                CardMoveReason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), "guicai", QString()), true);
             LogMessage log;
             log.type = "$ChangedJudge";
             log.from = player;
@@ -781,7 +790,7 @@ public:
 class Jiuyuan: public TriggerSkill{
 public:
     Jiuyuan():TriggerSkill("jiuyuan$"){
-        events << Dying << AskForPeachesDone << CardEffected;
+        events << Dying << AskForPeachesDone;
         frequency = Compulsory;
     }
 
@@ -796,42 +805,20 @@ public:
                 foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
                     if(wu->getKingdom() == "wu"){
                         room->playSkillEffect("jiuyuan", 1);
+                        room->setPlayerFlag(sunquan, "jiuyuan");
                         break;
                     }
-                }
-                break;
-            }
-
-        case CardEffected: {
-                CardEffectStruct effect = data.value<CardEffectStruct>();
-                if(effect.card->inherits("Peach") && effect.from->getKingdom() == "wu"
-                   && sunquan != effect.from && sunquan->hasFlag("dying"))
-                {
-                    int index = effect.from->getGeneral()->isMale() ? 2 : 3;
-                    room->playSkillEffect("jiuyuan", index);
-                    sunquan->setFlags("jiuyuan");
-
-                    LogMessage log;
-                    log.type = "#JiuyuanExtraRecover";
-                    log.from = sunquan;
-                    log.to << effect.from;
-                    log.arg = objectName();
-                    room->sendLog(log);
-
-                    RecoverStruct recover;
-                    recover.who = effect.from;
-                    room->recover(sunquan, recover);
-
-                    room->getThread()->delay(2000);
                 }
 
                 break;
             }
 
         case AskForPeachesDone:{
-                if(sunquan->getHp() > 0 && sunquan->hasFlag("jiuyuan"))
-                    room->playSkillEffect("jiuyuan", 4);
-                sunquan->setFlags("-jiuyuan");
+                if(sunquan->hasFlag("jiuyuan")){
+                    room->setPlayerFlag(sunquan, "-jiuyuan");
+                    if(sunquan->getHp() > 0)
+                        room->playSkillEffect("jiuyuan", 4);
+                }
 
                 break;
             }
@@ -1020,7 +1007,7 @@ public:
     Liuli():TriggerSkill("liuli"){
         view_as_skill = new LiuliViewAsSkill;
 
-        events << TargetConfirm;
+        events << TargetConfirming;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *daqiao, QVariant &data) const{
@@ -1127,9 +1114,9 @@ public:
         QString slasher = lvbu->objectName();
 
         const Card *first_jink = NULL, *second_jink = NULL;
-        first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), JinkUsed);
+        first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), CardUsed);
         if(first_jink)
-            second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), JinkUsed);
+            second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), CardUsed);
 
         Card *jink = NULL;
         if(first_jink && second_jink){
@@ -1488,10 +1475,10 @@ protected:
     }
 };
 
-class Shenjia: public TriggerSkill{
+class Chushi: public TriggerSkill{
 public:
-    Shenjia():TriggerSkill("shenjia"){
-        events << Predamaged;
+    Chushi():TriggerSkill("chushi"){
+        events << DamageForseen;
         frequency = Compulsory;
     }
 
@@ -1502,7 +1489,7 @@ public:
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         LogMessage log;
-        log.type = "#Shenjia";
+        log.type = "#Chushi";
         log.from = player;
         log.arg = QString::number(damage.damage);
         log.arg2 = objectName();
@@ -1512,9 +1499,9 @@ public:
     }
 };
 
-class Bumie: public TriggerSkill{
+class Shihun: public TriggerSkill{
 public:
-    Bumie():TriggerSkill("bumie"){
+    Shihun():TriggerSkill("shihun"){
         events << Dying;
     }
 
@@ -1523,11 +1510,11 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *yoka = room->findPlayerBySkillName(objectName());
+        ServerPlayer *nanhua = room->findPlayerBySkillName(objectName());
         DyingStruct dying_data = data.value<DyingStruct>();
-        if(dying_data.who != yoka)
+        if(dying_data.who != nanhua)
             return false;
-        if(!yoka || !room->askForSkillInvoke(yoka, objectName(), data))
+        if(!nanhua || !room->askForSkillInvoke(nanhua, objectName(), data))
             return false;
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
         int hp = target->getHp();
@@ -1557,10 +1544,10 @@ TestPackage::TestPackage()
     sp_shenzhaoyun->addSkill(new Longnu);
     sp_shenzhaoyun->addSkill("longhun");
 
-    General *yoka = new General(this, "yoka", "god", 3, true, true);
-    yoka->addSkill(new Yihun);
-    yoka->addSkill(new Shenjia);
-    yoka->addSkill(new Bumie);
+    General *nanhua = new General(this, "nanhua", "god", 3, true, true);
+    nanhua->addSkill(new Yihun);
+    nanhua->addSkill(new Chushi);
+    nanhua->addSkill(new Shihun);
 
 
     new General(this, "sujiang", "god", 5, true, true);

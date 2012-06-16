@@ -11,6 +11,7 @@ QuhuCard::QuhuCard(){
     once = true;
     mute = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -345,10 +346,10 @@ public:
             if(pangde->askForSkillInvoke(objectName(), data)){
                 room->playSkillEffect(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
-                CardMoveReason reason(CardMoveReason::S_REASON_THROW, effect.to->objectName());
+                CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, effect.to->objectName());
                 reason.m_playerId = pangde->objectName();
                 reason.m_targetId = effect.to->objectName();
-                room->moveCardTo(Sanguosha->getCard(to_throw), NULL, Player::DiscardPile, reason);
+                room->moveCardTo(Sanguosha->getCard(to_throw), NULL, NULL, Player::DiscardPile, reason);
             }
         }
 
@@ -501,6 +502,7 @@ public:
 TianyiCard::TianyiCard(){
     once = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

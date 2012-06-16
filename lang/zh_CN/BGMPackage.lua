@@ -1,7 +1,7 @@
 -- translation for Board Game Magazine Package
 
 return {
-	["BGM"] = "桌游志",
+	["BGM"] = "☆SP",
 
 	["#bgm_zhaoyun"] = "白马先锋",
 	["bgm_zhaoyun"] = "SP赵云",

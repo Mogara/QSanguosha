@@ -771,7 +771,7 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
         if(place == Player::Hand){
             card_item = CardItem::FindItem(m_handCards, card_id);
             if (card_item == selected) selected = NULL;
-            m_handCards.removeOne(card_item);            
+            m_handCards.removeOne(card_item);
             card_item->hideFrame();
         }
         else if(place == Player::Equip){

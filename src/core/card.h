@@ -118,6 +118,7 @@ public:
     bool canJilei() const;
     bool hasPreAction() const;
     bool asEquip() const;
+    bool asPindian() const;
 
     void setFlags(const QString &flag) const;
     bool hasFlag(const QString &flag) const;
@@ -152,6 +153,7 @@ protected:
     bool can_jilei;
     bool has_preact;
     bool as_equip;
+    bool as_pindian;
 
 private:
     Suit suit;

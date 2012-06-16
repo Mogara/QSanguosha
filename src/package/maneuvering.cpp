@@ -141,7 +141,7 @@ Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
 class GudingBladeSkill: public WeaponSkill{
 public:
     GudingBladeSkill():WeaponSkill("guding_blade"){
-        events << DamageProceed;
+        events << DamageCaused;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -175,7 +175,7 @@ GudingBlade::GudingBlade(Suit suit, int number):Weapon(suit, number, 2){
 class VineSkill: public ArmorSkill{
 public:
     VineSkill():ArmorSkill("vine"){
-        events << DamagedProceed << SlashEffected << CardEffected;
+        events << DamageInflicted << SlashEffected << CardEffected;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -203,7 +203,7 @@ public:
 
                 return true;
             }
-        }else if(event == DamagedProceed){
+        }else if(event == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
                 LogMessage log;
@@ -230,7 +230,7 @@ Vine::Vine(Suit suit, int number):Armor(suit, number){
 class SilverLionSkill: public ArmorSkill{
 public:
     SilverLionSkill():ArmorSkill("silver_lion"){
-        events << DamagedProceed;
+        events << DamageInflicted;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -340,7 +340,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.to.isEmpty()){
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
         reason.m_skillName = this->getSkillName();
-        room->moveCardTo(this, NULL, Player::DiscardPile, reason);
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
         card_use.from->playCardEffect("@recast");
         card_use.from->drawCards(1);
     }else

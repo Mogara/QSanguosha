@@ -203,8 +203,8 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
-    CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, source->objectName(), QString(), this->getSkillName(), QString());
-    room->moveCardTo(this, target, Player::Judging, reason, true);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), targets.first()->objectName(), this->getSkillName(), QString());
+    room->moveCardTo(this, source, target, Player::Judging, reason, true);
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -213,11 +213,6 @@ QString DelayedTrick::getSubtype() const{
 
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, effect.to->objectName());
-    if (!movable)
-    {        
-        room->throwCard(this, reason, NULL);
-    }
 
     LogMessage log;
     log.from = effect.to;
@@ -230,10 +225,16 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     room->judge(judge_struct);
 
     if(judge_struct.isBad()){
-        room->throwCard(this, reason, NULL);
         takeEffect(effect.to);
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+        room->throwCard(this, reason, NULL);
     }else if(movable){
         onNullified(effect.to);
+    }
+    if (!movable)
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+        room->throwCard(this, reason, NULL);
     }
 }
 
@@ -251,7 +252,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
                 continue;
 
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
-            room->moveCardTo(this, player, Player::Judging, reason, true);
+            room->moveCardTo(this, target, player, Player::Judging, reason, true);
             break;
         }
     }

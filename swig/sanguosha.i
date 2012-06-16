@@ -69,7 +69,7 @@ class Player: public QObject
 {
 public:
 	enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive};
-	enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, DealingArea, PlaceTakeoff, PlaceUnknown};
+	enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, TopDrawPile, DealingArea, PlaceTakeoff, PlaceUnknown};
 	enum Role {Lord, Loyalist, Rebel, Renegade};
 
 	explicit Player(QObject *parent);
@@ -470,9 +470,9 @@ enum TriggerEvent{
     TurnedOver,
 
     Predamage,
-    Predamaged,
-    DamagedProceed,
-    DamageProceed,
+    DamageForseen,
+    DamageCaused,
+    DamageInflicted,
     DamageDone,
     Damage,
     Damaged,
@@ -490,8 +490,6 @@ enum TriggerEvent{
     SlashHit,
     SlashMissed,
 
-    JinkUsed,
-
     CardAsked,
     CardResponsed,
     CardDiscarded,
@@ -503,7 +501,7 @@ enum TriggerEvent{
     CardDrawnDone,
 
     CardUsed,
-    TargetConfirm,
+    TargetConfirming,
     TargetConfirmed,
     CardEffect,
     CardEffected,
@@ -606,7 +604,7 @@ public:
 	bool willThrow() const;
 	bool canJilei() const;
 	bool hasPreAction() const;
-	bool canRecast() const;
+	bool asEquip() const;
 		
     void setFlags(const char *flag) const;
     bool hasFlag(const char *flag) const;
@@ -858,6 +856,7 @@ public:
 	QList<int> getDiscardPile();
 	QList<int> getDrawPile();
 	QList<int> getDealingArea();
+	QList<int> getTopDrawPile();
 	int getCardFromPile(const char *card_name);
 	ServerPlayer *findPlayer(const char *general_name, bool include_dead = false) const;
 	ServerPlayer *findPlayerBySkillName(const char *skill_name, bool include_dead = false) const;
@@ -900,7 +899,7 @@ public:
 
 	void throwCard(const Card *card, ServerPlayer *who);
 	void throwCard(int card_id, ServerPlayer *who);
-	void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
+	void moveCardTo(const Card *card, ServerPlayer *from, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
 
 	// interactive methods
 	void activate(ServerPlayer *player, CardUseStruct &card_use);

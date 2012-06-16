@@ -52,10 +52,16 @@ public:
         return -1;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return (target == NULL);
+    }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *caozhi, QVariant &data) const{
-
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
+        ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+
+        if(move->from_places.contains(Player::Judging) || move->from_places.contains(Player::Special))
+            return false;
         if(move->to_place == Player::DiscardPile && move->from && move->from->objectName() != caozhi->objectName() &&
             (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
             QList<CardsMoveStruct> exchangeMove;
@@ -135,7 +141,7 @@ private:
 class JiushiFlip: public TriggerSkill{
 public:
     JiushiFlip():TriggerSkill("#jiushi-flip"){
-        events << CardUsed << DamagedProceed << Damaged;
+        events << CardUsed << DamageInflicted << Damaged;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -143,7 +149,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->getSkillName() == "jiushi")
                 player->turnOver();
-        }else if(event == DamagedProceed){
+        }else if(event == DamageInflicted){
             player->tag["PredamagedFace"] = player->faceUp();
         }else if(event == Damaged){
             bool faceup = player->tag.value("PredamagedFace").toBool();
@@ -160,7 +166,7 @@ public:
 class Wuyan: public TriggerSkill{
 public:
     Wuyan():TriggerSkill("wuyan"){
-        events << Predamaged << Predamage;
+        events << DamageForseen << Predamage;
         frequency = Compulsory;
     }
 
@@ -174,7 +180,7 @@ public:
             return false;
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->getTypeId() == Card::Trick){
-            if(event == Predamaged && player->hasSkill(objectName())){
+            if(event == DamageForseen && player->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanGood";
                 log.from = player;
@@ -350,7 +356,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         ServerPlayer *victim = room->askForPlayerChosen(effect.from, targets, "xuanhuo");
         QString prompt = QString("xuanhuo-slash:%1:%2")
                 .arg(effect.from->objectName()).arg(victim->objectName());
-        const Card *slash = room->askForCard(effect.to, "slash", prompt, JinkUsed);
+        const Card *slash = room->askForCard(effect.to, "slash", prompt, CardUsed);
         if(slash){
             CardUseStruct use;
             use.card = slash;
@@ -640,7 +646,7 @@ void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(!card_use.from->canSlash(target, false))
         return;
 
-    const Card *slash = room->askForCard(card_use.from, "slash", "@xianzhen-slash", QVariant(), JinkUsed);
+    const Card *slash = room->askForCard(card_use.from, "slash", "@xianzhen-slash", QVariant(), CardUsed);
     if(slash){
         CardUseStruct use;
         use.card = slash;
@@ -1139,7 +1145,7 @@ void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
             return;
     }
 
-    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, zhonghui->objectName(),
+    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(),
         target->objectName(), "paiyi", QString());
     room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
     room->drawCards(target, 2,"paiyi");

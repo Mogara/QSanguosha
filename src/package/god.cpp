@@ -687,7 +687,7 @@ public:
 
         for(int i = 0; i < n; i++){
             int card_id = room->askForAG(shenzhuge, stars, false, "qixing-discard");
-            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, shenzhuge->objectName(), skillName, QString());
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), skillName, QString());
             room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
         }
 
@@ -764,7 +764,7 @@ public:
     Kuangfeng():TriggerSkill("kuangfeng"){
         view_as_skill = new KuangfengViewAsSkill;
 
-        events << Predamaged;
+        events << DamageForseen;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -880,7 +880,7 @@ public:
     Dawu():TriggerSkill("dawu"){
         view_as_skill = new DawuViewAsSkill;
 
-        events << Predamaged;
+        events << DamageForseen;
     }
 
     virtual int getPriority() const{

@@ -71,7 +71,7 @@ public:
             foreach (int card_id, player->getPile("hautain")){
                 if(!xuyou)
                 {
-                    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, xuyou->objectName(), "hautain", QString());
+                    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), "hautain", QString());
                     room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
                 }
                 else
@@ -270,7 +270,9 @@ public:
            && room->askForSkillInvoke(player, objectName())){
             for(int i = 0; i < 4 - handcardnum; i++){
                 int card_id = room->drawCard();
-                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::DealingArea, true);
+                /* revive this after TopDrawPile works
+                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::TopDrawPile, true);  */
+                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::Special, true);
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);
@@ -592,7 +594,7 @@ public:
 class Wenjiu: public TriggerSkill{
 public:
     Wenjiu():TriggerSkill("wenjiu"){
-        events << DamageProceed << SlashProceed;
+        events << DamageCaused << SlashProceed;
         frequency = Compulsory;
     }
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -617,7 +619,7 @@ public:
                 return true;
             }
         }
-        else if(event == DamageProceed){
+        else if(event == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
             const Card *reason = damage.card;
             if(!reason || damage.from != hua)

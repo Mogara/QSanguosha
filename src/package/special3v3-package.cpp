@@ -160,13 +160,18 @@ public:
 
         if(card){
             // the only difference for Guicai & Guidao
-            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), "huanshi", QString());
-            reason.m_targetId = player->objectName();
-            room->throwCard(judge->card, reason, judge->who);
+            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, QString());
+            // remove below after TopDrawPile works
+            if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile
+                || room->getCardPlace(judge->card->getEffectiveId()) != Player::Hand)
+                room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            room->moveCardTo(judge->card, NULL, Player::DealingArea,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, player->objectName(), "huanshi", QString()), true);
+            /* revive this when TopDrawPile is OK
+            room->moveCardTo(judge->card, player, NULL, Player::TopDrawPile,
+                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), "huanshi", QString()), true); */
+            room->moveCardTo(judge->card, player, judge->who, Player::Special,
+                CardMoveReason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), "huanshi", QString()), true);
             LogMessage log;
             log.type = "$ChangedJudge";
             log.from = player;
