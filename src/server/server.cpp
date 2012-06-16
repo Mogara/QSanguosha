@@ -191,11 +191,11 @@ QWidget *ServerDialog::createAdvancedTab(){
 	same_checkbox->setChecked(Config.EnableSame);
 
 	max_hp_label = new QLabel(tr("Max HP scheme"));
-	max_hp_scheme_combobox = new QComboBox;
-	max_hp_scheme_combobox->addItem(tr("Sum - 3"));
-	max_hp_scheme_combobox->addItem(tr("Minimum"));
-	max_hp_scheme_combobox->addItem(tr("Average"));
-	max_hp_scheme_combobox->setCurrentIndex(Config.MaxHpScheme);
+	max_hp_scheme_ComboBox = new QComboBox;
+	max_hp_scheme_ComboBox->addItem(tr("Sum - 3"));
+	max_hp_scheme_ComboBox->addItem(tr("Minimum"));
+	max_hp_scheme_ComboBox->addItem(tr("Average"));
+	max_hp_scheme_ComboBox->setCurrentIndex(Config.MaxHpScheme);
 	second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
 	basara_checkbox = new QCheckBox(tr("Enable Basara"));
@@ -236,7 +236,7 @@ QWidget *ServerDialog::createAdvancedTab(){
 	layout->addWidget(free_assign_self_checkbox);
 	layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
 	layout->addWidget(second_general_checkbox);
-	layout->addLayout(HLay(max_hp_label, max_hp_scheme_combobox));
+	layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
 	layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
 	layout->addLayout(HLay(scene_checkbox, same_checkbox));
 	layout->addWidget(announce_ip_checkbox);
@@ -250,8 +250,8 @@ QWidget *ServerDialog::createAdvancedTab(){
 
 	max_hp_label->setVisible(Config.Enable2ndGeneral);
 	connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
-	max_hp_scheme_combobox->setVisible(Config.Enable2ndGeneral);
-	connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setVisible(bool)));
+	max_hp_scheme_ComboBox->setVisible(Config.Enable2ndGeneral);
+	connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_ComboBox, SLOT(setVisible(bool)));
 
 	return widget;
 }
@@ -512,25 +512,25 @@ QGroupBox *ServerDialog::create3v3Box(){
 	exclude_disaster_checkbox->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
 
 	{
-		QComboBox *combobox = new QComboBox;
-		combobox->addItem(tr("Normal"), "Normal");
-		combobox->addItem(tr("Random"), "Random");
-		combobox->addItem(tr("All roles"), "AllRoles");
+		QComboBox *ComboBox = new QComboBox;
+		ComboBox->addItem(tr("Normal"), "Normal");
+		ComboBox->addItem(tr("Random"), "Random");
+		ComboBox->addItem(tr("All roles"), "AllRoles");
 
-		role_choose_combobox = combobox;
+		role_choose_ComboBox = ComboBox;
 
 		QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
 		if(scheme == "Random")
-			combobox->setCurrentIndex(1);
+			ComboBox->setCurrentIndex(1);
 		else if(scheme == "AllRoles")
-			combobox->setCurrentIndex(2);
+			ComboBox->setCurrentIndex(2);
 	}
 
 	vlayout->addWidget(standard_3v3_radiobutton);
 	vlayout->addWidget(new_3v3_radiobutton);
 	vlayout->addLayout(HLay(extend, extend_edit_button));
 	vlayout->addWidget(exclude_disaster_checkbox);
-	vlayout->addLayout(HLay(new QLabel(tr("Role choose")), role_choose_combobox));
+	vlayout->addLayout(HLay(new QLabel(tr("Role choose")), role_choose_ComboBox));
 	box->setLayout(vlayout);
 
 	bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
@@ -583,21 +583,21 @@ QGroupBox *ServerDialog::createGameModeBox(){
 		scenario_button->setObjectName("scenario");
 		mode_group->addButton(scenario_button);
 
-		scenario_combobox = new QComboBox;
+		scenario_ComboBox = new QComboBox;
 		QStringList names = Sanguosha->getScenarioNames();
 		foreach(QString name, names){
 			QString scenario_name = Sanguosha->translate(name);
 			const Scenario *scenario = Sanguosha->getScenario(name);
 			int count = scenario->getPlayerCount();
 			QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
-			scenario_combobox->addItem(text, name);
+			scenario_ComboBox->addItem(text, name);
 		}
 
 		if(mode_group->checkedButton() == NULL){
 			int index = names.indexOf(Config.GameMode);
 			if(index != -1){
 				scenario_button->setChecked(true);
-				scenario_combobox->setCurrentIndex(index);
+				scenario_ComboBox->setCurrentIndex(index);
 			}
 		}
 		//mini scenes
@@ -605,7 +605,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
 		mini_scenes->setObjectName("mini");
 		mode_group->addButton(mini_scenes);
 
-		mini_scene_combobox = new QComboBox;
+		mini_scene_ComboBox = new QComboBox;
 		int index = -1;
 		int stage = Config.value("MiniSceneStage",1).toInt();
 		for(int i =1;i<=stage;i++)
@@ -617,14 +617,14 @@ QGroupBox *ServerDialog::createGameModeBox(){
 			const Scenario *scenario = Sanguosha->getScenario(name);
 			int count = scenario->getPlayerCount();
 			QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
-			mini_scene_combobox->addItem(text, name);
+			mini_scene_ComboBox->addItem(text, name);
 
 			if(name == Config.GameMode)index = i-1;
 		}
 
 		if(index>=0)
 		{
-			mini_scene_combobox->setCurrentIndex(index);
+			mini_scene_ComboBox->setCurrentIndex(index);
 			mini_scenes->setChecked(true);
 		}
 		else if(Config.GameMode == "custom_scenario")
@@ -639,8 +639,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
 										  mode_group->checkedButton()->objectName() == "mini" :
 										  false);
 
-		item_list << HLay(scenario_button, scenario_combobox);
-		item_list << HLay(mini_scenes, mini_scene_combobox);
+		item_list << HLay(scenario_button, scenario_ComboBox);
+		item_list << HLay(mini_scenes, mini_scene_ComboBox);
 		item_list << HLay(mini_scenes, mini_scene_button);
 	}
 
@@ -809,7 +809,7 @@ void ServerDialog::doCustomAssign(){
 }
 
 void ServerDialog::setMiniCheckBox(){
-	mini_scene_combobox->setEnabled(false);
+	mini_scene_ComboBox->setEnabled(false);
 }
 
 void Select3v3GeneralDialog::toggleCheck(){
@@ -872,7 +872,7 @@ bool ServerDialog::config(){
 	Config.EnableSame = same_checkbox->isChecked();
 	Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
 	Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
-	Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
+	Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
 	Config.AnnounceIP = announce_ip_checkbox->isChecked();
 	Config.Address = address_edit->text();
 	Config.EnableAI = ai_enable_checkbox->isChecked();
@@ -882,10 +882,10 @@ bool ServerDialog::config(){
 	// game mode
 	QString objname = mode_group->checkedButton()->objectName();
 	if(objname == "scenario")
-		Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
+		Config.GameMode = scenario_ComboBox->itemData(scenario_ComboBox->currentIndex()).toString();
 	else if(objname == "mini"){
-		if(mini_scene_combobox->isEnabled())
-			Config.GameMode = mini_scene_combobox->itemData(mini_scene_combobox->currentIndex()).toString();
+		if(mini_scene_ComboBox->isEnabled())
+			Config.GameMode = mini_scene_ComboBox->itemData(mini_scene_ComboBox->currentIndex()).toString();
 		else
 			Config.GameMode = "custom_scenario";
 	}
@@ -919,7 +919,7 @@ bool ServerDialog::config(){
 
 	Config.beginGroup("3v3");
 	Config.setValue("UsingExtension", !standard_3v3_radiobutton->isChecked() && !new_3v3_radiobutton->isChecked());
-	Config.setValue("RoleChoose", role_choose_combobox->itemData(role_choose_combobox->currentIndex()).toString());
+	Config.setValue("RoleChoose", role_choose_ComboBox->itemData(role_choose_ComboBox->currentIndex()).toString());
 	Config.setValue("ExcludeDisaster", exclude_disaster_checkbox->isChecked());
 	Config.setValue("UsingNewMode", new_3v3_radiobutton->isChecked());
 	Config.endGroup();

@@ -26,10 +26,10 @@ QList<CardItem*> DiscardPile::removeCardItems(const QList<int> &card_ids, Player
 
 void DiscardPile::setSize(double width, double height) 
 {
-	m_cardsDisplayRegion = QRect(0, 0, width, height);
-	m_numCardsVisible = width / G_COMMON_LAYOUT.m_cardNormalHeight + 1;
-	resetTransform();
-	translate(-width / 2, -height / 2);
+    m_cardsDisplayRegion = QRect(0, 0, width, height);
+    m_numCardsVisible = width / G_COMMON_LAYOUT.m_cardNormalHeight + 1;
+    resetTransform();
+    translate(-width / 2, -height / 2);
 }
 
 bool DiscardPile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)

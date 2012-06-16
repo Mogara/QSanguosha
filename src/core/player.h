@@ -52,7 +52,7 @@ class Player : public QObject
 
 public:
     enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive};
-    enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, PlaceTakeoff, PlaceUnknown};
+    enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, PlaceTable, PlaceUnknown};
     enum Role {Lord, Loyalist, Rebel, Renegade};
 
     explicit Player(QObject *parent);
@@ -79,8 +79,6 @@ public:
 
     QString getKingdom() const;
     void setKingdom(const QString &kingdom);
-    QString getKingdomIcon() const;
-    QString getKingdomFrame() const;
 
     void setRole(const QString &role);
     QString getRole() const;
@@ -251,6 +249,7 @@ signals:
     void general2_changed();
     void role_changed(const QString &new_role);
     void state_changed();
+    void hp_changed();
     void kingdom_changed();
     void phase_changed();
     void owner_changed(bool owner);

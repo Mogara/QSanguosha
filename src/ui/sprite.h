@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QEasingCurve>
 
-#include "pixmap.h"
+#include "QSanSelectableItem.h"
 
 class Sprite : public QObject, public QGraphicsPixmapItem
 {

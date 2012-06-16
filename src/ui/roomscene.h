@@ -16,8 +16,7 @@ class Window;
 class Button;
 class CardContainer;
 class GuanxingBox;
-class IrregularButton;
-class TrustButton;
+class QSanButton;
 class QGroupBox;
 struct RoomLayout;
 
@@ -76,7 +75,7 @@ private:
     QComboBox *damage_nature;
     QSpinBox *damage_point;
 
-    void fillCombobox(QComboBox *combobox);
+    void fillComboBox(QComboBox *ComboBox);
 
 private slots:
     void disableSource();
@@ -89,7 +88,7 @@ public:
     void killPlayer(const QString &general_name);
 
 private:
-    Pixmap *avatars[3];
+    QSanSelectableItem *avatars[3];
     int revealed;
 };
 
@@ -145,7 +144,7 @@ public:
     void adjustItems();
     void showIndicator(const QString &from, const QString &to);
     void showPromptBox();
-    static void FillPlayerNames(QComboBox *combobox, bool add_none);
+    static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
     void updateTable();
 
 public slots:
@@ -182,7 +181,7 @@ public slots:
     void makeReviving();
     void doScript();
 
-	void handleEventEffect(const Json::Value &arg);
+    void handleEventEffect(const Json::Value &arg);
 
     EffectAnimation * getEA() const{return animations;}
     
@@ -198,10 +197,10 @@ private:
     const QSanRoomSkin::RoomLayout* _m_roomLayout;
     const QSanRoomSkin::PhotoLayout* _m_photoLayout;
     const QSanRoomSkin::CommonLayout* _m_commonLayout;
-	const QSanRoomSkin* _m_roomSkin;
+    const QSanRoomSkin* _m_roomSkin;
     QGraphicsItem* _m_last_front_item;
     double _m_last_front_ZValue;
-    PlayerCardContainer* _getPlayerCardContainer(Player::Place place, Player* player);
+    GeneralCardContainer* _getGeneralCardContainer(Player::Place place, Player* player);
     QMap<int, QList<QList<CardItem*> > > _m_cardsMoveStash;
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;
@@ -209,20 +208,17 @@ private:
     Photo *focused;
     CardItem *special_card;
     Dashboard *dashboard;
-    Pixmap *avatar;
     DiscardPile *m_discardPile;
     DrawPile *m_drawPile;
     // QQueue<CardItem*> piled_discards;
     QMainWindow *main_window;
-    QComboBox *role_combobox;
-    IrregularButton *ok_button, *cancel_button, *discard_button;
-    TrustButton *trust_button;
-    QPushButton *m_reverseSelectionButton, *m_freeDiscardButton;
+    QSanButton *ok_button, *cancel_button, *discard_button;
+    QSanButton *trust_button;
+    QPushButton *m_reverseSelectionButton, *m_sortHandcardButton, *m_freeDiscardButton;
     QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;
     QGraphicsItem *control_panel;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;
-    QComboBox *sort_combobox;    
     QDialog *m_choiceDialog; // Dialog for choosing generals, suits, card/equip, or kingdoms
 
     int timer_id;
@@ -254,7 +250,6 @@ private:
     QGraphicsProxyWidget *chat_edit_widget;
     QGraphicsTextItem *prompt_box_widget;
     ChatWidget *chat_widget;
-    RoomLayout *room_layout;
     QPixmap m_rolesBoxBackground;
     QGraphicsPixmapItem *m_rolesBox;
     QGraphicsTextItem *m_pileCardNumInfoTextBox;
@@ -264,7 +259,7 @@ private:
 #endif
 
     // for 3v3 & 1v1 mode
-    Pixmap *selector_box;
+    QSanSelectableItem *selector_box;
     QList<CardItem *> general_items, up_generals, down_generals;
     CardItem *to_change;
     QList<QGraphicsRectItem *> arrange_rects;
@@ -294,7 +289,7 @@ private:
     void addSkillButton(const Skill *skill, bool from_left = false);
     void addWidgetToSkillDock(QWidget *widget, bool from_left = false);
     void removeWidgetFromSkillDock(QWidget *widget);
-    void createControlButtons();
+    QGraphicsItem *createDashboardButtons();
     void createExtraButtons();
     void createReplayControlBar();
 
@@ -310,24 +305,21 @@ private:
     void doLightboxAnimation(const QString &name, const QStringList &args);
     void doHuashen(const QString &name, const QStringList &args);
     void doIndicate(const QString &name, const QStringList &args);
-
-    void animateHpChange(const QString &name, const QStringList &args);
     void animatePopup(const QString &name, const QStringList &args);
     EffectAnimation *animations;
 
     // re-layout attempts
     bool game_started;
-    void _dispersePhotos(QList<Photo*> &photos, QRectF disperseRegion, int minDistanceBetweenPhotos, Qt::Alignment align);
+    void _dispersePhotos(QList<Photo*> &photos, QRectF disperseRegion,
+                         Qt::Orientation orientation, Qt::Alignment align);
 
 
 private slots:
     void fillCards(const QList<int>& card_ids);
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
-    void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
     void updateTrustButton();
-    void updatePileButton(const QString &pile_name);
     void doSkillButton();
     void doOkButton();
     void doCancelButton();

@@ -47,6 +47,7 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
 			}
 		}
 	}
+#undef _NEW_PIXEL_CHANNEL
 #undef _NEW_PIXEL
 #undef _OLD_PIXEL
 	QImage result(newImage, cols, rows, QImage::Format_ARGB32);

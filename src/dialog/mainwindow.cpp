@@ -696,7 +696,7 @@ QGroupBox *MeleeDialog::createGeneralBox(){
 	return box;
 }
 
-class RoomItem: public Pixmap{
+class RoomItem: public QSanSelectableItem{
 public:
 	RoomItem(Room *room){
 		load("image/system/frog/playing.png");

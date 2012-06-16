@@ -388,8 +388,8 @@ public:
         Room *room = player->getRoom();
         int card_id = room->drawCard();
         const Card *card = Sanguosha->getCard(card_id);
-        room->moveCardTo(card, player, Player::PlaceTakeoff, 
-            CardMoveReason(CardMoveReason::S_REASON_SHOW, player->getGeneralName(), "fuhun", QString()), true);
+        room->moveCardTo(card, player, Player::PlaceTable, 
+            CardMoveReason(CardMoveReason::S_REASON_SHOW, player->getGeneralName(), "show_pile", QString()), true);
         room->getThread()->delay();
 
         player->obtainCard(card, true);
@@ -459,33 +459,24 @@ public:
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
-        events << SlashEffected << Damaged;
+        events << Damaged;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 
-        if(event == SlashEffected){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.drank)
-                effect.to->setFlags("Dranked");
-        }
-        else{
-            DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->inherits("Slash") &&
-                    (damage.card->isRed() || damage.to->hasFlag("Dranked"))){
-                if(damage.to->hasFlag("Dranked"))
-                    damage.to->setFlags("-Dranked");
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card && damage.card->inherits("Slash") &&
+                (damage.card->isRed() || damage.card->hasFlag("drank"))){
 
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = player;
-                log.arg = objectName();
-                room->sendLog(log);
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = objectName();
+            room->sendLog(log);
 
-                room->loseMaxHp(player);
-            }
+            room->loseMaxHp(player);
         }
         return false;
     }
@@ -556,7 +547,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if(player->hasSkill(objectName()) && damage.card && damage.card->inherits("Slash")
                     && !room->getTag("JiefanTarget").isNull()){
-					
+                    
                 DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
                 ServerPlayer *target = dying.who;
                 room->removeTag("JiefanTarget");

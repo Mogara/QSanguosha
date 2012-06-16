@@ -1,7 +1,7 @@
 #ifndef _DISCARD_PILE_H
 #define _DISCARD_PILE_H
 
-#include "pixmap.h"
+#include "QSanSelectableItem.h"
 #include "player.h"
 #include "carditem.h"
 #include "protocol.h"
@@ -9,11 +9,11 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class DiscardPile: public PlayerCardContainer
+class DiscardPile: public GeneralCardContainer
 {
     Q_OBJECT
 public:  
-    inline DiscardPile() : PlayerCardContainer(true) {}
+    inline DiscardPile() : GeneralCardContainer(true) {}
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);
     inline void setSize(QSize newSize) 
     {
@@ -31,11 +31,11 @@ protected:
     QRect m_cardsDisplayRegion;
 };
 
-class DrawPile: public PlayerCardContainer
+class DrawPile: public GeneralCardContainer
 {
     Q_OBJECT
 public:
-    inline DrawPile() : PlayerCardContainer(true) {}
+    inline DrawPile() : GeneralCardContainer(true) {}
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);    
 protected:
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);

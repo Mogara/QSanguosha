@@ -126,6 +126,17 @@ return {
 	["@askforretrial"] = "请使用【%dest】技能来修改 %src 的 %arg 判定",
 	["$CheatCard"] = "%from 使用了作弊，获得了 %card",
 
+	["CAPITAL(1)"] = "一",
+	["CAPITAL(2)"] = "二",
+	["CAPITAL(3)"] = "三",
+	["CAPITAL(4)"] = "四",
+	["CAPITAL(5)"] = "五",
+	["CAPITAL(6)"] = "六",
+	["CAPITAL(7)"] = "七",
+	["CAPITAL(8)"] = "八",
+	["CAPITAL(9)"] = "九",
+	["CAPITAL(10)"] = "十",
+
 	["3v3:cw"] = "顺时针",
 	["3v3:ccw"] = "逆时针",
 	["cw"] = "顺时针",

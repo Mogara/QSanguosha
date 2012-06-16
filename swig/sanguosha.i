@@ -68,7 +68,7 @@ class Player: public QObject
 {
 public:
 	enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive};
-	enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, PlaceTakeoff, PlaceUnknown};
+	enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, PlaceTable, PlaceUnknown};
 	enum Role {Lord, Loyalist, Rebel, Renegade};
 
 	explicit Player(QObject *parent);
@@ -89,8 +89,6 @@ public:
 
 	QString getKingdom() const;
 	void setKingdom(const char *kingdom);
-	QString getKingdomIcon() const;
-	QString getKingdomFrame() const;
 
 	void setRole(const char *role);
 	QString getRole() const;    

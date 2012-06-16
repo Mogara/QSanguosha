@@ -277,7 +277,7 @@ public:
 
                 for(i = 0; i < x; i++){
                     int card_id = room->drawCard();
-                    room->moveCardTo(Sanguosha->getCard(card_id), menghuo, Player::PlaceTakeoff,
+                    room->moveCardTo(Sanguosha->getCard(card_id), menghuo, Player::PlaceTable,
                         CardMoveReason(CardMoveReason::S_REASON_SHOW, menghuo->objectName(), QString(), "zaiqi", QString()), true);
 
                     room->getThread()->delay();

@@ -13,8 +13,6 @@ ClientPlayer::ClientPlayer(Client *client)
     :Player(client), handcard_num(0)
 {
     mark_doc = new QTextDocument(this);
-    mark_doc->setTextWidth(128);
-    mark_doc->setDefaultTextOption(QTextOption(Qt::AlignRight));
 }
 
 void ClientPlayer::handCardChange(int delta){
@@ -160,6 +158,7 @@ void ClientPlayer::setMark(const QString &mark, int value){
     if(!mark.startsWith("@"))
         return;
 
+    // @todo: consider move all the codes below to PlayerCardContainerUI.cpp
     // set mark doc
     QString text = "";
     QMapIterator<QString, int> itor(marks);
@@ -169,7 +168,9 @@ void ClientPlayer::setMark(const QString &mark, int value){
         if(itor.key().startsWith("@") && itor.value() > 0){
             QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
             if(itor.value() != 1)
-                mark_text.append(QString("x%1").arg(itor.value()));
+                mark_text.append(QString("%1").arg(itor.value()));
+            // @todo: add an option so that mark can be placed horizontally.
+            mark_text.append("<br>");
             text.append(mark_text);
         }
     }

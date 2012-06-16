@@ -2,7 +2,7 @@
 #define _CARDITEM_H
 
 #include "card.h"
-#include "pixmap.h"
+#include "QSanSelectableItem.h"
 #include "settings.h"
 #include <QAbstractAnimation>
 #include <QMutex>
@@ -12,7 +12,7 @@
 class FilterSkill;
 class General;
 
-class CardItem : public Pixmap
+class CardItem : public QSanSelectableItem
 {
 	Q_OBJECT
 
@@ -22,6 +22,7 @@ public:
 	CardItem(const QString &general_name);
 	~CardItem();
 
+    virtual QRectF boundingRect() const;
 	virtual void setEnabled(bool enabled);
 	void filter(const FilterSkill *filter_skill);
 	const Card *getFilteredCard() const;    
@@ -69,6 +70,7 @@ protected:
 	QMutex m_animationMutex;
 	double m_opacityAtHome;
 	bool m_isSelected;
+    static const int _S_CLICK_JITTER_TOLERANCE;
 	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 	virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -76,11 +78,12 @@ protected:
 	virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
 	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
 	virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
-
+    
 private:    
 	const Card *m_card, *filtered_card;
 	QString _m_frameType, _m_avatarName;
 	QPointF home_pos;
+    QPointF _m_lastMousePressScenePos;
 	bool auto_back, frozen;
 signals:
 	void toggle_discards();

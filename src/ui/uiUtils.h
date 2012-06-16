@@ -2,6 +2,7 @@
 #define _UI_UTILS_H
 #include <QImage>
 #include <QColor>
+#include <qrect.h>
 
 namespace QSanUiUtils
 {

@@ -458,6 +458,8 @@ sgs.ai_view_as.longdan = function(card, player, card_place)
 	end
 end
 
+sgs.ai_use_priority.longdan = 9
+
 sgs.zhaoyun_keep_value = 
 {
 	Peach = 6,

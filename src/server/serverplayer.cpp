@@ -326,10 +326,6 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             handcards.removeOne(card);
             break;
         }
-    case PlaceTakeoff: {
-            m_takenOffCards.removeOne(card);
-            break;
-        }
 
     case Equip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
@@ -373,10 +369,7 @@ void ServerPlayer::addCard(const Card *card, Place place){
             handcards << card;
             break;
         }
-    case PlaceTakeoff: {
-            m_takenOffCards << card;
-            break;
-        }
+
     case Equip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             setEquip(equip);

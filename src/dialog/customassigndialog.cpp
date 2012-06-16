@@ -46,10 +46,10 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 	list->setMovement(QListView::Static);
 
 	QVBoxLayout *vlayout = new QVBoxLayout;
-	num_combobox = new QComboBox;
+	num_ComboBox = new QComboBox;
 	for(int i = 0; i <= 9; i++){
 		if(i < 9)
-			num_combobox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
+			num_ComboBox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
 
 		QString player = (i == 0 ? "Player" : "AI");
 		QString text = i == 0 ?
@@ -69,14 +69,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 		item_map[i] = item;
 	}
 
-	role_combobox = new QComboBox;
-	role_combobox->addItem(tr("Unknown"), "unknown");
-	role_combobox->addItem(tr("Lord"), "lord");
-	role_combobox->addItem(tr("Loyalist"), "loyalist");
-	role_combobox->addItem(tr("Renegade"), "renegade");
-	role_combobox->addItem(tr("Rebel"), "rebel");
+	role_ComboBox = new QComboBox;
+	role_ComboBox->addItem(tr("Unknown"), "unknown");
+	role_ComboBox->addItem(tr("Lord"), "lord");
+	role_ComboBox->addItem(tr("Loyalist"), "loyalist");
+	role_ComboBox->addItem(tr("Renegade"), "renegade");
+	role_ComboBox->addItem(tr("Rebel"), "rebel");
 
-	for(int i=0; i< num_combobox->currentIndex()+2; i++){
+	for(int i=0; i< num_ComboBox->currentIndex()+2; i++){
 		list->addItem(item_map[i]);
 	}
 	list->setCurrentItem(item_map[0]);
@@ -92,8 +92,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 	QLabel *mark_text = new QLabel(tr("marks"));
 	QLabel *mark_num_text = new QLabel(tr("pieces"));
 
-	marks_combobox = new QComboBox;
-	marks_combobox->addItem(tr("None"));
+	marks_ComboBox = new QComboBox;
+	marks_ComboBox->addItem(tr("None"));
 	QString path = "image/mark";
 	QDir *dir = new QDir(path);
 	QStringList filter;
@@ -104,7 +104,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 		QString mark_name = file.fileName().split(".").first();
 		QString mark_translate = Sanguosha->translate(mark_name);
 		if(!mark_translate.startsWith("@")){
-			marks_combobox->addItem(mark_translate, mark_name);
+			marks_ComboBox->addItem(mark_translate, mark_name);
 			QLabel *mark_icon = new QLabel(mark_translate);
 			mark_icon->setPixmap(QPixmap(file.filePath()));
 			mark_icon->setObjectName(mark_name);
@@ -121,7 +121,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 	starter_group->setLayout(starter_lay);
 	starter_lay->addWidget(starter_box);
 	starter_lay->addLayout(HLay(draw_text, player_draw));
-	starter_lay->addLayout(HLay(marks_combobox, marks_count, mark_text, mark_num_text));
+	starter_lay->addLayout(HLay(marks_ComboBox, marks_count, mark_text, mark_num_text));
 
 	QGridLayout *grid_layout = new QGridLayout;
 	const int columns = mark_icons.length() > 10 ? 5 : 4;
@@ -211,8 +211,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 	QPushButton *defaultLoadButton = new QPushButton(tr("Default load"));
 	defaultLoadButton->setObjectName("default_load");
 
-	vlayout->addWidget(role_combobox);
-	vlayout->addWidget(num_combobox);
+	vlayout->addWidget(role_ComboBox);
+	vlayout->addWidget(num_ComboBox);
 	QHBoxLayout *label_lay = new QHBoxLayout;
 	label_lay->addWidget(general_box);
 	label_lay->addWidget(general_box2);
@@ -305,14 +305,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 	mainlayout->addLayout(layout);
 	setLayout(mainlayout);
 
-	connect(role_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
+	connect(role_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
 	connect(list, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
 			this, SLOT(on_list_itemSelectionChanged(QListWidgetItem*)));
 	connect(move_list_up_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
 	connect(move_list_down_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
 	connect(move_list_check, SIGNAL(toggled(bool)), this, SLOT(setMoveButtonAvaliable(bool)));
 	connect(move_pile_check, SIGNAL(toggled(bool)), this, SLOT(setMoveButtonAvaliable(bool)));
-	connect(num_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
+	connect(num_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
 	connect(general_label, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
 	connect(general_label2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
 	connect(max_hp_prompt,SIGNAL(toggled(bool)),max_hp_spin,SLOT(setEnabled(bool)));
@@ -335,7 +335,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 	connect(player_draw, SIGNAL(valueChanged(int)), this, SLOT(setPlayerStartDraw(int)));
 	connect(starter_box, SIGNAL(toggled(bool)), this, SLOT(setStarter(bool)));
 	connect(marks_count, SIGNAL(valueChanged(int)), this, SLOT(setPlayerMarks(int)));
-	connect(marks_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(getPlayerMarks(int)));
+	connect(marks_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(getPlayerMarks(int)));
 	connect(pile_list, SIGNAL(currentRowChanged(int)), this, SLOT(updatePileInfo(int)));
 	connect(removeEquipButton, SIGNAL(clicked()), this, SLOT(removeEquipCard()));
 	connect(removeHandButton, SIGNAL(clicked()), this, SLOT(removeHandCard()));
@@ -557,7 +557,7 @@ void CustomAssignDialog::getPileCard(int card_id){
 }
 
 void CustomAssignDialog::updateNumber(int num){
-	int count = num_combobox->itemData(num).toInt();
+	int count = num_ComboBox->itemData(num).toInt();
 	if(count < list->count()){
 		for(int i = list->count() - 1; i >= count; i--){
 			list->takeItem(i);
@@ -765,7 +765,7 @@ void CustomAssignDialog::setStarter(bool toggled){
 }
 
 void CustomAssignDialog::setPlayerMarks(int value){
-	QString mark_name = marks_combobox->itemData(marks_combobox->currentIndex()).toString();
+	QString mark_name = marks_ComboBox->itemData(marks_ComboBox->currentIndex()).toString();
 	QString player_name = list->item(list->currentRow())->data(Qt::UserRole).toString();
 	player_marks[player_name][mark_name] = value;
 
@@ -782,7 +782,7 @@ void CustomAssignDialog::setPlayerMarks(int value){
 }
 
 void CustomAssignDialog::getPlayerMarks(int index){
-	QString mark_name = marks_combobox->itemData(index).toString();
+	QString mark_name = marks_ComboBox->itemData(index).toString();
 	QString player_name = list->item(list->currentRow())->data(Qt::UserRole).toString();
 	if(mark_name.isEmpty())
 		marks_count->setEnabled(false);
@@ -794,7 +794,7 @@ void CustomAssignDialog::getPlayerMarks(int index){
 
 void CustomAssignDialog::updateRole(int index){
 	QString name = list->currentItem()->data(Qt::UserRole).toString();
-	QString role = role_combobox->itemData(index).toString();
+	QString role = role_ComboBox->itemData(index).toString();
 	setListText(name, role, list->currentRow());
 	role_mapping[name] = role;
 }
@@ -1021,9 +1021,9 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
 		general_label2->setPixmap(QPixmap(QString("image/system/disabled.png")));
 
 	if(!role_mapping[player_name].isEmpty()){
-		for(int i = 0; i < role_combobox->count(); i++){
-			if(role_mapping[player_name] == role_combobox->itemData(i).toString()){
-				role_combobox->setCurrentIndex(i);
+		for(int i = 0; i < role_ComboBox->count(); i++){
+			if(role_mapping[player_name] == role_ComboBox->itemData(i).toString()){
+				role_ComboBox->setCurrentIndex(i);
 				updateRole(i);
 				break;
 			}
@@ -1059,7 +1059,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
 
 	choose_nationality->setChecked(set_nationality.value(player_name, false));
 
-	QString mark_name = marks_combobox->itemData(marks_combobox->currentIndex()).toString();
+	QString mark_name = marks_ComboBox->itemData(marks_ComboBox->currentIndex()).toString();
 	if(!mark_name.isEmpty())
 		marks_count->setValue(player_marks.value(player_name)[mark_name]);
 	else
@@ -1325,7 +1325,7 @@ void CustomAssignDialog::load()
 	list->setCurrentRow(0);
 
 	player_draw->setValue(player_start_draw[list->currentItem()->data(Qt::UserRole).toString()]);
-	num_combobox->setCurrentIndex(list->count()-2);
+	num_ComboBox->setCurrentIndex(list->count()-2);
 	random_roles_box->setChecked(is_random_roles);
 
 	updatePileInfo();

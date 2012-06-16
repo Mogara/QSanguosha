@@ -121,9 +121,9 @@ QString Peach::getSubtype() const{
 }
 
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    BasicCard::use(room, source, targets);
     if(targets.isEmpty())
-        room->cardEffect(this, source, source);
-    BasicCard::use(room, source, targets);    
+        room->cardEffect(this, source, source);   
 }
 
 void Peach::onEffect(const CardEffectStruct &effect) const{

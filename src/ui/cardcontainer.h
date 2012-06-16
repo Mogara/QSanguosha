@@ -4,13 +4,13 @@
 class CardItem;
 class ClientPlayer;
 
-#include "pixmap.h"
+#include "QSanSelectableItem.h"
 #include "carditem.h"
 #include "GeneralCardContainerUI.h"
 
 #include <QStack>
 
-class CloseButton: public Pixmap{
+class CloseButton: public QSanSelectableItem{
     Q_OBJECT
 
 public:
@@ -25,7 +25,7 @@ signals:
 };
 
 
-class CardContainer : public PlayerCardContainer
+class CardContainer : public GeneralCardContainer
 {
     Q_OBJECT
 
@@ -65,7 +65,7 @@ signals:
     void item_gongxined(int card_id);
 };
 
-class GuanxingBox: public Pixmap{
+class GuanxingBox: public QSanSelectableItem{
     Q_OBJECT
 
 public:
@@ -81,12 +81,11 @@ private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
 
-    static const int start_x = 30;
-    static const int start_y1 = 40;
-    static const int start_y2 = 184;
+    static const int start_x = 76;
+    static const int start_y1 = 105;
+    static const int start_y2 = 249;
     static const int middle_y = 157;
     static const int skip = 102;
-    static const int card_width = 93;
 };
 
 #endif // CARDCONTAINER_H

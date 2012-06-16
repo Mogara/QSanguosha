@@ -178,7 +178,7 @@ public:
 
     // Notify client side to move cards from one place to another place. A movement should always be completed by
     // calling notifyMoveCards in pairs, one with isLostPhase equaling true followed by one with isLostPhase
-    // equaling false. The tow phase design is needed because the target player doesn't necessarily gets the 
+    // equaling false. The two phase design is needed because the target player doesn't necessarily gets the 
     // cards that the source player lost. Any trigger during the movement can cause either the target player to
     // be dead or some of the cards to be moved to another place before the target player actually gets it. 
     // @param isLostPhase
@@ -189,11 +189,11 @@ public:
     //        If true, all players will be able to see the face of card regardless of whether the movement is
     //        relevant or not.
     bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible);
-	bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
+    bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
     bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
-	bool broadcastSkillInvoke(const QString &skillName);
-	bool broadcastSkillInvoke(const QString &skillName, int type);
-	bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
+    bool broadcastSkillInvoke(const QString &skillName);
+    bool broadcastSkillInvoke(const QString &skillName, int type);
+    bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -248,13 +248,14 @@ public:
     void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who);
 
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, 
-        bool forceMoveVisible = false, bool ignoreChanged = true);
+                    bool forceMoveVisible = false, bool ignoreChanges = true);
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
-        bool forceMoveVisible = false, bool ignoreChanged = true);
+                    bool forceMoveVisible = false, bool ignoreChanges = true);
+    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const QString& pileName,
+                    const CardMoveReason &reason, bool forceMoveVisible = false, bool ignoreChanges = true);
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
-    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanged = true);
-    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged = true);
-    void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanged);
+    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);
+    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
     QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
 
     // interactive methods
@@ -285,7 +286,7 @@ public:
     void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
-	void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
+    void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void startTest(const QString &to_test);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
@@ -325,6 +326,7 @@ private:
     int _m_lastMovementId;
     void _fillMoveInfo(CardMoveStruct &move) const;
     void _fillMoveInfo(CardsMoveStruct &moves, int card_index) const;
+    void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges);
     QString _chooseDefaultGeneral(ServerPlayer* player) const;
     bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);
     QString mode;

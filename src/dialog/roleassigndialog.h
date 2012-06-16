@@ -19,7 +19,7 @@ protected:
 
 private:
     QListWidget *list;
-    QComboBox *role_combobox;
+    QComboBox *role_ComboBox;
     QMap<QString, QString> role_mapping;
 
 private slots:

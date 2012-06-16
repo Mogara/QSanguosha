@@ -270,7 +270,7 @@ public:
            && room->askForSkillInvoke(player, objectName())){
             for(int i = 0; i < 4 - handcardnum; i++){
                 int card_id = room->drawCard();
-                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::PlaceTakeoff, true);
+                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::PlaceTable, "showArea", true);
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);

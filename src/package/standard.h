@@ -54,10 +54,10 @@ class EquipCard:public Card{
 
 public:
     enum Location {
-        WeaponLocation,
-        ArmorLocation,
-        DefensiveHorseLocation,
-        OffensiveHorseLocation,
+        WeaponLocation = 0,
+        ArmorLocation = 1,
+        DefensiveHorseLocation = 2,
+        OffensiveHorseLocation = 3
     };
 
     EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){}
