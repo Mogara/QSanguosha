@@ -1110,37 +1110,88 @@ public:
     }
 };
 
-class Wushuang: public TriggerSkill{
+class Wushuang:public TriggerSkill{
 public:
     Wushuang():TriggerSkill("wushuang"){
-        events << SlashProceed;
+        frequency = Compulsory;
+        events << TargetConfirmed;
+    }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *lvbu = room->findPlayerBySkillName(objectName());
+        bool istarget = false;
+        if(!lvbu || lvbu->loseTriggerSkills() || !use.card->inherits("Slash"))
+            return false;
+        foreach(ServerPlayer *p, use.to){
+            if(player->objectName() == p->objectName()){
+                istarget = true;
+                break;
+            }
+        }
+
+        room->playSkillEffect(objectName());
+
+        room->setPlayerFlag(player, "WushuangTarget");
+
+        return false;
+    }
+};
+
+class WushuangHit:public TriggerSkill{
+public:
+    WushuangHit():TriggerSkill("#wushuang"){
+        events << TargetConfirmed << SlashProceed << CardFinished;
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *lvbu, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        room->playSkillEffect(objectName());
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lvbu, QVariant &data) const{
 
-        QString slasher = lvbu->objectName();
-
-        const Card *first_jink = NULL, *second_jink = NULL;
-        first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), CardUsed);
-        if(first_jink)
-            second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), CardUsed);
-
-        Card *jink = NULL;
-        if(first_jink && second_jink){
-            jink = new DummyCard;
-            jink->addSubcard(first_jink);
-            jink->addSubcard(second_jink);
+        if(event == TargetConfirmed){
+           CardUseStruct use = data.value<CardUseStruct>();
+           if(lvbu->loseTriggerSkills() || !use.card->inherits("Duel"))
+               return false;
+           room->setPlayerFlag(lvbu, "WushuangTarget");
         }
+        if(event == SlashProceed){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            room->playSkillEffect(objectName());
 
-        room->slashResult(effect, jink);
+            QString slasher = lvbu->objectName();
 
-        return true;
+            const Card *first_jink = NULL, *second_jink = NULL;
+            first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), CardUsed);
+            if(first_jink)
+                second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), CardUsed);
+
+            Card *jink = NULL;
+            if(first_jink && second_jink){
+                jink = new DummyCard;
+                jink->addSubcard(first_jink);
+                jink->addSubcard(second_jink);
+            }
+
+            room->slashResult(effect, jink);
+
+            return true;
+
+        }else if(event == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach(ServerPlayer *to, room->getAllPlayers()){
+                if(to->hasFlag("WushuangTarget"))
+                    room->setPlayerFlag(to, "-WushuangTarget");
+            }
+
+        }
+        return false;
     }
 };
+
 
 class Lijian: public OneCardViewAsSkill{
 public:
@@ -1365,6 +1416,8 @@ void StandardPackage::addGenerals(){
 
     lvbu = new General(this, "lvbu", "qun");
     lvbu->addSkill(new Wushuang);
+    lvbu->addSkill(new WushuangHit);
+    related_skills.insertMulti("wushuang", "#wushuang");
 
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);

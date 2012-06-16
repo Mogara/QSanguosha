@@ -545,7 +545,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhoutai, QVariant &) const{
-        if(zhoutai->getHp() < 1)
+        if(zhoutai->getPile("buqu").length() > 0)
             Remove(zhoutai);
 
         return false;
@@ -589,7 +589,6 @@ public:
                     room->setTag("Buqu", QVariant());
                     if(zhoutai->getMark("buqu") < 1)
                         zhoutai->gainMark("buqu");
-                    return true;
                 }
                 else
                     zhoutai->setMark("buqu", 0);
@@ -624,8 +623,9 @@ public:
                 if(zhoutai->getMark("buqu") < 1)
                     zhoutai->gainMark("buqu");
                 zhoutai->setFlags("-dying");
-                    return true;
-            }else{
+                return true;
+            }
+            else{
                 LogMessage log;
                 log.type = "#BuquDuplicate";
                 log.from = zhoutai;

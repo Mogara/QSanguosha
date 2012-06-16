@@ -125,10 +125,6 @@ void Settings::init(){
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
-    roles_ban << "zhugejin";
-
-    kof_ban << "sunquan" << "huatuo" << "zhangliao" << "liubei" << "zhugejin";
-
     basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "zhugejin";
 
     hegemony_ban.append(basara_ban);

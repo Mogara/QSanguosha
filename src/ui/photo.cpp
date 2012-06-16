@@ -309,7 +309,7 @@ void Photo::updateReadyItem(bool visible){
 }
 
 void Photo::refresh(){
-    if(player && player->getHp() <= 0 && player->isAlive() && player->getMaxHp() > 0){
+    if(player && player->getHp() <= 0 && player->getMark("buqu") < 1 && player->isAlive() && player->getMaxHp() > 0){
         setFrame(SOS);
 
         if(save_me_item == NULL){

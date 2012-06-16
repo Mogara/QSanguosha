@@ -834,7 +834,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     room->setEmotion(second, "duel-b");
 
     forever{
-        if(second->hasSkill("wushuang")){
+        if(second->hasFlag("WushuangTarget")){
             room->playSkillEffect("wushuang");
             const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
             if(slash == NULL)
