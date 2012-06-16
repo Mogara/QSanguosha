@@ -29,6 +29,7 @@ config = {
         "YJCM",
         "YJCM2012",
         "Special3v3",
+	"Ling",
         "BGM",
 	"NostalGeneral",
         "Yitian",

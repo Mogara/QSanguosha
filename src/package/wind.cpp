@@ -410,14 +410,14 @@ public:
 class Liegong:public TriggerSkill{
 public:
     Liegong():TriggerSkill("liegong"){
-        events << TargetConfirmed << SlashProceed << CardFinished;
+        events << TargetConfirmed;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *huangzhong = room->findPlayerBySkillName(objectName());
         int handcardnum = player->getHandcardNum();
@@ -436,7 +436,19 @@ public:
             room->playSkillEffect(objectName());
             room->setPlayerFlag(player, "LiegongTarget");
         }
-        else if(event == SlashProceed){
+         return false;
+    }
+};
+
+class LiegongHit:public TriggerSkill{
+public:
+    LiegongHit():TriggerSkill("#liegong"){
+        events  << SlashProceed << CardFinished;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+
+        if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.to->hasFlag("LiegongTarget")){
                 room->slashResult(effect, NULL);
@@ -453,7 +465,6 @@ public:
         return false;
     }
 };
-
 
 class Kuanggu: public TriggerSkill{
 public:
@@ -544,30 +555,27 @@ public:
 class Buqu: public TriggerSkill{
 public:
     Buqu():TriggerSkill("buqu"){
-        events << Dying << AskForPeachesDone;
-        default_choice = "alive";
+        events << HpChanged << AskForPeachesDone;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhoutai, QVariant &) const{
-        if(event == Dying){
+        if(event == HpChanged){
+            if(zhoutai->getHp() + zhoutai->getPile("buqu").length() > 0)
+                return true;
             if(room->askForSkillInvoke(zhoutai, objectName())){
                 room->setTag("Buqu", zhoutai->objectName());
                 room->playSkillEffect(objectName());
-                const QList<int> &buqu = zhoutai->getPile("buqu");
 
-                int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
-                int n = need - buqu.length();
+                int n = 1 - zhoutai->getHp() - zhoutai->getPile("buqu").length();
                 if(n > 0){
                     QList<int> card_ids = room->getNCards(n);
-                    foreach(int card_id, card_ids){
-                        zhoutai->addToPile("buqu", card_id);
-                    }
+                    zhoutai->addToPile("buqu", card_ids);
                 }
-                const QList<int> &buqunew = zhoutai->getPile("buqu");
+                const QList<int> &buqu = zhoutai->getPile("buqu");
                 QList<int> duplicate_numbers;
 
                 QSet<int> numbers;
-                foreach(int card_id, buqunew){
+                foreach(int card_id, buqu){
                     const Card *card = Sanguosha->getCard(card_id);
                     int number = card->getNumber();
 
@@ -579,9 +587,16 @@ public:
 
                 if(duplicate_numbers.isEmpty()){
                     room->setTag("Buqu", QVariant());
-                    zhoutai->setFlags("-dying");
+                    if(zhoutai->getMark("buqu") < 1)
+                        zhoutai->gainMark("buqu");
                     return true;
                 }
+                else
+                    zhoutai->setMark("buqu", 0);
+            }
+            else{
+                if(zhoutai->getMark("buqu") > 0)
+                    zhoutai->setMark("buqu", 0);
             }
         }else if(event == AskForPeachesDone){
             const QList<int> &buqu = zhoutai->getPile("buqu");
@@ -606,8 +621,10 @@ public:
 
             if(duplicate_numbers.isEmpty()){
                 room->playSkillEffect(objectName());
+                if(zhoutai->getMark("buqu") < 1)
+                    zhoutai->gainMark("buqu");
                 zhoutai->setFlags("-dying");
-                return true;
+                    return true;
             }else{
                 LogMessage log;
                 log.type = "#BuquDuplicate";
@@ -642,6 +659,7 @@ public:
         return false;
     }
 };
+
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -1105,6 +1123,8 @@ WindPackage::WindPackage()
 
     huangzhong = new General(this, "huangzhong", "shu");
     huangzhong->addSkill(new Liegong);
+    huangzhong->addSkill(new LiegongHit);
+    related_skills.insertMulti("liegong", "#liegong");
 
     weiyan = new General(this, "weiyan", "shu");
     weiyan->addSkill(new Kuanggu);

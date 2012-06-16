@@ -306,7 +306,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             QString str = QString("%1:%2L").arg(player->objectName()).arg(-lose);
             room->broadcastInvoke("hpChange", str);
 
-            if(player->getHp() <= 0)
+            if(player->getHp() <= 0 && player->getMark("buqu") < 1)
                 room->enterDying(player, NULL);
 
             break;
@@ -397,7 +397,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 room->setPlayerStatistics(damage.from, "damage", damage.damage);
 
             room->applyDamage(player, damage);
-            if(player->getHp() <= 0){
+            if(player->getHp() <= 0 && player->getMark("buqu") < 1){
                 room->enterDying(player, &damage);
             }
 

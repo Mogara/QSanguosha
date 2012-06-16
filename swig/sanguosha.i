@@ -604,7 +604,7 @@ public:
 	bool willThrow() const;
 	bool canJilei() const;
 	bool hasPreAction() const;
-	bool asEquip() const;
+	bool asPindian() const;
 		
     void setFlags(const char *flag) const;
     bool hasFlag(const char *flag) const;

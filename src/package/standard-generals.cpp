@@ -626,42 +626,53 @@ public:
 class Tieji:public TriggerSkill{
 public:
     Tieji():TriggerSkill("tieji"){
-        events << TargetConfirmed << SlashProceed << CardFinished;
+        events << TargetConfirmed;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == TargetConfirmed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            ServerPlayer *machao = room->findPlayerBySkillName(objectName());
-            bool istarget = false;
-            if(!machao || machao->loseTriggerSkills() || !use.card->inherits("Slash"))
-                return false;
-            foreach(ServerPlayer *p, use.to){
-                if(player->objectName() == p->objectName()){
-                    istarget = true;
-                    break;
-                }
-            }
-            if(istarget && machao->askForSkillInvoke("tieji", QVariant::fromValue(player))){
-                room->playSkillEffect(objectName());
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
 
-                JudgeStruct judge;
-                judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
-                judge.good = true;
-                judge.reason = objectName();
-                judge.who = machao;
-
-                room->judge(judge);
-                if(judge.isGood()){
-                    room->setPlayerFlag(player, "TiejiTarget");
-                }
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *machao = room->findPlayerBySkillName(objectName());
+        bool istarget = false;
+        if(!machao || machao->loseTriggerSkills() || !use.card->inherits("Slash"))
+            return false;
+        foreach(ServerPlayer *p, use.to){
+            if(player->objectName() == p->objectName()){
+                istarget = true;
+                break;
             }
         }
-        else if(event == SlashProceed){
+        if(istarget && machao->askForSkillInvoke("tieji", QVariant::fromValue(player))){
+            room->playSkillEffect(objectName());
+
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+            judge.good = true;
+            judge.reason = objectName();
+            judge.who = machao;
+
+            room->judge(judge);
+            if(judge.isGood()){
+                 room->setPlayerFlag(player, "TiejiTarget");
+            }
+        }
+        return false;
+    }
+};
+
+class TiejiHit:public TriggerSkill{
+public:
+    TiejiHit():TriggerSkill("#tieji"){
+        events << SlashProceed << CardFinished;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+
+        if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.to->hasFlag("TiejiTarget")){
                 room->slashResult(effect, NULL);
@@ -1304,8 +1315,10 @@ void StandardPackage::addGenerals(){
 
     machao = new General(this, "machao", "shu");
     machao->addSkill(new Tieji);
+    machao->addSkill(new TiejiHit);
     machao->addSkill(new Mashu);
     machao->addSkill(new SPConvertSkill("fanqun", "machao", "sp_machao"));
+    related_skills.insertMulti("tieji", "#tieji");
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);

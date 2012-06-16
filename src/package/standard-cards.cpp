@@ -609,7 +609,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
         damage.to = effect.to;
         damage.nature = DamageStruct::Normal;
         ServerPlayer *menghuo = room->findPlayerBySkillName("huoshou");
-        bool hasmenghuo = !room->getTag("Menghuo").toBool();
+        bool hasmenghuo = room->getTag("Huoshou").toBool();
         if(hasmenghuo){
             if(menghuo && !menghuo->loseTriggerSkills())
                 damage.from = menghuo;

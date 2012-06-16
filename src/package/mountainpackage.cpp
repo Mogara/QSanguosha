@@ -504,7 +504,6 @@ public:
 };
 
 ZhibaCard::ZhibaCard(){
-    will_throw = false;
     mute = true;
     as_pindian = true;
 }
@@ -718,7 +717,6 @@ public:
 
 ZhijianCard::ZhijianCard(){
     will_throw = false;
-    as_equip = true;
 }
 
 bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

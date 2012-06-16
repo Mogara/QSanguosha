@@ -18,7 +18,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), has_preact(false), as_equip(false), as_pindian(false)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), has_preact(false), as_pindian(false)
     , suit(suit), number(number), id(-1)
 {
     can_jilei = will_throw;
@@ -470,7 +470,7 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  
-    if(asEquip() || asPindian() || (isVirtualCard() && willThrow())){
+    if(isVirtualCard()){
         if(asPindian()){
             CardMoveReason reason(CardMoveReason::S_REASON_PINDIAN, player->objectName(), QString(), this->getSkillName(), QString());
             room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason, true);
@@ -596,10 +596,6 @@ bool Card::canJilei() const{
 
 bool Card::hasPreAction() const{
     return has_preact;
-}
-
-bool Card::asEquip() const{
-    return as_equip;
 }
 
 bool Card::asPindian() const{
