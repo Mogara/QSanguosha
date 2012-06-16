@@ -1293,7 +1293,7 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
                 result.append(Sanguosha->translate("judgedone"));
             }
             else if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLE){
-                    result.append(Sanguosha->translate("dismantle"));
+                    result.append(Sanguosha->translate("throw"));
             }
             else if (reason.m_reason == CardMoveReason::S_REASON_REMOVE_FROM_PILE){
                     result.append(Sanguosha->translate("backinto"));

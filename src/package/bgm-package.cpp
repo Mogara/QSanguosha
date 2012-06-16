@@ -8,51 +8,45 @@
 class ChongZhen: public TriggerSkill{
 public:
     ChongZhen(): TriggerSkill("chongzhen"){
-        events << CardResponsed << SlashEffect << CardEffect << CardEffected << CardFinished;
-    }
-
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    void doChongZhen(ServerPlayer *player, const Card *card) const{
-        if(card->getSkillName() != "longdan")
-            return;
-
-        Room *room = player->getRoom();
-
-        ServerPlayer *target = player->tag["ChongZhenTarget"].value<PlayerStar>();
-        if(!target || target->isKongcheng() || !room->askForSkillInvoke(player, objectName()))
-            return;
-
-        int card_id = room->askForCardChosen(player, target, "h", objectName());
-        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
-        room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
-        room->playSkillEffect("chongzhen"); 
+        events << CardResponsed  << TargetConfirmed;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardFinished){
-            player->tag["ChongZhenTarget"] = QVariant::fromValue(NULL);
-        }
-        else if(event == CardResponsed){
+        if(event == CardResponsed){
             CardStar card = data.value<CardStar>();
-            doChongZhen(player, card);
-        }
-        else if(event == SlashEffect){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.to);
-            doChongZhen(player, effect.slash);
+            if(card->getSkillName() == "longdan"){
+                ServerPlayer *target = NULL;
+                foreach(ServerPlayer* p, room->getOtherPlayers(player)){
+                    if(p->hasFlag("Chongzhen")){
+                        room->setPlayerFlag(p, "-Chongzhen");
+                        target = p;
+                        break;
+                    }
+                }
+                if(target){
+                    int card_id = room->askForCardChosen(player, target, "h", objectName());
+                    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+                    room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
+                    room->playSkillEffect("chongzhen");
+                }
+            }
         }
         else{
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card->inherits("Duel")
-                    || effect.card->inherits("ArcheryAttack")
-                    || effect.card->inherits("SavageAssault")
-                    || effect.card->inherits("Slash"))
-                player->tag["ChongZhenTarget"] = QVariant::fromValue(event == CardEffect ? effect.to : effect.from);
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
+                foreach(ServerPlayer *p, use.to){
+                    int card_id = room->askForCardChosen(player, p, "h", objectName());
+                    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+                    room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
+                    room->playSkillEffect("chongzhen");
+                }
+            }
+            else if(use.to.contains(player) && !use.card->inherits("Collateral")
+                    && use.card->getSkillName() != "luanwu"
+                    && use.card->getSkillName() != "tiaoxin"){
+                room->setPlayerFlag(use.from, "Chongzhen");
+            }
         }
-
         return false;
     }
 };

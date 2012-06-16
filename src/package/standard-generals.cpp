@@ -638,7 +638,8 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *machao = room->findPlayerBySkillName(objectName());
         bool istarget = false;
-        if(!machao || machao->loseTriggerSkills() || !use.card->inherits("Slash"))
+        if(!machao || machao->loseTriggerSkills()
+            || machao->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
             return false;
         foreach(ServerPlayer *p, use.to){
             if(player->objectName() == p->objectName()){
@@ -1126,7 +1127,8 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *lvbu = room->findPlayerBySkillName(objectName());
         bool istarget = false;
-        if(!lvbu || lvbu->loseTriggerSkills() || !use.card->inherits("Slash"))
+        if(!lvbu || lvbu->loseTriggerSkills() ||
+            lvbu->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
             return false;
         foreach(ServerPlayer *p, use.to){
             if(player->objectName() == p->objectName()){

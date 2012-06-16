@@ -287,7 +287,7 @@ public:
         if (zhangjiao == NULL) return false;
         CardStar card_star = data.value<CardStar>();
         if(!card_star->inherits("Jink"))
-            return false;       
+            return false;
         room->askForUseCard(zhangjiao, "@@leiji", "@leiji");
 
         return false;
@@ -423,7 +423,7 @@ public:
         int handcardnum = player->getHandcardNum();
         bool istarget = false;
         if(!huangzhong || huangzhong->loseTriggerSkills() || huangzhong->getPhase() != Player::Play ||
-           !use.card->inherits("Slash"))
+            huangzhong->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
             return false;
         foreach(ServerPlayer *p, use.to){
             if(player->objectName() == p->objectName()){
@@ -1160,5 +1160,3 @@ WindPackage::WindPackage()
 }
 
 ADD_PACKAGE(Wind)
-
-

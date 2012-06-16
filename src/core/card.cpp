@@ -475,6 +475,13 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
             CardMoveReason reason(CardMoveReason::S_REASON_PINDIAN, player->objectName(), QString(), this->getSkillName(), QString());
             room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason, true);
         }
+        else if(this->getSkillName() == "spear"){
+            CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
+            if (card_use.to.size() == 1)
+                reason.m_targetId = card_use.to.first()->objectName();
+            /*room->moveCardTo(this, card_use.from, NULL, Player::DealingArea, reason, true);   resume this when DealingArea is all OK*/
+            room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason, true);
+        }
     }
     else{
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
@@ -524,7 +531,7 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
         if(room->getCardPlace(getEffectiveId()) == Player::DealingArea)
             room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }*/
-    if(willThrow()){
+    if(willThrow() && isVirtualCard()){
         CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         if(room->getCardPlace(getEffectiveId()) != Player::DiscardPile)
