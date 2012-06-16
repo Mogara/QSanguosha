@@ -203,7 +203,7 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), targets.first()->objectName(), this->getSkillName(), QString());
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), target->objectName(), this->getSkillName(), QString());
     room->moveCardTo(this, source, target, Player::Judging, reason, true);
 }
 

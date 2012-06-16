@@ -121,13 +121,14 @@ public:
     static const int S_REASON_RETRIAL = 0x12;
 
     //subcategory of discard
-    static const int S_REASON_THROW = 0x13;             /*  gamerule(dying or punish)
+    static const int S_REASON_RULEDISCARD = 0x13;       //  discard at one's Player::Discard for gamerule
+    static const int S_REASON_THROW = 0x23;             /*  gamerule(dying or punish)
                                                             as the cost of some skills   */
-    static const int S_REASON_CHANGE_EQUIP = 0x23;      //  replace existed equip
-    static const int S_REASON_JUDGEDONE = 0x33;         //  judge card move into discardpile
-    static const int S_REASON_DISMANTLE = 0x43;         //  one throw card of another
-    static const int S_REASON_NATURAL_ENTER = 0x53;     //  a card with no-owner move into discardpile
-    static const int S_REASON_REMOVE_FROM_PILE = 0x63;  //  cards moved out of game go back into discardpile
+    static const int S_REASON_CHANGE_EQUIP = 0x33;      //  replace existed equip
+    static const int S_REASON_JUDGEDONE = 0x43;         //  judge card move into discardpile
+    static const int S_REASON_DISMANTLE = 0x53;         //  one throw card of another
+    static const int S_REASON_NATURAL_ENTER = 0x63;     //  a card with no-owner move into discardpile
+    static const int S_REASON_REMOVE_FROM_PILE = 0x73;  //  cards moved out of game go back into discardpile
 
     //subcategory of gotcard
     static const int S_REASON_GIVE = 0x17;              // from one hand to another hand

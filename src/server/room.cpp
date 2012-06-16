@@ -3486,7 +3486,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     foreach(int card_id, to_discard)
         dummy_card->addSubcard(card_id);
     if(reason == "gamerule"){
-        CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, player->objectName(), QString(), dummy_card->getSkillName(), QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_RULEDISCARD, player->objectName(), QString(), dummy_card->getSkillName(), QString());
         throwCard(dummy_card, reason, player);
     }
     else{

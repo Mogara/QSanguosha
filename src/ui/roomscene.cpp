@@ -1280,6 +1280,9 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         }
     }
     else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
+            if(reason.m_reason == CardMoveReason::S_REASON_RULEDISCARD){
+                result.append(Sanguosha->translate("discard"));
+            }
             if(reason.m_reason == CardMoveReason::S_REASON_THROW){
                 result.append(Sanguosha->translate("throw"));
             }
@@ -1292,14 +1295,11 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
             else if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLE){
                     result.append(Sanguosha->translate("dismantle"));
             }
-            else if (reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER){
-                    result.append(Sanguosha->translate("enter"));
-            }
             else if (reason.m_reason == CardMoveReason::S_REASON_REMOVE_FROM_PILE){
                     result.append(Sanguosha->translate("backinto"));
             }
             else{
-                result.append(Sanguosha->translate("discard"));
+                result.append(Sanguosha->translate("enter"));
             }
     }
     else if (reason.m_reason == CardMoveReason::S_REASON_RECAST){
