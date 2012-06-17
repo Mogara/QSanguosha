@@ -154,7 +154,7 @@ public:
                 target->drawCards(2+target->getLostHp());
                 target->turnOver();
 
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
             }
         }
 
@@ -174,7 +174,7 @@ public:
         QVariant source = QVariant::fromValue(from);
 
         if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
@@ -244,3 +244,39 @@ LingPackage::LingPackage()
 }
 
 ADD_PACKAGE(Ling)
+
+        class MingshiEX: public TriggerSkill{
+        public:
+            MingshiEX():TriggerSkill("exmingshi"){
+                events << DamageInflicted;
+                frequency = Compulsory;
+            }
+
+            virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+                DamageStruct damage = data.value<DamageStruct>();
+                if(damage.from && damage.from->getEquips().length() <= damage.to->getEquips().length()){
+                        LogMessage log;
+                        log.type = "#Mingshi";
+                        log.from = player;
+                        log.arg = QString::number(damage.damage);
+                        log.arg2 = objectName();
+                        room->sendLog(log);
+
+                        damage.damage--;
+                        if(damage.damage < 1)
+                            return true;
+                        data = QVariant::fromValue(damage);
+                }
+                return false;
+            }
+        };
+
+        TestHegePackage::TestHegePackage()
+            :Package("testhegemony")
+            {
+                General *kongwenju = new General(this, "kongwenju", "qun", 3);
+                kongwenju->addSkill(new MingshiEX);
+                kongwenju->addSkill("lirang");
+            }
+
+            ADD_PACKAGE(TestHege)

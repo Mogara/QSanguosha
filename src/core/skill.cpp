@@ -81,7 +81,7 @@ Skill::Location Skill::getLocation() const{
     return parent() ? Right : Left;
 }
 
-void Skill::playEffect(int index) const{
+void Skill::playAudioEffect(int index) const{
     if(!sources.isEmpty()){
         if(index == -1)
             index = qrand() % sources.length();
@@ -95,7 +95,7 @@ void Skill::playEffect(int index) const{
         else
             filename = sources.first();
 
-        Sanguosha->playEffect(filename);
+        Sanguosha->playAudioEffect(filename);
         if(ClientInstance)
             ClientInstance->setLines(filename);
     }
@@ -129,17 +129,8 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 bool ViewAsSkill::isAvailable() const{
     switch(ClientInstance->getStatus()){
-    case Client::Playing: return isEnabledAtPlay(Self) && (!Self->loseViewAsSkills()
-                                                           || this->objectName() == "free-discard"
-                                                           || this->objectName() == "fan"
-                                                           || this->objectName() == "spear"
-                                                           || this->objectName() == "huangtianv"
-                                                           || this->objectName() == "zhiba_pindian"
-                                                           || this->objectName() == "liangshangjunzi"
-                                                           || this->objectName() == "peaching");
-    case Client::Responsing: return isEnabledAtResponse(Self, ClientInstance->getPattern())
-                                        && (!Self->loseViewAsSkills()
-                                        || this->objectName() == "wuliu_sword");
+    case Client::Playing: return isEnabledAtPlay(Self);
+    case Client::Responsing: return isEnabledAtResponse(Self, ClientInstance->getPattern());
     default:
         return false;
     }
@@ -217,8 +208,7 @@ int TriggerSkill::getPriority() const{
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
-    return target != NULL && target->isAlive() && target->hasSkill(objectName())
-                && !target->loseTriggerSkills();
+    return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
 ScenarioRule::ScenarioRule(Scenario *scenario)

@@ -19,7 +19,7 @@ public:
         Room *room = player->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         bool has_frantic = player->getMark("@frantic")>0;
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
 
         if(has_frantic){
             foreach(ServerPlayer *target, players){
@@ -52,7 +52,7 @@ public:
         if(!room->askForSkillInvoke(player, objectName()))
             return;
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         int n = 0;
         if(has_frantic)
             n = players.length();
@@ -69,7 +69,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->isLord() && !target->loseTriggerSkills();
+        return target->isLord();
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -131,7 +131,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
 
@@ -240,8 +240,6 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        if(to->loseProhibitSkills())
-            return false;
         return card->inherits("DelayedTrick");
     }
 };

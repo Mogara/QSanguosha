@@ -130,10 +130,6 @@ QString Peach::getSubtype() const{
     return "recover_card";
 }
 
-QString Peach::getEffectPath(bool ) const{
-    return Card::getEffectPath();
-}
-
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     BasicCard::use(room, source, targets);
     if(targets.isEmpty())
@@ -163,9 +159,9 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
         log.arg = objectName();
         room->sendLog(log);
         if(effect.from->getGender() == effect.to->getGender())
-            room->playSkillEffect("jiuyuan", 2);
+            room->broadcastSkillInvoke("jiuyuan", 2);
         else
-            room->playSkillEffect("jiuyuan", 3);
+            room->broadcastSkillInvoke("jiuyuan", 3);
     }
 
     room->recover(effect.to, recover);
@@ -471,7 +467,7 @@ private:
     }
 
 public:
-    static EightDiagramSkill *GetInstance(){
+    static EightDiagramSkill *getInstance(){
         static EightDiagramSkill *instance = NULL;
         if(instance == NULL)
             instance = new EightDiagramSkill;
@@ -516,7 +512,7 @@ public:
 EightDiagram::EightDiagram(Suit suit, int number)
     :Armor(suit, number){
         setObjectName("eight_diagram");
-        skill = EightDiagramSkill::GetInstance();
+        skill = EightDiagramSkill::getInstance();
 }
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
@@ -611,7 +607,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
         ServerPlayer *menghuo = room->findPlayerBySkillName("huoshou");
         bool hasmenghuo = room->getTag("Huoshou").toBool();
         if(hasmenghuo){
-            if(menghuo && !menghuo->loseTriggerSkills())
+            if(menghuo)
                 damage.from = menghuo;
             else
                 damage.from = NULL;
@@ -914,7 +910,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
 
     forever{
         if(second->hasFlag("WushuangTarget")){
-            room->playSkillEffect("wushuang");
+            room->broadcastSkillInvoke("wushuang");
             const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
             if(slash == NULL)
                 break;
@@ -1245,7 +1241,7 @@ StandardCardPackage::StandardCardPackage()
         << new EightDiagram(Card::Spade)
         << new EightDiagram(Card::Club);
 
-    skills << EightDiagramSkill::GetInstance();
+    skills << EightDiagramSkill::getInstance();
 
     {
         QList<Card *> horses;

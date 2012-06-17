@@ -45,9 +45,9 @@ void Player::setReady(bool ready){
 }
 
 void Player::setHp(int hp){
-    if(hp <= max_hp && this->hp != hp){
+    if (this->hp != hp) {
         this->hp = hp;
-        emit state_changed();
+        emit hp_changed();
     }
 }
 
@@ -62,12 +62,10 @@ int Player::getMaxHp() const{
 void Player::setMaxHp(int max_hp){
     if(this->max_hp == max_hp)
         return;
-
     this->max_hp = max_hp;
     if(hp > max_hp)
         hp = max_hp;
-
-    emit state_changed();
+    emit hp_changed();
 }
 
 int Player::getLostHp() const{
@@ -215,7 +213,7 @@ QString Player::getGeneral2Name() const{
     if(general2)
         return general2->objectName();
     else
-        return "";
+        return QString();
 }
 
 const General *Player::getGeneral2() const{
@@ -308,26 +306,6 @@ bool Player::hasLordSkill(const QString &skill_name) const{
     }
 
     return false;
-}
-
-bool Player::loseTriggerSkills() const{
-    return (getMark("@duanchang") + getMark("@huoshui") + getMark("@qingcheng1")) > 0;
-}
-
-bool Player::loseViewAsSkills() const{
-    return (getMark("@duanchang") + getMark("@huoshui") + getMark("@qingcheng2")) > 0;
-}
-
-bool Player::loseProhibitSkills() const{
-    return (getMark("@duanchang") + getMark("@huoshui") + getMark("@qingcheng3")) > 0;
-}
-
-bool Player::loseDistanceSkills() const{
-    return (getMark("@duanchang") + getMark("@huoshui") + getMark("@qingcheng4")) > 0;
-}
-
-bool Player::loseOtherSkills() const{
-    return getMark("@duanchang") > 0;
 }
 
 void Player::acquireSkill(const QString &skill_name){
@@ -500,14 +478,6 @@ void Player::setKingdom(const QString &kingdom){
         this->kingdom = kingdom;
         emit kingdom_changed();
     }
-}
-
-QString Player::getKingdomIcon() const{
-    return QString("image/kingdom/icon/%1.png").arg(kingdom);
-}
-
-QString Player::getKingdomFrame() const{
-    return QString("image/kingdom/frame/%1.png").arg(kingdom);
 }
 
 bool Player::isKongcheng() const{

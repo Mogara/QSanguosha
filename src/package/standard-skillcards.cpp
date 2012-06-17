@@ -86,7 +86,7 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
         index = 1 + qrand() % 2;
     }
 
-    room->playSkillEffect("jieyin", index);
+    room->broadcastSkillInvoke("jieyin", index);
 }
 
 TuxiCard::TuxiCard(){
@@ -176,7 +176,7 @@ bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this, source);
-    room->playSkillEffect("lijian");
+    room->broadcastSkillInvoke("lijian");
 
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);

@@ -4,12 +4,12 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class Pixmap : public QGraphicsObject {
+class QSanSelectableItem : public QGraphicsObject {
     Q_OBJECT
 
 public:
-    Pixmap(const QString &filename, bool center_as_origin = false);
-    Pixmap(bool center_as_origin = false);
+    QSanSelectableItem(const QString &filename, bool center_as_origin = false);
+    QSanSelectableItem(bool center_as_origin = false);
     virtual QRectF boundingRect() const;
     bool load(const QString &filename, bool center_as_origin = false);
     bool load(const QString &filename, QSize newSize, bool center_as_origin = false);
@@ -20,7 +20,7 @@ public:
     bool isMarked() const;
     bool isMarkable() const;
     void mark(bool marked = true);
-    void setMarkable(bool markable);
+    void setMarkable(bool selectable);
 
     static void MakeGray(QPixmap &pixmap);
 
@@ -28,7 +28,7 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     int _m_width, _m_height;
-    QPixmap pixmap;
+    QPixmap _m_mainPixmap;
 
 private:
     bool _load(const QString &filename, QSize newSize, bool useNewSize, bool center_as_origin);

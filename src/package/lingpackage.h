@@ -28,5 +28,12 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class TestHegePackage: public Package{
+    Q_OBJECT
+
+public:
+    TestHegePackage();
+};
+
 
 #endif // LINGPACKAGE_H

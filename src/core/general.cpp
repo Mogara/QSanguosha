@@ -62,14 +62,6 @@ bool General::isTotallyHidden() const{
     return never_shown;
 }
 
-QString General::getPixmapPath(const QString &category) const{
-    QString suffix = "png";
-    if(category == "card")
-        suffix = "jpg";
-
-    return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
-}
-
 void General::addSkill(Skill *skill){
     skill->setParent(this);
     skill_set << skill->objectName();
@@ -170,7 +162,7 @@ void General::lastWord() const{
         if(Sanguosha->getGeneral(origin_general))
             filename = QString("audio/death/%1.ogg").arg(origin_general);
     }
-    Sanguosha->playEffect(filename);
+    Sanguosha->playAudioEffect(filename);
 }
 
 QSize General::BigIconSize(94, 96);

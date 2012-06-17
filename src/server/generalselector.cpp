@@ -7,7 +7,7 @@
 
 static GeneralSelector *Selector;
 
-GeneralSelector *GeneralSelector::GetInstance(){
+GeneralSelector *GeneralSelector::getInstance(){
     if(Selector == NULL){
         Selector = new GeneralSelector;
         //@todo: this setParent is illegitimate in QT and is equivalent to calling
@@ -168,9 +168,7 @@ void GeneralSelector::loadFirstGeneralTable(const QString &role){
             while(!stream.atEnd()){
                 QString name;
                 stream >> name;
-
-                int i;
-                for(i=0; i<7; i++){
+                for(int i = 0; i < 7; i++){
                     qreal value;
                     stream >> value;
 

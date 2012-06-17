@@ -108,7 +108,7 @@ public:
 
         if(room->askForSkillInvoke(yangxiu, objectName(), data)){
             QString choice = room->askForChoice(yangxiu, objectName(), "basic+equip+trick");
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             damage.from->jilei(choice);
             damage.from->invoke("jilei", choice);
@@ -141,7 +141,7 @@ public:
                     return false;
 
             player->tag["Danlao"] = use.card->getEffectiveId();
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             LogMessage log;
             log.type = "#DanlaoAvoid";
@@ -176,10 +176,6 @@ public:
         frequency = Compulsory;
     }
 
-    virtual int getPriority() const{
-        return 4;
-    }
-
     int getKingdoms(ServerPlayer *yuanshu) const{
         QSet<QString> kingdom_set;
         Room *room = yuanshu->getRoom();
@@ -203,61 +199,57 @@ public:
             log.arg2 = objectName();
             room->sendLog(log);
 
-            room->playSkillEffect("yongsi", x);
+            room->broadcastSkillInvoke("yongsi", x);
 
-        }else if(event == PhaseChange){
-            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+        }else if(event == PhaseChange && yuanshu->getPhase() == Player::Discard){
+            int x = getKingdoms(yuanshu);
+            int total = yuanshu->getEquips().length() + yuanshu->getHandcardNum();
+            Room *room = yuanshu->getRoom();
 
-            if(phase_change.from == Player::Play){
-                int x = getKingdoms(yuanshu);
-                int total = yuanshu->getEquips().length() + yuanshu->getHandcardNum();
-                Room *room = yuanshu->getRoom();
+            if(total <= x){
+                yuanshu->throwAllHandCards();
+                yuanshu->throwAllEquips();
 
-                if(total <= x){
-                    yuanshu->throwAllHandCards();
-                    yuanshu->throwAllEquips();
+                LogMessage log;
+                log.type = "#YongsiWorst";
+                log.from = yuanshu;
+                log.arg = QString::number(total);
+                log.arg2 = objectName();
+                room->sendLog(log);
 
+            }else if(yuanshu->hasFlag("jilei")){
+                QSet<const Card *> jilei_cards;
+                QList<const Card *> handcards = yuanshu->getHandcards();
+                foreach(const Card *card, handcards){
+                    if(yuanshu->isJilei(card))
+                        jilei_cards << card;
+                }
+                int total = handcards.size() - jilei_cards.size() + yuanshu->getEquips().length();
+                if(x > total){
+                    // show all his cards
+                    room->showAllCards(yuanshu);
                     LogMessage log;
-                    log.type = "#YongsiWorst";
+                    log.type = "#YongsiBad";
                     log.from = yuanshu;
                     log.arg = QString::number(total);
                     log.arg2 = objectName();
                     room->sendLog(log);
-
-                }else if(yuanshu->hasFlag("jilei")){
-                    QSet<const Card *> jilei_cards;
-                    QList<const Card *> handcards = yuanshu->getHandcards();
-                    foreach(const Card *card, handcards){
-                        if(yuanshu->isJilei(card))
-                            jilei_cards << card;
+                    yuanshu->throwAllEquips();
+                    DummyCard *dummy_card = new DummyCard;
+                    foreach(const Card *card, handcards.toSet() - jilei_cards){
+                        dummy_card->addSubcard(card);
                     }
-                    int total = handcards.size() - jilei_cards.size() + yuanshu->getEquips().length();
-                    if(x > total){
-                        // show all his cards
-                        room->showAllCards(yuanshu);
-                        LogMessage log;
-                        log.type = "#YongsiBad";
-                        log.from = yuanshu;
-                        log.arg = QString::number(total);
-                        log.arg2 = objectName();
-                        room->sendLog(log);
-                        yuanshu->throwAllEquips();
-                        DummyCard *dummy_card = new DummyCard;
-                        foreach(const Card *card, handcards.toSet() - jilei_cards){
-                            dummy_card->addSubcard(card);
-                        }
-                        room->throwCard(dummy_card, yuanshu);
-                    }
-                }else{
-                    room->askForDiscard(yuanshu, "yongsi", x, x, false, true);
-
-                    LogMessage log;
-                    log.type = "#YongsiBad";
-                    log.from = yuanshu;
-                    log.arg = QString::number(x);
-                    log.arg2 = objectName();
-                    room->sendLog(log);
+                    room->throwCard(dummy_card, yuanshu);
                 }
+            }else{
+                room->askForDiscard(yuanshu, "yongsi", x, x, false, true);
+
+                LogMessage log;
+                log.type = "#YongsiBad";
+                log.from = yuanshu;
+                log.arg = QString::number(x);
+                log.arg2 = objectName();
+                room->sendLog(log);
             }
         }
 
@@ -271,6 +263,7 @@ WeidiCard::WeidiCard(){
 
 void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *yuanshu = card_use.from;
+
     QStringList choices;
     if(yuanshu->hasLordSkill("jijiang")&&Slash::IsAvailable(yuanshu))
         choices << "jijiang";
@@ -335,9 +328,9 @@ public:
 
     virtual int getCorrect(const Player *from, const Player *to) const{
         int correct = 0;
-        if(from->hasSkill(objectName()) && from->getHp() > 2 && !from->loseDistanceSkills())
+        if(from->hasSkill(objectName()) && from->getHp() > 2)
             correct --;
-        if(to->hasSkill(objectName()) && to->getHp() <= 2 && !to->loseDistanceSkills())
+        if(to->hasSkill(objectName()) && to->getHp() <= 2)
             correct ++;
 
         return correct;
@@ -399,7 +392,7 @@ public:
     }
 
     virtual int getExtra(const Player *target) const{
-        if(target->hasSkill(objectName()) && !target->loseOtherSkills())
+        if(target->hasSkill(objectName()))
             return 2;
         else
             return 0;

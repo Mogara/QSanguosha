@@ -44,7 +44,7 @@ public:
     virtual Location getLocation() const;
 
     void initMediaSource();
-    void playEffect(int index = -1) const;
+    void playAudioEffect(int index = -1) const;
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;

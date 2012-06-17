@@ -1,32 +1,32 @@
-#include "pixmap.h"
+#include "QSanSelectableItem.h"
 
 #include <QPainter>
 #include <QGraphicsColorizeEffect>
 #include <QMessageBox>
 #include <QImageReader>
 
-Pixmap::Pixmap(const QString &filename, bool center_as_origin)    
+QSanSelectableItem::QSanSelectableItem(const QString &filename, bool center_as_origin)    
 {
     load(filename, center_as_origin);
     markable = false;
     marked = false;
-    _m_width = pixmap.width();
-    _m_height = pixmap.height();
+    _m_width = _m_mainPixmap.width();
+    _m_height = _m_mainPixmap.height();
 }
 
-bool Pixmap::load(const QString& filename, bool center_as_origin)
+bool QSanSelectableItem::load(const QString& filename, bool center_as_origin)
 {
     return _load(filename, QSize(), false, center_as_origin);
 }
 
-bool Pixmap::load(const QString &filename, QSize size, bool center_as_origin)
+bool QSanSelectableItem::load(const QString &filename, QSize size, bool center_as_origin)
 {
     return _load(filename, size, true, center_as_origin);
 }
 
-bool Pixmap::_load(const QString &filename, QSize size, bool useNewSize, bool center_as_origin)
+bool QSanSelectableItem::_load(const QString &filename, QSize size, bool useNewSize, bool center_as_origin)
 {    
-    bool success = pixmap.load(filename);
+    bool success = _m_mainPixmap.load(filename);
 
     if (!success){
         QImageReader reader(filename);
@@ -43,8 +43,8 @@ bool Pixmap::_load(const QString &filename, QSize size, bool useNewSize, bool ce
         }
         else
         {
-            _m_width = pixmap.width();
-            _m_height = pixmap.height();
+            _m_width = _m_mainPixmap.width();
+            _m_height = _m_mainPixmap.height();
         }
         if(center_as_origin)
         {
@@ -57,28 +57,28 @@ bool Pixmap::_load(const QString &filename, QSize size, bool useNewSize, bool ce
     return success; 
 }
 
-void Pixmap::setPixmap(const QPixmap &pixmap){
-    this->pixmap = pixmap;
+void QSanSelectableItem::setPixmap(const QPixmap &pixmap){
+    _m_mainPixmap = pixmap;
     prepareGeometryChange();
 }
 
-Pixmap::Pixmap(bool center_as_origin)
+QSanSelectableItem::QSanSelectableItem(bool center_as_origin)
     :markable(false), marked(false)
 {
     if(center_as_origin)
     {
         resetTransform();
-        this->translate(-pixmap.width() / 2, -pixmap.height()/2);
+        this->translate(-_m_mainPixmap.width() / 2, -_m_mainPixmap.height()/2);
     }
     _m_width = _m_height = 0;
 }
 
-QRectF Pixmap::boundingRect() const{
+QRectF QSanSelectableItem::boundingRect() const{
     return QRectF(0, 0, _m_width, _m_height);
 }
 
 
-void Pixmap::MakeGray(QPixmap &pixmap){
+void QSanSelectableItem::MakeGray(QPixmap &pixmap){
     QImage img = pixmap.toImage();
 
     for(int i = 0; i < img.width(); i++){
@@ -93,23 +93,23 @@ void Pixmap::MakeGray(QPixmap &pixmap){
     pixmap = QPixmap::fromImage(img);
 }
 
-void Pixmap::makeGray(){
-    MakeGray(pixmap);
+void QSanSelectableItem::makeGray(){
+    MakeGray(_m_mainPixmap);
 }
 
-void Pixmap::scaleSmoothly(qreal ratio){
+void QSanSelectableItem::scaleSmoothly(qreal ratio){
     _m_width *= ratio;
     _m_height *= ratio;
-    pixmap = pixmap.scaled(_m_width, _m_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    _m_mainPixmap = _m_mainPixmap.scaled(_m_width, _m_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     prepareGeometryChange();
 }
 
-void Pixmap::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    painter->drawPixmap(QRect(0, 0, _m_width, _m_height), pixmap);
+void QSanSelectableItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    painter->drawPixmap(QRect(0, 0, _m_width, _m_height), _m_mainPixmap);
 }
 
-QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
+QVariant QSanSelectableItem::itemChange(GraphicsItemChange change, const QVariant &value){
     if(change == ItemSelectedHasChanged){
         if(value.toBool()){
             QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect(this);
@@ -126,15 +126,15 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
     return QGraphicsObject::itemChange(change, value);
 }
 
-bool Pixmap::isMarked() const{
+bool QSanSelectableItem::isMarked() const{
     return markable && marked;
 }
 
-bool Pixmap::isMarkable() const{
+bool QSanSelectableItem::isMarkable() const{
     return markable;
 }
 
-void Pixmap::mark(bool marked){
+void QSanSelectableItem::mark(bool marked){
     if(markable){
         if(this->marked != marked){
             this->marked = marked;
@@ -143,7 +143,7 @@ void Pixmap::mark(bool marked){
     }
 }
 
-void Pixmap::setMarkable(bool markable){
+void QSanSelectableItem::setMarkable(bool markable){
     this->markable = markable;
 }
 

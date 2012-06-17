@@ -71,9 +71,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        ServerPlayer *xushu = room->findPlayerBySkillName(objectName());
-        if(xushu && xushu->loseTriggerSkills())
-            return false;
+
         if(effect.to == effect.from)
             return false;
 
@@ -90,7 +88,7 @@ public:
 
                 room->sendLog(log);
 
-                room->playSkillEffect("wuyan");
+                room->broadcastSkillInvoke("wuyan");
 
                 return true;
             }
@@ -105,7 +103,7 @@ public:
 
                 room->sendLog(log);
 
-                room->playSkillEffect("wuyan");
+                room->broadcastSkillInvoke("wuyan");
 
                 return true;
             }
@@ -125,7 +123,7 @@ void NosJujianCard::onEffect(const CardEffectStruct &effect) const{
     int n = subcardsLength();
     effect.to->drawCards(n);
     Room *room = effect.from->getRoom();
-    room->playSkillEffect("jujian");
+    room->broadcastSkillInvoke("jujian");
 
     if(n == 3){
         QSet<Card::CardType> types;
@@ -209,14 +207,14 @@ public:
 
                 room->sendLog(log);
 
-                room->playSkillEffect("enyuan", qrand() % 2 + 1);
+                room->broadcastSkillInvoke("enyuan", qrand() % 2 + 1);
 
             }
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
             if(source && source != player){
-                room->playSkillEffect("enyuan", qrand() % 2 + 3);
+                room->broadcastSkillInvoke("enyuan", qrand() % 2 + 3);
 
                 const Card *card = room->askForCard(source, ".enyuan", "@enyuanheart", QVariant(), NonTrigger);
                 if(card){
@@ -242,7 +240,7 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(this);
 
     Room *room = effect.from->getRoom();
-    room->playSkillEffect("xuanhuo");
+    room->broadcastSkillInvoke("xuanhuo");
     int card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
@@ -314,7 +312,7 @@ public:
                     card_use.to << target;
                     room->useCard(card_use, false);
                 }else if(choice == "damage"){
-                    room->playSkillEffect("xuanfeng");
+                    room->broadcastSkillInvoke("xuanfeng");
 
                     QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
                     foreach(ServerPlayer *p, players){

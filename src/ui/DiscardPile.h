@@ -1,7 +1,7 @@
 #ifndef _DISCARD_PILE_H
 #define _DISCARD_PILE_H
 
-#include "pixmap.h"
+#include "QSanSelectableItem.h"
 #include "player.h"
 #include "carditem.h"
 #include "protocol.h"
@@ -9,23 +9,17 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class DiscardPile: public PlayerCardContainer
+class DiscardPile: public GeneralCardContainer
 {
     Q_OBJECT
 public:  
-    inline DiscardPile() : PlayerCardContainer(true) {}
+    inline DiscardPile() : GeneralCardContainer(true) {}
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);
     inline void setSize(QSize newSize) 
     {
         setSize(newSize.width(), newSize.height());
     }
-    inline void setSize(double width, double height) 
-    {
-        m_cardsDisplayRegion = QRect(0, 0, width, height);
-        m_numCardsVisible = width / CardItem::S_NORMAL_CARD_WIDTH + 1;
-        resetTransform();
-        translate(-width / 2, -height / 2);
-    }
+    void setSize(double width, double height);
     inline void setNumCardsVisible(int num) { m_numCardsVisible = num; }
     inline int getNumCardsVisible() { return m_numCardsVisible; }
     void adjustCards();
@@ -37,14 +31,13 @@ protected:
     QRect m_cardsDisplayRegion;
 };
 
-class DrawPile: public PlayerCardContainer
+class DrawPile: public GeneralCardContainer
 {
     Q_OBJECT
 public:
-    inline DrawPile() : PlayerCardContainer(true) {}
+    inline DrawPile() : GeneralCardContainer(true) {}
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);    
 protected:
-    static const QRect S_DISPLAY_CARD_REGION;
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
 };
 

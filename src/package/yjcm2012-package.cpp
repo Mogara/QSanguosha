@@ -70,7 +70,7 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 int x = wangyi->getLostHp();
                 wangyi->drawCards(x);
                 ServerPlayer *target = room->askForPlayerChosen(wangyi, room->getAllPlayers(), objectName());
@@ -141,7 +141,7 @@ int QiceCard::getNumber(QList<int> cardid_list) const{
 const Card *QiceCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
     card_use->from->setFlags("QiceUsed");
-    room->playSkillEffect("qice");
+    room->broadcastSkillInvoke("qice");
     Card *use_card = Sanguosha->cloneCard(user_string, getSuit(this->getSubcards()), getNumber(this->getSubcards()));
     use_card->setSkillName("qice");
     foreach(int id, this->getSubcards())
@@ -153,7 +153,7 @@ const Card *QiceCard::validateInResposing(ServerPlayer *xunyou, bool *continuabl
     *continuable = true;
 
     Room *room = xunyou->getRoom();
-    room->playSkillEffect("qice");
+    room->broadcastSkillInvoke("qice");
     xunyou->setFlags("QiceUsed");
 
     Card *use_card = Sanguosha->cloneCard(user_string, getSuit(this->getSubcards()), getNumber(this->getSubcards()));
@@ -170,7 +170,7 @@ public:
     }
 
     virtual QDialog *getDialog() const{
-        return GuhuoDialog::GetInstance("qice", false);
+        return GuhuoDialog::getInstance("qice", false);
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -225,7 +225,7 @@ public:
             target->drawCards(1);
 
             Room *room = target->getRoom();
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
             room->showAllCards(target);
 
             QList<const Card *> cards = target->getHandcards();
@@ -260,13 +260,13 @@ public:
         if(choice == "jiang"){
             log.type = "#Jiangchi1";
             room->sendLog(log);
-            room->playSkillEffect(objectName(), 1);
+            room->broadcastSkillInvoke(objectName(), 1);
             room->setPlayerCardLock(caozhang, "Slash");
             return n + 1;
         }else{
             log.type = "#Jiangchi2";
             room->sendLog(log);
-            room->playSkillEffect(objectName(), 2);
+            room->broadcastSkillInvoke(objectName(), 2);
             room->setPlayerFlag(caozhang, "jiangchi_invoke");
             return n - 1;
         }
@@ -308,7 +308,7 @@ public:
 
             room->judge(judge);
             if(judge.isGood()){
-                room->playSkillEffect(objectName(), 1);
+                room->broadcastSkillInvoke(objectName(), 1);
                 LogMessage log;
                 log.type = "#Qianxi";
                 log.from = player;
@@ -319,7 +319,7 @@ public:
                 return true;
             }
             else
-                room->playSkillEffect(objectName(), 2);
+                room->broadcastSkillInvoke(objectName(), qrand() % 2 + 2);
         }
         return false;
     }
@@ -373,7 +373,7 @@ public:
             return false;
         if(liaohua->askForSkillInvoke(objectName(), data)){
             //room->broadcastInvoke("animate", "lightbox:$fuli");
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             liaohua->loseMark("@laoji");
             int x = getKingdoms(room);
@@ -458,7 +458,7 @@ public:
     virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
         Room *room = liubiao->getRoom();
         if(room->askForSkillInvoke(liubiao, objectName())){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
             return n + liubiao->getLostHp();
@@ -482,7 +482,7 @@ public:
             }
         }
         extra = kingdom_set.size();
-        if(target->hasSkill(objectName()) && !target->loseOtherSkills())
+        if(target->hasSkill(objectName()))
             return extra;
         else
             return 0;
@@ -713,7 +713,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName()) && !target->loseTriggerSkills();
+        return target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

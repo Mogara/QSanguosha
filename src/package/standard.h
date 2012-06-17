@@ -54,10 +54,10 @@ class EquipCard:public Card{
 
 public:
     enum Location {
-        WeaponLocation,
-        ArmorLocation,
-        DefensiveHorseLocation,
-        OffensiveHorseLocation,
+        WeaponLocation = 0,
+        ArmorLocation = 1,
+        DefensiveHorseLocation = 2,
+        OffensiveHorseLocation = 3
     };
 
     EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){}
@@ -65,7 +65,6 @@ public:
 
     virtual QString getType() const;
     virtual CardType getTypeId() const;
-    virtual QString getEffectPath(bool is_male) const;
 
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
@@ -269,8 +268,6 @@ public:
     Horse(Suit suit, int number, int correct);
     int getCorrect() const;
 
-    virtual QString getEffectPath(bool is_male) const;
-
     virtual Location location() const;
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
@@ -336,7 +333,6 @@ class Peach: public BasicCard{
 public:
     Q_INVOKABLE Peach(Card::Suit suit, int number);
     virtual QString getSubtype() const;
-    virtual QString getEffectPath(bool is_male) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;

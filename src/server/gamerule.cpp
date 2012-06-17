@@ -212,7 +212,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 const Card *card = card_use.card;
                 RoomThread *thread = room->getThread();
                 QList<int> changelist1, changelist2;
-                card_use.from->playCardEffect(card);
+                card_use.from->broadcastSkillInvoke(card);
                 int targetfix = 0;
                 // sort the order accord to the seat
                 if(card_use.card->hasPreAction())
@@ -293,8 +293,6 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
     case HpLost:{
             int lose = data.toInt();
 
-            if(room->getCurrent()->hasSkill("jueqing"))
-                return true;
 
             LogMessage log;
             log.type = "#LoseHp";
@@ -306,7 +304,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             QString str = QString("%1:%2L").arg(player->objectName()).arg(-lose);
             room->broadcastInvoke("hpChange", str);
 
-            if(player->getHp() <= 0 && player->getMark("buqu") < 1)
+            if(player->getHp() <= 0)
                 room->enterDying(player, NULL);
 
             break;
@@ -397,7 +395,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 room->setPlayerStatistics(damage.from, "damage", damage.damage);
 
             room->applyDamage(player, damage);
-            if(player->getHp() <= 0 && player->getMark("buqu") < 1){
+            if(player->getHp() <= 0){
                 room->enterDying(player, &damage);
             }
 
@@ -801,7 +799,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
     case CardUsed:{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
-            player->playCardEffect("@recast");
+            player->broadcastSkillInvoke("@recast");
             CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
             room->throwCard(use.card, reason, NULL);
             player->drawCards(1, false);
@@ -985,7 +983,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     log.arg2 = player->getGeneral2Name();
 
     room->sendLog(log);
-    room->broadcastInvoke("playAudio","choose-item");
+    room->broadcastInvoke("playSystemAudioEffect","choose-item");
 }
 
 bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

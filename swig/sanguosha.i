@@ -58,7 +58,6 @@ public:
 	QSet<const Skill *> getVisibleSkills() const;
 	QSet<const TriggerSkill *> getTriggerSkills() const;
 
-	QString getPixmapPath(const char *category) const;
 	QString getPackage() const;
 	QString getSkillDescription() const;
 	
@@ -69,7 +68,7 @@ class Player: public QObject
 {
 public:
 	enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive};
-	enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, TopDrawPile, DealingArea, PlaceTakeoff, PlaceUnknown};
+	enum Place {Hand, Equip, Judging, Special, DiscardPile, DrawPile, PlaceTable, PlaceUnknown};
 	enum Role {Lord, Loyalist, Rebel, Renegade};
 
 	explicit Player(QObject *parent);
@@ -90,8 +89,6 @@ public:
 
 	QString getKingdom() const;
 	void setKingdom(const char *kingdom);
-	QString getKingdomIcon() const;
-	QString getKingdomFrame() const;
 
 	void setRole(const char *role);
 	QString getRole() const;    
@@ -144,12 +141,6 @@ public:
 	bool hasSkill(const char *skill_name) const;
 	bool hasLordSkill(const char *skill_name) const;
 	bool hasInnateSkill(const char *skill_name) const;
-
-	bool loseTriggerSkills() const;
-    bool loseViewAsSkills() const;
-    bool loseProhibitSkills() const;
-    bool loseDistanceSkills() const;
-    bool loseOtherSkills() const;
 
 	void setEquip(const EquipCard *card);
 	void removeEquip(const EquipCard *equip);
@@ -245,12 +236,11 @@ public:
 	void setSocket(ClientSocket *socket);
 	void invoke(const char *method, const char *arg = ".");
 	QString reportHeader() const;
-	void sendProperty(const char *property_name, const Player *player = NULL) const;
 	void unicast(const char *message) const;
 	void drawCard(const Card *card);
 	Room *getRoom() const;
-	void playCardEffect(const Card *card) const;
-	void playCardEffect(const char *card_name) const;
+	void broadcastSkillInvoke(const Card *card) const;
+	void broadcastSkillInvoke(const char *card_name) const;
 	int getRandomHandCardId() const;
 	const Card *getRandomHandCard() const;
 	void obtainCard(const Card *card, bool unhide = true);
@@ -560,17 +550,13 @@ public:
 	bool sameColorWith(const Card *other) const;
 	bool isEquipped() const;
 
-	QString getPixmapPath() const;
-	QString getIconPath() const;
 	QString getPackage() const;    
-	QIcon getSuitIcon() const;
 	QString getFullName(bool include_suit = false) const;
 	QString getLogName() const;
 	QString getName() const;
 	QString getSkillName() const;   
 	void setSkillName(const char *skill_name);
 	QString getDescription() const;
-	QString getEffectPath() const;
 
 	bool isVirtualCard() const;
 	virtual bool match(const char *pattern) const;
@@ -587,7 +573,6 @@ public:
 	virtual QString getSubtype() const = 0;
 	virtual CardType getTypeId() const = 0;
 	virtual QString toString() const;
-	virtual QString getEffectPath(bool is_male) const;
 	bool isNDTrick() const;
 
 	// card target selection
@@ -603,8 +588,8 @@ public:
 	bool isMute() const;
 	bool willThrow() const;
 	bool canJilei() const;
-	bool hasPreAction() const;
-	bool asPindian() const;
+    bool hasPreAction() const;
+    bool asPindian() const;
 		
     void setFlags(const char *flag) const;
     bool hasFlag(const char *flag) const;
@@ -707,10 +692,7 @@ public:
 	QList<int> getRandomCards() const;
 	QString getRandomGeneralName() const;
 	QStringList getLimitedGeneralNames() const;
-
-	void playAudio(const char *name) const;
-	void playEffect(const char *filename) const;
-	void playSkillEffect(const char *skill_name, int index) const;
+	void playAudioEffect(const char *filename) const;
 
 	const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 	int correctDistance(const Player *from, const Player *to) const;
@@ -740,7 +722,7 @@ public:
 	virtual QDialog *getDialog() const;
 
 	void initMediaSource();
-	void playEffect(int index = -1) const;
+	void playAudioEffect(int index = -1) const;
 	void setFlag(ServerPlayer *player) const;
 	void unsetFlag(ServerPlayer *player) const;
 	Frequency getFrequency() const;
@@ -798,7 +780,6 @@ public:
 	QString getMode() const;
 	const Scenario *getScenario() const;
 	RoomThread *getThread() const;
-	void playSkillEffect(const char *skill_name, int index = -1);
 	ServerPlayer *getCurrent() const;
 	void setCurrent(ServerPlayer *current);
 	int alivePlayerCount() const;
@@ -855,8 +836,6 @@ public:
 	void swapPile();
 	QList<int> getDiscardPile();
 	QList<int> getDrawPile();
-	QList<int> getDealingArea();
-	QList<int> getTopDrawPile();
 	int getCardFromPile(const char *card_name);
 	ServerPlayer *findPlayer(const char *general_name, bool include_dead = false) const;
 	ServerPlayer *findPlayerBySkillName(const char *skill_name, bool include_dead = false) const;
@@ -899,7 +878,7 @@ public:
 
 	void throwCard(const Card *card, ServerPlayer *who);
 	void throwCard(int card_id, ServerPlayer *who);
-	void moveCardTo(const Card *card, ServerPlayer *from, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
+    void moveCardTo(const Card *card, ServerPlayer *from, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
 
 	// interactive methods
 	void activate(ServerPlayer *player, CardUseStruct &card_use);

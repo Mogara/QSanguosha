@@ -51,7 +51,7 @@ public:
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *zhugejin, QVariant &data) const{
         if(zhugejin->getPhase() == Player::Draw && room->askForSkillInvoke(zhugejin, objectName())){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
             if(ServerInfo.GameMode == "06_3v3"){
                 zhugejin->drawCards(1);
                 foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){

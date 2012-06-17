@@ -171,13 +171,8 @@ bool Card::CompareByType(const Card *a, const Card *b){
         return CompareBySuitNumber(a,b);
 }
 
-QString Card::getPixmapPath() const{
-    QString path = QString("image/card/%1.jpg").arg(objectName());
-    return QFile::exists(path) ? path : "image/card/unknown.jpg";
-}
-
-QString Card::getIconPath() const{
-    return QString("image/icon/%1.png").arg(objectName());
+bool Card::isNDTrick() const{
+    return getTypeId() == Trick && !inherits("DelayedTrick");
 }
 
 QString Card::getPackage() const{
@@ -185,23 +180,6 @@ QString Card::getPackage() const{
         return parent()->objectName();
     else
         return "";
-}
-
-QString Card::getEffectPath(bool is_male) const{
-    QString gender = is_male ? "male" : "female";
-    return QString("audio/card/%1/%2.ogg").arg(gender).arg(objectName());
-}
-
-bool Card::isNDTrick() const{
-    return getTypeId() == Trick && !inherits("DelayedTrick");
-}
-
-QString Card::getEffectPath() const{
-    return QString("audio/card/common/%1.ogg").arg(objectName());
-}
-
-QIcon Card::getSuitIcon() const{
-    return QIcon(QString("image/system/suit/%1.png").arg(getSuitString()));
 }
 
 QString Card::getFullName(bool include_suit) const{

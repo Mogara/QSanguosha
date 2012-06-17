@@ -1,4 +1,5 @@
 #include "DiscardPile.h"
+#include "SkinBank.h"
 #include <QParallelAnimationGroup>
 
 QList<CardItem*> DiscardPile::removeCardItems(const QList<int> &card_ids, Player::Place place)
@@ -21,6 +22,14 @@ QList<CardItem*> DiscardPile::removeCardItems(const QList<int> &card_ids, Player
     }
     _m_mutex_pileCards.unlock();
     return result;
+}
+
+void DiscardPile::setSize(double width, double height) 
+{
+    m_cardsDisplayRegion = QRect(0, 0, width, height);
+    m_numCardsVisible = width / G_COMMON_LAYOUT.m_cardNormalHeight + 1;
+    resetTransform();
+    translate(-width / 2, -height / 2);
 }
 
 bool DiscardPile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
@@ -61,13 +70,10 @@ void DiscardPile::adjustCards()
     animation->start();
 }
 
-// @todo: adjust here!!!
-const QRect DrawPile::S_DISPLAY_CARD_REGION(0, 0, CardItem::S_NORMAL_CARD_WIDTH, CardItem::S_NORMAL_CARD_HEIGHT);
-
 QList<CardItem*> DrawPile::removeCardItems(const QList<int> &card_ids, Player::Place place)
 {
     QList<CardItem*> result = _createCards(card_ids);
-    _disperseCards(result, S_DISPLAY_CARD_REGION, Qt::AlignCenter, false, true);
+    _disperseCards(result, QRect(0, 0, G_COMMON_LAYOUT.m_cardNormalWidth, G_COMMON_LAYOUT.m_cardNormalHeight), Qt::AlignCenter, false, true);
     return result;
 }
 

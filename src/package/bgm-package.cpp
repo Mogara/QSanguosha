@@ -27,7 +27,7 @@ public:
                     int card_id = room->askForCardChosen(player, target, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
-                    room->playSkillEffect("chongzhen");
+                    room->broadcastSkillInvoke("chongzhen");
                 }
             }
         }
@@ -38,7 +38,7 @@ public:
                     int card_id = room->askForCardChosen(player, p, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
-                    room->playSkillEffect("chongzhen");
+                    room->broadcastSkillInvoke("chongzhen");
                 }
             }
             else if(use.to.contains(player) && !use.card->inherits("Collateral")
@@ -392,8 +392,7 @@ public:
                 log.arg2 = objectName();
 
                 room->sendLog(log);
-
-                room->playSkillEffect(objectName());
+				room->broadcastSkillInvoke(objectName());
                 return true;
             }
         }
@@ -522,7 +521,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *bgm_zhangfei = room->findPlayerBySkillName(objectName());
-        if(!bgm_zhangfei || bgm_zhangfei->loseTriggerSkills())
+        if(!bgm_zhangfei)
             return false;
         if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -650,8 +649,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *lvmeng = room->findPlayerBySkillName(objectName());
-        if(lvmeng && lvmeng->loseTriggerSkills())
-            return false;
+
         if(event == CardLostOneTime){
             if((player->getMark("@wu") > 0) && player->getHandcardNum() <= 2){
                 player->loseMark("@wu");

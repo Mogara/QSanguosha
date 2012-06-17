@@ -77,7 +77,7 @@ class GuhuoDialog: public QDialog{
     Q_OBJECT
 
 public:
-    static GuhuoDialog *GetInstance(const QString &object, bool left = true, bool right = true);
+    static GuhuoDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
 public slots:
     void popup();

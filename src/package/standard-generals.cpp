@@ -25,7 +25,7 @@ public:
 
             QVariant data = QVariant::fromValue(card);
             if(room->askForSkillInvoke(caocao, "jianxiong", data)){
-                room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
                 caocao->obtainCard(card);
             }
         }
@@ -40,8 +40,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("hujia") && !target->loseTriggerSkills()
-                && !(target->getRoom()->getLord()->loseTriggerSkills());
+        return target->hasLordSkill("hujia");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *caocao, QVariant &data) const{
@@ -56,7 +55,7 @@ public:
         if(!room->askForSkillInvoke(caocao, objectName()))
             return false;
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         QVariant tohelp = QVariant::fromValue((PlayerStar)caocao);
         foreach(ServerPlayer *liege, lieges){
             const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + caocao->objectName(), tohelp);
@@ -123,7 +122,6 @@ public:
         events << FinishJudge;
     }
 
-
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *guojia, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         CardStar card = judge->card;
@@ -137,7 +135,7 @@ public:
             }
 
             guojia->obtainCard(judge->card);
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             return true;
         }
@@ -154,10 +152,11 @@ public:
 
     virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         Room *room = guojia->getRoom();
+
         if(!room->askForSkillInvoke(guojia, objectName()))
             return;
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
 
         int x = damage.damage, i;
         for(i=0; i<x; i++){
@@ -192,7 +191,7 @@ public:
         QVariant source = QVariant::fromValue(from);
 
         if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
@@ -230,7 +229,7 @@ public:
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
             CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
             room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
         }
     }
 };
@@ -353,7 +352,7 @@ public:
     virtual int getDrawNum(ServerPlayer *xuchu, int n) const{
         Room *room = xuchu->getRoom();
         if(room->askForSkillInvoke(xuchu, objectName())){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             xuchu->setFlags(objectName());
             return n - 1;
@@ -373,7 +372,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhenji, QVariant &data) const{
         if(event == PhaseChange && zhenji->getPhase() == Player::Start){
             while(zhenji->askForSkillInvoke("luoshen")){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
 
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(spade|club):(.*)");
@@ -495,9 +494,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasLordSkill("jijiang")
-                && !target->loseTriggerSkills()
-                && !(target->getRoom()->getLord()->loseTriggerSkills());
+        return target != NULL && target->hasLordSkill("jijiang");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *liubei, QVariant &data) const{
@@ -513,7 +510,7 @@ public:
         if(!room->askForSkillInvoke(liubei, objectName()))
             return false;
 
-        room->playSkillEffect(objectName(), getEffectIndex(liubei, NULL));
+        room->broadcastSkillInvoke(objectName(), getEffectIndex(liubei, NULL));
 
         QVariant tohelp = QVariant::fromValue((PlayerStar)liubei);
         foreach(ServerPlayer *liege, lieges){
@@ -638,8 +635,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *machao = room->findPlayerBySkillName(objectName());
         bool istarget = false;
-        if(!machao || machao->loseTriggerSkills()
-            || machao->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
+        if(!machao || machao->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
             return false;
         foreach(ServerPlayer *p, use.to){
             if(player->objectName() == p->objectName()){
@@ -648,7 +644,7 @@ public:
             }
         }
         if(istarget && machao->askForSkillInvoke("tieji", QVariant::fromValue(player))){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
@@ -702,7 +698,7 @@ public:
            zhuge->askForSkillInvoke(objectName()))
         {
             Room *room = zhuge->getRoom();
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             int n = qMin(5, room->alivePlayerCount());
             room->askForGuanxing(zhuge, room->getNCards(n, false), false);
@@ -718,10 +714,8 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card) const{
-        if(to->loseProhibitSkills())
-            return false;
-        else if(card->inherits("Slash") || card->inherits("Duel"))
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        if(card->inherits("Slash") || card->inherits("Duel"))
             return to->isKongcheng();
         else
             return false;
@@ -740,7 +734,7 @@ public:
         if(player->isKongcheng()){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from_places.contains(Player::Hand))
-                player->getRoom()->playSkillEffect("kongcheng");
+                player->getRoom()->broadcastSkillInvoke("kongcheng");
         }
 
         return false;
@@ -764,8 +758,8 @@ public:
             card = data.value<CardStar>();
 
         if(card->isNDTrick()){            
-            if(room->askForSkillInvoke(yueying, objectName(), data)){
-                room->playSkillEffect(objectName());
+            if(room->askForSkillInvoke(yueying, objectName())){
+                room->broadcastSkillInvoke(objectName());
                 yueying->drawCards(1);
             }
         }
@@ -807,8 +801,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("jiuyuan") && !target->loseTriggerSkills()
-                && !(target->getRoom()->getLord()->loseTriggerSkills());
+        return target->hasLordSkill("jiuyuan");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sunquan, QVariant &data) const{
@@ -816,7 +809,7 @@ public:
         case Dying: {
                 foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
                     if(wu->getKingdom() == "wu"){
-                        room->playSkillEffect("jiuyuan", 1);
+                        room->broadcastSkillInvoke("jiuyuan", 1);
                         room->setPlayerFlag(sunquan, "jiuyuan");
                         break;
                     }
@@ -829,7 +822,7 @@ public:
                 if(sunquan->hasFlag("jiuyuan")){
                     room->setPlayerFlag(sunquan, "-jiuyuan");
                     if(sunquan->getHp() > 0)
-                        room->playSkillEffect("jiuyuan", 4);
+                    	room->broadcastSkillInvoke("jiuyuan", 4);
                 }
 
                 break;
@@ -852,7 +845,7 @@ public:
     virtual int getDrawNum(ServerPlayer *zhouyu, int n) const{
         Room *room = zhouyu->getRoom();
         if(room->askForSkillInvoke(zhouyu, objectName())){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
             return n + 1;
         }else
             return n;
@@ -908,7 +901,7 @@ public:
                lvmeng->getSlashCount() == 0 &&
                lvmeng->askForSkillInvoke("keji"))
             {
-                lvmeng->getRoom()->playSkillEffect("keji");
+                lvmeng->getRoom()->broadcastSkillInvoke("keji");
 
                 return true;
             }
@@ -931,7 +924,7 @@ public:
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         if(luxun->isKongcheng() && move->from_places.contains(Player::Hand)){
             if(room->askForSkillInvoke(luxun, objectName(), data)){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 luxun->drawCards(1);
             }
         }
@@ -1102,7 +1095,7 @@ public:
         CardMoveStar move = data.value<CardMoveStar>();
         if(move->from_place == Player::Equip){            
             if(room->askForSkillInvoke(sunshangxiang, objectName())){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 sunshangxiang->drawCards(2);
             }
         }
@@ -1127,8 +1120,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *lvbu = room->findPlayerBySkillName(objectName());
         bool istarget = false;
-        if(!lvbu || lvbu->loseTriggerSkills() ||
-            lvbu->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
+        if(!lvbu || lvbu->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
             return false;
         foreach(ServerPlayer *p, use.to){
             if(player->objectName() == p->objectName()){
@@ -1137,7 +1129,7 @@ public:
             }
         }
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
 
         room->setPlayerFlag(player, "WushuangTarget");
 
@@ -1156,13 +1148,13 @@ public:
 
         if(event == TargetConfirmed){
            CardUseStruct use = data.value<CardUseStruct>();
-           if(lvbu->loseTriggerSkills() || !use.card->inherits("Duel"))
+           if(!use.card->inherits("Duel"))
                return false;
            room->setPlayerFlag(lvbu, "WushuangTarget");
         }
         if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
 
             QString slasher = lvbu->objectName();
 
@@ -1231,7 +1223,7 @@ public:
         if(diaochan->getPhase() == Player::Finish){
             Room *room = diaochan->getRoom();
             if(room->askForSkillInvoke(diaochan, objectName())){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 diaochan->drawCards(1);
             }
         }
@@ -1295,9 +1287,7 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card) const{
-        if(to->loseProhibitSkills())
-            return false;
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
         return card->inherits("Snatch") || card->inherits("Indulgence");
     }
 };
@@ -1309,7 +1299,7 @@ public:
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
-        if(from->hasSkill(objectName()) && !from->loseDistanceSkills())
+        if(from->hasSkill(objectName()))
             return -1;
         else
             return 0;
@@ -1462,9 +1452,9 @@ public:
            zhuge->askForSkillInvoke(objectName()))
         {
             Room *room = zhuge->getRoom();
-            room->playSkillEffect("guanxing");
+            room->broadcastSkillInvoke("guanxing");
 
-            room->askForGuanxing(zhuge, room->getNCards(10, false), false);
+            room->askForGuanxing(zhuge, room->getNCards(5, false), false);
         }
 
         return false;

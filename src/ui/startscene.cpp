@@ -10,7 +10,7 @@
 StartScene::StartScene()
 {
     // game logo
-    logo = new Pixmap("image/logo/logo.png", true);
+    logo = new QSanSelectableItem("image/logo/logo.png", true);
     logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);
 

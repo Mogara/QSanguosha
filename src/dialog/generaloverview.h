@@ -30,7 +30,7 @@ private:
     void addCopyAction(QCommandLinkButton *button);
 
 private slots:
-    void playEffect();
+    void playAudioEffect();
     void copyLines();
     void on_tableWidget_itemSelectionChanged();
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem* item);
