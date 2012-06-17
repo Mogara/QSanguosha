@@ -558,7 +558,7 @@ public:
                current->isDead() || !handang->canSlash(current,false)
                 || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
-            while(dying.who->getHp() < 1){
+            while(dying.who->getHp() < 1 && dying.who->isAlive()){
                 const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data, CardUsed);
                 int slash_targets = 1;
                 if(slash){
