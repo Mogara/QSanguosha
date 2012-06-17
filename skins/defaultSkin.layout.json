@@ -61,11 +61,11 @@
     "handCardFont": ["Arial", 9, 80, [255, 255, 255, 255]],	
     "equipAreas": [[3, 122, 150, 13], [3, 136, 150, 13], [3, 150, 150, 13], [3, 164, 150, 13]],
     "equipImageArea": [1, 1, 11, 11], // need adjustment
-    "equipTextArea": [15, -5, 85, 21], // need adjustment
-    "equipSuitArea": [114, 0, 13, 13], // need adjustment
-    "equipDistanceArea": [14, 0, 19, 13], // need adjustment
-    "equipPointArea": [100, 0, 14, 13], // need adjustment
-    "equipFont": ["LiSu", 12, 70, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
+    "equipTextArea": [35, -5, 85, 21], // need adjustment
+    "equipSuitArea": [133, 0, 13, 13], // need adjustment
+    "equipDistanceArea": [14, -5, 30, 21], // need adjustment
+    "equipPointArea": [120, 0, 14, 13], // need adjustment
+    "equipFont": ["FZLiBian-S02", 12, 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
     "equipPointFont": ["Arial", 7, 80, [0, 0, 0, 255], 1, 0, [0, 0], [255, 255, 190, 255]], 
     "delayedTrickFirstRegion": [-10, 16, 28, 28],
     "delayedTrickStep": [0, 19],
@@ -77,8 +77,8 @@
     "smallAvatarArea": [82, 36, 42, 36],
     "avatarNameArea": [4, 28, 40, 89],
     "smallAvatarNameArea": [84, 36, 18, 30],
-    "avatarNameFont": ["@LiSu", 15, 60, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-    "smallAvatarNameFont": ["@LiSu", 10, 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
+    "avatarNameFont": ["@FZXingKai-S04S", 15, 60, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "smallAvatarNameFont": ["@FZXingKai-S04S", 10, 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     "kingdomIconArea": [5, 0, 30, 30],
     "kingdomMaskArea": [10, 10, 25, 106],
     "screenNameArea": [0, 14, 157, 13],
@@ -133,8 +133,8 @@
     "smallAvatarArea": [2, 119, 36, 36],
     "avatarNameArea": [8, 28, 30, 89],
     "smallAvatarNameArea": [84, 36, 18, 36],
-    "avatarNameFont": ["@LiSu", 15, 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
-    "smallAvatarNameFont": ["@LiSu", 10, 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
+    "avatarNameFont": ["@FZXingKai-S04S", 15, 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
+    "smallAvatarNameFont": ["@FZXingKai-S04S", 10, 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     // must be in one of the following format:
     // [offsetX, offestY, sizeX, sizeY]
     // [childAnchor, parentAnchor, [offsetX, offsetY]]
