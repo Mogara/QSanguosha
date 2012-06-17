@@ -613,7 +613,7 @@ public:
                     log.type = "#JiefanNull1";
                     log.from = dying.who;
                     room->sendLog(log);
-                    return false;
+                    return true;
                 }
                 else if(target && target->isDead()){
                     LogMessage log;
@@ -621,14 +621,14 @@ public:
                     log.from = dying.who;
                     log.to << handang;
                     room->sendLog(log);
-                    return false;
+                    return true;
                 }
                 else if(current->hasSkill("wansha") && current->isAlive()  && target->objectName() != handang->objectName()){
                     LogMessage log;
                     log.type = "#JiefanNull3";
                     log.from = current;
                     room->sendLog(log);
-                    return false;
+                    return true;
                 }
                 else
                 {
