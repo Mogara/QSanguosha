@@ -55,7 +55,6 @@ public:
     void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
-    bool obtainable(const Card *card, ServerPlayer *player);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
@@ -242,6 +241,7 @@ public:
     void drawCards(QList<ServerPlayer*> players, int n, const QString &reason);
     void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
     void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
+    void obtainCard(ServerPlayer *target, const Card *card,  const CardMoveReason &reason, bool unhide = true);
 
     void throwCard(int card_id, ServerPlayer *who);
     void throwCard(const Card *card, ServerPlayer *who);    
@@ -251,7 +251,9 @@ public:
                     bool forceMoveVisible = false, bool ignoreChanges = true);
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
                     bool forceMoveVisible = false, bool ignoreChanges = true);
-    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const QString& pileName,
+    void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
+                    bool forceMoveVisible = false, bool ignoreChanges = true);
+    void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const QString& pileName,
                     const CardMoveReason &reason, bool forceMoveVisible = false, bool ignoreChanges = true);
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
     void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);

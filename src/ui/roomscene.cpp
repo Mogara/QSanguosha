@@ -1323,33 +1323,70 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         playerName = QString("%1(%2)").arg(Sanguosha->translate(Self->getGeneralName()))
                         .arg(Sanguosha->translate("yourself"));
     
-    if (dstPhoto != NULL)
+    if (dstPhoto != NULL){
         targetName = Sanguosha->translate("use upon")
             .append(Sanguosha->translate(dstPhoto->getPlayer()->getGeneralName()));
-    else if (reason.m_targetId == Self->objectName())
+    }
+    else if (reason.m_targetId == Self->objectName()){
         targetName = QString("%1%2(%3)").arg(Sanguosha->translate("use upon"))
         .arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate("yourself"));
-
+    }
     QString result(playerName + targetName);
     result.append(Sanguosha->translate(reason.m_eventName));
     result.append(Sanguosha->translate(reason.m_skillName));
-    if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLED)
-        result.append(Sanguosha->translate("dismantled"));
-    else if (reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP)
-        result.append(Sanguosha->translate("change equip"));
-    else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) 
-        result.append(Sanguosha->translate("discard"));
-    else if (reason.m_reason == CardMoveReason::S_REASON_JUDGE)
-        result.append(Sanguosha->translate("judge"));
-    else if (reason.m_reason == CardMoveReason::S_REASON_USE && reason.m_skillName.isEmpty())
+    if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE && reason.m_skillName.isEmpty()){
         result.append(Sanguosha->translate("use"));
-    else if (reason.m_reason == CardMoveReason::S_REASON_RESPONSE && reason.m_skillName.isEmpty())
-        result.append(Sanguosha->translate("response"));
-    else if (reason.m_reason == CardMoveReason::S_REASON_RECAST)
+    }
+    else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE){
+        if (reason.m_reason == CardMoveReason::S_REASON_RETRIAL){
+            result.append(Sanguosha->translate("retrial"));
+        }
+        else if(reason.m_skillName.isEmpty()){
+            result.append(Sanguosha->translate("response"));
+        }
+    }
+    else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
+            if(reason.m_reason == CardMoveReason::S_REASON_RULEDISCARD){
+                result.append(Sanguosha->translate("discard"));
+            }
+            if(reason.m_reason == CardMoveReason::S_REASON_THROW){
+                result.append(Sanguosha->translate("throw"));
+            }
+            else if (reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP){
+                result.append(Sanguosha->translate("change equip"));
+            }
+            else if (reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE){
+                result.append(Sanguosha->translate("judgedone"));
+            }
+            else if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLE){
+                    result.append(Sanguosha->translate("throw"));
+            }
+            else if (reason.m_reason == CardMoveReason::S_REASON_REMOVE_FROM_PILE){
+                    result.append(Sanguosha->translate("backinto"));
+            }
+            else if (reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER){
+                result.append(Sanguosha->translate("enter"));
+            }
+    }
+    else if (reason.m_reason == CardMoveReason::S_REASON_RECAST){
         result.append(Sanguosha->translate("recast"));
-    else if (reason.m_reason == CardMoveReason::S_REASON_PINDIAN)
+    }
+    else if (reason.m_reason == CardMoveReason::S_REASON_PINDIAN){
         result.append(Sanguosha->translate("pindian"));
+    }
+    else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_SHOW){
+        if (reason.m_reason == CardMoveReason::S_REASON_JUDGE){
+            result.append(Sanguosha->translate("judge"));
+        }
+        else if (reason.m_reason == CardMoveReason::S_REASON_TURNOVER){
+            result.append(Sanguosha->translate("turnover"));
+        }
+    }
+    else if (reason.m_reason == CardMoveReason::S_REASON_PUT){
+        result.append(Sanguosha->translate("put"));
+    }
     return result;
+
     //QString("%1:%2:%3:%4").arg(movement.reason.m_reason)
     //            .arg(movement.reason.m_skillName).arg(movement.reason.m_eventName
 }
@@ -1383,6 +1420,11 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
 
 void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
 {
+    if(move.from && move.to_place == Player::DrawPile){
+        QString type = "$PutCard";
+        QString from_general = move.from->getGeneralName();
+        log_box->appendLog(type, from_general, QStringList(), QString::number(move.card_ids.first()));
+    }
 }
 
 void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
@@ -1452,11 +1494,6 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             tos << move.to->objectName();
             log_box->appendLog(type, from_general, tos, QString::number(move.card_ids.first()));
         }
-    }
-    if(move.from && move.to_place == Player::DrawPile){
-        QString type = "$PutCard";
-        QString from_general = move.from->getGeneralName();
-        log_box->appendLog(type, from_general, QStringList(), QString::number(move.card_ids.first()));
     }
     if(move.from && move.to && move.from_place == Player::Equip && move.to_place == Player::Equip){
         QString type = "$Install";

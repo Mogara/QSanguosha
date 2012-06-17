@@ -39,7 +39,8 @@ public:
 
                 DummyCard *all_cards = player->wholeHandCards();
                 if(all_cards){
-                    room->obtainCard(caopi, all_cards, false);
+                    CardMoveReason reason(CardMoveReason::S_REASON_RECYCLE, caopi->objectName());
+                    room->obtainCard(caopi, all_cards, reason, false);
                     delete all_cards;
                 }
                 break;
@@ -188,39 +189,16 @@ private:
 class Huoshou: public TriggerSkill{
 public:
     Huoshou():TriggerSkill("huoshou"){
-        events << Predamage;
+        events << TargetConfirmed;
         frequency = Compulsory;
     }
 
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->inherits("SavageAssault")){
-            if (player == NULL) return false;
-            ServerPlayer *menghuo = room->findPlayerBySkillName(objectName());
-            if(menghuo){
-                LogMessage log;
-                log.type = "#HuoshouTransfer";
-                log.from = menghuo;
-                log.to << damage.to;
-                log.arg = player->getGeneralName();
-                log.arg2 = objectName();
-                room->sendLog(log);
-
-                room->broadcastSkillInvoke(objectName());
-
-                damage.from = menghuo;
-                room->damage(damage);
-                return true;
-            }
-        }
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->inherits("SavageAssault")){
+			room->broadcastSkillInvoke(objectName());
+            room->setTag("Huoshou", true);
+         }
 
         return false;
     }
@@ -251,7 +229,8 @@ public:
 
                 if(!target->isNude()){
                     int card_id = room->askForCardChosen(zhurong, target, "he", objectName());
-                    room->obtainCard(zhurong, card_id, room->getCardPlace(card_id) != Player::Hand);
+                    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, zhurong->objectName());
+                    room->obtainCard(zhurong, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
         }
@@ -277,9 +256,11 @@ public:
 
                 for(i = 0; i < x; i++){
                     int card_id = room->drawCard();
-                    room->moveCardTo(Sanguosha->getCard(card_id), menghuo, Player::PlaceTable,
-                        CardMoveReason(CardMoveReason::S_REASON_SHOW, menghuo->objectName(), QString(), "zaiqi", QString()), true);
-
+                    /* revive this after TopDrawPile works
+                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::TopDrawPile,
+                        CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), QString(), "zaiqi", QString()), true);  */
+                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, menghuo, Player::Special,
+                        CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), QString(), "zaiqi", QString()), true);
                     room->getThread()->delay();
 
                     const Card *card = Sanguosha->getCard(card_id);
@@ -291,8 +272,10 @@ public:
                         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, menghuo->objectName(), "zaiqi", QString());
                         room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
                         has_heart = true;
-                    }else
-                        room->obtainCard(menghuo, card_id);
+                    }else{
+                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, menghuo->objectName());
+                        room->obtainCard(menghuo, Sanguosha->getCard(card_id), reason);
+                    }
                 }
 
                 if(has_heart)
@@ -676,16 +659,106 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     const Card *slash = NULL;
-    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "@luanwu-slash", QVariant(), NonTrigger))){
+    if(!luanwu_targets.isEmpty()){
+        slash = room->askForCard(effect.to, "slash", "@luanwu-slash", QVariant(), CardUsed);
         ServerPlayer *to_slash;
+        int slash_targets = 1;
         if(luanwu_targets.length() == 1)
             to_slash = luanwu_targets.first();
         else
             to_slash = room->askForPlayerChosen(effect.to, luanwu_targets, "luanwu");
-        room->cardEffect(slash, effect.to, to_slash);
+        if(slash){
+            if(effect.to->hasWeapon("halberd") && effect.to->isLastHandCard(slash)){
+                slash_targets = 3;
+            }
+            if(effect.to->hasSkill("shenji") && effect.to->getWeapon() == NULL)
+                slash_targets = 3;
+            bool distance_limit = true;
+            int rangefix = 0;
+            if(slash->isVirtualCard() && slash->getSubcards().length() > 0){
+                foreach(int card_id, slash->getSubcards()){
+                    if(Sanguosha->getCard(card_id)->inherits("Weapon")){
+                        const Weapon *hisweapon = effect.to->getWeapon();
+                        if(hisweapon->getRange() > 1){
+                            rangefix = qMax((hisweapon->getRange()), rangefix);
+                        }
+                    }
+                    if(Sanguosha->getCard(card_id)->inherits("OffensiveHorse")){
+                        rangefix = qMax(rangefix, 1);
+                    }
+                }
+            }
+            if(effect.to->hasSkill("lihuo") && slash->inherits("FireSlash"))
+                slash_targets ++;
+
+            if(slash->inherits("WushenSlash")){
+                distance_limit = false;
+            }
+
+            if(!effect.to->canSlash(to_slash, distance_limit, rangefix)){
+                slash = NULL;
+            }
+        }
+        if(slash){
+            CardUseStruct use;
+            use.card = slash;
+            use.from = effect.to;
+            use.to << to_slash;
+            if(slash_targets > 1){
+                luanwu_targets = room->getOtherPlayers(effect.to);
+                luanwu_targets.removeOne(to_slash);
+                foreach(ServerPlayer *p, luanwu_targets){
+                    if(effect.to->distanceTo(p) > effect.to->getAttackRange())
+                        luanwu_targets.removeOne(p);
+                }
+
+                while(slash_targets > 1 && luanwu_targets.length() > 0
+                        && room->askForChoice(effect.to, "luanwu", "yes+no") == "yes"){
+                    ServerPlayer *tmptarget = room->askForPlayerChosen(effect.to,luanwu_targets,"halberd");
+                    use.to << tmptarget;
+                    luanwu_targets.removeOne(tmptarget);
+                    slash_targets--;
+                }
+            }
+            CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, effect.to->objectName());
+            room->moveCardTo(slash, effect.to, NULL, Player::DiscardPile, reason);
+            room->useCard(use);
+        }
+        else
+           room->loseHp(effect.to);
     }else
         room->loseHp(effect.to);
 }
+
+class Wansha: public TriggerSkill{
+public:
+    Wansha():TriggerSkill("wansha"){
+        events << Dying;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return (target != NULL);
+    }
+
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *jiaxu = room->findPlayerBySkillName(objectName());
+        if(jiaxu && jiaxu->objectName() == room->getCurrent()->objectName()){
+            room->broadcastSkillInvoke(objectName());
+            LogMessage log;
+            log.from = jiaxu;
+            log.arg = "wansha";
+            if(jiaxu != player){
+                log.type = "#WanshaTwo";
+                log.to << player;
+            }else{
+                log.type = "#WanshaOne";
+            }
+            room->sendLog(log);
+        }
+        return false;
+    }
+};
 
 class Weimu: public ProhibitSkill{
 public:
@@ -737,9 +810,9 @@ public:
         Room *room = player->getRoom();
 
         const Card *first_jink = NULL, *second_jink = NULL;
-        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), JinkUsed);
+        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), CardUsed);
         if(first_jink)
-            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), JinkUsed);
+            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), CardUsed);
 
         Card *jink = NULL;
         if(first_jink && second_jink){
@@ -923,10 +996,10 @@ ThicketPackage::ThicketPackage()
     dongzhuo->addSkill(new Baonue);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
-    jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
-    jiaxu->addSkill(new Weimu);
+    jiaxu->addSkill(new Wansha);
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);
+    jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new SPConvertSkill("guiwei", "jiaxu", "sp_jiaxu"));
     related_skills.insertMulti("luanwu", "#@chaos-1");
 

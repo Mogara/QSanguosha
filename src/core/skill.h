@@ -216,6 +216,15 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
 
+class MaxCardsSkill: public Skill{
+    Q_OBJECT
+
+public:
+    MaxCardsSkill(const QString &name);
+
+    virtual int getExtra(const Player *target) const = 0;
+};
+
 class WeaponSkill: public TriggerSkill{
     Q_OBJECT
 

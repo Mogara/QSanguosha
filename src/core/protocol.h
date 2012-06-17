@@ -46,7 +46,9 @@ namespace QSanProtocol
         S_CHEAT_THUNDER_DAMAGE,
         S_CHEAT_NORMAL_DAMAGE,
         S_CHEAT_HP_RECOVER,
-        S_CHEAT_HP_LOSE
+        S_CHEAT_HP_LOSE,
+        S_CHEAT_MAX_HP_LOSE,
+        S_CHEAT_MAX_HP_RESET
     };
 
     enum CommandType

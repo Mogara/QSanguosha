@@ -115,7 +115,7 @@ public:
 
 NosJujianCard::NosJujianCard(){
     once = true;
-    owner_discarded = true;
+    will_throw = true;
     mute = true;
 }
 
@@ -242,12 +242,15 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->broadcastSkillInvoke("xuanhuo");
     int card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName());
-    room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
+    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+    room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
 
     QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
     ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, objectName());
     if(target != effect.from)
-        room->obtainCard(target, card_id, false);
+        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName());
+        reason.m_playerId = target->objectName();
+        room->obtainCard(target, Sanguosha->getCard(card_id), reason, false);
 }
 
 class NosXuanhuo: public OneCardViewAsSkill{

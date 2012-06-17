@@ -129,7 +129,7 @@ public:
 	void setFaceUp(bool face_up);
 
 	virtual int aliveCount() const = 0;
-	int distanceTo(const Player *other) const;
+	int distanceTo(const Player *other, int distanse_fix = 0) const;
 	void setFixedDistance(const Player *player, int distance);
 	const General *getAvatarGeneral() const;
 	const General *getGeneral() const;
@@ -180,7 +180,7 @@ public:
 	void setChained(bool chained);
 	bool isChained() const;
 
-	bool canSlash(const Player *other, bool distance_limit = true) const;
+	bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0) const;
 	int getCardCount(bool include_equip) const;
 
 	QList<int> getPile(const char *pile_name);
@@ -460,9 +460,9 @@ enum TriggerEvent{
     TurnedOver,
 
     Predamage,
-    DamagedProceed,
-    DamageProceed,
-    Predamaged,
+    DamageForseen,
+    DamageCaused,
+    DamageInflicted,
     DamageDone,
     Damage,
     Damaged,
@@ -480,10 +480,7 @@ enum TriggerEvent{
     SlashHit,
     SlashMissed,
 
-    JinkUsed,
-
     CardAsked,
-    CardUsed,
     CardResponsed,
     CardDiscarded,
     CardLostOnePiece,
@@ -493,6 +490,9 @@ enum TriggerEvent{
     CardDrawing,
     CardDrawnDone,
 
+    CardUsed,
+    TargetConfirming,
+    TargetConfirmed,
     CardEffect,
     CardEffected,
     CardFinished,
@@ -588,8 +588,9 @@ public:
 	bool isMute() const;
 	bool willThrow() const;
 	bool canJilei() const;
-	bool isOwnerDiscarded() const;
-	
+    bool hasPreAction() const;
+    bool asPindian() const;
+		
     void setFlags(const char *flag) const;
     bool hasFlag(const char *flag) const;
 	void clearFlags() const;
@@ -795,7 +796,6 @@ public:
 	void slashResult(const SlashEffectStruct &effect, const Card *jink);
 	void attachSkillToPlayer(ServerPlayer *player, const char *skill_name);
 	void detachSkillFromPlayer(ServerPlayer *player, const char *skill_name);
-	bool obtainable(const Card *card, ServerPlayer *player);
 	void setPlayerFlag(ServerPlayer *player, const char *flag);
 	void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
 	void setPlayerMark(ServerPlayer *player, const char *mark, int value);
@@ -878,7 +878,7 @@ public:
 
 	void throwCard(const Card *card, ServerPlayer *who);
 	void throwCard(int card_id, ServerPlayer *who);
-	void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
+    void moveCardTo(const Card *card, ServerPlayer *from, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
 
 	// interactive methods
 	void activate(ServerPlayer *player, CardUseStruct &card_use);

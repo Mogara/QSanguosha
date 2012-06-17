@@ -183,9 +183,24 @@ DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
 {
 }
 
+void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
+    LogMessage log;
+    log.from = card_use.from;
+    log.to = card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+    thread->trigger(CardUsed, room, card_use.from, data);
+
+    thread->trigger(CardFinished, room, card_use.from, data);
+}
+
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
-    room->moveCardTo(this, target, Player::Judging, true);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), target->objectName(), this->getSkillName(), QString());
+    room->moveCardTo(this, source, target, Player::Judging, reason, true);
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -194,11 +209,6 @@ QString DelayedTrick::getSubtype() const{
 
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, effect.to->objectName());
-    if (!movable)
-    {        
-        room->throwCard(this, reason, NULL);
-    }
 
     LogMessage log;
     log.from = effect.to;
@@ -211,10 +221,16 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     room->judge(judge_struct);
 
     if(judge_struct.isBad()){
-        room->throwCard(this, reason, NULL);
         takeEffect(effect.to);
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+        room->throwCard(this, reason, NULL);
     }else if(movable){
         onNullified(effect.to);
+    }
+    if (!movable)
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+        room->throwCard(this, reason, NULL);
     }
 }
 
@@ -231,7 +247,8 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             if(room->isProhibited(target, player, this))
                 continue;
 
-            room->moveCardTo(this, player, Player::Judging, true);
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
+            room->moveCardTo(this, target, player, Player::Judging, reason, true);
             break;
         }
     }
@@ -389,6 +406,7 @@ StandardPackage::StandardPackage()
     patterns[".Trick"] = new ExpPattern("TrickCard");
     patterns[".Equip"] = new ExpPattern("EquipCard");
 
+    patterns[".Weapon"] = new ExpPattern("Weapon");
     patterns["slash"] = new ExpPattern("Slash");
     patterns["jink"] = new ExpPattern("Jink");
     patterns["peach"] = new  ExpPattern("Peach");

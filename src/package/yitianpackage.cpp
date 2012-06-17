@@ -685,7 +685,7 @@ public:
 class WulingExEffect: public TriggerSkill{
 public:
     WulingExEffect():TriggerSkill("#wuling-ex-effect"){
-        events << CardEffected << Predamaged;
+        events << CardEffected << DamageInflicted;
     }
 
     virtual int getPriority() const{
@@ -715,7 +715,7 @@ public:
                 log.from = player;
                 room->sendLog(log);
             }
-        }else if(event == Predamaged && wuling == "earth"){
+        }else if(event == DamageInflicted && wuling == "earth"){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature != DamageStruct::Normal && damage.damage > 1){
                 damage.damage = 1;
@@ -735,7 +735,7 @@ public:
 class WulingEffect: public TriggerSkill{
 public:
     WulingEffect():TriggerSkill("#wuling-effect"){
-        events << Predamaged;
+        events << DamageInflicted;
     }
 
     virtual int getPriority() const{
@@ -922,7 +922,7 @@ public:
 class Shenjun: public TriggerSkill{
 public:
     Shenjun():TriggerSkill("shenjun"){
-        events << GameStart << PhaseChange << Predamaged;
+        events << GameStart << PhaseChange << DamageInflicted;
         frequency = Compulsory;
     }
 
@@ -976,7 +976,7 @@ public:
                 QString old_general = new_general.endsWith("f")?"luboyan":"luboyanf";
                 room->transfigure(player, new_general, false, false, old_general);
             }
-        }else if(event == Predamaged){
+        }else if(event == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature != DamageStruct::Thunder && damage.from &&
                damage.from->getGeneral()->isMale() != player->getGeneral()->isMale()){
@@ -1395,11 +1395,11 @@ public:
 class Sizhan: public TriggerSkill{
 public:
     Sizhan():TriggerSkill("sizhan"){
-        events << Predamaged << PhaseChange;
+        events << DamageInflicted << PhaseChange;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *elai, QVariant &data) const{
-        if(event == Predamaged){
+        if(event == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
 
             LogMessage log;
@@ -1743,7 +1743,10 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(player->getRoom()->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data))
+
+        if(player->getRoom()->getCardPlace(effect.jink->getEffectiveId()) == Player::DiscardPile
+            && player->askForSkillInvoke(objectName(), data))
+
             player->obtainCard(effect.jink);
 
         return false;

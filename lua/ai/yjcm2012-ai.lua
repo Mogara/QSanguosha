@@ -144,6 +144,8 @@ sgs.ai_skill_invoke.jiefan = function(self, data)
 		and (currentplayer:getHandcardNum() > 2 or self:isEquip("EightDiagram", currentplayer))) and slashnum > 0
 end
 
+sgs.ai_skill_choice.jiefan = sgs.ai_skill_choice.collateral
+
 sgs.ai_skill_cardask["jiefan-slash"] = function(self, data, pattern, target)
 	target = target or global_room:getCurrent()
 	for _, slash in ipairs(self:getCards("Slash")) do

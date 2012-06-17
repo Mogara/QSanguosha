@@ -8,55 +8,51 @@
 class ChongZhen: public TriggerSkill{
 public:
     ChongZhen(): TriggerSkill("chongzhen"){
-        events << CardResponsed << SlashEffect << CardEffect << CardEffected << CardFinished;
-    }
-
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    void doChongZhen(ServerPlayer *player, const Card *card) const{
-        if(card->getSkillName() != "longdan")
-            return;
-
-        Room *room = player->getRoom();
-
-        ServerPlayer *target = player->tag["ChongZhenTarget"].value<PlayerStar>();
-        if(!target || target->isKongcheng() || !room->askForSkillInvoke(player, objectName()))
-            return;
-
-        int card_id = room->askForCardChosen(player, target, "h", objectName());
-        room->obtainCard(player, card_id, false);
+        events << CardResponsed  << TargetConfirmed;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardFinished){
-            player->tag["ChongZhenTarget"] = QVariant::fromValue(NULL);
-        }
-        else if(event == CardResponsed){
+        if(event == CardResponsed){
             CardStar card = data.value<CardStar>();
-            doChongZhen(player, card);
-        }
-        else if(event == SlashEffect){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.to);
-            doChongZhen(player, effect.slash);
+            if(card->getSkillName() == "longdan"){
+                ServerPlayer *target = NULL;
+                foreach(ServerPlayer* p, room->getOtherPlayers(player)){
+                    if(p->hasFlag("Chongzhen")){
+                        room->setPlayerFlag(p, "-Chongzhen");
+                        target = p;
+                        break;
+                    }
+                }
+                if(target){
+                    int card_id = room->askForCardChosen(player, target, "h", objectName());
+                    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+                    room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
+                    room->broadcastSkillInvoke("chongzhen");
+                }
+            }
         }
         else{
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card->inherits("Duel")
-                    || effect.card->inherits("ArcheryAttack")
-                    || effect.card->inherits("SavageAssault")
-                    || effect.card->inherits("Slash"))
-                player->tag["ChongZhenTarget"] = QVariant::fromValue(event == CardEffect ? effect.to : effect.from);
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
+                foreach(ServerPlayer *p, use.to){
+                    int card_id = room->askForCardChosen(player, p, "h", objectName());
+                    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+                    room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
+                    room->broadcastSkillInvoke("chongzhen");
+                }
+            }
+            else if(use.to.contains(player) && !use.card->inherits("Collateral")
+                    && use.card->getSkillName() != "luanwu"
+                    && use.card->getSkillName() != "tiaoxin"){
+                room->setPlayerFlag(use.from, "Chongzhen");
+            }
         }
-
         return false;
     }
 };
 
 LihunCard::LihunCard(){
-    owner_discarded = true;
+    will_throw = true;
 }
 
 bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -81,7 +77,7 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     {
         CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, effect.from->objectName(),
             effect.to->objectName(), "lihun", QString());
-        room->moveCardTo(dummy_card, effect.from, Player::Hand, reason, false);
+        room->moveCardTo(dummy_card, effect.to, effect.from, Player::Hand, reason, false);
     }
     effect.to->setFlags("LihunTarget");
 }
@@ -140,8 +136,11 @@ public:
 
             int hp = target->isAlive() ? target->getHp() : 0;
             if(diaochan->getCards("he").length() <= hp){
-                foreach(const Card *card, diaochan->getCards("he"))
-                    room->obtainCard(target, card, room->getCardPlace(card->getEffectiveId()) != Player::Hand);
+                foreach(const Card *card, diaochan->getCards("he")){
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
+                    reason.m_playerId = target->objectName();
+                    room->obtainCard(target, card, reason, room->getCardPlace(card->getEffectiveId()) != Player::Hand);
+                }
             }
             else{
                 int i;
@@ -150,7 +149,9 @@ public:
                         return false;
 
                     int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
-                    room->obtainCard(target, card_id, room->getCardPlace(card_id) != Player::Hand);
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
+                    reason.m_playerId = target->objectName();
+                    room->obtainCard(target, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
             room->removeTag("LihunTarget");
@@ -290,7 +291,7 @@ public:
             card_id = move->card_id;
             if(move->to_place == Player::Hand){
                 const Card* card = Sanguosha->getCard(card_id);
-                room->moveCardTo(card, NULL, Player::DiscardPile, reason);
+                room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
             }else
                 return false;
         }
@@ -299,7 +300,7 @@ public:
                 return false;
             card_id = data.toInt();
             const Card* card = Sanguosha->getCard(card_id);
-            room->moveCardTo(card, NULL, Player::DiscardPile, reason);
+            room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
         }
 
         LogMessage log;
@@ -431,6 +432,7 @@ public:
 DaheCard::DaheCard(){
     once = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool DaheCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -477,6 +479,8 @@ void DaheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
         QString choice = room->askForChoice(source, reason, "yes+no");
         if(!to_givelist.isEmpty() && choice == "yes"){
             ServerPlayer *to_give = room->askForPlayerChosen(source, to_givelist, reason);
+            CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
+            reason.m_playerId = to_give->objectName();
             to_give->obtainCard(card2);
         }
     }else{
@@ -528,7 +532,7 @@ public:
                                                 .arg(effect.from->objectName())
                                                 .arg(bgm_zhangfei->objectName())
                                                 .arg(objectName()),
-                                                data);
+                                                data, CardUsed);
             if(jink && jink->getSuit() != Card::Heart){
                 LogMessage log;
                 log.type = "#DaheEffect";
@@ -556,6 +560,7 @@ public:
 TanhuCard::TanhuCard(){
     once = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool TanhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

@@ -337,6 +337,8 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 	use.card = sgs.Card_Parse("@TiaoxinCard=.")
 end
 
+sgs.ai_skill_choice.tiaoxin = sgs.ai_skill_choice.collateral
+
 sgs.ai_card_intention.TiaoxinCard = 80
 sgs.ai_use_priority.TiaoxinCard = 8
 
@@ -526,7 +528,7 @@ end
 
 function sgs.ai_slash_prohibit.duanchang(self, to)
 	if self:isFriend(to) and self:isWeak(to) then return true end
-	if self.player:hasSkill("qianxi") then return false end
+	if self:hasSkills("jueqing|qianxi") then return false end
 	return #self.enemies>1 and self:isWeak(to) and (self.player:isLord() or not self:isWeak())
 end
 

@@ -11,6 +11,7 @@ QuhuCard::QuhuCard(){
     once = true;
     mute = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -149,7 +150,7 @@ public:
 
 QiangxiCard::QiangxiCard(){
     once = true;
-    owner_discarded = true;
+    will_throw = true;
 }
 
 bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -231,6 +232,29 @@ public:
     }
 };
 
+class Xueyi: public MaxCardsSkill{
+public:
+    Xueyi():MaxCardsSkill("xueyi$"){
+    }
+    virtual int getExtra(const Player *target) const{
+        int extra = 0;
+        const Player *lord = NULL;
+        if(target->isLord())
+            lord = target;
+        QList<const Player *> players = target->getSiblings();
+        foreach(const Player *player, players){
+            if(player->isAlive() && player->getKingdom() == "qun")
+                extra += 2;
+            if(player->isLord())
+                lord = player;
+        }
+        if(target->hasLordSkill(objectName()))
+            return extra;
+        else
+            return 0;
+    }
+};
+
 class ShuangxiongViewAsSkill: public OneCardViewAsSkill{
 public:
     ShuangxiongViewAsSkill():OneCardViewAsSkill("shuangxiong"){
@@ -295,6 +319,7 @@ public:
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(judge->reason == "shuangxiong"){
+                CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, judge->who->objectName());
                 shuangxiong->obtainCard(judge->card);
                 return true;
             }
@@ -321,7 +346,10 @@ public:
             if(pangde->askForSkillInvoke(objectName(), data)){
                 room->broadcastSkillInvoke(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
-                room->throwCard(to_throw, effect.to);
+                CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, effect.to->objectName());
+                reason.m_playerId = pangde->objectName();
+                reason.m_targetId = effect.to->objectName();
+                room->moveCardTo(Sanguosha->getCard(to_throw), NULL, NULL, Player::DiscardPile, reason);
             }
         }
 
@@ -474,6 +502,7 @@ public:
 TianyiCard::TianyiCard(){
     once = true;
     will_throw = false;
+    as_pindian = true;
 }
 
 bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -558,7 +587,7 @@ FirePackage::FirePackage()
 
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);
-    yuanshao->addSkill(new Skill("xueyi$", Skill::Compulsory));
+    yuanshao->addSkill(new Xueyi);
 
     yanliangwenchou = new General(this, "yanliangwenchou", "qun");
     yanliangwenchou->addSkill(new Shuangxiong);

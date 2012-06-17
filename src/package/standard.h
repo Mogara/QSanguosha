@@ -102,6 +102,7 @@ class AmazingGrace:public GlobalEffect{
 
 public:
     Q_INVOKABLE AmazingGrace(Card::Suit suit, int number);
+    virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
@@ -149,7 +150,6 @@ class Collateral:public SingleTargetTrick{
 public:
     Q_INVOKABLE Collateral(Card::Suit suit, int number);
     virtual bool isAvailable(const Player *player) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
@@ -178,6 +178,7 @@ public:
     DelayedTrick(Suit suit, int number, bool movable = false);
     void onNullified(ServerPlayer *target) const;
 
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual QString getSubtype() const;
     virtual void onEffect(const CardEffectStruct &effect) const;
