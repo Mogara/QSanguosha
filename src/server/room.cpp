@@ -3883,17 +3883,23 @@ void Room::makeDamage(const QString& source, const QString& target, QSanProtocol
     ServerPlayer* targetPlayer = findChild<ServerPlayer *>(target);    
     if (targetPlayer == NULL) return;
     // damage    
-    if (nature == S_CHEAT_HP_LOSE)
-    {
+    if (nature == S_CHEAT_HP_LOSE){
         loseHp(targetPlayer, point);
         return;
     }
-    else if (nature == S_CHEAT_HP_RECOVER)
-    {
+    else if (nature == S_CHEAT_MAX_HP_LOSE){
+        loseMaxHp(targetPlayer, point);
+        return;
+    }
+    else if (nature == S_CHEAT_HP_RECOVER){
         RecoverStruct recover;        
         recover.who = sourcePlayer;        
         recover.recover = point;
         this->recover(targetPlayer, recover);
+        return;
+    }
+    else if (nature == S_CHEAT_MAX_HP_RESET){
+        setPlayerProperty(targetPlayer, "maxhp", point);
         return;
     }
 
