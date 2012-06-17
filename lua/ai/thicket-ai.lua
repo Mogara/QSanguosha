@@ -336,6 +336,8 @@ luanwu_skill.getTurnUseCard=function(self)
 	if good > bad then return sgs.Card_Parse("@LuanwuCard=.") end
 end
 
+sgs.ai_skill_choice.luanwu = sgs.ai_skill_choice.collateral
+
 sgs.ai_skill_use_func.LuanwuCard=function(card,use,self)
 	use.card = card
 end

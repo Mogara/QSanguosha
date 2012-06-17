@@ -337,6 +337,8 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 	use.card = sgs.Card_Parse("@TiaoxinCard=.")
 end
 
+sgs.ai_skill_choice.tiaoxin = sgs.ai_skill_choice.collateral
+
 sgs.ai_card_intention.TiaoxinCard = 80
 sgs.ai_use_priority.TiaoxinCard = 8
 

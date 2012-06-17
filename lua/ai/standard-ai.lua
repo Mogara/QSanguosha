@@ -1205,7 +1205,7 @@ end
 
 sgs.ai_skill_invoke.bumie = true
 
-sgs.ai_skill_playerchosen.bumie = function(self)	
+sgs.ai_skill_playerchosen.bumie = function(self, targets)	
 	self:sort(self.enemies,"hp")
 	return self.enemies[1]
 end
