@@ -605,9 +605,8 @@ public:
             if(damage.card && damage.card->inherits("Slash") && damage.card->hasFlag("jiefan-slash")){
 
                 DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
-                ServerPlayer *target = NULL;
-                if(dying)
-                    target = dying.who;
+
+                ServerPlayer *target = dying.who;
                 if(target && target->getHp() > 0){
                     LogMessage log;
                     log.type = "#JiefanNull1";
