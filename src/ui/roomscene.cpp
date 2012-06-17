@@ -2899,8 +2899,7 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
     CardItem *copy = card_container->removeCardItems(card_ids, Player::Hand).first();
     if(copy == NULL)
         return;
-
-    addItem(copy);
+        
     QList<CardItem*> items;
     items << copy;
 
@@ -2913,6 +2912,7 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
         bringToFront(container);
         container->addCardItems(items, Player::Hand);
     }
+    else delete copy;
 }
 
 void RoomScene::showCard(const QString &player_name, int card_id){
