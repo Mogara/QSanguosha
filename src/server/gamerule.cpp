@@ -323,12 +323,12 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             LogMessage log;
             log.type = "#AskForPeaches";
             log.from = player;
-            log.to = room->getAlivePlayers();
+            log.to = room->getAllPlayers();
             log.arg = QString::number(1 - player->getHp());
             room->sendLog(log);
 
             RoomThread *thread = room->getThread();
-            foreach(ServerPlayer *saver, room->getAlivePlayers()){
+            foreach(ServerPlayer *saver, room->getAllPlayers()){
                 if(player->getHp() > 0)
                     break;
 
@@ -352,8 +352,8 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             while(dying.who->getHp() <= 0){
                 if(!current->hasSkill("wansha") || current->isDead() || dying.who->objectName() == player->objectName()
                     || player->hasFlag("dying") || player->objectName() == jiaxu->objectName())
-
-                    peach = room->askForSinglePeach(player, dying.who);
+                    if(dying.who->isAlive())
+                        peach = room->askForSinglePeach(player, dying.who);
                     if(peach == NULL)
                         break;
 

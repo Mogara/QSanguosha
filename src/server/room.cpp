@@ -971,9 +971,15 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card = card->validateInResposing(player, &continuable);
 
     if(card){
-        if(trigger_event == CardUsed || pattern == "nullification"){
+        if(trigger_event == CardUsed){
+            if(pattern != "slash"){
                 CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName());
                 moveCardTo(card, player, NULL, Player::DiscardPile, reason);
+            }
+        }
+        else if(pattern == "nullification"){
+            CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName());
+            moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
         else
             if(trigger_event == CardDiscarded){

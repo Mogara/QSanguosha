@@ -545,7 +545,7 @@ public:
 class Jiefan : public TriggerSkill{
 public:
     Jiefan():TriggerSkill("jiefan"){
-        events << AskForPeaches << DamageCaused << SlashMissed << CardFinished;
+        events << AskForPeaches << DamageCaused << CardFinished;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *handang, QVariant &data) const{
@@ -558,34 +558,90 @@ public:
                current->isDead() || !handang->canSlash(current,false)
                 || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
+            while(dying.who->getHp() < 1){
+                const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data, CardUsed);
+                int slash_targets = 1;
+                if(slash){
+                    if(handang->hasWeapon("halberd") && handang->isLastHandCard(slash)){
+                        slash_targets = 3;
+                    }
+                    if(handang->hasSkill("shenji") && handang->getWeapon() == NULL)
+                        slash_targets = 3;
 
-            const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data, CardUsed);
-           
-            if(slash){
-                room->setCardFlag(slash, "jiefan-slash");
-                room->setTag("JiefanTarget", data);
-                CardUseStruct use;
-                use.card = slash;
-                use.from = handang;
-                use.to << room->getCurrent();
-                room->useCard(use);
-            }            
+                    if(handang->hasSkill("lihuo") && slash->inherits("FireSlash"))
+                        slash_targets ++;
+                }
+                if(slash){
+                    room->setCardFlag(slash, "jiefan-slash");
+                    room->setTag("JiefanTarget", data);
+                    CardUseStruct use;
+                    use.card = slash;
+                    use.from = handang;
+                    use.to << room->getCurrent();
+                    if(slash_targets > 1){
+                        QList<ServerPlayer *> othertargets = room->getOtherPlayers(handang);
+                        othertargets.removeOne(current);
+                        foreach(ServerPlayer *p, othertargets){
+                            if(!slash->inherits("WushenSlash") && !handang->canSlash(p))
+                                othertargets.removeOne(p);
+                        }
+
+                        while(slash_targets > 1 && othertargets.length() > 0
+                                && room->askForChoice(handang, "jiefan", "yes+no") == "yes"){
+                            ServerPlayer *tmptarget = room->askForPlayerChosen(handang,othertargets,"halberd");
+                            use.to << tmptarget;
+                            othertargets.removeOne(tmptarget);
+                            slash_targets--;
+                        }
+                    }
+                    CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, handang->objectName());
+                    room->moveCardTo(slash, handang, NULL, Player::DiscardPile, reason);
+                    room->useCard(use);
+                }
+            }
         }
         else if(event == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->inherits("Slash") && !room->getTag("JiefanTarget").isNull()){
+            if(damage && damage.card && damage.card->inherits("Slash") && damage.card->hasFlag("jiefan-slash")){
 
                 DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
-                ServerPlayer *target = dying.who;
-                room->removeTag("JiefanTarget");
-                if(target->getHp() < 1 && !(current->hasSkill("wansha")
-                    && current->isAlive() && target->objectName() != handang->objectName())){
+                ServerPlayer *target = NULL;
+                if(dying)
+                    target = dying.who;
+                if(target && target->getHp() > 0){
+                    LogMessage log;
+                    log.type = "#JiefanNull1";
+                    log.from = dying.who;
+                    room->sendLog(log);
+                    return false;
+                }
+                else if(target && target->isDead()){
+                    LogMessage log;
+                    log.type = "#JiefanNull2";
+                    log.from = dying.who;
+                    log.to << handang;
+                    room->sendLog(log);
+                    return false;
+                }
+                else if(current->hasSkill("wansha") && current->isAlive()  && target->objectName() != handang->objectName()){
+                    LogMessage log;
+                    log.type = "#JiefanNull3";
+                    log.from = current;
+                    room->sendLog(log);
+                    return false;
+                }
+                else
+                {
                     Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
                     peach->setSkillName(objectName());
                     CardUseStruct use;
                     use.card = peach;
                     use.from = handang;
                     use.to << target;
+                    if(dying.who->hasFlag("jiuyuan") && handang->getKingdom() == "wu"
+                        && handang->objectName() != dying.who->objectName()){
+                        room->setCardFlag(use.card, "sweet");
+                    }
                     room->useCard(use);
                 }
                 return true;

@@ -638,12 +638,62 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
         room->playSkillEffect("tiaoxin", qrand() % 2 + 1);
 
     const Card *slash = room->askForCard(effect.to, "slash", "@tiaoxin-slash:" + effect.from->objectName(), QVariant(), CardUsed);
+    int slash_targets = 1;
+    if(slash){
+        if(effect.to->hasWeapon("halberd") && effect.to->isLastHandCard(slash)){
+            slash_targets = 3;
+        }
+        if(effect.to->hasSkill("shenji") && effect.to->getWeapon() == NULL)
+            slash_targets = 3;
+        bool distance_limit = true;
+        int rangefix = 0;
+        if(slash->isVirtualCard() && slash->getSubcards().length() > 0){
+            foreach(int card_id, slash->getSubcards()){
+                if(Sanguosha->getCard(card_id)->inherits("Weapon")){
+                    const Weapon *hisweapon = effect.to->getWeapon();
+                    if(hisweapon->getRange() > 1){
+                        rangefix = qMax((hisweapon->getRange()), rangefix);
+                    }
+                }
+                if(Sanguosha->getCard(card_id)->inherits("OffensiveHorse")){
+                    rangefix = qMax(rangefix, 1);
+                }
+            }
+        }
+        if(effect.to->hasSkill("lihuo") && slash->inherits("FireSlash"))
+            slash_targets ++;
 
+        if(slash->inherits("WushenSlash")){
+            distance_limit = false;
+        }
+
+        if(!effect.to->canSlash(effect.from, distance_limit, rangefix)){
+            slash = NULL;
+        }
+    }
     if(slash){
         CardUseStruct use;
         use.card = slash;
         use.to << effect.from;
         use.from = effect.to;
+        if(slash_targets > 1){
+            QList<ServerPlayer *> othertargets = room->getOtherPlayers(effect.to);
+            othertargets.removeOne(effect.from);
+            foreach(ServerPlayer *p, othertargets){
+                if(effect.to->distanceTo(p) > effect.to->getAttackRange())
+                    othertargets.removeOne(p);
+            }
+
+            while(slash_targets > 1 && othertargets.length() > 0
+                    && room->askForChoice(effect.to, "tiaoxin", "yes+no") == "yes"){
+                ServerPlayer *tmptarget = room->askForPlayerChosen(effect.to,othertargets,"halberd");
+                use.to << tmptarget;
+                othertargets.removeOne(tmptarget);
+                slash_targets--;
+            }
+        }
+        CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, effect.to->objectName());
+        room->moveCardTo(slash, effect.to, NULL, Player::DiscardPile, reason);
         room->useCard(use);
     }else if(!effect.to->isNude()){
         room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to);
