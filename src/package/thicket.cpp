@@ -760,7 +760,7 @@ public:
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *jiaxu = room->findPlayerBySkillName(objectName());
-        if(jiaxu && !jiaxu->loseTriggerSkills())
+        if(jiaxu && !jiaxu->loseTriggerSkills() && jiaxu->objectName() == room->getCurrent()->objectName())
             room->playSkillEffect(objectName());
         return false;
     }
