@@ -602,7 +602,7 @@ public:
         }
         else if(event == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
-            if(damage && damage.card && damage.card->inherits("Slash") && damage.card->hasFlag("jiefan-slash")){
+            if(damage.card && damage.card->inherits("Slash") && damage.card->hasFlag("jiefan-slash")){
 
                 DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
                 ServerPlayer *target = NULL;
