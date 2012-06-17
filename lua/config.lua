@@ -14,7 +14,6 @@ config = {
         "SPCard",
         "Nostalgia",
 	"New3v3Card",
-	"HegemonyCard",
 
         "Standard",
         "Wind",
