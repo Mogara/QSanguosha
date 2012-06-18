@@ -415,8 +415,7 @@ void RoomScene::createExtraButtons(){
     // to dashboard again...
     m_reverseSelectionButton = dashboard->createButton("reverse-select");
     m_reverseSelectionButton->setEnabled(true);
-    dashboard->addWidget(m_reverseSelectionButton, _m_roomLayout->m_scenePadding 
-                         + 10 + _m_photoLayout->m_normalWidth, true);
+    dashboard->addWidget(m_reverseSelectionButton, _m_roomLayout->m_scenePadding, true);
     connect(m_reverseSelectionButton, SIGNAL(clicked()), dashboard, SLOT(reverseSelection()));
 
     m_sortHandcardButton = dashboard->addButton("sort-handcard", 
@@ -704,7 +703,7 @@ void RoomScene::updateTable()
 
     Qt::Alignment aligns[] = {
         Qt::AlignRight | Qt::AlignTop,
-        Qt::AlignLeft | Qt::AlignTop,
+        Qt::AlignHCenter | Qt::AlignTop,
         Qt::AlignLeft | Qt::AlignTop,
         Qt::AlignRight | Qt::AlignVCenter,
         Qt::AlignLeft | Qt::AlignVCenter,
@@ -735,6 +734,7 @@ void RoomScene::updateTable()
     m_tablePile->setPos(m_tableCenterPos);
     m_tablePile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
                          _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
+    m_tablePile->adjustCards();
     card_container->setPos(m_tableCenterPos);
     guanxing_box->setPos(m_tableCenterPos);
     prompt_box->setPos(m_tableCenterPos);
@@ -858,8 +858,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 // cause a lot of major problems. We should look into this later.
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    /*
     QGraphicsScene::mousePressEvent(event);
+    /*
     _m_isMouseButtonDown = true;
     _m_isInDragAndUseMode = false;
     */    
@@ -867,9 +867,8 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    /*
     QGraphicsScene::mouseReleaseEvent(event);
-
+    /*
     if (_m_isInDragAndUseMode)
     {
         bool accepted = false;
@@ -898,9 +897,8 @@ void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    /*
     QGraphicsScene::mouseMoveEvent(event);
-
+    /*
     QGraphicsObject *obj = static_cast<QGraphicsObject*>(focusItem());
     CardItem *card_item = qobject_cast<CardItem*>(obj);
     if(!card_item || !card_item->isUnderMouse())
@@ -1421,16 +1419,28 @@ GeneralCardContainer* RoomScene::_getGeneralCardContainer(Player::Place place, P
     return NULL;
 }
 
+bool RoomScene::_shouldIgnoreDisplayMove(Player::Place from, Player::Place to)
+{
+    if (from == Player::DiscardPile && to == Player::DiscardPile)
+        return true;
+    else if (from == Player::PlaceTable && to == Player::DiscardPile)
+        return true;
+
+    return false;
+}
+
 void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
     for (int i = 0; i < card_moves.size(); i++) 
     {
         CardsMoveStruct &movement = card_moves[i];
+        if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
         GeneralCardContainer* from_container = _getGeneralCardContainer(movement.from_place, movement.from);
         QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach (CardItem* card, cards)
         {      
+            card->setFlag(QGraphicsItem::ItemIsMovable, false);
             card->setHomePos(from_container->mapToScene(card->homePos()));
             card->setPos(from_container->mapToScene(card->pos()));
             card->goBack(true);
@@ -1527,6 +1537,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
     for (int i = 0; i < card_moves.size(); i++) 
     {
         CardsMoveStruct &movement = card_moves[i];
+        if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
         GeneralCardContainer* to_container = _getGeneralCardContainer(movement.to_place, movement.to);
         QList<CardItem*> cards = _m_cardsMoveStash[moveId][i];
@@ -2875,6 +2886,8 @@ void RoomScene::revivePlayer(const QString &who){
 void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
     QList<int> card_ids;
     card_ids.append(card_id);
+    m_tablePile->clear();
+
     card_container->m_currentPlayer = taker;
     CardItem *copy = card_container->removeCardItems(card_ids, Player::Hand).first();
     if(copy == NULL)

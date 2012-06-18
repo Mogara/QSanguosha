@@ -561,8 +561,9 @@ void PlayerCardContainer::setFloatingArea(QRect rect)
     dummy.fill(Qt::transparent);
     _m_floatingArea->setPixmap(dummy);
     _m_floatingArea->setPos(rect.topLeft());
-    updatePhase();
-    updateMarks();
+    if (_getPhaseParent() == _m_floatingArea) updatePhase();
+    if (_getMarkParent() == _m_floatingArea) updateMarks();
+    if (_getProgressBarParent() == _m_floatingArea) _updateProgressBar();
 }
 
 void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
@@ -705,6 +706,18 @@ void PlayerCardContainer::updateRole(const QString &role)
     _m_roleComboBox->fix(role);
 }
 
+void PlayerCardContainer::_updateProgressBar()
+{
+    QGraphicsItem* parent = _getProgressBarParent();
+    if (parent == NULL) return;
+    QRectF newRect = _m_layout->m_progressBarArea
+                     .getTranslatedRect(parent->boundingRect().toRect());
+    _m_progressBar->setFixedHeight(newRect.height());
+    _m_progressBar->setFixedWidth(newRect.width());
+    _m_progressBarItem->setParentItem(parent);
+    _m_progressBarItem->setPos(newRect.left(), newRect.top());
+}
+
 void PlayerCardContainer::_createControls()
 {
     _m_floatingArea = new QGraphicsPixmapItem(this);
@@ -732,12 +745,10 @@ void PlayerCardContainer::_createControls()
     _m_progressBar = new QSanCommandProgressBar;
     _m_progressBar->setAutoHide(true);
     _m_progressBar->hide();
-    _m_progressBar->setOrientation(_m_layout->m_isProgressBarHorizontal ? Qt::Horizontal : Qt::Vertical);
-    _m_progressBar->setFixedHeight(_m_layout->m_progressBarArea.height());
-    _m_progressBar->setFixedWidth(_m_layout->m_progressBarArea.width());
-    _m_progressBarItem = new QGraphicsProxyWidget(this);
+    _m_progressBar->setOrientation(_m_layout->m_isProgressBarHorizontal ? Qt::Horizontal : Qt::Vertical);    
+    _m_progressBarItem = new QGraphicsProxyWidget(_getProgressBarParent());
     _m_progressBarItem->setWidget(_m_progressBar);
-    _m_progressBarItem->setPos(_m_layout->m_progressBarArea.left(), _m_layout->m_progressBarArea.top());
+    _updateProgressBar();
 
     for (int i = 0; i < 4; i++)
     {

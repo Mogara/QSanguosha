@@ -55,6 +55,7 @@ protected:
     inline virtual QGraphicsItem* _getMarkParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem* _getPhaseParent() { return this; }
     inline virtual QGraphicsItem* _getRoleComboBoxParent() { return this; }
+    inline virtual QGraphicsItem* _getProgressBarParent() { return this;}
     inline virtual QGraphicsItem* _getFocusFrameParent() { return this; }
     virtual QGraphicsItem* _getPileParent() { return this; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_PHOTO; }

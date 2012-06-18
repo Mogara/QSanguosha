@@ -1072,10 +1072,12 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     }else{              
         bool success = doRequest(player, S_COMMAND_AMAZING_GRACE, refusable, true);
         Json::Value clientReply = player->getClientReply();
-        if (!success || !clientReply.isInt() || !card_ids.contains(clientReply.asInt()))
-            card_id = refusable ? -1 : card_ids.first();
-        else card_id = clientReply.asInt();
+        if (!success || !clientReply.isInt())
+            card_id = clientReply.asInt();
     }   
+
+    if (!card_ids.contains(card_id))
+        card_id = refusable ? -1 : card_ids.first();
 
     QVariant decisionData = QVariant::fromValue("AGChosen:"+reason+":"+QString::number(card_id));
     thread->trigger(ChoiceMade, this, player, decisionData);
@@ -3187,7 +3189,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             }
         }
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
-		moveOneTimeStruct.reason = cards_move.reason;
+        moveOneTimeStruct.reason = cards_move.reason;
         for (int i = 0; i < cards_move.card_ids.size(); i++)
             moveOneTimeStruct.from_places.append(cards_move.from_place);        
         if (cards_move.countAsOneTime && moveOneTimeStruct.card_ids.size() > 0){
@@ -4012,6 +4014,7 @@ void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who){
 }
 
 void Room::takeAG(ServerPlayer *player, int card_id){
+    Q_ASSERT(card_id != 0);
     if(player){
         player->addCard(Sanguosha->getCard(card_id), Player::Hand);
         setCardMapping(card_id, player, Player::Hand);

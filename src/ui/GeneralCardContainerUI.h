@@ -21,7 +21,7 @@ public:
     virtual void addCardItems(QList<CardItem*> &card_items, Player::Place place);
 protected:
     // @return Whether the card items should be destroyed after animation
-    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place) = 0;
+    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place toPlace) = 0;
     QList<CardItem*> _createCards(QList<int> card_ids);
     CardItem* _createCard(int card_id);    
     void _disperseCards(QList<CardItem*> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);
@@ -93,9 +93,11 @@ protected:
     virtual QGraphicsItem* _getRoleComboBoxParent() = 0;
     virtual QGraphicsItem* _getPileParent() = 0;
     virtual QGraphicsItem* _getFocusFrameParent() = 0;
+    virtual QGraphicsItem* _getProgressBarParent() = 0;
     virtual QString getResourceKeyName() = 0;
 
     void _createRoleComboBox();
+    void _updateProgressBar(); // a dirty function used by the class itself only.
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QString &key);
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QString &key, QGraphicsItem* parent);
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QPixmap &pixmap);

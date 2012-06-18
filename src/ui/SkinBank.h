@@ -158,7 +158,7 @@ public:
         
         // progress bar and other controls
         bool m_isProgressBarHorizontal;
-        QRect m_progressBarArea;
+        AnchoredRect m_progressBarArea;
         QSize m_magatamaSize;
         bool m_magatamasHorizontal;
         bool m_magatamasBgVisible;

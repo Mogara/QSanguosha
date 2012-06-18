@@ -23,6 +23,7 @@ public:
     inline void setNumCardsVisible(int num) { m_numCardsVisible = num; }
     inline int getNumCardsVisible() { return m_numCardsVisible; }
     inline virtual void paint(QPainter *,const QStyleOptionGraphicsItem *,QWidget *) {}
+    void clear(bool playAnimation = true);
     void adjustCards();
     virtual QRectF boundingRect() const;
 protected:

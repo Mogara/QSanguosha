@@ -285,7 +285,7 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
     QPoint childAnchor;
     hAlign = m_anchorChild & Qt::AlignHorizontal_Mask;
     if (hAlign == Qt::AlignRight) childAnchor.setX(size.width());
-    else if (hAlign == Qt::AlignCenter) childAnchor.setX(size.width() / 2);
+    else if (hAlign == Qt::AlignHCenter) childAnchor.setX(size.width() / 2);
     else childAnchor.setX(0);
     vAlign = m_anchorChild & Qt::AlignVertical_Mask;
     if (vAlign == Qt::AlignBottom) childAnchor.setY(size.height());
@@ -626,7 +626,7 @@ bool QSanRoomSkin::_loadLayoutConfig()
         tryParse(playerConfig["screenNameArea"], layout->m_screenNameArea);
         layout->m_screenNameFont.tryParse(playerConfig["screenNameFont"]);
     
-        tryParse(playerConfig["progressBarArea"], layout->m_progressBarArea);
+        layout->m_progressBarArea.tryParse(playerConfig["progressBarArea"]);
         layout->m_isProgressBarHorizontal = playerConfig["progressBarHorizontal"].asBool();
         tryParse(playerConfig["magatamaSize"], layout->m_magatamaSize);
         layout->m_magatamasHorizontal = playerConfig["magatamasHorizontal"].asBool();

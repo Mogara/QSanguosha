@@ -37,20 +37,56 @@ void TablePile::setSize(double width, double height)
     translate(-width / 2, -height / 2);
 }
 
+void TablePile::clear(bool playAnimation)
+{
+    if (m_visibleCards.empty()) return;
+    _m_mutex_pileCards.lock();
+    // check again since we just gain the lock.
+    int shift = 0;
+    if (!m_visibleCards.empty())
+    {
+        CardItem* forerunner = m_visibleCards.first();
+        QPointF oldPos = forerunner->pos();
+        shift = oldPos.x() + 10;
+    }
+
+    foreach (CardItem* toRemove, m_visibleCards)
+    {        
+        toRemove->setZValue(0.0);
+        toRemove->setHomeOpacity(0.0);
+        toRemove->setHomePos(QPointF(toRemove->x() - shift, toRemove->y()));
+        if (playAnimation)
+        {
+            connect(toRemove, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
+            toRemove->goBack(true);
+        }
+        else delete toRemove;
+    }
+    m_visibleCards.clear();
+    _m_mutex_pileCards.unlock();
+}
+
 bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {
     _m_mutex_pileCards.lock();
     m_visibleCards.append(card_items);
     int numAdded = card_items.size();
     int numRemoved = m_visibleCards.size() - qMax(m_numCardsVisible, numAdded + 1);
+    int shift;
+    if (numRemoved > 0)
+    {
+        CardItem* forerunner = m_visibleCards.first();
+        QPointF oldPos = forerunner->pos();
+        shift = oldPos.x() + 10;
+    }
     for (int i = 0; i <  numRemoved; i++)
     {
-        CardItem* toRemove = m_visibleCards.first();
+        CardItem* toRemove = m_visibleCards.takeFirst();
         toRemove->setZValue(0.0);
         toRemove->setHomeOpacity(0.0);
+        toRemove->setHomePos(QPointF(toRemove->x() - shift, toRemove->y()));
         connect(toRemove, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
         toRemove->goBack(true);
-        m_visibleCards.removeFirst();
     }
     foreach (CardItem* card_item, m_visibleCards)
     {

@@ -195,6 +195,7 @@ protected:
     QMutex m_zValueMutex;	
 
 private:
+    bool _shouldIgnoreDisplayMove(Player::Place from, Player::Place to);
     bool _m_isMouseButtonDown;
     bool _m_isInDragAndUseMode;
     const QSanRoomSkin::RoomLayout* _m_roomLayout;
