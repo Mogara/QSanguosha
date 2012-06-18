@@ -1172,85 +1172,6 @@ public:
     }
 };
 
-class Jueqing: public TriggerSkill{
-public:
-    Jueqing():TriggerSkill("jueqing"){
-        frequency = Compulsory;
-
-        events << Predamage;
-    }
-
-    virtual int getPriority() const{
-        return -1;
-    }
-
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if(damage.from->objectName() == zhangchunhua->objectName()){
-            room->loseHp(damage.to,damage.damage);
-            room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
-            return true;
-        }
-        return false;
-    }
-};
-class Shangshi: public TriggerSkill{
-public:
-    Shangshi():TriggerSkill("shangshi"){
-        events << HpChanged << CardLostOneTime << CardGotOneTime << CardDrawnDone << PhaseChange;
-        frequency = Frequent;
-    }
-
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
-        int losthp = zhangchunhua->getLostHp();
-        /* a mix zch,if you want,make the follow work
-        if(losthp > 2 && qrand() % 2 == 1)
-            losthp = 2; */
-        if(event == HpChanged){
-                if(zhangchunhua->getHandcardNum()<losthp && zhangchunhua->getHp() > 0){
-                    if( room->askForSkillInvoke(zhangchunhua,objectName())){
-                        zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                        room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
-                    }
-                }
-        }
-        else if(event == CardLostOneTime && zhangchunhua->getPhase() != Player::Discard){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from_places.contains(Player::Hand) && zhangchunhua->getHandcardNum()<losthp){
-                if( room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
-                }
-            }
-        }
-        else if(event == PhaseChange && zhangchunhua->getPhase() == Player::Finish){
-                if(zhangchunhua->getHandcardNum()<losthp){
-                    if( room->askForSkillInvoke(zhangchunhua,objectName())){
-                        zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                        room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
-                    }
-                }
-        }
-        else if(event == CardGotOneTime){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->to_place == Player::Hand && zhangchunhua->getHandcardNum()<losthp){
-                if( room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
-                }
-            }
-        }
-        else if(event == CardDrawnDone){
-            if(zhangchunhua->getHandcardNum()<losthp){
-                if( room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
-                }
-            }
-        }
-        return false;
-    }
-};
 
 
 
@@ -1297,9 +1218,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *yujin = new General(this, "yujin", "wei");
     yujin->addSkill(new Yizhong);
 
-    General *zhangchunhua = new General(this, "zhangchunhua", "wei", 3, false);
-    zhangchunhua->addSkill(new Jueqing);
-    zhangchunhua->addSkill(new Shangshi);
 
 
     General *zhonghui = new General(this, "zhonghui", "wei");

@@ -24,7 +24,7 @@ config = {
         "SP",
         "YJCM",
         "YJCM2012",
-        "Special3v3";
+        "Special3v3",
 	},
 
 	scene_names = {
