@@ -228,7 +228,7 @@ public:
                             break;
                         }
 
-                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::Judging, true);
+                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::PlaceDelayedTrick, true);
                     }
                 }
 

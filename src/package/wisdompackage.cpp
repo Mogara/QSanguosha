@@ -195,7 +195,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
         if(jiangwei->isKongcheng()){
             CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place != Player::Hand)
+            if(move->from_place != Player::PlaceHand)
                 return false;
 
             Room *room = jiangwei->getRoom();

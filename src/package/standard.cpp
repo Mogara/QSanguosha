@@ -78,13 +78,13 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     case OffensiveHorseLocation: equipped = target->getOffensiveHorse(); break;
     }
 
-    if (room->getCardOwner(getId()) == source && room->getCardPlace(getId()) == Player::Hand)
+    if (room->getCardOwner(getId()) == source && room->getCardPlace(getId()) == Player::PlaceHand)
         {
             QList<CardsMoveStruct> exchangeMove;
             CardsMoveStruct move1;
             move1.card_ids << getId();
             move1.to = source;
-            move1.to_place = Player::Equip;
+            move1.to_place = Player::PlaceEquip;
             move1.reason = CardMoveReason(CardMoveReason::S_REASON_USE, source->objectName());
             exchangeMove.push_back(move1);
             if(equipped)
@@ -200,7 +200,7 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
     CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), target->objectName(), this->getSkillName(), QString());
-    room->moveCardTo(this, source, target, Player::Judging, reason, true);
+    room->moveCardTo(this, source, target, Player::PlaceDelayedTrick, reason, true);
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -248,7 +248,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
                 continue;
 
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
-            room->moveCardTo(this, target, player, Player::Judging, reason, true);
+            room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
             break;
         }
     }

@@ -163,7 +163,7 @@ public:
 
             move1.card_ids.append(card->getEffectiveId());
             
-            CardsMoveStruct move2(QList<int>(), player, Player::Hand,
+            CardsMoveStruct move2(QList<int>(), player, Player::PlaceHand,
                 CardMoveReason(CardMoveReason::S_REASON_OVERRIDE, player->objectName(), this->objectName(), QString()));
             move2.card_ids.append(oldJudge->getEffectiveId());
 

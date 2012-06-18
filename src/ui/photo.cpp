@@ -62,8 +62,10 @@ void Photo::refresh()
     if(!state_str.isEmpty() && state_str != "online") {
         QRect rect = G_PHOTO_LAYOUT.m_onlineStatusArea;
         QImage image(rect.size(), QImage::Format_ARGB32);
-        image.fill(G_PHOTO_LAYOUT.m_onlineStatusBgColor);// Cannot pass in Qt 4.7.0
+        image.fill(Qt::transparent);
         QPainter painter(&image);
+        painter.fillRect(QRect(0, 0, rect.width(), rect.height()),
+                         G_PHOTO_LAYOUT.m_onlineStatusBgColor);
         G_PHOTO_LAYOUT.m_onlineStatusFont.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
                                                     Qt::AlignCenter,
                                                     Sanguosha->translate(state_str));
@@ -172,18 +174,18 @@ void Photo::speak(const QString &content)
 QList<CardItem*> Photo::removeCardItems(const QList<int> &card_ids, Player::Place place)
 {
     QList<CardItem*> result;    
-    if(place == Player::Hand || place == Player::Special){
+    if(place == Player::PlaceHand || place == Player::PlaceSpecial){
          result = _createCards(card_ids);
          updateHandcardNum();
-    }else if(place == Player::Equip){
+    }else if(place == Player::PlaceEquip){
         result = removeEquips(card_ids);
-    }else if(place == Player::Judging){
+    }else if(place == Player::PlaceDelayedTrick){
         result = removeDelayedTricks(card_ids);
     }
 
     // if it is just one card from equip or judge area, we'd like to keep them
     // to start from the equip/trick icon.
-    if (result.size() > 1 || (place != Player::Equip && place != Player::Judge))
+    if (result.size() > 1 || (place != Player::PlaceEquip && place != Player::PlaceDelayedTrick))
         _disperseCards(result, G_PHOTO_LAYOUT.m_cardMoveRegion, Qt::AlignCenter, true, false);
     
     update();
@@ -197,17 +199,17 @@ bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
     bool destroy = true;
     foreach (CardItem* card_item, card_items)
         card_item->setHomeOpacity(homeOpacity);
-    if (place == Player::Equip)
+    if (place == Player::PlaceEquip)
     {
         addEquips(card_items);
         destroy = false;
     }
-    else if (place == Player::Judging)
+    else if (place == Player::PlaceDelayedTrick)
     {
         addDelayedTricks(card_items);
         destroy = false;
     }
-    else if (place == Player::Hand)
+    else if (place == Player::PlaceHand)
     {
         updateHandcardNum();
     }
@@ -237,10 +239,6 @@ void Photo::updatePhase(){
         setFrame(S_FRAME_PLAYING);
     else
         setFrame(S_FRAME_NO_FRAME);
-}
-
-static bool CompareByNumber(const Card *card1, const Card *card2){
-    return card1->getNumber() < card2->getNumber();
 }
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

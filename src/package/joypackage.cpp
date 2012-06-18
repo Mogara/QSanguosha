@@ -13,9 +13,9 @@ QString Shit::getSubtype() const{
 
 void Shit::onMove(const CardMoveStruct &move) const{
     ServerPlayer *from = (ServerPlayer*)move.from;
-    if(from && move.from_place == Player::Hand &&
+    if(from && move.from_place == Player::PlaceHand &&
        from->getRoom()->getCurrent() == move.from
-       && (move.to_place == Player::DiscardPile || move.to_place == Player::Special)
+       && (move.to_place == Player::DiscardPile || move.to_place == Player::PlaceSpecial)
        && move.to == NULL
        && from->isAlive()){
 
@@ -401,7 +401,7 @@ public:
             room->removeTag("YxSwordVictim");
             damage.from = target;
             data = QVariant::fromValue(damage);
-            room->moveCardTo(player->getWeapon(), damage.to, damage.from, Player::Hand,
+            room->moveCardTo(player->getWeapon(), damage.to, damage.from, Player::PlaceHand,
                 CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->objectName(), objectName(), QString()));
         }
         return damage.to->isDead();

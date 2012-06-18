@@ -323,12 +323,12 @@ QString ServerPlayer::reportHeader() const{
 
 void ServerPlayer::removeCard(const Card *card, Place place){
     switch(place){
-    case Hand: {
+    case PlaceHand: {
             handcards.removeOne(card);
             break;
         }
 
-    case Equip: {
+    case PlaceEquip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             removeEquip(equip);
 
@@ -342,12 +342,12 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             break;
         }
 
-    case Judging:{
+    case PlaceDelayedTrick:{
             removeDelayedTrick(card);
             break;
         }
 
-    case Special:{
+    case PlaceSpecial:{
             int card_id = card->getEffectiveId();
             QString pile_name = getPileName(card_id);
             
@@ -366,19 +366,19 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 
 void ServerPlayer::addCard(const Card *card, Place place){
     switch(place){
-    case Hand: {
+    case PlaceHand: {
             handcards << card;
             break;
         }
 
-    case Equip: {
+    case PlaceEquip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             setEquip(equip);
             equip->onInstall(this);
             break;
         }
 
-    case Judging:{
+    case PlaceDelayedTrick:{
             addDelayedTrick(card);
             break;
         }
@@ -857,13 +857,13 @@ void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool op
     else
         piles[pile_name] << card->getEffectiveId();
 
-    room->moveCardTo(card, this, Player::Special, open);
+    room->moveCardTo(card, this, Player::PlaceSpecial, open);
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     piles[pile_name] << card_id;
 
-    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
+    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::PlaceSpecial, open);
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open){
@@ -871,7 +871,7 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     CardsMoveStruct move;
     move.card_ids = card_ids;
     move.to = this;
-    move.to_place = Player::Special;
+    move.to_place = Player::PlaceSpecial;
     room->moveCards(move, open, false);
 }
 

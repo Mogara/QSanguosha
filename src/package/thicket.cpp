@@ -230,7 +230,7 @@ public:
                 if(!target->isNude()){
                     int card_id = room->askForCardChosen(zhurong, target, "he", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, zhurong->objectName());
-                    room->obtainCard(zhurong, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
+                    room->obtainCard(zhurong, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
                 }
             }
         }
@@ -420,7 +420,7 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
 void HaoshiCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *beggar = targets.first();
 
-    room->moveCardTo(this, beggar, Player::Hand, false);
+    room->moveCardTo(this, beggar, Player::PlaceHand, false);
     room->setEmotion(beggar, "draw-card");
 }
 
@@ -569,11 +569,11 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     CardsMoveStruct move1;
     move1.card_ids = a->handCards();
     move1.to = b;
-    move1.to_place = Player::Hand;
+    move1.to_place = Player::PlaceHand;
     CardsMoveStruct move2;
     move2.card_ids = b->handCards();
     move2.to = a;
-    move2.to_place = Player::Hand;
+    move2.to_place = Player::PlaceHand;
     exchangeMove.push_back(move1);
     exchangeMove.push_back(move2);
     

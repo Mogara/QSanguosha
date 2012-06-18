@@ -60,7 +60,7 @@ public:
         ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
 
-        if(move->from_places.contains(Player::Judging) || move->from_places.contains(Player::Special))
+        if(move->from_places.contains(Player::PlaceDelayedTrick) || move->from_places.contains(Player::PlaceSpecial))
             return false;
         if(move->to_place == Player::DiscardPile && move->from && move->from->objectName() != caozhi->objectName() &&
             (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
@@ -72,7 +72,7 @@ public:
                     && Sanguosha->getCard(card_id)->objectName() != "shit"){
                         luoyingget.card_ids << card_id;
                         luoyingget.to = caozhi;
-                        luoyingget.to_place = Player::Hand;
+                        luoyingget.to_place = Player::PlaceHand;
                 }
             }
             if(luoyingget.card_ids.empty())
@@ -368,7 +368,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
             effect.to->addToPile("#xuanhuo", dummy, true);
             int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             dummy->addSubcard(second_id);
-            room->moveCardTo(dummy, effect.from, Player::Hand, false);
+            room->moveCardTo(dummy, effect.from, Player::PlaceHand, false);
             delete dummy;
         }
     }
@@ -379,7 +379,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->addToPile("#xuanhuo", dummy, true);
         int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
         dummy->addSubcard(second_id);
-        room->moveCardTo(dummy, effect.from, Player::Hand, false);
+        room->moveCardTo(dummy, effect.from, Player::PlaceHand, false);
         delete dummy;
     }
 }
@@ -532,7 +532,7 @@ public:
         else if(event == CardLostOneTime)
         {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from_places.contains(Player::Equip) ||
+            if(move->from_places.contains(Player::PlaceEquip) ||
                 lingtong->tag.value("InvokeXuanfeng", false).toBool())
             {
                 lingtong->tag.remove("InvokeXuanfeng");
@@ -871,11 +871,11 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
     CardsMoveStruct move1;
     move1.card_ids = equips1;
     move1.to = second;
-    move1.to_place = Player::Equip;
+    move1.to_place = Player::PlaceEquip;
     CardsMoveStruct move2;
     move2.card_ids = equips2;
     move2.to = first;
-    move2.to_place = Player::Equip;
+    move2.to_place = Player::PlaceEquip;
     exchangeMove.push_back(move2);
     exchangeMove.push_back(move1);
     room->moveCards(exchangeMove, false);

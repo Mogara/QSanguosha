@@ -77,7 +77,7 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     {
         CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, effect.from->objectName(),
             effect.to->objectName(), "lihun", QString());
-        room->moveCardTo(dummy_card, effect.to, effect.from, Player::Hand, reason, false);
+        room->moveCardTo(dummy_card, effect.to, effect.from, Player::PlaceHand, reason, false);
     }
     effect.to->setFlags("LihunTarget");
 }
@@ -139,7 +139,7 @@ public:
                 foreach(const Card *card, diaochan->getCards("he")){
                     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
                     reason.m_playerId = target->objectName();
-                    room->obtainCard(target, card, reason, room->getCardPlace(card->getEffectiveId()) != Player::Hand);
+                    room->obtainCard(target, card, reason, room->getCardPlace(card->getEffectiveId()) != Player::PlaceHand);
                 }
             }
             else{
@@ -151,7 +151,7 @@ public:
                     int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
                     reason.m_playerId = target->objectName();
-                    room->obtainCard(target, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
+                    room->obtainCard(target, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
                 }
             }
             room->removeTag("LihunTarget");
@@ -273,7 +273,7 @@ public:
         room->fillAG(toGainList, sp_pangtong);
         int id = room->askForAG(sp_pangtong, toGainList, false, objectName());
         if(id != -1)
-            room->moveCardTo(Sanguosha->getCard(id), sp_pangtong, Player::Hand, true);
+            room->moveCardTo(Sanguosha->getCard(id), sp_pangtong, Player::PlaceHand, true);
 
         sp_pangtong->invoke("clearAG");
     }
@@ -289,7 +289,7 @@ public:
         if(event == CardGotOnePiece){
             CardMoveStar move = data.value<CardMoveStar>();
             card_id = move->card_id;
-            if(move->to_place == Player::Hand){
+            if(move->to_place == Player::PlaceHand){
                 const Card* card = Sanguosha->getCard(card_id);
                 room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
             }else
@@ -358,7 +358,7 @@ public:
             player->addMark("zuixiangHasTrigger");
             room->setPlayerCardLock(player, ".");
             CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", "");
-            CardsMoveStruct move(zuixiang, player, Player::Hand, reason);
+            CardsMoveStruct move(zuixiang, player, Player::PlaceHand, reason);
             room->moveCards(move, true);
         }
     }

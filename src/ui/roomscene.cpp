@@ -1409,7 +1409,7 @@ GeneralCardContainer* RoomScene::_getGeneralCardContainer(Player::Place place, P
     if (place == Player::DiscardPile || place == Player::DrawPile || place == Player::PlaceTable)
         return m_tablePile;
     // @todo: AG must be a pile with name rather than simply using the name special...
-    else if (player == NULL && place == Player::Special)
+    else if (player == NULL && place == Player::PlaceSpecial)
         return card_container;
     else if (player == Self)
         return dashboard;
@@ -1573,25 +1573,25 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 {
     if (move.card_ids.isEmpty()) return;
     //DrawNCards
-    if (move.from_place == Player::DrawPile && move.to_place == Player::Hand)
+    if (move.from_place == Player::DrawPile && move.to_place == Player::PlaceHand)
     {
         QString to_general = move.to->getGeneralName();
         log_box->appendLog("#DrawNCards", to_general, QStringList(), QString(),
                             QString::number(move.card_ids.length()));
     }
-    if(move.from_place == Player::PlaceTable && move.to_place == Player::Hand)
+    if(move.from_place == Player::PlaceTable && move.to_place == Player::PlaceHand)
     {
         QString to_general = move.to->getGeneralName();
         foreach(int card_id, move.card_ids)
             log_box->appendLog("$GotCardBack", to_general, QStringList(), QString::number(card_id));
     }
-    if(move.from_place == Player::DiscardPile && move.to_place == Player::Hand)
+    if(move.from_place == Player::DiscardPile && move.to_place == Player::PlaceHand)
     {
         QString to_general = move.to->getGeneralName();
         foreach(int card_id, move.card_ids)
             log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(card_id));
     }
-    if(move.from && move.from_place != Player::Hand && move.to && move.from != move.to)
+    if(move.from && move.from_place != Player::PlaceHand && move.to && move.from != move.to)
     {
         QString from_general = move.from->getGeneralName();
         QStringList tos;
@@ -1608,7 +1608,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog("#MoveNCards", from_general, tos, QString(),
             QString::number(hide));
     }
-    if(move.from_place == Player::Hand && move.to_place == Player::Hand)
+    if(move.from_place == Player::PlaceHand && move.to_place == Player::PlaceHand)
     {
         QString from_general = move.from->getGeneralName();
         QStringList tos;
@@ -1629,7 +1629,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
     if(move.from && move.to){
         // both src and dest are player
         QString type;
-        if(move.to_place == Player::Judging){
+        if(move.to_place == Player::PlaceDelayedTrick){
             const Card *trick = Sanguosha->getCard(move.card_ids.first());
             if(trick->objectName() == "lightning")
                 type = "$LightningMove";
@@ -1643,7 +1643,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog(type, from_general, tos, QString::number(move.card_ids.first()));
         }
     }
-    if(move.from && move.to && move.from_place == Player::Equip && move.to_place == Player::Equip){
+    if(move.from && move.to && move.from_place == Player::PlaceEquip && move.to_place == Player::PlaceEquip){
         QString type = "$Install";
         QString to_general = move.to->getGeneralName();
         foreach(int card_id, move.card_ids)
@@ -2895,7 +2895,7 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
     m_tablePile->clear();
 
     card_container->m_currentPlayer = taker;
-    CardItem *copy = card_container->removeCardItems(card_ids, Player::Hand).first();
+    CardItem *copy = card_container->removeCardItems(card_ids, Player::PlaceHand).first();
     if(copy == NULL)
         return;
         
@@ -2907,9 +2907,9 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
         QString from_general = taker->getGeneralName();
         QString card_str = QString::number(card_id);
         log_box->appendLog(type, from_general, QStringList(), card_str);
-        GeneralCardContainer* container = _getGeneralCardContainer(Player::Hand, taker);
+        GeneralCardContainer* container = _getGeneralCardContainer(Player::PlaceHand, taker);
         bringToFront(container);
-        container->addCardItems(items, Player::Hand);
+        container->addCardItems(items, Player::PlaceHand);
     }
     else delete copy;
 }
@@ -3414,7 +3414,7 @@ void RoomScene::doHuashen(const QString &, const QStringList &args){
         item->scaleSmoothly(0.5);
         generals.append(item);
     }    
-    dashboard->addCardItems(generals, Player::Special);
+    dashboard->addCardItems(generals, Player::PlaceSpecial);
 
     Self->tag["Huashens"] = huashen_list;
 }

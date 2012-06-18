@@ -103,7 +103,7 @@ public:
             room->sendLog(log);
             int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
             CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
-            room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::Hand);
+            room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
             return true;
         }
         return false;

@@ -162,7 +162,7 @@ public:
             // the only difference for Guicai & Guidao
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, QString());
             if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile
-                || room->getCardPlace(judge->card->getEffectiveId()) != Player::Hand)
+                || room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
                 room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());

@@ -26,7 +26,7 @@ public:
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), QString(), QString());
 
             if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile &&
-                room->getCardPlace(judge->card->getEffectiveId()) != Player::Hand)
+                room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
             room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card_id);
