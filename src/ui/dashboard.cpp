@@ -425,6 +425,7 @@ QList<CardItem*> Dashboard::removeHandCards(const QList<int> &card_ids)
             result.append(card_item);            
         }
     }
+    updateHandcardNum();
     return result;
 }
 

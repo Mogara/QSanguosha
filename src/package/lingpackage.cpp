@@ -134,7 +134,7 @@ public:
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
-        if(from->hasSkill(objectName()) && !from->loseDistanceSkills())
+        if(from->hasSkill(objectName()))
             return -from->getLostHp();
         else
             return 0;

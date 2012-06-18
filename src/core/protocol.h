@@ -115,7 +115,7 @@ namespace QSanProtocol
     };
 
     //static consts
-    static const char* S_PLAYER_SELF_REFERENCE_ID;
+    extern const char* S_PLAYER_SELF_REFERENCE_ID;
 
     class Countdown
     {

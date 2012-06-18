@@ -9,7 +9,7 @@ using namespace QSanProtocol;
 unsigned int QSanProtocol::QSanGeneralPacket::_m_globalSerial = 0;
 const unsigned int QSanProtocol::QSanGeneralPacket::S_MAX_PACKET_SIZE = 1000;
 const string QSanProtocol::Countdown::S_COUNTDOWN_MAGIC = "MG_COUNTDOWN";
-const char* S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
+const char* QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
 bool QSanProtocol::Countdown::tryParse(Json::Value val)
 {
