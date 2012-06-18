@@ -305,7 +305,7 @@ public:
                   (use.card->getSubcards().length() == 1 &&
                   Sanguosha->getCard(use.card->getSubcards().first())->inherits("SavageAssault")))){
             if (player == NULL) return false;
-            if(room->getCardPlace(use.card->getEffectiveId()) == Player::DiscardPile){
+            if(room->getCardPlace(use.card->getEffectiveId()) == Player::PlaceTable){
                 // finding zhurong;
                 QList<ServerPlayer *> players = room->getAllPlayers();
                 foreach(ServerPlayer *p, players){
