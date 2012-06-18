@@ -62,7 +62,7 @@ void Photo::refresh()
     if(!state_str.isEmpty() && state_str != "online") {
         QRect rect = G_PHOTO_LAYOUT.m_onlineStatusArea;
         QImage image(rect.size(), QImage::Format_ARGB32);
-        image.fill(G_PHOTO_LAYOUT.m_onlineStatusBgColor);
+        image.fill(G_PHOTO_LAYOUT.m_onlineStatusBgColor);// Cannot pass in Qt 4.7.0
         QPainter painter(&image);
         G_PHOTO_LAYOUT.m_onlineStatusFont.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
                                                     Qt::AlignCenter,

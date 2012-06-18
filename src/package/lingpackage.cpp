@@ -83,9 +83,9 @@ public:
     }
 };
 
-class Zhongyi: public TriggerSkill{
+class Yishi: public TriggerSkill{
 public:
-    Zhongyi():TriggerSkill("zhongyi"){
+    Yishi():TriggerSkill("yishi"){
         events << DamageCaused;
     }
 
@@ -96,7 +96,7 @@ public:
            !damage.chain && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
 
             LogMessage log;
-            log.type = "#Zhongyi";
+            log.type = "#Yishi";
             log.from = player;
             log.arg = objectName();
             log.to << damage.to;
@@ -214,16 +214,18 @@ LingPackage::LingPackage()
     neo_xuchu->addSkill("#luoyi");
 
     General * neo_zhouyu = new General(this, "neo_zhouyu", "wu", 3);
-    neo_zhouyu->addSkill(new NeoFanjian);
     neo_zhouyu->addSkill("yingzi");
+    neo_zhouyu->addSkill(new NeoFanjian);
+
 
     General * neo_guanyu = new General(this, "neo_guanyu", "shu");
-    neo_guanyu->addSkill(new Zhongyi);
     neo_guanyu->addSkill("wusheng");
+    neo_guanyu->addSkill(new Yishi);
 
     General * neo_gongsunzan = new General(this, "neo_gongsunzan", "qun");
-    neo_gongsunzan->addSkill(new Zhulou);
     neo_gongsunzan->addSkill("yicong");
+    neo_gongsunzan->addSkill(new Zhulou);
+
 
     General * neo_zhangfei = new General(this, "neo_zhangfei", "shu");
     neo_zhangfei->addSkill("paoxiao");
@@ -244,39 +246,3 @@ LingPackage::LingPackage()
 }
 
 ADD_PACKAGE(Ling)
-
-        class MingshiEX: public TriggerSkill{
-        public:
-            MingshiEX():TriggerSkill("exmingshi"){
-                events << DamageInflicted;
-                frequency = Compulsory;
-            }
-
-            virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-                DamageStruct damage = data.value<DamageStruct>();
-                if(damage.from && damage.from->getEquips().length() <= damage.to->getEquips().length()){
-                        LogMessage log;
-                        log.type = "#Mingshi";
-                        log.from = player;
-                        log.arg = QString::number(damage.damage);
-                        log.arg2 = objectName();
-                        room->sendLog(log);
-
-                        damage.damage--;
-                        if(damage.damage < 1)
-                            return true;
-                        data = QVariant::fromValue(damage);
-                }
-                return false;
-            }
-        };
-
-        TestHegePackage::TestHegePackage()
-            :Package("testhegemony")
-            {
-                General *kongwenju = new General(this, "kongwenju", "qun", 3);
-                kongwenju->addSkill(new MingshiEX);
-                kongwenju->addSkill("lirang");
-            }
-
-            ADD_PACKAGE(TestHege)
