@@ -162,6 +162,9 @@
     <ClCompile Include="..\..\src\package\god.cpp">
       <Filter>package</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\package\lingpackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\package\joypackage.cpp">
       <Filter>package</Filter>
     </ClCompile>
@@ -542,6 +545,9 @@
     <CustomBuild Include="..\..\src\package\god.h">
       <Filter>package</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\package\lingpackage.h">
+      <Filter>package</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\..\src\package\firepackage.h">
       <Filter>package</Filter>
     </CustomBuild>
@@ -842,6 +848,12 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_god.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_lingpackage.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_lingpackage.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_guandu-scenario.cpp">

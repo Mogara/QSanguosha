@@ -32,7 +32,7 @@ QRectF QSanButton::boundingRect() const{
 }
 
 void QSanButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    QPixmap& pixmap = G_ROOM_SKIN.getButtonPixmap(_m_buttonName, _m_state);
+    QPixmap pixmap = G_ROOM_SKIN.getButtonPixmap(_m_buttonName, _m_state);
     painter->drawPixmap(0, 0, _m_size.width(), _m_size.height(), pixmap);
 }
 
