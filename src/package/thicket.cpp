@@ -256,10 +256,7 @@ public:
 
                 for(i = 0; i < x; i++){
                     int card_id = room->drawCard();
-                    /* revive this after TopDrawPile works
-                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::TopDrawPile,
-                        CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), QString(), "zaiqi", QString()), true);  */
-                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, menghuo, Player::Special,
+                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, menghuo, Player::PlaceTable,
                         CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), QString(), "zaiqi", QString()), true);
                     room->getThread()->delay();
 

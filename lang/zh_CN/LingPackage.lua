@@ -1,7 +1,7 @@
 -- translation for StandardGeneralPackage
 
 return {
-	["ling"] = "凌包",
+	["ling"] = "翼包",
 
 --wei
 

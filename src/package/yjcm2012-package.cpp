@@ -24,17 +24,16 @@ public:
             int card_id = room->drawCard();
             room->getThread()->delay();
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), QString(), QString());
-            // remove below after TopDrawPile works
+
             if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile &&
                 room->getCardPlace(judge->card->getEffectiveId()) != Player::Hand)
             room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card_id);
-            /* revive this after TopDrawPile works
-            room->moveCardTo(judge->card, player, NULL, Player::TopDrawPile,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->getGeneralName(), this->objectName(), QString()), true);  */
-            room->moveCardTo(judge->card, player, judge->who, Player::Special,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGEDONE, player->getGeneralName(), this->objectName(), QString()), true);
+
+            room->moveCardTo(judge->card, player, NULL, Player::PlaceTable,
+                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->getGeneralName(), this->objectName(), QString()), true);
+
             LogMessage log;
             log.type = "$ChangedJudge";
             log.from = player;
@@ -396,10 +395,7 @@ public:
         Room *room = player->getRoom();
         int card_id = room->drawCard();
         const Card *card = Sanguosha->getCard(card_id);
-        /* revive this after TopDrawPile works
-        room->moveCardTo(card, NULL, NULL, Player::DealingArea,
-            CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->getGeneralName(), "fuhun", QString()), true);   */
-        room->moveCardTo(card, NULL, player, Player::Special,
+        room->moveCardTo(card, NULL, player, Player::PlaceTable,
             CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->getGeneralName(), "fuhun", QString()), true);
         room->getThread()->delay();
 

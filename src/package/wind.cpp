@@ -158,11 +158,9 @@ public:
             const Card* oldJudge = judge->card;
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 
-            /* revive this after TopDrawPile works
-            CardsMoveStruct move1(QList<int>(), NULL, Player::TopDrawPile,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), this->objectName(), QString()));  */
-            CardsMoveStruct move1(QList<int>(), NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), this->objectName(), QString()));
+            CardsMoveStruct move1(QList<int>(), NULL, Player::PlaceTable,
+                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), this->objectName(), QString()));
+
             move1.card_ids.append(card->getEffectiveId());
             
             CardsMoveStruct move2(QList<int>(), player, Player::Hand,
@@ -770,12 +768,9 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
     room->setTag("GuhuoType", this->user_string);
-
-    // yuji->addToPile("#guhuo_pile", this->getEffectiveId(), false);
-    // this card should put in to the DealingArea with the back on top(for UI)
-    /* revive this after DealingArea works
-    room->moveCardTo(this, yuji, NULL, Player::DealingArea,
-        CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), "guhuo", user_string), false);  */
+/*
+    room->moveCardTo(this, yuji, NULL, Player::PlaceTable,
+        CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), "guhuo", user_string), false);*/
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
 

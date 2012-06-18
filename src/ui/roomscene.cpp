@@ -1579,6 +1579,12 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         log_box->appendLog("#DrawNCards", to_general, QStringList(), QString(),
                             QString::number(move.card_ids.length()));
     }
+    if(move.from_place == Player::PlaceTable && move.to_place == Player::Hand)
+    {
+        QString to_general = move.to->getGeneralName();
+        foreach(int card_id, move.card_ids)
+            log_box->appendLog("$GotCardBack", to_general, QStringList(), QString::number(card_id));
+    }
     if(move.from_place == Player::DiscardPile && move.to_place == Player::Hand)
     {
         QString to_general = move.to->getGeneralName();

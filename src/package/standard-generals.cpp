@@ -17,11 +17,7 @@ public:
     virtual void onDamaged(ServerPlayer *caocao, const DamageStruct &damage) const{
         Room *room = caocao->getRoom();
         const Card *card = damage.card;
-        /* revive this after DealingArea works
-        if(room->getCardPlace(card->getEffectiveId()) == Player::DealingArea){  */
-        ServerPlayer *owner = room->getCardOwner(card->getEffectiveId());
-        if((!card->isVirtualCard() || card->getSubcards().length() > 0)
-            && (!owner || owner->objectName() != caocao->objectName())){
+        if(room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable){
 
             QVariant data = QVariant::fromValue(card);
             if(room->askForSkillInvoke(caocao, "jianxiong", data)){
@@ -284,17 +280,14 @@ public:
         if(card){
             // the only difference for Guicai & Guidao
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
-            // remove below after TopDrawPile works
             if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile
                || room->getCardPlace(judge->card->getEffectiveId()) != Player::Hand)
             room->throwCard(judge->card, reason, judge->who);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-            /* revive this after TopDrawPile works
-            room->moveCardTo(judge->card, player, NULL, Player::TopDrawPile,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), "guicai", QString()), true);  */
-            room->moveCardTo(judge->card, player, judge->who, Player::Special,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), "guicai", QString()), true);
+
+            room->moveCardTo(judge->card, player, judge->who, Player::PlaceTable,
+                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), "guicai", QString()), true);
             LogMessage log;
             log.type = "$ChangedJudge";
             log.from = player;

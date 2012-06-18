@@ -432,7 +432,6 @@ public:
 DaheCard::DaheCard(){
     once = true;
     will_throw = false;
-    as_pindian = true;
 }
 
 bool DaheCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

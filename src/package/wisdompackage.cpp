@@ -270,9 +270,9 @@ public:
            && room->askForSkillInvoke(player, objectName())){
             for(int i = 0; i < 4 - handcardnum; i++){
                 int card_id = room->drawCard();
-                /* revive this after TopDrawPile works
-                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::TopDrawPile, true);  */
-                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::Special, true);
+
+                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::PlaceTable,
+                                 CardMoveReason(CardMoveReason::S_REASON_SHOW, player->objectName(), QString(), "chouliang", QString()), true);
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);

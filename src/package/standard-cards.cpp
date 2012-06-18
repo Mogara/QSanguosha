@@ -310,9 +310,9 @@ public:
 
         Card::Suit suit = Card::NoSuit;
         if(first->isBlack() && second->isBlack())
-            suit = Card::Spade;
+            suit = Card::Club;
         else if(first->isRed() && second->isRed())
-            suit = Card::Heart;
+            suit = Card::Diamond;
 
         Slash *slash = new Slash(suit, 0);
         slash->setSkillName(objectName());
