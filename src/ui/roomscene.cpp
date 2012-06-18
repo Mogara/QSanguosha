@@ -1440,7 +1440,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
         QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach (CardItem* card, cards)
         {      
-            card->setFlag(QGraphicsItem::ItemIsMovable, false);
+            card->setEnabled(false);
             card->setHomePos(from_container->mapToScene(card->homePos()));
             card->setPos(from_container->mapToScene(card->pos()));
             card->goBack(true);

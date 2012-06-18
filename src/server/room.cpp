@@ -1072,7 +1072,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     }else{              
         bool success = doRequest(player, S_COMMAND_AMAZING_GRACE, refusable, true);
         Json::Value clientReply = player->getClientReply();
-        if (!success || !clientReply.isInt())
+        if (success && clientReply.isInt())
             card_id = clientReply.asInt();
     }   
 
