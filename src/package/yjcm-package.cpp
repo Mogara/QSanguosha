@@ -1219,7 +1219,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     yujin->addSkill(new Yizhong);
 
 
-
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);
     zhonghui->addSkill(new Quanji);
