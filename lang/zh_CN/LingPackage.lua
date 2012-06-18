@@ -57,5 +57,6 @@ return {
 	["@zhulou-discard"] = "请弃置一张武器牌",
 	["zhulou:throw"] = "弃置一张武器牌",
 	["zhulou:losehp"] = "流失1点体力",
+	
 }
 
