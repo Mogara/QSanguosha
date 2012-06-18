@@ -40,6 +40,7 @@
 #include <QFormLayout>
 #include <QStatusBar>
 #include <qmath.h>
+#include "UiUtils.h"
 
 #ifdef Q_OS_WIN32
 #include <QAxObject>
@@ -87,12 +88,10 @@ RoomScene::RoomScene(QMainWindow *main_window):
     }
 
     {
-        // create drawpile
-        m_drawPile = new DrawPile;
-        addItem(m_drawPile);
+        // create table pile
+        m_tablePile = new TablePile;
+        addItem(m_tablePile);
 
-        m_discardPile = new DiscardPile;
-        addItem(m_discardPile);
         // create dashboard
         dashboard = new Dashboard(createDashboardButtons());
         dashboard->setObjectName("dashboard");         
@@ -733,10 +732,9 @@ void RoomScene::updateTable()
 
     m_tableCenterPos = tableRect.center();
     control_panel->setPos(m_tableCenterPos);
-    m_drawPile->setPos(m_tableCenterPos);
-    m_discardPile->setPos(m_tableCenterPos);
-    m_discardPile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
-        _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
+    m_tablePile->setPos(m_tableCenterPos);
+    m_tablePile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
+                         _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
     card_container->setPos(m_tableCenterPos);
     guanxing_box->setPos(m_tableCenterPos);
     prompt_box->setPos(m_tableCenterPos);
@@ -843,8 +841,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     // set item to player mapping
-    if(item2player.isEmpty()){
-        item2player.insert(dashboard->getAvatar(), Self);
+    if(item2player.isEmpty()) {
+        item2player.insert(dashboard, Self);
         connect(dashboard, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
         connect(dashboard, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
         foreach(Photo *photo, photos){
@@ -856,43 +854,176 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     }
 }
 
-void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    foreach(Photo *photo, photos){
-        if (photo->isUnderMouse() && photo->isEnabled() &&
-            photo->flags() & QGraphicsItem::ItemIsSelectable){
-            photo->setSelected(!photo->isSelected());
-            return;
-        }
-    }
-
-    if (dashboard->isAvatarUnderMouse() &&
-        dashboard->isEnabled() &&
-        dashboard->flags() & QGraphicsItem::ItemIsSelectable) {
-        dashboard->setSelected(!dashboard->isSelected());
-        return;
-    }
-
+// @todo: The following 3 fuctions are for drag&use feature. Currently they are very buggy and
+// cause a lot of major problems. We should look into this later.
+void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    /*
     QGraphicsScene::mousePressEvent(event);
+    _m_isMouseButtonDown = true;
+    _m_isInDragAndUseMode = false;
+    */    
 }
 
-void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
+void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    /*
+    QGraphicsScene::mouseReleaseEvent(event);
+
+    if (_m_isInDragAndUseMode)
+    {
+        bool accepted = false;
+        if (ok_button->isEnabled())
+        {
+            foreach (Photo *photo, photos) {
+                if(photo->isUnderMouse()) {
+                    accepted = true;
+                    break;
+                }
+            }    
+
+            if (!accepted && dashboard->isAvatarUnderMouse()) {
+                accepted = true;
+            }
+        }
+        if (accepted) ok_button->click();
+        else
+        {
+            enableTargets(NULL);
+            dashboard->unselectAll();
+        }
+        _m_isInDragAndUseMode = false;
+    } */
+}
+
+void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    /*
     QGraphicsScene::mouseMoveEvent(event);
 
     QGraphicsObject *obj = static_cast<QGraphicsObject*>(focusItem());
     CardItem *card_item = qobject_cast<CardItem*>(obj);
     if(!card_item || !card_item->isUnderMouse())
         return;
+    PlayerCardContainer* victim = NULL;
 
-    foreach(Photo *photo, photos){
-        if(photo->isUnderMouse()){
-            photo->setSelected(true);
-            break;
+    foreach (Photo *photo, photos) {
+        if(photo->isUnderMouse()) {
+            victim = photo;
         }
     }
 
-    if(dashboard->isAvatarUnderMouse()){
-        dashboard->setSelected(true);
+    if (dashboard->isAvatarUnderMouse()) {
+        victim = dashboard;
     }
+    
+    //    _m_isInDragAndUseMode = true;
+    //    if (!dashboard->isSelected()) hasUpdate = true;
+    if (victim != NULL && !victim->isSelected())
+    {
+        if (!_m_isInDragAndUseMode)
+            enableTargets(card_item->getCard());
+        _m_isInDragAndUseMode = true;
+        dashboard->selectCard(card_item, true);
+        victim->setSelected(true);        
+    } */
+}
+
+void RoomScene::enableTargets(const Card *card) {
+    
+    if (card != NULL && (Self->isJilei(card) || Self->isLocked(card))){
+        ok_button->setEnabled(false);
+        return;
+    }
+
+    selected_targets.clear();
+
+    // unset avatar and all photo
+    foreach(QGraphicsItem *item, item2player.keys()){
+        item->setSelected(false);
+    }
+
+    if (card == NULL) {
+
+        foreach(PlayerCardContainer *item, item2player.keys()){
+            QGraphicsItem* animationTarget = item->getMouseClickReceiver();
+            animations->effectOut(animationTarget);
+            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            item->setEnabled(true);
+        }
+
+        ok_button->setEnabled(false);
+        return;
+    }
+
+    if (card->targetFixed() || ClientInstance->hasNoTargetResponsing()) {
+        foreach(PlayerCardContainer *item, item2player.keys()) {
+            QGraphicsItem* animationTarget = item->getMouseClickReceiver();
+            animations->effectOut(animationTarget);
+            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+        }
+
+        ok_button->setEnabled(true);
+        return;
+    }
+
+    updateTargetsEnablity(card);
+
+    if(Config.EnableAutoTarget)
+        selectNextTarget(false);
+
+    ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
+}
+
+void RoomScene::updateTargetsEnablity(const Card *card){
+    QMapIterator<PlayerCardContainer *, const ClientPlayer *> itor(item2player);
+    
+    while(itor.hasNext()){
+        itor.next();
+
+        PlayerCardContainer *item = itor.key();
+        const ClientPlayer *player = itor.value();
+
+        if(item->isSelected())
+            continue;
+
+        bool enabled = (card == NULL) || 
+                       (!Sanguosha->isProhibited(Self, player, card)
+                       && card->targetFilter(selected_targets, player, Self));
+        
+        QGraphicsItem* animationTarget = item->getMouseClickReceiver();
+        if (enabled)
+            animations->effectOut(animationTarget);
+        else if(!animationTarget->graphicsEffect() ||
+                !animationTarget->graphicsEffect()->inherits("SentbackEffect"))
+            animations->sendBack(animationTarget);
+        
+        if (card) item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+    }
+}
+
+void RoomScene::updateSelectedTargets(){
+    PlayerCardContainer *item = qobject_cast<PlayerCardContainer *>(sender());
+    
+    if(item == NULL)
+        return;
+
+    const Card *card = dashboard->getSelected();
+    if (card) {
+        const ClientPlayer *player = item2player.value(item, NULL);
+        if(item->isSelected()){
+            selected_targets.append(player);
+        }else{
+            selected_targets.removeOne(player);
+        }
+
+
+        ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
+    }else{
+        selected_targets.clear();
+    }
+
+    updateTargetsEnablity(card);
 }
 
 void RoomScene::keyReleaseEvent(QKeyEvent *event){
@@ -987,10 +1118,9 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     QGraphicsScene::contextMenuEvent(event);
 
     QGraphicsItem *item = itemAt(event->scenePos());
-    if(!item)
-        return;
+    if (item == NULL) return;
 
-    const ClientPlayer *player = item2player.value(item, NULL);
+    const ClientPlayer *player = item2player[(PlayerCardContainer*)item];
     if(player){
         if(player == Self)
             return;
@@ -1278,16 +1408,17 @@ void RoomScene::toggleDiscards(){
 
 GeneralCardContainer* RoomScene::_getGeneralCardContainer(Player::Place place, Player* player)
 {
-    if (place == Player::DiscardPile)
-        return m_discardPile;
-    else if (place == Player::DrawPile)
-        return m_drawPile;
+    if (place == Player::DiscardPile || place == Player::DrawPile || place == Player::PlaceTable)
+        return m_tablePile;
+    // @todo: AG must be a pile with name rather than simply using the name special...
     else if (player == NULL && place == Player::Special)
         return card_container;
     else if (player == Self)
         return dashboard;
-    else 
+    else if (player != NULL) 
         return name2photo.value(player->objectName(), NULL);
+    else Q_ASSERT(false);
+    return NULL;
 }
 
 void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
@@ -1638,100 +1769,6 @@ void RoomScene::updateSkillButtons(){
         button->setDisabled(true);
 }
 
-void RoomScene::enableTargets(const Card *card) {
-    
-    if (card != NULL && (Self->isJilei(card) || Self->isLocked(card))){
-        ok_button->setEnabled(false);
-        return;
-    }
-
-    selected_targets.clear();
-
-    // unset avatar and all photo
-    foreach(QGraphicsItem *item, item2player.keys()){
-        item->setSelected(false);
-    }
-
-    if (card == NULL) {
-
-        foreach(QGraphicsItem *item, item2player.keys()){
-            animations->effectOut(item);
-            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
-            item->setEnabled(true);
-        }
-
-        ok_button->setEnabled(false);
-        return;
-    }
-
-    if (card->targetFixed() || ClientInstance->hasNoTargetResponsing()) {
-        foreach(QGraphicsItem *item, item2player.keys()){
-            animations->effectOut(item);
-            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
-        }
-
-        ok_button->setEnabled(true);
-        return;
-    }
-
-    updateTargetsEnablity(card);
-
-    if(Config.EnableAutoTarget)
-        selectNextTarget(false);
-
-    ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
-}
-
-void RoomScene::updateTargetsEnablity(const Card *card){
-    QMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
-    
-    while(itor.hasNext()){
-        itor.next();
-
-        QGraphicsItem *item = itor.key();
-        const ClientPlayer *player = itor.value();
-
-        if(item->isSelected())
-            continue;
-
-        bool enabled;
-        if (card) enabled= !Sanguosha->isProhibited(Self, player, card)
-                       && card->targetFilter(selected_targets, player, Self);
-        else enabled = true;
-
-        if (enabled) animations->effectOut(item);
-        else if(!item->graphicsEffect() ||
-                !item->graphicsEffect()->inherits("SentbackEffect"))
-            animations->sendBack(item);
-        
-        if (card) item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
-    }
-}
-
-void RoomScene::updateSelectedTargets(){
-    QSanSelectableItem *item = qobject_cast<QSanSelectableItem *>(sender());
-
-    if(item == NULL)
-        return;
-
-    const Card *card = dashboard->getSelected();
-    if (card) {
-        const ClientPlayer *player = item2player[item];
-        if(item->isSelected()){
-            selected_targets.append(player);
-        }else{
-            selected_targets.removeOne(player);
-        }
-
-
-        ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
-    }else{
-        selected_targets.clear();
-    }
-
-    updateTargetsEnablity(card);
-}
-
 void RoomScene::useSelectedCard(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
@@ -1827,11 +1864,11 @@ void RoomScene::onSelectChange()
 {
     /*
     QGraphicsItem * photo = qobject_cast<QGraphicsItem*>(sender());
-    if(!photo)return;
-    if(photo->isSelected())animations->emphasize(photo);
-    else animations->effectOut(photo);
-    */
+    if (!photo) return;
+    if (photo->isSelected()) animations->emphasize(photo);
+    else animations->effectOut(photo); */
 }
+
 void RoomScene::onEnabledChange()
 {
     QGraphicsItem * photo = qobject_cast<QGraphicsItem*>(sender());
@@ -1875,100 +1912,6 @@ void RoomScene::cancelViewAsSkill(){
     Client::Status status = ClientInstance->getStatus();
     updateStatus(status, status);
 }
-
-#ifdef JOYSTICK_SUPPORT
-
-void RoomScene::onJoyButtonClicked(int bit){
-    QWidget *active_window = QApplication::activeWindow();
-
-    if(active_window == main_window){
-        switch(bit){
-        case 1: doOkButton(); break;
-        case 2: doCancelButton(); break;
-        case 3: doDiscardButton(); break;
-        case 4: chooseSkillButton(); break;
-        }
-    }else{
-        switch(bit){
-        case 1: {
-                QList<QAbstractButton *> buttons = active_window->findChildren<QAbstractButton *>();
-                foreach(QAbstractButton *button, buttons){
-                    if(button->underMouse() && button->isEnabled()){
-                        button->click();
-                        break;
-                    }
-                }
-
-                break;
-            }
-        case 2: {
-                QDialog *dialog = qobject_cast<QDialog *>(active_window);
-                if(dialog)
-                    dialog->reject();
-                break;
-            }
-        }
-    }
-}
-
-void RoomScene::onJoyDirectionClicked(int direction){
-    QWidget *active_window = QApplication::activeWindow();
-
-    if(active_window == main_window){
-        switch(direction){
-        case Joystick::Left: dashboard->selectCard(".", false); break;
-        case Joystick::Right: dashboard->selectCard(".", true); break;
-        case Joystick::Up: selectNextTarget(true); break;
-        case Joystick::Down: selectNextTarget(false); break;
-        }
-    }else{
-        bool next = (direction == Joystick::Right || direction == Joystick::Down);
-        int index = -1;
-        QList<QAbstractButton *> list = active_window->findChildren<QAbstractButton *>();
-
-        QMutableListIterator<QAbstractButton *> itor(list);
-        while(itor.hasNext()){
-            QAbstractButton *button = itor.next();
-            if(!button->isEnabled())
-                itor.remove();
-        }
-
-        if(list.isEmpty())
-            return;
-
-        int i, n = list.length();
-        for(i=0; i<n; i++){
-            QAbstractButton *button = list.at(i);
-            if(button->underMouse() && button->isEnabled()){
-                index = i;
-                break;
-            }
-        }
-
-        QAbstractButton *dest = NULL;
-        if(index == -1){
-            dest = list.first();
-        }else{
-            n = list.length();
-            if(!next){
-                index--;
-                if(index == -1)
-                    index += n;
-            }else{
-                index++;
-                if(index >= n)
-                    index -= n;
-            }
-
-            dest = list.at(index);
-        }
-
-        QPoint center(dest->width()/2, dest->height()/2);
-        QCursor::setPos(dest->mapToGlobal(center));
-    }
-}
-
-#endif
 
 void RoomScene::selectTarget(int order, bool multiple){
     QGraphicsItem *to_select = NULL;
@@ -2318,19 +2261,18 @@ void RoomScene::doCancelButton(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
             const ViewAsSkill *skill = dashboard->currentSkill();
+            dashboard->unselectAll();
             if (skill)
                 cancelViewAsSkill();
-            else
-            {
-                dashboard->unselectAll();
+            else            
                 dashboard->stopPending();
-            }
-            dashboard->adjustCards(true);
             break;
         }
 
     case Client::Responsing:{
             QString pattern = ClientInstance->getPattern();
+            dashboard->unselectAll();
+
             if(!pattern.startsWith("@")){
                 const ViewAsSkill *skill = dashboard->currentSkill();
                 if(!skill->inherits("ResponseSkill")){
@@ -2349,6 +2291,7 @@ void RoomScene::doCancelButton(){
         }
 
     case Client::Discarding:{
+            dashboard->unselectAll();
             dashboard->stopPending();
             ClientInstance->onPlayerDiscardCards(NULL);
             prompt_box->disappear();
@@ -2863,7 +2806,7 @@ void RoomScene::killPlayer(const QString &who){
     }else{
         Photo *photo = name2photo[who];
         photo->killPlayer();
-        photo->setFrame(Photo::NoFrame);
+        photo->setFrame(Photo::S_FRAME_NO_FRAME);
         photo->setOpacity(0.7);
         photo->update();
         item2player.remove(photo);
@@ -2955,7 +2898,8 @@ void RoomScene::chooseSkillButton(){
     dialog->exec();
 }
 
-void RoomScene::attachSkill(const QString &skill_name, bool from_left){
+void RoomScene::attachSkill(const QString &skill_name, bool from_left)
+{
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill)
         addSkillButton(skill, from_left);
@@ -3239,20 +3183,20 @@ void RoomScene::moveFocus(const QString &who, Countdown countdown){
     {
         focused->hideProgressBar();
         if (focused->getPlayer()->getPhase() == Player::NotActive)
-            focused->setFrame(Photo::NoFrame);        
+            focused->setFrame(Photo::S_FRAME_NO_FRAME);        
     }
     Photo *photo = name2photo[who];
     if(photo){
         if(focused != photo && focused){
             focused->hideProgressBar();
             if(focused->getPlayer()->getPhase() == Player::NotActive)
-                focused->setFrame(Photo::NoFrame);
+                focused->setFrame(Photo::S_FRAME_NO_FRAME);
         }
 
         focused = photo;
         focused->showProgressBar(countdown);
         if(focused->getPlayer()->getPhase() == Player::NotActive)
-            focused->setFrame(Photo::Responsing);
+            focused->setFrame(Photo::S_FRAME_RESPONSING);
     }
 }
 
@@ -3819,7 +3763,7 @@ static inline void AddRoleIcon(QMap<QChar, QPixmap> &map, char c, const QString 
     QChar qc(c);
     map[qc.toUpper()] = pixmap;
 
-    QSanSelectableItem::MakeGray(pixmap);
+    QSanUiUtils::makeGray(pixmap);
     map[qc.toLower()] = pixmap;
 }
 
@@ -3893,3 +3837,98 @@ void RoomScene::appendChatBox(QString txt){
     txt=txt.replace("#>", suffix);
     chat_box->append(txt);
 }
+
+#ifdef JOYSTICK_SUPPORT
+
+void RoomScene::onJoyButtonClicked(int bit){
+    QWidget *active_window = QApplication::activeWindow();
+
+    if(active_window == main_window){
+        switch(bit){
+        case 1: doOkButton(); break;
+        case 2: doCancelButton(); break;
+        case 3: doDiscardButton(); break;
+        case 4: chooseSkillButton(); break;
+        }
+    }else{
+        switch(bit){
+        case 1: {
+                QList<QAbstractButton *> buttons = active_window->findChildren<QAbstractButton *>();
+                foreach(QAbstractButton *button, buttons){
+                    if(button->underMouse() && button->isEnabled()){
+                        button->click();
+                        break;
+                    }
+                }
+
+                break;
+            }
+        case 2: {
+                QDialog *dialog = qobject_cast<QDialog *>(active_window);
+                if(dialog)
+                    dialog->reject();
+                break;
+            }
+        }
+    }
+}
+
+void RoomScene::onJoyDirectionClicked(int direction){
+    QWidget *active_window = QApplication::activeWindow();
+
+    if(active_window == main_window){
+        switch(direction){
+        case Joystick::Left: dashboard->selectCard(".", false); break;
+        case Joystick::Right: dashboard->selectCard(".", true); break;
+        case Joystick::Up: selectNextTarget(true); break;
+        case Joystick::Down: selectNextTarget(false); break;
+        }
+    }else{
+        bool next = (direction == Joystick::Right || direction == Joystick::Down);
+        int index = -1;
+        QList<QAbstractButton *> list = active_window->findChildren<QAbstractButton *>();
+
+        QMutableListIterator<QAbstractButton *> itor(list);
+        while(itor.hasNext()){
+            QAbstractButton *button = itor.next();
+            if(!button->isEnabled())
+                itor.remove();
+        }
+
+        if(list.isEmpty())
+            return;
+
+        int i, n = list.length();
+        for(i=0; i<n; i++){
+            QAbstractButton *button = list.at(i);
+            if(button->underMouse() && button->isEnabled()){
+                index = i;
+                break;
+            }
+        }
+
+        QAbstractButton *dest = NULL;
+        if(index == -1){
+            dest = list.first();
+        }else{
+            n = list.length();
+            if(!next){
+                index--;
+                if(index == -1)
+                    index += n;
+            }else{
+                index++;
+                if(index >= n)
+                    index -= n;
+            }
+
+            dest = list.at(index);
+        }
+
+        QPoint center(dest->width()/2, dest->height()/2);
+        QCursor::setPos(dest->mapToGlobal(center));
+    }
+}
+
+#endif
+

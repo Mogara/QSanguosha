@@ -52,6 +52,11 @@ bool Dashboard::isAvatarUnderMouse()
     return _m_avatarArea->isUnderMouse();
 }
 
+QGraphicsItem* Dashboard::getMouseClickReceiver()  
+{
+    return _m_avatarIcon; 
+}
+
 void Dashboard::_createLeft(){
     QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_rightWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_leftFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_LEFTFRAME), this);
@@ -239,11 +244,6 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
     }
 }
 
-QGraphicsItem* Dashboard::getAvatar()
-{
-    return this->_m_avatarIcon;
-}
-
 const Card *Dashboard::getSelected() const
 {
     if (view_as_skill)
@@ -259,7 +259,7 @@ void Dashboard::selectCard(CardItem* item, bool isSelected){
     //    frame->show();    
     bool oldState = item->isSelected();
     if (oldState == isSelected) return;
-    m_mutex.lock();     
+    m_mutex.lock();
     item->setSelected(isSelected);
     QPointF oldPos = item->homePos();
     QPointF newPos = oldPos;
@@ -267,9 +267,10 @@ void Dashboard::selectCard(CardItem* item, bool isSelected){
         newPos.setY(newPos.y() + S_PENDING_OFFSET_Y);
     else 
         newPos.setY(newPos.y() - S_PENDING_OFFSET_Y);
-    item->setHomePos(newPos);    
-    //setY(PendingY);
-    if (!hasFocus()) item->goBack(true);    
+    item->setHomePos(newPos);  
+    selected = item;
+    // setY(PendingY);
+    // if (!hasFocus()) item->goBack(true);
     m_mutex.unlock();
 }
 
@@ -278,8 +279,8 @@ void Dashboard::unselectAll(){
 
     foreach(CardItem *card_item, m_handCards){
         selectCard(card_item, false);
-        //card_item->goBack();
     }
+
     adjustCards(true);
 }
 
@@ -336,6 +337,12 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 }
 
 void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *){
+}
+
+void Dashboard::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    PlayerCardContainer::mouseReleaseEvent(mouseEvent);
+
     CardItem *to_select = NULL;
     for(int i = 0; i < 4; i++){
         if(_m_equipRegions[i]->isUnderMouse()){
@@ -346,7 +353,6 @@ void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *){
 
     if (to_select && to_select->isMarkable()) {
         to_select->mark(!to_select->isMarked());
-
         update();
     }
 }
@@ -361,12 +367,6 @@ void Dashboard::adjustCards(bool playAnimation){
 
 void Dashboard::_adjustCards(){
     int maxCards = Config.MaxCards;
-
-    /*
-    foreach (CardItem* card, m_handCards)
-    {
-        card->setSelected(false);
-    }*/
 
     int n = m_handCards.length();
 

@@ -35,6 +35,7 @@ const char* QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK = "%1FaceTurnedMask";
 const char* QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL = "%1BlankGeneral";
 const char* QSanRoomSkin::S_SKIN_KEY_CHAIN = "%1Chain";
 const char* QSanRoomSkin::S_SKIN_KEY_PHASE = "%1Phase%2";
+const char* QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME = "%1FrameWhenSelected";
 const char* QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME = "%1FocusFrame%2";
 const char* QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON = "kingdomIcon-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK = "kingdomColorMask-%1";
@@ -226,7 +227,7 @@ QPixmap QSanRoomSkin::getCardJudgeIconPixmap(const QString &judgeName) const{
 }
 
 QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName) const{
-    return getGeneralPixmap(generalName, GeneralIconSize::S_GENERAL_ICON_SIZE_TINY);
+    return getGeneralPixmap(generalName, S_GENERAL_ICON_SIZE_TINY);
 }
 
 QString QSanRoomSkin::getGeneralPixmapPath(const QString &generalName, GeneralIconSize size) const{
@@ -654,7 +655,8 @@ bool QSanRoomSkin::_loadLayoutConfig()
         && config["borderWidth"].isInt())
     {
         int borderWidth = config["borderWidth"].asInt();
-        _m_photoLayout.m_focusFrameArea = QRect(-borderWidth, -borderWidth, 
+        _m_photoLayout.m_focusFrameArea = QRect(
+            -borderWidth, -borderWidth, 
             _m_photoLayout.m_normalWidth + 2 * borderWidth,
             _m_photoLayout.m_normalHeight + 2 * borderWidth);
     }
@@ -671,6 +673,7 @@ bool QSanRoomSkin::_loadLayoutConfig()
     _m_dashboardLayout.m_leftWidth = config["leftWidth"].asInt();
     _m_dashboardLayout.m_rightWidth = config["rightWidth"].asInt();
     _m_dashboardLayout.m_floatingAreaHeight = config["floatingAreaHeight"].asInt();
+    tryParse(config["focusFrameArea"], _m_dashboardLayout.m_focusFrameArea);
     tryParse(config["buttonSetSize"], _m_dashboardLayout.m_buttonSetSize);
     tryParse(config["confirmButtonArea"], _m_dashboardLayout.m_confirmButtonArea);
     tryParse(config["cancelButtonArea"], _m_dashboardLayout.m_cancelButtonArea);

@@ -3,7 +3,7 @@
 
 #include "photo.h"
 #include "dashboard.h"
-#include "DiscardPile.h"
+#include "TablePile.h"
 #include "card.h"
 #include "client.h"
 #include "aux-skills.h"
@@ -188,12 +188,15 @@ public slots:
 protected:    
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);    
     QMutex m_roomMutex;
     QMutex m_zValueMutex;	
 
 private:
+    bool _m_isMouseButtonDown;
+    bool _m_isInDragAndUseMode;
     const QSanRoomSkin::RoomLayout* _m_roomLayout;
     const QSanRoomSkin::PhotoLayout* _m_photoLayout;
     const QSanRoomSkin::CommonLayout* _m_commonLayout;
@@ -208,8 +211,7 @@ private:
     Photo *focused;
     CardItem *special_card;
     Dashboard *dashboard;
-    DiscardPile *m_discardPile;
-    DrawPile *m_drawPile;
+    TablePile *m_tablePile;
     // QQueue<CardItem*> piled_discards;
     QMainWindow *main_window;
     QSanButton *ok_button, *cancel_button, *discard_button;
@@ -218,7 +220,7 @@ private:
     QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;
     QGraphicsItem *control_panel;
-    QMap<QGraphicsItem *, const ClientPlayer *> item2player;
+    QMap<PlayerCardContainer *, const ClientPlayer *> item2player;
     QDialog *m_choiceDialog; // Dialog for choosing generals, suits, card/equip, or kingdoms
 
     int timer_id;

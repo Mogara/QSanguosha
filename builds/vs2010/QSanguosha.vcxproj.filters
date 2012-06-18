@@ -348,15 +348,6 @@
     <ClCompile Include="..\..\src\ui\GeneralCardContainerUI.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ui\DiscardPile.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_DiscardPile.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_DiscardPile.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_GeneralCardContainerUI.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -392,6 +383,15 @@
     </ClCompile>
     <ClCompile Include="Release\moc_QSanSelectableItem.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_TablePile.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_TablePile.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\TablePile.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -635,9 +635,6 @@
     <CustomBuild Include="..\..\src\ui\TimedProgressBar.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\DiscardPile.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\ui\GeneralCardContainerUI.h">
       <Filter>ui</Filter>
     </CustomBuild>
@@ -648,6 +645,9 @@
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\QSanSelectableItem.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\TablePile.h">
       <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>

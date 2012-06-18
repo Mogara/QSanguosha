@@ -28,7 +28,6 @@ public:
     QGraphicsProxyWidget *addWidget(QWidget *widget, int x, bool from_left);
     QPushButton *createButton(const QString &name);
     QPushButton *addButton(const QString &name, int x, bool from_left);
-    QGraphicsItem* getAvatar();
     bool isAvatarUnderMouse();
 
     void setTrust(bool trust);    
@@ -45,7 +44,9 @@ public:
     void enableAllCards();
 
     void adjustCards(bool playAnimation = true);
-       
+    
+    virtual QGraphicsItem* getMouseClickReceiver();
+
     QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);
 
     // pending operations
@@ -82,11 +83,13 @@ protected:
     inline virtual QGraphicsItem* _getPhaseParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem* _getRoleComboBoxParent() { return _m_rightFrame; }
     inline virtual QGraphicsItem* _getPileParent() { return _m_rightFrame; }
+    inline virtual QGraphicsItem* _getFocusFrameParent() { return _m_rightFrame; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
     
     bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void _addHandCard(CardItem* card_item);    
     void _adjustCards();
     void _adjustCards(const QList<CardItem *> &list, int y);

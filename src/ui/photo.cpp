@@ -214,7 +214,7 @@ bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 }
 
 void Photo::setFrame(FrameType type){
-    if (type == NoFrame)
+    if (type == S_FRAME_NO_FRAME)
     {
         if (_m_focusFrame)
             _m_focusFrame->hide();
@@ -233,9 +233,9 @@ void Photo::setFrame(FrameType type){
 void Photo::updatePhase(){
     PlayerCardContainer::updatePhase();
     if(m_player->getPhase() != Player::NotActive)
-        setFrame(Playing);
+        setFrame(S_FRAME_PLAYING);
     else
-        setFrame(NoFrame);
+        setFrame(S_FRAME_NO_FRAME);
 }
 
 static bool CompareByNumber(const Card *card1, const Card *card2){
@@ -246,11 +246,16 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
 }
 
-QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value) {
+QGraphicsItem* Photo::getMouseClickReceiver()  
+{
+    return this; 
+}
+
+QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value)
+{
     if(change == ItemFlagsHaveChanged){
         if(!ServerInfo.EnableSame)
             order_item->setVisible(flags() & ItemIsSelectable);
     }
-
-    return QSanSelectableItem::itemChange(change, value);
+    return PlayerCardContainer::itemChange(change, value);
 }

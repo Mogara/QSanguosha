@@ -130,6 +130,7 @@
     "avatarImageType": 2,
     "smallAvatarImageType": 0,
     "avatarArea": [11, 13, 134, 134],
+    "focusFrameArea": [11, 13, 134, 134],
     "smallAvatarArea": [2, 119, 36, 36],
     "avatarNameArea": [8, 28, 30, 89],
     "smallAvatarNameArea": [84, 36, 18, 36],

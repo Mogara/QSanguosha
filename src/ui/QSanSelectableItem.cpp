@@ -1,4 +1,5 @@
 #include "QSanSelectableItem.h"
+#include "uiUtils.h"
 
 #include <QPainter>
 #include <QGraphicsColorizeEffect>
@@ -77,24 +78,8 @@ QRectF QSanSelectableItem::boundingRect() const{
     return QRectF(0, 0, _m_width, _m_height);
 }
 
-
-void QSanSelectableItem::MakeGray(QPixmap &pixmap){
-    QImage img = pixmap.toImage();
-
-    for(int i = 0; i < img.width(); i++){
-        for(int j = 0; j < img.height(); j++){
-            QRgb color = img.pixel(i, j);
-            int gray = qGray(color);
-            color = qRgba(gray, gray, gray, qAlpha(color));
-            img.setPixel(i, j, color);
-        }
-    }
-
-    pixmap = QPixmap::fromImage(img);
-}
-
 void QSanSelectableItem::makeGray(){
-    MakeGray(_m_mainPixmap);
+    QSanUiUtils::makeGray(_m_mainPixmap);
 }
 
 void QSanSelectableItem::scaleSmoothly(qreal ratio){

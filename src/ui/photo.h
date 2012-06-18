@@ -33,20 +33,21 @@ public:
     void setOrder(int order);
 
     enum FrameType{
-        Playing,
-        Responsing,
-        SOS,
-        NoFrame
+        S_FRAME_PLAYING,
+        S_FRAME_RESPONSING,
+        S_FRAME_SOS,
+        S_FRAME_NO_FRAME
     };
 
     void setFrame(FrameType type);
     virtual QRectF boundingRect() const;
-
+    QGraphicsItem* getMouseClickReceiver();
 public slots:
     void updatePhase();
     void hideEmotion();
     void hideSkillName();
     virtual void refresh();
+
 protected:
     inline virtual QGraphicsItem* _getEquipParent() { return this; }
     inline virtual QGraphicsItem* _getDelayedTrickParent() { return this; }
@@ -54,15 +55,13 @@ protected:
     inline virtual QGraphicsItem* _getMarkParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem* _getPhaseParent() { return this; }
     inline virtual QGraphicsItem* _getRoleComboBoxParent() { return this; }
+    inline virtual QGraphicsItem* _getFocusFrameParent() { return this; }
     virtual QGraphicsItem* _getPileParent() { return this; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_PHOTO; }
     virtual void _adjustComponentZValues();
     bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
-private:
-    
     bool _m_isReadyIconVisible;
     QGraphicsPixmapItem *_m_mainFrame;
     QGraphicsPixmapItem *order_item;

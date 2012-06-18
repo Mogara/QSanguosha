@@ -196,7 +196,6 @@ void PlayerCardContainer::updateAvatar()
         QPixmap avatarIcon = G_ROOM_SKIN.getGeneralPixmap(
                      general->objectName(),
                      (QSanRoomSkin::GeneralIconSize)_m_layout->m_avatarSize);
-        if (m_player->isDead()) MakeGray(avatarIcon);
         _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
@@ -231,7 +230,6 @@ void PlayerCardContainer::updateSmallAvatar()
         QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(
             general->objectName(),
             QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
-        if (m_player->isDead()) MakeGray(smallAvatarIcon);
         _paintPixmap(_m_smallAvatarIcon, _m_layout->m_smallAvatarArea,
                      smallAvatarIcon);
         _m_smallAvatarArea->setToolTip(general->getSkillDescription());
@@ -618,6 +616,7 @@ PlayerCardContainer::PlayerCardContainer()
     _m_markItem = NULL;
     _m_roleComboBox = NULL;
     m_player = NULL;
+    _m_selectedFrame = NULL;
     
     for (int i = 0; i < 4; i++) {
         _m_equipCards[i] = NULL;
@@ -693,6 +692,7 @@ void PlayerCardContainer::_adjustComponentZValues()
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 4; i++)
         _layUnder(_m_equipRegions[i]);
+    _layUnder(_m_selectedFrame);
     _layUnder(_m_faceTurnedIcon);   
     _layUnder(_m_smallAvatarArea);
     _layUnder(_m_avatarArea);
@@ -752,15 +752,53 @@ void PlayerCardContainer::_createControls()
     repaintAll();
 }
     
-void PlayerCardContainer::killPlayer(){
+void PlayerCardContainer::killPlayer()
+{
     _m_roleComboBox->fix(m_player->getRole());
     updateAvatar();
     updateSmallAvatar();
     _m_deathIcon->show();
 }
 
-void PlayerCardContainer::revivePlayer(){
+void PlayerCardContainer::revivePlayer()
+{
     updateAvatar();
     updateSmallAvatar();
     _m_deathIcon->hide();
+}
+
+void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    // we need to override QGraphicsItem's selecting behaviours.
+}
+
+void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem* item = getMouseClickReceiver();
+    if (item != NULL && item->isUnderMouse() && isEnabled() &&
+        (flags() & QGraphicsItem::ItemIsSelectable))
+    {
+        setSelected(!isSelected());
+    }
+}
+
+QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVariant &value) {
+    if(change == ItemSelectedHasChanged){
+        if(value.toBool())
+        {
+             _paintPixmap(_m_selectedFrame, _m_layout->m_focusFrameArea,
+                          _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
+                          _getFocusFrameParent());
+        }
+        else
+        {
+            _clearPixmap(_m_selectedFrame);
+        }
+
+        emit selected_changed();
+    }else if(change == ItemEnabledHasChanged){
+        emit enable_changed();
+    }
+
+    return QGraphicsObject::itemChange(change, value);
 }

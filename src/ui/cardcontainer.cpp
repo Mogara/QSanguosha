@@ -8,15 +8,26 @@
 #include <QGraphicsSceneMouseEvent>
 
 
-CardContainer::CardContainer()    
+CardContainer::CardContainer() : _m_background("image/system/card-container.png")    
 {
-    QSanSelectableItem::load("image/system/card-container.png", true);
+    translate(-_m_background.width() / 2, -_m_background.height() / 2);
+    _m_boundingRect = QRectF(QPoint(0, 0), _m_background.size());
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
     close_button = new CloseButton;
     close_button->setParentItem(this);
     close_button->setPos(517, 21);
     close_button->hide();
+}
+
+void CardContainer::paint(QPainter *painter,const QStyleOptionGraphicsItem *,QWidget *)
+{
+    painter->drawPixmap(0, 0, _m_background);
+}
+
+QRectF CardContainer::boundingRect() const
+{
+    return _m_boundingRect;
 }
 
 void CardContainer::fillCards(const QList<int> &card_ids){

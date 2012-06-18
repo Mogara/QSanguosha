@@ -1,8 +1,8 @@
-#include "DiscardPile.h"
+#include "TablePile.h"
 #include "SkinBank.h"
 #include <QParallelAnimationGroup>
 
-QList<CardItem*> DiscardPile::removeCardItems(const QList<int> &card_ids, Player::Place place)
+QList<CardItem*> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place place)
 {
     QList<CardItem*> result;
     _m_mutex_pileCards.lock();    
@@ -24,7 +24,12 @@ QList<CardItem*> DiscardPile::removeCardItems(const QList<int> &card_ids, Player
     return result;
 }
 
-void DiscardPile::setSize(double width, double height) 
+QRectF TablePile::boundingRect() const
+{
+    return m_cardsDisplayRegion;
+}
+
+void TablePile::setSize(double width, double height) 
 {
     m_cardsDisplayRegion = QRect(0, 0, width, height);
     m_numCardsVisible = width / G_COMMON_LAYOUT.m_cardNormalHeight + 1;
@@ -32,7 +37,7 @@ void DiscardPile::setSize(double width, double height)
     translate(-width / 2, -height / 2);
 }
 
-bool DiscardPile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
+bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {
     _m_mutex_pileCards.lock();
     m_visibleCards.append(card_items);
@@ -61,7 +66,7 @@ bool DiscardPile::_addCardItems(QList<CardItem*> &card_items, Player::Place plac
     return false;
 }
     
-void DiscardPile::adjustCards()
+void TablePile::adjustCards()
 {        
     _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);
     QParallelAnimationGroup* animation = new QParallelAnimationGroup;
@@ -70,18 +75,3 @@ void DiscardPile::adjustCards()
     animation->start();
 }
 
-QList<CardItem*> DrawPile::removeCardItems(const QList<int> &card_ids, Player::Place place)
-{
-    QList<CardItem*> result = _createCards(card_ids);
-    _disperseCards(result, QRect(0, 0, G_COMMON_LAYOUT.m_cardNormalWidth, G_COMMON_LAYOUT.m_cardNormalHeight), Qt::AlignCenter, false, true);
-    return result;
-}
-
-bool DrawPile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
-{    
-    foreach (CardItem* card_item, card_items)
-    {
-        card_item->setHomeOpacity(0.0);
-    }
-    return true;
-}

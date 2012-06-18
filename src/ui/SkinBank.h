@@ -276,6 +276,7 @@ public:
     static const char* S_SKIN_KEY_BLANK_GENERAL;
     static const char* S_SKIN_KEY_CHAIN;
     static const char* S_SKIN_KEY_PHASE;
+    static const char* S_SKIN_KEY_SELECTED_FRAME;
     static const char* S_SKIN_KEY_FOCUS_FRAME;
     static const char* S_SKIN_KEY_SAVE_ME_ICON;
     static const char* S_SKIN_KEY_ACTIONED_ICON;
