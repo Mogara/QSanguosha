@@ -1298,7 +1298,7 @@
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="2860"/>
-        <source>HP recover</source>
+        <source>Recover HP</source>
         <translation>体力回复</translation>
     </message>
     <message>
@@ -1307,7 +1307,17 @@
         <translation>流失体力</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="2867"/>
+        <location filename="src/ui/roomscene.cpp" line="2682"/>
+        <source>Lose Max HP</source>
+        <translation>流失体力上限</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2683"/>
+        <source>Reset Max HP</source>
+        <translation>重置体力上限</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2689"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>

@@ -1175,6 +1175,7 @@ public:
 
 
 
+
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
     caozhi->addSkill(new Luoying);
