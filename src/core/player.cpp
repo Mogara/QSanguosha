@@ -136,7 +136,6 @@ void Player::clearFlags(){
 int Player::getAttackRange() const{
     if(hasFlag("tianyi_success") || hasFlag("jiangchi_invoke"))
         return 1000;
-
     if(weapon)
         return weapon->getRange();
     else if(hasSkill("zhengfeng"))
@@ -156,7 +155,7 @@ void Player::setFixedDistance(const Player *player, int distance){
         fixed_distance.insert(player, distance);
 }
 
-int Player::distanceTo(const Player *other) const{
+int Player::distanceTo(const Player *other, int distance_fix) const{
     if(this == other)
         return 0;
 
@@ -168,6 +167,7 @@ int Player::distanceTo(const Player *other) const{
     int distance = qMin(left, right);
 
     distance += Sanguosha->correctDistance(this, other);
+    distance += distance_fix;
 
     // keep the distance >=1
     if(distance < 1)
@@ -454,47 +454,15 @@ void Player::setFaceUp(bool face_up){
 }
 
 int Player::getMaxCards() const{
-    int extra = 0, total = 0;
+    int rule = 0, total = 0, extra = 0;
     if(Config.MaxHpScheme == 2 && general2){
         total = general->getMaxHp() + general2->getMaxHp();
         if(total % 2 != 0)
-            extra = 1;
+            rule = 1;
     }
+    extra += Sanguosha->correctMaxCards(this);
 
-    int juejing = hasSkill("juejing") ? 2 : 0;
-
-    int xueyi = 0;
-    if(hasLordSkill("xueyi")){
-        QList<const Player *> players = getSiblings();
-        foreach(const Player *player, players){
-            if(player->isAlive() && player->getKingdom() == "qun")
-                xueyi += 2;
-        }
-    }
-
-    int shenwei = 0;
-    if(hasSkill("shenwei"))
-        shenwei = 2;
-
-    int zongshi = 0;
-    if(hasSkill("zongshi")){
-        QSet<QString> kingdom_set;
-        if(parent()){
-            foreach(const Player *player, parent()->findChildren<const Player *>()){
-                if(player->isAlive()){
-                    kingdom_set << player->getKingdom();
-                }
-            }
-        }
-
-        zongshi = kingdom_set.size();
-    }
-    int quanji = 0;
-    if(hasSkill("quanji"))
-        quanji = getPile("power").length();
-    total = qMax(hp,0) + extra + juejing + xueyi + shenwei + zongshi + quanji;
-
-    return total;
+    return (qMax(hp,0) + rule + extra);
 }
 
 QString Player::getKingdom() const{
@@ -590,15 +558,16 @@ int Player::getMark(const QString &mark) const{
     return marks.value(mark, 0);
 }
 
-bool Player::canSlash(const Player *other, bool distance_limit) const{
-    if(other->hasSkill("kongcheng") && other->isKongcheng())
-        return false;
-
+bool Player::canSlash(const Player *other, bool distance_limit, int rangefix) const{
     if(other == this)
         return false;
 
-    if(distance_limit)
-        return distanceTo(other) <= getAttackRange();
+    if(distance_limit){
+        if(rangefix > 1)
+            return distanceTo(other) <= (getAttackRange() - rangefix + 1);
+        else
+            return distanceTo(other,rangefix) <= getAttackRange();
+    }
     else
         return true;
 }

@@ -292,6 +292,14 @@ sgs.ai_skill_askforag.buqu = function(self, card_ids)
 	return card_ids[1]
 end
 
+function sgs.ai_skill_invoke.buqu(self, data)
+	if #self.enemies == 1 and self.enemies[1]:hasSkill("guhuo") then
+		return false
+	else
+		return true
+	end
+end
+
 sgs.ai_chaofeng.zhoutai = -4
 
 function sgs.ai_filterskill_filter.hongyan(card, card_place)

@@ -2045,6 +2045,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if not self:damageIsEffective(nil, nil, target) then return "." end
 	if self:getDamagedEffects(self) then return "." end
 	if target and target:getWeapon() and target:getWeapon():inherits("IceSword") and self.player:getCards("he"):length() > 2 then return end
+	if target and target:hasSkill("jueqing") then return end
 	if self:needBear() and self.player:getLostHp() < 2 then return "." end
 	if self.player:hasSkill("zili") and not self.player:hasSkill("paiyi") and self.player:getLostHp() < 2 then return "." end
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 6 and self.player:getHp() > 2 then return "." end
@@ -2775,8 +2776,8 @@ function sgs.getSkillLists(player)
 	local vsnlist = {}
 	local fsnlist = {}
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
-		if askill:inherits("ViewAsSkill") then table.insert(vsnlist, askill:objectName()) end
-		if askill:inherits("FilterSkill") then table.insert(fsnlist, askill:objectName()) end
+		if askill:inherits("ViewAsSkill") and not player:loseViewAsSkills() then table.insert(vsnlist, askill:objectName()) end
+		if askill:inherits("FilterSkill") and not player:loseViewAsSkills() then table.insert(fsnlist, askill:objectName()) end
 	end
 	return vsnlist, fsnlist
 end

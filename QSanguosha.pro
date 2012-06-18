@@ -55,6 +55,7 @@ SOURCES += \
 	src/package/firepackage.cpp \
 	src/package/god.cpp \
 	src/package/joypackage.cpp \
+	src/package/lingpackage.cpp \
 	src/package/maneuvering.cpp \
 	src/package/mountainpackage.cpp \
 	src/package/nostalgia.cpp \
@@ -186,6 +187,7 @@ HEADERS += \
 	src/package/firepackage.h \
 	src/package/god.h \
 	src/package/joypackage.h \
+	src/package/lingpackage.h \
 	src/package/maneuvering.h \
 	src/package/mountainpackage.h \
 	src/package/nostalgia.h \

@@ -17,19 +17,19 @@ function SmartAI:slashProhibit(card,enemy)
 		if card:inherits("FireSlash") or self.player:hasWeapon("fan") or self.player:hasSkill("zonghuo") then
 			if self:isEquip("Vine", enemy) and not (enemy:isChained() and self:isGoodChainTarget(enemy)) then return true end
 		end
-		if enemy:isChained() and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) and not self:isGoodChainTarget(enemy) and
+		if enemy:isChained() and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) and (not self:isGoodChainTarget(enemy) and not self.player:hasSkill("jueqing")) and
 			self:slashIsEffective(card,enemy) then return true end
 		if self:getCardsNum("Jink",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card,enemy) then return true end
 		if self:isEquip("GudingBlade") and enemy:isKongcheng() then return true end
 	else
-		if enemy:isChained() and not self:isGoodChainTarget(enemy) and self:slashIsEffective(card,enemy) 
+		if enemy:isChained() and not self:isGoodChainTarget(enemy) and not self.player:hasSkill("jueqing") and self:slashIsEffective(card,enemy) 
 			and (card:inherits("NatureSlash") or self.player:hasSkill("zonghuo")) then
 			return true
 		end
 	end
 
-	return not self:slashIsEffective(card, enemy)
+	return self.room:isProhibited(self.player, enemy, card) or not self:slashIsEffective(card, enemy) 
 end
 
 function SmartAI:canLiuli(other, another)
@@ -289,10 +289,12 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	--if not target then self.room:writeToConsole(debug.traceback()) end
 	if not target then return end
 	if self:isFriend(target) then
-		if target:hasSkill("rende") and self.player:hasSkill("jieming") then return "." end
-		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
-		if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
-		if self.player:isChained() and self:isGoodChainTarget(self.player) then return "." end
+		if not target:hasSkill("jueqing") then
+			if target:hasSkill("rende") and self.player:hasSkill("jieming") then return "." end
+			if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
+			if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
+			if self.player:isChained() and self:isGoodChainTarget(self.player) then return "." end
+		end
 	else
 		if not effect.slash:hasFlag("drank") then
 			if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
@@ -376,6 +378,17 @@ sgs.weapon_range.Blade = 3
 sgs.weapon_range.Spear = 3
 sgs.weapon_range.Halberd = 4
 sgs.weapon_range.KylinBow = 5
+
+
+sgs.ai_skill_playerchosen.halberd = function(self, targets)	
+	targets = sgs.QList2Table(targets)
+	self:sort(targets,"defense")
+	for _, enemy in ipairs(targets) do
+		if self:isEnemy(enemy) then
+			return enemy
+		end
+	end
+end
 
 sgs.ai_skill_invoke.double_sword = true
 
@@ -753,7 +766,8 @@ function SmartAI:useCardDuel(duel, use)
 		if target:hasSkill("wushuang") then n2 = n2*2 end
 		local useduel
 		if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) 
-			and not self:cantbeHurt(target) then
+			and not self.room:isProhibited(self.player, target, duel)
+				and not self:cantbeHurt(target) then
 			if n1 >= n2 then
 				useduel = true
 			elseif n2 > n1*2 + 1 then
@@ -786,7 +800,8 @@ function SmartAI:useCardDuel(duel, use)
 	
 	local useduel
 	if target and self:objectiveLevel(target) > 3 and self:hasTrickEffective(duel, target) 
-	and not self:cantbeHurt(target) then
+		and not self.room:isProhibited(self.player, target, duel)
+			and not self:cantbeHurt(target) then
 		if n1 >= n2 then
 			useduel = true
 		elseif n2 > n1*2 + 1 then
@@ -1042,7 +1057,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 				if enemy:getHandcardNum() == 1 then
-				if self:needKongcheng(enemy) or self:hasSkills("kongcheng|lianying", enemy) then return end
+					if self:needKongcheng(enemy) or self:hasSkills("kongcheng|lianying|shangshi",enemy) then return end
 				end
 				if self:hasSkills(sgs.cardneed_skill, enemy) then
 					use.card = card
@@ -1095,15 +1110,14 @@ function SmartAI:useCardCollateral(card, use)
 
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getWeapon() and self:hasSkills(sgs.lose_equip_skill, friend) 
-			and not self.room:isProhibited(self.player, friend, card) 
-			and not friend:hasSkill("weimu") then
+			and not self.room:isProhibited(self.player, friend, card) then
 
 			for _, enemy in ipairs(self.enemies) do
 				if friend:canSlash(enemy) then
 					use.card = card
 				end
 				if use.to then use.to:append(friend) end
-				if use.to then use.to:append(enemy) end
+				--if use.to then use.to:append(enemy) end
 				return
 			end
 		end
@@ -1133,7 +1147,7 @@ function SmartAI:useCardCollateral(card, use)
 			end
 			if n then use.card = card end
 			if use.to then use.to:append(enemy) end
-			if use.to then use.to:append(final_enemy) end
+			--if use.to then use.to:append(final_enemy) end
 			return
 
 		end
@@ -1141,11 +1155,31 @@ function SmartAI:useCardCollateral(card, use)
 	end
 end
 
+sgs.ai_skill_playerchosen.collateral = function(self, targets)	
+	targets = sgs.QList2Table(targets)
+	self:sort(targets,"defense")
+	for _, enemy in ipairs(targets) do
+		if self:isEnemy(friend) then
+			return enemy
+		end
+	end
+end
+
+sgs.ai_skill_choice.collateral = function(self, choices)
+	local enemynum = 0
+	for _,enemy in ipairs(self.enemies) do
+		if self.player:canSlash(emeny,true) then
+			enemynum = enemynum + 1
+		end
+	end
+	return enemynum > 1
+end
+
 sgs.ai_use_value.Collateral = 8.8
 sgs.ai_use_priority.Collateral = 2.75
 
 sgs.ai_card_intention.Collateral = function(card, from, tos)
-	assert(#tos == 2)
+	assert(#tos == 1)
 	if tos[2]:objectName() == from:objectName() then
 		sgs.updateIntention(from, tos[1], 80)
 	elseif sgs.compareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.compareRoleEvaluation(tos[2], "rebel", "loyalist") then
@@ -1214,7 +1248,7 @@ function SmartAI:useCardIndulgence(card, use)
 end
 
 sgs.ai_use_value.Indulgence = 8
-
+sgs.ai_use_priority.Indulgence = 8.9
 sgs.ai_card_intention.Indulgence = 120
 
 sgs.dynamic_value.control_usecard.Indulgence = true

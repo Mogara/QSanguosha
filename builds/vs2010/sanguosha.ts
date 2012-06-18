@@ -2646,7 +2646,7 @@
     </message>
 </context>
 <context>
-    <name>QSanSelectableItem</name>
+    <name>Pixmap</name>
     <message>
         <location filename="../../src/ui/pixmap.cpp" line="35"/>
         <source>Can not load image %1[%2], error string is %3</source>

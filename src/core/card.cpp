@@ -3,8 +3,10 @@
 #include "engine.h"
 #include "client.h"
 #include "room.h"
+#include "structs.h"
 #include "carditem.h"
 #include "lua-wrapper.h"
+#include <QFile>
 
 const int Card::S_UNKNOWN_CARD_ID = -1;
 
@@ -16,7 +18,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), owner_discarded(false)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), has_preact(false), as_pindian(false)
     , suit(suit), number(number), id(-1)
 {
     can_jilei = will_throw;
@@ -429,6 +431,10 @@ static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
     return room->getFront(a, b) == a;
 }
 
+void Card::doPreAction(Room *, const CardUseStruct &) const{
+
+}
+
 void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *player = card_use.from;
 
@@ -441,18 +447,33 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
+ 
+    if(isVirtualCard()){
+        if(asPindian()){
+            CardMoveReason reason(CardMoveReason::S_REASON_PINDIAN, player->objectName(), QString(), this->getSkillName(), QString());
+            room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason, true);
+        }
+        else if(this->getSkillName() == "spear"){
+            CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
+            if (card_use.to.size() == 1)
+                reason.m_targetId = card_use.to.first()->objectName();
+            /*room->moveCardTo(this, card_use.from, NULL, Player::DealingArea, reason, true);   resume this when DealingArea is all OK*/
+            room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason, true);
+        }
+    }
+    else{
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
+        if (card_use.to.size() == 1)
+            reason.m_targetId = card_use.to.first()->objectName();
+        /*room->moveCardTo(this, card_use.from, NULL, Player::DealingArea, reason, true);   resume this when DealingArea is all OK*/
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason, true);
+    }
     thread->trigger(CardUsed, room, player, data);
 
     thread->trigger(CardFinished, room, player, data);
 }
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(will_throw){
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(this, NULL, Player::DiscardPile, reason);
-    }
-
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
     }else{
@@ -474,6 +495,27 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
             room->cardEffect(effect);
         }
     }
+ /* revive this when DealingArea is finally OK
+
+    if(will_throw){
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
+        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        if(room->getCardPlace(getEffectiveId()) != Player::DiscardPile)
+            room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    }
+    else{
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        if(room->getCardPlace(getEffectiveId()) == Player::DealingArea)
+            room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    }*/
+    if(willThrow() && isVirtualCard()){
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
+        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        if(room->getCardPlace(getEffectiveId()) != Player::DiscardPile)
+            room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    }
+    room->removeTag("Huoshou");
 }
 
 void Card::onEffect(const CardEffectStruct &) const{
@@ -537,8 +579,12 @@ bool Card::canJilei() const{
     return can_jilei;
 }
 
-bool Card::isOwnerDiscarded() const{
-    return owner_discarded;
+bool Card::hasPreAction() const{
+    return has_preact;
+}
+
+bool Card::asPindian() const{
+    return as_pindian;
 }
 
 void Card::setFlags(const QString &flag) const{

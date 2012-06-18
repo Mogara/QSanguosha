@@ -306,7 +306,7 @@ void Monkey::onUninstall(ServerPlayer *player) const{
 class GaleShellSkill: public ArmorSkill{
 public:
     GaleShellSkill():ArmorSkill("gale-shell"){
-        events << Predamaged;
+        events << DamageInflicted;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -401,7 +401,7 @@ public:
             room->removeTag("YxSwordVictim");
             damage.from = target;
             data = QVariant::fromValue(damage);
-            room->moveCardTo(player->getWeapon(), damage.from, Player::Hand, 
+            room->moveCardTo(player->getWeapon(), damage.to, damage.from, Player::Hand,
                 CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->objectName(), objectName(), QString()));
         }
         return damage.to->isDead();

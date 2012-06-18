@@ -1,25 +1,24 @@
 -- translation for Board Game Magazine Package
 
 return {
-	["BGM"] = "桌游志",
+	["BGM"] = "☆SP",
 
 	["#bgm_zhaoyun"] = "白马先锋",
-	["bgm_zhaoyun"] = "SP赵云",
+	["bgm_zhaoyun"] = "☆SP赵云",
 	["illustrator:bgm_zhaoyun"] = "Vincent",
 	["designer:bgm_zhaoyun"] = "Danny",
 	["chongzhen"] = "冲阵",
 	[":chongzhen"] = "每当你发动“龙胆”使用或打出一张手牌时，你可以立即获得对方的一张手牌。",
 
 	["#bgm_diaochan"] = "暗黑的傀儡师",
-	["bgm_diaochan"] = "SP貂蝉",
+	["bgm_diaochan"] = "☆SP貂蝉",
 	["illustrator:bgm_diaochan"] = "木美人",
 	["designer:bgm_diaochan"] = "Danny",
 	["lihun"] = "离魂",
 	[":lihun"] = "出牌阶段，你可以弃置一张牌并将你的武将牌翻面，若如此做，指定一名男性角色，获得其所有手牌。出牌阶段结束时，你须为该角色每一点体力分配给其一张牌。每回合限一次。",
-	["BGM-Diaochan"] = "桌游志SP貂蝉",
 
 	["#bgm_caoren"] = "险不辞难",
-	["bgm_caoren"] = "SP曹仁",
+	["bgm_caoren"] = "☆SP曹仁",
 	["illustrator:bgm_caoren"] = "张帅",
 	["designer:bgm_caoren"] = "Danny",
 	["kuiwei"] = "溃围",
@@ -30,7 +29,7 @@ return {
 	["#KuiweiDiscard"] = "%from 的【%arg2】技能被触发，需要弃掉 %arg 张牌";
 
 	["#bgm_pangtong"] = "荆楚之高俊",
-	["bgm_pangtong"] = "SP庞统",
+	["bgm_pangtong"] = "☆SP庞统",
 	["illustrator:bgm_pangtong"] = "LiuHeng",
 	["designer:bgm_pangtong"] = "Danny",
 	["manjuan"] = "漫卷",
@@ -44,7 +43,7 @@ return {
 	["dream"] = "梦",
 	
 	["#bgm_zhangfei"] = "横矛立马",
-	["bgm_zhangfei"] = "SP张飞",
+	["bgm_zhangfei"] = "☆SP张飞",
 	["illustrator:bgm_zhangfei"] = "绿豆粥",
 	["designer:bgm_zhangfei"] = "Serendipity",
 	["jie"] = "嫉恶",
@@ -59,7 +58,7 @@ return {
 	["#DaheEffect"] = "%from 的技能【%arg2】被触发，%to 使用的 %arg 【闪】无效",
 	
 	["#bgm_lvmeng"] = "国士之风",
-	["bgm_lvmeng"] = "SP吕蒙",
+	["bgm_lvmeng"] = "☆SP吕蒙",
 	["illustrator:bgm_lvmeng"] = "yellowkiss",
 	["designer:bgm_lvmeng"] = "如水法师卞程",
 	["tanhu"] = "探虎",	

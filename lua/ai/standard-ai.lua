@@ -50,7 +50,7 @@ sgs.ai_skill_invoke.fankui = function(self, data)
 	end
 	if self:isEnemy(target) then				---fankui without zhugeliang and luxun
 		if target:hasSkill("tuntian") then return false end
-		if (self:needKongcheng(target) or target:hasSkill("lianying")) and target:getHandcardNum() == 1 then
+		if (self:needKongcheng(target) or self:hasSkills("lianying|shangshi",target)) and target:getHandcardNum() == 1 then
 			if not target:getEquips():isEmpty() then return true
 			else return false
 			end
@@ -598,7 +598,7 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 	local has_weapon=false
 	
 	for _,card in ipairs(cards)  do
-		if card:inherits("Weapon") and card:isRed() then has_weapon=true end
+		if card:inherits("Weapon") and card:isBlack() then has_weapon=true end
 	end
 	
 	for _,card in ipairs(cards)  do
@@ -1157,3 +1157,57 @@ end
 sgs.dynamic_value.damage_card.LijianCard = true
 
 sgs.ai_chaofeng.diaochan = 4
+
+yihun_skill={}
+yihun_skill.name="yihun"
+table.insert(sgs.ai_skills,yihun_skill)
+yihun_skill.getTurnUseCard=function(self)
+	if self.player:hasUsed("YihunCard") then return nil end
+	card=sgs.Card_Parse("@YihunCard=.")
+	return card
+
+end
+
+sgs.ai_skill_use_func.YihunCard=function(card,use,self)
+
+	self:sort(self.enemies,"hp")
+	self:sort(self.friends_noself,"hp")
+
+	local lowest_friend=self.friends_noself[1]
+
+	self:sort(self.enemies,"hp",true)
+	if lowest_friend then
+		for _,enemy in ipairs(self.enemies) do
+			local hp1=enemy:getHp()
+			local hp2=lowest_friend:getHp()
+
+			if (hp1 > hp2) then
+				use.card=card
+				if use.to then
+					use.to:append(enemy)
+					use.to:append(lowest_friend)
+					return
+				end
+			end
+		end
+	end
+end
+
+sgs.ai_card_intention.YihunCard = function(card, from, to)
+	local compare_func = function(a, b)
+		return a:getHp() < b:getHp()
+	end
+	table.sort(to, compare_func)
+	if to[1]:getHp() < to[2]:getHp() then
+		sgs.updateIntention(from, to[1], (to[2]:getHp()-to[1]:getHp())*20+40)
+	end
+end
+
+sgs.ai_skill_invoke.bumie = true
+
+sgs.ai_skill_playerchosen.bumie = function(self, targets)	
+	self:sort(self.enemies,"hp")
+	return self.enemies[1]
+end
+
+sgs.ai_use_value.YihunCard = 8.5

@@ -97,7 +97,7 @@ public:
 class Jilei: public TriggerSkill{
 public:
     Jilei():TriggerSkill("jilei"){
-        events << Predamaged;
+        events << DamageInflicted;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *yangxiu, QVariant &data) const{
@@ -129,36 +129,28 @@ public:
 class Danlao: public TriggerSkill{
 public:
     Danlao():TriggerSkill("danlao"){
-        events << CardUsed << CardEffected;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        events << TargetConfirmed << CardEffected;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardUsed){
+        if(event == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            ServerPlayer *yangxiu = room->findPlayerBySkillName(objectName());
-            if(!yangxiu || use.to.length() <= 1 ||
-                    !use.to.contains(yangxiu) ||
-                    !use.card->inherits("TrickCard") || use.card->inherits("Collateral") ||
-                    !room->askForSkillInvoke(yangxiu, objectName(), data))
-                return false;
+            if(use.to.length() <= 1 || !use.to.contains(player) ||
+               !use.card->inherits("TrickCard") ||
+               !room->askForSkillInvoke(player, objectName(), data))
+                    return false;
 
-            yangxiu->tag["Danlao"] = use.card->getEffectiveId();
-
+            player->tag["Danlao"] = use.card->getEffectiveId();
             room->broadcastSkillInvoke(objectName());
 
             LogMessage log;
             log.type = "#DanlaoAvoid";
-            log.from = yangxiu;
+            log.from = player;
             log.arg = use.card->objectName();
             log.arg2 = objectName();
 
             room->sendLog(log);
-
-            yangxiu->drawCards(1);
+            player->drawCards(1);
         }
         else{
             if(!player->isAlive() || !player->hasSkill(objectName()))
@@ -385,12 +377,25 @@ public:
 
 class Shenwei: public DrawCardsSkill{
 public:
-    Shenwei():DrawCardsSkill("shenwei"){
+    Shenwei():DrawCardsSkill("#shenwei-draw"){
         frequency = Compulsory;
     }
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         return n + 2;
+    }
+};
+
+class ShenweiKeep: public MaxCardsSkill{
+public:
+    ShenweiKeep():MaxCardsSkill("shenwei"){
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if(target->hasSkill(objectName()))
+            return 2;
+        else
+            return 0;
     }
 };
 
@@ -478,8 +483,10 @@ SPPackage::SPPackage()
     shenlvbu2->addSkill("mashu");
     shenlvbu2->addSkill("wushuang");
     shenlvbu2->addSkill(new Xiuluo);
+    shenlvbu2->addSkill(new ShenweiKeep);
     shenlvbu2->addSkill(new Shenwei);
     shenlvbu2->addSkill(new Skill("shenji"));
+    related_skills.insertMulti("shenwei", "#shenwei-draw");
 
     General *sp_caiwenji = new General(this, "sp_caiwenji", "wei", 3, false, true);
     sp_caiwenji->addSkill("beige");
