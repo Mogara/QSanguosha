@@ -63,7 +63,7 @@ QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
 bool QSanRoomSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
-    m_font = QFont(arg[0].asCString(), arg[1].asInt(), arg[2].asInt());
+    m_font = QFont(toQString(arg[0]), arg[1].asInt(), arg[2].asInt());
     m_foregroundPen = QPen(QColor(arg[3][0].asInt(), arg[3][1].asInt(), arg[3][2].asInt(), arg[3][3].asInt()));
     if (m_font.family().startsWith("@"))
     {
@@ -113,6 +113,7 @@ void QSanRoomSkin::QSanSimpleTextFont::paintText(QPainter* painter, QRect pos, Q
         boundingBox = QRect(0, 0, pos.height(), pos.width());
     }
     else boundingBox = QRect(0, 0, pos.width(), pos.height());
+    painter->setRenderHint(QPainter::TextAntialiasing);
     painter->setFont(m_font);
     painter->setPen(m_foregroundPen);
     painter->drawText(boundingBox, align, text);

@@ -6,7 +6,7 @@
 #include "standard.h"
 #include "client.h"
 #include "playercarddialog.h"
-#include "roleComboBox.h"
+#include "rolecombobox.h"
 #include "SkinBank.h"
 
 #include <QPainter>

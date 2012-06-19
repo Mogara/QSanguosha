@@ -57,8 +57,8 @@
     "normalHeight": 181,
     "mainFrameArea": [0, 0, 157, 181],
     "canvasArea": [0, 0, 157, 181],
-    "handCardNumIconArea": [4, 98, 18, 18],
-    "handCardFont": ["Arial", 9, 80, [255, 255, 255, 255]],	
+    "handCardNumIconArea": [4, 94, 21, 22],
+    "handCardFont": ["Arial", 9, 75, [255, 255, 255, 255]],	
     "equipAreas": [[3, 122, 150, 13], [3, 136, 150, 13], [3, 150, 150, 13], [3, 164, 150, 13]],
     "equipImageArea": [1, 1, 11, 11], // need adjustment
     "equipTextArea": [35, -5, 85, 21], // need adjustment
@@ -77,7 +77,7 @@
     "smallAvatarArea": [82, 36, 42, 36],
     "avatarNameArea": [4, 28, 40, 89],
     "smallAvatarNameArea": [84, 36, 18, 30],
-    "avatarNameFont": ["@FZXingKai-S04S", 15, 60, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "avatarNameFont": ["@方正行楷简体", 15, 60, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     "smallAvatarNameFont": ["@FZXingKai-S04S", 10, 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     "kingdomIconArea": [5, 0, 30, 30],
     "kingdomMaskArea": [10, 10, 25, 106],
@@ -134,7 +134,7 @@
     "smallAvatarArea": [2, 119, 36, 36],
     "avatarNameArea": [8, 28, 30, 89],
     "smallAvatarNameArea": [84, 36, 18, 36],
-    "avatarNameFont": ["@FZXingKai-S04S", 15, 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
+    "avatarNameFont": ["@方正行楷简体", 15, 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     "smallAvatarNameFont": ["@FZXingKai-S04S", 10, 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     // must be in one of the following format:
     // [offsetX, offestY, sizeX, sizeY]

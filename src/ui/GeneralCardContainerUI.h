@@ -10,7 +10,7 @@
 #include "SkinBank.h"
 #include "TimedProgressBar.h"
 #include "magatamasItem.h"
-#include "roleComboBox.h"
+#include "rolecombobox.h"
 
 class GeneralCardContainer: public QGraphicsObject
 {    
