@@ -768,7 +768,8 @@ void PlayerCardContainer::killPlayer()
     _m_roleComboBox->fix(m_player->getRole());
     updateAvatar();
     updateSmallAvatar();
-    _m_deathIcon->show();
+    /* unuse this before fixed
+    _m_deathIcon->show();*/
 }
 
 void PlayerCardContainer::revivePlayer()
