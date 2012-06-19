@@ -457,17 +457,7 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  
-    if(isVirtualCard()){
-         if(this->getSkillName() == "spear"){
-            CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
-            if (card_use.to.size() == 1)
-                reason.m_targetId = card_use.to.first()->objectName();
-            CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
-            moves.append(move);
-            room->moveCardsAtomic(moves, true);
-        }
-    }
-    else{
+    if(getTypeId() != Card::Skill){
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();

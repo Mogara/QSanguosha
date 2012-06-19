@@ -591,7 +591,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == GameStart && player->isLord()){
-            QList<ServerPlayer *> players = room->getAlivePlayers();
+            QList<ServerPlayer *> players = room->getAllPlayers();
             foreach(ServerPlayer *p, players){
                 room->attachSkillToPlayer(p, "zhiba_pindian");
             }
