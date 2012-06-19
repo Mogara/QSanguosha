@@ -1649,7 +1649,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach(int card_id, move.card_ids)
             log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
     }
-            /*if (movement.from_place == Player::Special){
+            /*if (movement.from_place == Player::PlaceSpecial){
             CardItem *card_item = card_container->take(NULL, card_id);
             if (card_item != NULL);
             else if (movement.from == Self)
@@ -1665,7 +1665,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
                 special_card = NULL;
             }
         }*/  
-        /*if (movement.to_place == Player::Special){
+        /*if (movement.to_place == Player::PlaceSpecial){
             special_card = card_item;
             dstPos = avatar->scenePos();            
         }*/
@@ -1676,14 +1676,14 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
     if(card_item->scene() == NULL)
         addItem(card_item);
 
-    if(src != NULL && src_place != Player::Judging)
+    if(src != NULL && src_place != Player::PlaceDelayedTrick)
     {
         QString from_general;
         from_general= src->getGeneralName();
         from_general = Sanguosha->translate(from_general);        
     }
     else{
-        if(src_place == Player::DiscardPile || dest_place == Player::Hand){
+        if(src_place == Player::DiscardPile || dest_place == Player::PlaceHand){
             card_item->deleteCardDescription();
         }        
     }   */

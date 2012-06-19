@@ -1001,7 +1001,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     reason.m_playerId = effect.from->objectName();
     reason.m_targetId = effect.to->objectName();
     room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::DiscardPile, reason);
-    // room->throwCard(card_id, room->getCardPlace(card_id) == Player::Judging ? NULL : effect.to);
+    // room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to);
 
     LogMessage log;
     log.type = "$Dismantlement";

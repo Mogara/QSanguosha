@@ -317,7 +317,7 @@ public:
         if (player == NULL) return false;
         if(event == CardLostOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if((move->from_places.contains(Player::PlaceHand) || move->from_places.contains(Player::PlaceEquip)) && 
+            if((move->from_places.contains(Player::PlaceHand) || move->from_places.contains(Player::PlaceEquip)) &&
                 player->getRoom()->getCurrent() != player
                 && player->askForSkillInvoke("tuntian", data)){                
                 room->broadcastSkillInvoke("tuntian");
@@ -916,8 +916,8 @@ public:
             log.to << liushan;
             log.arg = objectName();
             room->sendLog(log);
-
-            if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", data, CardDiscarded))
+            QVariant dataforai = QVariant::fromValue(liushan);
+            if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai, CardDiscarded))
                 room->setPlayerFlag(liushan, "xiangle_invoke");
         }
         else if(event == CardFinished)

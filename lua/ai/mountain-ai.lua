@@ -217,9 +217,9 @@ sgs.ai_card_intention.JixiCard = sgs.ai_card_intention.Snatch
 sgs.dynamic_value.control_card.JixiCard = true
 
 sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
-	local effect = data:toCardEffect()
-	if self:isFriend(effect.to) and not
-		(effect.to:hasSkill("leiji") and (self:getCardsNum("Jink", effect.to)>0 or (not self:isWeak(effect.to) and self:isEquip("EightDiagram",effect.to))))
+	local target = data:toPlayer()
+	if self:isFriend(target) and not
+		(target:hasSkill("leiji") and (self:getCardsNum("Jink", target)>0 or (not self:isWeak(target) and self:isEquip("EightDiagram",target))))
 		then return "." end
 	local has_peach, has_anal, has_slash, has_jink
 	for _, card in sgs.qlist(self.player:getHandcards()) do
@@ -233,7 +233,7 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	if has_slash then return "$" .. has_slash:getEffectiveId()
 	elseif has_jink then return "$" .. has_jink:getEffectiveId()
 	elseif has_anal or has_peach then
-		if self:getCardsNum("Jink", effect.to) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(effect.to) == 0 then
+		if self:getCardsNum("Jink", target) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(target) == 0 then
 			if has_anal then return "$" .. has_anal:getEffectiveId()
 			else return "$" .. has_peach:getEffectiveId()
 			end

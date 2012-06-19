@@ -472,12 +472,12 @@ sgs.zhaoyun_keep_value =
 }
 
 sgs.ai_skill_invoke.tieji = function(self, data)
-	local effect = data:toSlashEffect()
+	local target = data:toPlayer()
 	local zj = self.room:findPlayerBySkillName("guidao")
 	if zj and self:isEnemy(zj) and self:canRetrial(zj) then
 	    return false
 	else
-		return not self:isFriend(effect.to) 
+		return not self:isFriend(target) 
 	end 
 	--return not self:isFriend(effect.to) and (not effect.to:isKongcheng() or effect.to:getArmor())
 end
