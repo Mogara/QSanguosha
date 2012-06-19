@@ -699,7 +699,7 @@ const QSanRoomSkin& QSanSkinScheme::getRoomSkin() const
 QSanSkinFactory& QSanSkinFactory::getInstance()
 {
     if (_sm_singleton == NULL)
-        _sm_singleton = new QSanSkinFactory("skins\\skinList.json");
+        _sm_singleton = new QSanSkinFactory("skins/skinList.json");
     return *_sm_singleton;
 }
 
