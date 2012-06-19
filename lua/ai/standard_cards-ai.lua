@@ -1159,7 +1159,7 @@ sgs.ai_skill_playerchosen.collateral = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
 	for _, enemy in ipairs(targets) do
-		if self:isEnemy(friend) then
+		if self:isEnemy(enemy) then
 			return enemy
 		end
 	end
