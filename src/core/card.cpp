@@ -495,7 +495,7 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
     if(willThrow() && isVirtualCard()){
         CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable)
+        if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable || this->inherits("DummyCard"))
             room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
     room->removeTag("Huoshou");
