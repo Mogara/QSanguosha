@@ -40,7 +40,7 @@
 #include <QFormLayout>
 #include <QStatusBar>
 #include <qmath.h>
-#include "UiUtils.h"
+#include "uiUtils.h"
 
 #ifdef Q_OS_WIN32
 #include <QAxObject>
