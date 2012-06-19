@@ -689,7 +689,11 @@ bool Collateral::isAvailable(const Player *player) const{
 bool Collateral::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
-    return to_select->getWeapon() && to_select != Self;
+    foreach(const Player *p, to_select->getSiblings()){
+        if(to_select->getWeapon() && to_select != Self && to_select->distanceTo(p) <= to_select->getAttackRange())
+            return true;
+    }
+    return false;
 
 }
 

@@ -18,8 +18,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), has_preact(false), as_pindian(false)
-    , suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), has_preact(false), suit(suit), number(number), id(-1)
 {
     can_jilei = will_throw;
 
@@ -459,13 +458,7 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     RoomThread *thread = room->getThread();
  
     if(isVirtualCard()){
-        if(asPindian()){
-            CardMoveReason reason(CardMoveReason::S_REASON_PINDIAN, player->objectName(), QString(), this->getSkillName(), QString());
-            CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
-            moves.append(move);
-            room->moveCardsAtomic(moves, false);
-        }
-        else if(this->getSkillName() == "spear"){
+         if(this->getSkillName() == "spear"){
             CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
             if (card_use.to.size() == 1)
                 reason.m_targetId = card_use.to.first()->objectName();
@@ -581,10 +574,6 @@ bool Card::canJilei() const{
 
 bool Card::hasPreAction() const{
     return has_preact;
-}
-
-bool Card::asPindian() const{
-    return as_pindian;
 }
 
 void Card::setFlags(const QString &flag) const{

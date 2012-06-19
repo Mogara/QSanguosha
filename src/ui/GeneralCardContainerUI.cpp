@@ -776,7 +776,8 @@ void PlayerCardContainer::revivePlayer()
 {
     updateAvatar();
     updateSmallAvatar();
-    _m_deathIcon->hide();
+    /* unuse this before fixed
+    _m_deathIcon->hide(); */
 }
 
 void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)

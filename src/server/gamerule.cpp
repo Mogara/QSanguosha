@@ -604,11 +604,11 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             // modify this
             CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian->from->objectName(), pindian->to->objectName(),
                 pindian->reason, QString());
-            room->moveCardTo(pindian->from_card, pindian->from, NULL, Player::DiscardPile, reason1, false);
+            room->moveCardTo(pindian->from_card, pindian->from, NULL, Player::DiscardPile, reason1, true);
 
 
             CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian->to->objectName());
-            room->moveCardTo(pindian->to_card, pindian->to, NULL, Player::DiscardPile, reason2, false);
+            room->moveCardTo(pindian->to_card, pindian->to, NULL, Player::DiscardPile, reason2, true);
             LogMessage log;
 
             log.type = "$PindianResult";

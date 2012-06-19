@@ -11,7 +11,6 @@ QuhuCard::QuhuCard(){
     once = true;
     mute = true;
     will_throw = false;
-    as_pindian = true;
 }
 
 bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -502,7 +501,6 @@ public:
 TianyiCard::TianyiCard(){
     once = true;
     will_throw = false;
-    as_pindian = true;
 }
 
 bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

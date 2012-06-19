@@ -509,7 +509,7 @@ public:
 
 ZhibaCard::ZhibaCard(){
     mute = true;
-    as_pindian = true;
+    will_throw = false;
 }
 
 bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
