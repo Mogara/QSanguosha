@@ -66,7 +66,7 @@ bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-
+    room->throwCard(this, effect.from);
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
@@ -259,7 +259,9 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->setPlayerFlag(effect.to, "liuli_target");
+    Room *room = effect.to->getRoom();
+    room->throwCard(this, effect.from);
+    room->setPlayerFlag(effect.to, "liuli_target");
 }
 
 JijiangCard::JijiangCard(){

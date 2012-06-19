@@ -165,6 +165,7 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
+    room->throwCard(this, effect.from);
 
     if(subcards.isEmpty())
         room->loseHp(effect.from);

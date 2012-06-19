@@ -700,6 +700,7 @@ TianxiangCard::TianxiangCard()
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
+    room->throwCard(this, effect.from);
     DamageStruct damage = effect.from->tag["TianxiangDamage"].value<DamageStruct>();
     damage.to = effect.to;
     damage.chain = true;

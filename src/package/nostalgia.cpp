@@ -123,6 +123,7 @@ void NosJujianCard::onEffect(const CardEffectStruct &effect) const{
     int n = subcardsLength();
     effect.to->drawCards(n);
     Room *room = effect.from->getRoom();
+    room->throwCard(this, effect.from);
     room->broadcastSkillInvoke("jujian");
 
     if(n == 3){
