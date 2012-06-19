@@ -303,7 +303,10 @@ sgs.ai_skill_use["@@chunlao"] = function(self, prompt)
 	return "."
 end
 
-sgs.ai_skill_invoke.chunlao = sgs.ai_skill_invoke.buyi
+sgs.ai_skill_invoke.chunlao = function(self, data)
+	local dying = data:toDying()
+	return self:isFriend(dying.who) and self.player:getPile("wine"):length() > 0
+end
 
 sgs.chengpu_keep_value = 
 {

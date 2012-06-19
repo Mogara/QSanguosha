@@ -139,8 +139,8 @@ function sgs.ai_skill_invoke.jushou(self, data)
 end
 
 sgs.ai_skill_invoke.liegong = function(self, data)
-	local effect = data:toSlashEffect()
-	return not self:isFriend(effect.to)
+	local target = data:toPlayer()
+	return not self:isFriend(target)
 end
 
 sgs.ai_chaofeng.huangzhong = 1

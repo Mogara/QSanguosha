@@ -445,26 +445,42 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     log.card_str = toString();
     room->sendLog(log);
 
+    QList<int> used_cards;
+    QList<CardsMoveStruct> moves;
+    if(card_use.card->isVirtualCard()){
+        foreach(int card_id, card_use.card->getSubcards()){
+            used_cards << card_id;
+        }
+    }
+    else{
+        used_cards << card_use.card->getEffectiveId();
+    }
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  
     if(isVirtualCard()){
         if(asPindian()){
             CardMoveReason reason(CardMoveReason::S_REASON_PINDIAN, player->objectName(), QString(), this->getSkillName(), QString());
-            room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, false);
+            CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
+            moves.append(move);
+            room->moveCardsAtomic(moves, false);
         }
         else if(this->getSkillName() == "spear"){
             CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
             if (card_use.to.size() == 1)
                 reason.m_targetId = card_use.to.first()->objectName();
-            room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
+            CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
+            moves.append(move);
+            room->moveCardsAtomic(moves, true);
         }
     }
     else{
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
-        room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
+        CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
+        moves.append(move);
+        room->moveCardsAtomic(moves, true);
     }
     thread->trigger(CardUsed, room, player, data);
 

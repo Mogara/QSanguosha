@@ -768,11 +768,15 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
     room->setTag("GuhuoType", this->user_string);
-/*
-    room->moveCardTo(this, yuji, NULL, Player::PlaceTable,
-        CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), "guhuo", user_string), false);*/
+
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
+
+    QList<int> used_cards;
+    QList<CardsMoveStruct> moves;
+    foreach(int card_id, getSubcards()){
+        used_cards << card_id;
+    }
 
     foreach(ServerPlayer *player, players){
         if(player->getHp() <= 0){
@@ -816,9 +820,12 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
 
         foreach(ServerPlayer *player, players)
             room->setEmotion(player, ".");
-        if(yuji->getPhase() == Player::Play)
-            room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), user_string), true, false);
+        if(yuji->getPhase() == Player::Play){
+            CardMoveReason reason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), user_string);
+            CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceTable, reason);
+            moves.append(move);
+            room->moveCardsAtomic(moves, true);
+        }
         else if(yuji->getPhase() == Player::NotActive)
             room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
                 CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true, false);
@@ -832,15 +839,20 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
             real = card->match(user_string);
 
         success = real && card->getSuit() == Card::Heart;
-        if(success && yuji->getPhase() == Player::Play)
-            room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), user_string), true, false);
-        else if(success && yuji->getPhase() == Player::NotActive)
+        if(success && yuji->getPhase() == Player::Play){
+            CardMoveReason reason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), user_string);
+            CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceTable, reason);
+            moves.append(move);
+            room->moveCardsAtomic(moves, true);
+        }
+        else if(success && yuji->getPhase() == Player::NotActive){
             room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
                 CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true, false);
-        else
+        }
+        else{
             room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
                 CardMoveReason(CardMoveReason::S_REASON_PUT, yuji->objectName(), QString(), user_string), true, false);
+        }
         foreach(ServerPlayer *player, players){
             room->setEmotion(player, ".");
 
