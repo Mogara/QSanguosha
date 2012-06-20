@@ -263,6 +263,7 @@ const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
     DelayedTrick *trick = NULL;
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
+    // @TODO: this is a MUST FIX!
     if(card->inherits("DelayedTrick"))
         return qobject_cast<const DelayedTrick *>(card);
     else if(card->getSuit() == Card::Diamond){

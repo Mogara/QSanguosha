@@ -242,7 +242,17 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
     if (size == S_GENERAL_ICON_SIZE_CARD)
         return getCardMainPixmap(generalName);
     else
-        return getPixmap(QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(generalName).arg(size));
+    {
+        QString attempt1 = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(generalName).arg(size);
+        if (isImageKeyDefined(attempt1))
+            return getPixmap(attempt1);
+        else
+        {
+            QString fileName = toQString(_m_imageConfig[QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
+                               .arg("default").arg(size).toAscii().constData()]).arg(generalName);
+            return getPixmapFromFileName(fileName);
+        }
+    }
 }
 
 QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index) const{
