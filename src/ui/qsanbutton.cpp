@@ -14,6 +14,7 @@ QSanButton::QSanButton(const QString &buttonName, QGraphicsItem* parent)
     _m_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
     _m_buttonName = buttonName;
+    _m_mouseEntered = false;
 
     QPixmap pixmap = G_ROOM_SKIN.getButtonPixmap(buttonName, _m_state);
     setSize(pixmap.size());    
@@ -56,7 +57,11 @@ void QSanButton::setStyle(ButtonStyle style)
 
 void QSanButton::setEnabled(bool enabled)
 {
-    if (enabled) setState(S_STATE_UP);
+    if (enabled)
+    {
+        setState(S_STATE_UP);
+        _m_mouseEntered = false;
+    }
     QGraphicsObject::setEnabled(enabled);
     if (!enabled) setState(S_STATE_DISABLED);
     update();
@@ -77,51 +82,65 @@ bool QSanButton::insideButton(QPointF pos) const
 
 void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    Q_ASSERT(_m_state != S_STATE_DISABLED);        
     QPointF point = event->pos();
-    if (insideButton(point)){
+    if (_m_mouseEntered || !insideButton(point)) return; // fake event;
+
+    Q_ASSERT(_m_state != S_STATE_DISABLED &&
+             _m_state != S_STATE_HOVER);
+    _m_mouseEntered = true;    
+    if (_m_state == S_STATE_UP){
         setState(S_STATE_HOVER);
     }
 }
 
 void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+    if (!_m_mouseEntered) return;
+
     Q_ASSERT(_m_state != S_STATE_DISABLED);
-    setState(S_STATE_UP);
+    if (_m_state == S_STATE_HOVER)
+        setState(S_STATE_UP);
 }
 
 void QSanButton::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
-    Q_ASSERT(_m_state != S_STATE_DISABLED);
     QPointF point = event->pos();
     if (insideButton(point)) {
-        setState(S_STATE_HOVER);
+        if (!_m_mouseEntered) hoverEnterEvent(event);
     } else {
-        setState(S_STATE_UP);
+        if (_m_mouseEntered) hoverLeaveEvent(event);
     }
 }
 
 void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    QPointF point = event->pos();
+    if (!insideButton(point)) return;
+
     Q_ASSERT(_m_state != S_STATE_DISABLED);
     if (_m_style == S_STYLE_TOGGLE)
-        return;
-    QPointF point = event->pos();
-    if (insideButton(point)) {
-        setState(S_STATE_DOWN);
-    }
+        return;    
+    setState(S_STATE_DOWN);    
 }
 
 void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    Q_ASSERT(_m_state != S_STATE_DISABLED);
+    Q_ASSERT(_m_state != S_STATE_DISABLED);    
     QPointF point = event->pos();
-    if (insideButton(point)) {
-        if (_m_style == S_STYLE_PUSH)
+    bool inside = insideButton(point);    
+
+    if (_m_style == S_STYLE_PUSH)
+    {
+        Q_ASSERT(_m_state == S_STATE_DOWN);
+        setState(S_STATE_UP);        
+    }
+
+    else if (_m_style == S_STYLE_TOGGLE) {
+        if (_m_state == S_STATE_HOVER)
+            _m_state = S_STATE_UP; // temporarily set, do not use setState!
+        
+        if (_m_state == S_STATE_DOWN && inside)
             setState(S_STATE_UP);
-        else
-        {
-            if (_m_state == S_STATE_DOWN)
-                _m_state = S_STATE_UP;
-            else
-                _m_state = S_STATE_DOWN;
-        }
+        else if (_m_state == S_STATE_UP && inside)
+            setState(S_STATE_DOWN);
+    }
+
+    if (inside)
         emit clicked();
-    }    
 }

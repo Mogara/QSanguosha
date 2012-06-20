@@ -33,6 +33,7 @@ protected:
     QString _m_buttonName;
     QRegion _m_mask;
     QSize _m_size;
+    bool _m_mouseEntered;
 signals:
     void clicked();
 };
