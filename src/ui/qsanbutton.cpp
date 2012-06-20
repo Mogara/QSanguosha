@@ -101,6 +101,8 @@ void QSanButton::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
 
 void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
     Q_ASSERT(_m_state != S_STATE_DISABLED);
+    if (_m_style == S_STYLE_TOGGLE)
+        return;
     QPointF point = event->pos();
     if (insideButton(point)) {
         setState(S_STATE_DOWN);

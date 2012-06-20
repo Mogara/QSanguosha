@@ -3034,7 +3034,8 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
             //trigger events
-            if (cards_move.from && (cards_move.from_place == Player::PlaceHand || cards_move.from_place == Player::PlaceEquip)){
+            if (cards_move.from && (cards_move.from_place == Player::PlaceHand 
+                || cards_move.from_place == Player::PlaceEquip)){
                 CardMoveStar move_star = &moves[j];
                 QVariant data = QVariant::fromValue(move_star);
                 thread->trigger(CardLostOnePiece, this, (ServerPlayer*)cards_move.from, data);
@@ -3060,8 +3061,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
         QList<CardMoveStruct> moves = cards_move.flatten();
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
-            if (cards_move.to && cards_move.to != cards_move.from &&
-                (cards_move.to_place == Player::PlaceHand || cards_move.to_place == Player::PlaceEquip))
+            if (cards_move.to && cards_move.to != cards_move.from)
             {
                 CardMoveStar move_star = &moves[j];
                 QVariant data = QVariant::fromValue(move_star);
@@ -3079,8 +3079,6 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             QVariant data = QVariant::fromValue(move_star);
             if(cards_move.to)
                 thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
-            else
-                thread->trigger(CardGotOneTime, this, NULL, data);
         }
         if (cards_move.countAsOneTime) moveOneTimeStruct = CardsMoveOneTimeStruct();
     }
@@ -3252,8 +3250,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             // @todo: conside move this inside ServerPlayer::addCard;
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place); 
 
-            if (cards_move.to && cards_move.to != cards_move.from &&
-                (cards_move.to_place == Player::PlaceHand || cards_move.to_place == Player::PlaceEquip)) {
+            if (cards_move.to && cards_move.to != cards_move.from) {
                     CardMoveStar move_star = &moves[j];
                     QVariant data = QVariant::fromValue(move_star);
                     thread->trigger(CardGotOnePiece, this, (ServerPlayer*)cards_move.to, data);
@@ -3269,10 +3266,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             moveOneTimeStruct.to_place = cards_move.to_place;
             CardsMoveOneTimeStar move_star = &moveOneTimeStruct;
             QVariant data = QVariant::fromValue(move_star);
-            if(cards_move.to)
-                thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
-            else
-                thread->trigger(CardGotOneTime, this, NULL, data);
+            thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
         }
         if (cards_move.countAsOneTime) moveOneTimeStruct = CardsMoveOneTimeStruct();
     }    
