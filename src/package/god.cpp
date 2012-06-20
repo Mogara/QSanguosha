@@ -557,6 +557,10 @@ public:
         view_as_skill = new WuqianViewAsSkill;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill("wuqian");
+    }
+
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
 
         if(event == PhaseChange || event == Death){

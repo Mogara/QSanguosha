@@ -700,6 +700,10 @@ public:
         events << PhaseChange << Death;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill("xianzhen");
+    }
+
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
         ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
 
@@ -818,14 +822,15 @@ public:
             return false;
 
         if(event == Damaged){
-            room->setTag("Zhichi", player->objectName());
+            if(room->getCurrent()->isAlive()){
+                room->setTag("Zhichi", player->objectName());
+                room->broadcastSkillInvoke(objectName());
 
-			room->broadcastSkillInvoke(objectName());
-
-            LogMessage log;
-            log.type = "#ZhichiDamaged";
-            log.from = player;
-            room->sendLog(log);
+                LogMessage log;
+                log.type = "#ZhichiDamaged";
+                log.from = player;
+                room->sendLog(log);
+            }
 
         }else if(event == CardEffected){
             if(room->getTag("Zhichi").toString() != player->objectName())
