@@ -367,8 +367,9 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
     GameEventType eventType = (GameEventType)arg[0].asInt();
     if (eventType == S_GAME_EVENT_PLAYER_DYING)
     {
+        /* the codes below causes crash
         const Player* player = name2photo[arg[1].asCString()]->getPlayer();
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath("sos", player->getGeneral()->isMale()));
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath("sos", player->getGeneral()->isMale())); */
     }
     else if (eventType == S_GAME_EVENT_SKILL_INVOKED)
     {

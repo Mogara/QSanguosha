@@ -976,20 +976,21 @@ public:
                 Room *room = liushan->getRoom();
                 if(liushan->isKongcheng())
                     return false;
-                room->askForDiscard(liushan, "fangquan", 1, 1);
-                ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), "fangquan");
-                QString name = player->getGeneralName();
-                if(name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
+                if(room->askForDiscard(liushan, "fangquan", 1, 1, true)){
+                    ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), "fangquan");
+                    QString name = player->getGeneralName();
+                    if(name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
                         room->broadcastSkillInvoke("fangquan", 1);
-                else
+                    else
                         room->broadcastSkillInvoke("fangquan", 2);
 
-                LogMessage log;
-                log.type = "#Fangquan";
-                log.from = liushan;
-                log.to << player;
-                room->sendLog(log);
-                player->gainMark("fangquan");
+                    LogMessage log;
+                    log.type = "#Fangquan";
+                    log.from = liushan;
+                    log.to << player;
+                    room->sendLog(log);
+                    player->gainMark("fangquan");
+                }
              }
         }
         return false;

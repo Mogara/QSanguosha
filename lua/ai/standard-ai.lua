@@ -1203,9 +1203,9 @@ sgs.ai_card_intention.YihunCard = function(card, from, to)
 	end
 end
 
-sgs.ai_skill_invoke.bumie = true
+sgs.ai_skill_invoke.shihun = true
 
-sgs.ai_skill_playerchosen.bumie = function(self, targets)	
+sgs.ai_skill_playerchosen.shihun = function(self, targets)	
 	self:sort(self.enemies,"hp")
 	return self.enemies[1]
 end

@@ -256,6 +256,14 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	return self.player:getHandcardNum() <= limit and not self.player:isKongcheng()
 end
 
+sgs.ai_skill_discard.fangquan = function(self, discard_num, optional, include_equip)
+	local to_discard = {}
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	cards = sgs.reverse(cards)
+	return cards[1]:getEffectiveId()
+end
+
 sgs.ai_skill_playerchosen.fangquan = function(self, targets)
 	for _, target in sgs.qlist(targets) do
 		if self:isFriend(target) and not target:hasSkill("dawu") and

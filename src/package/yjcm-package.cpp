@@ -625,6 +625,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
         room->setPlayerFlag(effect.from, "xianzhen_success");
         room->setFixedDistance(effect.from, effect.to, 1);
+        room->setPlayerFlag(effect.to, "wuqian");
     }else{
         room->setPlayerFlag(effect.from, "xianzhen_failed");
     }
@@ -696,33 +697,24 @@ public:
     Xianzhen():TriggerSkill("xianzhen"){
         view_as_skill = new XianzhenViewAsSkill;
 
-        events << PhaseChange << CardUsed << CardFinished;
+        events << PhaseChange << Death;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
         ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
 
-        if(event == PhaseChange){
-            if(gaoshun->getPhase() == Player::Finish && target){
-                Room *room = gaoshun->getRoom();
-                room->setFixedDistance(gaoshun, target, -1);
-                gaoshun->tag.remove("XianzhenTarget");
-                target->removeMark("qinggang");
-            }
-        }else{
-            CardUseStruct use = data.value<CardUseStruct>();
-
-            if(target && use.to.contains(target)){
-                if(event == CardUsed)
-                    target->addMark("qinggang");
-                else
-                    target->removeMark("qinggang");
+        if(event == Death || event == PhaseChange){
+            if((event == Death || gaoshun->getPhase() == Player::Finish) && target){
+                    Room *room = gaoshun->getRoom();
+                    room->setFixedDistance(gaoshun, target, -1);
+                    gaoshun->tag.remove("XianzhenTarget");
+                    room->setPlayerFlag(target, "-wuqian");
             }
         }
-
         return false;
     }
 };
+
 
 class Jiejiu: public FilterSkill{
 public:

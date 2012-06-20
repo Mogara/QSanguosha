@@ -272,6 +272,9 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
         }
     case CardFinished: {
             CardUseStruct use = data.value<CardUseStruct>();
+            foreach(ServerPlayer *p, use.to)
+                if(p->getMark("qinggang") > 0)
+                    p->setMark("qinggang", 0);;
             room->clearCardFlag(use.card);
 
             break;
@@ -493,18 +496,14 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             damage.from = effect.from;
             damage.to = effect.to;
             damage.nature = effect.nature;
-
             room->damage(damage);
-
-            effect.to->removeMark("qinggang");
 
             break;
         }
 
     case SlashMissed:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            effect.to->removeMark("qinggang");
-
+                effect.to->loseMark("qinggang");
             break;
         }
 
