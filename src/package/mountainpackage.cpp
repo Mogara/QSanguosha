@@ -458,7 +458,8 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *sunce, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-
+        if(use.from->objectName() != sunce->objectName() || !use.to.contains(sunce))
+            return false;
         if(use.card->inherits("Duel") || (use.card->inherits("Slash") && use.card->isRed())){
             if(sunce->askForSkillInvoke(objectName(), data)){
                 sunce->getRoom()->broadcastSkillInvoke(objectName());
