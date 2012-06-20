@@ -136,7 +136,7 @@ void QSanRoomSkin::QSanShadowTextFont::paintText(QPainter* painter, QRect pos,
                                                  Qt::AlignmentFlag align, const QString &text) const
 {
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
-    image.fill(qRgba(0, 0, 0, 0));
+    image.fill(Qt::transparent);
     QPainter imagePainter(&image);
     // @todo: currently, we have not considered _m_sahdowOffset yet
     QSanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius,
@@ -158,7 +158,7 @@ void QSanRoomSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem* pixmapItem
                                                  const QString &text) const
 {
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
-    image.fill(qRgba(0, 0, 0, 0));
+    image.fill(Qt::transparent);
     QPainter imagePainter(&image);
     // @todo: currently, we have not considered _m_sahdowOffset yet
     QSanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius,

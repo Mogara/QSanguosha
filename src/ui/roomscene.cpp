@@ -67,7 +67,6 @@ RoomScene::RoomScene(QMainWindow *main_window):
     focused(NULL), special_card(NULL), 
     main_window(main_window),game_started(false)
 {
-
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
     _m_last_front_item = NULL;

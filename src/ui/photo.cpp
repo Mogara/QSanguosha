@@ -242,7 +242,7 @@ void Photo::updatePhase(){
 }
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 
 QGraphicsItem* Photo::getMouseClickReceiver()  

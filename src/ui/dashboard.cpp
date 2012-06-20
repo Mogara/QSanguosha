@@ -333,7 +333,7 @@ QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
 }
 
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
-
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 
 void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *){

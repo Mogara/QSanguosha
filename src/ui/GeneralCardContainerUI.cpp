@@ -158,7 +158,7 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item,
     if (pixmap.size() == rect.size())
         item->setPixmap(pixmap);
     else
-        item->setPixmap(pixmap.scaled(rect.size()));
+        item->setPixmap(pixmap.scaled(rect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     item->setParentItem(parent);
 }
 

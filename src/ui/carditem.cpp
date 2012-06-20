@@ -281,6 +281,8 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    
     if (!_m_frameType.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardFrameArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_frameType));
     
