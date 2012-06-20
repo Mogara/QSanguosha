@@ -213,10 +213,8 @@ sgs.ai_skill_use_func.DaheCard=function(card,use,self)
 end
 
 function sgs.ai_skill_pindian.dahe(minusecard, self, requestor)
-	if requestor:objectName() == self.player:objectName() then
-		return self:getMaxCard(self.player):getId()
-	end
 	if self:isFriend(requestor) then return minusecard end
+	return self:getMaxCard(self.player):getId()
 end
 
 sgs.ai_skill_choice.dahe = function(self, choices)
