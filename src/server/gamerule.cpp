@@ -401,35 +401,23 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             if(player->getHp() <= 0){
                 room->enterDying(player, &damage);
             }
-
-            break;
-        }
-
-    case DamageComplete:{
-            if(room->getMode() == "02_1v1" && player->isDead()){
-                QString new_general = player->tag["1v1ChangeGeneral"].toString();
-                if(!new_general.isEmpty())
-                    changeGeneral1v1(player);
-            }
-
             bool chained = player->isChained();
             if(!chained)
                 break;
 
-            DamageStruct damage = data.value<DamageStruct>();
-            if(damage.nature != DamageStruct::Normal){
-                room->setPlayerProperty(player, "chained", false);
+            if(damage.to->isChained() && damage.nature != DamageStruct::Normal){
+                room->setPlayerProperty(damage.to, "chained", false);
+                room->setPlayerFlag(damage.to, "chained");
+
+                LogMessage log;
+                log.type = "#IronChainDamage";
+                log.from = damage.to;
+                room->sendLog(log);
 
                 // iron chain effect
-                QList<ServerPlayer *> chained_players = room->getAlivePlayers();
+                QList<ServerPlayer *> chained_players = room->getAllPlayers();
                 foreach(ServerPlayer *chained_player, chained_players){
                     if(chained_player->isChained()){
-                        room->setPlayerProperty(chained_player, "chained", false);
-
-                        LogMessage log;
-                        log.type = "#IronChainDamage";
-                        log.from = chained_player;
-                        room->sendLog(log);
 
                         DamageStruct chain_damage = damage;
                         chain_damage.to = chained_player;
@@ -438,6 +426,15 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                         room->damage(chain_damage);
                     }
                 }
+            }
+            break;
+        }
+
+    case DamageComplete:{
+            if(room->getMode() == "02_1v1" && player->isDead()){
+                QString new_general = player->tag["1v1ChangeGeneral"].toString();
+                if(!new_general.isEmpty())
+                    changeGeneral1v1(player);
             }
 
             break;
