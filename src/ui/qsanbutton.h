@@ -17,6 +17,7 @@ public:
     void click();
     void setStyle(ButtonStyle style);
     void setState(ButtonState state);
+    inline ButtonState getState() { return _m_state; }
     void setRect(QRect rect);
     virtual QRectF boundingRect() const;
     bool insideButton(QPointF pos) const;

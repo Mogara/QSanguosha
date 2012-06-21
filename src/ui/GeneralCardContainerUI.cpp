@@ -544,7 +544,7 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard* equip)
         Q_ASSERT(horse);
         if (horse) distance = QString::number(horse->getCorrect());
     }
-    if (index != 0)
+    if (index != 1)
     {
         _m_layout->m_equipFont.paintText(
             &painter,
