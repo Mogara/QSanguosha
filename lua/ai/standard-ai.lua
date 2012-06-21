@@ -88,7 +88,7 @@ sgs.ai_skill_invoke.ganglie = function(self, data)
 	return not self:isFriend(data:toPlayer())
 end
 
-sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equip)
+sgs.ai_skill_discard.ganglie = function(self, discard_num, min_num, optional, include_equip)
 	local to_discard = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local index = 0

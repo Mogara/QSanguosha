@@ -3501,7 +3501,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     AI *ai = player->getAI();
     QList<int> to_discard;
     if (ai) {
-        to_discard = ai->askForDiscard(reason, discard_num, optional, include_equip);
+        to_discard = ai->askForDiscard(reason, discard_num, min_num, optional, include_equip);
     }else{
         Json::Value ask_str(Json::arrayValue);
         ask_str[0] = discard_num;
@@ -3550,7 +3550,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
     QList<int> to_exchange;
     if(ai){
         // share the same callback interface
-        to_exchange = ai->askForDiscard(reason, discard_num, false, false);
+        to_exchange = ai->askForDiscard(reason, discard_num, discard_num, false, false);
     }else{
         bool success = doRequest(player, S_COMMAND_EXCHANGE_CARD, discard_num, true);
         //@todo: also check if the player does have that card!!!

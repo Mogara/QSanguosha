@@ -164,7 +164,7 @@ sgs.ai_skill_choice.neoganglie = function(self, choices)
 	return "damage"
 end
 
-sgs.ai_skill_discard.neoganglie = function(self, discard_num, optional, include_equip)
+sgs.ai_skill_discard.neoganglie = function(self, discard_num, min_num, optional, include_equip)
 	local to_discard = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local index = 0

@@ -258,12 +258,33 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	return self.player:getHandcardNum() <= limit and not self.player:isKongcheng()
 end
 
-sgs.ai_skill_discard.fangquan = function(self, discard_num, optional, include_equip)
+sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, include_equip)
 	local to_discard = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
+	local index = 0
+	local all_peaches = 0
+	for _, card in ipairs(cards) do
+		if card:inherits("Peach") then
+			all_peaches = all_peaches + 1
+		end
+	end
+	if all_peaches >= 2 and self:getOverflow() <= 0 then return {} end
 	self:sortByKeepValue(cards)
 	cards = sgs.reverse(cards)
-	return cards[1]:getEffectiveId()
+
+	for i = #cards, 1, -1 do
+		local card = cards[i]
+		if not card:inherits("Peach") and not self.player:isJilei(card) then
+			table.insert(to_discard, card:getEffectiveId())
+			table.remove(cards, i)
+			index = index + 1
+			if index == 1 then break end
+		end
+	end	
+	if #to_discard < 1 then return {} 
+	else
+		return to_discard
+	end
 end
 
 sgs.ai_skill_playerchosen.fangquan = function(self, targets)
