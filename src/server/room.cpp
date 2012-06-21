@@ -2444,6 +2444,8 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
 
     if(victim->getMaxHp() == 0)
         killPlayer(victim);
+    else
+        thread->trigger(MaxHpLost, this, victim);
 }
 
 void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage){

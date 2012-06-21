@@ -44,7 +44,7 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this, zhanghe);
 
-    if(zhanghe->getPhase() == Player::Draw){
+    if(zhanghe->getPhase() == Player::Draw && room->askForSkillInvoke(zhanghe, "qiaobian")){
         room->broadcastSkillInvoke("qiaobian", 2);
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
@@ -272,6 +272,10 @@ public:
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
+            if(damage->from->getKingdom() != damage->from->getGeneral()->getKingdom())
+                room->setPlayerProperty(damage->from, "kingdom", damage->from->getGeneral()->getKingdom());
+            if(damage->from->getGeneralName() == "zuocif")
+                room->setPlayerProperty(damage->from, "general", "zuoci");
             if(damage->from->getHp() <= 0)
                 room->enterDying(damage->from,NULL);
             damage->from->clearPrivatePiles();
@@ -540,6 +544,7 @@ bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *sunce = targets.first();
+    room->setPlayerFlag(sunce, "ZhibaInvoked");
     if(sunce->getMark("hunzi") > 0 &&
        room->askForChoice(sunce, "zhiba_pindian", "accept+reject") == "reject")
     {
@@ -549,7 +554,6 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     room->broadcastSkillInvoke("sunce_zhiba", 1);
     source->pindian(sunce, "zhiba", this);
-    room->setPlayerFlag(sunce, "ZhibaInvoked");
     QList<ServerPlayer *> sunces;
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     ServerPlayer *lordplayer = NULL;
