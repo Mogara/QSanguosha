@@ -1757,7 +1757,7 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 
 	table.sort(cards, compare_func)
 	for _, card in ipairs(cards) do
-		if #to_discard >= discard_num then break end
+		if #to_discard >= min_num then break end
 		if not self.player:isJilei(card) then table.insert(to_discard, card:getId()) end
 	end
 	
