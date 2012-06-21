@@ -12,6 +12,12 @@
 
 #include <QCommandLinkButton>
 
+static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
+    Room *room = a->getRoom();
+
+    return room->getFront(a, b) == a;
+}
+
 QiaobianCard::QiaobianCard(){
     mute = true;
 }
@@ -40,12 +46,12 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
 
     if(zhanghe->getPhase() == Player::Draw){
         room->broadcastSkillInvoke("qiaobian", 2);
-        foreach(ServerPlayer *target, targets){
-            int card_id = room->askForCardChosen(zhanghe, target, "h", "qiaobian");
-            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, zhanghe->objectName());
-            room->obtainCard(zhanghe, Sanguosha->getCard(card_id), reason, false);
+        QList<ServerPlayer *> players = targets;
+        qSort(players.begin(), players.end(), CompareByActionOrder);
+        foreach(ServerPlayer *target, players){
+            room->cardEffect(this, zhanghe, target);
         }
-    }else if(zhanghe->getPhase() == Player::Play){
+    }else if(zhanghe->getPhase() == Player::Play && room->askForSkillInvoke(zhanghe, "qiaobian")){
         room->broadcastSkillInvoke("qiaobian", 3);
         PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
@@ -89,6 +95,20 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         room->broadcastSkillInvoke("qiaobian", 1);
     else
         room->broadcastSkillInvoke("qiaobian", 4);
+}
+
+void QiaobianCard::onEffect(const CardEffectStruct &effect) const{
+    if(effect.from->getPhase() == Player::Draw){
+        Room *room = effect.from->getRoom();
+        if(!effect.to->isKongcheng()){
+            int card_id = room->askForCardChosen(effect.from, effect.to, "h", "qiaobian");
+            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+            room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, false);
+
+            room->setEmotion(effect.to, "bad");
+            room->setEmotion(effect.from, "good");
+        }
+    }
 }
 
 class QiaobianViewAsSkill: public OneCardViewAsSkill{

@@ -1,3 +1,5 @@
+sgs.ai_skill_invoke.qiaobian = true
+
 local function card_for_qiaobian(self, who, return_prompt)
 	local card, target
 	if self:isFriend(who) then
