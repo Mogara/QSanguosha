@@ -230,8 +230,9 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *, QVariant &data) const{
         if(event == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            foreach(ServerPlayer *p, use.to)
-                p->addMark("qinggang");
+            if(use.card->inherits("Slash"))
+                foreach(ServerPlayer *p, use.to)
+                    p->addMark("qinggang");
         }
         else{
             foreach(ServerPlayer *p,room->getAlivePlayers())
