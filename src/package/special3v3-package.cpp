@@ -186,7 +186,7 @@ public:
 class Mingzhe: public TriggerSkill{
 public:
     Mingzhe():TriggerSkill("mingzhe"){
-        events << CardUsed << CardResponsed << CardDiscarded;
+        events << CardUsed << CardResponsed << CardLostOnePiece;
         frequency = Frequent;
     }
 
@@ -199,23 +199,20 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
         }
-        else
+        else if(event == CardResponsed){
             card = data.value<CardStar>();
+        }
+        else{
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->from_place == Player::PlaceDelayedTrick || move->from_place == Player::PlaceSpecial)
+                return false;
+            if((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_DISCARD)
+                return false;
+            card = Sanguosha->getCard(move->card_id);
+        }
 
         int n = 0;
-        if(event == CardDiscarded){
-            if(card->isVirtualCard()){
-                foreach(int card_id, card->getSubcards()){
-                    const Card *subcard = Sanguosha->getCard(card_id);
-                    if(subcard->isRed())
-                        n++;
-                }
-            }
-            else if(card->isRed())
-                n++;
-        }
-        else
-            n = card->isRed() ? 1 : 0;
+        n = card->isRed() ? 1 : 0;
 
         if(n>0 && player->askForSkillInvoke(objectName(), data))
             player->drawCards(n);
