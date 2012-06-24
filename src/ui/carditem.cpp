@@ -306,9 +306,9 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 void CardItem::setFootnote(const QString &desc)
 {
-    const QSanRoomSkin::QSanShadowTextFont& font = G_COMMON_LAYOUT.m_cardFootnoteFont;
+    const IQSanComponentSkin::QSanShadowTextFont& font = G_COMMON_LAYOUT.m_cardFootnoteFont;
     font.paintText(_m_footnoteItem, G_COMMON_LAYOUT.m_cardFootnoteArea, 
-            (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);            
+                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);            
 }
 
 

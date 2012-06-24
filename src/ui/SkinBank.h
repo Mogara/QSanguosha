@@ -30,6 +30,39 @@ private:
 class IQSanComponentSkin // interface class
 {
 public:
+    class QSanSimpleTextFont {
+    public:
+        int* m_fontFace;
+        QSize m_fontSize;
+        int m_spacing;
+        QColor m_color;
+        bool m_vertical;
+        bool tryParse(Json::Value arg);
+        void paintText(QPainter* painter, QRect pos, Qt::Alignment align,
+                       const QString &text) const;
+        // this function's prototype is confusing. It will CLEAR ALL contents on the
+        // QGraphicsPixmapItem passed in and then start drawing.
+        void paintText(QGraphicsPixmapItem* item, QRect pos, 
+                       Qt::Alignment align, const QString &text) const;
+    protected:
+        static QHash<QString, int*> _m_fontBank;
+    };
+
+    class QSanShadowTextFont : QSanSimpleTextFont
+    {
+    public:
+        int m_shadowRadius;
+        double m_shadowDecadeFactor;
+        QPoint m_shadowOffset;
+        QColor m_shadowColor;
+        bool tryParse(Json::Value arg);
+        void paintText(QPainter* painter, QRect pos, Qt::Alignment align,
+                       const QString &text) const;        
+        // this function's prototype is confusing. It will CLEAR ALL contents on the
+        // QGraphicsPixmapItem passed in and then start drawing.
+        void paintText(QGraphicsPixmapItem* item, QRect pos, Qt::Alignment align,
+                       const QString &text) const;
+    };
     class AnchoredRect
     {
     public:
@@ -70,38 +103,6 @@ protected:
 class QSanRoomSkin : public IQSanComponentSkin
 {
 public:
-    // @todo: move this to IQSanComponentSkin
-    class QSanSimpleTextFont {
-    public:
-        QFont m_font;
-        QPen m_foregroundPen;
-        bool m_vertical;
-        bool tryParse(Json::Value arg);
-        void paintText(QPainter* painter, QRect pos, Qt::AlignmentFlag align,
-                       const QString &text) const;
-        // this function's prototype is confusing. It will CLEAR ALL contents on the
-        // QGraphicsPixmapItem passed in and then start drawing.
-        void paintText(QGraphicsPixmapItem* item, QRect pos, 
-                       Qt::AlignmentFlag align, const QString &text) const;
-    };
-
-    class QSanShadowTextFont : QSanSimpleTextFont
-    {
-    public:
-        int m_shadowRadius;
-        double m_shadowDecadeFactor;
-        QPoint m_shadowOffset;
-        QColor m_shadowColor;
-        bool tryParse(Json::Value arg);
-        void paintText(QPainter* painter, QRect pos, Qt::AlignmentFlag align,
-                       const QString &text) const;        
-        // this function's prototype is confusing. It will CLEAR ALL contents on the
-        // QGraphicsPixmapItem passed in and then start drawing.
-        void paintText(QGraphicsPixmapItem* item, QRect pos, Qt::AlignmentFlag align,
-                       const QString &text) const;
-    };
-
-
     struct RoomLayout {
         int m_scenePadding;
         int m_roleBoxHeight;

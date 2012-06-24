@@ -59,24 +59,42 @@ const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
 
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
+QHash<QString, int*> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
-bool QSanRoomSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
+bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
-    m_font = QFont(toQString(arg[0]), arg[1].asInt(), arg[2].asInt());
-    m_foregroundPen = QPen(QColor(arg[3][0].asInt(), arg[3][1].asInt(), arg[3][2].asInt(), arg[3][3].asInt()));
-    if (m_font.family().startsWith("@"))
+    //m_font = QFont(toQString(arg[0]), arg[1].asInt(), arg[2].asInt());
+    m_vertical = false;
+    QString fontPath = toQString(arg[0]);
+    if (fontPath.startsWith("@"))
     {
         m_vertical = true;
+        fontPath.remove(0, 1);
+    }
+    if (_m_fontBank.contains(fontPath))
+        m_fontFace = _m_fontBank[fontPath];
+    else {
+        m_fontFace = QSanUiUtils::QSanFreeTypeFont::loadFont(fontPath);
+        _m_fontBank[fontPath] = m_fontFace;
+    }
+    if (arg[1].isInt())
+    {
+        m_fontSize.setWidth(arg[1].asInt());
+        m_fontSize.setHeight(arg[1].asInt());
+        m_spacing = 0;
     }
     else
     {
-        m_vertical = false;
+        m_fontSize.setWidth(arg[1][0].asInt());
+        m_fontSize.setHeight(arg[1][1].asInt());
+        m_spacing = arg[1][2].asInt();
     }
+    m_color = QColor(arg[3][0].asInt(), arg[3][1].asInt(), arg[3][2].asInt(), arg[3][3].asInt());
     return true;
 }
 
-bool QSanRoomSkin::QSanShadowTextFont::tryParse(Json::Value arg)
+bool IQSanComponentSkin::QSanShadowTextFont::tryParse(Json::Value arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
     if (!QSanSimpleTextFont::tryParse(arg)) return false;
@@ -100,29 +118,27 @@ bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const
     return val.isArray() || val.isString();           
 }
 
-void QSanRoomSkin::QSanSimpleTextFont::paintText(QPainter* painter, QRect pos, Qt::AlignmentFlag align,
-                                                 const QString &text) const
+void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter* painter, QRect pos, Qt::Alignment align,
+                                                       const QString &text) const
 {
-    painter->save();
-    painter->translate(pos.topLeft());
-    QRect boundingBox;
-    if (m_vertical) 
+    if (pos.width() < 0 || pos.height() < 0) return;
+    QSize actualSize = m_fontSize;
+    if ((align & Qt::TextWrapAnywhere) && !m_vertical)
     {
-        painter->rotate(90);
-        painter->translate(0, -pos.width());
-        boundingBox = QRect(0, 0, pos.height(), pos.width());
+        QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(
+            painter, text, m_fontFace, m_color, actualSize, m_spacing, pos, align);
     }
-    else boundingBox = QRect(0, 0, pos.width(), pos.height());
-    painter->setRenderHint(QPainter::TextAntialiasing);
-    painter->setFont(m_font);
-    painter->setPen(m_foregroundPen);
-    painter->drawText(boundingBox, align, text);
-    painter->restore();
+    else
+    {
+        QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color,
+                                                    actualSize, m_spacing, pos,
+                                                    m_vertical ? Qt::Vertical : Qt::Horizontal, align);
+    }
 }
 
 
-void QSanRoomSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem* item, QRect pos,
-                                                 Qt::AlignmentFlag align, const QString &text) const
+void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem* item, QRect pos,
+                                                       Qt::Alignment align, const QString &text) const
 {
     QPixmap pixmap(pos.size());
     pixmap.fill(Qt::transparent);
@@ -132,8 +148,8 @@ void QSanRoomSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem* item, QRec
     item->setPos(pos.x(), pos.y());
 }
 
-void QSanRoomSkin::QSanShadowTextFont::paintText(QPainter* painter, QRect pos,
-                                                 Qt::AlignmentFlag align, const QString &text) const
+void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter* painter, QRect pos,
+                                                       Qt::Alignment align, const QString &text) const
 {
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
@@ -152,10 +168,10 @@ void QSanRoomSkin::QSanShadowTextFont::paintText(QPainter* painter, QRect pos,
     painter->drawImage(pos.topLeft(), image); //pos, image);
 }
 
-void QSanRoomSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem* pixmapItem,
-                                                 QRect pos,
-                                                 Qt::AlignmentFlag align,
-                                                 const QString &text) const
+void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem* pixmapItem,
+                                                       QRect pos,
+                                                       Qt::Alignment align,
+                                                       const QString &text) const
 {
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);

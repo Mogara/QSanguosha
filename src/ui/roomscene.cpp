@@ -2300,10 +2300,6 @@ void RoomScene::updateTrustButton(){
     }
 }
 
-static bool CompareByNumber(const Card *card1, const Card *card2){
-    return card1->getNumber() < card2->getNumber();
-}
-
 void RoomScene::doOkButton(){
     if(!ok_button->isEnabled())
         return;

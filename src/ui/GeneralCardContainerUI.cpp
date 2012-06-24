@@ -188,7 +188,7 @@ void PlayerCardContainer::updateAvatar()
         general = m_player->getAvatarGeneral();
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, 
                                               _m_layout->m_screenNameArea,
-                                              Qt::AlignHCenter,
+                                              Qt::AlignCenter,
                                               m_player->screenName());
     }
     if (general != NULL) {
@@ -208,7 +208,8 @@ void PlayerCardContainer::updateAvatar()
                                                .arg(kingdom)),
                          this->_getAvatarParent());
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, 
-                                                  _m_layout->m_avatarNameArea, Qt::AlignLeft,
+                                                  _m_layout->m_avatarNameArea,
+                                                  Qt::AlignLeft | Qt::AlignJustify,
                                                   Sanguosha->translate(general->objectName()));
         }        
     } else {
@@ -509,7 +510,7 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard* equip)
     _m_layout->m_equipFont.paintText(
         &painter,
         _m_layout->m_equipTextArea,
-        Qt::AlignLeft,
+        Qt::AlignLeft | Qt::AlignCenter,
         Sanguosha->translate(equip->objectName()));
     // equip suit
     painter.drawPixmap(_m_layout->m_equipSuitArea,
@@ -518,7 +519,7 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard* equip)
     _m_layout->m_equipPointFont.paintText(
         &painter,
         _m_layout->m_equipPointArea,
-        Qt::AlignLeft,
+        Qt::AlignLeft | Qt::AlignVCenter,
         equip->getNumberString());
     // distance
     int index = (int)(equip->location());
@@ -549,7 +550,7 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard* equip)
         _m_layout->m_equipFont.paintText(
             &painter,
             _m_layout->m_equipDistanceArea,
-            Qt::AlignLeft,
+            Qt::AlignLeft | Qt::AlignVCenter,
             distance);
     }
     return equipIcon;

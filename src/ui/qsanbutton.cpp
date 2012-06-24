@@ -127,7 +127,7 @@ void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 
     if (_m_style == S_STYLE_PUSH)
     {
-        Q_ASSERT(_m_state == S_STATE_DOWN);
+        // Q_ASSERT(_m_state == S_STATE_DOWN);
         setState(S_STATE_UP);        
     }
 

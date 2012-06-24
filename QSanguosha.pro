@@ -344,3 +344,9 @@ OTHER_FILES += \
     acknowledgement/main.qml \
     acknowledgement/list.png \
     acknowledgement/back.png
+
+symbian: LIBS += -lfreetype
+else:unix|win32: LIBS += -L$$PWD/lib/ -lfreetype
+
+INCLUDEPATH += $$PWD/include/freetype
+DEPENDPATH += $$PWD/include/freetype
