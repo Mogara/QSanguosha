@@ -133,7 +133,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
         group->addAnimation(fade);
         group->addAnimation(grow);
-
+        
         group->start(QAbstractAnimation::DeleteWhenStopped);
 
         aniMaga->show();

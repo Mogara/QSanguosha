@@ -396,6 +396,12 @@
     <ClCompile Include="..\..\src\ui\TablePile.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_magatamasItem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_magatamasItem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">

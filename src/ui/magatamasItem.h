@@ -4,13 +4,12 @@
 #include <qpixmap.h>
 #include "SkinBank.h"
 
-class MagatamasBoxItem: public QObject, public QGraphicsItem
+class MagatamasBoxItem: public QGraphicsObject
 {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
 public:
-    inline MagatamasBoxItem(QGraphicsItem* parent = NULL, QGraphicsScene* scene = NULL)
-        : QObject() , QGraphicsItem(parent, scene)
+    inline MagatamasBoxItem(QGraphicsItem* parent = NULL)
+        : QGraphicsObject(parent)
     {
         m_hp = 0;
         m_maxHp = 0;
