@@ -56,6 +56,7 @@ const char* QSanRoomSkin::S_SKIN_KEY_SYSTEM_AUDIO_EFFECT = "systemAudioEffect-%1
 const char* QSanRoomSkin::S_SKIN_KEY_PLAYER_GENERAL_ICON = "playerGeneralIcon-%1-%2";
 const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG = "magatamasBg%1";
 const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
+const char* QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
 
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
@@ -220,6 +221,23 @@ QPixmap QSanRoomSkin::getCardFramePixmap(const QString &frameType) const
     return getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_FRAME).arg(frameType));
 }
 
+QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const
+{
+    Json::Value allMaps = _m_imageConfig[S_SKIN_KEY_PROGRESS_BAR_IMAGE];
+    if (!allMaps.isArray()) return QPixmap();
+    for (unsigned int i = 0; i < allMaps.size(); i++)
+    {
+        Json::Value progMap = allMaps[i];
+        if (!allMaps[i][0].isInt()) continue;
+        int thred = allMaps[i][0].asInt();
+        if (thred >= percentile) {
+            if (!allMaps[i][1].isString()) continue;
+            return getPixmapFromFileName(toQString(allMaps[i][1]));
+        }
+    }
+    return QPixmap();
+}
+
 QString QSanRoomSkin::getCardMainPixmapPath(const QString &cardName) const
 {
     return _readConfig(_m_imageConfig,QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO).arg(cardName));
@@ -227,7 +245,15 @@ QString QSanRoomSkin::getCardMainPixmapPath(const QString &cardName) const
 
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
 {
-    return getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO).arg(cardName));
+    QString attempt1 = QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO).arg(cardName);
+    if (isImageKeyDefined(attempt1))
+        return getPixmap(attempt1);
+    else
+    {
+        QString fileName = toQString(_m_imageConfig[QString(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO)
+                                     .arg("default").toAscii().constData()]).arg(cardName);
+        return getPixmapFromFileName(fileName);
+    }
 }
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const{
