@@ -153,6 +153,7 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item,
     if (item == NULL)
     {
         item = new QGraphicsPixmapItem(parent);
+        item->setTransformationMode(Qt::SmoothTransformation);
     }
     item->setPos(rect.x(), rect.y());
     if (pixmap.size() == rect.size())
