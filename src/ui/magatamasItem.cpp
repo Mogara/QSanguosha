@@ -1,4 +1,7 @@
 #include <magatamasItem.h>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+#include <sprite.h>
 #include "SkinBank.h"
 
 void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
@@ -60,8 +63,8 @@ QRectF MagatamasBoxItem::boundingRect() const
 
 void MagatamasBoxItem::setHp(int hp)
 {
-    m_hp = hp;
     _doHpChangeAnimation(hp);
+    m_hp = hp;
 }
 
 void MagatamasBoxItem::setAnchor(QPoint anchor, Qt::Alignment align)
@@ -98,18 +101,27 @@ void MagatamasBoxItem::_autoAdjustPos()
 
 void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
 {
-    if (newHp == m_hp) return;
-    // @todo: fix this
-    /*
-        i+=player->getHp();
-        QSanSelectableItem *aniMaga = new QSanSelectableItem(QString("image/system/magatamas/small-%1.png").arg(index));
-        addItem(aniMaga);
+    if (newHp >= m_hp) return;
 
-        QPoint pos = i>=5 ? QPoint(42,69):QPoint(26,86);
-        pos.rx() += (i % 5)*16;
-        pos.rx() += photo->scenePos().x();
-        pos.ry() += photo->scenePos().y();
-        aniMaga->setPos(pos);
+    int xStep, yStep;
+    if (this->m_orientation == Qt::Horizontal)
+    {
+        xStep = m_iconSize.width(); yStep = 0;
+    }
+    else
+    {
+        xStep = 0; yStep = m_iconSize.height();
+    }
+
+    for(int i = newHp + 1; i<= m_hp; i++)
+    {
+
+        Sprite *aniMaga = new Sprite();
+        aniMaga->setPixmap(_icons[i]);
+        aniMaga->setParentItem(this);
+        aniMaga->setOffset(QPoint(-m_iconSize.width()/2,-m_iconSize.height()/2));
+
+        aniMaga->setPos(QPoint(xStep * i + aniMaga->offset().x(), yStep * i + aniMaga->offset().y()));
 
         QPropertyAnimation *fade = new QPropertyAnimation(aniMaga,"opacity");
         fade->setEndValue(0);
@@ -125,9 +137,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
         group->start(QAbstractAnimation::DeleteWhenStopped);
 
         aniMaga->show();
-
-        i-=player->getHp();
-        */
+    }
 }
 
 void MagatamasBoxItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
