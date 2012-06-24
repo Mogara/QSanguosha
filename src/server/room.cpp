@@ -3998,7 +3998,6 @@ void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who){
 }
 
 void Room::takeAG(ServerPlayer *player, int card_id){
-    Q_ASSERT(card_id != 0);
     if(player){
         player->addCard(Sanguosha->getCard(card_id), Player::PlaceHand);
         setCardMapping(card_id, player, Player::PlaceHand);

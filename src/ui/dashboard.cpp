@@ -370,7 +370,11 @@ void Dashboard::_adjustCards(){
 
     int n = m_handCards.length();
 
-    maxCards = qBound(n / 2, maxCards, n);
+    if (n == 0) return;
+
+    if (maxCards >= n) maxCards = n;
+    else maxCards = (n - 1) / 2 + 1;
+
     QList<CardItem*> row;
     QSanRoomSkin::DashboardLayout* layout = (QSanRoomSkin::DashboardLayout*)_m_layout;
     int leftWidth = layout->m_leftWidth;
@@ -378,20 +382,24 @@ void Dashboard::_adjustCards(){
     int middleWidth = _m_width - layout->m_leftWidth - layout->m_rightWidth - this->getButtonWidgetWidth();
     QRect rowRect = QRect(leftWidth, layout->m_normalHeight - cardHeight, middleWidth, cardHeight);
     for (int i = 0; i < maxCards; i++)
+    {
         row.push_back(m_handCards[i]);
+    }
+    _m_highestZ = n;
     _disperseCards(row, rowRect, Qt::AlignLeft, true, true);
     
     row.clear();
-
     rowRect.translate(0, 1.5 * S_PENDING_OFFSET_Y);
     for (int i = maxCards; i < n; i++)
+    {
         row.push_back(m_handCards[i]);
+    }
+    _m_highestZ = 0;
     _disperseCards(row, rowRect, Qt::AlignLeft, true, true); 
 
     for (int i = 0; i < n; i++)
     {
         CardItem* card = m_handCards[i];
-        card->setZValue(i);
 
         if (card->isSelected())
         {

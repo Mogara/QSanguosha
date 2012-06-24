@@ -51,7 +51,7 @@ void GeneralCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRe
         qSort(cards.begin(), cards.end(), GeneralCardContainer::_horizontalPosLessThan);
     double maxWidth = fillRegion.width();
     int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;
-    double step = qMin((double)cardWidth, maxWidth / numCards);
+    double step = qMin((double)cardWidth, (maxWidth - cardWidth) / (numCards - 1));
     align &= Qt::AlignHorizontal_Mask;
     for (int i = 0; i < numCards; i++)
     {

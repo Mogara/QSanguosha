@@ -26,6 +26,7 @@ protected:
     CardItem* _createCard(int card_id);    
     void _disperseCards(QList<CardItem*> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);
     void _playMoveCardsAnimation(QList<CardItem*> &cards, bool destroyCards);
+    int _m_highestZ;
 protected slots:
     virtual void onAnimationFinished();
 private slots:
@@ -33,7 +34,6 @@ private slots:
     void _destroyCard();
 private:
     static bool _horizontalPosLessThan(const CardItem* card1, const CardItem* card2);
-    int _m_highestZ;
     QList<CardItem*> _cardsToBeDestroyed;
     QMutex _mutex_cardsToBeDestroyed;    
 signals:
