@@ -45,6 +45,7 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
                     int wy = y + dy;
                     int dist = dx * dx + dy * dy;
                     if (wx < 0 || wy < 0 || wx >= cols || wy >= rows) continue;
+                    if (dx * dx + dy * dy > radius * radius) continue;
                     int newVal = alpha - decade * dist;
                     Q_ASSERT((wy * cols + wx) * 4 < cols * rows * 4);
                     _NEW_PIXEL(wx, wy) = (uchar)qMax((int)_NEW_PIXEL(wx, wy), newVal); 
