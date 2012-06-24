@@ -113,7 +113,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
         xStep = 0; yStep = m_iconSize.height();
     }
 
-    for(int i = newHp + 1; i<= m_hp; i++)
+    for(int i = newHp ; i< m_hp; i++)
     {
 
         Sprite *aniMaga = new Sprite();
@@ -121,12 +121,14 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
         aniMaga->setParentItem(this);
         aniMaga->setOffset(QPoint(-m_iconSize.width()/2,-m_iconSize.height()/2));
 
-        aniMaga->setPos(QPoint(xStep * i + aniMaga->offset().x(), yStep * i + aniMaga->offset().y()));
+        aniMaga->setPos(QPoint(xStep * i - aniMaga->offset().x(), yStep * i - aniMaga->offset().y()));
 
         QPropertyAnimation *fade = new QPropertyAnimation(aniMaga,"opacity");
         fade->setEndValue(0);
+        fade->setDuration(500);
         QPropertyAnimation *grow = new QPropertyAnimation(aniMaga,"scale");
         grow->setEndValue(4);
+        grow->setDuration(500);
 
         connect(fade,SIGNAL(finished()),aniMaga,SLOT(deleteLater()));
 
