@@ -69,7 +69,8 @@ void Photo::refresh()
         G_PHOTO_LAYOUT.m_onlineStatusFont.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
                                                     Qt::AlignCenter,
                                                     Sanguosha->translate(state_str));
-        _paintPixmap(_m_onlineStatusItem, rect, QPixmap::fromImage(image), this);
+        QPixmap pixmap = QPixmap::fromImage(image);
+        _paintPixmap(_m_onlineStatusItem, rect, pixmap, this);
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
     }
 }
