@@ -3725,7 +3725,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         }else if(has_null){
             showCard(target, has_null->getEffectiveId());
             thread->delay();
-            throwCard(has_peach, target);
+            throwCard(has_null, target);
         }
         return;
     }
