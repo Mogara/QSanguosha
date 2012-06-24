@@ -313,10 +313,10 @@ public:
 				room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
                 int x = damage.damage, i;
                 for(i=0; i<x; i++){
-                    int card_id  = room->askForCardChosen(source, source, "h", objectName());
-                    if(card_id > -1){
-                        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
-                        room->obtainCard(player, Sanguosha->getCard(card_id), reason, true);
+                    const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
+                    if(card){
+                        room->showCard(source, card->getEffectiveId());
+                        player->obtainCard(card);
                     }else{
                         room->loseHp(source);
                     }
