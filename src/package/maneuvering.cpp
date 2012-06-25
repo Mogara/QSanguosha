@@ -180,6 +180,7 @@ public:
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.nature == DamageStruct::Normal){
+                room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -192,6 +193,7 @@ public:
         }else if(event == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card->inherits("AOE")){
+                room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -234,6 +236,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.damage > 1){
+            room->setEmotion(player, "armor/silver_lion");
             LogMessage log;
             log.type = "#SilverLion";
             log.from = player;
@@ -259,6 +262,7 @@ void SilverLion::onUninstall(ServerPlayer *player) const{
         RecoverStruct recover;
         recover.card = this;
         player->getRoom()->recover(player, recover);
+        player->getRoom()->setEmotion(player, "armor/silver_lion");
     }
 }
 

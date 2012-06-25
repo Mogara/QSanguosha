@@ -244,11 +244,15 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *, QVariant &data) const{
         if(event == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("Slash"))
-            {
-                foreach(ServerPlayer *p, use.to)
+            if(use.card->inherits("Slash")){
+                bool do_anim = false;
+                foreach(ServerPlayer *p, use.to){
                     p->addMark("qinggang");
-                room->setEmotion(use.from,"weapon/qinggang");
+                    if (p->getArmor()  || p->hasSkill("bazhen"))  do_anim = true;
+                }
+                if (do_anim){
+                    room->setEmotion(use.from, "weapon/qinggang_sword");
+                }
             }
         }
         else{
@@ -279,6 +283,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
+
 
         if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
             return false;
@@ -522,10 +527,11 @@ public:
 
                 room->judge(judge);
                 if(judge.isGood()){
+                    room->setEmotion(player, "armor/eight_diagram");
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
-                    room->setEmotion(player, "good");
+                    //room->setEmotion(player, "good");
 
                     return true;
                 }else
@@ -661,7 +667,7 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->objectName());
-    if(jink)
+    if(jink && !(jink->getSkillName() == "eight_diagram" || jink->getSkillName() == "bazhen"))
         room->setEmotion(effect.to, "jink");
     else{
         DamageStruct damage;
@@ -938,8 +944,8 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *second = effect.from;
     Room *room = first->getRoom();
 
-    room->setEmotion(first, "duel-a");
-    room->setEmotion(second, "duel-b");
+    room->setEmotion(first, "duel");
+    room->setEmotion(second, "duel");
 
     forever{
         if(second->hasFlag("WushuangTarget")){
@@ -1163,6 +1169,8 @@ public:
             log.arg = objectName();
             log.arg2 = effect.slash->objectName();
             player->getRoom()->sendLog(log);
+
+            room->setEmotion(player, "armor/renwang_shield");
 
             return true;
         }else

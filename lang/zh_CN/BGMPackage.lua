@@ -5,6 +5,7 @@ return {
 
 	["#bgm_zhaoyun"] = "白马先锋",
 	["bgm_zhaoyun"] = "☆SP赵云",
+	["&bgm_zhaoyun"] = "赵云",
 	["illustrator:bgm_zhaoyun"] = "Vincent",
 	["designer:bgm_zhaoyun"] = "Danny",
 	["chongzhen"] = "冲阵",
@@ -12,6 +13,7 @@ return {
 
 	["#bgm_diaochan"] = "暗黑的傀儡师",
 	["bgm_diaochan"] = "☆SP貂蝉",
+	["&bgm_diaochan"] = "貂蝉",
 	["illustrator:bgm_diaochan"] = "木美人",
 	["designer:bgm_diaochan"] = "Danny",
 	["lihun"] = "离魂",
@@ -19,6 +21,7 @@ return {
 
 	["#bgm_caoren"] = "险不辞难",
 	["bgm_caoren"] = "☆SP曹仁",
+	["&bgm_caoren"] = "曹仁",
 	["illustrator:bgm_caoren"] = "张帅",
 	["designer:bgm_caoren"] = "Danny",
 	["kuiwei"] = "溃围",
@@ -30,6 +33,7 @@ return {
 
 	["#bgm_pangtong"] = "荆楚之高俊",
 	["bgm_pangtong"] = "☆SP庞统",
+	["&bgm_pangtong"] = "庞统",
 	["illustrator:bgm_pangtong"] = "LiuHeng",
 	["designer:bgm_pangtong"] = "Danny",
 	["manjuan"] = "漫卷",
@@ -44,6 +48,7 @@ return {
 	
 	["#bgm_zhangfei"] = "横矛立马",
 	["bgm_zhangfei"] = "☆SP张飞",
+	["&bgm_zhangfei"] = "张飞",
 	["illustrator:bgm_zhangfei"] = "绿豆粥",
 	["designer:bgm_zhangfei"] = "Serendipity",
 	["jie"] = "嫉恶",
@@ -59,7 +64,8 @@ return {
 	
 	["#bgm_lvmeng"] = "国士之风",
 	["bgm_lvmeng"] = "☆SP吕蒙",
-	["illustrator:bgm_lvmeng"] = "yellowkiss",
+	["&bgm_lvmeng"] = "吕蒙",
+	["illustrator:bgm_lvmeng"] = "YellowKiss",
 	["designer:bgm_lvmeng"] = "如水法师卞程",
 	["tanhu"] = "探虎",	
 	[":tanhu"] = "出牌阶段，你可以与一名其他角色拼点。若你赢，你获得以下技能直到会和结束：你与该角色的距离为1.你对该角色使用的非延时类锦囊不能被【无懈可击】抵消，每阶段限一次。",
@@ -70,6 +76,7 @@ return {
 	
 	["#bgm_liubei"] = "汉昭烈帝",
 	["bgm_liubei"] = "☆SP刘备",
+	["&bgm_liubei"] = "刘备", 
 	["illustrator:bgm_liubei"] = "",
 	["designer:bgm_liubei"] = "",
 	["zhaolie"] = "昭烈",
