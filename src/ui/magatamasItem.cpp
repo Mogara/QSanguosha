@@ -117,7 +117,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
     {
 
         Sprite *aniMaga = new Sprite();
-        aniMaga->setPixmap(_icons[i]);
+        aniMaga->setPixmap(_icons[qBound(0,i,5)]);
         aniMaga->setParentItem(this);
         aniMaga->setOffset(QPoint(-m_iconSize.width()/2,-m_iconSize.height()/2));
 
