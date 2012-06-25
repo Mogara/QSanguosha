@@ -723,7 +723,8 @@ public:
                 }
                 QString choice;
                 if (choicelist.length() >=2){
-                        choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"));
+                    QVariant data = QVariant::fromValue(no_basic);
+                    choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"), data);
                 }
                 else{
                     choice = "damage";

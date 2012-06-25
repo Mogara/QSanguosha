@@ -21,7 +21,7 @@ public:
     virtual Card::Suit askForSuit(const QString&) = 0;
     virtual QString askForKingdom() = 0;
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) = 0;
-    virtual QString askForChoice(const char *skill_name, const char *choices) = 0;
+    virtual QString askForChoice(const char *skill_name, const char *choices, const QVariant &data) = 0;
     virtual QList<int> askForDiscard(const char *reason, int discard_num, int min_num, bool optional, bool include_equip) = 0;
     virtual const Card *askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive) = 0;
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason)  = 0;
@@ -42,7 +42,7 @@ public:
     virtual Card::Suit askForSuit(const QString&) ;
     virtual QString askForKingdom() ;
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) ;
-    virtual QString askForChoice(const char *skill_name, const char *choices);
+    virtual QString askForChoice(const char *skill_name, const char *choices, const QVariant &data);
     virtual QList<int> askForDiscard(const char *reason, int discard_num, int min_num, bool optional, bool include_equip) ;
     virtual const Card *askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason) ;
@@ -65,7 +65,7 @@ public:
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
     virtual QList<int> askForDiscard(const char *reason, int discard_num, int min_num, bool optional, bool include_equip) ;
-    virtual QString askForChoice(const char *skill_name, const char *choices);
+    virtual QString askForChoice(const char *skill_name, const char *choices, const QVariant &data);
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason) ;
     virtual const Card *askForCard(const char *pattern, const char *prompt, const QVariant &data);
@@ -111,6 +111,25 @@ bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
     }
 
     return false;
+}
+
+QString LuaAI::askForChoice(const QString &skill_name, const QString &choices, const QVariant &data){
+    if(callback == 0)
+        return TrustAI::askForChoice(skill_name, choices, data);
+
+   lua_State *L = room->getLuaState();
+   pushCallback(L, __FUNCTION__);
+   lua_pushstring(L, skill_name.toAscii());
+   lua_pushstring(L, choices.toAscii());
+   SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+   int error = lua_pcall(L, 4, 1, 0);
+   const char *result = lua_tostring(L, -1);
+   lua_pop(L, 1);
+   if(error){
+       room->output(result);
+       return TrustAI::askForChoice(skill_name, choices, data);
+   }
+   return result;
 }
 
 void LuaAI::activate(CardUseStruct &card_use) {

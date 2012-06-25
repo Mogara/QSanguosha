@@ -335,4 +335,63 @@ sgs.ai_use_priority.TanhuCard = 8
 sgs.ai_skill_invoke.mouduan = function(self, data)
 	return self:isEquip("Crossbow") or self:getCardsNum("Crossbow") > 0
 end
-	
+
+sgs.ai_skill_invoke.zhaolie = function(self, data)
+	local enemynum = 0
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:distanceTo(enemy) <= self.player:getAttackRange() then
+			enemynum = enemynum + 1
+		end
+	end
+	return enemynum > 0
+end
+
+sgs.ai_skill_playerchosen.zhaolie = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	self:sort(targets, "hp")
+	for _, target in ipairs(targets) do
+		if self:isEnemy(target) then 
+			return target 
+		end 
+	end
+	return targets[1]
+end
+
+sgs.ai_skill_choice.zhaolie = function(self, choices, data)
+	local nobasic = data:toInt()
+	if nobasic < 2 and self.player:getHp() > 1 then 
+		return "damage"
+	else
+		return "throw"
+	end
+end
+
+sgs.ai_skill_invoke.shichou = function(self, data)
+	local enemynum = 0
+	local shu = 0
+	local first = self.room:getTag("FirstRound"):toBool()
+	local players = self.room:getOtherPlayers(self.player)
+	for _, player in sgs.qlist(players) do
+		if player:getKingdom() == "shu" then
+			shu = shu + 1
+			if self:isEnemy(player) then
+				enemynum = enemynum + 1
+			end
+		end
+	end
+	if first and shu > 1 then return false end
+	return true
+end
+
+sgs.ai_skill_playerchosen.shichou = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	self:sort(targets, "hp", true)
+	for _, target in ipairs(targets) do
+		if self:isEnemy(target) then 
+			return target 
+		end 
+	end
+	return targets[1]
+end
+
+sgs.ai_skill_cardchosen.shichou = sgs.ai_skill_cardchosen.lihun

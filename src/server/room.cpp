@@ -730,13 +730,13 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     return invoked;
 }
 
-QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices){
+QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data){
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
     AI *ai = player->getAI();
     QString answer;
     if(ai)
     {
-        answer = ai->askForChoice(skill_name, choices);
+        answer = ai->askForChoice(skill_name, choices, data);
         thread->delay(Config.AIDelay);
     }
     else{
