@@ -184,7 +184,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
     dying.who = player;
     dying.damage = reason;
 
-    QVariant dying_data = QVariant::fromValue(dying);
+    QVariant dying_data = QVariant::fromValue(dying);// be care
     thread->trigger(Dying, this, player, dying_data);
 }
 

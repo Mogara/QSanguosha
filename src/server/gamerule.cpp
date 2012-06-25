@@ -405,13 +405,13 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             if(!chained)
                 break;
 
-            if(damage.to->isChained() && damage.nature != DamageStruct::Normal){
-                room->setPlayerProperty(damage.to, "chained", false);
-                room->setPlayerFlag(damage.to, "chained");
+            if(player->isChained() && damage.nature != DamageStruct::Normal){
+                room->setPlayerProperty(player, "chained", false);
+                room->setPlayerFlag(player, "chained");
 
                 LogMessage log;
                 log.type = "#IronChainDamage";
-                log.from = damage.to;
+                log.from = player;
                 room->sendLog(log);
 
                 // iron chain effect
