@@ -740,7 +740,7 @@ public:
             }
             QStringList choicelist;
             choicelist << "damage";
-            if (victim->getHandcardNum() >= no_basic){
+            if (victim->getCards("he").length() >= no_basic){
                 choicelist << "throw";
             }
             QString choice;
