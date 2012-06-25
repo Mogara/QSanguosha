@@ -676,6 +676,154 @@ public:
     }
 };
 
+class Zhaolie:public TriggerSkill{
+public:
+    Zhaolie():TriggerSkill("zhaolie"){
+        events << PhaseChange;
+    }
+
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *liubei, QVariant &data) const{
+        if(liubei->getPhase() == Player::Draw && room->askForSkillInvoke(liubei, objectName())){
+            room->broadcastSkillInvoke(objectName());
+            liubei->drawCards(1);
+            QList<ServerPlayer *> victims = room->getOtherPlayers(liubei);
+            QList<const Card *> cards;
+            int no_basic = 0;
+            ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, objectName());
+            for(int i = 0; i < 3; i++){
+                int card_id = room->drawCard();
+                room->moveCardTo(Sanguosha->getCard(card_id), NULL, victim, Player::PlaceTable,
+                    CardMoveReason(CardMoveReason::S_REASON_TURNOVER, QString(), QString(), "zhaolie", QString()), true);
+                room->getThread()->delay();
+
+                const Card *card = Sanguosha->getCard(card_id);
+                if(!card->inherits("BasicCard") || card->inherits("Peach")){
+                    if(!card->inherits("BasicCard")){
+                        no_basic++;
+                    }
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());
+                    room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+                }else{
+                    cards << card;
+                }
+            }
+            QStringList choicelist;
+            choicelist << "damage";
+            if (victim->getHandcardNum() >= no_basic){
+                choicelist << "throw";
+            }
+            QString choice;
+            if (choicelist.length() >=2){
+                    choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"));
+            }
+            else{
+                choice = "damage";
+            }
+            if(choice == "damage"){
+                if(no_basic > 0){
+                    DamageStruct damage;
+                    damage.card = NULL;
+                    damage.from = liubei;
+                    damage.to = victim;
+                    damage.damage = no_basic;
+
+                    room->damage(damage);
+                }
+                if(!cards.empty()){
+                    foreach(const Card *c, cards){
+                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, victim->objectName());
+                        room->obtainCard(victim, c, reason);
+                    }
+                }
+            }
+            else{
+                if(no_basic > 0){
+                    room->askForDiscard(victim, "zhaolie", no_basic, 1, false, true);
+                }
+                if(!cards.empty()){
+                    foreach(const Card *c, cards){
+                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, liubei->objectName());
+                        room->obtainCard(liubei, c, reason);
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+};
+
+class Shichou: public TriggerSkill{
+public:
+    Shichou(): TriggerSkill("shichou$"){
+        events << PhaseChange << DamageInflicted << Dying;
+        frequency = Limited;
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(event == PhaseChange && player->getMark("@hate") == 1
+            && player->getPhase() == Player::Start && player->getCards("he").length() > 1
+            && player->askForSkillInvoke(objectName())){
+            QList<ServerPlayer *> targets = room->getOtherPlayers(player);
+            QList<ServerPlayer *> victims;
+            player->loseMark("@hate", 1);
+
+            foreach(ServerPlayer *p, targets){
+                if(p->getKingdom() == "shu"){
+                    victims << p;
+                }
+            }
+            if(!victims.empty()){
+                ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
+                victim->gainMark("hate");
+                for(int i = 0; i < 2; i++){
+
+                    int card_id = room->askForCardChosen(player, player, "he", objectName());
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, player->objectName());
+                    reason.m_playerId = victim->objectName();
+                    room->obtainCard(victim, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+                }
+            }
+        }
+        else if(event == DamageInflicted && player->hasLordSkill(objectName())){
+            ServerPlayer *target = NULL;
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if(p->getMark("hate") > 0){
+                    target = p;
+                    break;
+                }
+            }
+            if(target == NULL)
+                return false;
+            LogMessage log;
+            log.type = "#ShichouProtect";
+            log.arg = objectName();
+            log.from = player;
+            log.to << target;
+            room->sendLog(log);
+            DamageStruct damage = data.value<DamageStruct>();
+            DamageStruct newdamage;
+            newdamage.card = damage.card;
+            newdamage.from = damage.from;
+            newdamage.to = target;
+            newdamage.damage = damage.damage;
+
+            room->damage(newdamage);
+            return true;
+        }
+        else if(event == Dying && player->getMark("hate") > 0){
+            player->loseMark("hate");
+        }
+        return false;
+    }
+};
+
+
 BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3);
     bgm_zhaoyun->addSkill("longdan");
@@ -705,6 +853,11 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_lvmeng->addSkill(new MouduanStart);
     bgm_lvmeng->addSkill(new Mouduan);
     related_skills.insertMulti("mouduan", "#mouduan");
+
+    General *bgm_liubei = new General(this, "bgm_liubei$", "shu");
+    bgm_liubei->addSkill(new Zhaolie);
+    bgm_liubei->addSkill(new Shichou);
+    bgm_liubei->addSkill(new MarkAssignSkill("@hate", 1));
 
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();
