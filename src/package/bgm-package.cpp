@@ -683,71 +683,81 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *liubei, QVariant &data) const{
-        if(liubei->getPhase() == Player::Draw && room->askForSkillInvoke(liubei, objectName())){
+        if(liubei->getPhase() == Player::Draw){
             room->broadcastSkillInvoke(objectName());
-            liubei->drawCards(1);
-            QList<ServerPlayer *> victims = room->getOtherPlayers(liubei);
+            QList<ServerPlayer *> targets = room->getOtherPlayers(liubei);
+            QList<ServerPlayer *> victims;
             QList<const Card *> cards;
             int no_basic = 0;
-            ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, objectName());
-            for(int i = 0; i < 3; i++){
-                int card_id = room->drawCard();
-                room->moveCardTo(Sanguosha->getCard(card_id), NULL, victim, Player::PlaceTable,
-                    CardMoveReason(CardMoveReason::S_REASON_TURNOVER, QString(), QString(), "zhaolie", QString()), true);
-                room->getThread()->delay();
+            foreach(ServerPlayer *p, targets){
+                if(liubei->inMyAttackRange(p)){
+                    victims << p;
+                }
+            }
+            if(victims.empty())
+                return false;
+            if(room->askForSkillInvoke(liubei, objectName())){
+                liubei->drawCards(1);
+                ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, objectName());
+                for(int i = 0; i < 3; i++){
+                    int card_id = room->drawCard();
+                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, victim, Player::PlaceTable,
+                        CardMoveReason(CardMoveReason::S_REASON_TURNOVER, QString(), QString(), "zhaolie", QString()), true);
+                    room->getThread()->delay();
 
-                const Card *card = Sanguosha->getCard(card_id);
-                if(!card->inherits("BasicCard") || card->inherits("Peach")){
-                    if(!card->inherits("BasicCard")){
-                        no_basic++;
+                    const Card *card = Sanguosha->getCard(card_id);
+                    if(!card->inherits("BasicCard") || card->inherits("Peach")){
+                        if(!card->inherits("BasicCard")){
+                            no_basic++;
+                        }
+                        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());
+                        room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+                    }else{
+                        cards << card;
                     }
-                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());
-                    room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
-                }else{
-                    cards << card;
                 }
-            }
-            QStringList choicelist;
-            choicelist << "damage";
-            if (victim->getHandcardNum() >= no_basic){
-                choicelist << "throw";
-            }
-            QString choice;
-            if (choicelist.length() >=2){
-                    choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"));
-            }
-            else{
-                choice = "damage";
-            }
-            if(choice == "damage"){
-                if(no_basic > 0){
-                    DamageStruct damage;
-                    damage.card = NULL;
-                    damage.from = liubei;
-                    damage.to = victim;
-                    damage.damage = no_basic;
+                QStringList choicelist;
+                choicelist << "damage";
+                if (victim->getHandcardNum() >= no_basic){
+                    choicelist << "throw";
+                }
+                QString choice;
+                if (choicelist.length() >=2){
+                        choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"));
+                }
+                else{
+                    choice = "damage";
+                }
+                if(choice == "damage"){
+                    if(no_basic > 0){
+                        DamageStruct damage;
+                        damage.card = NULL;
+                        damage.from = liubei;
+                        damage.to = victim;
+                        damage.damage = no_basic;
 
-                    room->damage(damage);
-                }
-                if(!cards.empty()){
-                    foreach(const Card *c, cards){
-                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, victim->objectName());
-                        room->obtainCard(victim, c, reason);
+                        room->damage(damage);
+                    }
+                    if(!cards.empty()){
+                        foreach(const Card *c, cards){
+                            CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, victim->objectName());
+                            room->obtainCard(victim, c, reason);
+                        }
                     }
                 }
-            }
-            else{
-                if(no_basic > 0){
-                    room->askForDiscard(victim, "zhaolie", no_basic, 1, false, true);
-                }
-                if(!cards.empty()){
-                    foreach(const Card *c, cards){
-                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, liubei->objectName());
-                        room->obtainCard(liubei, c, reason);
+                else{
+                    if(no_basic > 0){
+                        room->askForDiscard(victim, "zhaolie", no_basic, 1, false, true);
+                    }
+                    if(!cards.empty()){
+                        foreach(const Card *c, cards){
+                            CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, liubei->objectName());
+                            room->obtainCard(liubei, c, reason);
+                        }
                     }
                 }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -766,19 +776,20 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == PhaseChange && player->getMark("@hate") == 1
-            && player->getPhase() == Player::Start && player->getCards("he").length() > 1
-            && player->askForSkillInvoke(objectName())){
+        if(event == PhaseChange && player->getMark("@hate") == 1 && player->hasLordSkill("shichou")
+            && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
             QList<ServerPlayer *> targets = room->getOtherPlayers(player);
             QList<ServerPlayer *> victims;
-            player->loseMark("@hate", 1);
 
             foreach(ServerPlayer *p, targets){
                 if(p->getKingdom() == "shu"){
                     victims << p;
                 }
             }
-            if(!victims.empty()){
+            if(victims.empty())
+                return false;
+            if(player->askForSkillInvoke(objectName())){
+                player->loseMark("@hate", 1);
                 ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
                 victim->gainMark("hate");
                 for(int i = 0; i < 2; i++){
@@ -790,7 +801,7 @@ public:
                 }
             }
         }
-        else if(event == DamageInflicted && player->hasLordSkill(objectName())){
+        else if(event == DamageInflicted && player->hasLordSkill("shichou")){
             ServerPlayer *target = NULL;
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if(p->getMark("hate") > 0){
