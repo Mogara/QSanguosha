@@ -501,7 +501,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
     case SlashMissed:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.to->getMark("qinggang") > 0)
-                effect.to->loseMark("qinggang");
+                effect.to->setMark("qinggang", 0);
             break;
         }
 
