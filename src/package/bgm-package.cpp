@@ -720,7 +720,7 @@ public:
         }
         if(liubei->getPhase() == Player::Draw && liubei->hasFlag("Invoked")){
             room->setPlayerFlag(liubei, "-Invoked");
-            ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, objectName());
+            ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, "zhaolie");
             for(int i = 0; i < 3; i++){
                 int card_id = room->drawCard();
                 room->moveCardTo(Sanguosha->getCard(card_id), NULL, victim, Player::PlaceTable,
@@ -802,12 +802,11 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == PhaseChange && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
-            QList<ServerPlayer *> targets = room->getAllPlayers();
+            QList<ServerPlayer *> targets = room->getOtherPlayers(player);
             QList<ServerPlayer *> victims;
 
             foreach(ServerPlayer *p, targets){
-                if(p->getKingdom() == "shu" &&
-                   !(p->hasLordSkill(objectName()) && p->objectName() != player->objectName())){
+                if(p->getKingdom() == "shu" && !p->hasLordSkill(objectName())){
                     victims << p;
                 }
             }
@@ -816,7 +815,7 @@ public:
             if(player->askForSkillInvoke(objectName())){
                 player->gainMark("@hate");
                 ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
-                victim->gainMark("hate");
+                victim->addMark("hate"+player->objectName());
                 for(int i = 0; i < 2; i++){
 
                     int card_id = room->askForCardChosen(player, player, "he", objectName());
@@ -829,7 +828,7 @@ public:
         else if(event == DamageInflicted && player->hasLordSkill(objectName())){
             ServerPlayer *target = NULL;
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-                if(p->getMark("hate") > 0){
+                if(p->getMark("hate"+player->objectName()) > 0){
                     target = p;
                     break;
                 }
@@ -850,11 +849,16 @@ public:
             newdamage.damage = damage.damage;
 
             room->damage(newdamage);
-            target->drawCards(damage.damage);
+            if(target->isAlive())
+                target->drawCards(damage.damage);
             return true;
         }
-        else if(event == Dying && player->getMark("hate") > 0){
-            player->removeMark("hate");
+        else if(event == Dying){
+            foreach(ServerPlayer *p, room->getAllPlayers()){
+                if(p->hasLordSkill(objectName()) && player->getMark("hate"+p->objectName()) > 0){
+                    player->setMark("hate"+p->objectName(), 0);
+                }
+            }
         }
         return false;
     }
