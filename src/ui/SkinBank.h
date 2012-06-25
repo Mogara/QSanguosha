@@ -240,17 +240,21 @@ public:
     const CommonLayout& getCommonLayout() const;
     const DashboardLayout& getDashboardLayout() const;
     
-    QPixmap getButtonPixmap(const QString &buttonName, QSanButton::ButtonState state) const;
+    // @todo: these two functions are currently only used to generate HTML when prompt whether to
+    // use Nullification. Get rid of them in the future.
     QString getCardMainPixmapPath(const QString &cardName) const;
+    QString getGeneralPixmapPath(const QString &generalName, GeneralIconSize size) const;
+
+    QPixmap getButtonPixmap(const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getCardMainPixmap(const QString &cardName) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
     QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
     QPixmap getCardFramePixmap(const QString &frameType) const;
     QPixmap getCardAvatarPixmap(const QString &generalName) const;
-    QString getGeneralPixmapPath(const QString &generalName, GeneralIconSize size) const;
     QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size) const;
     QString getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index = -1) const;
+    QPixmap getProgressBarPixmap(int percentile) const;
 
     // static consts
     // main keys
@@ -297,6 +301,7 @@ public:
     static const char* S_SKIN_KEY_PLAYER_AUDIO_EFFECT;
     static const char* S_SKIN_KEY_SYSTEM_AUDIO_EFFECT;
     static const char* S_SKIN_KEY_EQUIP_ICON;
+    static const char* S_SKIN_KEY_PROGRESS_BAR_IMAGE;
 
     // The following ones are to be moved to lobby skin later
     static const char* S_SKIN_KEY_READY_ICON;

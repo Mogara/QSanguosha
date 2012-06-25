@@ -47,14 +47,6 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *);
     QSanProtocol::ProcessInstanceType m_instanceType;
-private:
-    static QPixmap* sm_progress_100_image;
-    static QPixmap* sm_progress_80_image;
-    static QPixmap* sm_progress_50_image;
-    static QPixmap* sm_progress_20_image;
-    static QPixmap* sm_progress_0_image;
-    static const int S_PROGRESS_IMAGE_WIDTH = 310;
-    static const int S_PROGRESS_IMAGE_HEIGHT = 26;
 };
 
 #endif
