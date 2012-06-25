@@ -676,91 +676,111 @@ public:
     }
 };
 
-class Zhaolie:public TriggerSkill{
+class Zhaolie:public DrawCardsSkill{
 public:
-    Zhaolie():TriggerSkill("zhaolie"){
-        events << PhaseChange;
+    Zhaolie():DrawCardsSkill("zhaolie"){
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *liubei, QVariant &data) const{
-        if(liubei->getPhase() == Player::Draw){
+    virtual int getDrawNum(ServerPlayer *liubei, int n) const{
+        Room *room = liubei->getRoom();
+        QList<ServerPlayer *> targets = room->getOtherPlayers(liubei);
+        QList<ServerPlayer *> victims;
+        foreach(ServerPlayer *p, targets){
+            if(liubei->inMyAttackRange(p)){
+                victims << p;
+            }
+        }
+        if(victims.empty())
+            return n;
+        if(room->askForSkillInvoke(liubei, objectName())){
             room->broadcastSkillInvoke(objectName());
-            QList<ServerPlayer *> targets = room->getOtherPlayers(liubei);
-            QList<ServerPlayer *> victims;
-            QList<const Card *> cards;
-            int no_basic = 0;
-            foreach(ServerPlayer *p, targets){
-                if(liubei->inMyAttackRange(p)){
-                    victims << p;
+            room->setPlayerFlag(liubei, "Invoked");
+            return n-1;
+        }else
+            return n;
+    }
+};
+
+class ZhaolieAct: public TriggerSkill{
+public:
+    ZhaolieAct():TriggerSkill("#zhaolie"){
+        events << CardDrawnDone;
+    }
+
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *liubei, QVariant &data) const{
+        int no_basic = 0;
+        QList<const Card *> cards;
+        QList<ServerPlayer *> targets = room->getOtherPlayers(liubei);
+        QList<ServerPlayer *> victims;
+        foreach(ServerPlayer *p, targets){
+            if(liubei->inMyAttackRange(p)){
+                victims << p;
+            }
+        }
+        if(liubei->getPhase() == Player::Draw && liubei->hasFlag("Invoked")){
+            room->setPlayerFlag(liubei, "-Invoked");
+            ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, objectName());
+            for(int i = 0; i < 3; i++){
+                int card_id = room->drawCard();
+                room->moveCardTo(Sanguosha->getCard(card_id), NULL, victim, Player::PlaceTable,
+                    CardMoveReason(CardMoveReason::S_REASON_TURNOVER, QString(), QString(), "zhaolie", QString()), true);
+                room->getThread()->delay();
+
+                const Card *card = Sanguosha->getCard(card_id);
+                if(!card->inherits("BasicCard") || card->inherits("Peach")){
+                    if(!card->inherits("BasicCard")){
+                        no_basic++;
+                    }
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());
+                    room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+                }else{
+                    cards << card;
                 }
             }
-            if(victims.empty())
-                return false;
-            if(room->askForSkillInvoke(liubei, objectName())){
-                liubei->drawCards(1);
-                ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, objectName());
-                for(int i = 0; i < 3; i++){
-                    int card_id = room->drawCard();
-                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, victim, Player::PlaceTable,
-                        CardMoveReason(CardMoveReason::S_REASON_TURNOVER, QString(), QString(), "zhaolie", QString()), true);
-                    room->getThread()->delay();
+            QStringList choicelist;
+            choicelist << "damage";
+            if (victim->getHandcardNum() >= no_basic){
+                choicelist << "throw";
+            }
+            QString choice;
+            if (choicelist.length() >=2){
+                QVariant data = QVariant::fromValue(no_basic);
+                choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"), data);
+            }
+            else{
+                choice = "damage";
+            }
+            if(choice == "damage"){
+                if(no_basic > 0){
+                    DamageStruct damage;
+                    damage.card = NULL;
+                    damage.from = liubei;
+                    damage.to = victim;
+                    damage.damage = no_basic;
 
-                    const Card *card = Sanguosha->getCard(card_id);
-                    if(!card->inherits("BasicCard") || card->inherits("Peach")){
-                        if(!card->inherits("BasicCard")){
-                            no_basic++;
-                        }
-                        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());
-                        room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
-                    }else{
-                        cards << card;
+                    room->damage(damage);
+                }
+                if(!cards.empty()){
+                    foreach(const Card *c, cards){
+                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, victim->objectName());
+                        room->obtainCard(victim, c, reason);
                     }
                 }
-                QStringList choicelist;
-                choicelist << "damage";
-                if (victim->getHandcardNum() >= no_basic){
-                    choicelist << "throw";
-                }
-                QString choice;
-                if (choicelist.length() >=2){
-                    QVariant data = QVariant::fromValue(no_basic);
-                    choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"), data);
-                }
-                else{
-                    choice = "damage";
-                }
-                if(choice == "damage"){
-                    if(no_basic > 0){
-                        DamageStruct damage;
-                        damage.card = NULL;
-                        damage.from = liubei;
-                        damage.to = victim;
-                        damage.damage = no_basic;
-
-                        room->damage(damage);
-                    }
-                    if(!cards.empty()){
-                        foreach(const Card *c, cards){
-                            CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, victim->objectName());
-                            room->obtainCard(victim, c, reason);
-                        }
+            }
+            else{
+                if(no_basic > 0){
+                    while(no_basic > 1){
+                        room->askForDiscard(victim, "zhaolie", no_basic, 1, false, true);
+                        no_basic--;
                     }
                 }
-                else{
-                    if(no_basic > 0){
-                        while(no_basic > 1){
-                            room->askForDiscard(victim, "zhaolie", no_basic, 1, false, true);
-                            no_basic--;
-                        }
-                    }
-                    if(!cards.empty()){
-                        foreach(const Card *c, cards){
-                            CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, liubei->objectName());
-                            room->obtainCard(liubei, c, reason);
-                        }
+                if(!cards.empty()){
+                    foreach(const Card *c, cards){
+                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, liubei->objectName());
+                        room->obtainCard(liubei, c, reason);
                     }
                 }
-                return true;
             }
         }
         return false;
@@ -780,20 +800,21 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == PhaseChange && player->getMark("@hate") == 1 && player->hasLordSkill("shichou")
+        if(event == PhaseChange && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
-            QList<ServerPlayer *> targets = room->getOtherPlayers(player);
+            QList<ServerPlayer *> targets = room->getAllPlayers();
             QList<ServerPlayer *> victims;
 
             foreach(ServerPlayer *p, targets){
-                if(p->getKingdom() == "shu"){
+                if(p->getKingdom() == "shu" &&
+                   !(p->hasLordSkill(objectName()) && p->objectName() != player->objectName())){
                     victims << p;
                 }
             }
             if(victims.empty())
                 return false;
             if(player->askForSkillInvoke(objectName())){
-                player->loseMark("@hate", 1);
+                player->gainMark("@hate");
                 ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
                 victim->gainMark("hate");
                 for(int i = 0; i < 2; i++){
@@ -805,7 +826,7 @@ public:
                 }
             }
         }
-        else if(event == DamageInflicted && player->hasLordSkill("shichou")){
+        else if(event == DamageInflicted && player->hasLordSkill(objectName())){
             ServerPlayer *target = NULL;
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if(p->getMark("hate") > 0){
@@ -829,10 +850,11 @@ public:
             newdamage.damage = damage.damage;
 
             room->damage(newdamage);
+            target->drawCards(damage.damage);
             return true;
         }
         else if(event == Dying && player->getMark("hate") > 0){
-            player->loseMark("hate");
+            player->removeMark("hate");
         }
         return false;
     }
@@ -871,8 +893,9 @@ BGMPackage::BGMPackage():Package("BGM"){
 
     General *bgm_liubei = new General(this, "bgm_liubei$", "shu");
     bgm_liubei->addSkill(new Zhaolie);
+    bgm_liubei->addSkill(new ZhaolieAct);
     bgm_liubei->addSkill(new Shichou);
-    bgm_liubei->addSkill(new MarkAssignSkill("@hate", 1));
+    related_skills.insertMulti("zhaolie", "#zhaolie");
 
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();

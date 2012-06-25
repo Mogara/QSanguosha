@@ -3079,8 +3079,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             moveOneTimeStruct.to_place = cards_move.to_place;
             CardsMoveOneTimeStar move_star = &moveOneTimeStruct;
             QVariant data = QVariant::fromValue(move_star);
-            if(cards_move.to)
-                thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
+            thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
         }
         if (cards_move.countAsOneTime) moveOneTimeStruct = CardsMoveOneTimeStruct();
     }
