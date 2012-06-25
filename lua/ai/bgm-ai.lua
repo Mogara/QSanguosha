@@ -359,6 +359,9 @@ end
 
 sgs.ai_skill_choice.zhaolie = function(self, choices, data)
 	local nobasic = data:toInt()
+	if nobasic == 0 then
+		return "damage"
+	end
 	if nobasic < 2 and self.player:getHp() > 1 then 
 		return "damage"
 	else

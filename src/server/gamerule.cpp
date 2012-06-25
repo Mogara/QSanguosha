@@ -274,7 +274,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *p, use.to)
                 if(p->getMark("qinggang") > 0)
-                    p->setMark("qinggang", 0);;
+                    p->setMark("qinggang", 0);
             room->clearCardFlag(use.card);
 
             break;

@@ -253,7 +253,7 @@ public:
         }
         else{
             foreach(ServerPlayer *p,room->getAlivePlayers())
-                p->removeMark("qinggang");;
+                p->removeMark("qinggang");
         }
         return false;
     }
