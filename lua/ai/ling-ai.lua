@@ -57,6 +57,8 @@ sgs.ai_skill_cardask["@luoyi-discard"] = function(self, data)
 	return "."
 end
 
+sgs.ai_use_priority.LuoyiCard = 9.2
+
 local neofanjian_skill={}
 neofanjian_skill.name="neofanjian"
 table.insert(sgs.ai_skills,neofanjian_skill)
