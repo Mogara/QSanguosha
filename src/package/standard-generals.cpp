@@ -17,7 +17,7 @@ public:
     virtual void onDamaged(ServerPlayer *caocao, const DamageStruct &damage) const{
         Room *room = caocao->getRoom();
         const Card *card = damage.card;
-        if(room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable){
+        if(card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable){
 
             QVariant data = QVariant::fromValue(card);
             if(room->askForSkillInvoke(caocao, "jianxiong", data)){

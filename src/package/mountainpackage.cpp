@@ -1170,7 +1170,7 @@ public:
                 }
             }
             Q_ASSERT(skill_names.length() > 0);
-            skill_name = ai->askForChoice("huashen", skill_names.join("+"));
+            skill_name = ai->askForChoice("huashen", skill_names.join("+"), QVariant());
             const General* general = hash[skill_name];
             Q_ASSERT(general != NULL);
             QString kingdom = general->getKingdom();
