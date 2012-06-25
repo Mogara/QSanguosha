@@ -36,6 +36,19 @@ QString Slash::getSubtype() const{
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    if(source->getPhase() == Player::Play
+            && source->hasUsed("Slash")
+            && source->hasWeapon("crossbow"))
+        room->setEmotion(source,"weapon/crossbow");
+    else if(this->isVirtualCard() && this->skill_name == "spear")
+        room->setEmotion(source,"weapon/spear");
+    else if(targets.length()>1
+            && source->handCards().size() == 0
+            && source->hasWeapon("halberd"))
+        room->setEmotion(source,"weapon/halberd");
+    else if(this->isVirtualCard() && this->skill_name == "fan")
+        room->setEmotion(source,"weapon/fan");
+
     BasicCard::use(room, source, targets);
 
     if(source->hasFlag("drank")){
@@ -191,6 +204,7 @@ public:
             if(use.from->getGeneral()->isMale() != to->getGeneral()->isMale()
                 && use.card->inherits("Slash")){
                 if(use.from->askForSkillInvoke(objectName())){
+                    to->getRoom()->setEmotion(use.from,"weapon/double_sword");
                     bool draw_card = false;
 
                     if(to->isKongcheng())
@@ -231,8 +245,11 @@ public:
         if(event == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Slash"))
+            {
                 foreach(ServerPlayer *p, use.to)
                     p->addMark("qinggang");
+                room->setEmotion(use.from,"weapon/qinggang");
+            }
         }
         else{
             foreach(ServerPlayer *p,room->getAlivePlayers())
@@ -277,6 +294,7 @@ public:
             use.from = player;
             use.to << effect.to;
             room->useCard(use, false);
+            room->setEmotion(player,"weapon/blade");
         }
 
         return false;
@@ -383,6 +401,8 @@ public:
 
         CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
+            room->setEmotion(player,"weapon/axe");
+
             QList<int> card_ids = card->getSubcards();
             foreach(int card_id, card_ids){
                 LogMessage log;
@@ -443,6 +463,8 @@ public:
             if (player == NULL) return false;
             if(!player->askForSkillInvoke(objectName(), data))
                 return false;
+
+            room->setEmotion(player,"weapon/kylin_bow");
 
             QString horse_type;
             if(horses.length() == 2)
@@ -1097,6 +1119,7 @@ public:
 
         if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude()
             && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
+            room->setEmotion(player,"weapon/ice_sword");
                 int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
                 CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, damage.to->objectName());
                 reason.m_playerId = damage.from->objectName();

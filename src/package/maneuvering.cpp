@@ -92,6 +92,7 @@ public:
             return false;
         if(effect.nature == DamageStruct::Normal){
             if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
+                player->getRoom()->setEmotion(player,"weapon/fan");
                 effect.nature = DamageStruct::Fire;
                 data = QVariant::fromValue(effect);
             }
@@ -146,6 +147,7 @@ public:
             damage.to->isKongcheng() && !damage.chain)
         {
             Room *room = damage.to->getRoom();
+            room->setEmotion(player,"weapon/guding_blade");
 
             LogMessage log;
             log.type = "#GudingBladeEffect";

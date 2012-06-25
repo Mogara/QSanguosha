@@ -410,7 +410,7 @@ QGraphicsItem *RoomScene::createDashboardButtons(){
 }
 
 void RoomScene::createExtraButtons(){
-    // @todo: this complication must be entangled... We cannot tolerate
+    // @todo: this complication must be disentangled... We cannot tolerate
     // something created by dashboard, forward to roomscene, and push back
     // to dashboard again...
     m_reverseSelectionButton = dashboard->createButton("reverse-select");
