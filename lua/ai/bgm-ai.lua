@@ -369,6 +369,30 @@ sgs.ai_skill_choice.zhaolie = function(self, choices, data)
 	end
 end
 
+sgs.ai_skill_discard.zhaolie = function(self, discard_num, min_num, optional, include_equip)
+	local to_discard = {}
+	local cards = sgs.QList2Table(self.player:getCards("he"))
+	local index = 0
+
+	self:sortByKeepValue(cards)
+	cards = sgs.reverse(cards)
+
+	for i = #cards, 1, -1 do
+		local card = cards[i]
+		if not self.player:isJilei(card) then
+			table.insert(to_discard, card:getEffectiveId())
+			table.remove(cards, i)
+			index = index + 1
+			if index == discard_num then break end
+		end
+	end	
+	if #to_discard < min_num then return {} 
+	else
+		return to_discard
+	end
+end
+
+
 sgs.ai_skill_invoke.shichou = function(self, data)
 	local enemynum = 0
 	local shu = 0

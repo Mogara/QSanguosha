@@ -748,7 +748,10 @@ public:
                 }
                 else{
                     if(no_basic > 0){
-                        room->askForDiscard(victim, "zhaolie", no_basic, 1, false, true);
+                        while(no_basic > 1){
+                            room->askForDiscard(victim, "zhaolie", no_basic, 1, false, true);
+                            no_basic--;
+                        }
                     }
                     if(!cards.empty()){
                         foreach(const Card *c, cards){
