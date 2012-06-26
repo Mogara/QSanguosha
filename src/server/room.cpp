@@ -3544,13 +3544,6 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     return true;
 }
 
-void Room::discardTotalNCards(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool include_equip){
-    while(discard_num > 0){
-        askForDiscard(player, reason, min_num, min_num, false, include_equip);
-        discard_num = discard_num - min_num;
-    }
-}
-
 const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num){
     notifyMoveFocus(player, S_COMMAND_EXCHANGE_CARD);
     AI *ai = player->getAI();

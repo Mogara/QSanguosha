@@ -723,7 +723,7 @@ public:
             ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, "zhaolie");
             for(int i = 0; i < 3; i++){
                 int card_id = room->drawCard();
-                room->moveCardTo(Sanguosha->getCard(card_id), NULL, victim, Player::PlaceTable,
+                room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::PlaceTable,
                     CardMoveReason(CardMoveReason::S_REASON_TURNOVER, QString(), QString(), "zhaolie", QString()), true);
                 room->getThread()->delay();
 
@@ -770,7 +770,10 @@ public:
             }
             else{
                 if(no_basic > 0){
-                    room->discardTotalNCards(victim, "zhaolie", no_basic, 1, true);
+                    while(no_basic > 0){
+                        room->askForDiscard(victim, "zhaolie", 1, 1, false, true);
+                        no_basic--;
+                    }
                 }
                 if(!cards.empty()){
                     foreach(const Card *c, cards){
