@@ -198,7 +198,7 @@ int GreatYeyanCard::targetFilterMultiple(const QList<const Player *> &targets, c
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    int totaldamage = 0;
+    int criticaltarget = 0;
     int totalvictim = 0;
     QMap<ServerPlayer*,int> map;
 
@@ -206,10 +206,11 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
         map[sp]++;
 
     foreach(ServerPlayer* sp,map.keys()){
-        totaldamage = totaldamage + map[sp];
+        if(map[sp] > 1)
+            criticaltarget++;
         totalvictim++;
     }
-    if(totaldamage == 3){
+    if(criticaltarget > 0){
         room->loseHp(shenzhouyu, 3);
         shenzhouyu->loseMark("@flame");
         room->throwCard(this, shenzhouyu);
