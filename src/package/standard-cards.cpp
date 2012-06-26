@@ -668,8 +668,10 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->objectName());
-    if(jink && !(jink->getSkillName() == "eight_diagram" || jink->getSkillName() == "bazhen"))
-        room->setEmotion(effect.to, "jink");
+    if(jink){
+        if(jink->getSkillName() != "eight_diagram" && jink->getSkillName() != "bazhen")
+            room->setEmotion(effect.to, "jink");
+    }
     else{
         DamageStruct damage;
         damage.card = this;
