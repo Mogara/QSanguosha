@@ -172,6 +172,12 @@ public:
     }
 };
 
+static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
+    Room *room = a->getRoom();
+
+    return room->getFront(a, b) == a;
+}
+
 void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point) const{
     DamageStruct damage;
 
@@ -192,44 +198,30 @@ int GreatYeyanCard::targetFilterMultiple(const QList<const Player *> &targets, c
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$greatyeyan");
-
-    shenzhouyu->loseMark("@flame");
-    room->throwCard(this, shenzhouyu);
-
+    int totaldamage = 0;
+    int totalvictim = 0;
     QMap<ServerPlayer*,int> map;
 
     foreach(ServerPlayer* sp, targets)
         map[sp]++;
 
-    room->loseHp(shenzhouyu, 3);
-
-    foreach(ServerPlayer* sp,map.keys())
-        damage(shenzhouyu, sp, map[sp]);
-}
-
-MediumYeyanCard::MediumYeyanCard(){
-
-}
-
-bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.length() < 2;
-}
-
-void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
-
-    shenzhouyu->loseMark("@flame");
-    room->throwCard(this, shenzhouyu);
-    room->loseHp(shenzhouyu, 3);
-
-    ServerPlayer *first = targets.first();
-    ServerPlayer *second = targets.value(1, NULL);
-
-    damage(shenzhouyu, first, 2);
-
-    if(second)
-        damage(shenzhouyu, second, 1);
+    foreach(ServerPlayer* sp,map.keys()){
+        totaldamage = totaldamage + map[sp];
+        totalvictim++;
+    }
+    if(totaldamage == 3){
+        room->loseHp(shenzhouyu, 3);
+        shenzhouyu->loseMark("@flame");
+        room->throwCard(this, shenzhouyu);
+        if(totalvictim > 1){
+            room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
+            qSort(map.keys().begin(), map.keys().end(), CompareByActionOrder);
+        }
+        else
+            room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+        foreach(ServerPlayer* sp,map.keys())
+            damage(shenzhouyu, sp, map[sp]);
+    }
 }
 
 SmallYeyanCard::SmallYeyanCard(){
@@ -251,9 +243,9 @@ void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{
     damage(effect.from, effect.to, 1);
 }
 
-class GreatYeyan: public ViewAsSkill{
+class Yeyan: public ViewAsSkill{
 public:
-    GreatYeyan(): ViewAsSkill("greatyeyan"){
+    Yeyan(): ViewAsSkill("yeyan"){
         frequency = Limited;
     }
 
@@ -288,37 +280,6 @@ public:
     }
 };
 
-class MediumYeyan: public GreatYeyan{
-public:
-    MediumYeyan(){
-        setObjectName("mediumyeyan");
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 4)
-            return NULL;
-
-        MediumYeyanCard *card = new MediumYeyanCard;
-        card->addSubcards(cards);
-
-        return card;
-    }
-};
-
-class SmallYeyan: public ZeroCardViewAsSkill{
-public:
-    SmallYeyan():ZeroCardViewAsSkill("smallyeyan"){
-        frequency = Limited;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("@flame") >= 1;
-    }
-
-    virtual const Card *viewAs() const{
-        return new SmallYeyanCard;
-    }
-};
 
 class Qinyin: public TriggerSkill{
 public:
@@ -1320,9 +1281,7 @@ GodPackage::GodPackage()
     General *shenzhouyu = new General(this, "shenzhouyu", "god");
     shenzhouyu->addSkill(new Qinyin);
     shenzhouyu->addSkill(new MarkAssignSkill("@flame", 1));
-    shenzhouyu->addSkill(new GreatYeyan);/*
-    shenzhouyu->addSkill(new MediumYeyan);
-    shenzhouyu->addSkill(new SmallYeyan);*/
+    shenzhouyu->addSkill(new Yeyan);
 
     General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
     shenzhugeliang->addSkill(new Qixing);
@@ -1367,10 +1326,9 @@ GodPackage::GodPackage()
     related_skills.insertMulti("lianpo", "#lianpo-do");
 
     addMetaObject<GongxinCard>();
-    addMetaObject<GreatYeyanCard>();
+    addMetaObject<YeyanCard>();
     addMetaObject<ShenfenCard>();
     addMetaObject<GreatYeyanCard>();
-    addMetaObject<MediumYeyanCard>();
     addMetaObject<SmallYeyanCard>();
     addMetaObject<WushenSlash>();
     addMetaObject<KuangfengCard>();
