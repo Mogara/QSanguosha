@@ -770,11 +770,7 @@ public:
             }
             else{
                 if(no_basic > 0){
-                    int allnum = victim->getCards("he").length();
-                    int keepnum = allnum - no_basic;
-                    while((victim->getCards("he").length() - keepnum) > 0){
-                        room->askForDiscard(victim, "zhaolie", (victim->getCards("he").length() - keepnum), 1, false, true);
-                    }
+                    room->discardTotalNCards(victim, "zhaolie", no_basic, 1, true);
                 }
                 if(!cards.empty()){
                     foreach(const Card *c, cards){

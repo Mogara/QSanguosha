@@ -3544,6 +3544,25 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     return true;
 }
 
+void Room::discardTotalNCards(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool include_equip){
+    int allnum = 0;
+    if(include_equip)
+        allnum = player->getCards("he").length();
+    else
+        allnum = player->getHandcardNum();
+    int keepnum = allnum - discard_num;
+    if(include_equip){
+        while((player->getCards("he").length() - keepnum) > 0){
+            askForDiscard(player, reason, (player->getCards("he").length() - keepnum), min_num, false, include_equip);
+        }
+    }
+    else{
+        while((player->getHandcardNum() - keepnum) > 0){
+            askForDiscard(player, reason, (player->getHandcardNum() - keepnum), min_num, false, include_equip);
+        }
+    }
+}
+
 const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num){
     notifyMoveFocus(player, S_COMMAND_EXCHANGE_CARD);
     AI *ai = player->getAI();
