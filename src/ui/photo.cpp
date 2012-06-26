@@ -56,6 +56,7 @@ Photo::Photo(): PlayerCardContainer()
 
     _createControls();
 
+    canReset = 1;
     connect(this,SIGNAL(selected_changed()),this,SLOT(resetOrder()));
 }
 
@@ -276,18 +277,19 @@ QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value)
 
 void Photo::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(event->button() == Qt::RightButton && this->isSelected())
+    if(event->button() == Qt::LeftButton && this->isSelected())
     {
         order++;
         if(order>order_limit)setSelected(false);
         else
         {
-            int temp = order;
+            canReset = 0;
             emit selected_changed();
-            order = temp;
+            canReset = 1;
             setOrder();
         }
-    }
+        return;
+    }else setSelected(false);
 
     PlayerCardContainer::mouseReleaseEvent(event);
 }

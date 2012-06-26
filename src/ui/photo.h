@@ -31,6 +31,7 @@ public:
     void tremble();
     void showSkillName(const QString &skill_name);
     void setOrder();
+    inline int getOrder(){ return order;}
     void setOrderLimit(int order_limit);
 
     enum FrameType{
@@ -76,7 +77,9 @@ protected:
     QGraphicsPixmapItem *_m_onlineStatusItem;
 
 private slots:
-    inline void resetOrder(){ order = isSelected(); setOrder();}
+    inline void resetOrder(){ if(canReset)order = isSelected(); setOrder();}
+private:
+    bool canReset;
 };
 
 #endif // PHOTOBACK_H

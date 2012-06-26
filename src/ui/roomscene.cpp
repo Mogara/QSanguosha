@@ -986,7 +986,12 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         const ClientPlayer *player = itor.value();
 
         if(item->isSelected())
+        {
+            Photo* photo = qobject_cast<Photo*>(item);
+            if(photo)
+                photo->setOrderLimit(photo->getOrder() + card->targetFilterMultiple(selected_targets, player, Self));
             continue;
+        }
 
         bool enabled = (card == NULL) || 
                        (!Sanguosha->isProhibited(Self, player, card)
