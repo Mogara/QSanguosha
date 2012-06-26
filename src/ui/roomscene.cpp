@@ -858,6 +858,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 // cause a lot of major problems. We should look into this later.
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(event->button() == Qt::RightButton)return;
     QGraphicsScene::mousePressEvent(event);
     /*
     _m_isMouseButtonDown = true;
@@ -867,6 +868,7 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(event->button() == Qt::RightButton)return;
     QGraphicsScene::mouseReleaseEvent(event);
     /*
     if (_m_isInDragAndUseMode)
@@ -1112,6 +1114,11 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     }
 }
 
+
+//THIS FUNCTION CAUSES CRASH ASSOCIATED WITH RIGHT MOUSE BUTTON.
+//THE FEATURE PROVIDED BY THIS FUNCTION IS NOT DESIRABLE.
+/*
+
 void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     QGraphicsScene::contextMenuEvent(event);
 
@@ -1167,6 +1174,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         }
     }
 }
+*/
 
 void RoomScene::chooseGeneral(const QStringList &generals){
     QApplication::alert(main_window);
