@@ -206,6 +206,7 @@ public:
         }else if(event == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
+				room->setEmotion(player, "armor/vineburn");
                 LogMessage log;
                 log.type = "#VineDamage";
                 log.from = player;
