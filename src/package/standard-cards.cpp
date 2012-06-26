@@ -457,7 +457,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         QStringList horses;
-        if(damage.card && damage.card->inherits("Slash") && !damage.chain){
+        if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer){
             if(damage.to->getDefensiveHorse())
                 horses << "dhorse";
             if(damage.to->getOffensiveHorse())
@@ -1127,7 +1127,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude()
-            && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
+            && !damage.chain && !damage.transfer && player->askForSkillInvoke("ice_sword", data)){
             room->setEmotion(player,"weapon/ice_sword");
                 int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
                 CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, damage.to->objectName());

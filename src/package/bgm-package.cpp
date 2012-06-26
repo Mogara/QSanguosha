@@ -844,7 +844,7 @@ public:
             newdamage.from = damage.from;
             newdamage.to = target;
             newdamage.damage = damage.damage;
-            newdamage.chain = true; 
+            newdamage.transfer = true;
 
             room->damage(newdamage);
             if(target->isAlive())

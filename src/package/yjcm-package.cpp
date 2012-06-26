@@ -595,7 +595,7 @@ public:
         if(damage.to->isDead())
             return false;
 
-        if(damage.card && damage.card->inherits("Slash") && !damage.chain &&
+        if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer &&
            player->askForSkillInvoke(objectName(), data))
         {
 			player->getRoom()->broadcastSkillInvoke(objectName());

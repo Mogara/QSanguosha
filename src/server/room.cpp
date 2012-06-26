@@ -2509,7 +2509,7 @@ void Room::damage(const DamageStruct &damage_data){
 
     QVariant data = QVariant::fromValue(damage_data);
 
-    if(!damage_data.chain && damage_data.from){
+    if(!damage_data.chain && !damage_data.transfer && damage_data.from){
         // predamage
         if(thread->trigger(Predamage, this, damage_data.from, data))
             return;

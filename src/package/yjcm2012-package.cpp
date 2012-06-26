@@ -298,7 +298,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
-           !damage.chain && player->askForSkillInvoke(objectName(), data)){
+           !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)){
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
             judge.good = false;
