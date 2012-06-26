@@ -60,8 +60,7 @@ return {
 ◆每个弃牌阶段限一次。\
 ◆你发动【旋风】须选择一名目标角色，然后依次弃置其两张牌，或选择两名目标角色，然后弃置他们的各一张牌。",
 	["xuanfeng:nothing"] = "不发动",
-	["xuanfeng:second"] = "依次弃置其他两名角色各1张牌",
-	["xuanfeng:first"] = "依次弃置其他一名角色两张牌",
+	["xuanfeng:throw"] = "发动",
 	["@xuanfeng-card"] = "请选择一至两名角色",
 	
 	["#wuguotai"] = "武烈皇后",

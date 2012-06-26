@@ -236,8 +236,9 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
     room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
-
-    Card::use(room, shenzhouyu, targets);
+    QList<ServerPlayer *> players = targets;
+    qSort(players.begin(), players.end(), CompareByActionOrder);
+    Card::use(room, shenzhouyu, players);
 }
 
 void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{
