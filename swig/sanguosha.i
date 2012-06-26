@@ -349,6 +349,7 @@ struct DamageStruct{
     int damage;
     Nature nature;
     bool chain;
+	bool transfer;
 };
 
 struct CardEffectStruct{

@@ -415,15 +415,17 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 room->sendLog(log);
 
                 // iron chain effect
-                QList<ServerPlayer *> chained_players = room->getAllPlayers();
-                foreach(ServerPlayer *chained_player, chained_players){
-                    if(chained_player->isChained()){
+                if(!damage.chain){
+                    QList<ServerPlayer *> chained_players = room->getAllPlayers();
+                    foreach(ServerPlayer *chained_player, chained_players){
+                        if(chained_player->isChained()){
 
-                        DamageStruct chain_damage = damage;
-                        chain_damage.to = chained_player;
-                        chain_damage.chain = true;
+                            DamageStruct chain_damage = damage;
+                            chain_damage.to = chained_player;
+                            chain_damage.chain = true;
 
-                        room->damage(chain_damage);
+                            room->damage(chain_damage);
+                        }
                     }
                 }
             }

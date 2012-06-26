@@ -248,8 +248,36 @@ sgs.ai_chaofeng.fazheng = -3
 
 
 sgs.ai_skill_choice.xuanfeng = function(self, choices)
-	return "first"
+	return "throw"
 end
+
+sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
+	if #self.enemies == 0 then
+		return "."
+	end
+	self:sort(self.enemies, "defense")
+	
+	local first_index, second_index
+	for i=1, #self.enemies-1 do
+		if not self.enemies[i]:isNude() then
+			if not first_index then
+				first_index = i
+			else
+				second_index = i
+			end
+		end
+		if second_index then break end
+	end
+	local first = self.enemies[first_index]:objectName()
+	if first_index and not second_index then
+		return ("@XuanfengCard=.->%s"):format(first)
+	else
+		local second = self.enemies[second_index]:objectName()
+		return ("@XuanfengCard=.->%s+%s"):format(first, second)
+	end
+end
+
+sgs.ai_card_intention.XuanfengCard = 80
 
 sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)	
 	targets = sgs.QList2Table(targets)

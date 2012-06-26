@@ -755,7 +755,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(wuling == "wind"){
-            if(damage.nature == DamageStruct::Fire && !damage.chain){
+            if(damage.nature == DamageStruct::Fire && !damage.chain && !damage.transfer){
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
 
@@ -767,7 +767,7 @@ public:
                 room->sendLog(log);
             }
         }else if(wuling == "thunder"){
-            if(damage.nature == DamageStruct::Thunder && !damage.chain){
+            if(damage.nature == DamageStruct::Thunder && !damage.chain && !damage.transfer){
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
 

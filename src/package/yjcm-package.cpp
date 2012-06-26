@@ -466,25 +466,34 @@ public:
 XuanfengCard::XuanfengCard(){
 }
 
-bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(targets.length() >= 2)
-        return false;
-
+int XuanfengCard::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(to_select == Self)
-        return false;
-
-    return true;
+        return 0;
+    return qMax(2 - targets.size(),0);
 }
 
-bool XuanfengCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
-    return targets.length() == 2;
-}
-
-void XuanfengCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-    if(!effect.to->isNude()){
-        int card_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanfeng");
-        room->throwCard(card_id, effect.to);
+void XuanfengCard::use(Room *room, ServerPlayer *lingtong, const QList<ServerPlayer *> &targets) const{
+    QMap<ServerPlayer*,int> map;
+    int totaltarget = 0;
+    foreach(ServerPlayer* sp, targets)
+        map[sp]++;
+    foreach(ServerPlayer* sp,map.keys()){
+        totaltarget++;
+    }
+    // only chose one and throw only one card of him is forbiden
+    if(totaltarget == 1){
+        foreach(ServerPlayer* sp,map.keys()){
+            map[sp]++;
+        }
+    }
+    foreach(ServerPlayer* sp,map.keys()){
+        while(map[sp] > 0){
+            if(!sp->isNude()){
+                int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng");
+                room->throwCard(card_id, sp);
+            }
+            map[sp]--;
+        }
     }
 }
 
@@ -547,33 +556,9 @@ public:
                         break;
                     }
                 }
-                QStringList choicelist;
                 if(can_invoke){
-                    choicelist << "first";
-                    if (room->getOtherPlayers(lingtong).length() > 1)
-                        choicelist << "second";
-                    choicelist << "nothing";
-                    QString choice = room->askForChoice(lingtong, objectName(), choicelist.join("+"));
-
-                    if(choice == "first")
-                    {
-					room->broadcastSkillInvoke(objectName());
-                        QList<ServerPlayer *> targets;
-                        foreach(ServerPlayer *target, room->getOtherPlayers(lingtong)){
-                            if(!target->isNude())
-                                targets << target;
-                        }
-
-                        ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
-                        int card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
-                        room->throwCard(card_id, target);
-
-                        if(!target->isNude()){
-                            card_id = room->askForCardChosen(lingtong, target, "he", "xuanfeng");
-                            room->throwCard(card_id, target);
-                        }
-                    }
-                    else if(choice == "second"){
+                    QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
+                    if(choice == "throw"){
                         room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
                     }
                 }
@@ -595,7 +580,7 @@ public:
         if(damage.to->isDead())
             return false;
 
-        if(damage.card && damage.card->inherits("Slash") && !damage.chain &&
+        if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer &&
            player->askForSkillInvoke(objectName(), data))
         {
 			player->getRoom()->broadcastSkillInvoke(objectName());

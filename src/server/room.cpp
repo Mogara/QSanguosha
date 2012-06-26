@@ -2509,7 +2509,7 @@ void Room::damage(const DamageStruct &damage_data){
 
     QVariant data = QVariant::fromValue(damage_data);
 
-    if(!damage_data.chain && damage_data.from){
+    if(!damage_data.chain && !damage_data.transfer && damage_data.from){
         // predamage
         if(thread->trigger(Predamage, this, damage_data.from, data))
             return;
@@ -3542,13 +3542,6 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     dummy_card->deleteLater();
 
     return true;
-}
-
-void Room::discardTotalNCards(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool include_equip){
-    while(discard_num > 0){
-        askForDiscard(player, reason, min_num, min_num, false, include_equip);
-        discard_num = discard_num - min_num;
-    }
 }
 
 const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num){

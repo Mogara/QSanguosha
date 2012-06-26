@@ -9,11 +9,7 @@
 
 LuoyiCard::LuoyiCard(){
     once = true;
-    will_throw = true;
-}
-
-bool LuoyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select == Self ;
+    target_fixed = true;
 }
 
 void LuoyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -93,7 +89,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.card && damage.card->inherits("Slash") && damage.card->getSuit() == Card::Heart &&
-           !damage.chain && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
+           !damage.chain && !damage.transfer && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
 
             LogMessage log;
             log.type = "#Yishi";

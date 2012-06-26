@@ -703,7 +703,8 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(this, effect.from);
     DamageStruct damage = effect.from->tag["TianxiangDamage"].value<DamageStruct>();
     damage.to = effect.to;
-    damage.chain = true;
+    damage.transfer = true;
+    damage.chain = false;
     room->damage(damage);
 
     if(damage.to->isAlive())
