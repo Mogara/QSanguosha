@@ -187,8 +187,8 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 GreatYeyanCard::GreatYeyanCard(){
 }
 
-bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty();
+int GreatYeyanCard::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return qMax(3 - targets.size(),0);
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
@@ -196,9 +196,16 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
 
     shenzhouyu->loseMark("@flame");
     room->throwCard(this, shenzhouyu);
+
+    QMap<ServerPlayer*,int> map;
+
+    foreach(ServerPlayer* sp, targets)
+        map[sp]++;
+
     room->loseHp(shenzhouyu, 3);
 
-    damage(shenzhouyu, targets.first(), 3);
+    foreach(ServerPlayer* sp,map.keys())
+        damage(shenzhouyu, sp, map[sp]);
 }
 
 MediumYeyanCard::MediumYeyanCard(){
@@ -270,6 +277,7 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length()  == 0)return new SmallYeyanCard();
         if(cards.length() != 4)
             return NULL;
 
@@ -1312,9 +1320,9 @@ GodPackage::GodPackage()
     General *shenzhouyu = new General(this, "shenzhouyu", "god");
     shenzhouyu->addSkill(new Qinyin);
     shenzhouyu->addSkill(new MarkAssignSkill("@flame", 1));
-    shenzhouyu->addSkill(new GreatYeyan);
+    shenzhouyu->addSkill(new GreatYeyan);/*
     shenzhouyu->addSkill(new MediumYeyan);
-    shenzhouyu->addSkill(new SmallYeyan);
+    shenzhouyu->addSkill(new SmallYeyan);*/
 
     General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
     shenzhugeliang->addSkill(new Qixing);

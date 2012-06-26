@@ -1003,7 +1003,8 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         {
             item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
             Photo* photo = qobject_cast<Photo*>(item);
-            photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
+            if(photo)
+                photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
         }
     }
 }

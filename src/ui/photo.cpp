@@ -90,7 +90,7 @@ void Photo::setOrderLimit(int order_limit)
     this->order_limit = order_limit;
 }
 
-void Photo::setOrder(int order){
+void Photo::setOrder(){
     QPixmap pixmap(QString("image/system/number/%1.png").arg(order));
     if(order_item)
         order_item->setPixmap(pixmap);
@@ -98,14 +98,7 @@ void Photo::setOrder(int order){
         order_item = new QGraphicsPixmapItem(pixmap, this);
         order_item->moveBy(15, 0);
     }
-
     order_item->setVisible(order>1);
-    if(this->order != order )
-    {
-        emit selected_changed();
-        this->order = order;
-    }
-
 }
 
 void Photo::_adjustComponentZValues()
@@ -287,7 +280,13 @@ void Photo::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         order++;
         if(order>order_limit)setSelected(false);
-        else setOrder(order);
+        else
+        {
+            int temp = order;
+            emit selected_changed();
+            order = temp;
+            setOrder();
+        }
     }
 
     PlayerCardContainer::mouseReleaseEvent(event);
