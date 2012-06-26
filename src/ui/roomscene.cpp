@@ -990,7 +990,7 @@ void RoomScene::updateTargetsEnablity(const Card *card){
 
         bool enabled = (card == NULL) || 
                        (!Sanguosha->isProhibited(Self, player, card)
-                       && card->targetFilter(selected_targets, player, Self));
+                       && card->targetFilterMultiple(selected_targets, player, Self)>0);
         
         QGraphicsItem* animationTarget = item->getMouseClickReceiver();
         if (enabled)
@@ -999,7 +999,12 @@ void RoomScene::updateTargetsEnablity(const Card *card){
                 !animationTarget->graphicsEffect()->inherits("SentbackEffect"))
             animations->sendBack(animationTarget);
         
-        if (card) item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        if (card)
+        {
+            item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+            Photo* photo = qobject_cast<Photo*>(item);
+            photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
+        }
     }
 }
 
