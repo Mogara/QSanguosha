@@ -294,12 +294,13 @@ public:
             if(player->hasFlag("drank"))
                 room->setPlayerFlag(player, "-drank");
 
+            room->setEmotion(player,"weapon/blade");
             CardUseStruct use;
             use.card = card;
             use.from = player;
             use.to << effect.to;
             room->useCard(use, false);
-            room->setEmotion(player,"weapon/blade");
+
         }
 
         return false;
