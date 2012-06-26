@@ -43,15 +43,20 @@ Photo::Photo(): PlayerCardContainer()
     _m_onlineStatusItem = NULL;
     _m_layout = &G_PHOTO_LAYOUT;
     setAcceptHoverEvents(true);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QSanRoomSkin::S_SKIN_KEY_MAINFRAME);
     translate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2);
     _m_skillNameItem = new QGraphicsPixmapItem(this);
     
-    order_item = NULL;
+    order       = 0;
+    order_limit = 1;
+    order_item  = NULL;
     emotion_item = new QGraphicsPixmapItem(this);
     emotion_item->moveBy(10, 0);
 
     _createControls();
+
+    connect(this,SIGNAL(selected_changed()),this,SLOT(resetOrder()));
 }
 
 void Photo::refresh()
@@ -80,15 +85,27 @@ QRectF Photo::boundingRect() const
     return QRect(0, 0, G_PHOTO_LAYOUT.m_normalWidth, G_PHOTO_LAYOUT.m_normalHeight);
 }
 
+void Photo::setOrderLimit(int order_limit)
+{
+    this->order_limit = order_limit;
+}
+
 void Photo::setOrder(int order){
     QPixmap pixmap(QString("image/system/number/%1.png").arg(order));
     if(order_item)
         order_item->setPixmap(pixmap);
     else{
         order_item = new QGraphicsPixmapItem(pixmap, this);
-        order_item->setVisible(ServerInfo.EnableSame);
         order_item->moveBy(15, 0);
     }
+
+    order_item->setVisible(order>1);
+    if(this->order != order )
+    {
+        emit selected_changed();
+        this->order = order;
+    }
+
 }
 
 void Photo::_adjustComponentZValues()
@@ -253,9 +270,25 @@ QGraphicsItem* Photo::getMouseClickReceiver()
 
 QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    //the following code doesn't make much sense
+    //order_item will be used as a mark on multi-selecting a player
+    /*
     if(change == ItemFlagsHaveChanged){
         if(!ServerInfo.EnableSame)
             order_item->setVisible(flags() & ItemIsSelectable);
     }
+    */
     return PlayerCardContainer::itemChange(change, value);
+}
+
+void Photo::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(event->button() == Qt::RightButton && this->isSelected())
+    {
+        order++;
+        if(order>order_limit)setSelected(false);
+        else setOrder(order);
+    }
+
+    PlayerCardContainer::mouseReleaseEvent(event);
 }

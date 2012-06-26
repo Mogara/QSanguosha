@@ -1,5 +1,6 @@
 #include "GeneralCardContainerUI.h"
 #include <QParallelAnimationGroup>
+#include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
 #include <qpushbutton.h>
 #include <qtextdocument.h>
@@ -792,6 +793,7 @@ void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(event->button() == Qt::RightButton)return;
     QGraphicsItem* item = getMouseClickReceiver();
     if (item != NULL && item->isUnderMouse() && isEnabled() &&
         (flags() & QGraphicsItem::ItemIsSelectable))

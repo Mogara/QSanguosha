@@ -833,10 +833,13 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     updateTable();
 
+    //feature changed
+    /*
     for(int i = 0; i < photos.length(); i++){
         Photo *photo = photos.at(i);
         photo->setOrder(photo->getPlayer()->getSeat());
     }
+    */
         
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
@@ -858,7 +861,6 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 // cause a lot of major problems. We should look into this later.
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(event->button() == Qt::RightButton)return;
     QGraphicsScene::mousePressEvent(event);
     /*
     _m_isMouseButtonDown = true;
@@ -868,7 +870,6 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(event->button() == Qt::RightButton)return;
     QGraphicsScene::mouseReleaseEvent(event);
     /*
     if (_m_isInDragAndUseMode)
@@ -1014,7 +1015,7 @@ void RoomScene::updateSelectedTargets(){
         if(item->isSelected()){
             selected_targets.append(player);
         }else{
-            selected_targets.removeOne(player);
+            selected_targets.removeAll(player);
         }
 
 
