@@ -3545,21 +3545,9 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
 }
 
 void Room::discardTotalNCards(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool include_equip){
-    int allnum = 0;
-    if(include_equip)
-        allnum = player->getCards("he").length();
-    else
-        allnum = player->getHandcardNum();
-    int keepnum = allnum - discard_num;
-    if(include_equip){
-        while((player->getCards("he").length() - keepnum) > 0){
-            askForDiscard(player, reason, (player->getCards("he").length() - keepnum), min_num, false, include_equip);
-        }
-    }
-    else{
-        while((player->getHandcardNum() - keepnum) > 0){
-            askForDiscard(player, reason, (player->getHandcardNum() - keepnum), min_num, false, include_equip);
-        }
+    while(discard_num > 0){
+        askForDiscard(player, reason, min_num, min_num, false, include_equip);
+        discard_num = discard_num - min_num;
     }
 }
 

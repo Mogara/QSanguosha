@@ -59,7 +59,8 @@ public:
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-
+        if(!caozhi || caozhi->isDead())
+            return false;
         if(move->from_places.contains(Player::PlaceDelayedTrick) || move->from_places.contains(Player::PlaceSpecial))
             return false;
         if(move->to_place == Player::DiscardPile && move->from && move->from->objectName() != caozhi->objectName() &&
