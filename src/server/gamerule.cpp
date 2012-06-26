@@ -413,7 +413,19 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 log.type = "#IronChainDamage";
                 log.from = player;
                 room->sendLog(log);
+            }
+            break;
+        }
 
+    case DamageComplete:{
+            DamageStruct damage = data.value<DamageStruct>();
+            if(room->getMode() == "02_1v1" && player->isDead()){
+                QString new_general = player->tag["1v1ChangeGeneral"].toString();
+                if(!new_general.isEmpty())
+                    changeGeneral1v1(player);
+            }
+            if(player->hasFlag("chained")){
+                room->setPlayerFlag(player, "-chained");
                 // iron chain effect
                 if(!damage.chain){
                     QList<ServerPlayer *> chained_players = room->getAllPlayers();
@@ -429,16 +441,6 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                     }
                 }
             }
-            break;
-        }
-
-    case DamageComplete:{
-            if(room->getMode() == "02_1v1" && player->isDead()){
-                QString new_general = player->tag["1v1ChangeGeneral"].toString();
-                if(!new_general.isEmpty())
-                    changeGeneral1v1(player);
-            }
-
             break;
         }
 
