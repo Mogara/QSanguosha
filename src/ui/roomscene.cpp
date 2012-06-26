@@ -988,8 +988,8 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         if(item->isSelected())
         {
             Photo* photo = qobject_cast<Photo*>(item);
-            if(photo)
-                photo->setOrderLimit(photo->getOrder() + card->targetFilterMultiple(selected_targets, player, Self));
+            if(photo && card)
+                photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
             continue;
         }
 

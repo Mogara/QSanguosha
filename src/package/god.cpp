@@ -194,7 +194,9 @@ GreatYeyanCard::GreatYeyanCard(){
 }
 
 int GreatYeyanCard::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return qMax(3 - targets.size(),0);
+    int i = 0;
+    foreach(const Player* player, targets)if(player == to_select)i++;
+    return qMax(3 - targets.size(),0) + i;
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
