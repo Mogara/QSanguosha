@@ -254,7 +254,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                         targetfix--;
                 }
                 if(card_use.from && !card_use.to.empty()){
-                    foreach(ServerPlayer *p, room->getAlivePlayers()){
+                    foreach(ServerPlayer *p, room->getAllPlayers()){
                         thread->trigger(TargetConfirmed, room, p, data);
                     }
                 }
