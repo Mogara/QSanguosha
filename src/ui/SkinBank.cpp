@@ -654,7 +654,7 @@ bool QSanRoomSkin::_loadLayoutConfig()
 
         tryParse(playerConfig["delayedTrickFirstRegion"],
                  layout->m_delayedTrickFirstRegion);
-        tryParse(playerConfig["delayedTrrickStep"], layout->m_delayedTrickStep);
+        tryParse(playerConfig["delayedTrickStep"], layout->m_delayedTrickStep);
         
         layout->m_markTextArea.tryParse(playerConfig["markTextArea"]);
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
