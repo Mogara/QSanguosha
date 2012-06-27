@@ -138,7 +138,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->isKongcheng();
+        return TriggerSkill::triggerable(target) && !target->isNude();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -152,7 +152,7 @@ public:
                     break;
                 }
             }
-        }else if(judge->who->objectName() != player->objectName() && !player->isNude()){
+        }else if(judge->who->objectName() != player->objectName()){
             if(room->askForSkillInvoke(player,objectName()))
                 if(room->askForChoice(judge->who, objectName(), "yes+no") == "yes")
                     can_invoke = true;
