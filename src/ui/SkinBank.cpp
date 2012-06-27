@@ -298,23 +298,26 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
 }
 
 QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index) const{
-    QString gender = isMale ? "male" : "female";
-    QString fileName;
-    QString key = QString(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg("common").arg(eventName);
-    if (index == -1)
-        fileName = getRandomAudioFileName(key);
-    else
-    {
-        QStringList fileNames = getAudioFileNames(key);
-        if (fileNames.length() >= index) return fileNames[index - 1];
-        else return fileNames[qrand() % fileNames.length()];
-    }
-    if(fileName.isEmpty())
-    {
-        fileName = toQString(_m_audioConfig[QString(S_SKIN_KEY_PLAYER_AUDIO_EFFECT)
-                             .arg(gender).arg("default").toAscii().constData()]).arg(eventName);
-    }
-    return fileName;
+	QString gender = isMale ? "male" : "female";
+	QString fileName;
+	QString key = QString(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg("common").arg(eventName);
+	if (index == -1)
+		fileName = getRandomAudioFileName(key);
+	else
+	{
+		QStringList fileNames = getAudioFileNames(key);
+		if(!fileNames.isEmpty())
+		{
+			if (fileNames.length() >= index) return fileNames[index - 1];
+			else return fileNames[qrand() % fileNames.length()];
+		}
+	}
+	if(fileName.isEmpty())
+	{
+		fileName = toQString(_m_audioConfig[QString(S_SKIN_KEY_PLAYER_AUDIO_EFFECT)
+			.arg(gender).arg("default").toAscii().constData()]).arg(eventName);
+	}
+	return fileName;
 }
 
 
