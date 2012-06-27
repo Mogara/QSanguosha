@@ -1,23 +1,17 @@
 #include "TimedProgressBar.h"
-#include "clientstruct.h"
-#include <QPainter>
-#include <SkinBank.h>
 
-void TimedProgressBar::showEvent(QShowEvent* showEvent)
+void TimedProgressBar::showEvent(QShowEvent*)
 {
-    if (!m_hasTimer || m_max <= 0) 
-    {
-        showEvent->setAccepted(false);
-        return;
-    }
+    if (!m_hasTimer) return;
     m_timer = startTimer(m_step);
     this->setMaximum(m_max);
-    this->setValue(m_val);    
+    this->setValue(m_val);
+    QProgressBar::show();    
 }
 
 void TimedProgressBar::hide()
 {
-    if (m_timer != 0)
+    if (m_timer)
     {        
         killTimer(m_timer);
         m_timer = NULL;
@@ -46,33 +40,13 @@ using namespace QSanProtocol;
 QSanCommandProgressBar::QSanCommandProgressBar()
 {
     m_step = Config.S_PROGRESS_BAR_UPDATE_INTERVAL;
-    m_hasTimer = (ServerInfo.OperationTimeout != 0);
+    m_hasTimer = !Config.OperationNoLimit;
     m_instanceType = S_CLIENT_INSTANCE;
 }
 
 void QSanCommandProgressBar::setCountdown(CommandType command)
 {
-    m_max = ServerInfo.getCommandTimeout(command, m_instanceType);
-}
-
-void QSanCommandProgressBar::paintEvent(QPaintEvent *e)
-{
-    if (this->m_val <= 0) return;
-    int width = this->width();
-    int height = this->height();
-    QPainter painter(this);
-    if (orientation() == Qt::Vertical)
-    {
-        painter.translate(0, height);
-        qSwap(width, height); 
-        painter.rotate(-90);
-    }
-    QPixmap progBg = G_ROOM_SKIN.getProgressBarPixmap(0);
-    painter.drawPixmap(0, 0, width, height, progBg);
-    double percent = 1 - (double) m_val / m_max;
-    QPixmap prog = G_ROOM_SKIN.getProgressBarPixmap((int)(percent * 100));
-    int drawWidth = percent * prog.width();
-    painter.drawPixmap(0, 0, percent * width, height, prog, 0, 0, drawWidth, prog.height());
+    m_max = Config.getCommandTimeout(command, m_instanceType);
 }
 
 void QSanCommandProgressBar::setCountdown(Countdown countdown)

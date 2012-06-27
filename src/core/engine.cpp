@@ -423,13 +423,15 @@ int Engine::getPlayerCount(const QString &mode) const{
     return -1;
 }
 
-QString Engine::getRoles(const QString &mode) const{
+void Engine::getRoles(const QString &mode, char *roles) const{
     int n = getPlayerCount(mode);
 
-    if(mode == "02_1v1"){        
-        return "ZN";
-    }else if(mode == "04_1v3"){        
-        return "ZFFF";
+    if(mode == "02_1v1"){
+        qstrcpy(roles, "ZN");
+        return;
+    }else if(mode == "04_1v3"){
+        qstrcpy(roles, "ZFFF");
+        return;
     }
 
     if(modes.contains(mode)){
@@ -472,28 +474,28 @@ QString Engine::getRoles(const QString &mode) const{
             rolechar.replace("C", "N");
         }
 
-        return rolechar;
+        qstrcpy(roles, rolechar.toStdString().c_str());
     }else if(mode.startsWith("@")){
         if(n == 8)
-            return "ZCCCNFFF";
+            qstrcpy(roles, "ZCCCNFFF");
         else if(n == 6)
-            return "ZCCNFF";
+            qstrcpy(roles, "ZCCNFF");
 
     }else{
         const Scenario *scenario = getScenario(mode);
         if(scenario)
-            return scenario->getRoles();
+            scenario->getRoles(roles);
     }
-    return QString();
 }
 
 QStringList Engine::getRoleList(const QString &mode) const{
-    QString roles = getRoles(mode);
+    char roles[100];
+    getRoles(mode, roles);
 
     QStringList role_list;
     for(int i=0; roles[i] != '\0'; i++){
         QString role;
-        switch(roles[i].toAscii()){
+        switch(roles[i]){
         case 'Z': role = "lord"; break;
         case 'C': role = "loyalist"; break;
         case 'N': role = "renegade"; break;
@@ -646,11 +648,11 @@ QString Engine::getRandomGeneralName() const{
     return generals.keys().at(qrand() % generals.size());
 }
 
-void Engine::playSystemAudioEffect(const QString &name) const{
-    playAudioEffect(QString("audio/system/%1.ogg").arg(name));
+void Engine::playAudio(const QString &name) const{
+    playEffect(QString("audio/system/%1.ogg").arg(name));
 }
 
-void Engine::playAudioEffect(const QString &filename) const{
+void Engine::playEffect(const QString &filename) const{
 #ifdef AUDIO_SUPPORT
 
     if(!Config.EnableEffects)
@@ -664,10 +666,24 @@ void Engine::playAudioEffect(const QString &filename) const{
 #endif
 }
 
-void Engine::playSkillAudioEffect(const QString &skill_name, int index) const{
+void Engine::playSkillEffect(const QString &skill_name, int index) const{
     const Skill *skill = skills.value(skill_name, NULL);
     if(skill)
-        skill->playAudioEffect(index);
+        skill->playEffect(index);
+}
+
+void Engine::playCardEffect(const QString &card_name, bool is_male) const{
+    QString path;
+    if(card_name.startsWith("@")){
+        QString gender = is_male ? "male" : "female";
+        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(card_name);
+    }else{
+        const Card *card = findChild<const Card *>(card_name);
+        if(card)
+            path = card->getEffectPath(is_male);
+    }
+
+    playEffect(path);
 }
 
 const Skill *Engine::getSkill(const QString &skill_name) const{

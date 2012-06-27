@@ -2,18 +2,12 @@
 #include "room.h"
 #include "engine.h"
 #include "gamerule.h"
-#include "scenerule.h"
-#include "scenario.h"
 #include "ai.h"
 #include "jsonutils.h"
 #include "settings.h"
 
 #include <QTime>
 #include <json/json.h>
-
-#ifdef QSAN_UI_LIBRARY_AVAILABLE
-#pragma message WARN("UI elements detected in server side!!!")
-#endif
 
 using namespace QSanProtocol::Utils;
 
@@ -206,11 +200,15 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
     }
 }
 
-void RoomThread::constructTriggerTable(){
+void RoomThread::constructTriggerTable(const GameRule *rule){
     foreach(ServerPlayer *player, room->getPlayers()){
-        addPlayerSkills(player, true);
-    }    
+        addPlayerSkills(player, false);
+    }
+
+    addTriggerSkill(rule);
 }
+
+static const int GameOver = 1;
 
 void RoomThread::run3v3(){
     QList<ServerPlayer *> warm, cool;
@@ -285,42 +283,29 @@ void RoomThread::action3v3(ServerPlayer *player){
 
 void RoomThread::run(){
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    
-    GameRule *game_rule;
-    if(room->getMode() == "04_1v3")
-        game_rule = new HulaoPassMode(this);
-    else if(Config.EnableScene)	//changjing
-        game_rule = new SceneRule(this);	//changjing
-    else
-        game_rule = new GameRule(this);
 
-    addTriggerSkill(game_rule);
-    if (Config.EnableBasara) addTriggerSkill(new BasaraMode(this));
-
-    if(room->getScenario() != NULL){
-        const ScenarioRule *rule = room->getScenario()->getRule();
-        if(rule)
-            addTriggerSkill(rule);
+    if(setjmp(env) == GameOver){        
+        return;
     }
 
     // start game, draw initial 4 cards
-    try {        
-        trigger(GameStart, (Room*)room, NULL);
-        constructTriggerTable();
+    foreach(ServerPlayer *player, room->getPlayers()){
+        trigger(GameStart, room, player);
+    }
 
-        if(room->mode == "06_3v3"){
-            run3v3();
-        }else if(room->getMode() == "04_1v3"){
-            ServerPlayer *shenlvbu = room->getLord();
-            try {            
-                QList<ServerPlayer *> league = room->getPlayers();
-                league.removeOne(shenlvbu);
+    if(room->mode == "06_3v3"){
+        run3v3();
+    }else if(room->getMode() == "04_1v3"){
+        ServerPlayer *shenlvbu = room->getLord();
+        if(shenlvbu->getGeneralName() == "shenlvbu1"){
+            QList<ServerPlayer *> league = room->getPlayers();
+            league.removeOne(shenlvbu);
 
-                forever{
-                    foreach(ServerPlayer *player, league){
-                        if(player->hasFlag("actioned"))
-                            room->setPlayerFlag(player, "-actioned");
-                    }
+            forever{
+                foreach(ServerPlayer *player, league){
+                    if(player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "-actioned");
+                }
 
                     foreach(ServerPlayer *player, league){
                         room->setCurrent(player);
@@ -329,20 +314,26 @@ void RoomThread::run(){
                         if(!player->hasFlag("actioned"))
                             room->setPlayerFlag(player, "actioned");                                       
 
-                        if(player->isAlive()){
-                            room->setCurrent(shenlvbu);
-                            trigger(TurnStart, room, room->getCurrent());
-                        }
+                    if(shenlvbu->getGeneralName() == "shenlvbu2")
+                        goto second_phase;
+
+                    if(player->isAlive()){
+                        room->setCurrent(shenlvbu);
+                        trigger(TurnStart, room, room->getCurrent());
+
+                        if(shenlvbu->getGeneralName() == "shenlvbu2")
+                            goto second_phase;
                     }
                 }
             }
-            catch (TriggerEvent event)
-            {
-                trigger(event, (Room*)room, NULL);
-                foreach(ServerPlayer *player, room->getPlayers()){
-                    if(player != shenlvbu){
-                        if(player->hasFlag("actioned"))
-                            room->setPlayerFlag(player, "-actioned");
+
+        }else{
+            second_phase:
+
+            foreach(ServerPlayer *player, room->getPlayers()){
+                if(player != shenlvbu){
+                    if(player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "-actioned");
 
                         if(player->getPhase() != Player::NotActive){
                             PhaseChangeStruct phase;
@@ -372,10 +363,6 @@ void RoomThread::run(){
                 room->setCurrent(room->getCurrent()->getNextAlive());
             }
         }
-    } catch (TriggerEvent event) {
-        if (event == GameFinished)
-            return;
-    }
 }
 
 static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
@@ -444,4 +431,8 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
 void RoomThread::delay(unsigned long secs){
     if(room->property("to_test").toString().isEmpty()&& Config.AIDelay>0)
         msleep(secs);
+}
+
+void RoomThread::end(){
+    longjmp(env, GameOver);
 }

@@ -19,17 +19,18 @@ bool Scenario::exposeRoles() const{
     return true;
 }
 
-QString Scenario::getRoles() const{
-    QString roles = "Z";   
-    for(int i = 0; i < loyalists.length(); i++)
-        roles.append('C');
+void Scenario::getRoles(char *roles) const{
+    qstrcpy(roles, "Z");
 
-    for (int i = 0; i < rebels.length(); i++)
-        roles.append('N');
+    int i;
+    for(i=0; i<loyalists.length(); i++)
+        strcat(roles, "C");
 
-    for(int i = 0; i < rebels.length(); i++)
-        roles.append('F');
-    return roles;
+    for(i=0; i<rebels.length(); i++)
+        strcat(roles, "N");
+
+    for(i=0; i<rebels.length(); i++)
+        strcat(roles, "F");
 }
 
 void Scenario::assign(QStringList &generals, QStringList &roles) const{

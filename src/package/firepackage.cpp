@@ -29,11 +29,11 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
 void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *tiger = targets.first();
 
-    room->broadcastSkillInvoke("quhu");
+    room->playSkillEffect("quhu", 1);
 
     bool success = xunyu->pindian(tiger, "quhu", this);
     if(success){
-        room->broadcastSkillInvoke("quhu");
+        room->playSkillEffect("quhu", 2);
 
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
         foreach(ServerPlayer *player, players){
@@ -51,7 +51,7 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> 
             return;
         }
 
-        room->broadcastSkillInvoke("#tunlang");
+        room->playSkillEffect("#tunlang");
         ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves, "quhu");
 
         DamageStruct damage;
@@ -149,7 +149,7 @@ public:
 
 QiangxiCard::QiangxiCard(){
     once = true;
-    will_throw = true;
+    owner_discarded = true;
 }
 
 bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -164,7 +164,6 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    room->throwCard(this, effect.from);
 
     if(subcards.isEmpty())
         room->loseHp(effect.from);
@@ -301,7 +300,7 @@ public:
                 if(shuangxiong->askForSkillInvoke(objectName())){
                     shuangxiong->setFlags("shuangxiong");
 
-                    room->broadcastSkillInvoke("shuangxiong");
+                    room->playSkillEffect("shuangxiong");
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*)");
                     judge.good = true;
@@ -319,7 +318,6 @@ public:
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(judge->reason == "shuangxiong"){
-                CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, judge->who->objectName());
                 shuangxiong->obtainCard(judge->card);
                 return true;
             }
@@ -344,12 +342,9 @@ public:
         if(!effect.to->isNude()){
             Room *room = pangde->getRoom();
             if(pangde->askForSkillInvoke(objectName(), data)){
-                room->broadcastSkillInvoke(objectName());
+                room->playSkillEffect(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
-                CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, effect.to->objectName());
-                reason.m_playerId = pangde->objectName();
-                reason.m_targetId = effect.to->objectName();
-                room->moveCardTo(Sanguosha->getCard(to_throw), NULL, NULL, Player::DiscardPile, reason);
+                room->throwCard(to_throw, effect.to);
             }
         }
 
@@ -393,7 +388,7 @@ public:
 
         if(pangtong->askForSkillInvoke(objectName(), data)){
             room->broadcastInvoke("animate", "lightbox:$niepan");
-            room->broadcastSkillInvoke(objectName());
+            room->playSkillEffect(objectName());
 
             pangtong->loseMark("@nirvana");
 

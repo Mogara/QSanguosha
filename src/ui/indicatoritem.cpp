@@ -10,6 +10,12 @@
 IndicatorItem::IndicatorItem(const QPointF &start, const QPointF &real_finish, Player *player)
     :start(start), finish(start), real_finish(real_finish)
 {
+    QGraphicsDropShadowEffect *halo = new QGraphicsDropShadowEffect();
+    halo->setOffset(0,0);
+    halo->setBlurRadius(5);
+    halo->setColor(Qt::white);
+
+    //setGraphicsEffect(halo);
     color = Sanguosha->getKingdomColor(player->getKingdom());
     width = player->isLord() ? 4 : 3;
 }

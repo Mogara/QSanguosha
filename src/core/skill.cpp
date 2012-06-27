@@ -59,17 +59,19 @@ int Skill::getEffectIndex(const ServerPlayer *, const Card *) const{
 }
 
 void Skill::initMediaSource(){
-    sources.clear();int i;
+    sources.clear();
+
+    int i;
     for(i=1; ;i++){
-		QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
+        QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
         if(QFile::exists(effect_file))
-			sources << effect_file;
+            sources << effect_file;
         else
             break;
     }
 
     if(sources.isEmpty()){
-		QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
+        QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
         if(QFile::exists(effect_file))
             sources << effect_file;
     }
@@ -79,7 +81,7 @@ Skill::Location Skill::getLocation() const{
     return parent() ? Right : Left;
 }
 
-void Skill::playAudioEffect(int index) const{
+void Skill::playEffect(int index) const{
     if(!sources.isEmpty()){
         if(index == -1)
             index = qrand() % sources.length();
@@ -93,7 +95,7 @@ void Skill::playAudioEffect(int index) const{
         else
             filename = sources.first();
 
-        Sanguosha->playAudioEffect(filename);
+        Sanguosha->playEffect(filename);
         if(ClientInstance)
             ClientInstance->setLines(filename);
     }

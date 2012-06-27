@@ -155,22 +155,10 @@ public:
 
         if(card){
             // the only difference for Guicai & Guidao
-            const Card* oldJudge = judge->card;
+            player->obtainCard(judge->card);
+
             judge->card = Sanguosha->getCard(card->getEffectiveId());
-
-            CardsMoveStruct move1(QList<int>(), NULL, Player::PlaceTable,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), this->objectName(), QString()));
-
-            move1.card_ids.append(card->getEffectiveId());
-            
-            CardsMoveStruct move2(QList<int>(), player, Player::PlaceHand,
-                CardMoveReason(CardMoveReason::S_REASON_OVERRIDE, player->objectName(), this->objectName(), QString()));
-            move2.card_ids.append(oldJudge->getEffectiveId());
-
-            QList<CardsMoveStruct> moves;
-            moves.append(move1);
-            moves.append(move2);
-            room->moveCardsAtomic(moves, true);            
+            room->moveCardTo(judge->card, NULL, Player::Special);
 
             LogMessage log;
             log.type = "$ChangedJudge";
@@ -387,7 +375,7 @@ public:
                 target->drawCards(3);
                 target->turnOver();
 
-                room->broadcastSkillInvoke(objectName());
+                room->playSkillEffect(objectName());
             }
         }
 
@@ -421,7 +409,7 @@ public:
         }
         if(istarget && (handcardnum >= huangzhong->getHp() || handcardnum <= huangzhong->getAttackRange()) &&
            huangzhong->askForSkillInvoke("liegong", QVariant::fromValue(player))){
-                room->broadcastSkillInvoke(objectName());
+                room->playSkillEffect(objectName());
             room->setPlayerFlag(player, "LiegongTarget");
         }
          return false;
@@ -476,7 +464,7 @@ public:
             if(invoke){
                 Room *room = player->getRoom();
 
-                room->broadcastSkillInvoke(objectName());
+                room->playSkillEffect(objectName());
 
                 LogMessage log;
                 log.type = "#TriggerSkill";
@@ -509,12 +497,11 @@ public:
         Room *room = zhoutai->getRoom();
         const QList<int> buqu(zhoutai->getPile("buqu"));
 
-        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), "buqu", QString());
         int need = 1 - zhoutai->getHp();
         if(need <= 0){
             // clear all the buqu cards
-            foreach(int card_id, buqu) {                
-                room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+            foreach(int card_id, buqu){
+                room->throwCard(card_id);
             }
         }else{
             int to_remove = buqu.length() - need;
@@ -523,7 +510,7 @@ public:
                         
             for(int i = 0; i < to_remove; i++){
                 int card_id = room->askForAG(zhoutai, buqu, false, "buqu");                
-                room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+                room->throwCard(card_id);
             }
 
             room->broadcastInvoke("clearAG");
@@ -548,7 +535,7 @@ public:
         if(event == Dying){
             if(room->askForSkillInvoke(zhoutai, objectName())){
                 room->setTag("Buqu", zhoutai->objectName());
-                room->broadcastSkillInvoke(objectName());
+                room->playSkillEffect(objectName());
                 const QList<int> &buqu = zhoutai->getPile("buqu");
 
                 int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
@@ -601,7 +588,7 @@ public:
             }
 
             if(duplicate_numbers.isEmpty()){
-                room->broadcastSkillInvoke(objectName());
+                room->playSkillEffect(objectName());
                 zhoutai->setFlags("-dying");
                 return true;
             }else{
@@ -695,12 +682,11 @@ public:
 
 TianxiangCard::TianxiangCard()
 {
-    will_throw = true;
+    owner_discarded = true;
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    room->throwCard(this, effect.from);
     DamageStruct damage = effect.from->tag["TianxiangDamage"].value<DamageStruct>();
     damage.to = effect.to;
     damage.transfer = true;
@@ -773,12 +759,6 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
 
-    QList<int> used_cards;
-    QList<CardsMoveStruct> moves;
-    foreach(int card_id, getSubcards()){
-        used_cards << card_id;
-    }
-
     foreach(ServerPlayer *player, players){
         if(player->getHp() <= 0){
             LogMessage log;
@@ -808,12 +788,6 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
 
         room->sendLog(log);
     }
-    
-    LogMessage log;
-    log.type = "$GuhuoResult";
-    log.from = yuji;
-    log.card_str = QString::number(subcards.first());
-    room->sendLog(log);
 
     bool success = false;
     if(questioned.isEmpty()){
@@ -821,15 +795,6 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
 
         foreach(ServerPlayer *player, players)
             room->setEmotion(player, ".");
-        if(yuji->getPhase() == Player::Play){
-            CardMoveReason reason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), user_string);
-            CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceTable, reason);
-            moves.append(move);
-            room->moveCardsAtomic(moves, true);
-        }
-        else if(yuji->getPhase() == Player::NotActive)
-            room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true, false);
 
     }else{
         const Card *card = Sanguosha->getCard(subcards.first());
@@ -840,20 +805,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
             real = card->match(user_string);
 
         success = real && card->getSuit() == Card::Heart;
-        if(success && yuji->getPhase() == Player::Play){
-            CardMoveReason reason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), user_string);
-            CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceTable, reason);
-            moves.append(move);
-            room->moveCardsAtomic(moves, true);
-        }
-        else if(success && yuji->getPhase() == Player::NotActive){
-            room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true, false);
-        }
-        else{
-            room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_PUT, yuji->objectName(), QString(), user_string), true, false);
-        }
+
         foreach(ServerPlayer *player, players){
             room->setEmotion(player, ".");
 
@@ -865,9 +817,18 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
             }
         }
     }
-    
+
+    LogMessage log;
+    log.type = "$GuhuoResult";
+    log.from = yuji;
+    log.card_str = QString::number(subcards.first());
+    room->sendLog(log);
+
     room->setTag("Guhuoing", false);
     room->removeTag("GuhuoType");
+
+    if(!success)
+        room->throwCard(this);
 
     return success;
 }
@@ -1003,7 +964,7 @@ bool GuhuoCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
 const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
-    room->broadcastSkillInvoke("guhuo");
+    room->playSkillEffect("guhuo");
 
     LogMessage log;
     log.type = card_use->to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
@@ -1019,9 +980,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
         use_card->addSubcard(this);
-        /* @todo: verify this...
-        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, card_use->from->objectName());
-        room->throwCard(this, reason, NULL); */
+        room->throwCard(this);
 
         return use_card;
     }else
@@ -1032,7 +991,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
     *continuable = true;
 
     Room *room = yuji->getRoom();
-    room->broadcastSkillInvoke("guhuo");
+    room->playSkillEffect("guhuo");
 
     QString to_guhuo;
     if(user_string == "peach+analeptic")
@@ -1051,6 +1010,8 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
+        room->throwCard(this);
+
         return use_card;
     }else
         return NULL;

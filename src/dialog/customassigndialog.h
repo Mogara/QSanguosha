@@ -51,7 +51,7 @@ protected:
 
 private:
     QListWidget *list, *equip_list, *hand_list, *judge_list, *pile_list;
-    QComboBox *role_ComboBox, *num_ComboBox, *marks_ComboBox;
+    QComboBox *role_combobox, *num_combobox, *marks_combobox;
     QCheckBox  *starter_box;
     LabelButton *general_label, *general_label2;
     QCheckBox *max_hp_prompt,*hp_prompt;

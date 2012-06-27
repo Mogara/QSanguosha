@@ -43,6 +43,10 @@ QString Analeptic::getSubtype() const{
     return "buff_card";
 }
 
+QString Analeptic::getEffectPath(bool ) const{
+    return Card::getEffectPath();
+}
+
 bool Analeptic::IsAvailable(const Player *player){
     return !player->hasUsed("Analeptic");
 }
@@ -321,6 +325,10 @@ QString IronChain::getSubtype() const{
     return "damage_spread";
 }
 
+QString IronChain::getEffectPath(bool is_male) const{
+    return QString();
+}
+
 bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.length() >= 2)
         return false;
@@ -337,17 +345,17 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
 
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.to.isEmpty()){
-        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
-        reason.m_skillName = this->getSkillName();
-        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
-        card_use.from->broadcastSkillInvoke("@recast");
+        room->throwCard(this);
+        card_use.from->playCardEffect("@recast");
         card_use.from->drawCards(1);
     }else
         TrickCard::onUse(room, card_use);
 }
 
 void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    source->broadcastSkillInvoke("@tiesuo");
+    room->throwCard(this);
+
+    source->playCardEffect("@tiesuo");
     TrickCard::use(room, source, targets);
 }
 

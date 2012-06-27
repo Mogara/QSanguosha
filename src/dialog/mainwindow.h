@@ -92,7 +92,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setBackgroundBrush(bool center_as_origin);
+    void setBackgroundBrush();
 
 protected:
     virtual void closeEvent(QCloseEvent *);

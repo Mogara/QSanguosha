@@ -1,5 +1,7 @@
 #include "engine.h"
 #include "standard-skillcards.h"
+#include "clientplayer.h"
+#include "client.h"
 #include "carditem.h"
 #include "scenerule.h"
 
@@ -87,7 +89,7 @@ public:
         Room *room = effect.to->getRoom();
         int card_id = room->askForCardChosen(effect.from, effect.to, "hej", "scene_27_effect");
 
-        room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::PlaceHand);
+        room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
     }
 };
 
@@ -157,7 +159,7 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
                     prevp.prepend(prevp.takeLast());
                     for(int i = 0; i < prevp.count(); i++) {
                         if(cardToMove[i]) {
-                            room->moveCardTo(cardToMove[i], prevp[i], Player::PlaceHand, false);
+                            room->moveCardTo(cardToMove[i], prevp[i], Player::Hand, false);
                             room->getThread()->delay();
                         }
                     }
@@ -228,7 +230,7 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
                     prevp.append(prevp.takeFirst());
                     for(int i = 0; i < prevp.count(); i++) {
                         if(cardToMove[i]) {
-                            room->moveCardTo(cardToMove[i], prevp[i], Player::PlaceHand, false);
+                            room->moveCardTo(cardToMove[i], prevp[i], Player::Hand, false);
                             room->getThread()->delay();
                         }
                     }
@@ -370,7 +372,7 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
                     }
 
                     foreach(int card, cardList) {
-                        room->throwCard(card, NULL);
+                        room->throwCard(card);
                     }
 
                     room->fillAG(cardList);
@@ -420,7 +422,7 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
                 log.to << effectTo;
                 room->sendLog(log);
 
-                room->throwCard(use.card, NULL);
+                room->throwCard(use.card);
                 room->recover(effectTo, recover);
                 return true;
             }

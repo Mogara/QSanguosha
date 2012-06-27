@@ -12,7 +12,7 @@ class GeneralSelector: public QObject{
     Q_OBJECT
 
 public:
-    static GeneralSelector *getInstance();
+    static GeneralSelector *GetInstance();
     QString selectFirst(ServerPlayer *player, const QStringList &candidates);
     QString selectSecond(ServerPlayer *player, const QStringList &candidates);
     QString select3v3(ServerPlayer *player, const QStringList &candidates);

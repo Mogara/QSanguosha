@@ -16,8 +16,6 @@ public:
 
         switch(event){
         case GameStart:{
-            foreach (ServerPlayer* player, room->getPlayers())
-            {
                 if(player->isLord()){
                     scenario->marryAll(room);
                     room->setTag("SkipNormalDeathProcess", true);
@@ -31,8 +29,8 @@ public:
                     if(player->askForSkillInvoke("reselect"))
                         room->transfigure(player, "caozhi", true);
                 }
-            }
-            break;
+
+                break;
             }
 
         case GameOverJudge:{
@@ -236,8 +234,8 @@ int CoupleScenario::getPlayerCount() const{
     return 9;
 }
 
-QString CoupleScenario::getRoles() const{
-    return "ZNNNNNNNN";
+void CoupleScenario::getRoles(char *roles) const{
+    strcpy(roles, "ZNNNNNNNN");
 }
 
 void CoupleScenario::onTagSet(Room *room, const QString &key) const{

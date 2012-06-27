@@ -30,7 +30,7 @@ public:
     virtual QString peerAddress() const = 0;
 
 signals:
-    void message_got(const char *msg);
+    void message_got(char *msg);
     void error_message(const QString &msg);
     void disconnected();
     void connected();

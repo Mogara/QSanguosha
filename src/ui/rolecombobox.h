@@ -1,54 +1,48 @@
-#ifndef ROLEComboBox_H
-#define ROLEComboBox_H
+#ifndef ROLECOMBOBOX_H
+#define ROLECOMBOBOX_H
 
 #include <QObject>
 
-#include "QSanSelectableItem.h"
+#include "pixmap.h"
 #include "player.h"
 
 class Photo;
 
-class RoleComboBoxItem : public QSanSelectableItem{
+class RoleComboboxItem : public Pixmap{
     Q_OBJECT
 
 public:
-    RoleComboBoxItem(const QString &role, int number, QSize size);
+    RoleComboboxItem(const QString &role, int number);
     QString getRole() const;
-    void setRole(const QString &role);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    QString m_role;
-    int m_number;
-    QSize m_size;
+    QString role;
 
 signals:
     void clicked();
 };
 
-class RoleComboBox : public QGraphicsObject
+class RoleCombobox : public QObject
 {
     Q_OBJECT
 
 public:
-    RoleComboBox(QGraphicsItem *photo);
-    static const int S_ROLE_COMBO_BOX_WIDTH = 25;
-    static const int S_ROLE_COMBO_BOX_HEIGHT = 26;
-    static const int S_ROLE_COMBO_BOX_GAP = 5;
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    RoleCombobox(Photo *photo);
+    void setupItems();
+    void hide();
+    void show();
+
 public slots:
     void fix(const QString &role);
-protected:
-    qreal _m_posX, _m_posY;
+
 private:
-    QList<RoleComboBoxItem *> items;
-    RoleComboBoxItem* m_currentRole;
+    QList<RoleComboboxItem *> items;
+
 private slots:
-    void collapse();
-    void expand();
+    void onItemClicked();
 };
 
-#endif // ROLEComboBox_H
+#endif // ROLECOMBOBOX_H

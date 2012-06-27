@@ -50,7 +50,7 @@ public:
     virtual int getDrawNum(ServerPlayer *zhugejin, int n) const{
         Room *room = zhugejin->getRoom();
         if(room->askForSkillInvoke(zhugejin, objectName())){
-            room->broadcastSkillInvoke(objectName());
+            room->playSkillEffect(objectName());
             room->setPlayerFlag(zhugejin, "Invoked");
             return n - 1;
         }else
@@ -172,15 +172,11 @@ public:
 
         if(card){
             // the only difference for Guicai & Guidao
-            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, QString());
-            if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile
-                || room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
-                room->throwCard(judge->card, reason, judge->who);
+                room->throwCard(judge->card);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 
-            room->moveCardTo(judge->card, player, NULL, Player::PlaceTable,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), "huanshi", QString()), true);
+            room->moveCardTo(judge->card, NULL, Player::Special);
             LogMessage log;
             log.type = "$ChangedJudge";
             log.from = player;
@@ -198,7 +194,7 @@ public:
 class Mingzhe: public TriggerSkill{
 public:
     Mingzhe():TriggerSkill("mingzhe"){
-        events << CardUsed << CardResponsed << CardLostOnePiece;
+        events << CardUsed << CardResponsed << CardDiscarded;
         frequency = Frequent;
     }
 
@@ -211,20 +207,23 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
         }
-        else if(event == CardResponsed){
+        else
             card = data.value<CardStar>();
-        }
-        else{
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place == Player::PlaceDelayedTrick || move->from_place == Player::PlaceSpecial)
-                return false;
-            if((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_DISCARD)
-                return false;
-            card = Sanguosha->getCard(move->card_id);
-        }
 
         int n = 0;
-        n = card->isRed() ? 1 : 0;
+        if(event == CardDiscarded){
+            if(card->isVirtualCard()){
+                foreach(int card_id, card->getSubcards()){
+                    const Card *subcard = Sanguosha->getCard(card_id);
+                    if(subcard->isRed())
+                        n++;
+                }
+            }
+            else if(card->isRed())
+                n++;
+        }
+        else
+            n = card->isRed() ? 1 : 0;
 
         if(n>0 && player->askForSkillInvoke(objectName(), data))
             player->drawCards(n);

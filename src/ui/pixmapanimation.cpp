@@ -1,5 +1,4 @@
 #include "pixmapanimation.h"
-#include <fstream>
 #include <QPainter>
 #include <QPixmapCache>
 #include <QDir>
@@ -23,30 +22,6 @@ void PixmapAnimation::advance(int phase)
 void PixmapAnimation::setPath(const QString &path)
 {
     frames.clear();
-    current = 0;
-
-    if(QFile(path + "prop").exists())
-    {
-        QPixmap atlas = GetFrameFromCache(path + "atlas.png");
-
-        int width,height,num = 0;
-        std::ifstream fin(QString(path + "prop").toStdString().data());
-        fin >> width >> height >> num;
-
-        for(int i=0;i<num;i++)
-        {
-            QPixmap pic(width,height);
-            pic.fill(Qt::transparent);
-            QPainter pt(&pic);
-            pt.setClipRect(0,0,width,height);
-            pt.drawPixmap( - width * i, 0,atlas);
-
-            frames << pic;
-        }
-        return;
-    }
-
-
 
     int i = 0;
     QString pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
@@ -55,25 +30,7 @@ void PixmapAnimation::setPath(const QString &path)
         pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
     }while(!GetFrameFromCache(pic_path).isNull());
 
-    QPixmap atlas(frames.last().size().width() * frames.count(),frames.last().size().height());
-    atlas.fill(Qt::transparent);
-    QPainter pt(&atlas);
-    i = 0;
-
-    foreach(QPixmap map,frames)
-    {
-        pt.drawPixmap((i++)*map.size().width(),0,map);
-    }
-    atlas.save(path + "atlas.png");
-
-    using namespace std;
-    ofstream cfg(QString("%1prop").arg(path).toStdString().data());
-
-    cfg << frames.last().size().width();
-    cfg << ' ' << frames.last().size().height() << ' '
-        << frames.count();
-
-    cfg.close();
+    current = 0;
 }
 
 void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)

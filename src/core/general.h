@@ -50,6 +50,7 @@ public:
     void addRelateSkill(const QString &skill_name);
     QStringList getRelatedSkillNames() const;
 
+    QString getPixmapPath(const QString &category) const;
     QString getPackage() const;
     QString getSkillDescription() const;
 

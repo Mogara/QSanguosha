@@ -2,7 +2,7 @@
 #include "mainwindow.h"
 #include "engine.h"
 #include "settings.h"
-#include "QSanSelectableItem.h"
+#include "pixmap.h"
 
 #include <QFormLayout>
 #include <QPushButton>
@@ -569,7 +569,7 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
 }
 
 void CardScene::setGeneralPhoto(const QString &filename){
-    photo->load(filename);
+    photo->changePixmap(filename);
 
     Config.setValue("CardEditor/Photo", filename);
 }
@@ -706,7 +706,7 @@ void CardScene::resetPhoto(){
         Config.remove("CardEditor/Photo");
     }
 
-    photo = new QSanSelectableItem;
+    photo = new Pixmap;
     photo->setZValue(-1);
     photo->setFlag(QGraphicsItem::ItemIsMovable);
     addItem(photo);
@@ -914,12 +914,12 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
 }
 
 QLayout *CardEditor::createGeneralLayout(){
-    kingdom_ComboBox = new QComboBox;
+    kingdom_combobox = new QComboBox;
     lord_checkbox = new QCheckBox(tr("Lord"));
     QStringList kingdom_names = Sanguosha->getKingdoms();
     foreach(QString kingdom, kingdom_names){
         QIcon icon(QString("image/kingdom/icon/%1.png").arg(kingdom));
-        kingdom_ComboBox->addItem(icon, Sanguosha->translate(kingdom), kingdom);
+        kingdom_combobox->addItem(icon, Sanguosha->translate(kingdom), kingdom);
     }
 
     QSpinBox *hp_spinbox = new QSpinBox;
@@ -932,20 +932,20 @@ QLayout *CardEditor::createGeneralLayout(){
 
     QFormLayout *layout = new QFormLayout;
     QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(kingdom_ComboBox);
+    hlayout->addWidget(kingdom_combobox);
     hlayout->addWidget(lord_checkbox);
     layout->addRow(tr("Kingdom"), hlayout);
     layout->addRow(tr("Max HP"), hp_spinbox);
     layout->addRow(tr("Image ratio"), ratio_spinbox);
 
-    connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
+    connect(kingdom_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
     connect(lord_checkbox, SIGNAL(toggled(bool)), this, SLOT(setCardFrame()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
     connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
 
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
     int is_lord = Config.value("CardEditor/IsLord", false).toBool();
-    kingdom_ComboBox->setCurrentIndex(kingdom_names.indexOf(kingdom));
+    kingdom_combobox->setCurrentIndex(kingdom_names.indexOf(kingdom));
     lord_checkbox->setChecked(is_lord);
     hp_spinbox->setValue(Config.value("CardEditor/MaxHP", 3).toInt());
     ratio_spinbox->setValue(Config.value("CardEditor/ImageRatio", 100).toInt());
@@ -988,28 +988,28 @@ QWidget *CardEditor::createSkillBox(){
     desc_font_dialog->setCurrentFont(Config.value("CardEditor/SkillDescriptionFont", QFont("", 9)).value<QFont>());
     tiny_font_dialog->setCurrentFont(Config.value("CardEditor/TinyFont", QFont("", 7)).value<QFont>());
 
-    QComboBox *suit_ComboBox = new QComboBox;
+    QComboBox *suit_combobox = new QComboBox;
     const Card::Suit *suits = Card::AllSuits;
     int i;
     for(i=0; i<4; i++){
         QString suit_name = Card::Suit2String(suits[i]);
         QIcon suit_icon(QString("image/system/suit/%1.png").arg(suit_name));
-        suit_ComboBox->addItem(suit_icon, Sanguosha->translate(suit_name), suit_name);
+        suit_combobox->addItem(suit_icon, Sanguosha->translate(suit_name), suit_name);
     }
-    layout->addRow(tr("Insert suit"), suit_ComboBox);
+    layout->addRow(tr("Insert suit"), suit_combobox);
 
-    connect(suit_ComboBox, SIGNAL(activated(int)), skill_box, SLOT(insertSuit(int)));
+    connect(suit_combobox, SIGNAL(activated(int)), skill_box, SLOT(insertSuit(int)));
 
-    QComboBox *bold_ComboBox = new QComboBox;
-    bold_ComboBox->setEditable(true);
-    bold_ComboBox->addItem(tr("Lord skill"));
-    bold_ComboBox->addItem(tr("Compulsory"));
-    bold_ComboBox->addItem(tr("Limited"));
-    bold_ComboBox->addItem(tr("Wake skill"));
-    bold_ComboBox->addItem(tr("Colla skill"));
-    layout->addRow(tr("Insert bold text"), bold_ComboBox);
+    QComboBox *bold_combobox = new QComboBox;
+    bold_combobox->setEditable(true);
+    bold_combobox->addItem(tr("Lord skill"));
+    bold_combobox->addItem(tr("Compulsory"));
+    bold_combobox->addItem(tr("Limited"));
+    bold_combobox->addItem(tr("Wake skill"));
+    bold_combobox->addItem(tr("Colla skill"));
+    layout->addRow(tr("Insert bold text"), bold_combobox);
 
-    connect(bold_ComboBox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
+    connect(bold_combobox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
 
     box->setLayout(layout);
     return box;
@@ -1052,7 +1052,7 @@ QWidget *CardEditor::createLeft(){
 }
 
 void CardEditor::setCardFrame(){
-    QString kingdom = kingdom_ComboBox->itemData(kingdom_ComboBox->currentIndex()).toString();
+    QString kingdom = kingdom_combobox->itemData(kingdom_combobox->currentIndex()).toString();
     if(kingdom == "god")
         card_scene->setFrame("god", false);
     else

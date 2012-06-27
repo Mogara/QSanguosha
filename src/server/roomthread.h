@@ -39,7 +39,7 @@ class RoomThread : public QThread{
 
 public:
     explicit RoomThread(Room *room);
-    void constructTriggerTable();
+    void constructTriggerTable(const GameRule *rule);
     bool trigger(TriggerEvent event, Room* room, ServerPlayer *target, QVariant &data);
     bool trigger(TriggerEvent event, Room* room, ServerPlayer *target);
 
@@ -47,6 +47,7 @@ public:
 
     void addTriggerSkill(const TriggerSkill *skill);
     void delay(unsigned long msecs = 1000);
+    void end();
     void run3v3();
     void action3v3(ServerPlayer *player);
 
@@ -57,6 +58,7 @@ protected:
 
 private:
     Room *room;
+    jmp_buf env;
     QString order;
 
     QList<const TriggerSkill *> skill_table[NumOfEvents];

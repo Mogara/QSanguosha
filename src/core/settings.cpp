@@ -22,8 +22,7 @@ const int Settings::S_GUANXING_TIMEOUT = 20;
 const int Settings::S_SURRNDER_REQUEST_MIN_INTERVAL = 60;
 const int Settings::S_PROGRESS_BAR_UPDATE_INTERVAL = 200;
 const int Settings::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
-const int Settings::S_MOVE_CARD_ANIMATION_DURAION = 600;
-const int Settings::S_REGULAR_ANIMATION_SLOW_DURAION = 1200;
+
 Settings::Settings()
 
 #ifdef Q_OS_WIN32
@@ -38,7 +37,7 @@ Settings::Settings()
 
 void Settings::init(){
     if(!qApp->arguments().contains("-server")){
-        QString font_path = value("DefaultFontPath", "font/simli.ttf").toString();
+        QString font_path = value("DefaultFontPath", "font/font.ttf").toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if(font_id!=-1){
             QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
@@ -108,6 +107,7 @@ void Settings::init(){
     DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 15).toInt();
 
+    FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
@@ -121,7 +121,7 @@ void Settings::init(){
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-    BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
+    BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 

@@ -13,6 +13,8 @@ ClientPlayer::ClientPlayer(Client *client)
     :Player(client), handcard_num(0)
 {
     mark_doc = new QTextDocument(this);
+    mark_doc->setTextWidth(128);
+    mark_doc->setDefaultTextOption(QTextOption(Qt::AlignRight));
 }
 
 void ClientPlayer::handCardChange(int delta){
@@ -29,18 +31,18 @@ int ClientPlayer::getHandcardNum() const{
 
 void ClientPlayer::addCard(const Card *card, Place place){
     switch(place){
-    case PlaceHand: {
+    case Hand: {
             if(card)
                 known_cards << card;
             handcard_num++;
             break;
         }
-    case PlaceEquip: {
+    case Equip: {
             const EquipCard *equip = qobject_cast<const EquipCard*>(card);
             setEquip(equip);
             break;
         }
-    case PlaceDelayedTrick:{
+    case Judging:{
             addDelayedTrick(card);
             break;
         }
@@ -64,18 +66,18 @@ bool ClientPlayer::isLastHandCard(const Card *card) const{
 
 void ClientPlayer::removeCard(const Card *card, Place place){
     switch(place){
-    case PlaceHand: {
+    case Hand: {
             handcard_num--;
             if(card)
                 known_cards.removeOne(card);
             break;
         }
-    case PlaceEquip:{
+    case Equip:{
             const EquipCard *equip = qobject_cast<const EquipCard*>(card);
             removeEquip(equip);
             break;
         }
-    case PlaceDelayedTrick:{
+    case Judging:{
             removeDelayedTrick(card);
             break;
         }
@@ -102,12 +104,11 @@ QTextDocument *ClientPlayer::getMarkDoc() const{
     return mark_doc;
 }
 
-void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids){
+void ClientPlayer::changePile(const QString &name, bool add, int card_id){
     if(add)
-        piles[name].append(card_ids);
+        piles[name] << card_id;
     else
-        foreach (int card_id, card_ids)
-            piles[name].removeOne(card_id);
+        piles[name].removeOne(card_id);
 
     if(!name.startsWith("#"))
         emit pile_changed(name);
@@ -158,7 +159,6 @@ void ClientPlayer::setMark(const QString &mark, int value){
     if(!mark.startsWith("@"))
         return;
 
-    // @todo: consider move all the codes below to PlayerCardContainerUI.cpp
     // set mark doc
     QString text = "";
     QMapIterator<QString, int> itor(marks);
@@ -168,9 +168,7 @@ void ClientPlayer::setMark(const QString &mark, int value){
         if(itor.key().startsWith("@") && itor.value() > 0){
             QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
             if(itor.value() != 1)
-                mark_text.append(QString("%1").arg(itor.value()));
-            // @todo: add an option so that mark can be placed horizontally.
-            mark_text.append("<br>");
+                mark_text.append(QString("x%1").arg(itor.value()));
             text.append(mark_text);
         }
     }

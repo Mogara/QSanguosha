@@ -47,7 +47,7 @@ public:
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;
     int getPlayerCount(const QString &mode) const;
-    QString getRoles(const QString &mode) const;
+    void getRoles(const QString &mode, char *roles) const;
     QStringList getRoleList(const QString &mode) const;
     int getRoleIndex() const;
 
@@ -81,9 +81,10 @@ public:
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
 
-    void playSystemAudioEffect(const QString &name) const;
-    void playAudioEffect(const QString &filename) const;
-    void playSkillAudioEffect(const QString &skill_name, int index) const;
+    void playAudio(const QString &name) const;
+    void playEffect(const QString &filename) const;
+    void playSkillEffect(const QString &skill_name, int index) const;
+    void playCardEffect(const QString &card_name, bool is_male) const;
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;

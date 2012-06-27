@@ -36,10 +36,19 @@ class GreatYeyanCard: public YeyanCard{
 public:
     Q_INVOKABLE GreatYeyanCard();
 
-    virtual int targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class MediumYeyanCard: public YeyanCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MediumYeyanCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
 
 class SmallYeyanCard: public YeyanCard{
     Q_OBJECT

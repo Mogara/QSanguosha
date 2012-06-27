@@ -3,12 +3,9 @@
 #include "engine.h"
 #include "client.h"
 #include "room.h"
-#include "structs.h"
 #include "carditem.h"
 #include "lua-wrapper.h"
 #include <QFile>
-
-const int Card::S_UNKNOWN_CARD_ID = -1;
 
 const Card::Suit Card::AllSuits[4] = {
     Card::Spade,
@@ -18,7 +15,8 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), has_preact(false), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), owner_discarded(false)
+	, has_preact(false), suit(suit), number(number), id(-1)
 {
     can_jilei = will_throw;
 
@@ -170,8 +168,13 @@ bool Card::CompareByType(const Card *a, const Card *b){
         return CompareBySuitNumber(a,b);
 }
 
-bool Card::isNDTrick() const{
-    return getTypeId() == Trick && !inherits("DelayedTrick");
+QString Card::getPixmapPath() const{
+    QString path = QString("image/card/%1.jpg").arg(objectName());
+    return QFile::exists(path) ? path : "image/card/unknown.jpg";
+}
+
+QString Card::getIconPath() const{
+    return QString("image/icon/%1.png").arg(objectName());
 }
 
 QString Card::getPackage() const{
@@ -179,6 +182,23 @@ QString Card::getPackage() const{
         return parent()->objectName();
     else
         return "";
+}
+
+QString Card::getEffectPath(bool is_male) const{
+    QString gender = is_male ? "male" : "female";
+    return QString("audio/card/%1/%2.ogg").arg(gender).arg(objectName());
+}
+
+bool Card::isNDTrick() const{
+    return getTypeId() == Trick && !inherits("DelayedTrick");
+}
+
+QString Card::getEffectPath() const{
+    return QString("audio/card/common/%1.ogg").arg(objectName());
+}
+
+QIcon Card::getSuitIcon() const{
+    return QIcon(QString("image/system/suit/%1.png").arg(getSuitString()));
 }
 
 QString Card::getFullName(bool include_suit) const{
@@ -397,11 +417,10 @@ Card *Card::Clone(const Card *card){
     const QMetaObject *meta = card->metaObject();
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
-    
+
     QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
     if(card_obj){
         Card *new_card = qobject_cast<Card *>(card_obj);
-        new_card->setId(card->getId());
         new_card->setObjectName(card->objectName());
         new_card->addSubcard(card->getId());
         return new_card;
@@ -448,26 +467,11 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     log.card_str = toString();
     room->sendLog(log);
 
-    QList<int> used_cards;
-    QList<CardsMoveStruct> moves;
-    if(card_use.card->isVirtualCard()){
-        foreach(int card_id, card_use.card->getSubcards()){
-            used_cards << card_id;
-        }
-    }
-    else{
-        used_cards << card_use.card->getEffectiveId();
-    }
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  
-    if(getTypeId() != Card::Skill){
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
-        if (card_use.to.size() == 1)
-            reason.m_targetId = card_use.to.first()->objectName();
-        CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
-        moves.append(move);
-        room->moveCardsAtomic(moves, true);
+    if(will_throw){
+        room->throwCard(this, owner_discarded ? card_use.from : NULL);
     }
     thread->trigger(CardUsed, room, player, data);
 
@@ -496,13 +500,6 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
             room->cardEffect(effect);
         }
     }
-    if(willThrow() && isVirtualCard()){
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable || this->inherits("DummyCard"))
-            room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
-    }
-    room->removeTag("Huoshou");
 }
 
 void Card::onEffect(const CardEffectStruct &) const{
@@ -564,6 +561,10 @@ bool Card::willThrow() const{
 
 bool Card::canJilei() const{
     return can_jilei;
+}
+
+bool Card::isOwnerDiscarded() const{
+    return owner_discarded;
 }
 
 bool Card::hasPreAction() const{

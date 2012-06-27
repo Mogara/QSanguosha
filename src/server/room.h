@@ -37,6 +37,7 @@ public:
     QString getMode() const;
     const Scenario *getScenario() const;
     RoomThread *getThread() const;
+    void playSkillEffect(const QString &skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
     void setCurrent(ServerPlayer *current);
     int alivePlayerCount() const;
@@ -55,6 +56,7 @@ public:
     void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
+    bool obtainable(const Card *card, ServerPlayer *player);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
@@ -145,10 +147,10 @@ public:
 
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
-    // will be rejected.    
+    // will be rejected.
     bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
-    bool doBroadcastNotify(const QList<ServerPlayer*> &players, QSanProtocol::CommandType command, const Json::Value &arg);
-    
+
+
     // Ask a server player to wait for the client response. Call is blocking until client replies or server times out, 
     // whichever is earlier.
     // @param player
@@ -174,25 +176,6 @@ public:
     // Notification functions
     bool notifyMoveFocus(ServerPlayer* player);
     bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);
-
-    // Notify client side to move cards from one place to another place. A movement should always be completed by
-    // calling notifyMoveCards in pairs, one with isLostPhase equaling true followed by one with isLostPhase
-    // equaling false. The two phase design is needed because the target player doesn't necessarily gets the 
-    // cards that the source player lost. Any trigger during the movement can cause either the target player to
-    // be dead or some of the cards to be moved to another place before the target player actually gets it. 
-    // @param isLostPhase
-    //        Specify whether this is a S_COMMAND_LOSE_CARD notification.
-    // @param move
-    //        Specify all movements need to be broadcasted.
-    // @param forceVisible
-    //        If true, all players will be able to see the face of card regardless of whether the movement is
-    //        relevant or not.
-    bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible);
-    bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
-    bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
-    bool broadcastSkillInvoke(const QString &skillName);
-    bool broadcastSkillInvoke(const QString &skillName, int type);
-    bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
@@ -238,27 +221,13 @@ public:
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
     void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
-    void drawCards(QList<ServerPlayer*> players, int n, const QString &reason);
     void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
     void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
-    void obtainCard(ServerPlayer *target, const Card *card,  const CardMoveReason &reason, bool unhide = true);
 
-    void throwCard(int card_id, ServerPlayer *who);
-    void throwCard(const Card *card, ServerPlayer *who);    
-    void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who);
-
-    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, 
-                    bool forceMoveVisible = false, bool ignoreChanges = true);
-    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
-                    bool forceMoveVisible = false, bool ignoreChanges = true);
-    void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
-                    bool forceMoveVisible = false, bool ignoreChanges = true);
-    void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const QString& pileName,
-                    const CardMoveReason &reason, bool forceMoveVisible = false, bool ignoreChanges = true);
-    void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
-    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);
-    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
-    QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
+    void throwCard(const Card *card, ServerPlayer *who = NULL);
+    void throwCard(int card_id, ServerPlayer *who = NULL);
+    void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
+    void doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -288,6 +257,7 @@ public:
     void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
+    void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void startTest(const QString &to_test);
@@ -298,37 +268,6 @@ protected:
     int _m_Id;
 
 private:
-    struct _MoveSourceClassifier
-    {
-        inline _MoveSourceClassifier(const CardsMoveStruct &move)
-        {
-            m_from = move.from; m_from_place = move.from_place; 
-            m_from_pile_name = move.from_pile_name; m_from_player_name = move.from_player_name;
-        }
-        inline void copyTo(CardsMoveStruct & move)
-        {
-            move.from = m_from; move.from_place = m_from_place;
-            move.from_pile_name = m_from_pile_name; move.from_player_name = m_from_player_name;
-        }
-        inline bool operator == (const _MoveSourceClassifier &other) const
-        {
-            return m_from == other.m_from && m_from_place == other.m_from_place &&
-                m_from_pile_name == other.m_from_pile_name && m_from_player_name == other.m_from_player_name;
-        }
-        inline bool operator < (const _MoveSourceClassifier &other) const
-        {
-            return m_from < other.m_from || m_from_place < other.m_from_place ||
-                m_from_pile_name < other.m_from_pile_name || m_from_player_name < other.m_from_player_name;
-        }
-        Player* m_from;
-        Player::Place m_from_place;
-        QString m_from_pile_name;
-        QString m_from_player_name; 
-    };
-    int _m_lastMovementId;
-    void _fillMoveInfo(CardMoveStruct &move) const;
-    void _fillMoveInfo(CardsMoveStruct &moves, int card_index) const;
-    void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges);
     QString _chooseDefaultGeneral(ServerPlayer* player) const;
     bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);
     QString mode;

@@ -114,9 +114,6 @@ namespace QSanProtocol
         S_CAMP_COOL = 1
     };
 
-    //static consts
-    extern const char* S_PLAYER_SELF_REFERENCE_ID;
-
     class Countdown
     {
     public:

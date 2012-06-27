@@ -14,8 +14,8 @@ class QDialog;
 class Skill : public QObject
 {
     Q_OBJECT
-	Q_ENUMS(Frequency)
-	Q_ENUMS(Location)
+    Q_ENUMS(Frequency);
+    Q_ENUMS(Location);
 
 public:
     enum Frequency{
@@ -44,7 +44,7 @@ public:
     virtual Location getLocation() const;
 
     void initMediaSource();
-    void playAudioEffect(int index = -1) const;
+    void playEffect(int index = -1) const;
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;

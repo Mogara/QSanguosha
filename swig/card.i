@@ -50,6 +50,7 @@ public:
 
 	virtual QString getType() const;
 	virtual CardType getTypeId() const;
+	virtual QString getEffectPath(bool is_male) const;
 	virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 
 	// should be pure virtual
@@ -92,6 +93,7 @@ public:
 class Horse:public EquipCard{
 public:
 	Horse(Suit suit, int number, int correct);
+	virtual QString getEffectPath(bool is_male) const;
 
 	virtual Location location() const;
 	virtual void onInstall(ServerPlayer *player) const;

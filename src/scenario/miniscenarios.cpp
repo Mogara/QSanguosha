@@ -39,11 +39,7 @@ QStringList MiniSceneRule::existedGenerals() const
 
 bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const
 {
-       
-    if (player == NULL)
-        room = data.value<RoomStar>();
-    else
-        room = player->getRoom();
+
 
     if(event == PhaseChange)
     {
@@ -79,17 +75,18 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
             return false;
         room->gameOver(this->players.first()["singleTurn"]);
     }
-    if(room->getTag("WaitForPlayer").toBool())
+    if(player->getRoom()->getTag("WaitForPlayer").toBool())
         return true;
 
     QList<ServerPlayer*> players = room->getAllPlayers();
     while(players.first()->getState() == "robot")
         players.append(players.takeFirst());
 
-    QStringList cards= setup.split(",", QString::SkipEmptyParts);
+    QStringList cards= setup.split(",");
     foreach(QString id,cards)
     {
-        room->moveCardTo(Sanguosha->getCard(id.toInt()), NULL, Player::DrawPile, true);
+        room->moveCardTo(Sanguosha->getCard(id.toInt()),NULL,Player::Special,true);
+        room->moveCardTo(Sanguosha->getCard(id.toInt()),NULL,Player::DrawPile,true);
         room->broadcastInvoke("addHistory","pushPile");
     }
 
@@ -180,8 +177,8 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
         {
             bool ok;
             equip.toInt(&ok);
-            if (!ok) room->installEquip(sp,equip);
-            else room->moveCardTo(Sanguosha->getCard(equip.toInt()), NULL, sp, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+            if(!ok)room->installEquip(sp,equip);
+            else room->moveCardTo(Sanguosha->getCard(equip.toInt()),sp,Player::Equip);
         }
 
         str = this->players.at(i)["judge"];
@@ -190,7 +187,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
             QStringList judges = str.split(",");
             foreach(QString judge,judges)
             {
-                room->moveCardTo(Sanguosha->getCard(judge.toInt()),NULL,sp,Player::PlaceDelayedTrick, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+                room->moveCardTo(Sanguosha->getCard(judge.toInt()),sp,Player::Judging);
             }
         }
 

@@ -264,7 +264,13 @@
     <ClCompile Include="..\..\src\ui\indicatoritem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\irregularbutton.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\ui\photo.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\pixmap.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\pixmapanimation.cpp">
@@ -348,60 +354,6 @@
     <ClCompile Include="Release\moc_TimedProgressBar.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ui\GeneralCardContainerUI.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_GeneralCardContainerUI.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_GeneralCardContainerUI.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\core\structs.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\SkinBank.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\uiUtils.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\magatamasItem.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_qsanbutton.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_qsanbutton.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\qsanbutton.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\QSanSelectableItem.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_QSanSelectableItem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_QSanSelectableItem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_TablePile.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_TablePile.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\TablePile.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_magatamasItem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_magatamasItem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -434,6 +386,9 @@
     <CustomBuild Include="..\..\src\server\serverplayer.h">
       <Filter>server</Filter>
     </CustomBuild>
+    <ClInclude Include="..\..\src\server\structs.h">
+      <Filter>server</Filter>
+    </ClInclude>
     <CustomBuild Include="..\..\src\client\aux-skills.h">
       <Filter>client</Filter>
     </CustomBuild>
@@ -605,7 +560,13 @@
     <CustomBuild Include="..\..\src\ui\indicatoritem.h">
       <Filter>ui</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\irregularbutton.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\..\src\ui\photo.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\pixmap.h">
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\pixmapanimation.h">
@@ -645,21 +606,6 @@
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\TimedProgressBar.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\GeneralCardContainerUI.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\magatamasItem.h">
-      <Filter>ui\form</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\qsanbutton.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\QSanSelectableItem.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\TablePile.h">
       <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -880,6 +826,12 @@
     <ClCompile Include="release\moc_indicatoritem.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="debug\moc_irregularbutton.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_irregularbutton.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
     <ClCompile Include="debug\moc_joypackage.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -944,6 +896,12 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_photo.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_pixmap.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_pixmap.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_pixmapanimation.cpp">
@@ -1236,18 +1194,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\core\jsonutils.h">
       <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\structs.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ui\SkinBank.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\compiler-specific.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ui\uiUtils.h">
-      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

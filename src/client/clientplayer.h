@@ -18,7 +18,7 @@ public:
     QList<const Card *> getCards() const;
     void setCards(const QList<int> &card_ids);
     QTextDocument *getMarkDoc() const;
-    void changePile(const QString &name, bool add, QList<int> card_ids);
+    void changePile(const QString &name, bool add, int card_id);
     QString getDeathPixmapPath() const;
     void setHandcardNum(int n);
     virtual QString getGameMode() const;

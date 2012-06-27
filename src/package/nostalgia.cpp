@@ -91,7 +91,7 @@ public:
 
                 room->sendLog(log);
 
-                room->broadcastSkillInvoke("wuyan");
+                room->playSkillEffect("wuyan");
 
                 return true;
             }
@@ -106,7 +106,7 @@ public:
 
                 room->sendLog(log);
 
-                room->broadcastSkillInvoke("wuyan");
+                room->playSkillEffect("wuyan");
 
                 return true;
             }
@@ -118,7 +118,7 @@ public:
 
 NosJujianCard::NosJujianCard(){
     once = true;
-    will_throw = true;
+    owner_discarded = true;
     mute = true;
 }
 
@@ -126,8 +126,7 @@ void NosJujianCard::onEffect(const CardEffectStruct &effect) const{
     int n = subcardsLength();
     effect.to->drawCards(n);
     Room *room = effect.from->getRoom();
-    room->throwCard(this, effect.from);
-    room->broadcastSkillInvoke("jujian");
+    room->playSkillEffect("jujian");
 
     if(n == 3){
         QSet<Card::CardType> types;
@@ -211,14 +210,14 @@ public:
 
                 room->sendLog(log);
 
-                room->broadcastSkillInvoke("enyuan", qrand() % 2 + 1);
+                room->playSkillEffect("enyuan", qrand() % 2 + 1);
 
             }
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
             if(source && source != player){
-                room->broadcastSkillInvoke("enyuan", qrand() % 2 + 3);
+                room->playSkillEffect("enyuan", qrand() % 2 + 3);
 
                 const Card *card = room->askForCard(source, ".enyuan", "@enyuanheart", QVariant(), NonTrigger);
                 if(card){
@@ -244,17 +243,14 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(this);
 
     Room *room = effect.from->getRoom();
-    room->broadcastSkillInvoke("xuanhuo");
+    room->playSkillEffect("xuanhuo");
     int card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName());
-    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
-    room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+    room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
 
     QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
     ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, objectName());
     if(target != effect.from)
-        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName());
-        reason.m_playerId = target->objectName();
-        room->obtainCard(target, Sanguosha->getCard(card_id), reason, false);
+        room->obtainCard(target, card_id, false);
 }
 
 class NosXuanhuo: public OneCardViewAsSkill{
@@ -281,7 +277,7 @@ public:
 class NosXuanfeng: public TriggerSkill{
 public:
     NosXuanfeng():TriggerSkill("nosxuanfeng"){
-        events << CardLostOneTime;
+        events << CardLost << CardLostDone;
     }
 
     virtual QString getDefaultChoice(ServerPlayer *) const{
@@ -289,48 +285,49 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lingtong, QVariant &data) const{
-        if(event == CardLostOneTime){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if (move->from_places.contains(Player::PlaceEquip))
-            {
-                Room *room = lingtong->getRoom();
+        if(event == CardLost){
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->from_place == Player::Equip)
+                lingtong->tag["InvokeNosXuanfeng"] = true;
+        }else if(event == CardLostDone && lingtong->tag.value("InvokeNosXuanfeng", false).toBool()){
+            lingtong->tag.remove("InvokeNosXuanfeng");
+            Room *room = lingtong->getRoom();
 
-                QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
+            QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
 
 
-                if(choice == "slash"){
-                    QList<ServerPlayer *> targets;
-                    foreach(ServerPlayer *target, room->getAlivePlayers()){
-                        if(lingtong->canSlash(target, false))
-                            targets << target;
-                    }
-
-                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-slash");
-
-                    Slash *slash = new Slash(Card::NoSuit, 0);
-                    slash->setSkillName("xuanfeng");
-
-                    CardUseStruct card_use;
-                    card_use.card = slash;
-                    card_use.from = lingtong;
-                    card_use.to << target;
-                    room->useCard(card_use, false);
-                }else if(choice == "damage"){
-                    room->broadcastSkillInvoke("xuanfeng");
-
-                    QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
-                    foreach(ServerPlayer *p, players){
-                        if(lingtong->distanceTo(p) <= 1)
-                            targets << p;
-                    }
-
-                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-damage");
-
-                    DamageStruct damage;
-                    damage.from = lingtong;
-                    damage.to = target;
-                    room->damage(damage);
+            if(choice == "slash"){
+                QList<ServerPlayer *> targets;
+                foreach(ServerPlayer *target, room->getAlivePlayers()){
+                    if(lingtong->canSlash(target, false))
+                        targets << target;
                 }
+
+                ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-slash");
+
+                Slash *slash = new Slash(Card::NoSuit, 0);
+                slash->setSkillName("xuanfeng");
+
+                CardUseStruct card_use;
+                card_use.card = slash;
+                card_use.from = lingtong;
+                card_use.to << target;
+                room->useCard(card_use, false);
+            }else if(choice == "damage"){
+                room->playSkillEffect("xuanfeng");
+
+                QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
+                foreach(ServerPlayer *p, players){
+                    if(lingtong->distanceTo(p) <= 1)
+                        targets << p;
+                }
+
+                ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-damage");
+
+                DamageStruct damage;
+                damage.from = lingtong;
+                damage.to = target;
+                room->damage(damage);
             }
         }
 
