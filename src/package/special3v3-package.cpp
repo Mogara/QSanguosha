@@ -152,7 +152,7 @@ public:
                     break;
                 }
             }
-        }else if(judge->who->objectName() != player->objectName()){
+        }else if(judge->who->objectName() != player->objectName() && !player->isNude()){
             if(room->askForSkillInvoke(player,objectName()))
                 if(room->askForChoice(judge->who, objectName(), "yes+no") == "yes")
                     can_invoke = true;
