@@ -134,8 +134,6 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange() const{
-    if(hasFlag("tianyi_success") || hasFlag("jiangchi_invoke"))
-        return 1000;
     if(weapon)
         return weapon->getRange();
     else if(hasSkill("zhengfeng"))
