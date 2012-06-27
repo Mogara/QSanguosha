@@ -1012,7 +1012,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             thread->trigger(CardResponsed, this, player, card_star);
         }
         else if(trigger_event == CardDiscarded)
-            thread->trigger(CardResponsed, this, player, card_star);
+            thread->trigger(CardDiscarded, this, player, card_star);
 
     }else if(continuable)
         return askForCard(player, pattern, prompt);

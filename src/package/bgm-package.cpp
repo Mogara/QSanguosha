@@ -27,7 +27,10 @@ public:
                     int card_id = room->askForCardChosen(player, target, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
-                    room->broadcastSkillInvoke("chongzhen");
+                    if(card->inherits("Jink"))
+                        room->broadcastSkillInvoke("chongzhen", 1);
+                    else
+                        room->broadcastSkillInvoke("chongzhen", 2);
                 }
             }
         }
@@ -35,10 +38,13 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
+                    if(use.card->inherits("Jink"))
+                        room->broadcastSkillInvoke("chongzhen", 1);
+                    else
+                        room->broadcastSkillInvoke("chongzhen", 2);
                     int card_id = room->askForCardChosen(player, p, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
-                    room->broadcastSkillInvoke("chongzhen");
                 }
             }
             else if(use.to.contains(player) && !use.card->inherits("Collateral")
@@ -76,6 +82,10 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     }
     if (!effect.to->isKongcheng())
     {
+        if(effect.to->getGeneralName().contains("lvbu"))
+            room->broadcastSkillInvoke("lihun", 2);
+        else
+            room->broadcastSkillInvoke("lihun", 1);
         CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, effect.from->objectName(),
             effect.to->objectName(), "lihun", QString());
         room->moveCardTo(dummy_card, effect.to, effect.from, Player::PlaceHand, reason, false);
@@ -190,7 +200,7 @@ public:
             int n = getWeaponCount(caoren);
             caoren->drawCards(n+2);
             caoren->turnOver();
-
+			room->broadcastSkillInvoke("kuiwei", 1);
             if(caoren->getMark("@kuiwei") == 0)
                 caoren->gainMark("@kuiwei");
         }
@@ -206,7 +216,7 @@ public:
                 log.arg = QString::number(n);
                 log.arg2 = objectName();
                 room->sendLog(log);
-
+				room->broadcastSkillInvoke("kuiwei", 2);
                 if(caoren->getCards("he").length() <= n){
                     caoren->throwAllEquips();
                     caoren->throwAllHandCards();
