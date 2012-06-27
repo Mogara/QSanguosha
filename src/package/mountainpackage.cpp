@@ -1074,12 +1074,8 @@ public:
     Huashen():GameStartSkill("huashen"){
     }
 
-    static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name){
-        int r = qrand() % 2;
-        if(zuoci->getGender() == General::Female)
-            r += 2;
-
-        zuoci->getRoom()->broadcastSkillInvoke(skill_name, r);
+	static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name){
+		zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->getGender() == General::Male, -1);
     }
 
     static void AcquireGenerals(ServerPlayer *zuoci, int n){
