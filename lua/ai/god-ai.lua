@@ -268,7 +268,7 @@ end
 
 local yeyan_skill={}
 yeyan_skill.name = "yeyan"
-table.insert(sgs.ai_skills, smallyeyan_skill)
+table.insert(sgs.ai_skills, yeyan_skill)
 yeyan_skill.getTurnUseCard=function(self)
 	if self.player:getMark("@flame") == 0 then return end
 	if self.player:getHandcardNum() >= 4 then
@@ -347,7 +347,11 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 				if enemy:isChained() and self:isGoodChainTarget(enemy) then
 					if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
 						use.card = greatyeyan
-						if use.to then use.to:append(enemy)	end
+						if use.to then 
+							use.to:append(enemy)
+							use.to:append(enemy)
+							use.to:append(enemy)	
+						end
 						return
 					end
 				end
@@ -359,7 +363,11 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 			and self:objectiveLevel(enemy) > 3 and enemy:getMark("@fog") < 1 then
 				if enemy:isChained() and self:isGoodChainTarget(enemy) then
 					use.card = greatyeyan
-					if use.to then use.to:append(enemy)	end
+					if use.to then 
+						use.to:append(enemy)
+						use.to:append(enemy)
+						use.to:append(enemy)	
+					end
 					return
 				end
 		end
@@ -371,7 +379,11 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 				if not enemy:isChained() then
 					if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
 						use.card = greatyeyan
-						if use.to then use.to:append(enemy)	end
+						if use.to then 
+							use.to:append(enemy)
+							use.to:append(enemy)
+							use.to:append(enemy)	
+						end
 						return
 					end
 				end
@@ -383,7 +395,11 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 			and self:objectiveLevel(enemy) > 3 and enemy:getMark("@fog") < 1 then
 				if not enemy:isChained() then
 					use.card = greatyeyan
-					if use.to then use.to:append(enemy)	end
+					if use.to then 
+						use.to:append(enemy)
+						use.to:append(enemy)
+						use.to:append(enemy)	
+					end
 					return
 				end
 		end

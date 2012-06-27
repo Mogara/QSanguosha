@@ -268,12 +268,14 @@ sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
 		end
 		if second_index then break end
 	end
-	local first = self.enemies[first_index]:objectName()
-	if first_index and not second_index then
-		return ("@XuanfengCard=.->%s"):format(first)
-	else
-		local second = self.enemies[second_index]:objectName()
-		return ("@XuanfengCard=.->%s+%s"):format(first, second)
+	if first_index then
+		local first = self.enemies[first_index]:objectName()
+		if first_index and not second_index then
+			return ("@XuanfengCard=.->%s"):format(first)
+		else
+			local second = self.enemies[second_index]:objectName()
+			return ("@XuanfengCard=.->%s+%s"):format(first, second)
+		end
 	end
 end
 

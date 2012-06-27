@@ -466,10 +466,14 @@ public:
 XuanfengCard::XuanfengCard(){
 }
 
-int XuanfengCard::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(targets.length() >= 2)
+        return false;
+
     if(to_select == Self)
-        return 0;
-    return qMax(2 - targets.size(),0);
+        return false;
+
+    return !to_select->isNude();
 }
 
 void XuanfengCard::use(Room *room, ServerPlayer *lingtong, const QList<ServerPlayer *> &targets) const{
