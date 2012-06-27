@@ -4,7 +4,12 @@
 	"systemAudioEffect-male-@recast": "audio/card/male/@recast.ogg"*/
 	"dummy": "hi!",
 	//skill effect
-	"playerAudioEffect-common-baonue": "audio/skill/baonue.ogg",
+	"playerAudioEffect-skill-default": "audio/skill/%1.ogg",//defualt path.
+	"playerAudioEffect-male-huashen": ["audio/skill/huashen1.ogg", "audio/skill/huashen2.ogg"],
+	"playerAudioEffect-female-huashen": ["audio/skill/huashen3.ogg", "audio/skill/huashen4.ogg"],
+	"playerAudioEffect-male-xinsheng": ["audio/skill/xinsheng1.ogg", "audio/skill/xinsheng2.ogg"],
+	"playerAudioEffect-female-xinsheng": ["audio/skill/xinsheng3.ogg", "audio/skill/xinsheng4.ogg"],
+	/*"playerAudioEffect-common-baonue": "audio/skill/baonue.ogg",
 	"playerAudioEffect-common-bazhen": "audio/skill/bazhen1.ogg",
 	"playerAudioEffect-common-beige": ["audio/skill/beige1.ogg", "audio/skill/beige2.ogg", "audio/skill/beige3.ogg", "audio/skill/beige4.ogg"],
 	"playerAudioEffect-common-benghuai": ["audio/skill/benghuai1.ogg", "audio/skill/benghuai2.ogg"],
@@ -151,7 +156,7 @@
 	"playerAudioEffect-common-zhiheng": "audio/skill/zhiheng1.ogg",
 	"playerAudioEffect-common-zhiji": "audio/skill/zhiji.ogg",
 	"playerAudioEffect-common-zhiyu": ["audio/skill/zhiyu1.ogg", "audio/skill/zhiyu2.ogg"],
-	"playerAudioEffect-common-zonghuo": "audio/skill/zonghuo.ogg",
+	"playerAudioEffect-common-zonghuo": "audio/skill/zonghuo.ogg",*/
 	// card effect
 	"playerAudioEffect-male-default": "audio/card/male/%1.ogg",
 	"playerAudioEffect-female-default": "audio/card/female/%1.ogg"
