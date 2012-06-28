@@ -275,6 +275,8 @@ bool Player::hasSkill(const QString &skill_name) const{
 }
 
 bool Player::hasInnateSkill(const QString &skill_name) const{
+    if(loseSkills())
+        return false;
     if(general && general->hasSkill(skill_name))
         return true;
 
@@ -285,6 +287,8 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
 }
 
 bool Player::hasLordSkill(const QString &skill_name) const{
+    if(loseSkills())
+        return false;
     if(acquired_skills.contains(skill_name))
         return true;
 
@@ -304,6 +308,11 @@ bool Player::hasLordSkill(const QString &skill_name) const{
 
     return false;
 }
+
+bool Player::loseSkills() const{
+    return (getMark("@duanchang")) > 0;
+}
+
 
 void Player::acquireSkill(const QString &skill_name){
     acquired_skills.insert(skill_name);

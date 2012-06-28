@@ -133,6 +133,7 @@ public:
     bool hasSkill(const QString &skill_name) const;
     bool hasInnateSkill(const QString &skill_name) const;
     bool hasLordSkill(const QString &skill_name) const;
+    bool loseSkills() const;
     virtual QString getGameMode() const = 0;
 
     void setEquip(const EquipCard *card);
