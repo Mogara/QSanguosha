@@ -23,7 +23,7 @@ public:
         if(player->askForSkillInvoke(objectName(), data)){
             int card_id = room->drawCard();
             room->getThread()->delay();
-            room->throwCard(judge->card);
+            room->throwCard(judge->card, judge->who);
 
             judge->card = Sanguosha->getCard(card_id);
             room->moveCardTo(judge->card, NULL, Player::Special);

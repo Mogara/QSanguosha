@@ -172,7 +172,7 @@ public:
 
         if(card){
             // the only difference for Guicai & Guidao
-                room->throwCard(judge->card);
+                room->throwCard(judge->card, judge->who);
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 
