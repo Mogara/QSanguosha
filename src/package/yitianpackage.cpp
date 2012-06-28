@@ -31,16 +31,17 @@ YitianSword::YitianSword(Suit suit, int number)
 }
 
 void YitianSword::onMove(const CardMoveStruct &move) const{
-    if(move.from_place == Player::Equip && move.from->isAlive()){
-        Room *room = move.from->getRoom();
+    if(move.from_place == Player::PlaceEquip && move.from->isAlive()){
+        ServerPlayer* from = (ServerPlayer*) move.from;
+        Room *room = from->getRoom();
 
-        bool invoke = move.from->askForSkillInvoke("yitian-lost");
+        bool invoke = from->askForSkillInvoke("yitian-lost");
         if(!invoke)
             return;
 
-        ServerPlayer *target = room->askForPlayerChosen(move.from, room->getAllPlayers(), "yitian-lost");
+        ServerPlayer *target = room->askForPlayerChosen(from, room->getAllPlayers(), "yitian-lost");
         DamageStruct damage;
-        damage.from = move.from;
+        damage.from = from;
         damage.to = target;
         damage.card = this;
 
@@ -248,7 +249,7 @@ public:
             }
         }
 
-        room->playSkillEffect("guixin");
+        room->broadcastSkillInvoke("guixin");
 
         return false;
     }
@@ -624,7 +625,7 @@ public:
         ServerPlayer *xiahoujuan = room->findPlayerBySkillName(objectName());
 
         if(xiahoujuan && xiahoujuan->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             ServerPlayer *zhangfei = NULL;
             if(target == xiahoujuan){
@@ -821,7 +822,7 @@ public:
             xuandi->gainMark("@" + choice);
             xuandi->tag["wuling"] = choice;
 
-            room->playSkillEffect(objectName(), effects.indexOf(choice) + 1);
+            room->broadcastSkillInvoke(objectName(), effects.indexOf(choice) + 1);
         }
 
         return false;
@@ -883,7 +884,7 @@ public:
             while(caizhaoji->askForSkillInvoke(objectName())){
                 caizhaoji->setFlags("caizhaoji_hujia");
 
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
 
                 times ++;
                 if(times == 3){
@@ -1009,7 +1010,7 @@ public:
             Room *room = player->getRoom();
             data = QVariant::fromValue(effect);
 
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
             LogMessage log;
             log.type = "#Zonghuo";
             log.from = player;
@@ -1060,7 +1061,7 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 DamageStruct shaoying_damage;
                 shaoying_damage.nature = DamageStruct::Fire;
                 shaoying_damage.from = luboyan;                
@@ -1143,12 +1144,12 @@ public:
             else
                 to_exchange = room->askForExchange(player, "gongmou", x);
 
-            room->moveCardTo(to_exchange, zhongshiji, Player::Hand, false);
+            room->moveCardTo(to_exchange, zhongshiji, Player::PlaceHand, false);
 
             delete to_exchange;
 
             to_exchange = room->askForExchange(zhongshiji, "gongmou", x);
-            room->moveCardTo(to_exchange, player, Player::Hand, false);
+            room->moveCardTo(to_exchange, player, Player::PlaceHand, false);
 
             delete to_exchange;
 
@@ -1177,7 +1178,7 @@ bool LexueCard::targetFilter(const QList<const Player *> &targets, const Player 
 void LexueCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
-    room->playSkillEffect("lexue", 1);
+    room->broadcastSkillInvoke("lexue", 1);
     const Card *card = room->askForCardShow(effect.to, effect.from, "lexue");
     int card_id = card->getEffectiveId();
     room->showCard(effect.to, card_id);
@@ -1481,7 +1482,7 @@ public:
         ServerPlayer *dengshizai = room->findPlayerBySkillName(objectName());
 
         if(dengshizai && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             dengshizai->turnOver();
 
@@ -1742,7 +1743,10 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(player->getRoom()->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data))
+
+        if(player->getRoom()->getCardPlace(effect.jink->getEffectiveId()) == Player::DiscardPile
+            && player->askForSkillInvoke(objectName(), data))
+
             player->obtainCard(effect.jink);
 
         return false;

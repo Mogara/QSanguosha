@@ -7,6 +7,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qlist.h>
+#include <qrect.h>
+#include <qcolor.h>
 
 namespace QSanProtocol
 {
@@ -15,7 +17,7 @@ namespace QSanProtocol
         inline QString toQString(const Json::Value& value)
         {
             Q_ASSERT(value.isString());
-            return QString(value.asCString());
+            return QString::fromLocal8Bit(value.asCString());
         }
         inline Json::Value toJsonString(const QString& s)
         {            
@@ -29,6 +31,10 @@ namespace QSanProtocol
         Json::Value toJsonArray(const QStringList&);
         bool tryParse(const Json::Value&, QList<int> &);
         bool tryParse(const Json::Value&, QStringList &);
+        bool tryParse(const Json::Value&, QRect &);
+        bool tryParse(const Json::Value& arg, QSize& result);
+        bool tryParse(const Json::Value& arg, QPoint& result);
+        bool tryParse(const Json::Value& arg, QColor& result);
     }
 }
 

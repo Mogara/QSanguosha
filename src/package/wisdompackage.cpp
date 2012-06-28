@@ -70,7 +70,10 @@ public:
             ServerPlayer *xuyou = room->findPlayerBySkillName(objectName());
             foreach (int card_id, player->getPile("hautain")){
                 if(!xuyou)
-                    room->throwCard(card_id);
+                {
+                    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), "hautain", QString());
+                    room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+                }
                 else
                     room->obtainCard(player, card_id);
             }
@@ -175,7 +178,8 @@ public:
             Room *room = jiangwei->getRoom();
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
-            room->throwCard(card);
+            // @todo: fix this!
+            room->throwCard(card, NULL);
             room->askForUseCard(jiangwei, "slash", "@askforslash");
         }
         return false;
@@ -185,13 +189,13 @@ public:
 class Beifa: public TriggerSkill{
 public:
     Beifa():TriggerSkill("beifa"){
-        events << CardLost;
+        events << CardLostOnePiece;
         frequency = Compulsory;
     }
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
         if(jiangwei->isKongcheng()){
             CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place != Player::Hand)
+            if(move->from_place != Player::PlaceHand)
                 return false;
 
             Room *room = jiangwei->getRoom();
@@ -266,12 +270,15 @@ public:
            && room->askForSkillInvoke(player, objectName())){
             for(int i = 0; i < 4 - handcardnum; i++){
                 int card_id = room->drawCard();
-                room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
+
+                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::PlaceTable,
+                                 CardMoveReason(CardMoveReason::S_REASON_SHOW, player->objectName(), QString(), "chouliang", QString()), true);
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);
                 if(!card->inherits("BasicCard")){
-                    room->throwCard(card_id);
+                    // @todo: fix this!
+                    room->throwCard(card_id, NULL);
                     room->setEmotion(player, "bad");
                 }
                 else{
@@ -448,7 +455,7 @@ public:
 class Longluo: public TriggerSkill{
 public:
     Longluo():TriggerSkill("longluo"){
-        events << CardLost << PhaseChange;
+        events << CardLostOnePiece << PhaseChange;
         frequency = Frequent;
     }
 
@@ -468,7 +475,7 @@ public:
         }
         if(player->getPhase() == Player::Discard){
             CardMoveStar move = data.value<CardMoveStar>();
-            if(move->to_place == Player::DiscardedPile){
+            if(move->to_place == Player::DiscardPile){
                 player->addMark("longluo");
             }
         }
@@ -681,7 +688,7 @@ public:
 
         if(card->inherits("BasicCard") && !card->isVirtualCard()){
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
                 tianfeng->drawCards(1);
             }
         }

@@ -50,7 +50,9 @@ class ChatWidget : public QGraphicsObject
 public:
     ChatWidget();
     ~ChatWidget();
-
+    virtual QRectF boundingRect() const;
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget); 
 private:
     QPixmap base_pixmap;
     QPushButton *returnButton;
@@ -61,11 +63,7 @@ private:
 
     QGraphicsProxyWidget *addWidget(QWidget *widget, int x);
     QPushButton *addButton(const QString &name, int x);
-    QPushButton *createButton(const QString &name);
-
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual QRectF boundingRect() const;
-
+    QPushButton *createButton(const QString &name);    
 private slots:
     void showEasyTextBoard();
     void showFaceBoard();

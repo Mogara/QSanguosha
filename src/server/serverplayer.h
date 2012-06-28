@@ -26,12 +26,11 @@ public:
     void invoke(const QSanProtocol::QSanPacket* packet);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
-    void sendProperty(const char *property_name, const Player *player = NULL) const;
     void unicast(const QString &message) const;
     void drawCard(const Card *card);
     Room *getRoom() const;
-    void playCardEffect(const Card *card) const;
-    void playCardEffect(const QString &card_name) const;
+    void broadcastSkillInvoke(const Card *card) const;
+    void broadcastSkillInvoke(const QString &card_name) const;
     int getRandomHandCardId() const;
     const Card *getRandomHandCard() const;
     void obtainCard(const Card *card, bool unhide = true);
@@ -66,7 +65,8 @@ public:
     AI *getAI() const;
     AI *getSmartAI() const;
 
-    bool isOnline() const;
+    bool isOnline() const; // @todo: better rename this to be re
+    inline bool isOffline() const { return getState() == "robot" || getState() == "offline"; }
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
@@ -99,6 +99,7 @@ public:
 
     void addToPile(const QString &pile_name, const Card *card, bool open = true);
     void addToPile(const QString &pile_name, int card_id, bool open = true);
+    void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true);
     void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
 
     void copyFrom(ServerPlayer* sp);
@@ -143,6 +144,7 @@ protected:
 private:
     ClientSocket *socket;
     QList<const Card *> handcards;
+    QList<const Card *> m_takenOffCards;
     Room *room;
     AI *ai;
     AI *trust_ai;
@@ -156,7 +158,7 @@ private:
     Json::Value _m_clientResponse;    
 
 private slots:
-    void getMessage(char *message);
+    void getMessage(const char *message);
     void castMessage(const QString &message);
 
 signals:

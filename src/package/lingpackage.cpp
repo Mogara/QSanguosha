@@ -98,14 +98,14 @@ public:
             log.to << damage.to;
             room->sendLog(log);
             int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
-            if(room->getCardPlace(card_id) == Player::Judging)
-                room->playSkillEffect("yishi", 1);
-            else if(room->getCardPlace(card_id) == Player::Equip)
-                room->playSkillEffect("yishi", 2);
+            if(room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
+                room->broadcastSkillInvoke("yishi", 1);
+            else if(room->getCardPlace(card_id) == Player::PlaceEquip)
+                room->broadcastSkillInvoke("yishi", 2);
             else
-                room->playSkillEffect("yishi", 3);
-   
-            room->obtainCard(player, card_id, room->getCardPlace(card_id) != Player::Hand);
+                room->broadcastSkillInvoke("yishi", 3);
+            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+            room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
             return true;
         }
         return false;
@@ -121,7 +121,7 @@ public:
         Room *room = gongsun->getRoom();
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
-			room->playSkillEffect("zhulou", qrand() % 2 + 1);
+			room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
             QString choice = room->askForChoice(gongsun, "zhulou", "throw+losehp");
             if(choice == "losehp" || !room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
                 room->loseHp(gongsun);
@@ -157,7 +157,7 @@ public:
                 target->drawCards(2+target->getLostHp());
                 target->turnOver();
 
-                room->playSkillEffect("jushou");
+                room->broadcastSkillInvoke("jushou");
             }
         }
 
@@ -177,7 +177,7 @@ public:
         QVariant source = QVariant::fromValue(from);
 
         if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
-            room->playSkillEffect("ganglie");
+            room->broadcastSkillInvoke("ganglie");
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");

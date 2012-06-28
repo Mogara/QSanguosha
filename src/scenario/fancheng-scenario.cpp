@@ -38,7 +38,7 @@ DujiangCard::DujiangCard(){
 }
 
 void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
+    room->throwCard(this, NULL);
 
     LogMessage log;
     log.type = "#InvokeSkill";
@@ -111,7 +111,7 @@ FloodCard::FloodCard(){
 }
 
 void FloodCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
+    room->throwCard(this, NULL);
     room->setTag("Flood", true);
 
     room->setPlayerFlag(source, "flood");
@@ -291,11 +291,11 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
-                if(player->isLord()){
-                    room->installEquip(player, "chitu");
-                    room->installEquip(player, "blade");
-                    room->acquireSkill(player, "flood");
-                    room->acquireSkill(player, "xiansheng");
+            player = room->getLord();
+            room->installEquip(player, "chitu");
+            room->installEquip(player, "blade");
+            room->acquireSkill(player, "flood");
+            room->acquireSkill(player, "xiansheng");
 
             ServerPlayer *panglingming = room->findPlayer("panglingming");
             room->acquireSkill(panglingming, "taichen_fight");
@@ -307,10 +307,10 @@ public:
             ServerPlayer *lvmeng = room->findPlayer("lvmeng");
             room->acquireSkill(lvmeng, "dujiang");
 
-                    ServerPlayer *caoren = room->findPlayer("caoren");
-                    room->installEquip(caoren, "renwang_shield");
-                    room->acquireSkill(caoren, "zhiyuan");
-                }
+            ServerPlayer *caoren = room->findPlayer("caoren");
+            room->installEquip(caoren, "renwang_shield");
+            room->acquireSkill(caoren, "zhiyuan");
+
 
             break;
             }

@@ -31,17 +31,16 @@ Room *ServerPlayer::getRoom() const{
     return room;
 }
 
-void ServerPlayer::playCardEffect(const QString &card_name) const{
-    QString gender = getGender() == General::Male ? "M" : "F";
-    room->broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
+void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const{
+	room->broadcastSkillInvoke(card_name, getGeneral()->isMale());
 }
 
-void ServerPlayer::playCardEffect(const Card *card) const{
+void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
     if(card->isMute())
         return;
 
     if(!card->isVirtualCard())
-        playCardEffect(card->objectName());
+        broadcastSkillInvoke(card->objectName());
 
     QString skill_name = card->getSkillName();
     const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -53,9 +52,9 @@ void ServerPlayer::playCardEffect(const Card *card) const{
         return;
 
     if(index == -1 && skill->getSources().isEmpty())
-        playCardEffect(card->objectName());
+        broadcastSkillInvoke(card->objectName());
     else
-        room->playSkillEffect(skill_name, index);
+        room->broadcastSkillInvoke(skill_name, index);
 }
 
 int ServerPlayer::getRandomHandCardId() const{
@@ -68,7 +67,8 @@ const Card *ServerPlayer::getRandomHandCard() const{
 }
 
 void ServerPlayer::obtainCard(const Card *card, bool unhide){
-    room->obtainCard(this, card, unhide);
+    CardMoveReason reason(CardMoveReason::S_REASON_GOTCARD, objectName());
+    room->obtainCard(this, card, reason, unhide);
 }
 
 void ServerPlayer::throwAllEquips(){
@@ -114,7 +114,8 @@ void ServerPlayer::clearPrivatePiles(){
         QList<int> &pile = piles[pile_name];
 
         foreach(int card_id, pile){
-            room->throwCard(card_id);
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
+            room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
             QString pile_command = QString("%1:%2-%3").arg(objectName()).arg(pile_name).arg(card_id);
             room->broadcastInvoke("pile", pile_command);
         }
@@ -138,7 +139,10 @@ void ServerPlayer::throwAllCards(){
 
     QList<const Card *> tricks = getJudgingArea();
     foreach(const Card *trick, tricks)
-        room->throwCard(trick);
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, this->objectName());
+        room->throwCard(trick, NULL);
+    }
 }
 
 void ServerPlayer::drawCards(int n, bool set_emotion, const QString &reason){
@@ -181,7 +185,7 @@ int ServerPlayer::getHandcardNum() const{
 void ServerPlayer::setSocket(ClientSocket *socket){
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(message_got(char*)), this, SLOT(getMessage(char*)));
+        connect(socket, SIGNAL(message_got(const char*)), this, SLOT(getMessage(const char*)));
 
         connect(this, SIGNAL(message_cast(QString)), this, SLOT(castMessage(QString)));
     }else{
@@ -198,7 +202,7 @@ void ServerPlayer::setSocket(ClientSocket *socket){
     this->socket = socket;
 }
 
-void ServerPlayer::getMessage(char *message){
+void ServerPlayer::getMessage(const char *message){
     QString request = message;
     if(request.endsWith("\n"))
         request.chop(1);
@@ -317,25 +321,14 @@ QString ServerPlayer::reportHeader() const{
     return QString("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
 }
 
-void ServerPlayer::sendProperty(const char *property_name, const Player *player) const{
-    if(player == NULL)
-        player = this;
-
-    QString value = player->property(property_name).toString();
-    if(player == this)
-        unicast(QString(".%1 %2").arg(property_name).arg(value));
-    else
-        unicast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
-}
-
 void ServerPlayer::removeCard(const Card *card, Place place){
     switch(place){
-    case Hand: {
+    case PlaceHand: {
             handcards.removeOne(card);
             break;
         }
 
-    case Equip: {
+    case PlaceEquip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             removeEquip(equip);
 
@@ -349,12 +342,12 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             break;
         }
 
-    case Judging:{
+    case PlaceDelayedTrick:{
             removeDelayedTrick(card);
             break;
         }
 
-    case Special:{
+    case PlaceSpecial:{
             int card_id = card->getEffectiveId();
             QString pile_name = getPileName(card_id);
             
@@ -373,19 +366,19 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 
 void ServerPlayer::addCard(const Card *card, Place place){
     switch(place){
-    case Hand: {
+    case PlaceHand: {
             handcards << card;
             break;
         }
 
-    case Equip: {
+    case PlaceEquip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             setEquip(equip);
             equip->onInstall(this);
             break;
         }
 
-    case Judging:{
+    case PlaceDelayedTrick:{
             addDelayedTrick(card);
             break;
         }
@@ -773,27 +766,27 @@ void ServerPlayer::introduceTo(ServerPlayer *player){
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const{
-    player->sendProperty("maxhp", this);
-    player->sendProperty("hp", this);
+    room->notifyProperty(player, this, "maxhp") ;
+    room->notifyProperty(player, this, "hp") ;
 
     if(getKingdom() != getGeneral()->getKingdom())
-        player->sendProperty("kingdom", this);
+        room->notifyProperty(player, this, "kingdom") ;
 
     if(isAlive()){
-        player->sendProperty("seat", this);
+        room->notifyProperty(player, this, "seat") ;
         if(getPhase() != Player::NotActive)
-            player->sendProperty("phase", this);
+            room->notifyProperty(player, this, "phase") ;
     }else{
-        player->sendProperty("alive", this);
-        player->sendProperty("role", this);
+        room->notifyProperty(player, this, "alive") ;
+        room->notifyProperty(player, this, "role") ;
         player->invoke("killPlayer", objectName());
     }
 
     if(!faceUp())
-        player->sendProperty("faceup", this);
+        room->notifyProperty(player, this, "faceup");
 
     if(isChained())
-        player->sendProperty("chained", this);
+        room->notifyProperty(player, this, "chained");
 
     if(!isKongcheng()){
         if(player != this){
@@ -864,13 +857,22 @@ void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool op
     else
         piles[pile_name] << card->getEffectiveId();
 
-    room->moveCardTo(card, this, Player::Special, open);
+    room->moveCardTo(card, this, Player::PlaceSpecial, open);
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     piles[pile_name] << card_id;
 
-    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
+    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::PlaceSpecial, open);
+}
+
+void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open){
+    piles[pile_name].append(card_ids);
+    CardsMoveStruct move;
+    move.card_ids = card_ids;
+    move.to = this;
+    move.to_place = Player::PlaceSpecial;
+    room->moveCards(move, open, false);
 }
 
 void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){

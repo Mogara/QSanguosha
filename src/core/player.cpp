@@ -477,14 +477,6 @@ void Player::setKingdom(const QString &kingdom){
     }
 }
 
-QString Player::getKingdomIcon() const{
-    return QString("image/kingdom/icon/%1.png").arg(kingdom);
-}
-
-QString Player::getKingdomFrame() const{
-    return QString("image/kingdom/frame/%1.png").arg(kingdom);
-}
-
 bool Player::isKongcheng() const{
     return getHandcardNum() == 0;
 }

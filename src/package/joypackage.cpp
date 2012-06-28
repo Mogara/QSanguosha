@@ -13,9 +13,9 @@ QString Shit::getSubtype() const{
 
 void Shit::onMove(const CardMoveStruct &move) const{
     ServerPlayer *from = (ServerPlayer*)move.from;
-    if(from && move.from_place == Player::Hand &&
+    if(from && move.from_place == Player::PlaceHand &&
        from->getRoom()->getCurrent() == move.from
-       && (move.to_place == Player::DiscardedPile || move.to_place == Player::Special)
+       && (move.to_place == Player::DiscardPile || move.to_place == Player::PlaceSpecial)
        && move.to == NULL
        && from->isAlive()){
 
@@ -92,7 +92,7 @@ void Deluge::takeEffect(ServerPlayer *target) const{
     QList<int> card_ids;
     foreach(const Card *card, cards){
         card_ids << card->getEffectiveId();
-        room->throwCard(card);
+        room->throwCard(card, NULL);
     }
 
     room->fillAG(card_ids);
@@ -139,7 +139,7 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
             else{
                 room->setEmotion(player, "bad");
                 room->broadcastInvoke("animate", "typhoon:" + player->objectName());
-                room->broadcastInvoke("playAudio", "typhoon");
+                room->broadcastInvoke("playSystemAudioEffect", "typhoon");
 
                 room->askForDiscard(player, objectName(), discard_num, discard_num);
             }
@@ -171,7 +171,7 @@ void Earthquake::takeEffect(ServerPlayer *target) const{
                 room->setEmotion(player, "good");
             }else{
                 room->setEmotion(player, "bad");
-                room->broadcastInvoke("playAudio", "earthquake");
+                room->broadcastInvoke("playSystemAudioEffect", "earthquake");
                 player->throwAllEquips();
             }
 
@@ -208,7 +208,7 @@ void Volcano::takeEffect(ServerPlayer *target) const{
             damage.to = player;
             damage.nature = DamageStruct::Fire;
 
-            room->broadcastInvoke("playAudio", "volcano");
+            room->broadcastInvoke("playSystemAudioEffect", "volcano");
             room->damage(damage);
         }
     }
@@ -230,7 +230,7 @@ void MudSlide::takeEffect(ServerPlayer *target) const{
     QList<ServerPlayer *> players = room->getAllPlayers();
     int to_destroy = 4;
     foreach(ServerPlayer *player, players){
-        room->broadcastInvoke("playAudio", "mudslide");
+        room->broadcastInvoke("playSystemAudioEffect", "mudslide");
 
         QList<const Card *> equips = player->getEquips();
         if(equips.isEmpty()){
@@ -239,9 +239,10 @@ void MudSlide::takeEffect(ServerPlayer *target) const{
             damage.to = player;
             room->damage(damage);
         }else{
-            int i, n = qMin(equips.length(), to_destroy);
-            for(i=0; i<n; i++){
-                room->throwCard(equips.at(i));
+            int n = qMin(equips.length(), to_destroy);
+            for(int i = 0; i < n; i++){
+                CardMoveReason reason(CardMoveReason::S_REASON_DISCARD, QString(), QString(), "mudslide");
+                room->throwCard(equips.at(i), reason, player);
             }
 
             to_destroy -= n;
@@ -271,8 +272,9 @@ public:
                 if(p->getOffensiveHorse() == parent() &&
                    p->askForSkillInvoke("grab_peach", data))
                 {
-                    room->throwCard(p->getOffensiveHorse());
-                    p->playCardEffect(objectName());
+                    // @todo: if you wish this to trigger card discarded event, please modify this!!!
+                    room->throwCard(p->getOffensiveHorse(), NULL);
+                    p->broadcastSkillInvoke(objectName());
                     p->obtainCard(use.card);
 
                     return true;
@@ -299,10 +301,6 @@ void Monkey::onInstall(ServerPlayer *player) const{
 
 void Monkey::onUninstall(ServerPlayer *player) const{
 
-}
-
-QString Monkey::getEffectPath(bool ) const{
-    return "audio/card/common/monkey.ogg";
 }
 
 class GaleShellSkill: public ArmorSkill{
@@ -403,7 +401,8 @@ public:
             room->removeTag("YxSwordVictim");
             damage.from = target;
             data = QVariant::fromValue(damage);
-            room->moveCardTo(player->getWeapon(), damage.from, Player::Hand);
+            room->moveCardTo(player->getWeapon(), damage.to, damage.from, Player::PlaceHand,
+                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->objectName(), objectName(), QString()));
         }
         return damage.to->isDead();
     }

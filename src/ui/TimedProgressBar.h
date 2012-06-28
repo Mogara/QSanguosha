@@ -3,6 +3,7 @@
 #include <QProgressBar>
 #include <QTimerEvent>
 #include <QShowEvent>
+#include <QPaintEvent>
 
 class TimedProgressBar : public QProgressBar
 {
@@ -21,7 +22,7 @@ public:
     inline void setAutoHide(bool enabled) { m_autoHide = enabled; }
     inline void setUpdateInterval(time_t step) { m_step = step; }
     virtual void showEvent(QShowEvent* showEvent);
-    virtual void hide();
+    virtual void hide();    
 signals:
     void timedOut();
 protected:
@@ -42,8 +43,9 @@ public:
     QSanCommandProgressBar();
     inline void setInstanceType(QSanProtocol::ProcessInstanceType type) { m_instanceType = type; }
     void setCountdown(QSanProtocol::CommandType command);
-    void setCountdown(QSanProtocol::Countdown countdown);
+    void setCountdown(QSanProtocol::Countdown countdown);    
 protected:
+    virtual void paintEvent(QPaintEvent *);
     QSanProtocol::ProcessInstanceType m_instanceType;
 };
 

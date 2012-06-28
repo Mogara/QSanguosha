@@ -14,7 +14,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->setupUi(this);
 
     // tab 1
-    QString bg_path = Config.value("BackgroundBrush").toString();
+    QString bg_path = Config.value("BackgroundImage").toString();
     if(!bg_path.startsWith(":"))
         ui->bgPathLineEdit->setText(bg_path);
 
@@ -23,7 +23,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
-    ui->fitInViewCheckBox->setChecked(Config.FitInView);
     ui->circularViewCheckBox->setChecked(Config.value("CircularView", false).toBool());
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
     ui->minimizecCheckBox->setChecked(Config.value("EnableMinimizeDialog", false).toBool());
@@ -77,8 +76,8 @@ void ConfigDialog::on_browseBgButton_clicked()
     if(!filename.isEmpty()){
         ui->bgPathLineEdit->setText(filename);
 
-        Config.BackgroundBrush = filename;
-        Config.setValue("BackgroundBrush", filename);
+        Config.BackgroundImage = filename;
+        Config.setValue("BackgroundImage", filename);
 
         emit bg_changed();
     }
@@ -89,8 +88,8 @@ void ConfigDialog::on_resetBgButton_clicked()
     ui->bgPathLineEdit->clear();
 
     QString filename = "backdrop/new-version.jpg";
-    Config.BackgroundBrush = filename;
-    Config.setValue("BackgroundBrush", filename);
+    Config.BackgroundImage = filename;
+    Config.setValue("BackgroundImage", filename);
 
     emit bg_changed();
 }
@@ -119,9 +118,6 @@ void ConfigDialog::saveConfig()
     enabled = ui->enableBgMusicCheckBox->isChecked();
     Config.EnableBgMusic = enabled;
     Config.setValue("EnableBgMusic", enabled);
-
-    Config.FitInView = ui->fitInViewCheckBox->isChecked();
-    Config.setValue("FitInView", Config.FitInView);
 
     Config.setValue("CircularView", ui->circularViewCheckBox->isChecked());
 

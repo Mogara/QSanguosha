@@ -88,7 +88,6 @@ public:
 
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
-    virtual QString getEffectPath(bool is_male) const;
 
 private:
     TriggerSkill *grab_peach;

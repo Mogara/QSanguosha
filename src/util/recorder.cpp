@@ -15,7 +15,7 @@ Recorder::Recorder(QObject *parent)
     watch.start();
 }
 
-void Recorder::record(char *line)
+void Recorder::record(const char *line)
 {
     recordLine(line);
 }

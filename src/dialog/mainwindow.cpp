@@ -26,6 +26,7 @@
 #include <QSystemTrayIcon>
 #include <QInputDialog>
 #include <QLabel>
+#include <QStatusBar>
 
 class FitView : public QGraphicsView
 {
@@ -35,22 +36,21 @@ public:
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
     }
 
-protected:
     virtual void resizeEvent(QResizeEvent *event) {
-        QGraphicsView::resizeEvent(event);
-        if(Config.FitInView)
-            fitInView(sceneRect(), Qt::KeepAspectRatio);
-
-        if(matrix().m11()>1)setMatrix(QMatrix());
-
-        if(scene()->inherits("RoomScene")){
-            RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            room_scene->adjustItems(matrix());
-        }
-
+        QGraphicsView::resizeEvent(event);        
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
+        if(scene()->inherits("RoomScene")){            
+            RoomScene *room_scene = qobject_cast<RoomScene *>(scene());            
+            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
+            room_scene->setSceneRect(newSceneRect);            
+            room_scene->adjustItems();
+            setSceneRect(room_scene->sceneRect());
+            fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
+            main_window->setBackgroundBrush(false);
+            return;
+        }
         if(main_window)
-            main_window->setBackgroundBrush();
+            main_window->setBackgroundBrush(true);           
     }
 };
 
@@ -86,7 +86,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);
-
     view = new FitView(scene);
 
     setCentralWidget(view);
@@ -106,8 +105,11 @@ void MainWindow::restoreFromConfig(){
     move(Config.value("WindowPosition", QPoint(20,20)).toPoint());
 
     QFont font;
+    /* @todo: For now, we haven't find a very good solution.
+    According to Qt, everything is overrules by this setting...
+    So just turn it off temporarily
     if(Config.AppFont != font)
-        QApplication::setFont(Config.AppFont);
+        QApplication::setFont(Config.AppFont); */
     if(Config.UIFont != font)
         QApplication::setFont(Config.UIFont, "QTextEdit");
 
@@ -131,11 +133,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene){
-    view->setScene(scene);
+    
     if(this->scene)
         this->scene->deleteLater();
     this->scene = scene;
-
+    view->setScene(scene);
+    QResizeEvent e(view->size(), view->size());
+    view->resizeEvent(&e);
     changeBackground();
 }
 
@@ -193,7 +197,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
         connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
 
         if(qApp->arguments().contains("-hall")){
-            HallDialog *dialog = HallDialog::GetInstance(this);
+            HallDialog *dialog = HallDialog::getInstance(this);
             connect(client, SIGNAL(server_connected()), dialog, SLOT(accept()));
         }
 
@@ -261,10 +265,9 @@ void MainWindow::enterRoom(){
 
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
-	ui->actionAI_Melee->setEnabled(false);
+    ui->actionAI_Melee->setEnabled(false);
 
     RoomScene *room_scene = new RoomScene(this);
-
     ui->actionView_Discarded->setEnabled(true);
     ui->actionView_distance->setEnabled(true);
     ui->actionServerInformation->setEnabled(true);
@@ -278,10 +281,6 @@ void MainWindow::enterRoom(){
     connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
     connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
-    connect(ui->actionExpand_dashboard, SIGNAL(toggled(bool)), room_scene, SLOT(adjustDashboard(bool)));
-
-    bool expand = Config.value("UI/ExpandDashboard", true).toBool();
-    ui->actionExpand_dashboard->setChecked(expand);
 
     if(ServerInfo.FreeChoose){
         ui->menuCheat->setEnabled(true);
@@ -305,8 +304,7 @@ void MainWindow::enterRoom(){
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
-
-    room_scene->adjustItems();
+    
     gotoScene(room_scene);
 }
 
@@ -361,7 +359,7 @@ void MainWindow::on_actionGeneral_Overview_triggered()
 
 void MainWindow::on_actionCard_Overview_triggered()
 {
-    CardOverview *overview = CardOverview::GetInstance(this);
+    CardOverview *overview = CardOverview::getInstance(this);
     overview->loadFromAll();
     overview->show();
 }
@@ -429,38 +427,28 @@ void MainWindow::on_actionAbout_triggered()
     window->appear();
 }
 
-void MainWindow::setBackgroundBrush(){
+void MainWindow::setBackgroundBrush(bool centerAsOrigin){
     if(scene){
-        QPixmap pixmap(Config.BackgroundBrush);
+        QPixmap pixmap(Config.BackgroundImage);        
         QBrush brush(pixmap);
+        qreal sx = qMax((qreal)width(), scene->width()) / qreal(pixmap.width());
+        qreal sy = qMax((qreal)height(), scene->height()) / qreal(pixmap.height());
+               
 
-        if(pixmap.width() > 100 && pixmap.height() > 100){
-            qreal _width = width()/view->matrix().m11();
-            qreal _height= height()/view->matrix().m22();
-
-            qreal dx = -_width/2.0;
-            qreal dy = -_height/2.0;
-            qreal sx = _width / qreal(pixmap.width());
-            qreal sy = _height / qreal(pixmap.height());
-
-
-            QTransform transform;
-            transform.translate(dx, dy);
-            transform.scale(sx, sy);
-            brush.setTransform(transform);
-        }
-
+        QTransform transform;
+        if (centerAsOrigin)
+            transform.translate(-qMax((qreal)width(), scene->width()) / 2,
+                -qMax((qreal)height(), scene->height()) / 2);        
+        transform.scale(sx, sy);
+        brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
     }
 }
 
 void MainWindow::changeBackground(){
-    setBackgroundBrush();
+    setBackgroundBrush(false);
 
-    if(scene->inherits("RoomScene")){
-        RoomScene *room_scene = qobject_cast<RoomScene *>(scene);
-        room_scene->changeTextEditBackground();
-    }else if(scene->inherits("StartScene")){
+    if(scene->inherits("StartScene")){
         StartScene *start_scene = qobject_cast<StartScene *>(scene);
         start_scene->setServerLogBackground();
     }
@@ -711,10 +699,10 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     return box;
 }
 
-class RoomItem: public Pixmap{
+class RoomItem: public QSanSelectableItem{
 public:
     RoomItem(Room *room){
-        changePixmap("image/system/frog/playing.png");
+        load("image/system/frog/playing.png");
 
         const qreal radius = 50;
         const qreal pi = 3.1415926;
@@ -732,7 +720,7 @@ public:
             qreal role_y = (radius + 30) * sin(theta) + 5;
 
             QGraphicsPixmapItem *avatar = new QGraphicsPixmapItem(this);
-            avatar->setPixmap(QPixmap(player->getGeneral()->getPixmapPath("tiny")));
+            avatar->setPixmap(G_ROOM_SKIN.getGeneralPixmap(player->getGeneral()->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY));
             avatar->setPos(x, y);
 
             QGraphicsPixmapItem *role = new QGraphicsPixmapItem(this);
@@ -806,11 +794,11 @@ void MeleeDialog::onGameOver(const QString &winner){
         if(p->getGeneralName() == to_test){
 
             if(won){
-                if(room_item) room_item->changePixmap("image/system/frog/good.png");
+                if(room_item) room_item->load("image/system/frog/good.png");
                 updateResultBox(p->getRole(),1);
             }
             else{
-                if(room_item) room_item->changePixmap("image/system/frog/bad.png");
+                if(room_item) room_item->load("image/system/frog/bad.png");
                 updateResultBox(p->getRole(),0);
             }
         }
@@ -879,13 +867,9 @@ void MeleeDialog::selectGeneral(){
 }
 
 void MeleeDialog::setGeneral(const QString &general_name){
-    const General *general = Sanguosha->getGeneral(general_name);
-
-    if(general){
-        avatar_button->setIcon(QIcon(general->getPixmapPath("card")));
-        Config.setValue("MeleeGeneral", general_name);
-        avatar_button->setProperty("to_test", general_name);
-    }
+    avatar_button->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_CARD)));
+    Config.setValue("MeleeGeneral", general_name);
+    avatar_button->setProperty("to_test", general_name);
 }
 
 AcknowledgementScene::AcknowledgementScene(QObject *parent) :

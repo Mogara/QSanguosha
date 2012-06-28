@@ -19,14 +19,14 @@ public:
         Room *room = player->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         bool has_frantic = player->getMark("@frantic")>0;
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
 
         if(has_frantic){
             foreach(ServerPlayer *target, players){
                 if(target->getCards("he").length() == 0)
                     continue;
                 int card_id = room->askForCardChosen(player, target, "he", objectName());
-                room->obtainCard(player, card_id, room->getCardPlace(card_id) != Player::Hand);
+                room->obtainCard(player, card_id, room->getCardPlace(card_id) != Player::PlaceHand);
             }
             return true;
         }
@@ -52,7 +52,7 @@ public:
         if(!room->askForSkillInvoke(player, objectName()))
             return;
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         int n = 0;
         if(has_frantic)
             n = players.length();
@@ -131,7 +131,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
 
@@ -181,12 +181,12 @@ public:
 class Guzhan: public TriggerSkill{
 public:
     Guzhan():TriggerSkill("guzhan"){
-        events << CardLost << SlashEffect;
+        events << CardLostOneTime << SlashEffect;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardLost){
+        if(event == CardLostOneTime){
             if(player->getWeapon() == NULL){
                 if(!player->hasSkill("paoxiao"))
                     room->acquireSkill(player, "paoxiao");
@@ -212,7 +212,7 @@ public:
 class Jizhan: public TriggerSkill{
 public:
     Jizhan():TriggerSkill("jizhan"){
-        events << Damage << CardLost;
+        events << Damage << CardLostOneTime;
         frequency = Compulsory;
     }
 
@@ -355,9 +355,9 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
-                if(player->isLord()){
-                    if(boss_banlist.contains(player->getGeneralName()))
-                        getRandomSkill(player, true);
+            player = room->getLord();
+            if (boss_banlist.contains(player->getGeneralName()))
+                getRandomSkill(player, true);
 
             removeLordSkill(player);
 
@@ -376,10 +376,12 @@ public:
             room->setPlayerProperty(player, "maxhp", maxhp);
             room->setPlayerProperty(player, "hp", maxhp);
 
-                }
+            foreach (ServerPlayer* serverPlayer, room->getPlayers())
+            {
+                getRandomSkill(serverPlayer);
+            }
 
-                getRandomSkill(player);
-                room->setTag("FirstRound", true);
+            room->setTag("FirstRound", true);
                 break;
             }
 
@@ -470,7 +472,7 @@ public:
 
                     QList<const Card *> judges = player->getCards("j");
                     foreach(const Card *card, judges)
-                        room->throwCard(card->getEffectiveId());
+                        room->throwCard(card->getEffectiveId(), NULL);
                 }
             }
             break;
@@ -507,8 +509,8 @@ int ImpasseScenario::getPlayerCount() const{
     return 8;
 }
 
-void ImpasseScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZFFFFFFF");
+QString ImpasseScenario::getRoles() const{
+    return "ZFFFFFFF";
 }
 
 void ImpasseScenario::onTagSet(Room *room, const QString &key) const{

@@ -76,3 +76,42 @@ bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QStringList& result)
     }    
     return true;
 }
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QRect& result)
+{
+    if (!arg.isArray() || arg.size() != 4) return false;
+    result.setLeft(arg[0].asInt());
+    result.setTop(arg[1].asInt());
+    result.setWidth(arg[2].asInt());
+    result.setHeight(arg[3].asInt());
+    return true;
+}
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QSize& result)
+{
+    if (!arg.isArray() || arg.size() != 2) return false;
+    result.setWidth(arg[0].asInt());
+    result.setHeight(arg[1].asInt());
+    return true;
+}
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QPoint& result)
+{
+    if (!arg.isArray() || arg.size() != 2) return false;
+    result.setX(arg[0].asInt());
+    result.setY(arg[1].asInt());
+    return true;
+}
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QColor& color)
+{
+    if (!arg.isArray() && arg.size() < 3) return false;
+    color.setRed(arg[0].asInt());
+    color.setGreen(arg[1].asInt());
+    color.setBlue(arg[2].asInt());
+    if (arg.size() > 3)
+        color.setAlpha(arg[3].asInt());
+    else
+        color.setAlpha(255);
+    return true;
+}

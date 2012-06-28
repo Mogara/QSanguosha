@@ -2,13 +2,18 @@
 #define CLIENTSTRUCT_H
 
 #include "player.h"
-
+#include "QSanSelectableItem.h"
+#include "protocol.h"
 #include <QMap>
 #include <QWidget>
 
 struct ServerInfoStruct{
     bool parse(const QString &str);
-
+    //Get the timeout allowance for a command. Server countdown is more lenient than the client.
+    //@param command: type of command
+    //@return countdown for command in milliseconds.
+    time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance);
+    
     QString Name;
     QString GameMode;
     int OperationTimeout;
@@ -56,13 +61,4 @@ private:
     QLabel *lack_label;
     QListWidget *list_widget;
 };
-
-struct CardMoveStructForClient{
-    int card_id;
-    ClientPlayer *from, *to;
-    Player::Place from_place, to_place;
-
-    bool parse(const QString &str);
-};
-
 #endif // CLIENTSTRUCT_H

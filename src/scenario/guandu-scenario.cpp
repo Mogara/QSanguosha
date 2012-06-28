@@ -38,7 +38,7 @@ public:
     virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         Room *room = guojia->getRoom();
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         int n = damage.damage * 3;
         guojia->drawCards(n);
         QList<int> yiji_cards = guojia->handCards().mid(guojia->getHandcardNum() - n);
@@ -95,7 +95,7 @@ bool SmallTuxiCard::targetFilter(const QList<const Player *> &targets, const Pla
 void SmallTuxiCard::onEffect(const CardEffectStruct &effect) const{
     TuxiCard::onEffect(effect);
 
-    effect.from->getRoom()->playSkillEffect("tuxi");
+    effect.from->getRoom()->broadcastSkillInvoke("tuxi");
 }
 
 class SmallTuxiViewAsSkill: public ZeroCardViewAsSkill{
@@ -165,9 +165,9 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
-                if(player->isLord()){
-                    room->installEquip(player, "renwang_shield");
-                    room->installEquip(player, "hualiu");
+            player = room->getLord();
+            room->installEquip(player, "renwang_shield");
+            room->installEquip(player, "hualiu");
 
             ServerPlayer *caocao = room->findPlayer("caocao");
             room->installEquip(caocao, "qinggang_sword");
@@ -182,10 +182,10 @@ public:
             room->acquireSkill(guanyu, "zhanshuangxiong");
 
 
-                    ServerPlayer *zhangliao = room->findPlayer("zhangliao");
-                    room->detachSkillFromPlayer(zhangliao, "tuxi");
-                    room->acquireSkill(zhangliao, "smalltuxi");
-                }
+            ServerPlayer *zhangliao = room->findPlayer("zhangliao");
+            room->detachSkillFromPlayer(zhangliao, "tuxi");
+            room->acquireSkill(zhangliao, "smalltuxi");
+
 
             break;
                        }
@@ -228,7 +228,7 @@ public:
                             break;
                         }
 
-                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::Judging, true);
+                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::PlaceDelayedTrick, true);
                     }
                 }
 

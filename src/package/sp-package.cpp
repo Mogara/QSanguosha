@@ -108,7 +108,7 @@ public:
 
         if(room->askForSkillInvoke(yangxiu, objectName(), data)){
             QString choice = room->askForChoice(yangxiu, objectName(), "basic+equip+trick");
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             damage.from->jilei(choice);
             damage.from->invoke("jilei", choice);
@@ -141,7 +141,7 @@ public:
                     return false;
 
             player->tag["Danlao"] = use.card->getEffectiveId();
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             LogMessage log;
             log.type = "#DanlaoAvoid";
@@ -199,7 +199,7 @@ public:
             log.arg2 = objectName();
             room->sendLog(log);
 
-            room->playSkillEffect("yongsi", x);
+            room->broadcastSkillInvoke("yongsi", x);
 
         }else if(event == PhaseChange && yuanshu->getPhase() == Player::Discard){
             int x = getKingdoms(yuanshu);

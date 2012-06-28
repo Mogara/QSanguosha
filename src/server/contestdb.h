@@ -12,7 +12,7 @@ class ContestDB : public QObject
     Q_OBJECT
 
 public:
-    static ContestDB *GetInstance();
+    static ContestDB *getInstance();
     bool loadMembers();
     bool checkPassword(const QString &username, const QString &password);
     void saveResult(const QList<ServerPlayer *> &players, const QString &winner);

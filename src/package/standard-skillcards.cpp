@@ -9,6 +9,7 @@
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
     once = true;
+    will_throw = true;
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -34,7 +35,9 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     }else
         target = targets.first();
 
-    room->obtainCard(target, this, false);
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
+    reason.m_playerId = target->objectName();
+    room->obtainCard(target, this, reason, false);
 
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
@@ -51,7 +54,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 JieyinCard::JieyinCard(){
     once = true;
     mute = true;
-    owner_discarded = true;
+    will_throw = true;
 }
 
 bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -63,7 +66,7 @@ bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-
+    room->throwCard(this, effect.from);
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
@@ -83,7 +86,7 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
         index = 1 + qrand() % 2;
     }
 
-    room->playSkillEffect("jieyin", index);
+    room->broadcastSkillInvoke("jieyin", index);
 }
 
 TuxiCard::TuxiCard(){
@@ -102,8 +105,9 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
 void TuxiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     if(!effect.to->isKongcheng()){
-    int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
-    room->obtainCard(effect.from, card_id, false);
+        int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
+        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+        room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, false);
 
         room->setEmotion(effect.to, "bad");
         room->setEmotion(effect.from, "good");
@@ -174,7 +178,7 @@ bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this, source);
-    room->playSkillEffect("lijian");
+    room->broadcastSkillInvoke("lijian");
 
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);
@@ -233,7 +237,7 @@ void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
 LiuliCard::LiuliCard()
 {
-    owner_discarded = true;
+    will_throw = true;
 }
 
 
@@ -257,7 +261,9 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->setPlayerFlag(effect.to, "liuli_target");
+    Room *room = effect.to->getRoom();
+    room->throwCard(this, effect.from);
+    room->setPlayerFlag(effect.to, "liuli_target");
 }
 
 JijiangCard::JijiangCard(){

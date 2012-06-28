@@ -30,7 +30,7 @@ public:
 
         if(damage.from && damage.from != player){
             damage.from->gainMark("@nightmare", damage.damage);
-            damage.from->getRoom()->playSkillEffect(objectName(), 1);
+            damage.from->getRoom()->broadcastSkillInvoke(objectName(), 1);
         }
 
         return false;
@@ -91,9 +91,9 @@ public:
             room->sendLog(log);
 
             room->killPlayer(foe);
-            room->playSkillEffect("wuhun", 2);
+            room->broadcastSkillInvoke("wuhun", 2);
         }else
-            room->playSkillEffect("wuhun", 3);
+            room->broadcastSkillInvoke("wuhun", 3);
         QList<ServerPlayer *> killers = room->getAllPlayers();
         foreach(ServerPlayer *player, killers){
             player->loseAllMarks("@nightmare");
@@ -126,7 +126,7 @@ public:
         if(!shenlvmeng->askForSkillInvoke(objectName()))
             return false;
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
 
         QList<int> card_ids = room->getNCards(5);
         qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
@@ -193,42 +193,38 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 GreatYeyanCard::GreatYeyanCard(){
 }
 
-bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty();
+int GreatYeyanCard::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    int i = 0;
+    foreach(const Player* player, targets)if(player == to_select)i++;
+    return qMax(3 - targets.size(),0) + i;
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+    int criticaltarget = 0;
+    int totalvictim = 0;
+    QMap<ServerPlayer*,int> map;
 
-    shenzhouyu->loseMark("@flame");
-    room->throwCard(this, shenzhouyu);
-    room->loseHp(shenzhouyu, 3);
+    foreach(ServerPlayer* sp, targets)
+        map[sp]++;
 
-    damage(shenzhouyu, targets.first(), 3);
-}
-
-MediumYeyanCard::MediumYeyanCard(){
-
-}
-
-bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.length() < 2;
-}
-
-void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
-
-    shenzhouyu->loseMark("@flame");
-    room->throwCard(this, shenzhouyu);
-    room->loseHp(shenzhouyu, 3);
-
-    ServerPlayer *first = targets.first();
-    ServerPlayer *second = targets.value(1, NULL);
-
-    damage(shenzhouyu, first, 2);
-
-    if(second)
-        damage(shenzhouyu, second, 1);
+    foreach(ServerPlayer* sp,map.keys()){
+        if(map[sp] > 1)
+            criticaltarget++;
+        totalvictim++;
+    }
+    if(criticaltarget > 0){
+        room->loseHp(shenzhouyu, 3);
+        shenzhouyu->loseMark("@flame");
+        room->throwCard(this, shenzhouyu);
+        if(totalvictim > 1){
+            room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
+            qSort(map.keys().begin(), map.keys().end(), CompareByActionOrder);
+        }
+        else
+            room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+        foreach(ServerPlayer* sp,map.keys())
+            damage(shenzhouyu, sp, map[sp]);
+    }
 }
 
 SmallYeyanCard::SmallYeyanCard(){
@@ -251,9 +247,9 @@ void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{
     damage(effect.from, effect.to, 1);
 }
 
-class GreatYeyan: public ViewAsSkill{
+class Yeyan: public ViewAsSkill{
 public:
-    GreatYeyan(): ViewAsSkill("greatyeyan"){
+    Yeyan(): ViewAsSkill("yeyan"){
         frequency = Limited;
     }
 
@@ -277,6 +273,7 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length()  == 0)return new SmallYeyanCard();
         if(cards.length() != 4)
             return NULL;
 
@@ -287,42 +284,11 @@ public:
     }
 };
 
-class MediumYeyan: public GreatYeyan{
-public:
-    MediumYeyan(){
-        setObjectName("mediumyeyan");
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 4)
-            return NULL;
-
-        MediumYeyanCard *card = new MediumYeyanCard;
-        card->addSubcards(cards);
-
-        return card;
-    }
-};
-
-class SmallYeyan: public ZeroCardViewAsSkill{
-public:
-    SmallYeyan():ZeroCardViewAsSkill("smallyeyan"){
-        frequency = Limited;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("@flame") >= 1;
-    }
-
-    virtual const Card *viewAs() const{
-        return new SmallYeyanCard;
-    }
-};
 
 class Qinyin: public TriggerSkill{
 public:
     Qinyin():TriggerSkill("qinyin"){
-        events << CardLost << PhaseChange;
+        events << CardLostOnePiece << PhaseChange;
         default_choice = "down";
     }
 
@@ -331,7 +297,7 @@ public:
         QString result = room->askForChoice(shenzhouyu, objectName(), "up+down");
         QList<ServerPlayer *> all_players = room->getAllPlayers();
         if(result == "up"){
-            room->playSkillEffect(objectName(), 2);
+            room->broadcastSkillInvoke(objectName(), 2);
             foreach(ServerPlayer *player, all_players){
                 RecoverStruct recover;
                 recover.who = shenzhouyu;
@@ -346,7 +312,7 @@ public:
             if(room->findPlayer("caocao+shencaocao+weiwudi"))
                 index = 3;
 
-            room->playSkillEffect(objectName(), index);
+            room->broadcastSkillInvoke(objectName(), index);
         }
     }
 
@@ -354,9 +320,9 @@ public:
         if(shenzhouyu->getPhase() != Player::Discard)
             return false;
 
-        if(event == CardLost){
+        if(event == CardLostOnePiece){
             CardMoveStar move = data.value<CardMoveStar>();
-            if(move->to_place == Player::DiscardedPile){
+            if(move->to_place == Player::DiscardPile){
                 shenzhouyu->addMark("qinyin");
                 if(shenzhouyu->getMark("qinyin") == 2){
                     if(shenzhouyu->askForSkillInvoke(objectName()))
@@ -390,7 +356,7 @@ public:
                 }
             }
             if(can_invoke && shencc->askForSkillInvoke(objectName())){
-                room->playSkillEffect(objectName());
+                room->broadcastSkillInvoke(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
                 if(players.length() >=5)
@@ -398,8 +364,10 @@ public:
 
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){
+                        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, shencc->objectName());
                         int card_id = room->askForCardChosen(shencc, player, "hej", objectName());
-                        room->obtainCard(shencc, card_id, room->getCardPlace(card_id) != Player::Hand);
+
+                        room->obtainCard(shencc, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
                     }
                 }
                 can_invoke = false;
@@ -442,7 +410,7 @@ public:
         player->getRoom()->sendLog(log);
 
         player->gainMark("@wrath", damage.damage);
-        player->getRoom()->playSkillEffect(objectName());
+        player->getRoom()->broadcastSkillInvoke(objectName());
 
         return false;
     }
@@ -465,7 +433,7 @@ public:
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
             Room *room = player->getRoom();
-            room->playSkillEffect(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             int num = player->getMark("@wrath");
             if(num >= 1 && room->askForChoice(player, objectName(), "discard+losehp") == "discard"){
@@ -629,7 +597,7 @@ public:
             return;
 
         Room *room = shenzhuge->getRoom();
-        room->playSkillEffect("qixing");
+        room->broadcastSkillInvoke("qixing");
         room->fillAG(stars, shenzhuge);
 
         int ai_delay = Config.AIDelay;
@@ -644,7 +612,8 @@ public:
             stars.removeOne(card_id);
             ++n;
 
-            room->obtainCard(shenzhuge, card_id, false);
+            CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, shenzhuge->objectName());
+            room->obtainCard(shenzhuge, Sanguosha->getCard(card_id), reason, false);
         }
 
         Config.AIDelay = ai_delay;
@@ -669,16 +638,16 @@ public:
         delete exchange_card;
     }
 
-    static void DiscardStar(ServerPlayer *shenzhuge, int n){
+    static void DiscardStar(ServerPlayer *shenzhuge, int n, QString skillName){
         Room *room = shenzhuge->getRoom();
         const QList<int> stars = shenzhuge->getPile("stars");
 
         room->fillAG(stars, shenzhuge);
 
-        int i;
-        for(i=0; i<n; i++){
+        for(int i = 0; i < n; i++){
             int card_id = room->askForAG(shenzhuge, stars, false, "qixing-discard");
-            room->throwCard(card_id);
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), skillName, QString());
+            room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
         }
 
         shenzhuge->invoke("clearAG");
@@ -704,14 +673,13 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *shenzhuge) const{
-        shenzhuge->gainMark("@star", 7);
-        shenzhuge->drawCards(7);
-
-        QList<int> stars = shenzhuge->handCards().mid(0, 7);
-
-        foreach(int card_id, stars)
-            shenzhuge->addToPile("stars", card_id, false);
-
+        shenzhuge->gainMark("@star", 7); 
+        QList<int> stars;
+        for (int i = 0; i < 7; i++)
+        {
+            stars.push_back(shenzhuge->getRoom()->drawCard());
+        }
+        shenzhuge->addToPile("stars", stars, false);
         Qixing::Exchange(shenzhuge);
     }
 };
@@ -725,7 +693,7 @@ bool KuangfengCard::targetFilter(const QList<const Player *> &targets, const Pla
 }
 
 void KuangfengCard::onEffect(const CardEffectStruct &effect) const{
-    Qixing::DiscardStar(effect.from, 1);
+    Qixing::DiscardStar(effect.from, 1, "kuangfeng");
 
     effect.from->loseMark("@star");
     effect.to->gainMark("@gale");
@@ -839,7 +807,7 @@ bool DawuCard::targetFilter(const QList<const Player *> &targets, const Player *
 
 void DawuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     int n = targets.length();
-    Qixing::DiscardStar(source, n);
+    Qixing::DiscardStar(source, n, "dawu");
 
     source->loseMark("@star", n);
     foreach(ServerPlayer *target, targets){
@@ -1175,7 +1143,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         if(player->isWounded())
-            player->getRoom()->playSkillEffect(objectName());
+            player->getRoom()->broadcastSkillInvoke(objectName());
         return n + player->getLostHp();
     }
 };
@@ -1317,9 +1285,7 @@ GodPackage::GodPackage()
     General *shenzhouyu = new General(this, "shenzhouyu", "god");
     shenzhouyu->addSkill(new Qinyin);
     shenzhouyu->addSkill(new MarkAssignSkill("@flame", 1));
-    shenzhouyu->addSkill(new GreatYeyan);
-    shenzhouyu->addSkill(new MediumYeyan);
-    shenzhouyu->addSkill(new SmallYeyan);
+    shenzhouyu->addSkill(new Yeyan);
 
     General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
     shenzhugeliang->addSkill(new Qixing);
@@ -1367,7 +1333,6 @@ GodPackage::GodPackage()
     addMetaObject<YeyanCard>();
     addMetaObject<ShenfenCard>();
     addMetaObject<GreatYeyanCard>();
-    addMetaObject<MediumYeyanCard>();
     addMetaObject<SmallYeyanCard>();
     addMetaObject<WushenSlash>();
     addMetaObject<KuangfengCard>();

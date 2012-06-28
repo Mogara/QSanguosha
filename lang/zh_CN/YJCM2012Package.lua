@@ -55,17 +55,13 @@ return {
 	["#liaohua"] = "历尽沧桑",
 	["liaohua"] = "廖化",
 	["designer:liaohua"] = "桃花僧",
-	["cv:liaohua"] = "桃花僧",
 	["illustrator:liaohua"] = "天空之城",
 	["dangxian"] = "当先",
 	[":dangxian"] = "<b>锁定技</b>，回合开始时，你执行一个额外的出牌阶段。",
 	["fuli"] = "伏枥",
 	[":fuli"] = "<b>限定技</b>，当你处于濒死状态时，你可以将体力回复至X点（X为现存势力数），然后将你的武将牌翻面。",
 	["@laoji"] = "老骥",
-        ["$dangxian"] = "先锋一职，老夫责无傍贷。",
-	["$fuli"] = "心系蜀汉，虽死必归。",
-	["~liaohua"] = "阅尽兴亡，此生无憾矣.",
-	
+
 	["#guanxingzhangbao"] = "将门虎子",
 	["guanxingzhangbao"] = "关兴张苞",
 	["designer:guanxingzhangbao"] = "诺思冥羽",

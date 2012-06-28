@@ -288,10 +288,10 @@ QRectF SentbackEffect::boundingRectFor(const QRectF &sourceRect) const
 {
     qreal scale = 0.05;
     QRectF rect(sourceRect);
-    rect.adjust(  -   sourceRect.width() * scale,
-                  -   sourceRect.height() * scale,
-                      sourceRect.width() * scale,
-                      sourceRect.height() * scale);
+    rect.adjust(-sourceRect.width() * scale,
+                -sourceRect.height() * scale,
+                 sourceRect.width() * scale,
+                 sourceRect.height() * scale);
     return rect;
 }
 

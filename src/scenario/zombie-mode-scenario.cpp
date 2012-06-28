@@ -32,7 +32,7 @@ public:
         room->sendLog(log);
 
         QString gender = player->getGeneral()->isMale() ? "male" : "female";
-        room->broadcastInvoke("playAudio", QString("zombify-%1").arg(gender));
+        room->broadcastInvoke("playSystemAudioEffect", QString("zombify-%1").arg(gender));
         room->updateStateItem();
 
         player->tag.remove("zombie");
@@ -41,8 +41,11 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
+            foreach (ServerPlayer* player, room->getPlayers())
+            {
                 room->acquireSkill(player, "peaching");
                 break;
+            }
             }
 
         case GameOverJudge:{
@@ -174,8 +177,8 @@ int ZombieScenario::getPlayerCount() const{
     return 8;
 }
 
-void ZombieScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZCCCCCCC");
+QString ZombieScenario::getRoles() const{
+    return "ZCCCCCCC";
 }
 
 void ZombieScenario::onTagSet(Room *, const QString &) const{

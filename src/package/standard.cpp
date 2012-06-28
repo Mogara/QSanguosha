@@ -54,10 +54,6 @@ Card::CardType EquipCard::getTypeId() const{
     return Equip;
 }
 
-QString EquipCard::getEffectPath(bool is_male) const{
-    return "audio/card/common/equip.ogg";
-}
-
 void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.to.isEmpty()){
         ServerPlayer *player = card_use.from;
@@ -74,7 +70,7 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     const EquipCard *equipped = NULL;
     ServerPlayer *target = targets.value(0, source);
-    
+    if (room->getCardOwner(getId()) != source) return;
     switch(location()){
     case WeaponLocation: equipped = target->getWeapon(); break;
     case ArmorLocation: equipped = target->getArmor(); break;
@@ -82,16 +78,33 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     case OffensiveHorseLocation: equipped = target->getOffensiveHorse(); break;
     }
 
-    if(equipped)
-        room->throwCard(equipped, source);
+    if (room->getCardOwner(getId()) == source && room->getCardPlace(getId()) == Player::PlaceHand)
+        {
+            QList<CardsMoveStruct> exchangeMove;
+            CardsMoveStruct move1;
+            move1.card_ids << getId();
+            move1.to = source;
+            move1.to_place = Player::PlaceEquip;
+            move1.reason = CardMoveReason(CardMoveReason::S_REASON_USE, source->objectName());
+            exchangeMove.push_back(move1);
+            if(equipped)
+            {
+                CardsMoveStruct move2;
+                move2.card_ids << equipped->getId();
+                move2.to = NULL;
+                move2.to_place = Player::DiscardPile;
+                move2.reason = CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, source->objectName());
+                exchangeMove.push_back(move2);
+            }
+            LogMessage log;
+            log.from = target;
+            log.type = "$Install";
+            log.card_str = QString::number(getEffectiveId());
+            room->sendLog(log);
 
-    LogMessage log;
-    log.from = target;
-    log.type = "$Install";
-    log.card_str = QString::number(getEffectiveId());
-    room->sendLog(log);
+            room->moveCardsAtomic(exchangeMove, true);
+        }
 
-    room->moveCardTo(this, target, Player::Equip, true);
 }
 
 void EquipCard::onInstall(ServerPlayer *player) const{
@@ -147,7 +160,7 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const{
             log.arg2 = objectName();
             room->sendLog(log);
 
-            room->playSkillEffect(skill->objectName());
+            room->broadcastSkillInvoke(skill->objectName());
         }else
             targets << player;
     }
@@ -186,7 +199,8 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
-    room->moveCardTo(this, target, Player::Judging, true);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), target->objectName(), this->getSkillName(), QString());
+    room->moveCardTo(this, source, target, Player::PlaceDelayedTrick, reason, true);
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -195,9 +209,6 @@ QString DelayedTrick::getSubtype() const{
 
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-
-    if(!movable)
-        room->throwCard(this);
 
     LogMessage log;
     log.from = effect.to;
@@ -210,10 +221,16 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     room->judge(judge_struct);
 
     if(judge_struct.isBad()){
-        room->throwCard(this);
         takeEffect(effect.to);
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+        room->throwCard(this, reason, NULL);
     }else if(movable){
         onNullified(effect.to);
+    }
+    if (!movable)
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+        room->throwCard(this, reason, NULL);
     }
 }
 
@@ -230,11 +247,16 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             if(room->isProhibited(target, player, this))
                 continue;
 
-            room->moveCardTo(this, player, Player::Judging, true);
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
+            room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
             break;
         }
-    }else
-        room->throwCard(this);
+    }
+    else
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
+        room->throwCard(this, reason, NULL);
+    }
 }
 
 const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
@@ -312,10 +334,6 @@ Horse::Horse(Suit suit, int number, int correct)
 
 int Horse::getCorrect() const{
     return correct;
-}
-
-QString Horse::getEffectPath(bool) const{
-    return "audio/card/common/horse.ogg";
 }
 
 void Horse::onInstall(ServerPlayer *) const{

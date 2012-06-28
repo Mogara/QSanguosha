@@ -3,10 +3,11 @@
 #include "engine.h"
 #include "clientstruct.h"
 #include "client.h"
+#include "SkinBank.h"
 
 static CardOverview *Overview;
 
-CardOverview *CardOverview::GetInstance(QWidget *main_window){
+CardOverview *CardOverview::getInstance(QWidget *main_window){
     if(Overview == NULL)
         Overview = new CardOverview(main_window);
 
@@ -114,7 +115,7 @@ void CardOverview::on_malePlayButton_clicked()
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getCard(card_id);
-        Sanguosha->playCardEffect(card->objectName(), true);
+		Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), true));
     }
 }
 
@@ -124,6 +125,6 @@ void CardOverview::on_femalePlayButton_clicked()
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getCard(card_id);
-        Sanguosha->playCardEffect(card->objectName(), false);
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), false));
     }
 }
