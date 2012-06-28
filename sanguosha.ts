@@ -1295,26 +1295,24 @@
         <translation>火焰</translation>
     </message>
     <message>
-        <source>Recover HP</source>
-        <translation type="obsolete">体力回复</translation>
-    </message>
-    <message>
         <location filename="src/ui/roomscene.cpp" line="2687"/>
         <source>Lose HP</source>
         <translation>流失体力</translation>
     </message>
     <message>
-        <source>Lose Max HP</source>
-        <translation type="obsolete">流失体力上限</translation>
-    </message>
-    <message>
-        <source>Reset Max HP</source>
-        <translation type="obsolete">重置体力上限</translation>
-    </message>
-    <message>
         <location filename="src/ui/roomscene.cpp" line="2686"/>
-        <source>HP recover</source>
+        <source>Recover HP</source>
         <translation>体力回复</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2682"/>
+ 	<source>Lose Max HP</source>
+ 	<translation>流失体力上限</translation>
+    </message>
+    <message>
+ 	<location filename="src/ui/roomscene.cpp" line="2683"/>
+ 	<source>Reset Max HP</source>
+ 	<translation>重置体力上限</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="2693"/>

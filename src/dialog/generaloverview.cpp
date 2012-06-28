@@ -268,7 +268,8 @@ void GeneralOverview::playEffect()
 void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
 {
     if(ServerInfo.FreeChoose && Self){
-        QString general_name = item->data(Qt::UserRole).toString();
+        int row = ui->tableWidget->currentRow();
+        QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
         ClientInstance->requestCheatChangeGeneral(general_name);
     }
 }
