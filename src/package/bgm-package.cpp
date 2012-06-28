@@ -838,7 +838,7 @@ public:
             newdamage.transfer = true;
 
             room->damage(newdamage);
-            if(target->isAlive() && p->getMark("hate"+player->objectName()) > 0)
+            if(target->isAlive() && target->getMark("hate"+player->objectName()) > 0)
                 target->drawCards(damage.damage);
             return true;
         }
