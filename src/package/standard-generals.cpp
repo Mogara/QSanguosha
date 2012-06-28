@@ -1107,7 +1107,7 @@ public:
         }
         else if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(player->objectName() != effect.from->objectName())
+            if(!effect.to->hasFlag("WushuangTarget"))
                 return false;
             room->playSkillEffect(objectName());
 
