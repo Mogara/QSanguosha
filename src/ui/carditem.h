@@ -63,7 +63,7 @@ protected:
 
 private:
     const Card *card, *filtered_card;
-    QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap;
+    QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap, *owner_pixmap;
     QGraphicsSimpleTextItem *owner_text;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
