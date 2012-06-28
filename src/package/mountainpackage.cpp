@@ -930,25 +930,34 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *liushan, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(event == TargetConfirming && use.card && use.card->inherits("Slash")){
 
-            room->broadcastSkillInvoke(objectName());
+        if(event == TargetConfirming){
 
-            LogMessage log;
-            log.type = "#Xiangle";
-            log.from = use.from;
-            log.to << liushan;
-            log.arg = objectName();
-            room->sendLog(log);
-            QVariant dataforai = QVariant::fromValue(liushan);
-            if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai, CardDiscarded))
-                room->setPlayerFlag(liushan, "xiangle_invoke");
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card && use.card->inherits("Slash")){
+
+                room->broadcastSkillInvoke(objectName());
+
+                LogMessage log;
+                log.type = "#Xiangle";
+                log.from = use.from;
+                log.to << liushan;
+                log.arg = objectName();
+                room->sendLog(log);
+                QVariant dataforai = QVariant::fromValue(liushan);
+                if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai, CardDiscarded))
+                    liushan->addMark("xiangle");
+            }
         }
-        else if(event == CardFinished)
-            room->setPlayerFlag(liushan, "-xiangle_invoke");
-        else
-            return liushan->hasFlag("xiangle_invoke");
+        else if(event == CardFinished){
+            liushan->setMark("xiangle", 0);
+        }
+        else {
+            if(liushan->getMark("xiangle") > 0){
+                liushan->loseMark("xiangle");
+                return true;
+            }
+        }
 
         return false;
     }

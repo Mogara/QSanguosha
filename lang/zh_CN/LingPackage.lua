@@ -52,6 +52,7 @@ return {
 
 	["#neo_gongsunzan"] = "白马将军",
 	["neo_gongsunzan"] = "翼公孙瓒",
+	["cv:neo_gongsunzan"] = "桃花僧",
 	["illustrator:neo_gongsunzan"] = "Vincent",
 	["zhulou"] = "筑楼",
 	[":zhulou"] = "回合结束阶段开始时，你可以摸两张牌，然后失去1点体力或弃置一张武器牌。",
@@ -59,5 +60,7 @@ return {
 	["zhulou:throw"] = "弃置一张武器牌",
 	["zhulou:losehp"] = "流失1点体力",
 	["designer:neo_gongsunzan"] = "凌天翼",
+	["$zhulou1"] = "易京高楼，易守难攻。",
+	["$zhulou2"] = "快!快!再多加些砖瓦。",
 }
 
