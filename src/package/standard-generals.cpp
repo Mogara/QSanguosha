@@ -611,55 +611,40 @@ public:
 class Tieji:public TriggerSkill{
 public:
     Tieji():TriggerSkill("tieji"){
-        events << TargetConfirmed;
+        events << TargetConfirmed << SlashProceed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
-    }
-
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
-
-        CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *machao = room->findPlayerBySkillName(objectName());
-        bool istarget = false;
-        if(!machao || machao->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
-            return false;
-        foreach(ServerPlayer *p, use.to){
-            if(player->objectName() == p->objectName()){
-                istarget = true;
-                break;
-            }
-        }
-        if(istarget && machao->askForSkillInvoke("tieji", QVariant::fromValue(player))){
-            room->playSkillEffect(objectName());
-
-            JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
-            judge.good = true;
-            judge.reason = objectName();
-            judge.who = machao;
-
-            room->judge(judge);
-            if(judge.isGood()){
-                 room->setPlayerFlag(player, "TiejiTarget");
-            }
-        }
-        return false;
-    }
-};
-
-class TiejiHit:public TriggerSkill{
-public:
-    TiejiHit():TriggerSkill("#tieji"){
-        events << SlashProceed << CardFinished;
+        return true;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
 
-        if(event == SlashProceed){
+        if(event == TargetConfirmed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            bool caninvoke = false;
+            if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
+                && use.to.contains(player)){
+                   caninvoke = true;
+            }
+            if(caninvoke && use.from->askForSkillInvoke("tieji", QVariant::fromValue(player))){
+                room->playSkillEffect(objectName());
+
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+                judge.good = true;
+                judge.reason = objectName();
+                judge.who = use.from;
+
+                room->judge(judge);
+                if(judge.isGood()){
+                     room->setPlayerFlag(player, "TiejiTarget");
+                }
+            }
+        }
+        else if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.to->hasFlag("TiejiTarget")){
+            if(effect.from->hasSkill(objectName()) && effect.to->hasFlag("TiejiTarget")){
                 room->slashResult(effect, NULL);
                 return true;
             }
@@ -1096,55 +1081,37 @@ class Wushuang:public TriggerSkill{
 public:
     Wushuang():TriggerSkill("wushuang"){
         frequency = Compulsory;
-        events << TargetConfirmed;
+        events << TargetConfirmed << SlashProceed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
+        return true;
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
-
-        CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *lvbu = room->findPlayerBySkillName(objectName());
-        bool istarget = false;
-        if(!lvbu || lvbu->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
-            return false;
-        foreach(ServerPlayer *p, use.to){
-            if(player->objectName() == p->objectName()){
-                istarget = true;
-                break;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(event == TargetConfirmed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            bool caninvoke = false;
+            if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
+                && use.to.contains(player)){
+                   caninvoke = true;
+            }
+            else if(use.card->inherits("Duel") && use.from->hasSkill(objectName())
+                && use.from->objectName() == player->objectName()){
+                       caninvoke = true;
+            }
+            if(caninvoke){
+                room->playSkillEffect(objectName());
+                room->setPlayerFlag(player, "WushuangTarget");
             }
         }
-
-        room->playSkillEffect(objectName());
-
-        room->setPlayerFlag(player, "WushuangTarget");
-
-        return false;
-    }
-};
-
-class WushuangHit:public TriggerSkill{
-public:
-    WushuangHit():TriggerSkill("#wushuang"){
-        events << TargetConfirmed << SlashProceed << CardFinished;
-        frequency = Compulsory;
-    }
-
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lvbu, QVariant &data) const{
-
-        if(event == TargetConfirmed){
-           CardUseStruct use = data.value<CardUseStruct>();
-           if(!use.card->inherits("Duel"))
-               return false;
-           room->setPlayerFlag(lvbu, "WushuangTarget");
-        }
-        if(event == SlashProceed){
+        else if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        room->playSkillEffect(objectName());
+            if(player->objectName() != effect.from->objectName())
+                return false;
+            room->playSkillEffect(objectName());
 
-            QString slasher = lvbu->objectName();
+            QString slasher = player->objectName();
 
             const Card *first_jink = NULL, *second_jink = NULL;
             first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), CardUsed);
@@ -1163,7 +1130,6 @@ public:
             return true;
 
         }else if(event == CardFinished){
-            CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *to, room->getAllPlayers()){
                 if(to->hasFlag("WushuangTarget"))
                     room->setPlayerFlag(to, "-WushuangTarget");
@@ -1173,7 +1139,6 @@ public:
         return false;
     }
 };
-
 
 class Lijian: public OneCardViewAsSkill{
 public:
@@ -1346,10 +1311,8 @@ void StandardPackage::addGenerals(){
 
     machao = new General(this, "machao", "shu");
     machao->addSkill(new Tieji);
-    machao->addSkill(new TiejiHit);
     machao->addSkill(new Mashu);
     machao->addSkill(new SPConvertSkill("fanqun", "machao", "sp_machao"));
-    related_skills.insertMulti("tieji", "#tieji");
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
@@ -1396,8 +1359,6 @@ void StandardPackage::addGenerals(){
 
     lvbu = new General(this, "lvbu", "qun");
     lvbu->addSkill(new Wushuang);
-    lvbu->addSkill(new WushuangHit);
-    related_skills.insertMulti("wushuang", "#wushuang");
 
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
