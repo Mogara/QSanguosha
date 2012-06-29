@@ -720,6 +720,14 @@ void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const c
     QMessageBox::warning(NULL, tr("Command format warning"), text);
 }
 
+QString Client::_processCardPattern(const QString &pattern){
+    const QChar c = pattern.at(pattern.length() - 1);
+    if(c == '!' || c.isNumber())
+        return pattern.left(pattern.length() - 1);
+
+    return pattern;
+}
+
 void Client::_askForCardOrUseCard(const Json::Value &cardUsage){
     if (!cardUsage.isArray() || !cardUsage[0].isString() || !cardUsage[1].isString() || !cardUsage[2].isInt())
         return;
@@ -733,12 +741,15 @@ void Client::_askForCardOrUseCard(const Json::Value &cardUsage){
         setPromptList(texts);
 
     if(card_pattern.endsWith("!"))
+    {
         m_isDiscardActionRefusable = false;
+    }
     else
         m_isDiscardActionRefusable = true;
 
+    QString temp_pattern = _processCardPattern(card_pattern);
     QRegExp rx("^@@?(\\w+)(-card)?$");
-    if(rx.exactMatch(card_pattern)){
+    if(rx.exactMatch(temp_pattern)){
         QString skill_name = rx.capturedTexts().at(1);
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if(skill){

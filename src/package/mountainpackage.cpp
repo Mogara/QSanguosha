@@ -24,9 +24,9 @@ QiaobianCard::QiaobianCard(){
 
 bool QiaobianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if(Self->getPhase() == Player::Draw)
-        return targets.length() <= 2 && !targets.isEmpty();
+        return targets.length() <= 2;
     else if(Self->getPhase() == Player::Play)
-        return targets.length() == 1;
+        return targets.length() <= 1;
     else
         return targets.isEmpty();
 }
@@ -44,14 +44,14 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this, zhanghe);
 
-    if(zhanghe->getPhase() == Player::Draw && room->askForSkillInvoke(zhanghe, "qiaobian")){
+    if(zhanghe->getPhase() == Player::Draw){
         room->broadcastSkillInvoke("qiaobian", 2);
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
         foreach(ServerPlayer *target, players){
             room->cardEffect(this, zhanghe, target);
         }
-    }else if(zhanghe->getPhase() == Player::Play && room->askForSkillInvoke(zhanghe, "qiaobian")){
+    }else if(zhanghe->getPhase() == Player::Play){
         room->broadcastSkillInvoke("qiaobian", 3);
         PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
@@ -159,10 +159,10 @@ public:
         case Player::Finish:
         case Player::NotActive: return false;
 
-        case Player::Judge: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge");
-        case Player::Draw: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw");
-        case Player::Play: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play");
-        case Player::Discard: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard");
+        case Player::Judge: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge", 1);
+        case Player::Draw: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw", 2);
+        case Player::Play: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play", 3);
+        case Player::Discard: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard", 1);
         }
 
         return false;

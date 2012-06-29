@@ -360,12 +360,12 @@ public:
         Room *room = xiahouyuan->getRoom();
 
         if(xiahouyuan->getPhase() == Player::Judge){
-            if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1")){
+            if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)){
                 xiahouyuan->skip(Player::Draw);
                 return true;
             }
         }else if(xiahouyuan->getPhase() == Player::Play){
-            if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2")){
+            if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2)){
                 return true;
             }
         }
