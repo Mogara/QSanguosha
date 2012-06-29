@@ -721,10 +721,11 @@ void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const c
 }
 
 void Client::_askForCardOrUseCard(const Json::Value &cardUsage){
-    
-    Q_ASSERT(isStringArray(cardUsage, 0, 1));
+    if (!cardUsage.isArray() || !cardUsage[0].isString() || !cardUsage[1].isString() || !cardUsage[2].isInt())
+        return;
     card_pattern = toQString(cardUsage[0]);
     QStringList texts = toQString(cardUsage[1]).split(":");
+    int index = cardUsage[2].asInt();
 
     if(texts.isEmpty()){
         return;
@@ -742,7 +743,7 @@ void Client::_askForCardOrUseCard(const Json::Value &cardUsage){
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if(skill){
             QString text = prompt_doc->toHtml();
-            text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getDescription()));
+            text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getNotice(index)));
             prompt_doc->setHtml(text);
         }
     }
@@ -773,11 +774,6 @@ void Client::askForSkillInvoke(const Json::Value &arg){
         text = tr("Do you want to invoke skill [%1] ?").arg(Sanguosha->translate(skill_name));
     else
         text = Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(data));
-
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(skill){
-        text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getDescription()));
-    }
 
     prompt_doc->setHtml(text);
     setStatus(AskForSkillInvoke);
