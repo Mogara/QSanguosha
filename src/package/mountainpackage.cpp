@@ -256,6 +256,10 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
 
+        if(Config.EnableBasara){
+            // @:todo if the killer is anjiang,do nothing;else turn him to anjiang again
+            return false;
+        }
         if(damage && damage->from && damage->from->getGeneralName() != "anjiang"){
             if (player == NULL) return false;
 
@@ -272,6 +276,7 @@ public:
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
+            damage->from->gainMark("@duanchang");
             if(damage->from->getKingdom() != damage->from->getGeneral()->getKingdom())
                 room->setPlayerProperty(damage->from, "kingdom", damage->from->getGeneral()->getKingdom());
             if(damage->from->getGeneralName() == "zuocif")
@@ -297,16 +302,6 @@ public:
             else if(damage->from->hasSkill("renjie")){
                 damage->from->loseAllMarks("@bear");
             }
-
-            QString kingdom = damage->from->getKingdom();
-
-            QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
-            room->setPlayerProperty(damage->from, "general", to_transfigure);
-            if(damage->from->getGeneral2())
-                room->setPlayerProperty(damage->from, "general2", to_transfigure);
-            room->setPlayerProperty(damage->from, "kingdom", kingdom);
-
-            room->resetAI(damage->from);
         }
 
         return false;
