@@ -623,7 +623,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
 
         if(event == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
