@@ -9,7 +9,8 @@ return {
 	["huanshi"] = "缓释",
 	[":huanshi"] = "在一名己方角色的判定牌生效前，你可以打出一张牌代替之。\
 (<b>身份局</b>：在一名角色的判定牌生效前，你可以令其选择是否由你打出一张牌代替之。)",
-	["@huanshi-card"] = "请使用【%dest】技能来修改 %src 的 %arg 判定",
+	["@huanshi-card"] = "你可以使用【%dest】技能来修改 %src 的 %arg 判定",
+	["~huanshi"] = "选择一张牌——点击确定",
 	["huanshi:yes"] = "让诸葛瑾帮忙改判",
 	["huanshi:no"] = "不改判",
 	["hongyuan"] = "弘援",
