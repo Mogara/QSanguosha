@@ -48,7 +48,7 @@ public:
         static QHash<QString, int*> _m_fontBank;
     };
 
-    class QSanShadowTextFont : QSanSimpleTextFont
+    class QSanShadowTextFont : public QSanSimpleTextFont
     {
     public:
         int m_shadowRadius;
@@ -203,6 +203,17 @@ public:
         QRect m_cancelButtonArea;
         QRect m_discardButtonArea;
         QRect m_trustButtonArea;
+        QSize m_skillButtonsSize[3];
+        QRect m_skillTextArea[3];
+        QSanShadowTextFont m_skillTextFonts[3];
+        QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES *
+                                 QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
+        QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES *
+                                       QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
+
+        QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state,
+                                            QSanInvokeSkillButton::SkillType type,
+                                            QSanInvokeSkillButton::SkillButtonWidth width) const;        
     };
 
     struct CommonLayout
@@ -245,7 +256,11 @@ public:
     QString getCardMainPixmapPath(const QString &cardName) const;
     QString getGeneralPixmapPath(const QString &generalName, GeneralIconSize size) const;
 
-    QPixmap getButtonPixmap(const QString &buttonName, QSanButton::ButtonState state) const;
+    QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
+    QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
+    QPixmap getSkillButtonPixmap(QSanButton::ButtonState state,
+                                 QSanInvokeSkillButton::SkillType type, 
+                                 QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
@@ -265,11 +280,13 @@ public:
 
     // button
     static const char* S_SKIN_KEY_BUTTON;
-    static const char* S_SKIN_DASHBOARD_BUTTON_SET_BG;
+    static const char* S_SKIN_KEY_DASHBOARD_BUTTON_SET_BG;
     static const char* S_SKIN_KEY_BUTTON_DASHBOARD_CONFIRM;
     static const char* S_SKIN_KEY_BUTTON_DASHBOARD_CANCEL;
     static const char* S_SKIN_KEY_BUTTON_DASHBOARD_DISCARD;
     static const char* S_SKIN_KEY_BUTTON_DASHBOARD_TRUST;
+    static const char* S_SKIN_KEY_PLATTER;
+    static const char* S_SKIN_KEY_BUTTON_SKILL;
 
     // player container
     static const char* S_SKIN_KEY_MAINFRAME;

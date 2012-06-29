@@ -116,6 +116,11 @@ void Dashboard::_createRight()
     _paintPixmap(_m_rightFrame, rect, 
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), this);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
+    _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
+    QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
+    _m_skillDock->setPos(avatar.left(), avatar.bottom() + 
+                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height());
+    _m_skillDock->setWidth(avatar.width());
 }
 
 void Dashboard::_updateFrames()
@@ -301,6 +306,11 @@ QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool toLeft){
     proxy_widget->setParentItem(toLeft ? _m_leftFrame : _m_rightFrame);
     proxy_widget->setPos(x, -32);
     return proxy_widget;
+}
+
+QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
+{
+    return _m_skillDock->addSkillButtonByName(skillName);
 }
 
 QPushButton *Dashboard::createButton(const QString &name){
@@ -546,6 +556,15 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     updatePending();
     // adjustCards(false);
     m_mutexEnableCards.unlock();
+}
+
+void Dashboard::removeSkillButton(const QString &skillName)
+{
+    QSanSkillButton* btn = _m_skillDock->removeSkillButtonByName(skillName);
+    if (getFilter() == btn->getSkill()){
+        setFilter(NULL);
+    }
+    delete btn;    
 }
 
 void Dashboard::stopPending(){

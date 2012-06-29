@@ -17,12 +17,9 @@ const char* QSanRoomSkin::S_SKIN_KEY_COMMON = "common";
 const char* QSanRoomSkin::S_SKIN_KEY_DASHBOARD = "dashboard";
 
 // buttons
-const char* QSanRoomSkin::S_SKIN_KEY_BUTTON = "button-%1-%2";
-const char* QSanRoomSkin::S_SKIN_DASHBOARD_BUTTON_SET_BG = "dashboardButtonSetBg";
-const char* QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_CONFIRM = "dashboardConfirm";
-const char* QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_CANCEL = "dashboardCancel";
-const char* QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_DISCARD = "dashboardDiscard";
-const char* QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_TRUST = "dashboardTrust";
+const char* QSanRoomSkin::S_SKIN_KEY_BUTTON = "button-%1";
+const char* QSanRoomSkin::S_SKIN_KEY_DASHBOARD_BUTTON_SET_BG = "dashboardButtonSetBg";
+const char* QSanRoomSkin::S_SKIN_KEY_BUTTON_SKILL = "skill";
 
 // player container
 const char* QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON = "%1Equip-%2";
@@ -65,7 +62,7 @@ QHash<QString, int*> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
-    //m_font = QFont(toQString(arg[0]), arg[1].asInt(), arg[2].asInt());
+    // m_font = QFont(toQString(arg[0]), arg[1].asInt(), arg[2].asInt());
     m_vertical = false;
     QString fontPath = toQString(arg[0]);
     if (fontPath.startsWith("@"))
@@ -189,31 +186,53 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem* pixm
     pixmapItem->setPos(pos.x(), pos.y());
 }
 
-QPixmap QSanRoomSkin::getButtonPixmap(const QString &buttonName, QSanButton::ButtonState state) const
+QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
+                                          const QString &buttonName,
+                                          QSanButton::ButtonState state) const
 {
-    QString key;
+    const char* key;
+    QString qkey = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(groupName);
+    QByteArray arr = qkey.toAscii();
+    key = arr.constData();
+    if (!isImageKeyDefined(key)) return QString();
+    QString path = toQString(_m_imageConfig[key]);
+    QString stateKey;
     if (state == QSanButton::S_STATE_DISABLED)
-    {
-        key = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(buttonName).arg("disabled");
-        if (isImageKeyDefined(key)) return getPixmap(key);
-    }
+        stateKey = "disabled";
     else if (state == QSanButton::S_STATE_DOWN)
-    {
-        key = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(buttonName).arg("down");
-        if (isImageKeyDefined(key)) return getPixmap(key);
-        // fall through and use "up" if we can't find down image
-    }
+        stateKey = "down";
     else if (state == QSanButton::S_STATE_HOVER)
-    {
-        key = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(buttonName).arg("hover");
-        if (isImageKeyDefined(key)) return getPixmap(key);
-        // fall through and use "up" if we can't find hover image
+        stateKey = "hover";
+    else if (state == QSanButton::S_STATE_UP)
+        stateKey = "normal";
+    else return QString(); // older Qt version cries for non-zero QPixmap...
+    return path.arg(buttonName).arg(stateKey);
+}
+
+QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state,
+                                           QSanInvokeSkillButton::SkillType type, 
+                                           QSanInvokeSkillButton::SkillButtonWidth width) const
+{
+    QString path = getButtonPixmapPath(S_SKIN_KEY_BUTTON_SKILL,
+        QSanInvokeSkillButton::getSkillTypeString(type), state);
+    if (path.isNull())
+        return QPixmap(1, 1); // older Qt version cries for non-zero QPixmap...
+    else {
+        QString arg2;
+        if (width == QSanInvokeSkillButton::S_WIDTH_NARROW) arg2 = "3";
+        else if (width == QSanInvokeSkillButton::S_WIDTH_MED) arg2 = "2";
+        else if (width == QSanInvokeSkillButton::S_WIDTH_WIDE) arg2 = "1";
+        return getPixmapFromFileName(path.arg(arg2));        
     }
-    
-    key = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(buttonName).arg("up");
-    if (isImageKeyDefined(key))
-        return getPixmap(key);
-    else return QPixmap(1, 1); // older Qt version cries for non-zero QPixmap...
+}
+
+QPixmap QSanRoomSkin::getButtonPixmap(const QString &groupName,
+                const QString &buttonName, QSanButton::ButtonState state) const
+{
+    QString path = getButtonPixmapPath(groupName, buttonName, state);
+    if (path.isNull())
+        return QPixmap(1, 1); // older Qt version cries for non-zero QPixmap...
+    else return getPixmapFromFileName(path);
 }
 
 QPixmap QSanRoomSkin::getCardFramePixmap(const QString &frameType) const
@@ -587,6 +606,18 @@ bool IQSanComponentSkin::_tryParse(const QString &str, Qt::Alignment &align)
     
     return true;
 }
+
+QSanRoomSkin::QSanShadowTextFont 
+QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state,
+                                                QSanInvokeSkillButton::SkillType type,
+                                                QSanInvokeSkillButton::SkillButtonWidth width) const
+{ 
+    int i = QSanButton::S_NUM_BUTTON_STATES * (int)type + (int)state;
+    QSanShadowTextFont font = m_skillTextFonts[width];
+    font.m_color = m_skillTextColors[i];
+    font.m_shadowColor = m_skillTextShadowColors[i];
+    return font;
+}
     
 bool QSanRoomSkin::_loadLayoutConfig()
 {
@@ -732,6 +763,43 @@ bool QSanRoomSkin::_loadLayoutConfig()
     tryParse(config["cancelButtonArea"], _m_dashboardLayout.m_cancelButtonArea);
     tryParse(config["discardButtonArea"], _m_dashboardLayout.m_discardButtonArea);
     tryParse(config["trustButtonArea"], _m_dashboardLayout.m_trustButtonArea);
+    config = _m_layoutConfig["skillButton"];
+    for (int i = 0; i < 3; i++)
+    {
+        _m_dashboardLayout.m_skillButtonsSize[i].setHeight(config["height"].asInt());
+        _m_dashboardLayout.m_skillButtonsSize[i].setWidth(config["width"][i].asInt());
+        tryParse(config["textArea"][i], _m_dashboardLayout.m_skillTextArea[i]);
+        _m_dashboardLayout.m_skillTextFonts[i].tryParse(config["textFont"][i]);
+    }
+    for (int i = 0; i < 5; i++)
+    {
+        char* key;
+        switch((QSanInvokeSkillButton::SkillType)i)
+        {
+        case QSanInvokeSkillButton::S_SKILL_AWAKEN:
+            key = "awakenFontColor";
+            break;
+        case QSanInvokeSkillButton::S_SKILL_COMPULSORY:
+            key = "compulsoryFontColor";
+            break;
+        case QSanInvokeSkillButton::S_SKILL_FREQUENT:
+            key = "frequentFontColor";
+            break;
+        case QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL:
+            key = "oneoffFontColor";
+            break;
+        case QSanInvokeSkillButton::S_SKILL_PROACTIVE:
+            key = "proactiveFontColor";
+            break;
+        }
+        for (int j = 0; j < 4; j++)
+        {
+            int index = i * 4 + j;
+            tryParse(config[key][j][0], _m_dashboardLayout.m_skillTextColors[index]);
+            tryParse(config[key][j][1], _m_dashboardLayout.m_skillTextShadowColors[index]);
+        }
+    }
+    
     return true;
 }
 
