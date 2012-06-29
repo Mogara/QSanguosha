@@ -1,5 +1,6 @@
 #include "GeneralCardContainerUI.h"
 #include <QParallelAnimationGroup>
+#include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
 #include <qpushbutton.h>
 #include <qtextdocument.h>
@@ -208,10 +209,12 @@ void PlayerCardContainer::updateAvatar()
                          G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK)
                                                .arg(kingdom)),
                          this->_getAvatarParent());
+            QString name = Sanguosha->translate("&" + general->objectName());
+            if (name.startsWith("&"))
+                name = Sanguosha->translate(general->objectName());
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, 
                                                   _m_layout->m_avatarNameArea,
-                                                  Qt::AlignLeft | Qt::AlignJustify,
-                                                  Sanguosha->translate(general->objectName()));
+                                                  Qt::AlignLeft | Qt::AlignJustify, name);
         }        
     } else {
         _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea,
@@ -790,6 +793,7 @@ void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(event->button() == Qt::RightButton)return;
     QGraphicsItem* item = getMouseClickReceiver();
     if (item != NULL && item->isUnderMouse() && isEnabled() &&
         (flags() & QGraphicsItem::ItemIsSelectable))

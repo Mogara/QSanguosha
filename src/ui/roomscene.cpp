@@ -406,7 +406,7 @@ QGraphicsItem *RoomScene::createDashboardButtons(){
 }
 
 void RoomScene::createExtraButtons(){
-    // @todo: this complication must be entangled... We cannot tolerate
+    // @todo: this complication must be disentangled... We cannot tolerate
     // something created by dashboard, forward to roomscene, and push back
     // to dashboard again...
     m_reverseSelectionButton = dashboard->createButton("reverse-select");
@@ -829,10 +829,13 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     updateTable();
 
+    //feature changed
+    /*
     for(int i = 0; i < photos.length(); i++){
         Photo *photo = photos.at(i);
         photo->setOrder(photo->getPlayer()->getSeat());
     }
+    */
         
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
@@ -979,11 +982,16 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         const ClientPlayer *player = itor.value();
 
         if(item->isSelected())
+        {
+            Photo* photo = qobject_cast<Photo*>(item);
+            if(photo && card)
+                photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
             continue;
+        }
 
         bool enabled = (card == NULL) || 
                        (!Sanguosha->isProhibited(Self, player, card)
-                       && card->targetFilter(selected_targets, player, Self));
+                       && card->targetFilterMultiple(selected_targets, player, Self)>0);
         
         QGraphicsItem* animationTarget = item->getMouseClickReceiver();
         if (enabled)
@@ -992,7 +1000,13 @@ void RoomScene::updateTargetsEnablity(const Card *card){
                 !animationTarget->graphicsEffect()->inherits("SentbackEffect"))
             animations->sendBack(animationTarget);
         
-        if (card) item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        if (card)
+        {
+            item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+            Photo* photo = qobject_cast<Photo*>(item);
+            if(photo)
+                photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
+        }
     }
 }
 
@@ -1008,7 +1022,7 @@ void RoomScene::updateSelectedTargets(){
         if(item->isSelected()){
             selected_targets.append(player);
         }else{
-            selected_targets.removeOne(player);
+            selected_targets.removeAll(player);
         }
 
 
@@ -1108,6 +1122,11 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     }
 }
 
+
+//THIS FUNCTION CAUSES CRASH ASSOCIATED WITH RIGHT MOUSE BUTTON.
+//THE FEATURE PROVIDED BY THIS FUNCTION IS NOT DESIRABLE.
+/*
+
 void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     QGraphicsScene::contextMenuEvent(event);
 
@@ -1163,6 +1182,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         }
     }
 }
+*/
 
 void RoomScene::chooseGeneral(const QStringList &generals){
     QApplication::alert(main_window);
@@ -3291,17 +3311,16 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
     QString word = args.first();
     word = Sanguosha->translate(word);
 
-    QGraphicsRectItem *lightbox = addRect(main_window->rect());
+    QRect rect = main_window->rect();
+    QGraphicsRectItem *lightbox = addRect(rect);
 
-    lightbox->setBrush(QColor(0x20, 0x20, 0x20));
+    lightbox->setBrush(QColor(20, 20, 20, 120));
 
     QGraphicsTextItem *line = addText(word, Config.BigFont);
     line->setDefaultTextColor(Qt::white);
     QRectF line_rect = line->boundingRect();
-    line->setPos(-line_rect.width()/2, -line_rect.height());
-
     line->setParentItem(lightbox);
-    line->setPos(lightbox->mapFromScene(line->x(), line->y()));
+    line->setPos(m_tableCenterPos - line_rect.center());        
 
     QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
     appear->setStartValue(0.0);

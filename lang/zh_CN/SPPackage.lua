@@ -45,6 +45,7 @@ return {
 
 	["#sp_diaochan"] = "绝世的舞姬",
 	["sp_diaochan"] = "SP貂蝉",
+	["&sp_diaochan"] = "貂蝉",
 	["illustrator:sp_diaochan"] = "巴萨小马",
 	["tuoqiao"] = "脱壳",
 	[":tuoqiao"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP貂蝉",
@@ -52,6 +53,7 @@ return {
 
 	["#sp_sunshangxiang"] = "梦醉良缘",
 	["sp_sunshangxiang"] = "SP孙尚香",
+	["&sp_sunshangxiang"] = "孙尚香",
 	["illustrator:sp_sunshangxiang"] = "木美人",
 	["chujia"] = "出嫁",
 	[":chujia"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
@@ -59,6 +61,7 @@ return {
 
 	["#sp_guanyu"] = "汉寿亭侯",
 	["sp_guanyu"] = "SP关羽",
+	["&sp_guanyu"] = "关羽",
 	["illustrator:sp_guanyu"] = "LiuHeng",
 	["danji"] = "单骑",
 	[":danji"] = "<b>觉醒技</b>，回合开始阶段，若你的手牌数大于你当前的体力值，且本局主公为曹操时，你须减1点体力上限并永久获得技能“马术”。",
@@ -73,6 +76,7 @@ return {
 	
 	["#sp_jiaxu"] = "算无遗策",
 	["sp_jiaxu"] = "SP贾诩",
+	["&sp_jiaxu"] = "贾诩",
 	["illustrator:sp_jiaxu"] = "雪君S",
 	["guiwei"] = "归魏",
 	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
@@ -80,6 +84,7 @@ return {
 	
 	["#sp_pangde"] = "枱榇之悟",
 	["sp_pangde"] = "SP庞德",
+	["&sp_pangde"] = "庞德",
 	["illustrator:sp_pangde"] = "天空之城",
 	["pangde_guiwei"] = "归魏",
 	[":pangde_guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP庞德，势力为魏",
@@ -87,6 +92,7 @@ return {
 
 	["#sp_machao"] = "西凉的猛狮",
 	["sp_machao"] = "SP马超",
+	["&sp_machao"] = "马超",
 	["illustrator:sp_machao"] = "天空之城",
 	["fanqun"] = "返群",
 	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
@@ -96,9 +102,11 @@ return {
 
 	["#shenlvbu1"] = "最强神话",
 	["shenlvbu1"] = "虎牢关吕布",
+	["&shenlvbu1"] = "最强神话",
 	["illustrator:shenlvbu1"] = "LiuHeng",
 	["#shenlvbu2"] = "暴怒的战神",
 	["shenlvbu2"] = "虎牢关吕布",
+	["&shenlvbu2"] = "暴怒战神",
 	["illustrator:shenlvbu2"] = "LiuHeng",
 	["xiuluo"] = "修罗",
 	[":xiuluo"] = "回合开始阶段开始时，你可以弃置一张手牌，若如此做，你弃置你判定区里的一张与你弃置手牌同花色的延时类锦囊牌。",

@@ -10,7 +10,7 @@ neoluoyi_skill.getTurnUseCard=function(self)
 	local equipnum = 0
 	self:sort(self.enemies,"hp")
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not (card:inherts("Weapon") and self:hasEquip(card))  then
+		if card:inherits("EquipCard") and not (card:inherits("Weapon") and self:hasEquip(card))  then
 			equipnum = equipnum + 1
 		end
 	end
@@ -56,6 +56,8 @@ sgs.ai_skill_cardask["@luoyi-discard"] = function(self, data)
 	end
 	return "."
 end
+
+sgs.ai_use_priority.LuoyiCard = 9.2
 
 local neofanjian_skill={}
 neofanjian_skill.name="neofanjian"

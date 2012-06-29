@@ -214,7 +214,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
         if(damage.card && damage.card->inherits("Slash") && !zhurong->isKongcheng()
-            && !target->isKongcheng() && target != zhurong && !damage.chain){
+            && !target->isKongcheng() && target != zhurong && !damage.chain && !damage.transfer){
             Room *room = zhurong->getRoom();
             if(room->askForSkillInvoke(zhurong, objectName(), data)){
                 room->broadcastSkillInvoke(objectName(), 1);
@@ -256,7 +256,7 @@ public:
 
                 for(i = 0; i < x; i++){
                     int card_id = room->drawCard();
-                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, menghuo, Player::PlaceTable,
+                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::PlaceTable,
                         CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), QString(), "zaiqi", QString()), true);
                     room->getThread()->delay();
 
@@ -417,7 +417,7 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
     return to_select->getHandcardNum() == Self->getMark("haoshi");
 }
 
-void HaoshiCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
+void HaoshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *beggar = targets.first();
 
     room->moveCardTo(this, beggar, Player::PlaceHand, false);
@@ -924,7 +924,8 @@ public:
                 dongzhuos << p;
             }
         }
-
+        if(dongzhuos.empty())
+            return false;
         foreach(ServerPlayer *dongzhuo, dongzhuos){
             QVariant who = QVariant::fromValue(dongzhuo);
             if(player->askForSkillInvoke(objectName(), who)){

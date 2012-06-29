@@ -40,31 +40,43 @@ protected:
     }
 };
 
-class Hongyuan:public TriggerSkill{
+class Hongyuan:public DrawCardsSkill{
 public:
-    Hongyuan():TriggerSkill("hongyuan"){
-        events << PhaseChange;
+    Hongyuan():DrawCardsSkill("hongyuan"){
         frequency = NotFrequent;
         view_as_skill = new HongyuanViewAsSkill;
     }
 
-
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *zhugejin, QVariant &data) const{
-        if(zhugejin->getPhase() == Player::Draw && room->askForSkillInvoke(zhugejin, objectName())){
+    virtual int getDrawNum(ServerPlayer *zhugejin, int n) const{
+        Room *room = zhugejin->getRoom();
+        if(room->askForSkillInvoke(zhugejin, objectName())){
             room->broadcastSkillInvoke(objectName());
+            room->setPlayerFlag(zhugejin, "Invoked");
+            return n - 1;
+        }else
+            return n;
+    }
+};
+
+class HongyuanAct: public TriggerSkill{
+public:
+    HongyuanAct():TriggerSkill("#hongyuan"){
+        events << CardDrawnDone;
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhugejin, QVariant &data) const{
+        if(zhugejin->getPhase() == Player::Draw && zhugejin->hasFlag("Invoked")){
+            room->setPlayerFlag(zhugejin, "-Invoked");
             if(ServerInfo.GameMode == "06_3v3"){
-                zhugejin->drawCards(1);
                 foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
                     if(AI::GetRelation3v3(zhugejin, other) == AI::Friend)
                         other->drawCards(1);
                 }
 
             }else{
-                zhugejin->drawCards(1);
                 if(!room->askForUseCard(zhugejin, "@@hongyuan", "@hongyuan"))
                    zhugejin->drawCards(1);
             }
-            return true;
         }
         return false;
     }
@@ -126,7 +138,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->isKongcheng();
+        return TriggerSkill::triggerable(target) && !target->isNude();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -242,7 +254,9 @@ Special3v3Package::Special3v3Package():Package("Special3v3")
     General *zhugejin = new General(this, "zhugejin", "wu", 3, true);
     zhugejin->addSkill(new Huanshi);
     zhugejin->addSkill(new Hongyuan);
+    zhugejin->addSkill(new HongyuanAct);
     zhugejin->addSkill(new Mingzhe);
+    related_skills.insertMulti("hongyuan", "#hongyuan");
 
     addMetaObject<HuanshiCard>();
     addMetaObject<HongyuanCard>();

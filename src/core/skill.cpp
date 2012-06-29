@@ -32,6 +32,14 @@ QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
 
+QString Skill::getNotice(int index) const{
+    if(index == -1)
+        return Sanguosha->translate("~" + objectName());
+    else
+        return Sanguosha->translate(QString("~%1%2").arg(objectName()).arg(index));
+    return QString();
+}
+
 QString Skill::getText() const{
     QString skill_name = Sanguosha->translate(objectName());
 
@@ -59,19 +67,17 @@ int Skill::getEffectIndex(const ServerPlayer *, const Card *) const{
 }
 
 void Skill::initMediaSource(){
-    sources.clear();
-
-    int i;
+    sources.clear();int i;
     for(i=1; ;i++){
-        QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
+		QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
         if(QFile::exists(effect_file))
-            sources << effect_file;
+			sources << effect_file;
         else
             break;
     }
 
     if(sources.isEmpty()){
-        QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
+		QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
         if(QFile::exists(effect_file))
             sources << effect_file;
     }

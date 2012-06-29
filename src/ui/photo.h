@@ -30,7 +30,9 @@ public:
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
     void showSkillName(const QString &skill_name);
-    void setOrder(int order);
+    void setOrder();
+    inline int getOrder(){ return order;}
+    void setOrderLimit(int order_limit);
 
     enum FrameType{
         S_FRAME_PLAYING,
@@ -61,14 +63,23 @@ protected:
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_PHOTO; }
     virtual void _adjustComponentZValues();
     bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
     bool _m_isReadyIconVisible;
+    int order,order_limit;
     QGraphicsPixmapItem *_m_mainFrame;
     QGraphicsPixmapItem *order_item;
     QGraphicsPixmapItem *emotion_item, *_m_skillNameItem;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
+
+private slots:
+    inline void resetOrder(){ if(canReset)order = isSelected(); setOrder();}
+private:
+    bool canReset;
 };
 
 #endif // PHOTOBACK_H

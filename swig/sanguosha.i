@@ -142,6 +142,7 @@ public:
     bool hasSkill(const char *skill_name) const;
     bool hasLordSkill(const char *skill_name) const;
     bool hasInnateSkill(const char *skill_name) const;
+    bool loseSkills() const;
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
@@ -349,6 +350,7 @@ struct DamageStruct{
     int damage;
     Nature nature;
     bool chain;
+	bool transfer;
 };
 
 struct CardEffectStruct{
@@ -886,14 +888,14 @@ public:
     Card::Suit askForSuit(ServerPlayer *player, const char *reason);
     QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const char *skill_name, const QVariant &data = QVariant());
-    QString askForChoice(ServerPlayer *player, const char *skill_name, const char *choices);
+    QString askForChoice(ServerPlayer *player, const char *skill_name, const char *choices, const QVariant &data = QVariant());
     bool askForDiscard(ServerPlayer *target, const char *reason, int discard_num, int min_num, bool optional = false, bool include_equip = false);
     const Card *askForExchange(ServerPlayer *player, const char *reason, int discard_num);
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
     const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant());
-    bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt);
+    bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);

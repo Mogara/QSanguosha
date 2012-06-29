@@ -254,7 +254,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                         targetfix--;
                 }
                 if(card_use.from && !card_use.to.empty()){
-                    foreach(ServerPlayer *p, room->getAlivePlayers()){
+                    foreach(ServerPlayer *p, room->getAllPlayers()){
                         thread->trigger(TargetConfirmed, room, p, data);
                     }
                 }
@@ -274,7 +274,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *p, use.to)
                 if(p->getMark("qinggang") > 0)
-                    p->setMark("qinggang", 0);;
+                    p->setMark("qinggang", 0);
             room->clearCardFlag(use.card);
 
             break;
@@ -405,38 +405,42 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             if(!chained)
                 break;
 
-            if(damage.to->isChained() && damage.nature != DamageStruct::Normal){
-                room->setPlayerProperty(damage.to, "chained", false);
-                room->setPlayerFlag(damage.to, "chained");
+            if(player->isChained() && damage.nature != DamageStruct::Normal){
+                room->setPlayerProperty(player, "chained", false);
+                room->setPlayerFlag(player, "chained");
 
                 LogMessage log;
                 log.type = "#IronChainDamage";
-                log.from = damage.to;
+                log.from = player;
                 room->sendLog(log);
-
-                // iron chain effect
-                QList<ServerPlayer *> chained_players = room->getAllPlayers();
-                foreach(ServerPlayer *chained_player, chained_players){
-                    if(chained_player->isChained()){
-
-                        DamageStruct chain_damage = damage;
-                        chain_damage.to = chained_player;
-                        chain_damage.chain = true;
-
-                        room->damage(chain_damage);
-                    }
-                }
             }
             break;
         }
 
     case DamageComplete:{
+            DamageStruct damage = data.value<DamageStruct>();
             if(room->getMode() == "02_1v1" && player->isDead()){
                 QString new_general = player->tag["1v1ChangeGeneral"].toString();
                 if(!new_general.isEmpty())
                     changeGeneral1v1(player);
             }
+            if(player->hasFlag("chained")){
+                room->setPlayerFlag(player, "-chained");
+                // iron chain effect
+                if(!damage.chain){
+                    QList<ServerPlayer *> chained_players = room->getAllPlayers();
+                    foreach(ServerPlayer *chained_player, chained_players){
+                        if(chained_player->isChained()){
 
+                            DamageStruct chain_damage = damage;
+                            chain_damage.to = chained_player;
+                            chain_damage.chain = true;
+
+                            room->damage(chain_damage);
+                        }
+                    }
+                }
+            }
             break;
         }
 
@@ -501,7 +505,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
     case SlashMissed:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.to->getMark("qinggang") > 0)
-                effect.to->loseMark("qinggang");
+                effect.to->setMark("qinggang", 0);
             break;
         }
 

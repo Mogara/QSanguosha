@@ -298,7 +298,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
-           !damage.chain && player->askForSkillInvoke(objectName(), data)){
+           !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)){
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
             judge.good = false;
@@ -548,6 +548,8 @@ public:
         if (handang == NULL) return false;
 
         ServerPlayer *current = room->getCurrent();
+        if(!current || current->isDead())
+            return false;
         if(event == AskForPeaches  && current->objectName() != handang->objectName()){
             DyingStruct dying = data.value<DyingStruct>();
             if(dying.who->getHp() > 0 || handang->isNude() ||

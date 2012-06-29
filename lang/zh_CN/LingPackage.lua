@@ -32,16 +32,17 @@ return {
 	["yishi"] = "义释",
 	[":yishi"] = "每当你使用红桃【杀】对目标角色造成伤害时，你可以防止此伤害，改为获得其区域里的一张牌。",
 	["#Yishi"] = "%from 发动【%arg】，要捉放%to 了。",
+	["designer:neo_guanyu"] = "凌天翼",
 	
 	["#neo_zhangfei"] = "万夫不当",
 	["neo_zhangfei"] = "翼张飞",
 	["tannang"] = "探囊",
 	[":tannang"] = "<b>锁定技</b>，你计算的与其他角色的距离-X（X为你已损失的体力值）。",
-
+	["designer:neo_zhangfei"] = "凌天翼",
 		
 	["#neo_zhaoyun"] = "少年将军",
 	["neo_zhaoyun"] = "翼赵云",
-
+	["designer:neo_zhaoyun"] = "凌天翼",
 
 
 	["#neo_zhouyu"] = "大都督",
@@ -51,12 +52,15 @@ return {
 
 	["#neo_gongsunzan"] = "白马将军",
 	["neo_gongsunzan"] = "翼公孙瓒",
+	["cv:neo_gongsunzan"] = "桃花僧",
 	["illustrator:neo_gongsunzan"] = "Vincent",
 	["zhulou"] = "筑楼",
 	[":zhulou"] = "回合结束阶段开始时，你可以摸两张牌，然后失去1点体力或弃置一张武器牌。",
 	["@zhulou-discard"] = "请弃置一张武器牌",
 	["zhulou:throw"] = "弃置一张武器牌",
 	["zhulou:losehp"] = "流失1点体力",
-	
+	["designer:neo_gongsunzan"] = "凌天翼",
+	["$zhulou1"] = "易京高楼，易守难攻。",
+	["$zhulou2"] = "快!快!再多加些砖瓦。",
 }
 

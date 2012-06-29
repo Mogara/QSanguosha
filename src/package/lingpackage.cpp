@@ -9,11 +9,7 @@
 
 LuoyiCard::LuoyiCard(){
     once = true;
-    will_throw = true;
-}
-
-bool LuoyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select == Self ;
+    target_fixed = true;
 }
 
 void LuoyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -93,7 +89,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.card && damage.card->inherits("Slash") && damage.card->getSuit() == Card::Heart &&
-           !damage.chain && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
+           !damage.chain && !damage.transfer && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
 
             LogMessage log;
             log.type = "#Yishi";
@@ -102,6 +98,12 @@ public:
             log.to << damage.to;
             room->sendLog(log);
             int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
+            if(room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
+                room->broadcastSkillInvoke("yishi", 1);
+            else if(room->getCardPlace(card_id) == Player::PlaceEquip)
+                room->broadcastSkillInvoke("yishi", 2);
+            else
+                room->broadcastSkillInvoke("yishi", 3);
             CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
             room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
             return true;
@@ -119,6 +121,7 @@ public:
         Room *room = gongsun->getRoom();
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
+			room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
             QString choice = room->askForChoice(gongsun, "zhulou", "throw+losehp");
             if(choice == "losehp" || !room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
                 room->loseHp(gongsun);
@@ -154,7 +157,7 @@ public:
                 target->drawCards(2+target->getLostHp());
                 target->turnOver();
 
-                room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke("jushou");
             }
         }
 
@@ -174,7 +177,7 @@ public:
         QVariant source = QVariant::fromValue(from);
 
         if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke("ganglie");
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");

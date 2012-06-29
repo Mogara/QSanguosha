@@ -184,7 +184,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
     dying.who = player;
     dying.damage = reason;
 
-    QVariant dying_data = QVariant::fromValue(dying);
+    QVariant dying_data = QVariant::fromValue(dying);// be care
     thread->trigger(Dying, this, player, dying_data);
 }
 
@@ -460,7 +460,8 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
     if(jink == NULL)
         thread->trigger(SlashHit, this, effect.from, data);
     else{
-        setEmotion(effect.to, "jink");
+        if (!(jink->getSkillName() == "eight_diagram" || jink->getSkillName() == "bazhen"))
+            setEmotion(effect.to, "jink");
         thread->trigger(SlashMissed, this, effect.from, data);
     }
 }
@@ -730,13 +731,13 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     return invoked;
 }
 
-QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices){
+QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data){
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
     AI *ai = player->getAI();
     QString answer;
     if(ai)
     {
-        answer = ai->askForChoice(skill_name, choices);
+        answer = ai->askForChoice(skill_name, choices, data);
         thread->delay(Config.AIDelay);
     }
     else{
@@ -926,8 +927,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
-    const QVariant &data, TriggerEvent trigger_event)
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, TriggerEvent trigger_event)
 {
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
     const Card *card = NULL;
@@ -943,8 +943,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             card = ai->askForCard(pattern, prompt, data);
             if(card)
                 thread->delay(Config.AIDelay);
-        }else{            
-            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, toJsonArray(pattern, prompt), true);
+        }else{
+            Json::Value ask_str(Json::arrayValue);
+            ask_str[0] = toJsonString(pattern);
+            ask_str[1] = toJsonString(prompt);
+            ask_str[2] = -1;
+            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
             Json::Value clientReply = player->getClientReply();
             if (success && !clientReply.isNull()){
                 card = Card::Parse(toQString(clientReply));
@@ -955,7 +959,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if(card == NULL)
     {
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+"nil"+"_");
-        thread->trigger(ChoiceMade, this,player, decisionData);
+        thread->trigger(ChoiceMade, this, player, decisionData);
         return NULL;
     }
 
@@ -1011,7 +1015,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             thread->trigger(CardResponsed, this, player, card_star);
         }
         else if(trigger_event == CardDiscarded)
-            thread->trigger(CardResponsed, this, player, card_star);
+            thread->trigger(CardDiscarded, this, player, card_star);
 
     }else if(continuable)
         return askForCard(player, pattern, prompt);
@@ -1019,7 +1023,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     return card;
 }
 
-bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){    
+bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index){
     notifyMoveFocus(player, S_COMMAND_USE_CARD);
     CardUseStruct card_use;
     bool isCardUsed = false;
@@ -1035,12 +1039,20 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
             thread->delay(Config.AIDelay);
         }
     }
-    else if (doRequest(player, S_COMMAND_USE_CARD, toJsonArray(pattern, prompt), true))
+    else
     {
-        Json::Value clientReply = player->getClientReply();
-        isCardUsed = !clientReply.isNull();
-        if (isCardUsed && card_use.tryParse(clientReply, this))                    
-            card_use.from = player;                        
+        Json::Value ask_str(Json::arrayValue);
+        ask_str[0] = toJsonString(pattern);
+        ask_str[1] = toJsonString(prompt);
+        ask_str[2] = notice_index;
+        bool success = doRequest(player, S_COMMAND_USE_CARD, ask_str, true);
+        if(success)
+        {
+            Json::Value clientReply = player->getClientReply();
+            isCardUsed = !clientReply.isNull();
+            if (isCardUsed && card_use.tryParse(clientReply, this))
+                card_use.from = player;
+        }
     }
 
     if (isCardUsed && card_use.isValid()){
@@ -2508,7 +2520,7 @@ void Room::damage(const DamageStruct &damage_data){
 
     QVariant data = QVariant::fromValue(damage_data);
 
-    if(!damage_data.chain && damage_data.from){
+    if(!damage_data.chain && !damage_data.transfer && damage_data.from){
         // predamage
         if(thread->trigger(Predamage, this, damage_data.from, data))
             return;
@@ -3079,8 +3091,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             moveOneTimeStruct.to_place = cards_move.to_place;
             CardsMoveOneTimeStar move_star = &moveOneTimeStruct;
             QVariant data = QVariant::fromValue(move_star);
-            if(cards_move.to)
-                thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
+            thread->trigger(CardGotOneTime, this, (ServerPlayer*)cards_move.to, data);
         }
         if (cards_move.countAsOneTime) moveOneTimeStruct = CardsMoveOneTimeStruct();
     }

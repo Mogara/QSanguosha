@@ -156,8 +156,7 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty())
         return false;
 
-    if(!subcards.isEmpty() && Self->getWeapon() == Sanguosha->getCard(subcards.first())
-        && !Self->hasFlag("tianyi_success"))
+    if(!subcards.isEmpty() && Self->getWeapon() == Sanguosha->getCard(subcards.first()))
         return Self->distanceTo(to_select) <= 1;
 
     return Self->inMyAttackRange(to_select);
@@ -302,6 +301,7 @@ public:
                 if(shuangxiong->askForSkillInvoke(objectName())){
                     shuangxiong->setFlags("shuangxiong");
 
+                    room->broadcastSkillInvoke("shuangxiong");
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*)");
                     judge.good = true;
@@ -459,10 +459,11 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
+                room->setEmotion(wolong, "armor/eight_diagram");
                 Jink *jink = new Jink(Card::NoSuit, 0);
                 jink->setSkillName(objectName());
                 room->provide(jink);
-                room->setEmotion(wolong, "good");
+                //room->setEmotion(wolong, "good");
                 return true;
             }else
                 room->setEmotion(wolong, "bad");

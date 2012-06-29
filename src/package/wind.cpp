@@ -360,12 +360,12 @@ public:
         Room *room = xiahouyuan->getRoom();
 
         if(xiahouyuan->getPhase() == Player::Judge){
-            if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1")){
+            if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)){
                 xiahouyuan->skip(Player::Draw);
                 return true;
             }
         }else if(xiahouyuan->getPhase() == Player::Play){
-            if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2")){
+            if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2)){
                 return true;
             }
         }
@@ -398,47 +398,31 @@ public:
 class Liegong:public TriggerSkill{
 public:
     Liegong():TriggerSkill("liegong"){
-        events << TargetConfirmed;
+        events << TargetConfirmed << SlashProceed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
+        return true;
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *huangzhong = room->findPlayerBySkillName(objectName());
-        int handcardnum = player->getHandcardNum();
-        bool istarget = false;
-        if(!huangzhong || huangzhong->getPhase() != Player::Play ||
-            huangzhong->objectName() != use.from->objectName() || !use.card->inherits("Slash"))
-            return false;
-        foreach(ServerPlayer *p, use.to){
-            if(player->objectName() == p->objectName()){
-                istarget = true;
-                break;
+    virtual bool trigger(TriggerEvent event , Room* room, ServerPlayer *player, QVariant &data) const{
+        if(event == TargetConfirmed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            bool caninvoke = false;
+            if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
+                && use.to.contains(player) && use.from->getPhase() == Player::Play){
+                   caninvoke = true;
+            }
+            int handcardnum = player->getHandcardNum();
+            if(caninvoke && (handcardnum >= use.from->getHp() || handcardnum <= use.from->getAttackRange()) &&
+               use.from->askForSkillInvoke("liegong", QVariant::fromValue(player))){
+                room->broadcastSkillInvoke(objectName());
+                room->setPlayerFlag(player, "LiegongTarget");
             }
         }
-        if(istarget && (handcardnum >= huangzhong->getHp() || handcardnum <= huangzhong->getAttackRange()) &&
-           huangzhong->askForSkillInvoke("liegong", QVariant::fromValue(player))){
-                room->broadcastSkillInvoke(objectName());
-            room->setPlayerFlag(player, "LiegongTarget");
-        }
-         return false;
-    }
-};
-
-class LiegongHit:public TriggerSkill{
-public:
-    LiegongHit():TriggerSkill("#liegong"){
-        events  << SlashProceed << CardFinished;
-    }
-
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-
-        if(event == SlashProceed){
+        else if(event == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.to->hasFlag("LiegongTarget")){
+            if(effect.from->hasSkill(objectName()) && effect.to->hasFlag("LiegongTarget")){
                 room->slashResult(effect, NULL);
                 return true;
             }
@@ -703,7 +687,7 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(this, effect.from);
     DamageStruct damage = effect.from->tag["TianxiangDamage"].value<DamageStruct>();
     damage.to = effect.to;
-    damage.chain = true;
+    damage.transfer = true;
     room->damage(damage);
 
     if(damage.to->isAlive())
@@ -1112,8 +1096,6 @@ WindPackage::WindPackage()
 
     huangzhong = new General(this, "huangzhong", "shu");
     huangzhong->addSkill(new Liegong);
-    huangzhong->addSkill(new LiegongHit);
-    related_skills.insertMulti("liegong", "#liegong");
 
     weiyan = new General(this, "weiyan", "shu");
     weiyan->addSkill(new Kuanggu);

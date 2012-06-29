@@ -191,7 +191,8 @@ protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
-    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);    
+    //this method causes crashes
+    //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QMutex m_roomMutex;
     QMutex m_zValueMutex;	
 

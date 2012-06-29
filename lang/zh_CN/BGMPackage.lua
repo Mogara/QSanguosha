@@ -5,6 +5,7 @@ return {
 
 	["#bgm_zhaoyun"] = "白马先锋",
 	["bgm_zhaoyun"] = "☆SP赵云",
+	["&bgm_zhaoyun"] = "赵云",
 	["illustrator:bgm_zhaoyun"] = "Vincent",
 	["designer:bgm_zhaoyun"] = "Danny",
 	["chongzhen"] = "冲阵",
@@ -12,6 +13,7 @@ return {
 
 	["#bgm_diaochan"] = "暗黑的傀儡师",
 	["bgm_diaochan"] = "☆SP貂蝉",
+	["&bgm_diaochan"] = "貂蝉",
 	["illustrator:bgm_diaochan"] = "木美人",
 	["designer:bgm_diaochan"] = "Danny",
 	["lihun"] = "离魂",
@@ -19,6 +21,7 @@ return {
 
 	["#bgm_caoren"] = "险不辞难",
 	["bgm_caoren"] = "☆SP曹仁",
+	["&bgm_caoren"] = "曹仁",
 	["illustrator:bgm_caoren"] = "张帅",
 	["designer:bgm_caoren"] = "Danny",
 	["kuiwei"] = "溃围",
@@ -30,6 +33,7 @@ return {
 
 	["#bgm_pangtong"] = "荆楚之高俊",
 	["bgm_pangtong"] = "☆SP庞统",
+	["&bgm_pangtong"] = "庞统",
 	["illustrator:bgm_pangtong"] = "LiuHeng",
 	["designer:bgm_pangtong"] = "Danny",
 	["manjuan"] = "漫卷",
@@ -44,6 +48,7 @@ return {
 	
 	["#bgm_zhangfei"] = "横矛立马",
 	["bgm_zhangfei"] = "☆SP张飞",
+	["&bgm_zhangfei"] = "张飞",
 	["illustrator:bgm_zhangfei"] = "绿豆粥",
 	["designer:bgm_zhangfei"] = "Serendipity",
 	["jie"] = "嫉恶",
@@ -59,7 +64,8 @@ return {
 	
 	["#bgm_lvmeng"] = "国士之风",
 	["bgm_lvmeng"] = "☆SP吕蒙",
-	["illustrator:bgm_lvmeng"] = "yellowkiss",
+	["&bgm_lvmeng"] = "吕蒙",
+	["illustrator:bgm_lvmeng"] = "YellowKiss",
 	["designer:bgm_lvmeng"] = "如水法师卞程",
 	["tanhu"] = "探虎",	
 	[":tanhu"] = "出牌阶段，你可以与一名其他角色拼点。若你赢，你获得以下技能直到会和结束：你与该角色的距离为1.你对该角色使用的非延时类锦囊不能被【无懈可击】抵消，每阶段限一次。",
@@ -67,4 +73,19 @@ return {
 	[":mouduan"] = "<b>转化技</b>，通常状态下，你拥有标记“武”并拥有技能“激昂”和“谦逊”。当你的手牌数为2张或以下时，你须将你的标记翻面为“文”，将该两项技能转化为“英姿”和“克己”。任一角色的回合开始前，你可弃一张牌将标记翻回。",
 	["@wen"] = "文",
 	["@wu"] = "武",
+	
+	["#bgm_liubei"] = "汉昭烈帝",
+	["bgm_liubei"] = "☆SP刘备",
+	["&bgm_liubei"] = "刘备", 
+	["illustrator:bgm_liubei"] = "FOOL头",
+	["designer:bgm_liubei"] = "妄想线条",
+	["zhaolie"] = "昭烈",
+	[":zhaolie"] = "摸牌阶段摸牌时，你可以少摸一张牌，指定你攻击范围内的一名其他角色亮出牌堆顶上3张牌，将其中全部的非基本牌和【桃】置于弃牌堆，该角色进行二选一：你对其造成X点伤害，然后他获得这些基本牌；或他依次弃置X张牌，然后你获得这些基本牌。（X为其中非基本牌的数量）。",
+	["zhaolie:damage"] = "受伤害拿牌",
+	["zhaolie:throw"] = "弃牌",
+	["shichou"] = "誓仇",
+	[":shichou"] = "<b>主公技</b>，<b>限定技</b>，你的回合开始时，你可指定一名蜀国角色并交给其两张牌。本盘游戏中，每当你受到伤害时，改为该角色替你受到等量的伤害，然后摸等量的牌，直至该角色第一次进入濒死状态。",
+	["@hate"] = "誓仇",
+	["hate"] = "誓仇",
+	["#ShichouProtect"] = "%from 的技能【%arg】被触发，%to 代其承受本次伤害。",
 }

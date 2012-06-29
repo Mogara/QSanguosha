@@ -446,7 +446,7 @@ public:
         if(dying.who != sunce)
             return false;
 
-        sunce->getRoom()->askForUseCard(sunce, "@@weidai", "@weidai");
+        room->askForUseCard(sunce, "@@weidai", "@weidai");
 
         return false;
     }

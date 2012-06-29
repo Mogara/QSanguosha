@@ -198,7 +198,7 @@ public:
 
             QList<ServerPlayer *> players = room->getAllPlayers();
             foreach(ServerPlayer *player, players){
-                player->removeMark("qinggang");
+                player->setMark("qinggang", 0);
             }
         }
         else{

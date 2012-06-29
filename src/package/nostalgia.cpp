@@ -32,6 +32,9 @@ public:
         if(card == NULL || !card->isBlack())
             return false;
 
+        //@todo: askForUseCard combines asking and using the card.
+        //animating weapon effect should happen in-between.
+        //we should come back after the askFor methods are restructured.
         room->askForUseCard(player, "slash", "@moon-spear-slash");
 
         return false;

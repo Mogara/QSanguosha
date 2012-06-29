@@ -1700,12 +1700,12 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 	end
 end
 
-function SmartAI:askForChoice(skill_name, choices)
+function SmartAI:askForChoice(skill_name, choices, data)
 	local choice = sgs.ai_skill_choice[skill_name]
 	if type(choice) == "string" then
 		return choice
 	elseif type(choice) == "function" then
-		return choice(self, choices)
+		return choice(self, choices, data)
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
 		if skill and choices:match(skill:getDefaultChoice(self.player)) then
@@ -2784,8 +2784,8 @@ function sgs.getSkillLists(player)
 	local vsnlist = {}
 	local fsnlist = {}
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
-		if askill:inherits("ViewAsSkill") then table.insert(vsnlist, askill:objectName()) end
-		if askill:inherits("FilterSkill") then table.insert(fsnlist, askill:objectName()) end
+		if askill:inherits("ViewAsSkill") and not player:loseSkills() then table.insert(vsnlist, askill:objectName()) end --
+		if askill:inherits("FilterSkill") and not player:loseSkills() then table.insert(fsnlist, askill:objectName()) end  --
 	end
 	return vsnlist, fsnlist
 end

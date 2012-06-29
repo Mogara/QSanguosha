@@ -92,6 +92,7 @@ public:
             return false;
         if(effect.nature == DamageStruct::Normal){
             if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
+                player->getRoom()->setEmotion(player,"weapon/fan");
                 effect.nature = DamageStruct::Fire;
                 data = QVariant::fromValue(effect);
             }
@@ -143,9 +144,10 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
-            damage.to->isKongcheng() && !damage.chain)
+            damage.to->isKongcheng() && !damage.chain && !damage.transfer)
         {
             Room *room = damage.to->getRoom();
+            room->setEmotion(player,"weapon/guding_blade");
 
             LogMessage log;
             log.type = "#GudingBladeEffect";
@@ -178,6 +180,7 @@ public:
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.nature == DamageStruct::Normal){
+                room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -190,6 +193,7 @@ public:
         }else if(event == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card->inherits("AOE")){
+                room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -202,6 +206,7 @@ public:
         }else if(event == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
+				room->setEmotion(player, "armor/vineburn");
                 LogMessage log;
                 log.type = "#VineDamage";
                 log.from = player;
@@ -232,6 +237,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.damage > 1){
+            room->setEmotion(player, "armor/silver_lion");
             LogMessage log;
             log.type = "#SilverLion";
             log.from = player;
@@ -257,6 +263,7 @@ void SilverLion::onUninstall(ServerPlayer *player) const{
         RecoverStruct recover;
         recover.card = this;
         player->getRoom()->recover(player, recover);
+        player->getRoom()->setEmotion(player, "armor/silver_lion");
     }
 }
 
