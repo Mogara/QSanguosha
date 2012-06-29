@@ -853,6 +853,120 @@ public:
     }
 };
 
+YanxiaoCard::YanxiaoCard(){
+}
+
+bool YanxiaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select->getPile("smile").empty();
+}
+
+void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.value(0, source);
+    target->addToPile("smile", this->getEffectiveId());
+}
+
+class YanxiaoViewAsSkill: public OneCardViewAsSkill{
+public:
+    YanxiaoViewAsSkill():OneCardViewAsSkill("yanxiao"){
+
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->getSuit() == Card::Diamond;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return true;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        Card *card = new YanxiaoCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
+};
+
+class Yanxiao: public TriggerSkill{
+public:
+    Yanxiao():TriggerSkill("yanxiao"){
+        events << PhaseChange;
+        view_as_skill = new YanxiaoViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getPhase() == Player::Judge;
+    }
+
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+        QList<const DelayedTrick *> tricks = player->delayedTricks();
+        if(player->getPile("smile").length() > 0){
+            while(!tricks.isEmpty() && player->isAlive()){
+                const DelayedTrick *trick = tricks.takeLast();
+                player->obtainCard(trick);
+            }
+            QList<int> yanxiao(player->getPile("smile"));
+            foreach(int card_id, yanxiao){
+                player->obtainCard(Sanguosha->getCard(card_id));
+            }
+            yanxiao.clear();
+        }
+        return false;
+    }
+};
+
+
+class Anxian: public TriggerSkill{
+public:
+    Anxian():TriggerSkill("anxian"){
+        events << DamageCaused << TargetConfirmed << SlashEffected;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *daqiao, QVariant &data) const{
+        if(event == DamageCaused){
+            DamageStruct damage = data.value<DamageStruct>();
+
+            if(damage.card && damage.card->inherits("Slash") &&
+               !damage.chain && !damage.transfer && !damage.to->isKongcheng()
+                && daqiao->askForSkillInvoke(objectName(), data)){
+
+                LogMessage log;
+                log.type = "#Anxian";
+                log.from = daqiao;
+                log.arg = objectName();
+                room->sendLog(log);
+                room->askForDiscard(damage.to, "anxian", 1, 1);
+                daqiao->drawCards(1);
+                return true;
+            }
+        }
+        else if(event == TargetConfirmed){
+
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(!use.to.contains(daqiao) || !daqiao->hasSkill(objectName()))
+                return false;
+            if(use.card && use.card->inherits("Slash")){
+                if(room->askForCard(daqiao, ".", "@anxian-discard", QVariant(), CardDiscarded)){
+                    daqiao->addMark("anxian");
+                    use.from->drawCards(1);
+                    LogMessage log;
+                    log.type = "#AnxianAvoid";
+                    log.from = use.from;
+                    log.to << daqiao;
+                    log.arg = objectName();
+                    room->sendLog(log);
+                }
+
+            }
+        }
+        else {
+            if(daqiao->getMark("anxian") > 0){
+                daqiao->setMark("anxian", daqiao->getMark("anxian")-1);
+                return true;
+            }
+        }
+        return false;
+    }
+};
 
 BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3);
@@ -890,9 +1004,14 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_liubei->addSkill(new Shichou);
     related_skills.insertMulti("zhaolie", "#zhaolie");
 
+    General *bgm_daqiao = new General(this, "bgm_daqiao", "wu", 3, false);
+    bgm_daqiao->addSkill(new Yanxiao);
+    bgm_daqiao->addSkill(new Anxian);
+
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();
     addMetaObject<TanhuCard>();
+    addMetaObject<YanxiaoCard>();
 }
 
 ADD_PACKAGE(BGM)

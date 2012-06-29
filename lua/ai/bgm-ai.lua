@@ -422,3 +422,66 @@ sgs.ai_skill_playerchosen.shichou = function(self, targets)
 end
 
 sgs.ai_skill_cardchosen.shichou = sgs.ai_skill_cardchosen.lihun
+
+local yanxiao_skill={}
+yanxiao_skill.name="yanxiao"
+table.insert(sgs.ai_skills,yanxiao_skill)
+yanxiao_skill.getTurnUseCard=function(self)
+	return sgs.Card_Parse("@YanxiaoCard=.")
+end
+
+sgs.ai_skill_use_func.YanxiaoCard=function(card,use,self)
+	local cards = self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+	self:sortByUseValue(cards,true)
+
+	local target
+	for _, friend in ipairs(self.friends_noself) do
+		local judges = friend:getJudgingArea()
+		if not judges:isEmpty() and friend:getPile("smile"):isEmpty() then
+			for _, card in ipairs(cards) do
+				if card:getSuit() == sgs.Card_Diamond and self.player:getHandcardNum() > 1 then
+					use.card = sgs.Card_Parse("@YanxiaoCard=" .. card:getEffectiveId())
+					target = friend
+					break
+				end
+			end
+		end
+		if target then break end
+	end
+	if not target and self.player:getPile("smile"):isEmpty() then
+		for _, card in ipairs(cards) do
+			if card:getSuit() == sgs.Card_Diamond  then
+				use.card = sgs.Card_Parse("@YanxiaoCard=" .. card:getEffectiveId())
+				target = self.player
+				break
+			end
+		end
+	if target then
+		if use.to then
+			use.to:append(target)
+		end
+	end
+end
+
+sgs.ai_card_intention.YanxiaoCard = -100
+
+sgs.ai_skill_invoke.anxian = function(self, data)
+	local damage = data:toDamage()
+	local target = damage.to
+	if self:isFriend(target) and not self:hasSkills(sgs.masochism_skill,target) then return true end
+	if self:isEnemy(target) and self:hasSkills(sgs.masochism_skill,target) then return true end
+	if damage.card:hasFlag("drank") then return false end
+	return false 
+end
+
+sgs.ai_skill_cardask["@anxian-discard"] = function(self, data)
+	if self:getCardsNum("Jink") > 0 or self.player:isKongcheng() then return "." end
+	local cards = self.player:getHandcards()
+	cards=sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+
+	return "$" .. cards[1]:getEffectiveId()
+
+	end
+end

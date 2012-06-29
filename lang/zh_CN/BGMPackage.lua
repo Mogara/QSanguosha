@@ -88,4 +88,19 @@ return {
 	["@hate"] = "誓仇",
 	["hate"] = "誓仇",
 	["#ShichouProtect"] = "%from 的技能【%arg】被触发，%to 代其承受本次伤害。",
+	
+	["#bgm_daqiao"] = "韶光易逝",
+	["bgm_daqiao"] = "☆SP大乔",
+	["&bgm_daqiao"] = "大乔",
+	["illustrator:bgm_daqiao"] = "木美人",
+	["designer:bgm_daqiao"] = "Ecauchy",
+	["yanxiao"] = "言笑",	
+	[":yanxiao"] = "出牌阶段你可以将一张方块牌置于一名角色的武将牌上，武将牌上有“言笑”牌的角色下一个判定阶段开始时，获得其判定区内的所有牌及“言笑”牌。",
+	["smile"] = "言笑",
+	["anxian"] = "安闲",
+	[":anxian"] = "每当你使用【杀】对目标角色造成伤害时，你可以防止此次伤害，令其弃置一张手牌，然后你摸一张牌；当你成为【杀】的目标时，你可以弃置一张手牌使之无效，然后该【杀】的使用者摸一张牌。",
+	["#Anxian"] = "%from 发动了技能【%arg】，阻止了本次伤害。",
+	["#AnxianAvoid"] = "%to 的技能【%arg】被触发，%from 对其使用的【杀】无效。",
+	["@anxian-discard"] = "你可以弃置一张手牌能令此【杀】失效",
+
 }
