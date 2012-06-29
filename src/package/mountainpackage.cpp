@@ -265,12 +265,12 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName());
 
-            damage->from->gainMark("@duanchang");
             QList<const Skill *> skills = damage->from->getVisibleSkillList();
             foreach(const Skill *skill, skills){
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
+            damage->from->gainMark("@duanchang");
             if(damage->from->getKingdom() != damage->from->getGeneral()->getKingdom())
                 room->setPlayerProperty(damage->from, "kingdom", damage->from->getGeneral()->getKingdom());
             if(damage->from->getGeneralName() == "zuocif")
@@ -296,7 +296,6 @@ public:
             else if(damage->from->hasSkill("renjie")){
                 damage->from->loseAllMarks("@bear");
             }
-            room->resetAI(damage->from);
         }
 
         return false;
