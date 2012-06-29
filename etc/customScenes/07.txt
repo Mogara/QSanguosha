@@ -2,4 +2,4 @@ general:select  general2:select  role:loyalist  starter:true
     general:wolong  general2:pangtong  maxhp:4  role:lord  equip:fan
     general:yujin  role:rebel
     general:xiahouyuan  role:rebel  equip:vine
-    general:panglingming  role:rebel  equip:vine,axe
+    general:sp_pangde  role:rebel  equip:vine,axe
