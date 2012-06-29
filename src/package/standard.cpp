@@ -90,8 +90,8 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     log.type = "$Install";
     log.card_str = QString::number(getEffectiveId());
     room->sendLog(log);
-
-    room->moveCardTo(this, target, Player::Equip, true);
+    if(room->getCardOwner(getId())->objectName() == target->objectName())
+        room->moveCardTo(this, target, Player::Equip, true);
 }
 
 void EquipCard::onInstall(ServerPlayer *player) const{
