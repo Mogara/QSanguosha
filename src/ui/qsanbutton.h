@@ -132,8 +132,10 @@ public:
     {
         if (button == NULL) return;
         disconnect(button);
-        _m_buttons.removeOne(button);
+        _m_buttons.removeAll(button);
     }
+    // Any one who call the following functions are responsible for
+    // destroying the buttons returned
     QSanSkillButton* addSkillButtonByName(const QString &skillName);
     inline QSanSkillButton* removeSkillButtonByName(const QString &skillName)
     {

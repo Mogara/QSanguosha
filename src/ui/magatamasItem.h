@@ -1,6 +1,6 @@
 #ifndef _MAGATAMAS_ITEM_H
 #define _MAGATAMAS_ITEM_H
-#include <qgraphicsitem.h>
+#include <QGraphicsObject>
 #include <qpixmap.h>
 #include "SkinBank.h"
 
@@ -8,12 +8,8 @@ class MagatamasBoxItem: public QGraphicsObject
 {
     Q_OBJECT
 public:
-    inline MagatamasBoxItem(QGraphicsItem* parent = NULL)
-        : QGraphicsObject(parent)
-    {
-        m_hp = 0;
-        m_maxHp = 0;
-    }
+    MagatamasBoxItem();
+    MagatamasBoxItem(QGraphicsItem* parent);
     inline int getHp() const { return m_hp; }
     void setHp(int hp);
     inline int getMaxHp() const { return m_maxHp; }
@@ -33,7 +29,7 @@ public:
     inline bool isAnchorEnable() { return anchorEnabled; }
     void setIconSize(QSize size);
     inline QSize getIconSize() const { return m_iconSize; }
-    QRectF boundingRect() const;
+    virtual QRectF boundingRect() const;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
 protected:
     void _autoAdjustPos();

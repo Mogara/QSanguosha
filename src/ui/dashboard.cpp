@@ -562,13 +562,13 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     m_mutexEnableCards.unlock();
 }
 
-void Dashboard::removeSkillButton(const QString &skillName)
+QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
 {
     QSanSkillButton* btn = _m_skillDock->removeSkillButtonByName(skillName);
     if (getFilter() == btn->getSkill()){
         setFilter(NULL);
     }
-    delete btn;    
+    return btn;
 }
 
 void Dashboard::stopPending(){

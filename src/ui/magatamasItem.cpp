@@ -4,6 +4,19 @@
 #include <sprite.h>
 #include "SkinBank.h"
 
+MagatamasBoxItem::MagatamasBoxItem() : QGraphicsObject(NULL)
+{
+    m_hp = 0;
+    m_maxHp = 0;
+}
+
+MagatamasBoxItem::MagatamasBoxItem(QGraphicsItem* parent)
+    : QGraphicsObject(parent)
+{
+    m_hp = 0;
+    m_maxHp = 0;
+}
+
 void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
 {
     m_orientation = orientation;

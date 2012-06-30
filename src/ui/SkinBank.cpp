@@ -575,7 +575,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
              keyFile = key.arg(S_SKIN_KEY_DEFAULT);
          }
 
-         QString& fileName = _readImageConfig(keyFile,
+         QString fileName = _readImageConfig(keyFile,
                              clipRegion, clipping, scaleRegion, scaled);
          if (useDefault) fileName = fileName.arg(arg);
          QPixmap pixmap = QSanPixmapCache::getPixmap(totalkey, fileName);
@@ -806,7 +806,7 @@ bool QSanRoomSkin::_loadLayoutConfig()
     }
     for (int i = 0; i < 5; i++)
     {
-        char* key;
+        QString key;
         switch((QSanInvokeSkillButton::SkillType)i)
         {
         case QSanInvokeSkillButton::S_SKILL_AWAKEN:
@@ -824,12 +824,17 @@ bool QSanRoomSkin::_loadLayoutConfig()
         case QSanInvokeSkillButton::S_SKILL_PROACTIVE:
             key = "proactiveFontColor";
             break;
+        default:
+            Q_ASSERT(false);
+            break;
         }
         for (int j = 0; j < 4; j++)
         {
             int index = i * 4 + j;
-            tryParse(config[key][j][0], _m_dashboardLayout.m_skillTextColors[index]);
-            tryParse(config[key][j][1], _m_dashboardLayout.m_skillTextShadowColors[index]);
+            QByteArray arr = key.toAscii();;
+            const char* sKey = arr.constData();
+            tryParse(config[sKey][j][0], _m_dashboardLayout.m_skillTextColors[index]);
+            tryParse(config[sKey][j][1], _m_dashboardLayout.m_skillTextShadowColors[index]);
         }
     }
     

@@ -31,7 +31,7 @@ public:
     QPushButton *createButton(const QString &name);
     QPushButton *addButton(const QString &name, int x, bool from_left);
     
-    void removeSkillButton(const QString &skillName);
+    QSanSkillButton *removeSkillButton(const QString &skillName);
     QSanSkillButton *addSkillButton(const QString &skillName);
     bool isAvatarUnderMouse();
 

@@ -359,7 +359,7 @@ void QSanInvokeSkillDock::update()
     int numButtons = _m_buttons.length();
     int rows = (numButtons - 1) / 3 + 1;
     int rowH = G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
-    int* btnNum = new int[rows];
+    int* btnNum = new int[rows + 1]; // we allocate one more row in case we need it.
     int remainingBtns = numButtons;
     for (int i = 0; i < rows; i++)
     {
@@ -368,21 +368,30 @@ void QSanInvokeSkillDock::update()
     }
 
     // If the buttons in rows are 3, 1, then balance them to 2, 2
-    if (rows >= 2 && btnNum [rows - 1] == 1 && btnNum[rows - 2] == 3)
+    if (rows >= 2)
     {
-        btnNum[rows - 1] = 2;
-        btnNum[rows - 2] = 2;
+        if (btnNum[rows - 1] == 1 && btnNum[rows - 2] == 3)
+        {
+            btnNum[rows - 1] = 2;
+            btnNum[rows - 2] = 2;
+        }
+    }
+    else if (rows == 1 && btnNum[0] == 3)
+    {
+        btnNum[0] = 2;
+        btnNum[1] = 1;
     }
 
+    int m = 0;
     for (int i = 0; i < rows; i++)
     {
-        int rowTop = (- i - 1) * rowH;
+        int rowTop = (- rows + i) * rowH;
         int btnWidth = _m_width / btnNum[i];
         for (int j = 0; j < btnNum[i]; j++)
         {
-            QSanInvokeSkillButton* button = _m_buttons[i * rows + j];
+            QSanInvokeSkillButton* button = _m_buttons[m++];
             button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
-            _m_buttons[i * rows + j]->setPos(btnWidth * j, rowTop);
+            button->setPos(btnWidth * j, rowTop);
         }
     }
     delete btnNum;

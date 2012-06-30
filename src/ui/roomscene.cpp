@@ -2196,6 +2196,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
 
     foreach (QSanSkillButton *button, m_skillButtons){
+        Q_ASSERT(button != NULL);
         const ViewAsSkill* skill = button->getViewAsSkill();
         if (skill != NULL)
             button->setEnabled(skill->isAvailable());
@@ -2909,7 +2910,9 @@ void RoomScene::attachSkill(const QString &skill_name, bool from_left)
 }
 
 void RoomScene::detachSkill(const QString &skill_name){
-    dashboard->removeSkillButton(skill_name);
+    QSanSkillButton* btn = dashboard->removeSkillButton(skill_name);
+    m_skillButtons.removeAll(btn);
+    delete btn;
 }
 
 void RoomScene::viewDistance(){
