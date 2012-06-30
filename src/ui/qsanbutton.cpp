@@ -380,6 +380,7 @@ void QSanInvokeSkillDock::update()
     {
         btnNum[0] = 2;
         btnNum[1] = 1;
+        rows = 2;
     }
 
     int m = 0;
