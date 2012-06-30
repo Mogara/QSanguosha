@@ -723,8 +723,7 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
                 slash_targets--;
             }
         }
-        room->throwCard(slash);
-        room->useCard(use);
+        room->useCard(use, false);
     }else if(!effect.to->isNude()){
         room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to);
     }

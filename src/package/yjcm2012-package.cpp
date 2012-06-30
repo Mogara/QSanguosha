@@ -582,8 +582,7 @@ public:
                             slash_targets--;
                         }
                     }
-					room->throwCard(slash);
-                    room->useCard(use);
+                    room->useCard(use, false);
                 }
             }
         }

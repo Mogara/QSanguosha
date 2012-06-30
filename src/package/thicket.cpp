@@ -717,8 +717,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
                     slash_targets--;
                 }
             }
-            room->throwCard(slash);
-            room->useCard(use);
+            room->useCard(use, false);
         }
         else
            room->loseHp(effect.to);

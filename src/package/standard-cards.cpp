@@ -826,8 +826,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                             slash_targets--;
                         }
                     }
-    				room->throwCard(slash);
-                    room->useCard(use);
+                    room->useCard(use, false);
                 }
                 else{
                     if(killer->getWeapon()){
@@ -861,8 +860,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                             slash_targets--;
                         }
                     }
-					room->throwCard(slash);
-                    room->useCard(use);
+                    room->useCard(use, false);
                 }
             }
             else{
@@ -887,8 +885,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                             slash_targets--;
                         }
                     }
-					room->throwCard(slash);
-                    room->useCard(use);
+                    room->useCard(use, false);
                 }
                 else{
                     if(killer->getWeapon())
