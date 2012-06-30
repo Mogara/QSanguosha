@@ -196,7 +196,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("SavageAssault")){
-			room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName());
             room->setTag("Huoshou", true);
          }
 

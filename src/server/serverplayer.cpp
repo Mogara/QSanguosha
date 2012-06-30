@@ -32,7 +32,7 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const{
-	room->broadcastSkillInvoke(card_name, getGeneral()->isMale());
+    room->broadcastSkillInvoke(card_name, getGeneral()->isMale(), -1);
 }
 
 void ServerPlayer::broadcastSkillInvoke(const Card *card) const{

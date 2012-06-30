@@ -38,7 +38,6 @@
 #include <QTimer>
 #include <QCommandLinkButton>
 #include <QFormLayout>
-#include <QStatusBar>
 #include <qmath.h>
 #include "uiUtils.h"
 
@@ -323,9 +322,6 @@ RoomScene::RoomScene(QMainWindow *main_window):
     skill_dock_layout->setContentsMargins(margins);
     skill_dock_layout->addStretch();
 
-    main_window->statusBar()->setObjectName("skill_bar_container");
-    main_window->statusBar()->show();
-
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);    
@@ -382,20 +378,20 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
 
 QGraphicsItem *RoomScene::createDashboardButtons(){
     QGraphicsItem *widget = new QGraphicsPixmapItem(
-        G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_DASHBOARD_BUTTON_SET_BG)
+        G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_BUTTON_SET_BG)
         .scaled(G_DASHBOARD_LAYOUT.m_buttonSetSize));
 
-    ok_button = new QSanButton(QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_CONFIRM, widget);
+    ok_button = new QSanButton("platter", "confirm", widget);
     ok_button->setRect(G_DASHBOARD_LAYOUT.m_confirmButtonArea);
-    cancel_button = new QSanButton(QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_CANCEL, widget);
+    cancel_button = new QSanButton("platter", "cancel", widget);
     cancel_button->setRect(G_DASHBOARD_LAYOUT.m_cancelButtonArea);
-    discard_button = new QSanButton(QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_DISCARD, widget);
+    discard_button = new QSanButton("platter", "discard", widget);
     discard_button->setRect(G_DASHBOARD_LAYOUT.m_discardButtonArea);
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
     connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
 
-    trust_button = new QSanButton(QSanRoomSkin::S_SKIN_KEY_BUTTON_DASHBOARD_TRUST, widget);
+    trust_button = new QSanButton("platter", "trust", widget);
     trust_button->setStyle(QSanButton::S_STYLE_TOGGLE);
     trust_button->setRect(G_DASHBOARD_LAYOUT.m_trustButtonArea);
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
@@ -426,7 +422,7 @@ void RoomScene::createExtraButtons(){
     connect(m_sortHandcardButton, SIGNAL(clicked()), dashboard, SLOT(sortCards()));
     
     // add free discard button
-    if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
+    /*if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
         m_freeDiscardButton = dashboard->addButton("free-discard",
             m_sortHandcardButton->pos().x() + m_sortHandcardButton->width()
             + _m_roomLayout->m_scenePadding, true);
@@ -436,7 +432,7 @@ void RoomScene::createExtraButtons(){
         connect(m_freeDiscardButton, SIGNAL(clicked()), this, SLOT(doSkillButton()));
 
         skill_buttons << m_freeDiscardButton;
-    }
+    }*/
 }
 
 ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
@@ -1715,87 +1711,21 @@ inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }
 void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     if(ClientInstance->getReplayer())
         return;
-
     // check duplication
-    foreach(QAbstractButton *button, skill_buttons){
-        if(button->objectName() == skill->objectName())
-            return;
-    }
-
-    QAbstractButton *button = NULL;
-
-    if(skill->inherits("TriggerSkill")){
-        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-        switch(trigger_skill->getFrequency()){
-        case Skill::Frequent:{
-                QCheckBox *checkbox = new QCheckBox();
-                checkbox->setObjectName(skill->objectName());
-                checkbox->setChecked(true);
-
-                button = checkbox;
-                break;
-        }
-        case Skill::Limited:
-        case Skill::NotFrequent:{
-                const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-                button = new QPushButton();
-                if(view_as_skill){
-                    button2skill.insert(button, view_as_skill);
-                    connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-                }
-
-                break;
-        }
-
-        case Skill::Wake:
-        case Skill::Compulsory: button = new QPushButton(); break;
-        }
-    }else if(skill->inherits("FilterSkill")){
-        const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
-        if(filter && dashboard->getFilter() == NULL)
-            dashboard->setFilter(filter);        
-        button = new QPushButton();
-
-    }else if(skill->inherits("ViewAsSkill")){
-        button = new QPushButton();
-        button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
-        connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-    }else{
-        button = new QPushButton;
-    }
-
+    QSanSkillButton* btn = dashboard->addSkillButton(skill->objectName());    
     QDialog *dialog = skill->getDialog();
     if(dialog){
         dialog->setParent(main_window, Qt::Dialog);
-        connect(button, SIGNAL(clicked()), dialog, SLOT(popup()));
+        connect(btn, SIGNAL(skill_activated()), dialog, SLOT(popup()));
+        connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));        
+    }
+    if (btn->getViewAsSkill() != NULL)
+    {
+        connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
+        connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
     }
 
-    button->setObjectName(skill->objectName());
-    button->setText(skill->getText());
-    button->setToolTip(skill->getDescription());
-    button->setDisabled(skill->getFrequency() == Skill::Compulsory);
-    //button->setStyleSheet(Config.value("style/button").toString());
-
-    if(skill->isLordSkill())
-        button->setIcon(QIcon("image/system/roles/lord.png"));
-
-    skill_buttons << button;
-    addWidgetToSkillDock(button, from_left);
-}
-
-void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
-    if(widget->inherits("QComboBox"))widget->setFixedHeight(20);
-    else widget->setFixedHeight(26);
-
-    if(!from_left)
-        main_window->statusBar()->addPermanentWidget(widget);
-    else
-        main_window->statusBar()->addWidget(widget);
-}
-
-void RoomScene::removeWidgetFromSkillDock(QWidget *widget){
-    QStatusBar * bar = main_window->statusBar();
-    bar->removeWidget(widget);
+    m_skillButtons.append(btn);
 }
 
 void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
@@ -1839,8 +1769,8 @@ void RoomScene::updateSkillButtons(){
     }
 
     // disable all skill buttons
-    foreach(QAbstractButton *button, skill_buttons)
-        button->setDisabled(true);
+    foreach (QSanSkillButton *button, m_skillButtons)
+        button->setEnabled(false);
 }
 
 void RoomScene::useSelectedCard(){
@@ -2182,15 +2112,17 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     case Client::AskForSkillInvoke:{
             QString skill_name = ClientInstance->getSkillNameToInvoke();
-            foreach(QAbstractButton *button, skill_buttons){
-                if(button->objectName() == skill_name){
-                    QCheckBox *check_box = qobject_cast<QCheckBox *>(button);
-                    if(check_box && check_box->isChecked()){
+            // @todo: refactor this
+            foreach (QSanSkillButton *button, m_skillButtons){
+                if (button->getSkill()->objectName() == skill_name) {
+                    if (button->getStyle() == QSanSkillButton::S_STYLE_TOGGLE
+                        && button->isDown()) {
                         ClientInstance->onPlayerInvokeSkill(true);
                         return;
                     }
                 }
             }
+
             showPromptBox();
             ok_button->setEnabled(true);
             cancel_button->setEnabled(true);
@@ -2266,12 +2198,12 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     }
 
 
-    foreach(QAbstractButton *button, skill_buttons){
-        const ViewAsSkill *skill = button2skill.value(button, NULL);
-        if(skill)
+    foreach (QSanSkillButton *button, m_skillButtons){
+        const ViewAsSkill* skill = button->getViewAsSkill();
+        if (skill != NULL)
             button->setEnabled(skill->isAvailable());
         else
-            button->setEnabled(true);
+            button->setEnabled(false);
     }
 
     if(ServerInfo.OperationTimeout == 0)
@@ -2286,22 +2218,24 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     }
 }
 
-void RoomScene::doSkillButton(){
+void RoomScene::onSkillDeactivated() {
     const ViewAsSkill *current = dashboard->currentSkill();
     if(current){
-        dashboard->stopPending();
-        QAbstractButton *button = button2skill.key(current);
-        if(button)
-            button->setEnabled(true);
+        cancel_button->click();
+        /*dashboard->stopPending();
+        QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
+        Q_ASSERT(button);
+        doCancelButton();*/
     }
+}
 
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
-    const ViewAsSkill *skill = button2skill.value(button, NULL);
+void RoomScene::onSkillActivated() {    
+    QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
+    const ViewAsSkill *skill = button->getViewAsSkill();
 
-    if(skill){
+    if (skill) {
         dashboard->startPending(skill);
 
-        button->setEnabled(false);
         ok_button->setEnabled(false);
         cancel_button->setEnabled(true);
 
@@ -2945,10 +2879,10 @@ void RoomScene::showCard(const QString &player_name, int card_id){
 }
 
 void RoomScene::chooseSkillButton(){
-    QList<QAbstractButton *> enabled_buttons;
-    foreach(QAbstractButton *skill_button, skill_buttons){
-        if(skill_button->isEnabled())
-            enabled_buttons << skill_button;
+    QList<QSanSkillButton *> enabled_buttons;
+    foreach (QSanSkillButton* btn, m_skillButtons){
+        if(btn->isEnabled())
+            enabled_buttons << btn;
     }
 
     if(enabled_buttons.isEmpty())
@@ -2959,9 +2893,9 @@ void RoomScene::chooseSkillButton(){
 
     QVBoxLayout *layout = new QVBoxLayout;
 
-    foreach(QAbstractButton *skill_button, enabled_buttons){
-        QCommandLinkButton *button = new QCommandLinkButton(skill_button->text());
-        connect(button, SIGNAL(clicked()), skill_button, SIGNAL(clicked()));
+    foreach (QSanSkillButton* btn, enabled_buttons) {
+        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(btn->getSkill()->objectName()));
+        connect(button, SIGNAL(clicked()), btn, SIGNAL(clicked()));
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
         layout->addWidget(button);
     }
@@ -2978,25 +2912,7 @@ void RoomScene::attachSkill(const QString &skill_name, bool from_left)
 }
 
 void RoomScene::detachSkill(const QString &skill_name){
-    QMutableListIterator<QAbstractButton *> itor(skill_buttons);
-
-    while(itor.hasNext()){
-        itor.next();
-
-        QAbstractButton *button = itor.value();
-        if(button->objectName() == skill_name){
-            removeWidgetFromSkillDock(button);
-            button2skill.remove(button);
-            button->deleteLater();
-            itor.remove();
-
-            break;
-        }
-    }
-
-    if(dashboard->getFilter() == Sanguosha->getSkill(skill_name)){
-        dashboard->setFilter(NULL);
-    }
+    dashboard->removeSkillButton(skill_name);
 }
 
 void RoomScene::viewDistance(){
@@ -3395,18 +3311,16 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
     QString word = args.first();
     word = Sanguosha->translate(word);
 
-    QGraphicsRectItem *lightbox = addRect(main_window->rect());
+    QRect rect = main_window->rect();
+    QGraphicsRectItem *lightbox = addRect(rect);
 
-    lightbox->setBrush(QColor(0x20, 0x20, 0x20));
-    lightbox->moveBy(-main_window->width()/2, -main_window->height()/2);
+    lightbox->setBrush(QColor(20, 20, 20, 120));
 
     QGraphicsTextItem *line = addText(word, Config.BigFont);
     line->setDefaultTextColor(Qt::white);
     QRectF line_rect = line->boundingRect();
-    line->setPos(-line_rect.width()/2, -line_rect.height());
-
     line->setParentItem(lightbox);
-    line->setPos(lightbox->mapFromScene(line->x(), line->y()));
+    line->setPos(m_tableCenterPos - line_rect.center());        
 
     QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
     appear->setStartValue(0.0);

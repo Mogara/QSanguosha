@@ -236,7 +236,7 @@ void PlayerCardContainer::updateSmallAvatar()
             general->objectName(),
             QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         _paintPixmap(_m_smallAvatarIcon, _m_layout->m_smallAvatarArea,
-                     smallAvatarIcon);
+                     smallAvatarIcon, _getAvatarParent());
         _m_smallAvatarArea->setToolTip(general->getSkillDescription());
         _m_layout->m_smallAvatarNameFont.paintText(
             _m_smallAvatarNameItem, 

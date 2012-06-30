@@ -548,6 +548,8 @@ public:
         if (handang == NULL) return false;
 
         ServerPlayer *current = room->getCurrent();
+        if(!current || current->isDead())
+            return false;
         if(event == AskForPeaches  && current->objectName() != handang->objectName()){
             DyingStruct dying = data.value<DyingStruct>();
             if(dying.who->getHp() > 0 || handang->isNude() ||

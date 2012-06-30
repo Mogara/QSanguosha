@@ -32,6 +32,7 @@ return {
 	["chengxiang"] = "称象",
 	[":chengxiang"] = "每当你受到1次伤害，你可打出X张牌（X小于等于3），它们的点数之和与造成伤害的牌的点数相等，你可令X名角色各恢复1点体力（若其满体力则摸2张牌）",
 	["@chengxiang-card"] = "请打出点数之和为 %arg 的卡牌以发动【称象】技能",
+	["~chengxiang-card"] = "选择若干张牌——点击确定",
 	["conghui"] = "聪慧",
 	[":conghui"] = "<b>锁定技</b>，你将永远跳过你的弃牌阶段",
 	["zaoyao"] = "早夭",
@@ -79,6 +80,7 @@ return {
 	["@lianli-jink"] = "请提供一张闪给你的连理对象",
 	[":lianli-slash"] = "与你处于连理状态的女性角色可以替你出杀",
 	["@lianli-card"] = "请选择一名要连理的对象",
+	["~lianli"] = "选择一名男性角色——点击确定",
 	["#LianliConnection"] = "%from 与 %to 结为连理",
 	["@tied"] = "连理",
 

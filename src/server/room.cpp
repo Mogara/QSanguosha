@@ -927,8 +927,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
-    const QVariant &data, TriggerEvent trigger_event)
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, TriggerEvent trigger_event)
 {
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
     const Card *card = NULL;
@@ -944,8 +943,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             card = ai->askForCard(pattern, prompt, data);
             if(card)
                 thread->delay(Config.AIDelay);
-        }else{            
-            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, toJsonArray(pattern, prompt), true);
+        }else{
+            Json::Value ask_str(Json::arrayValue);
+            ask_str[0] = toJsonString(pattern);
+            ask_str[1] = toJsonString(prompt);
+            ask_str[2] = -1;
+            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
             Json::Value clientReply = player->getClientReply();
             if (success && !clientReply.isNull()){
                 card = Card::Parse(toQString(clientReply));
@@ -956,7 +959,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if(card == NULL)
     {
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+"nil"+"_");
-        thread->trigger(ChoiceMade, this,player, decisionData);
+        thread->trigger(ChoiceMade, this, player, decisionData);
         return NULL;
     }
 
@@ -1020,7 +1023,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     return card;
 }
 
-bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){    
+bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index){
     notifyMoveFocus(player, S_COMMAND_USE_CARD);
     CardUseStruct card_use;
     bool isCardUsed = false;
@@ -1036,12 +1039,20 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
             thread->delay(Config.AIDelay);
         }
     }
-    else if (doRequest(player, S_COMMAND_USE_CARD, toJsonArray(pattern, prompt), true))
+    else
     {
-        Json::Value clientReply = player->getClientReply();
-        isCardUsed = !clientReply.isNull();
-        if (isCardUsed && card_use.tryParse(clientReply, this))                    
-            card_use.from = player;                        
+        Json::Value ask_str(Json::arrayValue);
+        ask_str[0] = toJsonString(pattern);
+        ask_str[1] = toJsonString(prompt);
+        ask_str[2] = notice_index;
+        bool success = doRequest(player, S_COMMAND_USE_CARD, ask_str, true);
+        if(success)
+        {
+            Json::Value clientReply = player->getClientReply();
+            isCardUsed = !clientReply.isNull();
+            if (isCardUsed && card_use.tryParse(clientReply, this))
+                card_use.from = player;
+        }
     }
 
     if (isCardUsed && card_use.isValid()){
