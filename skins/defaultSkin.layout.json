@@ -91,8 +91,8 @@
     "onlineStatusArea": [122, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["simsun", 12, 50, [255, 255, 255, 255], 2, 20, [0, 0], [20, 20, 20, 128]],
-    "skillNameArea": [25, 30, 300, 50],
-    "skillNameFont": ["simli", 30, 80, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
+    "skillNameArea": [0, 45, 157, 60],
+    "skillNameFont": ["simli", 30, 100, [255, 255, 255, 255], 5, 8, [0, 0], [45, 38, 178, 155]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [160, 10]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [38, 26],
@@ -102,7 +102,7 @@
     "saveMeIconRegion": [25, 46, 122, 50],
     "chainedIconRegion": [0, 81, 156, 19],
     "readyIconRegion": [97, 125, 44, 53],
-    "deathIconRegion": [4, 73, 147, 52],
+    "deathIconRegion": [0, 50, 157, 102],
     "drankMaskColor": [250, 0, 0, 115]
 },
 "dashboard":

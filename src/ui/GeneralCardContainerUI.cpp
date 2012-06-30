@@ -376,12 +376,12 @@ void PlayerCardContainer::refresh()
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
     }
-    else if (m_player && m_player->isDead())
+    if (m_player && m_player->isDead())
     {
         _paintPixmap(_m_deathIcon, _m_layout->m_deathIconRegion,
             QPixmap(m_player->getDeathPixmapPath()), this);
     }
-    else
+    else if(m_player)
     {
         _m_faceTurnedIcon->setVisible(!m_player->faceUp());
         _m_chainIcon->setVisible(m_player->isChained());
@@ -774,16 +774,16 @@ void PlayerCardContainer::killPlayer()
     _m_roleComboBox->fix(m_player->getRole());
     updateAvatar();
     updateSmallAvatar();
-    /* unuse this before fixed
-    _m_deathIcon->show();*/
+    refresh();
+    _m_deathIcon->show();
 }
 
 void PlayerCardContainer::revivePlayer()
 {
     updateAvatar();
     updateSmallAvatar();
-    /* unuse this before fixed
-    _m_deathIcon->hide(); */
+    refresh();
+    _m_deathIcon->hide();
 }
 
 void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
