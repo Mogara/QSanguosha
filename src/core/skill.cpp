@@ -35,9 +35,8 @@ QString Skill::getDescription() const{
 QString Skill::getNotice(int index) const{
     if(index == -1)
         return Sanguosha->translate("~" + objectName());
-    else
-        return Sanguosha->translate(QString("~%1%2").arg(objectName()).arg(index));
-    return QString();
+
+    return Sanguosha->translate(QString("~%1%2").arg(objectName()).arg(index));
 }
 
 QString Skill::getText() const{

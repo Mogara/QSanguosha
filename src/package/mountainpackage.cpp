@@ -46,6 +46,9 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
 
     if(zhanghe->getPhase() == Player::Draw){
         room->broadcastSkillInvoke("qiaobian", 2);
+        if(targets.isEmpty())
+            return;
+
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
         foreach(ServerPlayer *target, players){
@@ -53,6 +56,9 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         }
     }else if(zhanghe->getPhase() == Player::Play){
         room->broadcastSkillInvoke("qiaobian", 3);
+        if(targets.isEmpty())
+            return;
+
         PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
             return;
@@ -714,8 +720,6 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
                 slash_targets--;
             }
         }
-        CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, effect.to->objectName());
-        room->moveCardTo(slash, effect.to, NULL, Player::DiscardPile, reason);
         room->useCard(use);
     }else if(!effect.to->isNude()){
         room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to);

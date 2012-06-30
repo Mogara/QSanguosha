@@ -927,7 +927,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, TriggerEvent trigger_event)
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
+    const QVariant &data, TriggerEvent trigger_event)
 {
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
     const Card *card = NULL;
@@ -944,11 +945,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             if(card)
                 thread->delay(Config.AIDelay);
         }else{
-            Json::Value ask_str(Json::arrayValue);
-            ask_str[0] = toJsonString(pattern);
-            ask_str[1] = toJsonString(prompt);
-            ask_str[2] = -1;
-            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
+            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, toJsonArray(pattern, prompt), true);
             Json::Value clientReply = player->getClientReply();
             if (success && !clientReply.isNull()){
                 card = Card::Parse(toQString(clientReply));

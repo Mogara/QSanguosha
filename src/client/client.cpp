@@ -729,11 +729,13 @@ QString Client::_processCardPattern(const QString &pattern){
 }
 
 void Client::_askForCardOrUseCard(const Json::Value &cardUsage){
-    if (!cardUsage.isArray() || !cardUsage[0].isString() || !cardUsage[1].isString() || !cardUsage[2].isInt())
+    if (!cardUsage.isArray() || !cardUsage[0].isString() || !cardUsage[1].isString())
         return;
     card_pattern = toQString(cardUsage[0]);
     QStringList texts = toQString(cardUsage[1]).split(":");
-    int index = cardUsage[2].asInt();
+    int index = -1;
+    if(cardUsage[2].isInt())
+        index = cardUsage[2].asInt();
 
     if(texts.isEmpty()){
         return;
