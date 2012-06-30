@@ -552,8 +552,8 @@ public:
             return false;
         if(event == AskForPeaches  && current->objectName() != handang->objectName()){
             DyingStruct dying = data.value<DyingStruct>();
-            if(dying.who->getHp() > 0 || handang->isNude() ||
-               current->isDead() || !handang->canSlash(current,false)
+            if(dying.who->getHp() > 0 || handang->isNude()
+                || !handang->canSlash(current,false)
                 || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
             while(dying.who->getHp() < 1 && dying.who->isAlive()){
@@ -592,8 +592,6 @@ public:
                             slash_targets--;
                         }
                     }
-                    CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, handang->objectName());
-                    room->moveCardTo(slash, handang, NULL, Player::DiscardPile, reason);
                     room->useCard(use);
                 }
             }

@@ -720,8 +720,6 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
                 slash_targets--;
             }
         }
-        CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, effect.to->objectName());
-        room->moveCardTo(slash, effect.to, NULL, Player::DiscardPile, reason);
         room->useCard(use);
     }else if(!effect.to->isNude()){
         room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to);

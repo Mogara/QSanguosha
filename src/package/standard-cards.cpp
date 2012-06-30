@@ -826,8 +826,6 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                             slash_targets--;
                         }
                     }
-                    CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, killer->objectName());
-                    room->moveCardTo(slash, killer, NULL, Player::DiscardPile, reason);
                     room->useCard(use);
                 }
                 else{
@@ -862,8 +860,6 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                             slash_targets--;
                         }
                     }
-                    CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, killer->objectName());
-                    room->moveCardTo(slash, killer, NULL, Player::DiscardPile, reason);
                     room->useCard(use);
                 }
             }
@@ -889,8 +885,6 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                             slash_targets--;
                         }
                     }
-                    CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, killer->objectName());
-                    room->moveCardTo(slash, killer, NULL, Player::DiscardPile, reason);
                     room->useCard(use);
                 }
                 else{
