@@ -14,8 +14,8 @@ class QDialog;
 class Skill : public QObject
 {
     Q_OBJECT
-	Q_ENUMS(Frequency)
-	Q_ENUMS(Location)
+    Q_ENUMS(Frequency)
+    Q_ENUMS(Location)
 
 public:
     enum Frequency{

@@ -125,7 +125,8 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(!TriggerSkill::triggerable(target))
+        
+        if(target == NULL || !TriggerSkill::triggerable(target))
             return false;
 
         if(target->isKongcheng()){
@@ -216,7 +217,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -402,7 +403,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event , Room* room, ServerPlayer *player, QVariant &data) const{
@@ -446,7 +447,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

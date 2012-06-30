@@ -89,7 +89,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
         // create table pile
         m_tablePile = new TablePile;
         addItem(m_tablePile);
-
+        connect(ClientInstance, SIGNAL(card_used()), m_tablePile, SLOT(clear()));
         // create dashboard
         dashboard = new Dashboard(createDashboardButtons());
         dashboard->setObjectName("dashboard");         
@@ -981,17 +981,19 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         PlayerCardContainer *item = itor.key();
         const ClientPlayer *player = itor.value();
 
-        if(item->isSelected())
+        int maxVotes = 0;
+
+        if (card)
         {
-            Photo* photo = qobject_cast<Photo*>(item);
-            if(photo && card)
-                photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
-            continue;
+            card->targetFilter(selected_targets, player, Self, maxVotes);
+            item->setMaxVotes(maxVotes);
         }
 
-        bool enabled = (card == NULL) || 
+        if (item->isSelected()) continue;
+
+        bool enabled = (card == NULL) ||
                        (!Sanguosha->isProhibited(Self, player, card)
-                       && card->targetFilterMultiple(selected_targets, player, Self)>0);
+                        && maxVotes > 0);
         
         QGraphicsItem* animationTarget = item->getMouseClickReceiver();
         if (enabled)
@@ -1003,9 +1005,6 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         if (card)
         {
             item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
-            Photo* photo = qobject_cast<Photo*>(item);
-            if(photo)
-                photo->setOrderLimit(card->targetFilterMultiple(selected_targets, player, Self));
         }
     }
 }
@@ -1019,12 +1018,10 @@ void RoomScene::updateSelectedTargets(){
     const Card *card = dashboard->getSelected();
     if (card) {
         const ClientPlayer *player = item2player.value(item, NULL);
-        if(item->isSelected()){
+        if (item->isSelected())      
             selected_targets.append(player);
-        }else{
+        else
             selected_targets.removeAll(player);
-        }
-
 
         ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
     }else{

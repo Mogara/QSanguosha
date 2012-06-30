@@ -36,7 +36,11 @@ class GreatYeyanCard: public YeyanCard{
 public:
     Q_INVOKABLE GreatYeyanCard();
 
-    virtual int targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets,
+                                  const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select,
+                              const Player *Self, int &maxVotes) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
@@ -46,7 +50,7 @@ class SmallYeyanCard: public YeyanCard{
 
 public:
     Q_INVOKABLE SmallYeyanCard();
-
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;

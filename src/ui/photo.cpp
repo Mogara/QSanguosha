@@ -47,17 +47,11 @@ Photo::Photo(): PlayerCardContainer()
     _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QSanRoomSkin::S_SKIN_KEY_MAINFRAME);
     translate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2);
     _m_skillNameItem = new QGraphicsPixmapItem(this);
-    
-    order       = 0;
-    order_limit = 1;
-    order_item  = NULL;
+        
     emotion_item = new QGraphicsPixmapItem(this);
     emotion_item->moveBy(10, 0);
 
     _createControls();
-
-    canReset = 1;
-    connect(this,SIGNAL(selected_changed()),this,SLOT(resetOrder()));
 }
 
 void Photo::refresh()
@@ -86,27 +80,12 @@ QRectF Photo::boundingRect() const
     return QRect(0, 0, G_PHOTO_LAYOUT.m_normalWidth, G_PHOTO_LAYOUT.m_normalHeight);
 }
 
-void Photo::setOrderLimit(int order_limit)
-{
-    this->order_limit = order_limit;
-}
 
-void Photo::setOrder(){
-    QPixmap pixmap(QString("image/system/number/%1.png").arg(order));
-    if(order_item)
-        order_item->setPixmap(pixmap);
-    else{
-        order_item = new QGraphicsPixmapItem(pixmap, this);
-        order_item->moveBy(15, 0);
-    }
-    order_item->setVisible(order>1);
-}
 
 void Photo::_adjustComponentZValues()
 {
     PlayerCardContainer::_adjustComponentZValues();
-    _layBetween(_m_mainFrame, _m_faceTurnedIcon, _m_equipRegions[3]);
-    _layBetween(order_item, _m_chainIcon, _m_roleComboBox);
+    _layBetween(_m_mainFrame, _m_faceTurnedIcon, _m_equipRegions[3]);    
     _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
     _layBetween(_m_skillNameItem, _m_chainIcon, _m_roleComboBox);
 }
@@ -262,34 +241,3 @@ QGraphicsItem* Photo::getMouseClickReceiver()
     return this; 
 }
 
-QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    //the following code doesn't make much sense
-    //order_item will be used as a mark on multi-selecting a player
-    /*
-    if(change == ItemFlagsHaveChanged){
-        if(!ServerInfo.EnableSame)
-            order_item->setVisible(flags() & ItemIsSelectable);
-    }
-    */
-    return PlayerCardContainer::itemChange(change, value);
-}
-
-void Photo::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button() == Qt::LeftButton && this->isSelected())
-    {
-        order++;
-        if(order>order_limit)setSelected(false);
-        else
-        {
-            canReset = 0;
-            emit selected_changed();
-            canReset = 1;
-            setOrder();
-        }
-        return;
-    }else setSelected(false);
-
-    PlayerCardContainer::mouseReleaseEvent(event);
-}

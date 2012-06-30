@@ -41,7 +41,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const {
         Q_UNUSED(target);
 
-        return true;
+        return target != NULL;
     }
 
     virtual int getPriority() const { return 3; }

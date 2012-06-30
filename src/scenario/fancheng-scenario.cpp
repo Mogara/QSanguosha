@@ -87,7 +87,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(!PhaseChangeSkill::triggerable(target))
+        if(target == NULL && !PhaseChangeSkill::triggerable(target))
             return false;
 
         return target->getGeneralName() != "shenlvmeng";
@@ -207,7 +207,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getGeneralName() == "guanyu" && target->getHp() <= 2;
     }
 

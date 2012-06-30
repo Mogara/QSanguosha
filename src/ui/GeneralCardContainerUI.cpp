@@ -134,10 +134,22 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item, const QRect &
 
 QPixmap PlayerCardContainer::_getPixmap(const QString &key, const QString &sArg)
 {
-    QString rKey = key.arg(getResourceKeyName()).arg(sArg);
-    if (G_ROOM_SKIN.isImageKeyDefined(rKey))
-        return G_ROOM_SKIN.getPixmap(rKey);
-    else return G_ROOM_SKIN.getPixmap(key.arg(sArg));
+    Q_ASSERT(key.contains("%1"));
+    if (key.contains("%2"))
+    {
+        QString rKey = key.arg(getResourceKeyName()).arg(sArg);
+ 
+        if (G_ROOM_SKIN.isImageKeyDefined(rKey))
+            return G_ROOM_SKIN.getPixmap(rKey); // first try "%1key%2 = ...", %1 = "photo", %2 = sArg
+    
+        rKey = key.arg(getResourceKeyName()).arg(QSanRoomSkin::S_SKIN_KEY_DEFAULT);
+        Q_ASSERT(G_ROOM_SKIN.isImageKeyDefined(rKey));
+        return G_ROOM_SKIN.getPixmap(rKey, sArg); // then try "%1key = ..."
+    }
+    else 
+    {
+        return G_ROOM_SKIN.getPixmap(key, sArg); // finally, try "key = ..."
+    }
 }
 
 QPixmap PlayerCardContainer::_getPixmap(const QString &key)
@@ -162,6 +174,7 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item,
     else
         item->setPixmap(pixmap.scaled(rect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     item->setParentItem(parent);
+    item->show();
 }
 
 void PlayerCardContainer::_clearPixmap(QGraphicsPixmapItem *pixmap)
@@ -169,6 +182,7 @@ void PlayerCardContainer::_clearPixmap(QGraphicsPixmapItem *pixmap)
     QPixmap dummy;
     if (pixmap == NULL) return;   
     pixmap->setPixmap(dummy);
+    pixmap->hide();
 }
 
 void PlayerCardContainer::hideProgressBar()
@@ -630,6 +644,9 @@ PlayerCardContainer::PlayerCardContainer()
         _m_equipRegions[i] = NULL;
     }
     _m_floatingArea = NULL;
+    _m_votesGot = 0;
+    _m_maxVotes = 1;
+    _m_votesItem = NULL;
     _allZAdjusted = false;
 }
 
@@ -676,11 +693,12 @@ void PlayerCardContainer::_adjustComponentZValues()
     // layout
     if (!_startLaying()) return;
     _layUnder(_m_floatingArea);
+    _layUnder(_m_votesItem);
     foreach (QGraphicsItem* pile, _m_privatePiles.values())
-        _layUnder(pile);    
+        _layUnder(pile);
     foreach (QGraphicsItem* judge, _m_judgeIcons)
         _layUnder(judge);
-    _layUnder(_m_markItem);    
+    _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
     _layUnder(_m_chainIcon);        
@@ -791,32 +809,56 @@ void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // we need to override QGraphicsItem's selecting behaviours.
 }
 
+void PlayerCardContainer::updateVotes(){
+    if (!isSelected() || _m_votesGot <= 1)
+        _clearPixmap(_m_votesItem);
+    else 
+    {
+        _paintPixmap(_m_votesItem, _m_layout->m_votesIconRegion,
+                     _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(_m_votesGot)),
+                     _getAvatarParent());
+        _m_votesItem->setZValue(1);
+    }
+}
+
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button() == Qt::RightButton)return;
+{    
     QGraphicsItem* item = getMouseClickReceiver();
     if (item != NULL && item->isUnderMouse() && isEnabled() &&
         (flags() & QGraphicsItem::ItemIsSelectable))
     {
-        setSelected(!isSelected());
+        if (event->button() == Qt::RightButton)
+        {
+            setSelected(false);
+        }
+        else if(event->button() == Qt::LeftButton)
+        {
+            _m_votesGot++;
+            if (_m_votesGot > _m_maxVotes) setSelected(false);
+            else setSelected(true);
+            if (_m_votesGot > 1) emit selected_changed();
+        }
+        updateVotes();
     }
 }
 
 QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVariant &value) {
     if(change == ItemSelectedHasChanged){
-        if(value.toBool())
+        if (!value.toBool())
+        {
+            _m_votesGot = 0;
+            _clearPixmap(_m_selectedFrame);
+        }
+        else
         {
              _paintPixmap(_m_selectedFrame, _m_layout->m_focusFrameArea,
                           _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
                           _getFocusFrameParent());
         }
-        else
-        {
-            _clearPixmap(_m_selectedFrame);
-        }
-
+        updateVotes();
         emit selected_changed();
     }else if(change == ItemEnabledHasChanged){
+        _m_votesGot = 0;
         emit enable_changed();
     }
 

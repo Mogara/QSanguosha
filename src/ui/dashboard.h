@@ -112,6 +112,9 @@ protected:
     QMutex m_mutexEnableCards;
 
     QGraphicsPixmapItem *_m_leftFrame, *_m_middleFrame, *_m_rightFrame;    
+    // we can not draw bg directly _m_rightFrame because then it will always be
+    // under avatar (since it's avatar's parent).
+    QGraphicsPixmapItem *_m_rightFrameBg;
     QGraphicsItem *button_widget;
         
     CardItem *selected;

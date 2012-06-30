@@ -159,7 +159,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Discard;
+        return target != NULL && PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Discard;
     }
 
     virtual int getPriority() const{
@@ -361,7 +361,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::Start
                 && target->getMark("kegou") == 0
                 && target->getKingdom() == "wu"
@@ -490,7 +490,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@tied") > 0 && !target->hasSkill("lianli");
+        return target != NULL && target->getMark("@tied") > 0 && !target->hasSkill("lianli");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -521,7 +521,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getMark("@tied") > 0;
+        return target != NULL && TriggerSkill::triggerable(target) && target->getMark("@tied") > 0;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *xiahoujuan, QVariant &data) const{
@@ -617,7 +617,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@tied") > 0;
+        return target != NULL && target->getMark("@tied") > 0;
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
@@ -654,7 +654,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
@@ -693,7 +693,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -743,7 +743,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1029,7 +1029,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1118,7 +1118,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@conspiracy") > 0;
+        return target != NULL && target->getMark("@conspiracy") > 0;
     }
 
     virtual int getPriority() const{
@@ -1373,7 +1373,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1474,7 +1474,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return ! target->hasSkill(objectName());
+        return target != NULL && !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
@@ -1692,7 +1692,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
+        return target != NULL && !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

@@ -27,6 +27,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _m_layout = &G_DASHBOARD_LAYOUT;
     m_player = Self;
     _m_leftFrame = _m_rightFrame = _m_middleFrame = NULL;
+    _m_rightFrameBg = NULL;
     animations = new EffectAnimation();
     pending_card = NULL;
     // At this stage, we cannot decide the dashboard size yet, the whole
@@ -101,6 +102,7 @@ void Dashboard::_adjustComponentZValues()
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);    
     _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
+    _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
 }
 
 int Dashboard::width()
@@ -113,9 +115,11 @@ void Dashboard::_createRight()
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, 0, 
                        G_DASHBOARD_LAYOUT.m_rightWidth,
                        G_DASHBOARD_LAYOUT.m_normalHeight);
-    _paintPixmap(_m_rightFrame, rect, 
-                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), this);
+    _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), this);
+    _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()), 
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
+    
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
     _m_skillDock->setPos(avatar.left(), avatar.bottom() + 

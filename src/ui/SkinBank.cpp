@@ -12,6 +12,7 @@
 using namespace std;
 using namespace QSanProtocol::Utils;
 
+const char* IQSanComponentSkin::S_SKIN_KEY_DEFAULT = "default";
 const char* QSanRoomSkin::S_SKIN_KEY_PHOTO = "photo";
 const char* QSanRoomSkin::S_SKIN_KEY_ROOM = "room";
 const char* QSanRoomSkin::S_SKIN_KEY_COMMON = "common";
@@ -37,7 +38,7 @@ const char* QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME = "%1FrameWhenSelected";
 const char* QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME = "%1FocusFrame%2";
 const char* QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON = "kingdomIcon-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK = "kingdomColorMask-%1";
-
+const char* QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER = "votesNum-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON = "saveMe";
 const char* QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON = "playerActioned";
 const char* QSanRoomSkin::S_SKIN_KEY_READY_ICON = "playerReady";
@@ -260,33 +261,33 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const
 
 QString QSanRoomSkin::getCardMainPixmapPath(const QString &cardName) const
 {
-    return _readConfig(_m_imageConfig,QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO).arg(cardName));
-}
-
-QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
-{
-    QString attempt1 = QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO).arg(cardName);
-    if (isImageKeyDefined(attempt1))
-        return getPixmap(attempt1);
+    QString key = QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO).arg(cardName);
+    if (isImageKeyDefined(key))
+        return toQString(_m_imageConfig[key.toAscii().constData()]);
     else
     {
         QString fileName = toQString(_m_imageConfig[QString(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO)
                                      .arg("default").toAscii().constData()]).arg(cardName);
-        return getPixmapFromFileName(fileName);
+        return fileName;
     }
 }
 
+QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
+{
+    return getPixmapFromFileName(getCardMainPixmapPath(cardName));
+}
+
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const{
-    return getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT).arg(Card::Suit2String(suit)));
+    return getPixmap(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT, Card::Suit2String(suit));
 }
 
 QPixmap QSanRoomSkin::getCardNumberPixmap(int point, bool isBlack) const{
     QString pathKey = isBlack ? S_SKIN_KEY_HAND_CARD_NUMBER_BLACK : S_SKIN_KEY_HAND_CARD_NUMBER_RED;
-    return getPixmap(pathKey.arg(point));
+    return getPixmap(pathKey, QString::number(point));
 }
 
 QPixmap QSanRoomSkin::getCardJudgeIconPixmap(const QString &judgeName) const{
-    return getPixmap(QString(S_SKIN_KEY_JUDGE_CARD_ICON).arg(judgeName));
+    return getPixmap(S_SKIN_KEY_JUDGE_CARD_ICON, judgeName);
 }
 
 QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName) const{
@@ -297,65 +298,62 @@ QString QSanRoomSkin::getGeneralPixmapPath(const QString &generalName, GeneralIc
     if (size == S_GENERAL_ICON_SIZE_CARD)
         return getCardMainPixmapPath(generalName);
     else
-        return _readConfig(_m_imageConfig, QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(generalName).arg(size));
-}
-
-QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size) const{
-    if (size == S_GENERAL_ICON_SIZE_CARD)
-        return getCardMainPixmap(generalName);
-    else
     {
-        QString attempt1 = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(generalName).arg(size);
-        if (isImageKeyDefined(attempt1))
-            return getPixmap(attempt1);
+        QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(generalName).arg(size);
+        if (isImageKeyDefined(key))
+            return toQString(_m_imageConfig[key.toAscii().constData()]);
         else
         {
             QString fileName = toQString(_m_imageConfig[QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
-                               .arg("default").arg(size).toAscii().constData()]).arg(generalName);
-            return getPixmapFromFileName(fileName);
+                               .arg(S_SKIN_KEY_DEFAULT).arg(size).toAscii().constData()]).arg(generalName);
+            return fileName;
         }
     }
+}
+
+QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size) const{
+    return getPixmapFromFileName(getGeneralPixmapPath(generalName, size));
 }
 
 QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index) const{
     QString gender = isMale ? "male" : "female";
-	QString fileName;
+    QString fileName;
     QString key = QString(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(gender).arg(eventName);
 
-	if (index == -1)
+    if (index == -1)
         fileName = getRandomAudioFileName(key);
     else
     {
         QStringList fileNames = getAudioFileNames(key);
-		if(!fileNames.isEmpty())
-		{
-			if (fileNames.length() >= index) return fileNames[index - 1];
-			else return fileNames[qrand() % fileNames.length()];
+        if(!fileNames.isEmpty())
+        {
+            if (fileNames.length() >= index) return fileNames[index - 1];
+            else return fileNames[qrand() % fileNames.length()];
     }
-	}
+    }
 
-	if(fileName.isEmpty())
+    if(fileName.isEmpty())
     {
-		const Skill *skill = Sanguosha->getSkill(eventName);
-		QStringList fileNames;
-		if(skill) fileNames = skill->getSources();
-		if(!fileNames.isEmpty())
-		{
-			if (index == -1)
-				fileName = fileNames.at(qrand() % fileNames.length());
+        const Skill *skill = Sanguosha->getSkill(eventName);
+        QStringList fileNames;
+        if(skill) fileNames = skill->getSources();
+        if(!fileNames.isEmpty())
+        {
+            if (index == -1)
+                fileName = fileNames.at(qrand() % fileNames.length());
         else
         {
-				if (fileNames.length() >= index) return fileNames[index - 1];
-				else return fileNames[qrand() % fileNames.length()];
+                if (fileNames.length() >= index) return fileNames[index - 1];
+                else return fileNames[qrand() % fileNames.length()];
         }
     }
-	}
+    }
 
-	if(fileName.isEmpty())
-	{
-		fileName = toQString(_m_audioConfig[QString(S_SKIN_KEY_PLAYER_AUDIO_EFFECT)
-			.arg(gender).arg("default").toAscii().constData()]).arg(eventName);
-	}
+    if(fileName.isEmpty())
+    {
+        fileName = toQString(_m_audioConfig[QString(S_SKIN_KEY_PLAYER_AUDIO_EFFECT)
+            .arg(gender).arg("default").toAscii().constData()]).arg(eventName);
+    }
     return fileName;
 }
 
@@ -553,39 +551,56 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     }
     return result;
 }
+ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) const
+ {
+     QString totalkey;
+     if (arg.isNull()) totalkey = key;
+     else totalkey = key.arg(arg);
+     static QHash<QString, QPixmap> _pixmapCache;
+     if (!_pixmapCache.contains(totalkey))
+     {
+         QRect clipRegion;
+         QSize scaleRegion;
+         bool clipping = false;
+         bool scaled = false;
 
-QPixmap IQSanComponentSkin::getPixmap(const QString &key) const
-{
-    static QHash<QString, QPixmap> _pixmapCache;
-    if (!_pixmapCache.contains(key))
-    {
-        QRect clipRegion;
-        QSize scaleRegion;
-        bool clipping = false;
-        bool scaled = false;
-        QPixmap pixmap = QSanPixmapCache::getPixmap(key, _readImageConfig(key, clipRegion,
-                                                    clipping, scaleRegion, scaled));
-        if (clipping)
-        {
-            _pixmapCache[key] = pixmap.copy(clipRegion);
-            if (scaled)
-            {
-                _pixmapCache[key] = _pixmapCache[key].scaled(scaleRegion, Qt::IgnoreAspectRatio,
-                                                             Qt::SmoothTransformation);
-            }
-        }
-        else
-            _pixmapCache[key] = pixmap;
-    }
-    return _pixmapCache[key];
-}
+         bool useDefault = false;
+         QString keyFile;
+         if (arg.isNull()) keyFile = key;
+         else keyFile = key.arg(arg);
+         if (!isImageKeyDefined(keyFile))
+         {
+             useDefault = true;
+             Q_ASSERT(!arg.isNull());
+             keyFile = key.arg(S_SKIN_KEY_DEFAULT);
+         }
 
-QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const
-{
-    return _readConfig(_m_imageConfig, key);
-}
+         QString& fileName = _readImageConfig(keyFile,
+                             clipRegion, clipping, scaleRegion, scaled);
+         if (useDefault) fileName = fileName.arg(arg);
+         QPixmap pixmap = QSanPixmapCache::getPixmap(totalkey, fileName);
+         if (clipping)
+         {
+             _pixmapCache[totalkey] = pixmap.copy(clipRegion);
+             if (scaled)
+             {
+                 _pixmapCache[totalkey] = _pixmapCache[totalkey].scaled(
+                     scaleRegion, Qt::IgnoreAspectRatio,
+                     Qt::SmoothTransformation);
+             }
+         }
+         else
+             _pixmapCache[totalkey] = pixmap;
+     }
+     return _pixmapCache[totalkey];
+ }
 
-QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const
+ QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const
+ {
+     return _readConfig(_m_imageConfig, key);
+ }
+
+ QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const
 {
     return QSanPixmapCache::getPixmap(fileName, fileName);
 }
@@ -745,6 +760,7 @@ bool QSanRoomSkin::_loadLayoutConfig()
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
         tryParse(playerConfig["readyIconRegion"], layout->m_readyIconRegion);
         tryParse(playerConfig["deathIconRegion"], layout->m_deathIconRegion);
+        tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
     }
 

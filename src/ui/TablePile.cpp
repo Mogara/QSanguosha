@@ -50,6 +50,7 @@ void TablePile::clear(bool playAnimation)
         shift = oldPos.x() + 10;
     }
 
+    QParallelAnimationGroup* group = new QParallelAnimationGroup;
     foreach (CardItem* toRemove, m_visibleCards)
     {        
         toRemove->setZValue(0.0);
@@ -58,11 +59,12 @@ void TablePile::clear(bool playAnimation)
         if (playAnimation)
         {
             connect(toRemove, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
-            toRemove->goBack(true);
+            group->addAnimation(toRemove->getGoBackAnimation(true));
         }
         else delete toRemove;
     }
     m_visibleCards.clear();
+    group->start(QAbstractAnimation::DeleteWhenStopped);
     _m_mutex_pileCards.unlock();
 }
 

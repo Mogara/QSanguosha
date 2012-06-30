@@ -383,7 +383,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0;
+        return target != NULL && TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *pangtong, QVariant &data) const{
@@ -439,7 +439,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->getArmor()
+        return target != NULL && TriggerSkill::triggerable(target) && !target->getArmor()
                 && !target->hasFlag("wuqian") && target->getMark("qinggang") == 0;
     }
 

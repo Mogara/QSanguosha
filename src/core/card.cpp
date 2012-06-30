@@ -414,7 +414,7 @@ bool Card::targetFixed() const{
 }
 
 bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
-    if(target_fixed)
+    if (target_fixed)
         return true;
     else
         return !targets.isEmpty();
@@ -424,8 +424,11 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_s
     return targets.isEmpty() && to_select != Self;
 }
 
-int Card::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targetFilter(targets,to_select,Self);
+bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
+                        int &maxVotes) const{
+    bool canSelect = targetFilter(targets,to_select,Self);
+    maxVotes = canSelect ? 1 : 0; 
+    return canSelect;
 }
 
 static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){

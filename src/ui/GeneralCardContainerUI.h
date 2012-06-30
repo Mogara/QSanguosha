@@ -51,6 +51,8 @@ public:
     void hideAvatars();
     const ClientPlayer *getPlayer() const;
     void setPlayer(ClientPlayer* player);
+    inline int getVotes() { return _m_votesGot; }
+    inline void setMaxVotes(int maxVotes) { _m_maxVotes = maxVotes; }
     // See _m_floatingArea for more information
     inline QRect getFloatingArea() const { return _m_floatingAreaRect; }
     void setFloatingArea(QRect rect);
@@ -76,6 +78,7 @@ public slots:
     void updatePile(const QString &pile_name);
     void updateRole(const QString &role);
     void updateMarks();
+    void updateVotes();
     virtual void refresh();
 
 protected:
@@ -96,7 +99,7 @@ protected:
     virtual QGraphicsItem* _getProgressBarParent() = 0;
     virtual QString getResourceKeyName() = 0;
 
-    void _createRoleComboBox();
+    void _createRoleComboBox();    
     void _updateProgressBar(); // a dirty function used by the class itself only.
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QString &key);
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QString &key, QGraphicsItem* parent);
@@ -166,8 +169,13 @@ protected:
     
     // now, logic
     ClientPlayer* m_player;
+
+    // The following stuffs for mulitple votes required for yeyan
+    int _m_votesGot, _m_maxVotes;
+    QGraphicsPixmapItem *_m_votesItem;
 private:   
-    bool _startLaying();
+    bool _startLaying();    
+    void clearVotes();
     int _lastZ;
     bool _allZAdjusted;
 signals:

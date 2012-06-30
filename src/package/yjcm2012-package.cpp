@@ -278,7 +278,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target);
+        return target != NULL && PhaseChangeSkill::triggerable(target);
     }
 
     virtual bool onPhaseChange(ServerPlayer *caozhang) const{
@@ -355,7 +355,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getMark("@laoji") > 0;
+        return target != NULL && TriggerSkill::triggerable(target) && target->getMark("@laoji") > 0;
     }
 
     int getKingdoms(Room *room) const{
@@ -711,7 +711,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
