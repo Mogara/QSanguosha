@@ -46,6 +46,9 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
 
     if(zhanghe->getPhase() == Player::Draw){
         room->broadcastSkillInvoke("qiaobian", 2);
+        if(targets.isEmpty())
+            return;
+
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
         foreach(ServerPlayer *target, players){
@@ -53,6 +56,9 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         }
     }else if(zhanghe->getPhase() == Player::Play){
         room->broadcastSkillInvoke("qiaobian", 3);
+        if(targets.isEmpty())
+            return;
+
         PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
             return;
