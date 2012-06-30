@@ -24,9 +24,9 @@ QiaobianCard::QiaobianCard(){
 
 bool QiaobianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if(Self->getPhase() == Player::Draw)
-        return targets.length() <= 2 && !targets.isEmpty();
+        return targets.length() <= 2;
     else if(Self->getPhase() == Player::Play)
-        return targets.length() == 1;
+        return targets.length() <= 1;
     else
         return targets.isEmpty();
 }
@@ -44,15 +44,21 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this, zhanghe);
 
-    if(zhanghe->getPhase() == Player::Draw && room->askForSkillInvoke(zhanghe, "qiaobian")){
+    if(zhanghe->getPhase() == Player::Draw){
         room->playSkillEffect("qiaobian", 2);
+        if(targets.isEmpty())
+            return;
+
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
         foreach(ServerPlayer *target, players){
             room->cardEffect(this, zhanghe, target);
         }
-    }else if(zhanghe->getPhase() == Player::Play && room->askForSkillInvoke(zhanghe, "qiaobian")){
+    }else if(zhanghe->getPhase() == Player::Play){
         room->playSkillEffect("qiaobian", 3);
+        if(targets.isEmpty())
+            return;
+
         PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
             return;
