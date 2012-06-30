@@ -58,19 +58,22 @@ public:
     void setFrozen(bool is_frozen);
     bool isFrozen() const;
 
-    inline void showFootnote() { _m_footnoteItem->show(); }
-    inline void hideFootnote() { _m_footnoteItem->hide(); }
+    inline void showFootnote() { _m_showFootnote = false; }
+    inline void hideFootnote() { _m_showFootnote = true; }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
     
 protected:
     void _initialize();
     QAbstractAnimation* m_currentAnimation;
-    QGraphicsPixmapItem* _m_footnoteItem;
+    QImage _m_footnoteImage;
+    bool _m_showFootnote;
+    // QGraphicsPixmapItem* _m_footnoteItem;
     QMutex m_animationMutex;
     double m_opacityAtHome;
     bool m_isSelected;
     static const int _S_CLICK_JITTER_TOLERANCE;
+    static const int _S_MOVE_JITTER_TOLERANCE;
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
