@@ -24,9 +24,9 @@ QiaobianCard::QiaobianCard(){
 
 bool QiaobianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if(Self->getPhase() == Player::Draw)
-        return targets.length() <= 2 && !targets.isEmpty();
+        return targets.length() <= 2;
     else if(Self->getPhase() == Player::Play)
-        return targets.length() == 1;
+        return targets.length() <= 1;
     else
         return targets.isEmpty();
 }
@@ -44,15 +44,21 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this, zhanghe);
 
-    if(zhanghe->getPhase() == Player::Draw && room->askForSkillInvoke(zhanghe, "qiaobian")){
+    if(zhanghe->getPhase() == Player::Draw){
         room->broadcastSkillInvoke("qiaobian", 2);
+        if(targets.isEmpty())
+            return;
+
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
         foreach(ServerPlayer *target, players){
             room->cardEffect(this, zhanghe, target);
         }
-    }else if(zhanghe->getPhase() == Player::Play && room->askForSkillInvoke(zhanghe, "qiaobian")){
+    }else if(zhanghe->getPhase() == Player::Play){
         room->broadcastSkillInvoke("qiaobian", 3);
+        if(targets.isEmpty())
+            return;
+
         PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
             return;
@@ -159,10 +165,10 @@ public:
         case Player::Finish:
         case Player::NotActive: return false;
 
-        case Player::Judge: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge");
-        case Player::Draw: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw");
-        case Player::Play: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play");
-        case Player::Discard: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard");
+        case Player::Judge: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge", 1);
+        case Player::Draw: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw", 2);
+        case Player::Play: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play", 3);
+        case Player::Discard: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard", 1);
         }
 
         return false;
@@ -256,6 +262,10 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
 
+        if(Config.EnableBasara){
+            // @:todo if the killer is anjiang,do nothing;else turn him to anjiang again
+            return false;
+        }
         if(damage && damage->from && damage->from->getGeneralName() != "anjiang"){
             if (player == NULL) return false;
 
@@ -272,6 +282,7 @@ public:
                 if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
+            damage->from->gainMark("@duanchang");
             if(damage->from->getKingdom() != damage->from->getGeneral()->getKingdom())
                 room->setPlayerProperty(damage->from, "kingdom", damage->from->getGeneral()->getKingdom());
             if(damage->from->getGeneralName() == "zuocif")
@@ -297,16 +308,6 @@ public:
             else if(damage->from->hasSkill("renjie")){
                 damage->from->loseAllMarks("@bear");
             }
-
-            QString kingdom = damage->from->getKingdom();
-
-            QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
-            room->setPlayerProperty(damage->from, "general", to_transfigure);
-            if(damage->from->getGeneral2())
-                room->setPlayerProperty(damage->from, "general2", to_transfigure);
-            room->setPlayerProperty(damage->from, "kingdom", kingdom);
-
-            room->resetAI(damage->from);
         }
 
         return false;
@@ -930,25 +931,34 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *liushan, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(event == TargetConfirming && use.card && use.card->inherits("Slash")){
 
-            room->broadcastSkillInvoke(objectName());
+        if(event == TargetConfirming){
 
-            LogMessage log;
-            log.type = "#Xiangle";
-            log.from = use.from;
-            log.to << liushan;
-            log.arg = objectName();
-            room->sendLog(log);
-            QVariant dataforai = QVariant::fromValue(liushan);
-            if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai, CardDiscarded))
-                room->setPlayerFlag(liushan, "xiangle_invoke");
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card && use.card->inherits("Slash")){
+
+                room->broadcastSkillInvoke(objectName());
+
+                LogMessage log;
+                log.type = "#Xiangle";
+                log.from = use.from;
+                log.to << liushan;
+                log.arg = objectName();
+                room->sendLog(log);
+                QVariant dataforai = QVariant::fromValue(liushan);
+                if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai, CardDiscarded))
+                    liushan->addMark("xiangle");
+            }
         }
-        else if(event == CardFinished)
-            room->setPlayerFlag(liushan, "-xiangle_invoke");
-        else
-            return liushan->hasFlag("xiangle_invoke");
+        else if(event == CardFinished){
+            liushan->setMark("xiangle", 0);
+        }
+        else {
+            if(liushan->getMark("xiangle") > 0){
+                liushan->loseMark("xiangle");
+                return true;
+            }
+        }
 
         return false;
     }

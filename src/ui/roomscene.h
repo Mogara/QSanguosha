@@ -11,6 +11,7 @@
 #include "sprite.h"
 #include "chatwidget.h"
 #include "SkinBank.h"
+#include "qsanbutton.h"
 
 class Window;
 class Button;
@@ -231,9 +232,8 @@ private:
     
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
-
-    QList<QAbstractButton *> skill_buttons;
-    QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
+    
+    QList<QSanSkillButton*> m_skillButtons;
 
     ResponseSkill *response_skill;
     DiscardSkill *discard_skill;
@@ -291,8 +291,6 @@ private:
     void freeze();
     void addRestartButton(QDialog *dialog);
     void addSkillButton(const Skill *skill, bool from_left = false);
-    void addWidgetToSkillDock(QWidget *widget, bool from_left = false);
-    void removeWidgetFromSkillDock(QWidget *widget);
     QGraphicsItem *createDashboardButtons();
     void createExtraButtons();
     void createReplayControlBar();
@@ -324,7 +322,8 @@ private slots:
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
     void updateSelectedTargets();
     void updateTrustButton();
-    void doSkillButton();
+    void onSkillActivated();
+    void onSkillDeactivated();
     void doOkButton();
     void doCancelButton();
     void doDiscardButton();

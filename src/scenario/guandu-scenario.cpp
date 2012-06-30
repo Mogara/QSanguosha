@@ -144,7 +144,7 @@ public:
                 }
             }
 
-            if(!can_invoke || !room->askForUseCard(zhangliao, "@@smalltuxi", "@tuxi-card"))
+            if(!can_invoke || !room->askForUseCard(zhangliao, "@@smalltuxi", "@smalltuxi-card"))
                 zhangliao->drawCards(1, false);
 
             return true;

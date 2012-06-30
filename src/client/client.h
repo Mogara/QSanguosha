@@ -242,6 +242,7 @@ private:
 
 	void updatePileNum();
 	void setPromptList(const QStringList &text);
+    QString _processCardPattern(const QString &pattern);
 	void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
 
 	void _askForCardOrUseCard(const Json::Value&);

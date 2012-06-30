@@ -2,6 +2,7 @@
 #define DASHBOARD_H
 
 #include "QSanSelectableItem.h"
+#include "qsanbutton.h"
 #include "carditem.h"
 #include "player.h"
 #include "skill.h"
@@ -26,8 +27,12 @@ public:
     void setWidth(int width);
     int getMiddleWidth();
     QGraphicsProxyWidget *addWidget(QWidget *widget, int x, bool from_left);
+    // @TODO: the following function needs to be removed
     QPushButton *createButton(const QString &name);
     QPushButton *addButton(const QString &name, int x, bool from_left);
+    
+    void removeSkillButton(const QString &skillName);
+    QSanSkillButton *addSkillButton(const QString &skillName);
     bool isAvatarUnderMouse();
 
     void setTrust(bool trust);    
@@ -114,6 +119,8 @@ protected:
 
     QGraphicsRectItem *trusting_item;
     QGraphicsSimpleTextItem *trusting_text;
+
+    QSanInvokeSkillDock* _m_skillDock;
 
     //for animated effects
     EffectAnimation *animations;
