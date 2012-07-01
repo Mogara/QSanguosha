@@ -197,13 +197,18 @@ RoomThread::RoomThread(Room *room)
 
 void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
     QVariant void_data;
+    bool invoke_verify = false;
 
     foreach(const TriggerSkill *skill, player->getTriggerSkills()){
         addTriggerSkill(skill);
 
         if(invoke_game_start && skill->getTriggerEvents().contains(GameStart))
-            skill->trigger(GameStart, room, player, void_data);
+            invoke_verify = true;
     }
+
+    //We should make someone trigger a whole GameStart event instead of trigger a skill only.
+    if(invoke_verify)
+        trigger(GameStart, room, player, void_data);
 }
 
 void RoomThread::constructTriggerTable(){
