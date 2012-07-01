@@ -211,54 +211,37 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
                 RoomThread *thread = room->getThread();
-                QList<int> changelist1, changelist2;
+
                 card_use.from->broadcastSkillInvoke(card);
-                int targetfix = 0;
-                // sort the order accord to the seat
+
                 if(card_use.card->hasPreAction())
                     card_use.card->doPreAction(room, card_use);
+
+                // sort the order accord to the seat
                 if(card_use.from && card_use.to.length() > 1){
                     qSort(card_use.to.begin(), card_use.to.end(), CompareByActionOrder);
+                }
 
-                }
-                if(card_use.from && !card_use.to.empty()){
-                    foreach(ServerPlayer *to, card_use.to){
-                        if(true == thread->trigger(TargetConfirming, room, to, data)){
-                            changelist1 << card_use.to.indexOf(to);
+                ServerPlayer *target;
+                QList<ServerPlayer *> targets = card_use.to;
+
+                if(card_use.from && !targets.isEmpty()){
+                    foreach(ServerPlayer *to, targets){
+                        target = to;
+                        while(thread->trigger(TargetConfirming, room, target, data)){
+                            CardUseStruct new_use = data.value<CardUseStruct>();
+                            target = new_use.to.at(targets.indexOf(target));
+                            targets = new_use.to;
                         }
                     }
                 }
-                targetfix = changelist1.length();
-                while(targetfix > 0){
-                    if(!changelist1.empty()){
-                        card_use = data.value<CardUseStruct>();
-                        foreach(int tmp, changelist1){
-                            if(true == thread->trigger(TargetConfirming, room, card_use.to.at(tmp), data)){
-                                changelist2 << card_use.to.indexOf(card_use.to.at(tmp));
-                            }
-                        }
-                        changelist1.clear();
-                    }
-                    targetfix--;
-                    if(!changelist2.empty()){
-                        targetfix++;
-                        card_use = data.value<CardUseStruct>();
-                        foreach(int tmp, changelist2){
-                            if(true == thread->trigger(TargetConfirming, room, card_use.to.at(tmp) , data)){
-                                changelist1 << card_use.to.indexOf(card_use.to.at(tmp));
-                            }
-                        }
-                        changelist2.clear();
-                    }
-                    if(changelist1.empty())
-                        targetfix--;
-                }
+
+                card_use = data.value<CardUseStruct>();
                 if(card_use.from && !card_use.to.empty()){
                     foreach(ServerPlayer *p, room->getAllPlayers()){
                         thread->trigger(TargetConfirmed, room, p, data);
                     }
                 }
-                card_use = data.value<CardUseStruct>();
                 card->use(room, card_use.from, card_use.to);
             }
 
