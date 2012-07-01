@@ -319,6 +319,7 @@ QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool toLeft){
 QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
 {
     // if it's a equip skill, add it to equip bar
+    _mutexEquipAnim.lock();
     for (int i = 0; i < 4; i++)
     {
         if (!_m_equipCards[i]) continue;
@@ -331,13 +332,19 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
         if (skill == NULL) continue;
         if (skill->objectName() == skillName)
         {
+            // If there is already a button there, then we haven't removed the last skill before attaching
+            // a new one. The server must have sent the requests out of order. So crash.
+            Q_ASSERT(_m_equipSkillBtns[i] == NULL);
             _m_equipSkillBtns[i] = new QSanInvokeSkillButton();
             _m_equipSkillBtns[i]->setSkill(skill);
             connect(_m_equipSkillBtns[i], SIGNAL(clicked()), this, SLOT(_onEquipSelectChanged()));
             connect(_m_equipSkillBtns[i], SIGNAL(enable_changed()), this, SLOT(_onEquipSelectChanged()));
-            return _m_equipSkillBtns[i];
+            QSanSkillButton* btn = _m_equipSkillBtns[i];
+            _mutexEquipAnim.unlock();
+            return btn;
         }
     }
+    _mutexEquipAnim.unlock();
     const Skill* skill = Sanguosha->getSkill(skillName);
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"));
     return _m_skillDock->addSkillButtonByName(skillName);
@@ -346,14 +353,12 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
 QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
 {
     QSanSkillButton* btn = NULL;
+    _mutexEquipAnim.lock();
     for (int i = 0; i < 4; i++)
     {
-        if (!_m_equipCards[i]) continue;
-        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard());
-        Q_ASSERT(equip);
-        const Skill* skill = equip->getSkill();
-        if (skill == NULL) skill = Sanguosha->getSkill(equip->objectName());
-        if (skill == NULL) continue;
+        if (!_m_equipSkillBtns[i]) continue;
+        const Skill* skill = _m_equipSkillBtns[i]->getSkill();
+        Q_ASSERT(skill != NULL);
         if (skill->objectName() == skillName)
         {
             btn = _m_equipSkillBtns[i];
@@ -361,13 +366,12 @@ QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
             continue;
         }
     }
-
+    _mutexEquipAnim.unlock();
     if (btn == NULL) btn  = _m_skillDock->removeSkillButtonByName(skillName);
     Q_ASSERT(btn != NULL);
     if (getFilter() == btn->getSkill()){
         setFilter(NULL);
-    }
-
+    }    
     return btn;
 }
 
@@ -647,10 +651,10 @@ void Dashboard::sortCards(bool doAnimation){
 }
 
 void Dashboard::reverseSelection(){
-    m_mutexEnableCards.lock();
     if(view_as_skill == NULL)
         return;
 
+     m_mutexEnableCards.lock();
     QSet<CardItem *> selected_set = pendings.toSet();
     unselectAll();
 
