@@ -295,20 +295,33 @@ public:
             {
                 Room *room = lingtong->getRoom();
 
-                QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
+                QStringList choicelist;
+                choicelist << "nothing";
+                QList<ServerPlayer *> targets1;
+                foreach(ServerPlayer *target, room->getAlivePlayers()){
+                    if(lingtong->canSlash(target, false))
+                        targets1 << target;
+                }
+                if (!targets1.isEmpty()) choicelist << "slash";
+                QList<ServerPlayer *> targets2;
+                foreach(ServerPlayer *p, room->getOtherPlayers(lingtong)){
+                    if(lingtong->distanceTo(p) <= 1)
+                        targets2 << p;
+                }
+                if (!targets2.isEmpty()) choicelist << "damage";
+
+                QString choice;
+                if (choicelist.length() == 1)
+                    return false;
+                else
+                    choice = room->askForChoice(lingtong, objectName(), choicelist.join("+"));
 
 
                 if(choice == "slash"){
-                    QList<ServerPlayer *> targets;
-                    foreach(ServerPlayer *target, room->getAlivePlayers()){
-                        if(lingtong->canSlash(target, false))
-                            targets << target;
-                    }
-
-                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-slash");
+                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets1, "xuanfeng-slash");
 
                     Slash *slash = new Slash(Card::NoSuit, 0);
-                    slash->setSkillName("xuanfeng");
+                    slash->setSkillName("nosxuanfeng");
 
                     CardUseStruct card_use;
                     card_use.card = slash;
@@ -318,13 +331,7 @@ public:
                 }else if(choice == "damage"){
                     room->broadcastSkillInvoke("xuanfeng");
 
-                    QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
-                    foreach(ServerPlayer *p, players){
-                        if(lingtong->distanceTo(p) <= 1)
-                            targets << p;
-                    }
-
-                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-damage");
+                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets2, "xuanfeng-damage");
 
                     DamageStruct damage;
                     damage.from = lingtong;

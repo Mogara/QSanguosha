@@ -167,7 +167,7 @@ public:
 class Wuyan: public TriggerSkill{
 public:
     Wuyan():TriggerSkill("wuyan"){
-        events << DamageForseen << Predamage;
+        events << DamageCaused << DamageInflicted;
         frequency = Compulsory;
     }
 
@@ -178,7 +178,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->getTypeId() == Card::Trick){
-            if(event == DamageForseen && player->hasSkill(objectName())){
+            if(event == DamageInflicted && player->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanGood";
                 log.from = player;
@@ -190,7 +190,7 @@ public:
                 return true;
             }
 
-            if(event == Predamage && damage.from && damage.from->hasSkill(objectName())){
+            if(event == DamageCaused && damage.from && damage.from->isAlive() && damage.from->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanBad";
                 log.from = player;
@@ -345,7 +345,19 @@ bool XuanhuoCard::targetFilter(const QList<const Player *> &targets, const Playe
 void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->drawCards(effect.to,2);
-    QString choice = room->askForChoice(effect.to, "xuanhuo", "slash+give");
+
+    QString choice;
+    bool can_use = false;
+    foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
+        if (effect.to->inMyAttackRange(p))
+            can_use = true;
+    }
+    if (can_use){
+        choice = room->askForChoice(effect.to, "xuanhuo", "slash+give");
+    }
+    else
+        choice = "give";
+
     if(choice == "slash"){
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *victim, room->getOtherPlayers(effect.to)){
@@ -584,16 +596,18 @@ public:
         if(damage.to->isDead())
             return false;
 
-        if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer &&
-           player->askForSkillInvoke(objectName(), data))
-        {
-            player->getRoom()->broadcastSkillInvoke(objectName());
-
-            int x = qMin(5, damage.to->getHp());
-            damage.to->drawCards(x);
-            damage.to->turnOver();
-        }
-
+        if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer){
+            Room *room = player->getRoom();
+            if(room->askForSkillInvoke(player, objectName(), data)){
+                int x = qMin(5, damage.to->getHp());
+                if (x >= 3)
+                    player->getRoom()->broadcastSkillInvoke(objectName(), 2);
+                else
+                    player->getRoom()->broadcastSkillInvoke(objectName(), 1);
+                damage.to->drawCards(x);
+            	damage.to->turnOver();
+        	}
+		}
         return false;
     }
 };
@@ -710,10 +724,9 @@ public:
     }
 };
 
-
-class Jiejiu: public FilterSkill{
+class Jinjiu: public FilterSkill{
 public:
-    Jiejiu():FilterSkill("jiejiu"){
+    Jinjiu():FilterSkill("jinjiu"){
 
     }
 
@@ -740,7 +753,18 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(this);
 
     Room *room = effect.to->getRoom();
-    QString choice = room->askForChoice(effect.to, "mingce", "use+draw");
+    QString choice;
+    bool can_use = false;
+    foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
+        if (effect.to->inMyAttackRange(p))
+            can_use = true;
+    }
+    if (can_use){
+        choice = room->askForChoice(effect.to, "mingce", "use+draw");
+    }
+    else
+        choice = "draw";
+
     if(choice == "use"){
         QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), targets;
         foreach(ServerPlayer *player, players){
@@ -1183,7 +1207,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *gaoshun = new General(this, "gaoshun", "qun");
     gaoshun->addSkill(new Xianzhen);
-    gaoshun->addSkill(new Jiejiu);
+    gaoshun->addSkill(new Jinjiu);
 
     General *lingtong = new General(this, "lingtong", "wu");
     lingtong->addSkill(new Xuanfeng);

@@ -223,11 +223,8 @@ public:
             card = Sanguosha->getCard(move->card_id);
         }
 
-        int n = 0;
-        n = card->isRed() ? 1 : 0;
-
-        if(n>0 && player->askForSkillInvoke(objectName(), data))
-            player->drawCards(n);
+        if(card->isRed() && player->askForSkillInvoke(objectName(), data))
+            player->drawCards(1);
 
         return false;
     }
