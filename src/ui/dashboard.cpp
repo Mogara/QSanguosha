@@ -757,7 +757,9 @@ void Dashboard::stopPending(){
     for (int i = 0; i < 4; i++) {
         CardItem* equip = _m_equipCards[i];
         if (equip != NULL) {
+            equip->mark(false);
             equip->setMarkable(false);
+            equip->setEnabled(false);
             disconnect(equip, SIGNAL(mark_changed()));
         }
     }
@@ -797,8 +799,9 @@ void Dashboard::onCardItemClicked(){
 }
 
 void Dashboard::updatePending(){
+    if (!view_as_skill) return;
     foreach(CardItem *c, m_handCards){
-        if(!c->isSelected()||pendings.isEmpty()){
+        if(!c->isSelected() || pendings.isEmpty()){
             c->setEnabled(view_as_skill->viewFilter(pendings, c));
         }
     }
