@@ -1762,6 +1762,12 @@ void RoomScene::updateSkillButtons(){
                 continue;
         }
 
+        //SPConvertSkill is not important around the game, except on game start.
+        //Even it isn't a skill, it's only a temporary product of generals replacement system.
+        //So I think it is not necessary to exist in dashboard.
+        if(skill->inherits("SPConvertSkill"))
+            continue;
+
         addSkillButton(skill);
     }
 
