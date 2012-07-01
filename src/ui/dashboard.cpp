@@ -62,7 +62,7 @@ QGraphicsItem* Dashboard::getMouseClickReceiver()
 }
 
 void Dashboard::_createLeft(){
-    QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_rightWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
+    QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_leftFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_LEFTFRAME), this);
     _m_leftFrame->setZValue(-1000); // nobody should be under me.
     _createEquipBorderAnimations();
@@ -569,8 +569,7 @@ void Dashboard::_adjustCards(){
     if (n == 0) return;
 
     if (maxCards >= n) maxCards = n;
-    else maxCards = (n - 1) / 2 + 1;
-
+    else if (maxCards <= (n - 1) / 2 + 1) maxCards = (n - 1) / 2 + 1;
     QList<CardItem*> row;
     QSanRoomSkin::DashboardLayout* layout = (QSanRoomSkin::DashboardLayout*)_m_layout;
     int leftWidth = layout->m_leftWidth;
