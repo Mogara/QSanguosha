@@ -286,12 +286,10 @@ RoomScene::RoomScene(QMainWindow *main_window):
         prompt_box_widget->setDocument(prompt_doc);
 
         QFont qf = Config.SmallFont;
-        qf.setPixelSize(18);
+        qf.setPixelSize(21);
         qf.setStyleStrategy(QFont::PreferAntialias);
         //qf.setBold(true);
         prompt_box_widget->setFont(qf);
-
-        connect(prompt_doc,SIGNAL(contentsChanged()),this,SLOT(adjustPrompt()));
 
         addItem(prompt_box);
     }
@@ -3802,25 +3800,6 @@ void RoomScene::updateRolesBox()
     m_pileCardNumInfoTextBox->setPos(0, 35);
 }
 
-void RoomScene::adjustPrompt()
-{
-    static int fitSize = 140 ;
-    int height = ClientInstance->getPromptDoc()->size().height();
-
-    QFont ft=prompt_box_widget->font();
-    int fz = ft.pixelSize() * qSqrt(fitSize * 1.0 / height);
-    if (fz > 21) fz = 21;
-
-    ft.setPixelSize(fz);
-    prompt_box_widget->setFont(ft);
-
-    while(ClientInstance->getPromptDoc()->size().height() > fitSize)
-    {
-        ft.setPixelSize(ft.pixelSize()-1);
-        prompt_box_widget->setFont(ft);
-    }
-    //else m_pileCardNumInfoTextBox->setFont(QFont("SimHei",10));
-}
 
 void RoomScene::appendChatEdit(QString txt){
     chat_edit->setText(chat_edit->text() +  " " + txt);

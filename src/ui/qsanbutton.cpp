@@ -272,13 +272,8 @@ void QSanSkillButton::setSkill(const Skill* skill)
          else
              _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
 
-         if (skill->inherits("ZeroCardViewAsSkill")) {
-             setStyle(QSanButton::S_STYLE_PUSH);
-             _m_emitDeactivateSignal = false;
-         } else {
-             setStyle(QSanButton::S_STYLE_TOGGLE);
-             _m_emitDeactivateSignal = true;
-         }
+         setStyle(QSanButton::S_STYLE_TOGGLE);
+         _m_emitDeactivateSignal = true;
 
          _m_emitActivateSignal = true;
          _m_canEnable = true;
