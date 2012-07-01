@@ -207,6 +207,8 @@ public:
         QRect m_trustButtonArea;
         QSize m_skillButtonsSize[3];
         QRect m_skillTextArea[3];
+        QPoint m_equipBorderPos;
+        QPoint m_equipSelectedOffset;
         QSanShadowTextFont m_skillTextFonts[3];
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES *
                                  QSanInvokeSkillButton::S_NUM_SKILL_TYPES];

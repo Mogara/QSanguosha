@@ -4,9 +4,11 @@
 #include "player.h"
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <qparallelanimationgroup.h>
 #include "QSanSelectableItem.h"
 #include <QMutex>
 #include <qvariant.h>
+#include <qlabel.h>
 #include "SkinBank.h"
 #include "TimedProgressBar.h"
 #include "magatamasItem.h"
@@ -158,8 +160,11 @@ protected:
     QList<QGraphicsPixmapItem *> _m_judgeIcons;
     QList<CardItem *> _m_judgeCards;
 
-    QGraphicsPixmapItem *_m_equipRegions[4];  
+    QGraphicsProxyWidget *_m_equipRegions[4];  
     CardItem* _m_equipCards[4];
+    QLabel* _m_equipLabel[4];
+    QParallelAnimationGroup* _m_equipAnim[4];
+    QMutex _mutexEquipAnim;
 
     //controls
     MagatamasBoxItem *_m_hpBox;
@@ -173,6 +178,9 @@ protected:
     // The following stuffs for mulitple votes required for yeyan
     int _m_votesGot, _m_maxVotes;
     QGraphicsPixmapItem *_m_votesItem;
+    
+protected slots:
+    virtual void _onEquipSelectChanged();
 private:   
     bool _startLaying();    
     void clearVotes();

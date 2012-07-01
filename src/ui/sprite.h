@@ -37,7 +37,7 @@ public slots:
 private:
     struct AnimationLine
     {
-        AnimationLine(){frames[0] = 1;}
+        AnimationLine(){ frames[0] = 1; }
         QString name;
         QMap<int,qreal> frames;
         QMap<int,QEasingCurve::Type> easings;

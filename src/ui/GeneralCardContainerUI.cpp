@@ -1,10 +1,12 @@
 #include "GeneralCardContainerUI.h"
 #include <QParallelAnimationGroup>
+#include <qpropertyanimation.h>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
 #include <qpushbutton.h>
 #include <qtextdocument.h>
 #include <qmenu.h>
+#include <qlabel.h>
 #include "engine.h"
 #include "standard.h"
 #include "clientplayer.h"
@@ -587,18 +589,39 @@ void PlayerCardContainer::setFloatingArea(QRect rect)
 }
 
 void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
-{    
+{   
+
     foreach (CardItem* equip, equips)
     {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] == NULL);
         _m_equipCards[index] = equip;
+        connect(equip, SIGNAL(mark_changed()), this, SLOT(_onEquipSelectChanged()));
         equip->setHomeOpacity(0.0);
         equip->setHomePos(_m_layout->m_equipAreas[index].center());
         _m_equipRegions[index]->setToolTip(equip_card->getDescription());
-        _paintPixmap(_m_equipRegions[index], _m_layout->m_equipAreas[index], 
-                     _getEquipPixmap(equip_card), _getEquipParent());
+        QPixmap pixmap = _getEquipPixmap(equip_card);
+        _m_equipLabel[index]->setPixmap(pixmap);
+
+        _mutexEquipAnim.lock();
+        _m_equipRegions[index]->setPos(_m_layout->m_equipAreas[index].topRight());
+        _m_equipRegions[index]->setOpacity(0);
+        _m_equipRegions[index]->show();
+        _m_equipAnim[index]->stop();
+        _m_equipAnim[index]->clear();
+        QPropertyAnimation* anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
+        anim->setEndValue(_m_layout->m_equipAreas[index].topLeft());
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+        anim->setEndValue(255);
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        _m_equipAnim[index]->start();
+        _mutexEquipAnim.unlock();
+        // _paintPixmap(_m_equipRegions[index], _m_layout->m_equipAreas[index], 
+        //             _getEquipPixmap(equip_card), _getEquipParent());
     }
 }
 
@@ -615,7 +638,19 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
         equip->setPos(_m_layout->m_equipAreas[index].center());
         result.append(equip);
         _m_equipCards[index] = NULL;
-        _clearPixmap(_m_equipRegions[index]);
+        _mutexEquipAnim.lock();        
+        _m_equipAnim[index]->stop();
+        _m_equipAnim[index]->clear();
+        QPropertyAnimation* anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
+        anim->setEndValue(_m_layout->m_equipAreas[index].topRight());
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+        anim->setEndValue(0);
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        _m_equipAnim[index]->start();
+        _mutexEquipAnim.unlock();
     }
     return result;
  }
@@ -642,7 +677,10 @@ PlayerCardContainer::PlayerCardContainer()
     for (int i = 0; i < 4; i++) {
         _m_equipCards[i] = NULL;
         _m_equipRegions[i] = NULL;
+        _m_equipAnim[i] = NULL;
+        _m_equipLabel[i] = NULL;
     }
+
     _m_floatingArea = NULL;
     _m_votesGot = 0;
     _m_maxVotes = 1;
@@ -776,8 +814,15 @@ void PlayerCardContainer::_createControls()
 
     for (int i = 0; i < 4; i++)
     {
-        QPixmap emptyPixmap(_m_layout->m_equipAreas[i].size());
-        _m_equipRegions[i] = new QGraphicsPixmapItem(emptyPixmap);
+        _m_equipLabel[i] = new QLabel;
+        _m_equipLabel[i]->setStyleSheet("QLabel{ background-color: transparent;}");
+        _m_equipLabel[i]->setPixmap(QPixmap(_m_layout->m_equipAreas[i].size()));
+        _m_equipRegions[i] = new QGraphicsProxyWidget();
+        _m_equipRegions[i]->setWidget(_m_equipLabel[i]);
+        _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
+        _m_equipRegions[i]->setParentItem(_getEquipParent());
+        _m_equipRegions[i]->hide();
+        _m_equipAnim[i] = new QParallelAnimationGroup;
     }
 
     _m_markItem = new QGraphicsTextItem(_getMarkParent());
@@ -863,4 +908,8 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
     }
 
     return QGraphicsObject::itemChange(change, value);
+}
+
+void PlayerCardContainer::_onEquipSelectChanged()
+{
 }

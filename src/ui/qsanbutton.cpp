@@ -11,7 +11,7 @@
 QSanButton::QSanButton(QGraphicsItem* parent): QGraphicsObject(parent)
 {
     _m_state = S_STATE_UP;
-    _m_style = S_STYLE_PUSH;    
+    _m_style = S_STYLE_PUSH;
     _m_mouseEntered = false;    
     setSize(QSize(0, 0));
     setAcceptsHoverEvents(true);
@@ -43,7 +43,9 @@ QSanButton::QSanButton(const QString &groupName,
 
 void QSanButton::click(){
     if (isEnabled())
-        emit clicked();
+    {
+        _onMouseClick(true);
+    }
 }
 
 QRectF QSanButton::boundingRect() const{
@@ -92,6 +94,7 @@ void QSanButton::setEnabled(bool enabled)
     QGraphicsObject::setEnabled(enabled);
     if (!enabled) setState(S_STATE_DISABLED);
     update();
+    emit enable_changed();
 }
 
 void QSanButton::setState(QSanButton::ButtonState state)
@@ -152,11 +155,8 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
     update();
 }
 
-void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    Q_ASSERT(_m_state != S_STATE_DISABLED);    
-    QPointF point = event->pos();
-    bool inside = insideButton(point);    
-
+void QSanButton::_onMouseClick(bool inside)
+{
     if (_m_style == S_STYLE_PUSH)
     {
         // Q_ASSERT(_m_state == S_STATE_DOWN);
@@ -176,6 +176,14 @@ void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 
     if (inside)
         emit clicked();
+}
+
+void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_ASSERT(_m_state != S_STATE_DISABLED);    
+    QPointF point = event->pos();
+    bool inside = insideButton(point);    
+    _onMouseClick(inside);
 }
 
 bool QSanButton::isDown()

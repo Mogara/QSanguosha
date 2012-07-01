@@ -796,6 +796,8 @@ bool QSanRoomSkin::_loadLayoutConfig()
     tryParse(config["cancelButtonArea"], _m_dashboardLayout.m_cancelButtonArea);
     tryParse(config["discardButtonArea"], _m_dashboardLayout.m_discardButtonArea);
     tryParse(config["trustButtonArea"], _m_dashboardLayout.m_trustButtonArea);
+    tryParse(config["equipBorderPos"], _m_dashboardLayout.m_equipBorderPos);
+    tryParse(config["equipSelectedOffset"], _m_dashboardLayout.m_equipSelectedOffset);
     config = _m_layoutConfig["skillButton"];
     for (int i = 0; i < 3; i++)
     {
