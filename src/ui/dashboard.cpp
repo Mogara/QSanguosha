@@ -352,7 +352,8 @@ QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
         const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard());
         Q_ASSERT(equip);
         const Skill* skill = equip->getSkill();
-        if (!skill) continue;
+        if (skill == NULL) skill = Sanguosha->getSkill(equip->objectName());
+        if (skill == NULL) continue;
         if (skill->objectName() == skillName)
         {
             btn = _m_equipSkillBtns[i];
