@@ -385,7 +385,8 @@ public:
         Room *room = shencc->getRoom();
         int i, x = damage.damage;
         bool can_invoke = false;
-        QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
+        QList<ServerPlayer *> players = room->getAllPlayers();
+        players.removeOne(shencc);
         for(i=0; i<x; i++){
             foreach(ServerPlayer *player, players){
                 if(!player->isAllNude()){

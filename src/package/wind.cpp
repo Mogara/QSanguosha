@@ -222,9 +222,17 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == GameStart && player->isLord()){
-            QList<ServerPlayer *> players = room->getAlivePlayers();
-            foreach(ServerPlayer *p, players){
-                room->attachSkillToPlayer(p, "huangtianv");
+            QList<ServerPlayer *> lords;
+            foreach(ServerPlayer *p, room->getAlivePlayers())
+                if(p->hasLordSkill(objectName()))
+                    lords << p;
+
+            foreach(ServerPlayer *lord, lords){
+                QList<ServerPlayer *> players = room->getOtherPlayers(lord);
+                foreach(ServerPlayer *p, players){
+                    if(!p->hasSkill("huangtianv"))
+                        room->attachSkillToPlayer(p, "huangtianv");
+                }
             }
         }
         else if(event == PhaseChange && player->getPhase() == Player::NotActive){
