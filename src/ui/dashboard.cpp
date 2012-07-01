@@ -565,7 +565,7 @@ void Dashboard::startPending(const ViewAsSkill *skill){
 QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
 {
     QSanSkillButton* btn = _m_skillDock->removeSkillButtonByName(skillName);
-    if (getFilter() == btn->getSkill()){
+    if (btn && getFilter() == btn->getSkill()){
         setFilter(NULL);
     }
     return btn;
