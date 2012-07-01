@@ -472,10 +472,10 @@ sgs.ai_use_priority.MingceCard = 4
 sgs.ai_card_intention.MingceCard = -70
 
 sgs.ai_cardneed.mingce = sgs.ai_cardneed.equip
-local jiejiu_skill={}
-jiejiu_skill.name="jiejiu"
-table.insert(sgs.ai_skills,jiejiu_skill)
-jiejiu_skill.getTurnUseCard=function(self)
+local jinjiu_skill={}
+jinjiu_skill.name="jinjiu"
+table.insert(sgs.ai_skills,jinjiu_skill)
+jinjiu_skill.getTurnUseCard=function(self)
 	local cards = self.player:getCards("h")
 	cards=sgs.QList2Table(cards)
 
@@ -494,18 +494,18 @@ jiejiu_skill.getTurnUseCard=function(self)
 		local suit = anal_card:getSuitString()
 		local number = anal_card:getNumberString()
 		local card_id = anal_card:getEffectiveId()
-		local card_str = ("slash:jiejiu[%s:%s]=%d"):format(suit, number, card_id)
+		local card_str = ("slash:jiejin[%s:%s]=%d"):format(suit, number, card_id)
 		local slash = sgs.Card_Parse(card_str)
 
 		return slash
 	end
 end
 
-sgs.ai_filterskill_filter.jiejiu = function(card, card_place)
+sgs.ai_filterskill_filter.jinjiu = function(card, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:inherits("Analeptic") then return ("slash:jiejiu[%s:%s]=%d"):format(suit, number, card_id) end
+	if card:inherits("Analeptic") then return ("slash:jinjiu[%s:%s]=%d"):format(suit, number, card_id) end
 end
 
 local xianzhen_skill={}
