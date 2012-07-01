@@ -19,7 +19,7 @@ class DujiangCard: public SkillCard{
 public:
     Q_INVOKABLE DujiangCard();
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class FloodCard: public SkillCard{
@@ -28,7 +28,7 @@ class FloodCard: public SkillCard{
 public:
     Q_INVOKABLE FloodCard();
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -38,7 +38,7 @@ class TaichenFightCard: public SkillCard{
 public:
     Q_INVOKABLE TaichenFightCard();
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class ZhiyuanCard: public SkillCard{
@@ -48,7 +48,7 @@ public:
     Q_INVOKABLE ZhiyuanCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 #endif // FANCHENGSCENARIO_H

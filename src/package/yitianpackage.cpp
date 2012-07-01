@@ -62,7 +62,7 @@ bool ChengxiangCard::targetsFeasible(const QList<const Player *> &targets, const
     return targets.length() <= subcardsLength();
 }
 
-void ChengxiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ChengxiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if(targets.isEmpty()){
         QList<ServerPlayer *> to;
         to << source;
@@ -1264,7 +1264,7 @@ XunzhiCard::XunzhiCard(){
     target_fixed = true;
 }
 
-void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     source->drawCards(3);
 
     QList<ServerPlayer *> players = room->getAlivePlayers();
@@ -1561,7 +1561,7 @@ YisheCard::YisheCard(){
     will_throw = false;
 }
 
-void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void YisheCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     const QList<int> rice = source->getPile("rice");
 
     if(subcards.isEmpty()){
@@ -1613,7 +1613,7 @@ YisheAskCard::YisheAskCard(){
     target_fixed = true;
 }
 
-void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void YisheAskCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     ServerPlayer *zhanglu = room->findPlayerBySkillName("yishe");
     if(zhanglu == NULL)
         return;

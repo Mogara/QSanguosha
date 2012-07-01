@@ -476,7 +476,7 @@ bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Play
     return !to_select->isNude();
 }
 
-void XuanfengCard::use(Room *room, ServerPlayer *lingtong, const QList<ServerPlayer *> &targets) const{
+void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *> &targets) const{
     QMap<ServerPlayer*,int> map;
     int totaltarget = 0;
     foreach(ServerPlayer* sp, targets)
@@ -887,7 +887,7 @@ bool GanluCard::targetFilter(const QList<const Player *> &targets, const Player 
     }
 }
 
-void GanluCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void GanluCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *first = targets.first();
     ServerPlayer *second = targets.at(1);
 
@@ -960,7 +960,7 @@ XinzhanCard::XinzhanCard(){
     once = true;
 }
 
-void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void XinzhanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     QList<int> cards = room->getNCards(3), left;
     left = cards;
 

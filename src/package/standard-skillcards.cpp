@@ -12,7 +12,7 @@ ZhihengCard::ZhihengCard(){
     will_throw = true;
 }
 
-void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void ZhihengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->throwCard(this, source);
     if(source->isAlive())
         room->drawCards(source, subcards.length());
@@ -23,7 +23,7 @@ RendeCard::RendeCard(){
     will_throw = false;
 }
 
-void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = NULL;
     if(targets.isEmpty()){
         foreach(ServerPlayer *player, room->getAlivePlayers()){
@@ -151,7 +151,7 @@ KurouCard::KurouCard(){
     target_fixed = true;
 }
 
-void KurouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void KurouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->loseHp(source);
     if(source->isAlive())
         room->drawCards(source, 2);
@@ -176,7 +176,7 @@ bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     return targets.length() == 2;
 }
 
-void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->throwCard(this, source);
     room->broadcastSkillInvoke("lijian");
 
@@ -205,7 +205,7 @@ bool QingnangCard::targetsFeasible(const QList<const Player *> &targets, const P
     return targets.value(0, Self)->isWounded();
 }
 
-void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void QingnangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->throwCard(this, source);
 
     ServerPlayer *target = targets.value(0, source);
@@ -231,7 +231,7 @@ GuicaiCard::GuicaiCard(){
     can_jilei = true;
 }
 
-void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void GuicaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
 
 }
 
@@ -274,7 +274,7 @@ bool JijiangCard::targetFilter(const QList<const Player *> &targets, const Playe
     return targets.isEmpty() && Self->canSlash(to_select);
 }
 
-void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer *> &targets) const{
+void JijiangCard::use(Room *room, ServerPlayer *liubei, QList<ServerPlayer *> &targets) const{
     QList<ServerPlayer *> lieges = room->getLieges("shu", liubei);
     const Card *slash = NULL;
 

@@ -15,7 +15,7 @@ GuidaoCard::GuidaoCard(){
     can_jilei = true;
 }
 
-void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
+void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, QList<ServerPlayer *> &targets) const{
 
 }
 
@@ -58,7 +58,7 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
 HuangtianCard::HuangtianCard(){
 }
 
-void HuangtianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *zhangjiao = targets.first();
     if(zhangjiao->hasLordSkill("huangtian")){
         room->setPlayerFlag(zhangjiao, "HuangtianInvoked");
@@ -300,7 +300,7 @@ bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player
     return true;
 }
 
-void ShensuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->throwCard(this, source);
 
     Slash *slash = new Slash(Card::NoSuit, 0);

@@ -35,7 +35,7 @@ QString Slash::getSubtype() const{
     return "attack_card";
 }
 
-void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if(source->getPhase() == Player::Play
             && source->hasUsed("Slash")
             && source->hasWeapon("crossbow"))
@@ -143,7 +143,7 @@ QString Peach::getSubtype() const{
     return "recover_card";
 }
 
-void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void Peach::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     BasicCard::use(room, source, targets);
     if(targets.isEmpty())
         room->cardEffect(this, source, source);   
@@ -571,7 +571,7 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &card_use) const{
     room->setTag("AmazingGrace", ag_list);
 }
 
-void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
     room->moveCardTo(this, source, NULL, Player::DiscardPile, reason);
 
@@ -687,7 +687,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void SingleTargetTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
 
     CardEffectStruct effect;
     effect.card = this;
@@ -724,26 +724,40 @@ bool Collateral::isAvailable(const Player *player) const{
 }
 
 
-bool Collateral::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool Collateral::targetFilter(const QList<const Player *> &targets, 
+                              const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
-        return false;
+    {
+        Q_ASSERT(targets.length() <= 2);
+        if (targets.length() == 2) return false;
+        const Player* slashFrom = targets[0];
+        if (slashFrom->canSlash(to_select)) return true;
+        else return false;
+    }
     foreach(const Player *p, to_select->getSiblings()){
-        if(to_select->getWeapon() && to_select != Self && to_select->distanceTo(p) <= to_select->getAttackRange())
+        if(to_select->getWeapon() && to_select != Self &&
+            to_select->distanceTo(p) <= to_select->getAttackRange())
             return true;
     }
     return false;
 
 }
 
-void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-
+void Collateral::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    // @todo: this is a MUST FIX in the future. Currently we forged another target to allow UI to
+    // choose the destination of slash, and then remove the fake one only after after Collateral::use
+    // this might be too late consider some triggers are waiting on target confirm. Instead, use
+    // some flag and remove the fake target in the client side before it even reaches the trigger stack.
+    Q_ASSERT(targets.length() == 2);
     ServerPlayer *killer = targets[0];
-    QList<ServerPlayer *> victims = room->getOtherPlayers(killer);
+    /*QList<ServerPlayer *> victims = room->getOtherPlayers(killer);
     foreach(ServerPlayer *p, victims){
         if(!killer->canSlash(p))
             victims.removeOne(p);
-    }
-    ServerPlayer *victim = room->askForPlayerChosen(source, victims,"collateral");
+    }*/
+    QList<ServerPlayer*> victims;
+    ServerPlayer *victim = targets[1]; // room->askForPlayerChosen(source, victims,"collateral");
+    targets.removeAt(1);
     const Weapon *weapon = killer->getWeapon();
 
     if(weapon == NULL)
@@ -779,7 +793,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                 }
             }
             if(killer->hasSkill("lihuo") && slash->inherits("FireSlash"))
-                slash_targets ++;
+                slash_targets++;
 
             if(slash->inherits("WushenSlash")){
                 distance_limit = false;
@@ -813,7 +827,7 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
                     if(slash_targets > 1){
                         victims = room->getOtherPlayers(killer);
                         victims.removeOne(victim);
-                        foreach(ServerPlayer *p, victims){
+                        foreach (ServerPlayer *p, victims){
                             if(killer->distanceTo(p) > killer->getAttackRange())
                                 victims.removeOne(p);
                         }
@@ -902,7 +916,7 @@ Nullification::Nullification(Suit suit, int number)
     setObjectName("nullification");
 }
 
-void Nullification::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void Nullification::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     // does nothing, just throw it
     CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, source->objectName());
     room->moveCardTo(this, source, NULL, Player::DiscardPile, reason);

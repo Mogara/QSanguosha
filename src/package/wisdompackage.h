@@ -29,7 +29,7 @@ class WeidaiCard: public SkillCard{
 public:
     Q_INVOKABLE WeidaiCard();
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class HouyuanCard: public SkillCard{

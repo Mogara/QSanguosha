@@ -1450,7 +1450,7 @@ bool YihunCard::targetsFeasible(const QList<const Player *> &targets, const Play
     return targets.length() == 2;
 }
 
-void YihunCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void YihunCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHp() < selecteds.last()->getHp() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();

@@ -477,7 +477,7 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     thread->trigger(CardFinished, room, player, data);
 }
 
-void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
     }else{

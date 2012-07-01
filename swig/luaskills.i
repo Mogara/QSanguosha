@@ -515,7 +515,7 @@ bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const P
 	}
 }
 
-void LuaSkillCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void LuaSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
 	if(on_use == 0)
 		return SkillCard::use(room, source, targets);
 
