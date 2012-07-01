@@ -244,11 +244,11 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *, QVariant &data) const{
         if(event == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("Slash")){
+            if(use.card->inherits("Slash") && use.from->getWeapon() && use.from->getWeapon()->objectName() == objectName()){
                 bool do_anim = false;
                 foreach(ServerPlayer *p, use.to){
                     p->addMark("qinggang");
-                    if (p->getArmor()  || p->hasSkill("bazhen"))  do_anim = true;
+                    if (p->getArmor() || p->hasSkill("bazhen"))  do_anim = true;
                 }
                 if (do_anim){
                     room->setEmotion(use.from, "weapon/qinggang_sword");
