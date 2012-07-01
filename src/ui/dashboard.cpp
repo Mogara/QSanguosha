@@ -375,6 +375,27 @@ QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
     return btn;
 }
 
+void Dashboard::highlightEquip(QString skillName, bool highlight)
+{
+    QSanSkillButton* btn = NULL;
+    int i = 0;
+    for (i = 0; i < 4; i++)
+    {
+        if (!_m_equipSkillBtns[i]) continue;
+        const Skill* skill = _m_equipSkillBtns[i]->getSkill();
+        Q_ASSERT(skill != NULL);
+        if (skill->objectName() == skillName)
+        {
+            btn = _m_equipSkillBtns[i];
+            break;
+        }
+    }
+    if (btn != NULL)
+    {
+        _setEquipBorderAnimation(i, highlight);
+    }
+}
+
 QPushButton *Dashboard::createButton(const QString &name){
     QPushButton *button = new QPushButton;
     button->setEnabled(false);
@@ -430,6 +451,10 @@ void Dashboard::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         _m_equipSkillBtns[i]->click();        
     }
     else if (to_select->isMarkable()) {
+        // According to the game rule, you cannot select a weapon as a card when
+        // you are invoking the skill of that equip. So something must be wrong.
+        // Crash.
+        Q_ASSERT(_m_equipSkillBtns[i] == NULL || !_m_equipSkillBtns[i]->isDown());
         to_select->mark(!to_select->isMarked());
         update();
     }
@@ -444,7 +469,7 @@ void Dashboard::_onEquipSelectChanged()
         {
             if (_m_equipSkillBtns[i] == btn)
             {
-                _setEquipBorderAnimation(i,btn->isDown());
+                _setEquipBorderAnimation(i, btn->isDown());
                 break;
             }
         }
@@ -490,6 +515,7 @@ void Dashboard::_createEquipBorderAnimations()
 void Dashboard::_setEquipBorderAnimation(int index, bool turnOn)
 {
     QPoint newPos;
+
     if (turnOn)
     {
         newPos = _dlayout->m_equipSelectedOffset + _dlayout->m_equipAreas[index].topLeft();        

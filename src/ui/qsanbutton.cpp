@@ -86,6 +86,7 @@ void QSanButton::setStyle(ButtonStyle style)
 
 void QSanButton::setEnabled(bool enabled)
 {
+    bool changed = (enabled != isEnabled()); 
     if (enabled)
     {
         setState(S_STATE_UP);
@@ -94,7 +95,8 @@ void QSanButton::setEnabled(bool enabled)
     QGraphicsObject::setEnabled(enabled);
     if (!enabled) setState(S_STATE_DISABLED);
     update();
-    emit enable_changed();
+    if (changed)
+        emit enable_changed();
 }
 
 void QSanButton::setState(QSanButton::ButtonState state)

@@ -1826,6 +1826,8 @@ void RoomScene::useSelectedCard(){
 
     case Client::AskForSkillInvoke:{
             prompt_box->disappear();
+            QString skill_name = ClientInstance->getSkillNameToInvoke();
+            dashboard->highlightEquip(skill_name, false);
             ClientInstance->onPlayerInvokeSkill(true);
             break;
         }
@@ -2115,11 +2117,12 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     case Client::AskForSkillInvoke:{
             QString skill_name = ClientInstance->getSkillNameToInvoke();
+            dashboard->highlightEquip(skill_name, true);
             // @todo: refactor this
             foreach (QSanSkillButton *button, m_skillButtons){
                 if (button->getSkill()->objectName() == skill_name) {
                     if (button->getStyle() == QSanSkillButton::S_STYLE_TOGGLE
-                        && button->isDown()) {
+                        && button->isEnabled() && button->isDown()) {
                         ClientInstance->onPlayerInvokeSkill(true);
                         return;
                     }
@@ -2312,6 +2315,8 @@ void RoomScene::doCancelButton(){
         }
 
     case Client::AskForSkillInvoke:{
+            QString skill_name = ClientInstance->getSkillNameToInvoke();
+            dashboard->highlightEquip(skill_name, false);
             ClientInstance->onPlayerInvokeSkill(false);
             prompt_box->disappear();
             break;

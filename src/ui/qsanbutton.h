@@ -45,6 +45,8 @@ protected:
     QString _m_buttonName;
     QRegion _m_mask;
     QSize _m_size;
+    // @todo: currently this is an extremely dirty hack. Refactor the button states to
+    // get rid of it.
     bool _m_mouseEntered;
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
 signals:

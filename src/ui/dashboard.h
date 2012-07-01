@@ -37,6 +37,8 @@ public:
     QSanSkillButton *removeSkillButton(const QString &skillName);
     QSanSkillButton *addSkillButton(const QString &skillName);
     bool isAvatarUnderMouse();
+    
+    void highlightEquip(QString skillName, bool hightlight);
 
     void setTrust(bool trust);    
     void selectCard(const QString &pattern, bool forward = true);
@@ -147,7 +149,7 @@ protected:
     // for equip skill/selections
     PixmapAnimation* _m_equipBorders[4];
     QSanSkillButton* _m_equipSkillBtns[4];
-    
+
     void _createEquipBorderAnimations();
     void _setEquipBorderAnimation(int index, bool turnOn);
 
