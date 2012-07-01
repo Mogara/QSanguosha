@@ -329,7 +329,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool is
         {
             if (fileNames.length() >= index) return fileNames[index - 1];
             else return fileNames[qrand() % fileNames.length()];
-        }
+    }
     }
 
     if(fileName.isEmpty())
@@ -341,12 +341,12 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool is
         {
             if (index == -1)
                 fileName = fileNames.at(qrand() % fileNames.length());
-            else
-            {
+        else
+        {
                 if (fileNames.length() >= index) return fileNames[index - 1];
                 else return fileNames[qrand() % fileNames.length()];
-            }
         }
+    }
     }
 
     if(fileName.isEmpty())
