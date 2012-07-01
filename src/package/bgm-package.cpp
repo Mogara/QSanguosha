@@ -717,7 +717,7 @@ public:
             ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, "zhaolie");
             for(int i = 0; i < 3; i++){
                 int card_id = room->drawCard();
-                room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
+                room->moveCardTo(Sanguosha->getCard(card_id), liubei, Player::Special, true);
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);
