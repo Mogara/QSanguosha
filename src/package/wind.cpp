@@ -204,7 +204,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -390,7 +390,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event , Room* room, ServerPlayer *player, QVariant &data) const{
@@ -434,7 +434,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

@@ -24,7 +24,7 @@ GameRule::GameRule(QObject *)
             << StartJudge << FinishJudge << Pindian;
 }
 
-bool GameRule::triggerable(const ServerPlayer *) const{
+bool GameRule::triggerable(const ServerPlayer *target) const{
     return true;
 }
 

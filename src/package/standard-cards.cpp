@@ -248,7 +248,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *, QVariant &data) const{
         if(event == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("Slash")){
+            if(use.card->inherits("Slash") && use.from->getWeapon() && use.from->getWeapon()->objectName() == objectName()){
                 bool do_anim = false;
                 foreach(ServerPlayer *p, use.to){
                     p->addMark("qinggang");

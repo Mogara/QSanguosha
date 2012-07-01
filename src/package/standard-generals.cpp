@@ -36,7 +36,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("hujia");
+        return target != NULL && target->hasLordSkill("hujia");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *caocao, QVariant &data) const{
@@ -304,7 +304,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasFlag("luoyi") && target->isAlive();
+        return target != NULL && target->hasFlag("luoyi") && target->isAlive();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *xuchu, QVariant &data) const{
@@ -615,7 +615,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -774,7 +774,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("jiuyuan");
+        return target != NULL && target->hasLordSkill("jiuyuan");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sunquan, QVariant &data) const{
@@ -1085,7 +1085,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

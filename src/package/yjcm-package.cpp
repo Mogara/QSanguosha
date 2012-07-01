@@ -177,18 +177,18 @@ public:
 class Wuyan: public TriggerSkill{
 public:
     Wuyan():TriggerSkill("wuyan"){
-        events << DamageForseen << Predamage;
+        events << DamageCaused << DamageInflicted;
         frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->getTypeId() == Card::Trick){
-            if(event == DamageForseen && player->hasSkill(objectName())){
+            if(event == DamageInflicted && player->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanGood";
                 log.from = player;
@@ -200,7 +200,7 @@ public:
 				return true;
 			}
 
-			if(event == Predamage && damage.from && damage.from->hasSkill(objectName())){
+            if(event == DamageCaused && damage.from && damage.from->isAlive() && damage.from->hasSkill(objectName())){
 				LogMessage log;
 				log.type = "#WuyanBad";
 				log.from = player;
@@ -370,7 +370,19 @@ bool XuanhuoCard::targetFilter(const QList<const Player *> &targets, const Playe
 void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->drawCards(effect.to,2);
-    QString choice = room->askForChoice(effect.to, "xuanhuo", "slash+give");
+
+    QString choice;
+    bool can_use = false;
+    foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
+        if (effect.to->inMyAttackRange(p))
+            can_use = true;
+    }
+    if (can_use){
+        choice = room->askForChoice(effect.to, "xuanhuo", "slash+give");
+    }
+    else
+        choice = "give";
+
     if(choice == "slash"){
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *victim, room->getOtherPlayers(effect.to)){
@@ -458,7 +470,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-		return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -506,7 +518,7 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, const QList<ServerPla
     int totaltarget = 0;
     foreach(ServerPlayer* sp, targets)
         map[sp]++;
-    foreach(ServerPlayer* sp,map.keys()){
+    for (int i = 0; i < map.keys().size(); i++) {
         totaltarget++;
     }
     // only chose one and throw only one card of him is forbiden
@@ -573,10 +585,21 @@ public:
             Room *room = lingtong->getRoom();
             if(lingtong->tag.value("InvokeXuanfeng", false).toBool()){
                 lingtong->tag.remove("InvokeXuanfeng");
-                QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
+                Room *room = lingtong->getRoom();
+                bool can_invoke = false;
+                QList<ServerPlayer *> other_players = room->getOtherPlayers(lingtong);
+                foreach(ServerPlayer *player, other_players){
+                    if(!player->isNude()){
+                        can_invoke = true;
+                        break;
+                    }
+                }
+                if(can_invoke){
+                    QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
                     if(choice == "throw"){
                         room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
                     }
+                }
             }
         }else if(event == PhaseChange && lingtong->getPhase() == Player::Finish){
             lingtong->setMark("xuanfeng", 0);
@@ -600,9 +623,12 @@ public:
         if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer &&
            player->askForSkillInvoke(objectName(), data))
         {
-            player->getRoom()->playSkillEffect(objectName());
 
             int x = qMin(5, damage.to->getHp());
+                if (x >= 3)
+                    player->getRoom()->playSkillEffect(objectName(), 2);
+                else
+                    player->getRoom()->playSkillEffect(objectName(), 1);
             damage.to->drawCards(x);
             damage.to->turnOver();
         }
@@ -705,7 +731,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill("xianzhen");
+        return target != NULL && target->hasSkill("xianzhen");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
@@ -723,10 +749,9 @@ public:
     }
 };
 
-
-class Jiejiu: public FilterSkill{
+class Jinjiu: public FilterSkill{
 public:
-    Jiejiu():FilterSkill("jiejiu"){
+    Jinjiu():FilterSkill("jinjiu"){
 
     }
 
@@ -753,7 +778,18 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(this);
 
     Room *room = effect.to->getRoom();
-    QString choice = room->askForChoice(effect.to, "mingce", "use+draw");
+    QString choice;
+    bool can_use = false;
+    foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
+        if (effect.to->inMyAttackRange(p))
+            can_use = true;
+    }
+    if (can_use){
+        choice = room->askForChoice(effect.to, "mingce", "use+draw");
+    }
+    else
+        choice = "draw";
+
     if(choice == "use"){
         QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), targets;
         foreach(ServerPlayer *player, players){
@@ -800,7 +836,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
@@ -940,7 +976,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
-        return !player->isKongcheng();
+        return player != NULL && !player->isKongcheng();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1199,7 +1235,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *gaoshun = new General(this, "gaoshun", "qun");
     gaoshun->addSkill(new Xianzhen);
-    gaoshun->addSkill(new Jiejiu);
+    gaoshun->addSkill(new Jinjiu);
 
     General *lingtong = new General(this, "lingtong", "wu");
     lingtong->addSkill(new Xuanfeng);

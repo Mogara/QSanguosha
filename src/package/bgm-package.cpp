@@ -121,7 +121,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasUsed("LihunCard");
+        return target != NULL && target->hasUsed("LihunCard");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *diaochan, QVariant &data) const{
@@ -467,8 +467,8 @@ public:
         view_as_skill = new DaheViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *) const{
-        return true;
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -520,7 +520,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
@@ -786,7 +786,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
-        return true;
+        return player != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

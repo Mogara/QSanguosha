@@ -69,7 +69,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{

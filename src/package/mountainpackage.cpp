@@ -151,7 +151,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && !target->isKongcheng();
+        return target != NULL && PhaseChangeSkill::triggerable(target) && !target->isKongcheng();
     }
 
     virtual bool onPhaseChange(ServerPlayer *zhanghe) const{
@@ -180,7 +180,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -615,7 +615,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -838,7 +838,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -869,7 +869,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill("guzheng");
+        return target != NULL && !target->hasSkill("guzheng");
     }
 
     virtual int getPriority() const{
@@ -1026,7 +1026,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getPhase() == Player::Start
+        return target != NULL && target->getPhase() == Player::Start
                 && target->hasLordSkill("ruoyu")
                 && target->isAlive()
                 && target->getMark("ruoyu") == 0;

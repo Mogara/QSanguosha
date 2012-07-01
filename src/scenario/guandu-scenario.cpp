@@ -128,7 +128,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getGeneralName() == "zhangliao"
+        return target != NULL && target->getGeneralName() == "zhangliao"
                 && ! target->getRoom()->getTag("BurnWuchao").toBool();
     }
 

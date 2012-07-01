@@ -44,7 +44,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill("wuhun");
+        return target != NULL && target->hasSkill("wuhun");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *shenguanyu, QVariant &) const{
@@ -563,7 +563,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill("wuqian");
+        return target != NULL && target->hasSkill("wuqian");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -620,7 +620,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getMark("@star") > 0;
+        return target != NULL && PhaseChangeSkill::triggerable(target) && target->getMark("@star") > 0;
     }
 
     static void Exchange(ServerPlayer *shenzhuge){
@@ -759,7 +759,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@gale") > 0;
+        return target != NULL && target->getMark("@gale") > 0;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -815,7 +815,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
@@ -879,7 +879,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@fog") > 0;
+        return target != NULL && target->getMark("@fog") > 0;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -934,7 +934,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -965,7 +965,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::Start
                 && target->getMark("baiyin") == 0
                 && target->getMark("@bear") >= 4;
@@ -1048,7 +1048,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target)
+        return target != NULL && TriggerSkill::triggerable(target)
                 && target->getMark("@bear") > 0;
     }
 
@@ -1094,7 +1094,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::NotActive
                 && target->tag.value("JilveWansha").toBool();
     }
@@ -1117,7 +1117,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1152,7 +1152,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
