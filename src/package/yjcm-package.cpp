@@ -1089,6 +1089,7 @@ public:
         Room *room = zhonghui->getRoom();
 
         room->setPlayerMark(zhonghui, "zili", 1);
+        zhonghui->gainMark("@waked");
         room->loseMaxHp(zhonghui);
 
         LogMessage log;

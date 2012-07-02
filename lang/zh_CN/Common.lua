@@ -154,4 +154,6 @@ return {
 	["custom"] = "自定义模式",
 	["UnknowNick"] = "无称号",
 	["DefaultIllustrator"] = "KayaK",
+	
+	["@waked"] = "觉醒",
 }

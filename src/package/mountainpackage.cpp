@@ -376,6 +376,7 @@ public:
         Room *room = dengai->getRoom();
 
         room->setPlayerMark(dengai, "zaoxian", 1);
+        dengai->gainMark("@waked");
         room->loseMaxHp(dengai);
 
         LogMessage log;
@@ -777,6 +778,7 @@ public:
             room->drawCards(jiangwei, 2);
 
         room->setPlayerMark(jiangwei, "zhiji", 1);
+        jiangwei->gainMark("@waked");
         room->acquireSkill(jiangwei, "guanxing");
 
         room->loseMaxHp(jiangwei);
@@ -1058,6 +1060,7 @@ public:
             room->sendLog(log);
 
             room->setPlayerMark(liushan, "ruoyu", 1);
+            liushan->gainMark("@waked");
             room->setPlayerProperty(liushan, "maxhp", liushan->getMaxHp() + 1);
 
             RecoverStruct recover;

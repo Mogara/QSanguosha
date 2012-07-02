@@ -993,11 +993,12 @@ public:
         log.from = shensimayi;
         log.arg = QString::number(shensimayi->getMark("@bear"));
         room->sendLog(log);
-
+        
+        room->setPlayerMark(shensimayi, "baiyin", 1);
+        shensimayi->gainMark("@waked");
         room->loseMaxHp(shensimayi);
         room->acquireSkill(shensimayi, "jilve");
 
-        shensimayi->setMark("baiyin", 1);
 
         return false;
     }
