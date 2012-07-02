@@ -87,6 +87,7 @@ void QSanButton::setStyle(ButtonStyle style)
 void QSanButton::setEnabled(bool enabled)
 {
     bool changed = (enabled != isEnabled()); 
+    if (!changed) return;
     if (enabled)
     {
         setState(S_STATE_UP);
@@ -95,8 +96,7 @@ void QSanButton::setEnabled(bool enabled)
     QGraphicsObject::setEnabled(enabled);
     if (!enabled) setState(S_STATE_DISABLED);
     update();
-    if (changed)
-        emit enable_changed();
+    emit enable_changed();
 }
 
 void QSanButton::setState(QSanButton::ButtonState state)
@@ -122,7 +122,6 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     _m_mouseEntered = true;    
     if (_m_state == S_STATE_UP){
         setState(S_STATE_HOVER);
-        update();
     }
 }
 
@@ -134,7 +133,6 @@ void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     if (_m_state == S_STATE_HOVER)
         setState(S_STATE_UP);
     _m_mouseEntered = false;
-    update();
 }
 
 void QSanButton::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
@@ -154,7 +152,6 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if (_m_style == S_STYLE_TOGGLE)
         return;    
     setState(S_STATE_DOWN);
-    update();
 }
 
 void QSanButton::_onMouseClick(bool inside)
