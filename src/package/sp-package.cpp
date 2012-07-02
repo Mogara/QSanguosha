@@ -303,10 +303,9 @@ void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 }
 
-class Weidi:public ZeroCardViewAsSkill{
+class WeidiViewAsSkill:public ZeroCardViewAsSkill{
 public:
-    Weidi():ZeroCardViewAsSkill("weidi"){
-        frequency = Compulsory;
+    WeidiViewAsSkill():ZeroCardViewAsSkill("weidi"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -319,6 +318,18 @@ public:
     }
 };
 
+class Weidi:public GameStartSkill{
+public:
+    Weidi():GameStartSkill("weidi"){
+        frequency = Compulsory;
+        view_as_skill = new WeidiViewAsSkill;
+    }
+
+    virtual void onGameStart(ServerPlayer *) const{
+        // do nothing
+        return;
+    }
+};
 
 class Yicong: public DistanceSkill{
 public:

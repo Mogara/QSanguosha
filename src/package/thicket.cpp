@@ -994,8 +994,8 @@ ThicketPackage::ThicketPackage()
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Wansha);
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
-    jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new Weimu);
+    jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new SPConvertSkill("guiwei", "jiaxu", "sp_jiaxu"));
     related_skills.insertMulti("luanwu", "#@chaos-1");
 
