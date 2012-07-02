@@ -411,7 +411,6 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
 	foreach(QListWidget * alist , lists)
 	{
 		if(alist->objectName() == "Pairs")continue;
-		alist->setIconSize(General::TinyIconSize);
 		alist->setViewMode(QListView::IconMode);
 		alist->setDragDropMode(QListView::NoDragDrop);
 	}
@@ -757,7 +756,6 @@ void Select3v3GeneralDialog::fillTabWidget(){
 		case Package::GeneralPack:
 		case Package::MixedPack: {
 				QListWidget *list = new QListWidget;
-				list->setIconSize(General::TinyIconSize);
 				list->setViewMode(QListView::IconMode);
 				list->setDragDropMode(QListView::NoDragDrop);
 				fillListWidget(list, package);

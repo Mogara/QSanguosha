@@ -179,9 +179,10 @@ public:
         QRect m_saveMeIconRegion;
         QRect m_chainedIconRegion;
         QRect m_readyIconRegion;        
-        QRect m_deathIconRegion;
+        AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
         QColor m_drankMaskColor;
+        QColor m_deathEffectColor;
     };
 
     struct PhotoLayout : public PlayerCardContainerLayout

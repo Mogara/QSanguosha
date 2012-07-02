@@ -103,8 +103,9 @@
     "votesIconRegion": [5, 10, 25, 35],
     "chainedIconRegion": [0, 81, 156, 19],
     "readyIconRegion": [97, 125, 44, 53],
-    "deathIconRegion": [0, 50, 157, 102],
-    "drankMaskColor": [250, 0, 0, 115]
+    "deathIconRegion": [17, 55, 118, 75],
+    "drankMaskColor": [250, 0, 0, 115],
+    "deathEffectColor": [50, 50, 50, 255]
 },
 "dashboard":
 {
@@ -167,7 +168,7 @@
     "votesIconRegion": [59, 54, 25, 35],
     "chainedIconRegion": [8, 100, 134, 19],
     "readyIconRegion": [86, 102, 44, 53],
-    "deathIconRegion": [4, 73, 147, 52],
+    "deathIconRegion": ["center", "center", [0, 0], [118, 75]],
     "drankMaskColor": [250, 0, 0, 115],
     "buttonSetSize": [106, 168],
     "confirmButtonArea": [5, 3, 61, 75],

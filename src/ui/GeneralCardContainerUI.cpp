@@ -3,6 +3,7 @@
 #include <qpropertyanimation.h>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
+#include <QGraphicsColorizeEffect>
 #include <qpushbutton.h>
 #include <qtextdocument.h>
 #include <qmenu.h>
@@ -392,11 +393,6 @@ void PlayerCardContainer::refresh()
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
     }
-    if (m_player && m_player->isDead())
-    {
-        _paintPixmap(_m_deathIcon, _m_layout->m_deathIconRegion,
-            QPixmap(m_player->getDeathPixmapPath()), this);
-    }
     else if(m_player)
     {
         _m_faceTurnedIcon->setVisible(!m_player->faceUp());
@@ -681,6 +677,7 @@ PlayerCardContainer::PlayerCardContainer()
         _m_equipLabel[i] = NULL;
     }
 
+    _m_deathEffect = NULL;
     _m_floatingArea = NULL;
     _m_votesGot = 0;
     _m_maxVotes = 1;
@@ -745,7 +742,6 @@ void PlayerCardContainer::_adjustComponentZValues()
     _layUnder(_m_handCardBg);
     _layUnder(_m_readyIcon);
     _layUnder(_m_actionIcon);
-    _layUnder(_m_deathIcon);
     _layUnder(_m_saveMeIcon);
     _layUnder(_m_phaseIcon);
     _layUnder(_m_smallAvatarNameItem);
@@ -828,6 +824,10 @@ void PlayerCardContainer::_createControls()
     _m_markItem = new QGraphicsTextItem(_getMarkParent());
     _m_markItem->setDefaultTextColor(Qt::white);
 
+    QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
+    effect->setColor(_m_layout->m_deathEffectColor);
+    effect->setStrength(1.0);
+    _m_deathEffect = effect;
     _createRoleComboBox();
     repaintAll();
 }
@@ -835,18 +835,26 @@ void PlayerCardContainer::_createControls()
 void PlayerCardContainer::killPlayer()
 {
     _m_roleComboBox->fix(m_player->getRole());
-    updateAvatar();
-    updateSmallAvatar();
+    QRect deathArea = _m_layout->m_deathIconRegion.getTranslatedRect(
+        _getDeathIconParent()->boundingRect().toRect());
+    _paintPixmap(_m_deathIcon, deathArea,
+        QPixmap(m_player->getDeathPixmapPath()),  _getDeathIconParent());
+    QPointF scenePos = _getDeathIconParent()->mapToScene(_m_deathIcon->pos());
+    _m_deathIcon->setPos(scenePos);
+    _m_deathIcon->setParentItem(NULL);
+    _m_deathIcon->setZValue(this->zValue() + 10);
+    _m_saveMeIcon->hide();
+    this->setGraphicsEffect(_m_deathEffect);
     refresh();
     _m_deathIcon->show();
 }
 
 void PlayerCardContainer::revivePlayer()
 {
-    updateAvatar();
-    updateSmallAvatar();
-    refresh();
+    this->setGraphicsEffect(NULL);
+    Q_ASSERT(_m_deathIcon);
     _m_deathIcon->hide();
+    refresh();    
 }
 
 void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)

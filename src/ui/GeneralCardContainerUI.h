@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <qparallelanimationgroup.h>
+#include <qgraphicseffect.h>
 #include "QSanSelectableItem.h"
 #include <QMutex>
 #include <qvariant.h>
@@ -99,6 +100,7 @@ protected:
     virtual QGraphicsItem* _getPileParent() = 0;
     virtual QGraphicsItem* _getFocusFrameParent() = 0;
     virtual QGraphicsItem* _getProgressBarParent() = 0;
+    virtual QGraphicsItem* _getDeathIconParent() = 0;
     virtual QString getResourceKeyName() = 0;
 
     void _createRoleComboBox();    
@@ -148,6 +150,7 @@ protected:
     QGraphicsPixmapItem *_m_phaseIcon;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame;
+    QGraphicsEffect* _m_deathEffect;
     QMap<QString, QGraphicsProxyWidget*> _m_privatePiles;
 
     // The frame that is maintained by roomscene. Items in this area has positions

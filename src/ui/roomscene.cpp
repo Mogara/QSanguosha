@@ -2047,10 +2047,6 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             if(dashboard->currentSkill())
                 dashboard->stopPending();
 
-            foreach(Photo *photo, photos){
-                photo->setOpacity(photo->getPlayer()->isAlive() ? 1.0 : 0.7);
-            }
-
             dashboard->hideProgressBar();
 
             break;
@@ -2674,13 +2670,15 @@ void DamageMakerDialog::disableSource(){
 void RoomScene::FillPlayerNames(QComboBox *ComboBox, bool add_none){
     if(add_none)
         ComboBox->addItem(tr("None"), ".");
-
-    ComboBox->setIconSize(General::TinyIconSize);
-
+    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(Self->getGeneralName(),
+                          QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+    ComboBox->setIconSize(pixmap.size());
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         QString general_name = Sanguosha->translate(player->getGeneralName());
         if(!player->getGeneral()) continue;
-        ComboBox->addItem(QIcon(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY)),
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(),
+                          QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+        ComboBox->addItem(QIcon(pixmap),
                           QString("%1 [%2]").arg(general_name).arg(player->screenName()),
                           player->objectName());
     }
@@ -2818,7 +2816,6 @@ void RoomScene::killPlayer(const QString &who){
         Photo *photo = name2photo[who];
         photo->killPlayer();
         photo->setFrame(Photo::S_FRAME_NO_FRAME);
-        photo->setOpacity(0.7);
         photo->update();
         item2player.remove(photo);
 
@@ -2841,7 +2838,6 @@ void RoomScene::revivePlayer(const QString &who){
     }else{
         Photo *photo = name2photo[who];
         photo->revivePlayer();
-
         item2player.insert(photo, photo->getPlayer());
     }
 }
@@ -3022,8 +3018,6 @@ void KOFOrderBox::killPlayer(const QString &general_name){
             QPixmap pixmap("image/system/death/unknown.png");
             QGraphicsPixmapItem *death = new QGraphicsPixmapItem(pixmap, avatar);
             death->moveBy(10, 0);
-
-            avatar->setOpacity(0.7);
             avatar->makeGray();
             avatar->setEnabled(false);
 

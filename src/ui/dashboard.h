@@ -95,6 +95,7 @@ protected:
     inline virtual QGraphicsItem* _getPileParent() { return _m_rightFrame; }
     inline virtual QGraphicsItem* _getProgressBarParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem* _getFocusFrameParent() { return _m_rightFrame; }
+    inline virtual QGraphicsItem* _getDeathIconParent() { return _m_middleFrame;}
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
     
     bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
