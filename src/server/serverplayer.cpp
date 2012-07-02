@@ -897,3 +897,8 @@ void ServerPlayer::copyFrom(ServerPlayer* sp)
     Player* c = b;
     c->copyFrom(a);
 }
+
+bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
+    Room *room = a->getRoom();
+    return room->getFront(a, b) == a;
+}

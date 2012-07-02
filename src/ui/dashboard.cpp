@@ -362,8 +362,9 @@ QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
     }
     _mutexEquipAnim.unlock();
     if (btn == NULL) btn  = _m_skillDock->removeSkillButtonByName(skillName);
-    Q_ASSERT(btn != NULL);
-    if (getFilter() == btn->getSkill()){
+    //Q_ASSERT(btn != NULL);
+    //Be care LordSkill and SPConvertSkill
+    if (btn != NULL && getFilter() == btn->getSkill()){
         setFilter(NULL);
     }    
     return btn;

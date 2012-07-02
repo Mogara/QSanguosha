@@ -172,12 +172,6 @@ public:
     }
 };
 
-static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
-    Room *room = a->getRoom();
-
-    return room->getFront(a, b) == a;
-}
-
 void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point) const{
     DamageStruct damage;
 
@@ -251,7 +245,7 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
             room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
         else
             room->broadcastInvoke("animate", "lightbox:$greatyeyan");
-        qSort(map.keys().begin(), map.keys().end(), CompareByActionOrder);
+        qSort(map.keys().begin(), map.keys().end(), ServerPlayer::CompareByActionOrder);
         foreach(ServerPlayer* sp,map.keys())
             damage(shenzhouyu, sp, map[sp]);
     }
@@ -275,7 +269,7 @@ void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
     room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
     QList<ServerPlayer *> players = targets;
-    qSort(players.begin(), players.end(), CompareByActionOrder);
+    qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
     Card::use(room, shenzhouyu, players);
 }
 

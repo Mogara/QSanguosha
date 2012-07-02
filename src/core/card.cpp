@@ -431,12 +431,6 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_s
     return canSelect;
 }
 
-static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
-    Room *room = a->getRoom();
-
-    return room->getFront(a, b) == a;
-}
-
 void Card::doPreAction(Room *, const CardUseStruct &) const{
 
 }
@@ -482,7 +476,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         room->cardEffect(this, source, targets.first());
     }else{
         QList<ServerPlayer *> players = targets;
-        qSort(players.begin(), players.end(), CompareByActionOrder);
+        qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
 
         if(room->getMode() == "06_3v3"){
            if(inherits("AOE") || inherits("GlobalEffect"))
