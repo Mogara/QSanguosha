@@ -1452,9 +1452,9 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
         foreach (CardItem* card, cards)
         {      
             card->setEnabled(false);
-            card->setHomePos(from_container->mapToScene(card->homePos()));
-            card->setPos(from_container->mapToScene(card->pos()));
-            card->setParentItem(NULL);
+            // card->setHomePos(from_container->mapToScene(card->homePos()));
+            // card->setPos(from_container->mapToScene(card->pos()));
+            // card->setParentItem(NULL);
         }
         _m_cardsMoveStash[moveId].append(cards);
         keepLoseCardLog(movement);

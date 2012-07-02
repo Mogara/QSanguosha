@@ -166,8 +166,8 @@ QList<CardItem*> Photo::removeCardItems(const QList<int> &card_ids, Player::Plac
 {
     QList<CardItem*> result;    
     if(place == Player::PlaceHand || place == Player::PlaceSpecial){
-         result = _createCards(card_ids);
-         updateHandcardNum();
+        result = _createCards(card_ids);
+        updateHandcardNum();
     }else if(place == Player::PlaceEquip){
         result = removeEquips(card_ids);
     }else if(place == Player::PlaceDelayedTrick){
@@ -177,7 +177,7 @@ QList<CardItem*> Photo::removeCardItems(const QList<int> &card_ids, Player::Plac
     // if it is just one card from equip or judge area, we'd like to keep them
     // to start from the equip/trick icon.
     if (result.size() > 1 || (place != Player::PlaceEquip && place != Player::PlaceDelayedTrick))
-        _disperseCards(result, G_PHOTO_LAYOUT.m_cardMoveRegion, Qt::AlignCenter, true, false);
+        _disperseCards(result, G_PHOTO_LAYOUT.m_cardMoveRegion, Qt::AlignCenter, false, false);
     
     update();
     return result;
