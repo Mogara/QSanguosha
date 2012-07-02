@@ -942,7 +942,7 @@ public:
         else if(event == TargetConfirmed){
 
             CardUseStruct use = data.value<CardUseStruct>();
-            if(!use.to.contains(daqiao) || !daqiao->hasSkill(objectName()))
+            if(!use.to.contains(daqiao) || !daqiao->hasSkill(objectName()) || daqiao->isKongcheng())
                 return false;
             if(use.card && use.card->inherits("Slash")){
                 if(room->askForCard(daqiao, ".", "@anxian-discard", QVariant(), CardDiscarded)){

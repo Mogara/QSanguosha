@@ -1169,7 +1169,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         if(player->isWounded())
-            player->getRoom()->playSkillEffect(objectName());
+            player->getRoom()->playSkillEffect("juejing");
         return n + player->getLostHp();
     }
 };
