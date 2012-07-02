@@ -279,16 +279,16 @@ void QSanSkillButton::setSkill(const Skill* skill)
          _setSkillType(QSanInvokeSkillButton::S_SKILL_AWAKEN);
          _m_emitActivateSignal = false;
          _m_emitDeactivateSignal = false;
-         _m_canEnable = false;
-         _m_canDisable = false;
+         _m_canEnable = true;
+         _m_canDisable = true;
      } else if (freq == Skill::Compulsory) {
          setState(QSanButton::S_STATE_DISABLED);
          setStyle(QSanButton::S_STYLE_PUSH);
          _setSkillType(QSanInvokeSkillButton::S_SKILL_COMPULSORY);
-         setEnabled(false);
          _m_emitActivateSignal = false;
          _m_emitDeactivateSignal = false;
          _m_canEnable = false;
+         _m_canDisable = true;
      } else Q_ASSERT(false);
      setToolTip(skill->getDescription());
 

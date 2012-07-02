@@ -2203,11 +2203,16 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     foreach (QSanSkillButton *button, m_skillButtons){
         Q_ASSERT(button != NULL);
-        const ViewAsSkill* skill = button->getViewAsSkill();
-        if (skill != NULL)
-            button->setEnabled(skill->isAvailable());
-        else
-            button->setEnabled(false);
+        const ViewAsSkill* vsSkill = button->getViewAsSkill();
+        if (vsSkill != NULL)
+            button->setEnabled(vsSkill->isAvailable());
+        else{
+            const Skill *skill = button->getSkill();
+            if(skill->getFrequency() == Skill::Wake)
+                button->setEnabled(Self->getMark(skill->objectName()) > 0);
+            else
+                button->setEnabled(false);
+        }
     }
 
     if(ServerInfo.OperationTimeout == 0)
