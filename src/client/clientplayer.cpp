@@ -108,7 +108,7 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
     else
         foreach (int card_id, card_ids){
             //todo: Fix it !!!
-            if(piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !card_ids.contains(card_id))
+            if(piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
                 piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
             else piles[name].removeOne(card_id);
         }

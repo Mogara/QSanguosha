@@ -643,14 +643,15 @@ public:
 
         Room *room = shenzhuge->getRoom();
         room->broadcastSkillInvoke("qixing");
-        room->fillAG(stars, shenzhuge);
 
         int ai_delay = Config.AIDelay;
         Config.AIDelay = 0;
 
         int n = 0;
         while(!stars.isEmpty()){
+            room->fillAG(stars, shenzhuge);
             int card_id = room->askForAG(shenzhuge, stars, true, "qixing");
+            shenzhuge->invoke("clearAG");
             if(card_id == -1)
                 break;
 
@@ -663,7 +664,6 @@ public:
 
         Config.AIDelay = ai_delay;
 
-        shenzhuge->invoke("clearAG");
 
         if(n == 0)
             return;
@@ -685,17 +685,18 @@ public:
 
     static void DiscardStar(ServerPlayer *shenzhuge, int n, QString skillName){
         Room *room = shenzhuge->getRoom();
-        const QList<int> stars = shenzhuge->getPile("stars");
+        QList<int> stars = shenzhuge->getPile("stars");
 
-        room->fillAG(stars, shenzhuge);
 
         for(int i = 0; i < n; i++){
+            room->fillAG(stars, shenzhuge);
             int card_id = room->askForAG(shenzhuge, stars, false, "qixing-discard");
+            shenzhuge->invoke("clearAG");
+            stars.removeOne(card_id);
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), skillName, QString());
             room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
         }
 
-        shenzhuge->invoke("clearAG");
     }
 
     virtual bool onPhaseChange(ServerPlayer *shenzhuge) const{
