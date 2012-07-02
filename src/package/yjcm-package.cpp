@@ -582,10 +582,8 @@ public:
                 }
             }
         }else if(event == CardLostDone){
-            Room *room = lingtong->getRoom();
             if(lingtong->tag.value("InvokeXuanfeng", false).toBool()){
                 lingtong->tag.remove("InvokeXuanfeng");
-                Room *room = lingtong->getRoom();
                 bool can_invoke = false;
                 QList<ServerPlayer *> other_players = room->getOtherPlayers(lingtong);
                 foreach(ServerPlayer *player, other_players){
