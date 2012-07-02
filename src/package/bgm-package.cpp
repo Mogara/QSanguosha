@@ -126,7 +126,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasUsed("LihunCard");
+        return target != NULL && target->hasUsed("LihunCard");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *diaochan, QVariant &data) const{
@@ -449,7 +449,7 @@ bool DaheCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void DaheCard::use(Room *room, ServerPlayer *zhangfei, const QList<ServerPlayer *> &targets) const{
+void DaheCard::use(Room *room, ServerPlayer *zhangfei, QList<ServerPlayer *> &targets) const{
     zhangfei->pindian(targets.first(), "dahe", this);
 }
 
@@ -481,8 +481,8 @@ public:
         view_as_skill = new DaheViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *) const{
-        return true;
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -534,7 +534,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
@@ -575,7 +575,7 @@ bool TanhuCard::targetFilter(const QList<const Player *> &targets, const Player 
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TanhuCard::use(Room *room, ServerPlayer *lvmeng, const QList<ServerPlayer *> &targets) const{
+void TanhuCard::use(Room *room, ServerPlayer *lvmeng, QList<ServerPlayer *> &targets) const{
     bool success = lvmeng->pindian(targets.first(), "tanhu", this);
     if(success){
         room->setPlayerFlag(targets.first(), "TanhuTarget");
@@ -806,7 +806,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
-        return true;
+        return player != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

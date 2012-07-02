@@ -12,12 +12,6 @@
 
 #include <QCommandLinkButton>
 
-static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
-    Room *room = a->getRoom();
-
-    return room->getFront(a, b) == a;
-}
-
 QiaobianCard::QiaobianCard(){
     mute = true;
 }
@@ -41,7 +35,7 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
         return false;
 }
 
-void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
+void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> &targets) const{
     room->throwCard(this, zhanghe);
 
     if(zhanghe->getPhase() == Player::Draw){
@@ -50,7 +44,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
             return;
 
         QList<ServerPlayer *> players = targets;
-        qSort(players.begin(), players.end(), CompareByActionOrder);
+        qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
         foreach(ServerPlayer *target, players){
             room->cardEffect(this, zhanghe, target);
         }
@@ -153,7 +147,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && !target->isKongcheng();
+        return target != NULL && PhaseChangeSkill::triggerable(target) && !target->isKongcheng();
     }
 
     virtual bool onPhaseChange(ServerPlayer *zhanghe) const{
@@ -182,7 +176,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -256,7 +250,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -335,7 +329,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getPhase() == Player::NotActive;
+        return target != NULL && TriggerSkill::triggerable(target) && target->getPhase() == Player::NotActive;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -372,7 +366,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::Start
                 && target->getMark("zaoxian") == 0
                 && target->getPile("field").length() >= 3;
@@ -503,7 +497,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getMark("hunzi") == 0
                 && target->getPhase() == Player::Start
                 && target->getHp() == 1;
@@ -543,7 +537,7 @@ bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player 
             && !to_select->isKongcheng() && !to_select->hasFlag("ZhibaInvoked");
 }
 
-void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ZhibaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *sunce = targets.first();
     room->setPlayerFlag(sunce, "ZhibaInvoked");
     if(sunce->getMark("hunzi") > 0 &&
@@ -612,14 +606,14 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart && player->isLord()){
-            QList<ServerPlayer *> players = room->getAllPlayers();
-            foreach(ServerPlayer *p, players){
-                room->attachSkillToPlayer(p, "zhiba_pindian");
+        if(event == GameStart && player->hasLordSkill(objectName())){
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if(!p->hasSkill("zhiba_pindian"))
+                    room->attachSkillToPlayer(p, "zhiba_pindian");
             }
         }else if(event == Pindian){
             PindianStar pindian = data.value<PindianStar>();
@@ -720,8 +714,6 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
                 slash_targets--;
             }
         }
-        CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, effect.to->objectName());
-        room->moveCardTo(slash, effect.to, NULL, Player::DiscardPile, reason);
         room->useCard(use);
     }else if(!effect.to->isNude()){
         room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to);
@@ -750,7 +742,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getMark("zhiji") == 0
                 && target->getPhase() == Player::Start
                 && target->isKongcheng();
@@ -838,7 +830,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -870,7 +862,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill("guzheng");
+        return target != NULL && !target->hasSkill("guzheng");
     }
 
     virtual int getPriority() const{
@@ -1038,7 +1030,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getPhase() == Player::Start
+        return target != NULL && target->getPhase() == Player::Start
                 && target->hasLordSkill("ruoyu")
                 && target->isAlive()
                 && target->getMark("ruoyu") == 0;

@@ -67,7 +67,7 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
         Card::onUse(room, card_use);
 }
 
-void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     const EquipCard *equipped = NULL;
     ServerPlayer *target = targets.value(0, source);
     if (room->getCardOwner(getId()) != source) return;
@@ -197,7 +197,7 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
     thread->trigger(CardFinished, room, card_use.from, data);
 }
 
-void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
     CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), target->objectName(), this->getSkillName(), QString());
     room->moveCardTo(this, source, target, Player::PlaceDelayedTrick, reason, true);

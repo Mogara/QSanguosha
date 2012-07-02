@@ -4,6 +4,19 @@
 #include <sprite.h>
 #include "SkinBank.h"
 
+MagatamasBoxItem::MagatamasBoxItem() : QGraphicsObject(NULL)
+{
+    m_hp = 0;
+    m_maxHp = 0;
+}
+
+MagatamasBoxItem::MagatamasBoxItem(QGraphicsItem* parent)
+    : QGraphicsObject(parent)
+{
+    m_hp = 0;
+    m_maxHp = 0;
+}
+
 void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
 {
     m_orientation = orientation;
@@ -187,13 +200,13 @@ void MagatamasBoxItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* 
     {
         painter->drawPixmap(QRect(0, 0, m_iconSize.width(), m_iconSize.height()), _icons[imageIndex]);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, QRect(xStep * 1.5, yStep * 1.5, m_iconSize.width(),
+            painter, QRect(xStep * 1, yStep * 1, m_iconSize.width(),
             m_iconSize.height()), Qt::AlignCenter, QString::number(m_hp));
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, QRect(xStep * 2.5, yStep * 2.5, m_iconSize.width(),
+            painter, QRect(xStep * 2, yStep * 2, m_iconSize.width(),
             m_iconSize.height()), Qt::AlignCenter, "/");
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, QRect(xStep * 3.5, yStep * 3.5, m_iconSize.width(),
+            painter, QRect(xStep * 3, yStep * 3, m_iconSize.width(),
             m_iconSize.height()), Qt::AlignCenter, QString::number(m_maxHp));
     }
 }

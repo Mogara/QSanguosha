@@ -22,10 +22,11 @@ public:
     void setSize(double width, double height);
     inline void setNumCardsVisible(int num) { m_numCardsVisible = num; }
     inline int getNumCardsVisible() { return m_numCardsVisible; }
-    inline virtual void paint(QPainter *,const QStyleOptionGraphicsItem *,QWidget *) {}
-    void clear(bool playAnimation = true);
+    inline virtual void paint(QPainter *,const QStyleOptionGraphicsItem *,QWidget *) {}    
     void adjustCards();
     virtual QRectF boundingRect() const;
+public slots:
+    void clear(bool playAnimation = true);
 protected:
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
     QList<CardItem*> m_visibleCards;

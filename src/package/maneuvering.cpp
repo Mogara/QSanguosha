@@ -51,7 +51,7 @@ bool Analeptic::isAvailable(const Player *player) const{
     return IsAvailable(player);
 }
 
-void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void Analeptic::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     BasicCard::use(room, source, targets);
     if(targets.isEmpty())
         room->cardEffect(this, source, source);
@@ -260,10 +260,11 @@ SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
     if(player->isAlive() && !player->hasFlag("wuqian") && player->getMark("qinggang") == 0){
+        if (player->isWounded())
+            player->getRoom()->setEmotion(player, "armor/silver_lion");
         RecoverStruct recover;
         recover.card = this;
         player->getRoom()->recover(player, recover);
-        player->getRoom()->setEmotion(player, "armor/silver_lion");
     }
 }
 
@@ -346,7 +347,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
         TrickCard::onUse(room, card_use);
 }
 
-void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void IronChain::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     source->broadcastSkillInvoke("@tiesuo");
     TrickCard::use(room, source, targets);
 }

@@ -135,6 +135,8 @@ public:
     QSanProtocol::CommandType m_expectedReplyCommand; // Store the command to be sent to the client.
     Json::Value m_commandArgs; // Store the command args to be sent to the client.
 
+    // static function
+    static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
 protected:    
     //Synchronization helpers

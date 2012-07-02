@@ -36,7 +36,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("hujia");
+        return target != NULL && target->hasLordSkill("hujia");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *caocao, QVariant &data) const{
@@ -265,7 +265,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->isKongcheng();
+        return target != NULL && TriggerSkill::triggerable(target) && !target->isKongcheng();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -309,7 +309,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasFlag("luoyi") && target->isAlive();
+        return target != NULL && target->hasFlag("luoyi") && target->isAlive();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *xuchu, QVariant &data) const{
@@ -450,7 +450,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::NotActive
                 && target->hasUsed("RendeCard");
     }
@@ -620,7 +620,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -779,7 +779,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("jiuyuan");
+        return target != NULL && target->hasLordSkill("jiuyuan");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sunquan, QVariant &data) const{
@@ -1090,7 +1090,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1450,7 +1450,7 @@ bool YihunCard::targetsFeasible(const QList<const Player *> &targets, const Play
     return targets.length() == 2;
 }
 
-void YihunCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void YihunCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHp() < selecteds.last()->getHp() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
@@ -1495,7 +1495,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target);
+        return target != NULL && TriggerSkill::triggerable(target);
     }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1518,7 +1518,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->faceUp();
+        return target != NULL && TriggerSkill::triggerable(target) && target->faceUp();
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{

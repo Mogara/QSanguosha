@@ -414,7 +414,7 @@ bool Card::targetFixed() const{
 }
 
 bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
-    if(target_fixed)
+    if (target_fixed)
         return true;
     else
         return !targets.isEmpty();
@@ -424,14 +424,11 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_s
     return targets.isEmpty() && to_select != Self;
 }
 
-int Card::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targetFilter(targets,to_select,Self);
-}
-
-static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
-    Room *room = a->getRoom();
-
-    return room->getFront(a, b) == a;
+bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
+                        int &maxVotes) const{
+    bool canSelect = targetFilter(targets,to_select,Self);
+    maxVotes = canSelect ? 1 : 0; 
+    return canSelect;
 }
 
 void Card::doPreAction(Room *, const CardUseStruct &) const{
@@ -474,12 +471,12 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     thread->trigger(CardFinished, room, player, data);
 }
 
-void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
     }else{
         QList<ServerPlayer *> players = targets;
-        qSort(players.begin(), players.end(), CompareByActionOrder);
+        qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
 
         if(room->getMode() == "06_3v3"){
            if(inherits("AOE") || inherits("GlobalEffect"))

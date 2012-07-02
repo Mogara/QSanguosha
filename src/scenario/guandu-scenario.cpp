@@ -13,7 +13,7 @@ bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, con
     return targets.isEmpty() && to_select->getGeneralName() == "yanliangwenchou" && !to_select->isKongcheng();
 }
 
-void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *shuangxiong = targets.first();
 
     DamageStruct damage;
@@ -128,7 +128,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getGeneralName() == "zhangliao"
+        return target != NULL && target->getGeneralName() == "zhangliao"
                 && ! target->getRoom()->getTag("BurnWuchao").toBool();
     }
 

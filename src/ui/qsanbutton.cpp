@@ -11,7 +11,7 @@
 QSanButton::QSanButton(QGraphicsItem* parent): QGraphicsObject(parent)
 {
     _m_state = S_STATE_UP;
-    _m_style = S_STYLE_PUSH;    
+    _m_style = S_STYLE_PUSH;
     _m_mouseEntered = false;    
     setSize(QSize(0, 0));
     setAcceptsHoverEvents(true);
@@ -43,7 +43,9 @@ QSanButton::QSanButton(const QString &groupName,
 
 void QSanButton::click(){
     if (isEnabled())
-        emit clicked();
+    {
+        _onMouseClick(true);
+    }
 }
 
 QRectF QSanButton::boundingRect() const{
@@ -84,6 +86,8 @@ void QSanButton::setStyle(ButtonStyle style)
 
 void QSanButton::setEnabled(bool enabled)
 {
+    bool changed = (enabled != isEnabled()); 
+    if (!changed) return;
     if (enabled)
     {
         setState(S_STATE_UP);
@@ -92,6 +96,7 @@ void QSanButton::setEnabled(bool enabled)
     QGraphicsObject::setEnabled(enabled);
     if (!enabled) setState(S_STATE_DISABLED);
     update();
+    emit enable_changed();
 }
 
 void QSanButton::setState(QSanButton::ButtonState state)
@@ -117,7 +122,6 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     _m_mouseEntered = true;    
     if (_m_state == S_STATE_UP){
         setState(S_STATE_HOVER);
-        update();
     }
 }
 
@@ -129,7 +133,6 @@ void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     if (_m_state == S_STATE_HOVER)
         setState(S_STATE_UP);
     _m_mouseEntered = false;
-    update();
 }
 
 void QSanButton::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
@@ -149,14 +152,10 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if (_m_style == S_STYLE_TOGGLE)
         return;    
     setState(S_STATE_DOWN);
-    update();
 }
 
-void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    Q_ASSERT(_m_state != S_STATE_DISABLED);    
-    QPointF point = event->pos();
-    bool inside = insideButton(point);    
-
+void QSanButton::_onMouseClick(bool inside)
+{
     if (_m_style == S_STYLE_PUSH)
     {
         // Q_ASSERT(_m_state == S_STATE_DOWN);
@@ -176,6 +175,14 @@ void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 
     if (inside)
         emit clicked();
+}
+
+void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_ASSERT(_m_state != S_STATE_DISABLED);    
+    QPointF point = event->pos();
+    bool inside = insideButton(point);    
+    _onMouseClick(inside);
 }
 
 bool QSanButton::isDown()
@@ -262,13 +269,8 @@ void QSanSkillButton::setSkill(const Skill* skill)
          else
              _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
 
-         if (skill->inherits("ZeroCardViewAsSkill")) {
-             setStyle(QSanButton::S_STYLE_PUSH);
-             _m_emitDeactivateSignal = false;
-         } else {
-             setStyle(QSanButton::S_STYLE_TOGGLE);
-             _m_emitDeactivateSignal = true;
-         }
+         setStyle(QSanButton::S_STYLE_TOGGLE);
+         _m_emitDeactivateSignal = true;
 
          _m_emitActivateSignal = true;
          _m_canEnable = true;
@@ -279,8 +281,8 @@ void QSanSkillButton::setSkill(const Skill* skill)
          _setSkillType(QSanInvokeSkillButton::S_SKILL_AWAKEN);
          _m_emitActivateSignal = false;
          _m_emitDeactivateSignal = false;
-         _m_canEnable = false;
-         _m_canDisable = false;
+         _m_canEnable = true;
+         _m_canDisable = true;
      } else if (freq == Skill::Compulsory) {
          setState(QSanButton::S_STATE_DISABLED);
          setStyle(QSanButton::S_STYLE_PUSH);
@@ -288,7 +290,7 @@ void QSanSkillButton::setSkill(const Skill* skill)
          _m_emitActivateSignal = false;
          _m_emitDeactivateSignal = false;
          _m_canEnable = false;
-         _m_canDisable = false;
+         _m_canDisable = true;
      } else Q_ASSERT(false);
      setToolTip(skill->getDescription());
 
@@ -356,36 +358,49 @@ void QSanInvokeSkillDock::setWidth(int width)
 
 void QSanInvokeSkillDock::update()
 {
-    int numButtons = _m_buttons.length();
-    int rows = (numButtons - 1) / 3 + 1;
-    int rowH = G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
-    int* btnNum = new int[rows];
-    int remainingBtns = numButtons;
-    for (int i = 0; i < rows; i++)
+    if(!_m_buttons.isEmpty())
     {
-        btnNum[i] = qMin(3, remainingBtns);
-        remainingBtns -= 3;
-    }
-
-    // If the buttons in rows are 3, 1, then balance them to 2, 2
-    if (rows >= 2 && btnNum [rows - 1] == 1 && btnNum[rows - 2] == 3)
-    {
-        btnNum[rows - 1] = 2;
-        btnNum[rows - 2] = 2;
-    }
-
-    for (int i = 0; i < rows; i++)
-    {
-        int rowTop = (- i - 1) * rowH;
-        int btnWidth = _m_width / btnNum[i];
-        for (int j = 0; j < btnNum[i]; j++)
+        int numButtons = _m_buttons.length();
+        int rows = (numButtons - 1) / 3 + 1;
+        int rowH = G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
+        int* btnNum = new int[rows + 1]; // we allocate one more row in case we need it.
+        int remainingBtns = numButtons;
+        for (int i = 0; i < rows; i++)
         {
-            QSanInvokeSkillButton* button = _m_buttons[i * rows + j];
-            button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
-            _m_buttons[i * rows + j]->setPos(btnWidth * j, rowTop);
+            btnNum[i] = qMin(3, remainingBtns);
+            remainingBtns -= 3;
         }
+
+        // If the buttons in rows are 3, 1, then balance them to 2, 2
+        if (rows >= 2)
+        {
+            if (btnNum[rows - 1] == 1 && btnNum[rows - 2] == 3)
+            {
+                btnNum[rows - 1] = 2;
+                btnNum[rows - 2] = 2;
+            }
+        }
+        else if (rows == 1 && btnNum[0] == 3)
+        {
+            btnNum[0] = 2;
+            btnNum[1] = 1;
+            rows = 2;
+        }
+
+        int m = 0;
+        for (int i = 0; i < rows; i++)
+        {
+            int rowTop = (- rows + i) * rowH;
+            int btnWidth = _m_width / btnNum[i];
+            for (int j = 0; j < btnNum[i]; j++)
+            {
+                QSanInvokeSkillButton* button = _m_buttons[m++];
+                button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
+                button->setPos(btnWidth * j, rowTop);
+            }
+        }
+        delete btnNum;
     }
-    delete btnNum;
     QGraphicsObject::update();
 }
 

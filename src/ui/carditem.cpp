@@ -18,7 +18,8 @@ void CardItem::_initialize()
     m_currentAnimation = NULL;
     _m_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     _m_height = G_COMMON_LAYOUT.m_cardNormalHeight;
-    _m_footnoteItem = new QGraphicsPixmapItem(this);
+    // _m_footnoteItem = new QGraphicsPixmapItem(this);
+    _m_showFootnote = true;
     m_isSelected = false;
     auto_back = true;
     frozen = false;
@@ -133,7 +134,7 @@ void CardItem::goBack(bool playAnimation, bool doFade){
     }
 }
 
-QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade)
+QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade, bool smoothTransition)
 {
     m_animationMutex.lock();
     if (m_currentAnimation != NULL)
@@ -154,9 +155,12 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade)
         double middleOpacity = qMax(opacity(), m_opacityAtHome);
         if (middleOpacity == 0) middleOpacity = 1.0;        
         disappear->setEndValue(m_opacityAtHome);
-        disappear->setKeyValueAt(0.2, middleOpacity);
-        disappear->setKeyValueAt(0.8, middleOpacity);
-        disappear->setDuration(Config.S_MOVE_CARD_ANIMATION_DURAION);
+        if (!smoothTransition)
+        {
+            disappear->setKeyValueAt(0.2, middleOpacity);
+            disappear->setKeyValueAt(0.8, middleOpacity);
+            disappear->setDuration(Config.S_MOVE_CARD_ANIMATION_DURAION);
+        }
 
         group->addAnimation(goback);
         group->addAnimation(disappear);
@@ -221,7 +225,8 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
     return NULL;
 }
 
-const int CardItem::_S_CLICK_JITTER_TOLERANCE = 20;
+const int CardItem::_S_CLICK_JITTER_TOLERANCE = 1600;
+const int CardItem::_S_MOVE_JITTER_TOLERANCE = 200;
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent){
     if(isFrozen()) return;
@@ -233,7 +238,7 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent){
     
     QPointF totalMove = mapToParent(mouseEvent->pos()) - _m_lastMousePressScenePos;
     if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() 
-        < _S_CLICK_JITTER_TOLERANCE) 
+        < _S_MOVE_JITTER_TOLERANCE) 
     {
         emit clicked();
     }
@@ -296,6 +301,8 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if (m_card) {		
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(m_card->getSuit()));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(m_card->getNumber(), m_card->isBlack()));
+        if (_m_showFootnote)
+            painter->drawImage(G_COMMON_LAYOUT.m_cardFootnoteArea.topLeft(), _m_footnoteImage);
     }
     
     if (!_m_avatarName.isEmpty())
@@ -307,8 +314,15 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 void CardItem::setFootnote(const QString &desc)
 {
     const IQSanComponentSkin::QSanShadowTextFont& font = G_COMMON_LAYOUT.m_cardFootnoteFont;
-    font.paintText(_m_footnoteItem, G_COMMON_LAYOUT.m_cardFootnoteArea, 
-                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);            
+    QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
+    rect.moveTopLeft(QPoint(0, 0));
+    _m_footnoteImage = QImage(rect.size(), QImage::Format_ARGB32);
+    _m_footnoteImage.fill(Qt::transparent);
+    QPainter painter(&_m_footnoteImage);
+    font.paintText(&painter, QRect(QPoint(0, 0), rect.size()), 
+                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
+    /*font.paintText(_m_footnoteItem, G_COMMON_LAYOUT.m_cardFootnoteArea, 
+                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);*/            
 }
 
 

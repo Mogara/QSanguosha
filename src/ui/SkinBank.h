@@ -76,9 +76,10 @@ public:
         QSize m_fixedSize;
         bool m_useFixedSize;
     };
+    static const char* S_SKIN_KEY_DEFAULT;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
               const QString &audioConfigFileName);
-    QPixmap getPixmap(const QString &key) const;
+    QPixmap getPixmap(const QString &key, const QString &arg = QString()) const;
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName) const;
     QStringList getAudioFileNames(const QString &key) const;
@@ -178,8 +179,10 @@ public:
         QRect m_saveMeIconRegion;
         QRect m_chainedIconRegion;
         QRect m_readyIconRegion;        
-        QRect m_deathIconRegion;
+        AnchoredRect m_deathIconRegion;
+        QRect m_votesIconRegion;
         QColor m_drankMaskColor;
+        QColor m_deathEffectColor;
     };
 
     struct PhotoLayout : public PlayerCardContainerLayout
@@ -205,6 +208,9 @@ public:
         QRect m_trustButtonArea;
         QSize m_skillButtonsSize[3];
         QRect m_skillTextArea[3];
+        QPoint m_equipBorderPos;
+        QPoint m_equipSelectedOffset;
+        int m_disperseWidth;
         QSanShadowTextFont m_skillTextFonts[3];
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES *
                                  QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
@@ -304,6 +310,7 @@ public:
     static const char* S_SKIN_KEY_ACTIONED_ICON;
     static const char* S_SKIN_KEY_KINGDOM_ICON;
     static const char* S_SKIN_KEY_KINGDOM_COLOR_MASK;
+    static const char* S_SKIN_KEY_VOTES_NUMBER;
     static const char* S_SKIN_KEY_HAND_CARD_BACK;
     static const char* S_SKIN_KEY_HAND_CARD_SUIT;
     static const char* S_SKIN_KEY_JUDGE_CARD_ICON;

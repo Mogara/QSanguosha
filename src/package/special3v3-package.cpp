@@ -88,7 +88,7 @@ HuanshiCard::HuanshiCard(){
     can_jilei = true;
 }
 
-void HuanshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void HuanshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
 
 }
 
@@ -138,7 +138,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->isNude();
+        return target != NULL && TriggerSkill::triggerable(target) && !target->isNude();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -223,11 +223,8 @@ public:
             card = Sanguosha->getCard(move->card_id);
         }
 
-        int n = 0;
-        n = card->isRed() ? 1 : 0;
-
-        if(n>0 && player->askForSkillInvoke(objectName(), data))
-            player->drawCards(n);
+        if(card->isRed() && player->askForSkillInvoke(objectName(), data))
+            player->drawCards(1);
 
         return false;
     }

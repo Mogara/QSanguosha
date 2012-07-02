@@ -15,7 +15,7 @@ GuidaoCard::GuidaoCard(){
     can_jilei = true;
 }
 
-void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
+void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, QList<ServerPlayer *> &targets) const{
 
 }
 
@@ -58,7 +58,7 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
 HuangtianCard::HuangtianCard(){
 }
 
-void HuangtianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *zhangjiao = targets.first();
     if(zhangjiao->hasLordSkill("huangtian")){
         room->setPlayerFlag(zhangjiao, "HuangtianInvoked");
@@ -125,7 +125,8 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(!TriggerSkill::triggerable(target))
+        
+        if(target == NULL || !TriggerSkill::triggerable(target))
             return false;
 
         if(target->isKongcheng()){
@@ -216,14 +217,14 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart && player->isLord()){
-            QList<ServerPlayer *> players = room->getAlivePlayers();
-            foreach(ServerPlayer *p, players){
-                room->attachSkillToPlayer(p, "huangtianv");
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
+        if(event == GameStart && player->hasLordSkill(objectName())){
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if(!p->hasSkill("huangtianv"))
+                    room->attachSkillToPlayer(p, "huangtianv");
             }
         }
         else if(event == PhaseChange && player->getPhase() == Player::NotActive){
@@ -299,7 +300,7 @@ bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player
     return true;
 }
 
-void ShensuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->throwCard(this, source);
 
     Slash *slash = new Slash(Card::NoSuit, 0);
@@ -402,7 +403,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event , Room* room, ServerPlayer *player, QVariant &data) const{
@@ -446,7 +447,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

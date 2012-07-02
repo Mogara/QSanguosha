@@ -50,7 +50,7 @@ public:
 
 	virtual QString getType() const;
 	virtual CardType getTypeId() const;
-	virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+	virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 
 	// should be pure virtual
 	virtual void onInstall(ServerPlayer *player) const;

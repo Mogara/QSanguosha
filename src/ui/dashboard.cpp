@@ -15,20 +15,19 @@
 
 using namespace QSanProtocol;
 
-const QRect Dashboard::S_EQUIP_CARD_MOVE_REGION(0, -10,
-    G_COMMON_LAYOUT.m_cardNormalWidth * 1.5, G_COMMON_LAYOUT.m_cardNormalHeight);
-const QRect Dashboard::S_JUDGE_CARD_MOVE_REGION(0, -20, 
-    G_COMMON_LAYOUT.m_cardNormalWidth * 1.5, G_COMMON_LAYOUT.m_cardNormalHeight);
-
 Dashboard::Dashboard(QGraphicsItem *widget)
     : button_widget(widget), selected(NULL), view_as_skill(NULL), filter(NULL)
 {
     Q_ASSERT(button_widget);
-    _m_layout = &G_DASHBOARD_LAYOUT;
+    _dlayout = &G_DASHBOARD_LAYOUT;
+    _m_layout = _dlayout;
     m_player = Self;
     _m_leftFrame = _m_rightFrame = _m_middleFrame = NULL;
+    _m_rightFrameBg = NULL;
     animations = new EffectAnimation();
     pending_card = NULL;
+    for (int i = 0; i < 4; i++)
+        _m_equipSkillBtns[i] = NULL;
     // At this stage, we cannot decide the dashboard size yet, the whole
     // point in creating them here is to allow PlayerCardContainer to 
     // anchor all controls and widgets to the correct frame.
@@ -58,9 +57,10 @@ QGraphicsItem* Dashboard::getMouseClickReceiver()
 }
 
 void Dashboard::_createLeft(){
-    QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_rightWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
+    QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_leftFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_LEFTFRAME), this);
     _m_leftFrame->setZValue(-1000); // nobody should be under me.
+    _createEquipBorderAnimations();
 }
 
 int Dashboard::getButtonWidgetWidth() const{
@@ -101,6 +101,7 @@ void Dashboard::_adjustComponentZValues()
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);    
     _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
+    _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
 }
 
 int Dashboard::width()
@@ -113,9 +114,11 @@ void Dashboard::_createRight()
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, 0, 
                        G_DASHBOARD_LAYOUT.m_rightWidth,
                        G_DASHBOARD_LAYOUT.m_normalHeight);
-    _paintPixmap(_m_rightFrame, rect, 
-                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), this);
+    _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), this);
+    _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()), 
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
+    
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
     _m_skillDock->setPos(avatar.left(), avatar.bottom() + 
@@ -158,17 +161,16 @@ void Dashboard::setTrust(bool trust){
 
 bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {
-    if (place == Player::PlaceEquip)
-        _disperseCards(card_items, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
-    else if (place == Player::PlaceDelayedTrick)
-        _disperseCards(card_items, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
-    else if (place == Player::PlaceSpecial)
+    if (place == Player::PlaceSpecial)
     {
         foreach(CardItem* card, card_items)
         {
             card->setHomeOpacity(0.0);            
         }
-        _disperseCards(card_items, m_cardSpecialRegion, Qt::AlignCenter, true, false);
+        QPointF center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+        QRectF rect = QRectF(0, 0, _dlayout->m_disperseWidth, 0);
+        rect.moveCenter(center);
+        _disperseCards(card_items, rect, Qt::AlignCenter, true, false);
         return true;
     }
 
@@ -310,7 +312,83 @@ QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool toLeft){
 
 QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
 {
+    // if it's a equip skill, add it to equip bar
+    _mutexEquipAnim.lock();
+    for (int i = 0; i < 4; i++)
+    {
+        if (!_m_equipCards[i]) continue;
+        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard());
+        Q_ASSERT(equip);
+        const Skill* skill = equip->getSkill();
+        // @todo: we must fix this in the server side - add a skill to the card itself instead
+        // of getting it from the engine.
+        if (skill == NULL) skill = Sanguosha->getSkill(equip->objectName());
+        if (skill == NULL) continue;
+        if (skill->objectName() == skillName)
+        {
+            // If there is already a button there, then we haven't removed the last skill before attaching
+            // a new one. The server must have sent the requests out of order. So crash.
+            Q_ASSERT(_m_equipSkillBtns[i] == NULL);
+            _m_equipSkillBtns[i] = new QSanInvokeSkillButton();
+            _m_equipSkillBtns[i]->setSkill(skill);
+            connect(_m_equipSkillBtns[i], SIGNAL(clicked()), this, SLOT(_onEquipSelectChanged()));
+            connect(_m_equipSkillBtns[i], SIGNAL(enable_changed()), this, SLOT(_onEquipSelectChanged()));
+            QSanSkillButton* btn = _m_equipSkillBtns[i];
+            _mutexEquipAnim.unlock();
+            return btn;
+        }
+    }
+    _mutexEquipAnim.unlock();
+    const Skill* skill = Sanguosha->getSkill(skillName);
+    Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"));
     return _m_skillDock->addSkillButtonByName(skillName);
+}
+
+QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
+{
+    QSanSkillButton* btn = NULL;
+    _mutexEquipAnim.lock();
+    for (int i = 0; i < 4; i++)
+    {
+        if (!_m_equipSkillBtns[i]) continue;
+        const Skill* skill = _m_equipSkillBtns[i]->getSkill();
+        Q_ASSERT(skill != NULL);
+        if (skill->objectName() == skillName)
+        {
+            btn = _m_equipSkillBtns[i];
+            _m_equipSkillBtns[i] = NULL;
+            continue;
+        }
+    }
+    _mutexEquipAnim.unlock();
+    if (btn == NULL) btn  = _m_skillDock->removeSkillButtonByName(skillName);
+    //Q_ASSERT(btn != NULL);
+    //Be care LordSkill and SPConvertSkill
+    if (btn != NULL && getFilter() == btn->getSkill()){
+        setFilter(NULL);
+    }    
+    return btn;
+}
+
+void Dashboard::highlightEquip(QString skillName, bool highlight)
+{
+    QSanSkillButton* btn = NULL;
+    int i = 0;
+    for (i = 0; i < 4; i++)
+    {
+        if (!_m_equipSkillBtns[i]) continue;
+        const Skill* skill = _m_equipSkillBtns[i]->getSkill();
+        Q_ASSERT(skill != NULL);
+        if (skill->objectName() == skillName)
+        {
+            btn = _m_equipSkillBtns[i];
+            break;
+        }
+    }
+    if (btn != NULL)
+    {
+        _setEquipBorderAnimation(i, highlight);
+    }
 }
 
 QPushButton *Dashboard::createButton(const QString &name){
@@ -354,16 +432,119 @@ void Dashboard::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     PlayerCardContainer::mouseReleaseEvent(mouseEvent);
 
     CardItem *to_select = NULL;
-    for(int i = 0; i < 4; i++){
+    int i;
+    for (i = 0; i < 4; i++) {
         if(_m_equipRegions[i]->isUnderMouse()){
             to_select = _m_equipCards[i];
             break;
         }
     }
-
-    if (to_select && to_select->isMarkable()) {
+    if (!to_select) return;
+    if (_m_equipSkillBtns[i] != NULL
+        && _m_equipSkillBtns[i]->isEnabled())
+    {
+        _m_equipSkillBtns[i]->click();        
+    }
+    else if (to_select->isMarkable()) {
+        // According to the game rule, you cannot select a weapon as a card when
+        // you are invoking the skill of that equip. So something must be wrong.
+        // Crash.
+        Q_ASSERT(_m_equipSkillBtns[i] == NULL || !_m_equipSkillBtns[i]->isDown());
         to_select->mark(!to_select->isMarked());
         update();
+    }
+}
+
+void Dashboard::_onEquipSelectChanged()
+{
+    QSanSkillButton* btn = qobject_cast<QSanSkillButton*>(sender());
+    if (btn)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (_m_equipSkillBtns[i] == btn)
+            {
+                _setEquipBorderAnimation(i, btn->isDown());
+                break;
+            }
+        }
+    }
+    else
+    {
+        CardItem* equip = qobject_cast<CardItem*>(sender());
+        // Do not remove this assertion. If equip is NULL here, some other
+        // sources that could select equip has not been considered and must
+        // be implemented.
+        Q_ASSERT(equip);
+        for (int i = 0; i < 4; i++)
+        {
+            if (_m_equipCards[i] == equip)
+            {
+                _setEquipBorderAnimation(i, equip->isMarked());
+                break;
+            }
+        }
+    }
+}
+
+void Dashboard::_createEquipBorderAnimations()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        _m_equipBorders[i] = new PixmapAnimation();
+        _m_equipBorders[i]->setParentItem(_getEquipParent());
+        _m_equipBorders[i]->setPath("image/system/emotion/equipborder/");
+        if (!_m_equipBorders[i]->valid())
+        {
+            delete _m_equipBorders[i];
+            _m_equipBorders[i] = NULL;
+            continue;
+        }
+        _m_equipBorders[i]->setPos(_dlayout->m_equipBorderPos +
+                              _dlayout->m_equipSelectedOffset +
+                            _dlayout->m_equipAreas[i].topLeft());
+        _m_equipBorders[i]->hide();
+    }
+}
+
+void Dashboard::_setEquipBorderAnimation(int index, bool turnOn)
+{
+    QPoint newPos;
+
+    if (turnOn)
+    {
+        newPos = _dlayout->m_equipSelectedOffset + _dlayout->m_equipAreas[index].topLeft();        
+    }
+    else
+    {
+        newPos = _dlayout->m_equipAreas[index].topLeft();
+    }
+    
+    _mutexEquipAnim.lock();
+    _m_equipRegions[index]->show();
+    _m_equipAnim[index]->stop();
+    _m_equipAnim[index]->clear();
+    QPropertyAnimation* anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
+    anim->setEndValue(newPos);
+    anim->setDuration(200);
+    _m_equipAnim[index]->addAnimation(anim);
+    anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+    anim->setEndValue(255);
+    anim->setDuration(200);
+    _m_equipAnim[index]->addAnimation(anim);
+    _m_equipAnim[index]->start();
+    _mutexEquipAnim.unlock();
+    
+    Q_ASSERT(_m_equipBorders[index]);
+    if (turnOn)
+    {
+        _m_equipBorders[index]->show();
+        _m_equipBorders[index]->start();
+    }
+    else
+    {
+        _m_equipBorders[index]->hide();
+        _m_equipBorders[index]->stop();
     }
 }
 
@@ -383,8 +564,7 @@ void Dashboard::_adjustCards(){
     if (n == 0) return;
 
     if (maxCards >= n) maxCards = n;
-    else maxCards = (n - 1) / 2 + 1;
-
+    else if (maxCards <= (n - 1) / 2 + 1) maxCards = (n - 1) / 2 + 1;
     QList<CardItem*> row;
     QSanRoomSkin::DashboardLayout* layout = (QSanRoomSkin::DashboardLayout*)_m_layout;
     int leftWidth = layout->m_leftWidth;
@@ -467,14 +647,28 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
     }
     else Q_ASSERT(false);
 
+    Q_ASSERT(result.size() == card_ids.size());
     if (place == Player::PlaceHand)    
-        adjustCards();
-    else if (place == Player::PlaceEquip && card_ids.size() > 1)
-        _disperseCards(result, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, false, false);
-    else if (place == Player::PlaceDelayedTrick && card_ids.size() > 1)
-        _disperseCards(result, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, false, false);
-    else if (place == Player::PlaceSpecial)
-        _disperseCards(result, m_cardSpecialRegion, Qt::AlignCenter, false, false);
+        adjustCards();   
+    else if (result.size() > 1 || place == Player::PlaceSpecial)
+    {
+        QRect rect(0, 0, _dlayout->m_disperseWidth, 0);
+        QPointF center(0, 0);
+        if (place == Player::PlaceEquip || place == Player::PlaceDelayedTrick)
+        {
+            for (int i = 0; i < result.size(); i++)
+            {
+                center += result[i]->pos();
+            }
+            center = 1.0 / result.length() * center;
+        }
+        else if (place == Player::PlaceSpecial)
+            center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+        else
+            Q_ASSERT(false);
+        rect.moveCenter(center.toPoint());
+        _disperseCards(result, rect, Qt::AlignCenter, false, false);
+    }
     update();
     return result;
 }
@@ -491,10 +685,10 @@ void Dashboard::sortCards(bool doAnimation){
 }
 
 void Dashboard::reverseSelection(){
-    m_mutexEnableCards.lock();
     if(view_as_skill == NULL)
         return;
 
+     m_mutexEnableCards.lock();
     QSet<CardItem *> selected_set = pendings.toSet();
     unselectAll();
 
@@ -558,15 +752,6 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     m_mutexEnableCards.unlock();
 }
 
-void Dashboard::removeSkillButton(const QString &skillName)
-{
-    QSanSkillButton* btn = _m_skillDock->removeSkillButtonByName(skillName);
-    if (getFilter() == btn->getSkill()){
-        setFilter(NULL);
-    }
-    delete btn;    
-}
-
 void Dashboard::stopPending(){
     m_mutexEnableCards.lock();
     view_as_skill = NULL;
@@ -581,7 +766,9 @@ void Dashboard::stopPending(){
     for (int i = 0; i < 4; i++) {
         CardItem* equip = _m_equipCards[i];
         if (equip != NULL) {
+            equip->mark(false);
             equip->setMarkable(false);
+            equip->setEnabled(false);
             disconnect(equip, SIGNAL(mark_changed()));
         }
     }
@@ -621,8 +808,9 @@ void Dashboard::onCardItemClicked(){
 }
 
 void Dashboard::updatePending(){
+    if (!view_as_skill) return;
     foreach(CardItem *c, m_handCards){
-        if(!c->isSelected()||pendings.isEmpty()){
+        if(!c->isSelected() || pendings.isEmpty()){
             c->setEnabled(view_as_skill->viewFilter(pendings, c));
         }
     }
@@ -653,7 +841,7 @@ void Dashboard::onCardItemThrown(){
 void Dashboard::onCardItemHover()
 {
     QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if(!card_item)return;
+    if (!card_item) return;
 
     animations->emphasize(card_item);
 }
@@ -661,7 +849,7 @@ void Dashboard::onCardItemHover()
 void Dashboard::onCardItemLeaveHover()
 {
     QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if(!card_item)return;
+    if (!card_item) return;
 
     animations->effectOut(card_item);
 }

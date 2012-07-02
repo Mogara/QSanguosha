@@ -16,7 +16,7 @@ class LuoyiCard: public SkillCard{
 
 public:
     Q_INVOKABLE LuoyiCard();
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class NeoFanjianCard: public SkillCard{

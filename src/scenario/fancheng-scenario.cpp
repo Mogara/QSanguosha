@@ -37,7 +37,7 @@ DujiangCard::DujiangCard(){
     target_fixed = true;
 }
 
-void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void DujiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->throwCard(this, NULL);
 
     LogMessage log;
@@ -87,7 +87,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(!PhaseChangeSkill::triggerable(target))
+        if(target == NULL && !PhaseChangeSkill::triggerable(target))
             return false;
 
         return target->getGeneralName() != "shenlvmeng";
@@ -110,7 +110,7 @@ FloodCard::FloodCard(){
     target_fixed = true;
 }
 
-void FloodCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void FloodCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->throwCard(this, NULL);
     room->setTag("Flood", true);
 
@@ -167,7 +167,7 @@ TaichenFightCard::TaichenFightCard(){
     once = true;
 }
 
-void TaichenFightCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void TaichenFightCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->loseHp(source);
 
     if(source->isAlive()){
@@ -207,7 +207,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getGeneralName() == "guanyu" && target->getHp() <= 2;
     }
 
@@ -237,7 +237,7 @@ bool ZhiyuanCard::targetFilter(const QList<const Player *> &targets, const Playe
     return targets.isEmpty() && to_select != Self && to_select->getRoleEnum() == Player::Rebel;
 }
 
-void ZhiyuanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ZhiyuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     targets.first()->obtainCard(this);
     room->setPlayerMark(source, "zhiyuan", source->getMark("zhiyuan") - 1);
 }

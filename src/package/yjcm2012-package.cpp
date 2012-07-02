@@ -278,7 +278,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target);
+        return target != NULL && PhaseChangeSkill::triggerable(target);
     }
 
     virtual bool onPhaseChange(ServerPlayer *caozhang) const{
@@ -333,6 +333,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *liaohua) const{
         Room *room = liaohua->getRoom();
         if(liaohua->getPhase() == Player::RoundStart){
+			room->broadcastSkillInvoke("dangxian"); 
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = liaohua;
@@ -355,7 +356,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getMark("@laoji") > 0;
+        return target != NULL && TriggerSkill::triggerable(target) && target->getMark("@laoji") > 0;
     }
 
     int getKingdoms(Room *room) const{
@@ -371,7 +372,7 @@ public:
         if(dying_data.who != liaohua)
             return false;
         if(liaohua->askForSkillInvoke(objectName(), data)){
-            //room->broadcastInvoke("animate", "lightbox:$fuli");
+            room->broadcastInvoke("animate", "lightbox:$fuli");
             room->broadcastSkillInvoke(objectName());
 
             liaohua->loseMark("@laoji");
@@ -552,8 +553,8 @@ public:
             return false;
         if(event == AskForPeaches  && current->objectName() != handang->objectName()){
             DyingStruct dying = data.value<DyingStruct>();
-            if(dying.who->getHp() > 0 || handang->isNude() ||
-               current->isDead() || !handang->canSlash(current,false)
+            if(dying.who->getHp() > 0 || handang->isNude()
+                || !handang->canSlash(current,false)
                 || !room->askForSkillInvoke(handang, objectName(), data))
                 return false;
             while(dying.who->getHp() < 1 && dying.who->isAlive()){
@@ -592,8 +593,6 @@ public:
                             slash_targets--;
                         }
                     }
-                    CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, handang->objectName());
-                    room->moveCardTo(slash, handang, NULL, Player::DiscardPile, reason);
                     room->useCard(use);
                 }
             }
@@ -671,7 +670,7 @@ bool AnxuCard::targetsFeasible(const QList<const Player *> &targets, const Playe
     return targets.length() == 2;
 }
 
-void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void AnxuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHandcardNum() < selecteds.last()->getHandcardNum() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
@@ -711,7 +710,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -785,7 +784,7 @@ ChunlaoCard::ChunlaoCard(){
     target_fixed = true;
 }
 
-void ChunlaoCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void ChunlaoCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
     foreach(int id, this->subcards){
         source->addToPile("wine", id, true);
     }

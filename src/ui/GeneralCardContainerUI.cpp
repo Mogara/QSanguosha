@@ -1,10 +1,13 @@
 #include "GeneralCardContainerUI.h"
 #include <QParallelAnimationGroup>
+#include <qpropertyanimation.h>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
+#include <QGraphicsColorizeEffect>
 #include <qpushbutton.h>
 #include <qtextdocument.h>
 #include <qmenu.h>
+#include <qlabel.h>
 #include "engine.h"
 #include "standard.h"
 #include "clientplayer.h"
@@ -134,10 +137,22 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item, const QRect &
 
 QPixmap PlayerCardContainer::_getPixmap(const QString &key, const QString &sArg)
 {
-    QString rKey = key.arg(getResourceKeyName()).arg(sArg);
-    if (G_ROOM_SKIN.isImageKeyDefined(rKey))
-        return G_ROOM_SKIN.getPixmap(rKey);
-    else return G_ROOM_SKIN.getPixmap(key.arg(sArg));
+    Q_ASSERT(key.contains("%1"));
+    if (key.contains("%2"))
+    {
+        QString rKey = key.arg(getResourceKeyName()).arg(sArg);
+ 
+        if (G_ROOM_SKIN.isImageKeyDefined(rKey))
+            return G_ROOM_SKIN.getPixmap(rKey); // first try "%1key%2 = ...", %1 = "photo", %2 = sArg
+    
+        rKey = key.arg(getResourceKeyName()).arg(QSanRoomSkin::S_SKIN_KEY_DEFAULT);
+        Q_ASSERT(G_ROOM_SKIN.isImageKeyDefined(rKey));
+        return G_ROOM_SKIN.getPixmap(rKey, sArg); // then try "%1key = ..."
+    }
+    else 
+    {
+        return G_ROOM_SKIN.getPixmap(key, sArg); // finally, try "key = ..."
+    }
 }
 
 QPixmap PlayerCardContainer::_getPixmap(const QString &key)
@@ -162,6 +177,7 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item,
     else
         item->setPixmap(pixmap.scaled(rect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     item->setParentItem(parent);
+    item->show();
 }
 
 void PlayerCardContainer::_clearPixmap(QGraphicsPixmapItem *pixmap)
@@ -169,6 +185,7 @@ void PlayerCardContainer::_clearPixmap(QGraphicsPixmapItem *pixmap)
     QPixmap dummy;
     if (pixmap == NULL) return;   
     pixmap->setPixmap(dummy);
+    pixmap->hide();
 }
 
 void PlayerCardContainer::hideProgressBar()
@@ -285,7 +302,7 @@ void PlayerCardContainer::updateHp()
 
 void PlayerCardContainer::updatePile(const QString &pile_name)
 {
-        // retrieve menu and create a new pile if necessary
+    // retrieve menu and create a new pile if necessary
     QMenu* menu;
     QPushButton* button;
     if (!_m_privatePiles.contains(pile_name))
@@ -376,12 +393,7 @@ void PlayerCardContainer::refresh()
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
     }
-    else if (m_player && m_player->isDead())
-    {
-        _paintPixmap(_m_deathIcon, _m_layout->m_deathIconRegion,
-            QPixmap(m_player->getDeathPixmapPath()), this);
-    }
-    else
+    else if(m_player)
     {
         _m_faceTurnedIcon->setVisible(!m_player->faceUp());
         _m_chainIcon->setVisible(m_player->isChained());
@@ -573,18 +585,39 @@ void PlayerCardContainer::setFloatingArea(QRect rect)
 }
 
 void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
-{    
+{   
+
     foreach (CardItem* equip, equips)
     {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] == NULL);
         _m_equipCards[index] = equip;
+        connect(equip, SIGNAL(mark_changed()), this, SLOT(_onEquipSelectChanged()));
         equip->setHomeOpacity(0.0);
         equip->setHomePos(_m_layout->m_equipAreas[index].center());
         _m_equipRegions[index]->setToolTip(equip_card->getDescription());
-        _paintPixmap(_m_equipRegions[index], _m_layout->m_equipAreas[index], 
-                     _getEquipPixmap(equip_card), _getEquipParent());
+        QPixmap pixmap = _getEquipPixmap(equip_card);
+        _m_equipLabel[index]->setPixmap(pixmap);
+
+        _mutexEquipAnim.lock();
+        _m_equipRegions[index]->setPos(_m_layout->m_equipAreas[index].topRight());
+        _m_equipRegions[index]->setOpacity(0);
+        _m_equipRegions[index]->show();
+        _m_equipAnim[index]->stop();
+        _m_equipAnim[index]->clear();
+        QPropertyAnimation* anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
+        anim->setEndValue(_m_layout->m_equipAreas[index].topLeft());
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+        anim->setEndValue(255);
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        _m_equipAnim[index]->start();
+        _mutexEquipAnim.unlock();
+        // _paintPixmap(_m_equipRegions[index], _m_layout->m_equipAreas[index], 
+        //             _getEquipPixmap(equip_card), _getEquipParent());
     }
 }
 
@@ -601,7 +634,19 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
         equip->setPos(_m_layout->m_equipAreas[index].center());
         result.append(equip);
         _m_equipCards[index] = NULL;
-        _clearPixmap(_m_equipRegions[index]);
+        _mutexEquipAnim.lock();        
+        _m_equipAnim[index]->stop();
+        _m_equipAnim[index]->clear();
+        QPropertyAnimation* anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
+        anim->setEndValue(_m_layout->m_equipAreas[index].topRight());
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+        anim->setEndValue(0);
+        anim->setDuration(200);
+        _m_equipAnim[index]->addAnimation(anim);
+        _m_equipAnim[index]->start();
+        _mutexEquipAnim.unlock();
     }
     return result;
  }
@@ -628,8 +673,14 @@ PlayerCardContainer::PlayerCardContainer()
     for (int i = 0; i < 4; i++) {
         _m_equipCards[i] = NULL;
         _m_equipRegions[i] = NULL;
+        _m_equipAnim[i] = NULL;
+        _m_equipLabel[i] = NULL;
     }
+
     _m_floatingArea = NULL;
+    _m_votesGot = 0;
+    _m_maxVotes = 1;
+    _m_votesItem = NULL;
     _allZAdjusted = false;
 }
 
@@ -676,11 +727,12 @@ void PlayerCardContainer::_adjustComponentZValues()
     // layout
     if (!_startLaying()) return;
     _layUnder(_m_floatingArea);
+    _layUnder(_m_votesItem);
     foreach (QGraphicsItem* pile, _m_privatePiles.values())
-        _layUnder(pile);    
+        _layUnder(pile);
     foreach (QGraphicsItem* judge, _m_judgeIcons)
         _layUnder(judge);
-    _layUnder(_m_markItem);    
+    _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
     _layUnder(_m_chainIcon);        
@@ -689,7 +741,6 @@ void PlayerCardContainer::_adjustComponentZValues()
     _layUnder(_m_handCardBg);
     _layUnder(_m_readyIcon);
     _layUnder(_m_actionIcon);
-    _layUnder(_m_deathIcon);
     _layUnder(_m_saveMeIcon);
     _layUnder(_m_phaseIcon);
     _layUnder(_m_smallAvatarNameItem);
@@ -758,8 +809,15 @@ void PlayerCardContainer::_createControls()
 
     for (int i = 0; i < 4; i++)
     {
-        QPixmap emptyPixmap(_m_layout->m_equipAreas[i].size());
-        _m_equipRegions[i] = new QGraphicsPixmapItem(emptyPixmap);
+        _m_equipLabel[i] = new QLabel;
+        _m_equipLabel[i]->setStyleSheet("QLabel{ background-color: transparent;}");
+        _m_equipLabel[i]->setPixmap(QPixmap(_m_layout->m_equipAreas[i].size()));
+        _m_equipRegions[i] = new QGraphicsProxyWidget();
+        _m_equipRegions[i]->setWidget(_m_equipLabel[i]);
+        _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
+        _m_equipRegions[i]->setParentItem(_getEquipParent());
+        _m_equipRegions[i]->hide();
+        _m_equipAnim[i] = new QParallelAnimationGroup;
     }
 
     _m_markItem = new QGraphicsTextItem(_getMarkParent());
@@ -772,18 +830,29 @@ void PlayerCardContainer::_createControls()
 void PlayerCardContainer::killPlayer()
 {
     _m_roleComboBox->fix(m_player->getRole());
-    updateAvatar();
-    updateSmallAvatar();
-    /* unuse this before fixed
-    _m_deathIcon->show();*/
+    QRect deathArea = _m_layout->m_deathIconRegion.getTranslatedRect(
+        _getDeathIconParent()->boundingRect().toRect());
+    _paintPixmap(_m_deathIcon, deathArea,
+        QPixmap(m_player->getDeathPixmapPath()),  _getDeathIconParent());
+    QPointF scenePos = _getDeathIconParent()->mapToScene(_m_deathIcon->pos());
+    _m_deathIcon->setPos(scenePos);
+    _m_deathIcon->setParentItem(NULL);
+    _m_deathIcon->setZValue(this->zValue() + 10);
+    _m_saveMeIcon->hide();
+    QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
+    effect->setColor(_m_layout->m_deathEffectColor);
+    effect->setStrength(1.0);
+    this->setGraphicsEffect(effect);
+    refresh();
+    _m_deathIcon->show();
 }
 
 void PlayerCardContainer::revivePlayer()
 {
-    updateAvatar();
-    updateSmallAvatar();
-    /* unuse this before fixed
-    _m_deathIcon->hide(); */
+    this->setGraphicsEffect(NULL);
+    Q_ASSERT(_m_deathIcon);
+    _m_deathIcon->hide();
+    refresh();    
 }
 
 void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -791,34 +860,62 @@ void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // we need to override QGraphicsItem's selecting behaviours.
 }
 
+void PlayerCardContainer::updateVotes(){
+    if (!isSelected() || _m_votesGot <= 1)
+        _clearPixmap(_m_votesItem);
+    else 
+    {
+        _paintPixmap(_m_votesItem, _m_layout->m_votesIconRegion,
+                     _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(_m_votesGot)),
+                     _getAvatarParent());
+        _m_votesItem->setZValue(1);
+    }
+}
+
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button() == Qt::RightButton)return;
+{    
     QGraphicsItem* item = getMouseClickReceiver();
     if (item != NULL && item->isUnderMouse() && isEnabled() &&
         (flags() & QGraphicsItem::ItemIsSelectable))
     {
-        setSelected(!isSelected());
+        if (event->button() == Qt::RightButton)
+        {
+            setSelected(false);
+        }
+        else if(event->button() == Qt::LeftButton)
+        {
+            _m_votesGot++;
+            if (_m_votesGot > _m_maxVotes) setSelected(false);
+            else setSelected(true);
+            if (_m_votesGot > 1) emit selected_changed();
+        }
+        updateVotes();
     }
 }
 
 QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVariant &value) {
     if(change == ItemSelectedHasChanged){
-        if(value.toBool())
+        if (!value.toBool())
+        {
+            _m_votesGot = 0;
+            _clearPixmap(_m_selectedFrame);
+        }
+        else
         {
              _paintPixmap(_m_selectedFrame, _m_layout->m_focusFrameArea,
                           _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
                           _getFocusFrameParent());
         }
-        else
-        {
-            _clearPixmap(_m_selectedFrame);
-        }
-
+        updateVotes();
         emit selected_changed();
     }else if(change == ItemEnabledHasChanged){
+        _m_votesGot = 0;
         emit enable_changed();
     }
 
     return QGraphicsObject::itemChange(change, value);
+}
+
+void PlayerCardContainer::_onEquipSelectChanged()
+{
 }

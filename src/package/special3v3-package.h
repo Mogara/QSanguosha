@@ -23,7 +23,7 @@ class HuanshiCard: public SkillCard{
 public:
     Q_INVOKABLE HuanshiCard();
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class Special3v3Package : public Package{

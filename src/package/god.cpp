@@ -44,7 +44,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill("wuhun");
+        return target != NULL && target->hasSkill("wuhun");
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *shenguanyu, QVariant &) const{
@@ -172,12 +172,6 @@ public:
     }
 };
 
-static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
-    Room *room = a->getRoom();
-
-    return room->getFront(a, b) == a;
-}
-
 void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point) const{
     DamageStruct damage;
 
@@ -193,13 +187,44 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 GreatYeyanCard::GreatYeyanCard(){
 }
 
-int GreatYeyanCard::targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    int i = 0;
-    foreach(const Player* player, targets)if(player == to_select)i++;
-    return qMax(3 - targets.size(),0) + i;
+bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets,
+                                  const Player *to_select, const Player *Self) const
+{
+    Q_ASSERT(false);
+    return false;
 }
 
-void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+bool GreatYeyanCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    // check legitimacy
+    // first, we need 4 suits
+    if (subcards.length() != 4) return false;
+    QList<Card::Suit> allsuits;
+    foreach (int cardId, subcards)
+    {
+        // @todo: get this from room / roomscene rather than Sanguosha
+        const Card* card = Sanguosha->getCard(cardId);
+        if (allsuits.contains(card->getSuit())) return false;
+        allsuits.append(card->getSuit());
+    }
+    
+    if (targets.size() != 3 || targets.toSet().size() == 3)
+        return false;
+    return true;
+}
+
+bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets,
+                                  const Player *to_select, const Player *Self,
+                                  int& maxVotes) const
+{
+    int i = 0;
+    foreach(const Player* player, targets)
+        if(player == to_select) i++;
+    maxVotes = qMax(3 - targets.size(),0) + i;
+    return maxVotes > 0;
+}
+
+void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlayer *> &targets) const{
     int criticaltarget = 0;
     int totalvictim = 0;
     QMap<ServerPlayer*,int> map;
@@ -212,16 +237,15 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
             criticaltarget++;
         totalvictim++;
     }
-    if(criticaltarget > 0){
+    if (criticaltarget > 0){
         room->loseHp(shenzhouyu, 3);
         shenzhouyu->loseMark("@flame");
         room->throwCard(this, shenzhouyu);
-        if(totalvictim > 1){
+        if(totalvictim > 1)
             room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
-            qSort(map.keys().begin(), map.keys().end(), CompareByActionOrder);
-        }
         else
             room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+        qSort(map.keys().begin(), map.keys().end(), ServerPlayer::CompareByActionOrder);
         foreach(ServerPlayer* sp,map.keys())
             damage(shenzhouyu, sp, map[sp]);
     }
@@ -231,15 +255,21 @@ SmallYeyanCard::SmallYeyanCard(){
 
 }
 
-bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool SmallYeyanCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    return targets.length() == 3;
+}
+
+bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
     return targets.length() < 3;
 }
 
-void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlayer *> &targets) const{
     room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
     QList<ServerPlayer *> players = targets;
-    qSort(players.begin(), players.end(), CompareByActionOrder);
+    qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
     Card::use(room, shenzhouyu, players);
 }
 
@@ -265,7 +295,8 @@ public:
             return false;
 
         foreach(CardItem *item, selected){
-            if(to_select->getFilteredCard()->getSuit() == item->getFilteredCard()->getSuit())
+            if (to_select->getFilteredCard()->getSuit() == 
+                item->getFilteredCard()->getSuit())
                 return false;
         }
 
@@ -273,8 +304,9 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length()  == 0)return new SmallYeyanCard();
-        if(cards.length() != 4)
+        if (cards.length()  == 0) 
+            return new SmallYeyanCard;
+        if (cards.length() != 4)
             return NULL;
 
         GreatYeyanCard *card = new GreatYeyanCard;
@@ -347,7 +379,8 @@ public:
         Room *room = shencc->getRoom();
         int i, x = damage.damage;
         bool can_invoke = false;
-        QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
+        QList<ServerPlayer *> players = room->getAllPlayers();
+        players.removeOne(shencc);
         for(i=0; i<x; i++){
             foreach(ServerPlayer *player, players){
                 if(!player->isAllNude()){
@@ -466,7 +499,7 @@ ShenfenCard::ShenfenCard(){
     once = true;
 }
 
-void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, const QList<ServerPlayer *> &) const{
+void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, QList<ServerPlayer *> &) const{
     shenlvbu->loseMark("@wrath", 6);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(shenlvbu);
@@ -531,7 +564,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill("wuqian");
+        return target != NULL && target->hasSkill("wuqian");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -588,7 +621,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getMark("@star") > 0;
+        return target != NULL && PhaseChangeSkill::triggerable(target) && target->getMark("@star") > 0;
     }
 
     static void Exchange(ServerPlayer *shenzhuge){
@@ -727,7 +760,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@gale") > 0;
+        return target != NULL && target->getMark("@gale") > 0;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -783,7 +816,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return target != NULL && target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
@@ -805,7 +838,7 @@ bool DawuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.length() < Self->getMark("@star");
 }
 
-void DawuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void DawuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     int n = targets.length();
     Qixing::DiscardStar(source, n, "dawu");
 
@@ -847,7 +880,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@fog") > 0;
+        return target != NULL && target->getMark("@fog") > 0;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -902,7 +935,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -933,7 +966,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::Start
                 && target->getMark("baiyin") == 0
                 && target->getMark("@bear") >= 4;
@@ -1016,7 +1049,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target)
+        return target != NULL && TriggerSkill::triggerable(target)
                 && target->getMark("@bear") > 0;
     }
 
@@ -1062,7 +1095,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::NotActive
                 && target->tag.value("JilveWansha").toBool();
     }
@@ -1085,7 +1118,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1120,7 +1153,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

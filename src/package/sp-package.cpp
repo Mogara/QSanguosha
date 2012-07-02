@@ -69,7 +69,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -303,10 +303,9 @@ void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 }
 
-class Weidi:public ZeroCardViewAsSkill{
+class WeidiViewAsSkill:public ZeroCardViewAsSkill{
 public:
-    Weidi():ZeroCardViewAsSkill("weidi"){
-        frequency = Compulsory;
+    WeidiViewAsSkill():ZeroCardViewAsSkill("weidi"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -319,6 +318,18 @@ public:
     }
 };
 
+class Weidi:public GameStartSkill{
+public:
+    Weidi():GameStartSkill("weidi"){
+        frequency = Compulsory;
+        view_as_skill = new WeidiViewAsSkill;
+    }
+
+    virtual void onGameStart(ServerPlayer *) const{
+        // do nothing
+        return;
+    }
+};
 
 class Yicong: public DistanceSkill{
 public:
@@ -344,7 +355,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::Start
                 && !target->isKongcheng()
                 && !target->getJudgingArea().isEmpty();
@@ -406,7 +417,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::Start
                 && target->getMark("danji") == 0
                 && target->getHandcardNum() > target->getHp();

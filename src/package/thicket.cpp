@@ -16,7 +16,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
+        return target != NULL && !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -111,7 +111,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "wei";
+        return target != NULL && target->getKingdom() == "wei";
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -295,7 +295,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
+        return target != NULL && !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -389,7 +389,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
+        return target != NULL && PhaseChangeSkill::triggerable(target)
                 && target->getPhase() == Player::Start
                 && target->isWounded();
     }
@@ -417,7 +417,7 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
     return to_select->getHandcardNum() == Self->getMark("haoshi");
 }
 
-void HaoshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void HaoshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *beggar = targets.first();
 
     room->moveCardTo(this, beggar, Player::PlaceHand, false);
@@ -547,7 +547,7 @@ bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     return targets.length() == 2;
 }
 
-void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void DimengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *a = targets.at(0);
     ServerPlayer *b = targets.at(1);
 
@@ -623,7 +623,7 @@ LuanwuCard::LuanwuCard(){
     target_fixed = true;
 }
 
-void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void LuanwuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     source->loseMark("@chaos");
     room->broadcastInvoke("animate", "lightbox:$luanwu");
 
@@ -717,8 +717,6 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
                     slash_targets--;
                 }
             }
-            CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, effect.to->objectName());
-            room->moveCardTo(slash, effect.to, NULL, Player::DiscardPile, reason);
             room->useCard(use);
         }
         else
@@ -822,7 +820,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName()) || target->getGeneral()->isFemale();
+        return target != NULL && (target->hasSkill(objectName()) || target->getGeneral()->isFemale());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
@@ -912,7 +910,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "qun";
+        return target != NULL && target->getKingdom() == "qun";
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
@@ -996,8 +994,8 @@ ThicketPackage::ThicketPackage()
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Wansha);
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
-    jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new Weimu);
+    jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new SPConvertSkill("guiwei", "jiaxu", "sp_jiaxu"));
     related_skills.insertMulti("luanwu", "#@chaos-1");
 
