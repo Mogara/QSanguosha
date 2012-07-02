@@ -300,6 +300,10 @@ void PlayerCardContainer::updateHp()
     _m_saveMeIcon->setVisible(m_player->getHp() <= 0 && m_player->getMaxHp() > 0);
 }
 
+static bool CompareByNumber(const Card *card1, const Card *card2){
+    return card1->getNumber() < card2->getNumber();
+}
+
 void PlayerCardContainer::updatePile(const QString &pile_name)
 {
     // retrieve menu and create a new pile if necessary
@@ -309,7 +313,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     {
         button = new QPushButton;
         button->setObjectName(pile_name);
-        button->setProperty("private_pile","true");
+        button->setProperty("private_pile", "true");
         QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
         button_widget->setWidget(button);
         _m_privatePiles[pile_name] = button_widget;		
@@ -332,14 +336,21 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     {
         button->setText(QString("%1(%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
         menu = new QMenu(button);
-        int visibleCards = 0;
-        foreach (int card_id, pile){
-            if (card_id == Card::S_UNKNOWN_CARD_ID) continue;
+        menu->setProperty("private_pile", "true");
+
+        //Sort the cards in pile by number can let players know what is in this pile more clear.
+        //If someone has "buqu", we can got which card he need or which he hate easier.
+        QList<const Card *> cards;
+        foreach(int card_id, pile){
             const Card *card = Sanguosha->getCard(card_id);
-            menu->addAction(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()), card->getFullName());
-            visibleCards++;
+            if (card != NULL) cards << card;
         }
-        if (visibleCards > 0) button->setMenu(menu);
+        qSort(cards.begin(), cards.end(), CompareByNumber);
+
+        foreach (const Card *card, cards)
+            menu->addAction(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()), card->getFullName());
+
+        if (cards.count() > 0) button->setMenu(menu);
         else
         {
             delete menu;

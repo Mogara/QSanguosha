@@ -27,7 +27,10 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     animations = new EffectAnimation();
     pending_card = NULL;
     for (int i = 0; i < 4; i++)
+    {
         _m_equipSkillBtns[i] = NULL;
+        _m_isEquipsAnimOn[i] = false;
+    }
     // At this stage, we cannot decide the dashboard size yet, the whole
     // point in creating them here is to allow PlayerCardContainer to 
     // anchor all controls and widgets to the correct frame.
@@ -545,6 +548,12 @@ void Dashboard::_createEquipBorderAnimations()
 
 void Dashboard::_setEquipBorderAnimation(int index, bool turnOn)
 {
+    _mutexEquipAnim.lock();
+    if (_m_isEquipsAnimOn[index] == turnOn) {
+        _mutexEquipAnim.unlock();
+        return;
+    }
+    
     QPoint newPos;
 
     if (turnOn)
@@ -556,8 +565,6 @@ void Dashboard::_setEquipBorderAnimation(int index, bool turnOn)
         newPos = _dlayout->m_equipAreas[index].topLeft();
     }
     
-    _mutexEquipAnim.lock();
-    _m_equipRegions[index]->show();
     _m_equipAnim[index]->stop();
     _m_equipAnim[index]->clear();
     QPropertyAnimation* anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
@@ -569,7 +576,6 @@ void Dashboard::_setEquipBorderAnimation(int index, bool turnOn)
     anim->setDuration(200);
     _m_equipAnim[index]->addAnimation(anim);
     _m_equipAnim[index]->start();
-    _mutexEquipAnim.unlock();
     
     Q_ASSERT(_m_equipBorders[index]);
     if (turnOn)
@@ -582,6 +588,9 @@ void Dashboard::_setEquipBorderAnimation(int index, bool turnOn)
         _m_equipBorders[index]->hide();
         _m_equipBorders[index]->stop();
     }
+
+    _m_isEquipsAnimOn[index] = turnOn;
+    _mutexEquipAnim.unlock();
 }
 
 void Dashboard::adjustCards(bool playAnimation){
