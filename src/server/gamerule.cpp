@@ -158,12 +158,6 @@ void GameRule::setGameProcess(Room *room) const{
     room->setTag("GameProcess", process);
 }
 
-static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
-    Room *room = a->getRoom();
-
-    return room->getFront(a, b) == a;
-}
-
 bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
     if(room->getTag("SkipGameRule").toBool()){
         room->removeTag("SkipGameRule");
@@ -216,6 +210,10 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
                 if(card_use.card->hasPreAction())
                     card_use.card->doPreAction(room, card_use);
+
+                if(card_use.from && card_use.to.length() > 1){
+                    qSort(card_use.to.begin(), card_use.to.end(), ServerPlayer::CompareByActionOrder);
+                }
 
                 ServerPlayer *target;
                 QList<ServerPlayer *> targets = card_use.to;
