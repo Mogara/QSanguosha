@@ -150,13 +150,13 @@ QString General::getSkillDescription() const{
 
 void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
-    QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly)){
+    bool fileExists = QFile::exists(filename);
+    if(!fileExists){
         QStringList origin_generals = objectName().split("_");
         if(origin_generals.length()>1)
             filename = QString("audio/death/%1.ogg").arg(origin_generals.at(1));
     }
-    if(!file.open(QIODevice::ReadOnly) && objectName().endsWith("f")){
+    if(!fileExists && objectName().endsWith("f")){
         QString origin_general = objectName();
         origin_general.chop(1);
         if(Sanguosha->getGeneral(origin_general))
@@ -165,6 +165,3 @@ void General::lastWord() const{
     Sanguosha->playAudioEffect(filename);
 }
 
-QSize General::BigIconSize(94, 96);
-QSize General::SmallIconSize(122, 50);
-QSize General::TinyIconSize(42, 36);

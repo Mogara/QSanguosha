@@ -12,7 +12,7 @@ LuoyiCard::LuoyiCard(){
     target_fixed = true;
 }
 
-void LuoyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void LuoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded))
         source->setFlags("luoyi");
 }
@@ -121,7 +121,7 @@ public:
         Room *room = gongsun->getRoom();
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
-			room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
+            room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
             QString choice = room->askForChoice(gongsun, "zhulou", "throw+losehp");
             if(choice == "losehp" || !room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
                 room->loseHp(gongsun);

@@ -3051,7 +3051,15 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
                 QVariant data = QVariant::fromValue(move_star);
                 thread->trigger(CardLostOnePiece, this, (ServerPlayer*)cards_move.from, data);
             }
+            if (cards_move.from && cards_move.from_place == Player::PlaceEquip)
+            {
+                const Card* card = Sanguosha->getCard(moves[j].card_id);
+                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+                Q_ASSERT(equip);
+                equip->onUninstall((ServerPlayer*)cards_move.from);
+            }
         }
+
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
         moveOneTimeStruct.reason = cards_move.reason;
         for (int i = 0; i < cards_move.card_ids.size(); i++)
@@ -3077,6 +3085,13 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
                 CardMoveStar move_star = &moves[j];
                 QVariant data = QVariant::fromValue(move_star);
                 thread->trigger(CardGotOnePiece, this, (ServerPlayer*)cards_move.to, data);
+            }
+            if (cards_move.to && cards_move.to_place == Player::PlaceEquip)
+            {
+                const Card* card = Sanguosha->getCard(moves[j].card_id);
+                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+                Q_ASSERT(equip);
+                equip->onInstall((ServerPlayer*)cards_move.to);
             }
         }
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
@@ -3189,6 +3204,13 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
                 QVariant data = QVariant::fromValue(move_star);
                 thread->trigger(CardLostOnePiece, this, (ServerPlayer*)cards_move.from, data);
             }
+            if (cards_move.from && cards_move.from_place == Player::PlaceEquip)
+            {
+                const Card* card = Sanguosha->getCard(moves[j].card_id);
+                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+                Q_ASSERT(equip);
+                equip->onUninstall((ServerPlayer*)cards_move.from);
+            }
         }
         moveOneTimeStruct.card_ids.append(cards_move.card_ids);
         moveOneTimeStruct.reason = cards_move.reason;
@@ -3264,6 +3286,13 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
                     CardMoveStar move_star = &moves[j];
                     QVariant data = QVariant::fromValue(move_star);
                     thread->trigger(CardGotOnePiece, this, (ServerPlayer*)cards_move.to, data);
+            }
+            if (cards_move.to && cards_move.to_place == Player::PlaceEquip)
+            {
+                const Card* card = Sanguosha->getCard(moves[j].card_id);
+                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+                Q_ASSERT(equip);
+                equip->onInstall((ServerPlayer*)cards_move.to);
             }
             Sanguosha->getCard(card_id)->onMove(moves[j]);
         }

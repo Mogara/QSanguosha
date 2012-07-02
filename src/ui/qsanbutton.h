@@ -38,16 +38,20 @@ protected:
     virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void _onMouseClick(bool inside);
     ButtonState _m_state;
     ButtonStyle _m_style;
     QString _m_groupName;
     QString _m_buttonName;
     QRegion _m_mask;
     QSize _m_size;
+    // @todo: currently this is an extremely dirty hack. Refactor the button states to
+    // get rid of it.
     bool _m_mouseEntered;
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
 signals:
     void clicked();
+    void enable_changed();
 };
 
 class QSanSkillButton: public QSanButton
@@ -73,7 +77,7 @@ public:
         if (!_m_canDisable && !enabled) return;
         QSanButton::setEnabled(enabled);
     }
-    QSanSkillButton(QGraphicsItem* parent);
+    QSanSkillButton(QGraphicsItem* parent = NULL);
     inline const ViewAsSkill* getViewAsSkill() const { return _m_viewAsSkill; }
 protected:
     virtual void _setSkillType(SkillType type);
@@ -99,7 +103,7 @@ class QSanInvokeSkillButton: public QSanSkillButton
 {
     Q_OBJECT
 public:
-    inline QSanInvokeSkillButton(QGraphicsItem* parent) : QSanSkillButton(parent)
+    inline QSanInvokeSkillButton(QGraphicsItem* parent = NULL) : QSanSkillButton(parent)
     {
         _m_enumWidth = S_WIDTH_NARROW;
     }

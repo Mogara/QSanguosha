@@ -41,7 +41,7 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
         return false;
 }
 
-void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
+void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> &targets) const{
     room->throwCard(this, zhanghe);
 
     if(zhanghe->getPhase() == Player::Draw){
@@ -543,7 +543,7 @@ bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player 
             && !to_select->isKongcheng() && !to_select->hasFlag("ZhibaInvoked");
 }
 
-void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ZhibaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *sunce = targets.first();
     room->setPlayerFlag(sunce, "ZhibaInvoked");
     if(sunce->getMark("hunzi") > 0 &&

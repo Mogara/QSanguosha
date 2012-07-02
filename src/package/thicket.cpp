@@ -417,7 +417,7 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
     return to_select->getHandcardNum() == Self->getMark("haoshi");
 }
 
-void HaoshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void HaoshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *beggar = targets.first();
 
     room->moveCardTo(this, beggar, Player::PlaceHand, false);
@@ -547,7 +547,7 @@ bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     return targets.length() == 2;
 }
 
-void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void DimengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *a = targets.at(0);
     ServerPlayer *b = targets.at(1);
 
@@ -623,7 +623,7 @@ LuanwuCard::LuanwuCard(){
     target_fixed = true;
 }
 
-void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void LuanwuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     source->loseMark("@chaos");
     room->broadcastInvoke("animate", "lightbox:$luanwu");
 

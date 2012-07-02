@@ -4,9 +4,12 @@
 #include "player.h"
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <qparallelanimationgroup.h>
+#include <qgraphicseffect.h>
 #include "QSanSelectableItem.h"
 #include <QMutex>
 #include <qvariant.h>
+#include <qlabel.h>
 #include "SkinBank.h"
 #include "TimedProgressBar.h"
 #include "magatamasItem.h"
@@ -97,6 +100,7 @@ protected:
     virtual QGraphicsItem* _getPileParent() = 0;
     virtual QGraphicsItem* _getFocusFrameParent() = 0;
     virtual QGraphicsItem* _getProgressBarParent() = 0;
+    virtual QGraphicsItem* _getDeathIconParent() = 0;
     virtual QString getResourceKeyName() = 0;
 
     void _createRoleComboBox();    
@@ -146,6 +150,7 @@ protected:
     QGraphicsPixmapItem *_m_phaseIcon;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame;
+    QGraphicsEffect* _m_deathEffect;
     QMap<QString, QGraphicsProxyWidget*> _m_privatePiles;
 
     // The frame that is maintained by roomscene. Items in this area has positions
@@ -158,8 +163,11 @@ protected:
     QList<QGraphicsPixmapItem *> _m_judgeIcons;
     QList<CardItem *> _m_judgeCards;
 
-    QGraphicsPixmapItem *_m_equipRegions[4];  
+    QGraphicsProxyWidget *_m_equipRegions[4];  
     CardItem* _m_equipCards[4];
+    QLabel* _m_equipLabel[4];
+    QParallelAnimationGroup* _m_equipAnim[4];
+    QMutex _mutexEquipAnim;
 
     //controls
     MagatamasBoxItem *_m_hpBox;
@@ -173,6 +181,9 @@ protected:
     // The following stuffs for mulitple votes required for yeyan
     int _m_votesGot, _m_maxVotes;
     QGraphicsPixmapItem *_m_votesItem;
+    
+protected slots:
+    virtual void _onEquipSelectChanged();
 private:   
     bool _startLaying();    
     void clearVotes();

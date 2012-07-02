@@ -337,8 +337,6 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             log.card_str = card->toString();
             log.from = this;
             room->sendLog(log);
-
-            equip->onUninstall(this);
             break;
         }
 
@@ -374,7 +372,6 @@ void ServerPlayer::addCard(const Card *card, Place place){
     case PlaceEquip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             setEquip(equip);
-            equip->onInstall(this);
             break;
         }
 

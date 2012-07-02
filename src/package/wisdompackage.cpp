@@ -377,7 +377,7 @@ WeidaiCard::WeidaiCard(){
     target_fixed = true;
 }
 
-void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *> &) const{
+void WeidaiCard::use(Room *room, ServerPlayer *sunce, QList<ServerPlayer *> &) const{
     if(sunce->hasFlag("drank") || !sunce->hasLordSkill("weidai"))
         return;
     foreach(ServerPlayer *liege, room->getAlivePlayers()){

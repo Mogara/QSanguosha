@@ -11,8 +11,8 @@ PixmapAnimation::PixmapAnimation(QGraphicsScene *scene) :
 
 void PixmapAnimation::advance(int phase)
 {
-    if(phase)current++;
-    if(current>=frames.size())
+    if (phase) current++;
+    if (current >= frames.size())
     {
         current = 0;
         emit finished();
@@ -33,20 +33,18 @@ void PixmapAnimation::setPath(const QString &path)
         std::ifstream fin(QString(path + "prop").toStdString().data());
         fin >> width >> height >> num;
 
-        for(int i=0;i<num;i++)
+        for(int i = 0; i < num; i++)
         {
             QPixmap pic(width,height);
             pic.fill(Qt::transparent);
             QPainter pt(&pic);
             pt.setClipRect(0,0,width,height);
-            pt.drawPixmap( - width * i, 0,atlas);
+            pt.drawPixmap(-width * i, 0, atlas);
 
             frames << pic;
         }
         return;
     }
-
-
 
     int i = 0;
     QString pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
@@ -78,7 +76,7 @@ void PixmapAnimation::setPath(const QString &path)
 
 void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    painter->drawPixmap(0,0,frames.at(current));
+    painter->drawPixmap(0, 0, frames.at(current));
 }
 
 QRectF PixmapAnimation::boundingRect() const
@@ -98,21 +96,26 @@ void PixmapAnimation::timerEvent(QTimerEvent *)
 
 void PixmapAnimation::start(bool permanent,int interval)
 {
-    startTimer(interval);
-    if(!permanent)connect(this,SIGNAL(finished()),this,SLOT(deleteLater()));
+    _m_timerId = startTimer(interval);
+    if (!permanent) connect(this,SIGNAL(finished()),this,SLOT(deleteLater()));
 }
 
-PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsObject *parent, const QString &emotion)
+void PixmapAnimation::stop()
+{
+    killTimer(_m_timerId);
+}
+
+PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, const QString &emotion)
 {
     PixmapAnimation *pma = new PixmapAnimation();
     pma->setPath(QString("image/system/emotion/%1/").arg(emotion));
     if(pma->valid())
     {
-        if(emotion == "slash_red" ||
-                emotion == "slash_black" ||
-                emotion == "thunder_slash" ||
-                emotion == "peach" ||
-                emotion == "analeptic")
+        if (emotion == "slash_red" ||
+            emotion == "slash_black" ||
+            emotion == "thunder_slash" ||
+            emotion == "peach" ||
+            emotion == "analeptic")
         {
             pma->moveBy(pma->boundingRect().width()*0.15,
                         pma->boundingRect().height()*0.15);
@@ -129,7 +132,7 @@ PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsObject *parent, co
                 (parent->boundingRect().height() - pma->boundingRect().height())/2);
 
         {
-            if(emotion == "fire_slash")pma->moveBy(40,0);
+            if (emotion == "fire_slash") pma->moveBy(40,0);
         }
         pma->setParentItem(parent);
         pma->startTimer(50);

@@ -380,6 +380,7 @@ void RoomThread::run(){
     } catch (TriggerEvent event) {
         if (event == GameFinished)
             return;
+        else Q_ASSERT(false);
     }
 }
 

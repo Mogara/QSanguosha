@@ -88,7 +88,7 @@ HuanshiCard::HuanshiCard(){
     can_jilei = true;
 }
 
-void HuanshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void HuanshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
 
 }
 

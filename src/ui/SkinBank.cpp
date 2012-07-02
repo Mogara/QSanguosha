@@ -361,22 +361,26 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
 {
     QPoint parentAnchor;
     Qt::Alignment hAlign = m_anchorParent & Qt::AlignHorizontal_Mask;
-    if (hAlign == Qt::AlignRight) parentAnchor.setX(parentRect.right());
-    else if (hAlign == Qt::AlignHCenter) parentAnchor.setX(parentRect.center().x());
+    if (hAlign & Qt::AlignRight) parentAnchor.setX(parentRect.right());
+    else if (hAlign & Qt::AlignHCenter) 
+        parentAnchor.setX(parentRect.center().x());
     else parentAnchor.setX(parentRect.left());
     Qt::Alignment vAlign = m_anchorParent & Qt::AlignVertical_Mask;
-    if (vAlign == Qt::AlignBottom) parentAnchor.setY(parentRect.bottom());
-    else if (vAlign == Qt::AlignCenter) parentAnchor.setY(parentRect.center().y() );
+    if (vAlign & Qt::AlignBottom) parentAnchor.setY(parentRect.bottom());
+    else if (vAlign & Qt::AlignVCenter) 
+        parentAnchor.setY(parentRect.center().y() );
     else parentAnchor.setY(parentRect.top());
 
     QPoint childAnchor;
     hAlign = m_anchorChild & Qt::AlignHorizontal_Mask;
-    if (hAlign == Qt::AlignRight) childAnchor.setX(size.width());
-    else if (hAlign == Qt::AlignHCenter) childAnchor.setX(size.width() / 2);
+    if (hAlign & Qt::AlignRight) childAnchor.setX(size.width());
+    else if (hAlign & Qt::AlignHCenter)
+        childAnchor.setX(size.width() / 2);
     else childAnchor.setX(0);
     vAlign = m_anchorChild & Qt::AlignVertical_Mask;
-    if (vAlign == Qt::AlignBottom) childAnchor.setY(size.height());
-    else if (vAlign == Qt::AlignCenter) childAnchor.setY(size.height() / 2);
+    if (vAlign & Qt::AlignBottom) childAnchor.setY(size.height());
+    else if (vAlign & Qt::AlignVCenter) 
+        childAnchor.setY(size.height() / 2);
     else childAnchor.setY(0);
     
     QPoint pos = parentAnchor - childAnchor + m_offset;
@@ -759,9 +763,10 @@ bool QSanRoomSkin::_loadLayoutConfig()
         tryParse(playerConfig["saveMeIconRegion"], layout->m_saveMeIconRegion);
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
         tryParse(playerConfig["readyIconRegion"], layout->m_readyIconRegion);
-        tryParse(playerConfig["deathIconRegion"], layout->m_deathIconRegion);
+        layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
+        tryParse(playerConfig["deathEffectColor"], layout->m_deathEffectColor);
     }
 
 
@@ -796,6 +801,8 @@ bool QSanRoomSkin::_loadLayoutConfig()
     tryParse(config["cancelButtonArea"], _m_dashboardLayout.m_cancelButtonArea);
     tryParse(config["discardButtonArea"], _m_dashboardLayout.m_discardButtonArea);
     tryParse(config["trustButtonArea"], _m_dashboardLayout.m_trustButtonArea);
+    tryParse(config["equipBorderPos"], _m_dashboardLayout.m_equipBorderPos);
+    tryParse(config["equipSelectedOffset"], _m_dashboardLayout.m_equipSelectedOffset);
     config = _m_layoutConfig["skillButton"];
     for (int i = 0; i < 3; i++)
     {

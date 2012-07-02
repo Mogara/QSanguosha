@@ -449,7 +449,7 @@ bool DaheCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void DaheCard::use(Room *room, ServerPlayer *zhangfei, const QList<ServerPlayer *> &targets) const{
+void DaheCard::use(Room *room, ServerPlayer *zhangfei, QList<ServerPlayer *> &targets) const{
     zhangfei->pindian(targets.first(), "dahe", this);
 }
 
@@ -575,7 +575,7 @@ bool TanhuCard::targetFilter(const QList<const Player *> &targets, const Player 
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TanhuCard::use(Room *room, ServerPlayer *lvmeng, const QList<ServerPlayer *> &targets) const{
+void TanhuCard::use(Room *room, ServerPlayer *lvmeng, QList<ServerPlayer *> &targets) const{
     bool success = lvmeng->pindian(targets.first(), "tanhu", this);
     if(success){
         room->setPlayerFlag(targets.first(), "TanhuTarget");

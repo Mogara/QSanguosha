@@ -230,7 +230,7 @@ bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets,
     return maxVotes > 0;
 }
 
-void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlayer *> &targets) const{
     int criticaltarget = 0;
     int totalvictim = 0;
     QMap<ServerPlayer*,int> map;
@@ -271,7 +271,7 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
     return targets.length() < 3;
 }
 
-void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlayer *> &targets) const{
     room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
     QList<ServerPlayer *> players = targets;
@@ -505,7 +505,7 @@ ShenfenCard::ShenfenCard(){
     once = true;
 }
 
-void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, const QList<ServerPlayer *> &) const{
+void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, QList<ServerPlayer *> &) const{
     shenlvbu->loseMark("@wrath", 6);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(shenlvbu);
@@ -844,7 +844,7 @@ bool DawuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.length() < Self->getMark("@star");
 }
 
-void DawuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void DawuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     int n = targets.length();
     Qixing::DiscardStar(source, n, "dawu");
 

@@ -10,6 +10,7 @@
 #include "protocol.h"
 #include "TimedProgressBar.h"
 #include "GeneralCardContainerUI.h"
+#include "pixmapanimation.h"
 
 #include <QPushButton>
 #include <QComboBox>
@@ -17,6 +18,8 @@
 #include <QLineEdit>
 #include <QProgressBar>
 #include <QMutex>
+#include <QPropertyAnimation>
+
 
 class Dashboard : public PlayerCardContainer
 {
@@ -34,6 +37,8 @@ public:
     QSanSkillButton *removeSkillButton(const QString &skillName);
     QSanSkillButton *addSkillButton(const QString &skillName);
     bool isAvatarUnderMouse();
+    
+    void highlightEquip(QString skillName, bool hightlight);
 
     void setTrust(bool trust);    
     void selectCard(const QString &pattern, bool forward = true);
@@ -90,6 +95,7 @@ protected:
     inline virtual QGraphicsItem* _getPileParent() { return _m_rightFrame; }
     inline virtual QGraphicsItem* _getProgressBarParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem* _getFocusFrameParent() { return _m_rightFrame; }
+    inline virtual QGraphicsItem* _getDeathIconParent() { return _m_middleFrame;}
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
     
     bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
@@ -124,6 +130,7 @@ protected:
     QGraphicsSimpleTextItem *trusting_text;
 
     QSanInvokeSkillDock* _m_skillDock;
+    const QSanRoomSkin::DashboardLayout* _dlayout;
 
     //for animated effects
     EffectAnimation *animations;
@@ -139,10 +146,20 @@ protected:
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
     const FilterSkill *filter;
-       
+    
+    // for equip skill/selections
+    PixmapAnimation* _m_equipBorders[4];
+    QSanSkillButton* _m_equipSkillBtns[4];
+
+    void _createEquipBorderAnimations();
+    void _setEquipBorderAnimation(int index, bool turnOn);
+
     void drawEquip(QPainter *painter, const CardItem *equip, int order);
     void setSelectedItem(CardItem *card_item);
 
+protected slots:
+    virtual void _onEquipSelectChanged();
+    
 private slots:
     void onCardItemClicked();
     void onCardItemThrown();

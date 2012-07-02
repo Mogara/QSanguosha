@@ -670,7 +670,7 @@ bool AnxuCard::targetsFeasible(const QList<const Player *> &targets, const Playe
     return targets.length() == 2;
 }
 
-void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void AnxuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHandcardNum() < selecteds.last()->getHandcardNum() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
@@ -784,7 +784,7 @@ ChunlaoCard::ChunlaoCard(){
     target_fixed = true;
 }
 
-void ChunlaoCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void ChunlaoCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
     foreach(int id, this->subcards){
         source->addToPile("wine", id, true);
     }
