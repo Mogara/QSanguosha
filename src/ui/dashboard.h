@@ -29,6 +29,14 @@ public:
     virtual QRectF boundingRect() const;
     void setWidth(int width);
     int getMiddleWidth();
+    inline QRectF getAvatarArea()
+    {
+        QRectF rect;
+        rect.setSize(_dlayout->m_avatarArea.size());
+        QPointF topLeft = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.topLeft());
+        rect.moveTopLeft(topLeft);
+        return rect;
+    }
     QGraphicsProxyWidget *addWidget(QWidget *widget, int x, bool from_left);
     // @TODO: the following function needs to be removed
     QPushButton *createButton(const QString &name);
@@ -105,18 +113,12 @@ protected:
     void _addHandCard(CardItem* card_item);    
     void _adjustCards();
     void _adjustCards(const QList<CardItem *> &list, int y);
-    // ui controls
-    const static QRect S_EQUIP_CARD_MOVE_REGION;
-    const static QRect S_JUDGE_CARD_MOVE_REGION;
-    QRectF m_cardTakeOffRegion;
-    QRectF m_cardSpecialRegion;
 
     int _m_width;
-
     // sync objects
     QMutex m_mutex;
     QMutex m_mutexEnableCards;
-
+    
     QGraphicsPixmapItem *_m_leftFrame, *_m_middleFrame, *_m_rightFrame;    
     // we can not draw bg directly _m_rightFrame because then it will always be
     // under avatar (since it's avatar's parent).

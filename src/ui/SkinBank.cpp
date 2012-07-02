@@ -803,6 +803,7 @@ bool QSanRoomSkin::_loadLayoutConfig()
     tryParse(config["trustButtonArea"], _m_dashboardLayout.m_trustButtonArea);
     tryParse(config["equipBorderPos"], _m_dashboardLayout.m_equipBorderPos);
     tryParse(config["equipSelectedOffset"], _m_dashboardLayout.m_equipSelectedOffset);
+    _m_dashboardLayout.m_disperseWidth = config["disperseWidth"].asInt();
     config = _m_layoutConfig["skillButton"];
     for (int i = 0; i < 3; i++)
     {

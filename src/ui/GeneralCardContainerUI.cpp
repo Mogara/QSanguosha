@@ -302,7 +302,7 @@ void PlayerCardContainer::updateHp()
 
 void PlayerCardContainer::updatePile(const QString &pile_name)
 {
-        // retrieve menu and create a new pile if necessary
+    // retrieve menu and create a new pile if necessary
     QMenu* menu;
     QPushButton* button;
     if (!_m_privatePiles.contains(pile_name))
@@ -677,7 +677,6 @@ PlayerCardContainer::PlayerCardContainer()
         _m_equipLabel[i] = NULL;
     }
 
-    _m_deathEffect = NULL;
     _m_floatingArea = NULL;
     _m_votesGot = 0;
     _m_maxVotes = 1;
@@ -824,10 +823,6 @@ void PlayerCardContainer::_createControls()
     _m_markItem = new QGraphicsTextItem(_getMarkParent());
     _m_markItem->setDefaultTextColor(Qt::white);
 
-    QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
-    effect->setColor(_m_layout->m_deathEffectColor);
-    effect->setStrength(1.0);
-    _m_deathEffect = effect;
     _createRoleComboBox();
     repaintAll();
 }
@@ -844,7 +839,10 @@ void PlayerCardContainer::killPlayer()
     _m_deathIcon->setParentItem(NULL);
     _m_deathIcon->setZValue(this->zValue() + 10);
     _m_saveMeIcon->hide();
-    this->setGraphicsEffect(_m_deathEffect);
+    QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
+    effect->setColor(_m_layout->m_deathEffectColor);
+    effect->setStrength(1.0);
+    this->setGraphicsEffect(effect);
     refresh();
     _m_deathIcon->show();
 }

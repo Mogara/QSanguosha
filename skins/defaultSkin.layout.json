@@ -127,6 +127,8 @@
     "equipPointFont": ["arial", [14, 14, 3], 50, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
     "delayedTrickFirstRegion": [3, 3, 28, 28],
     "delayedTrickStep": [28, 0],
+    // the width of the region to disperse cards when the cards are to be moved to the special pile. 
+    "disperseWidth": 250,
     "markTextArea": [0, 0, 50, 50],
     "roleComboBoxPos": [-30, 5],
     "borderWidth": 6,

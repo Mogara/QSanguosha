@@ -150,7 +150,6 @@ protected:
     QGraphicsPixmapItem *_m_phaseIcon;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame;
-    QGraphicsEffect* _m_deathEffect;
     QMap<QString, QGraphicsProxyWidget*> _m_privatePiles;
 
     // The frame that is maintained by roomscene. Items in this area has positions

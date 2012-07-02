@@ -210,6 +210,7 @@ public:
         QRect m_skillTextArea[3];
         QPoint m_equipBorderPos;
         QPoint m_equipSelectedOffset;
+        int m_disperseWidth;
         QSanShadowTextFont m_skillTextFonts[3];
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES *
                                  QSanInvokeSkillButton::S_NUM_SKILL_TYPES];

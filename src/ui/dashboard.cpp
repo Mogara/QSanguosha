@@ -15,11 +15,6 @@
 
 using namespace QSanProtocol;
 
-const QRect Dashboard::S_EQUIP_CARD_MOVE_REGION(0, -10,
-    G_COMMON_LAYOUT.m_cardNormalWidth * 1.5, G_COMMON_LAYOUT.m_cardNormalHeight);
-const QRect Dashboard::S_JUDGE_CARD_MOVE_REGION(0, -20, 
-    G_COMMON_LAYOUT.m_cardNormalWidth * 1.5, G_COMMON_LAYOUT.m_cardNormalHeight);
-
 Dashboard::Dashboard(QGraphicsItem *widget)
     : button_widget(widget), selected(NULL), view_as_skill(NULL), filter(NULL)
 {
@@ -166,17 +161,16 @@ void Dashboard::setTrust(bool trust){
 
 bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {
-    if (place == Player::PlaceEquip)
-        _disperseCards(card_items, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
-    else if (place == Player::PlaceDelayedTrick)
-        _disperseCards(card_items, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, true, false);
-    else if (place == Player::PlaceSpecial)
+    if (place == Player::PlaceSpecial)
     {
         foreach(CardItem* card, card_items)
         {
             card->setHomeOpacity(0.0);            
         }
-        _disperseCards(card_items, m_cardSpecialRegion, Qt::AlignCenter, true, false);
+        QPointF center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+        QRectF rect = QRectF(0, 0, _dlayout->m_disperseWidth, 0);
+        rect.moveCenter(center);
+        _disperseCards(card_items, rect, Qt::AlignCenter, true, false);
         return true;
     }
 
@@ -652,14 +646,28 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
     }
     else Q_ASSERT(false);
 
+    Q_ASSERT(result.size() == card_ids.size());
     if (place == Player::PlaceHand)    
-        adjustCards();
-    else if (place == Player::PlaceEquip && card_ids.size() > 1)
-        _disperseCards(result, S_EQUIP_CARD_MOVE_REGION, Qt::AlignCenter, false, false);
-    else if (place == Player::PlaceDelayedTrick && card_ids.size() > 1)
-        _disperseCards(result, S_JUDGE_CARD_MOVE_REGION, Qt::AlignCenter, false, false);
-    else if (place == Player::PlaceSpecial)
-        _disperseCards(result, m_cardSpecialRegion, Qt::AlignCenter, false, false);
+        adjustCards();   
+    else if (result.size() > 1 || place == Player::PlaceSpecial)
+    {
+        QRect rect(0, 0, _dlayout->m_disperseWidth, 0);
+        QPointF center(0, 0);
+        if (place == Player::PlaceEquip || place == Player::PlaceDelayedTrick)
+        {
+            for (int i = 0; i < result.size(); i++)
+            {
+                center += result[i]->pos();
+            }
+            center = 1.0 / result.length() * center;
+        }
+        else if (place == Player::PlaceSpecial)
+            center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+        else
+            Q_ASSERT(false);
+        rect.moveCenter(center.toPoint());
+        _disperseCards(result, rect, Qt::AlignCenter, false, false);
+    }
     update();
     return result;
 }
