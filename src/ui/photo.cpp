@@ -129,7 +129,7 @@ void Photo::showSkillName(const QString &skill_name){
         Sanguosha->translate(skill_name));
     _m_skillNameItem->show();
 
-    QTimer::singleShot(1500, this, SLOT(hideSkillName()));
+    QTimer::singleShot(2000, this, SLOT(hideSkillName()));
 }
 
 void Photo::hideSkillName(){
