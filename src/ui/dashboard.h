@@ -154,6 +154,7 @@ protected:
     // for equip skill/selections
     PixmapAnimation* _m_equipBorders[4];
     QSanSkillButton* _m_equipSkillBtns[4];
+    bool _m_isEquipsAnimOn[4];
 
     void _createEquipBorderAnimations();
     void _setEquipBorderAnimation(int index, bool turnOn);
