@@ -87,6 +87,8 @@ public slots:
     void doFilter();
     void sortCards(bool doAnmiation = true);
     void reverseSelection();
+    void skillButtonActivated();
+    void skillButtonDeactivated();
 
 protected:
     virtual void _adjustComponentZValues();

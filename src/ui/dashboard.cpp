@@ -414,6 +414,42 @@ QPushButton *Dashboard::createButton(const QString &name){
     return button;
 }
 
+void Dashboard::skillButtonActivated(){
+    QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
+    foreach(QSanSkillButton *btn, _m_skillDock->getAllSkillButtons()){
+        if(button == btn)
+            continue;
+
+        if(btn->getViewAsSkill() != NULL && btn->isDown())
+            btn->setState(QSanButton::S_STATE_UP);
+    }
+
+    for(int i = 0; i < 4; i++)
+    {
+        if(button == _m_equipSkillBtns[i])
+            continue;
+
+        if(_m_equipSkillBtns[i] != NULL)
+            _m_equipSkillBtns[i]->setEnabled(false);
+    }
+}
+
+void Dashboard::skillButtonDeactivated(){
+    foreach(QSanSkillButton *btn, _m_skillDock->getAllSkillButtons()){
+        if(btn->getViewAsSkill() != NULL && btn->isDown())
+            btn->setState(QSanButton::S_STATE_UP);
+    }
+    
+    for(int i = 0; i < 4; i++)
+    {
+        if(_m_equipSkillBtns[i] != NULL){
+            _m_equipSkillBtns[i]->setEnabled(true);
+            if(_m_equipSkillBtns[i]->isDown())
+                _m_equipSkillBtns[i]->click();
+        }
+    }
+}
+
 QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
     QPushButton *button = createButton(name);
     addWidget(button, x, from_left);

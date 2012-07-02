@@ -1715,7 +1715,9 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     }
     if (btn->getViewAsSkill() != NULL)
     {
+        connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(skillButtonActivated()));
         connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
+        connect(btn, SIGNAL(skill_deactivated()), dashboard, SLOT(skillButtonDeactivated()));
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
     }
 
@@ -1897,12 +1899,12 @@ void RoomScene::useCard(const Card *card){
     if(card->targetFixed() || card->targetsFeasible(selected_targets, Self))
         ClientInstance->onPlayerUseCard(card, selected_targets);
     
-    selected_targets.clear();
+    /*selected_targets.clear();
     foreach(QGraphicsItem *item, item2player.keys()){
         item->setSelected(false);
         animations->effectOut(item);
-    }
-    // enableTargets(NULL);
+    }*/
+     enableTargets(NULL);
 }
 
 void RoomScene::callViewAsSkill(){
@@ -2278,6 +2280,7 @@ void RoomScene::doOkButton(){
 void RoomScene::doCancelButton(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
+            dashboard->skillButtonDeactivated();
             const ViewAsSkill *skill = dashboard->currentSkill();
             dashboard->unselectAll();
             if (skill)
@@ -2288,6 +2291,7 @@ void RoomScene::doCancelButton(){
         }
 
     case Client::Responsing:{
+            dashboard->skillButtonDeactivated();
             QString pattern = ClientInstance->getPattern();
             dashboard->unselectAll();
 
