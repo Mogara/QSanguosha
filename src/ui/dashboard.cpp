@@ -840,7 +840,7 @@ void Dashboard::onCardItemHover()
 void Dashboard::onCardItemLeaveHover()
 {
     QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if(!card_item)return;
+    if (!card_item) return;
 
     animations->effectOut(card_item);
 }

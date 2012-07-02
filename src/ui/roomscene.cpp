@@ -1454,7 +1454,6 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
             card->setEnabled(false);
             card->setHomePos(from_container->mapToScene(card->homePos()));
             card->setPos(from_container->mapToScene(card->pos()));
-            card->goBack(true);
             card->setParentItem(NULL);
         }
         _m_cardsMoveStash[moveId].append(cards);
