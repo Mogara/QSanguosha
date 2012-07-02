@@ -185,6 +185,7 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 }
 
 GreatYeyanCard::GreatYeyanCard(){
+    mute = true;
 }
 
 bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets,
@@ -208,9 +209,12 @@ bool GreatYeyanCard::targetsFeasible(const QList<const Player *> &targets, const
         allsuits.append(card->getSuit());
     }
     
-    if (targets.size() != 3 || targets.toSet().size() == 3)
-        return false;
-    return true;
+    //We can only assign 2 damage to one player
+    if(targets.toSet().size() == 1)
+        return targets.size() > 1;
+    else if(targets.toSet().size() == 2)
+        return targets.size() == 3;
+    return false;
 }
 
 bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets,
@@ -241,18 +245,25 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
         room->loseHp(shenzhouyu, 3);
         shenzhouyu->loseMark("@flame");
         room->throwCard(this, shenzhouyu);
-        if(totalvictim > 1)
-            room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
-        else
-            room->broadcastInvoke("animate", "lightbox:$greatyeyan");
-        qSort(map.keys().begin(), map.keys().end(), ServerPlayer::CompareByActionOrder);
-        foreach(ServerPlayer* sp,map.keys())
+        if(totalvictim > 1){
+            room->broadcastInvoke("animate", "lightbox:$yeyan2");
+            room->broadcastSkillInvoke("yeyan", 2);
+        }
+        else{
+            room->broadcastInvoke("animate", "lightbox:$yeyan3");
+            room->broadcastSkillInvoke("yeyan", 3);
+        }
+
+        QList<ServerPlayer *>targets = map.keys();
+        if(targets.size() > 1)
+            qSort(targets.begin(), targets.end(), ServerPlayer::CompareByActionOrder);
+        foreach(ServerPlayer* sp, targets)
             damage(shenzhouyu, sp, map[sp]);
     }
 }
 
 SmallYeyanCard::SmallYeyanCard(){
-
+    mute = true;
 }
 
 bool SmallYeyanCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -266,7 +277,8 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 }
 
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$smallyeyan");
+    room->broadcastInvoke("animate", "lightbox:$yeyan1");
+    room->broadcastSkillInvoke("yeyan", 1);
     shenzhouyu->loseMark("@flame");
     QList<ServerPlayer *> players = targets;
     qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
