@@ -12,12 +12,6 @@
 
 #include <QCommandLinkButton>
 
-static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
-    Room *room = a->getRoom();
-
-    return room->getFront(a, b) == a;
-}
-
 QiaobianCard::QiaobianCard(){
     mute = true;
 }
@@ -50,7 +44,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
             return;
 
         QList<ServerPlayer *> players = targets;
-        qSort(players.begin(), players.end(), CompareByActionOrder);
+        qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
         foreach(ServerPlayer *target, players){
             room->cardEffect(this, zhanghe, target);
         }
