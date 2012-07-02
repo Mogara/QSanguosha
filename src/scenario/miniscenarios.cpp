@@ -39,12 +39,6 @@ QStringList MiniSceneRule::existedGenerals() const
 
 bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const
 {
-       
-    if (player == NULL)
-        room = data.value<RoomStar>();
-    else
-        room = player->getRoom();
-
     if(event == PhaseChange)
     {
         if(player == room->getTag("Starter").value<PlayerStar>()){
