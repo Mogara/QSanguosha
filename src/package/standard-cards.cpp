@@ -728,11 +728,14 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
                               const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
     {
-        Q_ASSERT(targets.length() <= 2);
+        // @todo: fix this. We should probably keep the codes here, but change the code in
+        // roomscene such that if it is collateral, then targetFilter's result is overrode
+        /*Q_ASSERT(targets.length() <= 2);
         if (targets.length() == 2) return false;
         const Player* slashFrom = targets[0];
         if (slashFrom->canSlash(to_select)) return true;
-        else return false;
+        else*/
+        return false;
     }
     foreach(const Player *p, to_select->getSiblings()){
         if(to_select->getWeapon() && to_select != Self &&
@@ -744,20 +747,18 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
 }
 
 void Collateral::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    // @todo: this is a MUST FIX in the future. Currently we forged another target to allow UI to
-    // choose the destination of slash, and then remove the fake one only after after Collateral::use
-    // this might be too late consider some triggers are waiting on target confirm. Instead, use
-    // some flag and remove the fake target in the client side before it even reaches the trigger stack.
-    Q_ASSERT(targets.length() == 2);
+    // @todo: this is a MUST FIX in the future. the client side should temporarily stores the
+    // target of slash and respond to the server immediately upon server's next request.
+    Q_ASSERT(targets.length() == 1); //2);
     ServerPlayer *killer = targets[0];
-    /*QList<ServerPlayer *> victims = room->getOtherPlayers(killer);
+    QList<ServerPlayer *> victims = room->getOtherPlayers(killer);
     foreach(ServerPlayer *p, victims){
         if(!killer->canSlash(p))
             victims.removeOne(p);
-    }*/
-    QList<ServerPlayer*> victims;
-    ServerPlayer *victim = targets[1]; // room->askForPlayerChosen(source, victims,"collateral");
-    targets.removeAt(1);
+    }
+    // QList<ServerPlayer*> victims;
+    ServerPlayer *victim = room->askForPlayerChosen(source, victims,"collateral"); // targets[1];
+    // targets.removeAt(1);
     const Weapon *weapon = killer->getWeapon();
 
     if(weapon == NULL)
