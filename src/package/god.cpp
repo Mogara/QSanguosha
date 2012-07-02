@@ -1333,12 +1333,12 @@ GodPackage::GodPackage()
     shenzhouyu->addSkill(new Yeyan);
 
     General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
+    shenzhugeliang->addSkill(new Kuangfeng);
+    shenzhugeliang->addSkill(new Dawu);
     shenzhugeliang->addSkill(new Qixing);
     shenzhugeliang->addSkill(new QixingStart);
     shenzhugeliang->addSkill(new QixingAsk);
     shenzhugeliang->addSkill(new QixingClear);
-    shenzhugeliang->addSkill(new Kuangfeng);
-    shenzhugeliang->addSkill(new Dawu);
 
     related_skills.insertMulti("qixing", "#qixing");
     related_skills.insertMulti("qixing", "#qixing-ask");
