@@ -78,10 +78,10 @@
     "avatarNameArea": [1, 24, 40, 60],
     "avatarNameFont": ["@simli", [18, 18, 0], 60, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     "smallAvatarNameFont": ["@simli", [12, 12, 0], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
-    "kingdomIconArea": [5, 0, 30, 30],
-    "kingdomMaskArea": [-1, 20, 43, 92],
-    "screenNameArea": [0, 14, 157, 13],
-    "screenNameFont": ["simsun", [12, 12, 1], 50, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
+    "kingdomIconArea": [2, 0, 28, 28],
+    "kingdomMaskArea": [-2, 15, 36, 98],
+    "screenNameArea": [0, 12, 157, 13],
+    "screenNameFont": ["SimSun", 12, 50, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
     "magatamaSize": [14, 17],
     "magatamasBgVisible": true,
@@ -100,7 +100,7 @@
     "privatePileButtonSize": [60, 16],
     "actionedIconRegion": [100, 78, 52, 21],
     "saveMeIconRegion": [25, 46, 122, 50],
-    "votesIconRegion": [5, 10, 25, 35],
+    "votesIconRegion": [53, 66, 50, 50],
     "chainedIconRegion": [0, 81, 156, 19],
     "readyIconRegion": [97, 125, 44, 53],
     "deathIconRegion": [17, 55, 118, 75],
@@ -167,10 +167,10 @@
     "privatePileButtonSize": [60, 16],
     "actionedIconRegion": [80, 37, 52, 21],
     "saveMeIconRegion": [5, 15, 122, 50],
-    "votesIconRegion": [59, 54, 25, 35],
+    "votesIconRegion": [50, 52, 50, 50],
     "chainedIconRegion": [8, 100, 134, 19],
     "readyIconRegion": [86, 102, 44, 53],
-    "deathIconRegion": ["center", "center", [0, 0], [118, 75]],
+    "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
     "buttonSetSize": [106, 168],
     "confirmButtonArea": [5, 3, 61, 75],
@@ -182,21 +182,21 @@
 {
 "height": 19,
 "width": [134, 67, 45], 
-"textArea": [[20, -1, 112, 16], [20, -1, 44, 16], [14, -1, 26, 16]],
-"textFont": [["simkai", [14, 14, 0], 50, [0, 0, 0, 255], 1, 50, [0, 0], [255, 255, 190, 255]],  // wide
-             ["simkai", [14, 14, 0], 50, [0, 0, 0, 255], 1, 50, [0, 0], [255, 255, 190, 255]],  // medium
-             ["simkai", [12, 12, 0], 50, [0, 0, 0, 255], 1, 50, [0, 0], [255, 255, 190, 255]]],  // narrow
+"textArea": [[20, -2, 112, 20], [21, -2, 44, 20], [9, -2, 40, 20]],
+"textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
+             ["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
+             ["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
 
 // The following settings override the text color defined above
 // xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
-"awakenFontColor": [[[255, 255, 255, 255], [0, 0, 0, 255]], // normalColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 255]], // downColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 255]], // disableColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 255]]], // hoverColor = [penColor, shadowColor]
-"compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 255]],
-                        [[255, 255, 255, 255], [0, 0, 0, 255]],
-                        [[255, 255, 255, 255], [0, 0, 0, 255]],
-                        [[255, 255, 255, 255], [0, 0, 0, 255]]],
+"awakenFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]]], // hoverColor = [penColor, shadowColor]
+"compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]]],
 "frequentFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
                       [[255, 255, 255, 255], [0, 0, 0, 120]],
                       [[255, 255, 255, 255], [0, 0, 0, 120]],
