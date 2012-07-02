@@ -169,7 +169,7 @@ bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player
         return false;
     }
 
-    return true;
+    return targets.length() < 2;
 }
 
 bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
