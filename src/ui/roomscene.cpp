@@ -1899,12 +1899,12 @@ void RoomScene::useCard(const Card *card){
     if(card->targetFixed() || card->targetsFeasible(selected_targets, Self))
         ClientInstance->onPlayerUseCard(card, selected_targets);
     
-    selected_targets.clear();
+    /*selected_targets.clear();
     foreach(QGraphicsItem *item, item2player.keys()){
         item->setSelected(false);
         animations->effectOut(item);
-    }
-    // enableTargets(NULL);
+    }*/
+     enableTargets(NULL);
 }
 
 void RoomScene::callViewAsSkill(){

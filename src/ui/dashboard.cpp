@@ -420,7 +420,7 @@ void Dashboard::skillButtonActivated(){
         if(button == btn)
             continue;
 
-        if(btn->getViewAsSkill() != NULL && btn->getState() == QSanButton::S_STATE_DOWN)
+        if(btn->getViewAsSkill() != NULL && btn->isDown())
             btn->setState(QSanButton::S_STATE_UP);
     }
 
@@ -436,7 +436,7 @@ void Dashboard::skillButtonActivated(){
 
 void Dashboard::skillButtonDeactivated(){
     foreach(QSanSkillButton *btn, _m_skillDock->getAllSkillButtons()){
-        if(btn->getViewAsSkill() != NULL && btn->getState() == QSanButton::S_STATE_DOWN)
+        if(btn->getViewAsSkill() != NULL && btn->isDown())
             btn->setState(QSanButton::S_STATE_UP);
     }
     
@@ -444,7 +444,7 @@ void Dashboard::skillButtonDeactivated(){
     {
         if(_m_equipSkillBtns[i] != NULL){
             _m_equipSkillBtns[i]->setEnabled(true);
-            if(_m_equipSkillBtns[i]->getState() == QSanButton::S_STATE_DOWN)
+            if(_m_equipSkillBtns[i]->isDown())
                 _m_equipSkillBtns[i]->click();
         }
     }
