@@ -475,6 +475,10 @@ public:
     virtual const Card *viewAs() const{
         return new JijiangCard;
     }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "slash" && !ClientInstance->hasNoTargetResponsing() && !player->hasFlag("jijiang_failed");
+    }
 };
 
 class Jijiang: public TriggerSkill{

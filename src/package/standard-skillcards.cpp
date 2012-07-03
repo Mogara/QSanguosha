@@ -271,7 +271,8 @@ JijiangCard::JijiangCard(){
 }
 
 bool JijiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && Self->canSlash(to_select);
+    Slash *slash= new Slash(NoSuit, 0);
+    return slash->targetFilter(targets, to_select, Self);
 }
 
 void JijiangCard::use(Room *room, ServerPlayer *liubei, QList<ServerPlayer *> &targets) const{
@@ -291,5 +292,6 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, QList<ServerPlayer *> &t
             return;
         }
     }
+    room->setPlayerFlag(liubei, "jijiang_failed");
 }
 

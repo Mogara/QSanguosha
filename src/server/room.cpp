@@ -1065,6 +1065,52 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
+bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt){
+    Q_ASSERT(!victims.isEmpty());
+
+    //The realization of this function in the Slash::onUse and Slash::targetFilter.
+    setPlayerFlag(slasher, "slashTargetFix");
+    foreach(ServerPlayer *victim, victims)
+    {
+        setPlayerFlag(victim, "SlashAssignee");
+    }
+
+    //the special case for jijiang and guhuo
+    setPlayerFlag(slasher, "-jijiang_failed");
+
+    bool use = false;
+
+    do{
+        setPlayerFlag(slasher, "-guhuo_failed");
+        use = askForUseCard(slasher, "slash", prompt);
+    }while(slasher->hasFlag("guhuo_failed"));
+
+    if(slasher->hasFlag("jijiang_failed")){
+        do{
+            setPlayerFlag(slasher, "-guhuo_failed");
+            use = askForUseCard(slasher, "slash", prompt);
+        }while(slasher->hasFlag("guhuo_failed"));
+        setPlayerFlag(slasher, "-jijiang_failed");
+    }
+
+    if(!use){
+        setPlayerFlag(slasher, "-slashTargetFix");
+        foreach(ServerPlayer *victim, victims)
+        {
+            setPlayerFlag(victim, "-SlashAssignee");
+        }
+    }
+
+    return use;
+}
+
+bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt){
+    Q_ASSERT(victims != NULL);
+    QList<ServerPlayer *> victims;
+    victims << victim;
+    return askForUseSlashTo(slasher, victims, prompt);
+}
+
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){
     notifyMoveFocus(player, S_COMMAND_AMAZING_GRACE);
     Q_ASSERT(card_ids.length()>0);

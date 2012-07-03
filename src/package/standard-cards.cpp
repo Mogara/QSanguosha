@@ -38,6 +38,7 @@ QString Slash::getSubtype() const{
 void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.from->hasFlag("slashTargetFix"))
     {
+        room->setPlayerFlag(card_use.from, "-slashTargetFix");
         foreach(ServerPlayer *target, room->getAlivePlayers())
             if(target->hasFlag("SlashAssignee")){
                 room->setPlayerFlag(target, "-SlashAssignee");
@@ -770,6 +771,16 @@ void Collateral::onUse(Room *room, const CardUseStruct &card_use) const{
     SingleTargetTrick::onUse(room, new_use);
 }
 
+
+bool Collateral::doCollateral(Room *room, ServerPlayer *killer, ServerPlayer *victim, const QString &prompt) const{
+    bool useSlash = false;
+    if(killer->canSlash(victim))
+    {
+        useSlash = room->askForUseSlashTo(killer, victim, prompt);
+    }
+    return useSlash;
+}
+
 void Collateral::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *source = effect.from;
     Room *room = source->getRoom();
@@ -781,51 +792,9 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
     if(weapon == NULL || victim == NULL)
         return;
 
-    QList<ServerPlayer *> victims = room->getOtherPlayers(killer);
-    victims.removeOne(victim);
-    foreach(ServerPlayer *p, victims){
-        if(!killer->canSlash(p))
-            victims.removeOne(p);
-    }
-
     QString prompt = QString("collateral-slash:%1:%2")
             .arg(source->objectName()).arg(victim->objectName());
-    const Card *slash = NULL;
-    int slash_targets = 1;
-    if(killer->canSlash(victim))
-        slash = room->askForCard(killer, "slash", prompt, QVariant(), CardUsed);
-    if(slash){
-        if(killer->hasWeapon("halberd") && killer->isLastHandCard(slash)){
-            slash_targets = 3;
-        }
-        if(killer->hasSkill("shenji") && killer->getWeapon() == NULL)
-            slash_targets = 3;
-        bool distance_limit = true;
-        int rangefix = 0;
-        if(slash->isVirtualCard() && slash->getSubcards().length() > 0){
-            foreach(int card_id, slash->getSubcards()){
-                if(Sanguosha->getCard(card_id)->inherits("Weapon")){
-                    const Weapon *hisweapon = killer->getWeapon();
-                    if(hisweapon->getRange() > 1){
-                        rangefix = qMax((hisweapon->getRange()), rangefix);
-                    }
-                }
-                if(Sanguosha->getCard(card_id)->inherits("OffensiveHorse")){
-                    rangefix = qMax(rangefix, 1);
-                }
-            }
-        }
-        if(killer->hasSkill("lihuo") && slash->inherits("FireSlash"))
-            slash_targets++;
 
-        if(slash->inherits("WushenSlash")){
-            distance_limit = false;
-        }
-
-        if(!killer->canSlash(victim, distance_limit, rangefix)){
-            slash = NULL;
-        }
-    }
     if (victim->isDead()){
         if (source->isDead()){
             if(killer->isAlive() && killer->getWeapon()){
@@ -842,30 +811,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
     }
     else if (source->isDead()){
         if (killer->isAlive()){
-            if(slash){
-                CardUseStruct use;
-                use.card = slash;
-                use.from = killer;
-                use.to << victim;
-                if(slash_targets > 1){
-                    victims = room->getOtherPlayers(killer);
-                    victims.removeOne(victim);
-                    foreach (ServerPlayer *p, victims){
-                        if(killer->distanceTo(p) > killer->getAttackRange())
-                            victims.removeOne(p);
-                    }
-
-                    while(slash_targets > 1 && victims.length() > 0
-                          && room->askForChoice(killer, objectName(), "yes+no") == "yes"){
-                        ServerPlayer *tmptarget = room->askForPlayerChosen(killer,victims,"halberd");
-                        use.to << tmptarget;
-                        victims.removeOne(tmptarget);
-                        slash_targets--;
-                    }
-                }
-                room->useCard(use);
-            }
-            else{
+            if(!doCollateral(room, killer, victim, prompt)){
                 if(killer->getWeapon()){
                     int card_id = weapon->getId();
                     room->throwCard(card_id, killer);
@@ -876,55 +822,10 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
     else{
         if(killer->isDead()) ;
         else if(!killer->getWeapon()){
-            if(slash){
-                CardUseStruct use;
-                use.card = slash;
-                use.from = killer;
-                use.to << victim;
-                if(slash_targets > 1){
-                    victims = room->getOtherPlayers(killer);
-                    victims.removeOne(victim);
-                    foreach(ServerPlayer *p, victims){
-                        if(killer->distanceTo(p) > killer->getAttackRange())
-                            victims.removeOne(p);
-                    }
-
-                    while(slash_targets > 1 && victims.length() > 0
-                          && room->askForChoice(killer, objectName(), "yes+no") == "yes"){
-                        ServerPlayer *tmptarget = room->askForPlayerChosen(killer,victims,"halberd");
-                        use.to << tmptarget;
-                        victims.removeOne(tmptarget);
-                        slash_targets--;
-                    }
-                }
-                room->useCard(use);
-            }
+            doCollateral(room, killer, victim, prompt);
         }
         else{
-            if(slash){
-                CardUseStruct use;
-                use.card = slash;
-                use.from = killer;
-                use.to << victim;
-                if(slash_targets > 1){
-                    victims = room->getOtherPlayers(killer);
-                    victims.removeOne(victim);
-                    foreach(ServerPlayer *p, victims){
-                        if(killer->distanceTo(p) > killer->getAttackRange())
-                            victims.removeOne(p);
-                    }
-
-                    while(slash_targets > 1 && victims.length() > 0
-                          && room->askForChoice(killer, objectName(), "yes+no") == "yes"){
-                        ServerPlayer *tmptarget = room->askForPlayerChosen(killer,victims,"halberd");
-                        use.to << tmptarget;
-                        victims.removeOne(tmptarget);
-                        slash_targets--;
-                    }
-                }
-                room->useCard(use);
-            }
-            else{
+            if(!doCollateral(room, killer, victim, prompt)){
                 if(killer->getWeapon())
                     source->obtainCard(weapon);
             }

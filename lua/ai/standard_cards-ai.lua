@@ -224,11 +224,11 @@ function SmartAI:useCardSlash(card, use)
 end
 
 sgs.ai_skill_use.slash = function(self, prompt)
-	if prompt ~= "@askforslash" and prompt ~= "@moon-spear-slash" then return "." end
 	local slash = self:getCard("Slash")
 	if not slash then return "." end
 	for _, enemy in ipairs(self.enemies) do
-		if self.player:canSlash(enemy, true) and not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
+		if self.player:canSlash(enemy, true) and not self:slashProhibit(slash, enemy) 
+		and self:slashIsEffective(slash, enemy) and not (self.player:hasFlag("slashTargetFix") and not enemy:hasFlag("SlashAssignee")) then
 			return ("%s->%s"):format(slash:toString(), enemy:objectName())
 		end
 	end
@@ -1149,7 +1149,7 @@ sgs.ai_use_value.Collateral = 8.8
 sgs.ai_use_priority.Collateral = 2.75
 
 sgs.ai_card_intention.Collateral = function(card, from, tos)
-	assert(#tos == 1)
+	assert(#tos == 2)
 	if tos[2]:objectName() == from:objectName() then
 		sgs.updateIntention(from, tos[1], 80)
 	elseif sgs.compareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.compareRoleEvaluation(tos[2], "rebel", "loyalist") then

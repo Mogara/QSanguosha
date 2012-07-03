@@ -1023,13 +1023,14 @@ void RoomScene::updateSelectedTargets(){
         const ClientPlayer *player = item2player.value(item, NULL);
         if (item->isSelected())      
             selected_targets.append(player);
-        else{//======================================
+        else{
+            selected_targets.removeAll(player);
+            //======================================
             if(player->hasFlag("SlashAssignee")){
-                unselectAllTargets();
-                return;
+                selected_targets.clear();
+                unselectAllTargets(NULL);
             }
             //======================================
-            selected_targets.removeAll(player);
         }
 
         ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
