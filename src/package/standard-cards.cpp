@@ -712,7 +712,6 @@ Collateral::Collateral(Card::Suit suit, int number)
     :SingleTargetTrick(suit, number, false)
 {
     setObjectName("collateral");
-    has_preact = true;
 }
 
 bool Collateral::isAvailable(const Player *player) const{
@@ -736,7 +735,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets, const Player
 
 }
 
-void Collateral::doPreAction(Room *room, const CardUseStruct &card_use) const{
+void Collateral::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *killer = card_use.to.first();
     QList<ServerPlayer *> victims = room->getOtherPlayers(killer);
     foreach(ServerPlayer *p, victims){
@@ -745,6 +744,13 @@ void Collateral::doPreAction(Room *room, const CardUseStruct &card_use) const{
     }
     ServerPlayer *victim = room->askForPlayerChosen(card_use.from, victims,"collateral");
     room->setPlayerFlag(victim, "colltarget");
+    QVariant data = QVariant::fromValue(card_use);
+    if(willThrow()){
+        room->throwCard(this, owner_discarded ? card_use.from : NULL);
+    }
+    room->getThread()->trigger(CardUsed, room, card_use.from, data);
+
+    room->getThread()->trigger(CardFinished, room, card_use.from, data);
 }
 
 void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -760,8 +766,8 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     }
     const Weapon *weapon = killer->getWeapon();
 
-    if(weapon == NULL)
-        return;
+    //if(weapon == NULL)
+    //    return;
 
     bool on_effect = room->cardEffect(this, source, killer);
     if(on_effect){
