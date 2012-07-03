@@ -559,7 +559,7 @@ void RoomScene::adjustItems(){
      if (self_box)
          self_box->setPos(infoPlane.left() - padding - self_box->boundingRect().width(), 
                            sceneRect().height() - padding * 3 - self_box->boundingRect().height()
-                           - dashboard->boundingRect().height() - m_reverseSelectionButton->height());
+                           - G_DASHBOARD_LAYOUT.m_normalHeight - G_DASHBOARD_LAYOUT.m_floatingAreaHeight);
      if (enemy_box)
          enemy_box->setPos(padding * 2, padding * 2);
     
