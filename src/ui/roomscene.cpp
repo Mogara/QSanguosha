@@ -2299,6 +2299,7 @@ void RoomScene::doCancelButton(){
                 cancelViewAsSkill();
             else            
                 dashboard->stopPending();
+            dashboard->enableCards();
             break;
         }
 
