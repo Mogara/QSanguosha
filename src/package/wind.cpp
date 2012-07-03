@@ -754,6 +754,8 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
     room->setTag("GuhuoType", this->user_string);
+    if(yuji->hasFlag("guhuo_failed"))
+        room->setPlayerFlag(yuji, "-guhuo_failed");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
@@ -853,6 +855,8 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     
     room->setTag("Guhuoing", false);
     room->removeTag("GuhuoType");
+    if(!success)
+        room->setPlayerFlag(yuji, "guhuo_failed");
 
     return success;
 }
@@ -975,7 +979,14 @@ bool GuhuoCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool GuhuoCard::targetFixed() const{
     if(ClientInstance->getStatus() == Client::Responsing)
-        return true;
+    {
+        if(!ClientInstance->hasNoTargetResponsing()){
+            CardStar card = Sanguosha->cloneCard(user_string, NoSuit, 0);
+            Self->tag["guhuo"] = QVariant::fromValue(card);
+            return card && card->targetFixed();
+        }
+        else return true;
+    }
 
     CardStar card = Self->tag.value("guhuo").value<CardStar>();
     return card && card->targetFixed();

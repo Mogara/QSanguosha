@@ -989,8 +989,13 @@ void RoomScene::updateTargetsEnablity(const Card *card){
 
         if (item->isSelected()) continue;
 
+        //=====================================
+        bool weimuFailure = player->hasSkill("weimu") && card->inherits("Collateral")
+                && !selected_targets.isEmpty();
+        //=====================================
+
         bool enabled = (card == NULL) ||
-                       (!Sanguosha->isProhibited(Self, player, card)
+                    ((weimuFailure || !Sanguosha->isProhibited(Self, player, card))
                         && maxVotes > 0);
         
         QGraphicsItem* animationTarget = item->getMouseClickReceiver();
@@ -1018,8 +1023,15 @@ void RoomScene::updateSelectedTargets(){
         const ClientPlayer *player = item2player.value(item, NULL);
         if (item->isSelected())      
             selected_targets.append(player);
-        else
+        else{
             selected_targets.removeAll(player);
+            //======================================
+            if(player->hasFlag("SlashAssignee")){
+                selected_targets.clear();
+                unselectAllTargets(NULL);
+            }
+            //======================================
+        }
 
         ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
     }else{
@@ -1983,7 +1995,7 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
         dashboard->setSelected(false);
 
     foreach(Photo *photo, photos){
-        if(photo != except)
+        if(photo != except && photo->isSelected())
             photo->setSelected(false);
     }
 }
