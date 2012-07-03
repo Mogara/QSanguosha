@@ -50,7 +50,7 @@ private:
 class EquipCard:public Card{
     Q_OBJECT
 
-    Q_ENUMS(Location);
+    Q_ENUMS(Location)
 
 public:
     enum Location {
@@ -307,6 +307,7 @@ public:
     void setNature(DamageStruct::Nature nature);
 
     virtual QString getSubtype() const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 

@@ -379,17 +379,6 @@ sgs.weapon_range.Spear = 3
 sgs.weapon_range.Halberd = 4
 sgs.weapon_range.KylinBow = 5
 
-
-sgs.ai_skill_playerchosen.halberd = function(self, targets)	
-	targets = sgs.QList2Table(targets)
-	self:sort(targets,"defense")
-	for _, enemy in ipairs(targets) do
-		if self:isEnemy(enemy) then
-			return enemy
-		end
-	end
-end
-
 sgs.ai_skill_invoke.double_sword = true
 
 function sgs.ai_slash_weaponfilter.double_sword(to, self)
@@ -1118,7 +1107,7 @@ function SmartAI:useCardCollateral(card, use)
 					use.card = card
 				end
 				if use.to then use.to:append(friend) end
-				--if use.to then use.to:append(enemy) end
+				if use.to then use.to:append(enemy) end
 				return
 			end
 		end
@@ -1148,7 +1137,7 @@ function SmartAI:useCardCollateral(card, use)
 			end
 			if n then use.card = card end
 			if use.to then use.to:append(enemy) end
-			--if use.to then use.to:append(final_enemy) end
+			if use.to then use.to:append(final_enemy) end
 			return
 
 		end
@@ -1156,31 +1145,11 @@ function SmartAI:useCardCollateral(card, use)
 	end
 end
 
-sgs.ai_skill_playerchosen.collateral = function(self, targets)	
-	targets = sgs.QList2Table(targets)
-	self:sort(targets,"defense")
-	for _, enemy in ipairs(targets) do
-		if self:isEnemy(enemy) then
-			return enemy
-		end
-	end
-end
-
-sgs.ai_skill_choice.collateral = function(self, choices)
-	local enemynum = 0
-	for _,enemy in ipairs(self.enemies) do
-		if self.player:canSlash(emeny,true) then
-			enemynum = enemynum + 1
-		end
-	end
-	return enemynum > 1
-end
-
 sgs.ai_use_value.Collateral = 8.8
 sgs.ai_use_priority.Collateral = 2.75
 
-sgs.ai_card_intention.Collateral = sgs.ai_card_intention.FireAttack
---[[	assert(#tos == 1)
+sgs.ai_card_intention.Collateral = function(card, from, tos)
+	assert(#tos == 1)
 	if tos[2]:objectName() == from:objectName() then
 		sgs.updateIntention(from, tos[1], 80)
 	elseif sgs.compareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.compareRoleEvaluation(tos[2], "rebel", "loyalist") then
@@ -1191,7 +1160,7 @@ sgs.ai_card_intention.Collateral = sgs.ai_card_intention.FireAttack
 		sgs.updateIntention(from, tos[1], 80)
 	end
 	sgs.ai_collateral = false
-end]]
+end
 
 sgs.dynamic_value.control_card.Collateral = true
 

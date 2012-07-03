@@ -569,12 +569,8 @@ bool Player::canSlash(const Player *other, bool distance_limit, int rangefix) co
     if(other == this)
         return false;
 
-    if(distance_limit){
-        if(rangefix > 1)
-            return distanceTo(other) <= (getAttackRange() - rangefix + 1);
-        else
-            return distanceTo(other,rangefix) <= getAttackRange();
-    }
+    if(distance_limit)
+        return distanceTo(other, rangefix) <= getAttackRange();
     else
         return true;
 }

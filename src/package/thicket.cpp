@@ -762,7 +762,7 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        return card->inherits("TrickCard") && card->isBlack() && !card->inherits("Collateral");
+        return card->inherits("TrickCard") && card->isBlack();
     }
 };
 
