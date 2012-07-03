@@ -494,6 +494,7 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
             room->cardEffect(effect);
         }
     }
+    room->removeTag("Huoshou");
 }
 
 void Card::onEffect(const CardEffectStruct &) const{

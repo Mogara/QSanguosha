@@ -16,7 +16,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
+        return target != NULL && !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -648,78 +648,14 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     QList<ServerPlayer *> luanwu_targets;
-    int i;
-    for(i=0; i<distance_list.length(); i++){
+    for(int i = 0; i < distance_list.length(); i++){
         if(distance_list.at(i) == nearest && effect.to->canSlash(players.at(i))){
             luanwu_targets << players.at(i);
         }
     }
 
-    const Card *slash = NULL;
     if(!luanwu_targets.isEmpty()){
-        slash = room->askForCard(effect.to, "slash", "@luanwu-slash", QVariant(), CardUsed);
-        ServerPlayer *to_slash;
-        int slash_targets = 1;
-        if(luanwu_targets.length() == 1)
-            to_slash = luanwu_targets.first();
-        else
-            to_slash = room->askForPlayerChosen(effect.to, luanwu_targets, "luanwu");
-        if(slash){
-            if(effect.to->hasWeapon("halberd") && effect.to->isLastHandCard(slash)){
-                slash_targets = 3;
-            }
-            if(effect.to->hasSkill("shenji") && effect.to->getWeapon() == NULL)
-                slash_targets = 3;
-            bool distance_limit = true;
-            int rangefix = 0;
-            if(slash->isVirtualCard() && slash->getSubcards().length() > 0){
-                foreach(int card_id, slash->getSubcards()){
-                    if(Sanguosha->getCard(card_id)->inherits("Weapon")){
-                        const Weapon *hisweapon = effect.to->getWeapon();
-                        if(hisweapon->getRange() > 1){
-                            rangefix = qMax((hisweapon->getRange()), rangefix);
-                        }
-                    }
-                    if(Sanguosha->getCard(card_id)->inherits("OffensiveHorse")){
-                        rangefix = qMax(rangefix, 1);
-                    }
-                }
-            }
-            if(effect.to->hasSkill("lihuo") && slash->inherits("FireSlash"))
-                slash_targets ++;
-
-            if(slash->inherits("WushenSlash")){
-                distance_limit = false;
-            }
-
-            if(!effect.to->canSlash(to_slash, distance_limit, rangefix)){
-                slash = NULL;
-            }
-        }
-        if(slash){
-            CardUseStruct use;
-            use.card = slash;
-            use.from = effect.to;
-            use.to << to_slash;
-            if(slash_targets > 1){
-                luanwu_targets = room->getOtherPlayers(effect.to);
-                luanwu_targets.removeOne(to_slash);
-                foreach(ServerPlayer *p, luanwu_targets){
-                    if(effect.to->distanceTo(p) > effect.to->getAttackRange())
-                        luanwu_targets.removeOne(p);
-                }
-
-                while(slash_targets > 1 && luanwu_targets.length() > 0
-                        && room->askForChoice(effect.to, "luanwu", "yes+no") == "yes"){
-                    ServerPlayer *tmptarget = room->askForPlayerChosen(effect.to,luanwu_targets,"halberd");
-                    use.to << tmptarget;
-                    luanwu_targets.removeOne(tmptarget);
-                    slash_targets--;
-                }
-            }
-            room->useCard(use, false);
-        }
-        else
+        if(!room->askForUseSlashTo(effect.to, luanwu_targets, "@luanwu-slash"))
            room->loseHp(effect.to);
     }else
         room->loseHp(effect.to);

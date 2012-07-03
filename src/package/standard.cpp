@@ -121,6 +121,7 @@ QString AOE::getSubtype() const{
 }
 
 bool AOE::isAvailable(const Player *player) const{
+    bool canUse = false;
     QList<const Player *> players = player->getSiblings();
     foreach(const Player *p, players){
         if(p->isDead())
@@ -129,10 +130,11 @@ bool AOE::isAvailable(const Player *player) const{
         if(player->isProhibited(p, this))
             continue;
 
-        return true;
+        canUse = true;
+        break;
     }
 
-    return false;
+    return canUse && TrickCard::isAvailable(player);
 }
 
 void AOE::onUse(Room *room, const CardUseStruct &card_use) const{

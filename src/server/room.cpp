@@ -1013,7 +1013,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     return card;
 }
 
-bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){    
+bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index){
     notifyMoveFocus(player, S_COMMAND_USE_CARD);
     CardUseStruct card_use;
     bool isCardUsed = false;
@@ -1029,12 +1029,20 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
             thread->delay(Config.AIDelay);
         }
     }
-    else if (doRequest(player, S_COMMAND_USE_CARD, toJsonArray(pattern, prompt), true))
+    else
     {
-        Json::Value clientReply = player->getClientReply();
-        isCardUsed = !clientReply.isNull();
-        if (isCardUsed && card_use.tryParse(clientReply, this))                    
-            card_use.from = player;                        
+        Json::Value ask_str(Json::arrayValue);
+        ask_str[0] = toJsonString(pattern);
+        ask_str[1] = toJsonString(prompt);
+        ask_str[2] = notice_index;
+        bool success = doRequest(player, S_COMMAND_USE_CARD, ask_str, true);
+        if(success)
+        {
+            Json::Value clientReply = player->getClientReply();
+            isCardUsed = !clientReply.isNull();
+            if (isCardUsed && card_use.tryParse(clientReply, this))
+                card_use.from = player;
+        }
     }
 
     if (isCardUsed && card_use.isValid()){
@@ -1048,6 +1056,52 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     }
 
     return false;
+}
+
+bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt){
+    Q_ASSERT(!victims.isEmpty());
+
+    //The realization of this function in the Slash::onUse and Slash::targetFilter.
+    setPlayerFlag(slasher, "slashTargetFix");
+    foreach(ServerPlayer *victim, victims)
+    {
+        setPlayerFlag(victim, "SlashAssignee");
+    }
+
+    //the special case for jijiang and guhuo
+    setPlayerFlag(slasher, "-jijiang_failed");
+
+    bool use = false;
+
+    do{
+        setPlayerFlag(slasher, "-guhuo_failed");
+        use = askForUseCard(slasher, "slash", prompt);
+    }while(slasher->hasFlag("guhuo_failed"));
+
+    if(slasher->hasFlag("jijiang_failed")){
+        do{
+            setPlayerFlag(slasher, "-guhuo_failed");
+            use = askForUseCard(slasher, "slash", prompt);
+        }while(slasher->hasFlag("guhuo_failed"));
+        setPlayerFlag(slasher, "-jijiang_failed");
+    }
+
+    if(!use){
+        setPlayerFlag(slasher, "-slashTargetFix");
+        foreach(ServerPlayer *victim, victims)
+        {
+            setPlayerFlag(victim, "-SlashAssignee");
+        }
+    }
+
+    return use;
+}
+
+bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt){
+    Q_ASSERT(victim != NULL);
+    QList<ServerPlayer *> victims;
+    victims << victim;
+    return askForUseSlashTo(slasher, victims, prompt);
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){
@@ -2404,8 +2458,9 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
     }
 
     card = card_use.card->validate(&card_use);
-    if(card == card_use.card)
+    if(card == card_use.card){
         card_use.card->onUse(this, card_use);
+    }
     else if(card){
         CardUseStruct new_use = card_use;
         new_use.card = card;

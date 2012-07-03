@@ -50,7 +50,7 @@ private:
 class EquipCard:public Card{
     Q_OBJECT
 
-    Q_ENUMS(Location);
+    Q_ENUMS(Location)
 
 public:
     enum Location {
@@ -151,9 +151,13 @@ class Collateral:public SingleTargetTrick{
 public:
     Q_INVOKABLE Collateral(Card::Suit suit, int number);
     virtual bool isAvailable(const Player *player) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+
+private:
+    bool doCollateral(Room *room, ServerPlayer *killer, ServerPlayer *victim, const QString &prompt) const;
 };
 
 class ExNihilo: public SingleTargetTrick{
@@ -309,6 +313,7 @@ public:
     void setNature(DamageStruct::Nature nature);
 
     virtual QString getSubtype() const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 

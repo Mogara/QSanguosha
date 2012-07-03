@@ -154,8 +154,6 @@ sgs.ai_skill_cardask["jiefan-slash"] = function(self, data, pattern, target)
 	return "."
 end
 
-sgs.ai_skill_choice.jiefan = sgs.ai_skill_choice.collateral
-
 anxu_skill={}
 anxu_skill.name="anxu"
 table.insert(sgs.ai_skills,anxu_skill)

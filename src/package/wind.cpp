@@ -348,12 +348,12 @@ public:
         Room *room = xiahouyuan->getRoom();
 
         if(xiahouyuan->getPhase() == Player::Judge){
-            if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1")){
+            if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)){
                 xiahouyuan->skip(Player::Draw);
                 return true;
             }
         }else if(xiahouyuan->getPhase() == Player::Play){
-            if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2")){
+            if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2)){
                 return true;
             }
         }
@@ -739,6 +739,8 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
     room->setTag("GuhuoType", this->user_string);
+    if(yuji->hasFlag("guhuo_failed"))
+        room->setPlayerFlag(yuji, "-guhuo_failed");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
@@ -935,7 +937,14 @@ bool GuhuoCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool GuhuoCard::targetFixed() const{
     if(ClientInstance->getStatus() == Client::Responsing)
-        return true;
+    {
+        if(!ClientInstance->hasNoTargetResponsing()){
+            CardStar card = Sanguosha->cloneCard(user_string, NoSuit, 0);
+            Self->tag["guhuo"] = QVariant::fromValue(card);
+            return card && card->targetFixed();
+        }
+        else return true;
+    }
 
     CardStar card = Self->tag.value("guhuo").value<CardStar>();
     return card && card->targetFixed();

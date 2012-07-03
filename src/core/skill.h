@@ -14,8 +14,8 @@ class QDialog;
 class Skill : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Frequency);
-    Q_ENUMS(Location);
+    Q_ENUMS(Frequency)
+    Q_ENUMS(Location)
 
 public:
     enum Frequency{
@@ -34,6 +34,7 @@ public:
     explicit Skill(const QString &name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
+    QString getNotice(int index) const;
     QString getText() const;
     bool isVisible() const;
 

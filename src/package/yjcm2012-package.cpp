@@ -531,7 +531,7 @@ public:
 class Jiefan : public TriggerSkill{
 public:
     Jiefan():TriggerSkill("jiefan"){
-        events << AskForPeaches << DamageCaused << CardFinished;
+        events << AskForPeaches << DamageCaused << CardFinished << CardUsed;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *handang, QVariant &data) const{
@@ -540,49 +540,37 @@ public:
         ServerPlayer *current = room->getCurrent();
         if(!current || current->isDead())
             return false;
-        if(event == AskForPeaches  && current->objectName() != handang->objectName()){
-            DyingStruct dying = data.value<DyingStruct>();
-            if(dying.who->getHp() > 0 || handang->isNude() ||
-               current->isDead() || !handang->canSlash(current,false)
-                || !room->askForSkillInvoke(handang, objectName(), data))
+        if(event == CardUsed)
+        {
+            if(!handang->hasFlag("jiefanUsed"))
                 return false;
-            while(dying.who->getHp() < 1 && dying.who->isAlive()){
-                const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data, CardUsed);
-                int slash_targets = 1;
-                if(slash){
-                    if(handang->hasWeapon("halberd") && handang->isLastHandCard(slash)){
-                        slash_targets = 3;
-                    }
-                    if(handang->hasSkill("shenji") && handang->getWeapon() == NULL)
-                        slash_targets = 3;
 
-                    if(handang->hasSkill("lihuo") && slash->inherits("FireSlash"))
-                        slash_targets ++;
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->inherits("Slash"))
+            {
+                room->playSkillEffect(objectName());
+                room->setPlayerFlag(handang, "-jiefanUsed");
+                room->setCardFlag(use.card, "jiefan-slash");
+            }
+        }else if(event == AskForPeaches  && handang->getPhase() == Player::NotActive && handang->askForSkillInvoke(objectName(), data)){
+            DyingStruct dying = data.value<DyingStruct>();
+
+            forever{
+                if(handang->hasFlag("jiefan_failed")){
+                    room->setPlayerFlag(handang, "-jiefan_failed");
+                    break;
                 }
-                if(slash){
-                    room->setCardFlag(slash, "jiefan-slash");
-                    room->setTag("JiefanTarget", data);
-                    CardUseStruct use;
-                    use.card = slash;
-                    use.from = handang;
-                    use.to << room->getCurrent();
-                    if(slash_targets > 1){
-                        QList<ServerPlayer *> othertargets = room->getOtherPlayers(handang);
-                        othertargets.removeOne(current);
-                        foreach(ServerPlayer *p, othertargets){
-                            if(!slash->inherits("WushenSlash") && !handang->canSlash(p))
-                                othertargets.removeOne(p);
-                        }
 
-                        while(slash_targets > 1 && othertargets.length() > 0
-                                && room->askForChoice(handang, "jiefan", "yes+no") == "yes"){
-                            ServerPlayer *tmptarget = room->askForPlayerChosen(handang,othertargets,"halberd");
-                            use.to << tmptarget;
-                            othertargets.removeOne(tmptarget);
-                            slash_targets--;
-                        }
-                    }
-                    room->useCard(use, false);
+                if(dying.who->getHp() > 0 || handang->isNude() || current->isDead() || !handang->canSlash(current, false))
+                    break;
+
+                room->setPlayerFlag(handang, "jiefanUsed");
+                room->setTag("JiefanTarget", data);
+                if(!room->askForUseSlashTo(handang, current, "jiefan-slash:" + dying.who->objectName()))
+                {
+                    room->setPlayerFlag(handang, "-jiefanUsed");
+                    room->removeTag("JiefanTarget");
+                    break;
                 }
             }
         }
@@ -598,7 +586,6 @@ public:
                     log.type = "#JiefanNull1";
                     log.from = dying.who;
                     room->sendLog(log);
-                    return true;
                 }
                 else if(target && target->isDead()){
                     LogMessage log;
@@ -606,14 +593,12 @@ public:
                     log.from = dying.who;
                     log.to << handang;
                     room->sendLog(log);
-                    return true;
                 }
                 else if(current->hasSkill("wansha") && current->isAlive()  && target->objectName() != handang->objectName()){
                     LogMessage log;
                     log.type = "#JiefanNull3";
                     log.from = current;
                     room->sendLog(log);
-                    return true;
                 }
                 else
                 {
@@ -627,14 +612,21 @@ public:
                         && handang->objectName() != dying.who->objectName()){
                         room->setCardFlag(use.card, "sweet");
                     }
+                    room->setCardFlag(damage.card, "jiefan_success");
                     room->useCard(use);
                 }
                 return true;
             }
             return false;
         }
-        else if(!room->getTag("JiefanTarget").isNull())
-            room->removeTag("JiefanTarget");
+        else if(event == CardFinished && !room->getTag("JiefanTarget").isNull()){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->hasFlag("jiefan-slash")){
+                if(!use.card->hasFlag("jiefan_success"))
+                    room->setPlayerFlag(handang, "jiefan_failed");
+                room->removeTag("JiefanTarget");
+            }
+        }
 
         return false;
     }
