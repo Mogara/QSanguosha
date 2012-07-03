@@ -120,5 +120,6 @@ QPixmap PixmapAnimation::GetFrameFromCache(const QString &filename){
 int PixmapAnimation::GetFrameCount(const QString &emotion){
     QString path = QString("image/system/emotion/%1/").arg(emotion);
     QDir dir(path);
+    dir.setNameFilters(QStringList("*.png"));
     return dir.entryList(QDir::Files | QDir::NoDotAndDotDot).count();
 }
