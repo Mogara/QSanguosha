@@ -76,7 +76,7 @@
 // animations
 "animations": ["analeptic", "chain", "damage", "duel", "equipborder", "fire_slash", "jink",
 			   "killer", "no-success", "peach", "slash_black", "slash_red", "success", "thunder_slash", 										//general
-			   "armor/eight_diagram", "armor/eight_diagram", "armor/eight_diagram", "armor/eight_diagram", "armor/eight_diagram", 				//armor
+			   "armor/eight_diagram", "armor/renwang_shield", "armor/silver_lion", "armor/vine", "armor/vineburn", 								//armor
 			   "weapon/axe", "weapon/blade", "weapon/crossbow", "weapon/double_sword", "weapon/fan", "weapon/guding_blade", "weapon/halberd",   //weapon
 			   "weapon/ice_sword", "weapon/kylin_bow", "weapon/qinggang_sword", "weapon/sp_moonspear", "weapon/spear"],
 
