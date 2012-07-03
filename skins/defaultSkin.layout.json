@@ -48,7 +48,7 @@
     "photoVDistance": 32,
     "discardPileMinWidth": 465,
     "discardPilePadding": 50,
-    "minimumSceneSize": [900, 650],
+    "minimumSceneSize": [1080, 650],
     "minimumSceneSize-10player": [900, 700]
 },
 "photo":

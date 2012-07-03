@@ -57,6 +57,9 @@ const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG = "magatamasBg%1";
 const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
 const char* QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
 
+// Animations
+const char* QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "animations";
+
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
 QHash<QString, int*> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
@@ -503,6 +506,15 @@ QStringList IQSanComponentSkin::getAudioFileNames(const QString &key) const
         return audios;
     }
     return QStringList();
+}
+
+QStringList IQSanComponentSkin::getAnimationFileNames() const
+{
+    QStringList animations;
+
+    Json::Value result = _m_imageConfig[QSanRoomSkin::S_SKIN_KEY_ANIMATIONS];
+    tryParse(result, animations);
+    return animations;
 }
 
 QString IQSanComponentSkin::getRandomAudioFileName(const QString &key) const
