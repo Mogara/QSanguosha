@@ -73,6 +73,13 @@
 // card relevant
 "handCardBack": "image/system/card-back.png",
 
+// animations
+"animations": ["analeptic", "chain", "damage", "duel", "equipborder", "fire_slash", "jink",
+			   "killer", "no-success", "peach", "slash_black", "slash_red", "success", "thunder_slash", 										//general
+			   "armor/eight_diagram", "armor/eight_diagram", "armor/eight_diagram", "armor/eight_diagram", "armor/eight_diagram", 				//armor
+			   "weapon/axe", "weapon/blade", "weapon/crossbow", "weapon/double_sword", "weapon/fan", "weapon/guding_blade", "weapon/halberd",   //weapon
+			   "weapon/ice_sword", "weapon/kylin_bow", "weapon/qinggang_sword", "weapon/sp_moonspear", "weapon/spear"],
+
 // ****************auto-generated resource mappings**********************
 // equips
 "photoEquip-axe": "image/equips/icon/spear.png",

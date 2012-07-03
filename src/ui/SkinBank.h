@@ -83,6 +83,7 @@ public:
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName) const;
     QStringList getAudioFileNames(const QString &key) const;
+    QStringList getAnimationFileNames() const;
     QString getRandomAudioFileName(const QString &key) const;
     bool isImageKeyDefined(const QString &key) const;
 protected:
@@ -326,6 +327,9 @@ public:
     static const char* S_SKIN_KEY_SYSTEM_AUDIO_EFFECT;
     static const char* S_SKIN_KEY_EQUIP_ICON;
     static const char* S_SKIN_KEY_PROGRESS_BAR_IMAGE;
+
+    // Animations
+    static const char* S_SKIN_KEY_ANIMATIONS;
 
     // The following ones are to be moved to lobby skin later
     static const char* S_SKIN_KEY_READY_ICON;
