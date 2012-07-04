@@ -1660,8 +1660,10 @@ void Client::transfigure(const QString &transfigure_tr){
         const General *furui = Sanguosha->getGeneral(generals.first());
         const General *atarashi = Sanguosha->getGeneral(generals.last());
 
+        QList<const Skill*> skill_list = Self->getVisibleSkillList();
         if(furui)foreach(const Skill *skill, furui->getVisibleSkills()){
-            emit skill_detached(skill->objectName());
+            if(!skill_list.contains(skill))
+                emit skill_detached(skill->objectName());
         }
 
         if(atarashi)foreach(const Skill *skill, atarashi->getVisibleSkills()){

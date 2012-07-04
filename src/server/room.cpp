@@ -1456,9 +1456,7 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     log.arg = new_general;
     sendLog(log);
 
-    QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(new_general);
-    player->invoke("transfigure", transfigure_str);
-
+    QString m_old_general = old_general.isEmpty() ? player->getGeneralName() : old_general;
     if(Config.Enable2ndGeneral && !old_general.isEmpty() && player->getGeneral2Name() == old_general){
         setPlayerProperty(player, "general2", new_general);
         broadcastProperty(player, "general2");
@@ -1467,6 +1465,10 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
         setPlayerProperty(player, "general", new_general);
         broadcastProperty(player, "general");
     }
+
+    QString transfigure_str = QString("%1:%2").arg(m_old_general).arg(new_general);
+    player->invoke("transfigure", transfigure_str);
+
     thread->addPlayerSkills(player, invoke_start);
 
     player->setMaxHp(player->getGeneralMaxHp());

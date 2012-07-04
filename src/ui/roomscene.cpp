@@ -1724,10 +1724,16 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }
 
 void RoomScene::addSkillButton(const Skill *skill, bool from_left){
-    if(ClientInstance->getReplayer())
+    //SPConvertSkill is not important around the game, except on game start.
+    //Even it isn't a skill, it's only a temporary product of generals replacement system.
+    //So I think it is not necessary to exist in dashboard.
+    if(skill->inherits("SPConvertSkill") || ClientInstance->getReplayer())
         return;
     // check duplication
     QSanSkillButton* btn = dashboard->addSkillButton(skill->objectName());    
+    if(btn == NULL)
+        return;
+
     QDialog *dialog = skill->getDialog();
     if(dialog){
         dialog->setParent(main_window, Qt::Dialog);
@@ -1785,17 +1791,11 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 }
 
 void RoomScene::updateSkillButtons(){
-    foreach(const Skill* skill, Self->getVisibleSkillList()){
+    foreach(const Skill* skill, Self->getVisibleSkills()){
         if(skill->isLordSkill()){
             if(Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3")
                 continue;
         }
-
-        //SPConvertSkill is not important around the game, except on game start.
-        //Even it isn't a skill, it's only a temporary product of generals replacement system.
-        //So I think it is not necessary to exist in dashboard.
-        if(skill->inherits("SPConvertSkill"))
-            continue;
 
         addSkillButton(skill);
     }
