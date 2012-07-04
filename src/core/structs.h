@@ -114,7 +114,6 @@ public:
     static const int S_REASON_SHOW = 0x08;
     static const int S_REASON_TRANSFER = 0x09;
     static const int S_REASON_PUT = 0x0A;
-    static const int S_REASON_MOVECOPY = 0x0B;
 
     //subcategory of use
     static const int S_REASON_LETUSE = 0x11;           // use a card when self is not current
@@ -143,14 +142,12 @@ public:
     static const int S_REASON_TURNOVER = 0x18;          // show n cards  from drawpile
     static const int S_REASON_JUDGE = 0x28;             // show a card  from drawpile for judge
     static const int S_REASON_PREVIEW = 0x38;           // Not done yet, plan for view some cards for self only(guanxing yiji miji)
+    static const int S_REASON_DEMONSTRATE = 0x48;       // show a card which copy one to move to table
 
     //subcategory of transfer
     static const int S_REASON_SWAP = 0x19;              // exchange card for two players
     static const int S_REASON_OVERRIDE = 0x29;          // exchange cards from cards in game
     static const int S_REASON_EXCHANGE_FROM_PILE = 0x39;// exchange cards from cards moved out of game (for qixing only)
-
-    //subcategory of move copy card
-    static const int S_REASON_DEMONSTRATE = 0x1B;       // show a card which copy one to move to table
 
 
     static const int S_MASK_BASIC_REASON = 0x0F;

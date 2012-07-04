@@ -303,7 +303,7 @@ public:
         if(event == CardGotOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->from != NULL && move->card_ids.size() >= 2
-                && room->askForSkillInvoke(player,objectName(),data)){
+                    && room->askForSkillInvoke(player,objectName(),data)){
                 room->drawCards((ServerPlayer*)move->from,1);
                 room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
             }
@@ -315,18 +315,18 @@ public:
                 for(i=0; i<x; i++){
                     if (room->askForSkillInvoke(player,objectName(),data)){
                         room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
-					//fix this!
-                    const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
-                    if(card){
-                        room->showCard(source, card->getEffectiveId());
-                        player->obtainCard(card);
-                    }else{
-                        room->loseHp(source);
+                        //fix this!
+                        const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
+                        if(card){
+                            room->showCard(source, card->getEffectiveId());
+                            player->obtainCard(card);
+                        }else{
+                            room->loseHp(source);
+                        }
                     }
                 }
             }
         }
-
         return false;
     }
 };
@@ -348,7 +348,6 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->drawCards(effect.to,2);
 
-    QString choice;
     bool can_use = false;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
         if (effect.to->canSlash(p)){

@@ -1469,11 +1469,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
         if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
         GeneralCardContainer* from_container = _getGeneralCardContainer(movement.from_place, movement.from);
-        QList<CardItem*> cards;
-        if((movement.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_MOVECOPY)
-            cards = from_container->cloneCardItems(movement.card_ids);
-        else
-            cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
+        QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach (CardItem* card, cards)
         {      
             card->setEnabled(false);
@@ -1557,12 +1553,12 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
         else if (reason.m_reason == CardMoveReason::S_REASON_TURNOVER){
             result.append(Sanguosha->translate("turnover"));
         }
+        else if (reason.m_reason == CardMoveReason::S_REASON_DEMONSTRATE){
+            result.append(Sanguosha->translate("show"));
+        }
     }
     else if (reason.m_reason == CardMoveReason::S_REASON_PUT){
         result.append(Sanguosha->translate("put"));
-    }
-    else if (reason.m_reason == CardMoveReason::S_REASON_DEMONSTRATE){
-        result.append(Sanguosha->translate("show"));
     }
     return result;
 
@@ -2947,9 +2943,18 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
 }
 
 void RoomScene::showCard(const QString &player_name, int card_id){
-    QString card_str = QString::number(card_id);
-
+    QList<int> card_ids;
+    card_ids << card_id;
     const ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+    GeneralCardContainer* container = _getGeneralCardContainer(Player::PlaceHand, (Player*)player);
+    QList<CardItem*> card_items = container->cloneCardItems(card_ids);
+    CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
+    card_items[0]->setFootnote(_translateMovementReason(reason));
+    bringToFront(m_tablePile);
+    m_tablePile->addCardItems(card_items, Player::PlaceTable);
+
+    QString card_str = QString::number(card_id);
     log_box->appendLog("$ShowCard", player->getGeneralName(), QStringList(), card_str);
 }
 
