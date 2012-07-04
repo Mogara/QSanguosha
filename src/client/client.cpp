@@ -1327,9 +1327,8 @@ void Client::askForCardShow(const Json::Value &requestor){
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
     card_pattern = ".";
-    m_isDiscardActionRefusable = false;
     m_isUseCard = false;
-    setStatus(Responsing);
+    setStatus(AskForShowOrPindian);
 }
 
 void Client::askForAG(const Json::Value &arg){
@@ -1466,8 +1465,7 @@ void Client::askForPindian(const Json::Value &ask_str){
     }
     m_isUseCard = false;
     card_pattern = ".";
-    m_isDiscardActionRefusable = false;
-    setStatus(Responsing);
+    setStatus(AskForShowOrPindian);
 }
 
 void Client::askForYiji(const Json::Value &card_list){

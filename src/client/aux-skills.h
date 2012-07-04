@@ -30,14 +30,22 @@ class ResponseSkill: public OneCardViewAsSkill{
 
 public:
     ResponseSkill();
-    bool matchPattern(const Player *player, const Card *card) const;
+    virtual bool matchPattern(const Player *player, const Card *card) const;
 
     virtual void setPattern(const QString &pattern);
     virtual bool viewFilter(const CardItem *to_select) const;
     virtual const Card *viewAs(CardItem *card_item) const;
 
-private:
+protected:
     const CardPattern *pattern;
+};
+
+class ShowOrPindianSkill: public ResponseSkill{
+    Q_OBJECT
+
+public:
+    ShowOrPindianSkill();
+    virtual bool matchPattern(const Player *player, const Card *card) const;
 };
 
 class FreeDiscardSkill: public ViewAsSkill{

@@ -1141,6 +1141,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 }
 
 const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason){
+    Q_ASSERT(!player->isKongcheng());
     notifyMoveFocus(player, S_COMMAND_SHOW_CARD);
 
     const Card *card = NULL;
@@ -3849,6 +3850,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
 
 const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason)
 {
+    Q_ASSERT(!player->isKongcheng());
     notifyMoveFocus(player, S_COMMAND_PINDIAN);
     if(player->getHandcardNum() == 1){
         return player->getHandcards().first();

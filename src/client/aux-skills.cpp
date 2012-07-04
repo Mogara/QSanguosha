@@ -60,7 +60,7 @@ void ResponseSkill::setPattern(const QString &pattern){
 }
 
 bool ResponseSkill::matchPattern(const Player *player, const Card *card) const{
-    if(player->isJilei(card))
+    if(player->isJilei(card) || player->isLocked(card))
         return false;
 
     return pattern && pattern->match(player, card);
@@ -73,6 +73,17 @@ bool ResponseSkill::viewFilter(const CardItem *to_select) const{
 
 const Card *ResponseSkill::viewAs(CardItem *card_item) const{
     return card_item->getFilteredCard();
+}
+
+// -------------------------------------------
+
+ShowOrPindianSkill::ShowOrPindianSkill()
+{
+    setObjectName("showorpindian-skill");
+}
+
+bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) const{
+    return pattern && pattern->match(player, card);
 }
 
 // -------------------------------------------

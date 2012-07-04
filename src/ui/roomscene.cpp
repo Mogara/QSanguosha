@@ -114,6 +114,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
         createReplayControlBar();
 
     response_skill = new ResponseSkill;
+    showorpindian_skill = new ShowOrPindianSkill;
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
     choose_skill = new ChoosePlayerSkill;
@@ -932,7 +933,8 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void RoomScene::enableTargets(const Card *card) {
     
-    if (card != NULL && (Self->isJilei(card) || Self->isLocked(card))){
+    if (card != NULL && (Self->isJilei(card) || Self->isLocked(card))
+            && ClientInstance->getStatus() != Client::AskForShowOrPindian){
         ok_button->setEnabled(false);
         return;
     }
@@ -957,7 +959,8 @@ void RoomScene::enableTargets(const Card *card) {
         return;
     }
 
-    if (card->targetFixed() || ClientInstance->hasNoTargetResponsing()) {
+    if (card->targetFixed() || ClientInstance->hasNoTargetResponsing() ||
+            ClientInstance->getStatus() == Client::AskForShowOrPindian) {
         foreach(PlayerCardContainer *item, item2player.keys()) {
             QGraphicsItem* animationTarget = item->getMouseClickReceiver();
             animations->effectOut(animationTarget);
@@ -1824,6 +1827,16 @@ void RoomScene::useSelectedCard(){
             break;
         }
 
+    case Client::AskForShowOrPindian:{
+        const Card *card = dashboard->getSelected();
+        if(card){
+            ClientInstance->onPlayerResponseCard(card);
+            prompt_box->disappear();
+        }
+        dashboard->unselectAll();
+        break;
+    }
+
     case Client::Discarding: {
             const Card *card = dashboard->pendingCard();
             if(card){
@@ -2014,7 +2027,8 @@ void RoomScene::doTimeout(){
         break;}
     case Client::Responsing:
     case Client::Discarding:
-    case Client::ExecDialog:{
+    case Client::ExecDialog:
+    case Client::AskForShowOrPindian:{
         doCancelButton();
         break;}                     
     case Client::AskForPlayerChoose:{
@@ -2101,6 +2115,20 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
             break;
         }
+
+    case Client::AskForShowOrPindian:{
+        showPromptBox();
+
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(false);
+        discard_button->setEnabled(false);
+
+        QString pattern = ClientInstance->getPattern();
+        showorpindian_skill->setPattern(pattern);
+        dashboard->startPending(showorpindian_skill);
+
+        break;
+    }
 
     case Client::Playing:{
             dashboard->enableCards();
@@ -2330,6 +2358,14 @@ void RoomScene::doCancelButton(){
             dashboard->stopPending();
             break;
         }
+
+    case Client::AskForShowOrPindian:{
+        dashboard->unselectAll();
+        ClientInstance->onPlayerResponseCard(NULL);
+        prompt_box->disappear();
+        dashboard->stopPending();
+        break;
+    }
 
     case Client::Discarding:{
             dashboard->unselectAll();
