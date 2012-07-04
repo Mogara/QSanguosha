@@ -1412,7 +1412,7 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
 
 QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, bool include_dead) const{
     QList<ServerPlayer *> list;
-    foreach(ServerPlayer *player, include_dead ? getAllPlayers() : m_alivePlayers){
+    foreach(ServerPlayer *player, include_dead ? m_players : getAllPlayers()){
         if(player->hasSkill(skill_name))
             list << player;
     }
@@ -1420,7 +1420,7 @@ QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, boo
 }
 
 ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name, bool include_dead) const{
-    const QList<ServerPlayer *> &list = include_dead ? getAllPlayers() : m_alivePlayers;
+    const QList<ServerPlayer *> &list = include_dead ? m_players :getAllPlayers();
     foreach(ServerPlayer *player, list){
         if(player->hasSkill(skill_name))
             return player;
