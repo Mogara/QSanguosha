@@ -194,3 +194,6 @@ end
 sgs.ai_skill_playerchosen.nosxuanfeng_damage = sgs.ai_skill_playerchosen.damage
 
 sgs.ai_skill_playerchosen.nosxuanfeng_slash = sgs.ai_skill_playerchosen.zero_card_as_slash
+
+sgs.ai_playerchosen_intention.nosxuanfeng_damage = 80
+sgs.ai_playerchosen_intention.nosxuanfeng_slash = 80
