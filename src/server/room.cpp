@@ -3395,6 +3395,17 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
     return true;
 }
 
+bool Room::broadcastSkillInvoke(const QString &skill_name, const QString &category)
+{
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_SKILL_INVOKED;
+    args[1] = toJsonString(skill_name);
+    args[2] = toJsonString(category);
+    args[3] = -1;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    return true;
+}
+
 bool Room::broadcastSkillInvoke(const QString &skill_name) 
 {
     Json::Value args;

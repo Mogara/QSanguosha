@@ -73,6 +73,7 @@ public:
     Color getColor() const;
     bool isEquipped() const;
 
+    virtual QString getCommonEffectName() const;
     QString getPackage() const;
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;

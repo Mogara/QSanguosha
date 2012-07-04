@@ -205,6 +205,10 @@ QString Card::getLogName() const{
     return QString("%1[%2%3]").arg(getName()).arg(suit_char).arg(number_string);
 }
 
+QString Card::getCommonEffectName() const{
+    return QString();
+}
+
 QString Card::getName() const{
     return Sanguosha->translate(objectName());
 }
