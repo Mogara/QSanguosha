@@ -435,7 +435,7 @@ public:
             room->sendLog(log);
 
             guanyu->setMark("danji", 1);
-
+			guanyu->gainMark("@waked");
             room->loseMaxHp(guanyu);
             room->acquireSkill(guanyu, "mashu");
         }
