@@ -379,6 +379,7 @@ public:
         Room *room = dengai->getRoom();
 
         room->setPlayerMark(dengai, "zaoxian", 1);
+        dengai->gainMark("@waked");
         room->loseMaxHp(dengai);
 
         LogMessage log;
@@ -518,7 +519,7 @@ public:
         room->playSkillEffect(objectName());
         room->broadcastInvoke("animate", "lightbox:$Hunzi:5000");
         room->getThread()->delay(5000);
-
+        sunce->gainMark("@waked");
         room->loseMaxHp(sunce);
 
         room->acquireSkill(sunce, "yinghun");
@@ -723,6 +724,7 @@ public:
             room->drawCards(jiangwei, 2);
 
         room->setPlayerMark(jiangwei, "zhiji", 1);
+        jiangwei->gainMark("@waked");
         room->acquireSkill(jiangwei, "guanxing");
 
         room->loseMaxHp(jiangwei);
@@ -867,6 +869,9 @@ public:
 
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card && use.card->inherits("Slash")){
+
+                room->playSkillEffect(objectName());
+
                 LogMessage log;
                 log.type = "#Xiangle";
                 log.from = use.from;
@@ -889,71 +894,83 @@ public:
     }
 };
 
-class Fangquan: public TriggerSkill{
+class Fangquan: public PhaseChangeSkill{
 public:
-    Fangquan():TriggerSkill("fangquan"){
-        events << PhaseChange;
+    Fangquan():PhaseChangeSkill("fangquan"){
+
     }
 
     virtual int getPriority() const{
         return 3;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *liushan, QVariant &data) const{
-        if(liushan->getPhase() == Player::Play){
+    virtual bool onPhaseChange(ServerPlayer *liushan) const{
+        Room *room = liushan->getRoom();
+
+        switch(liushan->getPhase()){
+        case Player::Play: {
             bool invoked = liushan->askForSkillInvoke(objectName());
             if(invoked)
-                liushan->gainMark("fangquan");
+                liushan->setFlags("fangquan");
+
             return invoked;
         }
-        else if(liushan->getPhase() == Player::NotActive){
-                foreach(ServerPlayer* p, room->getAlivePlayers()){
-                    if(p->getMark("fangquan") > 0){
-                        p->setMark("fangquan", 0);
-                        p->gainAnExtraTurn(liushan);
-                    }
-                }
+        case Player::NotActive: {
+            if(liushan->hasFlag("fangquan")){
+                if(liushan->isKongcheng() || !room->askForDiscard(liushan, "fangquan", 1, 1, true))
+                    return false;
+
+                ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
+
+                QString name = player->getGeneralName();
+                if(name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
+                    room->playSkillEffect("fangquan", 1);
+                else
+                    room->playSkillEffect("fangquan", 2);
+
+                LogMessage log;
+                log.type = "#Fangquan";
+                log.from = liushan;
+                log.to << player;
+                room->sendLog(log);
+
+                PlayerStar p = player;
+                room->setTag("FangquanTarget", QVariant::fromValue(p));
+            }
+            break;
+        }
+        default:
+            break;
         }
         return false;
     }
 };
 
-class FangquanGive: public TriggerSkill{
+class FangquanGive: public PhaseChangeSkill{
 public:
-    FangquanGive():TriggerSkill("#fangquan-give"){
-        events << PhaseChange;
+    FangquanGive():PhaseChangeSkill("#fangquan-give"){
+
     }
 
     virtual int getPriority() const{
-        return -2;
+        return -4;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *liushan, QVariant &data) const{
-        if(liushan->getPhase() == Player::Finish){
-            if(liushan->getMark("fangquan") > 0){
-                liushan->setMark("fangquan", 0);
-                Room *room = liushan->getRoom();
-                if(liushan->isKongcheng())
-                    return false;
-                if(room->askForDiscard(liushan, "fangquan", 1, 1, true)){
-                    ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), "fangquan");
-                    QString name = player->getGeneralName();
-                    if(name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
-                        room->playSkillEffect("fangquan", 1);
-                    else
-                        room->playSkillEffect("fangquan", 2);
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->getPhase() == Player::NotActive;
+    }
 
-                    LogMessage log;
-                    log.type = "#Fangquan";
-                    log.from = liushan;
-                    log.to << player;
-                    room->sendLog(log);
-                    player->gainMark("fangquan");
-                }
-             }
+    virtual bool onPhaseChange(ServerPlayer *liushan) const{
+        Room *room = liushan->getRoom();
+        if(!room->getTag("FangquanTarget").isNull())
+        {
+            PlayerStar target = room->getTag("FangquanTarget").value<PlayerStar>();
+            room->removeTag("FangquanTarget");
+            if(target->isAlive())
+                target->gainAnExtraTurn();
         }
         return false;
- }
+    }
 };
 
 class Ruoyu: public PhaseChangeSkill{
@@ -991,6 +1008,7 @@ public:
             room->sendLog(log);
 
             room->setPlayerMark(liushan, "ruoyu", 1);
+            liushan->gainMark("@waked");
             room->setPlayerProperty(liushan, "maxhp", liushan->getMaxHp() + 1);
 
             RecoverStruct recover;

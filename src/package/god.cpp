@@ -921,37 +921,6 @@ public:
     }
 };
 
-class LianpoCount: public TriggerSkill{
-public:
-    LianpoCount():TriggerSkill("#lianpo-count"){
-        events << Death;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        DamageStar damage = data.value<DamageStar>();
-        ServerPlayer *killer = damage ? damage->from : NULL;
-
-        if(killer && killer->hasSkill("lianpo") && room->getCurrent()->isAlive()){
-            killer->addMark("lianpo");
-
-            LogMessage log;
-            log.type = "#LianpoRecord";
-            log.from = killer;
-            log.to << player;
-
-            Room *room = player->getRoom();
-            log.arg = room->getCurrent()->getGeneralName();
-            room->sendLog(log);
-        }
-
-        return false;
-    }
-};
-
 class Baiyin: public PhaseChangeSkill{
 public:
     Baiyin():PhaseChangeSkill("baiyin"){
@@ -973,11 +942,12 @@ public:
         log.from = shensimayi;
         log.arg = QString::number(shensimayi->getMark("@bear"));
         room->sendLog(log);
-
+        
+        room->setPlayerMark(shensimayi, "baiyin", 1);
+        shensimayi->gainMark("@waked");
         room->loseMaxHp(shensimayi);
         room->acquireSkill(shensimayi, "jilve");
 
-        shensimayi->setMark("baiyin", 1);
 
         return false;
     }
@@ -1100,14 +1070,10 @@ public:
     }
 };
 
-class Lianpo: public TriggerSkill{
+class LianpoCount: public TriggerSkill{
 public:
-    Lianpo():TriggerSkill("lianpo"){
-        events << PhaseChange;
-    }
-
-    virtual int getPriority() const{
-        return -2;
+    LianpoCount():TriggerSkill("#lianpo-count"){
+        events << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1115,47 +1081,87 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *shensimayi = room->findPlayerBySkillName("lianpo");
-        if(shensimayi == NULL)
-            return false;
-        if(player->getPhase() == Player::Finish && shensimayi->getMark("lianpo") > 0 ){
-            if(shensimayi->askForSkillInvoke("lianpo")){
-                int n = shensimayi->getMark("lianpo");
-                LogMessage log;
-                log.type = "#LianpoCanInvoke";
-                log.from = shensimayi;
-                log.arg = QString::number(n);
-                log.arg2 = objectName();
-                room->sendLog(log);
-            }
-            else
-                shensimayi->setMark("lianpo", 0);
+        DamageStar damage = data.value<DamageStar>();
+        ServerPlayer *killer = damage ? damage->from : NULL;
+
+        if(killer && killer->hasSkill("lianpo") && room->getCurrent()->isAlive()){
+            killer->addMark("lianpo");
+
+            LogMessage log;
+            log.type = "#LianpoRecord";
+            log.from = killer;
+            log.to << player;
+
+            Room *room = player->getRoom();
+            log.arg = room->getCurrent()->getGeneralName();
+            room->sendLog(log);
         }
+
         return false;
     }
 };
 
-class LianpoDo: public TriggerSkill{
+class Lianpo: public PhaseChangeSkill{
 public:
-    LianpoDo():TriggerSkill("#lianpo-do"){
-        events << PhaseChange;
+    Lianpo():PhaseChangeSkill("lianpo"){
     }
 
     virtual int getPriority() const{
-        return 3;
+        return -1;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+        return target && target->getPhase() == Player::NotActive;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
         ServerPlayer *shensimayi = room->findPlayerBySkillName("lianpo");
-        if(shensimayi == NULL)
+        if(shensimayi == NULL || shensimayi->getMark("lianpo") <= 0)
             return false;
-        if(player->getPhase() == Player::NotActive && shensimayi->getMark("lianpo") > 0){
-            shensimayi->setMark("lianpo", 0);
-            shensimayi->gainAnExtraTurn(player);
+
+        int n = shensimayi->getMark("lianpo");
+        shensimayi->setMark("lianpo", 0);
+
+        if(!shensimayi->askForSkillInvoke("lianpo"))
+            return false;
+
+        LogMessage log;
+        log.type = "#LianpoCanInvoke";
+        log.from = shensimayi;
+        log.arg = QString::number(n);
+        log.arg2 = objectName();
+        room->sendLog(log);
+        room->playSkillEffect(objectName());
+
+        PlayerStar p = shensimayi;
+        room->setTag("LianpoInvoke", QVariant::fromValue(p));
+
+        return false;
+    }
+};
+
+class LianpoDo: public PhaseChangeSkill{
+public:
+    LianpoDo():PhaseChangeSkill("#lianpo-do"){
+    }
+
+    virtual int getPriority() const{
+        return -3;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target && target->getPhase() == Player::NotActive;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        if(!room->getTag("LianpoInvoke").isNull())
+        {
+            PlayerStar target = room->getTag("LianpoInvoke").value<PlayerStar>();
+            room->removeTag("LianpoInvoke");
+            if(target->isAlive())
+                target->gainAnExtraTurn();
         }
         return false;
     }

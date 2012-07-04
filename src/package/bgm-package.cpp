@@ -19,8 +19,10 @@ public:
                 foreach(ServerPlayer* p, room->getOtherPlayers(player)){
                     if(p->hasFlag("Chongzhen")){
                         room->setPlayerFlag(p, "-Chongzhen");
-                        target = p;
-                        break;
+                        if(!p->isKongcheng()){
+                            target = p;
+                            break;
+                        }
                     }
                 }
                 if(target){
@@ -37,6 +39,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
+                    if(p->isKongcheng()) continue;
                     if(use.card->inherits("Jink"))
                         room->playSkillEffect("chongzhen", 1);
                     else
@@ -755,7 +758,10 @@ public:
                 }
                 if(!cards.empty()){
                     foreach(const Card *c, cards){
-                        room->obtainCard(victim, c->getEffectiveId(), true);
+                        if(victim->isAlive())
+                            room->obtainCard(victim, c->getEffectiveId(), true);
+                        else
+                            room->throwCard(c->getEffectiveId());
                     }
                 }
             }

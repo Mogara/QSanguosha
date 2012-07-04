@@ -901,6 +901,8 @@ public:
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
     const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant());
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
+    bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt);
+    bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
