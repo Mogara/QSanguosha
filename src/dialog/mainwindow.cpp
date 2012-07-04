@@ -91,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(view);
     restoreFromConfig();
 
+    BackLoader::preload();
     gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
@@ -255,30 +256,20 @@ void MainWindow::networkError(const QString &error_msg){
         QMessageBox::warning(this, tr("Network error"), error_msg);
 }
 
-BackLoader::BackLoader(QObject * parent)
-    :QThread(parent)
-{
-}
-
-void BackLoader::run()
+void BackLoader::preload()
 {
     QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
 
     foreach(QString emotion, emotions){
         int n = PixmapAnimation::GetFrameCount(emotion);
-        for(int i=0; i<n; i++){
-
+        for(int i = 0; i < n; i++){
             QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(i);
             G_ROOM_SKIN.getPixmapFromFileName(filename);
         }
     }
-
-    emit finished();
 }
 
 void MainWindow::enterRoom(){
-    BackLoader *loader = new BackLoader(this);
-    loader->start();
 
     // add current ip to history
     if(!Config.HistoryIPs.contains(Config.HostAddress)){

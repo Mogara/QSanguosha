@@ -3498,9 +3498,10 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     addItem(selector_box);
     selector_box->setZValue(10000); 
     
-    const static int start_x = 43;
+    const static int start_x = 43  + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
     const static int width = 86;
-    const static int row_y[4] = {60, 60+120, 60+120*2, 60+120*3};
+    const static int start_y = 60  + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
+    const static int height = 116;
 
     foreach(QString name, names){
         CardItem *item =  new CardItem(name);
@@ -3510,8 +3511,9 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
 
     qShuffle(general_items);
 
-    int i, n=names.length();
-    for(i=0; i<n; i++){
+    int n = names.length();
+    double scaleRatio = (double)116 / G_COMMON_LAYOUT.m_cardNormalHeight;
+    for(int i = 0; i < n; i++){
 
         int row, column;
         if(i < 5){
@@ -3523,9 +3525,10 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
         }
 
         CardItem *general_item = general_items.at(i);
-        general_item->scaleSmoothly(0.4);
+        general_item->scaleSmoothly(scaleRatio);
         general_item->setParentItem(selector_box);
-        general_item->setPos(start_x + width * column, row_y[row]);
+        general_item->setPos(start_x + width * column,
+                             start_y + height * row);
         general_item->setHomePos(general_item->pos());
     }
 }
@@ -3543,11 +3546,12 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
     selector_box->setZValue(10000);
     selector_box->setPos(m_tableCenterPos);
 
-    const static int start_x = 62;
-    const static int width = 148-62;
-    const static int row_y[4] = {85, 206, 329, 451};
+    const static int start_x = 108;
+    const static int width = 83;
+    const static int row_y[4] = {150, 271, 394, 516};
 
     int n = names.length();
+    double scaleRatio = 120.0 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for(int i = 0; i < n; i++){
 
         int row, column;
@@ -3560,7 +3564,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
         }
 
         CardItem *general_item = new CardItem(names.at(i));
-        general_item->scaleSmoothly(0.4);
+        general_item->scaleSmoothly(scaleRatio);
         general_item->setParentItem(selector_box);
         general_item->setPos(start_x + width * column, row_y[row]);
         general_item->setHomePos(general_item->pos());
@@ -3610,15 +3614,16 @@ void RoomScene::takeGeneral(const QString &who, const QString &name){
     general_items.removeOne(general_item);
     to_add->append(general_item);
 
-    int x,y;
+    int x , y;
     if(ServerInfo.GameMode == "06_3v3"){
-        x = 62 + (to_add->length() - 1) * (148-62);
+        x = 62 + (to_add->length() - 1) * (148 - 62);
         y = self_taken ? 451 : 85;
     }else{
         x = 43 + (to_add->length() - 1) * 86;
         y = self_taken ? 60 + 120 * 3 : 60;
     }
-
+    x = x + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
+    y = y + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
     general_item->setHomePos(QPointF(x, y));    
     general_item->goBack(true);
 }
