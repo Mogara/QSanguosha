@@ -114,6 +114,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
         createReplayControlBar();
 
     response_skill = new ResponseSkill;
+    showorpindian_skill = new ShowOrPindianSkill;
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
     choose_skill = new ChoosePlayerSkill;
@@ -932,7 +933,8 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void RoomScene::enableTargets(const Card *card) {
     
-    if (card != NULL && (Self->isJilei(card) || Self->isLocked(card))){
+    if (card != NULL && (Self->isJilei(card) || Self->isLocked(card))
+            && ClientInstance->getStatus() != Client::AskForShowOrPindian){
         ok_button->setEnabled(false);
         return;
     }
@@ -957,7 +959,8 @@ void RoomScene::enableTargets(const Card *card) {
         return;
     }
 
-    if (card->targetFixed() || ClientInstance->hasNoTargetResponsing()) {
+    if (card->targetFixed() || ClientInstance->hasNoTargetResponsing() ||
+            ClientInstance->getStatus() == Client::AskForShowOrPindian) {
         foreach(PlayerCardContainer *item, item2player.keys()) {
             QGraphicsItem* animationTarget = item->getMouseClickReceiver();
             animations->effectOut(animationTarget);
@@ -1721,10 +1724,16 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }
 
 void RoomScene::addSkillButton(const Skill *skill, bool from_left){
-    if(ClientInstance->getReplayer())
+    //SPConvertSkill is not important around the game, except on game start.
+    //Even it isn't a skill, it's only a temporary product of generals replacement system.
+    //So I think it is not necessary to exist in dashboard.
+    if(skill->inherits("SPConvertSkill") || ClientInstance->getReplayer())
         return;
     // check duplication
     QSanSkillButton* btn = dashboard->addSkillButton(skill->objectName());    
+    if(btn == NULL)
+        return;
+
     QDialog *dialog = skill->getDialog();
     if(dialog){
         dialog->setParent(main_window, Qt::Dialog);
@@ -1782,17 +1791,11 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 }
 
 void RoomScene::updateSkillButtons(){
-    foreach(const Skill* skill, Self->getVisibleSkillList()){
+    foreach(const Skill* skill, Self->getVisibleSkills()){
         if(skill->isLordSkill()){
             if(Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3")
                 continue;
         }
-
-        //SPConvertSkill is not important around the game, except on game start.
-        //Even it isn't a skill, it's only a temporary product of generals replacement system.
-        //So I think it is not necessary to exist in dashboard.
-        if(skill->inherits("SPConvertSkill"))
-            continue;
 
         addSkillButton(skill);
     }
@@ -1823,6 +1826,16 @@ void RoomScene::useSelectedCard(){
             dashboard->unselectAll();
             break;
         }
+
+    case Client::AskForShowOrPindian:{
+        const Card *card = dashboard->getSelected();
+        if(card){
+            ClientInstance->onPlayerResponseCard(card);
+            prompt_box->disappear();
+        }
+        dashboard->unselectAll();
+        break;
+    }
 
     case Client::Discarding: {
             const Card *card = dashboard->pendingCard();
@@ -2014,7 +2027,8 @@ void RoomScene::doTimeout(){
         break;}
     case Client::Responsing:
     case Client::Discarding:
-    case Client::ExecDialog:{
+    case Client::ExecDialog:
+    case Client::AskForShowOrPindian:{
         doCancelButton();
         break;}                     
     case Client::AskForPlayerChoose:{
@@ -2101,6 +2115,20 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
             break;
         }
+
+    case Client::AskForShowOrPindian:{
+        showPromptBox();
+
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(false);
+        discard_button->setEnabled(false);
+
+        QString pattern = ClientInstance->getPattern();
+        showorpindian_skill->setPattern(pattern);
+        dashboard->startPending(showorpindian_skill);
+
+        break;
+    }
 
     case Client::Playing:{
             dashboard->enableCards();
@@ -2330,6 +2358,14 @@ void RoomScene::doCancelButton(){
             dashboard->stopPending();
             break;
         }
+
+    case Client::AskForShowOrPindian:{
+        dashboard->unselectAll();
+        ClientInstance->onPlayerResponseCard(NULL);
+        prompt_box->disappear();
+        dashboard->stopPending();
+        break;
+    }
 
     case Client::Discarding:{
             dashboard->unselectAll();
@@ -3505,9 +3541,10 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     addItem(selector_box);
     selector_box->setZValue(10000); 
     
-    const static int start_x = 43;
+    const static int start_x = 43  + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
     const static int width = 86;
-    const static int row_y[4] = {60, 60+120, 60+120*2, 60+120*3};
+    const static int start_y = 60  + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
+    const static int height = 116;
 
     foreach(QString name, names){
         CardItem *item =  new CardItem(name);
@@ -3517,8 +3554,9 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
 
     qShuffle(general_items);
 
-    int i, n=names.length();
-    for(i=0; i<n; i++){
+    int n = names.length();
+    double scaleRatio = (double)116 / G_COMMON_LAYOUT.m_cardNormalHeight;
+    for(int i = 0; i < n; i++){
 
         int row, column;
         if(i < 5){
@@ -3530,9 +3568,10 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
         }
 
         CardItem *general_item = general_items.at(i);
-        general_item->scaleSmoothly(0.4);
+        general_item->scaleSmoothly(scaleRatio);
         general_item->setParentItem(selector_box);
-        general_item->setPos(start_x + width * column, row_y[row]);
+        general_item->setPos(start_x + width * column,
+                             start_y + height * row);
         general_item->setHomePos(general_item->pos());
     }
 }
@@ -3550,11 +3589,12 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
     selector_box->setZValue(10000);
     selector_box->setPos(m_tableCenterPos);
 
-    const static int start_x = 62;
-    const static int width = 148-62;
-    const static int row_y[4] = {85, 206, 329, 451};
+    const static int start_x = 108;
+    const static int width = 83;
+    const static int row_y[4] = {150, 271, 394, 516};
 
     int n = names.length();
+    double scaleRatio = 120.0 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for(int i = 0; i < n; i++){
 
         int row, column;
@@ -3567,7 +3607,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
         }
 
         CardItem *general_item = new CardItem(names.at(i));
-        general_item->scaleSmoothly(0.4);
+        general_item->scaleSmoothly(scaleRatio);
         general_item->setParentItem(selector_box);
         general_item->setPos(start_x + width * column, row_y[row]);
         general_item->setHomePos(general_item->pos());
@@ -3617,15 +3657,16 @@ void RoomScene::takeGeneral(const QString &who, const QString &name){
     general_items.removeOne(general_item);
     to_add->append(general_item);
 
-    int x,y;
+    int x , y;
     if(ServerInfo.GameMode == "06_3v3"){
-        x = 62 + (to_add->length() - 1) * (148-62);
+        x = 62 + (to_add->length() - 1) * (148 - 62);
         y = self_taken ? 451 : 85;
     }else{
         x = 43 + (to_add->length() - 1) * 86;
         y = self_taken ? 60 + 120 * 3 : 60;
     }
-
+    x = x + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
+    y = y + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
     general_item->setHomePos(QPointF(x, y));    
     general_item->goBack(true);
 }

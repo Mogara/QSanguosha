@@ -361,7 +361,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
 }
 
 QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index) const{
-    return getPlayerAudioEffectPath(eventName, isMale ? "male" : "female", index);
+    return getPlayerAudioEffectPath(eventName, QString(isMale ? "male" : "female"), index);
 }
 
 QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSize size) const

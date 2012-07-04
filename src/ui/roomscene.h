@@ -236,6 +236,7 @@ private:
     QList<QSanSkillButton*> m_skillButtons;
 
     ResponseSkill *response_skill;
+    ShowOrPindianSkill *showorpindian_skill;
     DiscardSkill *discard_skill;
     YijiViewAsSkill *yiji_skill;
     ChoosePlayerSkill *choose_skill;

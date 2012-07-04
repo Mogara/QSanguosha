@@ -33,6 +33,7 @@ public:
 		AskForYiji,
 		AskForGuanxing,
 		AskForGongxin,
+        AskForShowOrPindian
 	};
 
 	explicit Client(QObject *parent, const QString &filename = QString());

@@ -1141,6 +1141,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 }
 
 const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason){
+    Q_ASSERT(!player->isKongcheng());
     notifyMoveFocus(player, S_COMMAND_SHOW_CARD);
 
     const Card *card = NULL;
@@ -1411,7 +1412,7 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
 
 QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, bool include_dead) const{
     QList<ServerPlayer *> list;
-    foreach(ServerPlayer *player, include_dead ? m_players : m_alivePlayers){
+    foreach(ServerPlayer *player, include_dead ? getAllPlayers() : m_alivePlayers){
         if(player->hasSkill(skill_name))
             list << player;
     }
@@ -1419,7 +1420,7 @@ QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, boo
 }
 
 ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name, bool include_dead) const{
-    const QList<ServerPlayer *> &list = include_dead ? m_players : m_alivePlayers;
+    const QList<ServerPlayer *> &list = include_dead ? getAllPlayers() : m_alivePlayers;
     foreach(ServerPlayer *player, list){
         if(player->hasSkill(skill_name))
             return player;
@@ -1455,9 +1456,7 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     log.arg = new_general;
     sendLog(log);
 
-    QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(new_general);
-    player->invoke("transfigure", transfigure_str);
-
+    QString m_old_general = old_general.isEmpty() ? player->getGeneralName() : old_general;
     if(Config.Enable2ndGeneral && !old_general.isEmpty() && player->getGeneral2Name() == old_general){
         setPlayerProperty(player, "general2", new_general);
         broadcastProperty(player, "general2");
@@ -1466,6 +1465,10 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
         setPlayerProperty(player, "general", new_general);
         broadcastProperty(player, "general");
     }
+
+    QString transfigure_str = QString("%1:%2").arg(m_old_general).arg(new_general);
+    player->invoke("transfigure", transfigure_str);
+
     thread->addPlayerSkills(player, invoke_start);
 
     player->setMaxHp(player->getGeneralMaxHp());
@@ -3849,6 +3852,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
 
 const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason)
 {
+    Q_ASSERT(!player->isKongcheng());
     notifyMoveFocus(player, S_COMMAND_PINDIAN);
     if(player->getHandcardNum() == 1){
         return player->getHandcards().first();

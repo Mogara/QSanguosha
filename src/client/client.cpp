@@ -837,12 +837,15 @@ void Client::askForNullification(const Json::Value &arg){
     }
 
     QString trick_path = G_ROOM_SKIN.getCardMainPixmapPath(trick_card->objectName());
+    QString arrow_src = "<img src='image/system/to.png' />";
     QString to = G_ROOM_SKIN.getGeneralPixmapPath(target_player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
+    QString to_src = QString("<img src='%1' width='96' height='96'/>").arg(to);
     if(source == NULL){
-        prompt_doc->setHtml(QString("<img src='%1' /> ==&gt; <img src='%2' />").arg(trick_path).arg(to));
+        prompt_doc->setHtml(QString("<img src='%1' /> %2 %3").arg(trick_path).arg(arrow_src).arg(to_src));
     }else{
         QString from = G_ROOM_SKIN.getGeneralPixmapPath(source->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
-        prompt_doc->setHtml(QString("<img src='%1' /> <img src='%2'/> ==&gt; <img src='%3' />").arg(trick_path).arg(from).arg(to));
+        QString from_src = QString("<img src='%1' width='96' height='96'/>").arg(from);
+        prompt_doc->setHtml(QString("<img src='%1' /> %2 %3 %4").arg(trick_path).arg(from_src).arg(arrow_src).arg(to_src));
     }
 
     card_pattern = "nullification";
@@ -1324,9 +1327,8 @@ void Client::askForCardShow(const Json::Value &requestor){
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
     card_pattern = ".";
-    m_isDiscardActionRefusable = false;
     m_isUseCard = false;
-    setStatus(Responsing);
+    setStatus(AskForShowOrPindian);
 }
 
 void Client::askForAG(const Json::Value &arg){
@@ -1463,8 +1465,7 @@ void Client::askForPindian(const Json::Value &ask_str){
     }
     m_isUseCard = false;
     card_pattern = ".";
-    m_isDiscardActionRefusable = false;
-    setStatus(Responsing);
+    setStatus(AskForShowOrPindian);
 }
 
 void Client::askForYiji(const Json::Value &card_list){
@@ -1659,8 +1660,10 @@ void Client::transfigure(const QString &transfigure_tr){
         const General *furui = Sanguosha->getGeneral(generals.first());
         const General *atarashi = Sanguosha->getGeneral(generals.last());
 
+        QList<const Skill*> skill_list = Self->getVisibleSkillList();
         if(furui)foreach(const Skill *skill, furui->getVisibleSkills()){
-            emit skill_detached(skill->objectName());
+            if(!skill_list.contains(skill))
+                emit skill_detached(skill->objectName());
         }
 
         if(atarashi)foreach(const Skill *skill, atarashi->getVisibleSkills()){

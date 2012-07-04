@@ -833,6 +833,10 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
+    bool broadcastSkillInvoke(const char *skillName);
+    bool broadcastSkillInvoke(const char *skillName, const char *category);
+    bool broadcastSkillInvoke(const char *skillName, int type);
+    bool broadcastSkillInvoke(const char *skillName, bool isMale, int type);
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
     void adjustSeats();
@@ -896,6 +900,8 @@ public:
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
     const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant());
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
+    bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt);
+    bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);

@@ -208,7 +208,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
 
     //We should make someone trigger a whole GameStart event instead of trigger a skill only.
     if(invoke_verify)
-        trigger(GameStart, room, player, void_data);
+        trigger(GameStart, room, NULL, void_data);
 }
 
 void RoomThread::constructTriggerTable(){
@@ -396,8 +396,11 @@ bool RoomThread::trigger(TriggerEvent event, Room* room, ServerPlayer *target, Q
     event_stack.push_back(triplet);
 
     bool broken = false;
-    foreach(const TriggerSkill *skill, skill_table[event]){
-        if(skill->triggerable(target)){
+    const QList<const TriggerSkill*> &skills = skill_table[event];
+    for (int i = 0; i < skills.size(); i++)
+    {
+        const TriggerSkill *skill = skills[i];
+        if (skill->triggerable(target)) {
             broken = skill->trigger(event, room, target, data);
             if(broken)
                 break;
