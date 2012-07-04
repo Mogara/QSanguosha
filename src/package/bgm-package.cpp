@@ -19,11 +19,13 @@ public:
                 foreach(ServerPlayer* p, room->getOtherPlayers(player)){
                     if(p->hasFlag("Chongzhen")){
                         room->setPlayerFlag(p, "-Chongzhen");
-                        target = p;
-                        break;
+                        if(!p->isKongcheng()){
+                            target = p;
+                            break;
+                        }
                     }
                 }
-                if(target){
+                if(target && player->askForSkillInvoke(objectName())){
                     int card_id = room->askForCardChosen(player, target, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
@@ -38,6 +40,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
+					if(p->isKongcheng()) continue;
                     if(use.card->inherits("Jink"))
                         room->broadcastSkillInvoke("chongzhen", 1);
                     else
@@ -774,7 +777,12 @@ public:
                 if(!cards.empty()){
                     foreach(const Card *c, cards){
                         CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, victim->objectName());
-                        room->obtainCard(victim, c, reason);
+                        if(victim->isAlive())
+                            room->obtainCard(victim, c, reason, true);
+                        else{
+                            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, victim->objectName(), "zhaolie", QString());
+                            room->throwCard(c, reason, NULL);
+                        }
                     }
                 }
             }
