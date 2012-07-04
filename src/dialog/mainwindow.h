@@ -74,13 +74,10 @@ private:
     QList<RoomItem*> room_items;
 };
 
-class BackLoader: public QThread
+class BackLoader
 {
-    Q_OBJECT
 public:
-    BackLoader(QObject *parent =0 );
-protected:
-    virtual void run();
+    static void preload();
 };
 
 class AcknowledgementScene : public QGraphicsScene
