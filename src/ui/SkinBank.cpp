@@ -307,8 +307,10 @@ QString QSanRoomSkin::getGeneralPixmapPath(const QString &generalName, GeneralIc
             return toQString(_m_imageConfig[key.toAscii().constData()]);
         else
         {
-            QString fileName = toQString(_m_imageConfig[QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
-                               .arg(S_SKIN_KEY_DEFAULT).arg(size).toAscii().constData()]).arg(generalName);
+            QByteArray arr = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
+                             .arg(S_SKIN_KEY_DEFAULT).arg(size).toAscii();
+            const char* ckey = arr.constData();
+            QString fileName = toQString(_m_imageConfig[ckey]).arg(generalName);
             return fileName;
         }
     }
@@ -421,8 +423,8 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(Json::Value value)
     else if (isStringArray(value, 0, 0) && value.size() >= 3 &&
              isIntArray(value[2], 0, 1))
     {
-        if (_tryParse(value[0].asCString(), m_anchorChild) &&
-            _tryParse(value[1].asCString(), m_anchorParent) &&
+        if (QSanProtocol::Utils::tryParse(value[0], m_anchorChild) &&
+            QSanProtocol::Utils::tryParse(value[1], m_anchorParent) &&
             QSanProtocol::Utils::tryParse(value[2], m_offset))
         {
             if (value.size() >= 4 && isIntArray(value[3], 0, 1) &&
@@ -464,37 +466,57 @@ bool QSanPixmapCache::contains(const QString &key)
 
 bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &imageConfigName,
                               const QString &audioConfigName)
-{
-    Json::Reader layoutReader, imageReader, audioReader;
-    ifstream layoutFile(layoutConfigName.toAscii());
-    ifstream imageFile(imageConfigName.toAscii());
-    ifstream audioFile(audioConfigName.toAscii());
-    bool success = (!layoutFile.bad() && !imageFile.bad() && !audioFile.bad());
+{   
+    bool success = true;
     QString errorMsg;
-    if (!layoutReader.parse(layoutFile, this->_m_layoutConfig))
+
+    if (!layoutConfigName.isNull())
     {
-        errorMsg = QString("Error when reading layout config file \"%1\": \n%2")
-                   .arg(layoutConfigName).arg(layoutReader.getFormattedErrorMessages().c_str());
-        QMessageBox::warning(NULL, "Config Error", errorMsg);
-        success = false;
+        Json::Reader reader;
+        ifstream layoutFile(layoutConfigName.toAscii());
+        Json::Value layoutConfig;
+        if (layoutFile.bad() || !reader.parse(layoutFile, layoutConfig) || !layoutConfig.isObject())
+        {
+            errorMsg = QString("Error when reading layout config file \"%1\": \n%2")
+                       .arg(layoutConfigName).arg(reader.getFormattedErrorMessages().c_str());
+            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            success = false;
+        }
+        success = _loadLayoutConfig(layoutConfig);
+        layoutFile.close();
     }
-    if (!imageReader.parse(imageFile, this->_m_imageConfig))
+
+    if (!imageConfigName.isNull())
     {
-        errorMsg = QString("Error when reading image config file \"%1\": \n%2")
-                   .arg(imageConfigName).arg(imageReader.getFormattedErrorMessages().c_str());
-        QMessageBox::warning(NULL, "Config Error", errorMsg);
-        success = false;
+        Json::Reader reader;
+        ifstream imageFile(imageConfigName.toAscii());
+        if (imageFile.bad() ||
+            !reader.parse(imageFile, _m_imageConfig) ||
+            !_m_imageConfig.isObject())
+        {
+            errorMsg = QString("Error when reading image config file \"%1\": \n%2")
+                       .arg(imageConfigName).arg(reader.getFormattedErrorMessages().c_str());
+            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            success = false;
+        }
+        imageFile.close();
     }
-    if (!audioReader.parse(audioFile, this->_m_audioConfig))
+
+    if (!audioConfigName.isNull())
     {
-        errorMsg = QString("Error when reading audio config file \"%1\": \n%2")
-                   .arg(audioConfigName).arg(audioReader.getFormattedErrorMessages().c_str());
-        QMessageBox::warning(NULL, "Config Error", errorMsg);
-        success = false;
+        Json::Reader reader;
+        ifstream audioFile(audioConfigName.toAscii());
+        if (audioFile.bad() ||
+            !reader.parse(audioFile, _m_audioConfig) ||
+            !_m_audioConfig.isObject())
+        {
+            errorMsg = QString("Error when reading audio config file \"%1\": \n%2")
+                       .arg(audioConfigName).arg(reader.getFormattedErrorMessages().c_str());
+            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            success = false;
+        }
+        audioFile.close();
     }
-    layoutFile.close(); imageFile.close(); audioFile.close();
-    success &= (_m_layoutConfig.isObject() && _m_imageConfig.isObject() && _m_audioConfig.isObject());
-    if (_m_layoutConfig.isObject()) success = _loadLayoutConfig();
     return success;
 }
 
@@ -645,20 +667,6 @@ const QSanRoomSkin::CommonLayout& QSanRoomSkin::getCommonLayout() const
     return _m_commonLayout;
 }
 
-bool IQSanComponentSkin::_tryParse(const QString &str, Qt::Alignment &align)
-{
-    QString alignStr = str.toLower();
-    if (alignStr.contains("left")) align = Qt::AlignLeft;
-    else if (alignStr.contains("right")) align = Qt::AlignRight;
-    else if (alignStr.contains("center")) align = Qt::AlignHCenter;
-
-    if (alignStr.contains("top")) align |= Qt::AlignTop;
-    else if (alignStr.contains("bottom")) align |= Qt::AlignBottom;
-    else if (alignStr.contains("center")) align |= Qt::AlignVCenter;
-    
-    return true;
-}
-
 QSanRoomSkin::QSanShadowTextFont 
 QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state,
                                                 QSanInvokeSkillButton::SkillType type,
@@ -671,43 +679,43 @@ QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state,
     return font;
 }
     
-bool QSanRoomSkin::_loadLayoutConfig()
+bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
 {
-    Json::Value config = _m_layoutConfig[S_SKIN_KEY_COMMON];
-    _m_commonLayout.m_cardNormalHeight = config["cardNormalHeight"].asInt();
-    _m_commonLayout.m_cardNormalWidth = config["cardNormalWidth"].asInt();
-    _m_commonLayout.m_hpExtraSpaceHolder = config["hpExtraSpaceHolder"].asInt();
+    Json::Value config = layoutConfig[S_SKIN_KEY_COMMON];
+    tryParse(config["cardNormalHeight"], _m_commonLayout.m_cardNormalHeight);
+    tryParse(config["cardNormalWidth"], _m_commonLayout.m_cardNormalWidth);
+    tryParse(config["hpExtraSpaceHolder"], _m_commonLayout.m_hpExtraSpaceHolder);
     tryParse(config["cardMainArea"], _m_commonLayout.m_cardMainArea);
     tryParse(config["cardSuitArea"], _m_commonLayout.m_cardSuitArea);
     tryParse(config["cardNumberArea"], _m_commonLayout.m_cardNumberArea);
     tryParse(config["cardFrameArea"], _m_commonLayout.m_cardFrameArea);
     tryParse(config["cardFootnoteArea"], _m_commonLayout.m_cardFootnoteArea);
     tryParse(config["cardAvatarArea"], _m_commonLayout.m_cardAvatarArea);
-    _m_commonLayout.m_chooseGeneralBoxSwitchIconSizeThreshold =
-        config["chooseGeneralBoxSwitchIconSizeThreshold"].asInt();
+    tryParse(config["chooseGeneralBoxSwitchIconSizeThreshold"], 
+             _m_commonLayout.m_chooseGeneralBoxSwitchIconSizeThreshold);
     tryParse(config["chooseGeneralBoxDenseIconSize"],
-                                  _m_commonLayout.m_chooseGeneralBoxDenseIconSize);
+             _m_commonLayout.m_chooseGeneralBoxDenseIconSize);
     tryParse(config["chooseGeneralBoxSparseIconSize"],
-                                  _m_commonLayout.m_chooseGeneralBoxSparseIconSize);
+             _m_commonLayout.m_chooseGeneralBoxSparseIconSize);
     _m_commonLayout.m_cardFootnoteFont.tryParse(config["cardFootnoteFont"]);
     for (int i = 0; i < 6; i++)
     {
         _m_commonLayout.m_hpFont[i].tryParse(config["magatamaFont"][i]);
     }
 
-    config = _m_layoutConfig[S_SKIN_KEY_ROOM];
-    _m_roomLayout.m_chatBoxHeightPercentage = config["chatBoxHeightPercentage"].asDouble();
-    _m_roomLayout.m_chatTextBoxHeight = config["chatTextBoxHeight"].asInt();
-    _m_roomLayout.m_discardPileMinWidth = config["discardPileMinWidth"].asInt();
-    _m_roomLayout.m_discardPilePadding = config["discardPilePadding"].asInt();
-    _m_roomLayout.m_infoPlaneWidthPercentage = config["infoPlaneWidthPercentage"].asDouble();
-    _m_roomLayout.m_logBoxHeightPercentage = config["logBoxHeightPercentage"].asDouble();
+    config = layoutConfig[S_SKIN_KEY_ROOM];
+    tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);
+    tryParse(config["chatTextBoxHeight"], _m_roomLayout.m_chatTextBoxHeight);
+    tryParse(config["discardPileMinWidth"], _m_roomLayout.m_discardPileMinWidth);
+    tryParse(config["discardPilePadding"], _m_roomLayout.m_discardPilePadding);
+    tryParse(config["infoPlaneWidthPercentage"], _m_roomLayout.m_infoPlaneWidthPercentage);
+    tryParse(config["logBoxHeightPercentage"], _m_roomLayout.m_logBoxHeightPercentage);
     tryParse(config["minimumSceneSize"], _m_roomLayout.m_minimumSceneSize);
-    _m_roomLayout.m_photoHDistance = config["photoHDistance"].asInt();
-    _m_roomLayout.m_photoVDistance = config["photoVDistance"].asInt();
-    _m_roomLayout.m_photoDashboardPadding = config["photoDashboardPadding"].asInt();
-    _m_roomLayout.m_roleBoxHeight = config["roleBoxHeight"].asInt();
-    _m_roomLayout.m_scenePadding = config["scenePadding"].asInt();
+    tryParse(config["photoHDistance"], _m_roomLayout.m_photoHDistance);
+    tryParse(config["photoVDistance"], _m_roomLayout.m_photoVDistance);
+    tryParse(config["photoDashboardPadding"], _m_roomLayout.m_photoDashboardPadding);
+    tryParse(config["roleBoxHeight"], _m_roomLayout.m_roleBoxHeight);
+    tryParse(config["scenePadding"], _m_roomLayout.m_scenePadding);
 
     for (int i = 0; i < 2; i++)
     {
@@ -716,15 +724,15 @@ bool QSanRoomSkin::_loadLayoutConfig()
         if (i == 0)
         {
             layout = &_m_photoLayout;
-            playerConfig = _m_layoutConfig[S_SKIN_KEY_PHOTO];
+            playerConfig = layoutConfig[S_SKIN_KEY_PHOTO];
         }
         else
         {
             layout = &_m_dashboardLayout;
-            playerConfig = _m_layoutConfig[S_SKIN_KEY_DASHBOARD];
+            playerConfig = layoutConfig[S_SKIN_KEY_DASHBOARD];
         }
 
-        layout->m_normalHeight = playerConfig["normalHeight"].asInt();
+        tryParse(playerConfig["normalHeight"], layout->m_normalHeight);
         // @todo: focusFrameArea has not been parsed for dashboard
         // @todo: rename this to "handCardNumIconArea"
         tryParse(playerConfig["handCardNumIconArea"], layout->m_handCardArea);
@@ -749,8 +757,8 @@ bool QSanRoomSkin::_loadLayoutConfig()
 
         tryParse(playerConfig["avatarArea"], layout->m_avatarArea);
         tryParse(playerConfig["smallAvatarArea"], layout->m_smallAvatarArea);
-        layout->m_avatarSize = playerConfig["avatarImageType"].asInt();
-        layout->m_smallAvatarSize = playerConfig["smallAvatarImageType"].asInt();
+        tryParse(playerConfig["avatarImageType"], layout->m_avatarSize);
+        tryParse(playerConfig["smallAvatarImageType"], layout->m_smallAvatarSize);
         tryParse(playerConfig["avatarNameArea"], layout->m_avatarNameArea);
         layout->m_avatarNameFont.tryParse(playerConfig["avatarNameFont"]);
         tryParse(playerConfig["smallAvatarNameArea"], layout->m_smallAvatarNameArea);
@@ -763,13 +771,13 @@ bool QSanRoomSkin::_loadLayoutConfig()
         layout->m_screenNameFont.tryParse(playerConfig["screenNameFont"]);
 
         layout->m_progressBarArea.tryParse(playerConfig["progressBarArea"]);
-        layout->m_isProgressBarHorizontal = playerConfig["progressBarHorizontal"].asBool();
+        tryParse(playerConfig["progressBarHorizontal"], layout->m_isProgressBarHorizontal);
         tryParse(playerConfig["magatamaSize"], layout->m_magatamaSize);
-        layout->m_magatamasHorizontal = playerConfig["magatamasHorizontal"].asBool();
-        layout->m_magatamasBgVisible = playerConfig["magatamasBgVisible"].asBool();
+        tryParse(playerConfig["magatamasHorizontal"], layout->m_magatamasHorizontal);
+        tryParse(playerConfig["magatamasBgVisible"], layout->m_magatamasBgVisible);
         tryParse(playerConfig["magatamasAnchor"][1], layout->m_magatamasAnchor);
         if (playerConfig["magatamasAnchor"][0].isString())
-            _tryParse(playerConfig["magatamasAnchor"][0].asCString(), layout->m_magatamasAlign);
+            tryParse(playerConfig["magatamasAnchor"][0], layout->m_magatamasAlign);
 
         layout->m_phaseArea.tryParse(playerConfig["phaseArea"]);
         tryParse(playerConfig["privatePileStartPos"], layout->m_privatePileStartPos);
@@ -786,13 +794,14 @@ bool QSanRoomSkin::_loadLayoutConfig()
     }
 
 
-    config = _m_layoutConfig[S_SKIN_KEY_PHOTO];
+    config = layoutConfig[S_SKIN_KEY_PHOTO];
     
-    _m_photoLayout.m_normalWidth = config["normalWidth"].asInt();
+    tryParse(config["normalWidth"], _m_photoLayout.m_normalWidth);
     if (!tryParse(config["focusFrameArea"], _m_photoLayout.m_focusFrameArea)
         && config["borderWidth"].isInt())
     {
-        int borderWidth = config["borderWidth"].asInt();
+        int borderWidth = 0;
+        tryParse(config["borderWidth"], borderWidth);
         _m_photoLayout.m_focusFrameArea = QRect(
                     -borderWidth, -borderWidth,
             _m_photoLayout.m_normalWidth + 2 * borderWidth,
@@ -807,10 +816,10 @@ bool QSanRoomSkin::_loadLayoutConfig()
     _m_photoLayout.m_skillNameFont.tryParse(config["skillNameFont"]);
     tryParse(config["canvasArea"], _m_photoLayout.m_boundingRect);
 
-    config = _m_layoutConfig[S_SKIN_KEY_DASHBOARD];
-    _m_dashboardLayout.m_leftWidth = config["leftWidth"].asInt();
-    _m_dashboardLayout.m_rightWidth = config["rightWidth"].asInt();
-    _m_dashboardLayout.m_floatingAreaHeight = config["floatingAreaHeight"].asInt();
+    config = layoutConfig[S_SKIN_KEY_DASHBOARD];
+    tryParse(config["leftWidth"], _m_dashboardLayout.m_leftWidth);
+    tryParse(config["rightWidth"], _m_dashboardLayout.m_rightWidth);
+    tryParse(config["floatingAreaHeight"], _m_dashboardLayout.m_floatingAreaHeight);
     tryParse(config["focusFrameArea"], _m_dashboardLayout.m_focusFrameArea);
     tryParse(config["buttonSetSize"], _m_dashboardLayout.m_buttonSetSize);
     tryParse(config["confirmButtonArea"], _m_dashboardLayout.m_confirmButtonArea);
@@ -819,12 +828,20 @@ bool QSanRoomSkin::_loadLayoutConfig()
     tryParse(config["trustButtonArea"], _m_dashboardLayout.m_trustButtonArea);
     tryParse(config["equipBorderPos"], _m_dashboardLayout.m_equipBorderPos);
     tryParse(config["equipSelectedOffset"], _m_dashboardLayout.m_equipSelectedOffset);
-    _m_dashboardLayout.m_disperseWidth = config["disperseWidth"].asInt();
-    config = _m_layoutConfig["skillButton"];
+    tryParse(config["disperseWidth"], _m_dashboardLayout.m_disperseWidth);
+    config = layoutConfig["skillButton"];
     for (int i = 0; i < 3; i++)
     {
-        _m_dashboardLayout.m_skillButtonsSize[i].setHeight(config["height"].asInt());
-        _m_dashboardLayout.m_skillButtonsSize[i].setWidth(config["width"][i].asInt());
+        int height = 0;
+        if (tryParse(config["height"], height))
+        {
+            _m_dashboardLayout.m_skillButtonsSize[i].setHeight(height);
+        }
+        int width = 0;
+        if (tryParse(config["width"][i], width))
+        {
+            _m_dashboardLayout.m_skillButtonsSize[i].setWidth(width);
+        }
         tryParse(config["textArea"][i], _m_dashboardLayout.m_skillTextArea[i]);
         _m_dashboardLayout.m_skillTextFonts[i].tryParse(config["textFont"][i]);
     }
@@ -869,9 +886,11 @@ bool QSanRoomSkin::_loadLayoutConfig()
 bool QSanSkinScheme::load(Json::Value configs)
 {
     if (!configs.isObject()) return false;
-    return _m_roomSkin.load(configs["roomLayoutConfigFile"].asCString(),
-                            configs["roomImageConfigFile"].asCString(),
-                            configs["roomAudioConfigFile"].asCString());
+    QString layoutFile, imageFile, audioFile;
+    tryParse(configs["roomLayoutConfigFile"], layoutFile); 
+    tryParse(configs["roomImageConfigFile"], imageFile);
+    tryParse(configs["roomAudioConfigFile"], audioFile);
+    return _m_roomSkin.load(layoutFile, imageFile, audioFile);
 }
 
 const QSanRoomSkin& QSanSkinScheme::getRoomSkin() const
@@ -888,23 +907,36 @@ QSanSkinFactory& QSanSkinFactory::getInstance()
 
 const QSanSkinScheme& QSanSkinFactory::getCurrentSkinScheme()
 {
-    if (!_m_isSkinSet)
-        switchSkin("default");
     return this->_sm_currentSkin;
 }
 
 bool QSanSkinFactory::switchSkin(QString skinName)
 {
-    bool success = _sm_currentSkin.load(_m_skinList[skinName.toAscii().constData()]);
-    if (success) _m_isSkinSet = true;
+    if (skinName == _m_skinName) return false;
+    bool success = false;
+    if (_m_skinName != "default") {
+        success = _sm_currentSkin.load(_m_skinList["default"]);
+        if (!success) {
+            qWarning("Cannot load default skin!");
+        }
+    }
+    if (skinName != "default")
+    {
+        success = _sm_currentSkin.load(_m_skinList[skinName.toAscii().constData()]);
+    }
+    if (!success) {
+        qWarning("Loading skin %s failed", skinName.toAscii().constData());
+    }
+    _m_skinName = skinName;
     return success;
 }
 
 QSanSkinFactory::QSanSkinFactory(const char* fileName)
 {
-    _m_isSkinSet = false;
     Json::Reader reader;
     ifstream file(fileName);
     reader.parse(file, this->_m_skinList, false);
+    _m_skinName = "";
+    switchSkin("default");
     file.close();
 }

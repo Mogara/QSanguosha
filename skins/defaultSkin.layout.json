@@ -44,6 +44,7 @@
     "chatBoxHeightPercentage": 0.4,
     "infoPlaneWidthPercentage": 0.2,
     "photoRoomPadding": 10,
+    "photoDashboardPadding": 0,
     "photoHDistance": 32,
     "photoVDistance": 32,
     "discardPileMinWidth": 465,

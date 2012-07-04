@@ -110,7 +110,7 @@ void MainWindow::restoreFromConfig(){
 
     QFont font;
     /* @todo: For now, we haven't find a very good solution.
-    According to Qt, everything is overrules by this setting...
+    According to Qt, everything is overruled by this setting...
     So just turn it off temporarily
     if(Config.AppFont != font)
         QApplication::setFont(Config.AppFont); */

@@ -87,17 +87,13 @@ public:
     QString getRandomAudioFileName(const QString &key) const;
     bool isImageKeyDefined(const QString &key) const;
 protected:
-    virtual bool _loadLayoutConfig() = 0;
+    virtual bool _loadLayoutConfig(const Json::Value &layoutConfig) = 0;
     QString _readConfig(const Json::Value &dictionary, const QString &key,
                         const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
                              QSize &newScale, bool scaled,
                              const QString &defaultValue = QString()) const;
     
-    // helpers
-    static bool _tryParse(const QString &str, Qt::Alignment &align);
-    
-    Json::Value _m_layoutConfig;
     Json::Value _m_imageConfig;
     Json::Value _m_audioConfig;
 };
@@ -340,7 +336,7 @@ protected:
     PhotoLayout _m_photoLayout;
     CommonLayout _m_commonLayout;
     DashboardLayout _m_dashboardLayout;
-    virtual bool _loadLayoutConfig();
+    virtual bool _loadLayoutConfig(const Json::Value &layoutConfig);
 };
 
 class QSanSkinScheme
@@ -365,7 +361,7 @@ protected:
     static QSanSkinFactory* _sm_singleton;
     QSanSkinScheme _sm_currentSkin;
     Json::Value _m_skinList;
-    bool _m_isSkinSet;
+    QString _m_skinName;
 };
 
 #define G_ROOM_SKIN (QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin())
