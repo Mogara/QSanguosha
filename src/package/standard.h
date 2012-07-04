@@ -246,6 +246,7 @@ public:
 
     virtual Location location() const;
     virtual QString label() const;
+    virtual QString getCommonEffectName() const;
 
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
@@ -264,6 +265,7 @@ public:
 
     virtual Location location() const;
     virtual QString label() const;
+    virtual QString getCommonEffectName() const;
 };
 
 class Horse:public EquipCard{
@@ -278,6 +280,7 @@ public:
     virtual void onUninstall(ServerPlayer *player) const;
 
     virtual QString label() const;
+    virtual QString getCommonEffectName() const;
 
 private:
     int correct;

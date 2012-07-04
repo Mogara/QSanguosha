@@ -265,7 +265,6 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("Peach")){
-            Room *room = player->getRoom();
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
 
             foreach(ServerPlayer *p, players){
@@ -301,6 +300,10 @@ void Monkey::onInstall(ServerPlayer *player) const{
 
 void Monkey::onUninstall(ServerPlayer *player) const{
 
+}
+
+QString Monkey::getCommonEffectName() const{
+    return "monkey";
 }
 
 class GaleShellSkill: public ArmorSkill{

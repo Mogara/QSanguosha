@@ -1100,6 +1100,7 @@ function SmartAI:useCardCollateral(card, use)
 
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getWeapon() and self:hasSkills(sgs.lose_equip_skill, friend) 
+			and not friend:hasSkill("weimu")
 			and not self.room:isProhibited(self.player, friend, card) then
 
 			for _, enemy in ipairs(self.enemies) do
@@ -1149,14 +1150,8 @@ sgs.ai_use_value.Collateral = 8.8
 sgs.ai_use_priority.Collateral = 2.75
 
 sgs.ai_card_intention.Collateral = function(card, from, tos)
-	assert(#tos == 2)
-	if tos[2]:objectName() == from:objectName() then
-		sgs.updateIntention(from, tos[1], 80)
-	elseif sgs.compareRoleEvaluation(tos[1], "rebel", "loyalist") == sgs.compareRoleEvaluation(tos[2], "rebel", "loyalist") then
-		sgs.updateIntention(from, tos[2], 80)
-	elseif from:getWeapon() and from:distanceTo(tos[2]) <= from:getAttackRange() then
-		sgs.updateIntention(from, tos[1], 80)
-	elseif tos[1]:isKongcheng() then
+	assert(#tos == 1)
+	if sgs.compareRoleEvaluation(tos[1], "rebel", "loyalist") ~= sgs.compareRoleEvaluation(from, "rebel", "loyalist") then
 		sgs.updateIntention(from, tos[1], 80)
 	end
 	sgs.ai_collateral = false

@@ -1500,7 +1500,7 @@ public:
 
         }else{
             PlayerStar p = room->getTag("Zhenggong").value<PlayerStar>();
-            if(p){
+            if(p && !player->hasFlag("isExtraTurn")){
                 p->loseMark("@zhenggong");
                 room->setCurrent(p);
                 room->setTag("Zhenggong", QVariant());

@@ -1411,7 +1411,7 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
 
 QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, bool include_dead) const{
     QList<ServerPlayer *> list;
-    foreach(ServerPlayer *player, include_dead ? m_players : m_alivePlayers){
+    foreach(ServerPlayer *player, include_dead ? getAllPlayers() : m_alivePlayers){
         if(player->hasSkill(skill_name))
             list << player;
     }
@@ -1419,7 +1419,7 @@ QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, boo
 }
 
 ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name, bool include_dead) const{
-    const QList<ServerPlayer *> &list = include_dead ? m_players : m_alivePlayers;
+    const QList<ServerPlayer *> &list = include_dead ? getAllPlayers() : m_alivePlayers;
     foreach(ServerPlayer *player, list){
         if(player->hasSkill(skill_name))
             return player;
@@ -3392,6 +3392,17 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         else
             doNotify(player, S_COMMAND_GET_CARD, arg);
     }    
+    return true;
+}
+
+bool Room::broadcastSkillInvoke(const QString &skill_name, const QString &category)
+{
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_SKILL_INVOKED;
+    args[1] = toJsonString(skill_name);
+    args[2] = toJsonString(category);
+    args[3] = -1;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
     return true;
 }
 

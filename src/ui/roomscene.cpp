@@ -368,9 +368,15 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
     else if (eventType == S_GAME_EVENT_SKILL_INVOKED)
     {
         QString skillName = arg[1].asCString();
-        bool isMale = arg[2].asBool();
+        QString category;
+        if(arg[2].isBool()){
+            bool isMale = arg[2].asBool();
+            category = isMale ? "male" : "female";
+        }
+        else if(arg[2].isString())
+            category = arg[2].asCString();
         int type = arg[3].asInt();
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, isMale, type));
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
     }
 }
 
@@ -2299,6 +2305,7 @@ void RoomScene::doCancelButton(){
                 cancelViewAsSkill();
             else            
                 dashboard->stopPending();
+            dashboard->enableCards();
             break;
         }
 

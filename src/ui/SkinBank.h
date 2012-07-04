@@ -276,6 +276,7 @@ public:
     QPixmap getCardAvatarPixmap(const QString &generalName) const;
     QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size) const;
     QString getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index = -1) const;
+    QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1) const;
     QPixmap getProgressBarPixmap(int percentile) const;
 
     // static consts

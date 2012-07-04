@@ -318,10 +318,10 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
     return getPixmapFromFileName(getGeneralPixmapPath(generalName, size));
 }
 
-QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index) const{
-    QString gender = isMale ? "male" : "female";
+QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index) const{
     QString fileName;
-    QString key = QString(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(gender).arg(eventName);
+
+    QString key = QString(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(category).arg(eventName);
 
     if (index == -1)
         fileName = getRandomAudioFileName(key);
@@ -355,9 +355,13 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool is
     if(fileName.isEmpty())
     {
         fileName = toQString(_m_audioConfig[QString(S_SKIN_KEY_PLAYER_AUDIO_EFFECT)
-            .arg(gender).arg("default").toAscii().constData()]).arg(eventName);
+            .arg(category).arg("default").toAscii().constData()]).arg(eventName);
     }
     return fileName;
+}
+
+QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index) const{
+    return getPlayerAudioEffectPath(eventName, QString(isMale ? "male" : "female"), index);
 }
 
 QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSize size) const
