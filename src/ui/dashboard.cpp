@@ -651,6 +651,26 @@ int Dashboard::getMiddleWidth()
     return _m_width - G_DASHBOARD_LAYOUT.m_leftWidth - G_DASHBOARD_LAYOUT.m_rightWidth;
 }
 
+QList<CardItem*> Dashboard::cloneCardItems(QList<int> card_ids){
+    QList<CardItem*> result;
+    CardItem* card_item;
+    CardItem* new_card;
+
+    foreach (int card_id, card_ids)
+    {
+        card_item = CardItem::FindItem(m_handCards, card_id);
+        new_card = _createCard(card_id);
+        Q_ASSERT(card_item);
+        if(card_item)
+        {
+            new_card->setPos(card_item->pos());
+            new_card->setHomePos(card_item->homePos());
+        }
+        result.append(new_card);
+    }
+    return result;
+}
+
 QList<CardItem*> Dashboard::removeHandCards(const QList<int> &card_ids)
 {
     QList<CardItem*> result;

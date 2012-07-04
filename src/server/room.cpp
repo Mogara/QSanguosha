@@ -3362,7 +3362,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 }
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
-{   
+{
     // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   
@@ -4142,18 +4142,56 @@ void Room::sendLog(const LogMessage &log){
     broadcastInvoke("log", log.toString());
 }
 
+void Room::moveCardCopyForShow(int card_id, CardMoveReason reason, ServerPlayer *only_viewer, bool open){
+
+    if((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_MOVECOPY)
+        return;
+
+    int moveId = _m_lastMovementId++;
+    CardsMoveStruct cards_move;
+
+    cards_move.card_ids << card_id;
+    cards_move.to = NULL;
+    cards_move.to_place = Player::PlaceTable;
+    cards_move.open = open;
+    cards_move.reason = reason;
+    _fillMoveInfo(cards_move, 0);
+
+    Json::Value move_arg(Json::arrayValue);
+    move_arg[0] = moveId;
+    move_arg[1] = cards_move.toJsonValue();
+
+    if(only_viewer){
+        QList<ServerPlayer *>players;
+        players << only_viewer << (ServerPlayer*)cards_move.from ;
+        doBroadcastNotify(players, S_COMMAND_LOSE_CARD, move_arg);
+        moveId = --_m_lastMovementId;
+        move_arg[0] = moveId;
+        doBroadcastNotify(players, S_COMMAND_GET_CARD, move_arg);
+    }else{
+        doBroadcastNotify(S_COMMAND_LOSE_CARD, move_arg);
+        moveId = --_m_lastMovementId;
+        move_arg[0] = moveId;
+        doBroadcastNotify(S_COMMAND_GET_CARD, move_arg);
+    }
+}
+
 void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer){
     notifyMoveFocus(player);
-    Json::Value show_str;
-    show_str[0] = toJsonString(player->objectName());
-    show_str[1] = card_id;
-    if(only_viewer)
-        doNotify(player, S_COMMAND_SHOW_CARD, show_str);
+    Json::Value show_arg(Json::arrayValue);
+    show_arg[0] = toJsonString(player->objectName());
+    show_arg[1] = card_id;
+
+    if(only_viewer){
+        doNotify(only_viewer, S_COMMAND_SHOW_CARD, show_arg);
+    }
     else{
         if(card_id>0)
             setCardFlag(card_id, "visible");
-        doBroadcastNotify(S_COMMAND_SHOW_CARD, show_str);
+        doBroadcastNotify(S_COMMAND_SHOW_CARD, show_arg);
     }
+    CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
+    moveCardCopyForShow(card_id, reason, only_viewer);
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
