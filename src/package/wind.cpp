@@ -754,8 +754,6 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
     room->setTag("GuhuoType", this->user_string);
-    if(yuji->hasFlag("guhuo_failed"))
-        room->setPlayerFlag(yuji, "-guhuo_failed");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;

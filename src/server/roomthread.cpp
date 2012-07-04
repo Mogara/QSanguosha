@@ -208,7 +208,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
 
     //We should make someone trigger a whole GameStart event instead of trigger a skill only.
     if(invoke_verify)
-        trigger(GameStart, room, NULL, void_data);
+        trigger(GameStart, room, player, void_data);
 }
 
 void RoomThread::constructTriggerTable(){

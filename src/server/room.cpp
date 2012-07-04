@@ -1456,8 +1456,9 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     log.arg = new_general;
     sendLog(log);
 
-    QString m_old_general = old_general.isEmpty() ? player->getGeneralName() : old_general;
+    QString m_old_general = player->getGeneralName();
     if(Config.Enable2ndGeneral && !old_general.isEmpty() && player->getGeneral2Name() == old_general){
+        m_old_general = player->getGeneral2Name();
         setPlayerProperty(player, "general2", new_general);
         broadcastProperty(player, "general2");
     }

@@ -14,6 +14,10 @@
 
 using namespace QSanProtocol;
 
+QList<CardItem*> GeneralCardContainer::cloneCardItems(QList<int> card_ids){
+    return _createCards(card_ids);
+}
+
 QList<CardItem*> GeneralCardContainer::_createCards(QList<int> card_ids)
 {
     QList<CardItem*> result;

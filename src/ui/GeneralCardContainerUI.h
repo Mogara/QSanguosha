@@ -22,6 +22,7 @@ public:
     inline GeneralCardContainer() { _m_highestZ = 10000; }
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids,  Player::Place place) = 0;
     virtual void addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    QList<CardItem*> cloneCardItems(QList<int> card_ids);
 protected:
     // @return Whether the card items should be destroyed after animation
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place toPlace) = 0;
