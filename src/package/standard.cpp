@@ -301,6 +301,10 @@ QString Weapon::label() const{
     return QString("%1(%2)").arg(getName()).arg(range);
 }
 
+QString Weapon::getCommonEffectName() const{
+    return "weapon";
+}
+
 void Weapon::onInstall(ServerPlayer *player) const{
     EquipCard::onInstall(player);
     Room *room = player->getRoom();
@@ -329,6 +333,10 @@ QString Armor::label() const{
     return getName();
 }
 
+QString Armor::getCommonEffectName() const{
+    return "armor";
+}
+
 Horse::Horse(Suit suit, int number, int correct)
     :EquipCard(suit, number), correct(correct)
 {
@@ -355,6 +363,10 @@ QString Horse::label() const{
         format = "%1(%2)";
 
     return format.arg(getName()).arg(correct);
+}
+
+QString Horse::getCommonEffectName() const{
+    return "horse";
 }
 
 OffensiveHorse::OffensiveHorse(Card::Suit suit, int number, int correct)

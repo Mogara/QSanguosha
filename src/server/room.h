@@ -191,6 +191,7 @@ public:
     bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
     bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     bool broadcastSkillInvoke(const QString &skillName);
+    bool broadcastSkillInvoke(const QString &skillName, const QString &category);
     bool broadcastSkillInvoke(const QString &skillName, int type);
     bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
 

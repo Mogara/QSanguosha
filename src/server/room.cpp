@@ -1105,7 +1105,7 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
 }
 
 bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt){
-    Q_ASSERT(victims != NULL);
+    Q_ASSERT(victim != NULL);
     QList<ServerPlayer *> victims;
     victims << victim;
     return askForUseSlashTo(slasher, victims, prompt);
@@ -3392,6 +3392,17 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         else
             doNotify(player, S_COMMAND_GET_CARD, arg);
     }    
+    return true;
+}
+
+bool Room::broadcastSkillInvoke(const QString &skill_name, const QString &category)
+{
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_SKILL_INVOKED;
+    args[1] = toJsonString(skill_name);
+    args[2] = toJsonString(category);
+    args[3] = -1;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
     return true;
 }
 
