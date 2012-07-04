@@ -479,12 +479,13 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
     }else{
+        QList<ServerPlayer *> players = targets;
         if(room->getMode() == "06_3v3"){
            if(inherits("AOE") || inherits("GlobalEffect"))
-               room->reverseFor3v3(this, source, targets);
+               room->reverseFor3v3(this, source, players);
         }
 
-        foreach(ServerPlayer *target, targets){
+        foreach(ServerPlayer *target, players){
             CardEffectStruct effect;
             effect.card = this;
             effect.from = source;
@@ -495,10 +496,15 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         }
     }
     if(willThrow() && isVirtualCard()){
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable || this->inherits("DummyCard"))
+        if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable){
+            CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+            if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
             room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        }
+        else{
+              CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
+              room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        }
     }
     room->removeTag("Huoshou");
 }
