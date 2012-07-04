@@ -307,8 +307,8 @@ public:
         events << CardGot << CardGotDone << Damaged;
     }
 
-	virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-		if (player == NULL) return false;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if (player == NULL) return false;
 
         if(event == CardGot){
             CardMoveStar move = data.value<CardMoveStar>();
@@ -336,15 +336,18 @@ public:
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
-            if(source && source != player && room->askForSkillInvoke(player,objectName(),data)){
-                room->playSkillEffect(objectName(), qrand() % 2 + 3);
+            if(source && source != player){
                 int x = damage.damage, i;
                 for(i=0; i<x; i++){
-                    const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
-                    if(card){
-                        player->obtainCard(card);
-                    }else{
-                        room->loseHp(source);
+                    if (room->askForSkillInvoke(player,objectName(),data)){
+                        room->playSkillEffect(objectName(), qrand() % 2 + 3);
+					//fix this!
+                        const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
+                        if(card){
+                            player->obtainCard(card);
+                        }else{
+                            room->loseHp(source);
+                        }
                     }
                 }
             }
@@ -374,39 +377,31 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     QString choice;
     bool can_use = false;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
-        if (effect.to->inMyAttackRange(p))
+        if (effect.to->canSlash(p)){
             can_use = true;
+            break;
+        }
     }
+    ServerPlayer *victim = NULL;
     if (can_use){
-        choice = room->askForChoice(effect.to, "xuanhuo", "slash+give");
-    }
-    else
-        choice = "give";
-
-    if(choice == "slash"){
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *victim, room->getOtherPlayers(effect.to)){
             if(effect.to->canSlash(victim))
                 targets << victim;
         }
-        ServerPlayer *victim = room->askForPlayerChosen(effect.from, targets, "xuanhuo");
+        victim = room->askForPlayerChosen(effect.from, targets, "xuanhuo");
+
         QString prompt = QString("xuanhuo-slash:%1:%2")
                 .arg(effect.from->objectName()).arg(victim->objectName());
-        const Card *slash = room->askForCard(effect.to, "slash", prompt, CardUsed);
-        if(slash){
-            CardUseStruct use;
-            use.card = slash;
-            use.from = effect.to;
-            use.to << victim;
-            room->useCard(use);
-        }
-        else{
+        if (!room->askForUseSlashTo(effect.to, victim, prompt)){
             int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             DummyCard *dummy = new DummyCard;
             dummy->addSubcard(first_id);
-            effect.to->addToPile("#xuanhuo", dummy, true);
-            int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-            dummy->addSubcard(second_id);
+            effect.to->addToPile("#xuanhuo", dummy, false);
+            if (!effect.to->isNude()){
+                int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
+                dummy->addSubcard(second_id);
+            }
             room->moveCardTo(dummy, effect.from, Player::Hand, false);
             delete dummy;
         }
@@ -415,9 +410,11 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
         DummyCard *dummy = new DummyCard;
         dummy->addSubcard(first_id);
-        effect.to->addToPile("#xuanhuo", dummy, true);
-        int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-        dummy->addSubcard(second_id);
+        effect.to->addToPile("#xuanhuo", dummy, false);
+        if (!effect.to->isNude()){
+            int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
+            dummy->addSubcard(second_id);
+        }
         room->moveCardTo(dummy, effect.from, Player::Hand, false);
         delete dummy;
     }
@@ -772,8 +769,10 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
     QString choice;
     bool can_use = false;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
-        if (effect.to->inMyAttackRange(p))
+        if (effect.to->canSlash(p)){
             can_use = true;
+            break;
+        }
     }
     if (can_use){
         choice = room->askForChoice(effect.to, "mingce", "use+draw");

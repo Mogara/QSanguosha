@@ -25,7 +25,7 @@ public:
                         }
                     }
                 }
-                if(target){
+                if(target && player->askForSkillInvoke(objectName())){
                     int card_id = room->askForCardChosen(player, target, "h", objectName());
         			room->obtainCard(player, card_id, false);
                     if(card->inherits("Jink"))
