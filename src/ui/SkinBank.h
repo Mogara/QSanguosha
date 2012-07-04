@@ -316,7 +316,6 @@ public:
     static const char* S_SKIN_KEY_HAND_CARD_NUMBER_BLACK;
     static const char* S_SKIN_KEY_HAND_CARD_NUMBER_RED;
     static const char* S_SKIN_KEY_HAND_CARD_FRAME;
-    static const char* S_SKIN_KEY_HAND_CARD_AVATAR;
     static const char* S_SKIN_KEY_PLAYER_GENERAL_ICON;
     static const char* S_SKIN_KEY_MAGATAMAS_BG;
     static const char* S_SKIN_KEY_MAGATAMAS;

@@ -31,7 +31,7 @@ void PixmapAnimation::setPath(const QString &path)
     do{
         frames << G_ROOM_SKIN.getPixmapFromFileName(pic_path);
         pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
-    }while(G_ROOM_SKIN.getPixmapFromFileName(pic_path).size().height() > 1);
+    } while(QFile::exists(pic_path));
 }
 
 void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)

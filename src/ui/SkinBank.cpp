@@ -46,13 +46,12 @@ const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_BACK = "handCardBack";
 const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT = "handCardSuit-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_JUDGE_CARD_ICON = "judgeCardIcon-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_FRAME = "handCardFrame-%1";
-const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_AVATAR = "handCardAvatar-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO = "handCardMainPhoto-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_NUMBER_BLACK = "handCardNumber-black-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_HAND_CARD_NUMBER_RED = "handCardNumber-red-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT = "playerAudioEffect-%1-%2";
 const char* QSanRoomSkin::S_SKIN_KEY_SYSTEM_AUDIO_EFFECT = "systemAudioEffect-%1";
-const char* QSanRoomSkin::S_SKIN_KEY_PLAYER_GENERAL_ICON = "playerGeneralIcon-%1-%2";
+const char* QSanRoomSkin::S_SKIN_KEY_PLAYER_GENERAL_ICON = "playerGeneralIcon-%2-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG = "magatamasBg%1";
 const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
 const char* QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
@@ -277,7 +276,7 @@ QString QSanRoomSkin::getCardMainPixmapPath(const QString &cardName) const
 
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
 {
-    return getPixmapFromFileName(getCardMainPixmapPath(cardName));
+    return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, cardName);
 }
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const{
@@ -302,13 +301,13 @@ QString QSanRoomSkin::getGeneralPixmapPath(const QString &generalName, GeneralIc
         return getCardMainPixmapPath(generalName);
     else
     {
-        QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(generalName).arg(size);
+        QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(generalName);
         if (isImageKeyDefined(key))
             return toQString(_m_imageConfig[key.toAscii().constData()]);
         else
         {
             QByteArray arr = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
-                             .arg(S_SKIN_KEY_DEFAULT).arg(size).toAscii();
+                             .arg(size).arg(S_SKIN_KEY_DEFAULT).toAscii();
             const char* ckey = arr.constData();
             QString fileName = toQString(_m_imageConfig[ckey]).arg(generalName);
             return fileName;
@@ -317,7 +316,19 @@ QString QSanRoomSkin::getGeneralPixmapPath(const QString &generalName, GeneralIc
 }
 
 QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size) const{
-    return getPixmapFromFileName(getGeneralPixmapPath(generalName, size));
+    if (size == S_GENERAL_ICON_SIZE_CARD)
+        return getCardMainPixmapPath(generalName);
+    else
+    {
+        QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(generalName);
+        if (isImageKeyDefined(key))
+            return getPixmap(key);
+        else
+        {
+            key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size);
+            return getPixmap(key, generalName);
+        }
+    }
 }
 
 QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index) const{
