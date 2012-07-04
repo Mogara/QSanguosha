@@ -180,7 +180,7 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *diaochan = card_use.from;
 
     LogMessage log;
-    log.from = player;
+    log.from = diaochan;
     log.to << card_use.to[1];
     log.type = "#UseCard";
     log.card_str = toString();

@@ -3277,7 +3277,7 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion ,bool perm
     PixmapAnimation * pma = PixmapAnimation::GetPixmapAnimation(dashboard, emotion);
     if(pma)
     {
-        pma->moveBy(0,- dashboard->boundingRect().height()/2);
+        pma->moveBy(0,- dashboard->boundingRect().height() / 1.5);
         pma->setZValue(8.0);
     }
 }

@@ -407,7 +407,7 @@ public:
 
         CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
-            room->setEmotion(player,"weapon/axe");
+            room->setEmotion(effect.to, "weapon/axe");
 
             QList<int> card_ids = card->getSubcards();
             foreach(int card_id, card_ids){

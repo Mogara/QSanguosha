@@ -4,6 +4,9 @@
 #include <QPainter>
 #include <QPixmapCache>
 #include <QDir>
+#include <QTimer>
+
+const int PixmapAnimation::S_DEFAULT_INTERVAL = 50;
 
 PixmapAnimation::PixmapAnimation(QGraphicsScene *scene) :
     QGraphicsItem(0,scene)
@@ -65,38 +68,55 @@ void PixmapAnimation::stop()
     killTimer(_m_timerId);
 }
 
+void PixmapAnimation::preStart(){
+    this->show();
+    this->startTimer(S_DEFAULT_INTERVAL);
+}
+
 PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, const QString &emotion)
 {
     PixmapAnimation *pma = new PixmapAnimation();
     pma->setPath(QString("image/system/emotion/%1/").arg(emotion));
     if(pma->valid())
     {
-        if (emotion == "slash_red" ||
-            emotion == "slash_black" ||
-            emotion == "thunder_slash" ||
-            emotion == "peach" ||
-            emotion == "analeptic")
+        if(emotion == "no-success")
         {
             pma->moveBy(pma->boundingRect().width()*0.15,
                         pma->boundingRect().height()*0.15);
             pma->setScale(0.7);
         }
-        else if(emotion == "no-success")
+
+        else if(emotion.contains("double_sword"))
         {
-            pma->moveBy(pma->boundingRect().width()*0.15,
-                        pma->boundingRect().height()*0.15);
-            pma->setScale(0.7);
+            pma->moveBy(13, -85);
+            pma->setScale(1.3);
+        }
+
+        else if(emotion.contains("fan") || emotion.contains("guding_blade"))
+        {
+            pma->moveBy(-30, -80);
+            pma->setScale(1.3);
+        }
+
+        else if(emotion.contains("/spear"))
+        {
+            pma->moveBy(-90, -80);
+            pma->setScale(1.3);
         }
 
         pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width())/2,
-                (parent->boundingRect().height() - pma->boundingRect().height())/2);
+                    (parent->boundingRect().height() - pma->boundingRect().height())/2);
 
-        {
-            if (emotion == "fire_slash") pma->moveBy(40,0);
-        }
         pma->setParentItem(parent);
-        pma->startTimer(50);
-        connect(pma,SIGNAL(finished()),pma,SLOT(deleteLater()));
+        pma->setZValue(2.5);
+        if(emotion.contains("weapon")){
+            pma->hide();
+            QTimer::singleShot(1000, pma, SLOT(preStart()));
+        }
+        else
+            pma->startTimer(S_DEFAULT_INTERVAL);
+
+        connect(pma, SIGNAL(finished()), pma, SLOT(deleteLater()));
         return pma;
     }
     else
