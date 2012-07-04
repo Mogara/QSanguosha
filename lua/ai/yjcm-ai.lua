@@ -494,7 +494,7 @@ jinjiu_skill.getTurnUseCard=function(self)
 		local suit = anal_card:getSuitString()
 		local number = anal_card:getNumberString()
 		local card_id = anal_card:getEffectiveId()
-		local card_str = ("slash:jiejin[%s:%s]=%d"):format(suit, number, card_id)
+		local card_str = ("slash:jinjiu[%s:%s]=%d"):format(suit, number, card_id)
 		local slash = sgs.Card_Parse(card_str)
 
 		return slash
