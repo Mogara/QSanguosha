@@ -47,6 +47,8 @@ public:
             setSceneRect(room_scene->sceneRect());
             if (newSceneRect != room_scene->sceneRect())
                 fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
+            else
+                this->resetTransform();
             main_window->setBackgroundBrush(false);
             return;
         }
