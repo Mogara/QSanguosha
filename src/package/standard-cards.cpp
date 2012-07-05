@@ -64,7 +64,7 @@ void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets
 
     BasicCard::use(room, source, targets);
 
-    if(source->hasFlag("drank")){
+    if(this->hasFlag("drank")){
         LogMessage log;
         log.type = "#UnsetDrank";
         log.from = source;
@@ -128,7 +128,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
 
 
     if(Self->hasFlag("slashTargetFix") && targets.isEmpty())
-        return  to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, distance_limit, rangefix);
+        return  to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, false);
     return Self->canSlash(to_select, distance_limit, rangefix);
 }
 
@@ -300,20 +300,8 @@ public:
         if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
             return false;
 
-        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), QVariant(), CardUsed);
-        if(card){
-            // if player is drank, unset his flag
-            if(player->hasFlag("drank"))
-                room->setPlayerFlag(player, "-drank");
-
+        if(room->askForUseSlashTo(player, effect.to, "blade-slash:" + effect.to->objectName()))
             room->setEmotion(player,"weapon/blade");
-            CardUseStruct use;
-            use.card = card;
-            use.from = player;
-            use.to << effect.to;
-            room->useCard(use, false);
-
-        }
 
         return false;
     }
@@ -419,7 +407,7 @@ public:
 
         CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
-            room->setEmotion(player,"weapon/axe");
+            room->setEmotion(effect.to, "weapon/axe");
 
             QList<int> card_ids = card->getSubcards();
             foreach(int card_id, card_ids){

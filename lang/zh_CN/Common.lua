@@ -39,6 +39,7 @@ return {
 	["pindian"] = "拼点",
 	["change equip"] = "更换装备",
 	["turnover"] = "从牌堆顶翻开",
+	["show"] = "展示",
 	["online"] = "在线",
 	["offline"] = "离线",
 	["robot"] = "电脑",

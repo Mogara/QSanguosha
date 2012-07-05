@@ -63,6 +63,11 @@ QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
 QHash<QString, int*> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
+IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
+{
+    memset(this, 0, sizeof(*this));
+}
+
 bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
@@ -92,6 +97,7 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
         m_fontSize.setHeight(arg[1][1].asInt());
         m_spacing = arg[1][2].asInt();
     }
+    m_weight = arg[2].asInt();
     m_color = QColor(arg[3][0].asInt(), arg[3][1].asInt(), arg[3][2].asInt(), arg[3][3].asInt());
     return true;
 }
@@ -123,7 +129,7 @@ bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter* painter, QRect pos, Qt::Alignment align,
                                                        const QString &text) const
 {
-    if (pos.width() < 0 || pos.height() < 0) return;
+    if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) return;
     QSize actualSize = m_fontSize;
     if ((align & Qt::TextWrapAnywhere) && !m_vertical)
     {
@@ -133,7 +139,7 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter* painter, QRect 
     else
     {
         QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color,
-                                                    actualSize, m_spacing, pos,
+                                                    actualSize, m_spacing, m_weight, pos,
                                                     m_vertical ? Qt::Vertical : Qt::Horizontal, align);
     }
 }
@@ -153,6 +159,7 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem* item
 void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter* painter, QRect pos,
                                                        Qt::Alignment align, const QString &text) const
 {
+    if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) return;
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
     QPainter imagePainter(&image);
@@ -276,6 +283,7 @@ QString QSanRoomSkin::getCardMainPixmapPath(const QString &cardName) const
 
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
 {
+    if (cardName == "unknown") return getPixmap("handCardBack");
     return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, cardName);
 }
 

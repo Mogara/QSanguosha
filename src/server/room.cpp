@@ -4142,40 +4142,6 @@ void Room::sendLog(const LogMessage &log){
     broadcastInvoke("log", log.toString());
 }
 
-void Room::moveCardCopyForShow(int card_id, CardMoveReason reason, ServerPlayer *only_viewer, bool open){
-
-    if((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_MOVECOPY)
-        return;
-
-    int moveId = _m_lastMovementId++;
-    CardsMoveStruct cards_move;
-
-    cards_move.card_ids << card_id;
-    cards_move.to = NULL;
-    cards_move.to_place = Player::PlaceTable;
-    cards_move.open = open;
-    cards_move.reason = reason;
-    _fillMoveInfo(cards_move, 0);
-
-    Json::Value move_arg(Json::arrayValue);
-    move_arg[0] = moveId;
-    move_arg[1] = cards_move.toJsonValue();
-
-    if(only_viewer){
-        QList<ServerPlayer *>players;
-        players << only_viewer << (ServerPlayer*)cards_move.from ;
-        doBroadcastNotify(players, S_COMMAND_LOSE_CARD, move_arg);
-        moveId = --_m_lastMovementId;
-        move_arg[0] = moveId;
-        doBroadcastNotify(players, S_COMMAND_GET_CARD, move_arg);
-    }else{
-        doBroadcastNotify(S_COMMAND_LOSE_CARD, move_arg);
-        moveId = --_m_lastMovementId;
-        move_arg[0] = moveId;
-        doBroadcastNotify(S_COMMAND_GET_CARD, move_arg);
-    }
-}
-
 void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer){
     notifyMoveFocus(player);
     Json::Value show_arg(Json::arrayValue);
@@ -4183,15 +4149,15 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     show_arg[1] = card_id;
 
     if(only_viewer){
-        doNotify(only_viewer, S_COMMAND_SHOW_CARD, show_arg);
+        QList<ServerPlayer *>players;
+        players << only_viewer << player;
+        doBroadcastNotify(players, S_COMMAND_SHOW_CARD, show_arg);
     }
     else{
         if(card_id>0)
             setCardFlag(card_id, "visible");
         doBroadcastNotify(S_COMMAND_SHOW_CARD, show_arg);
     }
-    CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
-    moveCardCopyForShow(card_id, reason, only_viewer);
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){

@@ -83,9 +83,12 @@ void QSanSelectableItem::makeGray(){
 }
 
 void QSanSelectableItem::scaleSmoothly(qreal ratio){
-    _m_width *= ratio;
-    _m_height *= ratio;
-    _m_mainPixmap = _m_mainPixmap.scaled(_m_width, _m_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QTransform trans = transform();
+    trans.scale(ratio, ratio);
+    setTransform(trans);
+    // _m_width *= ratio;
+    // _m_height *= ratio;
+    // _m_mainPixmap = _m_mainPixmap.scaled(_m_width, _m_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 }
 
 void QSanSelectableItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

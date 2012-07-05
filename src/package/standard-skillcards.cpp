@@ -176,6 +176,25 @@ bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     return targets.length() == 2;
 }
 
+void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *diaochan = card_use.from;
+
+    LogMessage log;
+    log.from = diaochan;
+    log.to << card_use.to[1];
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+
+    thread->trigger(CardUsed, room, diaochan, data);
+
+    thread->trigger(CardFinished, room, diaochan, data);
+
+}
+
 void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->throwCard(this, source);
     room->broadcastSkillInvoke("lijian");
@@ -185,6 +204,7 @@ void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 
     Duel *duel = new Duel(Card::NoSuit, 0);
     duel->setCancelable(false);
+    duel->setSkillName("lijian");
 
     CardUseStruct use;
     use.from = from;

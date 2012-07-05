@@ -72,6 +72,7 @@ protected:
     QMutex m_animationMutex;
     double m_opacityAtHome;
     bool m_isSelected;
+    bool _m_isUnknownGeneral;
     static const int _S_CLICK_JITTER_TOLERANCE;
     static const int _S_MOVE_JITTER_TOLERANCE;
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);

@@ -78,6 +78,7 @@ void QSanUiUtils::makeGray(QPixmap &pixmap)
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_BITMAP_H
+#include FT_OUTLINE_H
 
 static FT_Library  _ftlib;
 static bool _ftLibInitialized = false;
@@ -152,7 +153,7 @@ static QMutex _paintTextMutex;
 
 bool QSanUiUtils::QSanFreeTypeFont::paintQString(
     QPainter* painter, QString text, int* font, QColor color,
-    QSize& fontSize, int spacing, QRect boundingBox,
+    QSize& fontSize, int spacing, int weight, QRect boundingBox,
     Qt::Orientation orient, Qt::Alignment align)
 {
     if (!_ftLibInitialized || font == NULL || painter == NULL)
@@ -160,6 +161,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
 
     QVector<uint> charcodes = text.toUcs4();
     int len = charcodes.size();
+    int pixelsAdded = (weight >> 6) * 2;
     int xstep, ystep;
     Qt::Alignment hAlign = align & Qt::AlignHorizontal_Mask;
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
@@ -198,9 +200,10 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
         }
     }
     if (fontSize.width() <= 0 || fontSize.height() <= 0) return false;
-    int rows = boundingBox.height();
-    int cols = boundingBox.width();
-    int imageSize = boundingBox.width() * boundingBox.height();
+    // we allocate larger area than necessary in case we need bold font
+    int rows = boundingBox.height() + pixelsAdded + 3;
+    int cols = boundingBox.width() + pixelsAdded + 3;
+    int imageSize = rows * cols;
     int imageBytes = imageSize * 4;
     uchar* newImage = new uchar[imageBytes];
 
@@ -234,9 +237,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
         FT_Vector  delta;
        
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcodes[i]);
-        error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER); 
+        error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT | FT_LOAD_NO_BITMAP); 
         if (error) continue;
-
         
         if (useKerning && previous && glyph_index)
         {
@@ -245,8 +247,24 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
             currentX += delta.x >> 6;
         }
         previous = glyph_index;
+        
+        
+        FT_Bitmap bitmap;
+        if (weight == 0) {
+            FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER); 
+            // FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+        } else {
+            FT_Outline_Embolden(&slot->outline, weight);
+            FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+        }
 
-        FT_Bitmap bitmap = slot->bitmap;
+        bitmap = slot->bitmap;
+        Q_ASSERT(bitmap.pitch == bitmap.width ||
+            bitmap.pitch == (bitmap.width - 1) / 8 + 1);
+        bool mono = true;
+        if (bitmap.pitch == bitmap.width) 
+            mono = false;
+        
         int fontRows = bitmap.rows;
         int fontCols = bitmap.width;
         int rowStep = bitmap.pitch;
@@ -258,13 +276,9 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
             currentX = (fontSize.width() - bitmap.width) / 2;
         }
 
-        Q_ASSERT(bitmap.pitch == bitmap.width ||
-                 bitmap.pitch == (bitmap.width - 1) / 8 + 1);
-        bool mono = true;
-        if (bitmap.pitch == bitmap.width) 
-            mono = false;
         // now paint the bitmap to the new region;
-        Q_ASSERT(currentX >= 0 && currentY >= 0);
+        if (currentX < 0) currentX = 0;
+        if (currentY < 0) currentY = 0;
         for (int y = 0; y < fontRows; y++)
         {
             if (currentY + y >= rows)
@@ -307,6 +321,10 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
         else
             currentX += xstep;
         currentY = currentY - tmpYOffset + ystep;
+        /*if (!mono && !(weight == 0))
+        {
+            FT_Bitmap_Done(_ftlib, &bitmap);
+        }*/
     }
 #undef _NEW_PIXEL
 #undef _FONT_PIXEL

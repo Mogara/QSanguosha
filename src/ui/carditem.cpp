@@ -21,6 +21,7 @@ void CardItem::_initialize()
     // _m_footnoteItem = new QGraphicsPixmapItem(this);
     _m_showFootnote = true;
     m_isSelected = false;
+    _m_isUnknownGeneral = false;
     auto_back = true;
     frozen = false;
     resetTransform();
@@ -81,8 +82,10 @@ void CardItem::changeGeneral(const QString &general_name){
     setObjectName(general_name);
     const General *general = Sanguosha->getGeneral(general_name);
     if(general){
+        _m_isUnknownGeneral = false;
         setToolTip(general->getSkillDescription());
     }else{
+        _m_isUnknownGeneral = true;
         setToolTip(QString());
     }
 }
@@ -297,7 +300,10 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         painter->setOpacity(0.7 * opacity());
     }
 
-    painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getCardMainPixmap(objectName()));
+    if (!_m_isUnknownGeneral)
+        painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getCardMainPixmap(objectName()));
+    else
+        painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getPixmap("generalCardBack"));
     if (m_card) {
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(m_card->getSuit()));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(m_card->getNumber(), m_card->isBlack()));

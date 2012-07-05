@@ -147,7 +147,7 @@ public:
             damage.to->isKongcheng() && !damage.chain && !damage.transfer)
         {
             Room *room = damage.to->getRoom();
-            room->setEmotion(player,"weapon/guding_blade");
+            room->setEmotion(damage.to, "weapon/guding_blade");
 
             LogMessage log;
             log.type = "#GudingBladeEffect";
