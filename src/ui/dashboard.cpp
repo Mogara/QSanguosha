@@ -454,6 +454,19 @@ void Dashboard::skillButtonDeactivated(){
     }
 }
 
+void Dashboard::selectAll(){
+    if(view_as_skill){
+        unselectAll();
+
+        foreach(CardItem *card_item, m_handCards){
+            selectCard(card_item, true);
+            pendings << card_item;
+        }
+        updatePending();
+    }
+    adjustCards(true);
+}
+
 QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
     QPushButton *button = createButton(name);
     addWidget(button, x, from_left);

@@ -14,6 +14,7 @@
 #include "pixmapanimation.h"
 #include "audio.h"
 #include "SkinBank.h"
+#include "wind.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -1737,12 +1738,6 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     if(btn == NULL)
         return;
 
-    QDialog *dialog = skill->getDialog();
-    if(dialog){
-        dialog->setParent(main_window, Qt::Dialog);
-        connect(btn, SIGNAL(skill_activated()), dialog, SLOT(popup()));
-        connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));        
-    }
     if (btn->getViewAsSkill() != NULL)
     {
         connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(skillButtonActivated()));
@@ -1750,7 +1745,15 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
         connect(btn, SIGNAL(skill_deactivated()), dashboard, SLOT(skillButtonDeactivated()));
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
     }
-
+    
+    QDialog *dialog = skill->getDialog();
+    if(dialog){
+        dialog->setParent(main_window, Qt::Dialog);
+        connect(btn, SIGNAL(skill_activated()), dialog, SLOT(popup()));
+        connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));
+        if(dialog->objectName() == "qice")
+            connect(dialog, SIGNAL(onButtonClick()), dashboard, SLOT(selectAll()));
+    }
     m_skillButtons.append(btn);
 }
 
