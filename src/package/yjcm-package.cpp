@@ -588,15 +588,14 @@ public:
         }else if(event == CardLostDone){
             if(lingtong->tag.value("InvokeXuanfeng", false).toBool()){
                 lingtong->tag.remove("InvokeXuanfeng");
-                bool can_invoke = false;
                 QList<ServerPlayer *> other_players = room->getOtherPlayers(lingtong);
-                foreach(ServerPlayer *player, other_players){
-                    if(!player->isNude()){
-                        can_invoke = true;
-                        break;
-                    }
+                foreach(ServerPlayer *p, other_players){
+                    if(p->hasFlag("changinge") && p->isKongcheng())
+                        other_players.removeOne(p);
+                    else if(p->isNude())
+                        other_players.removeOne(p);
                 }
-                if(can_invoke){
+                if(!other_players.empty()){
                     QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
                     if(choice == "throw"){
                         room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
