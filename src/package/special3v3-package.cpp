@@ -198,34 +198,33 @@ public:
 class Mingzhe: public TriggerSkill{
 public:
     Mingzhe():TriggerSkill("mingzhe"){
-        events << CardUsed << CardResponsed << CardLostOnePiece;
+        events << CardsMoveOneTime;
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* , ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
-        const Card *card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }
-        else if(event == CardResponsed){
-            card = data.value<CardStar>();
-        }
-        else{
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place == Player::PlaceDelayedTrick || move->from_place == Player::PlaceSpecial)
-                return false;
-            if((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_DISCARD)
-                return false;
-            card = Sanguosha->getCard(move->card_id);
-        }
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if(move->from != player)
+            return false;
 
-        if(card->isRed() && player->askForSkillInvoke(objectName(), data))
-            player->drawCards(1);
+        CardMoveReason reason = move->reason;
 
+        if((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+                || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
+                || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE){
+            const Card *card;
+            int n = 0;
+            foreach(int card_id, move->card_ids){
+                card = Sanguosha->getCard(card_id);
+                if(card->isRed())
+                    n++;
+            }
+            if(n > 0 && player->askForSkillInvoke(objectName(), data))
+                player->drawCards(n);
+        }
         return false;
     }
 };

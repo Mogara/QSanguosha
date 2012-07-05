@@ -325,7 +325,7 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardLostOneTime << FinishJudge;
+        events << CardsMoveOneTime << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -333,12 +333,12 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if (player == NULL) return false;
-        if(event == CardLostOneTime){
+        if(event == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if((move->from_places.contains(Player::PlaceHand) || move->from_places.contains(Player::PlaceEquip)) &&
-                player->getRoom()->getCurrent() != player
-                && player->askForSkillInvoke("tuntian", data)){                
+            if(move->from == player &&
+                    (move->from_places.contains(Player::PlaceHand)
+                     || move->from_places.contains(Player::PlaceEquip))
+                    && player->askForSkillInvoke("tuntian", data)){
                 room->broadcastSkillInvoke("tuntian");
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(heart):(.*)");
@@ -771,7 +771,7 @@ public:
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
-        events << CardLostOneTime;
+        events << CardsMoveOneTime;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -781,15 +781,17 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *erzhang = room->findPlayerBySkillName(objectName());
         ServerPlayer *current = room->getCurrent();
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
 
+        if(player != move->from)
+            return false;
         if(erzhang == NULL)
             return false;
         if(erzhang == current)
             return false;
         if(current->getPhase() == Player::Discard){
             QVariantList guzheng = erzhang->tag["Guzheng"].toList();
-            
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+
             foreach (int card_id, move->card_ids)
                 guzheng << card_id;
 
@@ -852,7 +854,7 @@ public:
             move.to_place = Player::PlaceHand;
             QList<CardsMoveStruct> moves;
             moves.append(move);
-            room->moveCards(moves, true, true);
+            room->moveCardsAtomic(moves, true);
         }
 
         return false;

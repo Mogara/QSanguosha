@@ -867,7 +867,7 @@ BasaraMode::BasaraMode(QObject *parent)
 {
     setObjectName("basara_mode");
 
-    events << CardLostOnePiece << DamageInflicted;
+    events << CardsMoveOneTime << DamageInflicted;
 
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";

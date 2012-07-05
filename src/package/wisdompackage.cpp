@@ -189,16 +189,15 @@ public:
 class Beifa: public TriggerSkill{
 public:
     Beifa():TriggerSkill("beifa"){
-        events << CardLostOnePiece;
+        events << CardsMoveOneTime;
         frequency = Compulsory;
     }
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
         if(jiangwei->isKongcheng()){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place != Player::PlaceHand)
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from != jiangwei && move->from_places.contains(Player::PlaceHand))
                 return false;
 
-            Room *room = jiangwei->getRoom();
             QList<ServerPlayer *> players;
             foreach(ServerPlayer *player, room->getOtherPlayers(jiangwei)){
                 if(player->hasSkill("kongcheng") && player->isKongcheng())
@@ -455,7 +454,7 @@ public:
 class Longluo: public TriggerSkill{
 public:
     Longluo():TriggerSkill("longluo"){
-        events << CardLostOnePiece << PhaseChange;
+        events << CardsMoveOneTime << PhaseChange;
         frequency = Frequent;
     }
 
@@ -473,9 +472,9 @@ public:
             }
             return false;
         }
-        if(player->getPhase() == Player::Discard){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->to_place == Player::DiscardPile){
+        else if(player->getPhase() == Player::Discard){
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from ==player && move->to_place == Player::DiscardPile){
                 player->addMark("longluo");
             }
         }

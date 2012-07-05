@@ -265,7 +265,7 @@ public:
 class Manjuan: public TriggerSkill{
 public:
     Manjuan(): TriggerSkill("manjuan"){
-        events << CardGotOnePiece << CardDrawing;
+        events << CardsMoveOneTime << CardDrawing;
         frequency = Frequent;
     }
 
@@ -300,14 +300,14 @@ public:
 
         int card_id = -1;
         CardMoveReason reason(CardMoveReason::S_REASON_PUT, sp_pangtong->objectName(), "manjuan", QString());
-        if(event == CardGotOnePiece){
-            CardMoveStar move = data.value<CardMoveStar>();
-            card_id = move->card_id;
-            if(move->to_place == Player::PlaceHand){
+        if(event == CardsMoveOneTime){
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->to != sp_pangtong || move->to_place != Player::PlaceHand)
+                return false;
+            foreach(int card_id, move->card_ids){
                 const Card* card = Sanguosha->getCard(card_id);
                 room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
-            }else
-                return false;
+            }
         }
         else if(event == CardDrawing){
             if(room->getTag("FirstRound").toBool())
@@ -324,10 +324,10 @@ public:
         room->sendLog(log);
 
         if(sp_pangtong->getPhase() == Player::NotActive || !sp_pangtong->askForSkillInvoke(objectName(), data))
-            return event == CardGotOnePiece ? false : true;
+            return event == CardsMoveOneTime ? false : true;
 
         doManjuan(sp_pangtong, card_id);
-        return event == CardGotOnePiece ? false : true;
+        return event == CardsMoveOneTime ? false : true;
     }
 };
 
@@ -373,7 +373,7 @@ public:
             room->setPlayerCardLock(player, ".");
             CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", "");
             CardsMoveStruct move(zuixiang, player, Player::PlaceHand, reason);
-            room->moveCards(move, true);
+            room->moveCardsAtomic(move, true);
         }
     }
 
@@ -651,18 +651,19 @@ public:
 class Mouduan: public TriggerSkill{
 public:
     Mouduan():TriggerSkill("mouduan"){
-        events << TurnStart << CardLostOneTime;
+        events << TurnStart << CardsMoveOneTime;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *lvmeng = room->findPlayerBySkillName(objectName());
 
-        if(event == CardLostOneTime){
-            if((player->getMark("@wu") > 0) && player->getHandcardNum() <= 2){
+        if(event == CardsMoveOneTime){
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from == player && (player->getMark("@wu") > 0) && player->getHandcardNum() <= 2){
                 player->loseMark("@wu");
                 player->gainMark("@wen");
                 room->detachSkillFromPlayer(player, "jiang");

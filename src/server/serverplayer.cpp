@@ -338,6 +338,7 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             removeEquip(equip);
 
+            equip->onUninstall(this);
             LogMessage log;
             log.type = "$Uninstall";
             log.card_str = card->toString();
@@ -378,6 +379,7 @@ void ServerPlayer::addCard(const Card *card, Place place){
     case PlaceEquip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             setEquip(equip);
+            equip->onInstall(this);
             break;
         }
 
@@ -875,7 +877,7 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     move.card_ids = card_ids;
     move.to = this;
     move.to_place = Player::PlaceSpecial;
-    room->moveCards(move, open, false);
+    room->moveCardsAtomic(move, open);
 }
 
 void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){

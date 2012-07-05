@@ -332,7 +332,7 @@ public:
 class Qinyin: public TriggerSkill{
 public:
     Qinyin():TriggerSkill("qinyin"){
-        events << CardLostOnePiece << PhaseChange;
+        events << CardsMoveOneTime << PhaseChange;
         default_choice = "down";
     }
 
@@ -364,13 +364,15 @@ public:
         if(shenzhouyu->getPhase() != Player::Discard)
             return false;
 
-        if(event == CardLostOnePiece){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->to_place == Player::DiscardPile){
-                shenzhouyu->addMark("qinyin");
-                if(shenzhouyu->getMark("qinyin") == 2){
-                    if(shenzhouyu->askForSkillInvoke(objectName()))
+        if(event == CardsMoveOneTime){
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from == shenzhouyu && move->to_place == Player::DiscardPile){
+                shenzhouyu->setMark("qinyin", move->card_ids.size());
+                if(!shenzhouyu->hasFlag("qinyin_used") && shenzhouyu->getMark("qinyin") >= 2){
+                    if(shenzhouyu->askForSkillInvoke(objectName())){
+                        room->setPlayerFlag(shenzhouyu, "qinyin_used");
                         perform(shenzhouyu);
+                    }
                 }
             }
         }else if(event == PhaseChange){

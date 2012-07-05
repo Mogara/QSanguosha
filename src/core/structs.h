@@ -126,10 +126,7 @@ public:
     static const int S_REASON_THROW = 0x23;             /*  gamerule(dying or punish)
                                                             as the cost of some skills   */
     static const int S_REASON_CHANGE_EQUIP = 0x33;      //  replace existed equip
-    static const int S_REASON_JUDGEDONE = 0x43;         //  judge card move into discardpile
-    static const int S_REASON_DISMANTLE = 0x53;         //  one throw card of another
-    static const int S_REASON_NATURAL_ENTER = 0x63;     //  a card with no-owner move into discardpile
-    static const int S_REASON_REMOVE_FROM_PILE = 0x73;  //  cards moved out of game go back into discardpile
+    static const int S_REASON_DISMANTLE = 0x43;         //  one throw card of another
 
     //subcategory of gotcard
     static const int S_REASON_GIVE = 0x17;              // from one hand to another hand
@@ -148,6 +145,11 @@ public:
     static const int S_REASON_SWAP = 0x19;              // exchange card for two players
     static const int S_REASON_OVERRIDE = 0x29;          // exchange cards from cards in game
     static const int S_REASON_EXCHANGE_FROM_PILE = 0x39;// exchange cards from cards moved out of game (for qixing only)
+
+    //subcategory of put
+    static const int S_REASON_NATURAL_ENTER = 0x1A;     //  a card with no-owner move into discardpile
+    static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
+    static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
 
 
     static const int S_MASK_BASIC_REASON = 0x0F;
@@ -353,10 +355,7 @@ enum TriggerEvent{
     CardAsked,
     CardResponsed,
     CardDiscarded,
-    CardLostOnePiece,
-    CardLostOneTime,
-    CardGotOnePiece,
-    CardGotOneTime,
+    CardsMoveOneTime,
     CardDrawing,
     CardDrawnDone,
 

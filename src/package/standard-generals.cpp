@@ -709,14 +709,14 @@ public:
     KongchengEffect():TriggerSkill("#kongcheng-effect"){
         frequency = Compulsory;
 
-        events << CardLostOneTime;
+        events << CardsMoveOneTime;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->isKongcheng()){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from_places.contains(Player::PlaceHand))
-                player->getRoom()->broadcastSkillInvoke("kongcheng");
+            if(move->from == player && move->from_places.contains(Player::PlaceHand))
+                room->broadcastSkillInvoke("kongcheng");
         }
 
         return false;
@@ -896,15 +896,14 @@ public:
 class Lianying: public TriggerSkill{
 public:
     Lianying():TriggerSkill("lianying"){
-        events << CardLostOneTime;
+        events << CardsMoveOneTime;
 
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *luxun, QVariant &data) const{
-        if (luxun == NULL) return false;
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(luxun->isKongcheng() && move->from_places.contains(Player::PlaceHand)){
+        if(move->from == luxun && move->from_places.contains(Player::PlaceHand) && luxun->isKongcheng()){
             if(room->askForSkillInvoke(luxun, objectName(), data)){
                 room->broadcastSkillInvoke(objectName());
                 luxun->drawCards(1);
@@ -1067,18 +1066,22 @@ public:
 class Xiaoji: public TriggerSkill{
 public:
     Xiaoji():TriggerSkill("xiaoji"){
-        events << CardLostOnePiece;
+        events << CardsMoveOneTime;
 
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *sunshangxiang, QVariant &data) const{
-        if (sunshangxiang == NULL) return false;
-        CardMoveStar move = data.value<CardMoveStar>();
-        if(move->from_place == Player::PlaceEquip){            
-            if(room->askForSkillInvoke(sunshangxiang, objectName())){
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if(move->from == sunshangxiang && move->from_places.contains(Player::PlaceEquip)){
+            int n = 0;
+            for(int i = 0; i < move->card_ids.size(); i++)
+                if(move->from_places[i] == Player::PlaceEquip)
+                    n ++;
+
+            if(n > 0 && room->askForSkillInvoke(sunshangxiang, objectName())){
                 room->broadcastSkillInvoke(objectName());
-                sunshangxiang->drawCards(2);
+                sunshangxiang->drawCards(n * 2);
             }
         }
 
@@ -1422,11 +1425,14 @@ public:
 class Longnu: public TriggerSkill{
 public:
     Longnu():TriggerSkill("longnu"){
-        events << CardLostOneTime << PhaseChange;
+        events << CardsMoveOneTime << PhaseChange;
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *sp_shenzhaoyun, QVariant &data) const{
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if(move->from != sp_shenzhaoyun)
+            return false;
         if(sp_shenzhaoyun->getPhase() == Player::Start)
             sp_shenzhaoyun->skip(Player::Draw);
         if(sp_shenzhaoyun->getHandcardNum()<4 && sp_shenzhaoyun->getPhase() != Player::Discard && room->askForSkillInvoke(sp_shenzhaoyun,objectName()))
