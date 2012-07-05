@@ -261,8 +261,6 @@ public:
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
     QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
 
-    void moveCardCopyForShow(int card_id, CardMoveReason reason, ServerPlayer* only_viewer = NULL, bool open = true);
-
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
     Card::Suit askForSuit(ServerPlayer *player, const QString &reason);

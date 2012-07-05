@@ -25,9 +25,14 @@ public:
     static QPixmap GetFrameFromCache(const QString &filename);
     static int GetFrameCount(const QString &emotion);
 
+    static const int S_DEFAULT_INTERVAL;
+
 signals:
     void finished();
     void frame_loaded();
+
+public slots:
+    void preStart();
 
 private:
     int _m_timerId;
