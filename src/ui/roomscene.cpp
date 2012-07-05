@@ -3677,7 +3677,6 @@ void RoomScene::recoverGeneral(int index, const QString &name){
     foreach(CardItem *item, general_items){
         if(item->objectName() == obj_name){
             item->changeGeneral(name);
-            item->scaleSmoothly(0.4);
             break;
         }
     }

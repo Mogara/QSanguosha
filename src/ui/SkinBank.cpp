@@ -92,6 +92,7 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
         m_fontSize.setHeight(arg[1][1].asInt());
         m_spacing = arg[1][2].asInt();
     }
+    m_weight = arg[2].asInt();
     m_color = QColor(arg[3][0].asInt(), arg[3][1].asInt(), arg[3][2].asInt(), arg[3][3].asInt());
     return true;
 }
@@ -133,7 +134,7 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter* painter, QRect 
     else
     {
         QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color,
-                                                    actualSize, m_spacing, pos,
+                                                    actualSize, m_spacing, m_weight, pos,
                                                     m_vertical ? Qt::Vertical : Qt::Horizontal, align);
     }
 }
@@ -276,6 +277,7 @@ QString QSanRoomSkin::getCardMainPixmapPath(const QString &cardName) const
 
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
 {
+    if (cardName == "unknown") return getPixmap("handCardBack");
     return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, cardName);
 }
 

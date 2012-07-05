@@ -34,7 +34,7 @@ namespace QSanUiUtils
         // @return True if succeed. 
         bool paintQString(QPainter* painter, QString text,
                           int* font, QColor color,
-                          QSize& fontSize, int spacing, QRect boundingBox,
+                          QSize& fontSize, int spacing, int weight, QRect boundingBox,
                           Qt::Orientation orient, Qt::Alignment align);
         
         // Currently, we online support horizotal layout for multiline text

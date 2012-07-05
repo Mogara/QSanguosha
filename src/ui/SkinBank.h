@@ -35,6 +35,7 @@ public:
         int* m_fontFace;
         QSize m_fontSize;
         int m_spacing;
+        int m_weight;
         QColor m_color;
         bool m_vertical;
         bool tryParse(Json::Value arg);

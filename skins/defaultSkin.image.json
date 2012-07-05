@@ -72,6 +72,8 @@
 "playerReady": "image/system/ready.png",
 // card relevant
 "handCardBack": "image/system/card-back.png",
+"generalCardBack": "image/system/unknown.png",
+
 
 // animations
 "animations": [

@@ -9,7 +9,7 @@
     "cardNumberArea": [0, 2, 27, 28],
     "cardFootnoteArea": [0, 70, 93, 50],
     "cardAvatarArea": [44, 87, 42, 36],
-    "cardFootnoteFont": ["simsun", [12, 12, 3], 50, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
+    "cardFootnoteFont": ["simsun", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
     "chooseGeneralBoxSwitchIconSizeThreshold": 10,
     "chooseGeneralBoxSparseIconSize": [160, 232],
     "chooseGeneralBoxDenseIconSize": [94, 94],
@@ -59,15 +59,15 @@
     "mainFrameArea": [0, 0, 157, 181],
     "canvasArea": [0, 0, 157, 181],
     "handCardNumIconArea": [3, 94, 21, 22],
-    "handCardFont": ["arial", [12, 12, 3], 75, [255, 255, 255, 255]],	
+    "handCardFont": ["arial", [12, 12, 3], 0, [255, 255, 255, 255]],	
     "equipAreas": [[3, 122, 150, 13], [3, 136, 150, 13], [3, 150, 150, 13], [3, 164, 150, 13]],
     "equipImageArea": [1, 1, 11, 11], // need adjustment
     "equipTextArea": [35, -5, 85, 21], // need adjustment
     "equipSuitArea": [131, -2, 21, 17], // need adjustment
     "equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [120, 0, 14, 13], // need adjustment
-    "equipFont": ["simli", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["arial", [12, 12, 3], 80, [0, 0, 0, 255], 1, 0, [0, 0], [255, 255, 190, 255]], 
+    "equipFont": ["simli", [14, 14, 0], 0, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
+    "equipPointFont": ["arial", [12, 12, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [255, 255, 190, 255]], 
     "delayedTrickFirstRegion": [-10, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [130, 1],
@@ -77,12 +77,12 @@
     "avatarArea": [4, 27, 148, 89],
     "smallAvatarArea": [82, 36, 42, 36],
     "avatarNameArea": [1, 24, 40, 60],
-    "avatarNameFont": ["@simli", [18, 18, 0], 60, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-    "smallAvatarNameFont": ["@simli", [12, 12, 0], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
+    "avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "smallAvatarNameFont": ["@simli", [12, 12, 0], 0, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     "kingdomIconArea": [2, 0, 28, 28],
     "kingdomMaskArea": [-2, 15, 36, 98],
     "screenNameArea": [0, 12, 157, 13],
-    "screenNameFont": ["SimSun", 12, 50, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
+    "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
     "magatamaSize": [14, 17],
     "magatamasBgVisible": true,
@@ -91,7 +91,7 @@
     "phaseArea": [25, 176, 140, 12],	
     "onlineStatusArea": [122, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
-    "onlineStatusFont": ["simsun", 12, 50, [255, 255, 255, 255], 2, 20, [0, 0], [20, 20, 20, 128]],
+    "onlineStatusFont": ["simsun", 12, 0, [255, 255, 255, 255], 2, 20, [0, 0], [20, 20, 20, 128]],
     "skillNameArea": [-5, 38, 157, 50],
     "skillNameFont": ["simli", 30, 80, [255, 255, 255, 255], 2, 11, [0, 0], [102, 16, 120, 255]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [160, 10]],
@@ -125,7 +125,7 @@
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
     "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
-    "equipPointFont": ["arial", [14, 14, 3], 50, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
+    "equipPointFont": ["arial", [14, 14, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
     "delayedTrickFirstRegion": [3, 3, 28, 28],
     "delayedTrickStep": [28, 0],
     // the width of the region to disperse cards when the cards are to be moved to the special pile. 
@@ -155,7 +155,7 @@
     "kingdomIconArea": [2, 2, 28, 28],
     // "kingdomMaskArea": [10, 27, 23, 89],
     "screenNameArea": [0, 11, 157, 13],
-    "screenNameFont": ["simsun", 12, 50, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 155]],
+    "screenNameFont": ["simsun", 12, 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": false,
     "magatamaSize": [22, 26],
     "magatamasBgVisible": true,
@@ -184,9 +184,9 @@
 "height": 19,
 "width": [134, 67, 45], 
 "textArea": [[25, -2, 112, 20], [21, -2, 44, 20], [9, -2, 40, 20]],
-"textFont": [["simkai", [13, 13, 10], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
-             ["simkai", [13, 13, 5], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
-             ["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
+"textFont": [["simkai", [15, 15, 10], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
+             ["simkai", [15, 15, 5], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
+             ["simkai", [15, 15, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
 
 // The following settings override the text color defined above
 // xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
