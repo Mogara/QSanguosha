@@ -44,6 +44,7 @@
     "chatBoxHeightPercentage": 0.4,
     "infoPlaneWidthPercentage": 0.2,
     "photoRoomPadding": 10,
+    "photoDashboardPadding": 0,
     "photoHDistance": 32,
     "photoVDistance": 32,
     "discardPileMinWidth": 465,
@@ -182,9 +183,9 @@
 {
 "height": 19,
 "width": [134, 67, 45], 
-"textArea": [[20, -2, 112, 20], [21, -2, 44, 20], [9, -2, 40, 20]],
-"textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
-             ["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
+"textArea": [[25, -2, 112, 20], [21, -2, 44, 20], [9, -2, 40, 20]],
+"textFont": [["simkai", [13, 13, 10], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
+             ["simkai", [13, 13, 5], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
              ["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
 
 // The following settings override the text color defined above

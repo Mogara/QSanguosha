@@ -47,6 +47,8 @@ public:
             setSceneRect(room_scene->sceneRect());
             if (newSceneRect != room_scene->sceneRect())
                 fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
+            else
+                this->resetTransform();
             main_window->setBackgroundBrush(false);
             return;
         }
@@ -108,7 +110,7 @@ void MainWindow::restoreFromConfig(){
 
     QFont font;
     /* @todo: For now, we haven't find a very good solution.
-    According to Qt, everything is overrules by this setting...
+    According to Qt, everything is overruled by this setting...
     So just turn it off temporarily
     if(Config.AppFont != font)
         QApplication::setFont(Config.AppFont); */

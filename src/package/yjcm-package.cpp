@@ -303,26 +303,25 @@ public:
         if(event == CardGotOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->from != NULL && move->card_ids.size() >= 2
-                    && room->askForSkillInvoke(player,objectName(),data)){
-                room->drawCards((ServerPlayer*)move->from,1);
-                room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
+                && room->askForSkillInvoke(player,objectName(),data)){
+                    room->drawCards((ServerPlayer*)move->from,1);
+                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
             }
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
-            if(source && source != player){
-                int x = damage.damage, i;
-                for(i=0; i<x; i++){
-                    if (room->askForSkillInvoke(player,objectName(),data)){
-                        room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
-                        //fix this!
-                        const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
-                        if(card){
-                            room->showCard(source, card->getEffectiveId());
-                            player->obtainCard(card);
-                        }else{
-                            room->loseHp(source);
-                        }
+            if(!source || source == player) return false;
+            int x = damage.damage, i;
+            for(i = 0; i < x; i++) {
+                if (room->askForSkillInvoke(player,objectName(),data)){
+                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
+                    //fix this!
+                    const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
+                    if(card){
+                        room->showCard(source, card->getEffectiveId());
+                        player->obtainCard(card);
+                    }else{
+                        room->loseHp(source);
                     }
                 }
             }
@@ -600,9 +599,9 @@ public:
                 else
                     player->getRoom()->broadcastSkillInvoke(objectName(), 1);
                 damage.to->drawCards(x);
-            	damage.to->turnOver();
-        	}
-		}
+                damage.to->turnOver();
+            }
+        }
         return false;
     }
 };

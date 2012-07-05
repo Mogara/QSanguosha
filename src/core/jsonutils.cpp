@@ -63,6 +63,50 @@ Json::Value QSanProtocol::Utils:: toJsonArray(const QStringList& arg)
     return val;
 }
 
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, int& result)
+{
+    if (!arg.isInt()) return false;
+    result = arg.asInt();
+    return true;
+}
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, double& result)
+{
+    if (arg.isDouble()) result = arg.asDouble();
+    else if (arg.isInt()) result = arg.asInt();
+    else return false;
+    return true;
+}
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, bool& result)
+{
+    if (!arg.isBool()) return false;
+    result = arg.asBool();
+    return true;
+}
+
+bool QSanProtocol::Utils::tryParse(const Json::Value &arg, Qt::Alignment &align)
+{
+    if (!arg.isString()) return false;
+    QString alignStr = toQString(arg).toLower();
+    if (alignStr.contains("left")) align = Qt::AlignLeft;
+    else if (alignStr.contains("right")) align = Qt::AlignRight;
+    else if (alignStr.contains("center")) align = Qt::AlignHCenter;
+
+    if (alignStr.contains("top")) align |= Qt::AlignTop;
+    else if (alignStr.contains("bottom")) align |= Qt::AlignBottom;
+    else if (alignStr.contains("center")) align |= Qt::AlignVCenter;
+    
+    return true;
+}
+
+bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QString& result)
+{
+    if (!arg.isString()) return false;
+    result = toQString(arg);
+    return true;
+}
+
 bool QSanProtocol::Utils::tryParse(const Json::Value& arg, QStringList& result)
 {
     if (!arg.isArray()) return false;
