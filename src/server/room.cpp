@@ -3791,15 +3791,18 @@ void Room::sendLog(const LogMessage &log){
 
 void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer){
     notifyMoveFocus(player);
-    Json::Value show_str;
-    show_str[0] = toJsonString(player->objectName());
-    show_str[1] = card_id;
-    if(only_viewer)
-        doNotify(player, S_COMMAND_SHOW_CARD, show_str);
+    Json::Value show_arg(Json::arrayValue);
+    show_arg[0] = toJsonString(player->objectName());
+    show_arg[1] = card_id;
+
+    if(only_viewer){
+         doNotify(player, S_COMMAND_SHOW_CARD, show_arg);
+         doNotify(only_viewer, S_COMMAND_SHOW_CARD, show_arg);
+    }
     else{
         if(card_id>0)
             setCardFlag(card_id, "visible");
-        doBroadcastNotify(S_COMMAND_SHOW_CARD, show_str);
+        doBroadcastNotify(S_COMMAND_SHOW_CARD, show_arg);
     }
 }
 
