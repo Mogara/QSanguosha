@@ -93,6 +93,9 @@ private:
     QHash<QString, const Card *> map;
 
     QString object_name;
+
+signals:
+    void onButtonClick();
 };
 
 class WindPackage: public Package{

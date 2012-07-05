@@ -90,6 +90,7 @@ public slots:
     void reverseSelection();
     void skillButtonActivated();
     void skillButtonDeactivated();
+    void selectAll();
 
 protected:
     virtual void _adjustComponentZValues();
