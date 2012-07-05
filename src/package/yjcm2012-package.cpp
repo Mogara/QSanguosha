@@ -21,6 +21,7 @@ public:
 
 
         if(player->askForSkillInvoke(objectName(), data)){
+            room->playSkillEffect(objectName());
             int card_id = room->drawCard();
             room->getThread()->delay();
             room->throwCard(judge->card, judge->who);
