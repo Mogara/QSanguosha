@@ -503,7 +503,8 @@ XuanfengCard::XuanfengCard(){
 bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.length() >= 2)
         return false;
-
+    if(to_select->hasFlag("changinge") && to_select->getHandcardNum() == 0)
+        return false;
     if(to_select == Self)
         return false;
 
@@ -527,8 +528,14 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, const QList<ServerPla
     foreach(ServerPlayer* sp,map.keys()){
         while(map[sp] > 0){
             if(!sp->isNude()){
-                int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng");
-                room->throwCard(card_id, sp);
+                if(sp->hasFlag("changinge") && !sp->isKongcheng()){
+                    int card_id = room->askForCardChosen(lingtong, sp, "h", "xuanfeng");
+                    room->throwCard(card_id, sp);
+                }
+                else{
+                    int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng");
+                    room->throwCard(card_id, sp);
+                }
             }
             map[sp]--;
         }
@@ -892,7 +899,10 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
     foreach(const Card *equip, first->getEquips())
         equips1->addSubcard(equip->getId());
     foreach(const Card *equip, second->getEquips())
+
         equips2->addSubcard(equip->getId());
+    room->setPlayerFlag(first, "changinge");
+    room->setPlayerFlag(second, "changinge");
 
     if(!equips1->getSubcards().isEmpty())
         second->addToPile("#ganlu", equips1);
@@ -911,6 +921,9 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
             room->moveCardTo(equip, second, Player::Equip);
         }
     }
+
+    room->setPlayerFlag(first, "-changinge");
+    room->setPlayerFlag(second, "-changinge");
 }
 
 bool GanluCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{

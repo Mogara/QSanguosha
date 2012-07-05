@@ -562,6 +562,8 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
     DummyCard *card1 = a->wholeHandCards();
     DummyCard *card2 = b->wholeHandCards();
+    room->setPlayerFlag(a, "changingh");
+    room->setPlayerFlag(b, "changingh");
 
     if(card1)
         b->addToPile("#dimeng", card1, false);
@@ -579,7 +581,8 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
         room->moveCardTo(card2, a, Player::Hand, false);
         delete card2;
     }
-
+    room->setPlayerFlag(a, "-changingh");
+    room->setPlayerFlag(b, "-changingh");
     LogMessage log;
     log.type = "#Dimeng";
     log.from = a;
