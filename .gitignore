@@ -18,6 +18,14 @@ QSanguosha.pro.user*
 etc/customScenes/custom_scenario.txt
 *.dylib
 QSanguosha.exe
+lib/jsoncpp.lib
+lib/lua.lib
 tools/
 builds/vs2010/Win32/
+builds/vs2010/ipch/
+builds/vs2010/*.sdf
+builds/vs2010/*.suo
+builds/vs2010/*.user
+builds/vs2010/*.opensdf
+builds/vs2010/QSanguosha.suo
 Bin/

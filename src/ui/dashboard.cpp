@@ -479,6 +479,18 @@ void Dashboard::drawHp(QPainter *painter) const{
         painter->drawPixmap(start_x + skip *(i+1) + i * magatama->width(), 5, *zero_magatama);
 }
 
+void Dashboard::selectAll(){
+    if(view_as_skill){
+        unselectAll();
+
+        foreach(CardItem *card_item, card_items){
+            selectCard(".", true);
+            pendings << card_item;
+        }
+        updatePending();
+    }
+}
+
 void Dashboard::killPlayer(){
     if(death_item){
         delete death_item;

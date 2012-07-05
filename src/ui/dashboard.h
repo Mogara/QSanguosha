@@ -75,6 +75,7 @@ public slots:
     void doFilter();
     void sortCards(int sort_type);
     void reverseSelection();
+    void selectAll();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

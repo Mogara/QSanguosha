@@ -13,6 +13,7 @@
 #include "indicatoritem.h"
 #include "pixmapanimation.h"
 #include "audio.h"
+#include "wind.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -1634,6 +1635,9 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     if(dialog){
         dialog->setParent(main_window, Qt::Dialog);
         connect(button, SIGNAL(clicked()), dialog, SLOT(popup()));
+        connect(button, SIGNAL(clicked()), dialog, SLOT(reject()));
+        if(dialog->objectName() == "qice")
+            connect(dialog, SIGNAL(onButtonClick()), dashboard, SLOT(selectAll()));
     }
 
     button->setObjectName(skill->objectName());

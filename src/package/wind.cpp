@@ -821,7 +821,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
 
 GuhuoDialog *GuhuoDialog::getInstance(const QString &object, bool left, bool right){
     static GuhuoDialog *instance;
-    if(instance == NULL)
+    if(instance == NULL || instance->objectName() != object)
         instance = new GuhuoDialog(object, left, right);
 
     return instance;
@@ -829,6 +829,7 @@ GuhuoDialog *GuhuoDialog::getInstance(const QString &object, bool left, bool rig
 
 GuhuoDialog::GuhuoDialog(const QString &object, bool left, bool right):object_name(object)
 {
+    setObjectName(object);
     setWindowTitle(Sanguosha->translate(object));
     group = new QButtonGroup(this);
 
@@ -859,6 +860,7 @@ void GuhuoDialog::popup(){
 void GuhuoDialog::selectCard(QAbstractButton *button){
     CardStar card = map.value(button->objectName());
     Self->tag[object_name] = QVariant::fromValue(card);
+    emit onButtonClick();
     accept();
 }
 
