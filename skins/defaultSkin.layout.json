@@ -59,7 +59,7 @@
     "mainFrameArea": [0, 0, 157, 181],
     "canvasArea": [0, 0, 157, 181],
     "handCardNumIconArea": [3, 94, 21, 22],
-    "handCardFont": ["arial", [12, 12, 3], 0, [255, 255, 255, 255]],	
+    "handCardFont": ["arial", [12, 12, 1], 80, [255, 255, 255, 255]],	
     "equipAreas": [[3, 122, 150, 13], [3, 136, 150, 13], [3, 150, 150, 13], [3, 164, 150, 13]],
     "equipImageArea": [1, 1, 11, 11], // need adjustment
     "equipTextArea": [35, -5, 85, 21], // need adjustment
