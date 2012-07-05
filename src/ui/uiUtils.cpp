@@ -277,7 +277,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
         }
 
         // now paint the bitmap to the new region;
-        Q_ASSERT(currentX >= 0 && currentY >= 0);
+        if (currentX < 0) currentX = 0;
+        if (currentY < 0) currentY = 0;
         for (int y = 0; y < fontRows; y++)
         {
             if (currentY + y >= rows)

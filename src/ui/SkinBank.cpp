@@ -63,6 +63,11 @@ QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
 QHash<QString, int*> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
+IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
+{
+    memset(this, 0, sizeof(*this));
+}
+
 bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
@@ -124,7 +129,7 @@ bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter* painter, QRect pos, Qt::Alignment align,
                                                        const QString &text) const
 {
-    if (pos.width() < 0 || pos.height() < 0) return;
+    if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) return;
     QSize actualSize = m_fontSize;
     if ((align & Qt::TextWrapAnywhere) && !m_vertical)
     {
@@ -154,6 +159,7 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem* item
 void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter* painter, QRect pos,
                                                        Qt::Alignment align, const QString &text) const
 {
+    if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) return;
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
     QPainter imagePainter(&image);

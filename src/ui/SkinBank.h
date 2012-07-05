@@ -38,6 +38,7 @@ public:
         int m_weight;
         QColor m_color;
         bool m_vertical;
+        QSanSimpleTextFont();
         bool tryParse(Json::Value arg);
         void paintText(QPainter* painter, QRect pos, Qt::Alignment align,
                        const QString &text) const;
