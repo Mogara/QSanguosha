@@ -516,7 +516,7 @@ public:
         room->broadcastSkillInvoke(objectName());
         room->broadcastInvoke("animate", "lightbox:$Hunzi:5000");
         room->getThread()->delay(5000);
-
+        sunce->gainMark("@waked");
         room->loseMaxHp(sunce);
 
         room->acquireSkill(sunce, "yinghun");
@@ -862,7 +862,7 @@ public:
 class Xiangle: public TriggerSkill{
 public:
     Xiangle():TriggerSkill("xiangle"){
-        events << SlashEffected << CardFinished << TargetConfirming;
+        events << SlashEffected << TargetConfirming;
 
         frequency = Compulsory;
     }
@@ -887,12 +887,9 @@ public:
                     liushan->addMark("xiangle");
             }
         }
-        else if(event == CardFinished){
-            liushan->setMark("xiangle", 0);
-        }
         else {
             if(liushan->getMark("xiangle") > 0){
-                liushan->loseMark("xiangle");
+                liushan->setMark("xiangle", liushan->getMark("xiangle") - 1);
                 return true;
             }
         }

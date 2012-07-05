@@ -1195,7 +1195,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         if(player->isWounded())
-            player->getRoom()->broadcastSkillInvoke(objectName());
+            player->getRoom()->broadcastSkillInvoke("juejing");
         return n + player->getLostHp();
     }
 };

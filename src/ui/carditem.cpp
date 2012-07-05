@@ -298,11 +298,13 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     }
 
     painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getCardMainPixmap(objectName()));
-    if (m_card) {		
+    if (m_card) {
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(m_card->getSuit()));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(m_card->getNumber(), m_card->isBlack()));
+        QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
+        // Deal with stupid QT...
         if (_m_showFootnote)
-            painter->drawImage(G_COMMON_LAYOUT.m_cardFootnoteArea.topLeft(), _m_footnoteImage);
+            painter->drawImage(rect, _m_footnoteImage);
     }
     
     if (!_m_avatarName.isEmpty())

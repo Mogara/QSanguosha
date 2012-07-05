@@ -19,7 +19,7 @@ struct DamageStruct{
     enum Nature{
         Normal, // normal slash, duel and most damage caused by skill
         Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
-        Thunder, // lightning, thunder slash, and few damage skill (Leiji, etc)
+        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
     };
 
     ServerPlayer *from;
@@ -114,6 +114,7 @@ public:
     static const int S_REASON_SHOW = 0x08;
     static const int S_REASON_TRANSFER = 0x09;
     static const int S_REASON_PUT = 0x0A;
+    static const int S_REASON_MOVECOPY = 0x0B;
 
     //subcategory of use
     static const int S_REASON_LETUSE = 0x11;           // use a card when self is not current
@@ -148,6 +149,8 @@ public:
     static const int S_REASON_OVERRIDE = 0x29;          // exchange cards from cards in game
     static const int S_REASON_EXCHANGE_FROM_PILE = 0x39;// exchange cards from cards moved out of game (for qixing only)
 
+    //subcategory of move copy card
+    static const int S_REASON_DEMONSTRATE = 0x1B;       // show a card which copy one to move to table
 
 
     static const int S_MASK_BASIC_REASON = 0x0F;

@@ -108,7 +108,8 @@ void Photo::setEmotion(const QString &emotion, bool permanent){
     if(!permanent)
         QTimer::singleShot(2000, this, SLOT(hideEmotion()));
 
-    PixmapAnimation::GetPixmapAnimation(this,emotion);
+    if (emotion != "good" && emotion != "bad")
+        PixmapAnimation::GetPixmapAnimation(this,emotion);
 }
 
 void Photo::tremble(){

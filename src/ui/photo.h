@@ -24,7 +24,8 @@ public:
     explicit Photo();
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
-    QList<CardItem*> removeCardItems(const QList<int> &card_id, Player::Place place);    
+    QList<CardItem*> removeCardItems(const QList<int> &card_id, Player::Place place);
+
     void showCard(int card_id);
     
     void setEmotion(const QString &emotion, bool permanent = false);

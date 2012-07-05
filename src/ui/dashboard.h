@@ -66,6 +66,7 @@ public:
     virtual QGraphicsItem* getMouseClickReceiver();
 
     QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);
+    virtual QList<CardItem*> cloneCardItems(QList<int> card_ids);
 
     // pending operations
     void startPending(const ViewAsSkill *skill);

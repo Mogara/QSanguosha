@@ -303,7 +303,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
             }
         }
         if (useKerning)        
-            currentX += slot->advance.x >> 6;
+            currentX += (slot->advance.x >> 6) + spacing;
         else
             currentX += xstep;
         currentY = currentY - tmpYOffset + ystep;
