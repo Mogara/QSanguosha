@@ -24,8 +24,7 @@ bool Slash::IsAvailable(const Player *player){
     if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed"))
         return false;
 
-    return (player->hasWeapon("crossbow") || player->canSlashWithoutCrossbow())
-            && BasicCard::isAvailable(player);
+    return (player->hasWeapon("crossbow") || player->canSlashWithoutCrossbow());
 }
 
 bool Slash::isAvailable(const Player *player) const{
