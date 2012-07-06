@@ -252,7 +252,7 @@ int Engine::getGeneralCount(bool include_banned) const{
 
         else if( (ServerInfo.GameMode.endsWith("p") ||
                   ServerInfo.GameMode.endsWith("pd") ||
-                  ServerInfo.GameMode.endsWith("pd"))
+                  ServerInfo.GameMode.endsWith("pz"))
                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
 
