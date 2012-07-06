@@ -4166,23 +4166,22 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
 
     move2.card_ids.append(oldJudge->getEffectiveId());
 
-    QList<CardsMoveStruct> moves;
-    moves.append(move1);
-    moves.append(move2);
-    moveCardsAtomic(moves, true);
-
     LogMessage log;
     log.type = "$ChangedJudge";
     log.from = player;
     log.to << judge->who;
     log.card_str = card->getEffectIdString();
     sendLog(log);
+    sendJudgeResult(judge);
+
+    QList<CardsMoveStruct> moves;
+    moves.append(move1);
+    moves.append(move2);
+    moveCardsAtomic(moves, true);
 
     CardStar card_ptr = card;
     QVariant card_star = QVariant::fromValue(card_ptr);
     thread->trigger(CardResponsed, this, player, card_star);
-
-    sendJudgeResult(judge);
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
