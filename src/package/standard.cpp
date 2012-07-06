@@ -305,22 +305,6 @@ QString Weapon::getCommonEffectName() const{
     return "weapon";
 }
 
-void Weapon::onInstall(ServerPlayer *player) const{
-    EquipCard::onInstall(player);
-    Room *room = player->getRoom();
-
-    if(attach_skill)
-        room->attachSkillToPlayer(player, objectName());
-}
-
-void Weapon::onUninstall(ServerPlayer *player) const{
-    EquipCard::onUninstall(player);
-    Room *room = player->getRoom();
-
-    if(attach_skill)
-        room->detachSkillFromPlayer(player, objectName());
-}
-
 QString Armor::getSubtype() const{
     return "armor";
 }

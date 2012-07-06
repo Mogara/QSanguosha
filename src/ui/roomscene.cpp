@@ -103,7 +103,8 @@ RoomScene::RoomScene(QMainWindow *main_window):
         connect(ClientInstance, SIGNAL(do_filter()), dashboard, SLOT(doFilter()));
         connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
         connect(dashboard, SIGNAL(card_to_use()), this, SLOT(doOkButton()));
-
+        connect(dashboard, SIGNAL(add_equip_skill(const Skill*,bool)), this, SLOT(addSkillButton(const Skill*,bool)));
+        connect(dashboard, SIGNAL(remove_equip_skill(QString)), this, SLOT(detachSkill(QString)));
     }
 
     connect(Self, SIGNAL(pile_changed(QString)), dashboard, SLOT(updatePile(QString)));
@@ -1734,7 +1735,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     if(skill->inherits("SPConvertSkill") || ClientInstance->getReplayer())
         return;
     // check duplication
-    QSanSkillButton* btn = dashboard->addSkillButton(skill->objectName());    
+    QSanSkillButton* btn = dashboard->addSkillButton(skill->objectName());
     if(btn == NULL)
         return;
 

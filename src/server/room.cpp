@@ -3072,6 +3072,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 {
     cards_moves = _breakDownCardMoves(cards_moves);
     // First, process remove card
+    QMap<const Card*, CardMoveStruct> onMoveMap;
     for (int i = 0; i < cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -3126,8 +3127,8 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 
             // update card to associate with new place
             // @todo: conside move this inside ServerPlayer::addCard;
-            setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place); 
-            card->onMove(moves[j]);
+            setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
+            onMoveMap[card] = moves[j];
         }
     }
     notifyMoveCards(true, cards_moves, forceMoveVisible);
@@ -3143,6 +3144,9 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
         foreach(ServerPlayer *player, getAllPlayers())
             thread->trigger(CardsMoveOneTime, this, player, data);
     }
+
+    foreach(const Card* card, onMoveMap.keys())
+        card->onMove(onMoveMap[card]);
 }
 
 QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_moves)
@@ -3187,6 +3191,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 {
     // First, process remove card
     notifyMoveCards(true, cards_moves, forceMoveVisible);
+    QMap<const Card*, CardMoveStruct> onMoveMap;
     QList<Player::Place> final_places;
     QList<Player*> move_tos;
     for (int i = 0; i < cards_moves.size(); i++)
@@ -3299,7 +3304,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             // update card to associate with new place
             // @todo: conside move this inside ServerPlayer::addCard;
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
-            card->onMove(moves[j]);
+            onMoveMap[card] = moves[j];
         }
     }
 
@@ -3312,6 +3317,10 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
         QVariant data = QVariant::fromValue(one_time_star);
         foreach(ServerPlayer *player, getAllPlayers())
             thread->trigger(CardsMoveOneTime, this, player, data);
+    }
+
+    foreach(const Card* card, onMoveMap.keys()){
+        card->onMove(onMoveMap[card]);
     }
 }
 

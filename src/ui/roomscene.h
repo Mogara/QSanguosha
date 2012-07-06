@@ -291,7 +291,6 @@ private:
 
     void freeze();
     void addRestartButton(QDialog *dialog);
-    void addSkillButton(const Skill *skill, bool from_left = false);
     QGraphicsItem *createDashboardButtons();
     void createExtraButtons();
     void createReplayControlBar();
@@ -341,6 +340,7 @@ private slots:
     void showPlayerCards();
     void updateRolesBox();
     void updateRoles(const QString &roles);
+    void addSkillButton(const Skill *skill, bool from_left = false);
 
     void resetPiles();
     void removeLightBox();
