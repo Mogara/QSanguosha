@@ -61,6 +61,6 @@ return {
 	["zhulou:losehp"] = "流失1点体力",
 	["designer:neo_gongsunzan"] = "凌天翼",
 	["$zhulou1"] = "易京高楼，易守难攻。",
-	["$zhulou2"] = "快!快!再多加些砖瓦。",
+	["$zhulou2"] = "快！快！多加些砖瓦。",
 }
 
