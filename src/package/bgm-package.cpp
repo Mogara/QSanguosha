@@ -302,7 +302,7 @@ public:
         CardMoveReason reason(CardMoveReason::S_REASON_PUT, sp_pangtong->objectName(), "manjuan", QString());
         if(event == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->to != sp_pangtong || move->to_place != Player::PlaceHand)
+            if(move->to != sp_pangtong || move->to_place != Player::PlaceHand || move->to == move->from)
                 return false;
             foreach(int card_id, move->card_ids){
                 const Card* card = Sanguosha->getCard(card_id);
