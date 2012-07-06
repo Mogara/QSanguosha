@@ -537,7 +537,8 @@ public:
             if((lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("xuanfeng_used"))
                     || move->from_places.contains(Player::PlaceEquip))
             {
-                room->setPlayerFlag(lingtong, "xuanfeng_used");
+                if(lingtong->getMark("xuanfeng") >= 2)
+                    room->setPlayerFlag(lingtong, "xuanfeng_used");
                 bool can_invoke = false;
                 QList<ServerPlayer *> other_players = room->getOtherPlayers(lingtong);
                 foreach(ServerPlayer *player, other_players){
