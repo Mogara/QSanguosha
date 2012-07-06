@@ -3194,8 +3194,6 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
         CardsMoveStruct &cards_move = cards_moves[i];
         final_places.append(cards_move.to_place);
         move_tos.append(cards_move.to);
-        cards_move.to_place = Player::PlaceTable;
-        cards_move.to = NULL;
         if (enforceOrigin)
         {
             if (cards_move.to && !cards_move.to->isAlive()){
@@ -3203,6 +3201,8 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
                 move_tos[i] = NULL;
             }
         }
+        cards_move.to_place = Player::PlaceTable;
+        cards_move.to = NULL;
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
             int card_id = cards_move.card_ids[j];
