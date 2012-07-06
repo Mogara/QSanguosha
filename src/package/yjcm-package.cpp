@@ -52,14 +52,9 @@ public:
         return -1;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
-        ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *caozhi, QVariant &data) const{
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(!caozhi || caozhi->isDead() || move->from == caozhi || move->from == NULL)
+        if(move->from == caozhi || move->from == NULL)
             return false;
         if(move->to_place == Player::DiscardPile
                 && ((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
