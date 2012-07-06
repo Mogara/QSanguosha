@@ -322,10 +322,10 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
         if (!_m_equipCards[i]) continue;
         const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard());
         Q_ASSERT(equip);
-        const Skill* skill = equip->getSkill();
         // @todo: we must fix this in the server side - add a skill to the card itself instead
         // of getting it from the engine.
-        if (skill == NULL) skill = Sanguosha->getSkill(equip->objectName());
+        const Skill* skill = Sanguosha->getSkill(equip->objectName());
+        if (skill == NULL) skill = equip->getSkill();
         if (skill == NULL) continue;
         if (skill->objectName() == skillName)
         {
