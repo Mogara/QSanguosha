@@ -983,14 +983,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 reason.m_skillName = card->getSkillName();
                 moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
-        else
-            if(trigger_event != NonTrigger){    // Danm it! the fxxking nosenyuan!!!!!!
+        else if(trigger_event != NonTrigger && trigger_event != AskForRetrial){
                 CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
                 moveCardTo(card, player, NULL, Player::DiscardPile, reason);
-        }
-        else{
-            CardMoveReason reason(CardMoveReason::S_REASON_GIVE, player->objectName());
-            moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
@@ -4140,6 +4135,54 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
             setCardFlag(card_id, "visible");
         doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
     }
+}
+
+void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
+                   const QString &skill_name, bool exchange){
+
+    if(card == NULL)
+        return;
+
+    const Card* oldJudge = judge->card;
+    judge->card = Sanguosha->getCard(card->getEffectiveId());
+
+    CardsMoveStruct move1(QList<int>(),
+                          NULL,
+                          Player::PlaceTable,
+                          CardMoveReason(CardMoveReason::S_REASON_RETRIAL,
+                                         player->objectName(),
+                                         skill_name,
+                                         QString()));
+
+    move1.card_ids.append(card->getEffectiveId());
+
+    CardsMoveStruct move2(QList<int>(),
+                          exchange ? player : NULL,
+                          exchange ? Player::PlaceHand : Player::DiscardPile,
+                          CardMoveReason(exchange ? CardMoveReason::S_REASON_OVERRIDE : CardMoveReason::S_REASON_JUDGEDONE,
+                                         player->objectName(),
+                                         exchange ? skill_name : QString(),
+                                         QString()));
+
+    move2.card_ids.append(oldJudge->getEffectiveId());
+
+    QList<CardsMoveStruct> moves;
+    moves.append(move1);
+    moves.append(move2);
+    moveCardsAtomic(moves, true);
+
+    LogMessage log;
+    log.type = "$ChangedJudge";
+    log.from = player;
+    log.to << judge->who;
+    log.card_str = card->getEffectIdString();
+    sendLog(log);
+
+    CardStar card_ptr = card;
+    QVariant card_star = QVariant::fromValue(card_ptr);
+    thread->trigger(CardResponsed, this, player, card_star);
+
+    sendJudgeResult(judge);
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){

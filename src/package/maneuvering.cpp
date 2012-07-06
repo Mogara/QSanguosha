@@ -44,7 +44,7 @@ QString Analeptic::getSubtype() const{
 }
 
 bool Analeptic::IsAvailable(const Player *player){
-    return !player->hasUsed("Analeptic");
+    return !player->hasUsed("Analeptic") && BasicCard::isAvailable(player);
 }
 
 bool Analeptic::isAvailable(const Player *player) const{

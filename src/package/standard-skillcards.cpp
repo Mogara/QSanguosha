@@ -108,12 +108,15 @@ void TuxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     move1.card_ids << room->askForCardChosen(source, targets[0], "h", "tuxi");
     move1.to = source;
     move1.to_place = Player::PlaceHand;
-    CardsMoveStruct move2;
-    move2.card_ids << room->askForCardChosen(source, targets[1], "h", "tuxi");
-    move2.to = source;
-    move2.to_place = Player::PlaceHand;
     moves.push_back(move1);
-    moves.push_back(move2);
+    if(targets.length() == 2)
+    {
+        CardsMoveStruct move2;
+        move2.card_ids << room->askForCardChosen(source, targets[1], "h", "tuxi");
+        move2.to = source;
+        move2.to_place = Player::PlaceHand;
+        moves.push_back(move2);
+    }
     room->moveCards(moves, false);
 }
 

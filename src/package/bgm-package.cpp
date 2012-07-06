@@ -320,13 +320,29 @@ public:
         LogMessage log;
         log.type = "$ManjuanGot";
         log.from = sp_pangtong;
-        log.card_str = Sanguosha->getCard(card_id)->toString();
+        if(event == CardsMoveOneTime)
+        {
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            foreach(int _card_id, move->card_ids)
+                if(log.card_str.isEmpty())
+                    log.card_str = QString::number(_card_id);
+                else
+                    log.card_str += "+" + QString::number(_card_id);
+        }
+        else
+            log.card_str = Sanguosha->getCard(card_id)->toString();
         room->sendLog(log);
 
         if(sp_pangtong->getPhase() == Player::NotActive || !sp_pangtong->askForSkillInvoke(objectName(), data))
             return event == CardsMoveOneTime ? false : true;
 
-        doManjuan(sp_pangtong, card_id);
+        if(event == CardsMoveOneTime)
+        {
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            foreach(int _card_id, move->card_ids)
+                doManjuan(sp_pangtong, _card_id);
+        }
+        else doManjuan(sp_pangtong, card_id);
         return event == CardsMoveOneTime ? false : true;
     }
 };

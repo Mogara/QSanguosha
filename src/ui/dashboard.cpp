@@ -720,9 +720,9 @@ QList<CardItem*> Dashboard::removeCardItems(const QList<int> &card_ids, Player::
         foreach (int card_id, card_ids)
         {
             card_item = _createCard(card_id);
-            card_item->setOpacity(0.0);            
+            card_item->setOpacity(0.0);
+            result.push_back(card_item);
         }
-        result.push_back(card_item);
     }
     else Q_ASSERT(false);
 

@@ -23,25 +23,9 @@ public:
         if(player->askForSkillInvoke(objectName(), data)){
             int card_id = room->drawCard();
             room->getThread()->delay();
-            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), QString(), QString());
+            const Card *card = Sanguosha->getCard(card_id);
 
-            if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile &&
-                room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
-            room->throwCard(judge->card, reason, judge->who);
-
-            judge->card = Sanguosha->getCard(card_id);
-
-            room->moveCardTo(judge->card, player, NULL, Player::PlaceTable,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->getGeneralName(), this->objectName(), QString()), true);
-
-            LogMessage log;
-            log.type = "$ChangedJudge";
-            log.from = player;
-            log.to << judge->who;
-            log.card_str = judge->card->getEffectIdString();
-            room->sendLog(log);
-
-            room->sendJudgeResult(judge);
+            room->retrial(card, player, judge, objectName());
         }
         return false;
     }
