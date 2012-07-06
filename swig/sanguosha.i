@@ -487,10 +487,7 @@ enum TriggerEvent{
     CardAsked,
     CardResponsed,
     CardDiscarded,
-    CardLostOnePiece,
-    CardLostOneTime,
-    CardGotOnePiece,
-    CardGotOneTime,
+	CardsMoveOneTime,
     CardDrawing,
     CardDrawnDone,
 

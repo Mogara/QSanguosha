@@ -248,15 +248,16 @@ public:
     void throwCard(const Card *card, ServerPlayer *who);    
     void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who);
 
-    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, 
-                    bool forceMoveVisible = false, bool ignoreChanges = true);
+    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
+                    bool forceMoveVisible = false);
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
-                    bool forceMoveVisible = false, bool ignoreChanges = true);
+                    bool forceMoveVisible = false);
     void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
-                    bool forceMoveVisible = false, bool ignoreChanges = true);
+                    bool forceMoveVisible = false);
     void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const QString& pileName,
-                    const CardMoveReason &reason, bool forceMoveVisible = false, bool ignoreChanges = true);
+                    const CardMoveReason &reason, bool forceMoveVisible = false);
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
+    void moveCardsAtomic(CardsMoveStruct cards_move, bool forceMoveVisible);
     void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
     QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
@@ -329,9 +330,29 @@ private:
         QString m_from_pile_name;
         QString m_from_player_name; 
     };
+
+    struct _MoveMergeClassifier
+    {
+        inline _MoveMergeClassifier(const CardsMoveStruct &move)
+        {
+            m_from = move.from; m_to = move.to;
+        }
+        inline bool operator == (const _MoveMergeClassifier &other) const
+        {
+            return m_from == other.m_from && m_to == other.m_to;
+        }
+        inline bool operator < (const _MoveMergeClassifier &other) const
+        {
+            return m_from < other.m_from || m_to < other.m_to;
+        }
+        Player* m_from;
+        Player* m_to;
+    };
+
     int _m_lastMovementId;
     void _fillMoveInfo(CardMoveStruct &move) const;
     void _fillMoveInfo(CardsMoveStruct &moves, int card_index) const;
+    QList<CardsMoveOneTimeStruct> _mergeMoves(QList<CardsMoveStruct> cards_moves);
     void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges);
     QString _chooseDefaultGeneral(ServerPlayer* player) const;
     bool _setPlayerGeneral(ServerPlayer* player, const QString& generalName, bool isFirst);

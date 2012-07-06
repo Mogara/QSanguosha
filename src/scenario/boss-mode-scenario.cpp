@@ -181,12 +181,16 @@ public:
 class Guzhan: public TriggerSkill{
 public:
     Guzhan():TriggerSkill("guzhan"){
-        events << CardLostOneTime << SlashEffect;
+        events << CardsMoveOneTime << SlashEffect;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardLostOneTime){
+        if(event == CardsMoveOneTime){
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from != player)
+                return false;
+
             if(player->getWeapon() == NULL){
                 if(!player->hasSkill("paoxiao"))
                     room->acquireSkill(player, "paoxiao");
@@ -212,7 +216,7 @@ public:
 class Jizhan: public TriggerSkill{
 public:
     Jizhan():TriggerSkill("jizhan"){
-        events << Damage << CardLostOneTime;
+        events << Damage << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
@@ -225,7 +229,10 @@ public:
             recover.recover = 1;
             room->recover(player, recover);
         }
-        else{
+        else if(event == CardsMoveOneTime){
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from != player)
+                return false;
             QList<ServerPlayer *> players = room->getAlivePlayers();
             if(player->getHandcardNum() < players.length())
                 player->drawCards(1);

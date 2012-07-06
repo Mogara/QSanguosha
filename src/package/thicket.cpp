@@ -554,12 +554,6 @@ void DimengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     int n1 = a->getHandcardNum();
     int n2 = b->getHandcardNum();
 
-    // make sure a is front of b
-    if(room->getFront(a, b) != a){
-        qSwap(a, b);
-        qSwap(n1, n2);
-    }
-
     int diff = qAbs(n1 - n2);
     if(diff != 0){
         room->askForDiscard(source, "dimeng", diff, diff, false, true);
@@ -576,7 +570,9 @@ void DimengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     move2.to_place = Player::PlaceHand;
     exchangeMove.push_back(move1);
     exchangeMove.push_back(move2);
-    
+
+    room->moveCards(exchangeMove, false);
+
     LogMessage log;
     log.type = "#Dimeng";
     log.from = a;
@@ -584,8 +580,6 @@ void DimengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     log.arg = QString::number(n1);
     log.arg2 = QString::number(n2);
     room->sendLog(log);
-
-    room->moveCards(exchangeMove, false);
     room->getThread()->delay();
 }
 

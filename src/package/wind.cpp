@@ -814,7 +814,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
         }
         else if(yuji->getPhase() == Player::NotActive)
             room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true, false);
+                CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true);
 
     }else{
         const Card *card = Sanguosha->getCard(subcards.first());
@@ -833,11 +833,11 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
         }
         else if(success && yuji->getPhase() == Player::NotActive){
             room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true, false);
+                CardMoveReason(CardMoveReason::S_REASON_RESPONSE, yuji->objectName(), QString(), user_string), true);
         }
         else{
             room->moveCardTo(this, yuji, NULL, Player::DiscardPile,
-                CardMoveReason(CardMoveReason::S_REASON_PUT, yuji->objectName(), QString(), user_string), true, false);
+                CardMoveReason(CardMoveReason::S_REASON_PUT, yuji->objectName(), QString(), user_string), true);
         }
         foreach(ServerPlayer *player, players){
             room->setEmotion(player, ".");

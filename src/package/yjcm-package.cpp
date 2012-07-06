@@ -43,7 +43,7 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
-        events << CardGotOneTime;
+        events << CardsMoveOneTime;
         frequency = Frequent;
         default_choice = "no";
     }
@@ -53,56 +53,40 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return (target == NULL);
+        return true;
     }
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(!caozhi || caozhi->isDead())
+        if(!caozhi || caozhi->isDead() || move->from == caozhi || move->from == NULL)
             return false;
-        if(move->from_places.contains(Player::PlaceDelayedTrick) || move->from_places.contains(Player::PlaceSpecial))
-            return false;
-        if(move->to_place == Player::DiscardPile && move->from && move->from->objectName() != caozhi->objectName() &&
-            (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
+        if(move->to_place == Player::DiscardPile
+                && ((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
+                    ||move->reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE)){
             QList<CardsMoveStruct> exchangeMove;
             CardsMoveStruct luoyingget;
+            luoyingget.to = caozhi;
+            luoyingget.to_place = Player::PlaceHand;
 
             foreach(int card_id, move->card_ids){
                 if(Sanguosha->getCard(card_id)->getSuit() == Card::Club
-                    && Sanguosha->getCard(card_id)->objectName() != "shit"){
-                        luoyingget.card_ids << card_id;
-                        luoyingget.to = caozhi;
-                        luoyingget.to_place = Player::PlaceHand;
+                        && Sanguosha->getCard(card_id)->objectName() != "shit"
+                        && room->getCardPlace(card_id) != Player::PlaceHand){
+                    luoyingget.card_ids << card_id;
                 }
             }
             if(luoyingget.card_ids.empty())
                 return false;
-            else{
-                if(move->reason.m_reason == CardMoveReason::S_REASON_THROW
-                    && caozhi->askForSkillInvoke(objectName(), data)){
+            else if(caozhi->askForSkillInvoke(objectName(), data)){
 
-                        if(move->from->getGeneralName() == "zhenji")
-                            room->broadcastSkillInvoke("luoying", 2);
-                        else
-                            room->broadcastSkillInvoke("luoying", 1);
-                        exchangeMove.push_back(luoyingget);
-                        // iwillback
-                        room->moveCards(exchangeMove, true);
-                }
-                else{
-                        foreach(int card_id, luoyingget.card_ids){
-                            if(caozhi->askForSkillInvoke(objectName(), data)){
-                                if(move->from->getGeneralName() == "zhenji")
-                                    room->broadcastSkillInvoke("luoying", 2);
-                                else
-                                    room->broadcastSkillInvoke("luoying", 1);
-                                CardMoveReason reason(CardMoveReason::S_REASON_RECYCLE, caozhi->objectName());
-                                room->obtainCard(caozhi, Sanguosha->getCard(card_id), reason);
-                            }
-                        }
-
-                    }
+                if(move->from->getGeneralName() == "zhenji")
+                    room->broadcastSkillInvoke("luoying", 2);
+                else
+                    room->broadcastSkillInvoke("luoying", 1);
+                exchangeMove.push_back(luoyingget);
+                // iwillback
+                room->moveCardsAtomic(exchangeMove, true);
             }
 
         }
@@ -294,17 +278,17 @@ public:
 class Enyuan: public TriggerSkill{
 public:
     Enyuan():TriggerSkill("enyuan"){
-        events << CardGotOneTime << Damaged;
+        events << CardsMoveOneTime << Damaged;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 
-        if(event == CardGotOneTime){
+        if(event == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if (move->from != NULL && move->card_ids.size() >= 2
+            if (move->to == player && move->from != NULL && move->card_ids.size() >= 2
                 && room->askForSkillInvoke(player,objectName(),data)){
-                    room->drawCards((ServerPlayer*)move->from,1);
+                    room->drawCards((ServerPlayer*)move->from, 1);
                     room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
             }
         }else if(event == Damaged){
@@ -529,7 +513,7 @@ protected:
 class Xuanfeng: public TriggerSkill{
 public:
     Xuanfeng():TriggerSkill("xuanfeng"){
-        events << CardLostOnePiece << CardLostOneTime << PhaseChange;
+        events << CardsMoveOneTime << PhaseChange;
         view_as_skill = new XuanfengViewAsSkill;
     }
 
@@ -538,26 +522,22 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lingtong, QVariant &data) const{
-        if(event == CardLostOnePiece){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->to_place == Player::DiscardPile && lingtong->getPhase() == Player::Discard){
-                lingtong->addMark("xuanfeng");
-                if(lingtong->getMark("xuanfeng") == 2){
-                    lingtong->tag["InvokeXuanfeng"] = true;
-                }
-            }
-        }
-        else if(event == PhaseChange){
+        if(event == PhaseChange){
             lingtong->setMark("xuanfeng", 0);
         }
-        else if(event == CardLostOneTime)
+        else if(event == CardsMoveOneTime)
         {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from_places.contains(Player::PlaceEquip) ||
-                lingtong->tag.value("InvokeXuanfeng", false).toBool())
+            if(move->from != lingtong)
+                return false;
+
+            if(move->to_place == Player::DiscardPile && lingtong->getPhase() == Player::Discard)
+                lingtong->setMark("xuanfeng", move->card_ids.length());
+
+            if((lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("xuanfeng_used"))
+                    || move->from_places.contains(Player::PlaceEquip))
             {
-                lingtong->tag.remove("InvokeXuanfeng");
-                Room *room = lingtong->getRoom();
+                room->setPlayerFlag(lingtong, "xuanfeng_used");
                 bool can_invoke = false;
                 QList<ServerPlayer *> other_players = room->getOtherPlayers(lingtong);
                 foreach(ServerPlayer *player, other_players){
@@ -862,9 +842,6 @@ GanluCard::GanluCard(){
 
 void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
     Room *room = first->getRoom();
-
-    if(room->getFront(first, second) != first)
-        qSwap(first, second);
 
     QList<int> equips1, equips2;
     foreach(const Card *equip, first->getEquips())

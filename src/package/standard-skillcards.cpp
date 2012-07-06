@@ -102,16 +102,19 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
     return !to_select->isKongcheng();
 }
 
-void TuxiCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-    if(!effect.to->isKongcheng()){
-        int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
-        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
-        room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, false);
-
-        room->setEmotion(effect.to, "bad");
-        room->setEmotion(effect.from, "good");
-    }
+void TuxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    QList<CardsMoveStruct> moves;
+    CardsMoveStruct move1;
+    move1.card_ids << room->askForCardChosen(source, targets[0], "h", "tuxi");
+    move1.to = source;
+    move1.to_place = Player::PlaceHand;
+    CardsMoveStruct move2;
+    move2.card_ids << room->askForCardChosen(source, targets[1], "h", "tuxi");
+    move2.to = source;
+    move2.to_place = Player::PlaceHand;
+    moves.push_back(move1);
+    moves.push_back(move2);
+    room->moveCards(moves, false);
 }
 
 FanjianCard::FanjianCard(){
