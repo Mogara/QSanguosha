@@ -1362,10 +1362,12 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
 
     if(src_place == Player::Special){
         card_item = special_card;
-        card_item->hideFrame();
-        card_item->showAvatar(NULL);
-        special_card = NULL;
-        return card_item;
+        if(card_item){
+            card_item->hideFrame();
+            card_item->showAvatar(NULL);
+            special_card = NULL;
+            return card_item;
+        }
     }
 
     // from discard pile

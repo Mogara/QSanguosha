@@ -552,6 +552,12 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             break;
         }
 
+    case RetrialDone:{
+            if(player->hasFlag("retrial"))
+                room->setPlayerFlag(player, "-retrial");
+            break;
+        }
+
     case FinishJudge:{
             JudgeStar judge = data.value<JudgeStar>();
             room->throwCard(judge->card);

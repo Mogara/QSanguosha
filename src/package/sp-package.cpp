@@ -11,7 +11,7 @@
 class SPMoonSpearSkill: public WeaponSkill{
 public:
     SPMoonSpearSkill():WeaponSkill("sp_moonspear"){
-        events << CardFinished << CardResponsed;
+        events << CardFinished << CardResponsed << RetrialDone;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -19,6 +19,7 @@ public:
             return false;
 
         CardStar card = NULL;
+        bool caninvoke = false;
         if(event == CardFinished){
             CardUseStruct card_use = data.value<CardUseStruct>();
             card = card_use.card;
@@ -26,28 +27,43 @@ public:
             if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
                 card = NULL;
             }
+            if(card->isBlack()){
+                if(!player->hasFlag("retrial"))
+                    caninvoke = true;
+                else
+                    room->setPlayerFlag(player, "invokelater");
+            }
         }else if(event == CardResponsed){
             card = data.value<CardStar>();
             player->tag["MoonSpearSlash"] = data;
+            if(card != NULL && card->isBlack()){
+                if(!player->hasFlag("retrial"))
+                    caninvoke = true;
+                else
+                    room->setPlayerFlag(player, "invokelater");
+            }
+        }else if(event == RetrialDone){
+            if(player->hasFlag("invokelater")){
+                room->setPlayerFlag(player, "-invokelater");
+                caninvoke = true;
+            }
         }
-
-        if(card == NULL || !card->isBlack())
-            return false;
-
-        if(!room->askForSkillInvoke(player, objectName(), data))
-            return false;
-        QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *tmp, room->getOtherPlayers(player)){
-            if(player->inMyAttackRange(tmp))
-                targets << tmp;
-        }
-        if(targets.isEmpty()) return false;
-        ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
-        if(!room->askForCard(target, "jink", "@moon-spear-jink")){
-            DamageStruct damage;
-            damage.from = player;
-            damage.to = target;
-            room->damage(damage);
+        if(caninvoke){
+            if(!room->askForSkillInvoke(player, objectName(), data))
+                return false;
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *tmp, room->getOtherPlayers(player)){
+                if(player->inMyAttackRange(tmp))
+                    targets << tmp;
+            }
+            if(targets.isEmpty()) return false;
+            ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
+            if(!room->askForCard(target, "jink", "@moon-spear-jink")){
+                DamageStruct damage;
+                damage.from = player;
+                damage.to = target;
+                room->damage(damage);
+            }
         }
         return false;
     }

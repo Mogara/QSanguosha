@@ -314,6 +314,7 @@ void Room::judge(JudgeStruct &judge_struct){
     foreach(ServerPlayer *player, players){
         if(thread->trigger(AskForRetrial, this, player, data))
             break; //if a skill break retrial.
+        thread->trigger(RetrialDone, this, player, data);
     }
 
     thread->trigger(FinishJudge, this, judge_star->who, data);

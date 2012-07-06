@@ -161,13 +161,13 @@ public:
             can_invoke = true;
         if(!can_invoke)
             return false;
-
         QStringList prompt_list;
         prompt_list << "@huanshi-card" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
 
         player->tag["Judge"] = data;
+        room->setPlayerFlag(player, "retrial");
         const Card *card = room->askForCard(player, "@huanshi", prompt, data);
 
         if(card){

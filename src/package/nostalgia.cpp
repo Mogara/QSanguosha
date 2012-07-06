@@ -9,13 +9,13 @@
 class MoonSpearSkill: public WeaponSkill{
 public:
     MoonSpearSkill():WeaponSkill("moon_spear"){
-        events << CardFinished << CardResponsed;
+        events << CardFinished << CardResponsed << RetrialDone;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
-
+        bool caninvoke = false;
         CardStar card = NULL;
         if(event == CardFinished){
             CardUseStruct card_use = data.value<CardUseStruct>();
@@ -24,18 +24,34 @@ public:
             if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
                 card = NULL;
             }
+            if(card->isBlack()){
+                if(!player->hasFlag("retrial"))
+                    caninvoke = true;
+                else
+                    room->setPlayerFlag(player, "invokelater");
+            }
         }else if(event == CardResponsed){
             card = data.value<CardStar>();
             player->tag["MoonSpearSlash"] = data;
+            if(card != NULL && card->isBlack()){
+                if(!player->hasFlag("retrial"))
+                    caninvoke = true;
+                else
+                    room->setPlayerFlag(player, "invokelater");
+            }
+        }else if(event == RetrialDone){
+            if(player->hasFlag("invokelater")){
+                room->setPlayerFlag(player, "-invokelater");
+                caninvoke = true;
+            }
         }
 
-        if(card == NULL || !card->isBlack())
-            return false;
 
         //@todo: askForUseCard combines asking and using the card.
         //animating weapon effect should happen in-between.
         //we should come back after the askFor methods are restructured.
-        room->askForUseCard(player, "slash", "@moon-spear-slash");
+        if(caninvoke)
+            room->askForUseCard(player, "slash", "@moon-spear-slash");
 
         return false;
     }

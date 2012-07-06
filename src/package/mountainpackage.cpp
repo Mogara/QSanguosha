@@ -319,7 +319,7 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardLost << CardLostDone << FinishJudge;
+        events << CardLost << CardLostDone << RetrialDone << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -334,6 +334,25 @@ public:
             if((move->from_place == Player::Hand || move->from_place == Player::Equip) && move->to!=player)
                 player->tag["InvokeTuntian"] = true;
         }else if(event == CardLostDone){
+            if(!player->tag.value("InvokeTuntian", false).toBool())
+                return false;
+            if(player->hasFlag("retrial"))
+                return false;
+            player->tag.remove("InvokeTuntian");
+
+            if(player->askForSkillInvoke("tuntian", data)){
+                Room *room = player->getRoom();
+                room->playSkillEffect("tuntian");
+
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(heart):(.*)");
+                judge.good = false;
+                judge.reason = "tuntian";
+                judge.who = player;
+
+                room->judge(judge);
+            }
+        }else if(event == RetrialDone){
             if(!player->tag.value("InvokeTuntian", false).toBool())
                 return false;
             player->tag.remove("InvokeTuntian");

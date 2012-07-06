@@ -147,6 +147,7 @@ enum TriggerEvent{
 
     StartJudge,
     AskForRetrial,
+    RetrialDone,
     FinishJudge,
 
     Pindian,

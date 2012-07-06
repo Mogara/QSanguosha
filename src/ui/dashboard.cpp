@@ -718,8 +718,8 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
         else{
             handcard_num->setText(QString::number(Self->getHandcardNum()));
         }
-
-        card_item->hideFrame();
+        if(card_item)
+            card_item->hideFrame();
     }else if(place == Player::Equip){
         foreach(CardItem **equip_ptr, equips){
             CardItem *equip = *equip_ptr;

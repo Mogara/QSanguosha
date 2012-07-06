@@ -151,6 +151,7 @@ public:
         prompt_list << "@guidao-card" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
+        room->setPlayerFlag(player, "retrial");
         const Card *card = room->askForCard(player, "@guidao", prompt, data);
 
         if(card){
