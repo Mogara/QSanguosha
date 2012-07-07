@@ -43,9 +43,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
         if(targets.isEmpty())
             return;
 
-        QList<ServerPlayer *> players = targets;
-        qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
-        foreach(ServerPlayer *target, players){
+        foreach(ServerPlayer *target, targets){
             room->cardEffect(this, zhanghe, target);
         }
     }else if(zhanghe->getPhase() == Player::Play){
