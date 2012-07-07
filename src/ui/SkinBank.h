@@ -89,7 +89,8 @@ public:
     QString getRandomAudioFileName(const QString &key) const;
     bool isImageKeyDefined(const QString &key) const;
 protected:
-    virtual bool _loadLayoutConfig(const Json::Value &layoutConfig) = 0;
+    virtual bool _loadLayoutConfig(const Json::Value &config) = 0;
+    virtual bool _loadImageConfig(const Json::Value &config);
     QString _readConfig(const Json::Value &dictionary, const QString &key,
                         const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
@@ -98,6 +99,12 @@ protected:
     
     Json::Value _m_imageConfig;
     Json::Value _m_audioConfig;
+    // image key -> image file name
+    static QHash<QString, QString> S_IMAGE_KEY2FILE;
+    // image group key -> image keys
+    // for example,
+    // "generalIcon-1-default" -> "generalIcon-1-zhangliao", "generalIcon-1-liubie", ...
+    static QHash<QString, QList<QString>> S_IMAGE_GROUP_KEYS;
 };
 
 class QSanRoomSkin : public IQSanComponentSkin

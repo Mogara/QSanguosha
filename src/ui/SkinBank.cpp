@@ -472,15 +472,43 @@ const QPixmap& QSanPixmapCache::getPixmap(const QString &key, const QString &fil
     return _m_pixmapBank[key];
 }
 
-// Load pixmap from a existing key.
-const QPixmap& QSanPixmapCache::getPixmap(const QString &key)
+// Load pixmap from a file.
+const QPixmap& QSanPixmapCache::getPixmap(const QString &fileName)
 {
-    return _m_pixmapBank[key];
+    return getPixmap(fileName, fileName);
 }
 
 bool QSanPixmapCache::contains(const QString &key)
 {
     return _m_pixmapBank.contains(key);
+}
+
+bool IQSanComponentSkin::_loadImageConfig(const Json::Value &config)
+{
+    if (!config.isObject())
+    {
+        return false;
+    }
+    if (_m_imageConfig.isNull())
+    {
+        _m_imageConfig = config;
+    }
+    else
+    {
+        Json::Value::Members keys = config.getMemberNames();
+        for (unsigned int i = 0; i < keys.size(); i++)
+        {
+            const char* key = keys[i].c_str();
+            _m_imageConfig[key] = config[key];
+            S_IMAGE_KEY2FILE.remove(key);
+            QList<QString> &mappedKeys = S_IMAGE_GROUP_KEYS[key];
+            foreach (QString mkey, mappedKeys)
+            {
+                S_IMAGE_KEY2FILE.remove(mkey);
+            }
+        }
+    }
+    return true;
 }
 
 bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &imageConfigName,
@@ -509,15 +537,17 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
     {
         Json::Reader reader;
         ifstream imageFile(imageConfigName.toAscii());
+        Json::Value imageConfig;
         if (imageFile.bad() ||
-            !reader.parse(imageFile, _m_imageConfig) ||
-            !_m_imageConfig.isObject())
+            !reader.parse(imageFile, imageConfig) ||
+            !imageConfig.isObject())
         {
             errorMsg = QString("Error when reading image config file \"%1\": \n%2")
                        .arg(imageConfigName).arg(reader.getFormattedErrorMessages().c_str());
             QMessageBox::warning(NULL, "Config Error", errorMsg);
             success = false;
         }
+        success = _loadImageConfig(imageConfig);
         imageFile.close();
     }
 
@@ -612,49 +642,63 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     }
     return result;
 }
- QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) const
- {
-     QString totalkey;
-     if (arg.isNull()) totalkey = key;
-     else totalkey = key.arg(arg);
-     static QHash<QString, QPixmap> _pixmapCache;
-     if (!_pixmapCache.contains(totalkey))
-     {
-         QRect clipRegion;
-         QSize scaleRegion;
-         bool clipping = false;
-         bool scaled = false;
 
-         bool useDefault = false;
-         QString keyFile;
-         if (arg.isNull()) keyFile = key;
-         else keyFile = key.arg(arg);
-         if (!isImageKeyDefined(keyFile))
-         {
-             useDefault = true;
-             Q_ASSERT(!arg.isNull());
-             keyFile = key.arg(S_SKIN_KEY_DEFAULT);
-         }
+QHash<QString, QString> IQSanComponentSkin::S_IMAGE_KEY2FILE;
+QHash<QString, QList<QString>> IQSanComponentSkin::S_IMAGE_GROUP_KEYS;
+static QHash<QString, QPixmap> _pixmapCache;
 
-         QString fileName = _readImageConfig(keyFile,
-                             clipRegion, clipping, scaleRegion, scaled);
-         if (useDefault) fileName = fileName.arg(arg);
-         QPixmap pixmap = QSanPixmapCache::getPixmap(totalkey, fileName);
-         if (clipping)
-         {
-             _pixmapCache[totalkey] = pixmap.copy(clipRegion);
-             if (scaled)
-             {
-                 _pixmapCache[totalkey] = _pixmapCache[totalkey].scaled(
-                     scaleRegion, Qt::IgnoreAspectRatio,
-                     Qt::SmoothTransformation);
-             }
-         }
-         else
-             _pixmapCache[totalkey] = pixmap;
-     }
-     return _pixmapCache[totalkey];
- }
+QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) const
+{
+    // the order of attempts are:
+    // 1. if no arg, then just use key to find fileName.
+    // 2. try key.arg(arg), if exists, then return the pixmap
+    // 3. try key.arg(default), get fileName, and try fileName.arg(arg)
+    QString totalKey;
+    QString groupKey;
+    QString fileName;
+    QRect clipRegion;
+    QSize scaleRegion;
+    bool clipping = false;
+    bool scaled = false;
+
+    // case 1 and 2
+    if (arg.isNull()) totalKey = key;
+    else totalKey = key.arg(arg);
+    // first, search cache
+    if (S_IMAGE_KEY2FILE.contains(totalKey))
+        fileName = S_IMAGE_KEY2FILE[totalKey];
+    // then, read from config file
+    else if (isImageKeyDefined(totalKey))
+    {
+        fileName = _readImageConfig(totalKey, clipRegion, clipping, scaleRegion, scaled);
+        S_IMAGE_KEY2FILE[totalKey].append(fileName);
+    }
+    // case 3: use default
+    else
+    {
+        Q_ASSERT(!arg.isNull());
+        groupKey = key.arg(S_SKIN_KEY_DEFAULT);
+        S_IMAGE_GROUP_KEYS[groupKey].append(totalKey);
+        QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
+        fileName = fileNameToResolve.arg(arg);
+    }
+
+    if (!_pixmapCache.contains(totalKey))
+    {
+        QPixmap pixmap = QSanPixmapCache::getPixmap(fileName);
+        if (clipping) {
+            pixmap = pixmap.copy(clipRegion);
+            if (scaled)
+            {
+                pixmap = pixmap.scaled(
+                    scaleRegion, Qt::IgnoreAspectRatio,
+                    Qt::SmoothTransformation);
+            }
+        }
+        _pixmapCache[totalKey] = pixmap;
+    }
+    return _pixmapCache[totalKey];
+}
 
  QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const
  {
