@@ -275,28 +275,9 @@ public:
         prompt_list << "@guicai-card" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
-        const Card *card = room->askForCard(player, "@guicai", prompt, data);
+        const Card *card = room->askForCard(player, "@guicai", prompt, data, AskForRetrial);
 
-        if(card){
-            // the only difference for Guicai & Guidao
-            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
-            if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile
-               || room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
-            room->throwCard(judge->card, reason, judge->who);
-
-            judge->card = Sanguosha->getCard(card->getEffectiveId());
-
-            room->moveCardTo(judge->card, player, judge->who, Player::PlaceTable,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), "guicai", QString()), true);
-            LogMessage log;
-            log.type = "$ChangedJudge";
-            log.from = player;
-            log.to << judge->who;
-            log.card_str = card->getEffectIdString();
-            room->sendLog(log);
-
-            room->sendJudgeResult(judge);
-        }
+        room->retrial(card, player, judge, objectName());
 
         return false;
     }
