@@ -903,7 +903,7 @@ end
 function sgs.isRolePredictable()
 	if sgs.GetConfig("RolePredictable", true) then return true end
 	local mode = string.lower(global_room:getMode())
-	if not mode:find("0") or mode:find("03p") or mode:find("02_1v1") or mode:find("04_1v3") or mode == "06_3v3" or mode:find("mini") then return true end
+	if mode == "04_1v3" or mode == "06_3v3" or mode:find("mini") then return true end
 	return false
 end
 
@@ -1764,7 +1764,6 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 		if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num then break end
 		if not self.player:isJilei(card) then table.insert(to_discard, card:getId()) end
 	end
-	
 	return to_discard
 end
 
