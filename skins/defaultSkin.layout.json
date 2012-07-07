@@ -39,7 +39,7 @@
 {
     "scenePadding": 0,
     "roleBoxHeight": 60,
-    "chatTextBoxHeight": 30,
+    "chatTextBoxHeight": 35,
     "logBoxHeightPercentage": 0.6,
     "chatBoxHeightPercentage": 0.4,
     "infoPlaneWidthPercentage": 0.2,

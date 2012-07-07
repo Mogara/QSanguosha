@@ -1236,6 +1236,10 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     if(strcmp(property_name, "hp") == 0){
         thread->trigger(HpChanged, this, player);
     }
+
+    if(strcmp(property_name, "maxhp") == 0){
+        thread->trigger(MaxHpChanged, this, player);
+    }
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
@@ -2484,13 +2488,18 @@ void Room::loseHp(ServerPlayer *victim, int lose){
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){
     int hp = victim->getHp();
-    victim->setMaxHp(qMax(victim->getMaxHp() - lose, 0));
+    int maxhp = qMax(victim->getMaxHp() - lose, 0);
+    victim->setMaxHp(maxhp);
 
-    broadcastProperty(victim, "maxhp");
-    broadcastProperty(victim, "hp");
+    bool hp_changed = hp - victim->getHp() != 0;
+
+    setPlayerProperty(victim, "maxhp", maxhp);
+
+    if(hp_changed)
+        setPlayerProperty(victim, "hp", victim->getHp());
 
     LogMessage log;
-    log.type = hp - victim->getHp() == 0 ? "#LoseMaxHp" : "#LostMaxHpPlus";
+    log.type = !hp_changed ? "#LoseMaxHp" : "#LostMaxHpPlus";
     log.from = victim;
     log.arg = QString::number(lose);
     log.arg2 = QString::number(hp - victim->getHp());
@@ -2498,8 +2507,6 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
 
     if(victim->getMaxHp() == 0)
         killPlayer(victim);
-    else
-        thread->trigger(MaxHpLost, this, victim);
 }
 
 void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage){

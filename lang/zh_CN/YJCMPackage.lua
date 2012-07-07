@@ -100,7 +100,13 @@ return {
 	["#ZhichiDamaged"] = "%from 受到【智迟】的影响，本回合内【杀】和非延时锦囊都将对其无效",
 	["#ZhichiAvoid"] = "%from 受到【智迟】的影响，【杀】和非延时锦囊对其无效",
 
-
+	["#zhangchunhua"] = "冷血皇后",
+	["zhangchunhua"]="张春华",
+	["jueqing"]="绝情",
+	[":jueqing"]="<b>锁定技</b>，你即将造成的伤害均视为失去体力。",
+	["shangshi"]="伤逝",
+	[":shangshi"]="<b>锁定技</b>，弃牌阶段外，当你的手牌数小于X时，你可以将手牌补至X张（X为你已损失的体力值且最多为2）",
+		
 	["#zhonghui"] = "桀骜的野心家",
 	["zhonghui"] = "钟会",
 	["quanji"] = "权计",
@@ -128,6 +134,7 @@ return {
 	["designer:wuguotai"] = "章鱼咬你哦",
 	["designer:gaoshun"] = "羽柴文理",
 	["designer:chengong"] = "Kaycent",
+	["designer:zhangchunhua"] = "JZHIEI",
 	["designer:zhonghui"] = "韩旭",
 
 	["cv:caozhi"] = "殆尘",
@@ -171,6 +178,11 @@ return {
 	["$zhichi2"] = "若吾早知如此~",
 	["$yizhong1"] = "不先为备，何以待敌",
 	["$yizhong2"] = "稳重行军，百战不殆！",
+	["$jueqing1"]="你的死活与我何干？",
+	["$jueqing2"]="无来无去，不悔不怨。",
+	["$shangshi1"]="无情者伤人，有情者自伤",
+	["$shangshi2"]="自损八百，可伤敌一千",
+	
 	["$zili"] = "如今起兵，进可以谋取天下，退亦能入蜀称王！",
 	
 	["~chengong"] = "请出就戮！",
@@ -181,6 +193,7 @@ return {
 	["~xusheng"] = "盛不能奋身出命，不亦辱乎…",
 	["~xushu"] = "娘……孩儿不孝……向您……请罪……",
 	["~yujin"] = "我……无颜面对丞相了……",
+	["~zhangchunhua"] = "怎能如此对我",
 	["~zhonghui"] = "",
 
 	-- illustrator
@@ -194,5 +207,6 @@ return {
 	["illustrator:wuguotai"] = "zoo",
 	["illustrator:chengong"] = "黑月乱",
 	["illustrator:gaoshun"] = "鄧Sir",
+	["illustrator:zhangchunhua"] = "樱花闪乱",
 	["illustrator:zhonghui"] = "雪君S",
 }

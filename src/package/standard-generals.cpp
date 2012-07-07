@@ -345,8 +345,11 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhenji, QVariant &data) const{
         if(event == PhaseChange && zhenji->getPhase() == Player::Start){
+            int n = 0;
             while(zhenji->askForSkillInvoke("luoshen")){
-                room->broadcastSkillInvoke(objectName());
+                if(n == 0)
+                    room->broadcastSkillInvoke(objectName());
+                n++;
 
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(spade|club):(.*)");
@@ -1056,13 +1059,15 @@ public:
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         if(move->from == sunshangxiang && move->from_places.contains(Player::PlaceEquip)){
             int n = 0;
-            for(int i = 0; i < move->card_ids.size(); i++)
-                if(move->from_places[i] == Player::PlaceEquip)
+            foreach(Player::Place place, move->from_places)
+                if(place == Player::PlaceEquip)
                     n ++;
 
-            if(n > 0 && room->askForSkillInvoke(sunshangxiang, objectName())){
-                room->broadcastSkillInvoke(objectName());
-                sunshangxiang->drawCards(n * 2);
+            for(int i = 0; i < n; i++)
+            if(room->askForSkillInvoke(sunshangxiang, objectName())){
+                if(i == 0)
+                    room->broadcastSkillInvoke(objectName());
+                sunshangxiang->drawCards(2);
             }
         }
 
