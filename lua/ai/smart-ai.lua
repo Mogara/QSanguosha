@@ -1653,9 +1653,9 @@ function SmartAI:filterEvent(event, player, data)
 		if sgs.ai_snat_disma_effect then
 			sgs.ai_snat_disma_effect = false
 			local intention = 70
-			if place == sgs.Player_Judging then
+			if place == sgs.Player_PlaceDelayedTrick then
 				if not card:inherits("Disaster") then intention = -intention else intention = 0 end
-			elseif place == sgs.Player_Equip then
+			elseif place == sgs.Player_PlaceEquip then
 				if player:getLostHp() > 1 and card:inherits("SilverLion") then intention = -intention end
 				if self:hasSkills(sgs.lose_equip_skill, player) or card:inherits("GaleShell") then intention = 0 end
 			end
@@ -1739,7 +1739,7 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 	cards = sgs.QList2Table(cards)
 	local aux_func = function(card)
 	local place = self.room:getCardPlace(card:getEffectiveId())
-	if place == sgs.Player_Equip then
+	if place == sgs.Player_PlaceEquip then
 		if card:inherits("GaleShell") then return -2
 		elseif card:inherits("SilverLion") and self.player:isWounded() then return -2
 		elseif card:inherits("YitianSword") then return -1
@@ -3064,7 +3064,7 @@ function getCards(class_name, player, room, flag)
 	flag = flag or "he"
 	local cards = {}
 	local card_place, card_str
-	if not room then card_place = sgs.Player_Hand end
+	if not room then card_place = sgs.Player_PlaceHand end
 
 	for _, card in sgs.qlist(player:getCards(flag)) do
 		card_place = card_place or room:getCardPlace(card:getEffectiveId())
