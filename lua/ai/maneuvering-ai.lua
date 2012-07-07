@@ -135,7 +135,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
         
 	for _, anal in ipairs(cards) do
 		if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) and
-			not isCompulsoryView(anal, "Slash", self.player, sgs.Player_Hand) then
+			not isCompulsoryView(anal, "Slash", self.player, sgs.Player_PlaceHand) then
 			return anal
 		end
 	end
@@ -388,6 +388,15 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 	club = 2,
 	diamond = 1
 	}
+	if self.player:hasSkill("hongyan") then
+		priority  =
+		{
+			heart = 4,
+			spade = 0,
+			club = 2,
+			diamond = 1
+		}
+	end
 	local index = 0
 	local result
 	local cards = self.player:getHandcards()

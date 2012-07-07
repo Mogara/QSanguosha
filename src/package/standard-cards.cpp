@@ -24,7 +24,7 @@ bool Slash::IsAvailable(const Player *player){
     if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed"))
         return false;
 
-    return player->hasWeapon("crossbow") || player->canSlashWithoutCrossbow();
+    return (player->hasWeapon("crossbow") || player->canSlashWithoutCrossbow());
 }
 
 bool Slash::isAvailable(const Player *player) const{
@@ -193,7 +193,7 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
 }
 
 bool Peach::isAvailable(const Player *player) const{
-    return player->isWounded();
+    return player->isWounded() && BasicCard::isAvailable(player);
 }
 
 Crossbow::Crossbow(Suit suit, int number)

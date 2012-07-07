@@ -321,7 +321,7 @@ enum TriggerEvent{
     HpRecover,
     HpLost,
     HpChanged,
-    MaxHpLost,
+    MaxHpChanged,
 
     StartJudge,
     AskForRetrial,

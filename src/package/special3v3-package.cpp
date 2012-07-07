@@ -168,28 +168,9 @@ public:
         QString prompt = prompt_list.join(":");
 
         player->tag["Judge"] = data;
-        const Card *card = room->askForCard(player, "@huanshi", prompt, data);
+        const Card *card = room->askForCard(player, "@huanshi", prompt, data, AskForRetrial);
 
-        if(card){
-            // the only difference for Guicai & Guidao
-            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, QString());
-            if(room->getCardPlace(judge->card->getEffectiveId()) != Player::DiscardPile
-                || room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
-                room->throwCard(judge->card, reason, judge->who);
-
-            judge->card = Sanguosha->getCard(card->getEffectiveId());
-
-            room->moveCardTo(judge->card, player, NULL, Player::PlaceTable,
-                CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), "huanshi", QString()), true);
-            LogMessage log;
-            log.type = "$ChangedJudge";
-            log.from = player;
-            log.to << judge->who;
-            log.card_str = card->getEffectIdString();
-            room->sendLog(log);
-
-            room->sendJudgeResult(judge);
-        }
+        room->retrial(card, player, judge, objectName());
 
         return false;
     }
@@ -222,8 +203,9 @@ public:
                 if(card->isRed())
                     n++;
             }
-            if(n > 0 && player->askForSkillInvoke(objectName(), data))
-                player->drawCards(n);
+            for(int i = 0; i < n; i++)
+                if(player->askForSkillInvoke(objectName(), data))
+                    player->drawCards(1);
         }
         return false;
     }

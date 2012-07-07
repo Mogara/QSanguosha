@@ -454,7 +454,7 @@ enum TriggerEvent{
     HpRecover,
     HpLost,
     HpChanged,
-    MaxHpLost,
+    MaxHpChanged,
 
     StartJudge,
     AskForRetrial,
@@ -830,6 +830,7 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
+	void retrial(const Card *card, ServerPlayer *player, JudgeStar judge, const char *skill_name, bool exchange = false);
     bool broadcastSkillInvoke(const char *skillName);
     bool broadcastSkillInvoke(const char *skillName, const char *category);
     bool broadcastSkillInvoke(const char *skillName, int type);

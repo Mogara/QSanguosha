@@ -89,6 +89,9 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);   
+
+    void retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
+                 const QString &skill_name, bool exchange = false);
    
     // Ask a player to send a server request and returns the client response. Call is blocking until client 
     // replies or server times out, whichever is earlier.

@@ -439,8 +439,13 @@ void Card::doPreAction(Room *, const CardUseStruct &) const{
 
 }
 
-void Card::onUse(Room *room, const CardUseStruct &card_use) const{
+void Card::onUse(Room *room, const CardUseStruct &use) const{
+    CardUseStruct card_use = use;
     ServerPlayer *player = card_use.from;
+
+    if(card_use.from && card_use.to.length() > 1){
+        qSort(card_use.to.begin(), card_use.to.end(), ServerPlayer::CompareByActionOrder);
+    }
 
     LogMessage log;
     log.from = player;
@@ -451,14 +456,10 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 
     QList<int> used_cards;
     QList<CardsMoveStruct> moves;
-    if(card_use.card->isVirtualCard()){
-        foreach(int card_id, card_use.card->getSubcards()){
-            used_cards << card_id;
-        }
-    }
-    else{
-        used_cards << card_use.card->getEffectiveId();
-    }
+    if(card_use.card->isVirtualCard())
+        used_cards.append(card_use.card->getSubcards());
+    else used_cards << card_use.card->getEffectiveId();
+
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  

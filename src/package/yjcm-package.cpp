@@ -1,5 +1,4 @@
 #include "yjcm-package.h"
-#include "skill.h"
 #include "standard.h"
 #include "maneuvering.h"
 #include "clientplayer.h"
@@ -49,46 +48,55 @@ public:
     }
 
     virtual int getPriority() const{
-        return -1;
+        return 4;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
-        ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *caozhi, QVariant &data) const{
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(!caozhi || caozhi->isDead() || move->from == caozhi || move->from == NULL)
+        if(move->from == caozhi || move->from == NULL)
             return false;
         if(move->to_place == Player::DiscardPile
                 && ((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
                     ||move->reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE)){
             QList<CardsMoveStruct> exchangeMove;
-            CardsMoveStruct luoyingget;
-            luoyingget.to = caozhi;
-            luoyingget.to_place = Player::PlaceHand;
+            CardsMoveStruct luoyingMove;
+            luoyingMove.to = caozhi;
+            luoyingMove.to_place = Player::PlaceHand;
 
-            foreach(int card_id, move->card_ids){
-                if(Sanguosha->getCard(card_id)->getSuit() == Card::Club
-                        && Sanguosha->getCard(card_id)->objectName() != "shit"
-                        && room->getCardPlace(card_id) != Player::PlaceHand){
-                    luoyingget.card_ids << card_id;
-                }
+            for(int i = 0; i < move->card_ids.size(); i++){
+                int card_id = move->card_ids[i];
+                if(Sanguosha->getCard(card_id)->getSuit() != Card::Club
+                        || move->from_places[i] == Player::PlaceDelayedTrick
+                        || move->from_places[i] == Player::PlaceSpecial
+                        || room->getCardPlace(card_id) != Player::DiscardPile)
+                    continue;
+
+                luoyingMove.card_ids << card_id;
             }
-            if(luoyingget.card_ids.empty())
+
+            if(luoyingMove.card_ids.empty() || !caozhi->askForSkillInvoke(objectName(), data))
                 return false;
-            else if(caozhi->askForSkillInvoke(objectName(), data)){
 
-                if(move->from->getGeneralName() == "zhenji")
-                    room->broadcastSkillInvoke("luoying", 2);
-                else
-                    room->broadcastSkillInvoke("luoying", 1);
-                exchangeMove.push_back(luoyingget);
-                // iwillback
-                room->moveCardsAtomic(exchangeMove, true);
+            if(luoyingMove.card_ids.size() > 1){
+                while(!luoyingMove.card_ids.isEmpty()){
+                    room->fillAG(luoyingMove.card_ids, caozhi);
+                    int card_id = room->askForAG(caozhi, luoyingMove.card_ids, true, "luoying");
+                    caozhi->invoke("clearAG");
+                    if(card_id == -1)
+                        break;
+                    luoyingMove.card_ids.removeOne(card_id);
+                }
+                if(luoyingMove.card_ids.empty())
+                    return false;
             }
 
+            if(move->from->getGeneralName() == "zhenji")
+                room->broadcastSkillInvoke("luoying", 2);
+            else
+                room->broadcastSkillInvoke("luoying", 1);
+            exchangeMove.push_back(luoyingMove);
+            // iwillback
+            room->moveCardsAtomic(exchangeMove, true);
         }
         return false;
     }
@@ -1156,9 +1164,109 @@ public:
     }
 };
 
+class Jueqing: public TriggerSkill{
+public:
+    Jueqing():TriggerSkill("jueqing")
+    {
+        frequency = Compulsory;
+        events << Predamage;
+    }
+
+    virtual bool trigger(TriggerEvent ,  Room* room, ServerPlayer *player, QVariant &data) const
+    {
+        LogMessage log;
+        DamageStruct damage = data.value<DamageStruct>();
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->broadcastSkillInvoke(objectName());
+        room->loseHp(damage.to, damage.damage);
+        return true;
+    }
+};
 
 
+Shangshi::Shangshi(const QString &name, int n)
+    :TriggerSkill(name), n(n)
+{
+}
 
+QString Shangshi::getEffectName()const{
+    return objectName();
+}
+
+bool Shangshi::trigger(TriggerEvent event,  Room* room, ServerPlayer *player, QVariant &data) const
+{
+    if(event == PhaseChange && player->getPhase() != Player::Finish)
+        return false;
+
+    if(event == CardsMoveOneTime)
+    {
+        if(player->getPhase() == Player::Discard)
+            return false;
+        CardsMoveOneTimeStar cards_move = data.value<CardsMoveOneTimeStar>();
+        bool canInvoke = false;
+        if(cards_move->from == player)
+            canInvoke = cards_move->from_places.contains(Player::PlaceHand);
+        else if(cards_move->to == player)
+            canInvoke = cards_move->to_place == Player::PlaceHand;
+        if(!canInvoke)
+            return false;
+    }
+
+    const int count = qMin(qMin(player->getLostHp(), player->getMaxHp()), n) - player->getHandcardNum();
+
+    if(count <= 0)
+        return false;
+
+    if(frequency == Compulsory || player->askForSkillInvoke(getEffectName())){
+        if(frequency == Compulsory){
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = "shangshi";
+            room->sendLog(log);
+            room->broadcastSkillInvoke("shangshi");
+        }
+        player->drawCards(count);
+    }
+
+    return false;
+}
+
+class ShangshiStateChanged: public Shangshi{
+public:
+    ShangshiStateChanged():Shangshi("shangshi", 2)
+    {
+        frequency = Compulsory;
+        events << DamageDone << HpLost << HpRecover << MaxHpChanged << PhaseChange;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual QString ShangshiStateChanged::getEffectName() const{
+        return objectName();
+    }
+};
+
+class ShangshiCardMove: public Shangshi{
+public:
+    ShangshiCardMove():Shangshi("#shangshi", 2)
+    {
+        events << CardsMoveOneTime << CardDrawnDone;
+    }
+
+    virtual int getPriority() const{
+        return 2;
+    }
+
+    virtual QString ShangshiCardMove::getEffectName() const{
+        return "shangshi";
+    }
+};
 
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
@@ -1202,6 +1310,11 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *yujin = new General(this, "yujin", "wei");
     yujin->addSkill(new Yizhong);
 
+    General *zhangchunhua = new General(this, "zhangchunhua", "wei", 3, false);
+    zhangchunhua->addSkill(new Jueqing);
+    zhangchunhua->addSkill(new ShangshiStateChanged);
+    zhangchunhua->addSkill(new ShangshiCardMove);
+    related_skills.insertMulti("shangshi", "#shangshi");
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);

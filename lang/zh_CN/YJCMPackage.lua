@@ -7,7 +7,9 @@ return {
 	["caozhi"] = "曹植",
 	["luoying"] = "落英",
 	[":luoying"] = "当其他角色的梅花牌因弃置或判定而置入弃牌堆时，你可以获得之。\
-◆其他角色被代替的和生效后的梅花判定牌置入弃牌堆时，你都可以发动【落英】。";
+◆其他角色被代替的和生效后的梅花判定牌置入弃牌堆时，你都可以发动【落英】。\
+※操作:双击移除不想获得的牌，点击确定获得余下的全部牌。",
+
 	["jiushi"] = "酒诗",
 	[":jiushi"] = "若你的武将牌正面朝上，你可以将你的武将牌翻面，视为使用一张【酒】；若你的武将牌背面朝上时你受到伤害，你可以在伤害结算后将你的武将牌翻转至正面朝上。",
 	["luoying:yes"] = "拿屎",
@@ -25,7 +27,7 @@ return {
 	["xuanhuo"] = "眩惑",
 	[":xuanhuo"] = "摸牌阶段开始时，你可以放弃摸牌，改为令一名其他角色摸两张牌，然后令其对其攻击范围内你选择的另一名角色使用一张【杀】，若该角色未如此做或其攻击范围内没有其他角色，你获得其两张牌。",
 	["@xuanhuo-card"] = "是否发动【眩惑】",
-	["~xuanhuo"] = "选择一名其他角色——点击确定",
+	["~xuanhuo"] = "选择一名其他角色→点击确定",
 	["xuanhuo:slash"] = "对攻击范围内的一名角色使用一张【杀】",
 	["xuanhuo:give"] = "对方获得你的两张牌",
 	["xuanhuo-slash"] = "请对已选择的目标使用一张【杀】",
@@ -47,7 +49,7 @@ return {
 	["jujian"] = "举荐",
 	[":jujian"] = "回合结束阶段开始时，你可以弃置一张非基本牌，令一名其他角色选择一项：摸两张牌，或回复1点体力，或将其武将牌翻至正面朝上并重置之。",
 	["@jujian-card"] = "你可以发动技能【举荐】",
-	["~jujian"] = "选择一张非基本牌——选择一名其他角色——点击确定",
+	["~jujian"] = "选择一张非基本牌→选择一名其他角色——点击确定",
 	["#WuyanBad"] = "%from 触发【%arg2】，防止此伤害",
 	["#WuyanGood"] = "%from 触发【%arg2】，防止此伤害",
 	["@jujian-discard"] = "你必须弃置一张非基本牌来发动举荐",
@@ -64,7 +66,7 @@ return {
 	["xuanfeng:nothing"] = "不发动",
 	["xuanfeng:throw"] = "发动",
 	["@xuanfeng-card"] = "你可以发动技能【旋风】",
-	["~xuanfeng"] = "选择 1-2 名其他角色——点击确定",
+	["~xuanfeng"] = "选择 1-2 名其他角色→点击确定",
 	
 	["#wuguotai"] = "武烈皇后",
 	["wuguotai"] = "吴国太",
@@ -100,7 +102,13 @@ return {
 	["#ZhichiDamaged"] = "%from 受到【智迟】的影响，本回合内【杀】和非延时锦囊都将对其无效",
 	["#ZhichiAvoid"] = "%from 受到【智迟】的影响，【杀】和非延时锦囊对其无效",
 
-
+	["#zhangchunhua"] = "冷血皇后",
+	["zhangchunhua"]="张春华",
+	["jueqing"]="绝情",
+	[":jueqing"]="<b>锁定技</b>，你即将造成的伤害均视为失去体力。",
+	["shangshi"]="伤逝",
+	[":shangshi"]="<b>锁定技</b>，弃牌阶段外，当你的手牌数小于X时，你将手牌补至X张（X为你已损失的体力值且最多为2）",
+		
 	["#zhonghui"] = "桀骜的野心家",
 	["zhonghui"] = "钟会",
 	["quanji"] = "权计",
@@ -128,6 +136,7 @@ return {
 	["designer:wuguotai"] = "章鱼咬你哦",
 	["designer:gaoshun"] = "羽柴文理",
 	["designer:chengong"] = "Kaycent",
+	["designer:zhangchunhua"] = "JZHIEI",
 	["designer:zhonghui"] = "韩旭",
 
 	["cv:caozhi"] = "殆尘",
@@ -171,6 +180,11 @@ return {
 	["$zhichi2"] = "若吾早知如此~",
 	["$yizhong1"] = "不先为备，何以待敌",
 	["$yizhong2"] = "稳重行军，百战不殆！",
+	["$jueqing1"]="你的死活与我何干？",
+	["$jueqing2"]="无来无去，不悔不怨。",
+	["$shangshi1"]="无情者伤人，有情者自伤",
+	["$shangshi2"]="自损八百，可伤敌一千",
+	
 	["$zili"] = "如今起兵，进可以谋取天下，退亦能入蜀称王！",
 	
 	["~chengong"] = "请出就戮！",
@@ -181,6 +195,7 @@ return {
 	["~xusheng"] = "盛不能奋身出命，不亦辱乎…",
 	["~xushu"] = "娘……孩儿不孝……向您……请罪……",
 	["~yujin"] = "我……无颜面对丞相了……",
+	["~zhangchunhua"] = "怎能如此对我",
 	["~zhonghui"] = "",
 
 	-- illustrator
@@ -194,5 +209,6 @@ return {
 	["illustrator:wuguotai"] = "zoo",
 	["illustrator:chengong"] = "黑月乱",
 	["illustrator:gaoshun"] = "鄧Sir",
+	["illustrator:zhangchunhua"] = "樱花闪乱",
 	["illustrator:zhonghui"] = "雪君S",
 }

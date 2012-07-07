@@ -378,7 +378,7 @@ sgs.ai_view_as.jiuchi = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place ~= sgs.Player_Equip then
+	if card_place ~= sgs.Player_PlaceEquip then
 		if card:getSuit() == sgs.Card_Spade then
 			return ("analeptic:jiuchi[%s:%s]=%d"):format(suit, number, card_id)
 		end
