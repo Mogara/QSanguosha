@@ -1294,7 +1294,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     related_skills.insertMulti("shangshi", "#shangshi-card");
     related_skills.insertMulti("shangshi", "#shangshi-hp");
 
-    General *zhonghui = new General(this, "zhonghui", "wei", 3, false);
+    General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);
     zhonghui->addSkill(new Quanji);
     zhonghui->addSkill(new Zili);

@@ -4127,6 +4127,8 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
     // notifyMoveFocus(player);
+    if (player->isKongcheng())
+        return;
     Json::Value gongxinArgs(Json::arrayValue);    
     gongxinArgs[0] = toJsonString(player->objectName());
     gongxinArgs[1] = false;

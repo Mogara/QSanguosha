@@ -189,12 +189,6 @@ protected:
             return !player->hasUsed("QiceCard");
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "nullification" &&
-                !player->hasFlag("QiceUsed") &&
-                !player->isKongcheng() &&
-                player->getPhase() == Player::Play ;
-    }
 };
 
 class Zhiyu: public MasochismSkill{
@@ -206,6 +200,8 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
         if(target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
             target->drawCards(1);
+            if (target->isKongcheng())
+                return;
 
             Room *room = target->getRoom();
             room->broadcastSkillInvoke(objectName());
