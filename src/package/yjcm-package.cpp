@@ -54,7 +54,8 @@ public:
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *caozhi, QVariant &data) const{
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(move->from == caozhi || move->from == NULL)
+        if(move->from == caozhi || move->from == NULL
+                || move->from_places == Player::PlaceSpecial || move->from_places == Player::PlaceDelayedTrick)
             return false;
         if(move->to_place == Player::DiscardPile
                 && ((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
