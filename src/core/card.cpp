@@ -456,14 +456,10 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
 
     QList<int> used_cards;
     QList<CardsMoveStruct> moves;
-    if(card_use.card->isVirtualCard()){
-        foreach(int card_id, card_use.card->getSubcards()){
-            used_cards << card_id;
-        }
-    }
-    else{
-        used_cards << card_use.card->getEffectiveId();
-    }
+    if(card_use.card->isVirtualCard())
+        used_cards.append(card_use.card->getSubcards());
+    else used_cards << card_use.card->getEffectiveId();
+
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  

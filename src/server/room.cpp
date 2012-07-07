@@ -4166,6 +4166,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     move1.card_ids.append(card->getEffectiveId());
 
     CardsMoveStruct move2(QList<int>(),
+                          judge->who,
                           exchange ? player : NULL,
                           exchange ? Player::PlaceHand : Player::DiscardPile,
                           CardMoveReason(exchange ? CardMoveReason::S_REASON_OVERRIDE : CardMoveReason::S_REASON_JUDGEDONE,

@@ -5,6 +5,7 @@
 #include "carditem.h"
 #include "engine.h"
 #include "nostalgia.h"
+#include "yjcm-package.h"
 
 class MoonSpearSkill: public WeaponSkill{
 public:
@@ -344,6 +345,39 @@ public:
     }
 };
 
+class NosShangshi: public Shangshi{
+public:
+    NosShangshi():Shangshi("nosshangshi", 998)
+    {
+        frequency = Frequent;
+        events << DamageDone << HpLost << HpRecover << MaxHpChanged << PhaseChange;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual QString NosShangshi::getEffectName() const{
+        return objectName();
+    }
+};
+
+class NosShangshiCardMove: public Shangshi{
+public:
+    NosShangshiCardMove():Shangshi("#nosshangshi", 998)
+    {
+        events << CardsMoveOneTime << CardDrawnDone;
+    }
+
+    virtual int getPriority() const{
+        return 2;
+    }
+
+    virtual QString NosShangshiCardMove::getEffectName() const{
+        return "nosshangshi";
+    }
+};
+
 NostalGeneralPackage::NostalGeneralPackage()
     :Package("nostal_general")
 {
@@ -359,10 +393,16 @@ NostalGeneralPackage::NostalGeneralPackage()
     nosxushu->addSkill(new NosWuyan);
     nosxushu->addSkill(new NosJujian);
 
+    General *noszhangchunhua = new General(this, "noszhangchunhua", "wei", 3, false);
+    noszhangchunhua->addSkill("jueqing");
+    noszhangchunhua->addSkill(new NosShangshi);
+    noszhangchunhua->addSkill(new NosShangshiCardMove);
+    related_skills.insertMulti("nosshangshi", "#nosshangshi");
+
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();
 }
 
-ADD_PACKAGE(Nostalgia);
-ADD_PACKAGE(NostalGeneral);
+ADD_PACKAGE(Nostalgia)
+ADD_PACKAGE(NostalGeneral)
 

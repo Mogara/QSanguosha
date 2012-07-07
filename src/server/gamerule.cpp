@@ -491,8 +491,8 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
             QString winner = getWinner(player);
             if(!winner.isNull()){
-                player->bury();
                 room->gameOver(winner);
+                player->bury();
                 return true;
             }
 
@@ -538,7 +538,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
 
-            room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceTable,
+            room->moveCardTo(judge->card, judge->who, NULL, Player::PlaceTable,
                 CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
             LogMessage log;
             log.type = "$InitialJudge";
@@ -553,10 +553,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
     case FinishJudge:{
             JudgeStar judge = data.value<JudgeStar>();
-            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceSpecial){
-                CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
-                room->throwCard(judge->card, reason, judge->who);
-            }
+
             LogMessage log;
             log.type = "$JudgeResult";
             log.from = player;

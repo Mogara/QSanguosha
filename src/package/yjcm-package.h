@@ -3,6 +3,7 @@
 
 #include "package.h"
 #include "card.h"
+#include "skill.h"
 
 class YJCMPackage: public Package{
     Q_OBJECT
@@ -97,6 +98,18 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
+
+class Shangshi: public TriggerSkill{
+    Q_OBJECT
+
+public:
+    Shangshi(const QString &name, int n);
+    virtual bool trigger(TriggerEvent event,  Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual QString getEffectName() const;
+
+private:
+    int n;
 };
 
 #endif // YJCMPACKAGE_H
