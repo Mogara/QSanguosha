@@ -203,8 +203,9 @@ public:
                 if(card->isRed())
                     n++;
             }
-            if(n > 0 && player->askForSkillInvoke(objectName(), data))
-                player->drawCards(n);
+            for(int i = 0; i < n; i++)
+                if(player->askForSkillInvoke(objectName(), data))
+                    player->drawCards(1);
         }
         return false;
     }

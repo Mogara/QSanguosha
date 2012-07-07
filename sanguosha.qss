@@ -13,7 +13,7 @@ QProgressBar::chunk{
 QTextEdit{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
-    background-color: rgba(43,45,31,120);
+    background-color: rgba(43,45,31,255);
 }
 
 QTextEdit[description="true"]{
@@ -71,7 +71,7 @@ QScrollBar::down-arrow:vertical
 }
 
  QLineEdit#chat_edit{
-    background-color: rgba(20,20,20,200);
+    background-color: rgba(20,20,20,255);
     color: white;
     border: 10px transparent;
     height: 20px;
