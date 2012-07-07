@@ -439,8 +439,13 @@ void Card::doPreAction(Room *, const CardUseStruct &) const{
 
 }
 
-void Card::onUse(Room *room, const CardUseStruct &card_use) const{
+void Card::onUse(Room *room, const CardUseStruct &use) const{
+    CardUseStruct card_use = use;
     ServerPlayer *player = card_use.from;
+
+    if(card_use.from && card_use.to.length() > 1){
+        qSort(card_use.to.begin(), card_use.to.end(), ServerPlayer::CompareByActionOrder);
+    }
 
     LogMessage log;
     log.from = player;
