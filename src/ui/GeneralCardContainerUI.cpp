@@ -463,6 +463,7 @@ void PlayerCardContainer::repaintAll()
     _m_hpBox->setBackgroundVisible(_m_layout->m_magatamasBgVisible);
     _m_hpBox->setAnchorEnable(true);
     _m_hpBox->setAnchor(_m_layout->m_magatamasAnchor, _m_layout->m_magatamasAlign);
+    _m_hpBox->setImageArea(_m_layout->m_magatamaImageArea);
     _m_hpBox->update();
 
     _adjustComponentZValues();
