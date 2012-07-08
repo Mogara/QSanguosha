@@ -170,27 +170,17 @@ sgs.ai_skill_discard.neoganglie = function(self, discard_num, min_num, optional,
 	local to_discard = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local index = 0
-	local all_peaches = 0
-	for _, card in ipairs(cards) do
-		if card:inherits("Peach") then
-			all_peaches = all_peaches + 1
-		end
-	end
-	if all_peaches >= 2 and self:getOverflow() <= 0 then return {} end
 	self:sortByKeepValue(cards)
 	cards = sgs.reverse(cards)
 
 	for i = #cards, 1, -1 do
 		local card = cards[i]
-		if not card:inherits("Peach") and not self.player:isJilei(card) then
+		if not self.player:isJilei(card) then
 			table.insert(to_discard, card:getEffectiveId())
 			table.remove(cards, i)
 			index = index + 1
 			if index == 2 then break end
 		end
 	end	
-	if #to_discard < 2 then return {} 
-	else
-		return to_discard
-	end
+	return to_discard
 end

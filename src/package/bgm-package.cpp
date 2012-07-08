@@ -25,7 +25,8 @@ public:
                         }
                     }
                 }
-                if(target && player->askForSkillInvoke(objectName())){
+                QVariant data = QVariant::fromValue(target);
+                if(target && player->askForSkillInvoke(objectName(), data)){
                     int card_id = room->askForCardChosen(player, target, "h", objectName());
         			room->obtainCard(player, card_id, false);
                     if(card->inherits("Jink"))
@@ -39,13 +40,16 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
+                    QVariant data = QVariant::fromValue(p);
                     if(p->isKongcheng()) continue;
-                    if(use.card->inherits("Jink"))
-                        room->playSkillEffect("chongzhen", 1);
-                    else
-                        room->playSkillEffect("chongzhen", 2);
-                    int card_id = room->askForCardChosen(player, p, "h", objectName());
-        			room->obtainCard(player, card_id, false);
+                    if(player->askForSkillInvoke(objectName(), data)){
+                        if(use.card->inherits("Jink"))
+                            room->playSkillEffect("chongzhen", 1);
+                        else
+                            room->playSkillEffect("chongzhen", 2);
+                        int card_id = room->askForCardChosen(player, p, "h", objectName());
+                                    room->obtainCard(player, card_id, false);
+                    }
                 }
             }
             else if(use.to.contains(player) && !use.card->inherits("Collateral")
