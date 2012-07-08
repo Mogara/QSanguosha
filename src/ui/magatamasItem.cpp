@@ -78,6 +78,7 @@ void MagatamasBoxItem::setHp(int hp)
 {
     _doHpChangeAnimation(hp);
     m_hp = hp;
+    update();
 }
 
 void MagatamasBoxItem::setAnchor(QPoint anchor, Qt::Alignment align)
@@ -116,6 +117,7 @@ void MagatamasBoxItem::update()
 {
     _updateLayout();
     _autoAdjustPos();
+    QGraphicsItem::update();
 }
 
 void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
