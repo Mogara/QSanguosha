@@ -176,7 +176,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
         guanxing_box = new GuanxingBox;
         guanxing_box->hide();
         addItem(guanxing_box);
-        guanxing_box->setZValue(9.0);
+        guanxing_box->setZValue(20000.0);
 
         connect(ClientInstance, SIGNAL(guanxing(QList<int>,bool)), guanxing_box, SLOT(doGuanxing(QList<int>,bool)));
 
