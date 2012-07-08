@@ -1737,6 +1737,9 @@
     <ResourceCompile Include="..\..\resource\icon.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="breakpad.vcxproj">
+      <Project>{3023a030-312f-4878-b6f2-47d149585081}</Project>
+    </ProjectReference>
     <ProjectReference Include="jsoncpp.vcxproj">
       <Project>{d1d5b663-5ae0-4811-8672-d13c4661857f}</Project>
     </ProjectReference>

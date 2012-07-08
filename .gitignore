@@ -20,6 +20,7 @@ etc/customScenes/custom_scenario.txt
 QSanguosha.exe
 lib/jsoncpp.lib
 lib/lua.lib
+lib/breakpad.lib
 tools/
 builds/vs2010/Win32/
 builds/vs2010/ipch/
