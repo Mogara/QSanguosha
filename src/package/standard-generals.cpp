@@ -836,43 +836,31 @@ public:
 class Keji: public TriggerSkill{
 public:
     Keji():TriggerSkill("keji"){
-        events << CardResponsed;
-
+        events << EventPhaseChanging << CardResponsed;
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *lvmeng, QVariant &data) const{
-        CardStar card_star = data.value<CardStar>();
-        if(card_star->inherits("Slash"))
-            lvmeng->setFlags("keji_use_slash");
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
+        if(event == CardResponsed && lvmeng->getPhase() == Player::Play){
+            CardStar card_star = data.value<CardStar>();
+            if(card_star->inherits("Slash"))
+                lvmeng->setFlags("keji_use_slash");
+        }
+        else if(event == EventPhaseChanging)
+        {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if(change.to == Player::Discard){
+                if(!lvmeng->hasFlag("keji_use_slash") &&
+                        lvmeng->getSlashCount() == 0 &&
+                        lvmeng->askForSkillInvoke("keji"))
+                {
+                    room->broadcastSkillInvoke("keji");
 
-        return false;
-    }
-};
-
-class KejiSkip: public PhaseChangeSkill{
-public:
-    KejiSkip():PhaseChangeSkill("#keji-skip"){
-    }
-
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *lvmeng) const{
-        if(lvmeng->getPhase() == Player::Start){
-            lvmeng->setFlags("-keji_use_slash");
-        }else if(lvmeng->getPhase() == Player::Discard){
-            if(!lvmeng->hasFlag("keji_use_slash") &&
-               lvmeng->getSlashCount() == 0 &&
-               lvmeng->askForSkillInvoke("keji"))
-            {
-                lvmeng->getRoom()->broadcastSkillInvoke("keji");
-
-                return true;
+                    lvmeng->skip(Player::Discard);
+                    return true;
+                }
             }
         }
-
         return false;
     }
 };
@@ -1326,8 +1314,6 @@ void StandardPackage::addGenerals(){
 
     lvmeng = new General(this, "lvmeng", "wu");
     lvmeng->addSkill(new Keji);
-    lvmeng->addSkill(new KejiSkip);
-    related_skills.insertMulti("keji", "#keji-skip");
 
     huanggai = new General(this, "huanggai", "wu");
     huanggai->addSkill(new Kurou);

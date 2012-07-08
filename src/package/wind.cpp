@@ -333,13 +333,13 @@ public:
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if(change.to == Player::Judge){
+        if(change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge)){
             if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)){
                 xiahouyuan->skip(Player::Judge);
                 xiahouyuan->skip(Player::Draw);
                 return true;
             }
-        }else if(change.to == Player::Play){
+        }else if(change.to == Player::Play && !xiahouyuan->isSkipped(Player::Play)){
             if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2)){
                 xiahouyuan->skip(Player::Play);
                 return true;

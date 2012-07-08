@@ -304,25 +304,26 @@ public:
     }
 };
 
-class Dangxian: public PhaseChangeSkill{
+class Dangxian: public TriggerSkill{
 public:
-    Dangxian():PhaseChangeSkill("dangxian"){
+    Dangxian():TriggerSkill("dangxian"){
         frequency = Compulsory;
+        events << EventPhaseChanging;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *liaohua) const{
-        Room *room = liaohua->getRoom();
-        if(liaohua->getPhase() == Player::RoundStart){
-			room->broadcastSkillInvoke("dangxian"); 
+
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *liaohua, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if(change.to == Player::Start){
+            room->broadcastSkillInvoke("dangxian");
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = liaohua;
             log.arg = objectName();
             room->sendLog(log);
 
-            QList<Player::Phase> phases = liaohua->getPhases();
-            phases.prepend(Player::Play) ;
-            liaohua->play(phases);
+            liaohua->insertPhase(Player::Play);
+            return true;
         }
         return false;
     }

@@ -231,7 +231,7 @@ void PlayerCardContainer::updateAvatar()
                                                .arg(kingdom)),
                          this->_getAvatarParent());
             QString name = Sanguosha->translate("&" + general->objectName());
-            if (name.isNull())
+            if (name.startsWith("&"))
                 name = Sanguosha->translate(general->objectName());
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, 
                                                   _m_layout->m_avatarNameArea,

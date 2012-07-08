@@ -9,6 +9,7 @@ class Recorder;
 #include "player.h"
 #include "socket.h"
 #include "protocol.h"
+#include "structs.h"
 
 #include <QSemaphore>
 #include <QDateTime>
@@ -57,6 +58,8 @@ public:
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase);
     void skip();
+    void insertPhase(Player::Phase phase);
+    bool isSkipped(Player::Phase phase);
     
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);
@@ -154,6 +157,8 @@ private:
     QList<ServerPlayer *> victims;
     Recorder *recorder;
     QList<Phase> phases;
+    int _m_phases_index;
+    QList<PhaseStruct> _m_phases_state;
     ServerPlayer *next;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;

@@ -152,22 +152,19 @@ public:
     }
 };
 
-class Conghui: public PhaseChangeSkill{
+class Conghui: public TriggerSkill{
 public:
-    Conghui():PhaseChangeSkill("conghui"){
+    Conghui():TriggerSkill("conghui"){
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Discard;
-    }
-
-    virtual int getPriority() const{
-        return 3;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *) const{
-        return true;
+    virtual bool trigger(TriggerEvent , Room *, ServerPlayer *player, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if(change.to == Player::Discard && !player->isSkipped(Player::Discard)){
+            player->skip(Player::Discard);
+            return true;
+        }
+        return false;
     }
 };
 
@@ -318,33 +315,30 @@ public:
     }
 };
 
-class LukangWeiyan: public PhaseChangeSkill{
+class LukangWeiyan: public TriggerSkill{
 public:
-    LukangWeiyan():PhaseChangeSkill("lukang_weiyan"){
+    LukangWeiyan():TriggerSkill("lukang_weiyan"){
+        events << EventPhaseChanging;
     }
 
-    virtual int getPriority() const{
-        return 4; // very high priority
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        switch(target->getPhase()){
+    virtual bool trigger(TriggerEvent , Room *, ServerPlayer *target, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        switch(change.to){
         case Player::Draw: {
-                if(target->askForSkillInvoke("lukang_weiyan", "draw2play")){
-                    target->getRoom()->setPlayerProperty(target, "phase", "play");
-                }
-
-                break;
+            if(!target->isSkipped(Player::Draw) && target->askForSkillInvoke("lukang_weiyan", "draw2play")){
+                change.to = Player::Play;
+                data = QVariant::fromValue(change);
             }
+            break;
+        }
 
         case Player::Play:{
-                if(target->askForSkillInvoke("lukang_weiyan", "play2draw")){
-                    target->clearHistory();
-                    target->getRoom()->setPlayerProperty(target, "phase", "draw");
-                }
-
-                break;
+            if(!target->isSkipped(Player::Play) && target->askForSkillInvoke("lukang_weiyan", "play2draw")){
+                change.to = Player::Draw;
+                data = QVariant::fromValue(change);
             }
+            break;
+        }
 
         default:
             return false;

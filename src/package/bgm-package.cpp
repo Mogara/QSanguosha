@@ -120,22 +120,16 @@ public:
 class Lihun: public TriggerSkill{
 public:
     Lihun():TriggerSkill("lihun"){
-        events << EventPhaseStart;
+        events << EventPhaseEnd;
         view_as_skill = new LihunSelect;
-    }
-
-    virtual int getPriority() const{
-        return 4;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL && target->hasUsed("LihunCard");
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *diaochan, QVariant &data) const{
-        PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
-
-        if(phase_change.from == Player::Play){
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *diaochan, QVariant &) const{
+        if(diaochan->getPhase() == Player::Play){
             ServerPlayer *target = NULL;
             foreach(ServerPlayer *other, room->getOtherPlayers(diaochan)){
                 if(other->hasFlag("LihunTarget")){

@@ -622,18 +622,16 @@ public:
     }
 };
 
-class Qixing: public PhaseChangeSkill{
+class Qixing: public TriggerSkill{
 public:
-    Qixing():PhaseChangeSkill("qixing"){
+    Qixing():TriggerSkill("qixing"){
         frequency = Frequent;
-    }
-
-    virtual int getPriority() const{
-        return -1;
+        events << EventPhaseEnd;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && PhaseChangeSkill::triggerable(target) && target->getMark("@star") > 0;
+        return TriggerSkill::triggerable(target) && target->getMark("@star") > 0
+                && target->getPhase() == Player::Draw;
     }
 
     static void Exchange(ServerPlayer *shenzhuge){
@@ -699,11 +697,8 @@ public:
 
     }
 
-    virtual bool onPhaseChange(ServerPlayer *shenzhuge) const{
-        if(shenzhuge->getPhase() == Player::Draw){
-            Exchange(shenzhuge);
-        }
-
+    virtual bool trigger(TriggerEvent , Room *, ServerPlayer *shenzhuge, QVariant &) const{
+        Exchange(shenzhuge);
         return false;
     }
 };

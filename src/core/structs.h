@@ -311,6 +311,16 @@ struct PhaseChangeStruct{
     Player::Phase to;
 };
 
+struct PhaseStruct{
+    inline PhaseStruct(){
+        phase = Player::PhaseNone;
+        finished = false;
+    }
+
+    Player::Phase phase;
+    bool finished;
+};
+
 enum TriggerEvent{
     NonTrigger,
 

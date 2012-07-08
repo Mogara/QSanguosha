@@ -15,7 +15,8 @@ const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
     socket(NULL), room(room),
-    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL), next(NULL), _m_clientResponse(Json::nullValue)
+    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL), next(NULL), _m_clientResponse(Json::nullValue),
+    _m_phases_index(0)
 {
     semas = new QSemaphore*[S_NUM_SEMAPHORES];
     for(int i=0; i< S_NUM_SEMAPHORES; i++){
@@ -582,7 +583,7 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to){
     QVariant data = QVariant::fromValue(phase_change);
 
     bool skip = thread->trigger(EventPhaseChanging, room, this, data);
-    if(skip){
+    if(skip && to != NotActive){
         setPhase(from);
         return true;
     }
@@ -610,15 +611,43 @@ void ServerPlayer::play(QList<Player::Phase> set_phases){
                    << Discard << Finish << NotActive;
 
     phases = set_phases;
-    while(!phases.isEmpty()){
+    _m_phases_state.clear();
+    for(int i = 0; i < phases.size(); i++){
+        PhaseStruct _phase;
+        _phase.phase = phases[i];
+        _m_phases_state << _phase;
+    }
 
-        if(changePhase(getPhase(), phases.first()))
+    for(int i = 0; i < _m_phases_state.size(); i++)
+    {
+        if(isDead()){
+            setPhase(NotActive);
+            room->broadcastProperty(this, "phase");
+            break;
+        }
+
+        _m_phases_index = i;
+        PhaseChangeStruct phase_change;
+        phase_change.from = getPhase();
+        phase_change.to = phases[i];
+
+        RoomThread *thread = room->getThread();
+        setPhase(PhaseNone);
+        QVariant data = QVariant::fromValue(phase_change);
+
+        bool skip = thread->trigger(EventPhaseChanging, room, this, data);
+        phase_change = data.value<PhaseChangeStruct>();
+        _m_phases_state[i].phase = phases[i] = phase_change.to;
+
+        if((skip || _m_phases_state[i].finished) && phases[i] != NotActive)
             continue;
 
-        if(isDead() && getPhase() != NotActive){
-            phases.clear();
-            phases << NotActive;
-        }
+        setPhase(phases[i]);
+        room->broadcastProperty(this, "phase");
+
+        thread->trigger(EventPhaseStart, room, this);
+        if(getPhase() != NotActive)
+            thread->trigger(EventPhaseEnd, room, this);
     }
 }
 
@@ -626,8 +655,28 @@ QList<Player::Phase> &ServerPlayer::getPhases(){
     return phases;
 }
 
+void ServerPlayer::skip(){
+    for(int i = 0; i < _m_phases_state.size(); i++)
+    {
+        _m_phases_state[i].finished = true;
+    }
+
+    LogMessage log;
+    log.type = "#SkipAllPhase";
+    log.from = this;
+    room->sendLog(log);
+}
+
 void ServerPlayer::skip(Player::Phase phase){
-    phases.removeOne(phase);
+    for(int i = _m_phases_index; i < _m_phases_state.size(); i++)
+    {
+        if(_m_phases_state[i].phase == phase){
+            if(_m_phases_state[i].finished)
+                return;
+            _m_phases_state[i].finished = true;
+            break;
+        }
+    }
 
     static QStringList phase_strings;
     if(phase_strings.isEmpty()){
@@ -644,13 +693,21 @@ void ServerPlayer::skip(Player::Phase phase){
     room->sendLog(log);
 }
 
-void ServerPlayer::skip(){
-    phases.clear();
+void ServerPlayer::insertPhase(Player::Phase phase){
+    PhaseStruct _phase;
+    _phase.phase = phase;
+    phases.insert(_m_phases_index + 1, phase);
+    _m_phases_state.insert(_m_phases_index + 1, _phase);
+}
 
-    LogMessage log;
-    log.type = "#SkipAllPhase";
-    log.from = this;
-    room->sendLog(log);
+bool ServerPlayer::isSkipped(Player::Phase phase){
+    for(int i = _m_phases_index; i < _m_phases_state.size(); i++)
+    {
+        if(_m_phases_state[i].phase == phase){
+            return _m_phases_state[i].finished;
+        }
+    }
+    return false;
 }
 
 void ServerPlayer::gainMark(const QString &mark, int n){

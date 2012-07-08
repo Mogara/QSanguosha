@@ -564,7 +564,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
 
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable){
                 CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
-                room->throwCard(judge->card, reason, judge->who);
+                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
             }
             break;
         }

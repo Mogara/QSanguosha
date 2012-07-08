@@ -29,7 +29,10 @@ bool Skill::isLordSkill() const{
 }
 
 QString Skill::getDescription() const{
-    return Sanguosha->translate(":" + objectName());
+    QString des_src = Sanguosha->translate(":" + objectName());
+    if(des_src == ":" + objectName())
+        return QString();
+    return des_src;
 }
 
 QString Skill::getNotice(int index) const{
@@ -256,11 +259,7 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
 }
 
 bool PhaseChangeSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
-    bool skipped = onPhaseChange(player);
-    if(skipped)
-        player->skip(player->getPhase());
-
-    return skipped;
+    return onPhaseChange(player);
 }
 
 DrawCardsSkill::DrawCardsSkill(const QString &name)

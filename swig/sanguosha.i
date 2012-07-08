@@ -267,6 +267,8 @@ public:
 
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase);
+    void insertPhase(Player::Phase phase);
+    bool isSkipped(Player::Phase phase);
 
     void gainMark(const char *mark, int n = 1);
     void loseMark(const char *mark, int n = 1);
@@ -314,10 +316,6 @@ public:
     void speak(const char *msg){
         QString str = QByteArray(msg).toBase64();
         $self->getRoom()->speakCommand($self, str);
-    }
-
-    bool isSkipped(Player::Phase phase){
-        return ! $self->getPhases().contains(phase);
     }
 };
 
