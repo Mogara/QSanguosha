@@ -263,10 +263,12 @@ public:
 
         boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
 
-        dummy_skills << "chujia" << "xuwei" << "tuoqiao" << "shenli" << "midao"
-                     << "kuangfeng" << "dawu" << "kuangbao" << "shenfen" << "wuqian"
-                     << "wumou" << "wuhun" << "tongxin" << "xinsheng" << "zaoxian"
-                     << "renjie" << "baiyin";
+        dummy_skills << "xinsheng" << "wuhu" << "kuangfeng" << "dawu" << "wumou" << "wuqian" 
+					 << "shenfen" << "renjie" << "weidi" << "danji" << "shiyong" << "zhiba"
+					 << "super_guanxing" << "yihun" << "shihun" << "chongzhen" << "tongxin"
+					 << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian";
+					 
+		available_wake_skills << "hunzi" << "zhiji" << "kegou"
     }
 
     void getRandomSkill(ServerPlayer *player, bool need_trans = false) const{
@@ -296,9 +298,13 @@ public:
             const General *general = Sanguosha->getGeneral(one);
             QList<const Skill *> skills = general->findChildren<const Skill *>();
             foreach(const Skill *skill, skills){
-                if(!skill->isLordSkill()){
+                if(!skill->isLordSkill() && !skill->inherits("SPConvertSkill")){
                     if(dummy_skills.contains(skill->objectName()))
                         continue;
+						
+					if(skill->getFrequency() == Skill::Wake
+							&& !available_wake_skills.contains(skill->objectName()))
+						continue;
 
                     if(!skill->objectName().startsWith("#"))
                         all_skills << skill->objectName();
