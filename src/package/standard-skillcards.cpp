@@ -54,7 +54,6 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 JieyinCard::JieyinCard(){
     once = true;
     mute = true;
-    will_throw = true;
 }
 
 bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

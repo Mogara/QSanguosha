@@ -247,7 +247,8 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
                 continue;
 
             const ProhibitSkill *skill = room->isProhibited(target, player, this);
-            if(skill){LogMessage log;
+            if(skill){
+                LogMessage log;
                 log.type = "#SkillAvoid";
                 log.from = player;
                 log.arg = skill->objectName();
