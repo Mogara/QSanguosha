@@ -12,8 +12,32 @@
 #include "server.h"
 #include "audio.h"
 
+#ifdef WIN32
+#include "exception_handler.h"
+
+using namespace google_breakpad;
+
+static bool callback(const wchar_t *dump_path, const wchar_t *id,
+                     void *context, EXCEPTION_POINTERS *exinfo,
+                     MDRawAssertionInfo *assertion,
+                     bool succeeded) 
+{
+    if (succeeded) {
+        qWarning("Dump file created in %s, dump guid is %ws\n", dump_path, id);   
+    } else {
+        printf("Dump failed\n");
+    }
+    return succeeded; 
+} 
+
 int main(int argc, char *argv[])
-{    
+{
+    ExceptionHandler eh(L"./dmp", NULL, callback, NULL,
+                        ExceptionHandler::HANDLER_ALL);
+#else
+int main(int argc, char *argv[])
+{
+#endif
     if(argc > 1 && strcmp(argv[1], "-server") == 0)
         new QCoreApplication(argc, argv);
     else

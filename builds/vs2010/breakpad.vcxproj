@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2CFD36B2-A793-499C-8521-9286DCB027F7}</ProjectGuid>
+    <ProjectGuid>{3023A030-312F-4878-B6F2-47D149585081}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>lua</RootNamespace>
+    <RootNamespace>breakpad</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -40,9 +40,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)..\..\lib\</OutDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\..\lib\</OutDir>
   </PropertyGroup>
@@ -52,8 +49,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\src\breakpad\client\windows\;..\..\src\breakpad\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -68,7 +67,10 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\src\breakpad\client\windows\;..\..\src\breakpad\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,62 +80,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\lua\lapi.h" />
-    <ClInclude Include="..\..\src\lua\lauxlib.h" />
-    <ClInclude Include="..\..\src\lua\lcode.h" />
-    <ClInclude Include="..\..\src\lua\ldebug.h" />
-    <ClInclude Include="..\..\src\lua\ldo.h" />
-    <ClInclude Include="..\..\src\lua\lfunc.h" />
-    <ClInclude Include="..\..\src\lua\lgc.h" />
-    <ClInclude Include="..\..\src\lua\llex.h" />
-    <ClInclude Include="..\..\src\lua\llimits.h" />
-    <ClInclude Include="..\..\src\lua\lmem.h" />
-    <ClInclude Include="..\..\src\lua\lobject.h" />
-    <ClInclude Include="..\..\src\lua\lopcodes.h" />
-    <ClInclude Include="..\..\src\lua\lparser.h" />
-    <ClInclude Include="..\..\src\lua\lstate.h" />
-    <ClInclude Include="..\..\src\lua\lstring.h" />
-    <ClInclude Include="..\..\src\lua\ltable.h" />
-    <ClInclude Include="..\..\src\lua\ltm.h" />
-    <ClInclude Include="..\..\src\lua\lua.h" />
-    <ClInclude Include="..\..\src\lua\lua.hpp" />
-    <ClInclude Include="..\..\src\lua\luaconf.h" />
-    <ClInclude Include="..\..\src\lua\lualib.h" />
-    <ClInclude Include="..\..\src\lua\lundump.h" />
-    <ClInclude Include="..\..\src\lua\lvm.h" />
-    <ClInclude Include="..\..\src\lua\lzio.h" />
+    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\lua\lapi.c" />
-    <ClCompile Include="..\..\src\lua\lauxlib.c" />
-    <ClCompile Include="..\..\src\lua\lbaselib.c" />
-    <ClCompile Include="..\..\src\lua\lcode.c" />
-    <ClCompile Include="..\..\src\lua\ldblib.c" />
-    <ClCompile Include="..\..\src\lua\ldebug.c" />
-    <ClCompile Include="..\..\src\lua\ldo.c" />
-    <ClCompile Include="..\..\src\lua\ldump.c" />
-    <ClCompile Include="..\..\src\lua\lfunc.c" />
-    <ClCompile Include="..\..\src\lua\lgc.c" />
-    <ClCompile Include="..\..\src\lua\linit.c" />
-    <ClCompile Include="..\..\src\lua\liolib.c" />
-    <ClCompile Include="..\..\src\lua\llex.c" />
-    <ClCompile Include="..\..\src\lua\lmathlib.c" />
-    <ClCompile Include="..\..\src\lua\lmem.c" />
-    <ClCompile Include="..\..\src\lua\loadlib.c" />
-    <ClCompile Include="..\..\src\lua\lobject.c" />
-    <ClCompile Include="..\..\src\lua\lopcodes.c" />
-    <ClCompile Include="..\..\src\lua\loslib.c" />
-    <ClCompile Include="..\..\src\lua\lparser.c" />
-    <ClCompile Include="..\..\src\lua\lstate.c" />
-    <ClCompile Include="..\..\src\lua\lstring.c" />
-    <ClCompile Include="..\..\src\lua\lstrlib.c" />
-    <ClCompile Include="..\..\src\lua\ltable.c" />
-    <ClCompile Include="..\..\src\lua\ltablib.c" />
-    <ClCompile Include="..\..\src\lua\ltm.c" />
-    <ClCompile Include="..\..\src\lua\lundump.c" />
-    <ClCompile Include="..\..\src\lua\lvm.c" />
-    <ClCompile Include="..\..\src\lua\lzio.c" />
-    <ClCompile Include="..\..\src\lua\print.c" />
+    <ClCompile Include="..\..\src\breakpad\client\windows\crash_generation\client_info.cc" />
+    <ClCompile Include="..\..\src\breakpad\client\windows\crash_generation\crash_generation_client.cc" />
+    <ClCompile Include="..\..\src\breakpad\client\windows\crash_generation\crash_generation_server.cc" />
+    <ClCompile Include="..\..\src\breakpad\client\windows\crash_generation\minidump_generator.cc" />
+    <ClCompile Include="..\..\src\breakpad\client\windows\handler\exception_handler.cc" />
+    <ClCompile Include="..\..\src\breakpad\common\windows\guid_string.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\breakpad\client\windows\crash_generation\client_info.h" />
+    <ClInclude Include="..\..\src\breakpad\client\windows\crash_generation\crash_generation_client.h" />
+    <ClInclude Include="..\..\src\breakpad\client\windows\crash_generation\crash_generation_server.h" />
+    <ClInclude Include="..\..\src\breakpad\client\windows\crash_generation\minidump_generator.h" />
+    <ClInclude Include="..\..\src\breakpad\client\windows\handler\exception_handler.h" />
+    <ClInclude Include="..\..\src\breakpad\common\windows\guid_string.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
