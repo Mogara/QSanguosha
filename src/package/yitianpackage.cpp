@@ -156,6 +156,7 @@ class Conghui: public TriggerSkill{
 public:
     Conghui():TriggerSkill("conghui"){
         frequency = Compulsory;
+        events << EventPhaseChanging;
     }
 
     virtual bool trigger(TriggerEvent , Room *, ServerPlayer *player, QVariant &data) const{
