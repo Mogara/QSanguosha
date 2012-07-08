@@ -15,7 +15,7 @@ GameRule::GameRule(QObject *)
     // a way to do it.
     //setParent(parent);
 
-    events << GameStart << TurnStart << PhaseChange << CardUsed
+    events << GameStart << TurnStart << EventPhaseStart << CardUsed
             << CardFinished << TargetConfirming << TargetConfirmed
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
             << AskForPeaches << Death << Dying << GameOverJudge
@@ -199,7 +199,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             break;
         }
 
-    case PhaseChange: onPhaseChange(player); break;
+    case EventPhaseStart: onPhaseChange(player); break;
     case CardUsed: {
             if(data.canConvert<CardUseStruct>()){
                 CardUseStruct card_use = data.value<CardUseStruct>();
@@ -774,7 +774,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
         }
 
     case HpChanged:{
-            if(player->getGeneralName() == "shenlvbu1" && player->getHp() <= 4){
+            if(player->isLord() && player->getHp() <= 4){
                 throw StageChange;
             }
 
@@ -1016,7 +1016,7 @@ bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, Q
         break;
     }
 
-    case PhaseChange:{
+    case EventPhaseStart:{
         if(player->getPhase() == Player::Start)
             playerShowed(player);
 

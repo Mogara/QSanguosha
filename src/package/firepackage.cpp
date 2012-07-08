@@ -290,11 +290,11 @@ public:
     Shuangxiong():TriggerSkill("shuangxiong"){
         view_as_skill = new ShuangxiongViewAsSkill;
 
-        events << PhaseChange << FinishJudge;
+        events << EventPhaseStart << FinishJudge;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *shuangxiong, QVariant &data) const{
-        if(event == PhaseChange){
+        if(event == EventPhaseStart){
             if(shuangxiong->getPhase() == Player::Start){
                 room->setPlayerMark(shuangxiong, "shuangxiong", 0);
             }else if(shuangxiong->getPhase() == Player::Draw){

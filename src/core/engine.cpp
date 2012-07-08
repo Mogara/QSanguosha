@@ -204,7 +204,9 @@ QStringList Engine::getBanPackages() const{
 }
 
 QString Engine::translate(const QString &to_translate) const{
-    return translations.value(to_translate, to_translate);
+    bool ok;
+    to_translate.toInt(&ok);
+    return translations.value(to_translate, ok ? to_translate : QString());
 }
 
 int Engine::getRoleIndex() const{

@@ -126,7 +126,7 @@ public:
 class Daji: public TriggerSkill{
 public:
     Daji():TriggerSkill("daji"){
-        events << Damaged << PhaseChange << CardEffected << DamageInflicted;
+        events << Damaged << EventPhaseStart << CardEffected << DamageInflicted;
         frequency = Compulsory;
     }
 
@@ -135,7 +135,7 @@ public:
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
 
-        if(event == PhaseChange && player->getPhase() == Player::Finish){
+        if(event == EventPhaseStart && player->getPhase() == Player::Finish){
             if(has_frantic)
                 player->drawCards(players.length());
             else
@@ -256,7 +256,7 @@ public:
     ImpasseRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << TurnStart << PhaseChange
+        events << GameStart << TurnStart << EventPhaseStart
                << Death << GameOverJudge << Damaged << HpLost;
 
         boss_banlist << "yuanshao" << "yanliangwenchou" << "zhaoyun" << "guanyu" << "shencaocao";
@@ -301,7 +301,7 @@ public:
                 if(!skill->isLordSkill() && !skill->inherits("SPConvertSkill")){
                     if(dummy_skills.contains(skill->objectName()))
                         continue;
-                        
+
                     if(skill->getFrequency() == Skill::Wake
                             && !available_wake_skills.contains(skill->objectName()))
                         continue;
@@ -414,7 +414,7 @@ public:
                 break;
             }
 
-        case PhaseChange:{
+        case EventPhaseStart:{
                 if(player->isLord() && player->getMark("frantic_over") > 0 && player->getPhase() == Player::Finish)
                    player->getRoom()->killPlayer(player);
                 break;
@@ -500,8 +500,7 @@ public:
 
 private:
     QStringList boss_banlist, boss_skillbanned;
-    QStringList dummy_skills;
-    QList<QString> available_wake_skills;
+    QStringList dummy_skills, available_wake_skills;
 };
 
 bool ImpasseScenario::exposeRoles() const{

@@ -156,7 +156,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(
     QSize& fontSize, int spacing, int weight, QRect boundingBox,
     Qt::Orientation orient, Qt::Alignment align)
 {
-    if (!_ftLibInitialized || font == NULL || painter == NULL)
+    if (!_ftLibInitialized || font == NULL || painter == NULL || text.isNull())
         return false;
 
     QVector<uint> charcodes = text.toUcs4();

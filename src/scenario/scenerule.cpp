@@ -36,7 +36,7 @@ public:
 
 class Scene26Effect : public TriggerSkill {
 public:
-    Scene26Effect(const QString &name) : TriggerSkill(name) { events << PhaseChange; }
+    Scene26Effect(const QString &name) : TriggerSkill(name) { events << EventPhaseStart; }
 
     virtual bool triggerable(const ServerPlayer *target) const {
         Q_UNUSED(target);
@@ -52,7 +52,7 @@ public:
         if(room->getTag("SceneID").toInt() != 26)
             return false;
 
-        if(player == room->getCurrent() && event == PhaseChange) {
+        if(player == room->getCurrent() && event == EventPhaseStart) {
             if(player->getPhase() == Player::Start) {
                 room->getThread()->delay();
                 if(room->getTag("SceneTurnLeft").toInt() != 4) player->skip(Player::Judge);
@@ -392,7 +392,7 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
 
         break;
 
-    case PhaseChange:
+    case EventPhaseStart:
         switch(room->getTag("SceneID").toInt()) {
         case 6:
             if(player->getPhase() == Player::Start) {

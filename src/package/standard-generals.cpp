@@ -338,13 +338,13 @@ public:
 class Luoshen:public TriggerSkill{
 public:
     Luoshen():TriggerSkill("luoshen"){
-        events << PhaseChange << FinishJudge;
+        events << EventPhaseStart << FinishJudge;
 
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhenji, QVariant &data) const{
-        if(event == PhaseChange && zhenji->getPhase() == Player::Start){
+        if(event == EventPhaseStart && zhenji->getPhase() == Player::Start){
             int n = 0;
             while(zhenji->askForSkillInvoke("luoshen")){
                 if(n == 0)
@@ -1411,7 +1411,7 @@ public:
 class Longnu: public TriggerSkill{
 public:
     Longnu():TriggerSkill("longnu"){
-        events << CardsMoveOneTime << PhaseChange;
+        events << CardsMoveOneTime << EventPhaseStart;
         frequency = Frequent;
     }
 

@@ -782,6 +782,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["logBoxHeightPercentage"], _m_roomLayout.m_logBoxHeightPercentage);
     tryParse(config["minimumSceneSize"], _m_roomLayout.m_minimumSceneSize);
     tryParse(config["maximumSceneSize"], _m_roomLayout.m_maximumSceneSize);
+    tryParse(config["minimumSceneSize-10player"], _m_roomLayout.m_minimumSceneSize);
+    tryParse(config["maximumSceneSize-10player"], _m_roomLayout.m_maximumSceneSize);
     tryParse(config["photoHDistance"], _m_roomLayout.m_photoHDistance);
     tryParse(config["photoVDistance"], _m_roomLayout.m_photoVDistance);
     tryParse(config["photoDashboardPadding"], _m_roomLayout.m_photoDashboardPadding);

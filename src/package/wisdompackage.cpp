@@ -454,12 +454,12 @@ public:
 class Longluo: public TriggerSkill{
 public:
     Longluo():TriggerSkill("longluo"){
-        events << CardsMoveOneTime << PhaseChange;
+        events << CardsMoveOneTime << EventPhaseStart;
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == PhaseChange){
+        if(event == EventPhaseStart){
             if(player->getPhase() == Player::Finish){
                 int drawnum = player->getMark("longluo");
                 if(drawnum > 0 && player->askForSkillInvoke(objectName(), data)){
@@ -643,7 +643,7 @@ public:
 class Shipo: public TriggerSkill{
 public:
     Shipo():TriggerSkill("shipo"){
-        events << PhaseChange;
+        events << EventPhaseStart;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

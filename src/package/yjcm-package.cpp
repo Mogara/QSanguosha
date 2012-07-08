@@ -521,7 +521,7 @@ protected:
 class Xuanfeng: public TriggerSkill{
 public:
     Xuanfeng():TriggerSkill("xuanfeng"){
-        events << CardsMoveOneTime << PhaseChange;
+        events << CardsMoveOneTime << EventPhaseStart;
         view_as_skill = new XuanfengViewAsSkill;
     }
 
@@ -530,7 +530,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lingtong, QVariant &data) const{
-        if(event == PhaseChange){
+        if(event == EventPhaseStart){
             lingtong->setMark("xuanfeng", 0);
         }
         else if(event == CardsMoveOneTime)
@@ -678,7 +678,7 @@ public:
     Xianzhen():TriggerSkill("xianzhen"){
         view_as_skill = new XianzhenViewAsSkill;
 
-        events << PhaseChange << Death;
+        events << EventPhaseStart << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -688,7 +688,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
         ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
 
-        if(event == Death || event == PhaseChange){
+        if(event == Death || event == EventPhaseStart){
             if((event == Death || gaoshun->getPhase() == Player::Finish) && target){
                     Room *room = gaoshun->getRoom();
                     room->setFixedDistance(gaoshun, target, -1);
@@ -785,7 +785,7 @@ public:
 class ZhichiClear: public TriggerSkill{
 public:
     ZhichiClear():TriggerSkill("#zhichi-clear"){
-        events << PhaseChange;
+        events << EventPhaseStart;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1198,7 +1198,7 @@ QString Shangshi::getEffectName()const{
 
 bool Shangshi::trigger(TriggerEvent event,  Room* room, ServerPlayer *player, QVariant &data) const
 {
-    if(event == PhaseChange && player->getPhase() != Player::Finish)
+    if(event == EventPhaseStart && player->getPhase() != Player::Finish)
         return false;
 
     if(event == CardsMoveOneTime)
@@ -1240,15 +1240,11 @@ public:
     ShangshiStateChanged():Shangshi("shangshi", 2)
     {
         frequency = Compulsory;
-        events << DamageDone << HpLost << HpRecover << MaxHpChanged << PhaseChange;
+        events << DamageDone << HpLost << HpRecover << MaxHpChanged << EventPhaseStart;
     }
 
     virtual int getPriority() const{
         return -1;
-    }
-
-    virtual QString ShangshiStateChanged::getEffectName() const{
-        return objectName();
     }
 };
 
@@ -1263,7 +1259,7 @@ public:
         return 2;
     }
 
-    virtual QString ShangshiCardMove::getEffectName() const{
+    virtual QString getEffectName() const{
         return "shangshi";
     }
 };

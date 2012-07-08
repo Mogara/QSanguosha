@@ -330,7 +330,7 @@ public:
 class Qinyin: public TriggerSkill{
 public:
     Qinyin():TriggerSkill("qinyin"){
-        events << CardsMoveOneTime << PhaseChange;
+        events << CardsMoveOneTime << EventPhaseStart;
         default_choice = "down";
     }
 
@@ -373,7 +373,7 @@ public:
                     }
                 }
             }
-        }else if(event == PhaseChange){
+        }else if(event == EventPhaseStart){
             shenzhouyu->setMark("qinyin", 0);
         }
 
@@ -571,7 +571,7 @@ public:
 class Wuqian: public TriggerSkill{
 public:
     Wuqian():TriggerSkill("wuqian"){
-        events << PhaseChange << Death;
+        events << EventPhaseStart << Death;
         view_as_skill = new WuqianViewAsSkill;
     }
 
@@ -581,7 +581,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
 
-        if(event == PhaseChange || event == Death){
+        if(event == EventPhaseStart || event == Death){
             if(player->hasSkill(objectName()) && (event == Death || player->getPhase() == Player::NotActive)){
                 foreach(ServerPlayer *p , room->getAllPlayers())
                     if(p->hasFlag("wuqian"))

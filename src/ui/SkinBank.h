@@ -126,6 +126,8 @@ public:
         int m_photoVDistance;
         QSize m_minimumSceneSize;
         QSize m_maximumSceneSize;
+        QSize m_minimumSceneSize10Player;
+        QSize m_maximumSceneSize10Player;
     };
 
     struct PlayerCardContainerLayout

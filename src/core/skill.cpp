@@ -252,7 +252,7 @@ bool MasochismSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVa
 PhaseChangeSkill::PhaseChangeSkill(const QString &name)
     :TriggerSkill(name)
 {
-    events << PhaseChange;
+    events << EventPhaseStart;
 }
 
 bool PhaseChangeSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{

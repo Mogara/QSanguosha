@@ -350,15 +350,11 @@ public:
     NosShangshi():Shangshi("nosshangshi", 998)
     {
         frequency = Frequent;
-        events << DamageDone << HpLost << HpRecover << MaxHpChanged << PhaseChange;
+        events << DamageDone << HpLost << HpRecover << MaxHpChanged << EventPhaseStart;
     }
 
     virtual int getPriority() const{
         return -1;
-    }
-
-    virtual QString NosShangshi::getEffectName() const{
-        return objectName();
     }
 };
 
@@ -373,7 +369,7 @@ public:
         return 2;
     }
 
-    virtual QString NosShangshiCardMove::getEffectName() const{
+    virtual QString getEffectName() const{
         return "nosshangshi";
     }
 };

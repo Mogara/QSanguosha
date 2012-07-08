@@ -120,7 +120,7 @@ public:
 class Lihun: public TriggerSkill{
 public:
     Lihun():TriggerSkill("lihun"){
-        events << PhaseChange;
+        events << EventPhaseStart;
         view_as_skill = new LihunSelect;
     }
 
@@ -178,7 +178,7 @@ public:
 class Kuiwei: public TriggerSkill{
 public:
     Kuiwei(): TriggerSkill("kuiwei"){
-        events << PhaseChange;
+        events << EventPhaseStart;
     }
 
     virtual int getPriority() const{
@@ -350,7 +350,7 @@ public:
 class Zuixiang: public TriggerSkill{
 public:
     Zuixiang(): TriggerSkill("zuixiang"){
-        events << PhaseChange << CardEffected ;
+        events << EventPhaseStart << CardEffected ;
         frequency = Limited;
 
         type[Card::Basic] = "BasicCard";
@@ -396,7 +396,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sp_pangtong, QVariant &data) const{
         QList<int> zuixiang = sp_pangtong->getPile("dream");
 
-        if(event == PhaseChange && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
+        if(event == EventPhaseStart && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
             if(sp_pangtong->getPhase() == Player::Start){
                 if(sp_pangtong->getMark("@sleep") == 1){
                     if(!sp_pangtong->askForSkillInvoke(objectName()))
@@ -496,7 +496,7 @@ public:
 class Dahe: public TriggerSkill{
 public:
     Dahe():TriggerSkill("dahe"){
-        events << SlashProceed << PhaseChange;
+        events << SlashProceed << EventPhaseStart;
         view_as_skill = new DaheViewAsSkill;
     }
 
@@ -533,7 +533,7 @@ public:
 
             return true;
         }
-        else if(event == PhaseChange && bgm_zhangfei->getPhase() == Player::NotActive){
+        else if(event == EventPhaseStart && bgm_zhangfei->getPhase() == Player::NotActive){
             foreach(ServerPlayer *other, room->getOtherPlayers(player))
                 if(other->hasFlag(objectName()))
                     room->setPlayerFlag(other, "-" + objectName());
@@ -825,7 +825,7 @@ public:
 class Shichou: public TriggerSkill{
 public:
     Shichou(): TriggerSkill("shichou$"){
-        events << PhaseChange << DamageInflicted << Dying;
+        events << EventPhaseStart << DamageInflicted << Dying;
         frequency = Limited;
 
     }
@@ -835,7 +835,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == PhaseChange && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
+        if(event == EventPhaseStart && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
             QList<ServerPlayer *> targets = room->getOtherPlayers(player);
             QList<ServerPlayer *> victims;

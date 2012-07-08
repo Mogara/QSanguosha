@@ -201,7 +201,7 @@ AI::Relation ZombieScenario::relationTo(const ServerPlayer *a, const ServerPlaye
 class Zaibian: public TriggerSkill{
 public:
     Zaibian():TriggerSkill("zaibian"){
-        events << PhaseChange ;
+        events << EventPhaseStart ;
         frequency = Compulsory;
     }
 
@@ -226,7 +226,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zombie, QVariant &) const{
-        if(event == PhaseChange && zombie->getPhase() == Player::Play){
+        if(event == EventPhaseStart && zombie->getPhase() == Player::Play){
         int x = getNumDiff(zombie);
         if(x > 0){
             Room *room = zombie->getRoom();

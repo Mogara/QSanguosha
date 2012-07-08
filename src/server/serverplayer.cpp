@@ -571,6 +571,35 @@ void ServerPlayer::turnOver(){
     room->getThread()->trigger(TurnedOver, room, this);
 }
 
+bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to){
+    RoomThread *thread = room->getThread();
+
+    setPhase(Player::PhaseNone);
+
+    PhaseChangeStruct phase_change;
+    phase_change.from = from;
+    phase_change.to = to;
+    QVariant data = QVariant::fromValue(phase_change);
+
+    bool skip = thread->trigger(EventPhaseChanging, room, this, data);
+    if(skip){
+        setPhase(from);
+        return true;
+    }
+
+    setPhase(to);
+    room->broadcastProperty(this, "phase");
+
+    if(!phases.isEmpty())
+        phases.removeFirst();
+
+    thread->trigger(EventPhaseStart, room, this);
+    if(getPhase() != NotActive)
+        thread->trigger(EventPhaseEnd, room, this);
+
+    return false;
+}
+
 void ServerPlayer::play(QList<Player::Phase> set_phases){
     if(!set_phases.isEmpty()){
         if(!set_phases.contains(NotActive))
@@ -578,23 +607,15 @@ void ServerPlayer::play(QList<Player::Phase> set_phases){
     }
     else
         set_phases << RoundStart << Start << Judge << Draw << Play
-                << Discard << Finish << NotActive;
+                   << Discard << Finish << NotActive;
 
     phases = set_phases;
     while(!phases.isEmpty()){
-        PhaseChangeStruct phase_change;
 
-        Phase phase = phases.takeFirst();
-        phase_change.from = this->getPhase();
-        phase_change.to = phase;
+        if(changePhase(getPhase(), phases.first()))
+            continue;
 
-        setPhase(phase);
-        room->broadcastProperty(this, "phase");
-
-        QVariant data = QVariant::fromValue(phase_change);
-        room->getThread()->trigger(PhaseChange, room, this, data);
-
-        if(isDead() && phase != NotActive){
+        if(isDead() && getPhase() != NotActive){
             phases.clear();
             phases << NotActive;
         }
@@ -611,7 +632,7 @@ void ServerPlayer::skip(Player::Phase phase){
     static QStringList phase_strings;
     if(phase_strings.isEmpty()){
         phase_strings << "round_start" << "start" << "judge" << "draw"
-                << "play" << "discard" << "finish" << "not_active";
+                      << "play" << "discard" << "finish" << "not_active";
     }
 
     int index = static_cast<int>(phase);
