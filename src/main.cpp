@@ -25,7 +25,7 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
     if (succeeded) {
         qWarning("Dump file created in %s, dump guid is %ws\n", dump_path, id);   
     } else {
-        printf("Dump failed\n");
+        qWarning("Dump failed\n");
     }
     return succeeded; 
 } 
