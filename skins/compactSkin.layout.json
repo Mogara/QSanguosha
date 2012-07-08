@@ -3,19 +3,19 @@
 {
     "scenePadding": 0,
     "roleBoxHeight": 60,
-    "chatTextBoxHeight": 30,
+    "chatTextBoxHeight": 35,
     "logBoxHeightPercentage": 0.6,
     "chatBoxHeightPercentage": 0.4,
     "infoPlaneWidthPercentage": 0.2,
     "photoRoomPadding": 10,
     "photoHDistance": 32,
-    "photoVDistance": 32,
+    "photoVDistance": 15,
     "discardPileMinWidth": 465,
     "discardPilePadding": 50,
-    "maximumSceneSize": [1000, 700], // if greater than this size, switch to default skin
+    "maximumSceneSize": [1000, 660], // if greater than this size, switch to default skin
     "minimumSceneSize": [900, 600], // if smaller than this size, start scaling 
-    "maximumSceneSize-10player": [1100, 800],
-    "minimumSceneSize-10player": [1080, 720]
+    "maximumSceneSize-10player": [1080, 810],
+    "minimumSceneSize-10player": [1020, 680]
 },
 "photo":
 {
@@ -24,7 +24,7 @@
     "mainFrameArea": [0, 0, 131, 152],
     "canvasArea": [0, 0, 131, 152],
     "handCardNumIconArea": [3, 70, 21, 22],
-    "handCardFont": ["Arial", [12, 12, 3], 32, [255, 255, 255, 255]],	
+    "handCardFont": ["Arial", [12, 12, 3], 20, [255, 255, 255, 255]],	
     "equipAreas": [[3, 94, 150, 13], [3, 108, 150, 13], [3, 122, 150, 13], [3, 136, 150, 13]],
     "equipImageArea": [1, 1, 11, 11],
     //"equipTextArea": [35, -5, 85, 21], // need adjustment
@@ -47,7 +47,7 @@
     "kingdomIconArea": [2, 0, 28, 28],
     "kingdomMaskArea": [1, 9, 36, 98],
     "screenNameArea": [0, 12, 131, 13],
-    "screenNameFont": ["SimSun", 12, 50, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
+    "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
     "magatamaSize": [14, 17],
     "magatamasBgVisible": true,
@@ -58,7 +58,7 @@
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["SimSun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
     "skillNameArea": [25, 20, 300, 50],
-    "skillNameFont": ["SimLi", 30, 80, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
+    "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [133, 10]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [32, 26],
