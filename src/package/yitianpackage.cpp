@@ -1774,6 +1774,7 @@ public:
 };
 
 TaichenCard::TaichenCard(){
+    will_throw = false;
 }
 
 bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

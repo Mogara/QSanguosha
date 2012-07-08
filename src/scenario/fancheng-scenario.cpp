@@ -38,8 +38,6 @@ DujiangCard::DujiangCard(){
 }
 
 void DujiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    room->throwCard(this, NULL);
-
     LogMessage log;
     log.type = "#InvokeSkill";
     log.from = source;
@@ -111,7 +109,6 @@ FloodCard::FloodCard(){
 }
 
 void FloodCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    room->throwCard(this, NULL);
     room->setTag("Flood", true);
 
     room->setPlayerFlag(source, "flood");

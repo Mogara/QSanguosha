@@ -246,8 +246,17 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             if(player->containsTrick(objectName()))
                 continue;
 
-            if(room->isProhibited(target, player, this))
+            const ProhibitSkill *skill = room->isProhibited(target, player, this);
+            if(skill){LogMessage log;
+                log.type = "#SkillAvoid";
+                log.from = player;
+                log.arg = skill->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                room->broadcastSkillInvoke(skill->objectName());
                 continue;
+            }
 
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
             room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);

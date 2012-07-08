@@ -242,7 +242,6 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
         totalvictim++;
     }
     if (criticaltarget > 0){
-        room->throwCard(this, shenzhouyu);
         room->loseHp(shenzhouyu, 3);
         shenzhouyu->loseMark("@flame");
         if(totalvictim > 1){

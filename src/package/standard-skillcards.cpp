@@ -9,7 +9,7 @@
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
     once = true;
-    will_throw = true;
+    will_throw = false;
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
@@ -66,7 +66,6 @@ bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    room->throwCard(this, effect.from);
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
@@ -202,7 +201,6 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    room->throwCard(this, source);
     room->broadcastSkillInvoke("lijian");
 
     ServerPlayer *to = targets.at(0);
@@ -232,8 +230,6 @@ bool QingnangCard::targetsFeasible(const QList<const Player *> &targets, const P
 }
 
 void QingnangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    room->throwCard(this, source);
-
     ServerPlayer *target = targets.value(0, source);
 
     CardEffectStruct effect;
@@ -263,7 +259,6 @@ void GuicaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 
 LiuliCard::LiuliCard()
 {
-    will_throw = true;
 }
 
 
@@ -288,7 +283,6 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    room->throwCard(this, effect.from);
     room->setPlayerFlag(effect.to, "liuli_target");
 }
 

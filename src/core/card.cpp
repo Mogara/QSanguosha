@@ -471,6 +471,11 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
         moves.append(move);
         room->moveCardsAtomic(moves, true);
     }
+    else if(willThrow()){
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), this->getSkillName(), QString());
+        room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
+    }
+
     thread->trigger(CardUsed, room, player, data);
 
     thread->trigger(CardFinished, room, player, data);
@@ -496,16 +501,11 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
             room->cardEffect(effect);
         }
     }
-    if(willThrow() && isVirtualCard()){
-        if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable){
-            CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-            if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-            room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
-        }
-        else{
-              CardMoveReason reason(CardMoveReason::S_REASON_THROW, source->objectName(), QString(), this->getSkillName(), QString());
-              room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
-        }
+
+    if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable){
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
     room->removeTag("Huoshou");
 }

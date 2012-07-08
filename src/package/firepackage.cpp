@@ -149,7 +149,6 @@ public:
 
 QiangxiCard::QiangxiCard(){
     once = true;
-    will_throw = true;
 }
 
 bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -164,7 +163,6 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    room->throwCard(this, effect.from);
 
     if(subcards.isEmpty())
         room->loseHp(effect.from);

@@ -214,7 +214,6 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-        room->throwCard(this,effect.from);
     QStringList choicelist;
     choicelist << "draw";
     if (effect.to->getLostHp() != 0)

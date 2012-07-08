@@ -38,7 +38,6 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 }
 
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> &targets) const{
-    room->throwCard(this, zhanghe);
     Player::Phase phase = (Player::Phase)zhanghe->getMark("qiaobianPhase");
     if(phase == Player::Draw){
         room->broadcastSkillInvoke("qiaobian", 2);

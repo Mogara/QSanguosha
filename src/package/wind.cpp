@@ -274,8 +274,6 @@ bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    room->throwCard(this, source);
-
     Slash *slash = new Slash(Card::NoSuit, 0);
     slash->setSkillName("shensu");
     CardUseStruct use;
@@ -655,12 +653,10 @@ public:
 
 TianxiangCard::TianxiangCard()
 {
-    will_throw = true;
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    room->throwCard(this, effect.from);
     DamageStruct damage = effect.from->tag["TianxiangDamage"].value<DamageStruct>();
     damage.to = effect.to;
     damage.transfer = true;
