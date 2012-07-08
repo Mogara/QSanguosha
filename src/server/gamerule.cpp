@@ -35,6 +35,9 @@ int GameRule::getPriority() const{
 void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
     switch(player->getPhase()){
+    case Player::PhaseNone: {
+        Q_ASSERT(false);
+        }
     case Player::RoundStart:{
             break;
         }

@@ -651,7 +651,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
 }
 
 QHash<QString, QString> IQSanComponentSkin::S_IMAGE_KEY2FILE;
-QHash<QString, QList<QString>> IQSanComponentSkin::S_IMAGE_GROUP_KEYS;
+QHash<QString, QList<QString> > IQSanComponentSkin::S_IMAGE_GROUP_KEYS;
 QHash<QString, QPixmap> IQSanComponentSkin::S_IMAGE_KEY2PIXMAP;
 
 QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) const

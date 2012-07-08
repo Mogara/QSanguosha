@@ -161,6 +161,7 @@ public:
         case Player::Draw: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw", 2);
         case Player::Play: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play", 3);
         case Player::Discard: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard", 1);
+        case Player::PhaseNone: Q_ASSERT(false);
         }
 
         return false;
