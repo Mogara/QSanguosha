@@ -197,6 +197,7 @@ protected:
     QMutex m_zValueMutex;	
 
 private:
+    void _getSceneSizes(QSize& minSize, QSize& maxSize);
     bool _shouldIgnoreDisplayMove(Player::Place from, Player::Place to);
     bool _m_isMouseButtonDown;
     bool _m_isInDragAndUseMode;

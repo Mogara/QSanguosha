@@ -112,6 +112,12 @@ void MagatamasBoxItem::_autoAdjustPos()
         setY(m_anchor.y());
 }
 
+void MagatamasBoxItem::update()
+{
+    _updateLayout();
+    _autoAdjustPos();
+}
+
 void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
 {
     if (newHp >= m_hp) return;

@@ -4164,15 +4164,18 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
                                          QString()));
 
     move1.card_ids.append(card->getEffectiveId());
-
+    int reasonType;
+    if (exchange) reasonType = CardMoveReason::S_REASON_OVERRIDE;
+    else reasonType = CardMoveReason::S_REASON_JUDGEDONE;
+    CardMoveReason reason(reasonType,
+                          player->objectName(),
+                          exchange ? skill_name : QString(),
+                          QString());
     CardsMoveStruct move2(QList<int>(),
                           judge->who,
                           exchange ? player : NULL,
                           exchange ? Player::PlaceHand : Player::DiscardPile,
-                          CardMoveReason(exchange ? CardMoveReason::S_REASON_OVERRIDE : CardMoveReason::S_REASON_JUDGEDONE,
-                                         player->objectName(),
-                                         exchange ? skill_name : QString(),
-                                         QString()));
+                          reason);
 
     move2.card_ids.append(oldJudge->getEffectiveId());
 

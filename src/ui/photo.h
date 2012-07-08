@@ -24,6 +24,7 @@ public:
     explicit Photo();
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
+    virtual void repaintAll();
     QList<CardItem*> removeCardItems(const QList<int> &card_id, Player::Place place);
 
     void showCard(int card_id);
@@ -49,16 +50,16 @@ public slots:
     virtual void refresh();
 
 protected:
-    inline virtual QGraphicsItem* _getEquipParent() { return this; }
-    inline virtual QGraphicsItem* _getDelayedTrickParent() { return this; }
-    inline virtual QGraphicsItem* _getAvatarParent() { return this; }
+    inline virtual QGraphicsItem* _getEquipParent() { return _m_groupMain; }
+    inline virtual QGraphicsItem* _getDelayedTrickParent() { return _m_groupMain; }
+    inline virtual QGraphicsItem* _getAvatarParent() { return _m_groupMain; }
     inline virtual QGraphicsItem* _getMarkParent() { return _m_floatingArea; }
-    inline virtual QGraphicsItem* _getPhaseParent() { return this; }
-    inline virtual QGraphicsItem* _getRoleComboBoxParent() { return this; }
-    inline virtual QGraphicsItem* _getProgressBarParent() { return this;}
-    inline virtual QGraphicsItem* _getFocusFrameParent() { return this; }
-    inline virtual QGraphicsItem* _getDeathIconParent() { return this;}
-    virtual QGraphicsItem* _getPileParent() { return this; }
+    inline virtual QGraphicsItem* _getPhaseParent() { return _m_groupMain; }
+    inline virtual QGraphicsItem* _getRoleComboBoxParent() { return _m_groupMain; }
+    inline virtual QGraphicsItem* _getProgressBarParent() { return _m_groupMain;}
+    inline virtual QGraphicsItem* _getFocusFrameParent() { return _m_groupMain; }
+    inline virtual QGraphicsItem* _getDeathIconParent() { return _m_groupDeath;}
+    virtual QGraphicsItem* _getPileParent() { return _m_groupMain; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_PHOTO; }
     virtual void _adjustComponentZValues();
     bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);

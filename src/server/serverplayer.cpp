@@ -41,10 +41,12 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
         return;
 
     if(!card->isVirtualCard())
+    {
         if(card->getCommonEffectName().isNull())
             broadcastSkillInvoke(card->objectName());
         else
             room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+    }
 
     QString skill_name = card->getSkillName();
     const Skill *skill = Sanguosha->getSkill(skill_name);

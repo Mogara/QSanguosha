@@ -264,10 +264,10 @@ public:
         boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
 
         dummy_skills << "xinsheng" << "wuhu" << "kuangfeng" << "dawu" << "wumou" << "wuqian" 
-					 << "shenfen" << "renjie" << "weidi" << "danji" << "shiyong" << "zhiba"
-					 << "super_guanxing" << "yihun" << "shihun" << "chongzhen" << "tongxin"
-					 << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian";
-					 
+                     << "shenfen" << "renjie" << "weidi" << "danji" << "shiyong" << "zhiba"
+                     << "super_guanxing" << "yihun" << "shihun" << "chongzhen" << "tongxin"
+                     << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian";
+                     
         available_wake_skills << "hunzi" << "zhiji" << "kegou";
     }
 
@@ -277,7 +277,7 @@ public:
 
         QStringList all_generals = Sanguosha->getLimitedGeneralNames();
         QList<ServerPlayer *> players = room->getAllPlayers();
-        foreach(ServerPlayer *player, players){
+        foreach(ServerPlayer *player, players) {
             all_generals.removeOne(player->getGeneralName());
         }
 
@@ -301,7 +301,7 @@ public:
                 if(!skill->isLordSkill() && !skill->inherits("SPConvertSkill")){
                     if(dummy_skills.contains(skill->objectName()))
                         continue;
-						
+
                     if(skill->getFrequency() == Skill::Wake
                             && !available_wake_skills.contains(skill->objectName()))
                         continue;

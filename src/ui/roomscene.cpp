@@ -39,6 +39,7 @@
 #include <QTimer>
 #include <QCommandLinkButton>
 #include <QFormLayout>
+#include <QCoreApplication>
 #include <qmath.h>
 #include "uiUtils.h"
 
@@ -521,20 +522,73 @@ void RoomScene::createReplayControlBar(){
     new ReplayerControlBar(dashboard);
 }
 
-void RoomScene::adjustItems(){
+void RoomScene::_getSceneSizes(QSize& minSize, QSize &maxSize)
+{
+    if (photos.size() >= 8)
+    {
+        minSize = _m_roomLayout->m_minimumSceneSize10Player;
+        maxSize = _m_roomLayout->m_maximumSceneSize10Player;
+    }
+    else
+    {
+        minSize = _m_roomLayout->m_minimumSceneSize;
+        maxSize = _m_roomLayout->m_maximumSceneSize;
+    }
+}
+
+void RoomScene::adjustItems()
+{
     QRectF displayRegion = sceneRect();
+
+    // switch between default & compact skin depending on scene size
+    QSanSkinFactory &factory =  QSanSkinFactory::getInstance();
+    QString skinName = factory.getCurrentSkinName();
+
+    QSize minSize, maxSize;
+    _getSceneSizes(minSize, maxSize);
+    if (skinName == "default")
+    {
+        if (displayRegion.width() < minSize.width() ||
+            displayRegion.height() < minSize.height())
+        {
+            QThread* thread = QCoreApplication::instance()->thread(); 
+            thread->blockSignals(true);
+            factory.switchSkin("compact");
+            thread->blockSignals(false);
+            foreach (Photo* photo, photos)
+                photo->repaintAll();
+        }
+    }
+    else if (skinName == "compact")
+    {
+        if (displayRegion.width() > maxSize.width() &&
+            displayRegion.height() > maxSize.height())
+        {
+            QThread* thread = QCoreApplication::instance()->thread(); 
+            thread->blockSignals(true);
+            factory.switchSkin("default");
+            thread->blockSignals(false);
+            foreach (Photo* photo, photos)
+                photo->repaintAll();
+        }
+    }
+     
+    // update the sizes since we have reloaded the skin.
+    _getSceneSizes(minSize, maxSize);
+
     if (displayRegion.left() != 0 || displayRegion.top() != 0 ||
-        displayRegion.bottom() < _m_roomLayout->m_minimumSceneSize.height() ||
-        displayRegion.right() < _m_roomLayout->m_minimumSceneSize.width())
+        displayRegion.bottom() < minSize.height() ||
+        displayRegion.right() < minSize.width())
     {
         displayRegion.setLeft(0); displayRegion.setTop(0);
-        double sy = _m_roomLayout->m_minimumSceneSize.height() / displayRegion.height();
-        double sx = _m_roomLayout->m_minimumSceneSize.width() / displayRegion.width();
+        double sy = minSize.height() / displayRegion.height();
+        double sx = minSize.width() / displayRegion.width();
         double scale = qMax(sx, sy);
         displayRegion.setBottom(scale * displayRegion.height());
         displayRegion.setRight(scale * displayRegion.width());
         setSceneRect(displayRegion);
     }
+
     int padding = _m_roomLayout->m_scenePadding;
     displayRegion.moveLeft(displayRegion.x() + padding);
     displayRegion.moveTop(displayRegion.y() + padding);

@@ -159,6 +159,8 @@ public:
         case Player::Draw: skip = room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw", 2);break;
         case Player::Play: skip =  room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play", 3);break;
         case Player::Discard: skip = room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard", 1);break;
+        case Player::PhaseNone: Q_ASSERT(false);
+
         }
 
         if(skip)
