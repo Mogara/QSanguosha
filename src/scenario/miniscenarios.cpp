@@ -6,7 +6,7 @@
 MiniSceneRule::MiniSceneRule(Scenario *scenario)
     :ScenarioRule(scenario)
 {
-    events << GameStart << PhaseChange;
+    events << GameStart << EventPhaseStart;
 }
 
 void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const{
@@ -39,7 +39,7 @@ QStringList MiniSceneRule::existedGenerals() const
 
 bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const
 {
-    if(event == PhaseChange)
+    if(event == EventPhaseStart)
     {
         if(player == room->getTag("Starter").value<PlayerStar>()){
             if(player->getPhase() == Player::Start){

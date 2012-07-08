@@ -350,12 +350,10 @@ void RoomThread::run(){
                             room->setPlayerFlag(player, "-actioned");
 
                         if(player->getPhase() != Player::NotActive){
-                            PhaseChangeStruct phase;
-                            phase.from = player->getPhase();
-                            room->setPlayerProperty(player, "phase", "not_active");
-                            phase.to = player->getPhase();
-                            QVariant data = QVariant::fromValue(phase);
-                            trigger(PhaseChange, room, player, data);
+
+                            trigger(EventPhaseEnd, room, player);
+
+                            player->changePhase(player->getPhase(), Player::NotActive);
                         }
                     }
                 }

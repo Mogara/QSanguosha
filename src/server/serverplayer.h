@@ -52,6 +52,7 @@ public:
     bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
     void turnOver();
     void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
+    bool changePhase(Player::Phase from, Player::Phase to);
 
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase);

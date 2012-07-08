@@ -874,11 +874,11 @@ public:
 class CaizhaojiHujia: public TriggerSkill{
 public:
     CaizhaojiHujia():TriggerSkill("caizhaoji_hujia"){
-        events << PhaseChange << FinishJudge;
+        events << EventPhaseStart << FinishJudge;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *caizhaoji, QVariant &data) const{
-        if(event == PhaseChange && caizhaoji->getPhase() == Player::Finish){
+        if(event == EventPhaseStart && caizhaoji->getPhase() == Player::Finish){
             int times = 0;
             Room *room = caizhaoji->getRoom();
             while(caizhaoji->askForSkillInvoke(objectName())){
@@ -922,7 +922,7 @@ public:
 class Shenjun: public TriggerSkill{
 public:
     Shenjun():TriggerSkill("shenjun"){
-        events << GameStart << PhaseChange << DamageInflicted;
+        events << GameStart << EventPhaseStart << DamageInflicted;
         frequency = Compulsory;
     }
 
@@ -962,7 +962,7 @@ public:
             log.arg = gender;
             room->sendLog(log);
 
-        }else if(event == PhaseChange){
+        }else if(event == EventPhaseStart){
             if(player->getPhase() == Player::Start){
                 LogMessage log;
                 log.from = player;
@@ -1395,7 +1395,7 @@ public:
 class Sizhan: public TriggerSkill{
 public:
     Sizhan():TriggerSkill("sizhan"){
-        events << DamageInflicted << PhaseChange;
+        events << DamageInflicted << EventPhaseStart;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *elai, QVariant &data) const{
@@ -1412,7 +1412,7 @@ public:
             elai->gainMark("@struggle", damage.damage);
 
             return true;
-        }else if(event == PhaseChange && elai->getPhase() == Player::Finish){
+        }else if(event == EventPhaseStart && elai->getPhase() == Player::Finish){
             int x = elai->getMark("@struggle");
             if(x > 0){
                 elai->loseMark("@struggle", x);

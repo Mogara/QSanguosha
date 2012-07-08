@@ -316,7 +316,9 @@ enum TriggerEvent{
 
     GameStart,
     TurnStart,
-    PhaseChange,
+    EventPhaseStart,
+    EventPhaseEnd,
+    EventPhaseChanging,
     DrawNCards,
     HpRecover,
     HpLost,

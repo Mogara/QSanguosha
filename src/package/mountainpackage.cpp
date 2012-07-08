@@ -597,7 +597,7 @@ public:
 class SunceZhiba: public TriggerSkill{
 public:
     SunceZhiba():TriggerSkill("sunce_zhiba$"){
-        events << GameStart << Pindian << PhaseChange;
+        events << GameStart << Pindian << EventPhaseStart;
     }
 
     virtual int getPriority() const{
@@ -625,7 +625,7 @@ public:
             }
             else
                 room->broadcastSkillInvoke(objectName(), 3);
-        }else if(event == PhaseChange && player->getPhase() == Player::NotActive){
+        }else if(event == EventPhaseStart && player->getPhase() == Player::NotActive){
             if(player->hasFlag("ForbidZhiba")){
                 room->setPlayerFlag(player, "-ForbidZhiba");
             }
@@ -781,12 +781,9 @@ public:
         ServerPlayer *current = room->getCurrent();
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
 
-        if(player != move->from)
+        if(player != move->from || erzhang == NULL || erzhang == current)
             return false;
-        if(erzhang == NULL)
-            return false;
-        if(erzhang == current)
-            return false;
+
         if(current->getPhase() == Player::Discard){
             QVariantList guzheng = erzhang->tag["Guzheng"].toList();
 
@@ -1031,7 +1028,7 @@ public:
     Huashen():GameStartSkill("huashen"){
     }
 
-	static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name){
+    static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name){
 		zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->getGender() == General::Male, -1);
     }
 
@@ -1208,16 +1205,20 @@ void HuashenDialog::popup(){
     show();
 }
 
-class HuashenBegin: public TriggerSkill{
+class HuashenBegin: public PhaseChangeSkill{
 public:
-    HuashenBegin():TriggerSkill("#huashen-begin"){
-        events << TurnStart;
+    HuashenBegin():PhaseChangeSkill("#huashen-begin"){
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *zuoci = room->findPlayerBySkillName(objectName());
-        if(!zuoci || player->objectName() != zuoci->objectName() || !zuoci->faceUp())
-            return false;
+    int getPriority() const{
+        return 3;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::RoundStart;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zuoci) const{
         if(zuoci->askForSkillInvoke("huashen")){
             QString skill_name = Huashen::SelectSkill(zuoci, false);
             if(!skill_name.isEmpty())
@@ -1230,7 +1231,7 @@ public:
 class HuashenEnd: public TriggerSkill{
 public:
     HuashenEnd():TriggerSkill("#huashen-end"){
-        events << PhaseChange;
+        events << EventPhaseStart;
     }
 
     virtual int getPriority() const{

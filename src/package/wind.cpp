@@ -186,7 +186,7 @@ public:
 class Huangtian: public TriggerSkill{
 public:
     Huangtian():TriggerSkill("huangtian$"){
-        events << GameStart << PhaseChange;
+        events << GameStart << EventPhaseStart;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -200,7 +200,7 @@ public:
                     room->attachSkillToPlayer(p, "huangtianv");
             }
         }
-        else if(event == PhaseChange && player->getPhase() == Player::NotActive){
+        else if(event == EventPhaseStart && player->getPhase() == Player::NotActive){
             if(player->hasFlag("ForbidHuangtian")){
                 room->setPlayerFlag(player, "-ForbidHuangtian");
             }
@@ -324,26 +324,27 @@ public:
     }
 };
 
-class Shensu: public PhaseChangeSkill{
+class Shensu: public TriggerSkill{
 public:
-    Shensu():PhaseChangeSkill("shensu"){
+    Shensu():TriggerSkill("shensu"){
+        events << EventPhaseChanging;
         view_as_skill = new ShensuViewAsSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *xiahouyuan) const{
-        Room *room = xiahouyuan->getRoom();
-
-        if(xiahouyuan->getPhase() == Player::Judge){
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if(change.to == Player::Judge){
             if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)){
+                xiahouyuan->skip(Player::Judge);
                 xiahouyuan->skip(Player::Draw);
                 return true;
             }
-        }else if(xiahouyuan->getPhase() == Player::Play){
+        }else if(change.to == Player::Play){
             if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2)){
+                xiahouyuan->skip(Player::Play);
                 return true;
             }
         }
-
         return false;
     }
 };

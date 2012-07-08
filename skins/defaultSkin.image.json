@@ -54,12 +54,15 @@
 "playerGeneralIcon-nosfazheng-2": "image/generals/big/fazheng.png",
 "playerGeneralIcon-noslingtong-2": "image/generals/big/lingtong.png",
 "playerGeneralIcon-nosxushu-2": "image/generals/big/xushu.png",
+"playerGeneralIcon-noszhangchunhua-2": "image/generals/big/zhangchunhua.png",
 "playerGeneralIcon-nosfazheng-1": "image/generals/small/fazheng.png",
 "playerGeneralIcon-noslingtong-1": "image/generals/small/lingtong.png",
 "playerGeneralIcon-nosxushu-1": "image/generals/small/xushu.png",
+"playerGeneralIcon-noszhangchunhua-1": "image/generals/small/zhangchunhua.png",
 "playerGeneralIcon-nosfazheng-0": "image/generals/tiny/fazheng.png",
 "playerGeneralIcon-noslingtong-0": "image/generals/tiny/lingtong.png",
 "playerGeneralIcon-nosxushu-0": "image/generals/tiny/xushu.png",
+"playerGeneralIcon-noszhangchunhua-0": "image/generals/tiny/zhangchunhua.png",
 
 // buttons
 "dashboardButtonSetBg": "image/system/button/platter/bg.png",
@@ -164,6 +167,8 @@
 // cards
 "handCardMainPhoto-default": "image/card/%1.jpg",
 "handCardMainPhoto-unknown": "image/system/card-back.png",
+
+"handCardMainPhoto-noszhangchunhua": "image/card/zhangchunhua.jpg",
 
 "handCardNumber-black-default": "image/system/black/%1.png",
 "handCardNumber-red-default": "image/system/red/%1.png",

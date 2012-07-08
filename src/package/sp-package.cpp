@@ -172,7 +172,7 @@ public:
 class Yongsi: public TriggerSkill{
 public:
     Yongsi():TriggerSkill("yongsi"){
-        events << DrawNCards << PhaseChange;
+        events << DrawNCards << EventPhaseStart;
         frequency = Compulsory;
     }
 
@@ -201,7 +201,7 @@ public:
 
             room->broadcastSkillInvoke("yongsi", x);
 
-        }else if(event == PhaseChange && yuanshu->getPhase() == Player::Discard){
+        }else if(event == EventPhaseStart && yuanshu->getPhase() == Player::Discard){
             int x = getKingdoms(yuanshu);
             int total = yuanshu->getEquips().length() + yuanshu->getHandcardNum();
             Room *room = yuanshu->getRoom();

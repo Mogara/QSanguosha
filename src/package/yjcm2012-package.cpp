@@ -793,14 +793,14 @@ public:
 class Chunlao: public TriggerSkill{
 public:
     Chunlao():TriggerSkill("chunlao"){
-        events << PhaseChange << AskForPeaches ;
+        events << EventPhaseStart << AskForPeaches ;
         view_as_skill = new ChunlaoViewAsSkill;
     }
 
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *chengpu, QVariant &data) const{
 
-        if(event == PhaseChange &&
+        if(event == EventPhaseStart &&
                 chengpu->getPhase() == Player::Finish &&
                 !chengpu->isKongcheng() &&
                 chengpu->getPile("wine").isEmpty()){

@@ -231,7 +231,7 @@ void PlayerCardContainer::updateAvatar()
                                                .arg(kingdom)),
                          this->_getAvatarParent());
             QString name = Sanguosha->translate("&" + general->objectName());
-            if (name.startsWith("&"))
+            if (name.isNull())
                 name = Sanguosha->translate(general->objectName());
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, 
                                                   _m_layout->m_avatarNameArea,
@@ -281,7 +281,9 @@ void PlayerCardContainer::updatePhase()
     if (!m_player || !m_player->isAlive()) {
         _clearPixmap(_m_phaseIcon);
     }
-    else if (m_player->getPhase() != Player::NotActive) {
+    else if (m_player->getPhase() != Player::NotActive ) {
+        if(m_player->getPhase() == Player::PhaseNone)
+            return;
         int index = static_cast<int>(m_player->getPhase());
         QRect phaseArea = _m_layout->m_phaseArea.getTranslatedRect(
                           _getPhaseParent()->boundingRect().toRect());
