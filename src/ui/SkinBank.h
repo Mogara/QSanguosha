@@ -105,7 +105,7 @@ protected:
     // image group key -> image keys
     // for example,
     // "generalIcon-1-default" -> "generalIcon-1-zhangliao", "generalIcon-1-liubie", ...
-    static QHash<QString, QList<QString>> S_IMAGE_GROUP_KEYS;
+    static QHash<QString, QList<QString> > S_IMAGE_GROUP_KEYS;
 
 };
 
