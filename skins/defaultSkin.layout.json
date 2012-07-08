@@ -153,7 +153,7 @@
     // and offset if applied after the alignment is done. When the 4th parameter [sizeX, sizeY] is specified, fixed size of the area
     // is used; otherwise, it means area's size is variable with the content of that area, the program will adjust the size automatically
     "markTextArea": ["bottomRight", "bottomRight",  [-10, -10]],
-    "phaseArea": ["bottomRight", "bottomRight", [-100, 0], [209, 20]],
+    "phaseArea": ["bottomRight", "bottomRight", [0, 0], [209, 20]],
     "kingdomIconArea": [2, 2, 28, 28],
     // "kingdomMaskArea": [10, 27, 23, 89],
     "screenNameArea": [0, 7, 157, 25],
