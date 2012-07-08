@@ -117,7 +117,7 @@ void Dashboard::_createRight()
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, 0, 
                        G_DASHBOARD_LAYOUT.m_rightWidth,
                        G_DASHBOARD_LAYOUT.m_normalHeight);
-    _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), this);
+    _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()), 
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
@@ -303,6 +303,7 @@ void Dashboard::setWidth(int width){
     adjustCards(true);
     this->_m_width = width;
     _updateFrames();
+    _updateDeathIcon();
 }
 
 QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool toLeft){

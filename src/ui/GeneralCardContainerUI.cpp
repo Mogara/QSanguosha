@@ -136,7 +136,7 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item,
 
 void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QPixmap &pixmap)
 {
-    _paintPixmap(item, rect, pixmap, this);
+    _paintPixmap(item, rect, pixmap, _m_groupMain);
 }
 
 QPixmap PlayerCardContainer::_getPixmap(const QString &key, const QString &sArg)
@@ -181,7 +181,6 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem* &item,
     else
         item->setPixmap(pixmap.scaled(rect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     item->setParentItem(parent);
-    item->show();
 }
 
 void PlayerCardContainer::_clearPixmap(QGraphicsPixmapItem *pixmap)
@@ -399,6 +398,18 @@ void PlayerCardContainer::updateMarks()
     _m_markItem->setPos(newRect.topLeft());
 }
 
+void PlayerCardContainer::_updateEquips()
+{
+    for (int i = 0; i < 4; i++) {
+        CardItem* equip = _m_equipCards[i];
+        if (equip == NULL) continue;
+        const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
+        QPixmap pixmap = _getEquipPixmap(equip_card);
+        _m_equipLabel[i]->setPixmap(pixmap);
+        _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
+    }
+}
+
 void PlayerCardContainer::refresh()
 {
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive())
@@ -410,9 +421,10 @@ void PlayerCardContainer::refresh()
     }
     else if(m_player)
     {
-        _m_faceTurnedIcon->setVisible(!m_player->faceUp());
-        _m_chainIcon->setVisible(m_player->isChained());
-        _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
+        if (_m_faceTurnedIcon) _m_faceTurnedIcon->setVisible(!m_player->faceUp());
+        if (_m_chainIcon) _m_chainIcon->setVisible(m_player->isChained());
+        if (_m_actionIcon) _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
+        if (_m_deathIcon) _m_deathIcon->setVisible(m_player->isDead());
     }
     updateHandcardNum();
     _adjustComponentZValues();
@@ -424,6 +436,11 @@ void PlayerCardContainer::repaintAll()
     updateSmallAvatar();
     updatePhase();
     updateMarks();
+    _updateProgressBar();
+    _updateDeathIcon();
+    _updateEquips();
+    updateDelayedTricks();
+
     _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK,
                  _getAvatarParent());
     _paintPixmap(_m_readyIcon, _m_layout->m_readyIconRegion, QSanRoomSkin::S_SKIN_KEY_READY_ICON,
@@ -438,6 +455,14 @@ void PlayerCardContainer::repaintAll()
                  _getAvatarParent());
     if (_m_roleComboBox != NULL)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos); 
+
+    _m_hpBox->setIconSize(_m_layout->m_magatamaSize);
+    _m_hpBox->setOrientation(_m_layout->m_magatamasHorizontal ?  Qt::Horizontal : Qt::Vertical);
+    _m_hpBox->setBackgroundVisible(_m_layout->m_magatamasBgVisible);
+    _m_hpBox->setAnchorEnable(true);
+    _m_hpBox->setAnchor(_m_layout->m_magatamasAnchor, _m_layout->m_magatamasAlign);
+    _m_hpBox->update();
+
     _adjustComponentZValues();
     refresh();
 }
@@ -704,6 +729,12 @@ PlayerCardContainer::PlayerCardContainer()
     _m_votesGot = 0;
     _m_maxVotes = 1;
     _m_votesItem = NULL;
+    _m_groupMain = new QGraphicsPixmapItem(this);
+    _m_groupMain->setFlag(ItemHasNoContents);
+    _m_groupMain->setPos(0, 0);
+    _m_groupDeath = new QGraphicsPixmapItem(this);
+    _m_groupDeath->setFlag(ItemHasNoContents);
+    _m_groupDeath->setPos(0, 0);
     _allZAdjusted = false;
 }
 
@@ -790,6 +821,7 @@ void PlayerCardContainer::_updateProgressBar()
 {
     QGraphicsItem* parent = _getProgressBarParent();
     if (parent == NULL) return;
+    _m_progressBar->setOrientation(_m_layout->m_isProgressBarHorizontal ? Qt::Horizontal : Qt::Vertical);  
     QRectF newRect = _m_layout->m_progressBarArea
                      .getTranslatedRect(parent->boundingRect().toRect());
     _m_progressBar->setFixedHeight(newRect.height());
@@ -800,7 +832,7 @@ void PlayerCardContainer::_updateProgressBar()
 
 void PlayerCardContainer::_createControls()
 {
-    _m_floatingArea = new QGraphicsPixmapItem(this);
+    _m_floatingArea = new QGraphicsPixmapItem(_m_groupMain);
     
     _m_screenNameItem = new QGraphicsPixmapItem(_getAvatarParent());
 
@@ -815,17 +847,11 @@ void PlayerCardContainer::_createControls()
     _m_handCardNumText = new QGraphicsPixmapItem(_getAvatarParent());
 
     _m_hpBox = new MagatamasBoxItem(_getAvatarParent());
-    _m_hpBox->setIconSize(_m_layout->m_magatamaSize);
-    _m_hpBox->setOrientation(_m_layout->m_magatamasHorizontal ?  Qt::Horizontal : Qt::Vertical);
-    _m_hpBox->setBackgroundVisible(_m_layout->m_magatamasBgVisible);
-    _m_hpBox->setAnchorEnable(true);
-    _m_hpBox->setAnchor(_m_layout->m_magatamasAnchor, _m_layout->m_magatamasAlign); 
     
      // Now set up progress bar
     _m_progressBar = new QSanCommandProgressBar;
     _m_progressBar->setAutoHide(true);
-    _m_progressBar->hide();
-    _m_progressBar->setOrientation(_m_layout->m_isProgressBarHorizontal ? Qt::Horizontal : Qt::Vertical);    
+    _m_progressBar->hide();  
     _m_progressBarItem = new QGraphicsProxyWidget(_getProgressBarParent());
     _m_progressBarItem->setWidget(_m_progressBar);
     _updateProgressBar();
@@ -849,30 +875,33 @@ void PlayerCardContainer::_createControls()
     _createRoleComboBox();
     repaintAll();
 }
+
+void PlayerCardContainer::_updateDeathIcon()
+{
+    if (!m_player || !m_player->isDead()) return;
+    QRect deathArea = _m_layout->m_deathIconRegion.getTranslatedRect(
+                      _getDeathIconParent()->boundingRect().toRect());
+    _paintPixmap(_m_deathIcon, deathArea,
+                 QPixmap(m_player->getDeathPixmapPath()), _getDeathIconParent());
+    _m_deathIcon->setZValue(_m_groupMain->zValue() + 10);
+}
     
 void PlayerCardContainer::killPlayer()
 {
     _m_roleComboBox->fix(m_player->getRole());
-    QRect deathArea = _m_layout->m_deathIconRegion.getTranslatedRect(
-        _getDeathIconParent()->boundingRect().toRect());
-    _paintPixmap(_m_deathIcon, deathArea,
-        QPixmap(m_player->getDeathPixmapPath()),  _getDeathIconParent());
-    QPointF scenePos = _getDeathIconParent()->mapToScene(_m_deathIcon->pos());
-    _m_deathIcon->setPos(scenePos);
-    _m_deathIcon->setParentItem(NULL);
-    _m_deathIcon->setZValue(this->zValue() + 10);
+    _updateDeathIcon();
     _m_saveMeIcon->hide();
     QGraphicsColorizeEffect* effect = new QGraphicsColorizeEffect();
     effect->setColor(_m_layout->m_deathEffectColor);
     effect->setStrength(1.0);
-    this->setGraphicsEffect(effect);
+    _m_groupMain->setGraphicsEffect(effect);
     refresh();
     _m_deathIcon->show();
 }
 
 void PlayerCardContainer::revivePlayer()
 {
-    this->setGraphicsEffect(NULL);
+    _m_groupMain->setGraphicsEffect(NULL);
     Q_ASSERT(_m_deathIcon);
     _m_deathIcon->hide();
     refresh();    
@@ -917,24 +946,26 @@ void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 
 QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVariant &value) {
-    if(change == ItemSelectedHasChanged){
+    if (change == ItemSelectedHasChanged) {
         if (!value.toBool())
         {
             _m_votesGot = 0;
             _clearPixmap(_m_selectedFrame);
+            _m_selectedFrame->hide();
         }
         else
         {
              _paintPixmap(_m_selectedFrame, _m_layout->m_focusFrameArea,
                           _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
                           _getFocusFrameParent());
+             _m_selectedFrame->show();
         }
         updateVotes();
         emit selected_changed();
-    }else if(change == ItemEnabledHasChanged){
+    } else if(change == ItemEnabledHasChanged) {
         _m_votesGot = 0;
         emit enable_changed();
-    }
+    } 
 
     return QGraphicsObject::itemChange(change, value);
 }

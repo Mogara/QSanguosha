@@ -101,10 +101,12 @@ protected:
     Json::Value _m_audioConfig;
     // image key -> image file name
     static QHash<QString, QString> S_IMAGE_KEY2FILE;
+    static QHash<QString, QPixmap> S_IMAGE_KEY2PIXMAP;
     // image group key -> image keys
     // for example,
     // "generalIcon-1-default" -> "generalIcon-1-zhangliao", "generalIcon-1-liubie", ...
     static QHash<QString, QList<QString>> S_IMAGE_GROUP_KEYS;
+
 };
 
 class QSanRoomSkin : public IQSanComponentSkin
@@ -122,7 +124,8 @@ public:
         double m_photoDashboardPadding;
         int m_photoHDistance;
         int m_photoVDistance;
-        QSize m_minimumSceneSize;    
+        QSize m_minimumSceneSize;
+        QSize m_maximumSceneSize;
     };
 
     struct PlayerCardContainerLayout
@@ -362,6 +365,7 @@ class QSanSkinFactory
 {
 public:
     static QSanSkinFactory& getInstance();
+    const QString& getCurrentSkinName() const;
     const QSanSkinScheme& getCurrentSkinScheme();
     bool switchSkin(QString skinName);
 protected:

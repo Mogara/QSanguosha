@@ -39,6 +39,7 @@
 #include <QTimer>
 #include <QCommandLinkButton>
 #include <QFormLayout>
+#include <QCoreApplication>
 #include <qmath.h>
 #include "uiUtils.h"
 
@@ -523,6 +524,38 @@ void RoomScene::createReplayControlBar(){
 
 void RoomScene::adjustItems(){
     QRectF displayRegion = sceneRect();
+
+    // switch between default & compact skin depending on scene size
+    QSanSkinFactory &factory =  QSanSkinFactory::getInstance();
+    QString skinName = factory.getCurrentSkinName();
+    if (skinName == "default")
+    {
+        if (displayRegion.width() < _m_roomLayout->m_minimumSceneSize.width() ||
+            displayRegion.height() < _m_roomLayout->m_minimumSceneSize.height())
+        {
+            QThread* thread = QCoreApplication::instance()->thread(); 
+            thread->blockSignals(true);
+            factory.switchSkin("compact");
+            thread->blockSignals(false);
+            foreach (Photo* photo, photos)
+                photo->repaintAll();
+        }
+    }
+    else if (skinName == "compact")
+    {
+        if (displayRegion.width() > _m_roomLayout->m_maximumSceneSize.width() &&
+            displayRegion.height() > _m_roomLayout->m_maximumSceneSize.height())
+        {
+            QThread* thread = QCoreApplication::instance()->thread(); 
+            thread->blockSignals(true);
+            factory.switchSkin("default");
+            thread->blockSignals(false);
+            foreach (Photo* photo, photos)
+                photo->repaintAll();
+        }
+    }
+     
+
     if (displayRegion.left() != 0 || displayRegion.top() != 0 ||
         displayRegion.bottom() < _m_roomLayout->m_minimumSceneSize.height() ||
         displayRegion.right() < _m_roomLayout->m_minimumSceneSize.width())

@@ -44,11 +44,10 @@ Photo::Photo(): PlayerCardContainer()
     _m_layout = &G_PHOTO_LAYOUT;
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
-    _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QSanRoomSkin::S_SKIN_KEY_MAINFRAME);
     translate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2);
-    _m_skillNameItem = new QGraphicsPixmapItem(this);
+    _m_skillNameItem = new QGraphicsPixmapItem(_m_groupMain);
         
-    emotion_item = new QGraphicsPixmapItem(this);
+    emotion_item = new QGraphicsPixmapItem(_m_groupMain);
     emotion_item->moveBy(10, 0);
 
     _createControls();
@@ -70,7 +69,7 @@ void Photo::refresh()
                                                     Qt::AlignCenter,
                                                     Sanguosha->translate(state_str));
         QPixmap pixmap = QPixmap::fromImage(image);
-        _paintPixmap(_m_onlineStatusItem, rect, pixmap, this);
+        _paintPixmap(_m_onlineStatusItem, rect, pixmap, _m_groupMain);
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
     }
 }
@@ -80,7 +79,14 @@ QRectF Photo::boundingRect() const
     return QRect(0, 0, G_PHOTO_LAYOUT.m_normalWidth, G_PHOTO_LAYOUT.m_normalHeight);
 }
 
-
+void Photo::repaintAll()
+{
+    resetTransform();
+    translate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2);
+    _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QSanRoomSkin::S_SKIN_KEY_MAINFRAME);
+    PlayerCardContainer::repaintAll();
+    refresh();
+}
 
 void Photo::_adjustComponentZValues()
 {
@@ -218,7 +224,7 @@ void Photo::setFrame(FrameType type){
     {
         _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea,
                      _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)),
-                     this);
+                     _m_groupMain);
         _layBetween(_m_focusFrame, _m_avatarArea, _m_mainFrame);
         _m_focusFrame->show();
     }

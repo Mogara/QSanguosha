@@ -49,7 +49,8 @@
     "photoVDistance": 32,
     "discardPileMinWidth": 465,
     "discardPilePadding": 50,
-    "minimumSceneSize": [1080, 650],
+    "minimumSceneSize": [950, 650], // if smaller than this size, switch to compact skin
+    //make sure that default skin's minimum scene size is smaller than maximum scene size in compact skin to avoid deadloop!!!
     "minimumSceneSize-10player": [900, 700]
 },
 "photo":

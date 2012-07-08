@@ -4,5 +4,10 @@
 "roomLayoutConfigFile": "skins/defaultSkin.layout.json",
 "roomImageConfigFile": "skins/defaultSkin.image.json",
 "roomAudioConfigFile": "skins/defaultSkin.audio.json"
+},
+"compact":
+{
+"roomLayoutConfigFile": "skins/compactSkin.layout.json",
+"roomImageConfigFile": "skins/compactSkin.image.json"
 }
 }

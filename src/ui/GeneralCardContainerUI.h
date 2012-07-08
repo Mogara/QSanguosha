@@ -65,7 +65,7 @@ public:
     // very costly. Avoid calling this except for changing skins or only once during
     // the initialization. If you just want to update the information displayed, call
     // refresh instead.
-    void repaintAll();
+    virtual void repaintAll();
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem* getMouseClickReceiver() = 0;
@@ -106,6 +106,8 @@ protected:
 
     void _createRoleComboBox();    
     void _updateProgressBar(); // a dirty function used by the class itself only.
+    void _updateDeathIcon();
+    void _updateEquips();
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QString &key);
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QString &key, QGraphicsItem* parent);
     void _paintPixmap(QGraphicsPixmapItem* &item, const QRect &rect, const QPixmap &pixmap);
@@ -169,12 +171,16 @@ protected:
     QParallelAnimationGroup* _m_equipAnim[4];
     QMutex _mutexEquipAnim;
 
-    //controls
+    // controls
     MagatamasBoxItem *_m_hpBox;
     RoleComboBox *_m_roleComboBox;
     QSanCommandProgressBar *_m_progressBar;
     QGraphicsProxyWidget *_m_progressBarItem;
     
+    // in order to apply different graphics effect;
+    QGraphicsPixmapItem *_m_groupMain;
+    QGraphicsPixmapItem *_m_groupDeath;
+
     // now, logic
     ClientPlayer* m_player;
 

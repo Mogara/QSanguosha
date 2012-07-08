@@ -428,6 +428,7 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(Json::Value value)
     // [offsetX, offestY, sizeX, sizeY]
     // [childAnchor, parentAnchor, [offsetX, offsetY]]
     // [childAnchor, parentAnchor, [offsetX, offsetY], [sizeX, sizeY]]
+    if (!value.isArray()) return false;
     m_useFixedSize = false;
     m_anchorChild = m_anchorParent = Qt::AlignLeft | Qt::AlignTop;
     if (isIntArray(value, 0, 3))
@@ -501,10 +502,16 @@ bool IQSanComponentSkin::_loadImageConfig(const Json::Value &config)
             const char* key = keys[i].c_str();
             _m_imageConfig[key] = config[key];
             S_IMAGE_KEY2FILE.remove(key);
-            QList<QString> &mappedKeys = S_IMAGE_GROUP_KEYS[key];
-            foreach (QString mkey, mappedKeys)
+            S_IMAGE_KEY2PIXMAP.remove(key);
+            if (S_IMAGE_GROUP_KEYS.contains(key))
             {
-                S_IMAGE_KEY2FILE.remove(mkey);
+                QList<QString> &mappedKeys = S_IMAGE_GROUP_KEYS[key];
+                foreach (QString mkey, mappedKeys)
+                {
+                    S_IMAGE_KEY2FILE.remove(mkey);
+                    S_IMAGE_KEY2PIXMAP.remove(mkey);
+                }
+                S_IMAGE_GROUP_KEYS.remove(key);
             }
         }
     }
@@ -645,7 +652,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
 
 QHash<QString, QString> IQSanComponentSkin::S_IMAGE_KEY2FILE;
 QHash<QString, QList<QString>> IQSanComponentSkin::S_IMAGE_GROUP_KEYS;
-static QHash<QString, QPixmap> _pixmapCache;
+QHash<QString, QPixmap> IQSanComponentSkin::S_IMAGE_KEY2PIXMAP;
 
 QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) const
 {
@@ -683,7 +690,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
         fileName = fileNameToResolve.arg(arg);
     }
 
-    if (!_pixmapCache.contains(totalKey))
+    if (!S_IMAGE_KEY2PIXMAP.contains(totalKey))
     {
         QPixmap pixmap = QSanPixmapCache::getPixmap(fileName);
         if (clipping) {
@@ -695,9 +702,9 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
                     Qt::SmoothTransformation);
             }
         }
-        _pixmapCache[totalKey] = pixmap;
+        S_IMAGE_KEY2PIXMAP[totalKey] = pixmap;
     }
-    return _pixmapCache[totalKey];
+    return S_IMAGE_KEY2PIXMAP[totalKey];
 }
 
  QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const
@@ -774,6 +781,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["infoPlaneWidthPercentage"], _m_roomLayout.m_infoPlaneWidthPercentage);
     tryParse(config["logBoxHeightPercentage"], _m_roomLayout.m_logBoxHeightPercentage);
     tryParse(config["minimumSceneSize"], _m_roomLayout.m_minimumSceneSize);
+    tryParse(config["maximumSceneSize"], _m_roomLayout.m_maximumSceneSize);
     tryParse(config["photoHDistance"], _m_roomLayout.m_photoHDistance);
     tryParse(config["photoVDistance"], _m_roomLayout.m_photoVDistance);
     tryParse(config["photoDashboardPadding"], _m_roomLayout.m_photoDashboardPadding);
@@ -1002,4 +1010,9 @@ QSanSkinFactory::QSanSkinFactory(const char* fileName)
     _m_skinName = "";
     switchSkin("default");
     file.close();
+}
+
+const QString& QSanSkinFactory::getCurrentSkinName() const
+{
+    return _m_skinName;
 }
