@@ -333,7 +333,8 @@ public:
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if(change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge)){
+        if(change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge)
+                && !xiahouyuan->isSkipped(Player::Draw)){
             if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)){
                 xiahouyuan->skip(Player::Judge);
                 xiahouyuan->skip(Player::Draw);
