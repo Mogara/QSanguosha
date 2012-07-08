@@ -268,7 +268,7 @@ public:
 					 << "super_guanxing" << "yihun" << "shihun" << "chongzhen" << "tongxin"
 					 << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian";
 					 
-		available_wake_skills << "hunzi" << "zhiji" << "kegou"
+        available_wake_skills << "hunzi" << "zhiji" << "kegou";
     }
 
     void getRandomSkill(ServerPlayer *player, bool need_trans = false) const{
@@ -302,9 +302,9 @@ public:
                     if(dummy_skills.contains(skill->objectName()))
                         continue;
 						
-					if(skill->getFrequency() == Skill::Wake
-							&& !available_wake_skills.contains(skill->objectName()))
-						continue;
+                    if(skill->getFrequency() == Skill::Wake
+                            && !available_wake_skills.contains(skill->objectName()))
+                        continue;
 
                     if(!skill->objectName().startsWith("#"))
                         all_skills << skill->objectName();
@@ -500,7 +500,7 @@ public:
 
 private:
     QStringList boss_banlist, boss_skillbanned;
-    QStringList dummy_skills;
+    QStringList dummy_skills, available_wake_skills;
 };
 
 bool ImpasseScenario::exposeRoles() const{
