@@ -1018,7 +1018,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(selected.length() > 2)
+        if(selected.length() > 1)
             return false;
 
         return !to_select->isEquipped();
@@ -1397,18 +1397,25 @@ public:
 class Longnu: public TriggerSkill{
 public:
     Longnu():TriggerSkill("longnu"){
-        events << CardsMoveOneTime << EventPhaseStart;
+        events << CardsMoveOneTime << EventPhaseChanging;
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *sp_shenzhaoyun, QVariant &data) const{
-        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(move->from != sp_shenzhaoyun)
-            return false;
-        if(sp_shenzhaoyun->getPhase() == Player::Start)
-            sp_shenzhaoyun->skip(Player::Draw);
-        if(sp_shenzhaoyun->getHandcardNum()<4 && sp_shenzhaoyun->getPhase() != Player::Discard && room->askForSkillInvoke(sp_shenzhaoyun,objectName()))
-            sp_shenzhaoyun->drawCards(4-sp_shenzhaoyun->getHandcardNum());
+        if(event == EventPhaseChanging)
+        {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if(change.to == Player::Start)
+                sp_shenzhaoyun->skip(Player::Draw);
+        }
+        else
+        {
+            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            if(move->from != sp_shenzhaoyun)
+                return false;
+            if(sp_shenzhaoyun->getHandcardNum()<4 && sp_shenzhaoyun->getPhase() != Player::Discard && room->askForSkillInvoke(sp_shenzhaoyun,objectName()))
+                sp_shenzhaoyun->drawCards(4-sp_shenzhaoyun->getHandcardNum());
+        }
         return false;
     }
 };
