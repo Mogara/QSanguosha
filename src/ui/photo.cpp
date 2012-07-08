@@ -104,18 +104,20 @@ void Photo::setEmotion(const QString &emotion, bool permanent){
     }
 
     QString path = QString("image/system/emotion/%1.png").arg(emotion);
-    emotion_item->setPixmap(QPixmap(path));
-    _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
-    emotion_item->show();
 
-    if(emotion == "question" || emotion == "no-question")
-        return;
+    if (QFile::exists(path))
+    {
+        emotion_item->setPixmap(QPixmap(path));
+        _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
+        emotion_item->show();
 
-    if(!permanent)
-        QTimer::singleShot(2000, this, SLOT(hideEmotion()));
-
-    if (emotion != "good" && emotion != "bad")
+        if (!permanent)
+            QTimer::singleShot(2000, this, SLOT(hideEmotion()));
+    }
+    else
+    {
         PixmapAnimation::GetPixmapAnimation(this,emotion);
+    }
 }
 
 void Photo::tremble(){

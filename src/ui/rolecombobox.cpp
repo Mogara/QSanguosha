@@ -69,18 +69,35 @@ void RoleComboBox::collapse(){
     m_currentRole->setRole(clicked_item->getRole());
 }
 
-void RoleComboBox::expand(){
+void RoleComboBox::expand() {
     foreach(RoleComboBoxItem *item, items)
         item->show();
     m_currentRole->setRole("unknown");
     connect(m_currentRole, SIGNAL(clicked()), this, SLOT(collapse()));
 }
 
+void RoleComboBox::toggle() {
+    Q_ASSERT(!_m_fixedRole.isNull());
+    if (!isEnabled()) return;
+    QString displayed = m_currentRole->getRole();
+    if (displayed == "unknown")
+        m_currentRole->setRole(_m_fixedRole);
+    else
+        m_currentRole->setRole("unknown");
+}
+
 void RoleComboBox::fix(const QString &role){
+    if (_m_fixedRole.isNull())
+    {
+        disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
+        connect(m_currentRole, SIGNAL(clicked()), this, SLOT(toggle()));
+    }
     m_currentRole->setRole(role);
-    disconnect(m_currentRole);
+    _m_fixedRole = role;
     // delete all
     foreach(RoleComboBoxItem *item, items)
+    {
         delete item;
+    }
     items.clear();
 }

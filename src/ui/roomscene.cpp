@@ -2523,7 +2523,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 
         if(photo){
             //photo->setEmotion("damage");
-            setEmotion(who,"damage");
+            setEmotion(who, "damage");
             photo->tremble();
         }
 
@@ -3326,10 +3326,17 @@ void RoomScene::moveFocus(const QString &who, Countdown countdown){
     }
 }
 
+void RoomScene::setEmotion(const QString &who, const QString &emotion){
+    bool permanent = false;
+    if (emotion == "question" || emotion == "no-question")
+        permanent = true;
+    setEmotion(who, emotion, permanent);
+}
+
 void RoomScene::setEmotion(const QString &who, const QString &emotion ,bool permanent){
     Photo *photo = name2photo[who];
     if(photo){
-        photo->setEmotion(emotion,permanent);
+        photo->setEmotion(emotion, permanent);
         return;
     }
     PixmapAnimation * pma = PixmapAnimation::GetPixmapAnimation(dashboard, emotion);
@@ -3424,8 +3431,7 @@ void RoomScene::animatePopup(const QString &name, const QStringList &args)
 
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args){
 
-    if(name == "analeptic"
-            || name == "peach")
+    if(name == "analeptic" || name == "peach")
     {
         setEmotion(args.at(0),name);
         return;

@@ -333,7 +333,8 @@ private slots:
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void moveFocus(const QString &who, QSanProtocol::Countdown);
-    void setEmotion(const QString &who, const QString &emotion,bool permanent = false);
+    void setEmotion(const QString &who, const QString &emotion);
+    void setEmotion(const QString &who, const QString &emotion, bool permanent);
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);
     void showOwnerButtons(bool owner);
