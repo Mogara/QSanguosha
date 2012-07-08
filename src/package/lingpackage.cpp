@@ -14,6 +14,7 @@ LuoyiCard::LuoyiCard(){
 
 void LuoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded))
+        room->broadcastSkillInvoke("luoyi");
         source->setFlags("luoyi");
 }
 
@@ -41,6 +42,7 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = zhouyu->getRoom();
 
     int card_id = room->askForCardChosen(zhouyu, zhouyu, "h", "neofanjian");
+    room->broadcastSkillInvoke("fanjian");
     const Card *card = Sanguosha->getCard(card_id);
     Card::Suit suit = room->askForSuit(target, "neofanjian");
 
