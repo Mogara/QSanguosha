@@ -103,16 +103,10 @@ void ServerPlayer::throwAllHandCards(){
 }
 
 void ServerPlayer::throwAllHandCardsAndEquips(){
-    DummyCard *card = new DummyCard;
-    DummyCard *handcard = wholeHandCards();
-    if (handcard != NULL)
-        card = handcard;
-    QList<const Card *> equips = getEquips();
-    if(!equips.isEmpty()){
-        foreach(const Card *equip, equips)
-            card->addSubcard(equip);
-    }
-    if(card == NULL)
+    DummyCard *card = isKongcheng() ? new DummyCard : wholeHandCards();
+    foreach(const Card *equip, getEquips())
+        card->addSubcard(equip);
+    if(card->subcardsLength() == 0)
         return;
     room->throwCard(card, this);
     card->deleteLater();

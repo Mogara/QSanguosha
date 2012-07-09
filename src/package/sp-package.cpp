@@ -243,7 +243,7 @@ public:
                     }
                     room->throwCard(dummy_card, yuanshu);
                     room->showAllCards(yuanshu);
-					delete dummy_card;
+                    delete dummy_card;
                 }
             }else{
                 room->askForDiscard(yuanshu, "yongsi", x, x, false, true);
