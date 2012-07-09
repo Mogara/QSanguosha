@@ -13,7 +13,7 @@
     "discardPileMinWidth": 465,
     "discardPilePadding": 50,
     "maximumSceneSize": [1000, 660], // if greater than this size, switch to default skin
-    "minimumSceneSize": [900, 600], // if smaller than this size, start scaling 
+    "minimumSceneSize": [850, 550], // if smaller than this size, start scaling 
     "maximumSceneSize-10player": [1080, 810],
     "minimumSceneSize-10player": [1020, 680]
 },
