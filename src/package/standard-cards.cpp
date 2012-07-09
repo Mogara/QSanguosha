@@ -96,21 +96,8 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int slash_targets = 1;
-    if(Self->hasWeapon("halberd")){
-        bool can_invoke = false;
-        if (this->isVirtualCard() && this->getSubcards().length() > 0){
-            can_invoke = true;
-            foreach(int card_id, this->getSubcards()){
-                if (Sanguosha->getCard(card_id)->isEquipped()){
-                    can_invoke = false;
-                    break;
-                }
-            }
-        }
-        if ((can_invoke && this->isVirtualCard() && this->getSubcards().length() == Self->getHandcardNum()) || Self->isLastHandCard(this)){
-            slash_targets += 2;
-        }
-    }
+    if(Self->hasWeapon("halberd") && Self->isLastHandCard(this))
+        slash_targets += 2;
 
     if(Self->hasSkill("lihuo") && inherits("FireSlash"))
         slash_targets ++;

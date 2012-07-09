@@ -207,8 +207,7 @@ public:
             Room *room = yuanshu->getRoom();
 
             if(total <= x){
-                yuanshu->throwAllHandCards();
-                yuanshu->throwAllEquips();
+                yuanshu->throwAllHandCardsAndEquips();
 
                 LogMessage log;
                 log.type = "#YongsiWorst";
@@ -227,19 +226,24 @@ public:
                 int total = handcards.size() - jilei_cards.size() + yuanshu->getEquips().length();
                 if(x > total){
                     // show all his cards
-                    room->showAllCards(yuanshu);
                     LogMessage log;
                     log.type = "#YongsiBad";
                     log.from = yuanshu;
                     log.arg = QString::number(total);
                     log.arg2 = objectName();
                     room->sendLog(log);
-                    yuanshu->throwAllEquips();
                     DummyCard *dummy_card = new DummyCard;
                     foreach(const Card *card, handcards.toSet() - jilei_cards){
                         dummy_card->addSubcard(card);
                     }
+                    QList<const Card *> equips = yuanshu->getEquips();
+                    if(!equips.isEmpty()){
+                        foreach(const Card *equip, equips)
+                            dummy_card->addSubcard(equip);
+                    }
                     room->throwCard(dummy_card, yuanshu);
+                    room->showAllCards(yuanshu);
+					delete dummy_card;
                 }
             }else{
                 room->askForDiscard(yuanshu, "yongsi", x, x, false, true);

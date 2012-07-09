@@ -213,8 +213,7 @@ public:
                 room->sendLog(log);
 				room->broadcastSkillInvoke("kuiwei", 2);
                 if(caoren->getCards("he").length() <= n){
-                    caoren->throwAllEquips();
-                    caoren->throwAllHandCards();
+                    caoren->throwAllHandCardsAndEquips();
                 }
                 else{
                     room->askForDiscard(caoren, objectName(), n, n, false, true);

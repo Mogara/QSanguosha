@@ -213,8 +213,7 @@ public:
             Room *room = guanyu->getRoom();
 
             if(guanyu->askForSkillInvoke("xiansheng")){
-                guanyu->throwAllEquips();
-                guanyu->throwAllHandCards();
+                guanyu->throwAllHandCardsAndEquips();
 
                 room->transfigure(guanyu, "shenguanyu", true);
 

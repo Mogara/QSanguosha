@@ -37,6 +37,7 @@ public:
     void obtainCard(const Card *card, bool unhide = true);
     void throwAllEquips();
     void throwAllHandCards();
+    void throwAllHandCardsAndEquips();
     void throwAllCards();
     void bury();
     void throwAllMarks();

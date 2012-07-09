@@ -98,7 +98,6 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
                     if(jilei_cards.size() > player->getMaxCards()){
                         // show all his cards
-                        room->showAllCards(player);
 
                         DummyCard *dummy_card = new DummyCard;
                         foreach(const Card *card, handcards.toSet() - jilei_cards){
@@ -106,6 +105,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
                         }
                         room->throwCard(dummy_card, player);
 
+                        room->showAllCards(player);
                         return;
                     }
                 }
@@ -231,7 +231,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 card_use = data.value<CardUseStruct>();
                 if(card_use.from && !card_use.to.isEmpty())
                 {
-                    foreach(ServerPlayer *p, room->getAlivePlayers())
+                    foreach(ServerPlayer *p, room->getAllPlayers())
                         thread->trigger(TargetConfirmed, room, p, data);
                 }
                 card->use(room, card_use.from, card_use.to);
@@ -641,8 +641,7 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
         if(victim->getRole() == "rebel" && killer != victim){
             killer->drawCards(3);
         }else if(victim->getRole() == "loyalist" && killer->getRole() == "lord"){
-            killer->throwAllEquips();
-            killer->throwAllHandCards();
+            killer->throwAllHandCardsAndEquips();
         }
     }
 }
@@ -1047,8 +1046,7 @@ bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, Q
             DamageStar damage = data.value<DamageStar>();
             ServerPlayer *killer = damage ? damage->from : NULL;
             if(killer && killer->getKingdom() == damage->to->getKingdom()){
-                killer->throwAllEquips();
-                killer->throwAllHandCards();
+                killer->throwAllHandCardsAndEquips();
             }
             else if(killer && killer->isAlive()){
                 killer->drawCards(3);

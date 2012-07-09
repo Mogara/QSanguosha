@@ -130,7 +130,7 @@ public:
     void setFaceUp(bool face_up);
 
     virtual int aliveCount() const = 0;
-    int distanceTo(const Player *other, int distanse_fix = 0) const;
+    int distanceTo(const Player *other, int distance_fix = 0) const;
     void setFixedDistance(const Player *player, int distance);
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
@@ -248,6 +248,7 @@ public:
     void obtainCard(const Card *card, bool unhide = true);
     void throwAllEquips();
     void throwAllHandCards();
+    void throwAllHandCardsAndEquips();
     void throwAllCards();
     void bury();
     void throwAllMarks();

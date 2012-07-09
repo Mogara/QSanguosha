@@ -102,6 +102,22 @@ void ServerPlayer::throwAllHandCards(){
     card->deleteLater();
 }
 
+void ServerPlayer::throwAllHandCardsAndEquips(){
+    DummyCard *card = new DummyCard;
+    DummyCard *handcard = wholeHandCards();
+    if (handcard != NULL)
+        card = handcard;
+    QList<const Card *> equips = getEquips();
+    if(!equips.isEmpty()){
+        foreach(const Card *equip, equips)
+            card->addSubcard(equip);
+    }
+    if(card == NULL)
+        return;
+    room->throwCard(card, this);
+    card->deleteLater();
+}
+
 void ServerPlayer::throwAllMarks(){
     // throw all marks
     foreach(QString mark_name, marks.keys()){
@@ -143,8 +159,7 @@ void ServerPlayer::bury(){
 }
 
 void ServerPlayer::throwAllCards(){
-    throwAllEquips();
-    throwAllHandCards();
+    throwAllHandCardsAndEquips();
 
     QList<const Card *> tricks = getJudgingArea();
     foreach(const Card *trick, tricks)
@@ -399,10 +414,19 @@ void ServerPlayer::addCard(const Card *card, Place place){
 }
 
 bool ServerPlayer::isLastHandCard(const Card *card) const{
-    if(handcards.length() != 1)
-        return false;
-
-    return card->getEffectiveId() == handcards.first()->getEffectiveId();
+    if (!card->isVirtualCard()){
+        if(handcards.length() != 1)
+            return false;
+        return handcards.first()->getEffectiveId() == card->getEffectiveId();
+    }
+    else if (card->getSubcards().length() > 0){
+        foreach (int card_id, card->getSubcards()){
+            if (!handcards.contains(Sanguosha->getCard(card_id)))
+                    return false;
+        }
+        return handcards.length() == card->getSubcards().length();
+    }
+    return false;
 }
 
 QList<int> ServerPlayer::handCards() const{

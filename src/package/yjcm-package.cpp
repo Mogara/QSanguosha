@@ -446,8 +446,7 @@ public:
             log.arg = objectName();
             room->sendLog(log);
 
-            killer->throwAllHandCards();
-            killer->throwAllEquips();
+            killer->throwAllHandCardsAndEquips();
 
             QString killer_name = killer->getGeneralName();
             if(killer_name == "zhugeliang" || killer_name == "wolong" || killer_name == "shenzhugeliang")
