@@ -199,6 +199,7 @@ protected:
 private:
     void _getSceneSizes(QSize& minSize, QSize& maxSize);
     bool _shouldIgnoreDisplayMove(Player::Place from, Player::Place to);
+    bool _processCardsMove(CardsMoveStruct &move, bool isLost);
     bool _m_isMouseButtonDown;
     bool _m_isInDragAndUseMode;
     const QSanRoomSkin::RoomLayout* _m_roomLayout;
@@ -273,6 +274,25 @@ private:
     Button *arrange_button;
     KOFOrderBox *enemy_box, *self_box;
     QPointF m_tableCenterPos;
+
+    struct _MoveCardsClassifier
+    {
+        inline _MoveCardsClassifier(const CardsMoveStruct &move)
+        {
+            m_card_ids = move.card_ids;
+        }
+        inline bool operator == (const _MoveCardsClassifier &other) const
+        {
+            return m_card_ids == other.m_card_ids;
+        }
+        inline bool operator < (const _MoveCardsClassifier &other) const
+        {
+            return m_card_ids.first() < other.m_card_ids.first();
+        }
+        QList<int> m_card_ids;
+    };
+
+    QMap<_MoveCardsClassifier, CardsMoveStruct> m_move_cache;
 
     // @todo: this function shouldn't be here. But it's here anyway, before someone find a better
     // home for it.

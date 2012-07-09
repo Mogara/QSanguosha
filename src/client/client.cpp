@@ -1059,6 +1059,7 @@ void Client::askForExchange(const Json::Value &exchange_str){
     }
 
     discard_num = exchange_str.asInt();
+    min_num = discard_num;
     m_isDiscardActionRefusable = false;
     m_canDiscardEquip = false;
 

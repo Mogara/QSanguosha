@@ -1517,11 +1517,33 @@ bool RoomScene::_shouldIgnoreDisplayMove(Player::Place from, Player::Place to)
     return false;
 }
 
+bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost){
+    _MoveCardsClassifier cls(move);
+
+    // delayed trick processed;
+    if (move.from_place == Player::PlaceDelayedTrick && move.to_place == Player::PlaceTable){
+        if(isLost)
+            m_move_cache[cls] = move;
+        return true;
+    }
+    CardsMoveStruct tmpMove = m_move_cache.value(cls, CardsMoveStruct());
+    if(tmpMove.from_place != Player::PlaceUnknown){
+        move.from = tmpMove.from;
+        move.from_place = tmpMove.from_place;
+        move.from_pile_name = tmpMove.from_pile_name;
+    }
+    if(!isLost)
+        m_move_cache.remove(cls);
+    return false;
+}
+
 void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
     for (int i = 0; i < card_moves.size(); i++) 
     {
         CardsMoveStruct &movement = card_moves[i];
+        bool skipMove = _processCardsMove(movement, true);
+        if(skipMove) continue;
         if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
         GeneralCardContainer* from_container = _getGeneralCardContainer(movement.from_place, movement.from);
@@ -1583,17 +1605,8 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
             else if (reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP){
                 result.append(Sanguosha->translate("change equip"));
             }
-            else if (reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE){
-                result.append(Sanguosha->translate("judgedone"));
-            }
             else if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLE){
                     result.append(Sanguosha->translate("throw"));
-            }
-            else if (reason.m_reason == CardMoveReason::S_REASON_REMOVE_FROM_PILE){
-                    result.append(Sanguosha->translate("backinto"));
-            }
-            else if (reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER){
-                result.append(Sanguosha->translate("enter"));
             }
     }
     else if (reason.m_reason == CardMoveReason::S_REASON_RECAST){
@@ -1613,8 +1626,18 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
             result.append(Sanguosha->translate("show"));
         }
     }
-    else if (reason.m_reason == CardMoveReason::S_REASON_PUT){
-        result.append(Sanguosha->translate("put"));
+    else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_PUT){
+        if(reason.m_reason == CardMoveReason::S_REASON_PUT)
+            result.append(Sanguosha->translate("put"));
+        else if (reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER){
+            result.append(Sanguosha->translate("enter"));
+        }
+        else if (reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE){
+            result.append(Sanguosha->translate("judgedone"));
+        }
+        else if (reason.m_reason == CardMoveReason::S_REASON_REMOVE_FROM_PILE){
+                result.append(Sanguosha->translate("backinto"));
+        }
     }
     return result;
 
@@ -1627,6 +1650,8 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
     for (int i = 0; i < card_moves.size(); i++) 
     {
         CardsMoveStruct &movement = card_moves[i];
+        bool skipMove = _processCardsMove(movement, false);
+        if(skipMove) continue;
         if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
         GeneralCardContainer* to_container = _getGeneralCardContainer(movement.to_place, movement.to);
