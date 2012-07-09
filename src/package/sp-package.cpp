@@ -230,7 +230,7 @@ public:
                     if (dummy_card->subcardsLength() > 0)
                         room->throwCard(dummy_card, yuanshu);
                     room->showAllCards(yuanshu);
-					delete dummy_card;
+                    delete dummy_card;
                 }
                 else
                 {
