@@ -28,6 +28,7 @@ public:
     inline void setAnchorEnable(bool enabled) { anchorEnabled = enabled; }
     inline bool isAnchorEnable() { return anchorEnabled; }
     void setIconSize(QSize size);
+    inline void setImageArea(QRect rect) { m_imageArea = rect; }
     inline QSize getIconSize() const { return m_iconSize; }
     virtual QRectF boundingRect() const;
     virtual void update();
@@ -44,6 +45,7 @@ protected:
     Qt::Orientation m_orientation;
     bool m_showBackground;
     QSize m_iconSize;
+    QRect m_imageArea;
     QPixmap _icons[6];
     QPixmap _bgImages[6];
 };

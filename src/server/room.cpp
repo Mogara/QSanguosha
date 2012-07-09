@@ -853,7 +853,6 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
             if (card != NULL)
             {
                 repliedPlayer = player;
-                thread->delay(Config.AIDelay);
                 break;
             }
         }

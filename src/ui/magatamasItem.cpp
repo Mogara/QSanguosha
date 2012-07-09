@@ -78,6 +78,7 @@ void MagatamasBoxItem::setHp(int hp)
 {
     _doHpChangeAnimation(hp);
     m_hp = hp;
+    update();
 }
 
 void MagatamasBoxItem::setAnchor(QPoint anchor, Qt::Alignment align)
@@ -116,6 +117,7 @@ void MagatamasBoxItem::update()
 {
     _updateLayout();
     _autoAdjustPos();
+    QGraphicsItem::update();
 }
 
 void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
@@ -196,23 +198,30 @@ void MagatamasBoxItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* 
     {
         int i;        
         for (i = 0; i < m_hp; i++)
-            painter->drawPixmap(QRect(xStep * i, yStep * i, m_iconSize.width(), m_iconSize.height()),
-                                _icons[imageIndex]);
+        {
+            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
+            rect.translate(m_imageArea.topLeft());
+            painter->drawPixmap(rect, _icons[imageIndex]);
+        }
         for (; i < m_maxHp; i++)
-            painter->drawPixmap(QRect(xStep * i, yStep * i, m_iconSize.width(), m_iconSize.height()),
-                                _icons[0]);
+        {
+            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
+            rect.translate(m_imageArea.topLeft());
+            painter->drawPixmap(rect, _icons[0]);
+        }
     }
     else
     {
-        painter->drawPixmap(QRect(0, 0, m_iconSize.width(), m_iconSize.height()), _icons[imageIndex]);
+        painter->drawPixmap(m_imageArea, _icons[imageIndex]);
+        QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
+        rect.translate(m_imageArea.topLeft());
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, QRect(xStep * 1, yStep * 1, m_iconSize.width(),
-            m_iconSize.height()), Qt::AlignCenter, QString::number(m_hp));
+            painter, rect, Qt::AlignCenter, QString::number(m_hp));
+        rect.translate(xStep, yStep);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, QRect(xStep * 2, yStep * 2, m_iconSize.width(),
-            m_iconSize.height()), Qt::AlignCenter, "/");
+            painter, rect, Qt::AlignCenter, "/");
+        rect.translate(xStep, yStep);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, QRect(xStep * 3, yStep * 3, m_iconSize.width(),
-            m_iconSize.height()), Qt::AlignCenter, QString::number(m_maxHp));
+            painter, rect, Qt::AlignCenter, QString::number(m_maxHp));
     }
 }

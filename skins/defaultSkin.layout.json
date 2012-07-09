@@ -24,12 +24,12 @@
     // to specify a solid border of width 5.
     // @todo: adjust these colors!
     "magatamaFont": [
-        ["Arial", [15, 15, 3], 80, [233, 0, 0, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, 3], 80, [233, 34, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, 3], 80, [233, 116, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, 3], 80, [195, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, 3], 80, [141, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, 3], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
+        ["Arial", [15, 15, -1], 80, [233, 0, 0, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -1], 80, [233, 34, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -1], 80, [233, 116, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -1], 80, [195, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -1], 80, [141, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -1], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
     // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
@@ -51,7 +51,7 @@
     "discardPilePadding": 50,
     "minimumSceneSize": [950, 650], // if smaller than this size, switch to compact skin
     //make sure that default skin's minimum scene size is smaller than maximum scene size in compact skin to avoid deadloop!!!
-    "minimumSceneSize-10player": [900, 700]
+    "minimumSceneSize-10player": [1050, 800]
 },
 "photo":
 {
@@ -60,7 +60,7 @@
     "mainFrameArea": [0, 0, 157, 181],
     "canvasArea": [0, 0, 157, 181],
     "handCardNumIconArea": [3, 94, 21, 22],
-    "handCardFont": ["arial", [12, 12, 1], 80, [255, 255, 255, 255]],	
+    "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255]],	
     "equipAreas": [[3, 122, 150, 13], [3, 136, 150, 13], [3, 150, 150, 13], [3, 164, 150, 13]],
     "equipImageArea": [1, 1, 11, 11], // need adjustment
     "equipTextArea": [35, -5, 85, 21], // need adjustment
@@ -86,6 +86,7 @@
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
     "magatamaSize": [14, 17],
+    "magatamaImageArea": [0, 0, 14, 17],
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [163, 115]],
     "cardMoveArea": [-50, 35, 200, 130],
@@ -97,15 +98,15 @@
     "skillNameFont": ["simli", 30, 80, [255, 255, 255, 255], 2, 11, [0, 0], [102, 16, 120, 255]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [160, 10]],
     "progressBarHorizontal": true,
-    "privatePileStartPos": [34, 26],
+    "privatePileStartPos": [34, 27],
     "privatePileStep": [0, 16],
     "privatePileButtonSize": [60, 16],
     "actionedIconRegion": [100, 78, 52, 21],
     "saveMeIconRegion": [25, 46, 122, 50],
     "votesIconRegion": [53, 66, 50, 50],
-    "chainedIconRegion": [0, 81, 156, 19],
+    "chainedIconRegion": [0, 108, 156, 19],
     "readyIconRegion": [97, 125, 44, 53],
-    "deathIconRegion": [17, 55, 118, 75],
+    "deathIconRegion": [0, 50, 157, 102],
     "drankMaskColor": [250, 0, 0, 115],
     "deathEffectColor": [50, 50, 50, 255]
 },
@@ -116,7 +117,7 @@
     "normalHeight": 170,
     "floatingAreaHeight": 50,
     "handCardNumIconArea": [-100, 145, 21, 22],
-    "handCardFont": ["arial", [12, 12, 1], 80, [255, 255, 255, 255]],
+    "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255]],	
     "equipAreas": [[7, 44, 149, 25], [7, 76, 149, 25], [7, 108, 149, 25], [7, 140, 149, 25]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
@@ -158,13 +159,14 @@
     "screenNameArea": [0, 7, 157, 25],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
-    "magatamaSize": [22, 26],
-    "magatamasBgVisible": true,
+    "magatamaSize": [23, 31],
+    "magatamaImageArea": [0, 2, 22, 26],
+    "magatamasBgVisible": false,
     "magatamasAnchor": ["rightTop", [165, 10]],
     "cardMoveArea": [-50, 65, 200, 130], 
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
-    "privatePileStartPos": [8, 26],
+    "privatePileStartPos": [10, 30],
     "privatePileStep": [0, 16],
     "privatePileButtonSize": [60, 16],
     "actionedIconRegion": [80, 37, 52, 21],

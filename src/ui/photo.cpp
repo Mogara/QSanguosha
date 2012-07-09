@@ -42,6 +42,7 @@ Photo::Photo(): PlayerCardContainer()
     _m_focusFrame = NULL;
     _m_onlineStatusItem = NULL;
     _m_layout = &G_PHOTO_LAYOUT;
+    _m_frameType = S_FRAME_NO_FRAME;
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     translate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2);
@@ -84,7 +85,10 @@ void Photo::repaintAll()
     resetTransform();
     translate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2);
     _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QSanRoomSkin::S_SKIN_KEY_MAINFRAME);
-    PlayerCardContainer::repaintAll();
+    setFrame(_m_frameType);
+    hideSkillName(); // @todo: currently we don't adjust skillName's position for simplicity,
+                     // consider repainting it instead of hiding it in the future.
+    PlayerCardContainer::repaintAll();    
     refresh();
 }
 
@@ -104,18 +108,20 @@ void Photo::setEmotion(const QString &emotion, bool permanent){
     }
 
     QString path = QString("image/system/emotion/%1.png").arg(emotion);
-    emotion_item->setPixmap(QPixmap(path));
-    _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
-    emotion_item->show();
 
-    if(emotion == "question" || emotion == "no-question")
-        return;
+    if (QFile::exists(path))
+    {
+        emotion_item->setPixmap(QPixmap(path));
+        _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
+        emotion_item->show();
 
-    if(!permanent)
-        QTimer::singleShot(2000, this, SLOT(hideEmotion()));
-
-    if (emotion != "good" && emotion != "bad")
+        if (!permanent)
+            QTimer::singleShot(2000, this, SLOT(hideEmotion()));
+    }
+    else
+    {
         PixmapAnimation::GetPixmapAnimation(this,emotion);
+    }
 }
 
 void Photo::tremble(){
@@ -215,6 +221,7 @@ bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
 }
 
 void Photo::setFrame(FrameType type){
+    _m_frameType = type;
     if (type == S_FRAME_NO_FRAME)
     {
         if (_m_focusFrame)

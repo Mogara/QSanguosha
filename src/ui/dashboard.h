@@ -83,7 +83,7 @@ public:
     int width();
     int height();
 
-    static const int S_PENDING_OFFSET_Y = -40;
+    static const int S_PENDING_OFFSET_Y = -25;
 public slots:
     void doFilter();
     void sortCards(bool doAnmiation = true);

@@ -788,7 +788,7 @@ public:
                 if(sunquan->hasFlag("jiuyuan")){
                     room->setPlayerFlag(sunquan, "-jiuyuan");
                     if(sunquan->getHp() > 0)
-                    	room->broadcastSkillInvoke("jiuyuan", 4);
+                        room->broadcastSkillInvoke("jiuyuan", 4);
                 }
 
                 break;
@@ -971,7 +971,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *daqiao, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
 
-		if(use.card && use.card->inherits("Slash") && use.to.contains(daqiao) && !daqiao->isNude() && room->alivePlayerCount() > 2){
+        if(use.card && use.card->inherits("Slash") && use.to.contains(daqiao) && !daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(use.from);
 

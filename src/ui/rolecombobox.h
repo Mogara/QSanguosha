@@ -43,12 +43,14 @@ public slots:
     void fix(const QString &role);
 protected:
     qreal _m_posX, _m_posY;
+    QString _m_fixedRole;
 private:
     QList<RoleComboBoxItem *> items;
     RoleComboBoxItem* m_currentRole;
 private slots:
     void collapse();
     void expand();
+    void toggle();
 };
 
 #endif // ROLEComboBox_H

@@ -846,6 +846,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
         layout->m_progressBarArea.tryParse(playerConfig["progressBarArea"]);
         tryParse(playerConfig["progressBarHorizontal"], layout->m_isProgressBarHorizontal);
         tryParse(playerConfig["magatamaSize"], layout->m_magatamaSize);
+        tryParse(playerConfig["magatamaImageArea"], layout->m_magatamaImageArea);
         tryParse(playerConfig["magatamasHorizontal"], layout->m_magatamasHorizontal);
         tryParse(playerConfig["magatamasBgVisible"], layout->m_magatamasBgVisible);
         tryParse(playerConfig["magatamasAnchor"][1], layout->m_magatamasAnchor);

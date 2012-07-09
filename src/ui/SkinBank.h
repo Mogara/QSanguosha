@@ -173,6 +173,7 @@ public:
         bool m_isProgressBarHorizontal;
         AnchoredRect m_progressBarArea;
         QSize m_magatamaSize;
+        QRect m_magatamaImageArea;
         bool m_magatamasHorizontal;
         bool m_magatamasBgVisible;
         QPoint m_magatamasAnchor;
