@@ -13,9 +13,10 @@ LuoyiCard::LuoyiCard(){
 }
 
 void LuoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded))
+    if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded)){
         room->broadcastSkillInvoke("luoyi");
         source->setFlags("luoyi");
+    }
 }
 
 class NeoLuoyi: public ZeroCardViewAsSkill{

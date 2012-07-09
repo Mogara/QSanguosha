@@ -138,7 +138,7 @@ void Photo::tremble(){
 
 void Photo::showSkillName(const QString &skill_name){
     G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
-        G_PHOTO_LAYOUT.m_skillNameArea, Qt::AlignCenter,
+        G_PHOTO_LAYOUT.m_skillNameArea, Qt::AlignLeft,
         Sanguosha->translate(skill_name));
     _m_skillNameItem->show();
 
