@@ -243,15 +243,16 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only){
         card_item->setParentItem(this);
     }
 
-    int i;
-    for(i=0; i<up_items.length(); i++){
+    show();
+
+    QPointF source(start_x, start_y1);
+    for(int i = 0; i < up_items.length(); i++){
         CardItem *card_item = up_items.at(i);
         QPointF pos(start_x + i*skip, start_y1);
-        card_item->setPos(pos);
+        card_item->setPos(source);
         card_item->setHomePos(pos);
+        card_item->goBack(true);
     }
-
-    show();
 }
 
 void GuanxingBox::adjust(){
@@ -269,7 +270,7 @@ void GuanxingBox::adjust(){
     else
         items = &down_items;
 
-    int c = (item->x() - start_x) / G_COMMON_LAYOUT.m_cardNormalWidth;
+    int c = (item->x() + item->boundingRect().width()/2 - start_x) / G_COMMON_LAYOUT.m_cardNormalWidth;
     c = qBound(0, c, items->length());
     items->insert(c, item);
 
@@ -277,13 +278,13 @@ void GuanxingBox::adjust(){
     for(i = 0; i < up_items.length(); i++){
         QPointF pos(start_x + i * skip, start_y1);
         up_items.at(i)->setHomePos(pos);
-        up_items.at(i)->goBack(false);
+        up_items.at(i)->goBack(true);
     }
 
     for(i = 0; i < down_items.length(); i++){
         QPointF pos(start_x + i * skip, start_y2);
         down_items.at(i)->setHomePos(pos);
-        down_items.at(i)->goBack(false);
+        down_items.at(i)->goBack(true);
     }
 }
 

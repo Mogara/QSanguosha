@@ -86,7 +86,7 @@ private:
     static const int start_x = 76;
     static const int start_y1 = 105;
     static const int start_y2 = 249;
-    static const int middle_y = 157;
+    static const int middle_y = 173;
     static const int skip = 102;
 };
 
