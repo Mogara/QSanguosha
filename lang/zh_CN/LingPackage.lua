@@ -29,10 +29,15 @@ return {
 
 	["#neo_guanyu"] = "美髯公",
 	["neo_guanyu"] = "翼关羽",
+	["cv:neo_guanyu"] = "凌天翼&桃花僧",
 	["yishi"] = "义释",
 	[":yishi"] = "每当你使用红桃【杀】对目标角色造成伤害时，你可以防止此伤害，改为获得其区域里的一张牌。",
-	["#Yishi"] = "%from 发动【%arg】，要捉放%to 了。",
+	["#Yishi"] = "%from 发动【%arg】，要捉放 %to 了。",
 	["designer:neo_guanyu"] = "凌天翼",
+	["$yishi1"] = "大丈夫以信义为重。",
+	["$yishi2"] = "全都退下！丞相你走吧。",              --delaytrick
+	["$yishi3"] = "且饶汝性命！快换马来厮杀！",          --equip
+	["$yishi4"] = "吾杀汝犹杀狗彘耳，空污刀斧。",        --hand
 	
 	["#neo_zhangfei"] = "万夫不当",
 	["neo_zhangfei"] = "翼张飞",
