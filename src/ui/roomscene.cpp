@@ -766,7 +766,7 @@ void RoomScene::updateTable()
         Qt::AlignLeft | Qt::AlignVCenter,
         Qt::AlignRight | Qt::AlignVCenter,
         Qt::AlignLeft | Qt::AlignVCenter,
-        Qt::AlignLeft | Qt::AlignTop,
+        Qt::AlignHCenter | Qt::AlignTop,
     };
 
     Qt::Orientation orients[] = {
