@@ -203,29 +203,17 @@ public:
 
         }else if(event == EventPhaseStart && yuanshu->getPhase() == Player::Discard){
             int x = getKingdoms(yuanshu);
-            int total = yuanshu->getEquips().length() + yuanshu->getHandcardNum();
-            Room *room = yuanshu->getRoom();
+            int total = 0;
+            QSet<const Card *> jilei_cards;
+            QList<const Card *> handcards = yuanshu->getHandcards();
+            foreach(const Card *card, handcards){
+                if(yuanshu->isJilei(card))
+                    jilei_cards << card;
+            }
+            total = handcards.size() - jilei_cards.size() + yuanshu->getEquips().length();
 
-            if(total <= x){
-                yuanshu->throwAllHandCardsAndEquips();
-
-                LogMessage log;
-                log.type = "#YongsiWorst";
-                log.from = yuanshu;
-                log.arg = QString::number(total);
-                log.arg2 = objectName();
-                room->sendLog(log);
-
-            }else if(yuanshu->hasFlag("jilei")){
-                QSet<const Card *> jilei_cards;
-                QList<const Card *> handcards = yuanshu->getHandcards();
-                foreach(const Card *card, handcards){
-                    if(yuanshu->isJilei(card))
-                        jilei_cards << card;
-                }
-                int total = handcards.size() - jilei_cards.size() + yuanshu->getEquips().length();
-                if(x > total){
-                    // show all his cards
+            if(x >= total){
+                if (yuanshu->hasFlag("jilei")){
                     LogMessage log;
                     log.type = "#YongsiBad";
                     log.from = yuanshu;
@@ -237,15 +225,27 @@ public:
                         dummy_card->addSubcard(card);
                     }
                     QList<const Card *> equips = yuanshu->getEquips();
-                    if(!equips.isEmpty()){
-                        foreach(const Card *equip, equips)
-                            dummy_card->addSubcard(equip);
-                    }
-                    room->throwCard(dummy_card, yuanshu);
+                    foreach(const Card *equip, equips)
+                        dummy_card->addSubcard(equip);
+                    if (dummy_card->subcardsLength() > 0)
+                        room->throwCard(dummy_card, yuanshu);
                     room->showAllCards(yuanshu);
 					delete dummy_card;
                 }
-            }else{
+                else
+                {
+                    yuanshu->throwAllHandCardsAndEquips();
+
+                    LogMessage log;
+                    log.type = "#YongsiWorst";
+                    log.from = yuanshu;
+                    log.arg = QString::number(total);
+                    log.arg2 = objectName();
+                    room->sendLog(log);
+                }
+            }
+            else
+            {
                 room->askForDiscard(yuanshu, "yongsi", x, x, false, true);
 
                 LogMessage log;

@@ -85,35 +85,23 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
 
     case Player::Discard:{
-            while (player->getHandcardNum() > player->getMaxCards())
-            {
-                int discard_num = player->getHandcardNum() - player->getMaxCards();
-                if(player->hasFlag("jilei")){
-                    QSet<const Card *> jilei_cards;
-                    QList<const Card *> handcards = player->getHandcards();
-                    foreach(const Card *card, handcards){
-                        if(player->isJilei(card))
-                            jilei_cards << card;
-                    }
 
-                    if(jilei_cards.size() > player->getMaxCards()){
-                        // show all his cards
-
-                        DummyCard *dummy_card = new DummyCard;
-                        foreach(const Card *card, handcards.toSet() - jilei_cards){
-                            dummy_card->addSubcard(card);
-                        }
-                        room->throwCard(dummy_card, player);
-
-                        room->showAllCards(player);
-                        return;
-                    }
-                }
-                if(discard_num > 0)
-                {
-                    room->askForDiscard(player, "gamerule", discard_num, 1);
-                }
+            int discard_num = player->getHandcardNum() - player->getMaxCards();
+            QSet<const Card *> jilei_cards;
+            QList<const Card *> handcards = player->getHandcards();
+            foreach(const Card *card, handcards){
+                if(player->isJilei(card))
+                    jilei_cards << card;
             }
+            int keepnum = qMax(player->getMaxCards(), jilei_cards.size());
+            discard_num = player->getHandcardNum() - keepnum;
+            while (discard_num > 0)
+            {
+                room->askForDiscard(player, "gamerule", discard_num, 1);
+                discard_num = player->getHandcardNum() - keepnum;
+            }
+            if (player->getHandcardNum() > player->getMaxCards())
+                room->showAllCards(player);
             break;
         }
     case Player::Finish: {
