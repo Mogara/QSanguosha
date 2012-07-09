@@ -1401,7 +1401,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *sp_shenzhaoyun, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *sp_shenzhaoyun, QVariant &data) const{
         if(event == EventPhaseChanging)
         {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();

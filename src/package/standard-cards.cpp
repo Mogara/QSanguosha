@@ -702,10 +702,14 @@ void SingleTargetTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer
         effect.to = source;
         room->cardEffect(effect);
     }
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
-    reason.m_skillName = this->getSkillName();
-    if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-    room->moveCardTo(this, source, NULL, Player::DiscardPile, reason);
+
+    if(room->getCardPlace(this->getEffectiveId()) == Player::PlaceTable)
+    {
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
+        reason.m_skillName = this->getSkillName();
+        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason);
+    }
 }
 
 Collateral::Collateral(Card::Suit suit, int number)

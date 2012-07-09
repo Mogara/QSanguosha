@@ -224,8 +224,11 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
 
     if(judge_struct.isBad()){
         takeEffect(effect.to);
-        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
-        room->throwCard(this, reason, NULL);
+        if(room->getCardOwner(getEffectiveId()) == NULL)
+        {
+            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+            room->throwCard(this, reason, NULL);
+        }
     }else if(movable){
         onNullified(effect.to);
     }
@@ -238,36 +241,29 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
     Room *room = target->getRoom();
-    if(movable){
-        QList<ServerPlayer *> players = room->getOtherPlayers(target);
-        players << target;
+    QList<ServerPlayer *> players = room->getOtherPlayers(target);
+    players << target;
 
-        foreach(ServerPlayer *player, players){
-            if(player->containsTrick(objectName()))
-                continue;
+    foreach(ServerPlayer *player, players){
+        if(player->containsTrick(objectName()))
+            continue;
 
-            const ProhibitSkill *skill = room->isProhibited(target, player, this);
-            if(skill){
-                LogMessage log;
-                log.type = "#SkillAvoid";
-                log.from = player;
-                log.arg = skill->objectName();
-                log.arg2 = objectName();
-                room->sendLog(log);
+        const ProhibitSkill *skill = room->isProhibited(target, player, this);
+        if(skill){
+            LogMessage log;
+            log.type = "#SkillAvoid";
+            log.from = player;
+            log.arg = skill->objectName();
+            log.arg2 = objectName();
+            room->sendLog(log);
 
-                room->broadcastSkillInvoke(skill->objectName());
-                continue;
-            }
-
-            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
-            room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
-            break;
+            room->broadcastSkillInvoke(skill->objectName());
+            continue;
         }
-    }
-    else
-    {
-        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
-        room->throwCard(this, reason, NULL);
+
+        CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
+        room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
+        break;
     }
 }
 
