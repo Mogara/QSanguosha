@@ -566,12 +566,12 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     room->setPlayerFlag(b, "changingh");
 
     if(card1)
-        b->addToPile("#dimeng", card1, false);
+        a->addToPile("#dimeng", card1, false);
 
     room->getThread()->delay();
 
     if(card2)
-        a->addToPile("#dimeng", card2, false);
+        b->addToPile("#dimeng", card2, false);
 
     if(card1){
         room->moveCardTo(card1, b, Player::Hand, false);

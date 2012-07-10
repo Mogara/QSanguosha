@@ -325,6 +325,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *liaohua) const{
         Room *room = liaohua->getRoom();
         if(liaohua->getPhase() == Player::RoundStart){
+            room->playSkillEffect(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = liaohua;
@@ -363,7 +364,7 @@ public:
         if(dying_data.who != liaohua)
             return false;
         if(liaohua->askForSkillInvoke(objectName(), data)){
-            //room->broadcastInvoke("animate", "lightbox:$fuli");
+            room->broadcastInvoke("animate", "lightbox:$fuli");
             room->playSkillEffect(objectName());
 
             liaohua->loseMark("@laoji");
