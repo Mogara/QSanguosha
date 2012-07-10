@@ -507,6 +507,8 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
+    else
+        this->setFlags("ever_moved");
     room->removeTag("Huoshou");
 }
 
