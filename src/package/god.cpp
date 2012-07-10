@@ -364,7 +364,7 @@ public:
         if(event == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from == shenzhouyu && move->to_place == Player::DiscardPile){
-                shenzhouyu->setMark("qinyin", move->card_ids.size());
+                shenzhouyu->setMark("qinyin", shenzhouyu->getMark("qinyin") + move->card_ids.size());
                 if(!shenzhouyu->hasFlag("qinyin_used") && shenzhouyu->getMark("qinyin") >= 2){
                     if(shenzhouyu->askForSkillInvoke(objectName())){
                         room->setPlayerFlag(shenzhouyu, "qinyin_used");
