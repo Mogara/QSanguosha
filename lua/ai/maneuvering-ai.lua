@@ -388,15 +388,6 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 	club = 2,
 	diamond = 1
 	}
-	if self.player:hasSkill("hongyan") then
-		priority  =
-		{
-			heart = 4,
-			spade = 0,
-			club = 2,
-			diamond = 1
-		}
-	end
 	local index = 0
 	local result
 	local cards = self.player:getHandcards()
@@ -406,12 +397,14 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 			index = priority[card:getSuitString()]
 		end
 	end
+	local newresult = result
 	if self.player:hasSkill("hongyan") and result:getSuit() == sgs.Card_Spade then
-		result = sgs.Sanguosha:cloneCard(result:objectName(), sgs.Card_Heart, result:getNumber())
-		result:setSkillName("hongyan")
+		newresult = sgs.Sanguosha:cloneCard(result:objectName(), sgs.Card_Heart, result:getNumber())
+		newresult:addSubcard(result:getId())
+		newresult:setSkillName("hongyan")
 	end
 
-	return result
+	return newresult
 end
 
 sgs.ai_use_value.FireAttack = 4.8

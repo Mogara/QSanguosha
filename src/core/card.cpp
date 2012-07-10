@@ -213,9 +213,13 @@ QString Card::getFullName(bool include_suit) const{
 QString Card::getLogName() const{
     QString suit_char;
     QString number_string;
-
+    QString tmp_string = "no_suit";
+    if(getId() > -1)
+        tmp_string = getSuitString();
+    else if(!getSubcards().empty())
+       tmp_string = Sanguosha->getCard(this->getSubcards().first())->getSuitString();
     if(suit != Card::NoSuit)
-        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(getSuitString());
+        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(tmp_string);
     else
         suit_char = tr("NoSuit");
 
@@ -421,8 +425,6 @@ Card *Card::Clone(const Card *card){
     QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
     if(card_obj){
         Card *new_card = qobject_cast<Card *>(card_obj);
-        if(card->inherits("EquipCard"))
-            new_card->setId(card->getId());
         new_card->setObjectName(card->objectName());
         new_card->addSubcard(card->getId());
         return new_card;

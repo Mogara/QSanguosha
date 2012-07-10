@@ -297,7 +297,10 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
         return;
 
     const Card *card = room->askForCardShow(effect.to, effect.from, objectName());
-    room->showCard(effect.to, card->getEffectiveId());
+    if(card->getEffectiveId() < 0 && !card->getSubcards().empty())
+        room->showCard(effect.to, Sanguosha->getCard(card->getSubcards().first())->getId());
+    else
+        room->showCard(effect.to, card->getEffectiveId());
 
     QString suit_str = card->getSuitString();
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());

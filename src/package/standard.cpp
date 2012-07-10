@@ -84,12 +84,16 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     if(equipped)
         room->throwCard(equipped, source);
-
-    if(room->getCardOwner(getId())->objectName() == target->objectName()){
+    int tmpId = -1;
+    if(getId() > -1)
+        tmpId = getId();
+    else if(!getSubcards().empty())
+       tmpId = this->getSubcards().first();
+    if(room->getCardOwner(tmpId)->objectName() == target->objectName()){
         LogMessage log;
         log.from = target;
         log.type = "$Install";
-        log.card_str = QString::number(getEffectiveId());
+        log.card_str = QString::number(tmpId);
         room->sendLog(log);
         room->moveCardTo(this, target, Player::Equip, true);
     }
