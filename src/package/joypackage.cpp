@@ -15,7 +15,9 @@ void Shit::onMove(const CardMoveStruct &move) const{
     ServerPlayer *from = (ServerPlayer*)move.from;
     if(from && move.from_place == Player::PlaceHand &&
        from->getRoom()->getCurrent() == move.from
-       && (move.to_place == Player::DiscardPile || move.to_place == Player::PlaceSpecial)
+       && (move.to_place == Player::DiscardPile
+           || move.to_place == Player::PlaceSpecial
+           || move.to_place == Player::PlaceTable)
        && move.to == NULL
        && from->isAlive()){
 
