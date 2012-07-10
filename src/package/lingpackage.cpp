@@ -91,6 +91,7 @@ public:
         if(damage.card && damage.card->inherits("Slash") && damage.card->getSuit() == Card::Heart &&
            !damage.chain && !damage.transfer && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
 
+            room->playSkillEffect("yishi", 1);
             LogMessage log;
             log.type = "#Yishi";
             log.from = player;
@@ -99,11 +100,11 @@ public:
             room->sendLog(log);
             int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
             if(room->getCardPlace(card_id) == Player::Judging)
-                room->playSkillEffect("yishi", 1);
-            else if(room->getCardPlace(card_id) == Player::Equip)
                 room->playSkillEffect("yishi", 2);
-            else
+            else if(room->getCardPlace(card_id) == Player::Equip)
                 room->playSkillEffect("yishi", 3);
+            else
+                room->playSkillEffect("yishi", 4);
    
             room->obtainCard(player, card_id, room->getCardPlace(card_id) != Player::Hand);
             return true;
