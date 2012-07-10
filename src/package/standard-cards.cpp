@@ -105,14 +105,14 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(Self->hasSkill("shenji") && Self->getWeapon() == NULL)
         slash_targets += 2;
 
-    if(targets.length() >= slash_targets)
-        return false;
-
     bool distance_limit = true;
     if(Self->hasFlag("tianyi_success")){
         distance_limit = false;
         slash_targets ++;
     }
+
+    if(targets.length() >= slash_targets)
+        return false;
 
     if(inherits("WushenSlash")){
         distance_limit = false;
@@ -124,7 +124,6 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
 
     if(Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getEffectiveId()))
         rangefix += 1;
-
 
     if(Self->hasFlag("slashTargetFix") && targets.isEmpty())
         return  to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, false);

@@ -201,6 +201,7 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
 void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->broadcastSkillInvoke("lijian");
+    room->throwCard(this, source);
 
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);

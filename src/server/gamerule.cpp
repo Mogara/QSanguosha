@@ -725,6 +725,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
     case StageChange: {
         ServerPlayer* lord = room->getLord();
         room->transfigure(lord, "shenlvbu2", true, true);
+        room->setPlayerMark(lord, "secondMode", 1);
 
         QList<const Card *> tricks = lord->getJudgingArea();
         foreach(const Card *trick, tricks)
@@ -765,7 +766,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
         }
 
     case HpChanged:{
-            if(player->isLord() && player->getHp() <= 4){
+        if(player->isLord() && player->getHp() <= 4 && player->getMark("secondMode") == 0){
                 throw StageChange;
             }
 
