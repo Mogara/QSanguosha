@@ -300,7 +300,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("SavageAssault") &&
+        if(use.card->inherits("SavageAssault") && !use.card->hasFlag("ever_moved") &&
                 ((!use.card->isVirtualCard()) ||
                   (use.card->getSubcards().length() == 1 &&
                   Sanguosha->getCard(use.card->getSubcards().first())->inherits("SavageAssault")))){
@@ -310,8 +310,8 @@ public:
                 QList<ServerPlayer *> players = room->getAllPlayers();
                 foreach(ServerPlayer *p, players){
                     if(p->hasSkill(objectName())){
-                        p->obtainCard(use.card);
                         room->broadcastSkillInvoke(objectName());
+                        p->obtainCard(use.card);
                         break;
                     }
                 }

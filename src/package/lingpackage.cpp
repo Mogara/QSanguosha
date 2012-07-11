@@ -92,7 +92,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.card && damage.card->inherits("Slash") && damage.card->getSuit() == Card::Heart &&
-           !damage.chain && !damage.transfer && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
+           !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)){
 		   
             room->broadcastSkillInvoke("yishi", 1);
             LogMessage log;
@@ -101,15 +101,17 @@ public:
             log.arg = objectName();
             log.to << damage.to;
             room->sendLog(log);
-            int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
-            if(room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
-                room->broadcastSkillInvoke("yishi", 2);
-            else if(room->getCardPlace(card_id) == Player::PlaceEquip)
-                room->broadcastSkillInvoke("yishi", 3);
-            else
-                room->broadcastSkillInvoke("yishi", 4);
-            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
-            room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+			if(!damage.to->isAllNude()){
+                int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
+			    if(room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
+                    room->broadcastSkillInvoke("yishi", 2);
+                else if(room->getCardPlace(card_id) == Player::PlaceEquip)
+                    room->broadcastSkillInvoke("yishi", 3);
+                else
+                    room->broadcastSkillInvoke("yishi", 4);
+                CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+                room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+			}
             return true;
         }
         return false;

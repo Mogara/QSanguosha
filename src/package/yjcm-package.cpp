@@ -538,7 +538,7 @@ public:
                 return false;
 
             if(move->to_place == Player::DiscardPile && lingtong->getPhase() == Player::Discard)
-                lingtong->setMark("xuanfeng", move->card_ids.length());
+                lingtong->setMark("xuanfeng", lingtong->getMark("xuanfeng") + move->card_ids.length());
 
             if((lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("xuanfeng_used"))
                     || move->from_places.contains(Player::PlaceEquip))
