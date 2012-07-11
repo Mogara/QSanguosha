@@ -293,6 +293,8 @@ public:
 
             room->sendJudgeResult(judge);
         }
+        else
+            room->setPlayerFlag(player, "-retrial");
 
         return false;
     }
