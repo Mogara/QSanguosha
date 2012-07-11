@@ -162,7 +162,7 @@ return {
 	["$shenfen2"] = "战神之怒，神挡杀神，佛挡杀佛！",
 	["~shenlvbu"] = "大耳贼最叵信……啊！",
 
-	["cv:shenzhaoyun"] = "猎狐",
+	["cv:shenzhaoyun"] = "猎狐【天子会工作室】",
 	["$juejing"] = "龙战于野,其血玄黄",
 	["$longhun1"] = "金甲映日,驱邪祛秽", -- spade
 	["$longhun2"] = "腾龙行云,首尾不见", -- club
@@ -170,7 +170,7 @@ return {
 	["$longhun4"] = "千里一怒,红莲灿世", -- diamond
 	["~shenzhaoyun"] = "血染鳞甲,龙坠九天",
 
-	["cv:shensimayi"] = "",
+	["cv:shensimayi"] = "泥马【影音同画】",
 	["$renjie"] = "韬光养晦，静待时机。",
 	["$baiyin"] = "是可忍，孰不可忍！",
 	["$jilve1"] = "天意如何，我命由我。", -- guicai

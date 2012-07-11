@@ -909,12 +909,17 @@ public:
             if(player->getPhase() == Player::Discard){
                 CardStar card = data.value<CardStar>();
                 int n = card->subcardsLength();
-                if(n > 0)
+                if(n > 0){
+                    room->playSkillEffect(objectName());
                     player->gainMark("@bear", n);
+                }
             }
         }else if(event == DamageDone){
             DamageStruct damage = data.value<DamageStruct>();
-            player->gainMark("@bear", damage.damage);
+            if(damage.damage > 0){
+                room->playSkillEffect(objectName());
+                player->gainMark("@bear", damage.damage);
+            }
         }
 
         return false;
@@ -942,7 +947,8 @@ public:
         log.from = shensimayi;
         log.arg = QString::number(shensimayi->getMark("@bear"));
         room->sendLog(log);
-        
+
+        room->playSkillEffect(objectName());
         room->setPlayerMark(shensimayi, "baiyin", 1);
         shensimayi->gainMark("@waked");
         room->loseMaxHp(shensimayi);
@@ -955,6 +961,7 @@ public:
 
 JilveCard::JilveCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -979,10 +986,13 @@ void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
     shensimayi->loseMark("@bear");
 
     if(choice == "wansha"){
+        room->playSkillEffect("jilve", 3);
         room->acquireSkill(shensimayi, "wansha");
         shensimayi->tag["JilveWansha"] = true;
-    }else
+    }else{
+        room->playSkillEffect("jilve", 4);
         room->askForUseCard(shensimayi, "@zhiheng", "@jilve-zhiheng");
+    }
 }
 
 // wansha & zhiheng
@@ -1026,18 +1036,21 @@ public:
                 card = data.value<CardStar>();
 
             if(card->isNDTrick() && player->askForSkillInvoke("jilve", data)){
+                room->playSkillEffect(objectName(), 5);
                 player->loseMark("@bear");
                 player->drawCards(1);
             }
         }else if(event == AskForRetrial){
             const TriggerSkill *guicai = Sanguosha->getTriggerSkill("guicai");
             if(guicai && !player->isKongcheng() && player->askForSkillInvoke("jilve", data)){
+                room->playSkillEffect(objectName(), 1);
                 player->loseMark("@bear");
                 guicai->trigger(event, room, player, data);
             }
         }else if(event == Damaged){
             const TriggerSkill *fangzhu = Sanguosha->getTriggerSkill("fangzhu");
             if(fangzhu && player->askForSkillInvoke("jilve", data)){
+                room->playSkillEffect(objectName(), 2);
                 player->loseMark("@bear");
                 fangzhu->trigger(event, room, player, data);
             }
@@ -1359,6 +1372,7 @@ GodPackage::GodPackage()
     shensimayi->addSkill(new LianpoCount);
     shensimayi->addSkill(new LianpoDo);
 
+    shensimayi->addRelateSkill("jilve");
     related_skills.insertMulti("jilve", "#jilve-clear");
     related_skills.insertMulti("lianpo", "#lianpo-count");
     related_skills.insertMulti("lianpo", "#lianpo-do");
