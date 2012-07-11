@@ -212,7 +212,9 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        if(target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+        ServerPlayer *from = damage.from;
+        QVariant source = QVariant::fromValue(from);
+        if(from && from->isAlive() && target->askForSkillInvoke(objectName(), source)){
             target->drawCards(1);
 
             Room *room = target->getRoom();
