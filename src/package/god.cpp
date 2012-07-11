@@ -949,6 +949,9 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect(objectName());
+        room->broadcastInvoke("animate", "lightbox:$baiyin:2000");
+        room->getThread()->delay(2000);
+
         room->setPlayerMark(shensimayi, "baiyin", 1);
         shensimayi->gainMark("@waked");
         room->loseMaxHp(shensimayi);
@@ -1368,12 +1371,11 @@ GodPackage::GodPackage()
     General *shensimayi = new General(this, "shensimayi", "god", 4);
     shensimayi->addSkill(new Renjie);
     shensimayi->addSkill(new Baiyin);
+    shensimayi->addRelateSkill("jilve");
+    related_skills.insertMulti("jilve", "#jilve-clear");
     shensimayi->addSkill(new Lianpo);
     shensimayi->addSkill(new LianpoCount);
     shensimayi->addSkill(new LianpoDo);
-
-    shensimayi->addRelateSkill("jilve");
-    related_skills.insertMulti("jilve", "#jilve-clear");
     related_skills.insertMulti("lianpo", "#lianpo-count");
     related_skills.insertMulti("lianpo", "#lianpo-do");
 
