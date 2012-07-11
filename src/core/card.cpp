@@ -15,7 +15,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), owner_discarded(false)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), owner_discarded(false), target_asigned(false)
 	, has_preact(false), suit(suit), number(number), id(-1)
 {
     can_jilei = will_throw;
@@ -568,6 +568,10 @@ bool Card::isOwnerDiscarded() const{
 
 bool Card::hasPreAction() const{
     return has_preact;
+}
+
+bool Card::isTargetAsigned() const{
+    return target_asigned;
 }
 
 void Card::setFlags(const QString &flag) const{

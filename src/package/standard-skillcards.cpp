@@ -155,6 +155,7 @@ void KurouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
 LijianCard::LijianCard(){
     once = true;
+    target_asigned = true;
 }
 
 bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

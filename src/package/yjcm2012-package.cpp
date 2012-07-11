@@ -212,7 +212,9 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        if(target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+        ServerPlayer *from = damage.from;
+        QVariant source = QVariant::fromValue(from);
+        if(from && from->isAlive() && target->askForSkillInvoke(objectName(), source)){
             target->drawCards(1);
 
             Room *room = target->getRoom();
@@ -445,7 +447,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
         Room *room = liubiao->getRoom();
-        if(room->askForSkillInvoke(liubiao, objectName())){
+        if(liubiao->getLostHp() > 0 && room->askForSkillInvoke(liubiao, objectName())){
             room->playSkillEffect(objectName());
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
