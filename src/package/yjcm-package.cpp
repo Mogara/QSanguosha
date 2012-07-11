@@ -1225,8 +1225,8 @@ bool Shangshi::trigger(TriggerEvent event,  Room* room, ServerPlayer *player, QV
             log.from = player;
             log.arg = "shangshi";
             room->sendLog(log);
-            room->broadcastSkillInvoke("shangshi");
         }
+        room->broadcastSkillInvoke("shangshi");
         player->drawCards(count);
     }
 
@@ -1250,6 +1250,7 @@ class ShangshiCardMove: public Shangshi{
 public:
     ShangshiCardMove():Shangshi("#shangshi", 2)
     {
+        frequency = Compulsory;
         events << CardsMoveOneTime << CardDrawnDone;
     }
 
