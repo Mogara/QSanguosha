@@ -2267,7 +2267,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         }
 
     case Client::AskForShowOrPindian:{
-
+        prompt_box->appear();
         ok_button->setEnabled(false);
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);
