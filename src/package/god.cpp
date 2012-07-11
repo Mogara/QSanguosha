@@ -202,7 +202,7 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
 }
 
 MediumYeyanCard::MediumYeyanCard(){
-
+    target_asigned = true;
 }
 
 bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

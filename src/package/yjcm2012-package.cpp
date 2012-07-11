@@ -445,7 +445,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
         Room *room = liubiao->getRoom();
-        if(room->askForSkillInvoke(liubiao, objectName())){
+        if(liubiao->getLostHp() > 0 && room->askForSkillInvoke(liubiao, objectName())){
             room->playSkillEffect(objectName());
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
