@@ -43,6 +43,13 @@ public:
 	virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
 
+class MaxCardsSkill: public Skill{
+public:
+	MaxCardsSkill(const QString &name);
+
+	virtual int getExtra(const Player *target) const = 0;
+};
+
 class LuaProhibitSkill: public ProhibitSkill{
 public:
 	LuaProhibitSkill(const char *name);
@@ -111,6 +118,14 @@ public:
 	virtual int getCorrect(const Player *from, const Player *to) const;
 
 	LuaFunction correct_func;
+};
+
+class LuaMaxCardsSkill: public MaxCardsSkill{
+public:
+	LuaMaxCardsSkill(const char *name);
+	virtual int getExtra(const Player *target) const;
+
+	LuaFunction extra_func;
 };
 
 class LuaSkillCard: public SkillCard{
@@ -247,6 +262,29 @@ int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{
 	lua_pop(L, 1);
 
 	return correct;
+}
+
+int LuaMaxCardsSkill::getExtra(const Player *target) const{
+	if(extra_func == 0)
+		return 0;
+
+	lua_State *L = Sanguosha->getLuaState();
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, extra_func);
+
+	SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaMaxCardsSkill, 0);
+	SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);
+
+	int error = lua_pcall(L, 2, 1, 0);
+	if(error){
+		Error(L);
+		return 0;
+	}
+
+	int extra = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	return extra;
 }
 
 bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{
