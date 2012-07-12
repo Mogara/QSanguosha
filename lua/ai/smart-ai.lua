@@ -3911,8 +3911,10 @@ function SmartAI:damageMinusHp(self, enemy, type)
 						slash_damagenum = slash_damagenum + 1 
 						analepticpowerup = analepticpowerup + 1 
 				end
-				if self:isEquip("GudingBlade", self.player) and enemy:isKongcheng() and not self:isEquip("SilverLion", enemy) then
-					slash_damagenum = slash_damagenum + 1 
+				if self:isEquip("GudingBlade", self.player) and not self:isEquip("SilverLion", enemy) then
+					if type == 0 or enemy:isKongcheng() then
+						slash_damagenum = slash_damagenum + 1 
+					end
 				end
 			end
 		end

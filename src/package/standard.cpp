@@ -89,7 +89,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
         tmpId = getId();
     else if(!getSubcards().empty())
        tmpId = this->getSubcards().first();
-    if(room->getCardOwner(tmpId)->objectName() == target->objectName()){
+    if(this->objectName() == "gale-shell" || room->getCardOwner(tmpId)->objectName() == target->objectName()){
         LogMessage log;
         log.from = target;
         log.type = "$Install";

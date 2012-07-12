@@ -30,7 +30,8 @@ lihun_skill.getTurnUseCard=function(self)
 
 		for _, acard in ipairs(cards) do
 			if (acard:getTypeId() ~= sgs.Card_Trick or acard:inherits("AmazingGrace"))
-				and not acard:inherits("Peach") and not acard:inherits("Shit") then
+				and not acard:inherits("Peach") and not acard:inherits("Shit") 
+				and not (acard:inherits("Slash") and self:getCardsNum("Slash") == 1) then
 				card_id = acard:getEffectiveId()
 				break
 			end
@@ -71,7 +72,7 @@ sgs.ai_skill_use_func.LihunCard = function(card,use,self)
 			if enemy:getGeneral():isMale() and not enemy:hasSkill("kongcheng") then
 			    if (enemy:hasSkill("lianying") and self:damageMinusHp(self, enemy, 1) > 0) or
 				   (enemy:getHp() < 3 and self:damageMinusHp(self, enemy, 0) > 0  and enemy:getHandcardNum() > 0) or
-				   (enemy:getHandcardNum() >= enemy:getHp() and enemy:getHp() > 2 and self:damageMinusHp(self, enemy, 0) >= -1) or
+				   (enemy:getHandcardNum() >= enemy:getHp() -1 and enemy:getHp() > 2 and self:damageMinusHp(self, enemy, 0) + enemy:getHp() > 1) or
 				   (enemy:getHandcardNum() - enemy:getHp() > 4) then
 					target = enemy
 					break
@@ -82,6 +83,7 @@ sgs.ai_skill_use_func.LihunCard = function(card,use,self)
 		if target then
 			use.card = card
 			if use.to then
+				self.room:setPlayerFlag(target, "lihun_target")
 				use.to:append(target)
 			end
 		end

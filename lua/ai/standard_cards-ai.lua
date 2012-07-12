@@ -137,6 +137,15 @@ function SmartAI:useCardSlash(card, use)
 	end
 
 	local targets = {}
+	local lihuntarget
+	for _, enemy in ipairs(self.enemies) do
+		local slash_prohibit = false
+		slash_prohibit = self:slashProhibit(card,enemy)
+		if not slash_prohibit and enemy:hasFlag("lihun_target") then 
+			lihuntarget = enemy
+			table.insert(targets, lihuntarget)
+		end
+	end
 	local ptarget = self:getPriorTarget()
 	if ptarget and not self:slashProhibit(card, ptarget) then 
 		table.insert(targets, ptarget)
@@ -145,7 +154,7 @@ function SmartAI:useCardSlash(card, use)
 	for _, enemy in ipairs(self.enemies) do
 		local slash_prohibit = false
 		slash_prohibit = self:slashProhibit(card,enemy)
-		if not slash_prohibit and enemy:objectName() ~= ptarget:objectName() then 
+		if not slash_prohibit and enemy:objectName() ~= ptarget:objectName() and not enemy:hasFlag("lihun_target") then 
 			table.insert(targets, enemy)
 		end
 	end
@@ -745,6 +754,18 @@ function SmartAI:useCardDuel(duel, use)
 			use.card = duel
 			if use.to then
 				use.to:append(friend)
+			end
+			return
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		local slash_prohibit = false
+		slash_prohibit = self:slashProhibit(card,enemy)
+		if not slash_prohibit and enemy:hasFlag("lihun_target") then 
+			use.card = duel
+			if use.to then
+				use.to:append(enemy)
+				self:speak("duel", self.player:getGeneral():isFemale())
 			end
 			return
 		end

@@ -322,7 +322,7 @@ sgs.ai_skill_use_func.JijiangCard=function(card,use,self)
 	self:sort(self.enemies, "defense")
 	local target_count=0
 	for _, enemy in ipairs(self.enemies) do
-		if (self.player:canSlash(enemy, not no_distance) or
+		if (self.player:canSlash(enemy, not no_distance) and not self:cantbeHurt(enemy) and 
 			(use.isDummy and self.player:distanceTo(enemy)<=(self.predictedRange or self.player:getAttackRange())))
 			and self:objectiveLevel(enemy)>3 and self:slashIsEffective(card, enemy) then
 			use.card=card
