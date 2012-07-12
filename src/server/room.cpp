@@ -2547,57 +2547,54 @@ void Room::damage(DamageStruct &damage_data){
     QVariant data = QVariant::fromValue(damage_data);
 
 
-    do
-    {
-        if(!damage_data.chain && !damage_data.transfer && damage_data.from){
-            // ComfirmDamage
-            thread->trigger(ConfirmDamage, this, damage_data.from, data);
-            damage_data = data.value<DamageStruct>();
-
-            // Predamage
-            if(thread->trigger(Predamage, this, damage_data.from, data))
-                break;
-        }
-
-        // DamageForseen
-        bool prevent = thread->trigger(DamageForseen, this, damage_data.to, data);
-        if(prevent)
-            break;
-
-        // DamageCaused
-        if(damage_data.from){
-            if(thread->trigger(DamageCaused, this, damage_data.from, data))
-                break;
-        }
-
+    if(!damage_data.chain && !damage_data.transfer && damage_data.from){
+        // ComfirmDamage
+        thread->trigger(ConfirmDamage, this, damage_data.from, data);
         damage_data = data.value<DamageStruct>();
 
-        // predamaged
-        bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
-        if(broken)
-            break;
+        // Predamage
+        if(thread->trigger(Predamage, this, damage_data.from, data))
+            return;
+    }
 
-        // PreHpReduced
-        prevent = thread->trigger(PreHpReduced, this, damage_data.to, data);
-        if(prevent)
-            break;
+    // DamageForseen
+    bool prevent = thread->trigger(DamageForseen, this, damage_data.to, data);
+    if(prevent)
+        return;
 
-        // damage done, should not cause damage process broken
-        thread->trigger(DamageDone, this, damage_data.to, data);
+    // DamageCaused
+    if(damage_data.from){
+        if(thread->trigger(DamageCaused, this, damage_data.from, data))
+            return;
+    }
 
-        // PostHpReduced
-        broken = thread->trigger(PostHpReduced, this, damage_data.to, data);
-        if(broken)
-            break;
+    damage_data = data.value<DamageStruct>();
 
-        // damage
-        if(damage_data.from){
-            thread->trigger(Damage, this, damage_data.from, data);
-        }
+    // predamaged
+    bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
+    if(broken)
+        return;
 
-        // damaged
-        thread->trigger(Damaged, this, damage_data.to, data);
-    }while(false);
+    // PreHpReduced
+    prevent = thread->trigger(PreHpReduced, this, damage_data.to, data);
+    if(prevent)
+        return;
+
+    // damage done, should not cause damage process broken
+    thread->trigger(DamageDone, this, damage_data.to, data);
+
+    // PostHpReduced
+    broken = thread->trigger(PostHpReduced, this, damage_data.to, data);
+    if(broken)
+        return;
+
+    // damage
+    if(damage_data.from){
+        thread->trigger(Damage, this, damage_data.from, data);
+    }
+
+    // damaged
+    thread->trigger(Damaged, this, damage_data.to, data);
 
     thread->trigger(DamageComplete, this, damage_data.to, data);
 }
