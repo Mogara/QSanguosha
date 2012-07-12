@@ -291,8 +291,8 @@ public:
         events << EventPhaseStart << FinishJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *shuangxiong, QVariant &data) const{
-        if(event == EventPhaseStart){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *shuangxiong, QVariant &data) const{
+        if(triggerEvent == EventPhaseStart){
             if(shuangxiong->getPhase() == Player::Start){
                 room->setPlayerMark(shuangxiong, "shuangxiong", 0);
             }else if(shuangxiong->getPhase() == Player::Draw){
@@ -314,7 +314,7 @@ public:
                     return true;
                 }
             }
-        }else if(event == FinishJudge){
+        }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(judge->reason == "shuangxiong"){
                 CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, judge->who->objectName());

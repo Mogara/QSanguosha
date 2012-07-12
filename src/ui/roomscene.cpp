@@ -1705,7 +1705,8 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach(int card_id, move.card_ids)
             log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(card_id));
     }
-    if(move.from && move.from_place != Player::PlaceHand && move.to && move.from != move.to)
+    if(move.from && move.from_place != Player::PlaceHand && move.from_place != Player::PlaceDelayedTrick
+            && move.to && move.from != move.to)
     {
         QString from_general = move.from->getGeneralName();
         QStringList tos;
@@ -1729,8 +1730,10 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         tos << move.to->getGeneralName();
         bool hiden = false;
         foreach(int card_id, move.card_ids)
-            if(card_id == Card::S_UNKNOWN_CARD_ID)
+            if(card_id == Card::S_UNKNOWN_CARD_ID){
                 hiden = true;
+                break;
+            }
         if(hiden)
             log_box->appendLog("#MoveNCards", from_general, tos, QString(),
                                QString::number(move.card_ids.length()));
@@ -1763,45 +1766,6 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach(int card_id, move.card_ids)
             log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
     }
-            /*if (movement.from_place == Player::PlaceSpecial){
-            CardItem *card_item = card_container->take(NULL, card_id);
-            if (card_item != NULL);
-            else if (movement.from == Self)
-            {
-                card_item = new CardItem(Sanguosha->getCard(card_id));
-                card_item->setPos(avatar->scenePos());                
-            }
-            else
-            {
-                card_item = special_card;
-                card_item->hideFrame();
-                card_item->showAvatar(NULL);
-                special_card = NULL;
-            }
-        }*/  
-        /*if (movement.to_place == Player::PlaceSpecial){
-            special_card = card_item;
-            dstPos = avatar->scenePos();            
-        }*/
-           /*    
-    if(src)
-        card_item->setOpacity(src == Self ? 1.0 : 0.0);
-
-    if(card_item->scene() == NULL)
-        addItem(card_item);
-
-    if(src != NULL && src_place != Player::PlaceDelayedTrick)
-    {
-        QString from_general;
-        from_general= src->getGeneralName();
-        from_general = Sanguosha->translate(from_general);        
-    }
-    else{
-        if(src_place == Player::DiscardPile || dest_place == Player::PlaceHand){
-            card_item->deleteCardDescription();
-        }        
-    }   */
-    
 }
 
 inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }

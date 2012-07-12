@@ -286,7 +286,7 @@ public:
 class LuoyiBuff: public TriggerSkill{
 public:
     LuoyiBuff():TriggerSkill("#luoyi"){
-        events << Predamage;
+        events << ConfirmDamage;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -343,8 +343,8 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhenji, QVariant &data) const{
-        if(event == EventPhaseStart && zhenji->getPhase() == Player::Start){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *zhenji, QVariant &data) const{
+        if(triggerEvent == EventPhaseStart && zhenji->getPhase() == Player::Start){
             int n = 0;
             while(zhenji->askForSkillInvoke("luoshen")){
                 if(n == 0)
@@ -363,7 +363,7 @@ public:
                     break;
             }
 
-        }else if(event == FinishJudge){
+        }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(judge->reason == objectName()){
                 if(judge->card->isBlack()){
@@ -611,9 +611,9 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
 
-        if(event == TargetConfirmed){
+        if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             bool caninvoke = false;
             if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
@@ -635,13 +635,13 @@ public:
                 }
             }
         }
-        else if(event == SlashProceed){
+        else if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.from->hasSkill(objectName()) && effect.to->hasFlag("TiejiTarget")){
                 room->slashResult(effect, NULL);
                 return true;
             }
-        }else if(event == CardFinished){
+        }else if(triggerEvent == CardFinished){
             CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *to, use.to){
                 if(to->hasFlag("TiejiTarget"))
@@ -714,13 +714,13 @@ public:
         events << CardUsed << CardResponsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *yueying, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *yueying, QVariant &data) const{
         if (yueying == NULL) return false;
         CardStar card = NULL;
-        if(event == CardUsed){
+        if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(event == CardResponsed)
+        }else if(triggerEvent == CardResponsed)
             card = data.value<CardStar>();
 
         if(card->isNDTrick()){            
@@ -770,8 +770,8 @@ public:
         return target != NULL && target->hasLordSkill("jiuyuan");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sunquan, QVariant &data) const{
-        switch(event){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *sunquan, QVariant &data) const{
+        switch(triggerEvent){
         case Dying: {
                 foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
                     if(wu->getKingdom() == "wu"){
@@ -840,13 +840,13 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
-        if(event == CardResponsed && lvmeng->getPhase() == Player::Play){
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
+        if(triggerEvent == CardResponsed && lvmeng->getPhase() == Player::Play){
             CardStar card_star = data.value<CardStar>();
             if(card_star->inherits("Slash"))
                 lvmeng->setFlags("keji_use_slash");
         }
-        else if(event == EventPhaseChanging)
+        else if(triggerEvent == EventPhaseChanging)
         {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if(change.to == Player::Discard){
@@ -1074,8 +1074,8 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == TargetConfirmed){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             bool caninvoke = false;
             if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
@@ -1091,7 +1091,7 @@ public:
                 room->setPlayerFlag(player, "WushuangTarget");
             }
         }
-        else if(event == SlashProceed){
+        else if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(!effect.to->hasFlag("WushuangTarget"))
                 return false;
@@ -1115,7 +1115,7 @@ public:
 
             return true;
 
-        }else if(event == CardFinished){
+        }else if(triggerEvent == CardFinished){
             foreach(ServerPlayer *to, room->getAllPlayers()){
                 if(to->hasFlag("WushuangTarget"))
                     room->setPlayerFlag(to, "-WushuangTarget");
@@ -1401,8 +1401,8 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *sp_shenzhaoyun, QVariant &data) const{
-        if(event == EventPhaseChanging)
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *sp_shenzhaoyun, QVariant &data) const{
+        if(triggerEvent == EventPhaseChanging)
         {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if(change.to == Player::Start)

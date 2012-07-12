@@ -342,14 +342,17 @@ enum TriggerEvent{
     Pindian,
     TurnedOver,
 
-    Predamage,        // assure the num of damage,check all buff(ancaletic luoyi...)
-    DamageForseen,       // Damage begun! The first moment when you enter "Real Damage Process" (kuangfeng dawu)
-    DamageCaused,    // The moment you just damage to someone(qianxi kylinbow ice_sword...)
-    DamageInflicted,   // The moment you are just damaged by someone,but can still change(silverlion jilei tianxiang!)
-    DamageDone,       // Always trigger,from this one,the damage is assertain,hp changed.
-    Damage,
-    Damaged,
-    DamageComplete,
+    ConfirmDamage,    // confirm the damage's count and damage's nature
+    Predamage,        // trigger the certain skill -- jueqing
+    DamageForseen,    // the first event in a damage -- kuangfeng dawu
+    DamageCaused,     // the moment for -- qianxi..
+    DamageInflicted,  // the moment for -- tianxiang..
+    PreHpReduced,     // the moment before Hpreduce
+    DamageDone,       // it's time to do the damage
+    PostHpReduced,    // the moment after Hpreduce
+    Damage,           // the moment for -- lieren..
+    Damaged,          // the moment for -- yiji..
+    DamageComplete,   // the moment for trigger iron chain
 
     Dying,
     AskForPeaches,

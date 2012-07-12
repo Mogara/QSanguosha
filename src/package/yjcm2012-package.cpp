@@ -198,7 +198,7 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        if(target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+        if(damage.from && target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
             target->drawCards(1);
             if (target->isKongcheng())
                 return;
@@ -217,7 +217,7 @@ public:
                 }
             }
 
-            if(same_color && damage.from && !damage.from->isKongcheng())
+            if(same_color && !damage.from->isKongcheng())
                 room->askForDiscard(damage.from, objectName(), 1, 1);
         }
     }
@@ -474,7 +474,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 
         DamageStruct damage = data.value<DamageStruct>();
@@ -526,13 +526,13 @@ public:
         events << AskForPeaches << DamageCaused << CardFinished << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *handang, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *handang, QVariant &data) const{
         if (handang == NULL) return false;
 
         ServerPlayer *current = room->getCurrent();
         if(!current || current->isDead())
             return false;
-        if(event == CardUsed)
+        if(triggerEvent == CardUsed)
         {
             if(!handang->hasFlag("jiefanUsed"))
                 return false;
@@ -544,7 +544,7 @@ public:
                 room->setPlayerFlag(handang, "-jiefanUsed");
                 room->setCardFlag(use.card, "jiefan-slash");
             }
-        }else if(event == AskForPeaches  && handang->getPhase() == Player::NotActive && handang->askForSkillInvoke(objectName(), data)){
+        }else if(triggerEvent == AskForPeaches  && handang->getPhase() == Player::NotActive && handang->askForSkillInvoke(objectName(), data)){
             DyingStruct dying = data.value<DyingStruct>();
 
             forever{
@@ -566,7 +566,7 @@ public:
                 }
             }
         }
-        else if(event == DamageCaused){
+        else if(triggerEvent == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.card && damage.card->inherits("Slash") && damage.card->hasFlag("jiefan-slash")){
 
@@ -611,7 +611,7 @@ public:
             }
             return false;
         }
-        else if(event == CardFinished && !room->getTag("JiefanTarget").isNull()){
+        else if(triggerEvent == CardFinished && !room->getTag("JiefanTarget").isNull()){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->hasFlag("jiefan-slash")){
                 if(!use.card->hasFlag("jiefan_success"))
@@ -738,8 +738,8 @@ public:
         view_as_skill = new LihuoViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == DamageCaused){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName())
                 player->tag["Invokelihuo"] = true;
@@ -799,14 +799,14 @@ public:
     }
 
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *chengpu, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *chengpu, QVariant &data) const{
 
-        if(event == EventPhaseStart &&
+        if(triggerEvent == EventPhaseStart &&
                 chengpu->getPhase() == Player::Finish &&
                 !chengpu->isKongcheng() &&
                 chengpu->getPile("wine").isEmpty()){
             room->askForUseCard(chengpu, "@@chunlao", "@chunlao");
-        }else if(event == AskForPeaches && !chengpu->getPile("wine").isEmpty()){
+        }else if(triggerEvent == AskForPeaches && !chengpu->getPile("wine").isEmpty()){
             DyingStruct dying = data.value<DyingStruct>();
             while(dying.who->getHp() < 1 && chengpu->askForSkillInvoke(objectName(), data)){
                 QList<int> cards = chengpu->getPile("wine");

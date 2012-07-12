@@ -37,9 +37,9 @@ QStringList MiniSceneRule::existedGenerals() const
     return names;
 }
 
-bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const
+bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const
 {
-    if(event == EventPhaseStart)
+    if(triggerEvent == EventPhaseStart)
     {
         if(player == room->getTag("Starter").value<PlayerStar>()){
             if(player->getPhase() == Player::Start){

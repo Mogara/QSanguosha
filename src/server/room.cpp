@@ -2547,7 +2547,11 @@ void Room::damage(const DamageStruct &damage_data){
     QVariant data = QVariant::fromValue(damage_data);
 
     if(!damage_data.chain && !damage_data.transfer && damage_data.from){
-        // predamage
+        // ComfirmDamage
+        if(thread->trigger(ConfirmDamage, this, damage_data.from, data))
+            return;
+
+        // Predamage
         if(thread->trigger(Predamage, this, damage_data.from, data))
             return;
     }
@@ -2563,14 +2567,19 @@ void Room::damage(const DamageStruct &damage_data){
             return;
     }
 
-
     // predamaged
     bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
     if(broken)
         return;
 
+    // PreHpReduced
+    thread->trigger(PreHpReduced, this, damage_data.to, data);
+
     // damage done, should not cause damage process broken
     thread->trigger(DamageDone, this, damage_data.to, data);
+
+    // PostHpReduced
+    thread->trigger(PostHpReduced, this, damage_data.to, data);
 
     // damage
     if(damage_data.from){
@@ -4129,6 +4138,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     if(card == NULL)
         return;
 
+    broadcastSkillInvoke(skill_name);
     const Card* oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
 

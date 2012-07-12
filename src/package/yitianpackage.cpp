@@ -488,7 +488,7 @@ public:
         return target != NULL && target->getMark("@tied") > 0 && !target->hasSkill("lianli");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         QString pattern = data.toString();
         if(pattern != "slash")
             return false;
@@ -519,7 +519,7 @@ public:
         return target != NULL && TriggerSkill::triggerable(target) && target->getMark("@tied") > 0;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *xiahoujuan, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *xiahoujuan, QVariant &data) const{
         QString pattern = data.toString();
         if(pattern != "jink")
             return false;
@@ -691,13 +691,13 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
         if(xuandi == NULL)
             return false;
 
         QString wuling = xuandi->tag.value("wuling").toString();
-        if(event == CardEffected && wuling == "water"){
+        if(triggerEvent == CardEffected && wuling == "water"){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card && effect.card->inherits("Peach")){
                 RecoverStruct recover;
@@ -710,7 +710,7 @@ public:
                 log.from = player;
                 room->sendLog(log);
             }
-        }else if(event == DamageInflicted && wuling == "earth"){
+        }else if(triggerEvent == DamageInflicted && wuling == "earth"){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature != DamageStruct::Normal && damage.damage > 1){
                 damage.damage = 1;
@@ -741,7 +741,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
         if(xuandi == NULL)
             return false;
@@ -872,8 +872,8 @@ public:
         events << EventPhaseStart << FinishJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *caizhaoji, QVariant &data) const{
-        if(event == EventPhaseStart && caizhaoji->getPhase() == Player::Finish){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *caizhaoji, QVariant &data) const{
+        if(triggerEvent == EventPhaseStart && caizhaoji->getPhase() == Player::Finish){
             int times = 0;
             Room *room = caizhaoji->getRoom();
             while(caizhaoji->askForSkillInvoke(objectName())){
@@ -900,7 +900,7 @@ public:
             }
 
             caizhaoji->setFlags("-caizhaoji_hujia");
-        }else if(event == FinishJudge){
+        }else if(triggerEvent == FinishJudge){
             if(caizhaoji->hasFlag("caizhaoji_hujia")){
                 JudgeStar judge = data.value<JudgeStar>();
                 if(judge->card->isRed()){
@@ -934,8 +934,8 @@ public:
             return "male";
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == GameStart){
             if(player->getGeneral2Name().startsWith("luboyan")){
                 room->setPlayerProperty(player, "general2", player->getGeneralName());
                 room->setPlayerProperty(player, "general", "luboyan");
@@ -957,7 +957,7 @@ public:
             log.arg = gender;
             room->sendLog(log);
 
-        }else if(event == EventPhaseStart){
+        }else if(triggerEvent == EventPhaseStart){
             if(player->getPhase() == Player::Start){
                 LogMessage log;
                 log.from = player;
@@ -971,7 +971,7 @@ public:
                 QString old_general = new_general.endsWith("f")?"luboyan":"luboyanf";
                 room->transfigure(player, new_general, false, false, old_general);
             }
-        }else if(event == DamageInflicted){
+        }else if(triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature != DamageStruct::Thunder && damage.from &&
                damage.from->getGeneral()->isMale() != player->getGeneral()->isMale()){
@@ -998,7 +998,7 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.nature != DamageStruct::Fire){
             effect.nature = DamageStruct::Fire;
@@ -1393,8 +1393,8 @@ public:
         events << DamageInflicted << EventPhaseStart;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *elai, QVariant &data) const{
-        if(event == DamageInflicted){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *elai, QVariant &data) const{
+        if(triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
 
             LogMessage log;
@@ -1407,7 +1407,7 @@ public:
             elai->gainMark("@struggle", damage.damage);
 
             return true;
-        }else if(event == EventPhaseStart && elai->getPhase() == Player::Finish){
+        }else if(triggerEvent == EventPhaseStart && elai->getPhase() == Player::Finish){
             int x = elai->getMark("@struggle");
             if(x > 0){
                 elai->loseMark("@struggle", x);
@@ -1433,7 +1433,7 @@ public:
 class Shenli: public TriggerSkill{
 public:
     Shenli():TriggerSkill("shenli"){
-        events << Predamage;
+        events << ConfirmDamage;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *elai, QVariant &data) const{
@@ -1751,7 +1751,7 @@ public:
 class Yitian: public TriggerSkill{
 public:
     Yitian():TriggerSkill("yitian"){
-        events << Predamage;
+        events << DamageCaused;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

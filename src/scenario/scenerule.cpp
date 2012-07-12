@@ -46,13 +46,13 @@ public:
 
     virtual int getPriority() const { return 3; }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const {
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const {
         Q_UNUSED(data);
 
         if(room->getTag("SceneID").toInt() != 26)
             return false;
 
-        if(player == room->getCurrent() && event == EventPhaseStart) {
+        if(player == room->getCurrent() && triggerEvent == EventPhaseStart) {
             if(player->getPhase() == Player::Start) {
                 room->getThread()->delay();
                 if(room->getTag("SceneTurnLeft").toInt() != 4) player->skip(Player::Judge);
@@ -119,8 +119,8 @@ SceneRule::SceneRule(QObject *parent) : GameRule(parent) {
     }
 }
 
-bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const {
-    switch(event) {
+bool SceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const {
+    switch(triggerEvent) {
     case GameStart:
         if(player->isLord()) {
             room->setTag("SceneID", 0);
@@ -581,5 +581,5 @@ bool SceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QV
         break;
     }
 
-    return GameRule::trigger(event, room, player, data);
+    return GameRule::trigger(triggerEvent, room, player, data);
 }
