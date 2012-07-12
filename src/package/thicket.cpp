@@ -189,16 +189,37 @@ private:
 class Huoshou: public TriggerSkill{
 public:
     Huoshou():TriggerSkill("huoshou"){
-        events << TargetConfirmed;
+        events << TargetConfirmed << ConfirmDamage << CardFinished;
         frequency = Compulsory;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("SavageAssault")){
-            room->broadcastSkillInvoke(objectName());
-            room->setTag("Huoshou", true);
-         }
+        if(triggerEvent == TargetConfirmed && player->hasSkill(objectName()) && player->isAlive())
+        {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->inherits("SavageAssault") && !use.from->hasSkill(objectName())){
+                room->broadcastSkillInvoke(objectName());
+                room->setTag("HuoshouSource", QVariant::fromValue((PlayerStar)player));
+            }
+        }
+        else if(triggerEvent == ConfirmDamage && !room->getTag("HuoshouSource").isNull()){
+            ServerPlayer *menghuo = room->getTag("HuoshouSource").value<PlayerStar>();
+            DamageStruct damage = data.value<DamageStruct>();
+            if(menghuo->isAlive())
+                damage.from = menghuo;
+            else
+                damage.from = NULL;
+            data = QVariant::fromValue(damage);
+        }
+        else if(triggerEvent == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->inherits("SavageAssault"))
+                room->removeTag("HuoshouSource");
+        }
 
         return false;
     }

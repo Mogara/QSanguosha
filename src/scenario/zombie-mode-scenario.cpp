@@ -265,13 +265,11 @@ public:
             log.from = zombie;
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(damage.damage + 1);
-            zombie->getRoom()->sendLog(log);
+            log.arg2 = QString::number(++ damage.damage);
+            room->sendLog(log);
 
-            if(zombie->getHp()>1)zombie->getRoom()->loseHp(zombie);
-
-            damage.damage ++;
             data = QVariant::fromValue(damage);
+            if(zombie->getHp()>1) room->loseHp(zombie);
         }
 
         return false;

@@ -509,7 +509,6 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     }
     else
         this->setFlags("ever_moved");
-    room->removeTag("Huoshou");
 }
 
 void Card::onEffect(const CardEffectStruct &) const{

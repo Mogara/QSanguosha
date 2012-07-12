@@ -2537,7 +2537,7 @@ bool Room::cardEffect(const CardEffectStruct &effect){
     return !thread->trigger(CardEffected, this, effect.to, data);
 }
 
-void Room::damage(const DamageStruct &damage_data){
+void Room::damage(DamageStruct &damage_data){
     if(damage_data.to == NULL)
         return;
 
@@ -2548,8 +2548,8 @@ void Room::damage(const DamageStruct &damage_data){
 
     if(!damage_data.chain && !damage_data.transfer && damage_data.from){
         // ComfirmDamage
-        if(thread->trigger(ConfirmDamage, this, damage_data.from, data))
-            return;
+        thread->trigger(ConfirmDamage, this, damage_data.from, data);
+        damage_data = data.value<DamageStruct>();
 
         // Predamage
         if(thread->trigger(Predamage, this, damage_data.from, data))
@@ -2583,15 +2583,11 @@ void Room::damage(const DamageStruct &damage_data){
 
     // damage
     if(damage_data.from){
-        bool broken = thread->trigger(Damage, this, damage_data.from, data);
-        if(broken)
-            return;
+        thread->trigger(Damage, this, damage_data.from, data);
     }
 
     // damaged
-    broken = thread->trigger(Damaged, this, damage_data.to, data);
-    if(broken)
-        return;
+    thread->trigger(Damaged, this, damage_data.to, data);
 
     thread->trigger(DamageComplete, this, damage_data.to, data);
 }

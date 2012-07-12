@@ -163,7 +163,6 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if(change.to == Player::Discard && !player->isSkipped(Player::Discard)){
             player->skip(Player::Discard);
-            return true;
         }
         return false;
     }
@@ -1454,7 +1453,7 @@ public:
                 log.from = elai;
                 log.arg = QString::number(x);
                 log.arg2 = QString::number(damage.damage);
-                elai->getRoom()->sendLog(log);
+                room->sendLog(log);
             }
         }
 

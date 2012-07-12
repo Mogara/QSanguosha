@@ -336,12 +336,10 @@ public:
             if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)){
                 xiahouyuan->skip(Player::Judge);
                 xiahouyuan->skip(Player::Draw);
-                return true;
             }
         }else if(change.to == Player::Play && !xiahouyuan->isSkipped(Player::Play)){
             if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2)){
                 xiahouyuan->skip(Player::Play);
-                return true;
             }
         }
         return false;
