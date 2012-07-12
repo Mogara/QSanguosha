@@ -817,11 +817,14 @@ public:
                 ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
                 victim->addMark("hate"+player->objectName());
                 victim->gainMark("@hate");
-                for(int i = 0; i < 2; i++){
-
-                    int card_id = room->askForCardChosen(player, player, "he", objectName());
-                    room->obtainCard(victim, card_id, true);
-                }
+                int first_id = room->askForCardChosen(player, player, "he", objectName());
+                DummyCard *dummy = new DummyCard;
+                dummy->addSubcard(first_id);
+                player->addToPile("#shichou", dummy, room->getCardPlace(first_id) == Player::Equip);
+                int second_id = room->askForCardChosen(player, player, "he", objectName());
+                dummy->addSubcard(second_id);
+                room->moveCardTo(dummy, victim, Player::Hand, false);
+                delete dummy;
             }
         }
         else if(event == DamageInflicted && player->hasLordSkill(objectName())){
