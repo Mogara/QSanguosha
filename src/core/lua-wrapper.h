@@ -80,6 +80,17 @@ public:
     LuaFunction correct_func;
 };
 
+class LuaMaxCardsSkill: public MaxCardsSkill{
+    Q_OBJECT
+
+public:
+    LuaMaxCardsSkill(const char *name);
+
+    virtual int getExtra(const Player *target) const;
+
+    LuaFunction extra_func;
+};
+
 class LuaSkillCard: public SkillCard{
     Q_OBJECT
 
