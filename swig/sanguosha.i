@@ -464,20 +464,24 @@ enum TriggerEvent{
     Pindian,
     TurnedOver,
 
-    Predamage,
-    DamageForseen,
-    DamageCaused,
-    DamageInflicted,
-    DamageDone,
-    Damage,
-    Damaged,
-    DamageComplete,
+    ConfirmDamage,    // confirm the damage's count and damage's nature
+    Predamage,        // trigger the certain skill -- jueqing
+    DamageForseen,    // the first event in a damage -- kuangfeng dawu
+    DamageCaused,     // the moment for -- qianxi..
+    DamageInflicted,  // the moment for -- tianxiang..
+    PreHpReduced,     // the moment before Hpreduce
+    DamageDone,       // it's time to do the damage
+    PostHpReduced,    // the moment after Hpreduce
+    Damage,           // the moment for -- lieren..
+    Damaged,          // the moment for -- yiji..
+    DamageComplete,   // the moment for trigger iron chain
 
     Dying,
     AskForPeaches,
     AskForPeachesDone,
     Death,
     GameOverJudge,
+    GameFinished,
 
     SlashEffect,
     SlashEffected,
@@ -488,7 +492,7 @@ enum TriggerEvent{
     CardAsked,
     CardResponsed,
     CardDiscarded,
-	CardsMoveOneTime,
+    CardsMoveOneTime,
     CardDrawing,
     CardDrawnDone,
 
@@ -501,7 +505,10 @@ enum TriggerEvent{
 
     ChoiceMade,
 
-    NumOfEvents,
+    // For hulao pass only
+    StageChange,
+
+    NumOfEvents
 };
 
 class CardMoveReason
@@ -897,7 +904,8 @@ public:
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
-    const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant());
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
+                           const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
     bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt);
     bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt);

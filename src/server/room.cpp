@@ -2479,7 +2479,7 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
     log.type = !hp_changed ? "#LoseMaxHp" : "#LostMaxHpPlus";
     log.from = victim;
     log.arg = QString::number(lose);
-    log.arg2 = QString::number(hp - victim->getHp());
+    log.arg2 = QString::number(victim->getHp());
     sendLog(log);
 
     if(victim->getMaxHp() == 0)
@@ -2547,7 +2547,11 @@ void Room::damage(const DamageStruct &damage_data){
     QVariant data = QVariant::fromValue(damage_data);
 
     if(!damage_data.chain && !damage_data.transfer && damage_data.from){
-        // predamage
+        // ComfirmDamage
+        if(thread->trigger(ConfirmDamage, this, damage_data.from, data))
+            return;
+
+        // Predamage
         if(thread->trigger(Predamage, this, damage_data.from, data))
             return;
     }
@@ -2563,14 +2567,19 @@ void Room::damage(const DamageStruct &damage_data){
             return;
     }
 
-
     // predamaged
     bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
     if(broken)
         return;
 
+    // PreHpReduced
+    thread->trigger(PreHpReduced, this, damage_data.to, data);
+
     // damage done, should not cause damage process broken
     thread->trigger(DamageDone, this, damage_data.to, data);
+
+    // PostHpReduced
+    thread->trigger(PostHpReduced, this, damage_data.to, data);
 
     // damage
     if(damage_data.from){

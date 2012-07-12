@@ -20,8 +20,8 @@ GameRule::GameRule(QObject *)
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
             << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
-            << DamageDone << DamageComplete
-            << StartJudge << FinishJudge << Pindian;
+            << ConfirmDamage << PreHpReduced << DamageDone << PostHpReduced
+            << DamageComplete << StartJudge << FinishJudge << Pindian;
 }
 
 bool GameRule::triggerable(const ServerPlayer *target) const{
@@ -150,7 +150,7 @@ void GameRule::setGameProcess(Room *room) const{
     room->setTag("GameProcess", process);
 }
 
-bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
     if(room->getTag("SkipGameRule").toBool()){
         room->removeTag("SkipGameRule");
         return false;
@@ -159,7 +159,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
     // Handle global events
     if (player == NULL)
     {      
-        if (event == GameStart) {
+        if (triggerEvent == GameStart) {
             foreach (ServerPlayer* player, room->getPlayers())
             {
                 if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
@@ -180,7 +180,7 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
         return false;
     }
 
-    switch(event){
+    switch(triggerEvent){
     case TurnStart:{
             player = room->getCurrent();
             if(!player->faceUp())
@@ -354,17 +354,27 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             break;
         }
 
-    case DamageDone:{
+    case ConfirmDamage:{
             DamageStruct damage = data.value<DamageStruct>();
-            room->sendDamageLog(damage);
 
-            if(damage.from)
-                room->setPlayerStatistics(damage.from, "damage", damage.damage);
+            if(damage.card && damage.card->hasFlag("drank")){
+                LogMessage log;
+                log.type = "#AnalepticBuff";
+                log.from = damage.from;
+                log.to << damage.to;
+                log.arg = "analeptic";
+                room->sendLog(log);
 
-            room->applyDamage(player, damage);
-            if(player->getHp() <= 0){
-                room->enterDying(player, &damage);
+                damage.damage++;
+                data = QVariant::fromValue(damage);
             }
+
+            break;
+        }
+
+    case PreHpReduced:{
+            DamageStruct damage = data.value<DamageStruct>();
+
             bool chained = player->isChained();
             if(!chained)
                 break;
@@ -378,6 +388,29 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
                 log.from = player;
                 room->sendLog(log);
             }
+
+            break;
+        }
+
+    case DamageDone:{
+            DamageStruct damage = data.value<DamageStruct>();
+            room->sendDamageLog(damage);
+
+            if(damage.from)
+                room->setPlayerStatistics(damage.from, "damage", damage.damage);
+
+            room->applyDamage(player, damage);
+            
+            break;
+        }
+
+    case PostHpReduced:{
+            DamageStruct damage = data.value<DamageStruct>();
+
+            if(player->getHp() <= 0){
+                room->enterDying(player, &damage);
+            }
+            
             break;
         }
 
@@ -446,17 +479,6 @@ bool GameRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVa
             damage.card = effect.slash;
 
             damage.damage = 1;
-            if(effect.drank){
-                LogMessage log;
-                log.type = "#AnalepticBuff";
-                log.from = effect.from;
-                log.to << effect.to;
-                log.arg = "analeptic";
-                room->sendLog(log);
-
-                damage.damage++;
-            }
-
 
             damage.from = effect.from;
             damage.to = effect.to;
@@ -720,8 +742,8 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
     default_choice = "recover";
 }
 
-bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-    switch(event) {
+bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    switch(triggerEvent) {
     case StageChange: {
         ServerPlayer* lord = room->getLord();
         room->transfigure(lord, "shenlvbu2", true, true);
@@ -843,7 +865,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player
         break;
     }
 
-    return GameRule::trigger(event, room, player, data);
+    return GameRule::trigger(triggerEvent, room, player, data);
 }
 
 BasaraMode::BasaraMode(QObject *parent)
@@ -942,11 +964,11 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     room->broadcastInvoke("playSystemAudioEffect","choose-item");
 }
 
-bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
     // Handle global events
     if (player == NULL)
     {
-        if (event == GameStart)
+        if (triggerEvent == GameStart)
         {
             if(Config.EnableHegemony)
                 room->setTag("SkipNormalDeathProcess", true);
@@ -979,10 +1001,10 @@ bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, Q
     }
 
 
-    player->tag["event"] = event;
+    player->tag["event"] = triggerEvent;
     player->tag["event_data"] = data;
 
-    switch(event){    
+    switch(triggerEvent){    
     case CardEffected:{
         if(player->getPhase() == Player::NotActive){
             CardEffectStruct ces = data.value<CardEffectStruct>();

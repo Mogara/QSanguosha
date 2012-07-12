@@ -188,7 +188,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
         card_container->hide();
         addItem(card_container);
         // card_container->shift();
-        card_container->setZValue(5.0);
+        card_container->setZValue(9.0);
 
         connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(onPlayerChooseAG(int)));
         connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(onPlayerReplyGongxin(int)));

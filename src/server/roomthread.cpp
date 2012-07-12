@@ -341,9 +341,9 @@ void RoomThread::run(){
                     }
                 }
             }
-            catch (TriggerEvent event)
+            catch (TriggerEvent triggerEvent)
             {
-                trigger(event, (Room*)room, NULL);
+                trigger(triggerEvent, (Room*)room, NULL);
                 foreach(ServerPlayer *player, room->getPlayers()){
                     if(player != shenlvbu){
                         if(player->hasFlag("actioned"))
@@ -375,8 +375,8 @@ void RoomThread::run(){
                 room->setCurrent(room->getCurrent()->getNextAlive());
             }
         }
-    } catch (TriggerEvent event) {
-        if (event == GameFinished)
+    } catch (TriggerEvent triggerEvent) {
+        if (triggerEvent == GameFinished)
             return;
         else Q_ASSERT(false);
     }
@@ -386,20 +386,20 @@ static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
     return a->getPriority() > b->getPriority();
 }
 
-bool RoomThread::trigger(TriggerEvent event, Room* room, ServerPlayer *target, QVariant &data){
+bool RoomThread::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *target, QVariant &data){
     // Q_ASSERT(QThread::currentThread() == this);
 
     // push it to event stack
-    EventTriplet triplet(event, room, target, &data);
+    EventTriplet triplet(triggerEvent, room, target, &data);
     event_stack.push_back(triplet);
 
     bool broken = false;
-    const QList<const TriggerSkill*> &skills = skill_table[event];
+    const QList<const TriggerSkill*> &skills = skill_table[triggerEvent];
     for (int i = 0; i < skills.size(); i++)
     {
         const TriggerSkill *skill = skills[i];
         if (skill->triggerable(target)) {
-            broken = skill->trigger(event, room, target, data);
+            broken = skill->trigger(triggerEvent, room, target, data);
             if(broken)
                 break;
         }
@@ -407,7 +407,7 @@ bool RoomThread::trigger(TriggerEvent event, Room* room, ServerPlayer *target, Q
 
     if(target){
         foreach(AI *ai, room->ais){
-            ai->filterEvent(event, target, data);
+            ai->filterEvent(triggerEvent, target, data);
         }
     }
 
@@ -421,9 +421,9 @@ const QList<EventTriplet> *RoomThread::getEventStack() const{
     return &event_stack;
 }
 
-bool RoomThread::trigger(TriggerEvent event, Room* room, ServerPlayer *target){
+bool RoomThread::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *target){
     QVariant data;
-    return trigger(event, room, target, data);
+    return trigger(triggerEvent, room, target, data);
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){
@@ -433,8 +433,8 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
     skillSet << skill;
 
     QList<TriggerEvent> events = skill->getTriggerEvents();
-    foreach(TriggerEvent event, events){
-        QList<const TriggerSkill *> &table = skill_table[event];
+    foreach(TriggerEvent triggerEvent, events){
+        QList<const TriggerSkill *> &table = skill_table[triggerEvent];
 
         table << skill;
         qStableSort(table.begin(), table.end(), CompareByPriority);

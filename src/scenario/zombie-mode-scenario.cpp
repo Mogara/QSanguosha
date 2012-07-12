@@ -38,8 +38,8 @@ public:
         player->tag.remove("zombie");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        switch(event){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        switch(triggerEvent){
         case GameStart:{
             foreach (ServerPlayer* player, room->getPlayers())
             {
@@ -225,8 +225,8 @@ public:
             return x;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zombie, QVariant &) const{
-        if(event == EventPhaseStart && zombie->getPhase() == Player::Play){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *zombie, QVariant &) const{
+        if(triggerEvent == EventPhaseStart && zombie->getPhase() == Player::Play){
         int x = getNumDiff(zombie);
         if(x > 0){
             Room *room = zombie->getRoom();
@@ -247,7 +247,7 @@ public:
 class Xunmeng: public TriggerSkill{
 public:
     Xunmeng():TriggerSkill("xunmeng"){
-        events << Predamage;
+        events << ConfirmDamage;
 
         frequency = Compulsory;
     }

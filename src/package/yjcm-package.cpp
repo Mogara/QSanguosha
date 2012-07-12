@@ -134,17 +134,17 @@ private:
 class JiushiFlip: public TriggerSkill{
 public:
     JiushiFlip():TriggerSkill("#jiushi-flip"){
-        events << CardUsed << DamageInflicted << DamageComplete;
+        events << CardUsed << PreHpReduced << DamageComplete;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardUsed){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->getSkillName() == "jiushi")
                 player->turnOver();
-        }else if(event == DamageInflicted){
+        }else if(triggerEvent == PreHpReduced){
             player->tag["PredamagedFace"] = player->faceUp();
-        }else if(event == DamageComplete){
+        }else if(triggerEvent == DamageComplete){
             bool faceup = player->tag.value("PredamagedFace").toBool();
             if(!faceup && player->askForSkillInvoke("jiushi", data)){
                 player->getRoom()->broadcastSkillInvoke("jiushi", 3);
@@ -167,10 +167,10 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->getTypeId() == Card::Trick){
-            if(event == DamageInflicted && player->hasSkill(objectName())){
+            if(triggerEvent == DamageInflicted && player->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanGood";
                 log.from = player;
@@ -182,7 +182,7 @@ public:
                 return true;
             }
 
-            if(event == DamageCaused && damage.from && damage.from->isAlive() && damage.from->hasSkill(objectName())){
+            if(triggerEvent == DamageCaused && damage.from && damage.from->isAlive() && damage.from->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanBad";
                 log.from = player;
@@ -288,17 +288,17 @@ public:
         events << CardsMoveOneTime << Damaged;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 
-        if(event == CardsMoveOneTime){
+        if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->to == player && move->from != NULL && move->card_ids.size() >= 2
                 && room->askForSkillInvoke(player,objectName(),data)){
                     room->drawCards((ServerPlayer*)move->from, 1);
                     room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
             }
-        }else if(event == Damaged){
+        }else if(triggerEvent == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
             if(!source || source == player) return false;
@@ -527,18 +527,18 @@ public:
         return "nothing";
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lingtong, QVariant &data) const{
-        if(event == EventPhaseStart){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *lingtong, QVariant &data) const{
+        if(triggerEvent == EventPhaseStart){
             lingtong->setMark("xuanfeng", 0);
         }
-        else if(event == CardsMoveOneTime)
+        else if(triggerEvent == CardsMoveOneTime)
         {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from != lingtong)
                 return false;
 
             if(move->to_place == Player::DiscardPile && lingtong->getPhase() == Player::Discard)
-                lingtong->setMark("xuanfeng", move->card_ids.length());
+                lingtong->setMark("xuanfeng", lingtong->getMark("xuanfeng") + move->card_ids.length());
 
             if((lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("xuanfeng_used"))
                     || move->from_places.contains(Player::PlaceEquip))
@@ -683,11 +683,11 @@ public:
         return target != NULL && target->hasSkill("xianzhen");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
         ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
 
-        if(event == Death || event == EventPhaseStart){
-            if((event == Death || gaoshun->getPhase() == Player::Finish) && target){
+        if(triggerEvent == Death || triggerEvent == EventPhaseStart){
+            if((triggerEvent == Death || gaoshun->getPhase() == Player::Finish) && target){
                     Room *room = gaoshun->getRoom();
                     room->setFixedDistance(gaoshun, target, -1);
                     gaoshun->tag.remove("XianzhenTarget");
@@ -806,13 +806,13 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 
         if(player->getPhase() != Player::NotActive)
             return false;
 
-        if(event == Damaged){
+        if(triggerEvent == Damaged){
             if(room->getCurrent()->isAlive()){
                 room->setTag("Zhichi", player->objectName());
                 room->broadcastSkillInvoke(objectName());
@@ -823,7 +823,7 @@ public:
                 room->sendLog(log);
             }
 
-        }else if(event == CardEffected){
+        }else if(triggerEvent == CardEffected){
             if(room->getTag("Zhichi").toString() != player->objectName())
                 return false;
 
@@ -1194,12 +1194,12 @@ QString Shangshi::getEffectName()const{
     return objectName();
 }
 
-bool Shangshi::trigger(TriggerEvent event,  Room* room, ServerPlayer *player, QVariant &data) const
+bool Shangshi::trigger(TriggerEvent triggerEvent,  Room* room, ServerPlayer *player, QVariant &data) const
 {
-    if(event == EventPhaseStart && player->getPhase() != Player::Finish)
+    if(triggerEvent == EventPhaseStart && player->getPhase() != Player::Finish)
         return false;
 
-    if(event == CardsMoveOneTime)
+    if(triggerEvent == CardsMoveOneTime)
     {
         if(player->getPhase() == Player::Discard)
             return false;
@@ -1238,7 +1238,7 @@ public:
     ShangshiStateChanged():Shangshi("shangshi", 2)
     {
         frequency = Compulsory;
-        events << DamageDone << HpLost << HpRecover << MaxHpChanged << EventPhaseStart;
+        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseStart;
     }
 
     virtual int getPriority() const{

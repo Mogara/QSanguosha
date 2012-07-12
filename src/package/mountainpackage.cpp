@@ -331,8 +331,8 @@ public:
         return target != NULL && TriggerSkill::triggerable(target) && target->getPhase() == Player::NotActive;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardsMoveOneTime){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from == player &&
                     (move->from_places.contains(Player::PlaceHand)
@@ -346,7 +346,7 @@ public:
                 judge.who = player;
                 room->judge(judge);
             }
-        }else if(event == FinishJudge){
+        }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(judge->reason == "tuntian" && judge->isGood()){
                 player->addToPile("field", judge->card->getEffectiveId());
@@ -609,13 +609,13 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart && player->hasLordSkill(objectName())){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == GameStart && player->hasLordSkill(objectName())){
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if(!p->hasSkill("zhiba_pindian"))
                     room->attachSkillToPlayer(p, "zhiba_pindian");
             }
-        }else if(event == Pindian){
+        }else if(triggerEvent == Pindian){
             PindianStar pindian = data.value<PindianStar>();
             if(pindian->reason != "zhiba" || !pindian->to->hasLordSkill(objectName()))
                 return false;
@@ -626,7 +626,7 @@ public:
             }
             else
                 room->broadcastSkillInvoke(objectName(), 3);
-        }else if(event == EventPhaseStart && player->getPhase() == Player::NotActive){
+        }else if(triggerEvent == EventPhaseStart && player->getPhase() == Player::NotActive){
             if(player->hasFlag("ForbidZhiba")){
                 room->setPlayerFlag(player, "-ForbidZhiba");
             }
@@ -860,9 +860,9 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *liushan, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *liushan, QVariant &data) const{
 
-        if(event == TargetConfirming){
+        if(triggerEvent == TargetConfirming){
 
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card && use.card->inherits("Slash")){

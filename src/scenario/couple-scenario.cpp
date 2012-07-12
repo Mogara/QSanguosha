@@ -11,10 +11,10 @@ public:
         events << GameStart << GameOverJudge << Death;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         const CoupleScenario *scenario = qobject_cast<const CoupleScenario *>(parent());
 
-        switch(event){
+        switch(triggerEvent){
         case GameStart:{
             foreach (ServerPlayer* player, room->getPlayers())
             {

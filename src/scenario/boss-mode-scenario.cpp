@@ -130,19 +130,19 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         room->broadcastSkillInvoke(objectName());
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
 
-        if(event == EventPhaseStart && player->getPhase() == Player::Finish){
+        if(triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish){
             if(has_frantic)
                 player->drawCards(players.length());
             else
                 player->drawCards(player->getMaxHp());
         }
 
-        if(has_frantic && (event == CardEffected)){
+        if(has_frantic && (triggerEvent == CardEffected)){
             if(player->isWounded()){
                 CardEffectStruct effect = data.value<CardEffectStruct>();
                 if(!effect.multiple && effect.card->inherits("TrickCard") && player->getPhase() == Player::NotActive){
@@ -160,7 +160,7 @@ public:
             }
         }
 
-        if(event == DamageInflicted){
+        if(triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.damage > 1){
                 damage.damage = damage.damage-1;
@@ -185,8 +185,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardsMoveOneTime){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from != player)
                 return false;
@@ -220,16 +220,16 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::Play) return false;
 
-        if(player->getHp() != player->getMaxHp() && event == Damage){
+        if(player->getHp() != player->getMaxHp() && triggerEvent == Damage){
             RecoverStruct recover;
             recover.who = player;
             recover.recover = 1;
             room->recover(player, recover);
         }
-        else if(event == CardsMoveOneTime){
+        else if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from != player)
                 return false;
@@ -365,8 +365,8 @@ public:
         }
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        switch(event){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        switch(triggerEvent){
         case GameStart:{
             player = room->getLord();
             if (boss_banlist.contains(player->getGeneralName()))

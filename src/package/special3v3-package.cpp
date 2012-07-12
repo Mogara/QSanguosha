@@ -197,15 +197,14 @@ public:
                 || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
                 || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE){
             const Card *card;
-            int n = 0;
+            int i = 0;
             foreach(int card_id, move->card_ids){
                 card = Sanguosha->getCard(card_id);
-                if(card->isRed())
-                    n++;
-            }
-            for(int i = 0; i < n; i++)
-                if(player->askForSkillInvoke(objectName(), data))
+                if(card->isRed() && (move->from_places[i] == Player::PlaceHand || move->from_places[i] == Player::PlaceEquip)
+                    && player->askForSkillInvoke(objectName(), data))
                     player->drawCards(1);
+                i++;
+            }
         }
         return false;
     }

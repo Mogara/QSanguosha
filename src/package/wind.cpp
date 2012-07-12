@@ -193,14 +193,14 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
-        if(event == GameStart && player->hasLordSkill(objectName())){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+        if(triggerEvent == GameStart && player->hasLordSkill(objectName())){
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if(!p->hasSkill("huangtianv"))
                     room->attachSkillToPlayer(p, "huangtianv");
             }
         }
-        else if(event == EventPhaseStart && player->getPhase() == Player::NotActive){
+        else if(triggerEvent == EventPhaseStart && player->getPhase() == Player::NotActive){
             if(player->hasFlag("ForbidHuangtian")){
                 room->setPlayerFlag(player, "-ForbidHuangtian");
             }
@@ -379,8 +379,8 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event , Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == TargetConfirmed){
+    virtual bool trigger(TriggerEvent triggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             bool caninvoke = false;
             if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
@@ -394,13 +394,13 @@ public:
                 room->setPlayerFlag(player, "LiegongTarget");
             }
         }
-        else if(event == SlashProceed){
+        else if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.from->hasSkill(objectName()) && effect.to->hasFlag("LiegongTarget")){
                 room->slashResult(effect, NULL);
                 return true;
             }
-        }else if(event == CardFinished){
+        }else if(triggerEvent == CardFinished){
             CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *to, use.to){
                 if(to->hasFlag("LiegongTarget"))
@@ -416,20 +416,20 @@ class Kuanggu: public TriggerSkill{
 public:
     Kuanggu():TriggerSkill("kuanggu"){
         frequency = Compulsory;
-        events << Damage << DamageDone;
+        events << Damage << PreHpReduced;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(event == DamageDone && damage.from && damage.from->hasSkill("kuanggu") && damage.from->isAlive()){
+        if(triggerEvent == PreHpReduced && damage.from && damage.from->hasSkill("kuanggu") && damage.from->isAlive()){
             ServerPlayer *weiyan = damage.from;
             weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;
-        }else if(event == Damage && player->hasSkill("kuanggu") && player->isAlive()){
+        }else if(triggerEvent == Damage && player->hasSkill("kuanggu") && player->isAlive()){
             bool invoke = player->tag.value("InvokeKuanggu", false).toBool();
             if(invoke){
                 Room *room = player->getRoom();
@@ -502,8 +502,8 @@ public:
         events << Dying << AskForPeachesDone;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhoutai, QVariant &) const{
-        if(event == Dying){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *zhoutai, QVariant &) const{
+        if(triggerEvent == Dying){
             if(room->askForSkillInvoke(zhoutai, objectName())){
                 room->setTag("Buqu", zhoutai->objectName());
                 room->broadcastSkillInvoke(objectName());
@@ -537,7 +537,7 @@ public:
                     return true;
                 }
             }
-        }else if(event == AskForPeachesDone){
+        }else if(triggerEvent == AskForPeachesDone){
             const QList<int> &buqu = zhoutai->getPile("buqu");
 
             if(zhoutai->getHp() > 0)
@@ -704,7 +704,7 @@ public:
         return 2;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *xiaoqiao, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *xiaoqiao, QVariant &data) const{
         if(!xiaoqiao->isKongcheng()){
             DamageStruct damage = data.value<DamageStruct>();
 

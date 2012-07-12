@@ -162,8 +162,8 @@ public:
         events << GameStart << EventPhaseStart << Damaged << GameOverJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        switch(event){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        switch(triggerEvent){
         case GameStart:{
             player = room->getLord();
             room->installEquip(player, "renwang_shield");
