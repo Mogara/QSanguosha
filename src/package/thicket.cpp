@@ -208,7 +208,7 @@ public:
         }
         else if(triggerEvent == ConfirmDamage && !room->getTag("HuoshouSource").isNull()){
             DamageStruct damage = data.value<DamageStruct>();
-            if(!damage.card && !damage.card->inherits("SavageAssault"))
+            if(!damage.card || !damage.card->inherits("SavageAssault"))
                 return false;
 
             ServerPlayer *menghuo = room->getTag("HuoshouSource").value<PlayerStar>();
