@@ -800,7 +800,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == PhaseChange && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
+        if(event == PhaseChange && player->getMark("hate") < 1 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
             QList<ServerPlayer *> targets = room->getOtherPlayers(player);
             QList<ServerPlayer *> victims;
@@ -813,9 +813,10 @@ public:
             if(victims.empty())
                 return false;
             if(player->askForSkillInvoke(objectName())){
-                player->gainMark("@hate");
+                player->addMark("hate");
                 ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
                 victim->addMark("hate"+player->objectName());
+                victim->gainMark("@hate");
                 for(int i = 0; i < 2; i++){
 
                     int card_id = room->askForCardChosen(player, player, "he", objectName());
@@ -856,6 +857,7 @@ public:
             foreach(ServerPlayer *p, room->getAllPlayers()){
                 if(p->hasLordSkill(objectName()) && player->getMark("hate"+p->objectName()) > 0){
                     player->setMark("hate"+p->objectName(), 0);
+                    player->loseMark("@hate");
                 }
             }
         }
