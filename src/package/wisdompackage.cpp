@@ -629,9 +629,8 @@ public:
                 log.from = hua;
                 log.to << damage.to;
                 log.arg = QString::number(damage.damage);
-                log.arg2 = QString::number(damage.damage + 1);
-                hua->getRoom()->sendLog(log);
-                damage.damage ++;
+                log.arg2 = QString::number(++ damage.damage);
+                room->sendLog(log);
                 data = QVariant::fromValue(damage);
             }
         }

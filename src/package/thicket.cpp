@@ -860,41 +860,45 @@ public:
 class Baonue: public TriggerSkill{
 public:
     Baonue():TriggerSkill("baonue$"){
-        events << Damage;
+        events << Damage << PreHpReduced;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->getKingdom() == "qun";
+        return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
-        if (player == NULL) return false;
-        QList<ServerPlayer *> dongzhuos;
-        QList<ServerPlayer *> players = room->getOtherPlayers(player);
-        foreach(ServerPlayer *p, players){
-            if(p->hasLordSkill("baonue")){
-                dongzhuos << p;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(event == PreHpReduced && damage.from)
+            damage.from->tag["InvokeBaonue"] = damage.from->getKingdom() == "qun";
+        else if (event == Damage && player->tag.value("InvokeBaonue", false).toBool())
+        {
+            QList<ServerPlayer *> dongzhuos;
+            QList<ServerPlayer *> players = room->getOtherPlayers(player);
+            foreach(ServerPlayer *p, players){
+                if(p->hasLordSkill("baonue")){
+                    dongzhuos << p;
+                }
             }
-        }
-        if(dongzhuos.empty())
-            return false;
-        foreach(ServerPlayer *dongzhuo, dongzhuos){
-            QVariant who = QVariant::fromValue(dongzhuo);
-            if(player->askForSkillInvoke(objectName(), who)){
-                JudgeStruct judge;
-                judge.pattern = QRegExp("(.*):(spade):(.*)");
-                judge.good = true;
-                judge.reason = "baonue";
-                judge.who = player;
 
-                room->judge(judge);
+            foreach(ServerPlayer *dongzhuo, dongzhuos){
+                QVariant who = QVariant::fromValue(dongzhuo);
+                if(player->askForSkillInvoke(objectName(), who)){
+                    JudgeStruct judge;
+                    judge.pattern = QRegExp("(.*):(spade):(.*)");
+                    judge.good = true;
+                    judge.reason = "baonue";
+                    judge.who = player;
 
-                if(judge.isGood()){
-                    room->broadcastSkillInvoke(objectName());
+                    room->judge(judge);
 
-                    RecoverStruct recover;
-                    recover.who = player;
-                    room->recover(dongzhuo, recover);
+                    if(judge.isGood()){
+                        room->broadcastSkillInvoke(objectName());
+
+                        RecoverStruct recover;
+                        recover.who = player;
+                        room->recover(dongzhuo, recover);
+                    }
                 }
             }
         }

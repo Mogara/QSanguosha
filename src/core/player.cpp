@@ -274,8 +274,8 @@ bool Player::hasSkill(const QString &skill_name) const{
             || acquired_skills.contains(skill_name);
 }
 
-bool Player::hasInnateSkill(const QString &skill_name) const{
-    if(loseSkills())
+bool Player::hasInnateSkill(const QString &skill_name, bool includeLost) const{
+    if(loseSkills() && !includeLost)
         return false;
     if(general && general->hasSkill(skill_name))
         return true;
@@ -286,8 +286,8 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
     return false;
 }
 
-bool Player::hasLordSkill(const QString &skill_name) const{
-    if(loseSkills())
+bool Player::hasLordSkill(const QString &skill_name, bool includeLost) const{
+    if(loseSkills() && !includeLost)
         return false;
     if(acquired_skills.contains(skill_name))
         return true;
@@ -297,7 +297,7 @@ bool Player::hasLordSkill(const QString &skill_name) const{
         return false;
 
     if(isLord() || ServerInfo.EnableHegemony)
-        return hasInnateSkill(skill_name);
+        return hasInnateSkill(skill_name, includeLost);
 
     if(hasSkill("weidi")){
         foreach(const Player *player, getSiblings()){

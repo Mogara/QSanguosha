@@ -140,8 +140,8 @@ public:
     void loseSkill(const char *skill_name);
     void loseAllSkills();
     bool hasSkill(const char *skill_name) const;
-    bool hasLordSkill(const char *skill_name) const;
-    bool hasInnateSkill(const char *skill_name) const;
+    bool hasLordSkill(const char *skill_name, bool includeLost = false) const;
+    bool hasInnateSkill(const char *skill_name, bool includeLost = false) const;
     bool loseSkills() const;
 
     void setEquip(const EquipCard *card);

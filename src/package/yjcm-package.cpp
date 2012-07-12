@@ -145,9 +145,10 @@ public:
         }else if(triggerEvent == PreHpReduced){
             player->tag["PredamagedFace"] = player->faceUp();
         }else if(triggerEvent == DamageComplete){
-            bool faceup = player->tag.value("PredamagedFace").toBool();
+            bool faceup = player->tag.value("PredamagedFace", true).toBool();
+            player->tag.remove("PredamagedFace");
             if(!faceup && player->askForSkillInvoke("jiushi", data)){
-                player->getRoom()->broadcastSkillInvoke("jiushi", 3);
+                room->broadcastSkillInvoke("jiushi", 3);
                 player->turnOver();
             }
         }

@@ -882,10 +882,6 @@ public:
         events << DamageForseen;
     }
 
-    virtual int getPriority() const{
-        return 2;
-    }
-
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL && target->getMark("@fog") > 0;
     }

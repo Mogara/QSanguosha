@@ -321,10 +321,9 @@ public:
             log.type = "#GaleShellDamage";
             log.from = player;
             log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(damage.damage + 1);
+            log.arg2 = QString::number(++ damage.damage);
             player->getRoom()->sendLog(log);
 
-            damage.damage ++;
             data = QVariant::fromValue(damage);
         }
         return false;
