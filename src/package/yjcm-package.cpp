@@ -397,7 +397,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
             int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             DummyCard *dummy = new DummyCard;
             dummy->addSubcard(first_id);
-            effect.to->addToPile("#xuanhuo", dummy, false);
+            effect.to->addToPile("#xuanhuo", dummy, room->getCardPlace(first_id) == Player::Equip);
             if (!effect.to->isNude()){
                 int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
                 dummy->addSubcard(second_id);
@@ -410,7 +410,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
         DummyCard *dummy = new DummyCard;
         dummy->addSubcard(first_id);
-        effect.to->addToPile("#xuanhuo", dummy, false);
+        effect.to->addToPile("#xuanhuo", dummy, room->getCardPlace(first_id) == Player::Equip);
         if (!effect.to->isNude()){
             int second_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             dummy->addSubcard(second_id);
