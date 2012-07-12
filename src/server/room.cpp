@@ -302,9 +302,12 @@ void Room::judge(JudgeStruct &judge_struct){
 }
 
 void Room::sendJudgeResult(const JudgeStar judge){
-    QString who = judge->who->objectName();
-    QString result = judge->isGood() ? "good" : "bad";
-    broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
+    thread->delay(2000);
+    Json::Value arg(Json::arrayValue);
+    arg[0] = (int)QSanProtocol::S_GAME_EVENT_JUDGE_RESULT;
+    arg[1] = judge->isGood();
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+    thread->delay(2000);
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
@@ -4175,7 +4178,6 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     log.to << judge->who;
     log.card_str = card->getEffectIdString();
     sendLog(log);
-    sendJudgeResult(judge);
 
     QList<CardsMoveStruct> moves;
     moves.append(move1);

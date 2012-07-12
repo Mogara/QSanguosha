@@ -99,7 +99,8 @@ namespace QSanProtocol
     enum GameEventType
     {
         S_GAME_EVENT_PLAYER_DYING,
-        S_GAME_EVENT_SKILL_INVOKED
+        S_GAME_EVENT_SKILL_INVOKED,
+        S_GAME_EVENT_JUDGE_RESULT
     };
 
     enum Game3v3ChooseOrderCommand
