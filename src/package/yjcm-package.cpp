@@ -374,7 +374,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->drawCards(effect.to,2);
 
-    QString choice;
+    QString choice = room->askForChoice(effect.to, "xuanhuo", "give+slash");
     bool can_use = false;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
         if (effect.to->canSlash(p)){
@@ -383,7 +383,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         }
     }
     ServerPlayer *victim = NULL;
-    if (can_use){
+    if (can_use && choice == "slash"){
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *victim, room->getOtherPlayers(effect.to)){
             if(effect.to->canSlash(victim))
