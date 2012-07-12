@@ -4129,6 +4129,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     if(card == NULL)
         return;
 
+    broadcastSkillInvoke(skill_name);
     const Card* oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
 
