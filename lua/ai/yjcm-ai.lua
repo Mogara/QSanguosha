@@ -537,7 +537,7 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 	local slashcount = self:getCardsNum("Slash")
 	if max_card:inherits("Slash") then slashcount = slashcount - 1 end
 
-	if slashcount > 1 or (slashcount == 1 and #self.enemies > 1) then
+	if slashcount > 0  then
 		local slash = self:getCard("Slash")
 		assert(slash)
 		local dummy_use = {isDummy = true}
@@ -552,7 +552,7 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 				if (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown > 0)
 					or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10) 
 					or (not enemy_max_card and max_point > 10) then
-					use.card = sgs.Card_Parse("@Xianzhen=" .. max_card:getId())
+					use.card = sgs.Card_Parse("@XianzhenCard=" .. max_card:getId())
 					if use.to then use.to:append(enemy) end
 					return
 				end
@@ -562,14 +562,7 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)
 	if self:getUseValue(cards[1]) >= 6 or self:getKeepValue(cards[1]) >= 6 then return end
-	local shouldUse = (slashcount == 0)
-	if slashcount > 0 then
-		local slash = self:getCard("Slash")
-		assert(slash)
-		local dummyuse = {isDummy = true}
-		self:useBasicCard(slash, dummyuse)
-		if not dummyuse.card then shouldUse = true end
-	end
+	local shouldUse = self:getOverflow() > 0
 	if shouldUse then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() and not enemy:hasSkill("tuntian") then
@@ -577,15 +570,6 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 				if use.to then use.to:append(enemy) end
 				return
 			end
-		end
-	end
-	if self:getOverflow()>0	then
-		for _, enemy in ipairs(self.enemies) do
-			if use.to and not enemy:isKongcheng() then
-				use.to:append(enemy)
-			end
-			use.card = sgs.Card_Parse("@XianzhenCard=" .. cards[1]:getId())
-			break
 		end
 	end
 end
