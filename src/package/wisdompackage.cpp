@@ -103,8 +103,8 @@ public:
         return -1;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *xuyou, QVariant &data) const{
-        if(event == Damaged){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *xuyou, QVariant &data) const{
+        if(triggerEvent == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *from = damage.from;
             Room *room = xuyou->getRoom();
@@ -166,12 +166,12 @@ public:
         events << CardUsed << CardResponsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
         CardStar card = NULL;
-        if(event == CardUsed){
+        if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(event == CardResponsed)
+        }else if(triggerEvent == CardResponsed)
             card = data.value<CardStar>();
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
@@ -458,8 +458,8 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == EventPhaseStart){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == EventPhaseStart){
             if(player->getPhase() == Player::Finish){
                 int drawnum = player->getMark("longluo");
                 if(drawnum > 0 && player->askForSkillInvoke(objectName(), data)){
@@ -599,11 +599,11 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *hua = room->findPlayerBySkillName(objectName());
         if(!hua)
             return false;
-        if(event == SlashProceed){
+        if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.to == hua && effect.slash->isRed()){
 
@@ -617,7 +617,7 @@ public:
                 return true;
             }
         }
-        else if(event == DamageCaused){
+        else if(triggerEvent == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
             const Card *reason = damage.card;
             if(!reason || damage.from != hua)
@@ -675,14 +675,14 @@ public:
         events << CardUsed << CardResponsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *tianfeng, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *tianfeng, QVariant &data) const{
         if(room->getCurrent() == tianfeng)
             return false;
         CardStar card = NULL;
-        if(event == CardUsed){
+        if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(event == CardResponsed)
+        }else if(triggerEvent == CardResponsed)
             card = data.value<CardStar>();
 
         if(card->inherits("BasicCard") && !card->isVirtualCard()){
@@ -821,15 +821,15 @@ public:
         return target != NULL && !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
         if (player->getMark("forbid_shien") > 0)
             return false;
         CardStar card = NULL;
-        if(event == CardUsed){
+        if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(event == CardResponsed)
+        }else if(triggerEvent == CardResponsed)
             card = data.value<CardStar>();
 
         if(card->isNDTrick()){

@@ -251,8 +251,8 @@ public:
         events << TargetConfirmed << Death;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *, QVariant &data) const{
-        if(event == TargetConfirmed){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
+        if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Slash") && use.from->getWeapon() && use.from->getWeapon()->objectName() == objectName()){
                 bool do_anim = false;

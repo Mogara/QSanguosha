@@ -14,19 +14,19 @@ public:
         events << CardFinished << CardResponsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
         CardStar card = NULL;
-        if(event == CardFinished){
+        if(triggerEvent == CardFinished){
             CardUseStruct card_use = data.value<CardUseStruct>();
             card = card_use.card;
 
             if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
                 card = NULL;
             }
-        }else if(event == CardResponsed){
+        }else if(triggerEvent == CardResponsed){
             card = data.value<CardStar>();
             player->tag["MoonSpearSlash"] = data;
         }
@@ -100,7 +100,7 @@ public:
         events << DamageInflicted;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *yangxiu, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *yangxiu, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.from == NULL)
@@ -132,8 +132,8 @@ public:
         events << TargetConfirmed << CardEffected;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == TargetConfirmed){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.to.length() <= 1 || !use.to.contains(player) ||
                !use.card->inherits("TrickCard") ||
@@ -186,8 +186,8 @@ public:
         return kingdom_set.size();
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *yuanshu, QVariant &data) const{
-        if(event == DrawNCards){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *yuanshu, QVariant &data) const{
+        if(triggerEvent == DrawNCards){
             int x = getKingdoms(yuanshu);
             data = data.toInt() + x;
 
@@ -201,7 +201,7 @@ public:
 
             room->broadcastSkillInvoke("yongsi", x);
 
-        }else if(event == EventPhaseStart && yuanshu->getPhase() == Player::Discard){
+        }else if(triggerEvent == EventPhaseStart && yuanshu->getPhase() == Player::Discard){
             int x = getKingdoms(yuanshu);
             int total = 0;
             QSet<const Card *> jilei_cards;

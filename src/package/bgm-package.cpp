@@ -11,8 +11,8 @@ public:
         events << CardResponsed  << TargetConfirmed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardResponsed){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == CardResponsed){
             CardStar card = data.value<CardStar>();
             if(card->getSkillName() == "longdan"){
                 ServerPlayer *target = NULL;
@@ -283,7 +283,7 @@ public:
         sp_pangtong->invoke("clearAG");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sp_pangtong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *sp_pangtong, QVariant &data) const{
         if(sp_pangtong->hasFlag("ManjuanInvoke")){
             sp_pangtong->setFlags("-ManjuanInvoke");
             return false;
@@ -291,7 +291,7 @@ public:
 
         int card_id = -1;
         CardMoveReason reason(CardMoveReason::S_REASON_PUT, sp_pangtong->objectName(), "manjuan", QString());
-        if(event == CardsMoveOneTime){
+        if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->to != sp_pangtong || move->to_place != Player::PlaceHand || move->to == move->from)
                 return false;
@@ -300,7 +300,7 @@ public:
                 room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
             }
         }
-        else if(event == CardDrawing){
+        else if(triggerEvent == CardDrawing){
             if(room->getTag("FirstRound").toBool())
                 return false;
             card_id = data.toInt();
@@ -311,7 +311,7 @@ public:
         LogMessage log;
         log.type = "$ManjuanGot";
         log.from = sp_pangtong;
-        if(event == CardsMoveOneTime)
+        if(triggerEvent == CardsMoveOneTime)
         {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             foreach(int _card_id, move->card_ids)
@@ -325,16 +325,16 @@ public:
         room->sendLog(log);
 
         if(sp_pangtong->getPhase() == Player::NotActive || !sp_pangtong->askForSkillInvoke(objectName(), data))
-            return event == CardsMoveOneTime ? false : true;
+            return triggerEvent == CardsMoveOneTime ? false : true;
 
-        if(event == CardsMoveOneTime)
+        if(triggerEvent == CardsMoveOneTime)
         {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             foreach(int _card_id, move->card_ids)
                 doManjuan(sp_pangtong, _card_id);
         }
         else doManjuan(sp_pangtong, card_id);
-        return event == CardsMoveOneTime ? false : true;
+        return triggerEvent == CardsMoveOneTime ? false : true;
     }
 };
 
@@ -384,10 +384,10 @@ public:
         }
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sp_pangtong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *sp_pangtong, QVariant &data) const{
         QList<int> zuixiang = sp_pangtong->getPile("dream");
 
-        if(event == EventPhaseStart && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
+        if(triggerEvent == EventPhaseStart && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
             if(sp_pangtong->getPhase() == Player::Start){
                 if(sp_pangtong->getMark("@sleep") == 1){
                     if(!sp_pangtong->askForSkillInvoke(objectName()))
@@ -398,7 +398,7 @@ public:
                     doZuixiang(sp_pangtong);
             }
         }
-        else if(event == CardEffected){
+        else if(triggerEvent == CardEffected){
             if(zuixiang.isEmpty())
                 return false;
 
@@ -413,7 +413,7 @@ public:
                 log.arg2 = objectName();
 
                 room->sendLog(log);
-				room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName());
                 return true;
             }
         }
@@ -427,7 +427,7 @@ private:
 class Jie: public TriggerSkill{
 public:
     Jie():TriggerSkill("jie"){
-        events << Predamage;
+        events << ConfirmDamage;
         frequency = Compulsory;
     }
 
@@ -495,11 +495,11 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *bgm_zhangfei = room->findPlayerBySkillName(objectName());
         if(!bgm_zhangfei)
             return false;
-        if(event == SlashProceed){
+        if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(!effect.to->hasFlag(objectName()))
                 return false;
@@ -524,7 +524,7 @@ public:
 
             return true;
         }
-        else if(event == EventPhaseStart && bgm_zhangfei->getPhase() == Player::NotActive){
+        else if(triggerEvent == EventPhaseStart && bgm_zhangfei->getPhase() == Player::NotActive){
             foreach(ServerPlayer *other, room->getOtherPlayers(player))
                 if(other->hasFlag(objectName()))
                     room->setPlayerFlag(other, "-" + objectName());
@@ -665,10 +665,10 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *lvmeng = room->findPlayerBySkillName(objectName());
 
-        if(event == CardsMoveOneTime){
+        if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from == player && (player->getMark("@wu") > 0) && player->getHandcardNum() <= 2){
                 player->loseMark("@wu");
@@ -825,8 +825,8 @@ public:
         return player != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == EventPhaseStart && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == EventPhaseStart && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
             QList<ServerPlayer *> targets = room->getOtherPlayers(player);
             QList<ServerPlayer *> victims;
@@ -851,7 +851,7 @@ public:
                 }
             }
         }
-        else if(event == DamageInflicted && player->hasLordSkill(objectName())){
+        else if(triggerEvent == DamageInflicted && player->hasLordSkill(objectName())){
             ServerPlayer *target = NULL;
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if(p->getMark("hate"+player->objectName()) > 0){
@@ -880,7 +880,7 @@ public:
                 target->drawCards(damage.damage);
             return true;
         }
-        else if(event == Dying){
+        else if(triggerEvent == Dying){
             foreach(ServerPlayer *p, room->getAllPlayers()){
                 if(p->hasLordSkill(objectName()) && player->getMark("hate"+p->objectName()) > 0){
                     player->setMark("hate"+p->objectName(), 0);

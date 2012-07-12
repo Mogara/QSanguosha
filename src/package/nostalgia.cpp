@@ -13,19 +13,19 @@ public:
         events << CardFinished << CardResponsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
         CardStar card = NULL;
-        if(event == CardFinished){
+        if(triggerEvent == CardFinished){
             CardUseStruct card_use = data.value<CardUseStruct>();
             card = card_use.card;
 
             if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
                 card = NULL;
             }
-        }else if(event == CardResponsed){
+        }else if(triggerEvent == CardResponsed){
             card = data.value<CardStar>();
             player->tag["MoonSpearSlash"] = data;
         }
@@ -195,8 +195,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == HpRecover){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == HpRecover){
             RecoverStruct recover = data.value<RecoverStruct>();
             if(recover.who && recover.who != player){
                 recover.who->drawCards(recover.recover);
@@ -213,7 +213,7 @@ public:
                 room->broadcastSkillInvoke("enyuan", qrand() % 2 + 1);
 
             }
-        }else if(event == Damaged){
+        }else if(triggerEvent == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
             if(source && source != player){
@@ -287,8 +287,8 @@ public:
         return "nothing";
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lingtong, QVariant &data) const{
-        if(event == CardsMoveOneTime){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *lingtong, QVariant &data) const{
+        if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->from == lingtong && move->from_places.contains(Player::PlaceEquip))
             {
@@ -348,7 +348,7 @@ public:
     NosShangshi():Shangshi("nosshangshi", 998)
     {
         frequency = Frequent;
-        events << DamageDone << HpLost << HpRecover << MaxHpChanged << EventPhaseStart;
+        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseStart;
     }
 
     virtual int getPriority() const{

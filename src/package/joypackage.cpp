@@ -382,7 +382,7 @@ JoyPackage::JoyPackage()
 class YxSwordSkill: public WeaponSkill{
 public:
     YxSwordSkill():WeaponSkill("yx_sword"){
-        events << Predamage;
+        events << DamageCaused;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
