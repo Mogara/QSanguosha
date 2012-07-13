@@ -186,10 +186,6 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
         log.to << effect.from;
         log.arg = objectName();
         room->sendLog(log);
-        if(effect.from->getGender() == effect.to->getGender())
-            room->playSkillEffect("jiuyuan", 2);
-        else
-            room->playSkillEffect("jiuyuan", 3);
     }
 
     room->recover(effect.to, recover);

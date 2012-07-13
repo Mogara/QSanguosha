@@ -798,7 +798,7 @@ public:
                 if(sunquan->hasFlag("jiuyuan")){
                     room->setPlayerFlag(sunquan, "-jiuyuan");
                     if(sunquan->getHp() > 0)
-                    	room->playSkillEffect("jiuyuan", 4);
+                        room->playSkillEffect("jiuyuan", 2);
                 }
 
                 break;
