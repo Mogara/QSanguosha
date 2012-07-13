@@ -779,13 +779,12 @@ void Dashboard::reverseSelection(){
 
     foreach(CardItem *item, m_handCards){
         if(view_as_skill->viewFilter(pendings, item) && !selected_set.contains(item)){
-            selectCard(item, false);
             pendings << item;
-
             item->setEnabled(true);
+            selectCard(item, true);
         }
     }
-
+    adjustCards();
     if(pending_card && pending_card->isVirtualCard() && pending_card->parent() == NULL)
         delete pending_card;
     pending_card = view_as_skill->viewAs(pendings);

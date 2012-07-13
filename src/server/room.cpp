@@ -302,7 +302,7 @@ void Room::judge(JudgeStruct &judge_struct){
 }
 
 void Room::sendJudgeResult(const JudgeStar judge){
-    thread->delay(2000);
+    thread->delay(1500);
     Json::Value arg(Json::arrayValue);
     arg[0] = (int)QSanProtocol::S_GAME_EVENT_JUDGE_RESULT;
     arg[1] = judge->isGood();

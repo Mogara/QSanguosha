@@ -73,10 +73,7 @@ void TablePile::showJudgeResult(CardItem *card, bool isGood){
     card->setOpacity(1.0);
     card->goBack(false);
 
-    static const QString judge_good = "judgegood";
-    static const QString judge_bad = "judgebad";
-
-    PixmapAnimation::GetPixmapAnimation(card, isGood ? judge_good : judge_bad);
+    PixmapAnimation::GetPixmapAnimation(card, isGood ? "judgegood" : "judgebad");
 
     QTimer::singleShot(1200, this, SLOT(clear()));
 }
