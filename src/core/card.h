@@ -153,8 +153,8 @@ protected:
     bool will_throw;
     bool can_jilei;
     bool owner_discarded;
-    bool has_preact;
     bool target_asigned;
+    bool has_preact;
 
 private:
     Suit suit;

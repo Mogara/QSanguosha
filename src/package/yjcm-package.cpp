@@ -1078,8 +1078,7 @@ public:
 
         if(!room->askForSkillInvoke(zhonghui, objectName()))
             return;
-
-		room->playSkillEffect(objectName());
+        room->playSkillEffect(objectName());
 
         int x = damage.damage, i;
         for(i=0; i<x; i++){
@@ -1131,7 +1130,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-		room->playSkillEffect("zili");
+        room->playSkillEffect("zili");
         room->broadcastInvoke("animate", "lightbox:$zili:4000");
         room->getThread()->delay(4000);
         QStringList choicelist;
@@ -1157,21 +1156,22 @@ public:
 
 PaiyiCard::PaiyiCard(){
     once = true;
+    mute = true;
 }
 
 bool PaiyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
-
     return true;
 }
 
 void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *zhonghui = card_use.from;
-    ServerPlayer *target = card_use.to.first();
     QList<int> powers = zhonghui->getPile("power");
     if(powers.isEmpty())
-        return ;
+        return;
+    ServerPlayer *target = card_use.to.first();
+    room->playSkillEffect("paiyi", target == zhonghui ? 1 : 2);
 
     int card_id;
     if(powers.length() == 1)
@@ -1186,7 +1186,7 @@ void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 
     room->throwCard(card_id);
-    room->drawCards(target, 2,"paiyi");
+    room->drawCards(target, 2, "paiyi");
     if(target->getHandcardNum() > zhonghui->getHandcardNum()){
         DamageStruct damage;
         damage.card = NULL;
@@ -1214,10 +1214,6 @@ public:
         return Right;
     }
 };
-
-
-
-
 
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
