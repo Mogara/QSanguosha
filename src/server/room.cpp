@@ -298,14 +298,18 @@ void Room::judge(JudgeStruct &judge_struct){
             break; //if a skill break retrial.
     }
 
+    thread->trigger(FinishRetrial, this, judge_star->who, data);
+
     thread->trigger(FinishJudge, this, judge_star->who, data);
 }
 
 void Room::sendJudgeResult(const JudgeStar judge){
-    thread->delay(1200);
     Json::Value arg(Json::arrayValue);
     arg[0] = (int)QSanProtocol::S_GAME_EVENT_JUDGE_RESULT;
-    arg[1] = judge->isGood();
+    arg[1] = judge->card->getEffectiveId();
+    arg[2] = judge->isEffected();
+    arg[3] = toJsonString(judge->who->objectName());
+    arg[4] = toJsonString(judge->reason);
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
     thread->delay(Settings::S_JUDGE_ANIMATION_DURATION);
 }

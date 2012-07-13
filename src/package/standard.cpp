@@ -180,6 +180,8 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
     :TrickCard(suit, number, true), movable(movable)
 {
+    judge.negative = true;
+    judge.play_animation = true;
 }
 
 void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{

@@ -132,6 +132,7 @@ public:
 
             guojia->obtainCard(judge->card);
             room->broadcastSkillInvoke(objectName());
+            room->getThread()->delay(500);
 
             return true;
         }

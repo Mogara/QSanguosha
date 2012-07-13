@@ -65,8 +65,7 @@ void RoomScene::resetPiles()
 #include "qsanbutton.h"
 
 RoomScene::RoomScene(QMainWindow *main_window):
-    focused(NULL), judge_result(NULL),
-    main_window(main_window),game_started(false)
+    focused(NULL), main_window(main_window),game_started(false)
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
@@ -383,8 +382,11 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
     }
     else if(eventType == S_GAME_EVENT_JUDGE_RESULT)
     {
-        bool good = arg[1].asBool();
-        showJudgeResult(good);
+        int card_id = arg[1].asInt();
+        bool take_effect = arg[2].asBool();
+        QString who = arg[3].asCString();
+        QString reason = arg[4].asCString();
+        showJudgeResult(card_id, take_effect, who, reason);
     }
 }
 
@@ -1522,17 +1524,6 @@ bool RoomScene::_shouldIgnoreDisplayMove(Player::Place from, Player::Place to)
 }
 
 bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost){
-    // judge result processed
-    if(move.from_place == Player::PlaceTable && move.to_place == Player::DiscardPile
-            && move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE && move.reason.m_eventName != "beige")
-    {
-        if(isLost){
-            judge_result = m_tablePile->removeCardItems(move.card_ids, move.from_place).first();
-            judge_result->setFootnote(_translateMovementReason(move.reason));
-        }
-        return true;
-    }
-
     _MoveCardsClassifier cls(move);
     // delayed trick processed;
     if (move.from_place == Player::PlaceDelayedTrick && move.to_place == Player::PlaceTable){
@@ -3093,11 +3084,13 @@ void RoomScene::showOwnerButtons(bool owner){
         control_panel->setVisible(owner);
 }
 
-void RoomScene::showJudgeResult(bool good){
-    if(judge_result){
-        m_tablePile->showJudgeResult(judge_result, good);
-    }
-    judge_result = NULL;
+void RoomScene::showJudgeResult(int card_id, bool take_effect, const QString &who, const QString reason){
+    QList<int> card_ids;
+    card_ids.append(card_id);
+    CardItem *judge_result = m_tablePile->removeCardItems(card_ids, Player::DiscardPile).first();
+    CardMoveReason _reason(CardMoveReason::S_REASON_JUDGEDONE, who, QString(), reason);
+    judge_result->setFootnote(_translateMovementReason(_reason));
+    m_tablePile->showJudgeResult(judge_result, take_effect);
 }
 
 void RoomScene::showPlayerCards(){

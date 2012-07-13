@@ -99,9 +99,9 @@ void TablePile::_showJudgeResult(){
     m_judge_card = NULL;
 }
 
-void TablePile::showJudgeResult(CardItem *card, bool isGood){
+void TablePile::showJudgeResult(CardItem *card, bool take_effect){
     m_judge_card = card;
-    m_judge_emotion = isGood ? "judgegood" : "judgebad";
+    m_judge_emotion = take_effect ? "judgegood" : "judgebad";
     faded();
     QTimer::singleShot(Settings::S_MOVE_CARD_ANIMATION_DURAION + 100, this, SLOT(_showJudgeResult()));
 }

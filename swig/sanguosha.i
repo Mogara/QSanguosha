@@ -413,8 +413,11 @@ struct RecoverStruct{
 struct JudgeStruct{
     JudgeStruct();
     bool isGood(const Card *card = NULL) const;
+    bool isEffected();
     bool isBad() const;
 
+    bool negative;
+    bool play_animation;
     ServerPlayer *who;
     const Card *card;
     QRegExp pattern;
@@ -459,6 +462,7 @@ enum TriggerEvent{
 
     StartJudge,
     AskForRetrial,
+    FinishRetrial,
     FinishJudge,
 
     Pindian,

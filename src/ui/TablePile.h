@@ -25,7 +25,7 @@ public:
     inline virtual void paint(QPainter *,const QStyleOptionGraphicsItem *,QWidget *) {}    
     void adjustCards();
     virtual QRectF boundingRect() const;
-    void showJudgeResult(CardItem* card, bool isGood);
+    void showJudgeResult(CardItem* card, bool take_effect);
 public slots:
     void clear(bool playAnimation = true);
     void faded();

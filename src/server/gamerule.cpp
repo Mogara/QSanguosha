@@ -21,7 +21,7 @@ GameRule::GameRule(QObject *)
             << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << ConfirmDamage << PreHpReduced << DamageDone << PostHpReduced
-            << DamageComplete << StartJudge << FinishJudge << Pindian;
+            << DamageComplete << StartJudge << FinishRetrial << FinishJudge << Pindian;
 }
 
 bool GameRule::triggerable(const ServerPlayer *target) const{
@@ -564,10 +564,15 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
+            int delay = Config.AIDelay;
+            if(judge->time_consuming)
+                delay /= 4;
+            room->getThread()->delay(delay);
+
             break;
         }
 
-    case FinishJudge:{
+    case FinishRetrial:{
             JudgeStar judge = data.value<JudgeStar>();
 
             LogMessage log;
@@ -576,11 +581,18 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
+            if(judge->play_animation)
+                room->sendJudgeResult(judge);
+
+            break;
+        }
+
+    case FinishJudge:{
+            JudgeStar judge = data.value<JudgeStar>();
+
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable){
                 CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
-
-                room->sendJudgeResult(judge);
             }
 
             break;
