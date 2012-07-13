@@ -8,7 +8,7 @@
 #include "maneuvering.h"
 
 HongyuanCard::HongyuanCard(){
-
+    mute = true;
 }
 
 bool HongyuanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -227,8 +227,10 @@ public:
         else
             n = card->isRed() ? 1 : 0;
 
-        if(n>0 && player->askForSkillInvoke(objectName(), data))
+        if(n > 0 && player->askForSkillInvoke(objectName(), data)){
+            room->playSkillEffect(objectName());
             player->drawCards(n);
+        }
 
         return false;
     }
