@@ -141,12 +141,11 @@ public:
         events << DamageCaused;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
             damage.to->isKongcheng() && !damage.chain && !damage.transfer)
         {
-            Room *room = damage.to->getRoom();
             room->setEmotion(damage.to, "weapon/guding_blade");
 
             LogMessage log;
@@ -154,10 +153,9 @@ public:
             log.from = player;
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(damage.damage + 1);
+            log.arg2 = QString::number(++ damage.damage);
             room->sendLog(log);
 
-            damage.damage ++;
             data = QVariant::fromValue(damage);
         }
 
@@ -211,10 +209,9 @@ public:
                 log.type = "#VineDamage";
                 log.from = player;
                 log.arg = QString::number(damage.damage);
-                log.arg2 = QString::number(damage.damage + 1);
+                log.arg2 = QString::number(++ damage.damage);
                 player->getRoom()->sendLog(log);
 
-                damage.damage ++;
                 data = QVariant::fromValue(damage);
             }
         }

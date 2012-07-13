@@ -76,7 +76,6 @@ Client::Client(QObject *parent, const QString &filename)
     //callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["addHistory"] = &Client::addHistory;
     callbacks["animate"] = &Client::animate;
-    callbacks["judgeResult"] = &Client::judgeResult;
     callbacks["setScreenName"] = &Client::setScreenName;
     callbacks["setFixedDistance"] = &Client::setFixedDistance;
     callbacks["transfigure"] = &Client::transfigure;
@@ -644,14 +643,6 @@ void Client::jilei(const QString &jilei_str){
 
 void Client::cardLock(const QString &card_str){
     Self->setCardLocked(card_str);
-}
-
-void Client::judgeResult(const QString &result_str){
-    QStringList texts = result_str.split(":");
-    QString who = texts.at(0);
-    QString result = texts.at(1);
-
-    emit judge_result(who, result);
 }
 
 QString Client::getSkillLine() const{

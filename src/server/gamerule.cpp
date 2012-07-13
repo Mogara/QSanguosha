@@ -425,7 +425,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 room->setPlayerFlag(player, "-chained");
                 // iron chain effect
                 if(!damage.chain){
-                    QList<ServerPlayer *> chained_players = room->getAllPlayers();
+                    QList<ServerPlayer *> chained_players;
+                    if(room->getCurrent()->isDead())
+                        chained_players = room->getOtherPlayers(room->getCurrent());
+                    else
+                        chained_players = room->getAllPlayers();
                     foreach(ServerPlayer *chained_player, chained_players){
                         if(chained_player->isChained()){
 
@@ -560,8 +564,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
-            room->sendJudgeResult(judge);
-
             break;
         }
 
@@ -574,12 +576,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
-            room->sendJudgeResult(judge);
-
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable){
                 CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
+
+                room->sendJudgeResult(judge);
             }
+
             break;
         }
 

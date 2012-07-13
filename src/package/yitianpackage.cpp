@@ -163,7 +163,6 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if(change.to == Player::Discard && !player->isSkipped(Player::Discard)){
             player->skip(Player::Discard);
-            return true;
         }
         return false;
     }
@@ -1418,7 +1417,6 @@ public:
                 log.arg = QString::number(x);
                 log.arg2 = objectName();
 
-                Room *room = elai->getRoom();
                 room->sendLog(log);
                 room->loseHp(elai, x);
             }
@@ -1454,7 +1452,7 @@ public:
                 log.from = elai;
                 log.arg = QString::number(x);
                 log.arg2 = QString::number(damage.damage);
-                elai->getRoom()->sendLog(log);
+                room->sendLog(log);
             }
         }
 
@@ -1762,10 +1760,9 @@ public:
             log.from = player;
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(damage.damage - 1);
-            player->getRoom()->sendLog(log);
+            log.arg2 = QString::number(-- damage.damage);
+            room->sendLog(log);
 
-            damage.damage --;
             data.setValue(damage);
         }
 

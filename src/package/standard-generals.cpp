@@ -857,7 +857,6 @@ public:
                     room->broadcastSkillInvoke("keji");
 
                     lvmeng->skip(Player::Discard);
-                    return true;
                 }
             }
         }

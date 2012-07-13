@@ -441,9 +441,8 @@ public:
         log.from = player;
         log.to << damage.to;
         log.arg = QString::number(damage.damage);
-        log.arg2 = QString::number(damage.damage + 1);
+        log.arg2 = QString::number(++damage.damage);
         room->sendLog(log);
-        damage.damage ++;
         data = QVariant::fromValue(damage);
 
         return false;
@@ -816,76 +815,105 @@ public:
 class Shichou: public TriggerSkill{
 public:
     Shichou(): TriggerSkill("shichou$"){
-        events << EventPhaseStart << DamageInflicted << Dying;
+        events << GameStart << EventPhaseStart << DamageInflicted << Dying << DamageComplete;
         frequency = Limited;
-
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
         return player != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == EventPhaseStart && player->getMark("@hate") < 1 && player->hasLordSkill(objectName())
-            && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
-            QList<ServerPlayer *> targets = room->getOtherPlayers(player);
-            QList<ServerPlayer *> victims;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        switch(event){
+        case GameStart:{
+            if(player->hasLordSkill(objectName()))
+                room->setPlayerMark(player, "@hate", 1);
+            break;
+        }
+        case EventPhaseStart:{
+            if(player->hasLordSkill(objectName()) && player->getPhase() == Player::Start &&
+                    player->getMark("shichouInvoke") == 0 && player->getCards("he").length() > 1)
+            {
+                if(player->getMark("@hate") == 0)
+                    room->setPlayerMark(player, "@hate", 1);
 
-            foreach(ServerPlayer *p, targets){
-                if(p->getKingdom() == "shu" && !p->hasLordSkill(objectName())){
-                    victims << p;
+                QList<ServerPlayer *> victims;
+
+                foreach(ServerPlayer *p, room->getAlivePlayers()){
+                    if(p->getKingdom() == "shu"){
+                        if(!p->tag.value("ShichouTarget").isNull()
+                                && p->tag.value("ShichouTarget").value<PlayerStar>() == player)
+                            continue;
+                        else
+                            victims << p;
+                    }
                 }
-            }
-            if(victims.empty())
-                return false;
-            if(player->askForSkillInvoke(objectName())){
-                player->gainMark("@hate");
-                ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
-                victim->addMark("hate"+player->objectName());
-                for(int i = 0; i < 2; i++){
+                if(victims.empty())
+                    return false;
 
-                    int card_id = room->askForCardChosen(player, player, "he", objectName());
+                if(player->askForSkillInvoke(objectName())){
+                    player->loseMark("@hate", 1);
+                    room->setPlayerMark(player, "shichouInvoke", 1);
+                    room->broadcastSkillInvoke(objectName());
+                    ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
+                    room->setPlayerMark(victim, "@chou", 1);
+                    player->tag["ShichouTarget"] = QVariant::fromValue((PlayerStar)victim);
+
+                    const Card *card = Sanguosha->getCard(room->askForCardChosen(player, player, "he", objectName()));
                     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, player->objectName());
                     reason.m_playerId = victim->objectName();
-                    room->obtainCard(victim, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+                    room->obtainCard(victim, card, reason, false);
                 }
             }
+            break;
         }
-        else if(triggerEvent == DamageInflicted && player->hasLordSkill(objectName())){
-            ServerPlayer *target = NULL;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-                if(p->getMark("hate"+player->objectName()) > 0){
-                    target = p;
-                    break;
-                }
-            }
-            if(target == NULL)
-                return false;
-            LogMessage log;
-            log.type = "#ShichouProtect";
-            log.arg = objectName();
-            log.from = player;
-            log.to << target;
-            room->sendLog(log);
-            DamageStruct damage = data.value<DamageStruct>();
-            DamageStruct newdamage;
-            newdamage.card = damage.card;
-            newdamage.from = damage.from;
-            newdamage.to = target;
-            newdamage.damage = damage.damage;
-            newdamage.transfer = true;
+        case DamageInflicted:{
+            if(player->hasLordSkill("shichou", true) && !player->tag.value("ShichouTarget").isNull())
+            {
+                ServerPlayer *target = player->tag.value("ShichouTarget").value<PlayerStar>();
 
-            room->damage(newdamage);
-            if(target->isAlive())
-                target->drawCards(damage.damage);
-            return true;
-        }
-        else if(triggerEvent == Dying){
-            foreach(ServerPlayer *p, room->getAllPlayers()){
-                if(p->hasLordSkill(objectName()) && player->getMark("hate"+p->objectName()) > 0){
-                    player->setMark("hate"+p->objectName(), 0);
+                LogMessage log;
+                log.type = "#ShichouProtect";
+                log.arg = objectName();
+                log.from = player;
+                log.to << target;
+                room->sendLog(log);
+                room->setPlayerFlag(target, "Shichou");
+
+                if(player != target)
+                {
+                    DamageStruct damage = data.value<DamageStruct>();
+                    damage.to = target;
+                    damage.transfer = true;
+                    room->damage(damage);
+                    return true;
                 }
             }
+            break;
+        }
+        case DamageComplete:{
+            if(player->hasFlag("Shichou")){
+                DamageStruct damage = data.value<DamageStruct>();
+                player->drawCards(damage.damage);
+                room->setPlayerFlag(player, "-Shichou");
+            }
+            break;
+        }
+        case Dying:{
+            if(player->getMark("@chou") > 0)
+            {
+                player->loseMark("@chou");
+                foreach(ServerPlayer *lord, room->getAlivePlayers())
+                {
+                    if(lord->hasLordSkill(objectName(), true)
+                            && lord->tag.value("ShichouTarget").value<PlayerStar>() == player)
+                        lord->tag.remove("ShichouTarget");
+                }
+            }
+            break;
+        }
+        default:
+            break;
         }
         return false;
     }

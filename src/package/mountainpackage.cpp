@@ -152,7 +152,7 @@ public:
         case Player::RoundStart:
         case Player::Start:
         case Player::Finish:
-        case Player::NotActive: return skip;
+        case Player::NotActive: return false;
 
         case Player::Judge: skip = room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge", 1);break;
         case Player::Draw: skip = room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw", 2);break;
@@ -164,7 +164,7 @@ public:
 
         if(skip)
             zhanghe->skip(change.to);
-        return skip;
+        return false;
     }
 };
 
@@ -904,14 +904,13 @@ public:
             bool invoked = false;
 
             if(liushan->isSkipped(Player::Play))
-                return invoked;
+                return false;
             invoked = liushan->askForSkillInvoke(objectName());
             if(invoked){
                 liushan->setFlags("fangquan");
                 liushan->skip(Player::Play);
             }
-
-            return invoked;
+            return false;
         }
         case Player::NotActive: {
             if(liushan->hasFlag("fangquan")){

@@ -198,7 +198,8 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        if(damage.from && target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+        if(damage.from && damage.from->isAlive()
+            && target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
             target->drawCards(1);
             if (target->isKongcheng())
                 return;

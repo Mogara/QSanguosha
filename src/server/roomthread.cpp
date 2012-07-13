@@ -383,6 +383,8 @@ void RoomThread::run(){
 }
 
 static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
+    if(a->getPriority() == b->getPriority())
+        return b->inherits("WeaponSkill") || b->inherits("ArmorSkill");
     return a->getPriority() > b->getPriority();
 }
 

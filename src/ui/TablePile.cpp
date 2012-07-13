@@ -1,6 +1,9 @@
 #include "TablePile.h"
 #include "SkinBank.h"
 #include <QParallelAnimationGroup>
+#include "pixmapanimation.h"
+
+#include <QTimer>
 
 QList<CardItem*> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place place)
 {
@@ -60,6 +63,19 @@ void TablePile::clear(bool playAnimation)
     m_visibleCards.clear();
     group->start(QAbstractAnimation::DeleteWhenStopped);
     _m_mutex_pileCards.unlock();
+}
+
+void TablePile::showJudgeResult(CardItem *card, bool isGood){
+    clear(false);
+    card->setParentItem(this);
+    m_visibleCards.append(card);
+    _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);
+    card->setOpacity(1.0);
+    card->goBack(false);
+
+    PixmapAnimation::GetPixmapAnimation(card, isGood ? "judgegood" : "judgebad");
+
+    QTimer::singleShot(1200, this, SLOT(clear()));
 }
 
 bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)

@@ -140,8 +140,8 @@ public:
     void loseSkill(const char *skill_name);
     void loseAllSkills();
     bool hasSkill(const char *skill_name) const;
-    bool hasLordSkill(const char *skill_name) const;
-    bool hasInnateSkill(const char *skill_name) const;
+    bool hasLordSkill(const char *skill_name, bool includeLost = false) const;
+    bool hasInnateSkill(const char *skill_name, bool includeLost = false) const;
     bool loseSkills() const;
 
     void setEquip(const EquipCard *card);
@@ -815,7 +815,7 @@ public:
     void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
     void clearCardFlag(int card_id, ServerPlayer *who = NULL);
     void useCard(const CardUseStruct &card_use, bool add_history = true);
-    void damage(const DamageStruct &data);
+    void damage(DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
     void loseMaxHp(ServerPlayer *victim, int lose = 1);
@@ -904,8 +904,7 @@ public:
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
-    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
-                           const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
+    const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
     bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt);
     bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt);

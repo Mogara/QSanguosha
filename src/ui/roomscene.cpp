@@ -65,7 +65,7 @@ void RoomScene::resetPiles()
 #include "qsanbutton.h"
 
 RoomScene::RoomScene(QMainWindow *main_window):
-    focused(NULL), special_card(NULL), 
+    focused(NULL), judge_result(NULL),
     main_window(main_window),game_started(false)
 {
     m_choiceDialog = NULL;
@@ -158,7 +158,6 @@ RoomScene::RoomScene(QMainWindow *main_window):
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
     connect(ClientInstance, SIGNAL(animated(QString,QStringList)), this, SLOT(doAnimation(QString,QStringList)));
-    connect(ClientInstance, SIGNAL(judge_result(QString,QString)), this, SLOT(showJudgeResult(QString,QString)));
     connect(ClientInstance, SIGNAL(role_state_changed(QString)),this, SLOT(updateRoles(QString)));
     connect(ClientInstance, SIGNAL(event_received(const Json::Value)), this, SLOT(handleEventEffect(const Json::Value))); 
 
@@ -380,6 +379,11 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
             category = arg[2].asCString();
         int type = arg[3].asInt();
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
+    }
+    else if(eventType == S_GAME_EVENT_JUDGE_RESULT)
+    {
+        bool good = arg[1].asBool();
+        showJudgeResult(good);
     }
 }
 
@@ -1517,8 +1521,18 @@ bool RoomScene::_shouldIgnoreDisplayMove(Player::Place from, Player::Place to)
 }
 
 bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost){
-    _MoveCardsClassifier cls(move);
+    // judge result processed
+    if(move.from_place == Player::PlaceTable && move.to_place == Player::DiscardPile
+            && move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE && move.reason.m_eventName != "beige")
+    {
+        if(isLost){
+            judge_result = m_tablePile->removeCardItems(move.card_ids, move.from_place).first();
+            judge_result->setFootnote(_translateMovementReason(move.reason));
+        }
+        return true;
+    }
 
+    _MoveCardsClassifier cls(move);
     // delayed trick processed;
     if (move.from_place == Player::PlaceDelayedTrick && move.to_place == Player::PlaceTable){
         if(isLost)
@@ -3078,14 +3092,11 @@ void RoomScene::showOwnerButtons(bool owner){
         control_panel->setVisible(owner);
 }
 
-void RoomScene::showJudgeResult(const QString &who, const QString &result){
-    if(special_card){
-        const ClientPlayer *player = ClientInstance->getPlayer(who);
-        QString desc = QString(tr("%1's judge")).arg(Sanguosha->translate(player->getGeneralName()));
-        special_card->setFootnote(desc);
-
-        special_card->showFrame(result);
+void RoomScene::showJudgeResult(bool good){
+    if(judge_result){
+        m_tablePile->showJudgeResult(judge_result, good);
     }
+    judge_result = NULL;
 }
 
 void RoomScene::showPlayerCards(){

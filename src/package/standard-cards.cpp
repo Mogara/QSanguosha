@@ -638,20 +638,11 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
         damage.damage = 1;
         damage.to = effect.to;
         damage.nature = DamageStruct::Normal;
-        ServerPlayer *menghuo = room->findPlayerBySkillName("huoshou");
-        bool hasmenghuo = room->getTag("Huoshou").toBool();
-        if(hasmenghuo){
-            if(menghuo)
-                damage.from = menghuo;
-            else
-                damage.from = NULL;
-        }      
-        else{
-            if(effect.from->isAlive())
-                damage.from = effect.from;
-            else
-                damage.from = NULL;
-        }
+
+        if(effect.from->isAlive())
+            damage.from = effect.from;
+        else
+            damage.from = NULL;
 
         room->damage(damage);
     }

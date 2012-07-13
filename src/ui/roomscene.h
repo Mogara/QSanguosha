@@ -214,7 +214,7 @@ private:
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
     Photo *focused;
-    CardItem *special_card;
+    CardItem *judge_result;
     Dashboard *dashboard;
     TablePile *m_tablePile;
     // QQueue<CardItem*> piled_discards;
@@ -358,7 +358,7 @@ private slots:
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);
     void showOwnerButtons(bool owner);
-    void showJudgeResult(const QString &who, const QString &result);
+    void showJudgeResult(bool good);
     void showPlayerCards();
     void updateRolesBox();
     void updateRoles(const QString &roles);

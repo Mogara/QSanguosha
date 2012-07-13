@@ -302,9 +302,12 @@ void Room::judge(JudgeStruct &judge_struct){
 }
 
 void Room::sendJudgeResult(const JudgeStar judge){
-    QString who = judge->who->objectName();
-    QString result = judge->isGood() ? "good" : "bad";
-    broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
+    thread->delay(1500);
+    Json::Value arg(Json::arrayValue);
+    arg[0] = (int)QSanProtocol::S_GAME_EVENT_JUDGE_RESULT;
+    arg[1] = judge->isGood();
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+    thread->delay(2000);
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
@@ -2537,7 +2540,7 @@ bool Room::cardEffect(const CardEffectStruct &effect){
     return !thread->trigger(CardEffected, this, effect.to, data);
 }
 
-void Room::damage(const DamageStruct &damage_data){
+void Room::damage(DamageStruct &damage_data){
     if(damage_data.to == NULL)
         return;
 
@@ -2546,10 +2549,11 @@ void Room::damage(const DamageStruct &damage_data){
 
     QVariant data = QVariant::fromValue(damage_data);
 
+
     if(!damage_data.chain && !damage_data.transfer && damage_data.from){
         // ComfirmDamage
-        if(thread->trigger(ConfirmDamage, this, damage_data.from, data))
-            return;
+        thread->trigger(ConfirmDamage, this, damage_data.from, data);
+        damage_data = data.value<DamageStruct>();
 
         // Predamage
         if(thread->trigger(Predamage, this, damage_data.from, data))
@@ -2567,31 +2571,33 @@ void Room::damage(const DamageStruct &damage_data){
             return;
     }
 
+    damage_data = data.value<DamageStruct>();
+
     // predamaged
     bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
     if(broken)
         return;
 
     // PreHpReduced
-    thread->trigger(PreHpReduced, this, damage_data.to, data);
+    prevent = thread->trigger(PreHpReduced, this, damage_data.to, data);
+    if(prevent)
+        return;
 
     // damage done, should not cause damage process broken
     thread->trigger(DamageDone, this, damage_data.to, data);
 
     // PostHpReduced
-    thread->trigger(PostHpReduced, this, damage_data.to, data);
+    broken = thread->trigger(PostHpReduced, this, damage_data.to, data);
+    if(broken)
+        return;
 
     // damage
     if(damage_data.from){
-        bool broken = thread->trigger(Damage, this, damage_data.from, data);
-        if(broken)
-            return;
+        thread->trigger(Damage, this, damage_data.from, data);
     }
 
     // damaged
-    broken = thread->trigger(Damaged, this, damage_data.to, data);
-    if(broken)
-        return;
+    thread->trigger(Damaged, this, damage_data.to, data);
 
     thread->trigger(DamageComplete, this, damage_data.to, data);
 }
@@ -4172,7 +4178,6 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     log.to << judge->who;
     log.card_str = card->getEffectIdString();
     sendLog(log);
-    sendJudgeResult(judge);
 
     QList<CardsMoveStruct> moves;
     moves.append(move1);
