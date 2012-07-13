@@ -342,7 +342,7 @@ bool GaleShell::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void GaleShell::onUse(Room *room, const CardUseStruct &card_use) const{
-    Card::onUse(room, card_use);
+    EquipCard::onUse(room, card_use);
 }
 
 DisasterPackage::DisasterPackage()

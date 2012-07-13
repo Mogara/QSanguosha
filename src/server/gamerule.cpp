@@ -577,7 +577,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             room->sendLog(log);
 
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable){
-                CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
+                CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
 
                 room->sendJudgeResult(judge);

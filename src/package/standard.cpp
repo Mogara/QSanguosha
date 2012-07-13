@@ -55,16 +55,13 @@ Card::CardType EquipCard::getTypeId() const{
 }
 
 void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    if(card_use.to.isEmpty()){
-        ServerPlayer *player = card_use.from;
+    ServerPlayer *player = card_use.from;
 
-        QVariant data = QVariant::fromValue(card_use);
-        RoomThread *thread = room->getThread();
-        thread->trigger(CardUsed, room, player, data);
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+    thread->trigger(CardUsed, room, player, data);
 
-        thread->trigger(CardFinished, room, player, data);
-    }else
-        Card::onUse(room, card_use);
+    thread->trigger(CardFinished, room, player, data);
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
@@ -78,14 +75,14 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     case OffensiveHorseLocation: equipped = target->getOffensiveHorse(); break;
     }
 
-    if (room->getCardOwner(getId()) == source && room->getCardPlace(getId()) == Player::PlaceHand)
+    if (room->getCardPlace(getId()) == Player::PlaceHand)
         {
             QList<CardsMoveStruct> exchangeMove;
             CardsMoveStruct move1;
             move1.card_ids << getId();
-            move1.to = source;
+            move1.to = target;
             move1.to_place = Player::PlaceEquip;
-            move1.reason = CardMoveReason(CardMoveReason::S_REASON_USE, source->objectName());
+            move1.reason = CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName());
             exchangeMove.push_back(move1);
             if(equipped)
             {
@@ -93,7 +90,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
                 move2.card_ids << equipped->getId();
                 move2.to = NULL;
                 move2.to_place = Player::DiscardPile;
-                move2.reason = CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, source->objectName());
+                move2.reason = CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName());
                 exchangeMove.push_back(move2);
             }
             LogMessage log;
