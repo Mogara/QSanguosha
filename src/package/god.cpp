@@ -1366,6 +1366,7 @@ GodPackage::GodPackage()
     shensimayi->addSkill(new Lianpo);
     shensimayi->addSkill(new LianpoCount);
     shensimayi->addSkill(new LianpoDo);
+    shensimayi->addRelateSkill("jilve");
 
     related_skills.insertMulti("jilve", "#jilve-clear");
     related_skills.insertMulti("lianpo", "#lianpo-count");
