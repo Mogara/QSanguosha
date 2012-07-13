@@ -1077,7 +1077,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-        room->broadcastSkillInvoke("zili");
+        room->broadcastSkillInvoke(objectName());
         room->broadcastInvoke("animate", "lightbox:$zili:4000");
         room->getThread()->delay(4000);
         QStringList choicelist;
@@ -1130,6 +1130,11 @@ void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
         if(card_id == -1)
             return;
     }
+
+    if(target==zhonghui)
+        room->broadcastSkillInvoke(objectName(),1);
+    else
+        room->broadcastSkillInvoke(objectName(),2);
 
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(),
         target->objectName(), "paiyi", QString());

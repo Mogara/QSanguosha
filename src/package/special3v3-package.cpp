@@ -183,7 +183,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent , Room* , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
@@ -202,6 +202,7 @@ public:
                 card = Sanguosha->getCard(card_id);
                 if(card->isRed() && (move->from_places[i] == Player::PlaceHand || move->from_places[i] == Player::PlaceEquip)
                     && player->askForSkillInvoke(objectName(), data))
+                    room->broadcastSkillInvoke(objectName());
                     player->drawCards(1);
                 i++;
             }
