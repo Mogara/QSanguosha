@@ -196,6 +196,7 @@ return {
 
 	["illustrator:zhonghui"] = "雪君S",
 	["designer:zhonghui"] = "韩旭",
+	["cv:zhonghui"] = "韩旭",
 	["$quanji1"] = "终于轮到我掌权了。",
 	["$quanji2"] = "夺得军权方能施展一番。",
 	["$zili"] = "以我之才，何必屈人之下！",

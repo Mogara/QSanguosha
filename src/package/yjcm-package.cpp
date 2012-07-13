@@ -374,7 +374,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->drawCards(effect.to,2);
 
-    QString choice;
+    QString choice = room->askForChoice(effect.to, "xuanhuo", "give+slash");
     bool can_use = false;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
         if (effect.to->canSlash(p)){
@@ -383,7 +383,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         }
     }
     ServerPlayer *victim = NULL;
-    if (can_use){
+    if (can_use && choice == "slash"){
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *victim, room->getOtherPlayers(effect.to)){
             if(effect.to->canSlash(victim))
@@ -1070,7 +1070,7 @@ public:
 class Quanji:public MasochismSkill{
 public:
     Quanji():MasochismSkill("#quanji"){
-        frequency = Frequent;
+        //frequency = Frequent;
     }
 
     virtual void onDamaged(ServerPlayer *zhonghui, const DamageStruct &damage) const{
@@ -1078,7 +1078,7 @@ public:
 
         if(!room->askForSkillInvoke(zhonghui, objectName()))
             return;
-        room->playSkillEffect(objectName());
+        room->playSkillEffect("quanji");
 
         int x = damage.damage, i;
         for(i=0; i<x; i++){
@@ -1093,6 +1093,7 @@ public:
 class QuanjiKeep: public MaxCardsSkill{
 public:
     QuanjiKeep():MaxCardsSkill("quanji"){
+        frequency = NotFrequent;
     }
 
     virtual int getExtra(const Player *target) const{
@@ -1131,8 +1132,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect("zili");
-        room->broadcastInvoke("animate", "lightbox:$zili:4000");
-        room->getThread()->delay(4000);
+        room->broadcastInvoke("animate", "lightbox:$zili:2000");
+        room->getThread()->delay(2000);
         QStringList choicelist;
         choicelist << "draw";
         if (zhonghui->getLostHp() != 0)

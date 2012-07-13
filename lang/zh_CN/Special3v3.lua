@@ -7,6 +7,7 @@ return {
 	["#zhugejin"] = "联盟的维系者",
 	["zhugejin"] = "诸葛瑾",
 	["illustrator:zhugejin"] = "LiuHeng",
+	["cv:zhugejin"] = "韩旭",
 	["huanshi"] = "缓释",
 	[":huanshi"] = "在一名己方角色的判定牌生效前，你可以打出一张牌代替之。\
 (<b>身份局</b>：在一名角色的判定牌生效前，你可以令其选择是否由你打出一张牌代替之。)",
