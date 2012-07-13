@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "QSanSelectableItem.h"
+#include "clientstruct.h"
 #include "player.h"
 
 class Photo;

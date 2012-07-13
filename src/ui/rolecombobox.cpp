@@ -34,6 +34,8 @@ RoleComboBox::RoleComboBox(QGraphicsItem *parent) : QGraphicsObject(parent)
     m_currentRole = new RoleComboBoxItem("unknown", index, size);
     m_currentRole->setParentItem(this);
     connect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
+    if(ServerInfo.EnableHegemony)
+        items << new RoleComboBoxItem("lord", index, size);
     items << new RoleComboBoxItem("loyalist", index, size)
           << new RoleComboBoxItem("rebel", index, size)
           << new RoleComboBoxItem("renegade", index, size);
