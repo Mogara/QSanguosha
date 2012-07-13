@@ -293,6 +293,8 @@ public:
 
         if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
            !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)){
+            room->playSkillEffect(objectName(), 1);
+
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
             judge.good = false;
@@ -301,7 +303,7 @@ public:
 
             room->judge(judge);
             if(judge.isGood()){
-                room->playSkillEffect(objectName(), 1);
+                room->playSkillEffect(objectName(), 2);
                 LogMessage log;
                 log.type = "#Qianxi";
                 log.from = player;
@@ -312,7 +314,7 @@ public:
                 return true;
             }
             else
-                room->playSkillEffect(objectName(), qrand() % 2 + 2);
+                room->playSkillEffect(objectName(), 3);
         }
         return false;
     }
