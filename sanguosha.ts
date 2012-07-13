@@ -1787,7 +1787,7 @@
     <message>
         <location filename="src/dialog/mainwindow.ui" line="134"/>
         <source>Start game</source>
-        <translation>启动游戏</translation>
+        <translation>联机启动</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="142"/>
