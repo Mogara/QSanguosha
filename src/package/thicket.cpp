@@ -696,6 +696,8 @@ public:
         if(jiaxu && jiaxu->objectName() == room->getCurrent()->objectName()){
             if(!jiaxu->hasSkill("jilve"))
                 room->broadcastSkillInvoke(objectName());
+            else
+                room->broadcastSkillInvoke("jilve", 3);
 
             LogMessage log;
             log.from = jiaxu;

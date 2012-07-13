@@ -957,7 +957,7 @@ public:
         room->sendLog(log);
         
         room->broadcastSkillInvoke(objectName());
-        room->broadcastInvoke("animate", "lightbox:$baiyin:2000");
+        room->broadcastInvoke("animate", "lightbox:$baiyin");
         room->getThread()->delay(2000);
 
         room->setPlayerMark(shensimayi, "baiyin", 1);
@@ -999,9 +999,10 @@ void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
         room->acquireSkill(shensimayi, "wansha");
         room->broadcastSkillInvoke("jilve",3);
         shensimayi->tag["JilveWansha"] = true;
-    }else
+    }else{
         room->askForUseCard(shensimayi, "@zhiheng", "@jilve-zhiheng");
         room->broadcastSkillInvoke("jilve",4);
+    }
 }
 
 // wansha & zhiheng
@@ -1015,7 +1016,7 @@ public:
         int extra = 0;
         if(player->hasSkill("zhiheng"))
             extra++;
-        else if(player->hasSkill("wansha") && !player->tag.value("JilveWansha").toBool())
+        else if(player->hasInnateSkill("wansha"))
             extra++;
         return player->usedTimes("JilveCard")+extra < 2 && player->getMark("@bear") > 0;
     }
@@ -1107,7 +1108,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
         ServerPlayer *killer = damage ? damage->from : NULL;
 
