@@ -3458,7 +3458,8 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
     QRect rect = main_window->rect();
     QGraphicsRectItem *lightbox = addRect(rect);
 
-    lightbox->setBrush(QColor(20, 20, 20, 120));
+    lightbox->setBrush(QColor(32, 32, 32, 204));
+    lightbox->setZValue(20000.0);
 
     QGraphicsTextItem *line = addText(word, Config.BigFont);
     line->setDefaultTextColor(Qt::white);
