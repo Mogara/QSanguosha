@@ -9,11 +9,14 @@
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
     once = true;
+    mute = true;
     will_throw = false;
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->throwCard(this, source);
+    if(!source->hasSkill("jilve"))
+        room->broadcastSkillInvoke("zhiheng");
     if(source->isAlive())
         room->drawCards(source, subcards.length());
 }

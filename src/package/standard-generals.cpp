@@ -277,7 +277,10 @@ public:
         QString prompt = prompt_list.join(":");
         const Card *card = room->askForCard(player, "@guicai", prompt, data, AskForRetrial);
 
-        room->retrial(card, player, judge, objectName());
+        if(player->hasSkill("jilve"))
+            room->retrial(card, player, judge, "jilve");
+        else
+            room->retrial(card, player, judge, objectName());
 
         return false;
     }
