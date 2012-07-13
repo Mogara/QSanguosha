@@ -65,17 +65,45 @@ void TablePile::clear(bool playAnimation)
     _m_mutex_pileCards.unlock();
 }
 
-void TablePile::showJudgeResult(CardItem *card, bool isGood){
-    clear(false);
-    card->setParentItem(this);
-    m_visibleCards.append(card);
+void TablePile::faded()
+{
+    if(m_visibleCards.empty()) return;
+    _m_mutex_pileCards.lock();
+
+    QParallelAnimationGroup* group = new QParallelAnimationGroup;
+    foreach (CardItem* toFaded, m_visibleCards)
+    {
+        toFaded->setZValue(0.0);
+        toFaded->setHomeOpacity(0.0);
+        connect(toFaded, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
+        group->addAnimation(toFaded->getGoBackAnimation(true));
+    }
+    m_visibleCards.clear();
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+
+    _m_mutex_pileCards.unlock();
+}
+
+void TablePile::_showJudgeResult(){
+    if(m_judge_card == NULL)
+        return;
+
+    m_judge_card->setParentItem(this);
+    m_visibleCards.append(m_judge_card);
     _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);
-    card->setOpacity(1.0);
-    card->goBack(false);
+    m_judge_card->setOpacity(1.0);
+    m_judge_card->goBack(false);
 
-    PixmapAnimation::GetPixmapAnimation(card, isGood ? "judgegood" : "judgebad");
+    PixmapAnimation::GetPixmapAnimation(m_judge_card, m_judge_emotion);
 
-    QTimer::singleShot(1200, this, SLOT(clear()));
+    QTimer::singleShot(1200, this, SLOT(faded()));
+}
+
+void TablePile::showJudgeResult(CardItem *card, bool isGood){
+    m_judge_card = card;
+    m_judge_emotion = isGood ? "judgegood" : "judgebad";
+    faded();
+    QTimer::singleShot(Settings::S_MOVE_CARD_ANIMATION_DURAION + 100, this, SLOT(_showJudgeResult()));
 }
 
 bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)

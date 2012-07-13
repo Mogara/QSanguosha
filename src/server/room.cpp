@@ -302,12 +302,12 @@ void Room::judge(JudgeStruct &judge_struct){
 }
 
 void Room::sendJudgeResult(const JudgeStar judge){
-    thread->delay(1500);
+    thread->delay(1200);
     Json::Value arg(Json::arrayValue);
     arg[0] = (int)QSanProtocol::S_GAME_EVENT_JUDGE_RESULT;
     arg[1] = judge->isGood();
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-    thread->delay(2000);
+    thread->delay(Settings::S_MOVE_JUDGE_ANIMATION_DURAION);
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
