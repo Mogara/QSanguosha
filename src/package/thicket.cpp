@@ -867,11 +867,11 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(event == PreHpReduced && damage.from)
+        if(triggerEvent == PreHpReduced && damage.from)
             damage.from->tag["InvokeBaonue"] = damage.from->getKingdom() == "qun";
-        else if (event == Damage && player->tag.value("InvokeBaonue", false).toBool())
+        else if (triggerEvent == Damage && player->tag.value("InvokeBaonue", false).toBool())
         {
             QList<ServerPlayer *> dongzhuos;
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
