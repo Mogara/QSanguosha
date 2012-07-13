@@ -95,8 +95,8 @@ void TablePile::_showJudgeResult(){
     m_judge_card->goBack(false);
 
     PixmapAnimation::GetPixmapAnimation(m_judge_card, m_judge_emotion);
-
     QTimer::singleShot(1200, this, SLOT(faded()));
+    m_judge_card = NULL;
 }
 
 void TablePile::showJudgeResult(CardItem *card, bool isGood){

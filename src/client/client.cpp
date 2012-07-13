@@ -92,6 +92,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["setStatistics"] = &Client::setStatistics;
     callbacks["setCardFlag"] = &Client::setCardFlag;
+    callbacks["playSystemAudioEffect"] = &Client::playSystemAudioEffect;
 
     // interactive methods    
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -1013,6 +1014,10 @@ void Client::setCardFlag(const QString &pattern_str){
     QString object = texts.at(2);
 
     Sanguosha->getCard(card_str.toInt())->setFlags(object);
+}
+
+void Client::playSystemAudioEffect(const QString &effect_str){
+    Sanguosha->playSystemAudioEffect(effect_str);
 }
 
 void Client::updatePileNum(){

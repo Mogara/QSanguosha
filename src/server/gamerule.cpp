@@ -938,7 +938,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     {
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player,"general",general_name);
+        room->setPlayerProperty(player, "general", general_name);
 
         foreach(QString skill_name, skill_mark.keys()){
             if(player->hasSkill(skill_name))
@@ -951,6 +951,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         room->setPlayerProperty(player,"general2",general_name);
     }
 
+    room->getThread()->addPlayerSkills(player);
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
     if(Config.EnableHegemony)room->setPlayerProperty(player, "role", getMappedRole(player->getGeneral()->getKingdom()));
 
@@ -964,7 +965,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     log.arg2 = player->getGeneral2Name();
 
     room->sendLog(log);
-    room->broadcastInvoke("playSystemAudioEffect","choose-item");
+    room->broadcastInvoke("playSystemAudioEffect", "choose-item");
 }
 
 bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -978,9 +979,9 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
-                sp->invoke("transfigure", transfigure_str);
                 room->setPlayerProperty(sp,"general","anjiang");
                 room->setPlayerProperty(sp,"kingdom","god");
+                sp->invoke("transfigure", transfigure_str);
 
                 LogMessage log;
                 log.type = "#BasaraGeneralChosen";
