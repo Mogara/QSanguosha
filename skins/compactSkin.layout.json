@@ -57,7 +57,7 @@
     "onlineStatusArea": [93, 20, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["SimSun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
-    "skillNameArea": [25, 20, 300, 50],
+    "skillNameArea": [0, 25, 131, 50],
     "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [133, 10]],
     "progressBarHorizontal": true,
