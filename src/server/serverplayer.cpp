@@ -397,10 +397,14 @@ void ServerPlayer::addCard(const Card *card, Place place){
 }
 
 bool ServerPlayer::isLastHandCard(const Card *card) const{
-    if(handcards.length() != 1)
-        return false;
+    if(card->getSubcards().length() <= 1)
+        return (handcards.length() == 1) && (card->getEffectiveId() == handcards.first()->getEffectiveId());
+    if(card->getSubcards().length() > 1){
+        if(card->getSubcards().length() > handcards.length())
+            return false;
 
-    return card->getEffectiveId() == handcards.first()->getEffectiveId();
+        return card->getSubcards().length() == handcards.length();
+    }
 }
 
 QList<int> ServerPlayer::handCards() const{

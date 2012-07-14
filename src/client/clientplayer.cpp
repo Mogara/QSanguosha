@@ -58,10 +58,14 @@ void ClientPlayer::addKnownHandCard(const Card *card){
 }
 
 bool ClientPlayer::isLastHandCard(const Card *card) const{
-    if(known_cards.length() != 1)
-        return false;
+    if(card->getSubcards().length() <= 1)
+        return (known_cards.length() == 1) && (card->getEffectiveId() == known_cards.first()->getEffectiveId());
+    if(card->getSubcards().length() > 1){
+        if(card->getSubcards().length() > known_cards.length())
+            return false;
 
-    return known_cards.first()->getEffectiveId() == card->getEffectiveId();
+        return card->getSubcards().length() == known_cards.length();
+    }
 }
 
 void ClientPlayer::removeCard(const Card *card, Place place){
