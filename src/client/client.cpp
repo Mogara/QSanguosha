@@ -1048,18 +1048,27 @@ void Client::askForDiscard(const Json::Value &req){
 }
 
 void Client::askForExchange(const Json::Value &exchange_str){
-    if (!exchange_str.isInt())
+    if (!exchange_str.isArray() || !exchange_str[0].isInt() || !exchange_str[1].isBool() || !exchange_str[2].isString())
     {
         QMessageBox::warning(NULL, tr("Warning"), tr("Exchange string is not well formatted!"));
         return;
     }
 
-    discard_num = exchange_str.asInt();
+    discard_num = exchange_str[0].asInt();
+    m_canDiscardEquip = exchange_str[1].asBool();
+    QString prompt = exchange_str[2].asCString();
     min_num = discard_num;
     m_isDiscardActionRefusable = false;
-    m_canDiscardEquip = false;
 
-    prompt_doc->setHtml(tr("Please give %1 cards to exchange").arg(discard_num));
+    if(prompt.isEmpty())
+        prompt = tr("Please give %1 cards to exchange").arg(discard_num);
+    else
+    {
+        prompt = Sanguosha->translate(prompt);
+        prompt = prompt.replace("%arg", QString::number(discard_num));
+    }
+
+    prompt_doc->setHtml(prompt);
 
     setStatus(Discarding);
 }

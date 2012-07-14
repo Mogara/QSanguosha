@@ -10,6 +10,14 @@ function sgs.ai_skill_invoke.jiushi(self, data)
 	return not self.player:faceUp()
 end
 
+sgs.ai_skill_askforag.luoying = function(self, card_ids)
+	for _, id in ipairs(card_ids) do
+		if sgs.Sanguosha:getCard(id):inherits("Shit") then
+			return id
+		end
+	end
+	return -1
+end
 
 sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 	local needfriend = 0
@@ -634,14 +642,15 @@ end
 sgs.ai_use_value.XianzhenSlashCard = 9.2
 sgs.ai_use_priority.XianzhenSlashCard = 2.6
 
-sgs.ai_cardshow.quanji = function(self, requestor)
-	local index = 0
-	local result
+sgs.ai_skill_discard.quanji = function(self)
+	local to_discard = {}
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
-
-	return cards[1]
+	
+	table.insert(to_discard, cards[1]:getEffectiveId())
+	
+	return to_discard
 end
 
 sgs.ai_skill_choice.zili = function(self, choice)

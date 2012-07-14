@@ -1016,22 +1016,30 @@ public:
 class Quanji:public MasochismSkill{
 public:
     Quanji():MasochismSkill("#quanji"){
-        frequency = Frequent;
     }
 
     virtual void onDamaged(ServerPlayer *zhonghui, const DamageStruct &damage) const{
         Room *room = zhonghui->getRoom();
 
-        if(!room->askForSkillInvoke(zhonghui, objectName()))
+        if(!room->askForSkillInvoke(zhonghui, "quanji"))
             return;
 
-        room->broadcastSkillInvoke(objectName());
+        room->broadcastSkillInvoke("quanji");
 
         int x = damage.damage, i;
         for(i=0; i<x; i++){
             room->drawCards(zhonghui,1);
-            const Card *card = room->askForCardShow(zhonghui, zhonghui, objectName());
-            zhonghui->addToPile("power", card->getEffectiveId());
+            if(!zhonghui->isKongcheng())
+            {
+                int card_id;
+                if(zhonghui->handCards().length() == 1){
+                    room->getThread()->delay(500);
+                    card_id = zhonghui->handCards().first();
+                }
+                else
+                    card_id = room->askForExchange(zhonghui, "quanji", 1, false, "QuanjiPush")->getSubcards().first();
+                zhonghui->addToPile("power", card_id);
+            }
         }
 
     }
@@ -1040,6 +1048,7 @@ public:
 class QuanjiKeep: public MaxCardsSkill{
 public:
     QuanjiKeep():MaxCardsSkill("quanji"){
+        frequency = Frequent;
     }
 
     virtual int getExtra(const Player *target) const{

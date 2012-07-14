@@ -137,30 +137,25 @@ public:
                 }
             }
 
-            if(!target || target->isDead())
+            if(!target || target->getHp() < 1 || diaochan->isNude())
                 return false;
 
-            int hp = target->isAlive() ? target->getHp() : 0;
-            if(diaochan->getCards("he").length() <= hp){
-                foreach(const Card *card, diaochan->getCards("he")){
-                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
-                    reason.m_playerId = target->objectName();
-                    room->obtainCard(target, card, reason, room->getCardPlace(card->getEffectiveId()) != Player::PlaceHand);
-                }
+            DummyCard *to_goback;
+            if(diaochan->getCardCount(true) <= target->getHp())
+            {
+                to_goback = diaochan->isKongcheng() ? new DummyCard : diaochan->wholeHandCards();
+                for (int i = 0;i < 4; i++)
+                    if(diaochan->getEquip(i))
+                        to_goback->addSubcard(diaochan->getEquip(i)->getEffectiveId());
             }
-            else{
-                int i;
-                for(i = 0; i < hp; i++){
-                    if(diaochan->isNude())
-                        return false;
+            else
+                to_goback = (DummyCard*)room->askForExchange(diaochan, objectName(), target->getHp(), true, "LihunGoBack");
 
-                    int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
-                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName());
-                    reason.m_playerId = target->objectName();
-                    room->obtainCard(target, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
-                }
-            }
-            room->removeTag("LihunTarget");
+            CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName(),
+                                  target->objectName(), objectName(), QString());
+            reason.m_playerId = target->objectName();
+            room->moveCardTo(to_goback, diaochan, target, Player::PlaceHand, reason);
+            delete to_goback;
         }
 
         return false;
@@ -859,7 +854,7 @@ public:
                     room->setPlayerMark(victim, "@chou", 1);
                     player->tag["ShichouTarget"] = QVariant::fromValue((PlayerStar)victim);
 
-                    const Card *card = Sanguosha->getCard(room->askForCardChosen(player, player, "he", objectName()));
+                    const Card *card = room->askForExchange(player, objectName(), 2, true, "ShichouGive");
                     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, player->objectName());
                     reason.m_playerId = victim->objectName();
                     room->obtainCard(victim, card, reason, false);

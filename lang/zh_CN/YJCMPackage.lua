@@ -125,6 +125,7 @@ return {
 	["paiyi"] = "排异",
 	[":paiyi"] = "出牌阶段，你可以将一张“权”置入弃牌堆，令一名角色摸两张牌，然后若该角色的手牌数大于你的手牌数，你对其造成1点伤害。每阶段限一次。",
 	["power"] = "权",
+	["QuanjiPush"] = "请将 %arg 张手牌放置在武将牌上",
 		
 	["designer:caozhi"] = "foxear",
 	["designer:yujin"] = "城管无畏",
