@@ -1202,7 +1202,7 @@ QString Shangshi::getEffectName()const{
 
 bool Shangshi::trigger(TriggerEvent triggerEvent,  Room* room, ServerPlayer *player, QVariant &data) const
 {
-    if(triggerEvent == EventPhaseStart && player->getPhase() != Player::Finish)
+    if(triggerEvent == EventPhaseChanging && data.value<PhaseChangeStruct>().to != Player::Finish)
         return false;
 
     if(triggerEvent == CardsMoveOneTime)
@@ -1244,7 +1244,7 @@ public:
     ShangshiStateChanged():Shangshi("shangshi", 2)
     {
         frequency = Compulsory;
-        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseStart;
+        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseChanging;
     }
 
     virtual int getPriority() const{
