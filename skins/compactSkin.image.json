@@ -14,5 +14,10 @@
 "photoFocusFrame1": "image/compact/frame/responsing.png",
 "photoFocusFrame2": "image/compact/frame/sos.png",
 "photoFrameWhenSelected": "image/compact/frame/photoSelected.png",
-"playerGeneralIcon-default-1": ["image/generals/small/%1.png",[8, 17, 119, 60]]
+"playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[0, 30, 220, 111]],
+
+"playerGeneralIcon-anjiang-1": "image/compact/generals/small/anjiang.png", 
+"playerGeneralIcon-yanliangwenchou-1": "image/compact/generals/small/yanliangwenchou.png",
+"playerGeneralIcon-erzhang-1": "image/compact/generals/small/erzhang.png",
+"playerGeneralIcon-guanxingzhangbao-1": "image/compact/generals/small/guanxingzhangbao.png"
 }
