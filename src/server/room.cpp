@@ -478,7 +478,8 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         log.arg = skill_name;
         sendLog(log);
 
-        thread->trigger(EventLoseSkill, this, player, (QVariant)skill_name);
+        QVariant data = skill_name;
+        thread->trigger(EventLoseSkill, this, player, data);
     }
 }
 
@@ -3436,7 +3437,8 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
                 acquireSkill(player, related_skill);
         }
 
-        thread->trigger(EventAcquireSkill, this, player, (QVariant)skill_name);
+        QVariant data = skill_name;
+        thread->trigger(EventAcquireSkill, this, player, data);
     }
 }
 
