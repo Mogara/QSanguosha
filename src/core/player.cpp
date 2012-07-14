@@ -762,7 +762,7 @@ void Player::setCardLocked(const QString &name){
 
 bool Player::isLocked(const Card *card) const{
     foreach(QString card_name, lock_card){
-        if(card->inherits(card_name.toStdString().c_str())){
+        if (card->inherits(card_name.toStdString().c_str())){
             return true;
         }
     }

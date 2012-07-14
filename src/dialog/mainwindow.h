@@ -41,39 +41,6 @@ private:
     QTextEdit *text_edit;
 };
 
-class MeleeDialog: public QDialog{
-    Q_OBJECT
-
-public:
-    MeleeDialog(QWidget *parent);
-
-private slots:
-    void selectGeneral();
-    void setGeneral(const QString &general_name);
-    void startTest();
-    void onGameStart();
-    void onGameOver(const QString &winner);
-
-private:    
-    QMap<QString, int> roleCount, winCount;
-
-    QGroupBox *createGeneralBox();
-    QGroupBox *createResultBox();
-    void updateResultBox(QString role, int win);
-
-    QToolButton *avatar_button;
-    QPushButton *start_button;
-    QCheckBox *loop_checkbox;
-    QGraphicsScene *record_scene;
-    QGroupBox *general_box;
-    QGroupBox *result_box;
-    QTextEdit *server_log;
-    QSpinBox *spinbox;
-    Server *server;
-    int room_count;
-    QList<RoomItem*> room_items;
-};
-
 class BackLoader
 {
 public:
@@ -120,7 +87,6 @@ private slots:
     void on_actionAbout_Lua_triggered();
     void on_actionAbout_fmod_triggered();
     void on_actionReplay_file_convert_triggered();
-    void on_actionAI_Melee_triggered();
     void on_actionPackaging_triggered();
     void on_actionScript_editor_triggered();
     void on_actionPC_Console_Start_triggered();

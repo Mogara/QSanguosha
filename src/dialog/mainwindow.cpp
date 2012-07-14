@@ -283,20 +283,17 @@ void MainWindow::enterRoom(){
 
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
-    ui->actionAI_Melee->setEnabled(false);
 
     RoomScene *room_scene = new RoomScene(this);
     ui->actionView_Discarded->setEnabled(true);
     ui->actionView_distance->setEnabled(true);
     ui->actionServerInformation->setEnabled(true);
-    ui->actionKick->setEnabled(true);
     ui->actionSurrender->setEnabled(true);
     ui->actionSaveRecord->setEnabled(true);
 
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(toggleDiscards()));
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
     connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
-    connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
     connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
@@ -642,254 +639,6 @@ void MainWindow::on_actionScript_editor_triggered()
 #include <QCommandLinkButton>
 #include <QFormLayout>
 
-MeleeDialog::MeleeDialog(QWidget *parent)
-    :QDialog(parent)
-{
-    server=NULL;    
-    room_count=0;
-
-    setWindowTitle(tr("AI Melee"));
-
-//    QGroupBox *general_box = createGeneralBox();
-//    QGroupBox *result_box = createResultBox();
-    general_box = createGeneralBox();
-    result_box = createResultBox();
-    server_log = new QTextEdit;
-    QGraphicsView *record_view = new QGraphicsView;
-    record_view->setMinimumWidth(500);
-
-    record_scene = new QGraphicsScene;
-    record_view->setScene(record_scene);
-
-    general_box->setMaximumWidth(250);
-    result_box->setMaximumWidth(250);
-    server_log->setMinimumWidth(400);
-    server_log->setReadOnly(true);
-    server_log->setFrameStyle(QFrame::Box);
-    server_log->setProperty("description", true);
-    server_log->setFont(QFont("Verdana", 12));
-
-    QVBoxLayout *vlayout = new QVBoxLayout;
-    vlayout->addWidget(general_box);
-    vlayout->addWidget(result_box);
-
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addLayout(vlayout);
-    layout->addWidget(record_view);
-    layout->addWidget(server_log);
-    setLayout(layout);
-
-    setGeneral(Config.value("MeleeGeneral", "zhangliao").toString());
-}
-
-QGroupBox *MeleeDialog::createGeneralBox(){
-    QGroupBox *box = new QGroupBox(tr("General"));
-
-    avatar_button = new QToolButton;
-    avatar_button->setIconSize(QSize(200, 290));
-    avatar_button->setObjectName("avatar");
-
-    connect(avatar_button, SIGNAL(clicked()), this, SLOT(selectGeneral()));
-
-    QFormLayout *form_layout = new QFormLayout;
-    spinbox = new QSpinBox;
-    spinbox->setRange(1, 50);
-    spinbox->setValue(1);
-
-    start_button = new QPushButton(tr("Start"));
-    connect(start_button, SIGNAL(clicked()), this, SLOT(startTest()));
-
-    loop_checkbox = new QCheckBox(tr("LOOP"));
-    loop_checkbox->setObjectName("loop_checkbox");
-    loop_checkbox->setChecked(true);
-
-    form_layout->addRow(tr("Num of rooms"), spinbox);
-    form_layout->addRow(loop_checkbox, start_button);
-    // form_layout->addWidget(start_button);
-    // form_layout->addWidget(loop_checkbox);
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(avatar_button);
-    layout->addLayout(form_layout);
-
-    box->setLayout(layout);
-
-    return box;
-}
-
-class RoomItem: public QSanSelectableItem{
-public:
-    RoomItem(Room *room){
-        load("image/system/frog/playing.png");
-
-        const qreal radius = 50;
-        const qreal pi = 3.1415926;
-
-        QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
-        int n = players.length();
-        qreal angle = 2 * pi / n;
-
-        foreach(const ServerPlayer *player, players){
-            qreal theta = (player->getSeat() -1) * angle;
-            qreal x = radius * cos(theta) + 5;
-            qreal y = radius * sin(theta) + 5;
-
-            qreal role_x = (radius + 30) * cos(theta) + 5;
-            qreal role_y = (radius + 30) * sin(theta) + 5;
-
-            QGraphicsPixmapItem *avatar = new QGraphicsPixmapItem(this);
-            avatar->setPixmap(G_ROOM_SKIN.getGeneralPixmap(player->getGeneral()->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY));
-            avatar->setPos(x, y);
-
-            QGraphicsPixmapItem *role = new QGraphicsPixmapItem(this);
-            role->setPixmap(QString("image/system/roles/small-%1.png").arg(player->getRole()));
-            role->setPos(role_x, role_y);
-        }
-
-        setFlag(ItemIsMovable);
-    }
-
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *){
-        foreach(QGraphicsItem *item, childItems()){
-            item->setVisible(! item->isVisible());
-        }
-    }
-};
-
-typedef RoomItem *RoomItemStar;
-Q_DECLARE_METATYPE(RoomItemStar);
-
-void MeleeDialog::startTest(){
-    foreach(RoomItemStar room_item, room_items){
-        if(room_item) delete room_item;
-    }
-    room_items.clear();
-
-    if(server){
-        server->gamesOver();
-    }else{
-        server = new Server(this->parentWidget());
-        server->listen();
-        connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
-    }
-    Config.AIDelay = 0;
-    room_count = spinbox->value();
-    for(int i=0;i<room_count;i++){
-        Room *room = server->createNewRoom();
-        connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
-        connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
-
-        room->startTest(avatar_button->property("to_test").toString());
-    }
-}
-
-void MeleeDialog::onGameStart(){
-    if(room_count>10) return;
-    Room *room = qobject_cast<Room *>(sender());
-
-    RoomItemStar room_item = new RoomItem(room);
-    room->setTag("RoomItem", QVariant::fromValue(room_item));
-
-    room_items << room_item;
-    record_scene->addItem(room_item);
-}
-
-void MeleeDialog::onGameOver(const QString &winner){
-    Room *room = qobject_cast<Room *>(sender());
-    RoomItemStar room_item = room->getTag("RoomItem").value<RoomItemStar>();
-    QString to_test = room->property("to_test").toString();
-
-    QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
-
-    QStringList winners, losers;
-    foreach(const ServerPlayer *p, players){
-        bool won = winner.contains(p->getRole()) || winner.contains(p->objectName());
-        if(won)
-            winners << Sanguosha->translate(p->getGeneralName());
-        else
-            losers << Sanguosha->translate(p->getGeneralName());
-
-        if(p->getGeneralName() == to_test){
-
-            if(won){
-                if(room_item) room_item->load("image/system/frog/good.png");
-                updateResultBox(p->getRole(),1);
-            }
-            else{
-                if(room_item) room_item->load("image/system/frog/bad.png");
-                updateResultBox(p->getRole(),0);
-            }
-        }
-    }
-
-    QString tooltip = tr("Winner(s): %1 <br/> Losers: %2 <br /> Shuffle times: %3")
-                      .arg(winners.join(","))
-                      .arg(losers.join(","))
-                      .arg(room->getTag("SwapPile").toInt());
-
-    if(room_item) room_item->setToolTip(tooltip);
-    if(loop_checkbox->isChecked()){
-        if(room_item){
-            room_items.removeOne(room_item);
-            delete room_item;
-        }
-        Room *room = server->createNewRoom();
-        connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
-        connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
-
-        room->startTest(avatar_button->property("to_test").toString());
-    }
-}
-
-QGroupBox *MeleeDialog::createResultBox(){
-    QGroupBox *box = new QGroupBox(tr("Winning result"));
-
-    QFormLayout *layout = new QFormLayout;
-
-    QLineEdit *lord_edit = new QLineEdit;
-    QLineEdit *loyalist_edit = new QLineEdit;
-    QLineEdit *rebel_edit = new QLineEdit;
-    QLineEdit *renegade_edit = new QLineEdit;
-    QLineEdit *total_edit = new QLineEdit;
-
-    lord_edit->setReadOnly(true);
-    loyalist_edit->setReadOnly(true);
-    rebel_edit->setReadOnly(true);
-    renegade_edit->setReadOnly(true);
-    total_edit->setReadOnly(true);
-
-    lord_edit->setObjectName("lord_edit");;
-    loyalist_edit->setObjectName("loyalist_edit");
-    rebel_edit->setObjectName("rebel_edit");
-    renegade_edit->setObjectName("renegade_edit");
-    total_edit->setObjectName("total_edit");
-
-    layout->addRow(tr("Lord"), lord_edit);
-    layout->addRow(tr("Loyalist"), loyalist_edit);
-    layout->addRow(tr("Rebel"), rebel_edit);
-    layout->addRow(tr("Renegade"), renegade_edit);
-    layout->addRow(tr("Total"), total_edit);
-
-    box->setLayout(layout);
-
-    return box;
-}
-
-#include "choosegeneraldialog.h"
-
-void MeleeDialog::selectGeneral(){
-    FreeChooseDialog *dialog = new FreeChooseDialog(this);
-    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(setGeneral(QString)));
-
-    dialog->exec();
-}
-
-void MeleeDialog::setGeneral(const QString &general_name){
-    avatar_button->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_CARD)));
-    Config.setValue("MeleeGeneral", general_name);
-    avatar_button->setProperty("to_test", general_name);
-}
-
 AcknowledgementScene::AcknowledgementScene(QObject *parent) :
     QGraphicsScene(parent)
 {
@@ -902,13 +651,6 @@ AcknowledgementScene::AcknowledgementScene(QObject *parent) :
     QObject *item = view->rootObject();
 
     connect(item,SIGNAL(go_back()),this,SIGNAL(go_back()));
-}
-
-
-void MainWindow::on_actionAI_Melee_triggered()
-{
-    MeleeDialog *dialog = new MeleeDialog(this);
-    dialog->exec();
 }
 
 #include "recorder.h"
@@ -953,28 +695,6 @@ void MainWindow::sendLowLevelCommand()
     if(!command.isEmpty())
         ClientInstance->request(command);
 }
-
-void MeleeDialog::updateResultBox(QString role, int win){    
-    QLineEdit *edit = result_box->findChild<QLineEdit *>(role + "_edit");
-    double roleCount = ++(this->roleCount[role]);
-    double winCount = (this->winCount[role] += win);
-    double rate = winCount / roleCount * 100;
-    edit->setText(QString("%1 / %2 = %3 %").arg(winCount).arg(roleCount).arg(rate));
-
-    double totalCount = 0, totalWinCount = 0;
-
-    foreach(int count, this->roleCount.values())
-        totalCount += count;
-
-    foreach(int count, this->winCount.values())
-        totalWinCount += count;
-
-    QLineEdit *total_edit = result_box->findChild<QLineEdit *>("total_edit");
-    total_edit->setText(QString("%1 / %2 = %3 %").arg(totalWinCount).arg(totalCount).arg(totalWinCount/totalCount*100));
-
-    server_log->append(tr("End of game %1").arg(totalCount));
-}
-
 void MainWindow::on_actionView_ban_list_triggered()
 {
     BanlistDialog *dialog = new BanlistDialog(this, true);
