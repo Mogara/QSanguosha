@@ -334,6 +334,77 @@ public:
 
 extern ClientPlayer *Self;
 
+class CardMoveReason
+{
+public:
+    int m_reason;
+    QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
+    QString m_targetId; // To keep this structure lightweight, currently this is only used for UI purpose.
+                        // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
+                        // judgement!!! It will not accurately reflect the real reason.
+    QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
+    QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
+	
+    CardMoveReason();
+	
+    CardMoveReason(int moveReason, char *playerId);
+
+    CardMoveReason(int moveReason, char *playerId, char *skillName, char *eventName);
+
+    CardMoveReason(int moveReason, char *playerId, char *targetId, char *skillName, char *eventName);
+
+    static const int S_REASON_UNKNOWN = 0x00;
+    static const int S_REASON_USE = 0x01;
+    static const int S_REASON_RESPONSE = 0x02;
+    static const int S_REASON_DISCARD = 0x03;
+    static const int S_REASON_RECAST = 0x04;          // ironchain etc.
+    static const int S_REASON_PINDIAN = 0x05;
+    static const int S_REASON_DRAW = 0x06;
+    static const int S_REASON_GOTCARD = 0x07;
+    static const int S_REASON_SHOW = 0x08;
+    static const int S_REASON_TRANSFER = 0x09;
+    static const int S_REASON_PUT = 0x0A;
+
+    //subcategory of use
+    static const int S_REASON_LETUSE = 0x11;           // use a card when self is not current
+
+    //subcategory of response
+    static const int S_REASON_RETRIAL = 0x12;
+
+    //subcategory of discard
+    static const int S_REASON_RULEDISCARD = 0x13;       //  discard at one's Player::Discard for gamerule
+    static const int S_REASON_THROW = 0x23;             /*  gamerule(dying or punish)
+                                                            as the cost of some skills   */
+    static const int S_REASON_CHANGE_EQUIP = 0x33;      //  replace existed equip
+    static const int S_REASON_DISMANTLE = 0x43;         //  one throw card of another
+
+    //subcategory of gotcard
+    static const int S_REASON_GIVE = 0x17;              // from one hand to another hand
+    static const int S_REASON_EXTRACTION = 0x27;        // from another's place to one's hand
+    static const int S_REASON_GOTBACK = 0x37;           // from placetable to hand
+    static const int S_REASON_RECYCLE = 0x47;           // from discardpile to hand
+    static const int S_REASON_ROB = 0x57;               // got a definite card from other's hand
+
+    //subcategory of show
+    static const int S_REASON_TURNOVER = 0x18;          // show n cards  from drawpile
+    static const int S_REASON_JUDGE = 0x28;             // show a card  from drawpile for judge
+    static const int S_REASON_PREVIEW = 0x38;           // Not done yet, plan for view some cards for self only(guanxing yiji miji)
+    static const int S_REASON_DEMONSTRATE = 0x48;       // show a card which copy one to move to table
+
+    //subcategory of transfer
+    static const int S_REASON_SWAP = 0x19;              // exchange card for two players
+    static const int S_REASON_OVERRIDE = 0x29;          // exchange cards from cards in game
+    static const int S_REASON_EXCHANGE_FROM_PILE = 0x39;// exchange cards from cards moved out of game (for qixing only)
+
+    //subcategory of put
+    static const int S_REASON_NATURAL_ENTER = 0x1A;     //  a card with no-owner move into discardpile
+    static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
+    static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
+
+
+    static const int S_MASK_BASIC_REASON = 0x0F;
+};
+
 struct DamageStruct{
     DamageStruct();
 
@@ -387,12 +458,21 @@ struct CardUseStruct{
     QList<ServerPlayer *> to;
 };
 
-struct CardMoveStruct{
-    CardMoveStruct();
-    
-    int card_id;
+struct CardsMoveStruct{
+    CardsMoveStruct();
+    QList<int> card_ids;
     Player::Place from_place, to_place;
-    ServerPlayer *from, *to;
+    Player *from, *to;
+    CardMoveReason reason;
+	bool open;
+};
+
+struct CardsMoveOneTimeStruct{
+    QList<int> card_ids;
+    QList<Player::Place> from_places;
+    Player::Place to_place;
+    CardMoveReason reason;
+    Player *from, *to;
 };
 
 struct DyingStruct{
@@ -513,16 +593,6 @@ enum TriggerEvent{
     StageChange,
 
     NumOfEvents
-};
-
-class CardMoveReason
-{
-public:
-    int m_reason;
-    QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
-    QString m_targetId;
-    QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
-    QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
 };
 
 class Card: public QObject
@@ -893,9 +963,22 @@ public:
     void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
     void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
 
-    void throwCard(const Card *card, ServerPlayer *who);
     void throwCard(int card_id, ServerPlayer *who);
-    void moveCardTo(const Card *card, ServerPlayer *from, ServerPlayer *to, Player::Place place, const CardMoveReason &reason, bool open = true);
+    void throwCard(const Card *card, ServerPlayer *who);    
+    void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who);
+	
+    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
+                    bool forceMoveVisible = false);
+    void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
+                    bool forceMoveVisible = false);
+    void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
+                    bool forceMoveVisible = false);
+    void moveCardTo(const Card* card, ServerPlayer* srcPlayer, ServerPlayer* dstPlayer, Player::Place dstPlace, const QString& pileName,
+                    const CardMoveReason &reason, bool forceMoveVisible = false);
+    void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
+    void moveCardsAtomic(CardsMoveStruct cards_move, bool forceMoveVisible);
+    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);
+    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
