@@ -461,11 +461,11 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         return;
 
     player->loseSkill(skill_name);
-    broadcastInvoke("detachSkill",
-        QString("%1:%2").arg(player->objectName()).arg(skill_name));
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill && skill->isVisible()){
+        broadcastInvoke("detachSkill",
+            QString("%1:%2").arg(player->objectName()).arg(skill_name));
         foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
             detachSkillFromPlayer(player, skill->objectName());
 
@@ -961,14 +961,13 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName());
             moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
-        else
-            if(trigger_event == CardDiscarded){
+        else if(trigger_event == CardDiscarded){
                 CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
-                reason.m_skillName = card->getSkillName();
                 moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
         else if(trigger_event != NonTrigger && trigger_event != AskForRetrial){
                 CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
+                reason.m_skillName = card->getSkillName();
                 moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
 
