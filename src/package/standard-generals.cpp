@@ -632,6 +632,7 @@ public:
                 judge.good = true;
                 judge.reason = objectName();
                 judge.who = use.from;
+                judge.play_animation = true;
 
                 room->judge(judge);
                 if(judge.isGood()){

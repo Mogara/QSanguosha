@@ -445,8 +445,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
     if(jink == NULL)
         thread->trigger(SlashHit, this, effect.from, data);
     else{
-        if (!(jink->getSkillName() == "eight_diagram" || jink->getSkillName() == "bazhen"))
-            setEmotion(effect.to, "jink");
+        setEmotion(effect.to, "jink");
         thread->trigger(SlashMissed, this, effect.from, data);
     }
 }
@@ -683,8 +682,6 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     AI *ai = player->getAI();
     if(ai){
         invoked = ai->askForSkillInvoke(skill_name, data);
-        if(invoked)
-            thread->delay(Config.AIDelay);
     }else{
 
         Json::Value skillCommand;

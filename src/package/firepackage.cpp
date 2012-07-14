@@ -452,18 +452,17 @@ public:
             judge.good = true;
             judge.reason = objectName();
             judge.who = wolong;
+            judge.play_animation = true;
 
+            room->setEmotion(wolong, "armor/eight_diagram");
             room->judge(judge);
 
             if(judge.isGood()){
-                room->setEmotion(wolong, "armor/eight_diagram");
                 Jink *jink = new Jink(Card::NoSuit, 0);
                 jink->setSkillName(objectName());
                 room->provide(jink);
-                //room->setEmotion(wolong, "good");
                 return true;
-            }else
-                room->setEmotion(wolong, "bad");
+            }
         }
 
         return false;

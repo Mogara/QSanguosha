@@ -575,14 +575,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
     case FinishRetrial:{
             JudgeStar judge = data.value<JudgeStar>();
 
+            if(judge->play_animation)
+                room->sendJudgeResult(judge);
+
             LogMessage log;
             log.type = "$JudgeResult";
             log.from = player;
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
-
-            if(judge->play_animation)
-                room->sendJudgeResult(judge);
 
             break;
         }

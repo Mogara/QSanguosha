@@ -523,18 +523,17 @@ public:
                 judge.good = true;
                 judge.reason = objectName();
                 judge.who = player;
+                judge.play_animation = true;
 
+                room->setEmotion(player, "armor/eight_diagram");
                 room->judge(judge);
                 if(judge.isGood()){
-                    room->setEmotion(player, "armor/eight_diagram");
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
-                    //room->setEmotion(player, "good");
 
                     return true;
-                }else
-                    room->setEmotion(player, "bad");
+                }
             }
         }
         return false;
@@ -658,8 +657,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->objectName());
     if(jink){
-        if(jink->getSkillName() != "eight_diagram" && jink->getSkillName() != "bazhen")
-            room->setEmotion(effect.to, "jink");
+        room->setEmotion(effect.to, "jink");
     }
     else{
         DamageStruct damage;
