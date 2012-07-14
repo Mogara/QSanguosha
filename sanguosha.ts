@@ -2595,7 +2595,7 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../../src/server/room.cpp" line="1655"/>
+        <location filename="../../src/server/room.cpp" line="1652"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
@@ -2604,7 +2604,7 @@
         <translation type="obsolete">回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="1910"/>
+        <location filename="../../src/server/room.cpp" line="1907"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
@@ -2613,61 +2613,61 @@
         <translation type="obsolete">回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="1677"/>
-        <location filename="../../src/server/room.cpp" line="1983"/>
-        <location filename="../../src/server/room.cpp" line="4304"/>
+        <location filename="../../src/server/room.cpp" line="1674"/>
+        <location filename="../../src/server/room.cpp" line="1980"/>
+        <location filename="../../src/server/room.cpp" line="4301"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="1678"/>
+        <location filename="../../src/server/room.cpp" line="1675"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="1888"/>
+        <location filename="../../src/server/room.cpp" line="1885"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="1914"/>
+        <location filename="../../src/server/room.cpp" line="1911"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="1982"/>
+        <location filename="../../src/server/room.cpp" line="1979"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2373"/>
+        <location filename="../../src/server/room.cpp" line="2370"/>
         <source>Unable to parse player</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2377"/>
+        <location filename="../../src/server/room.cpp" line="2374"/>
         <source>Server is not waiting for reply from %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2381"/>
+        <location filename="../../src/server/room.cpp" line="2378"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2386"/>
+        <location filename="../../src/server/room.cpp" line="2383"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="3501"/>
+        <location filename="../../src/server/room.cpp" line="3498"/>
         <source>Card can not parse:
  %1</source>
         <translation>卡牌字符串无法解析:
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="4303"/>
+        <location filename="../../src/server/room.cpp" line="4300"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3252,10 +3252,6 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Server</name>
     <message>
-        <source>Lua scripts error</source>
-        <translation type="obsolete">Lua 脚本错误</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="994"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
@@ -3326,7 +3322,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../../src/server/server.cpp" line="190"/>
         <source>Enable Same</source>
-        <translation></translation>
+        <translation>同将模式</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="201"/>
