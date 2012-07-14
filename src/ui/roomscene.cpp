@@ -3044,7 +3044,7 @@ void RoomScene::attachSkill(const QString &skill_name, bool from_left)
 
 void RoomScene::detachSkill(const QString &skill_name){
     QSanSkillButton* btn = dashboard->removeSkillButton(skill_name);
-    Q_ASSERT(btn != NULL);
+    if (btn == NULL) return;    //be care LordSkill and SPConvertSkill
     m_skillButtons.removeAll(btn);
     btn->deleteLater();
 }
