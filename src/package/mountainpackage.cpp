@@ -1025,7 +1025,7 @@ public:
     }
 
     static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name){
-		zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->getGender() == General::Male, -1);
+        zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->getGender() == General::Male, -1);
     }
 
     static void AcquireGenerals(ServerPlayer *zuoci, int n){
