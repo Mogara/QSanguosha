@@ -7,12 +7,6 @@ sgs.ai_skill_invoke.chongzhen = function(self, data)
 	end
 end
 
-sgs.ai_skill_invoke.huantong = function(self, data)
-	if self.room:getLord():getKingdom() == "qun" then return true
-	elseif self.room:getLord():getKingdom() == "shu" then return false
-	elseif math.random(0, 1) == 0 then return true else return false end
-end
-
 --AI for BGM Diaochan
 --code by clarkcyt and William915
 
@@ -137,10 +131,6 @@ sgs.ai_use_value.LihunCard = 8.5
 sgs.ai_use_priority.LihunCard = 6
 
 --AI for BGM Caoren
-
-sgs.ai_skill_invoke.jiagu = function(self, data)
-    if math.random(0, 1) == 0 then return true else return false end
-end
 
 function sgs.ai_skill_invoke.kuiwei(self, data)
     local weapon = 0
@@ -361,7 +351,7 @@ sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
 	end
 end
 
-sgs.ai_cardneed.tanhuhu = sgs.ai_cardneed.bignumber
+sgs.ai_cardneed.tanhu = sgs.ai_cardneed.bignumber
 sgs.ai_card_intention.TanhuCard = 30
 sgs.dynamic_value.control_card.TanhuCard = true
 sgs.ai_use_priority.TanhuCard = 8
