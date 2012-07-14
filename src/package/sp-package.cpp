@@ -269,10 +269,10 @@ void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *yuanshu = card_use.from;
 
     QStringList choices;
-    if(yuanshu->hasLordSkill("jijiang")&&Slash::IsAvailable(yuanshu))
+    if(yuanshu->hasLordSkill("jijiang") && room->getLord()->hasLordSkill("jijiang") && Slash::IsAvailable(yuanshu))
         choices << "jijiang";
 
-    if(yuanshu->hasLordSkill("weidai")&&Analeptic::IsAvailable(yuanshu))
+    if(yuanshu->hasLordSkill("weidai") && room->getLord()->hasLordSkill("weidai") && Analeptic::IsAvailable(yuanshu))
         choices << "weidai";
 
     if(choices.isEmpty())
