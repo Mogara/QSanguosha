@@ -1099,8 +1099,9 @@ public:
                 && use.to.contains(player)){
                    caninvoke = true;
             }
-            else if(use.card->inherits("Duel") && use.from->hasSkill(objectName())
-                && use.from->objectName() == player->objectName()){
+            else if(use.card->inherits("Duel") && (
+                    (use.from->hasSkill(objectName()) && use.from->objectName() == player->objectName())
+                    || (player->hasSkill(objectName()) && use.to.contains(player)))){
                        caninvoke = true;
             }
             if(caninvoke){
