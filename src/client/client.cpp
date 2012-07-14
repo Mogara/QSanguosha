@@ -1410,7 +1410,7 @@ void Client::detachSkill(const QString &detach_str){
 
     player->loseSkill(skill_name);
 
-    if(player == Self)
+    if(player == Self && !Self->hasSkill(skill_name))
         emit skill_detached(skill_name);
 }
 
