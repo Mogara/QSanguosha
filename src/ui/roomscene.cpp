@@ -3368,6 +3368,7 @@ QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const{
 
 void RoomScene::doMovingAnimation(const QString &name, const QStringList &args){
     QSanSelectableItem *item = new QSanSelectableItem(QString("image/system/animation/%1.png").arg(name));
+    item->setZValue(10086.0);
     addItem(item);
 
     QPointF from = getAnimationObject(args.at(0))->scenePos();
