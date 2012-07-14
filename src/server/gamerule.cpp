@@ -1003,8 +1003,8 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
                 {
 
                     transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
-                    sp->invoke("transfigure", transfigure_str);
                     room->setPlayerProperty(sp,"general2","anjiang");
+                    sp->invoke("transfigure", transfigure_str);
 
                     log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
                 }

@@ -1602,7 +1602,7 @@ void Room::prepareForStart(){
                 QString role = toQString(clientReply[1][0]);
                 ServerPlayer *player_self = findChild<ServerPlayer *>(name);
                 setPlayerProperty(player_self, "role", role);
-                if(role == "lord")
+                if(role == "lord" && !ServerInfo.EnableHegemony)
                     broadcastProperty(player_self, "role", "lord");
 
                 QList<ServerPlayer *> all_players = m_players;
@@ -1617,7 +1617,7 @@ void Room::prepareForStart(){
                     QString role = roles.at(i);
 
                     player->setRole(role);
-                    if(role == "lord")
+                    if(role == "lord" && !ServerInfo.EnableHegemony)
                         broadcastProperty(player, "role", "lord");
                     else
                         notifyProperty(player, player, "role");
@@ -2222,7 +2222,7 @@ void Room::assignRoles(){
         QString role = roles.at(i);
 
         player->setRole(role);
-        if(role == "lord")
+        if(role == "lord" && !ServerInfo.EnableHegemony)
             broadcastProperty(player, "role", "lord");
         else
             notifyProperty(player, player, "role");
