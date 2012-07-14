@@ -16,12 +16,14 @@ GameRule::GameRule(QObject *)
     //setParent(parent);
 
     events << GameStart << TurnStart << EventPhaseStart << CardUsed
-            << CardFinished << TargetConfirming << TargetConfirmed
-            << CardEffected << HpRecover << HpLost << AskForPeachesDone
-            << AskForPeaches << Death << Dying << GameOverJudge
-            << SlashHit << SlashMissed << SlashEffected << SlashProceed
-            << ConfirmDamage << PreHpReduced << DamageDone << PostHpReduced
-            << DamageComplete << StartJudge << FinishRetrial << FinishJudge << Pindian;
+           << CardEffected << CardFinished
+           << HpRecover << HpLost
+           << EventLoseSkill << EventAcquireSkill
+           << AskForPeaches << AskForPeachesDone << Dying << Death << GameOverJudge
+           << SlashHit << SlashMissed << SlashEffected << SlashProceed
+           << ConfirmDamage << PreHpReduced << DamageDone << PostHpReduced << DamageComplete
+           << StartJudge << FinishRetrial << FinishJudge
+           << Pindian;
 }
 
 bool GameRule::triggerable(const ServerPlayer *target) const{
@@ -228,12 +230,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
             break;
         }
-    case TargetConfirming:{
-            break;
-        }
-    case TargetConfirmed:{
-            break;
-        }
     case CardFinished: {
             CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *p, use.to)
@@ -242,6 +238,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             room->clearCardFlag(use.card);
 
             break;
+    }
+
+    case EventAcquireSkill:{
+        break;
+    }
+
+    case EventLoseSkill:{
+        break;
     }
 
     case HpRecover:{

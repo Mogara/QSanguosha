@@ -463,16 +463,22 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill && skill->isVisible()){
-        broadcastInvoke("detachSkill",
-            QString("%1:%2").arg(player->objectName()).arg(skill_name));
         foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
             detachSkillFromPlayer(player, skill->objectName());
+
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+        args[1] = toJsonString(player->objectName());
+        args[2] = toJsonString(skill_name);
+        doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         LogMessage log;
         log.type = "#LoseSkill";
         log.from = player;
         log.arg = skill_name;
         sendLog(log);
+
+        thread->trigger(EventLoseSkill, this, player, (QVariant)skill_name);
     }
 }
 
@@ -3418,14 +3424,19 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
 
     if(skill->isVisible()){
         if(open){
-            QString acquire_str = QString("%1:%2").arg(player->objectName()).arg(skill_name);
-            broadcastInvoke("acquireSkill", acquire_str);
+            Json::Value args;
+            args[0] = QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL;
+            args[1] = toJsonString(player->objectName());
+            args[2] = toJsonString(skill_name);
+            doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
         }
 
         foreach(const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)){
             if(!related_skill->isVisible())
                 acquireSkill(player, related_skill);
         }
+
+        thread->trigger(EventAcquireSkill, this, player, (QVariant)skill_name);
     }
 }
 

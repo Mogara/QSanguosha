@@ -63,9 +63,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["doFilter"] = &Client::doFilter;
     callbacks["log"] = &Client::log;
     callbacks["speak"] = &Client::speak;
-    callbacks["acquireSkill"] = &Client::acquireSkill;
     callbacks["attachSkill"] = &Client::attachSkill;
-    callbacks["detachSkill"] = &Client::detachSkill;
     m_callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus; 
     //callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
@@ -1396,24 +1394,6 @@ void Client::attachSkill(const QString &skill_name){
     emit skill_attached(skill_name, true);
 }
 
-void Client::detachSkill(const QString &detach_str){
-    QStringList texts = detach_str.split(":");
-    ClientPlayer *player = NULL;
-    QString skill_name;
-    if(texts.length() == 1){
-        player = Self;
-        skill_name = texts.first();
-    }else if(texts.length() == 2){
-        player = getPlayer(texts.first());
-        skill_name = texts.last();
-    }
-
-    player->loseSkill(skill_name);
-
-    if(player == Self)
-        emit skill_detached(skill_name);
-}
-
 void Client::askForAssign(const Json::Value &){
     emit assign_asked();
 }
@@ -1595,21 +1575,6 @@ void Client::setEmotion(const QString &set_str){
 void Client::skillInvoked(const Json::Value &arg){
     if (!isStringArray(arg,0,1)) return;
     emit skill_invoked(QString(arg[1].asCString()), QString(arg[0].asCString()));
-}
-
-void Client::acquireSkill(const QString &acquire_str){
-    QRegExp rx("(\\w+):(\\w+)");
-
-    if(!rx.exactMatch(acquire_str))
-        return;
-
-    QStringList texts = rx.capturedTexts();
-    ClientPlayer *who = getPlayer(texts.at(1));
-    QString skill_name = texts.at(2);
-
-    who->acquireSkill(skill_name);
-
-    emit skill_acquired(who, skill_name);
 }
 
 void Client::animate(const QString &animate_str){

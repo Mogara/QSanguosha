@@ -360,14 +360,14 @@ RoomScene::RoomScene(QMainWindow *main_window):
 void RoomScene::handleEventEffect(const Json::Value &arg)
 {
     GameEventType eventType = (GameEventType)arg[0].asInt();
-    if (eventType == S_GAME_EVENT_PLAYER_DYING)
-    {
+    switch(eventType){
+    case S_GAME_EVENT_PLAYER_DYING:{
         /* the codes below causes crash
         const Player* player = name2photo[arg[1].asCString()]->getPlayer();
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath("sos", player->getGeneral()->isMale())); */
+        break;
     }
-    else if (eventType == S_GAME_EVENT_SKILL_INVOKED)
-    {
+    case S_GAME_EVENT_SKILL_INVOKED:{
         QString skillName = arg[1].asCString();
         QString category;
         if(arg[2].isBool()){
@@ -378,14 +378,43 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
             category = arg[2].asCString();
         int type = arg[3].asInt();
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
+
+        break;
     }
-    else if(eventType == S_GAME_EVENT_JUDGE_RESULT)
-    {
+    case S_GAME_EVENT_JUDGE_RESULT:{
         int card_id = arg[1].asInt();
         bool take_effect = arg[2].asBool();
         QString who = arg[3].asCString();
         QString reason = arg[4].asCString();
         showJudgeResult(card_id, take_effect, who, reason);
+
+        break;
+    }
+    case S_GAME_EVENT_LOSE_SKILL:{
+        QString player_name = arg[1].asCString();
+        QString skill_name =  arg[2].asCString();
+
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+        player->loseSkill(skill_name);
+        if(player == Self)
+            detachSkill(skill_name);
+
+        break;
+    }
+    case S_GAME_EVENT_ACQUIRE_SKILL:{
+        QString player_name = arg[1].asCString();
+        QString skill_name =  arg[2].asCString();
+
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+        player->acquireSkill(skill_name);
+        acquireSkill(player, skill_name);
+
+        break;
+    }
+    default:
+        break;
     }
 }
 

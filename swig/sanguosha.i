@@ -534,11 +534,16 @@ enum TriggerEvent{
     EventPhaseStart,
     EventPhaseEnd,
     EventPhaseChanging,
+
     DrawNCards,
+
     HpRecover,
     HpLost,
     HpChanged,
     MaxHpChanged,
+
+    EventLoseSkill,
+    EventAcquireSkill,
 
     StartJudge,
     AskForRetrial,

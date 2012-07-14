@@ -118,8 +118,7 @@ public:
 	void addHistory(const QString &card);
 	void moveFocus(const Json::Value &focus);
 	void setEmotion(const QString &set_str);
-	void skillInvoked(const Json::Value &invoke_str);
-	void acquireSkill(const QString &acquire_str);
+    void skillInvoked(const Json::Value &invoke_str);
 	void animate(const QString &animate_str);
 	void jilei(const QString &jilei_str);
     void cardLock(const QString &card_str);
@@ -173,8 +172,7 @@ public:
 	void recoverGeneral(const QString &);
 	void revealGeneral(const QString &);
 
-	void attachSkill(const QString &skill_name);
-	void detachSkill(const QString &skill_name);
+    void attachSkill(const QString &skill_name);
 	
 	inline void setCountdown(QSanProtocol::Countdown countdown) 
 	{

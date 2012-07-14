@@ -348,7 +348,7 @@ public:
     NosShangshi():Shangshi("nosshangshi", 998)
     {
         frequency = Frequent;
-        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseChanging;
+        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseChanging << EventAcquireSkill;
     }
 
     virtual int getPriority() const{
