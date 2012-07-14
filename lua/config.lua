@@ -1,10 +1,10 @@
-
+﻿
 -- this script to store the basic configuration for game program itself
 -- and it is a little different from config.ini
 
 config = {
-	version = "20120405",
-	version_name = "踏青版",
+	version = "20120715",
+	version_name = "涅盘版",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
