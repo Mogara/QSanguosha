@@ -159,7 +159,7 @@ public:
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         return selected.length() < 3;
     }
 
@@ -167,7 +167,7 @@ public:
         return ! player->hasUsed("NosJujianCard");
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.isEmpty())
             return NULL;
 
@@ -266,14 +266,14 @@ public:
         return ! player->hasUsed("NosXuanhuoCard");
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return ! to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == Card::Heart;
+    virtual bool viewFilter(const Card* to_select) const{
+        return ! to_select->isEquipped() && to_select->getSuit() == Card::Heart;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        NosXuanhuoCard *card = new NosXuanhuoCard;
-        card->addSubcard(card_item->getFilteredCard());
-        return card;
+    virtual const Card *viewAs(const Card *originalCard) const{
+        NosXuanhuoCard *xuanhuoCard = new NosXuanhuoCard;
+        xuanhuoCard->addSubcard(originalCard);
+        return xuanhuoCard;
     }
 };
 

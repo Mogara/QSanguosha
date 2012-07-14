@@ -144,17 +144,15 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getFilteredCard();
+    virtual bool viewFilter(const Card *card) const{
         return card->isBlack() && !card->inherits("TrickCard");
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getFilteredCard();
+    virtual const Card *viewAs(const Card *originalCard) const{
 
-        SupplyShortage *shortage = new SupplyShortage(card->getSuit(), card->getNumber());
+        SupplyShortage *shortage = new SupplyShortage(originalCard->getSuit(), originalCard->getNumber());
         shortage->setSkillName(objectName());
-        shortage->addSubcard(card);
+        shortage->addSubcard(originalCard);
 
         return shortage;
     }
@@ -455,7 +453,7 @@ public:
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if(to_select->isEquipped())
             return false;
 
@@ -463,7 +461,7 @@ public:
         return selected.length() < length;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != Self->getHandcardNum() / 2)
             return NULL;
 
@@ -738,15 +736,15 @@ public:
         return  pattern.contains("analeptic");
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == Card::Spade;
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->isEquipped() && to_select->getSuit() == Card::Spade;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        Analeptic *analeptic = new Analeptic(card->getSuit(), card->getNumber());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        
+        Analeptic *analeptic = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
         analeptic->setSkillName(objectName());
-        analeptic->addSubcard(card->getId());
+        analeptic->addSubcard(originalCard->getId());
 
         return analeptic;
     }

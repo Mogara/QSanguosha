@@ -105,14 +105,14 @@ public:
         return pattern == "@huanshi";
     }
 
-    virtual bool viewFilter(const CardItem *) const{
+    virtual bool viewFilter(const Card *) const{
         return true;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card* to_select) const{
         Card *card = new HuanshiCard;
-        card->setSuit(card_item->getFilteredCard()->getSuit());
-        card->addSubcard(card_item->getFilteredCard());
+        card->setSuit(to_select->getSuit());
+        card->addSubcard(to_select);
 
         return card;
     }

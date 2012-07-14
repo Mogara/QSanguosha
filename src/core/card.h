@@ -31,6 +31,7 @@ class Card : public QObject
     Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
+    Q_PROPERTY(bool modified READ isModified WRITE setModified)
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
@@ -90,7 +91,7 @@ public:
     QList<int> getSubcards() const;
     void clearSubcards();
     QString subcardString() const;
-    void addSubcards(const QList<CardItem *> &card_items);
+    void addSubcards(const QList<const Card *> &cards);
     int subcardsLength() const;
 
     virtual QString getType() const = 0;
@@ -128,6 +129,9 @@ public:
 
     virtual void onMove(const CardMoveStruct &move) const;
 
+    inline virtual bool isModified() const { return m_isModified; }
+    inline virtual void setModified(bool modified) { m_isModified = modified; }
+
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
     static bool CompareBySuitNumber(const Card *a, const Card *b);
@@ -148,8 +152,7 @@ protected:
     bool will_throw;
     bool can_jilei;
     bool has_preact;
-
-private:
+    bool m_isModified;
     Suit suit;
     int number;
     int id;

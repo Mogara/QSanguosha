@@ -158,14 +158,14 @@ ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)
 
 }
 
-const Card *ZeroCardViewAsSkill::viewAs(const QList<CardItem *> &cards) const{
+const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards) const{
     if(cards.isEmpty())
         return viewAs();
     else
         return NULL;
 }
 
-bool ZeroCardViewAsSkill::viewFilter(const QList<CardItem *> &, const CardItem *) const{
+bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *) const{
     return false;
 }
 
@@ -175,11 +175,11 @@ OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
 
 }
 
-bool OneCardViewAsSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
     return selected.isEmpty() && viewFilter(to_select);
 }
 
-const Card *OneCardViewAsSkill::viewAs(const QList<CardItem *> &cards) const{
+const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards) const{
     if(cards.length() != 1)
         return NULL;
     else

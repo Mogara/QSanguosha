@@ -297,13 +297,13 @@ public:
         return true;
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->inherits("Peach");
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->inherits("Peach");
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         PeachingCard *qingnang_card = new PeachingCard;
-        qingnang_card->addSubcard(card_item->getCard()->getId());
+        qingnang_card->addSubcard(originalCard->getId());
 
         return qingnang_card;
     }
@@ -322,14 +322,14 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->getTypeId() == Card::Equip;
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->getTypeId() == Card::Equip;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        GanranEquip *ironchain = new GanranEquip(card->getSuit(), card->getNumber());
-        ironchain->addSubcard(card_item->getCard()->getId());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        
+        GanranEquip *ironchain = new GanranEquip(originalCard->getSuit(), originalCard->getNumber());
+        ironchain->addSubcard(originalCard->getId());
         ironchain->setSkillName(objectName());
 
         return ironchain;

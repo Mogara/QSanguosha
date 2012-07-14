@@ -326,16 +326,16 @@ public:
         return  pattern == "slash";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         return selected.length() < 2 && !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 
-        const Card *first = cards.at(0)->getFilteredCard();
-        const Card *second = cards.at(1)->getFilteredCard();
+        const Card *first = cards[0];
+        const Card *second = cards[1];
 
         Card::Suit suit = Card::NoSuit;
         if(first->isBlack() && second->isBlack())
@@ -373,17 +373,17 @@ public:
         return pattern == "@axe";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if(selected.length() >= 2)
             return false;
 
-        if(to_select->getCard() == Self->getWeapon())
+        if(to_select == Self->getWeapon())
             return false;
 
         return true;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 

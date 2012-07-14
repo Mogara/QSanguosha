@@ -18,8 +18,11 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), has_preact(false), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false),
+     will_throw(true), has_preact(false),
+     suit(suit), number(number), id(-1)
 {
+    m_isModified = false;
     can_jilei = will_throw;
 
     if(number < 1 || number > 13)
@@ -247,9 +250,9 @@ QString Card::subcardString() const{
     return str.join("+");
 }
 
-void Card::addSubcards(const QList<CardItem *> &card_items){
-    foreach(CardItem *card_item, card_items)
-        subcards << card_item->getCard()->getId();
+void Card::addSubcards(const QList<const Card *> &cards){
+    foreach (const Card* card, cards)
+        subcards.append(card->getId());
 }
 
 int Card::subcardsLength() const{

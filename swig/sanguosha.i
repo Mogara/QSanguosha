@@ -344,9 +344,9 @@ public:
                         // judgement!!! It will not accurately reflect the real reason.
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
-	
+    
     CardMoveReason();
-	
+    
     CardMoveReason(int moveReason, char *playerId);
 
     CardMoveReason(int moveReason, char *playerId, char *skillName, char *eventName);
@@ -464,7 +464,7 @@ struct CardsMoveStruct{
     Player::Place from_place, to_place;
     Player *from, *to;
     CardMoveReason reason;
-	bool open;
+    bool open;
 };
 
 struct CardsMoveOneTimeStruct{
@@ -654,7 +654,7 @@ public:
     QList<int> getSubcards() const;
     void clearSubcards();
     QString subcardString() const;
-    void addSubcards(const QList<CardItem *> &card_items);
+    void addSubcards(const QList<const Card *> &cards);
     int subcardsLength() const;
 
     virtual QString getType() const = 0;
@@ -917,7 +917,7 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
-	void retrial(const Card *card, ServerPlayer *player, JudgeStar judge, const char *skill_name, bool exchange = false);
+    void retrial(const Card *card, ServerPlayer *player, JudgeStar judge, const char *skill_name, bool exchange = false);
     bool broadcastSkillInvoke(const char *skillName);
     bool broadcastSkillInvoke(const char *skillName, const char *category);
     bool broadcastSkillInvoke(const char *skillName, int type);
@@ -971,7 +971,7 @@ public:
     void throwCard(int card_id, ServerPlayer *who);
     void throwCard(const Card *card, ServerPlayer *who);    
     void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who);
-	
+    
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace,
                     bool forceMoveVisible = false);
     void moveCardTo(const Card* card, ServerPlayer* dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,

@@ -115,14 +115,13 @@ public:
         return  pattern == "slash";
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->objectName() == "slash";
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->objectName() == "slash";
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        Card *acard = new FireSlash(card->getSuit(), card->getNumber());
-        acard->addSubcard(card->getId());
+    virtual const Card *viewAs(const Card *originalCard) const{        
+        Card *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
+        acard->addSubcard(originalCard->getId());
         acard->setSkillName(objectName());
         return acard;
     }
@@ -204,7 +203,7 @@ public:
         }else if(triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
-				room->setEmotion(player, "armor/vineburn");
+                room->setEmotion(player, "armor/vineburn");
                 LogMessage log;
                 log.type = "#VineDamage";
                 log.from = player;

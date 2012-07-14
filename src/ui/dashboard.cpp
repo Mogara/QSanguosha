@@ -143,20 +143,6 @@ void Dashboard::_updateFrames()
     button_widget->setY(0);
 }
 
-void Dashboard::setFilter(const FilterSkill *filter){
-    this->filter = filter;
-    doFilter();
-}
-
-const FilterSkill *Dashboard::getFilter() const{
-    return filter;
-}
-
-void Dashboard::doFilter(){
-    foreach(CardItem *card_item, m_handCards)
-        card_item->filter(filter);
-}
-
 void Dashboard::setTrust(bool trust){
     trusting_item->setVisible(trust);
     trusting_text->setVisible(trust);
@@ -197,10 +183,8 @@ void Dashboard::addHandCards(QList<CardItem*> &card_items)
 
 void Dashboard::_addHandCard(CardItem* card_item)
 {
-    card_item->filter(filter);
-
     if(ClientInstance->getStatus() == Client::Playing)
-        card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
+        card_item->setEnabled(card_item->getCard()->isAvailable(Self));
     else
         card_item->setEnabled(false);
     
@@ -225,7 +209,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
 
     foreach(CardItem *card_item, m_handCards){
         if(card_item->isEnabled()){
-            if(pattern == "." || card_item->getFilteredCard()->match(pattern))
+            if(pattern == "." || card_item->getCard()->match(pattern))
                 matches << card_item;
         }
     }
@@ -250,7 +234,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
         selectCard(to_select, true);
         selected = to_select;
 
-        emit card_selected(selected->getFilteredCard());
+        emit card_selected(selected->getCard());
     }
 }
 
@@ -259,7 +243,7 @@ const Card *Dashboard::getSelected() const
     if (view_as_skill)
         return pending_card;
     else if(selected)
-        return selected->getFilteredCard();
+        return selected->getCard();
     else
         return NULL;
 }
@@ -378,9 +362,6 @@ QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
     }
     //Q_ASSERT(btn != NULL);
     //Be care LordSkill and SPConvertSkill
-    if (btn != NULL && getFilter() == btn->getSkill()){
-        setFilter(NULL);
-    }    
     return btn;
 }
 
@@ -777,8 +758,11 @@ void Dashboard::reverseSelection(){
     if(view_as_skill == NULL)
         return;
 
-     m_mutexEnableCards.lock();
-    QSet<CardItem *> selected_set = pendings.toSet();
+    m_mutexEnableCards.lock();
+
+    QSet<const Card *> selected_set;
+    foreach (CardItem* item, pendings)
+        selected_set.insert(item->getCard());
     unselectAll();
 
     foreach(CardItem *item, m_handCards)
@@ -786,17 +770,26 @@ void Dashboard::reverseSelection(){
 
     pendings.clear();
 
+    QList<const Card*> pendingCards; 
     foreach(CardItem *item, m_handCards){
-        if(view_as_skill->viewFilter(pendings, item) && !selected_set.contains(item)){
+        const Card* card = item->getCard();
+        if (view_as_skill->viewFilter(pendingCards, card) &&
+            !selected_set.contains(card))
+        {
             pendings << item;
             item->setEnabled(true);
             selectCard(item, true);
         }
     }
+    
     adjustCards();
-    if(pending_card && pending_card->isVirtualCard() && pending_card->parent() == NULL)
+    
+    if (pending_card && pending_card->isVirtualCard() &&
+        pending_card->parent() == NULL) {
         delete pending_card;
-    pending_card = view_as_skill->viewAs(pendings);
+    }
+
+    pending_card = view_as_skill->viewAs(pendingCards);
     m_mutexEnableCards.unlock();
     emit card_selected(pending_card);
 }
@@ -812,7 +805,7 @@ void Dashboard::disableAllCards(){
 void Dashboard::enableCards(){
     m_mutexEnableCards.lock();
     foreach(CardItem *card_item, m_handCards){
-        card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
+        card_item->setEnabled(card_item->getCard()->isAvailable(Self));
     }
     m_mutexEnableCards.unlock();
 }
@@ -890,26 +883,30 @@ void Dashboard::onCardItemClicked(){
             selectCard(card_item, true);          
             selected = card_item;
 
-            emit card_selected(selected->getFilteredCard());
+            emit card_selected(selected->getCard());
         }
     }
 }
 
 void Dashboard::updatePending(){
     if (!view_as_skill) return;
-    foreach(CardItem *c, m_handCards){
-        if(!c->isSelected() || pendings.isEmpty()){
-            c->setEnabled(view_as_skill->viewFilter(pendings, c));
+    QList<const Card*> cards;
+    foreach (CardItem* item, pendings)
+        cards.append(item->getCard());
+
+    foreach(CardItem *item, m_handCards){
+        if(!item->isSelected() || pendings.isEmpty()){
+            item->setEnabled(view_as_skill->viewFilter(cards, item->getCard()));
         }
     }
 
     for (int i = 0; i < 4; i++){
         CardItem *equip = _m_equipCards[i];
         if(equip && !equip->isMarked())
-            equip->setMarkable(view_as_skill->viewFilter(pendings, equip));
+            equip->setMarkable(view_as_skill->viewFilter(cards, equip->getCard()));
     }
 
-    const Card *new_pending_card = view_as_skill->viewAs(pendings);
+    const Card *new_pending_card = view_as_skill->viewAs(cards);
     if(pending_card != new_pending_card){
         pending_card = new_pending_card;
         emit card_selected(pending_card);

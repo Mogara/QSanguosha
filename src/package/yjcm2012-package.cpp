@@ -156,11 +156,11 @@ public:
         return GuhuoDialog::getInstance("qice", false);
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() < Self->getHandcardNum())
             return NULL;
 
@@ -509,14 +509,13 @@ public:
         return pattern == "slash";
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->getTypeId() == Card::Equip;
+    virtual bool viewFilter(const Card *to_select) const{
+        return to_select->getTypeId() == Card::Equip;
     }
 
-    const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getFilteredCard();
-        WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
-        slash->addSubcard(card);
+    const Card *viewAs(const Card *originalCard) const{
+        WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
+        slash->addSubcard(originalCard);
         slash->setSkillName(objectName());
         return slash;
     }
@@ -720,14 +719,14 @@ public:
         return  pattern == "slash";
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->objectName() == "slash";
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->objectName() == "slash";
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        Card *acard = new FireSlash(card->getSuit(), card->getNumber());
-        acard->addSubcard(card->getId());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        
+        Card *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
+        acard->addSubcard(originalCard->getId());
         acard->setSkillName(objectName());
         return acard;
     }
@@ -778,11 +777,11 @@ public:
         return pattern == "@@chunlao";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
-        return to_select->getFilteredCard()->inherits("Slash");
+    virtual bool viewFilter(const QList<const Card *> &, const Card* to_select) const{
+        return to_select->inherits("Slash");
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() == 0)
             return NULL;
 

@@ -136,13 +136,13 @@ public:
         return ! player->hasUsed("QuhuCard") && !player->isKongcheng();
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         QuhuCard *card = new QuhuCard;
-        card->addSubcard(card_item->getFilteredCard());
+        card->addSubcard(card);
         return card;
     }
 };
@@ -185,11 +185,11 @@ public:
         return ! player->hasUsed("QiangxiCard");
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getCard()->inherits("Weapon");
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        return selected.isEmpty() && to_select->inherits("Weapon");
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.isEmpty())
             return new QiangxiCard;
         else if(cards.length() == 1){
@@ -207,19 +207,19 @@ public:
     Luanji():ViewAsSkill("luanji"){
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if(selected.isEmpty())
             return !to_select->isEquipped();
         else if(selected.length() == 1){
-            const Card *card = selected.first()->getFilteredCard();
-            return !to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == card->getSuit();
+            const Card *card = selected.first();
+            return !to_select->isEquipped() && to_select->getSuit() == card->getSuit();
         }else
             return false;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() == 2){
-            const Card *first = cards.first()->getCard();
+            const Card *first = cards.first();
             ArcheryAttack *aa = new ArcheryAttack(first->getSuit(), 0);
             aa->addSubcards(cards);
             aa->setSkillName(objectName());
@@ -261,23 +261,22 @@ public:
         return player->getMark("shuangxiong") != 0;
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        if(to_select->isEquipped())
+    virtual bool viewFilter(const Card *card) const{
+        if(card->isEquipped())
             return false;
 
         int value = Self->getMark("shuangxiong");
         if(value == 1)
-            return to_select->getFilteredCard()->isBlack();
+            return card->isBlack();
         else if(value == 2)
-            return to_select->getFilteredCard()->isRed();
+            return card->isRed();
 
         return false;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        Duel *duel = new Duel(card->getSuit(), card->getNumber());
-        duel->addSubcard(card);
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Duel *duel = new Duel(originalCard->getSuit(), originalCard->getNumber());
+        duel->addSubcard(originalCard);
         duel->setSkillName(objectName());
         return duel;
     }
@@ -359,14 +358,13 @@ public:
     Lianhuan():OneCardViewAsSkill("lianhuan"){
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getCard()->getSuit() == Card::Club;
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->isEquipped() && to_select->getSuit() == Card::Club;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getFilteredCard();
-        IronChain *chain = new IronChain(card->getSuit(), card->getNumber());
-        chain->addSubcard(card);
+    virtual const Card *viewAs(const Card *originalCard) const {
+        IronChain *chain = new IronChain(originalCard->getSuit(), originalCard->getNumber());
+        chain->addSubcard(originalCard);
         chain->setSkillName(objectName());
         return chain;
     }
@@ -415,14 +413,14 @@ public:
     Huoji():OneCardViewAsSkill("huoji"){
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getCard()->isRed();
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->isEquipped() && to_select->isRed();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        FireAttack *fire_attack = new FireAttack(card->getSuit(), card->getNumber());
-        fire_attack->addSubcard(card->getId());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        
+        FireAttack *fire_attack = new FireAttack(originalCard->getSuit(), originalCard->getNumber());
+        fire_attack->addSubcard(originalCard->getId());
         fire_attack->setSkillName(objectName());
         return fire_attack;
     }
@@ -475,8 +473,8 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->isBlack() && !to_select->isEquipped();
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->isBlack() && !to_select->isEquipped();
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -487,8 +485,8 @@ public:
         return  pattern == "nullification";
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *first = card_item->getFilteredCard();
+    virtual const Card *viewAs(const Card *originalCard) const{
+        const Card *first = originalCard;
         Card *ncard = new Nullification(first->getSuit(), first->getNumber());
         ncard->addSubcard(first);
         ncard->setSkillName("kanpo");
@@ -525,13 +523,13 @@ public:
         return !player->hasUsed("TianyiCard") && !player->isKongcheng();
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new TianyiCard;
-        card->addSubcard(card_item->getFilteredCard());
+        card->addSubcard(card);
         return card;
     }
 };

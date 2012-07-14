@@ -94,18 +94,6 @@ const Card *CardItem::getCard() const{
     return m_card;
 }
 
-void CardItem::filter(const FilterSkill *filter_skill){
-    if(filter_skill){
-        if(filter_skill->viewFilter(this))
-            filtered_card = filter_skill->viewAs(this);
-    }else
-        filtered_card = m_card;
-}
-
-const Card *CardItem::getFilteredCard() const{
-    return filtered_card;
-}
-
 void CardItem::setHomePos(QPointF home_pos){
     this->home_pos = home_pos;
 }

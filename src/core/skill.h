@@ -2,7 +2,6 @@
 #define SKILL_H
 
 class Player;
-class CardItem;
 class Card;
 class ServerPlayer;
 class QDialog;
@@ -66,8 +65,8 @@ class ViewAsSkill:public Skill{
 public:
     ViewAsSkill(const QString &name);
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const = 0;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const = 0;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const = 0;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const = 0;
 
     bool isAvailable() const;
     virtual bool isEnabledAtPlay(const Player *player) const;
@@ -80,8 +79,8 @@ class ZeroCardViewAsSkill: public ViewAsSkill{
 public:
     ZeroCardViewAsSkill(const QString &name);
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
+    virtual const Card* viewAs(const QList<const Card *> &cards) const;
 
     virtual const Card *viewAs() const = 0;
 };
@@ -92,11 +91,11 @@ class OneCardViewAsSkill: public ViewAsSkill{
 public:
     OneCardViewAsSkill(const QString &name);
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
+    virtual const Card* viewAs(const QList<const Card *> &cards) const;
 
-    virtual bool viewFilter(const CardItem *to_select) const = 0;
-    virtual const Card *viewAs(CardItem *card_item) const = 0;
+    virtual bool viewFilter(const Card *to_select) const = 0;
+    virtual const Card *viewAs(const Card *originalCard) const = 0;
 };
 
 class FilterSkill: public OneCardViewAsSkill{
