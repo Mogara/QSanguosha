@@ -1410,7 +1410,7 @@ void Client::detachSkill(const QString &detach_str){
 
     player->loseSkill(skill_name);
 
-    if(player == Self && !Self->hasSkill(skill_name))
+    if(player == Self)
         emit skill_detached(skill_name);
 }
 
@@ -1666,10 +1666,8 @@ void Client::transfigure(const QString &transfigure_tr){
         const General *furui = Sanguosha->getGeneral(generals.first());
         const General *atarashi = Sanguosha->getGeneral(generals.last());
 
-        QList<const Skill*> skill_list = Self->getVisibleSkillList();
         if(furui)foreach(const Skill *skill, furui->getVisibleSkills()){
-            if(!skill_list.contains(skill))
-                emit skill_detached(skill->objectName());
+            emit skill_detached(skill->objectName());
         }
 
         if(atarashi)foreach(const Skill *skill, atarashi->getVisibleSkills()){

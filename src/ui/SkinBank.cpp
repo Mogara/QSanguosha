@@ -317,7 +317,13 @@ QString QSanRoomSkin::getGeneralPixmapPath(const QString &generalName, GeneralIc
             QByteArray arr = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
                              .arg(size).arg(S_SKIN_KEY_DEFAULT).toAscii();
             const char* ckey = arr.constData();
-            QString fileName = toQString(_m_imageConfig[ckey]).arg(generalName);
+            Json::Value imageMap = _m_imageConfig[ckey];
+            QString fileName;
+            if (imageMap.isString())
+                fileName = toQString(imageMap).arg(generalName);
+            else if (imageMap.isArray())
+                fileName = toQString(imageMap[0]).arg(generalName);
+
             return fileName;
         }
     }

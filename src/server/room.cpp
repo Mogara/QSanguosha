@@ -3409,7 +3409,7 @@ void Room::startTest(const QString &to_test){
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
     QString skill_name = skill->objectName();
-    if(player->hasSkill(skill_name))
+    if(player->getAcquiredSkills().contains(skill_name))
         return;
 
     player->acquireSkill(skill_name);

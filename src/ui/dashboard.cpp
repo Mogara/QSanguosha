@@ -345,7 +345,10 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
     _mutexEquipAnim.unlock();
     const Skill* skill = Sanguosha->getSkill(skillName);
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"));
-    if(_m_skillDock->getSkillButtonByName(skillName) != NULL) return NULL;
+    if(_m_skillDock->getSkillButtonByName(skillName) != NULL){
+        _m_button_recycle.append(_m_skillDock->getSkillButtonByName(skillName));
+        return NULL;
+    }
     return _m_skillDock->addSkillButtonByName(skillName);
 }
 
@@ -366,7 +369,13 @@ QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
         }
     }
     _mutexEquipAnim.unlock();
-    if (btn == NULL) btn  = _m_skillDock->removeSkillButtonByName(skillName);
+    if (btn == NULL){
+        QSanSkillButton* temp = _m_skillDock->getSkillButtonByName(skillName);
+        if(_m_button_recycle.contains(temp))
+            _m_button_recycle.removeOne(temp);
+        else
+            btn = _m_skillDock->removeSkillButtonByName(skillName);
+    }
     //Q_ASSERT(btn != NULL);
     //Be care LordSkill and SPConvertSkill
     if (btn != NULL && getFilter() == btn->getSkill()){

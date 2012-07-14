@@ -157,6 +157,7 @@ protected:
     PixmapAnimation* _m_equipBorders[4];
     QSanSkillButton* _m_equipSkillBtns[4];
     bool _m_isEquipsAnimOn[4];
+    QList<QSanSkillButton*> _m_button_recycle;
 
     void _createEquipBorderAnimations();
     void _setEquipBorderAnimation(int index, bool turnOn);
