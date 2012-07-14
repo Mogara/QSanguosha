@@ -237,6 +237,17 @@ struct CardsMoveStruct{
                (to_player_name == move.to_player_name) && (to_pile_name == move.to_pile_name);
     }
 
+    inline bool operator == (const CardsMoveStruct &other) const
+    {
+        return from == other.from && from_place == other.from_place &&
+            from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
+    }
+    inline bool operator < (const CardsMoveStruct &other) const
+    {
+        return from < other.from || from_place < other.from_place ||
+            from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
+    }
+
     QList<int> card_ids;
     Player::Place from_place, to_place;
     QString from_player_name, to_player_name;
@@ -295,8 +306,11 @@ public:
 struct JudgeStruct{
     JudgeStruct();
     bool isGood(const Card *card = NULL) const;
+    bool isEffected();
     bool isBad() const;
 
+    bool negative;
+    bool play_animation;
     ServerPlayer *who;
     const Card *card;
     JudgeStructPattern pattern;
@@ -337,6 +351,7 @@ enum TriggerEvent{
 
     StartJudge,
     AskForRetrial,
+    FinishRetrial,
     FinishJudge,
 
     Pindian,

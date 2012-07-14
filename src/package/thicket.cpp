@@ -68,7 +68,8 @@ void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
         index = is_brother ? 3 : 1;
     }else
         index = 2;
-    room->broadcastSkillInvoke("fangzhu", index);
+    if(!effect.from->hasSkill("jilve"))
+        room->broadcastSkillInvoke("fangzhu", index);
 
     effect.to->turnOver();
 }
@@ -693,7 +694,11 @@ public:
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *jiaxu = room->findPlayerBySkillName(objectName());
         if(jiaxu && jiaxu->objectName() == room->getCurrent()->objectName()){
-            room->broadcastSkillInvoke(objectName());
+            if(!jiaxu->hasSkill("jilve"))
+                room->broadcastSkillInvoke(objectName());
+            else
+                room->broadcastSkillInvoke("jilve", 3);
+
             LogMessage log;
             log.from = jiaxu;
             log.arg = "wansha";
@@ -867,11 +872,11 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(event == PreHpReduced && damage.from)
+        if(triggerEvent == PreHpReduced && damage.from)
             damage.from->tag["InvokeBaonue"] = damage.from->getKingdom() == "qun";
-        else if (event == Damage && player->tag.value("InvokeBaonue", false).toBool())
+        else if (triggerEvent == Damage && player->tag.value("InvokeBaonue", false).toBool())
         {
             QList<ServerPlayer *> dongzhuos;
             QList<ServerPlayer *> players = room->getOtherPlayers(player);

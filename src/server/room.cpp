@@ -298,16 +298,20 @@ void Room::judge(JudgeStruct &judge_struct){
             break; //if a skill break retrial.
     }
 
+    thread->trigger(FinishRetrial, this, judge_star->who, data);
+
     thread->trigger(FinishJudge, this, judge_star->who, data);
 }
 
 void Room::sendJudgeResult(const JudgeStar judge){
-    thread->delay(1500);
     Json::Value arg(Json::arrayValue);
     arg[0] = (int)QSanProtocol::S_GAME_EVENT_JUDGE_RESULT;
-    arg[1] = judge->isGood();
+    arg[1] = judge->card->getEffectiveId();
+    arg[2] = judge->isEffected();
+    arg[3] = toJsonString(judge->who->objectName());
+    arg[4] = toJsonString(judge->reason);
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-    thread->delay(2000);
+    thread->delay(Settings::S_JUDGE_ANIMATION_DURATION);
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
@@ -2162,7 +2166,6 @@ void Room::run(){
         }
     }else
         broadcastInvoke("startInXs", "0");
-
 
     if(scenario && !scenario->generalSelection())
         startGame();
@@ -4143,8 +4146,10 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
 
     if(card == NULL)
         return;
+    
+    if(skill_name != "jilve")
+        broadcastSkillInvoke(skill_name);
 
-    broadcastSkillInvoke(skill_name);
     const Card* oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
 

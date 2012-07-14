@@ -25,15 +25,22 @@ public:
     inline virtual void paint(QPainter *,const QStyleOptionGraphicsItem *,QWidget *) {}    
     void adjustCards();
     virtual QRectF boundingRect() const;
-    void showJudgeResult(CardItem* card, bool isGood);
+    void showJudgeResult(CardItem* card, bool take_effect);
 public slots:
     void clear(bool playAnimation = true);
+    void faded();
 protected:
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
     QList<CardItem*> m_visibleCards;
     QMutex _m_mutex_pileCards;
     int m_numCardsVisible;
     QRect m_cardsDisplayRegion;
+
+private:
+    CardItem *m_judge_card;
+    QString m_judge_emotion;
+private slots:
+    void _showJudgeResult();
 };
 
 #endif

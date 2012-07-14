@@ -317,7 +317,6 @@ public:
         }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
             if(judge->reason == "shuangxiong"){
-                CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, judge->who->objectName());
                 shuangxiong->obtainCard(judge->card);
                 return true;
             }

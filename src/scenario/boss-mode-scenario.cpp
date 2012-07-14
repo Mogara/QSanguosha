@@ -368,35 +368,38 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(triggerEvent){
         case GameStart:{
-            player = room->getLord();
-            if (boss_banlist.contains(player->getGeneralName()))
-                getRandomSkill(player, true);
-
-            removeLordSkill(player);
-
-            room->installEquip(player, "silver_lion");
-            qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-            if((qrand() % 2) == 1){
-                room->acquireSkill(player, "silue");
-                room->acquireSkill(player, "kedi");
-            }
-            else{
-                room->acquireSkill(player, "jishi");
-                room->acquireSkill(player, "daji");
-            }
-
-            int maxhp = 8-((player->getMaxHp()%3)%2);
-            room->setPlayerProperty(player, "maxhp", maxhp);
-            room->setPlayerProperty(player, "hp", maxhp);
-
-            foreach (ServerPlayer* serverPlayer, room->getPlayers())
+            if(player == NULL)
             {
-                getRandomSkill(serverPlayer);
-            }
+                player = room->getLord();
+                if (boss_banlist.contains(player->getGeneralName()))
+                    getRandomSkill(player, true);
 
-            room->setTag("FirstRound", true);
-                break;
+                removeLordSkill(player);
+
+                room->installEquip(player, "silver_lion");
+                qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+                if((qrand() % 2) == 1){
+                    room->acquireSkill(player, "silue");
+                    room->acquireSkill(player, "kedi");
+                }
+                else{
+                    room->acquireSkill(player, "jishi");
+                    room->acquireSkill(player, "daji");
+                }
+
+                int maxhp = 8 - ((player->getMaxHp() % 3) % 2);
+                room->setPlayerProperty(player, "maxhp", maxhp);
+                room->setPlayerProperty(player, "hp", maxhp);
+
+                foreach (ServerPlayer* serverPlayer, room->getPlayers())
+                {
+                    getRandomSkill(serverPlayer);
+                }
+
+                room->setTag("FirstRound", true);
             }
+            break;
+        }
 
         case TurnStart:{
                 if(player->isLord() && player->faceUp()){

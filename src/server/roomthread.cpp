@@ -108,9 +108,17 @@ JudgeStructPattern &JudgeStructPattern::operator =(const QString &str){
 }
 
 JudgeStruct::JudgeStruct()
-    :who(NULL), card(NULL), good(true), time_consuming(false)
+    :who(NULL), card(NULL), good(true), time_consuming(false),
+      negative(false), play_animation(false)
 {
 
+}
+
+bool JudgeStruct::isEffected(){
+    if(!negative)
+        return isGood();
+    else
+        return isBad();
 }
 
 bool JudgeStruct::isGood(const Card *card) const{

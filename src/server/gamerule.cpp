@@ -21,7 +21,7 @@ GameRule::GameRule(QObject *)
             << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << ConfirmDamage << PreHpReduced << DamageDone << PostHpReduced
-            << DamageComplete << StartJudge << FinishJudge << Pindian;
+            << DamageComplete << StartJudge << FinishRetrial << FinishJudge << Pindian;
 }
 
 bool GameRule::triggerable(const ServerPlayer *target) const{
@@ -564,10 +564,15 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
+            int delay = Config.AIDelay;
+            if(judge->time_consuming)
+                delay /= 4;
+            room->getThread()->delay(delay);
+
             break;
         }
 
-    case FinishJudge:{
+    case FinishRetrial:{
             JudgeStar judge = data.value<JudgeStar>();
 
             LogMessage log;
@@ -576,11 +581,18 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
-            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable){
-                CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), QString());
-                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
-
+            if(judge->play_animation)
                 room->sendJudgeResult(judge);
+
+            break;
+        }
+
+    case FinishJudge:{
+            JudgeStar judge = data.value<JudgeStar>();
+
+            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable){
+                CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
+                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
             }
 
             break;
@@ -938,7 +950,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     {
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player,"general",general_name);
+        room->setPlayerProperty(player, "general", general_name);
 
         foreach(QString skill_name, skill_mark.keys()){
             if(player->hasSkill(skill_name))
@@ -951,6 +963,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         room->setPlayerProperty(player,"general2",general_name);
     }
 
+    room->getThread()->addPlayerSkills(player);
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
     if(Config.EnableHegemony)room->setPlayerProperty(player, "role", getMappedRole(player->getGeneral()->getKingdom()));
 
@@ -964,7 +977,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     log.arg2 = player->getGeneral2Name();
 
     room->sendLog(log);
-    room->broadcastInvoke("playSystemAudioEffect","choose-item");
+    room->broadcastInvoke("playSystemAudioEffect", "choose-item");
 }
 
 bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -978,9 +991,9 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
-                sp->invoke("transfigure", transfigure_str);
                 room->setPlayerProperty(sp,"general","anjiang");
                 room->setPlayerProperty(sp,"kingdom","god");
+                sp->invoke("transfigure", transfigure_str);
 
                 LogMessage log;
                 log.type = "#BasaraGeneralChosen";
