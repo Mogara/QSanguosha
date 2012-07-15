@@ -493,6 +493,14 @@ public:
 
         return ncard;
     }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        foreach(const Card *card, player->getHandcards()){
+            if(card->isBlack() || card->objectName() == "nullification")
+                return true;
+        }
+        return false;
+    }
 };
 
 TianyiCard::TianyiCard(){

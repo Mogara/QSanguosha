@@ -245,6 +245,15 @@ public:
 
         return ncard;
     }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        foreach(const Card *card, player->getHandcards()){
+            if(card->objectName() == "nullification")
+                return true;
+        }
+
+        return player->getHandcardNum() > player->getHp() && !player->getEquips().isEmpty();
+    }
 };
 
 class Manjuan: public TriggerSkill{

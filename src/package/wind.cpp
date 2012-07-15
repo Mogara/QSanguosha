@@ -1059,6 +1059,10 @@ public:
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return 0;
     }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        return !player->isKongcheng();
+    }
 };
 
 WindPackage::WindPackage()

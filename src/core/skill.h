@@ -71,6 +71,7 @@ public:
     bool isAvailable() const;
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill{
