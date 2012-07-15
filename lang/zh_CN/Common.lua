@@ -18,7 +18,9 @@ function getRobotName(i)
 		"QB的契约",
 		"小A喜欢用的外挂",
 		"吉祥物小萨",
-		"Slob的杀虫剂"
+		"Slob的杀虫剂",
+		"克拉克的跑动投",
+		"讨厌的核弹",
 	}
 	
 	if i and i > 0 then return ai_names[i] end
@@ -28,7 +30,7 @@ function getRobotName(i)
 	return ai_names[index]
 end
 
-return {
+translation_table = {
 	["Pairs"] = "双将",
 
 	["spade"] = "黑桃",
@@ -186,24 +188,10 @@ return {
 	["DefaultIllustrator"] = "KayaK",
 	
 	["@waked"] = "觉醒",
-	
-	["ai_name1"] = getRobotName(1),
-	["ai_name2"] = getRobotName(2),
-	["ai_name3"] = getRobotName(3),
-	["ai_name4"] = getRobotName(4),
-	["ai_name5"] = getRobotName(5),
-	["ai_name6"] = getRobotName(6),
-	["ai_name7"] = getRobotName(7),
-	["ai_name8"] = getRobotName(8),
-	["ai_name9"] = getRobotName(9),
-	["ai_name10"] = getRobotName(10),
-	["ai_name11"] = getRobotName(11),
-	["ai_name12"] = getRobotName(12),
-	["ai_name13"] = getRobotName(13),
-	["ai_name14"] = getRobotName(14),
-	["ai_name15"] = getRobotName(15),
-	["ai_name16"] = getRobotName(16),
-	["ai_name17"] = getRobotName(17),
-	["ai_name18"] = getRobotName(18),
-	["ai_name19"] = getRobotName(19),
 }
+
+for i = 1, 21 do 
+	translation_table["ai_name"..i] = getRobotName(i)
+end
+
+return translation_table
