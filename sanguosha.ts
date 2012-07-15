@@ -3513,7 +3513,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="src/server/server.cpp" line="604"/>
         <source>Mini Scenes</source>
-        <translation>小型场景</translation>
+        <translation>小型场景[共33关]</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="705"/>
