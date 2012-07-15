@@ -82,7 +82,7 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
     
 private:    
-    const Card *m_card, *filtered_card;
+    const Card *m_card;
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;
     QPointF _m_lastMousePressScenePos;

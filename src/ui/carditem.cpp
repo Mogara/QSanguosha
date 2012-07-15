@@ -36,7 +36,7 @@ CardItem::CardItem(const Card *card)
 }
 
 CardItem::CardItem(const QString &general_name)
-    :m_card(NULL), filtered_card(NULL)
+    :m_card(NULL)
 {
     _initialize();
     changeGeneral(general_name);
@@ -53,13 +53,12 @@ void CardItem::setCard(const Card* card)
 {      
     if (card != NULL) 
     {
-        setObjectName(card->objectName());
+        setObjectName(Sanguosha->getCard(card->getId())->objectName());
         setToolTip(card->getDescription());
     }
     else
         setObjectName("unknown");
     m_card = card;
-    filtered_card = card;
 }
 
 void CardItem::setEnabled(bool enabled)
@@ -278,7 +277,7 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    
+    const Card* card = Sanguosha->getEngineCard(m_card->getId());
     if (!_m_frameType.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardFrameArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_frameType));
     
@@ -293,8 +292,8 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     else
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getPixmap("generalCardBack"));
     if (m_card) {
-        painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(m_card->getSuit()));
-        painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(m_card->getNumber(), m_card->isBlack()));
+        painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+        painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card->getNumber(), card->isBlack()));
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
         // Deal with stupid QT...
         if (_m_showFootnote)
