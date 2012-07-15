@@ -14,7 +14,10 @@
 "photoFocusFrame1": "image/compact/frame/responsing.png",
 "photoFocusFrame2": "image/compact/frame/sos.png",
 "photoFrameWhenSelected": "image/compact/frame/photoSelected.png",
+
 "playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[0, 30, 220, 111]],
+
+"generalCircleMask-0": ["image/generals/double-general/circle-photo-mask-compact.png", [78, 12, 41, 36]],
 
 "playerGeneralIcon-anjiang-1": "image/compact/generals/small/anjiang.png", 
 "playerGeneralIcon-yanliangwenchou-1": "image/compact/generals/small/yanliangwenchou.png",

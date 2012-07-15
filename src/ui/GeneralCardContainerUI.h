@@ -71,6 +71,8 @@ public:
     virtual QGraphicsItem* getMouseClickReceiver() = 0;
 
     inline void hookMouseEvents();
+
+    QPixmap paintByMask(QPixmap& source);
 public slots:
     void updateAvatar();    
     void updateSmallAvatar();
@@ -141,7 +143,7 @@ protected:
     // painting large shadowtext every frame is very costly, so we use a
     // graphicsitem to cache the result
     QGraphicsPixmapItem *_m_avatarNameItem, *_m_smallAvatarNameItem;
-    QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon;
+    QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon, *_m_circleItem;
     QGraphicsPixmapItem *_m_screenNameItem;
     QGraphicsPixmapItem *_m_chainIcon, *_m_faceTurnedIcon;
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;

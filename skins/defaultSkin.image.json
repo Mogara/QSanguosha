@@ -49,6 +49,14 @@
 "playerGeneralIcon-default-0": "image/generals/tiny/%1.png",
 "playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[0, 18, 220, 132]],
 "playerGeneralIcon-default-2": ["image/generals/avatar/%1.png",[43, 0, 134, 134]],
+"playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[62, 17, 105, 105]], //small avatar for photo
+"playerGeneralIcon-default-5": ["image/generals/avatar/%1.png",[53, 6, 117, 133]],  //small avatar for dashboard
+
+"generalCircleImage-0": "image/generals/double-general/circle-photo.png",
+"generalCircleImage-1": "image/generals/double-general/circle-dashboard.png",
+
+"generalCircleMask-0": ["image/generals/double-general/circle-photo-mask.png", [21, 40, 51, 49]],
+"generalCircleMask-1": ["image/generals/double-general/circle-dashboard-mask.png", [73, 0, 61, 70]],
 
 // generals defined later will override default path and also previously defined generals
 "playerGeneralIcon-anjiang-2": "image/generals/big/anjiang.png", 
@@ -70,7 +78,14 @@
 "playerGeneralIcon-nosfazheng-0": "image/generals/tiny/fazheng.png",
 "playerGeneralIcon-noslingtong-0": "image/generals/tiny/lingtong.png",
 "playerGeneralIcon-nosxushu-0": "image/generals/tiny/xushu.png",
-"playerGeneralIcon-noszhangchunhua-0": "image/generals/tiny/zhangchunhua.png",
+"playerGeneralIcon-noszhangchunhua-4": ["image/generals/avatar/zhangchunhua.png", [62, 17, 105, 105]],
+"playerGeneralIcon-nosfazheng-4": ["image/generals/avatar/fazheng.png", [62, 17, 105, 105]],
+"playerGeneralIcon-noslingtong-4": ["image/generals/avatar/lingtong.png", [62, 17, 105, 105]],
+"playerGeneralIcon-nosxushu-4": ["image/generals/avatar/xushu.png", [62, 17, 105, 105]],
+"playerGeneralIcon-noszhangchunhua-5": ["image/generals/avatar/zhangchunhua.png", [53, 6, 117, 133]],
+"playerGeneralIcon-nosfazheng-5": ["image/generals/avatar/fazheng.png", [53, 6, 117, 133]],
+"playerGeneralIcon-noslingtong-5": ["image/generals/avatar/lingtong.png", [53, 6, 117, 133]],
+"playerGeneralIcon-nosxushu-5": ["image/generals/avatar/xushu.png", [53, 6, 117, 133]],
 
 // buttons
 "dashboardButtonSetBg": "image/system/button/platter/bg.png",

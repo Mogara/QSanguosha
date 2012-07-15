@@ -159,6 +159,8 @@ public:
         int m_avatarSize;
         QRect m_smallAvatarArea;
         int m_smallAvatarSize;
+        QRect m_circleArea;
+        int m_circleImageSize;
         QRect m_avatarNameArea;
         QRect m_smallAvatarNameArea;
         QSanShadowTextFont m_avatarNameFont;
@@ -338,6 +340,8 @@ public:
     static const char* S_SKIN_KEY_SYSTEM_AUDIO_EFFECT;
     static const char* S_SKIN_KEY_EQUIP_ICON;
     static const char* S_SKIN_KEY_PROGRESS_BAR_IMAGE;
+    static const char* S_SKIN_KEY_GENERAL_CIRCLE_IMAGE;
+    static const char* S_SKIN_KEY_GENERAL_CIRCLE_MASK;
 
     // Animations
     static const char* S_SKIN_KEY_ANIMATIONS;

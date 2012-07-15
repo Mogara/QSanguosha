@@ -55,6 +55,8 @@ const char* QSanRoomSkin::S_SKIN_KEY_PLAYER_GENERAL_ICON = "playerGeneralIcon-%2
 const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG = "magatamasBg%1";
 const char* QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
 const char* QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
+const char* QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-%1";
+const char* QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
 
 // Animations
 const char* QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "animations";
@@ -836,8 +838,10 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
 
         tryParse(playerConfig["avatarArea"], layout->m_avatarArea);
         tryParse(playerConfig["smallAvatarArea"], layout->m_smallAvatarArea);
+        tryParse(playerConfig["circleArea"], layout->m_circleArea);
         tryParse(playerConfig["avatarImageType"], layout->m_avatarSize);
         tryParse(playerConfig["smallAvatarImageType"], layout->m_smallAvatarSize);
+        tryParse(playerConfig["circleImageType"], layout->m_circleImageSize);
         tryParse(playerConfig["avatarNameArea"], layout->m_avatarNameArea);
         layout->m_avatarNameFont.tryParse(playerConfig["avatarNameFont"]);
         tryParse(playerConfig["smallAvatarNameArea"], layout->m_smallAvatarNameArea);

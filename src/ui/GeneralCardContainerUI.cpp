@@ -247,6 +247,14 @@ void PlayerCardContainer::updateAvatar()
     _adjustComponentZValues();
 }
 
+QPixmap PlayerCardContainer::paintByMask(QPixmap &source){
+    QPixmap tmp = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK, QString::number(_m_layout->m_circleImageSize));
+    QPainter p(&tmp);
+    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    p.drawPixmap(0, 0, _m_layout->m_smallAvatarArea.width(), _m_layout->m_smallAvatarArea.height(), source);
+    return tmp;
+}
+
 void PlayerCardContainer::updateSmallAvatar()
 {
     const General *general = NULL;
@@ -255,8 +263,12 @@ void PlayerCardContainer::updateSmallAvatar()
         QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(
             general->objectName(),
             QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
+        smallAvatarIcon = paintByMask(smallAvatarIcon);
         _paintPixmap(_m_smallAvatarIcon, _m_layout->m_smallAvatarArea,
                      smallAvatarIcon, _getAvatarParent());
+        _paintPixmap(_m_circleItem, _m_layout->m_circleArea,
+                     QString(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize),
+                     _getAvatarParent());
         _m_smallAvatarArea->setToolTip(general->getSkillDescription());
         _m_layout->m_smallAvatarNameFont.paintText(
             _m_smallAvatarNameItem, 
@@ -707,7 +719,7 @@ PlayerCardContainer::PlayerCardContainer()
     _m_layout = NULL;
     _m_avatarArea = _m_smallAvatarArea = NULL;
     _m_avatarNameItem = _m_smallAvatarNameItem = NULL;
-    _m_avatarIcon = _m_smallAvatarIcon = NULL;
+    _m_avatarIcon = _m_smallAvatarIcon = _m_circleItem = NULL;
     _m_screenNameItem = NULL;
     _m_chainIcon = _m_faceTurnedIcon = NULL;
     _m_handCardBg = _m_handCardNumText = NULL;
@@ -811,6 +823,7 @@ void PlayerCardContainer::_adjustComponentZValues()
     _layUnder(_m_faceTurnedIcon);   
     _layUnder(_m_smallAvatarArea);
     _layUnder(_m_avatarArea);
+    _layUnder(_m_circleItem);
     _layUnder(_m_smallAvatarIcon);
     _layUnder(_m_avatarIcon);    
 }
