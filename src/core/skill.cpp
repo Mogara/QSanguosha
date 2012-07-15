@@ -152,6 +152,10 @@ bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &) const{
     return false;
 }
 
+bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer *) const{
+    return false;
+}
+
 ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)
     :ViewAsSkill(name)
 {

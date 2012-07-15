@@ -1324,6 +1324,20 @@ public:
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         return static_cast<int>(card->getSuit()) + 1;
     }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        int n = qMax(1, player->getHp());
+        int count = 0;
+        foreach(const Card *card, player->getHandcards() + player->getEquips()){
+            if(card->objectName() == "nullification")
+                return true;
+
+            if(card->getSuit() == Card::Spade)
+                count ++;
+        }
+
+        return count >= n;
+    }
 };
 
 
