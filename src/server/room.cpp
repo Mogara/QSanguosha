@@ -105,6 +105,41 @@ void Room::setCard(int cardId, Card* card)
     _m_roomState.setCard(cardId, card);
 }
 
+bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCard)
+{
+    Json::Value val(Json::arrayValue);
+    val[0] = cardId;
+    val[1] = toJsonString(newCard->objectName());
+    val[2] = (int)newCard->getSuit();
+    val[3] = newCard->getNumber();
+    val[4] = toJsonArray(newCard->getFlags());
+    doNotify(player, S_COMMAND_UPDATE_CARD, val);
+    return true;
+}
+
+
+bool Room::broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard)
+{
+    foreach (ServerPlayer* player, players)
+        notifyUpdateCard(player, cardId, newCard);
+    return true;
+}
+    
+
+bool Room::notifyResetCard(ServerPlayer* player, int cardId)
+{
+    if (_m_roomState.getCard(cardId)->isModified()) return false;
+    doNotify(player, S_COMMAND_UPDATE_CARD, cardId);
+    return true;
+}
+    
+bool Room::broadcastResetCard(const QList<ServerPlayer*> &players, int cardId)
+{
+    foreach (ServerPlayer* player, players)
+        notifyResetCard(player, cardId);
+    return true;
+}
+
 QList<ServerPlayer *> Room::getPlayers() const{
     return m_players;
 }

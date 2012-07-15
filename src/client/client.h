@@ -129,6 +129,7 @@ public:
     void setStatistics(const QString &property_str);
     void setCardFlag(const QString &pattern_str);
     void playSystemAudioEffect(const QString &effect_str);
+    void updateCard(const Json::Value &arg);
 
     void fillAG(const QString &cards_str);    
     void takeAG(const QString &take_str);

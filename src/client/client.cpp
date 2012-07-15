@@ -58,6 +58,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
+    m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     //callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["log"] = &Client::log;
@@ -167,6 +168,31 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc->setTextWidth(350);
     prompt_doc->setDefaultFont(QFont("SimHei"));
 }
+
+
+void Client::updateCard(const Json::Value &val)
+{
+    if (val.isInt())
+    {
+        // reset card
+        int cardId = val.asInt();
+        _m_roomState.resetCard(cardId);
+    }
+    else
+    {
+        // update card
+        Q_ASSERT(val.size() >= 5);
+        int cardId = val[0].asInt();
+        QString cardName = val[1].asCString();
+        Card::Suit suit = (Card::Suit)val[2].asInt();
+        int number = val[3].asInt();
+        QStringList flags;
+        tryParse(val[4], flags);
+        Card* card = Sanguosha->cloneCard(cardName, suit, number, flags);
+        _m_roomState.setCard(cardId, card);
+    }
+}
+
 
 void Client::signup(){
     if(replayer)
