@@ -2,6 +2,15 @@
 #include "engine.h"
 #include "card.h"
 
+RoomState::~RoomState()
+{
+    foreach (Card* card, m_cards.values())
+    {
+        delete card;
+    }
+    m_cards.clear();
+}
+
 Card* RoomState::getCard(int cardId) const
 {
     if (!m_cards.contains(cardId))

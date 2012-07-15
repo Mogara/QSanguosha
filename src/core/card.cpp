@@ -521,6 +521,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
+    // @todo: must remove this flag. Flags set inside card.cpp are not tracked and totally not maintainable!!!
     else
         this->setFlags("ever_moved");
 }

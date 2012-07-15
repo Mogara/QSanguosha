@@ -31,9 +31,6 @@ Client::Client(QObject *parent, const QString &filename)
     status(NotActive), alive_count(1), swap_pile(0),
     _m_roomState(true)
 {
-
-    Sanguosha->registerRoom(this);
-    _m_roomState.reset();
     ClientInstance = this;
     m_isGameOver = false;
 
@@ -600,6 +597,9 @@ void Client::activate(const Json::Value& playerId){
 }
 
 void Client::startGame(const QString &){
+    Sanguosha->registerRoom(this);
+    _m_roomState.reset();
+    
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
 
@@ -1108,8 +1108,8 @@ void Client::gameOver(const Json::Value &arg){
         ClientPlayer *p = const_cast<ClientPlayer *>(player);
         p->setProperty("win", win);
     }
-
-    emit game_over();
+    Sanguosha->unregisterRoom();
+    emit game_over();    
 }
 
 void Client::killPlayer(const QString &player_name){
@@ -1718,3 +1718,4 @@ void Client::updateStateItem(const QString &state_str)
 {
     emit role_state_changed(state_str);
 }
+
