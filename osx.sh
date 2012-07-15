@@ -6,6 +6,7 @@ if [ $1 == "-help" -o $1 == "-h" ]; then
     echo "Usage: $0 [-dmg]"
     echo "Create a QSanguosha application bundle in build directory"
     echo "If you provide the parameter '-dmg' is provided, then this script will also create a disk image"
+    exit 0
 fi
 
 SRC_DIR="$HOME/Projects/QSanguosha"
