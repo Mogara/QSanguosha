@@ -933,7 +933,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         card = provided;
         provided = NULL;
         has_provided = false;
-    }else if(pattern.startsWith("@") || !player->isNude()){
+    }else {
         AI *ai = player->getAI();
         if(ai){
             card = ai->askForCard(pattern, prompt, data);
@@ -1157,35 +1157,6 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
 
 const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
     notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
-    //@todo: put this into AI!!!!!!!!!!!!!!!!!
-    if(player->isKongcheng()){
-        // jijiu special case
-        if(player->hasSkill("jijiu") && player->getPhase() == Player::NotActive){
-            bool has_red = false;
-            foreach(const Card *equip, player->getEquips()){
-                if(equip->isRed()){
-                    has_red = true;
-                    break;
-                }
-            }
-            if(!has_red)
-                return NULL;
-        }else if(player->hasSkill("jiushi")){
-            if(!player->faceUp())
-                return NULL;
-        }else if(player->hasSkill("longhun")){
-            bool has_heart = false;
-            foreach(const Card *equip, player->getEquips()){
-                if(equip->getSuit() == Card::Heart){
-                    has_heart = true;
-                    break;
-                }
-            }
-            if(!has_heart)
-                return NULL;
-        }else
-            return NULL;
-    }
 
     const Card * card;
     bool continuable = false;
