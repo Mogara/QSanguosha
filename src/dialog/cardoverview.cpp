@@ -85,7 +85,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 {
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = Sanguosha->getEngineCard(card_id);
     QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
     ui->cardLabel->setPixmap(pixmap_path);
 
@@ -114,7 +114,7 @@ void CardOverview::on_malePlayButton_clicked()
     int row = ui->tableWidget->currentRow();
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        const Card *card = Sanguosha->getCard(card_id);
+        const Card *card = Sanguosha->getEngineCard(card_id);
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), true));
     }
 }
@@ -124,7 +124,7 @@ void CardOverview::on_femalePlayButton_clicked()
     int row = ui->tableWidget->currentRow();
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        const Card *card = Sanguosha->getCard(card_id);
+        const Card *card = Sanguosha->getEngineCard(card_id);
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), false));
     }
 }

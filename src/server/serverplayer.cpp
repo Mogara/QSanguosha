@@ -614,11 +614,11 @@ void ServerPlayer::play(QList<Player::Phase> set_phases){
         phase_change = data.value<PhaseChangeStruct>();
         _m_phases_state[i].phase = phases[i] = phase_change.to;
 
-        if((skip || _m_phases_state[i].finished) && phases[i] != NotActive)
-            continue;
-
         setPhase(phases[i]);
         room->broadcastProperty(this, "phase");
+        
+        if((skip || _m_phases_state[i].finished) && phases[i] != NotActive)
+            continue;
 
         thread->trigger(EventPhaseStart, room, this);
         if(getPhase() != NotActive)
