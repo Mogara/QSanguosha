@@ -712,7 +712,7 @@ void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<Server
         effect.to = source;
         room->cardEffect(effect);
     }
-    room->throwCard(this);
+    //room->throwCard(this);
 }
 
 Collateral::Collateral(Card::Suit suit, int number)
