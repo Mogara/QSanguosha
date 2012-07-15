@@ -1547,6 +1547,8 @@ bool RoomScene::_shouldIgnoreDisplayMove(Player::Place from, Player::Place to)
         return true;
     else if (from == Player::PlaceTable && to == Player::DiscardPile)
         return true;
+    else if (from == Player::PlaceJudge && to == Player::DiscardPile)
+        return true;
 
     return false;
 }
