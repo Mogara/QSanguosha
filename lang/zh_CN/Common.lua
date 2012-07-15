@@ -1,3 +1,33 @@
+function getRobotName(i)
+	ai_names = {
+		"Kenkic的机器女仆",
+		"HyperX的基友",
+		"天启的老公",
+		"灵魂的⑨",
+		"太阳神的苦工",
+		"William大神",
+		"海泡叉",
+		"安岐家的男宠",
+		"灵魂家的葱娘手办",
+		"启姐家的好丈夫",
+		"KK家的机器女仆",
+		"神上的化身",
+		"donle的最后之作",
+		"全宇宙最强的天霜雪舞",
+		"导线的电阻",
+		"QB的契约",
+		"小A喜欢用的外挂",
+		"吉祥物小萨",
+		"Slob的杀虫剂"
+	}
+	
+	if i and i > 0 then return ai_names[i] end
+	
+	math.randomseed(os.time())
+	local index = math.random(1, #ai_names)
+	return ai_names[index]
+end
+
 return {
 	["Pairs"] = "双将",
 
@@ -156,4 +186,24 @@ return {
 	["DefaultIllustrator"] = "KayaK",
 	
 	["@waked"] = "觉醒",
+	
+	["ai_name1"] = getRobotName(1),
+	["ai_name2"] = getRobotName(2),
+	["ai_name3"] = getRobotName(3),
+	["ai_name4"] = getRobotName(4),
+	["ai_name5"] = getRobotName(5),
+	["ai_name6"] = getRobotName(6),
+	["ai_name7"] = getRobotName(7),
+	["ai_name8"] = getRobotName(8),
+	["ai_name9"] = getRobotName(9),
+	["ai_name10"] = getRobotName(10),
+	["ai_name11"] = getRobotName(11),
+	["ai_name12"] = getRobotName(12),
+	["ai_name13"] = getRobotName(13),
+	["ai_name14"] = getRobotName(14),
+	["ai_name15"] = getRobotName(15),
+	["ai_name16"] = getRobotName(16),
+	["ai_name17"] = getRobotName(17),
+	["ai_name18"] = getRobotName(18),
+	["ai_name19"] = getRobotName(19),
 }
