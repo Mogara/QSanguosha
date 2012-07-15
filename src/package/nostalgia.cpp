@@ -1,4 +1,3 @@
-#include "standard.h"
 #include "skill.h"
 #include "wind.h"
 #include "client.h"
@@ -42,14 +41,12 @@ public:
     }
 };
 
-class MoonSpear: public Weapon{
-public:
-    MoonSpear(Suit suit = Card::Diamond, int number = 12)
-        :Weapon(suit, number, 3){
-        setObjectName("moon_spear");
-        skill = new MoonSpearSkill;
-    }
-};
+MoonSpear::MoonSpear(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("moon_spear");
+    skill = new MoonSpearSkill;
+}
 
 NostalgiaPackage::NostalgiaPackage()
     :Package("nostalgia")

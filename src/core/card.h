@@ -48,7 +48,7 @@ public:
         Skill,
         Basic,
         Trick,
-        Equip,
+        Equip
     };
 
     // constructor

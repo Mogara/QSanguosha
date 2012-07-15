@@ -3,6 +3,7 @@
 
 #include "package.h"
 #include "card.h"
+#include "standard.h"
 
 class SPPackage: public Package{
     Q_OBJECT
@@ -25,6 +26,13 @@ class SPCardPackage: public Package{
 
 public:
     SPCardPackage();
+};
+
+class SPMoonSpear:public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SPMoonSpear(Card::Suit suit = Diamond, int number = 12);
 };
 
 #endif // SPPACKAGE_H

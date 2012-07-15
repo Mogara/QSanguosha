@@ -4,7 +4,6 @@
 #include "standard-skillcards.h"
 #include "carditem.h"
 #include "engine.h"
-#include "standard.h"
 #include "maneuvering.h"
 #include "wisdompackage.h"
 
@@ -53,14 +52,12 @@ public:
     }
 };
 
-class SPMoonSpear: public Weapon{
-public:
-    SPMoonSpear(Suit suit = Card::Diamond, int number = 12)
-        :Weapon(suit, number, 3){
-        setObjectName("sp_moonspear");
-        skill = new SPMoonSpearSkill;
-    }
-};
+SPMoonSpear::SPMoonSpear(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("sp_moonspear");
+    skill = new SPMoonSpearSkill;
+}
 
 class JileiClear: public PhaseChangeSkill{
 public:
