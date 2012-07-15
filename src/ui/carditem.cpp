@@ -277,7 +277,7 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    const Card* card = Sanguosha->getEngineCard(m_card->getId());
+    
     if (!_m_frameType.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardFrameArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_frameType));
     
@@ -292,6 +292,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     else
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getPixmap("generalCardBack"));
     if (m_card) {
+        const Card* card = Sanguosha->getEngineCard(m_card->getId());
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card->getNumber(), card->isBlack()));
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
