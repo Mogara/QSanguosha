@@ -385,11 +385,12 @@ void RoomThread::run(){
             }
         }
     } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == GameFinished)
+        if (triggerEvent == GameFinished){
+            Sanguosha->unregisterRoom();
             return;
+        }
         else Q_ASSERT(false);
     }
-    Sanguosha->unregisterRoom();
 }
 
 static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
