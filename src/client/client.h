@@ -218,13 +218,14 @@ protected:
     QSanProtocol::Countdown m_countdown;
     // sync objects    
     QMutex m_mutexCountdown;
+    Status status;  
+    int alive_count;
+    int swap_pile;
     RoomState _m_roomState;
 
 private:
     ClientSocket *socket;
-    bool m_isGameOver;
-    Status status;
-    int alive_count;
+    bool m_isGameOver;  
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, CallBack> m_interactions;
     QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
@@ -238,7 +239,6 @@ private:
     QString skill_title, skill_line;
     QString card_pattern;
     QString skill_to_invoke;
-    int swap_pile;
 
     unsigned int _m_lastServerSerial;
 

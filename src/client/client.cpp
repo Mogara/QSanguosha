@@ -28,11 +28,12 @@ Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
     :QObject(parent), m_isDiscardActionRefusable(true),
-    status(NotActive), alive_count(1), swap_pile(0), _m_roomState(true)
+    status(NotActive), alive_count(1), swap_pile(0),
+    _m_roomState(true)
 {
+
     Sanguosha->registerRoom(this);
     _m_roomState.reset();
-
     ClientInstance = this;
     m_isGameOver = false;
 

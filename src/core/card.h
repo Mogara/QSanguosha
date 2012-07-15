@@ -136,6 +136,7 @@ public:
     static bool CompareByColor(const Card *a, const Card *b);
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
+    static bool Equals(const Card *a, const Card *b);
     static const Card *Parse(const QString &str);
     static Card *Clone(const Card *card);
     static QString Suit2String(Suit suit);

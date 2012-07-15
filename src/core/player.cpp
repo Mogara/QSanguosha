@@ -376,10 +376,11 @@ void Player::removeEquip(const EquipCard *equip){
 }
 
 bool Player::hasEquip(const Card *card) const{
-    return weapon->getId() == card->getId() ||
-           armor->getId() == card->getId() ||
-           defensive_horse->getId() == card->getId() ||
-           offensive_horse->getId() == card->getId();
+    Q_ASSERT(card != NULL);
+    return Card::Equals(weapon, card) ||
+           Card::Equals(armor, card) ||
+           Card::Equals(defensive_horse, card) ||
+           Card::Equals(offensive_horse, card);
 }
 
 bool Player::hasEquip() const{

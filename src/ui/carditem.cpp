@@ -54,7 +54,7 @@ void CardItem::setCard(const Card* card)
     if (card != NULL) 
     {
         m_cardId = card->getId();
-        const Card* engineCard = Sanguosha->getEngineCard(card->getId());
+        const Card* engineCard = Sanguosha->getEngineCard(m_cardId);
         Q_ASSERT(engineCard != NULL);
         setObjectName(engineCard->objectName());
         setToolTip(engineCard->getDescription());
@@ -195,7 +195,9 @@ void CardItem::setAutoBack(bool auto_back){
 }
 
 bool CardItem::isEquipped() const{
-    return Self->hasEquip(getCard());
+    const Card* card = getCard();
+    Q_ASSERT(card);
+    return Self->hasEquip(card);
 }
 
 void CardItem::setFrozen(bool is_frozen){

@@ -19,6 +19,7 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QMenu>
+#include <QFile>
 
 #include "pixmapanimation.h"
 
