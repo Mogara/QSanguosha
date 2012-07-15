@@ -1,7 +1,6 @@
 #include "god.h"
 #include "client.h"
 #include "engine.h"
-#include "carditem.h"
 #include "settings.h"
 #include "maneuvering.h"
 #include "general.h"
@@ -296,23 +295,22 @@ public:
         return player->getMark("@flame") >= 1;
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if(selected.length() >= 4)
             return false;
 
         if(to_select->isEquipped())
             return false;
 
-        foreach(CardItem *item, selected){
-            if (to_select->getFilteredCard()->getSuit() == 
-                item->getFilteredCard()->getSuit())
+        foreach (const Card *item, selected){
+            if (to_select->getSuit() == item->getSuit())
                 return false;
         }
 
         return true;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if (cards.length()  == 0) 
             return new SmallYeyanCard;
         if (cards.length() != 4)
@@ -607,14 +605,14 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->getSuit() == Card::Heart;
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->getSuit() == Card::Heart;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
-        slash->addSubcard(card_item->getCard()->getId());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        
+        WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
+        slash->addSubcard(originalCard->getId());
         slash->setSkillName(objectName());
 
         return slash;
@@ -1240,15 +1238,14 @@ public:
         return player->isWounded() || Slash::IsAvailable(player);
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        const Card *card = to_select->getFilteredCard();
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *card) const{
         int n = qMax(1, Self->getHp());
 
         if(selected.length() >= n)
             return false;
 
         if(n > 1 && !selected.isEmpty()){
-            Card::Suit suit = selected.first()->getFilteredCard()->getSuit();
+            Card::Suit suit = selected.first()->getSuit();
             return card->getSuit() == suit;
         }
 
@@ -1281,13 +1278,13 @@ public:
         return false;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         int n = qMax(1, Self->getHp());
 
         if(cards.length() != n)
             return NULL;
 
-        const Card *card = cards.first()->getFilteredCard();
+        const Card *card = cards.first();
         Card *new_card = NULL;
 
         Card::Suit suit = card->getSuit();

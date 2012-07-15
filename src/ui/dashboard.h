@@ -54,8 +54,6 @@ public:
     const Card *getSelected() const;
     void unselectAll();
     void hideAvatar();
-    void setFilter(const FilterSkill *filter);
-    const FilterSkill *getFilter() const;
 
     void disableAllCards();
     void enableCards();
@@ -85,7 +83,6 @@ public:
 
     static const int S_PENDING_OFFSET_Y = -25;
 public slots:
-    void doFilter();
     void sortCards(bool doAnmiation = true);
     void reverseSelection();
     void skillButtonActivated();

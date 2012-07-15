@@ -40,7 +40,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
-					if(p->isKongcheng()) continue;
+                    if(p->isKongcheng()) continue;
                     if(use.card->inherits("Jink"))
                         room->broadcastSkillInvoke("chongzhen", 1);
                     else
@@ -100,7 +100,7 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return true;
     }
 
@@ -108,9 +108,9 @@ public:
         return !player->hasUsed("LihunCard");
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new LihunCard;
-        card->addSubcard(card_item->getFilteredCard());
+        card->addSubcard(card);
         return card;
     }
 };
@@ -190,7 +190,7 @@ public:
             int n = getWeaponCount(caoren);
             caoren->drawCards(n+2);
             caoren->turnOver();
-			room->broadcastSkillInvoke("kuiwei", 1);
+            room->broadcastSkillInvoke("kuiwei", 1);
             if(caoren->getMark("@kuiwei") == 0)
                 caoren->gainMark("@kuiwei");
         }
@@ -206,7 +206,7 @@ public:
                 log.arg = QString::number(n);
                 log.arg2 = objectName();
                 room->sendLog(log);
-				room->broadcastSkillInvoke("kuiwei", 2);
+                room->broadcastSkillInvoke("kuiwei", 2);
                 if(caoren->getCards("he").length() <= n){
                     caoren->throwAllHandCardsAndEquips();
                 }
@@ -234,14 +234,13 @@ public:
         return pattern == "nullification" && player->getHandcardNum() > player->getHp();
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *first = card_item->getFilteredCard();
-        Card *ncard = new Nullification(first->getSuit(), first->getNumber());
-        ncard->addSubcard(first);
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
+        ncard->addSubcard(originalCard);
         ncard->setSkillName(objectName());
 
         return ncard;
@@ -467,14 +466,14 @@ public:
         return !player->hasUsed("DaheCard") && !player->isKongcheng();
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card *to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        Card *card = new DaheCard;
-        card->addSubcard(card_item->getFilteredCard());
-        return card;
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Card *daheCard = new DaheCard;
+        daheCard->addSubcard(originalCard);
+        return daheCard;
     }
 };
 
@@ -547,7 +546,7 @@ public:
             return false;
 
         if(pindian->isSuccess()){
-			room->setPlayerFlag(pindian->to, "dahe");
+            room->setPlayerFlag(pindian->to, "dahe");
             QList<ServerPlayer *> to_givelist = room->getAlivePlayers();
             foreach(ServerPlayer *p, to_givelist){
                 if(p->getHp() > pindian->from->getHp())
@@ -597,14 +596,14 @@ public:
         return !player->hasUsed("TanhuCard") && !player->isKongcheng();
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        Card *card = new TanhuCard;
-        card->addSubcard(card_item->getFilteredCard());
-        return card;
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Card *newCard = new TanhuCard;
+        newCard->addSubcard(originalCard);
+        return newCard;
     }
 };
 

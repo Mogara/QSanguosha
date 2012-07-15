@@ -23,9 +23,7 @@ public:
     ~CardItem();
 
     virtual QRectF boundingRect() const;
-    virtual void setEnabled(bool enabled);
-    void filter(const FilterSkill *filter_skill);
-    const Card *getFilteredCard() const;    
+    virtual void setEnabled(bool enabled);   
 
     const Card *getCard() const;
     void setCard(const Card* card);

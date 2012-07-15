@@ -10,6 +10,7 @@
 #include "protocol.h"
 #include "jsonutils.h"
 #include "structs.h"
+#include "RoomState.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -261,21 +262,54 @@ int Engine::getGeneralCount(bool include_banned) const{
 
         else if(ServerInfo.EnableBasara &&
                 Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
-            total -- ;
+            total-- ;
 
         else if(ServerInfo.EnableHegemony &&
                 Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
-            total -- ;
+            total-- ;
     }
 
     return total;
 }
 
-const Card *Engine::getCard(int index) const{
-    if(index < 0 || index >= cards.length())
+void Engine::registerRoom(QObject* room) {
+    m_rooms[QThread::currentThread()] = room;
+}
+
+void Engine::unregisterRoom() {
+    m_rooms.remove(QThread::currentThread());
+}
+
+QObject* Engine::currentRoom() const {
+    return m_rooms[QThread::currentThread()];
+}
+
+Card *Engine::getCard(int cardId) const{
+    Card *card = NULL;
+    if (cardId < 0 || cardId >= cards.length())
+        return NULL;
+    QObject* room = currentRoom();
+    Q_ASSERT(room);
+    Room *serverRoom = qobject_cast<Room *>(room);
+    if (serverRoom != NULL)
+    {
+        card = serverRoom->getCard(cardId);
+    }
+    else
+    {
+        Client *clientRoom = qobject_cast<Client *>(room);
+        Q_ASSERT(clientRoom != NULL);
+        card = clientRoom->getCard(cardId);
+    }
+    Q_ASSERT(card);
+    return card;
+}
+
+const Card *Engine::getEngineCard(int cardId) const{
+    if(cardId < 0 || cardId >= cards.length())
         return NULL;
     else
-        return cards.at(index);
+        return cards.at(cardId);
 }
 
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{

@@ -245,14 +245,14 @@ public:
     JujianViewAsSkill():OneCardViewAsSkill("jujian"){
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        JujianCard *card = new JujianCard;
-        card->addSubcard(card_item->getFilteredCard());
-        return card;
+    virtual const Card *viewAs(const Card *originalCard) const{
+        JujianCard *jujianCard = new JujianCard;
+        jujianCard->addSubcard(originalCard);
+        return jujianCard;
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->getCard()->inherits("BasicCard");
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->inherits("BasicCard");
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -644,7 +644,7 @@ public:
         return ! player->hasUsed("XianzhenCard") || player->hasFlag("xianzhen_success");
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if(!selected.isEmpty())
             return false;
 
@@ -654,7 +654,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(! Self->hasUsed("XianzhenCard")){
             if(cards.length() != 1)
                 return NULL;
@@ -705,15 +705,14 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getCard()->objectName() == "analeptic";
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->isEquipped() && to_select->objectName() == "analeptic";
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *c = card_item->getCard();
-        Slash *slash = new Slash(c->getSuit(), c->getNumber());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->setSkillName(objectName());
-        slash->addSubcard(card_item->getCard());
+        slash->addSubcard(originalCard);
 
         return slash;
     }
@@ -768,16 +767,16 @@ public:
         return ! player->hasUsed("MingceCard");
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *c = to_select->getCard();
+    virtual bool viewFilter(const Card* to_select) const{
+        const Card *c = to_select;
         return c->getTypeId() == Card::Equip || c->inherits("Slash");
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        MingceCard *card = new MingceCard;
-        card->addSubcard(card_item->getFilteredCard());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        MingceCard *mingceCard = new MingceCard;
+        mingceCard->addSubcard(originalCard);
 
-        return card;
+        return originalCard;
     }
 };
 

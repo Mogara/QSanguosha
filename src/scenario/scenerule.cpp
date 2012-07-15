@@ -94,14 +94,13 @@ public:
 class Scene27Skill : public OneCardViewAsSkill {
     Scene27Skill():OneCardViewAsSkill("liangshangjunzi") { }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->inherits("Dismantlement") || to_select->getFilteredCard()->inherits("Snatch");
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->inherits("Dismantlement") || to_select->inherits("Snatch");
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *first = card_item->getCard();
+    virtual const Card *viewAs(const Card *originalCard) const{
         Scene27Card *skill_card = new Scene27Card();
-        skill_card->addSubcard(first->getId());
+        skill_card->addSubcard(originalCard->getId());
         skill_card->setSkillName("scene_27_effect");
         return skill_card;
     }

@@ -103,16 +103,16 @@ public:
         return pattern == "@guidao";
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->isBlack();
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->isBlack();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        GuidaoCard *card = new GuidaoCard;
-        card->setSuit(card_item->getFilteredCard()->getSuit());
-        card->addSubcard(card_item->getFilteredCard());
+    virtual const Card *viewAs(const Card *originalCard) const{
+        GuidaoCard *guidaoCard = new GuidaoCard;
+        guidaoCard->setSuit(originalCard->getSuit());
+        guidaoCard->addSubcard(originalCard);
 
-        return card;
+        return guidaoCard;
     }
 };
 
@@ -170,14 +170,14 @@ public:
         return player->getKingdom() == "qun" && !player->hasFlag("ForbidHuangtian");
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getFilteredCard();
+    virtual bool viewFilter(const Card* to_select) const{
+        const Card *card = to_select;
         return card->objectName() == "jink" || card->objectName() == "lightning";
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         HuangtianCard *card = new HuangtianCard;
-        card->addSubcard(card_item->getFilteredCard());
+        card->addSubcard(card);
 
         return card;
     }
@@ -293,18 +293,18 @@ public:
         return false;
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if(ClientInstance->getPattern().endsWith("1"))
             return false;
         else
-            return selected.isEmpty() && to_select->getCard()->inherits("EquipCard");
+            return selected.isEmpty() && to_select->inherits("EquipCard");
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         return  pattern.startsWith("@@shensu");
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(ClientInstance->getPattern().endsWith("1")){
             if(cards.isEmpty())
                 return new ShensuCard;
@@ -599,19 +599,18 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->getSuit() == Card::Spade;
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->getSuit() == Card::Spade;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        Card *new_card = Card::Clone(card);
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Card *new_card = Card::Clone(originalCard);
         if(new_card) {
             new_card->setSuit(Card::Heart);
             new_card->setSkillName(objectName());
             return new_card;
         }else
-            return card;
+            return originalCard;
     }
 };
 
@@ -669,15 +668,14 @@ public:
         return pattern == "@@tianxiang";
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == Card::Heart;
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->isEquipped() && to_select->getSuit() == Card::Heart;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        TianxiangCard *card = new TianxiangCard;
-        card->addSubcard(card_item->getFilteredCard());
-
-        return card;
+    virtual const Card *viewAs(const Card *originalCard) const{
+        TianxiangCard *tianxiangCard = new TianxiangCard;
+        tianxiangCard->addSubcard(originalCard);
+        return tianxiangCard;
     }
 };
 
@@ -1031,15 +1029,15 @@ public:
                 && ! pattern.startsWith(".");
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         if(ClientInstance->getStatus() == Client::Responsing){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(ClientInstance->getPattern());
-            card->addSubcard(card_item->getFilteredCard());
+            card->addSubcard(card);
             return card;
         }
 
@@ -1047,7 +1045,7 @@ public:
         if(c){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(c->objectName());
-            card->addSubcard(card_item->getFilteredCard());
+            card->addSubcard(card);
 
             return card;
         }else

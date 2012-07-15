@@ -28,8 +28,10 @@ Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
     :QObject(parent), m_isDiscardActionRefusable(true),
-    status(NotActive), alive_count(1), swap_pile(0)
+    status(NotActive), alive_count(1), swap_pile(0), _m_roomState(true)
 {
+    Sanguosha->registerRoom(this);
+    _m_roomState.reset();
 
     ClientInstance = this;
     m_isGameOver = false;
@@ -60,7 +62,6 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
     //callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
-    callbacks["doFilter"] = &Client::doFilter;
     callbacks["log"] = &Client::log;
     callbacks["speak"] = &Client::speak;
     callbacks["attachSkill"] = &Client::attachSkill;
@@ -1241,10 +1242,6 @@ void Client::setMark(const QString &mark_str){
 
     ClientPlayer *player = getPlayer(who);
     player->setMark(mark, value);
-}
-
-void Client::doFilter(const QString &){
-    emit do_filter();
 }
 
 void Client::onPlayerChooseSuit(){

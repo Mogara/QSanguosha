@@ -39,7 +39,7 @@ Room::Room(QObject *parent, const QString &mode)
     game_started(false), game_finished(false), L(NULL), thread(NULL),
     thread_3v3(NULL), sem(new QSemaphore), _m_semRaceRequest(0), _m_semRoomMutex(1),
     _m_raceStarted(false), provided(NULL), has_provided(false),
-    m_surrenderRequestReceived(false), _virtual(false)
+    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
 {       
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -98,6 +98,11 @@ void Room::setCurrent(ServerPlayer *current){
 
 int Room::alivePlayerCount() const{
     return m_alivePlayers.count();
+}
+
+void Room::setCard(int cardId, Card* card)
+{
+    _m_roomState.setCard(cardId, card);
 }
 
 QList<ServerPlayer *> Room::getPlayers() const{

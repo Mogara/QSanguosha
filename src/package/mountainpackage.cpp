@@ -114,13 +114,13 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         QiaobianCard *card = new QiaobianCard;
-        card->addSubcard(card_item->getFilteredCard());
+        card->addSubcard(card);
         return card;
     }
 
@@ -583,13 +583,13 @@ public:
         return player->getKingdom() == "wu" && !player->isKongcheng() && !player->hasFlag("ForbidZhiba");
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const Card* to_select) const{
         return ! to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         ZhibaCard *card = new ZhibaCard;
-        card->addSubcard(card_item->getFilteredCard());
+        card->addSubcard(card);
 
         return card;
     }
@@ -756,13 +756,13 @@ public:
 
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getFilteredCard()->getTypeId() == Card::Equip;
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->isEquipped() && to_select->getTypeId() == Card::Equip;
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         ZhijianCard *zhijian_card = new ZhijianCard();
-        zhijian_card->addSubcard(card_item->getFilteredCard());
+        zhijian_card->addSubcard(originalCard);
         return zhijian_card;
     }
 };
@@ -1025,7 +1025,7 @@ public:
     }
 
     static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name){
-		zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->getGender() == General::Male, -1);
+        zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->getGender() == General::Male, -1);
     }
 
     static void AcquireGenerals(ServerPlayer *zuoci, int n){

@@ -402,6 +402,9 @@
     <ClCompile Include="Release\moc_magatamasItem.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\RoomState.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -661,6 +664,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\magatamasItem.h">
       <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\RoomState.h">
+      <Filter>core</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

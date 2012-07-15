@@ -63,11 +63,11 @@ public:
         return pattern == "@dujiang-card";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         return selected.length() < 2 && to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return false;
 
@@ -144,11 +144,11 @@ public:
         return ! player->hasFlag("flood");
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.length() < 3 && !to_select->isEquipped() && to_select->getCard()->isBlack();
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        return selected.length() < 3 && !to_select->isEquipped() && to_select->isBlack();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 3)
             return NULL;
 
@@ -248,15 +248,14 @@ public:
         return player->getMark("zhiyuan") > 0;
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->inherits("BasicCard");
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->inherits("BasicCard");
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        ZhiyuanCard *card = new ZhiyuanCard;
-        card->addSubcard(card_item->getFilteredCard());
-
-        return card;
+    virtual const Card *viewAs(const Card *originalCard) const{
+        ZhiyuanCard *zhiyuanCard = new ZhiyuanCard;
+        zhiyuanCard->addSubcard(originalCard);
+        return zhiyuanCard;
     }
 };
 
