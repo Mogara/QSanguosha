@@ -1,3 +1,3 @@
-setPile:155,142,129,50,82,41,27,16,15,4,3,116,77,76,73
-general:select role:lord maxhp:2 hp:2 singleTurn:lord+loyalist draw:0 hand:44,97,20 
-general:sujiang role:rebel starter:true hp:1 draw:0 hand:80,21,74,75,78,79 
+ general:select  role:rebel  hp:2  draw:2  starter:true
+    general:zhanghe  hp:2  draw:2  role:rebel
+    general:shenzhaoyun  general2:luxun  maxhp:3  hp:1  role:lord  equip:silver_lion,qinggang_sword,dayuan,hualiu

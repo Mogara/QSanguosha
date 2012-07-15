@@ -1,4 +1,2 @@
-setPile:22,21,27,26,25,172,118,143,140,137,0
-general:select role:lord hp:1 beforeNext:Lord+Loyalist draw:0 hand:13 
-general:gongsunzan role:rebel starter:true hp:1 draw:0 equip:109,69 
-general:zhangfei role:rebel hp:1 draw:0 equip:122,68 
+﻿general:select|role:rebel|starter:true
+general:zhaoyun|general2:zhangfei|maxhp:5|hp:5|role:lord|draw:5|equip:qinggang_sword,zixing

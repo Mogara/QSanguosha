@@ -1,6 +1,5 @@
-
-setPile:4,3,2,70,114,96,79,53,47
-general:caocao role:lord starter:true maxhp:5 hp:1 beforeNext:Rebel draw:0 hand:31,76,72,75 
-general:zhurong role:rebel maxhp:4 hp:1 equip:62,59 hand:0 
-general:yuanshu role:loyalist maxhp:4 hp:2 
-general:weiyan role:rebel 
+general:select  general2:select  role:loyalist  starter:true
+    general:wolong  general2:pangtong  maxhp:4  role:lord  equip:fan
+    general:yujin  role:rebel
+    general:xiahouyuan  role:rebel  equip:vine
+    general:panglingming  role:rebel  equip:vine,axe

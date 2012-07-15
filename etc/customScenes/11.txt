@@ -1,7 +1,5 @@
-
-setPile:40,39,38,37,36,35,0
-general:zhangliao role:loyalist starter:true beforeNext:Rebel draw:0 hand:73,75,99 
-general:dianwei role:rebel draw:0 hand:55 
-general:xiaoqiao role:rebel draw:0 hand:74 
-general:zhugeliang role:rebel maxhp:3 hp:2 draw:0 hand:46 
-general:luxun role:lord maxhp:3 hp:1 draw:0 hand:30 
+general:select  general2:select  role:lord  starter:true
+    general:pangde  equip:blade  role:rebel
+    general:ganning  general2:sunjian  maxhp:4  role:rebel  equip:guding_blade
+    general:zhangliao  general2:lukang  equip:ice_sword  role:rebel
+    general:sunshangxiang  general2:lingtong  maxhp:4  role:loyalist
