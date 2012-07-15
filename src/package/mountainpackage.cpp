@@ -13,6 +13,7 @@
 #include <QCommandLinkButton>
 
 QiaobianCard::QiaobianCard(){
+    will_throw = false;
     mute = true;
 }
 
@@ -20,47 +21,41 @@ bool QiaobianCard::targetsFeasible(const QList<const Player *> &targets, const P
     Player::Phase phase = (Player::Phase)Self->getMark("qiaobianPhase");
     if(phase == Player::Draw)
         return targets.length() <= 2;
-    else if(phase == Player::Play)
-        return targets.length() <= 1;
     else
-        return targets.isEmpty();
+        return targets.length() <= 1;
 }
 
 bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     Player::Phase phase = (Player::Phase)Self->getMark("qiaobianPhase");
     if(phase == Player::Draw)
         return targets.length() < 2 && to_select != Self && !to_select->isKongcheng();
-    else if(phase == Player::Play){
+    else
         return targets.isEmpty() &&
                 (!to_select->getJudgingArea().isEmpty() || !to_select->getEquips().isEmpty());
-    }else
-        return false;
 }
 
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> &targets) const{
     Player::Phase phase = (Player::Phase)zhanghe->getMark("qiaobianPhase");
     if(phase == Player::Draw){
-        room->broadcastSkillInvoke("qiaobian", 2);
         if(targets.isEmpty())
             return;
 
         QList<CardsMoveStruct> moves;
         CardsMoveStruct move1;
-        move1.card_ids << room->askForCardChosen(zhanghe, targets[0], "h", "tuxi");
+        move1.card_ids << room->askForCardChosen(zhanghe, targets[0], "h", "qiaobian");
         move1.to = zhanghe;
         move1.to_place = Player::PlaceHand;
         moves.push_back(move1);
         if(targets.length() == 2)
         {
             CardsMoveStruct move2;
-            move2.card_ids << room->askForCardChosen(zhanghe, targets[1], "h", "tuxi");
+            move2.card_ids << room->askForCardChosen(zhanghe, targets[1], "h", "qiaobian");
             move2.to = zhanghe;
             move2.to_place = Player::PlaceHand;
             moves.push_back(move2);
         }
         room->moveCards(moves, false);
-    }else if(phase == Player::Play){
-        room->broadcastSkillInvoke("qiaobian", 3);
+    }else{
         if(targets.isEmpty())
             return;
 
@@ -102,25 +97,16 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
                 CardMoveReason(CardMoveReason::S_REASON_TRANSFER, zhanghe->objectName(), "qiaobian", QString()));
         room->removeTag("QiaobianTarget");
     }
-    else if(phase == Player::Judge)
-        room->broadcastSkillInvoke("qiaobian", 1);
-    else
-        room->broadcastSkillInvoke("qiaobian", 4);
 }
 
-class QiaobianViewAsSkill: public OneCardViewAsSkill{
+class QiaobianViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    QiaobianViewAsSkill():OneCardViewAsSkill(""){
+    QiaobianViewAsSkill():ZeroCardViewAsSkill(""){
 
     }
 
-    virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->isEquipped();
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs() const{
         QiaobianCard *card = new QiaobianCard;
-        card->addSubcard(card);
         return card;
     }
 
@@ -147,23 +133,28 @@ public:
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *zhanghe, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         room->setPlayerMark(zhanghe, "qiaobianPhase", (int)change.to);
-        bool skip = false;
+        int index;
         switch(change.to){
         case Player::RoundStart:
         case Player::Start:
         case Player::Finish:
         case Player::NotActive: return false;
 
-        case Player::Judge: skip = room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge", 1);break;
-        case Player::Draw: skip = room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw", 2);break;
-        case Player::Play: skip =  room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play", 3);break;
-        case Player::Discard: skip = room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard", 1);break;
+        case Player::Judge: index = 1;break;
+        case Player::Draw: index = 2;break;
+        case Player::Play: index = 3;break;
+        case Player::Discard: index = 4;break;
         case Player::PhaseNone: Q_ASSERT(false);
 
         }
 
-        if(skip)
+        if(index && room->askForSkillInvoke(zhanghe, objectName(), data)
+                && room->askForDiscard(zhanghe, objectName(), 1, 1, true, false)){
+            room->broadcastSkillInvoke("qiaobian", index);
+            if(!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
+                room->askForUseCard(zhanghe, "@qiaobian", "@qiaobianask", index);
             zhanghe->skip(change.to);
+        }
         return false;
     }
 };
