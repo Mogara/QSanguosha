@@ -1527,7 +1527,8 @@ void RoomScene::toggleDiscards(){
 
 GeneralCardContainer* RoomScene::_getGeneralCardContainer(Player::Place place, Player* player)
 {
-    if (place == Player::DiscardPile || place == Player::DrawPile || place == Player::PlaceTable)
+    if (place == Player::DiscardPile || place == Player::PlaceJudge
+            || place == Player::DrawPile || place == Player::PlaceTable)
         return m_tablePile;
     // @todo: AG must be a pile with name rather than simply using the name special...
     else if (player == NULL && place == Player::PlaceSpecial)
@@ -1545,6 +1546,8 @@ bool RoomScene::_shouldIgnoreDisplayMove(Player::Place from, Player::Place to)
     if (from == Player::DiscardPile && to == Player::DiscardPile)
         return true;
     else if (from == Player::PlaceTable && to == Player::DiscardPile)
+        return true;
+    else if (from == Player::PlaceJudge && to == Player::DiscardPile)
         return true;
 
     return false;

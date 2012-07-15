@@ -309,6 +309,8 @@ void Room::judge(JudgeStruct &judge_struct){
 }
 
 void Room::sendJudgeResult(const JudgeStar judge){
+    if(tag.value("retrial", false).toBool())
+        thread->delay(1200);
     Json::Value arg(Json::arrayValue);
     arg[0] = (int)QSanProtocol::S_GAME_EVENT_JUDGE_RESULT;
     arg[1] = judge->card->getEffectiveId();
@@ -4172,8 +4174,8 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     judge->card = Sanguosha->getCard(card->getEffectiveId());
 
     CardsMoveStruct move1(QList<int>(),
-                          NULL,
-                          Player::PlaceTable,
+                          judge->who,
+                          Player::PlaceJudge,
                           CardMoveReason(CardMoveReason::S_REASON_RETRIAL,
                                          player->objectName(),
                                          skill_name,
@@ -4210,6 +4212,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     CardStar card_ptr = card;
     QVariant card_star = QVariant::fromValue(card_ptr);
     thread->trigger(CardResponsed, this, player, card_star);
+    tag["retrial"] = true;
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
