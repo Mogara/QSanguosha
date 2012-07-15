@@ -1,6 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "RoomState.h"
 #include "card.h"
 #include "general.h"
 #include "skill.h"
@@ -12,6 +13,8 @@
 #include <QHash>
 #include <QStringList>
 #include <QMetaObject>
+#include <QThread>
+#include <QList>
 
 class AI;
 class Scenario;
@@ -23,7 +26,7 @@ class Engine: public QObject
     Q_OBJECT
 
 public:
-    explicit Engine();
+    Engine();
     ~Engine();
 
     void addTranslationEntry(const char *key, const char *value);
@@ -72,7 +75,9 @@ public:
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
-    const Card *getCard(int index) const;
+    const Card *getEngineCard(int cardId) const;
+    // @todo: consider making this const Card*
+    Card *getCard(int cardId) const;
 
     QStringList getLords() const;
     QStringList getRandomLords() const;
@@ -89,11 +94,16 @@ public:
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target) const;
 
+    void registerRoom(QObject* room);
+    void unregisterRoom();
+    QObject* currentRoom() const;
+
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals, hidden_generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
+    QHash<QThread *, QObject *> m_rooms;
     QMap<QString, QString> modes;
     QMap<QString, const CardPattern *> patterns;
     QMultiMap<QString, QString> related_skills;

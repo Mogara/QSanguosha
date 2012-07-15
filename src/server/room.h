@@ -14,9 +14,11 @@ struct LogMessage;
 #include "serverplayer.h"
 #include "roomthread.h"
 #include "protocol.h"
+#include "RoomState.h"
 #include <qmutex.h>
 
-class Room : public QThread{
+class Room : public QThread
+{
     Q_OBJECT
 
 public:
@@ -300,7 +302,9 @@ public:
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void startTest(const QString &to_test);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
-
+    inline virtual RoomState* getRoomState() { return &_m_roomState; }
+    inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
+    virtual void setCard(int cardId, Card* card);
 protected:
     virtual void run();
     int _m_Id;
@@ -403,6 +407,7 @@ private:
 
     bool m_surrenderRequestReceived;
     bool _virtual;
+    RoomState _m_roomState;
 
     static QString generatePlayerName();
     void prepareForStart();

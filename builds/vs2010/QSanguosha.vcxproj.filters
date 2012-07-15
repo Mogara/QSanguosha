@@ -665,6 +665,9 @@
     <CustomBuild Include="..\..\src\ui\magatamasItem.h">
       <Filter>ui</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\core\RoomState.h">
+      <Filter>core</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug\moc_ai.cpp">
@@ -1251,9 +1254,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ui\uiUtils.h">
       <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\RoomState.h">
-      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

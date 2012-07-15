@@ -201,6 +201,7 @@ QString EventTriplet::toString() const{
 RoomThread::RoomThread(Room *room)
     :room(room)
 {
+    room->getRoomState()->reset();
 }
 
 void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
@@ -298,7 +299,7 @@ void RoomThread::action3v3(ServerPlayer *player){
 
 void RoomThread::run(){
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    
+    Sanguosha->registerRoom(room);
     GameRule *game_rule;
     if(room->getMode() == "04_1v3")
         game_rule = new HulaoPassMode(this);

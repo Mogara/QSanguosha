@@ -173,6 +173,9 @@ public:
 
     void attachSkill(const QString &skill_name);
     
+    inline virtual RoomState* getRoomState() { return &_m_roomState; }
+    inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
+
     inline void setCountdown(QSanProtocol::Countdown countdown) 
     {
         m_mutexCountdown.lock();
@@ -215,6 +218,7 @@ protected:
     QSanProtocol::Countdown m_countdown;
     // sync objects    
     QMutex m_mutexCountdown;
+    RoomState _m_roomState;
 
 private:
     ClientSocket *socket;
