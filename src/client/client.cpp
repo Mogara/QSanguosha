@@ -1028,19 +1028,27 @@ void Client::updatePileNum(){
 
 void Client::askForDiscard(const Json::Value &req){
     
-    if (!req.isArray() || !req[0].isInt() || !req[2].isBool() || !req[3].isBool() || !req[1].isInt())
+    if (!req.isArray() || !req[0].isInt() || !req[1].isInt() || !req[2].isBool() || !req[3].isBool())
         return;
 
     discard_num = req[0].asInt();    
+    min_num = req[1].asInt();
     m_isDiscardActionRefusable = req[2].asBool();
     m_canDiscardEquip = req[3].asBool();
-    min_num = req[1].asInt();
+    QString prompt = req[4].asCString();
 
-    QString prompt;
-    if(m_canDiscardEquip)
-        prompt = tr("Please discard %1 card(s), include equip").arg(discard_num);
+    if(prompt.isNull())
+    {
+        if(m_canDiscardEquip)
+            prompt = tr("Please discard %1 card(s), include equip").arg(discard_num);
+        else
+            prompt = tr("Please discard %1 card(s), only hand cards is allowed").arg(discard_num);
+    }
     else
-        prompt = tr("Please discard %1 card(s), only hand cards is allowed").arg(discard_num);
+    {
+        prompt = Sanguosha->translate(prompt);
+        prompt = prompt.replace("%arg", QString::number(discard_num));
+    }
 
     prompt_doc->setHtml(prompt);
 

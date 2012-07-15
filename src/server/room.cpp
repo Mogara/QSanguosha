@@ -3541,7 +3541,8 @@ QString Room::askForKingdom(ServerPlayer *player){
     return "wei";    
 }
 
-bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool optional, bool include_equip){
+bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, int min_num,
+                         bool optional, bool include_equip, const QString &prompt){
     notifyMoveFocus(player, S_COMMAND_DISCARD_CARD);
     AI *ai = player->getAI();
     QList<int> to_discard;
@@ -3552,7 +3553,8 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         ask_str[0] = discard_num;
         ask_str[1] = min_num;
         ask_str[2] = optional;
-        ask_str[3] = include_equip;;
+        ask_str[3] = include_equip;
+        ask_str[4] = toJsonString(prompt);
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str, true);
 
         //@todo: also check if the player does have that card!!!
