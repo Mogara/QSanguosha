@@ -36,8 +36,8 @@ CardItem::CardItem(const Card *card)
 }
 
 CardItem::CardItem(const QString &general_name)
-    :m_card(NULL)
 {
+    m_cardId = Card::S_UNKNOWN_CARD_ID;
     _initialize();
     changeGeneral(general_name);
     m_currentAnimation = NULL;
@@ -53,12 +53,17 @@ void CardItem::setCard(const Card* card)
 {      
     if (card != NULL) 
     {
-        setObjectName(Sanguosha->getCard(card->getId())->objectName());
-        setToolTip(card->getDescription());
+        m_cardId = card->getId();
+        const Card* engineCard = Sanguosha->getEngineCard(card->getId());
+        Q_ASSERT(engineCard != NULL);
+        setObjectName(engineCard->objectName());
+        setToolTip(engineCard->getDescription());
     }
     else
+    {
+        m_cardId = Card::S_UNKNOWN_CARD_ID;
         setObjectName("unknown");
-    m_card = card;
+    }
 }
 
 void CardItem::setEnabled(bool enabled)
@@ -90,7 +95,7 @@ void CardItem::changeGeneral(const QString &general_name){
 }
 
 const Card *CardItem::getCard() const{
-    return m_card;
+    return Sanguosha->getCard(m_cardId);
 }
 
 void CardItem::setHomePos(QPointF home_pos){
@@ -190,7 +195,7 @@ void CardItem::setAutoBack(bool auto_back){
 }
 
 bool CardItem::isEquipped() const{
-    return Self->hasEquip(m_card);
+    return Self->hasEquip(getCard());
 }
 
 void CardItem::setFrozen(bool is_frozen){
@@ -291,8 +296,9 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getCardMainPixmap(objectName()));
     else
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getPixmap("generalCardBack"));
-    if (m_card) {
-        const Card* card = Sanguosha->getEngineCard(m_card->getId());
+    const Card* card = Sanguosha->getEngineCard(m_cardId);
+    if (card) 
+    {
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card->getNumber(), card->isBlack()));
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;

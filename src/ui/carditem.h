@@ -28,8 +28,7 @@ public:
     const Card *getCard() const;
     void setCard(const Card* card);
     inline int getId() const {
-        if (m_card == NULL) return Card::S_UNKNOWN_CARD_ID;
-        else return m_card->getId();
+        return m_cardId;
     }
 
     // For move card animation
@@ -82,7 +81,7 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
     
 private:    
-    const Card *m_card;
+    int m_cardId;
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;
     QPointF _m_lastMousePressScenePos;
