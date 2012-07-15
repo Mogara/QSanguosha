@@ -4,7 +4,7 @@
 
 config = {
 	version = "20120715",
-	version_name = "Äù˜„°æ",
+	version_name = "æ¶…æ§ƒç‰ˆ",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
