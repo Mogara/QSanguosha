@@ -1906,18 +1906,15 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
     if(isFull())
         return;
 
-    int n = 0;
-    foreach(ServerPlayer *player, m_players){
-        if(player->getState() == "robot")
-            n++;
-    }
-
     ServerPlayer *robot = new ServerPlayer(this);
     robot->setState("robot");
 
     m_players << robot;
 
-    const QString robot_name = tr("Computer %1").arg(QChar('A' + n));
+    int n = qrand() % 19 + 1;
+    const QString robot_name = Sanguosha->translate("ai_name" + QString::number(n));
+            // tr("Computer %1").arg(QChar('A' + n));
+
     const QString robot_avatar = Sanguosha->getRandomGeneralName();
     signup(robot, robot_name, robot_avatar, true);
 

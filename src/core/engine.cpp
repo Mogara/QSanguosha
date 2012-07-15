@@ -36,10 +36,6 @@ void Engine::addScenario(const QString &name){
         qWarning("Scenario %s cannot be loaded!", qPrintable(name));
 }
 
-static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
-    return GetValueFromLuaState(L, "config", key);
-}
-
 Engine::Engine()
 {
     Sanguosha = this;

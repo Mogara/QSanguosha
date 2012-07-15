@@ -4,7 +4,7 @@
 
 config = {
 	version = "20120715",
-	version_name = "æ¶…ç›˜ç‰ˆ",
+	version_name = "Äù˜„°æ",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
@@ -45,6 +45,7 @@ config = {
         "Impasse",
         "Custom",
 	},
+
 
         color_wei = "#547998",
         color_shu = "#D0796C",
