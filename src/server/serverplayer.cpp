@@ -399,7 +399,7 @@ void ServerPlayer::addCard(const Card *card, Place place){
 bool ServerPlayer::isLastHandCard(const Card *card) const{
     if(card->getSubcards().length() <= 1)
         return (handcards.length() == 1) && (card->getEffectiveId() == handcards.first()->getEffectiveId());
-    if(card->getSubcards().length() > 1){
+    else{
         if(card->getSubcards().length() > handcards.length())
             return false;
 

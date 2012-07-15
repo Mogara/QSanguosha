@@ -1,4 +1,0 @@
-general:select  general2:select  hpadj:1  role:lord  equip:zhuahuangfeidian
-    general:shensimayi  general2:yuanshu  maxhp:4  role:rebel
-    general:taishici  general2:erzhang  maxhp:4  role:rebel
-    general:shenguanyu  general2:shenlumeng  maxhp:5  role:renegade  starter:true

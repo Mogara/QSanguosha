@@ -1,2 +1,0 @@
-general:select  general2:yangxiu  general3:zhouyu  role:rebel
-    general:huanggai  general2:huangyueying  maxhp:4  role:lord  equip:crossbow  starter:true

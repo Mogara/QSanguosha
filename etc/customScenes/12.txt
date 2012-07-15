@@ -1,4 +1,4 @@
-general:select  role:rebel  starter:true
-    general:xusheng  role:rebel
-    general:caopi  maxhp:4  role:lord
-    general:caoren  general2:caozhi  role:loyalist
+setPile:136,123,85,146,118,82,135,137
+general:select role:loyalist starter:true hp:1 beforeNext:Rebel draw:0 hand:5,80 
+general:chengong general2:yujin role:rebel maxhp:3 hp:3 draw:0 equip:68,64,109 hand:98,32 
+general:guanyu role:lord draw:0 equip:57 hand:103 

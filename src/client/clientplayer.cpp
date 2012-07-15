@@ -60,7 +60,7 @@ void ClientPlayer::addKnownHandCard(const Card *card){
 bool ClientPlayer::isLastHandCard(const Card *card) const{
     if(card->getSubcards().length() <= 1)
         return (known_cards.length() == 1) && (card->getEffectiveId() == known_cards.first()->getEffectiveId());
-    if(card->getSubcards().length() > 1){
+    else{
         if(card->getSubcards().length() > known_cards.length())
             return false;
 
