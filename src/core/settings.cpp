@@ -125,7 +125,7 @@ void Settings::init(){
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
-    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "zhugejin";
+    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "huaxiong" << "bgm_lvmeng";
 
     hegemony_ban.append(basara_ban);
     hegemony_ban << "xiahoujuan" << "zhugejin";
@@ -134,7 +134,7 @@ void Settings::init(){
             hegemony_ban << general;
     }
 
-    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua"
+    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua" << "bgm_pangtong"
               << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
                 << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
                 << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlvbu" << "dengshizai+bgm_diaochan"
@@ -146,7 +146,7 @@ void Settings::init(){
                 << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao"
                 << "jiangboyue+yanliangwenchou" << "jiangboyue+ganning" << "jiangboyue+luxun" << "jiangboyue+zhanggongqi"
                 << "weiyan+huanggai" << "caoren+shenlvbu" << "bgm_pangtong+huanggai"
-                << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
+                << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+noslingtong"
                 << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
                 << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlvbu"
                 << "yuanshu+lvmeng" << "yuanshu+caochong" << "huatuo+guojia"
@@ -157,7 +157,10 @@ void Settings::init(){
                 << "guanxingzhangbao+luxun" << "guanxingzhangbao+sunce" << "bgm_caoren+caoren"
                 << "bgm_caoren+caozhi" << "bgm_caoren+shenlvbu" << "bgm_caoren+bgm_diaochan"
                 << "bgm_caoren+dengshizai" << "bgm_caoren+caizhaoji" << "bgm_pangtong+huanggai"
-                << "huanggai+guanxingzhangbao";
+                << "huanggai+guanxingzhangbao" << "xushu+zhugeliang" << "nosxushu+zhugeliang"
+                << "zhugejin+caizhaoji" << "zhugejin+zhenji" << "zhugejin+huatuo" << "zhugejin+dengai"
+                << "fazheng+xiahoudun" << "nosfazheng+xiahoudun" << "bgm_zhangfei+guanyu"
+                << "bgm_zhangfei+sp_guanyu" << "bgm_liugei+zhugeliang";
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     if(banlist.isEmpty()){
