@@ -35,10 +35,10 @@ CardOverview::CardOverview(QWidget *parent) :
 }
 
 void CardOverview::loadFromAll(){
-    int i, n = Sanguosha->getCardCount();
+    int n = Sanguosha->getCardCount();
     ui->tableWidget->setRowCount(n);
-    for(i=0; i<n ;i++){
-        const Card *card = Sanguosha->getCard(i);
+    for (int i = 0; i < n ;i++){
+        const Card *card = Sanguosha->getEngineCard(i);
         addCard(i, card);
     }
 
@@ -47,12 +47,12 @@ void CardOverview::loadFromAll(){
 }
 
 void CardOverview::loadFromList(const QList<const Card*> &list){
-    int i, n = list.length();
+    int n = list.length();
     ui->tableWidget->setRowCount(n);
-    for(i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
         addCard(i, list.at(i));    
 
-    if(n>0)
+    if (n > 0)
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
 }
 
@@ -115,7 +115,7 @@ void CardOverview::on_malePlayButton_clicked()
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getCard(card_id);
-		Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), true));
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), true));
     }
 }
 
