@@ -837,10 +837,11 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
 
         tryParse(playerConfig["avatarArea"], layout->m_avatarArea);
-        tryParse(playerConfig["smallAvatarArea"], layout->m_smallAvatarArea);
+        tryParse(playerConfig["secondaryAvatarArea"], layout->m_smallAvatarArea);
         tryParse(playerConfig["circleArea"], layout->m_circleArea);
         tryParse(playerConfig["avatarImageType"], layout->m_avatarSize);
-        tryParse(playerConfig["smallAvatarImageType"], layout->m_smallAvatarSize);
+        tryParse(playerConfig["secondaryAvatarImageType"], layout->m_smallAvatarSize);
+        tryParse(playerConfig["primaryAvatarImageType"], layout->m_primaryAvatarSize);
         tryParse(playerConfig["circleImageType"], layout->m_circleImageSize);
         tryParse(playerConfig["avatarNameArea"], layout->m_avatarNameArea);
         layout->m_avatarNameFont.tryParse(playerConfig["avatarNameFont"]);
