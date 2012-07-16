@@ -2430,7 +2430,8 @@ void Room::processResponse(ServerPlayer *player, const QSanGeneralPacket *packet
     }
 }
 
-void Room::useCard(const CardUseStruct &card_use, bool add_history){
+void Room::useCard(const CardUseStruct &use, bool add_history){
+    CardUseStruct card_use = use;
     const Card *card = card_use.card;
 
     if(card_use.from->getPhase() == Player::Play && add_history){
@@ -2454,8 +2455,19 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
     }
 
     card = card_use.card->validate(&card_use);
-    if(card == card_use.card)
+    if(card == card_use.card){
+        if(card->inherits("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1){
+            Card *trick = Sanguosha->cloneCard(card->metaObject()->className(), card->getSuit(), card->getNumber());
+            Q_ASSERT(trick != NULL);
+            trick->setSkillName(card->getSkillName());
+            trick->setId(card->getEffectiveId());
+            trick->setObjectName(card->objectName());
+            setCard(card->getEffectiveId(), trick);
+            broadcastUpdateCard(getPlayers(), card->getEffectiveId(), trick);
+            card_use.card = trick;
+        }
         card_use.card->onUse(this, card_use);
+    }
     else if(card){
         CardUseStruct new_use = card_use;
         new_use.card = card;
