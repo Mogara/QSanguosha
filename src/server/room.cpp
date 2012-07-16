@@ -409,7 +409,7 @@ void Room::gameOver(const QString &winner){
             id.replace("_mini_","");
             int stage = Config.value("MiniSceneStage",1).toInt();
             int current = id.toInt();
-            if((stage == current) && stage<34)
+            if((stage == current) && stage<33)
             {
                 Config.setValue("MiniSceneStage",current+1);
                 id = QString::number(stage+1).rightJustified(2,'0');
@@ -1906,26 +1906,18 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
     if(isFull())
         return;
 
-    int n = 0;
-    foreach(ServerPlayer *player, m_players){
-        if(player->getState() == "robot")
-            n++;
-    }
-
     ServerPlayer *robot = new ServerPlayer(this);
     robot->setState("robot");
 
     m_players << robot;
 
     QStringList robot_names = GetConfigFromLuaState(Sanguosha->getLuaState(), "ai_names").toStringList();
-
     foreach(ServerPlayer *p, m_players){
         if(robot_names.contains(p->screenName()))
             robot_names.removeOne(p->screenName());
     }
 
-    const QString robot_name = robot_names.isEmpty() ? tr("Computer %1").arg(QChar('A' + n)) :
-                                                       robot_names.at(qrand() % robot_names.length());
+    const QString robot_name = robot_names.at(qrand() % robot_names.length());
     const QString robot_avatar = Sanguosha->getRandomGeneralName();
     signup(robot, robot_name, robot_avatar, true);
 

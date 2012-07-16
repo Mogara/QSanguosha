@@ -45,7 +45,7 @@ config = {
         "Impasse",
         "Custom",
 	},
-
+	
 	ai_names = {
 		"Kenkic的机器女仆",
 		"HyperX的基友",
@@ -67,7 +67,7 @@ config = {
 		"吉祥物小萨",
 		"Slob的杀虫剂",
 		"克拉克的跑动投",
-                "讨厌的核弹"
+		"讨厌的核弹",
 	},
 	
         color_wei = "#547998",

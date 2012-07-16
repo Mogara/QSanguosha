@@ -1,36 +1,4 @@
-function getRobotName(i)
-	ai_names = {
-		"Kenkic的机器女仆",
-		"HyperX的基友",
-		"天启的老公",
-		"灵魂的⑨",
-		"太阳神的苦工",
-		"William大神",
-		"海泡叉",
-		"安岐家的男宠",
-		"灵魂家的葱娘手办",
-		"启姐家的好丈夫",
-		"KK家的机器女仆",
-		"神上的化身",
-		"donle的最后之作",
-		"全宇宙最强的天霜雪舞",
-		"导线的电阻",
-		"QB的契约",
-		"小A喜欢用的外挂",
-		"吉祥物小萨",
-		"Slob的杀虫剂",
-		"克拉克的跑动投",
-		"讨厌的核弹",
-	}
-	
-	if i and i > 0 then return ai_names[i] end
-	
-	math.randomseed(os.time())
-	local index = math.random(1, #ai_names)
-	return ai_names[index]
-end
-
-translation_table = {
+return {
 	["Pairs"] = "双将",
 
 	["spade"] = "黑桃",
@@ -189,9 +157,3 @@ translation_table = {
 	
 	["@waked"] = "觉醒",
 }
-
-for i = 1, 21 do 
-	translation_table["ai_name"..i] = getRobotName(i)
-end
-
-return translation_table
