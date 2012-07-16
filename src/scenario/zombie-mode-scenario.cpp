@@ -301,7 +301,7 @@ public:
         return to_select->inherits("Peach");
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         PeachingCard *qingnang_card = new PeachingCard;
         qingnang_card->addSubcard(originalCard->getId());
 
@@ -326,10 +326,10 @@ public:
         return to_select->getTypeId() == Card::Equip;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         
         GanranEquip *ironchain = new GanranEquip(originalCard->getSuit(), originalCard->getNumber());
-        ironchain->setId(originalCard->getEffectiveId());
+        ironchain->addSubcard(originalCard->getId());
         ironchain->setSkillName(objectName());
 
         return ironchain;

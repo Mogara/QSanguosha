@@ -189,6 +189,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual void takeEffect(ServerPlayer *target) const = 0;
 
+    static const DelayedTrick *CastFrom(const Card *card);
+
 protected:
     JudgeStruct judge;
 

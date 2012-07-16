@@ -105,44 +105,6 @@ void Room::setCard(int cardId, Card* card)
     _m_roomState.setCard(cardId, card);
 }
 
-bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCard)
-{
-    Json::Value val(Json::arrayValue);
-    Q_ASSERT(newCard);
-    val[0] = cardId;
-    val[1] = toJsonString(newCard->metaObject()->className());
-    val[2] = (int)newCard->getSuit();
-    val[3] = newCard->getNumber();
-    val[4] = toJsonArray(newCard->getFlags());
-    val[5] = toJsonString(newCard->objectName());
-    val[6] = toJsonString(newCard->getSkillName());
-    doNotify(player, S_COMMAND_UPDATE_CARD, val);
-    return true;
-}
-
-
-bool Room::broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard)
-{
-    foreach (ServerPlayer* player, players)
-        notifyUpdateCard(player, cardId, newCard);
-    return true;
-}
-    
-
-bool Room::notifyResetCard(ServerPlayer* player, int cardId)
-{
-    if (_m_roomState.getCard(cardId)->isModified()) return false;
-    doNotify(player, S_COMMAND_UPDATE_CARD, cardId);
-    return true;
-}
-    
-bool Room::broadcastResetCard(const QList<ServerPlayer*> &players, int cardId)
-{
-    foreach (ServerPlayer* player, players)
-        notifyResetCard(player, cardId);
-    return true;
-}
-
 QList<ServerPlayer *> Room::getPlayers() const{
     return m_players;
 }
@@ -998,7 +960,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card_use.card = card;
     card_use.from = player;
     card = card->validateInResposing(player, &continuable);
-    int card_id = card->getEffectiveId();
 
     if(card){
         if(trigger_event == CardUsed){
@@ -1020,8 +981,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 reason.m_skillName = card->getSkillName();
                 moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
-
-        card = Sanguosha->getCard(card_id);
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, this, player, decisionData);
@@ -1261,6 +1220,24 @@ void Room::setPlayerCardLock(ServerPlayer *player, const QString &name){
 void Room::clearPlayerCardLock(ServerPlayer *player){
     player->setCardLocked(".");
     player->invoke("cardLock", ".");
+}
+
+void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value){
+    StatisticsStruct *statistics = player->getStatistics();
+    if(!statistics->setStatistics(property_name, value))
+        return;
+
+    player->setStatistics(statistics);
+    QString prompt = property_name + ":";
+
+    bool ok;
+    int add = value.toInt(&ok);
+    if(ok)
+        prompt += QString::number(add);
+    else
+        prompt += value.toString();
+
+    player->invoke("setStatistics", prompt);
 }
 
 void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who){
@@ -2430,8 +2407,7 @@ void Room::processResponse(ServerPlayer *player, const QSanGeneralPacket *packet
     }
 }
 
-void Room::useCard(const CardUseStruct &use, bool add_history){
-    CardUseStruct card_use = use;
+void Room::useCard(const CardUseStruct &card_use, bool add_history){
     const Card *card = card_use.card;
 
     if(card_use.from->getPhase() == Player::Play && add_history){
@@ -2455,19 +2431,8 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
     }
 
     card = card_use.card->validate(&card_use);
-    if(card == card_use.card){
-        if(card->inherits("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1){
-            Card *trick = Sanguosha->cloneCard(card->metaObject()->className(), card->getSuit(), card->getNumber());
-            Q_ASSERT(trick != NULL);
-            trick->setSkillName(card->getSkillName());
-            trick->setId(card->getEffectiveId());
-            trick->setObjectName(card->objectName());
-            setCard(card->getEffectiveId(), trick);
-            broadcastUpdateCard(getPlayers(), card->getEffectiveId(), trick);
-            card_use.card = trick;
-        }
+    if(card == card_use.card)
         card_use.card->onUse(this, card_use);
-    }
     else if(card){
         CardUseStruct new_use = card_use;
         new_use.card = card;
@@ -3116,6 +3081,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     for (int i = 0; i <  cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
+        QList<CardMoveStruct> moves = cards_move.flatten();
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
             int card_id = cards_move.card_ids[j];
@@ -3140,21 +3106,11 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             // update card to associate with new place
             // @todo: conside move this inside ServerPlayer::addCard;
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
+            onMoveMap[card] = moves[j];
         }
     }
     notifyMoveCards(true, cards_moves, forceMoveVisible);
     notifyMoveCards(false, cards_moves, forceMoveVisible);
-
-    for(int i = 0; i < cards_moves.size(); i++)
-    {
-        CardsMoveStruct &cards_move = cards_moves[i];
-        QList<CardMoveStruct> moves = cards_move.flatten();
-        for (int j = 0; j < cards_move.card_ids.size(); j++)
-        {
-            const Card *card = Sanguosha->getCard(cards_move.card_ids[j]);
-            onMoveMap[card] = moves[j];
-        }
-    }
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3346,146 +3302,9 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }
 }
 
-void Room::updateCardsOnLose(const CardsMoveStruct &move)
-{
-   if(move.to_place == Player::DiscardPile
-            || (move.to && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick)){
-        for (int i = 0; i < move.card_ids.size(); i++)
-        {
-            const Card *card = Sanguosha->getCard(move.card_ids[i]);
-            if(card->isModified())
-            {
-                resetCard(move.card_ids[i]);
-                broadcastResetCard(getPlayers(), move.card_ids[i]);
-            }
-        }
-        return;
-    }
-
-    ServerPlayer* player = (ServerPlayer*)move.from;
-    if(player != NULL && move.from_place == Player::PlaceHand
-        && move.to != NULL
-        && move.to_place != Player::PlaceDelayedTrick){
-        for (int i = 0; i < move.card_ids.size(); i++)
-        {
-            const Card *card = Sanguosha->getCard(move.card_ids[i]);
-            if(card->isModified())
-            {
-                resetCard(move.card_ids[i]);
-                notifyResetCard(player, move.card_ids[i]);
-            }
-        }
-        return;
-    }
-}
-
-void Room::updateCardsOnGet(const CardsMoveStruct &move)
-{
-    bool* cardChanged = new bool[move.card_ids.size()];
-    for (int i = 0; i < move.card_ids.size(); i++)
-    {
-        cardChanged[i] = false;
-    }
-
-    ServerPlayer* player = (ServerPlayer*)move.to;
-    if (player != NULL && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))
-    {
-        QSet<const Skill*> skills = player->getVisibleSkills();
-        QList<const FilterSkill*> filterSkills;
-        // first, get all filter skills
-        foreach (const Skill* skill, skills)
-        {
-            if (skill->inherits("FilterSkill"))
-            {
-                const FilterSkill* filter = qobject_cast<const FilterSkill*>(skill);
-                Q_ASSERT(filter);
-                filterSkills.append(filter);
-            }
-        }
-
-        if (filterSkills.size() == 0) return;
-
-        // now get all cards that need to be translated
-        QList<Card*> cards;
-        
-        foreach (int cardId, move.card_ids)
-        {
-            Card* card = Card::Clone(Sanguosha->getCard(cardId));
-            Q_ASSERT(card);
-            cards.append(card);
-        }
-
-        // We run through filterSkills for multiple times to ensure that the card will converge.
-        // (Consider Hongyan and Wushen.)
-        for (int i = 0; i < cards.size(); i++)
-        {            
-            for (int fTime = 0; fTime < filterSkills.size(); fTime++)
-            {
-                bool converged = true;
-                foreach (const FilterSkill* skill, filterSkills)
-                {
-                    Card* card = cards[i];
-                    Q_ASSERT(skill);
-                    if (skill->viewFilter(cards[i]))
-                    {
-                        cards[i] = skill->viewAs(card);
-                        Q_ASSERT(cards[i]);
-                        delete card;
-                        converged = false;
-                        cardChanged[i] = true;
-                    }
-                }
-                if (converged) break;
-            }            
-        }
-
-        for (int i = 0; i < cards.size(); i++)
-        {
-            if (!cardChanged[i]) {
-                delete cards[i];
-                continue;
-            }
-            setCard(move.card_ids[i], cards[i]);
-            if(move.to_place == Player::PlaceHand)
-                notifyUpdateCard(player, move.card_ids[i], cards[i]);
-            else
-                broadcastUpdateCard(getPlayers(), move.card_ids[i], cards[i]);
-        }
-    }
-
-    delete cardChanged;
-
-    player = (ServerPlayer*)move.from;
-    if(player != NULL && move.to_place == Player::PlaceDelayedTrick){
-        for (int i = 0; i < move.card_ids.size(); i++)
-        {
-            const Card *card = Sanguosha->getCard(move.card_ids[i]);
-            if(card->isModified())
-            {
-                Card *trick = Sanguosha->cloneCard(card->metaObject()->className(), card->getSuit(), card->getNumber(), card->getFlags());
-                Q_ASSERT(trick != NULL);
-                trick->setNumber(Sanguosha->getEngineCard(move.card_ids[i])->getNumber());
-                trick->setSuit(Sanguosha->getEngineCard(move.card_ids[i])->getSuit());
-                trick->setSkillName(card->getSkillName());
-                trick->setId(card->getId());
-                trick->setObjectName(card->objectName());
-                setCard(move.card_ids[i], trick);
-                broadcastUpdateCard(getPlayers(), move.card_ids[i], trick);
-            }
-        }
-    }
-}
-
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
 {
-    if (isLostPhase) {
-        foreach (CardsMoveStruct move, cards_moves)
-            updateCardsOnLose(move);
-    } else {
-        foreach (CardsMoveStruct move, cards_moves)
-            updateCardsOnGet(move);
-    }
-    // process dongcha
+    // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   
     // Notify clients

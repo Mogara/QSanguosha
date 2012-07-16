@@ -10,7 +10,7 @@ Player::Player(QObject *parent)
     hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    face_up(true), chained(false)
+    face_up(true), chained(false), player_statistics(new StatisticsStruct())
 {
 }
 
@@ -439,10 +439,7 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
 }
 
 QList<const Card *> Player::getJudgingArea() const{
-    QList<const Card*> cards;
-    foreach (int card_id, judging_area)
-        cards.append(Sanguosha->getCard(card_id));
-    return cards;
+    return judging_area;
 }
 
 Player::Phase Player::getPhase() const{
@@ -506,36 +503,32 @@ bool Player::isAllNude() const{
 }
 
 void Player::addDelayedTrick(const Card *trick){
-    judging_area << trick->getEffectiveId();
+    judging_area << trick;
+    delayed_tricks << DelayedTrick::CastFrom(trick);
 }
 
 void Player::removeDelayedTrick(const Card *trick){
-    judging_area.removeOne(trick->getEffectiveId());
+    int index = judging_area.indexOf(trick);
+    if(index >= 0){
+        judging_area.removeAt(index);
+        delayed_tricks.removeAt(index);
+    }
 }
 
 const DelayedTrick *Player::topDelayedTrick() const{
-    if(judging_area.isEmpty())
+    if(delayed_tricks.isEmpty())
         return NULL;
-    else{
-        const Card *card = Sanguosha->getCard(judging_area.last());
-        const DelayedTrick *trick = qobject_cast<const DelayedTrick*>(card);
-        Q_ASSERT(trick != NULL);
-        return trick;
-    }
+    else
+        return delayed_tricks.last();
 }
 
 QList<const DelayedTrick *> Player::delayedTricks() const{
-    QList<const DelayedTrick*> cards;
-    foreach (int card_id, judging_area){
-        const Card* card = Sanguosha->getCard(card_id);
-        cards.append(qobject_cast<const DelayedTrick*>(card));
-    }
-    return cards;
+    return delayed_tricks;
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
-    foreach(int card_id, judging_area){
-        if(Sanguosha->getCard(card_id)->objectName() == trick_name)
+    foreach(const DelayedTrick *trick, delayed_tricks){
+        if(trick->objectName() == trick_name)
             return true;
     }
 
@@ -590,11 +583,19 @@ int Player::getCardCount(bool include_equip) const{
     int count = getHandcardNum();
 
     if(include_equip){
-        if (weapon) count++;
-        if (armor) count++;
-        if(defensive_horse) count++;
-        if(offensive_horse) count++;
+        if(weapon)
+            count ++;
+
+        if(armor)
+            count ++;
+
+        if(defensive_horse)
+            count ++;
+
+        if(offensive_horse)
+            count ++;
     }
+
     return count;
 }
 
@@ -777,6 +778,14 @@ bool Player::hasCardLock(const QString &card_str) const{
     return lock_card.contains(card_str);
 }
 
+StatisticsStruct *Player::getStatistics() const{
+    return player_statistics;
+}
+
+void Player::setStatistics(StatisticsStruct *statistics){
+    player_statistics = statistics;
+}
+
 bool Player::isCaoCao() const{
     QString general_name = getGeneralName();
     return general_name == "caocao" || general_name == "shencaocao" || general_name == "weiwudi";
@@ -807,7 +816,8 @@ void Player::copyFrom(Player* p)
     b->offensive_horse  = a->offensive_horse;
     b->face_up          = a->face_up;
     b->chained          = a->chained;
-    b->judging_area     = QList<int> (a->judging_area);
+    b->judging_area     = QList<const Card *> (a->judging_area);
+    b->delayed_tricks   = QList<const DelayedTrick *> (a->delayed_tricks);
     b->fixed_distance   = QHash<const Player *, int> (a->fixed_distance);
     b->jilei_set        = QSet<QString> (a->jilei_set);
 

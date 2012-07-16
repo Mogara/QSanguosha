@@ -245,8 +245,8 @@ QString Card::toString() const{
     if(!isVirtualCard())
         return QString::number(id);
     else
-        return QString("%1:%2:%3[%4:%5]=%6")
-                .arg(metaObject()->className()).arg(objectName()).arg(skill_name)
+        return QString("%1:%2[%3:%4]=%5")
+                .arg(objectName()).arg(skill_name)
                 .arg(getSuitString()).arg(getNumberString()).arg(subcardString());
 }
 
@@ -364,17 +364,16 @@ const Card *Card::Parse(const QString &str){
         LuaSkillCard *new_card =  LuaSkillCard::Parse(str);
         return new_card;
     }if(str.contains(QChar('='))){
-        QRegExp pattern("(\\w+):(\\w*):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
+        QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
         if(!pattern.exactMatch(str))
             return NULL;
 
         QStringList texts = pattern.capturedTexts();
         QString name = texts.at(1);
-        QString objectname = texts.at(2);
-        QString skill_name = texts.at(3);
-        QString suit_string = texts.at(4);
-        QString number_string = texts.at(5);
-        QString subcard_str = texts.at(6);
+        QString skill_name = texts.at(2);
+        QString suit_string = texts.at(3);
+        QString number_string = texts.at(4);
+        QString subcard_str = texts.at(5);
         QStringList subcard_ids;
         if(subcard_str != ".")
             subcard_ids = subcard_str.split("+");
@@ -394,7 +393,6 @@ const Card *Card::Parse(const QString &str){
             number = number_string.toInt();
 
         Card *card = Sanguosha->cloneCard(name, suit, number);
-        card->setObjectName(objectname);
         if(card == NULL)
             return NULL;
 
@@ -519,18 +517,12 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     }
 
     if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable){
-        int card_id = this->getEffectiveId();
-        bool is_virtual = isVirtualCard();
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
-        CardUseStruct card_use;
-        card_use.card = is_virtual ? this : Sanguosha->getCard(card_id);
-        card_use.from = source;
-        card_use.to = targets;
-        QVariant data = QVariant::fromValue(card_use);
-        room->getThread()->trigger(PostCardEffected, room, source, data);
     }
+    else
+        this->setFlags("ever_moved");
 }
 
 void Card::onEffect(const CardEffectStruct &) const{

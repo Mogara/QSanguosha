@@ -28,7 +28,7 @@ public:
         return !player->hasUsed("LuoyiCard") && !player->isNude();
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new LuoyiCard;
     }
 };
@@ -77,7 +77,7 @@ public:
         return !player->isKongcheng() && ! player->hasUsed("NeoFanjianCard");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new NeoFanjianCard;
     }
 };

@@ -330,7 +330,7 @@ public:
         return selected.length() < 2 && !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 
@@ -383,7 +383,7 @@ public:
         return true;
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 
@@ -952,7 +952,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, effect.to->objectName());
     reason.m_playerId = effect.from->objectName();
     reason.m_targetId = effect.to->objectName();
-    room->moveCardTo(Sanguosha->getCard(card_id), effect.to, NULL, Player::DiscardPile, reason);
+    room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::DiscardPile, reason);
     // room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to);
 
     LogMessage log;

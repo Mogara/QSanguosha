@@ -36,10 +36,13 @@ public:
     explicit Replayer(QObject *parent, const QString &filename);
     static QByteArray PNG2TXT(const QString filename);
 
+    void initCommandPair();
+    QString &commandTranslation(QString &cmd);
     QString &commandProceed(QString &cmd);
     int getDuration() const;
     qreal getSpeed();
 
+    bool m_isOldVersion;
     int m_commandSeriesCounter;
 
 public slots:
@@ -63,6 +66,10 @@ private:
         QString cmd;
     };
     QList<Pair> pairs;
+
+    QMap<QString, QString> m_nameTranslation;
+    QMap<QString, QSanProtocol::CommandType> m_commandMapping;
+    QMap<QSanProtocol::PacketType, QList<QSanProtocol::CommandType> > m_packetTypeMapping;
 
 signals:
     void command_parsed(const QString &cmd);

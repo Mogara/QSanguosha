@@ -74,7 +74,7 @@ public:
         return !player->isKongcheng() && !player->hasUsed("ZhanShuangxiongCard");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new ZhanShuangxiongCard();
     }
 };
@@ -103,7 +103,7 @@ public:
     SmallTuxiViewAsSkill():ZeroCardViewAsSkill("smalltuxi"){
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new SmallTuxiCard;
     }
 

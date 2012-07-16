@@ -111,7 +111,7 @@ public:
         return sum <= Self->getMark("chengxiang");
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         int sum = 0;
         foreach (const Card *card, cards){
             sum += card->getNumber();
@@ -288,7 +288,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         JuejiCard *juejiCard = new JuejiCard;
         juejiCard->addSubcard(originalCard);
         return juejiCard;
@@ -472,7 +472,7 @@ public:
         return player->getMark("@tied") > 0 && Slash::IsAvailable(player);
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new LianliSlashCard;
     }
 };
@@ -559,7 +559,7 @@ public:
         return pattern == "@@lianli";
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new LianliCard;
     }
 };
@@ -855,7 +855,7 @@ public:
             return false;
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 
@@ -1246,7 +1246,7 @@ public:
             return false;
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(Self->hasUsed("LexueCard")){
             if(!Self->hasFlag("lexue"))
                 return false;
@@ -1304,7 +1304,7 @@ public:
         return !player->hasFlag("xunzhi");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new XunzhiCard;
     }
 };
@@ -1603,7 +1603,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(Self->getPile("rice").isEmpty() && cards.isEmpty())
             return NULL;
 
@@ -1670,7 +1670,7 @@ public:
         return zhanglu && !zhanglu->getPile("rice").isEmpty();
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new YisheAskCard;
     }
 };
@@ -1822,7 +1822,7 @@ public:
         return selected.isEmpty() && to_select->inherits("Weapon");
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() <= 1){
             TaichenCard *taichen_card = new TaichenCard;
             taichen_card->addSubcards(cards);

@@ -160,7 +160,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() < Self->getHandcardNum())
             return NULL;
 
@@ -513,7 +513,7 @@ public:
         return to_select->getTypeId() == Card::Equip;
     }
 
-    Card *viewAs(const Card *originalCard) const{
+    const Card *viewAs(const Card *originalCard) const{
         WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard);
         slash->setSkillName(objectName());
@@ -663,7 +663,7 @@ public:
     Anxu():ZeroCardViewAsSkill("anxu"){
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new AnxuCard;
     }
 
@@ -723,7 +723,7 @@ public:
         return to_select->objectName() == "slash";
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         
         Card *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
         acard->addSubcard(originalCard->getId());
@@ -781,7 +781,7 @@ public:
         return to_select->inherits("Slash");
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() == 0)
             return NULL;
 

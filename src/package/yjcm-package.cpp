@@ -105,6 +105,10 @@ public:
 class Jiushi: public ZeroCardViewAsSkill{
 public:
     Jiushi():ZeroCardViewAsSkill("jiushi"){
+        Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
+        analeptic->setSkillName("jiushi");
+
+        this->analeptic = analeptic;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -115,15 +119,16 @@ public:
         return  pattern.contains("analeptic") && player->faceUp();
     }
 
-    virtual Card *viewAs() const{
-        Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
-        analeptic->setSkillName("jiushi");
+    virtual const Card *viewAs() const{
         return analeptic;
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return qrand() % 2 + 1;
     }
+
+private:
+    const Analeptic *analeptic;
 };
 
 class JiushiFlip: public TriggerSkill{
@@ -240,7 +245,7 @@ public:
     JujianViewAsSkill():OneCardViewAsSkill("jujian"){
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         JujianCard *jujianCard = new JujianCard;
         jujianCard->addSubcard(originalCard);
         return jujianCard;
@@ -384,7 +389,7 @@ public:
     XuanhuoViewAsSkill():ZeroCardViewAsSkill("xuanhuo"){
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new XuanhuoCard;
     }
 
@@ -498,7 +503,7 @@ public:
     XuanfengViewAsSkill():ZeroCardViewAsSkill("xuanfeng"){
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new XuanfengCard;
     }
 
@@ -649,7 +654,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(! Self->hasUsed("XianzhenCard")){
             if(cards.length() != 1)
                 return NULL;
@@ -704,10 +709,10 @@ public:
         return !to_select->isEquipped() && to_select->objectName() == "analeptic";
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
-        slash->setId(originalCard->getEffectiveId());
         slash->setSkillName(objectName());
+        slash->addSubcard(originalCard);
 
         return slash;
     }
@@ -767,10 +772,11 @@ public:
         return c->getTypeId() == Card::Equip || c->inherits("Slash");
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         MingceCard *mingceCard = new MingceCard;
         mingceCard->addSubcard(originalCard);
-        return mingceCard;
+
+        return originalCard;
     }
 };
 
@@ -905,7 +911,7 @@ public:
         return ! player->hasUsed("GanluCard");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new GanluCard;
     }
 };
@@ -1001,7 +1007,7 @@ public:
         return ! player->hasUsed("XinzhanCard") && player->getHandcardNum() > player->getMaxHp();
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new XinzhanCard;
     }
 };
@@ -1161,7 +1167,7 @@ public:
         return !player->getPile("power").isEmpty()&&!player->hasUsed("PaiyiCard");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new PaiyiCard;
     }
 

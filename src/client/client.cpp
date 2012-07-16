@@ -31,6 +31,9 @@ Client::Client(QObject *parent, const QString &filename)
     status(NotActive), alive_count(1), swap_pile(0),
     _m_roomState(true)
 {
+
+    Sanguosha->registerRoom(this);
+    _m_roomState.reset();
     ClientInstance = this;
     m_isGameOver = false;
 
@@ -58,7 +61,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
-    m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     //callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["log"] = &Client::log;
@@ -168,35 +170,6 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc->setTextWidth(350);
     prompt_doc->setDefaultFont(QFont("SimHei"));
 }
-
-
-void Client::updateCard(const Json::Value &val)
-{
-    if (val.isInt())
-    {
-        // reset card
-        int cardId = val.asInt();
-        _m_roomState.resetCard(cardId);
-    }
-    else
-    {
-        // update card
-        Q_ASSERT(val.size() >= 5);
-        int cardId = val[0].asInt();
-        QString cardName = val[1].asCString();
-        Card::Suit suit = (Card::Suit)val[2].asInt();
-        int number = val[3].asInt();
-        QStringList flags;
-        tryParse(val[4], flags);
-        Card* card = Sanguosha->cloneCard(cardName, suit, number, flags);
-        QString objectName = val[5].asCString();
-        QString skillName = val[6].asCString();
-        card->setObjectName(objectName);
-        card->setSkillName(skillName);
-        _m_roomState.setCard(cardId, card);
-    }
-}
-
 
 void Client::signup(){
     if(replayer)
@@ -627,9 +600,6 @@ void Client::activate(const Json::Value& playerId){
 }
 
 void Client::startGame(const QString &){
-    Sanguosha->registerRoom(this);
-    _m_roomState.reset();
-    
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
 
@@ -1022,6 +992,16 @@ void Client::setStatistics(const QString &property_str){
     QStringList texts = rx.capturedTexts();
     QString property_name = texts.at(1);
     QString value_str = texts.at(2);
+
+    StatisticsStruct *statistics = Self->getStatistics();
+    bool ok;
+    value_str.toInt(&ok);
+    if(ok)
+        statistics->setStatistics(property_name, value_str.toInt());
+    else
+        statistics->setStatistics(property_name, value_str);
+
+    Self->setStatistics(statistics);
 }
 
 void Client::setCardFlag(const QString &pattern_str){
@@ -1057,7 +1037,7 @@ void Client::askForDiscard(const Json::Value &req){
     m_canDiscardEquip = req[3].asBool();
     QString prompt = req[4].asCString();
 
-    if(prompt.isEmpty())
+    if(prompt.isNull())
     {
         if(m_canDiscardEquip)
             prompt = tr("Please discard %1 card(s), include equip").arg(discard_num);
@@ -1128,8 +1108,8 @@ void Client::gameOver(const Json::Value &arg){
         ClientPlayer *p = const_cast<ClientPlayer *>(player);
         p->setProperty("win", win);
     }
-    Sanguosha->unregisterRoom();
-    emit game_over();    
+
+    emit game_over();
 }
 
 void Client::killPlayer(const QString &player_name){
@@ -1738,4 +1718,3 @@ void Client::updateStateItem(const QString &state_str)
 {
     emit role_state_changed(state_str);
 }
-

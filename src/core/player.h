@@ -3,6 +3,8 @@
 
 #include "general.h"
 #include "card.h"
+#include "statistics.h"
+
 #include <QObject>
 #include <QTcpSocket>
 
@@ -199,6 +201,9 @@ public:
     bool isLocked(const Card *card) const;
     bool hasCardLock(const QString &card_str) const;
 
+    StatisticsStruct *getStatistics() const;
+    void setStatistics(StatisticsStruct *statistics);
+
     bool isCaoCao() const;
     void copyFrom(Player* p);
 
@@ -231,11 +236,14 @@ private:
     const Horse *defensive_horse, *offensive_horse;
     bool face_up;
     bool chained;
-    QList<int> judging_area;
+    QList<const Card *> judging_area;
+    QList<const DelayedTrick *> delayed_tricks;
     QHash<const Player *, int> fixed_distance;
 
     QSet<QString> jilei_set;
     QSet<QString> lock_card;
+
+    StatisticsStruct *player_statistics;
 
 signals:
     void general_changed();

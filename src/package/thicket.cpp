@@ -88,7 +88,7 @@ public:
         return pattern == "@@fangzhu";
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new FangzhuCard;
     }
 };
@@ -148,7 +148,7 @@ public:
         return card->isBlack() && !card->inherits("TrickCard");
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
 
         SupplyShortage *shortage = new SupplyShortage(originalCard->getSuit(), originalCard->getNumber());
         shortage->setSkillName(objectName());
@@ -314,7 +314,7 @@ public:
 class Juxiang: public TriggerSkill{
 public:
     Juxiang():TriggerSkill("juxiang"){
-        events << PostCardEffected;
+        events << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -323,7 +323,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("SavageAssault") &&
+        if(use.card->inherits("SavageAssault") && !use.card->hasFlag("ever_moved") &&
                 ((!use.card->isVirtualCard()) ||
                   (use.card->getSubcards().length() == 1 &&
                   Sanguosha->getCard(use.card->getSubcards().first())->inherits("SavageAssault")))){
@@ -390,7 +390,7 @@ public:
     YinghunViewAsSkill():ZeroCardViewAsSkill("yinghun"){
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new YinghunCard;
     }
 
@@ -461,7 +461,7 @@ public:
         return selected.length() < length;
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != Self->getHandcardNum() / 2)
             return NULL;
 
@@ -612,7 +612,7 @@ public:
 
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new DimengCard;
     }
 
@@ -627,7 +627,7 @@ public:
         frequency = Limited;
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new LuanwuCard;
     }
 
@@ -740,7 +740,7 @@ public:
         return !to_select->isEquipped() && to_select->getSuit() == Card::Spade;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         
         Analeptic *analeptic = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
         analeptic->setSkillName(objectName());

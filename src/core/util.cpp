@@ -33,7 +33,7 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
         size_t size = lua_objlen(L, -1);
         for(size_t i=0; i<size; i++){
             lua_rawgeti(L, -1, i+1);
-            QString element = QString::fromUtf8(lua_tostring(L, -1));
+            QString element = lua_tostring(L, -1);
             lua_pop(L, 1);
             list << element;
         }

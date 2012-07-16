@@ -120,7 +120,6 @@ public:
     void setFlags(const QString &flag) const;
     bool hasFlag(const QString &flag) const;
     void clearFlags() const;
-    inline QStringList getFlags() const { return flags; }
 
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;

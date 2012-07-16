@@ -162,7 +162,7 @@ void Engine::addPackage(Package *package){
         card->setId(cards.length());
         cards << card;
 
-        QString card_name = card->metaObject()->className();
+        QString card_name = card->objectName();
         metaobjects.insert(card_name, card->metaObject());
     }
 
@@ -284,8 +284,8 @@ QObject* Engine::currentRoom() const {
     return m_rooms[QThread::currentThread()];
 }
 
-const Card *Engine::getCard(int cardId) const{
-    const Card *card = NULL;
+Card *Engine::getCard(int cardId) const{
+    Card *card = NULL;
     if (cardId < 0 || cardId >= cards.length())
         return NULL;
     QObject* room = currentRoom();
@@ -320,15 +320,6 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
         return qobject_cast<Card *>(card_obj);
     }else
         return NULL;
-}
-
-Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, QStringList flags) const{
-    Card* card = cloneCard(name, suit, number);
-    if (!card) return NULL;
-    card->clearFlags();
-    foreach (QString flag, flags)
-        card->setFlags(flag);
-    return card;
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name) const{

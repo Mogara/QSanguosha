@@ -12,9 +12,8 @@ class RoomState
 {
 public:
     inline RoomState(bool isClient) { m_isClient = isClient; }
-    ~RoomState();
     inline bool isClient() const { return m_isClient; }
-    const Card* getCard(int cardId) const;
+    Card* getCard(int cardId) const;
 
     // Update a card in the room.
     // @param cardId

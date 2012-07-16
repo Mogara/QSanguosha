@@ -159,7 +159,6 @@ public:
         int m_avatarSize;
         QRect m_smallAvatarArea;
         int m_smallAvatarSize;
-        int m_primaryAvatarSize;
         QRect m_circleArea;
         int m_circleImageSize;
         QRect m_avatarNameArea;
@@ -264,11 +263,7 @@ public:
         S_GENERAL_ICON_SIZE_TINY,
         S_GENERAL_ICON_SIZE_SMALL,
         S_GENERAL_ICON_SIZE_LARGE,
-        S_GENERAL_ICON_SIZE_CARD,
-        S_GENERAL_ICON_SIZE_PHOTO_SECONDARY,
-        S_GENERAL_ICON_SIZE_DASHBOARD_SECONDARY,
-        S_GENERAL_ICON_SIZE_PHOTO_PRIMARY,
-        S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY
+        S_GENERAL_ICON_SIZE_CARD
     };
 
     const RoomLayout& getRoomLayout() const;

@@ -129,7 +129,6 @@ public:
     void setStatistics(const QString &property_str);
     void setCardFlag(const QString &pattern_str);
     void playSystemAudioEffect(const QString &effect_str);
-    void updateCard(const Json::Value &arg);
 
     void fillAG(const QString &cards_str);    
     void takeAG(const QString &take_str);
@@ -175,7 +174,7 @@ public:
     void attachSkill(const QString &skill_name);
     
     inline virtual RoomState* getRoomState() { return &_m_roomState; }
-    inline virtual const Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
+    inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
 
     inline void setCountdown(QSanProtocol::Countdown countdown) 
     {

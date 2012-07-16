@@ -34,7 +34,7 @@ public:
 
 private:
     int handcard_num;
-    QList<int> known_cards;
+    QList<const Card *> known_cards;
     QTextDocument *mark_doc;
 
 signals:

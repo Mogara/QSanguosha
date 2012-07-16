@@ -37,8 +37,6 @@ public:
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
-    Card *cloneCard(const QString &name, Card::Suit suit, int number,
-                    QStringList flags) const;
     SkillCard *cloneSkillCard(const QString &name) const;
     QString getVersionNumber() const;
     QString getVersion() const;
@@ -78,7 +76,8 @@ public:
 
     int getCardCount() const;
     const Card *getEngineCard(int cardId) const;
-    const Card *getCard(int cardId) const;
+    // @todo: consider making this const Card*
+    Card *getCard(int cardId) const;
 
     QStringList getLords() const;
     QStringList getRandomLords() const;

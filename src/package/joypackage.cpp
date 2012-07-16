@@ -142,8 +142,8 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
                 room->setEmotion(player, "bad");
                 room->broadcastInvoke("animate", "typhoon:" + player->objectName());
                 room->broadcastInvoke("playSystemAudioEffect", "typhoon");
-                QString reason = objectName();
-                room->askForDiscard(player, reason, discard_num, discard_num);
+
+                room->askForDiscard(player, objectName(), discard_num, discard_num);
             }
 
             room->getThread()->delay();

@@ -30,6 +30,7 @@ class DelayedTrick:public TrickCard{
 
 public:
 	DelayedTrick(Suit suit, int number, bool movable = false);
+	static const DelayedTrick *CastFrom(const Card *card);
 
 private:
 	bool movable;

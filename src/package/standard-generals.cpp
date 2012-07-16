@@ -70,7 +70,7 @@ public:
     TuxiViewAsSkill():ZeroCardViewAsSkill("tuxi"){
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new TuxiCard;
     }
 
@@ -248,10 +248,11 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new GuicaiCard;
         card->setSuit(card->getSuit());
-        card->addSubcard(originalCard);
+        card->addSubcard(card);
+
         return card;
     }
 };
@@ -390,7 +391,7 @@ public:
         return to_select->isBlack() && !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         
         Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
         jink->setSkillName(objectName());
@@ -420,7 +421,7 @@ public:
             return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.isEmpty())
             return NULL;
 
@@ -459,7 +460,7 @@ public:
         return player->hasLordSkill("jijiang") && Slash::IsAvailable(player);
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new JijiangCard;
     }
 
@@ -542,7 +543,7 @@ public:
             return true;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         
         Card *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard->getId());
@@ -587,7 +588,7 @@ public:
         return pattern == "jink" || pattern == "slash";
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         if(originalCard->inherits("Slash")){
             Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
             jink->addSubcard(originalCard);
@@ -747,7 +748,7 @@ public:
         return true;
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.isEmpty())
             return NULL;
 
@@ -831,7 +832,7 @@ public:
         return !player->isKongcheng() && ! player->hasUsed("FanjianCard");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new FanjianCard;
     }
 };
@@ -897,7 +898,7 @@ public:
         return to_select->isBlack();
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         Dismantlement *dismantlement = new Dismantlement(originalCard->getSuit(), originalCard->getNumber());
         dismantlement->addSubcard(originalCard->getId());
         dismantlement->setSkillName(objectName());
@@ -911,7 +912,7 @@ public:
 
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new KurouCard;
     }
 };
@@ -926,7 +927,7 @@ public:
         return to_select->getSuit() == Card::Diamond;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         Indulgence *indulgence = new Indulgence(originalCard->getSuit(), originalCard->getNumber());
         indulgence->addSubcard(originalCard->getId());
         indulgence->setSkillName(objectName());
@@ -952,7 +953,7 @@ public:
         return true;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         LiuliCard *liuli_card = new LiuliCard;
         liuli_card->addSubcard(originalCard);
 
@@ -1024,7 +1025,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 
@@ -1140,7 +1141,7 @@ public:
         return true;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         LijianCard *lijian_card = new LijianCard;
         lijian_card->addSubcard(originalCard->getId());
 
@@ -1185,7 +1186,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         QingnangCard *qingnang_card = new QingnangCard;
         qingnang_card->addSubcard(originalCard->getId());
 
@@ -1211,7 +1212,7 @@ public:
         return to_select->isRed();
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         Peach *peach = new Peach(originalCard->getSuit(), originalCard->getNumber());
         peach->addSubcard(originalCard->getId());
         peach->setSkillName(objectName());
@@ -1461,7 +1462,7 @@ public:
     Yihun():ZeroCardViewAsSkill("yihun"){
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new YihunCard;
     }
 

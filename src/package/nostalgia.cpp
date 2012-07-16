@@ -164,7 +164,7 @@ public:
         return ! player->hasUsed("NosJujianCard");
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.isEmpty())
             return NULL;
 
@@ -267,7 +267,7 @@ public:
         return ! to_select->isEquipped() && to_select->getSuit() == Card::Heart;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         NosXuanhuoCard *xuanhuoCard = new NosXuanhuoCard;
         xuanhuoCard->addSubcard(originalCard);
         return xuanhuoCard;

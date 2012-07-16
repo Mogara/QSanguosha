@@ -70,9 +70,12 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
         Player::Place place = room->getCardPlace(card_id);
 
         int equip_index = -1;
+        const DelayedTrick *trick = NULL;
         if(place == Player::PlaceEquip){
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             equip_index = static_cast<int>(equip->location());
+        }else{
+            trick = DelayedTrick::CastFrom(card);
         }
 
         QList<ServerPlayer *> tos;
@@ -81,10 +84,13 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
                 if(p->getEquip(equip_index) == NULL)
                     tos << p;
             }else{
-                if(!zhanghe->isProhibited(p, card) && !p->containsTrick(card->objectName()))
+                if(!zhanghe->isProhibited(p, trick) && !p->containsTrick(trick->objectName()))
                     tos << p;
             }
         }
+
+        if(trick && trick->isVirtualCard())
+            delete trick;
 
         room->setTag("QiaobianTarget", QVariant::fromValue(from));
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian");
@@ -101,7 +107,7 @@ public:
 
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         QiaobianCard *card = new QiaobianCard;
         return card;
     }
@@ -446,7 +452,7 @@ public:
         return !player->getPile("field").isEmpty();
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new JixiCard;
     }
 
@@ -575,9 +581,9 @@ public:
         return ! to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         ZhibaCard *card = new ZhibaCard;
-        card->addSubcard(originalCard);
+        card->addSubcard(card);
 
         return card;
     }
@@ -661,7 +667,7 @@ public:
         return ! player->hasUsed("TiaoxinCard");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new TiaoxinCard;
     }
 };
@@ -748,7 +754,7 @@ public:
         return !to_select->isEquipped() && to_select->getTypeId() == Card::Equip;
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         ZhijianCard *zhijian_card = new ZhijianCard();
         zhijian_card->addSubcard(originalCard);
         return zhijian_card;

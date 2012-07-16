@@ -93,8 +93,7 @@ namespace QSanProtocol
         S_COMMAND_GET_CARD,
         S_COMMAND_LOSE_CARD,
         S_COMMAND_LOG_EVENT,
-        S_COMMAND_LOG_SKILL,
-        S_COMMAND_UPDATE_CARD
+        S_COMMAND_LOG_SKILL
     };
 
     enum GameEventType

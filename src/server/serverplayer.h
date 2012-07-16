@@ -150,16 +150,17 @@ protected:
 
 private:
     ClientSocket *socket;
-    QList<int> m_handcards;
+    QList<const Card *> handcards;
+    QList<const Card *> m_takenOffCards;
     Room *room;
     AI *ai;
     AI *trust_ai;
     QList<ServerPlayer *> victims;
     Recorder *recorder;
     QList<Phase> phases;
+    int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
     ServerPlayer *next;
-    int _m_phases_index;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
     QString m_clientResponseString;

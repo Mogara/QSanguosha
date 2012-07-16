@@ -25,8 +25,7 @@ ServerPlayer::ServerPlayer(Room *room)
 }
 
 void ServerPlayer::drawCard(const Card *card){
-    Q_ASSERT(card);
-    m_handcards.append(card->getId());
+    handcards << card;
 }
 
 Room *ServerPlayer::getRoom() const{
@@ -41,35 +40,39 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
     if(card->isMute())
         return;
 
+    if(!card->isVirtualCard())
+    {
+        if(card->getCommonEffectName().isNull())
+            broadcastSkillInvoke(card->objectName());
+        else
+            room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+    }
+
     QString skill_name = card->getSkillName();
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(skill == NULL){
-        if(!card->isVirtualCard() && card->getCommonEffectName().isNull())
-            broadcastSkillInvoke(card->objectName());
-        else room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+    if(skill == NULL)
         return;
-    }
-    else {
-        int index = skill->getEffectIndex(this, card);
-        if(index == 0)
-            return;
 
-        if(index == -1 && skill->getSources().isEmpty()){
-            if(card->getCommonEffectName().isNull())
-                broadcastSkillInvoke(card->objectName());
-            else room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
-        }
-        else room->broadcastSkillInvoke(skill_name, index);
-    }
+    int index = skill->getEffectIndex(this, card);
+    if(index == 0)
+        return;
+
+    if(index == -1 && skill->getSources().isEmpty())
+        if(card->getCommonEffectName().isNull())
+            broadcastSkillInvoke(card->objectName());
+        else
+            room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+    else
+        room->broadcastSkillInvoke(skill_name, index);
 }
 
 int ServerPlayer::getRandomHandCardId() const{
-    return m_handcards.at(qrand() % m_handcards.length());
+    return getRandomHandCard()->getEffectiveId();
 }
 
 const Card *ServerPlayer::getRandomHandCard() const{
-    int index = qrand() % m_handcards.length();
-    return Sanguosha->getCard(m_handcards.at(index));
+    int index = qrand() % handcards.length();
+    return handcards.at(index);
 }
 
 void ServerPlayer::obtainCard(const Card *card, bool unhide){
@@ -194,7 +197,7 @@ int ServerPlayer::aliveCount() const{
 }
 
 int ServerPlayer::getHandcardNum() const{
-    return m_handcards.length();
+    return handcards.length();
 }
 
 void ServerPlayer::setSocket(ClientSocket *socket){
@@ -340,7 +343,7 @@ QString ServerPlayer::reportHeader() const{
 void ServerPlayer::removeCard(const Card *card, Place place){
     switch(place){
     case PlaceHand: {
-            m_handcards.removeOne(card->getEffectiveId());
+            handcards.removeOne(card);
             break;
         }
 
@@ -382,7 +385,7 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 void ServerPlayer::addCard(const Card *card, Place place){
     switch(place){
     case PlaceHand: {
-            m_handcards << card->getEffectiveId();
+            handcards << card;
             break;
         }
 
@@ -405,39 +408,37 @@ void ServerPlayer::addCard(const Card *card, Place place){
 }
 
 bool ServerPlayer::isLastHandCard(const Card *card) const{
-    Q_ASSERT(card);
     if (!card->isVirtualCard()){
-        if(m_handcards.length() != 1)
+        if(handcards.length() != 1)
             return false;
-        return m_handcards.first() == card->getEffectiveId();
+        return handcards.first()->getEffectiveId() == card->getEffectiveId();
     }
     else if (card->getSubcards().length() > 0){
         foreach (int card_id, card->getSubcards()){
-            if (!m_handcards.contains(card_id))
-                return false;
+            if (!handcards.contains(Sanguosha->getCard(card_id)))
+                    return false;
         }
-        return m_handcards.length() == card->getSubcards().length();
+        return handcards.length() == card->getSubcards().length();
     }
     return false;
 }
 
 QList<int> ServerPlayer::handCards() const{
-    return m_handcards;
+    QList<int> card_ids;
+    foreach(const Card *card, handcards)
+        card_ids << card->getId();
+
+    return card_ids;
 }
 
 QList<const Card *> ServerPlayer::getHandcards() const{
-    QList<const Card*> cards;
-    foreach (int id, m_handcards)
-    {
-        cards.append(Sanguosha->getCard(id));
-    }
-    return cards;
+    return handcards;
 }
 
 QList<const Card *> ServerPlayer::getCards(const QString &flags) const{
     QList<const Card *> cards;
     if(flags.contains("h"))
-        cards << getHandcards();
+        cards << handcards;
 
     if(flags.contains("e"))
         cards << getEquips();
@@ -453,15 +454,14 @@ DummyCard *ServerPlayer::wholeHandCards() const{
         return NULL;
 
     DummyCard *dummy_card = new DummyCard;
-    foreach (int id, m_handcards)
-        dummy_card->addSubcard(id);
+    foreach(const Card *card, handcards)
+        dummy_card->addSubcard(card->getId());
 
     return dummy_card;
 }
 
 bool ServerPlayer::hasNullification() const{
-    QList<const Card*> handcards = getHandcards();
-    foreach (const Card *card, handcards){
+    foreach(const Card *card, handcards){
         if(card->objectName() == "nullification")
             return true;
     }
@@ -855,8 +855,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
                            .arg(getHandcardNum()));
         }else{
             QStringList card_str;
-            foreach(int id, m_handcards){
-                card_str << QString::number(id);
+            foreach(const Card *card, handcards){
+                card_str << QString::number(card->getId());
             }
 
             player->invoke("drawCards", card_str.join("+"));
@@ -953,7 +953,7 @@ void ServerPlayer::copyFrom(ServerPlayer* sp)
     ServerPlayer *b = this;
     ServerPlayer *a = sp;
 
-    b->m_handcards    = QList<int> (a->m_handcards);
+    b->handcards    = QList<const Card *> (a->handcards);
     b->phases       = QList<ServerPlayer::Phase> (a->phases);
     b->selected     = QStringList (a->selected);
 

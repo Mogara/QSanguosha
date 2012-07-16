@@ -906,14 +906,8 @@ void Dashboard::updatePending(){
             equip->setMarkable(view_as_skill->viewFilter(cards, equip->getCard()));
     }
 
-    Card *new_pending_card = view_as_skill->viewAs(cards);
-    
+    const Card *new_pending_card = view_as_skill->viewAs(cards);
     if(pending_card != new_pending_card){
-        
-        if (pending_card != NULL) {
-            delete pending_card;
-        }
-
         pending_card = new_pending_card;
         emit card_selected(pending_card);
     }

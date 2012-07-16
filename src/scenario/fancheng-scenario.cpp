@@ -67,7 +67,7 @@ public:
         return selected.length() < 2 && to_select->isEquipped();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return false;
 
@@ -148,7 +148,7 @@ public:
         return selected.length() < 3 && !to_select->isEquipped() && to_select->isBlack();
     }
 
-    virtual Card *viewAs(const QList<const Card *> &cards) const{
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 3)
             return NULL;
 
@@ -192,7 +192,7 @@ public:
         return ! player->hasUsed("TaichenFightCard");
     }
 
-    virtual Card *viewAs() const{
+    virtual const Card *viewAs() const{
         return new TaichenFightCard;
     }
 };
@@ -252,7 +252,7 @@ public:
         return to_select->inherits("BasicCard");
     }
 
-    virtual Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const{
         ZhiyuanCard *zhiyuanCard = new ZhiyuanCard;
         zhiyuanCard->addSubcard(originalCard);
         return zhiyuanCard;
