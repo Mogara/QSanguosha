@@ -106,7 +106,19 @@ void ClientLogBox::appendLog(
             }
 
             delete card;
-        }else
+        } else if(card->isModified()){
+            const Card *real = Sanguosha->getEngineCard(card->getEffectiveId());
+            QString skill_name = Sanguosha->translate(card->getSkillName());
+            skill_name = bold(skill_name, Qt::yellow);
+
+            QString subcard_str = bold(real->getLogName(), Qt::yellow);
+
+            log = tr("%from use skill [%1] use %2 as %3")
+                    .arg(skill_name)
+                    .arg(subcard_str)
+                    .arg(card_name);
+        }
+        else
             log = tr("%from use %1").arg(card_name);
 
         if(!to.isEmpty())
