@@ -215,9 +215,10 @@ void PlayerCardContainer::updateAvatar()
     }
     if (general != NULL) {
         _m_avatarArea->setToolTip(general->getSkillDescription());
+        int avatarSize = ServerInfo.Enable2ndGeneral ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
         QPixmap avatarIcon = G_ROOM_SKIN.getGeneralPixmap(
                      general->objectName(),
-                     (QSanRoomSkin::GeneralIconSize)_m_layout->m_avatarSize);
+                     (QSanRoomSkin::GeneralIconSize)avatarSize);
         _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
