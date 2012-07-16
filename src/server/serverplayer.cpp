@@ -41,39 +41,35 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
     if(card->isMute())
         return;
 
-    if(!card->isVirtualCard())
-    {
-        if(card->getCommonEffectName().isNull())
-            broadcastSkillInvoke(card->objectName());
-        else
-            room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
-    }
-
     QString skill_name = card->getSkillName();
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(skill == NULL)
-        return;
-
-    int index = skill->getEffectIndex(this, card);
-    if(index == 0)
-        return;
-
-    if(index == -1 && skill->getSources().isEmpty())
-        if(card->getCommonEffectName().isNull())
+    if(skill == NULL){
+        if(!card->isVirtualCard() && card->getCommonEffectName().isNull())
             broadcastSkillInvoke(card->objectName());
-        else
-            room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
-    else
-        room->broadcastSkillInvoke(skill_name, index);
+        else room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+        return;
+    }
+    else {
+        int index = skill->getEffectIndex(this, card);
+        if(index == 0)
+            return;
+
+        if(index == -1 && skill->getSources().isEmpty()){
+            if(card->getCommonEffectName().isNull())
+                broadcastSkillInvoke(card->objectName());
+            else room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+        }
+        else room->broadcastSkillInvoke(skill_name, index);
+    }
 }
 
 int ServerPlayer::getRandomHandCardId() const{
-    return getRandomHandCard()->getEffectiveId();
+    return m_handcards.at(qrand() % m_handcards.length());
 }
 
 const Card *ServerPlayer::getRandomHandCard() const{
     int index = qrand() % m_handcards.length();
-    return Sanguosha->getCard(index);
+    return Sanguosha->getCard(m_handcards.at(index));
 }
 
 void ServerPlayer::obtainCard(const Card *card, bool unhide){

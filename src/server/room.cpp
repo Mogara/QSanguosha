@@ -3377,26 +3377,6 @@ void Room::updateCardsOnLose(const CardsMoveStruct &move)
         }
         return;
     }
-
-    if(player != NULL && move.to_place == Player::PlaceDelayedTrick){
-        for (int i = 0; i < move.card_ids.size(); i++)
-        {
-            const Card *card = Sanguosha->getCard(move.card_ids[i]);
-            if(card->isModified())
-            {
-                Card *trick = Sanguosha->cloneCard(card->metaObject()->className(), card->getSuit(), card->getNumber(), card->getFlags());
-                Q_ASSERT(trick != NULL);
-                trick->setNumber(Sanguosha->getEngineCard(move.card_ids[i])->getNumber());
-                trick->setSuit(Sanguosha->getEngineCard(move.card_ids[i])->getSuit());
-                trick->setSkillName(card->getSkillName());
-                trick->setId(card->getId());
-                trick->setObjectName(card->objectName());
-                setCard(move.card_ids[i], trick);
-                broadcastUpdateCard(getPlayers(), move.card_ids[i], trick);
-            }
-        }
-        return;
-    }
 }
 
 void Room::updateCardsOnGet(const CardsMoveStruct &move)
@@ -3474,6 +3454,26 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
     }
 
     delete cardChanged;
+
+    player = (ServerPlayer*)move.from;
+    if(player != NULL && move.to_place == Player::PlaceDelayedTrick){
+        for (int i = 0; i < move.card_ids.size(); i++)
+        {
+            const Card *card = Sanguosha->getCard(move.card_ids[i]);
+            if(card->isModified())
+            {
+                Card *trick = Sanguosha->cloneCard(card->metaObject()->className(), card->getSuit(), card->getNumber(), card->getFlags());
+                Q_ASSERT(trick != NULL);
+                trick->setNumber(Sanguosha->getEngineCard(move.card_ids[i])->getNumber());
+                trick->setSuit(Sanguosha->getEngineCard(move.card_ids[i])->getSuit());
+                trick->setSkillName(card->getSkillName());
+                trick->setId(card->getId());
+                trick->setObjectName(card->objectName());
+                setCard(move.card_ids[i], trick);
+                broadcastUpdateCard(getPlayers(), move.card_ids[i], trick);
+            }
+        }
+    }
 }
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
