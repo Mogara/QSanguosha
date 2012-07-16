@@ -439,7 +439,10 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
 }
 
 QList<const Card *> Player::getJudgingArea() const{
-    return judging_area;
+    QList<const Card*> cards;
+    foreach (int card_id, judging_area)
+        cards.append(Sanguosha->getCard(card_id));
+    return cards;
 }
 
 Player::Phase Player::getPhase() const{
@@ -503,32 +506,36 @@ bool Player::isAllNude() const{
 }
 
 void Player::addDelayedTrick(const Card *trick){
-    judging_area << trick;
-    delayed_tricks << DelayedTrick::CastFrom(trick);
+    judging_area << trick->getEffectiveId();
 }
 
 void Player::removeDelayedTrick(const Card *trick){
-    int index = judging_area.indexOf(trick);
-    if(index >= 0){
-        judging_area.removeAt(index);
-        delayed_tricks.removeAt(index);
-    }
+    judging_area.removeOne(trick->getEffectiveId());
 }
 
 const DelayedTrick *Player::topDelayedTrick() const{
-    if(delayed_tricks.isEmpty())
+    if(judging_area.isEmpty())
         return NULL;
-    else
-        return delayed_tricks.last();
+    else{
+        const Card *card = Sanguosha->getCard(judging_area.last());
+        const DelayedTrick *trick = qobject_cast<const DelayedTrick*>(card);
+        Q_ASSERT(trick != NULL);
+        return trick;
+    }
 }
 
 QList<const DelayedTrick *> Player::delayedTricks() const{
-    return delayed_tricks;
+    QList<const DelayedTrick*> cards;
+    foreach (int card_id, judging_area){
+        const Card* card = Sanguosha->getCard(card_id);
+        cards.append(qobject_cast<const DelayedTrick*>(card));
+    }
+    return cards;
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
-    foreach(const DelayedTrick *trick, delayed_tricks){
-        if(trick->objectName() == trick_name)
+    foreach(int card_id, judging_area){
+        if(Sanguosha->getCard(card_id)->objectName() == trick_name)
             return true;
     }
 
@@ -800,8 +807,7 @@ void Player::copyFrom(Player* p)
     b->offensive_horse  = a->offensive_horse;
     b->face_up          = a->face_up;
     b->chained          = a->chained;
-    b->judging_area     = QList<const Card *> (a->judging_area);
-    b->delayed_tricks   = QList<const DelayedTrick *> (a->delayed_tricks);
+    b->judging_area     = QList<int> (a->judging_area);
     b->fixed_distance   = QHash<const Player *, int> (a->fixed_distance);
     b->jilei_set        = QSet<QString> (a->jilei_set);
 

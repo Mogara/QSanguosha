@@ -152,6 +152,7 @@ bool CardUseStruct::tryParse(const Json::Value &usage, Room *room){
     if (usage.size() < 2 || !usage[0].isString() || !usage[1].isArray())
         return false;
 
+    QString test = toQString(usage[0]);
     card = Card::Parse(toQString(usage[0]));
 
     const Json::Value &targets = usage[1];

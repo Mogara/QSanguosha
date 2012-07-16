@@ -198,6 +198,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             if(data.canConvert<CardUseStruct>()){
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
+                int card_id = card->getEffectiveId();
                 RoomThread *thread = room->getThread();
 
                 card_use.from->broadcastSkillInvoke(card);
@@ -226,6 +227,9 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                         thread->trigger(TargetConfirmed, room, p, data);
                 }
                 card->use(room, card_use.from, card_use.to);
+                card_use.card = Sanguosha->getCard(card_id);
+                data = QVariant::fromValue(card_use);
+
             }
 
             break;

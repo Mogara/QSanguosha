@@ -1057,7 +1057,7 @@ void Client::askForDiscard(const Json::Value &req){
     m_canDiscardEquip = req[3].asBool();
     QString prompt = req[4].asCString();
 
-    if(prompt.isNull())
+    if(prompt.isEmpty())
     {
         if(m_canDiscardEquip)
             prompt = tr("Please discard %1 card(s), include equip").arg(discard_num);

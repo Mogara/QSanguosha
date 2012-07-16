@@ -998,6 +998,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card_use.card = card;
     card_use.from = player;
     card = card->validateInResposing(player, &continuable);
+    int card_id = card->getEffectiveId();
 
     if(card){
         if(trigger_event == CardUsed){
@@ -1019,6 +1020,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 reason.m_skillName = card->getSkillName();
                 moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
+
+        card = Sanguosha->getCard(card_id);
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, this, player, decisionData);
@@ -3333,7 +3336,55 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 
 void Room::updateCardsOnLose(const CardsMoveStruct &move)
 {
-    // do nothing for now
+   if(move.to_place == Player::DiscardPile
+            || (move.to && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick)){
+        for (int i = 0; i < move.card_ids.size(); i++)
+        {
+            const Card *card = Sanguosha->getCard(move.card_ids[i]);
+            if(card->isModified())
+            {
+                resetCard(move.card_ids[i]);
+                broadcastResetCard(getPlayers(), move.card_ids[i]);
+            }
+        }
+        return;
+    }
+
+    ServerPlayer* player = (ServerPlayer*)move.from;
+    if(player != NULL && move.from_place == Player::PlaceHand
+        && move.to != NULL
+        && move.to_place != Player::PlaceDelayedTrick){
+        for (int i = 0; i < move.card_ids.size(); i++)
+        {
+            const Card *card = Sanguosha->getCard(move.card_ids[i]);
+            if(card->isModified())
+            {
+                resetCard(move.card_ids[i]);
+                notifyResetCard(player, move.card_ids[i]);
+            }
+        }
+        return;
+    }
+
+    if(player != NULL && move.to_place == Player::PlaceDelayedTrick){
+        for (int i = 0; i < move.card_ids.size(); i++)
+        {
+            const Card *card = Sanguosha->getCard(move.card_ids[i]);
+            if(card->isModified())
+            {
+                Card *trick = Sanguosha->cloneCard(card->metaObject()->className(), card->getSuit(), card->getNumber(), card->getFlags());
+                Q_ASSERT(trick != NULL);
+                trick->setNumber(Sanguosha->getEngineCard(move.card_ids[i])->getNumber());
+                trick->setSuit(Sanguosha->getEngineCard(move.card_ids[i])->getSuit());
+                trick->setSkillName(card->getSkillName());
+                trick->setId(card->getId());
+                trick->setObjectName(card->objectName());
+                setCard(move.card_ids[i], trick);
+                broadcastUpdateCard(getPlayers(), move.card_ids[i], trick);
+            }
+        }
+        return;
+    }
 }
 
 void Room::updateCardsOnGet(const CardsMoveStruct &move)
@@ -3403,7 +3454,10 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
                 continue;
             }
             setCard(move.card_ids[i], cards[i]);
-            notifyUpdateCard(player, move.card_ids[i], cards[i]);
+            if(move.to_place == Player::PlaceHand)
+                notifyUpdateCard(player, move.card_ids[i], cards[i]);
+            else
+                broadcastUpdateCard(getPlayers(), move.card_ids[i], cards[i]);
         }
     }
 

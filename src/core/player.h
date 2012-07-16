@@ -231,8 +231,7 @@ private:
     const Horse *defensive_horse, *offensive_horse;
     bool face_up;
     bool chained;
-    QList<const Card *> judging_area;
-    QList<const DelayedTrick *> delayed_tricks;
+    QList<int> judging_area;
     QHash<const Player *, int> fixed_distance;
 
     QSet<QString> jilei_set;
