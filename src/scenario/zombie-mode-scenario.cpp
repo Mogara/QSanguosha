@@ -329,7 +329,7 @@ public:
     virtual Card *viewAs(const Card *originalCard) const{
         
         GanranEquip *ironchain = new GanranEquip(originalCard->getSuit(), originalCard->getNumber());
-        ironchain->addSubcard(originalCard->getId());
+        ironchain->setId(originalCard->getEffectiveId());
         ironchain->setSkillName(objectName());
 
         return ironchain;

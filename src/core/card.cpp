@@ -520,10 +520,13 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        CardUseStruct card_use;
+        card_use.card = this;
+        card_use.from = source;
+        card_use.to = targets;
+        QVariant data = QVariant::fromValue(card_use);
+        room->getThread()->trigger(PostCardEffected, room, source, data);
     }
-    // @todo: must remove this flag. Flags set inside card.cpp are not tracked and totally not maintainable!!!
-    else
-        this->setFlags("ever_moved");
 }
 
 void Card::onEffect(const CardEffectStruct &) const{

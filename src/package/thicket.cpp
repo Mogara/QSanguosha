@@ -314,7 +314,7 @@ public:
 class Juxiang: public TriggerSkill{
 public:
     Juxiang():TriggerSkill("juxiang"){
-        events << CardFinished;
+        events << PostCardEffected;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -323,7 +323,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("SavageAssault") && !use.card->hasFlag("ever_moved") &&
+        if(use.card->inherits("SavageAssault")&&
                 ((!use.card->isVirtualCard()) ||
                   (use.card->getSubcards().length() == 1 &&
                   Sanguosha->getCard(use.card->getSubcards().first())->inherits("SavageAssault")))){

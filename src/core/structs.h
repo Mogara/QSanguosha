@@ -398,6 +398,7 @@ enum TriggerEvent{
     TargetConfirmed,
     CardEffect,
     CardEffected,
+    PostCardEffected,  // For juxiang only now
     CardFinished,
 
     ChoiceMade,
