@@ -110,7 +110,7 @@ bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCar
     Json::Value val(Json::arrayValue);
     Q_ASSERT(newCard);
     val[0] = cardId;
-    val[1] = toJsonString(newCard->objectName());
+    val[1] = toJsonString(newCard->metaObject()->className());
     val[2] = (int)newCard->getSuit();
     val[3] = newCard->getNumber();
     val[4] = toJsonArray(newCard->getFlags());
@@ -3387,7 +3387,10 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
 
         for (int i = 0; i < cards.size(); i++)
         {
-            if (!cardChanged[i]) continue;
+            if (!cardChanged[i]) {
+                delete cards[i];
+                continue;
+            }
             setCard(move.card_ids[i], cards[i]);
             notifyUpdateCard(player, move.card_ids[i], cards[i]);
         }
