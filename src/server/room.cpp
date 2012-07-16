@@ -3365,12 +3365,12 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
         // (Consider Hongyan and Wushen.)
         for (int i = 0; i < cards.size(); i++)
         {            
-            Card* card = cards[i];
             for (int fTime = 0; fTime < filterSkills.size(); fTime++)
             {
                 bool converged = true;
                 foreach (const FilterSkill* skill, filterSkills)
                 {
+                    Card* card = cards[i];
                     Q_ASSERT(skill);
                     if (skill->viewFilter(cards[i]))
                     {

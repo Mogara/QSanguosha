@@ -612,7 +612,7 @@ public:
     virtual Card *viewAs(const Card *originalCard) const{
         
         WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
-        slash->addSubcard(originalCard->getId());
+        slash->setId(originalCard->getEffectiveId());
         slash->setSkillName(objectName());
 
         return slash;
