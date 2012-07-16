@@ -706,8 +706,8 @@ public:
 
     virtual Card *viewAs(const Card *originalCard) const{
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        slash->setId(originalCard->getEffectiveId());
         slash->setSkillName(objectName());
-        slash->addSubcard(originalCard);
 
         return slash;
     }

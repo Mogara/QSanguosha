@@ -110,7 +110,7 @@ bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCar
     Json::Value val(Json::arrayValue);
     Q_ASSERT(newCard);
     val[0] = cardId;
-    val[1] = toJsonString(newCard->objectName());
+    val[1] = toJsonString(newCard->metaObject()->className());
     val[2] = (int)newCard->getSuit();
     val[3] = newCard->getNumber();
     val[4] = toJsonArray(newCard->getFlags());
@@ -3099,7 +3099,6 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     for (int i = 0; i <  cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
-        QList<CardMoveStruct> moves = cards_move.flatten();
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
             int card_id = cards_move.card_ids[j];
@@ -3124,11 +3123,21 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             // update card to associate with new place
             // @todo: conside move this inside ServerPlayer::addCard;
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
-            onMoveMap[card] = moves[j];
         }
     }
     notifyMoveCards(true, cards_moves, forceMoveVisible);
     notifyMoveCards(false, cards_moves, forceMoveVisible);
+
+    for(int i = 0; i < cards_moves.size(); i++)
+    {
+        CardsMoveStruct &cards_move = cards_moves[i];
+        QList<CardMoveStruct> moves = cards_move.flatten();
+        for (int j = 0; j < cards_move.card_ids.size(); j++)
+        {
+            const Card *card = Sanguosha->getCard(cards_move.card_ids[j]);
+            onMoveMap[card] = moves[j];
+        }
+    }
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);

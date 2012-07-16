@@ -162,7 +162,7 @@ void Engine::addPackage(Package *package){
         card->setId(cards.length());
         cards << card;
 
-        QString card_name = card->objectName();
+        QString card_name = card->metaObject()->className();
         metaobjects.insert(card_name, card->metaObject());
     }
 
