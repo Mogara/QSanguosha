@@ -583,7 +583,7 @@ public:
 
     virtual Card *viewAs(const Card *originalCard) const{
         ZhibaCard *card = new ZhibaCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
 
         return card;
     }

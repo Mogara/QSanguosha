@@ -110,7 +110,7 @@ public:
 
     virtual Card *viewAs(const Card *originalCard) const{
         Card *card = new LihunCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
         return card;
     }
 };
