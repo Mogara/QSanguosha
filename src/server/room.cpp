@@ -3396,7 +3396,10 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
 
         for (int i = 0; i < cards.size(); i++)
         {
-            if (!cardChanged[i]) continue;
+            if (!cardChanged[i]) {
+                delete cards[i];
+                continue;
+            }
             setCard(move.card_ids[i], cards[i]);
             notifyUpdateCard(player, move.card_ids[i], cards[i]);
         }
