@@ -1070,7 +1070,7 @@ public:
 class Quanji:public MasochismSkill{
 public:
     Quanji():MasochismSkill("#quanji"){
-        //frequency = Frequent;
+        frequency = Frequent;
     }
 
     virtual void onDamaged(ServerPlayer *zhonghui, const DamageStruct &damage) const{

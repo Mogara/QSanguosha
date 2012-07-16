@@ -606,6 +606,8 @@ end
 sgs.ai_use_value.XianzhenSlashCard = 9.2
 sgs.ai_use_priority.XianzhenSlashCard = 2.6
 
+sgs.ai_skill_invoke.quanji = true
+
 sgs.ai_cardshow.quanji = function(self, requestor)
 	local index = 0
 	local result
