@@ -162,7 +162,7 @@ public:
         default_choice = "discard";
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new GongxinCard;
     }
 
@@ -310,7 +310,7 @@ public:
         return true;
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if (cards.length()  == 0) 
             return new SmallYeyanCard;
         if (cards.length() != 4)
@@ -497,7 +497,7 @@ public:
         return player->getMark("@wrath") >= 6 && !player->hasUsed("ShenfenCard");
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new ShenfenCard;
     }
 };
@@ -560,7 +560,7 @@ public:
         return player->getMark("@wrath") >= 2;
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new WuqianCard;
     }
 };
@@ -609,7 +609,7 @@ public:
         return to_select->getSuit() == Card::Heart;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         
         WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard->getId());
@@ -751,7 +751,7 @@ public:
         return pattern == "@@kuangfeng";
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new KuangfengCard;
     }
 };
@@ -867,7 +867,7 @@ public:
         return pattern == "@@dawu";
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new DawuCard;
     }
 };
@@ -1019,7 +1019,7 @@ public:
         return player->usedTimes("JilveCard")+extra < 2 && player->getMark("@bear") > 0;
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new JilveCard;
     }
 };
@@ -1278,7 +1278,7 @@ public:
         return false;
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         int n = qMax(1, Self->getHp());
 
         if(cards.length() != n)

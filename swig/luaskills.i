@@ -64,7 +64,7 @@ public:
 	ViewAsSkill(const QString &name);
 
 	virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const = 0;
-	virtual const Card *viewAs(const QList<const Card *> &cards) const = 0;
+	virtual Card *viewAs(const QList<const Card *> &cards) const = 0;
 
 	virtual bool isEnabledAtPlay(const Player *player) const;
 	virtual bool isEnabledAtResponse(const Player *player, const char *pattern) const;
@@ -75,7 +75,7 @@ public:
 	LuaViewAsSkill(const char *name);
 
 	virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-	virtual const Card* viewAs(const QList<const Card *> &cards) const;
+	virtual Card *viewAs(const QList<const Card *> &cards) const;
 
 	LuaFunction view_filter;
 	LuaFunction view_as;
@@ -90,10 +90,10 @@ public:
 	OneCardViewAsSkill(const QString &name);
 
 	virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-	virtual const Card* viewAs(const QList<const Card *> &cards) const;
+	virtual Card *viewAs(const QList<const Card *> &cards) const;
 
 	virtual bool viewFilter(const Card* to_select) const = 0;
-	virtual const Card *viewAs(const Card *originalCard) const = 0;
+	virtual Card *viewAs(const Card *originalCard) const = 0;
 };
 
 class FilterSkill: public OneCardViewAsSkill{
@@ -106,7 +106,7 @@ public:
 	LuaFilterSkill(const char *name);
 
 	virtual bool viewFilter(const Card* to_select) const;
-	virtual const Card *viewAs(const Card *originalCard) const;
+	virtual Card *viewAs(const Card *originalCard) const;
 
 	LuaFunction view_filter;
 	LuaFunction view_as;
@@ -309,7 +309,7 @@ bool LuaFilterSkill::viewFilter(const Card* to_select) const{
 	return result;
 }
 
-const Card *LuaFilterSkill::viewAs(const Card *originalCard) const{
+Card *LuaFilterSkill::viewAs(const Card *originalCard) const{
 	if(view_as == 0)
 		return false;
 
@@ -330,7 +330,7 @@ const Card *LuaFilterSkill::viewAs(const Card *originalCard) const{
 	int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
 	lua_pop(L, 1);
 	if(SWIG_IsOK(result)){
-		const Card *card = static_cast<const Card *>(card_ptr);
+		Card *card = static_cast<Card *>(card_ptr);
 		return card;
 	}else
 		return NULL;
@@ -375,7 +375,7 @@ bool LuaViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card 
 	}
 }
 
-const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const{
+Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const{
 	if(view_as == 0)
 		return NULL;
 
@@ -402,7 +402,7 @@ const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const{
 	int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
 	lua_pop(L, 1);
 	if(SWIG_IsOK(result)){
-		const Card *card = static_cast<const Card *>(card_ptr);
+		Card *card = static_cast<Card *>(card_ptr);
 		return card;
 	}else
 		return NULL;

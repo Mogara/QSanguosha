@@ -26,7 +26,7 @@ public:
     HongyuanViewAsSkill():ZeroCardViewAsSkill("hongyuan"){
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new HongyuanCard;
     }
 
@@ -109,7 +109,7 @@ public:
         return true;
     }
 
-    virtual const Card *viewAs(const Card* to_select) const{
+    virtual Card *viewAs(const Card* to_select) const{
         Card *card = new HuanshiCard;
         card->setSuit(to_select->getSuit());
         card->addSubcard(to_select);

@@ -108,6 +108,7 @@ void Room::setCard(int cardId, Card* card)
 bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCard)
 {
     Json::Value val(Json::arrayValue);
+    Q_ASSERT(newCard);
     val[0] = cardId;
     val[1] = toJsonString(newCard->objectName());
     val[2] = (int)newCard->getSuit();
@@ -1255,24 +1256,6 @@ void Room::setPlayerCardLock(ServerPlayer *player, const QString &name){
 void Room::clearPlayerCardLock(ServerPlayer *player){
     player->setCardLocked(".");
     player->invoke("cardLock", ".");
-}
-
-void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value){
-    StatisticsStruct *statistics = player->getStatistics();
-    if(!statistics->setStatistics(property_name, value))
-        return;
-
-    player->setStatistics(statistics);
-    QString prompt = property_name + ":";
-
-    bool ok;
-    int add = value.toInt(&ok);
-    if(ok)
-        prompt += QString::number(add);
-    else
-        prompt += value.toString();
-
-    player->invoke("setStatistics", prompt);
 }
 
 void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who){
@@ -3337,9 +3320,92 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }
 }
 
+void Room::updateCardsOnLose(const CardsMoveStruct &move)
+{
+    // do nothing for now
+}
+
+void Room::updateCardsOnGet(const CardsMoveStruct &move)
+{
+    bool* cardChanged = new bool[move.card_ids.size()];
+    for (int i = 0; i < move.card_ids.size(); i++)
+    {
+        cardChanged[i] = false;
+    }
+
+    ServerPlayer* player = (ServerPlayer*)move.to;
+    if (player != NULL && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))
+    {
+        QSet<const Skill*> skills = player->getVisibleSkills();
+        QList<const FilterSkill*> filterSkills;
+        // first, get all filter skills
+        foreach (const Skill* skill, skills)
+        {
+            if (skill->inherits("FilterSkill"))
+            {
+                const FilterSkill* filter = qobject_cast<const FilterSkill*>(skill);
+                Q_ASSERT(filter);
+                filterSkills.append(filter);
+            }
+        }
+
+        if (filterSkills.size() == 0) return;
+
+        // now get all cards that need to be translated
+        QList<Card*> cards;
+        
+        foreach (int cardId, move.card_ids)
+        {
+            Card* card = Card::Clone(Sanguosha->getCard(cardId));
+            Q_ASSERT(card);
+            cards.append(card);
+        }
+
+        // We run through filterSkills for multiple times to ensure that the card will converge.
+        // (Consider Hongyan and Wushen.)
+        for (int i = 0; i < cards.size(); i++)
+        {            
+            Card* card = cards[i];
+            for (int fTime = 0; fTime < filterSkills.size(); fTime++)
+            {
+                bool converged = true;
+                foreach (const FilterSkill* skill, filterSkills)
+                {
+                    Q_ASSERT(skill);
+                    if (skill->viewFilter(cards[i]))
+                    {
+                        cards[i] = skill->viewAs(card);
+                        Q_ASSERT(cards[i]);
+                        delete card;
+                        converged = false;
+                        cardChanged[i] = true;
+                    }
+                }
+                if (converged) break;
+            }            
+        }
+
+        for (int i = 0; i < cards.size(); i++)
+        {
+            if (!cardChanged[i]) continue;
+            setCard(move.card_ids[i], cards[i]);
+            notifyUpdateCard(player, move.card_ids[i], cards[i]);
+        }
+    }
+
+    delete cardChanged;
+}
+
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
 {
-    // process dongcha    
+    if (isLostPhase) {
+        foreach (CardsMoveStruct move, cards_moves)
+            updateCardsOnLose(move);
+    } else {
+        foreach (CardsMoveStruct move, cards_moves)
+            updateCardsOnGet(move);
+    }
+    // process dongcha
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   
     // Notify clients

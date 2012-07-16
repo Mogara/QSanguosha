@@ -105,7 +105,7 @@ public:
         return pattern == "@@jieming";
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new JiemingCard;
     }
 };
@@ -140,7 +140,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         QuhuCard *card = new QuhuCard;
         card->addSubcard(card);
         return card;
@@ -189,7 +189,7 @@ public:
         return selected.isEmpty() && to_select->inherits("Weapon");
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.isEmpty())
             return new QiangxiCard;
         else if(cards.length() == 1){
@@ -217,7 +217,7 @@ public:
             return false;
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() == 2){
             const Card *first = cards.first();
             ArcheryAttack *aa = new ArcheryAttack(first->getSuit(), 0);
@@ -274,7 +274,7 @@ public:
         return false;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Duel *duel = new Duel(originalCard->getSuit(), originalCard->getNumber());
         duel->addSubcard(originalCard);
         duel->setSkillName(objectName());
@@ -362,7 +362,7 @@ public:
         return !to_select->isEquipped() && to_select->getSuit() == Card::Club;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const {
+    virtual Card *viewAs(const Card *originalCard) const {
         IronChain *chain = new IronChain(originalCard->getSuit(), originalCard->getNumber());
         chain->addSubcard(originalCard);
         chain->setSkillName(objectName());
@@ -417,7 +417,7 @@ public:
         return !to_select->isEquipped() && to_select->isRed();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         
         FireAttack *fire_attack = new FireAttack(originalCard->getSuit(), originalCard->getNumber());
         fire_attack->addSubcard(originalCard->getId());
@@ -485,7 +485,7 @@ public:
         return  pattern == "nullification";
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         const Card *first = originalCard;
         Card *ncard = new Nullification(first->getSuit(), first->getNumber());
         ncard->addSubcard(first);
@@ -535,7 +535,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Card *card = new TianyiCard;
         card->addSubcard(card);
         return card;

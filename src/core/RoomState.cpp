@@ -11,7 +11,7 @@ RoomState::~RoomState()
     m_cards.clear();
 }
 
-Card* RoomState::getCard(int cardId) const
+const Card* RoomState::getCard(int cardId) const
 {
     if (!m_cards.contains(cardId))
     {
@@ -22,7 +22,12 @@ Card* RoomState::getCard(int cardId) const
 
 bool RoomState::setCard(int cardId, Card *newCard)
 {
-   Card* oldCard = getCard(cardId);
+   Card* oldCard;
+   if (!m_cards.contains(cardId))
+       oldCard = NULL;
+   else
+       oldCard = m_cards[cardId];
+   Q_ASSERT(oldCard == NULL || oldCard->getId() == cardId);
    if (oldCard == newCard) return true;
 
    m_cards[cardId] = newCard;
@@ -33,6 +38,7 @@ bool RoomState::setCard(int cardId, Card *newCard)
    if (oldCard != NULL) {
        delete oldCard;
    }
+
    return true;
 }
 

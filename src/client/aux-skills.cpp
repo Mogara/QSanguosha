@@ -38,7 +38,7 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card* c
     return true;
 }
 
-const Card* DiscardSkill::viewAs(const QList<const Card*> &cards) const{
+Card* DiscardSkill::viewAs(const QList<const Card*> &cards) const{
     if(cards.length() >= minnum){
         card->clearSubcards();
         card->addSubcards(cards);
@@ -70,8 +70,8 @@ bool ResponseSkill::viewFilter(const Card *card) const{
     return matchPattern(Self, card);
 }
 
-const Card *ResponseSkill::viewAs(const Card *originalCard) const{
-    return originalCard;
+Card *ResponseSkill::viewAs(const Card *originalCard) const{
+    return Card::Clone(originalCard);
 }
 
 // -------------------------------------------
@@ -102,7 +102,7 @@ bool FreeDiscardSkill::viewFilter(const QList<const Card *> &, const Card *) con
     return true;
 }
 
-const Card *FreeDiscardSkill::viewAs(const QList<const Card *> &cards) const{
+Card *FreeDiscardSkill::viewAs(const QList<const Card *> &cards) const{
     if(!cards.isEmpty()){
 
         card->clearSubcards();
@@ -130,7 +130,7 @@ bool YijiViewAsSkill::viewFilter(const QList<const Card *> &, const Card* card) 
     return ids.contains(card->getId());
 }
 
-const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const{
+Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const{
     if(cards.isEmpty())
         return NULL;
 
@@ -171,6 +171,6 @@ void ChoosePlayerSkill::setPlayerNames(const QStringList &names){
     card->setPlayerNames(names);
 }
 
-const Card *ChoosePlayerSkill::viewAs() const{
+Card *ChoosePlayerSkill::viewAs() const{
     return card;
 }

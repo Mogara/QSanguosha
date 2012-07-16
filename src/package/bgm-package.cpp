@@ -108,7 +108,7 @@ public:
         return !player->hasUsed("LihunCard");
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Card *card = new LihunCard;
         card->addSubcard(card);
         return card;
@@ -238,7 +238,7 @@ public:
         return to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
         ncard->addSubcard(originalCard);
         ncard->setSkillName(objectName());
@@ -479,7 +479,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Card *daheCard = new DaheCard;
         daheCard->addSubcard(originalCard);
         return daheCard;
@@ -609,7 +609,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Card *newCard = new TanhuCard;
         newCard->addSubcard(originalCard);
         return newCard;

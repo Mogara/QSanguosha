@@ -284,8 +284,8 @@ QObject* Engine::currentRoom() const {
     return m_rooms[QThread::currentThread()];
 }
 
-Card *Engine::getCard(int cardId) const{
-    Card *card = NULL;
+const Card *Engine::getCard(int cardId) const{
+    const Card *card = NULL;
     if (cardId < 0 || cardId >= cards.length())
         return NULL;
     QObject* room = currentRoom();

@@ -308,15 +308,14 @@ struct JudgeStruct{
     bool isGood(const Card *card = NULL) const;
     bool isEffected();
     bool isBad() const;
-
-    bool negative;
-    bool play_animation;
     ServerPlayer *who;
     const Card *card;
     JudgeStructPattern pattern;
     bool good;
     QString reason;
     bool time_consuming;
+    bool negative;
+    bool play_animation;
 };
 
 struct PhaseChangeStruct{

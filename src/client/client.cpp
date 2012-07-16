@@ -1018,16 +1018,6 @@ void Client::setStatistics(const QString &property_str){
     QStringList texts = rx.capturedTexts();
     QString property_name = texts.at(1);
     QString value_str = texts.at(2);
-
-    StatisticsStruct *statistics = Self->getStatistics();
-    bool ok;
-    value_str.toInt(&ok);
-    if(ok)
-        statistics->setStatistics(property_name, value_str.toInt());
-    else
-        statistics->setStatistics(property_name, value_str);
-
-    Self->setStatistics(statistics);
 }
 
 void Client::setCardFlag(const QString &pattern_str){

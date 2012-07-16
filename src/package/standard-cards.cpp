@@ -330,7 +330,7 @@ public:
         return selected.length() < 2 && !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 
@@ -383,7 +383,7 @@ public:
         return true;
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 

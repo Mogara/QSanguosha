@@ -119,7 +119,7 @@ public:
         return to_select->objectName() == "slash";
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{        
+    virtual Card *viewAs(const Card *originalCard) const{        
         Card *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
         acard->addSubcard(originalCard->getId());
         acard->setSkillName(objectName());

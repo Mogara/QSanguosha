@@ -107,7 +107,7 @@ public:
 
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         QiaobianCard *card = new QiaobianCard;
         return card;
     }
@@ -452,7 +452,7 @@ public:
         return !player->getPile("field").isEmpty();
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new JixiCard;
     }
 
@@ -581,7 +581,7 @@ public:
         return ! to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         ZhibaCard *card = new ZhibaCard;
         card->addSubcard(card);
 
@@ -667,7 +667,7 @@ public:
         return ! player->hasUsed("TiaoxinCard");
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new TiaoxinCard;
     }
 };
@@ -754,7 +754,7 @@ public:
         return !to_select->isEquipped() && to_select->getTypeId() == Card::Equip;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         ZhijianCard *zhijian_card = new ZhijianCard();
         zhijian_card->addSubcard(originalCard);
         return zhijian_card;

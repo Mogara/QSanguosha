@@ -30,7 +30,6 @@ SOURCES += \
     src/core/protocol.cpp \
     src/core/settings.cpp \
     src/core/skill.cpp \
-    src/core/statistics.cpp \
     src/core/structs.cpp \
     src/core/util.cpp \
     src/dialog/cardeditor.cpp \
@@ -168,7 +167,6 @@ HEADERS += \
     src/core/protocol.h \
     src/core/settings.h \
     src/core/skill.h \
-    src/core/statistics.h \
     src/core/structs.h \
     src/core/util.h \
     src/dialog/cardeditor.h \

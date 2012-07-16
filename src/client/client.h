@@ -175,7 +175,7 @@ public:
     void attachSkill(const QString &skill_name);
     
     inline virtual RoomState* getRoomState() { return &_m_roomState; }
-    inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
+    inline virtual const Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
 
     inline void setCountdown(QSanProtocol::Countdown countdown) 
     {

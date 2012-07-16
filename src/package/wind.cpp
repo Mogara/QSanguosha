@@ -107,7 +107,7 @@ public:
         return to_select->isBlack();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         GuidaoCard *guidaoCard = new GuidaoCard;
         guidaoCard->setSuit(originalCard->getSuit());
         guidaoCard->addSubcard(originalCard);
@@ -175,7 +175,7 @@ public:
         return card->objectName() == "jink" || card->objectName() == "lightning";
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         HuangtianCard *card = new HuangtianCard;
         card->addSubcard(card);
 
@@ -229,7 +229,7 @@ public:
         return  pattern == "@@leiji";
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new LeijiCard;
     }
 };
@@ -304,7 +304,7 @@ public:
         return  pattern.startsWith("@@shensu");
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(ClientInstance->getPattern().endsWith("1")){
             if(cards.isEmpty())
                 return new ShensuCard;
@@ -603,14 +603,12 @@ public:
         return to_select->getSuit() == Card::Spade;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Card *new_card = Card::Clone(originalCard);
-        if(new_card) {
-            new_card->setSuit(Card::Heart);
-            new_card->setSkillName(objectName());
-            return new_card;
-        }else
-            return originalCard;
+        Q_ASSERT(new_card);
+        new_card->setSuit(Card::Heart);
+        new_card->setSkillName(objectName());
+        return new_card;
     }
 };
 
@@ -672,7 +670,7 @@ public:
         return !to_select->isEquipped() && to_select->getSuit() == Card::Heart;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         TianxiangCard *tianxiangCard = new TianxiangCard;
         tianxiangCard->addSubcard(originalCard);
         return tianxiangCard;
@@ -1033,7 +1031,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         if(ClientInstance->getStatus() == Client::Responsing){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(ClientInstance->getPattern());

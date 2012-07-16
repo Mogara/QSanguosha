@@ -14,7 +14,7 @@ public:
     void setIncludeEquip(bool include_equip);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card *viewAs(const QList<const Card *> &cards) const;
+    virtual Card *viewAs(const QList<const Card *> &cards) const;
 
 private:
     DummyCard *card;
@@ -34,7 +34,7 @@ public:
 
     virtual void setPattern(const QString &pattern);
     virtual bool viewFilter(const Card* to_select) const;
-    virtual const Card *viewAs(const Card *originalCard) const;
+    virtual Card *viewAs(const Card *originalCard) const;
 
 protected:
     const CardPattern *pattern;
@@ -57,7 +57,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *) const;
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
+    virtual Card *viewAs(const QList<const Card *> &cards) const;
 
 private:
     DummyCard *card;
@@ -71,7 +71,7 @@ public:
     void setCards(const QString &card_str);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
+    virtual Card *viewAs(const QList<const Card *> &cards) const;
 
 private:
     Card *card;
@@ -87,7 +87,7 @@ public:
     explicit ChoosePlayerSkill();
     void setPlayerNames(const QStringList &names);
 
-    virtual const Card *viewAs() const;
+    virtual Card *viewAs() const;
 
 private:
     ChoosePlayerCard *card;

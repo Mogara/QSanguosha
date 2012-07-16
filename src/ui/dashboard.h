@@ -146,7 +146,7 @@ protected:
 
     // for pendings
     QList<CardItem *> pendings;
-    const Card *pending_card;
+    Card *pending_card;
     const ViewAsSkill *view_as_skill;
     const FilterSkill *filter;
     

@@ -98,7 +98,7 @@ class Scene27Skill : public OneCardViewAsSkill {
         return to_select->inherits("Dismantlement") || to_select->inherits("Snatch");
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         Scene27Card *skill_card = new Scene27Card();
         skill_card->addSubcard(originalCard->getId());
         skill_card->setSkillName("scene_27_effect");

@@ -10,7 +10,7 @@ Player::Player(QObject *parent)
     hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    face_up(true), chained(false), player_statistics(new StatisticsStruct())
+    face_up(true), chained(false)
 {
 }
 
@@ -583,19 +583,11 @@ int Player::getCardCount(bool include_equip) const{
     int count = getHandcardNum();
 
     if(include_equip){
-        if(weapon)
-            count ++;
-
-        if(armor)
-            count ++;
-
-        if(defensive_horse)
-            count ++;
-
-        if(offensive_horse)
-            count ++;
+        if (weapon) count++;
+        if (armor) count++;
+        if(defensive_horse) count++;
+        if(offensive_horse) count++;
     }
-
     return count;
 }
 
@@ -776,14 +768,6 @@ bool Player::isLocked(const Card *card) const{
 
 bool Player::hasCardLock(const QString &card_str) const{
     return lock_card.contains(card_str);
-}
-
-StatisticsStruct *Player::getStatistics() const{
-    return player_statistics;
-}
-
-void Player::setStatistics(StatisticsStruct *statistics){
-    player_statistics = statistics;
 }
 
 bool Player::isCaoCao() const{

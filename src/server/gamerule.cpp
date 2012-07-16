@@ -252,8 +252,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             RecoverStruct recover_struct = data.value<RecoverStruct>();
             int recover = recover_struct.recover;
 
-            room->setPlayerStatistics(player, "recover", recover);
-
             int new_hp = qMin(player->getHp() + recover, player->getMaxHp());
             room->setPlayerProperty(player, "hp", new_hp);
             room->broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
@@ -340,9 +338,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 room->useCard(use, false);
             }
 
-            if(player != dying.who && dying.who->getHp() > 0)
-                    room->setPlayerStatistics(player, "save", 1);
-
             break;
         }
 
@@ -351,8 +346,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 DyingStruct dying = data.value<DyingStruct>();
                 room->killPlayer(player, dying.damage);
 
-                if(dying.damage && dying.damage->from)
-                    room->setPlayerStatistics(dying.damage->from, "kill", 1);
             }
 
             break;
@@ -399,10 +392,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
     case DamageDone:{
             DamageStruct damage = data.value<DamageStruct>();
             room->sendDamageLog(damage);
-
-            if(damage.from)
-                room->setPlayerStatistics(damage.from, "damage", damage.damage);
-
             room->applyDamage(player, damage);
             
             break;

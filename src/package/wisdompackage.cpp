@@ -43,7 +43,7 @@ public:
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
 
@@ -247,7 +247,7 @@ public:
         return ! player->hasUsed("HouyuanCard");
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != 2)
             return NULL;
         HouyuanCard *card = new HouyuanCard;
@@ -330,7 +330,7 @@ public:
     BawangViewAsSkill():ZeroCardViewAsSkill("bawang"){
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new BawangCard;
     }
 
@@ -423,7 +423,7 @@ public:
         return pattern == "@@weidai";
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new WeidaiCard;
     }
 };
@@ -770,7 +770,7 @@ public:
         return !to_select->isEquipped() && to_select->isRed();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         ShouyeCard *shouye_card = new ShouyeCard;
         shouye_card->addSubcard(originalCard->getId());
 

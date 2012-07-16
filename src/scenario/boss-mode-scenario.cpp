@@ -114,8 +114,9 @@ public:
             if(target->getPhase() == Player::Discard){
                 int n = 0;
                 n = target->getHandcardNum() - players.length();
-                if(n > 0){
-                    room->askForDiscard(target, objectName(), n, n, false);
+                if (n > 0) {
+                    QString reason = objectName();
+                    room->askForDiscard(target, reason, n, n, false);
                     return true;
                 }
             }

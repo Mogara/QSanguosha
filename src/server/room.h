@@ -62,7 +62,6 @@ public:
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void setPlayerCardLock(ServerPlayer *player, const QString &name);
     void clearPlayerCardLock(ServerPlayer *player);
-    void setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value);
     void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);
     void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
@@ -309,9 +308,12 @@ public:
     void startTest(const QString &to_test);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
     inline virtual RoomState* getRoomState() { return &_m_roomState; }
-    inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
+    inline virtual const Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
     virtual void setCard(int cardId, Card* card);
     inline virtual void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
+    virtual void updateCardsOnLose(const CardsMoveStruct &move);
+    virtual void updateCardsOnGet(const CardsMoveStruct &move);
+
 protected:
     virtual void run();
     int _m_Id;

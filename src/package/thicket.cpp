@@ -88,7 +88,7 @@ public:
         return pattern == "@@fangzhu";
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new FangzhuCard;
     }
 };
@@ -148,7 +148,7 @@ public:
         return card->isBlack() && !card->inherits("TrickCard");
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
 
         SupplyShortage *shortage = new SupplyShortage(originalCard->getSuit(), originalCard->getNumber());
         shortage->setSkillName(objectName());
@@ -390,7 +390,7 @@ public:
     YinghunViewAsSkill():ZeroCardViewAsSkill("yinghun"){
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new YinghunCard;
     }
 
@@ -461,7 +461,7 @@ public:
         return selected.length() < length;
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+    virtual Card *viewAs(const QList<const Card *> &cards) const{
         if(cards.length() != Self->getHandcardNum() / 2)
             return NULL;
 
@@ -612,7 +612,7 @@ public:
 
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new DimengCard;
     }
 
@@ -627,7 +627,7 @@ public:
         frequency = Limited;
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new LuanwuCard;
     }
 
@@ -740,7 +740,7 @@ public:
         return !to_select->isEquipped() && to_select->getSuit() == Card::Spade;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual Card *viewAs(const Card *originalCard) const{
         
         Analeptic *analeptic = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
         analeptic->setSkillName(objectName());

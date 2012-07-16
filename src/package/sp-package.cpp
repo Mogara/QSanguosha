@@ -314,7 +314,7 @@ public:
                 ||(player->hasLordSkill("weidai") && Analeptic::IsAvailable(player));
     }
 
-    virtual const Card *viewAs() const{
+    virtual Card *viewAs() const{
         return new WeidiCard;
     }
 };
@@ -436,7 +436,7 @@ public:
             room->sendLog(log);
 
             guanyu->setMark("danji", 1);
-			guanyu->gainMark("@waked");
+            guanyu->gainMark("@waked");
             room->loseMaxHp(guanyu);
             room->acquireSkill(guanyu, "mashu");
         }
