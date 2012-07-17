@@ -126,8 +126,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-    virtual void onMove(const CardMoveStruct &move) const;
-
     inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
 
     // static functions
