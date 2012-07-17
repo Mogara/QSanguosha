@@ -91,8 +91,8 @@ public:
         if(!effect.slash->getSkillName().isEmpty() && effect.slash->getSubcards().length() > 0)
             return false;
         if(effect.nature == DamageStruct::Normal){
-            if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
-                player->getRoom()->setEmotion(player,"weapon/fan");
+            if(room->askForSkillInvoke(player, objectName(), data)){
+                room->setEmotion(player, "weapon/fan");
                 effect.nature = DamageStruct::Fire;
                 data = QVariant::fromValue(effect);
             }

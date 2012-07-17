@@ -28,7 +28,7 @@ bool Slash::IsAvailable(const Player *player){
 }
 
 bool Slash::isAvailable(const Player *player) const{
-    return IsAvailable(player) && BasicCard::isAvailable(player);;
+    return IsAvailable(player) && BasicCard::isAvailable(player);
 }
 
 QString Slash::getSubtype() const{
@@ -294,7 +294,8 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-
+        if (!effect.to->isAlive())
+            return false;
         if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
             return false;
 
@@ -403,6 +404,9 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
+        if (!effect.to->isAlive())
+            return false;
+
         CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
             room->setEmotion(effect.to, "weapon/axe");
@@ -468,7 +472,7 @@ public:
             if(!player->askForSkillInvoke(objectName(), data))
                 return false;
 
-            room->setEmotion(player,"weapon/kylin_bow");
+            room->setEmotion(player, "weapon/kylin_bow");
 
             QString horse_type;
             if(horses.length() == 2)
@@ -775,27 +779,13 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
             .arg(source->objectName()).arg(victim->objectName());
 
     if (victim->isDead()){
-        if (source->isDead()){
-            if(killer->isAlive() && killer->getWeapon()){
-                int card_id = weapon->getId();
-                room->throwCard(card_id, killer);
-            }
-        }
-        else
-        {
-            if(killer->isAlive() && killer->getWeapon()){
-                source->obtainCard(weapon);
-            }
+        if(source->isAlive() && killer->isAlive() && killer->getWeapon()){
+            source->obtainCard(weapon);
         }
     }
     else if (source->isDead()){
         if (killer->isAlive()){
-            if(!doCollateral(room, killer, victim, prompt)){
-                if(killer->getWeapon()){
-                    int card_id = weapon->getId();
-                    room->throwCard(card_id, killer);
-                }
-            }
+            doCollateral(room, killer, victim, prompt);
         }
     }
     else{

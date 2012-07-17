@@ -522,7 +522,7 @@ sgs.ai_skill_use["@@dawu"] = function(self, prompt)
 			if self:isWeak(friend) and not friend:hasSkill("buqu") then table.insert(targets, friend:objectName()) break end
 		end	
 	end
-	if self.player:getMark("@star") > #targets and self:isWeak() then table.insert(targets, self.player:objectName()) end
+	if self.player:getPile("stars"):length() > #targets and self:isWeak() then table.insert(targets, self.player:objectName()) end
 	if #targets > 0 then return "@DawuCard=.->" .. table.concat(targets, "+") end
 	return "."
 end

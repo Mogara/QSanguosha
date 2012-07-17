@@ -222,7 +222,7 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
     if (!effect.to->faceUp() || effect.to->isChained())
         choicelist << "reset";
         QString choice;
-    if (choicelist.length() >=2)
+    if (choicelist.length() >= 2)
         choice = room->askForChoice(effect.to, "jujian", choicelist.join("+"));
     else
         choice = "draw";
@@ -358,6 +358,8 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         QString prompt = QString("xuanhuo-slash:%1:%2")
                 .arg(effect.from->objectName()).arg(victim->objectName());
         if (!room->askForUseSlashTo(effect.to, victim, prompt)){
+            if (effect.to->isNude())
+                return;
             int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
             DummyCard *dummy = new DummyCard;
             dummy->addSubcard(first_id);
@@ -371,6 +373,8 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         }
     }
     else{
+        if (effect.to->isNude())
+            return;
         int first_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
         DummyCard *dummy = new DummyCard;
         dummy->addSubcard(first_id);

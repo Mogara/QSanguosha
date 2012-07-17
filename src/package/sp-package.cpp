@@ -231,26 +231,25 @@ public:
                 }
                 else
                 {
-                    yuanshu->throwAllHandCardsAndEquips();
-
                     LogMessage log;
                     log.type = "#YongsiWorst";
                     log.from = yuanshu;
                     log.arg = QString::number(total);
                     log.arg2 = objectName();
                     room->sendLog(log);
+
+                    yuanshu->throwAllHandCardsAndEquips();
                 }
             }
             else
             {
-                room->askForDiscard(yuanshu, "yongsi", x, x, false, true);
-
                 LogMessage log;
                 log.type = "#YongsiBad";
                 log.from = yuanshu;
                 log.arg = QString::number(x);
                 log.arg2 = objectName();
                 room->sendLog(log);
+                room->askForDiscard(yuanshu, "yongsi", x, x, false, true);
             }
         }
 

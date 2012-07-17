@@ -250,8 +250,8 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new GuicaiCard;
-        card->setSuit(card->getSuit());
-        card->addSubcard(card);
+        card->setSuit(originalCard->getSuit());
+        card->addSubcard(originalCard);
 
         return card;
     }
@@ -1284,7 +1284,7 @@ void StandardPackage::addGenerals(){
     guanyu->addSkill(new Wusheng);
 
     zhangfei = new General(this, "zhangfei", "shu");
-    zhangfei->addSkill(new Skill("paoxiao"));
+    zhangfei->addSkill(new Skill("paoxiao", Skill::Compulsory));
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);

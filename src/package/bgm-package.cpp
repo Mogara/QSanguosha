@@ -110,7 +110,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new LihunCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
         return card;
     }
 };
@@ -408,7 +408,7 @@ public:
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(sp_pangtong->hasCardLock(type[effect.card->getTypeId()])){
                 LogMessage log;
-                log.type = effect.from ? "#ZuiXiang1" : "#Zuixiang2";
+                log.type = effect.from ? "#ZuiXiang1" : "#ZuiXiang2";
                 log.from = effect.to;
                 if(effect.from)
                     log.to << effect.from;

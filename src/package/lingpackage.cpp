@@ -182,7 +182,7 @@ public:
         Room *room = xiahou->getRoom();
         QVariant source = QVariant::fromValue(from);
 
-        if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
+        if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "neoganglie", source)){
             room->broadcastSkillInvoke("ganglie");
 
             JudgeStruct judge;
@@ -197,7 +197,11 @@ public:
                 choicelist << "damage";
                 if (from->getHandcardNum() > 1)
                     choicelist << "throw";
-                QString choice = room->askForChoice(xiahou, "neoganglie", choicelist.join("+"));
+                QString choice;
+                if (choicelist.length() == 1)
+                    choice = choicelist.first();
+                else
+                    choice = room->askForChoice(xiahou, "neoganglie", choicelist.join("+"));
                 if(choice == "damage"){
                     DamageStruct damage;
                     damage.from = xiahou;

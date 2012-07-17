@@ -177,7 +177,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         HuangtianCard *card = new HuangtianCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
 
         return card;
     }
@@ -467,7 +467,14 @@ public:
         int need = 1 - zhoutai->getHp();
         if(need <= 0){
             // clear all the buqu cards
-            foreach(int card_id, buqu) {                
+            foreach(int card_id, buqu) {
+
+                LogMessage log;
+                log.type = "$BuquRemove";
+                log.from = zhoutai;
+                log.card_str = Sanguosha->getCard(card_id)->toString();
+                room->sendLog(log);
+
                 room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
             }
         }else{
@@ -476,6 +483,13 @@ public:
             for(int i = 0; i < to_remove; i++){
                 room->fillAG(buqu);
                 int card_id = room->askForAG(zhoutai, buqu, false, "buqu");
+
+                LogMessage log;
+                log.type = "$BuquRemove";
+                log.from = zhoutai;
+                log.card_str = Sanguosha->getCard(card_id)->toString();
+                room->sendLog(log);
+
                 buqu.removeOne(card_id);
                 room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
                 room->broadcastInvoke("clearAG");
@@ -1037,7 +1051,7 @@ public:
         if(ClientInstance->getStatus() == Client::Responsing){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(ClientInstance->getPattern());
-            card->addSubcard(card);
+            card->addSubcard(originalCard);
             return card;
         }
 
@@ -1045,7 +1059,7 @@ public:
         if(c){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(c->objectName());
-            card->addSubcard(card);
+            card->addSubcard(originalCard);
 
             return card;
         }else

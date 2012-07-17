@@ -22,6 +22,7 @@ public:
 
         if(player->askForSkillInvoke(objectName(), data)){
             int card_id = room->drawCard();
+            room->broadcastSkillInvoke(objectName());
             room->getThread()->delay();
             const Card *card = Sanguosha->getCard(card_id);
 
@@ -317,7 +318,7 @@ public:
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *liaohua, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if(change.to == Player::Start){
-            room->broadcastSkillInvoke("dangxian");
+            room->broadcastSkillInvoke(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = liaohua;
@@ -397,13 +398,16 @@ public:
 
                 Room *room = shuangying->getRoom();
                 if(first->getColor() != second->getColor()){
+                    room->broadcastSkillInvoke(objectName(), 1);
                     room->setEmotion(shuangying, "good");
                     room->acquireSkill(shuangying, "wusheng");
                     room->acquireSkill(shuangying, "paoxiao");
 
                     shuangying->setFlags(objectName());
-                }else
+                }else{
+                    room->broadcastSkillInvoke(objectName(), 2);
                     room->setEmotion(shuangying, "bad");
+                }
 
                 return true;
             }
@@ -483,6 +487,7 @@ public:
         if(damage.card && damage.card->isKindOf("Slash") &&
                 (damage.card->isRed() || damage.card->hasFlag("drank"))){
 
+            room->broadcastSkillInvoke(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = player;
@@ -697,6 +702,7 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
 
+        room->broadcastSkillInvoke(objectName());
         target->drawCards(3);
         RecoverStruct recover;
         recover.who = target;
@@ -735,12 +741,12 @@ public:
 class Lihuo: public TriggerSkill{
 public:
     Lihuo():TriggerSkill("lihuo"){
-        events << DamageCaused << CardFinished;
+        events << DamageDone << CardFinished;
         view_as_skill = new LihuoViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == DamageCaused){
+        if(triggerEvent == DamageDone){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.card && damage.card->isKindOf("Slash") && damage.card->getSkillName() == objectName())
                 player->tag["Invokelihuo"] = true;

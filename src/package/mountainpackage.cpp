@@ -583,7 +583,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         ZhibaCard *card = new ZhibaCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
 
         return card;
     }
@@ -824,6 +824,7 @@ public:
             return false;
 
         if(erzhang->askForSkillInvoke("guzheng", cards.length())){
+            room->broadcastSkillInvoke("guzheng");
             room->fillAG(cards, erzhang);
 
             int to_back = room->askForAG(erzhang, cards, false, objectName());
@@ -1079,8 +1080,6 @@ public:
         if(!huashen_skill.isEmpty()){
             room->detachSkillFromPlayer(zuoci, huashen_skill);
             zuoci->clearPrivatePiles();
-            if(zuoci->getHp() <= 0 )
-                room->enterDying(zuoci, NULL);
         }
 
         QVariantList huashens = zuoci->tag["Huashens"].toList();
@@ -1155,6 +1154,9 @@ public:
 
         if(acquire_instant)
             room->acquireSkill(zuoci, skill_name);
+
+        if(zuoci->getHp() <= 0)
+            room->enterDying(zuoci, NULL);
 
         return skill_name;
     }

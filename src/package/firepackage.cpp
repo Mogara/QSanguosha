@@ -142,7 +142,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         QuhuCard *card = new QuhuCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
         return card;
     }
 };
@@ -337,7 +337,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *pangde, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(!effect.to->isNude()){
+        if(effect.to->isAlive() && !effect.to->isNude()){
             Room *room = pangde->getRoom();
             if(pangde->askForSkillInvoke(objectName(), data)){
                 room->broadcastSkillInvoke(objectName());
@@ -537,7 +537,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new TianyiCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
         return card;
     }
 };
@@ -549,7 +549,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
+        if(target->getPhase() == Player::NotActive){
             Room *room = target->getRoom();
             if(target->hasFlag("tianyi_failed"))
                 room->setPlayerFlag(target, "-tianyi_failed");
