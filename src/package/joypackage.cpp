@@ -429,6 +429,6 @@ JoyEquipPackage::JoyEquipPackage()
     type = CardPack;
 }
 
-ADD_PACKAGE(Joy)
+//ADD_PACKAGE(Joy)
 ADD_PACKAGE(Disaster)
 ADD_PACKAGE(JoyEquip)

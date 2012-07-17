@@ -1838,9 +1838,9 @@ public:
     (new YitianSword)->setParent(this);
 
     type = CardPack;
-}*/
+}
 
-ADD_PACKAGE(YitianCard)
+ADD_PACKAGE(YitianCard)*/
 
 YitianPackage::YitianPackage()
     :Package("yitian")
