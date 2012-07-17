@@ -90,7 +90,6 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
     callbacks["clearPile"] = &Client::resetPiles;
     callbacks["setPileNumber"] = &Client::setPileNumber;
-    callbacks["setStatistics"] = &Client::setStatistics;
     callbacks["setCardFlag"] = &Client::setCardFlag;
     callbacks["playSystemAudioEffect"] = &Client::playSystemAudioEffect;
 
@@ -982,26 +981,6 @@ void Client::setPileNumber(const QString &pile_str){
     pile_num = pile_str.toInt();
 
     updatePileNum();
-}
-
-void Client::setStatistics(const QString &property_str){
-    QRegExp rx("(\\w+):(\\w+)");
-    if(!rx.exactMatch(property_str))
-        return;
-
-    QStringList texts = rx.capturedTexts();
-    QString property_name = texts.at(1);
-    QString value_str = texts.at(2);
-
-    StatisticsStruct *statistics = Self->getStatistics();
-    bool ok;
-    value_str.toInt(&ok);
-    if(ok)
-        statistics->setStatistics(property_name, value_str.toInt());
-    else
-        statistics->setStatistics(property_name, value_str);
-
-    Self->setStatistics(statistics);
 }
 
 void Client::setCardFlag(const QString &pattern_str){

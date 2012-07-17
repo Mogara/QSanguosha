@@ -111,9 +111,6 @@
     <ClCompile Include="..\..\src\core\skill.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\core\statistics.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\cardeditor.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -1226,9 +1223,6 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\banpair.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\statistics.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\package\exppattern.h">
