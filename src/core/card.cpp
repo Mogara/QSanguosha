@@ -17,17 +17,6 @@ const Card::Suit Card::AllSuits[4] = {
     Card::Diamond
 };
 
-bool Card::Equals(const Card *a, const Card *b)
-{
-    if ((a == NULL) != (b == NULL)) return false;
-    else if (a == NULL && b== NULL) return true;
-    else {
-        // virtual card are not considered.
-        Q_ASSERT(a->getId() >= 0 && b->getId() >= 0);
-        return (a->getId() == b->getId());
-    }
-}
-
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), once(false), mute(false),
      will_throw(true), has_preact(false),
