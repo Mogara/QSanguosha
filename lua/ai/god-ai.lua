@@ -762,7 +762,7 @@ jilve_skill.getTurnUseCard=function(self)
 			end
 		end
 	end
-	if not self.player:hasUsed("ZhihengCard") and not wanshadone then
+	if not self.player:hasUsed("JilveCard") and not wanshadone then
 	   sgs.ai_skill_choice.jilve="zhiheng" 
 	   local card=sgs.Card_Parse("@ZhihengCard=.")
 	   local dummy_use={isDummy=true}
