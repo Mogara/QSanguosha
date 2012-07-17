@@ -23,7 +23,7 @@ public:
     }
 };
 
-YitianSword::YitianSword(Suit suit, int number)
+/*YitianSword::YitianSword(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
     setObjectName("yitian_sword");
@@ -47,7 +47,7 @@ void YitianSword::onMove(const CardMoveStruct &move) const{
 
         room->damage(damage);
     }
-}
+}*/
 
 ChengxiangCard::ChengxiangCard()
 {
@@ -1832,7 +1832,7 @@ public:
     }
 };
 
-YitianCardPackage::YitianCardPackage()
+/*YitianCardPackage::YitianCardPackage()
     :Package("yitian_cards")
 {
     (new YitianSword)->setParent(this);
@@ -1840,7 +1840,7 @@ YitianCardPackage::YitianCardPackage()
     type = CardPack;
 }
 
-ADD_PACKAGE(YitianCard)
+ADD_PACKAGE(YitianCard)*/
 
 YitianPackage::YitianPackage()
     :Package("yitian")

@@ -1,7 +1,7 @@
 #include "joypackage.h"
 #include "engine.h"
 
-Shit::Shit(Suit suit, int number):BasicCard(suit, number){
+/*Shit::Shit(Suit suit, int number):BasicCard(suit, number){
     setObjectName("shit");
 
     target_fixed = true;
@@ -66,7 +66,7 @@ bool Shit::HasShit(const Card *card){
         return false;
     }else
         return card->objectName() == "shit";
-}
+}*/
 
 // -----------  Deluge -----------------
 
@@ -362,7 +362,7 @@ DisasterPackage::DisasterPackage()
     type = CardPack;
 }
 
-JoyPackage::JoyPackage()
+/*JoyPackage::JoyPackage()
     :Package("joy")
 {
     QList<Card *> cards;
@@ -376,7 +376,7 @@ JoyPackage::JoyPackage()
         card->setParent(this);
 
     type = CardPack;
-}
+}*/
 
 class YxSwordSkill: public WeaponSkill{
 public:
@@ -429,6 +429,6 @@ JoyEquipPackage::JoyEquipPackage()
     type = CardPack;
 }
 
-ADD_PACKAGE(Joy)
+//ADD_PACKAGE(Joy)
 ADD_PACKAGE(Disaster)
 ADD_PACKAGE(JoyEquip)

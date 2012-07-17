@@ -25,7 +25,7 @@ public:
     JoyEquipPackage();
 };
 
-class Shit:public BasicCard{
+/*class Shit:public BasicCard{
     Q_OBJECT
 
 public:
@@ -34,7 +34,7 @@ public:
     virtual void onMove(const CardMoveStruct &move) const;
 
     static bool HasShit(const Card *card);
-};
+};*/
 
 
 

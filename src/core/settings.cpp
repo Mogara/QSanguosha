@@ -67,9 +67,9 @@ void Settings::init(){
     if(!contains("BanPackages")){
         QStringList banlist;
         banlist << "nostalgia" << "nostal_general" << "yitian" << "wisdom"
-                << "disaster" << "god" << "YJCM" << "yitian_cards" << "test"
+                << "disaster" << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
                 << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                << "New3v3Card" << "joy" << "joy_equip" << "hegemony_card" 
+                << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
                 << "hegemony" << "ling";
 
         setValue("BanPackages", banlist);

@@ -522,10 +522,6 @@ bool Card::isCancelable(const CardEffectStruct &) const{
     return false;
 }
 
-void Card::onMove(const CardMoveStruct &) const{
-    // usually dummy
-}
-
 void Card::addSubcard(int card_id){
     if(card_id < 0)
         qWarning("%s", qPrintable(tr("Subcard must not be virtual card!")));
