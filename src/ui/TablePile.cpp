@@ -45,7 +45,7 @@ void TablePile::clear(bool playAnimation)
     if (m_visibleCards.empty()) return;
     _m_mutex_pileCards.lock();
     // check again since we just gain the lock.
-    int shift = 1 * G_COMMON_LAYOUT.m_cardNormalWidth;
+    int shift = 0;
     
     QParallelAnimationGroup* group = new QParallelAnimationGroup;
     foreach (CardItem* toRemove, m_visibleCards)

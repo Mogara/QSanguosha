@@ -49,7 +49,7 @@
 "playerGeneralIcon-default-0": "image/generals/tiny/%1.png",
 "playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[0, 18, 220, 132]],  //avatar for photo
 "playerGeneralIcon-default-2": ["image/generals/avatar/%1.png",[43, 0, 134, 134]],	//avatar for dashboard
-"playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[58, 17, 105, 105]], //secondary avatar for photo
+"playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[53, 0, 108, 152], [63, 89]], //secondary avatar for photo
 "playerGeneralIcon-default-5": ["image/generals/avatar/%1.png",[51, 6, 117, 133]],  //secondary avatar for dashboard
 "playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[3, 40, 157, 94]],  	//primary avatar for photo
 "playerGeneralIcon-default-7": ["image/generals/avatar/%1.png",[66, 0, 154, 154]],  //primary avatar for dashboard
@@ -57,7 +57,7 @@
 "generalCircleImage-0": "image/generals/double-general/circle-photo.png",
 "generalCircleImage-1": "image/generals/double-general/circle-dashboard.png",
 
-"generalCircleMask-0": ["image/generals/double-general/circle-photo-mask.png", [21, 40, 51, 49]],
+"generalCircleMask-0": "image/generals/double-general/circle-photo-mask.png",
 "generalCircleMask-1": ["image/generals/double-general/circle-dashboard-mask.png", [73, 0, 61, 70]],
 
 // generals defined later will override default path and also previously defined generals
