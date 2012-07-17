@@ -129,8 +129,7 @@ public:
 
     virtual void onMove(const CardMoveStruct &move) const;
 
-    inline virtual bool isModified() const { return m_isModified; }
-    inline virtual void setModified(bool modified) { m_isModified = modified; }
+    inline virtual bool isKindOf(const char* cardType) { return inherits(cardType); }
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
