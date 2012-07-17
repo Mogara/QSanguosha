@@ -204,14 +204,14 @@ sgs.ai_skill_choice.wuling = function(self, choices)
 	end
 	if choices:match("fire") then
 		for _,enemy in ipairs(self.enemies) do
-			if self:isEquip("Vine", enemy) then return "fire" end
+			if self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) then return "fire" end
 		end
 		if #(self:getChainedFriends()) < #(self:getChainedEnemies()) and
 			#(self:getChainedFriends()) + #(self:getChainedEnemies()) > 1 then return "fire" end
 	end
 	if choices:match("wind") then
 		for _,enemy in ipairs(self.enemies) do
-			if self:isEquip("Vine", enemy) then return "wind" end
+			if self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) then return "wind" end
 		end
 		for _,friend in ipairs(self.friends) do
 			if friend:hasSkill("huoji") then return "wind" end

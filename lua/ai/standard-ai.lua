@@ -526,7 +526,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 		local zcards = self.player:getCards("he")
 		for _, zcard in sgs.qlist(zcards) do
 			if not zcard:isKindOf("Peach") and not zcard:isKindOf("ExNihilo") then
-				if self:getAllPeachNum()>0 then table.insert(unpreferedCards,zcard:getId()) end
+				table.insert(unpreferedCards,zcard:getId())
 			end	
 		end
 	end
@@ -561,7 +561,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 			table.insert(unpreferedCards, self.player:getWeapon():getId())
 		end
 				
-		if (self:isEquip("SilverLion") and self.player:isWounded()) then
+		if (self:isEquip("SilverLion") and self.player:isWounded()) or self:isEquip("GaleShell") then
 			table.insert(unpreferedCards, self.player:getArmor():getId())
 		end	
 

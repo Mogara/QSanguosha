@@ -69,7 +69,7 @@ fan_skill.getTurnUseCard=function(self)
 end
 
 function sgs.ai_weapon_value.fan(self, enemy)
-	if enemy and self:isEquip("Vine", enemy) then return 3 end
+	if enemy and (self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy)) then return 3 end
 end
 
 function sgs.ai_armor_value.vine(player, self)

@@ -73,7 +73,11 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getHp() == 1 then
 			for _, hcard in sgs.qlist(cards) do
-				if #givecard == 1 and givecard[1] ~= hcard:getId() then
+				if hcard:isKindOf("Disaster") then
+					table.insert(givecard, hcard:getId())
+				end
+				if #givecard == 1 and givecard[1] ~= hcard:getId() and
+					not hcard:isKindOf("Peach") and not hcard:isKindOf("TrickCard") then
 					table.insert(givecard, hcard:getId())
 					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
 					if use.to then use.to:append(enemy) end
@@ -84,6 +88,18 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 					return
 				else
 				end
+			end
+		end
+	end
+	if #givecard < 2 then
+		for _, hcard in sgs.qlist(cards) do
+			if hcard:isKindOf("Disaster") then
+				table.insert(givecard, hcard:getId())
+			end
+			if #givecard == 2 then
+				use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+				if use.to then use.to:append(self.enemies[1]) end
+				return
 			end
 		end
 	end

@@ -394,7 +394,7 @@ sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target
 	if self:needBear() then return "." end
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:isKindOf("Slash") or card:isKindOf("Collateral") or card:isKindOf("GodSalvation")
+		if card:isKindOf("Slash") or card:isKindOf("Collateral") or card:isKindOf("GodSalvation") or card:isKindOf("Disaster")
 		or card:isKindOf("EquipCard") or card:isKindOf("AmazingGrace") then
 			return "$"..card:getEffectiveId()
 		end
@@ -568,7 +568,7 @@ end
 
 function sgs.ai_slash_weaponfilter.fan(to)
 	local armor = to:getArmor()
-	return armor and armor:isKindOf("Vine")
+	return armor and (armor:isKindOf("Vine") or armor:isKindOf("GaleShell"))
 end
 
 sgs.ai_skill_invoke.kylin_bow = function(self, data)
@@ -886,7 +886,11 @@ function SmartAI:getValuableCard(who)
 	if armor and self:evaluateArmor(armor,who)>3 and not who:hasSkill("nosxuanfeng") then
 		return armor:getEffectiveId()
 	end
-	
+
+	if self:isEquip("Monkey", who) then
+		return offhorse:getEffectiveId()
+	end
+
 
 	local equips = sgs.QList2Table(who:getEquips())
 	for _,equip in ipairs(equips) do
@@ -1040,7 +1044,8 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 		for _, enemy in ipairs(enemies) do
 			local equips = enemy:getEquips()
 			if not enemy:isNude() and self:hasTrickEffective(card, enemy) and not enemy:hasSkill("tuntian") and
-				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) then
+				not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
+				not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 				if enemy:getHandcardNum() == 1 then
 					if self:needKongcheng(enemy) or self:hasSkills("kongcheng|lianying|shangshi",enemy) then return end
 				end

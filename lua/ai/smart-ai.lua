@@ -165,7 +165,7 @@ end
 
 function sgs.getDefense(player)
 	local defense = math.min(sgs.getValue(player), player:getHp() * 3)
-	if player:getArmor() then
+	if player:getArmor() and not player:getArmor():isKindOf("GaleShell") then
 		defense = defense + 2
 	end
 	if not player:getArmor() and player:hasSkill("bazhen") then
@@ -379,6 +379,12 @@ function SmartAI:getDynamicUsePriority(card)
 
 		if use_card:getTypeId() == sgs.Card_Equips then
 			if self:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
+		end
+
+		if use_card:getSkillName() == "wusheng" and
+			sgs.Sanguosha:getCard(use_card:getEffectiveId()):isKindOf("GaleShell") and
+			self:isEquip("GaleShell") then
+			value = value + 10
 		end
 
 		if sgs.dynamic_value.benefit[class_name] then
@@ -1506,7 +1512,7 @@ sgs.ai_choicemade_filter.Nullification.general = function(player, promptlist)
 	elseif sgs.dynamic_value.benefit[className] then intention = -40
 	elseif (className == "Snatch" or className == "Dismantlement") and
 		(to:getCards("j"):isEmpty() and
-		not (to:getArmor() and to:getArmor():isKindOf("SilverLion"))) then
+		not (to:getArmor() and (to:getArmor():isKindOf("GaleShell") or to:getArmor():isKindOf("SilverLion")))) then
 		intention = 80
 	end
 	if positive then intention = -intention end
@@ -1582,7 +1588,7 @@ function SmartAI:filterEvent(event, player, data)
 			sgs.ai_snat_disma_effect = true
 			sgs.ai_snat_dism_from = struct.from
 			if to:getCards("j"):isEmpty() and
-				not (to:getArmor() and to:getArmor():isKindOf("SilverLion")) then
+				not (to:getArmor() and (to:getArmor():isKindOf("GaleShell") or to:getArmor():isKindOf("SilverLion"))) then
 				sgs.updateIntention(from, to, 80)
 			end
 		end
@@ -1646,10 +1652,10 @@ function SmartAI:filterEvent(event, player, data)
 			sgs.ai_snat_disma_effect = false
 			local intention = 70
 			if place == sgs.Player_PlaceDelayedTrick then
-				intention = -intention
+				if not card:isKindOf("Disaster") then intention = -intention else intention = 0 end
 			elseif place == sgs.Player_PlaceEquip then
 				if player:getLostHp() > 1 and card:isKindOf("SilverLion") then intention = -intention end
-				if self:hasSkills(sgs.lose_equip_skill, player) then intention = 0 end
+				if self:hasSkills(sgs.lose_equip_skill, player) or card:isKindOf("GaleShell") then intention = 0 end
 			end
 			sgs.updateIntention(sgs.ai_snat_dism_from, from, intention)
 		end
@@ -1732,7 +1738,8 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 	local aux_func = function(card)
 	local place = self.room:getCardPlace(card:getEffectiveId())
 	if place == sgs.Player_PlaceEquip then
-		if card:isKindOf("SilverLion") and self.player:isWounded() then return -2
+		if card:isKindOf("GaleShell") then return -2
+		elseif card:isKindOf("SilverLion") and self.player:isWounded() then return -2
 		elseif card:isKindOf("OffensiveHorse") then return 1
 		elseif card:isKindOf("Weapon") then return 2
 		elseif card:isKindOf("DefensiveHorse") then return 3
@@ -1883,6 +1890,15 @@ function SmartAI:getCardRandomly(who, flags)
 			end
 		end
 	end
+	if self:isEquip("GaleShell", who) then
+		if self:isEnemy(who) and card == who:getArmor() then
+			if r ~= (cards:length()-1) then
+				card = cards:at(r+1)
+			else
+				card = cards:at(r-1)
+			end
+		end
+	end
 	return card:getEffectiveId()
 end
 
@@ -1909,7 +1925,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 					lightning = trick:getId()
 				elseif trick:isKindOf("Indulgence") or trick:getSuit() == sgs.Card_Diamond then
 					indulgence = trick:getId()
-				else
+				elseif not trick:isKindOf("Disaster") then
 					supply_shortage = trick:getId()
 				end
 			end
@@ -1969,6 +1985,10 @@ function SmartAI:askForCardChosen(who, flags, reason)
 
 			if who:getArmor() and self:evaluateArmor(who:getArmor(),who)>3 then
 				return who:getArmor():getId()
+			end
+
+			if self:isEquip("Monkey", who) then
+				return who:getOffensiveHorse():getId()
 			end
 		end
 
@@ -2112,7 +2132,7 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 			if #card_ids == 1 then return -1 end
 		end
 		for _, card_id in ipairs(card_ids) do
-			return card_id end
+			return card_id
 		end
 		return -1
 	end
@@ -2162,7 +2182,7 @@ function SmartAI:getCardNeedPlayer(cards)
 	cards = cards or sgs.QList2Table(self.player:getHandcards())
 
 	self:sort(self.enemies, "hp")
-	
+
 	-- special move between liubei and xunyu and huatuo
 	local cardtogivespecial = {}
 	local specialnum = 0
@@ -2415,7 +2435,7 @@ function SmartAI:getCardNeedPlayer(cards)
 			self:sort(friends, "handcard")
 			for _, friend in ipairs(friends) do
 				if not self:needKongcheng(friend) then
-					for _, askill in sgs.qlist(friend:getVisibleSkillList()) do
+						for _, askill in sgs.qlist(friend:getVisibleSkillList()) do
 						local callback = sgs.ai_cardneed[askill:objectName()]
 						if type(callback)=="function" and callback(friend, hcard, self) then
 							return hcard, friend
@@ -2426,7 +2446,7 @@ function SmartAI:getCardNeedPlayer(cards)
 			if self:getUseValue(hcard)<6 then
 				for _, friend in ipairs(friends) do
 					if not self:needKongcheng(friend) then
-						if sgs[friend:getGeneralName() .. "_suit_value"] and
+							if sgs[friend:getGeneralName() .. "_suit_value"] and
 							(sgs[friend:getGeneralName() .. "_suit_value"][hcard:getSuitString()] or 0)>=3.9 then
 							return hcard, friend
 						end
@@ -2478,15 +2498,14 @@ function SmartAI:getCardNeedPlayer(cards)
 			end
 		end
 	end
-	self:sort(self.enemies, "hp")
 	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 	if zhugeliang and zhugeliang:objectName() ~= self.player:objectName() and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
-		local trash = self:getCard("GodSalvation") or self:getCard("AmazingGrace")
+		local trash = self:getCard("Disaster") or self:getCard("GodSalvation") or self:getCard("AmazingGrace")
 		if trash then
 			return trash, zhugeliang
 		end
 		for _, card in ipairs(self:getCards("EquipCard")) do
-			if self:getSameEquip(card, zhugeliang) or (card:isKindOf("OffensiveHorse")) then
+			if self:getSameEquip(card, zhugeliang) or (card:isKindOf("OffensiveHorse") and not card:isKindOf("Monkey")) then
 				return card, zhugeliang
 			end
 		end
@@ -2516,7 +2535,7 @@ function SmartAI:askForYiji(card_ids)
 		for _, afriend in ipairs(self.friends) do
 			if not (self:needKongcheng(afriend) or afriend:hasSkill("manjuan")) then
 				for _, acard_id in ipairs(card_ids) do
-					return afriend, acard_id end
+					return afriend, acard_id
 				end
 			end
 		end
@@ -3804,7 +3823,7 @@ function SmartAI:useEquipCard(card, use)
 		for _,friend in ipairs(self.friends_noself) do
 			if not friend:getOffensiveHorse() then return end
 		end
-	elseif self.lua_ai:useCard(card) then
+	elseif card:isKindOf("Monkey") or self.lua_ai:useCard(card) then
 		use.card = card
 	end
 end

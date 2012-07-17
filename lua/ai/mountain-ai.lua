@@ -38,7 +38,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 			end
 		end
 	else
-		if not who:hasEquip() or who:getCards("e"):length() == 1 then return end
+		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():isKindOf("GaleShell")) then return end
 		local card_id = self:askForCardChosen(who, "e", "snatch")
 		if card_id >= 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
 		local targets = {}
@@ -407,7 +407,7 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 				max_card = hcard
 			end
 
-			if hcard:getNumber() <= min_num and not self:isFriend(lord) then
+			if hcard:getNumber() <= min_num then
 				if hcard:getNumber() == min_num then
 					if min_card and self:getKeepValue(hcard) > self:getKeepValue(min_card) then
 						min_num = hcard:getNumber()

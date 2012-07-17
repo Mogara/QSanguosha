@@ -105,6 +105,7 @@ sgs.ai_skill_discard.lihun = function(self, discard_num, min_num, optional, incl
 	end
 	
 	temp = table.copyFrom(card_ids)
+
 	for i = 1, #card_ids, 1 do
 		local card = sgs.Sanguosha:getCard(card_ids[i])
 		table.insert(to_discard, card_ids[i])

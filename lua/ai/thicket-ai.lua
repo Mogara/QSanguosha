@@ -1,6 +1,4 @@
-sgs.ai_skill_invoke.xingshang = function(self, data)
-	return true
-end
+sgs.ai_skill_invoke.xingshang = true
 
 sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 	self:sort(self.friends_noself)

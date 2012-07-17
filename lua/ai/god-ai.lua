@@ -297,7 +297,7 @@ yeyan_skill.getTurnUseCard=function(self)
 	local target_num = 0
 	local chained = 0
 	for _, enemy in ipairs(self.enemies) do
-		if ((self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0) or enemy:getHp() <= 1) 
+		if ((self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy) or enemy:getMark("@gale") > 0) or enemy:getHp() <= 1) 
 		   and not (self.role == "renegade" and enemy:isLord()) then
 			target_num = target_num + 1
 		end
