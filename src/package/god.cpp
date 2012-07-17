@@ -473,7 +473,7 @@ public:
         }else if(triggerEvent == CardResponsed)
             card = data.value<CardStar>();
 
-        if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
+        if(card->isNDTrick()){
             Room *room = player->getRoom();
             room->broadcastSkillInvoke(objectName());
 

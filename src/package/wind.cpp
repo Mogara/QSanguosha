@@ -248,7 +248,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhangjiao, QVariant &data) const{
         if (zhangjiao == NULL) return false;
         CardStar card_star = data.value<CardStar>();
-        if(!card_star->inherits("Jink"))
+        if(!card_star->isKindOf("Jink"))
             return false;
         room->askForUseCard(zhangjiao, "@@leiji", "@leiji");
 
@@ -297,7 +297,7 @@ public:
         if(ClientInstance->getPattern().endsWith("1"))
             return false;
         else
-            return selected.isEmpty() && to_select->inherits("EquipCard");
+            return selected.isEmpty() && to_select->isKindOf("EquipCard");
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -381,7 +381,7 @@ public:
         if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             bool caninvoke = false;
-            if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
+            if(use.card->isKindOf("Slash") && use.from->hasSkill(objectName())
                 && use.to.contains(player) && use.from->getPhase() == Player::Play){
                    caninvoke = true;
             }
@@ -910,7 +910,7 @@ QGroupBox *GuhuoDialog::createRight(){
             c->setSkillName(object_name);
             c->setParent(this);
 
-            QVBoxLayout *layout = c->inherits("SingleTargetTrick") ? layout1 : layout2;
+            QVBoxLayout *layout = c->isKindOf("SingleTargetTrick") ? layout1 : layout2;
             layout->addWidget(createButton(c));
         }
     }

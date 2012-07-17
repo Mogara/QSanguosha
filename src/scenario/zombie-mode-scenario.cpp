@@ -259,7 +259,7 @@ public:
         if(reason == NULL)
             return false;
 
-        if(reason->inherits("Slash")){
+        if(reason->isKindOf("Slash")){
             LogMessage log;
             log.type = "#Xunmeng";
             log.from = zombie;
@@ -298,7 +298,7 @@ public:
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return to_select->inherits("Peach");
+        return to_select->isKindOf("Peach");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

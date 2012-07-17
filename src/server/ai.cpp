@@ -174,9 +174,9 @@ void TrustAI::activate(CardUseStruct &card_use){
 }
 
 bool TrustAI::useCard(const Card *card){
-    if(card->inherits("Peach"))
+    if(card->isKindOf("Peach"))
         return self->isWounded();
-    else if(card->inherits("EquipCard")){
+    else if(card->isKindOf("EquipCard")){
         const EquipCard *equip = qobject_cast<const EquipCard *>(card);
         switch(equip->location()){
         case EquipCard::WeaponLocation:{
@@ -194,7 +194,7 @@ bool TrustAI::useCard(const Card *card){
             return true;
         }
 
-    }else if(card->inherits("ExNihilo"))
+    }else if(card->isKindOf("ExNihilo"))
         return true;
     else
         return false;
@@ -247,7 +247,7 @@ const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *,
         QList<const Card *> cards = self->getHandcards();
 
         foreach(const Card *card, cards){
-            if(card->inherits("Nullification"))
+            if(card->isKindOf("Nullification"))
                 return card;
         }
 
@@ -332,10 +332,10 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
     if(isFriend(dying)){
         QList<const Card *> cards = self->getHandcards();
         foreach(const Card *card, cards){
-            if(card->inherits("Peach"))
+            if(card->isKindOf("Peach"))
                 return card;
 
-            if(card->inherits("Analeptic") && dying == self)
+            if(card->isKindOf("Analeptic") && dying == self)
                 return card;
         }
 

@@ -174,7 +174,7 @@ public:
         }else if(triggerEvent == CardResponsed)
             card = data.value<CardStar>();
 
-        if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
+        if(card->isNDTrick()){
             Room *room = jiangwei->getRoom();
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
@@ -275,7 +275,7 @@ public:
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);
-                if(!card->inherits("BasicCard")){
+                if(!card->isKindOf("BasicCard")){
                     // @todo: fix this!
                     room->throwCard(card_id, NULL);
                     room->setEmotion(player, "bad");
@@ -580,7 +580,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *hua, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(effect.card->inherits("Slash") && effect.card->isBlack()){
+        if(effect.card->isKindOf("Slash") && effect.card->isBlack()){
             if(room->askForSkillInvoke(hua, objectName(), data)){
                 room->askForUseCard(hua, "slash", "@askforslash");
             }
@@ -623,7 +623,7 @@ public:
             if(!reason || damage.from != hua)
                 return false;
 
-            if(reason->inherits("Slash") && reason->isBlack()){
+            if(reason->isKindOf("Slash") && reason->isBlack()){
                 LogMessage log;
                 log.type = "#Wenjiu2";
                 log.from = hua;
@@ -684,7 +684,7 @@ public:
         }else if(triggerEvent == CardResponsed)
             card = data.value<CardStar>();
 
-        if(card->inherits("BasicCard") && !card->isVirtualCard()){
+        if(card->isKindOf("BasicCard") && !card->isVirtualCard()){
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
                 room->broadcastSkillInvoke(objectName());
                 tianfeng->drawCards(1);

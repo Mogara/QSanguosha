@@ -174,7 +174,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card == NULL || !damage.card->inherits("Slash") || damage.to->isDead())
+        if(damage.card == NULL || !damage.card->isKindOf("Slash") || damage.to->isDead())
             return false;
 
         QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
@@ -472,7 +472,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *sunce, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.from->objectName() == sunce->objectName() || use.to.contains(sunce)){
-            if(use.card->inherits("Duel") || (use.card->inherits("Slash") && use.card->isRed())){
+            if(use.card->isKindOf("Duel") || (use.card->isKindOf("Slash") && use.card->isRed())){
                 if(sunce->askForSkillInvoke(objectName(), data)){
                     sunce->getRoom()->broadcastSkillInvoke(objectName());
                     sunce->drawCards(1);
@@ -859,7 +859,7 @@ public:
         if(triggerEvent == TargetConfirming){
 
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card && use.card->inherits("Slash")){
+            if(use.card && use.card->isKindOf("Slash")){
 
                 room->broadcastSkillInvoke(objectName());
 

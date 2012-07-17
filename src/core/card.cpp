@@ -174,7 +174,7 @@ bool Card::CompareByType(const Card *a, const Card *b){
 }
 
 bool Card::isNDTrick() const{
-    return getTypeId() == Trick && !inherits("DelayedTrick");
+    return getTypeId() == Trick && !isKindOf("DelayedTrick");
 }
 
 QString Card::getPackage() const{
@@ -490,7 +490,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     }else{
         QList<ServerPlayer *> players = targets;
         if(room->getMode() == "06_3v3"){
-           if(inherits("AOE") || inherits("GlobalEffect"))
+           if(isKindOf("AOE") || isKindOf("GlobalEffect"))
                room->reverseFor3v3(this, source, players);
         }
 

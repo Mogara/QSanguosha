@@ -1479,7 +1479,7 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
         while(!list.isEmpty())
             new_list << list.takeLast();
 
-        if(card->inherits("GlobalEffect")){
+        if(card->isKindOf("GlobalEffect")){
             new_list.removeLast();
             new_list.prepend(player);
         }
@@ -2252,7 +2252,7 @@ int Room::getCardFromPile(const QString &card_pattern){
         if(card_pattern == "@duanliang"){
             foreach(int card_id, *draw_pile){
                 const Card *card = Sanguosha->getCard(card_id);
-                if(card->isBlack() && (card->inherits("BasicCard") || card->inherits("EquipCard")))
+                if(card->isBlack() && (card->isKindOf("BasicCard") || card->isKindOf("EquipCard")))
                     return card_id;
             }
         }
@@ -3723,11 +3723,11 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         foreach(const Card *card, cards){
             if(card->getSuit() == Card::Heart || (card->getSuit() == Card::Spade && target->hasSkill("hongyan"))){
                 has_null = card;
-                if(card->inherits("Jink"))
+                if(card->isKindOf("Jink"))
                     has_jink = card;
-                else if(card->inherits("Peach"))
+                else if(card->isKindOf("Peach"))
                     has_peach = card;
-                else if(card->inherits("Shit"))
+                else if(card->isKindOf("Shit"))
                     has_shit = card;
                 heartnum++;
             }

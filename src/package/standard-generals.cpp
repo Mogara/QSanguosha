@@ -304,7 +304,7 @@ public:
         if(reason == NULL)
             return false;
 
-        if(reason->inherits("Slash") || reason->inherits("Duel")){
+        if(reason->isKindOf("Slash") || reason->isKindOf("Duel")){
             LogMessage log;
             log.type = "#LuoyiBuff";
             log.from = xuchu;
@@ -564,15 +564,15 @@ public:
         switch(ClientInstance->getStatus()){
         case Client::Playing:{
                 // jink as slash
-                return card->inherits("Jink");
+                return card->isKindOf("Jink");
             }
 
         case Client::Responsing:{
                 QString pattern = ClientInstance->getPattern();
                 if(pattern == "slash")
-                    return card->inherits("Jink");
+                    return card->isKindOf("Jink");
                 else if(pattern == "jink")
-                    return card->inherits("Slash");
+                    return card->isKindOf("Slash");
             }
 
         default:
@@ -589,12 +589,12 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        if(originalCard->inherits("Slash")){
+        if(originalCard->isKindOf("Slash")){
             Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
             jink->addSubcard(originalCard);
             jink->setSkillName(objectName());
             return jink;
-        }else if(originalCard->inherits("Jink")){
+        }else if(originalCard->isKindOf("Jink")){
             Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
             slash->addSubcard(originalCard);
             slash->setSkillName(objectName());
@@ -619,7 +619,7 @@ public:
         if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             bool caninvoke = false;
-            if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
+            if(use.card->isKindOf("Slash") && use.from->hasSkill(objectName())
                 && use.to.contains(player)){
                    caninvoke = true;
             }
@@ -685,7 +685,7 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        if(card->inherits("Slash") || card->inherits("Duel"))
+        if(card->isKindOf("Slash") || card->isKindOf("Duel"))
             return to->isKongcheng();
         else
             return false;
@@ -847,7 +847,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
         if(triggerEvent == CardResponsed && lvmeng->getPhase() == Player::Play){
             CardStar card_star = data.value<CardStar>();
-            if(card_star->inherits("Slash"))
+            if(card_star->isKindOf("Slash"))
                 lvmeng->setFlags("keji_use_slash");
         }
         else if(triggerEvent == EventPhaseChanging)
@@ -972,7 +972,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *daqiao, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
 
-        if(use.card && use.card->inherits("Slash") && use.to.contains(daqiao) && !daqiao->isNude() && room->alivePlayerCount() > 2){
+        if(use.card && use.card->isKindOf("Slash") && use.to.contains(daqiao) && !daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(use.from);
 
@@ -1079,11 +1079,11 @@ public:
         if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             bool caninvoke = false;
-            if(use.card->inherits("Slash") && use.from->hasSkill(objectName())
+            if(use.card->isKindOf("Slash") && use.from->hasSkill(objectName())
                 && use.to.contains(player)){
                    caninvoke = true;
             }
-            else if(use.card->inherits("Duel") && use.from->hasSkill(objectName())
+            else if(use.card->isKindOf("Duel") && use.from->hasSkill(objectName())
                 && use.from->objectName() == player->objectName()){
                        caninvoke = true;
             }
@@ -1227,7 +1227,7 @@ public:
     }
 
     virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
-        return card->inherits("Snatch") || card->inherits("Indulgence");
+        return card->isKindOf("Snatch") || card->isKindOf("Indulgence");
     }
 };
 

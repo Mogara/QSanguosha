@@ -785,7 +785,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                     }
     case CardUsed:{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
+        if(use.card->isKindOf("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
             player->broadcastSkillInvoke("@recast");
             CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
             room->throwCard(use.card, reason, NULL);
@@ -1019,8 +1019,8 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
         if(player->getPhase() == Player::NotActive){
             CardEffectStruct ces = data.value<CardEffectStruct>();
             if(ces.card)
-                if(ces.card->inherits("TrickCard") ||
-                        ces.card->inherits("Slash"))
+                if(ces.card->isKindOf("TrickCard") ||
+                        ces.card->isKindOf("Slash"))
                 playerShowed(player);
 
             const ProhibitSkill* prohibit = room->isProhibited(ces.from,ces.to,ces.card);

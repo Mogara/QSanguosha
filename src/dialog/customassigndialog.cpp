@@ -1684,7 +1684,7 @@ void CardAssignDialog::updateCardList(){
 				continue;
 
 			const Card *card = Sanguosha->getCard(i);
-			if(card->getType() == card_type || card->inherits(class_name.toStdString().c_str()))
+            if(card->getType() == card_type || card->isKindOf(class_name.toStdString().c_str()))
 				reasonable_cards << card;
 		}
 	}

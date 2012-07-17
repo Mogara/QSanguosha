@@ -821,7 +821,7 @@ void Client::askForNullification(const Json::Value &arg){
         source = getPlayer(source_name.asCString());
 
     if(Config.NeverNullifyMyTrick && source == Self){
-        if(trick_card->inherits("SingleTargetTrick") || trick_card->objectName() == "iron_chain"){
+        if(trick_card->isKindOf("SingleTargetTrick") || trick_card->objectName() == "iron_chain"){
             onPlayerResponseCard(NULL);
             return;
         }

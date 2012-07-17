@@ -145,7 +145,7 @@ public:
     }
 
     virtual bool viewFilter(const Card *card) const{
-        return card->isBlack() && !card->inherits("TrickCard");
+        return card->isBlack() && !card->isKindOf("TrickCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -166,15 +166,15 @@ public:
         events << CardEffected;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(effect.card->inherits("SavageAssault")){
+        if(effect.card->isKindOf("SavageAssault")){
             LogMessage log;
             log.type = "#SkillNullify";
             log.from = player;
             log.arg = avoid_skill;
             log.arg2 = "savage_assault";
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             return true;
         }else
@@ -200,14 +200,14 @@ public:
         if(triggerEvent == TargetConfirmed && player->hasSkill(objectName()) && player->isAlive())
         {
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("SavageAssault") && !use.from->hasSkill(objectName())){
+            if(use.card->isKindOf("SavageAssault") && !use.from->hasSkill(objectName())){
                 room->broadcastSkillInvoke(objectName());
                 room->setTag("HuoshouSource", QVariant::fromValue((PlayerStar)player));
             }
         }
         else if(triggerEvent == ConfirmDamage && !room->getTag("HuoshouSource").isNull()){
             DamageStruct damage = data.value<DamageStruct>();
-            if(!damage.card || !damage.card->inherits("SavageAssault"))
+            if(!damage.card || !damage.card->isKindOf("SavageAssault"))
                 return false;
 
             ServerPlayer *menghuo = room->getTag("HuoshouSource").value<PlayerStar>();
@@ -219,7 +219,7 @@ public:
         }
         else if(triggerEvent == CardFinished){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("SavageAssault"))
+            if(use.card->isKindOf("SavageAssault"))
                 room->removeTag("HuoshouSource");
         }
 
@@ -236,9 +236,8 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
-        if(damage.card && damage.card->inherits("Slash") && !zhurong->isKongcheng()
+        if(damage.card && damage.card->isKindOf("Slash") && !zhurong->isKongcheng()
             && !target->isKongcheng() && target != zhurong && !damage.chain && !damage.transfer){
-            Room *room = zhurong->getRoom();
             if(room->askForSkillInvoke(zhurong, objectName(), data)){
                 room->broadcastSkillInvoke(objectName(), 1);
 
@@ -323,10 +322,10 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("SavageAssault") && !use.card->hasFlag("ever_moved") &&
+        if(use.card->isKindOf("SavageAssault") && !use.card->hasFlag("ever_moved") &&
                 ((!use.card->isVirtualCard()) ||
                   (use.card->getSubcards().length() == 1 &&
-                  Sanguosha->getCard(use.card->getSubcards().first())->inherits("SavageAssault")))){
+                  Sanguosha->getCard(use.card->getSubcards().first())->isKindOf("SavageAssault")))){
             if (player == NULL) return false;
             if(room->getCardPlace(use.card->getEffectiveId()) == Player::DiscardPile){
                 // finding zhurong;
@@ -718,8 +717,8 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        return card->inherits("TrickCard") && card->isBlack();
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
+        return card->isKindOf("TrickCard") && card->isBlack();
     }
 };
 
