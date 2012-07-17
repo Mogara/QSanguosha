@@ -702,13 +702,23 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
     {
         QPixmap pixmap = QSanPixmapCache::getPixmap(fileName);
         if (clipping) {
-            pixmap = pixmap.copy(clipRegion);
+            QRect actualClip = clipRegion;
+            if (actualClip.right() > pixmap.width())
+                actualClip.setRight(pixmap.width());
+            if (actualClip.bottom() > pixmap.height())
+                actualClip.setBottom(pixmap.height());
+            
+            QPixmap clipped = QPixmap(clipRegion.size());
+            QPainter painter(&clipped);
+            painter.drawPixmap(0, 0, pixmap.copy(actualClip));
+            
             if (scaled)
             {
-                pixmap = pixmap.scaled(
+                clipped = clipped.scaled(
                     scaleRegion, Qt::IgnoreAspectRatio,
                     Qt::SmoothTransformation);
             }
+            pixmap = clipped;
         }
         S_IMAGE_KEY2PIXMAP[totalKey] = pixmap;
     }

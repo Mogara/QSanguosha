@@ -78,7 +78,7 @@
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
     "avatarArea": [4, 27, 148, 89],
-    "secondaryAvatarArea": [25, 67, 51, 49],
+    "secondaryAvatarArea": [89, 27, 63, 89],
     "circleArea": [4, 27, 148, 89],
     "avatarNameArea": [1, 24, 40, 60],
     "avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
