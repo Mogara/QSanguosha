@@ -22,7 +22,6 @@ Card::Card(Suit suit, int number, bool target_fixed)
      will_throw(true), has_preact(false),
      suit(suit), number(number), id(-1)
 {
-    m_isModified = false;
     can_jilei = will_throw;
 
     if(number < 1 || number > 13)

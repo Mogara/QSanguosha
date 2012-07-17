@@ -768,8 +768,10 @@
     <ClCompile Include="..\..\src\package\yjcm-package.cpp" />
     <ClCompile Include="..\..\src\package\yjcm2012-package.cpp" />
     <ClCompile Include="..\..\src\scenario\zombie-mode-scenario.cpp" />
+    <ClCompile Include="WrappedCard.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="WrappedCard.h" />
     <CustomBuild Include="..\..\src\ui\TimedProgressBar.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing TimedProgressBar.h...</Message>

@@ -402,6 +402,9 @@
     <ClCompile Include="..\..\src\core\RoomState.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="WrappedCard.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1248,6 +1251,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ui\uiUtils.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="WrappedCard.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
