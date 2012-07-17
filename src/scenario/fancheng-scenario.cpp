@@ -249,7 +249,7 @@ public:
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return to_select->inherits("BasicCard");
+        return to_select->isKindOf("BasicCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

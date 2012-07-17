@@ -662,7 +662,7 @@ QList<int> Engine::getRandomCards() const{
     foreach(Card *card, cards){
         card->clearFlags();
 
-        if(exclude_disaters && card->inherits("Disaster"))
+        if(exclude_disaters && card->isKindOf("Disaster"))
             continue;
 
         if(card->getPackage() == "New3v3Card" && using_new_3v3){

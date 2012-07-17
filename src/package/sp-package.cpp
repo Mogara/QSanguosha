@@ -133,7 +133,7 @@ public:
         if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.to.length() <= 1 || !use.to.contains(player) ||
-               !use.card->inherits("TrickCard") ||
+               !use.card->isKindOf("TrickCard") ||
                !room->askForSkillInvoke(player, objectName(), data))
                     return false;
 

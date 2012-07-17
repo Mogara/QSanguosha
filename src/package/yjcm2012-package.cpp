@@ -278,7 +278,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
+        if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->isKindOf("Slash") &&
            !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName(), 1);
             JudgeStruct judge;
@@ -476,11 +476,11 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         if (player == NULL) return false;
 
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->inherits("Slash") &&
+        if(damage.card && damage.card->isKindOf("Slash") &&
                 (damage.card->isRed() || damage.card->hasFlag("drank"))){
 
             LogMessage log;
@@ -539,7 +539,7 @@ public:
                 return false;
 
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("Slash"))
+            if(use.card->isKindOf("Slash"))
             {
                 room->broadcastSkillInvoke(objectName());
                 room->setPlayerFlag(handang, "-jiefanUsed");
@@ -569,7 +569,7 @@ public:
         }
         else if(triggerEvent == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->inherits("Slash") && damage.card->hasFlag("jiefan-slash")){
+            if(damage.card && damage.card->isKindOf("Slash") && damage.card->hasFlag("jiefan-slash")){
 
                 DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
 
@@ -742,7 +742,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName())
+            if(damage.card && damage.card->isKindOf("Slash") && damage.card->getSkillName() == objectName())
                 player->tag["Invokelihuo"] = true;
         }
         else if(player->tag.value("Invokelihuo", false).toBool()){
@@ -778,7 +778,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &, const Card* to_select) const{
-        return to_select->inherits("Slash");
+        return to_select->isKindOf("Slash");
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{

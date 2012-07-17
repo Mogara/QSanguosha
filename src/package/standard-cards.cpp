@@ -99,7 +99,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(Self->hasWeapon("halberd") && Self->isLastHandCard(this))
         slash_targets += 2;
 
-    if(Self->hasSkill("lihuo") && inherits("FireSlash"))
+    if(Self->hasSkill("lihuo") && isKindOf("FireSlash"))
         slash_targets++;
 
     if(Self->hasSkill("shenji") && Self->getWeapon() == NULL)
@@ -114,7 +114,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(targets.length() >= slash_targets)
         return false;
 
-    if (inherits("WushenSlash")) {
+    if (isKindOf("WushenSlash")) {
         distance_limit = false;
     }
 
@@ -212,7 +212,7 @@ public:
             return false;
         foreach(ServerPlayer *to, use.to){
             if(use.from->getGeneral()->isMale() != to->getGeneral()->isMale()
-                && use.card->inherits("Slash")){
+                && use.card->isKindOf("Slash")){
                 if(use.from->askForSkillInvoke(objectName())){
                     to->getRoom()->setEmotion(use.from,"weapon/double_sword");
                     bool draw_card = false;
@@ -254,7 +254,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("Slash") && use.from->getWeapon() && use.from->getWeapon()->objectName() == objectName()){
+            if(use.card->isKindOf("Slash") && use.from->getWeapon() && use.from->getWeapon()->objectName() == objectName()){
                 bool do_anim = false;
                 foreach(ServerPlayer *p, use.to){
                     p->addMark("qinggang");
@@ -455,7 +455,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         QStringList horses;
-        if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer){
+        if(damage.card && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer){
             if(damage.to->getDefensiveHorse())
                 horses << "dhorse";
             if(damage.to->getOffensiveHorse())
@@ -1036,7 +1036,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude()
+        if(damage.card && damage.card->isKindOf("Slash") && !damage.to->isNude()
             && !damage.chain && !damage.transfer && player->askForSkillInvoke("ice_sword", data)){
             room->setEmotion(player,"weapon/ice_sword");
                 int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");

@@ -26,7 +26,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     bool checkpoint = false;
     QStringList card_types = factors.at(0).split(',');
     foreach(QString name,card_types)
-        if(card->inherits(name.toLocal8Bit().data()) || name == ".")checkpoint = true;
+        if(card->isKindOf(name.toLocal8Bit().data()) || name == ".")checkpoint = true;
     if(!checkpoint)return false;
     if(factors.size()<2)return true;
 

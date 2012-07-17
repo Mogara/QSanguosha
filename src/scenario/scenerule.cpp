@@ -95,7 +95,7 @@ class Scene27Skill : public OneCardViewAsSkill {
     Scene27Skill():OneCardViewAsSkill("liangshangjunzi") { }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return to_select->inherits("Dismantlement") || to_select->inherits("Snatch");
+        return to_select->isKindOf("Dismantlement") || to_select->isKindOf("Snatch");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -407,7 +407,7 @@ bool SceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pla
         CardUseStruct use = data.value<CardUseStruct>();
         switch(room->getTag("SceneID").toInt()) {
         case 16:
-            if(use.card->inherits("Peach") && player->getPhase() == Player::Play) {
+            if(use.card->isKindOf("Peach") && player->getPhase() == Player::Play) {
                 ServerPlayer *effectTo = room->askForPlayerChosen(player, room->getOtherPlayers(player), "Scene16");
                 RecoverStruct recover;
                 recover.who = effectTo;
@@ -433,7 +433,7 @@ bool SceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pla
         CardEffectStruct effect = data.value<CardEffectStruct>();
         switch(room->getTag("SceneID").toInt()) {
         case 7:
-            if(effect.card->inherits("TrickCard") && !effect.card->inherits("DelayedTrick")) {
+            if(effect.card->isKindOf("TrickCard") && !effect.card->isKindOf("DelayedTrick")) {
                 LogMessage log;
                 log.type = "#Scene7CardInvalid";
                 log.from = player;
@@ -558,7 +558,7 @@ bool SceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pla
         DamageStruct damage = data.value<DamageStruct>();
         switch(room->getTag("SceneID").toInt()) {
         case 15:
-            if(damage.card && damage.card->inherits("Slash") && damage.nature == DamageStruct::Normal)
+            if(damage.card && damage.card->objectName() == "slash")
                 if(!player->isKongcheng()) {
                     LogMessage log;
                     log.type = "#Scene15NeedDiscard";

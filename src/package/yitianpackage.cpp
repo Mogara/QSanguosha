@@ -671,8 +671,8 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        return card->inherits("Indulgence") || card->inherits("SupplyShortage");
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
+        return card->isKindOf("Indulgence") || card->isKindOf("SupplyShortage");
     }
 };
 
@@ -698,7 +698,7 @@ public:
         QString wuling = xuandi->tag.value("wuling").toString();
         if(triggerEvent == CardEffected && wuling == "water"){
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card && effect.card->inherits("Peach")){
+            if(effect.card && effect.card->isKindOf("Peach")){
                 RecoverStruct recover;
                 recover.card = effect.card;
                 recover.who = effect.from;
@@ -1450,7 +1450,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *elai, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->inherits("Slash") &&
+        if(damage.card && damage.card->isKindOf("Slash") &&
            elai->getPhase() == Player::Play && !elai->hasFlag("shenli"))
         {
             elai->setFlags("shenli");
@@ -1819,7 +1819,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        return selected.isEmpty() && to_select->inherits("Weapon");
+        return selected.isEmpty() && to_select->isKindOf("Weapon");
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{

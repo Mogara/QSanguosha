@@ -252,7 +252,7 @@ public:
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->inherits("BasicCard");
+        return !to_select->isKindOf("BasicCard");
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -578,7 +578,7 @@ public:
         if(damage.to->isDead())
             return false;
 
-        if(damage.card && damage.card->inherits("Slash") && !damage.chain && !damage.transfer){
+        if(damage.card && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer){
             Room *room = player->getRoom();
             if(room->askForSkillInvoke(player, objectName(), data)){
                 int x = qMin(5, damage.to->getHp());
@@ -769,7 +769,7 @@ public:
 
     virtual bool viewFilter(const Card* to_select) const{
         const Card *c = to_select;
-        return c->getTypeId() == Card::Equip || c->inherits("Slash");
+        return c->getTypeId() == Card::Equip || c->isKindOf("Slash");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -828,7 +828,7 @@ public:
                 return false;
 
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card->inherits("Slash") || effect.card->getTypeId() == Card::Trick){
+            if(effect.card->isKindOf("Slash") || effect.card->getTypeId() == Card::Trick){
                 LogMessage log;
                 log.type = "#ZhichiAvoid";
                 log.from = player;

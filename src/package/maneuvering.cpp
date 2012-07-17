@@ -142,7 +142,7 @@ public:
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->inherits("Slash") &&
+        if(damage.card && damage.card->isKindOf("Slash") &&
             damage.to->isKongcheng() && !damage.chain && !damage.transfer)
         {
             room->setEmotion(damage.to, "weapon/guding_blade");
@@ -189,7 +189,7 @@ public:
             }
         }else if(triggerEvent == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card->inherits("AOE")){
+            if(effect.card->isKindOf("AOE")){
                 room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
