@@ -31,7 +31,6 @@ class Card : public QObject
     Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
-    Q_PROPERTY(bool modified READ isModified WRITE setModified)
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
@@ -129,7 +128,7 @@ public:
 
     virtual void onMove(const CardMoveStruct &move) const;
 
-    inline virtual bool isKindOf(const char* cardType) { return inherits(cardType); }
+    inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);

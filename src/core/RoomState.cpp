@@ -18,9 +18,7 @@ bool RoomState::setCard(int cardId, Card *newCard)
 
    m_cards[cardId] = newCard;
    newCard->setId(cardId);
-   newCard->setModified(true);
-   // @todo: notify client of the change in the future;
-
+   // newCard->setModified(true);
    if (oldCard != NULL) {
        delete oldCard;
    }
@@ -32,7 +30,7 @@ void RoomState::resetCard(int cardId)
     Card* newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
     if (newCard == NULL) return;
     setCard(cardId, newCard);
-    newCard->setModified(false);
+    // newCard->setModified(false);
 }
 
 // Reset all cards, generals' states of the room instance

@@ -688,6 +688,7 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
     virtual void onMove(const CardMoveStruct &move) const;
+	virtual bool isKindOf(const char* cardType) const;
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
