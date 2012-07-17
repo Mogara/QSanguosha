@@ -266,7 +266,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("Peach")){
+        if(use.card->isKindOf("Peach")){
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
 
             foreach(ServerPlayer *p, players){
@@ -386,7 +386,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(player, objectName(), data)){
+        if(damage.card && damage.card->isKindOf("Slash") && room->askForSkillInvoke(player, objectName(), data)){
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
             QMutableListIterator<ServerPlayer *> itor(players);
 

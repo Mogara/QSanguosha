@@ -29,7 +29,7 @@ public:
                     int card_id = room->askForCardChosen(player, target, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
-                    if(card->inherits("Jink"))
+                    if(card->isKindOf("Jink"))
                         room->broadcastSkillInvoke("chongzhen", 1);
                     else
                         room->broadcastSkillInvoke("chongzhen", 2);
@@ -41,7 +41,7 @@ public:
             if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
                     if(p->isKongcheng()) continue;
-                    if(use.card->inherits("Jink"))
+                    if(use.card->isKindOf("Jink"))
                         room->broadcastSkillInvoke("chongzhen", 1);
                     else
                         room->broadcastSkillInvoke("chongzhen", 2);
@@ -50,7 +50,7 @@ public:
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
                 }
             }
-            else if(use.to.contains(player) && !use.card->inherits("Collateral")
+            else if(use.to.contains(player) && !use.card->isKindOf("Collateral")
                     && use.card->getSkillName() != "luanwu"
                     && use.card->getSkillName() != "tiaoxin"){
                 room->setPlayerFlag(use.from, "Chongzhen");
@@ -436,7 +436,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(!damage.card || !damage.card->inherits("Slash") || !damage.card->isRed())
+        if(!damage.card || !damage.card->isKindOf("Slash") || !damage.card->isRed())
             return false;
 
         LogMessage log;
@@ -751,8 +751,8 @@ public:
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);
-                if(!card->inherits("BasicCard") || card->inherits("Peach")){
-                    if(!card->inherits("BasicCard")){
+                if(!card->isKindOf("BasicCard") || card->isKindOf("Peach")){
+                    if(!card->isKindOf("BasicCard")){
                         no_basic++;
                     }
                     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());

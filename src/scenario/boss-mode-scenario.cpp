@@ -145,7 +145,7 @@ public:
         if(has_frantic && (triggerEvent == CardEffected)){
             if(player->isWounded()){
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                if(!effect.multiple && effect.card->inherits("TrickCard") && player->getPhase() == Player::NotActive){
+                if(!effect.multiple && effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){
                     LogMessage log;
                     log.type = "#DajiAvoid";
                     log.from = effect.from;
@@ -247,7 +247,7 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        return card->inherits("DelayedTrick");
+        return card->isKindOf("DelayedTrick");
     }
 };
 
