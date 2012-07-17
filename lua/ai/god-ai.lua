@@ -181,7 +181,6 @@ global_room:writeToConsole("we are in !!!!!!!!!")
 	cards=sgs.QList2Table(cards)
     local has_jink
 	local has_peach
-	local has_shit
 	local has_null
     local heartnum = 0
 	local hasindul = 0
@@ -206,9 +205,6 @@ global_room:writeToConsole("we are in !!!!!!!!!")
             elseif card:isKindOf("Peach") then
                 has_peach = card
 				global_room:writeToConsole("has peach !!!!!!!!!")
-            elseif card:isKindOf("Shit") then
-                has_shit = card
-				global_room:writeToConsole("has shit !!!!!!!!!")
 			end
             heartnum = heartnum + 1
 		end
@@ -226,9 +222,6 @@ global_room:writeToConsole("we are in !!!!!!!!!")
 		self.room:setPlayerFlag(self.player, "gongxin_put")
 		global_room:writeToConsole("indul ? OK  !!!!!!!!!")
 		return has_null:getEffectiveId()
-	elseif heartnum == 1 and has_shit then
-		global_room:writeToConsole("Oh Shit  !!!!!!!!!")
-		return "."
 	elseif has_null then
 		global_room:writeToConsole("Normal discard  !!!!!!!!!")
 		return has_null:getEffectiveId()
@@ -304,7 +297,7 @@ yeyan_skill.getTurnUseCard=function(self)
 	local target_num = 0
 	local chained = 0
 	for _, enemy in ipairs(self.enemies) do
-		if ((self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy) or enemy:getMark("@gale") > 0) or enemy:getHp() <= 1) 
+		if ((self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0) or enemy:getHp() <= 1) 
 		   and not (self.role == "renegade" and enemy:isLord()) then
 			target_num = target_num + 1
 		end

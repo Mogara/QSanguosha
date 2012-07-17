@@ -89,8 +89,6 @@ sgs.ai_skill_use_func.NeoFanjianCard=function(card,use,self)
 end
 
 sgs.ai_skill_cardchosen.neofanjian = function(self)
-	local shit = self:getCard("Shit")
-	if shit then return shit end
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	return cards[1]

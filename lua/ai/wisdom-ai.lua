@@ -17,7 +17,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 				if hcard:isKindOf("Analeptic") or hcard:isKindOf("Peach") then
 					table.insert(givecard, hcard:getId())
 				end
-				if #givecard == 1 and givecard[1] ~= hcard:getId() and not hcard:isKindOf("Shit") then
+				if #givecard == 1 and givecard[1] ~= hcard:getId() then
 					table.insert(givecard, hcard:getId())
 				elseif #givecard == 2 then
 					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
@@ -31,7 +31,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 				if hcard:isKindOf("TrickCard") and not hcard:isKindOf("DelayedTrick") then
 					table.insert(givecard, hcard:getId())
 				end
-				if #givecard == 1 and givecard[1] ~= hcard:getId() and not hcard:isKindOf("Shit") then
+				if #givecard == 1 and givecard[1] ~= hcard:getId() then
 					table.insert(givecard, hcard:getId())
 				elseif #givecard == 2 then
 					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
@@ -45,7 +45,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 				if hcard:getSuit() == sgs.Card_Spade or hcard:isKindOf("Jink") then
 					table.insert(givecard, hcard:getId())
 				end
-				if #givecard == 1 and givecard[1] ~= hcard:getId() and not hcard:isKindOf("Shit") then
+				if #givecard == 1 and givecard[1] ~= hcard:getId() then
 					table.insert(givecard, hcard:getId())
 				elseif #givecard == 2 then
 					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
@@ -59,7 +59,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 				if hcard:isKindOf("EquipCard") then
 					table.insert(givecard, hcard:getId())
 				end
-				if #givecard == 1 and givecard[1] ~= hcard:getId() and not hcard:isKindOf("Shit") then
+				if #givecard == 1 and givecard[1] ~= hcard:getId() then
 					table.insert(givecard, hcard:getId())
 				elseif #givecard == 2 then
 					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
@@ -73,11 +73,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getHp() == 1 then
 			for _, hcard in sgs.qlist(cards) do
-				if hcard:isKindOf("Shit") or hcard:isKindOf("Disaster") then
-					table.insert(givecard, hcard:getId())
-				end
-				if #givecard == 1 and givecard[1] ~= hcard:getId() and
-					not hcard:isKindOf("Peach") and not hcard:isKindOf("TrickCard") then
+				if #givecard == 1 and givecard[1] ~= hcard:getId() then
 					table.insert(givecard, hcard:getId())
 					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
 					if use.to then use.to:append(enemy) end
@@ -88,18 +84,6 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 					return
 				else
 				end
-			end
-		end
-	end
-	if #givecard < 2 then
-		for _, hcard in sgs.qlist(cards) do
-			if hcard:isKindOf("Shit") or hcard:isKindOf("Disaster") then
-				table.insert(givecard, hcard:getId())
-			end
-			if #givecard == 2 then
-				use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
-				if use.to then use.to:append(self.enemies[1]) end
-				return
 			end
 		end
 	end
@@ -137,10 +121,8 @@ houyuan_skill.getTurnUseCard=function(self)
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
 		for _, fcard in ipairs(cards) do
-			if not fcard:isKindOf("Shit") then
-				table.insert(givecard, fcard:getId())
-				index = index + 1
-			end
+			table.insert(givecard, fcard:getId())
+			index = index + 1
 			if index == 2 then break end
 		end
 		if index < 2 then return end

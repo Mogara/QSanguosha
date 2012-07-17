@@ -72,7 +72,7 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 				eCard = card
 				break
 			end
-			if not eCard and (not card:isKindOf("Armor") or card:isKindOf("GaleShell")) then eCard = card end
+			if not eCard and not card:isKindOf("Armor") then eCard = card end
 		end
 	end
 	
@@ -395,7 +395,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	local guhuocard = sgs.Sanguosha:cloneCard(guhuoname, sgs.Card_NoSuit, 0)
 	local guhuotype = guhuocard:className()
 	if guhuotype and self:getRestCardsNum(guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
-	if guhuotype and (guhuotype == "Shit" or guhuotype == "AmazingGrace" or (guhuotype:match("Slash") and not self:isEquip("Crossbow",yuji))) then return "noquestion" end
+	if guhuotype and (guhuotype == "AmazingGrace" or (guhuotype:match("Slash") and not self:isEquip("Crossbow",yuji))) then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 	local yuji
@@ -463,8 +463,7 @@ guhuo_skill.getTurnUseCard=function(self)
 	for _,card in ipairs(cards) do
 		if (card:isKindOf("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
 		or (card:isKindOf("Jink") and self:getCardsNum("Jink", self.player, "h")>=3)
-		or (card:isKindOf("Weapon") and self.player:getWeapon())
-		or card:isKindOf("Disaster") then
+		or (card:isKindOf("Weapon") and self.player:getWeapon()) then
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())

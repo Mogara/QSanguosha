@@ -11,11 +11,6 @@ function sgs.ai_skill_invoke.jiushi(self, data)
 end
 
 sgs.ai_skill_askforag.luoying = function(self, card_ids)
-	for _, id in ipairs(card_ids) do
-		if sgs.Sanguosha:getCard(id):isKindOf("Shit") then
-			return id
-		end
-	end
 	return -1
 end
 
@@ -106,7 +101,7 @@ sgs.ai_use_priority.XinzhanCard = 9.2
 function sgs.ai_slash_prohibit.huilei(self, to)
 	if self.player:hasSkill("jueqing") then return false end
 	if self:isFriend(to) and self:isWeak(to) then return true end
-	return #self.enemies>1 and self:isWeak(to) and (self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0)
+	return #self.enemies>1 and self:isWeak(to) and self.player:getHandcardNum()>3
 end
 
 sgs.ai_chaofeng.masu = -4
@@ -335,9 +330,7 @@ sgs.ai_skill_use_func.GanluCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if not self:hasSkills(sgs.lose_equip_skill, enemy) then
 				local ee = self:getCardsNum(".",enemy,"e")
-				if self:isEquip("GaleShell", enemy) then ee = ee - 1 end
 				local fe = self:getCardsNum(".",friend, "e")
-				if self:isEquip("GaleShell", friend) then fe = fe - 1 end
 				if self:hasSkills(sgs.lose_equip_skill, friend) then ee = ee + fe end
 				local value = self:evaluateArmor(enemy:getArmor(),friend) - self:evaluateArmor(friend:getArmor(),enemy)
 					- self:evaluateArmor(friend:getArmor(),friend) + self:evaluateArmor(enemy:getArmor(),enemy)
@@ -357,8 +350,8 @@ sgs.ai_skill_use_func.GanluCard = function(card, use, self)
 
 	target = nil
 	for _,friend in ipairs(self.friends) do
-		if self:isEquip("YitianSword", friend) or (self:isEquip("SilverLion",friend) and friend:isWounded()) 
-			or (self:hasSkills(sgs.lose_equip_skill, friend) and not friend:getEquips():isEmpty()) then target = friend break end
+		if (self:isEquip("SilverLion",friend) and friend:isWounded()) or (self:hasSkills(sgs.lose_equip_skill, friend)
+			and not friend:getEquips():isEmpty()) then target = friend break end
 	end
 	if not target then return end
 	for _,friend in ipairs(self.friends) do
