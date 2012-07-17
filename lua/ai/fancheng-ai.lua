@@ -11,9 +11,9 @@ zhiyuan_skill.getTurnUseCard=function(self)
 
 	for _,card in ipairs(cards)  do
 		if card:getTypeId()==sgs.Card_Basic then
-			if card:inherits("Slash") and (self:getCardsNum("Slash")<=1)then
-			elseif card:inherits("Jink") and (self:getCardsNum("Jink")<=1)then
-			elseif card:inherits("Peach") and (self.player:getHp()<=2)then
+			if card:isKindOf("Slash") and (self:getCardsNum("Slash")<=1)then
+			elseif card:isKindOf("Jink") and (self:getCardsNum("Jink")<=1)then
+			elseif card:isKindOf("Peach") and (self.player:getHp()<=2)then
 			else
 				basic_card = card
 				break
@@ -145,7 +145,7 @@ ganran_skill.getTurnUseCard=function(self)
 		cards=sgs.QList2Table(cards)
 
 	for _,card in ipairs(cards) do
-		if card:inherits("EquipCard") then
+		if card:isKindOf("EquipCard") then
 			local suit = card:getSuitString()
 			local number = card:getNumberString()
 			local card_id = card:getEffectiveId()

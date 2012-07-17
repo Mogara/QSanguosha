@@ -23,8 +23,8 @@ lihun_skill.getTurnUseCard=function(self)
 		cards=sgs.QList2Table(cards)
 
 		for _, acard in ipairs(cards) do
-			if (acard:getTypeId() ~= sgs.Card_Trick or acard:inherits("AmazingGrace"))
-				and not acard:inherits("Peach") and not acard:inherits("Shit") then
+			if (acard:getTypeId() ~= sgs.Card_Trick or acard:isKindOf("AmazingGrace"))
+				and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then
 				card_id = acard:getEffectiveId()
 				break
 			end
@@ -40,8 +40,8 @@ lihun_skill.getTurnUseCard=function(self)
 	if not card_id then
 		cards=sgs.QList2Table(self.player:getHandcards())
 		for _, acard in ipairs(cards) do
-			if (acard:getTypeId() ~= sgs.Card_Trick or acard:inherits("AmazingGrace"))
-				and not acard:inherits("Peach") and not acard:inherits("Shit") then
+			if (acard:getTypeId() ~= sgs.Card_Trick or acard:isKindOf("AmazingGrace"))
+				and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then
 				card_id = acard:getEffectiveId()
 				break
 			end
@@ -95,7 +95,7 @@ sgs.ai_skill_discard.lihun = function(self, discard_num, min_num, optional, incl
 	local temp = table.copyFrom(card_ids)
 	for i = 1, #temp, 1 do
 		local card = sgs.Sanguosha:getCard(temp[i])
-		if (self:isEquip("SilverLion") and self.player:isWounded()) and card:inherits("SilverLion") then
+		if (self:isEquip("SilverLion") and self.player:isWounded()) and card:isKindOf("SilverLion") then
 			table.insert(to_discard, temp[i])
 			table.removeOne(card_ids, temp[i])
 			if #to_discard == discard_num then
@@ -107,7 +107,7 @@ sgs.ai_skill_discard.lihun = function(self, discard_num, min_num, optional, incl
 	temp = table.copyFrom(card_ids)
 	for i = 1, #temp, 1 do
 		local card = sgs.Sanguosha:getCard(temp[i])
-		if card:inherits("Shit") then
+		if card:isKindOf("Shit") then
 			table.insert(to_discard, temp[i])
 			table.removeOne(card_ids, temp[i])
 			if #to_discard == discard_num then
@@ -165,10 +165,10 @@ sgs.ai_skill_askforag.manjuan = function(self, card_ids)
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
 	for _, card in ipairs(cards) do
-		if card:inherits("ExNihilo") then return card:getEffectiveId() end
+		if card:isKindOf("ExNihilo") then return card:getEffectiveId() end
 	end
 	for _, card in ipairs(cards) do
-		if card:inherits("Snatch") then
+		if card:isKindOf("Snatch") then
 			self:sort(self.enemies,"defense")
 			if sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
 			local enemies = self:exclude(self.enemies, card)
@@ -180,10 +180,10 @@ sgs.ai_skill_askforag.manjuan = function(self, card_ids)
 		end
 	end
 	for _, card in ipairs(cards) do
-		if card:inherits("Peach") and self.player:isWounded() and self:getCardsNum("Peach") < self.player:getLostHp() then return card:getEffectiveId() end
+		if card:isKindOf("Peach") and self.player:isWounded() and self:getCardsNum("Peach") < self.player:getLostHp() then return card:getEffectiveId() end
 	end
 	for _, card in ipairs(cards) do
-		if card:inherits("AOE") and self:getAoeValue(card) > 0 then return card:getEffectiveId() end
+		if card:isKindOf("AOE") and self:getAoeValue(card) > 0 then return card:getEffectiveId() end
 	end
 	self:sortByCardNeed(cards)
 	return cards[#cards]:getEffectiveId()
@@ -201,7 +201,7 @@ sgs.ai_skill_use_func.DaheCard=function(card,use,self)
 	local max_card = self:getMaxCard(self.player)
 	local max_point = max_card:getNumber()
 	local slashcount = self:getCardsNum("Slash")
-	if max_card:inherits("Slash") then slashcount = slashcount - 1 end
+	if max_card:isKindOf("Slash") then slashcount = slashcount - 1 end
 	if self.player:hasSkill("kongcheng") and self.player:getHandcardNum()==1 then
 		for _, enemy in ipairs(self.enemies) do
 			if not enemy:isKongcheng() then
@@ -294,7 +294,7 @@ sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
 	local max_point = max_card:getNumber()
 	local ptarget = self:getPriorTarget()
 	local slashcount = self:getCardsNum("Slash")
-	if max_card:inherits("Slash") then slashcount = slashcount - 1 end
+	if max_card:isKindOf("Slash") then slashcount = slashcount - 1 end
 	if not ptarget:isKongcheng() and slashcount > 0 and self.player:canSlash(ptarget, true) 
 	and not ptarget:hasSkill("kongcheng") and ptarget:getHandcardNum() == 1 then
 		local card_id = max_card:getEffectiveId()

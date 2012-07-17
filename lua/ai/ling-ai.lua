@@ -10,12 +10,12 @@ neoluoyi_skill.getTurnUseCard=function(self)
 	local equipnum = 0
 	self:sort(self.enemies,"hp")
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not (card:inherits("Weapon") and self:hasEquip(card))  then
+		if card:isKindOf("EquipCard") and not (card:isKindOf("Weapon") and self:hasEquip(card))  then
 			equipnum = equipnum + 1
 		end
 	end
 	for _,card in ipairs(cards) do
-		if card:inherits("Slash") then
+		if card:isKindOf("Slash") then
 			for _,enemy in ipairs(self.enemies) do
 				if self.player:canSlash(enemy, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
 					if self:getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
@@ -24,7 +24,7 @@ neoluoyi_skill.getTurnUseCard=function(self)
 				end
 			end
 		end
-		if card:inherits("Duel") then
+		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
 				if self:getCardsNum("Slash") >= self:getCardsNum("Slash", enemy) 
 				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then 
@@ -45,12 +45,12 @@ end
 
 sgs.ai_skill_cardask["@luoyi-discard"] = function(self, data)
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not self.player:hasEquip(card) then 
+		if card:isKindOf("EquipCard") and not self.player:hasEquip(card) then 
 			return "$" .. card:getEffectiveId()
 		end
 	end
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not card:inherits("Weapon") then 
+		if card:isKindOf("EquipCard") and not card:isKindOf("Weapon") then 
 			return "$" .. card:getEffectiveId()
 		end
 	end
@@ -120,7 +120,7 @@ sgs.ai_skill_choice.zhulou = function(self, choices)
 	local weaponnum = 0
 	local weapon_card
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("Weapon") then
+		if card:isKindOf("Weapon") then
 			weapon_card = card
 			weaponnum = weaponnum + 1
 		end

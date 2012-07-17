@@ -20,10 +20,10 @@ local function card_for_qiaobian(self, who, return_prompt)
 		local equips = who:getCards("e")
 		if not target and not equips:isEmpty() and self:hasSkills(sgs.lose_equip_skill, who) then
 			for _, equip in sgs.qlist(equips) do
-				if equip:inherits("OffensiveHorse") then card = equip break
-				elseif equip:inherits("DefensiveHorse") then card = equip break
-				elseif equip:inherits("Weapon") then card = equip break
-				elseif equip:inherits("Armor") then card = equip break
+				if equip:isKindOf("OffensiveHorse") then card = equip break
+				elseif equip:isKindOf("DefensiveHorse") then card = equip break
+				elseif equip:isKindOf("Weapon") then card = equip break
+				elseif equip:isKindOf("Armor") then card = equip break
 				end
 			end
 
@@ -38,7 +38,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 			end
 		end
 	else
-		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():inherits("GaleShell")) then return end
+		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():isKindOf("GaleShell")) then return end
 		local card_id = self:askForCardChosen(who, "e", "snatch")
 		if card_id >= 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
 		local targets = {}
@@ -52,7 +52,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		end
 		
 		if #targets > 0 then
-			if card:inherits("Weapon") or card:inherits("OffensiveHorse") then
+			if card:isKindOf("Weapon") or card:isKindOf("OffensiveHorse") then
 				self:sort(targets, "threat")
 				target = targets[#targets]
 			else
@@ -130,7 +130,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 
 		local top_value = 0
 		for _, hcard in ipairs(cards) do
-			if not hcard:inherits("Jink") then
+			if not hcard:isKindOf("Jink") then
 				if self:getUseValue(hcard) > top_value then	top_value = self:getUseValue(hcard) end
 			end
 		end
@@ -225,10 +225,10 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 		then return "." end
 	local has_peach, has_anal, has_slash, has_jink
 	for _, card in sgs.qlist(self.player:getHandcards()) do
-		if card:inherits("Peach") then has_peach = card
-		elseif card:inherits("Analeptic") then has_anal = card
-		elseif card:inherits("Slash") then has_slash = card
-		elseif card:inherits("Jink") then has_jink = card
+		if card:isKindOf("Peach") then has_peach = card
+		elseif card:isKindOf("Analeptic") then has_anal = card
+		elseif card:isKindOf("Slash") then has_slash = card
+		elseif card:isKindOf("Jink") then has_jink = card
 		end
 	end
 
@@ -264,7 +264,7 @@ sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, i
 	local index = 0
 	local all_peaches = 0
 	for _, card in ipairs(cards) do
-		if card:inherits("Peach") then
+		if card:isKindOf("Peach") then
 			all_peaches = all_peaches + 1
 		end
 	end
@@ -274,7 +274,7 @@ sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, i
 
 	for i = #cards, 1, -1 do
 		local card = cards[i]
-		if not card:inherits("Peach") and not self.player:isJilei(card) then
+		if not card:isKindOf("Peach") and not self.player:isJilei(card) then
 			table.insert(to_discard, card:getEffectiveId())
 			table.remove(cards, i)
 			index = index + 1
@@ -328,11 +328,11 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 		cards = sgs.QList2Table(cards)
 
 		for _, card in ipairs(cards) do
-			if card:inherits("Slash") then
+			if card:isKindOf("Slash") then
 				if card:isBlack() then sgs.slash_property.is_black = true end
 				if card:isRed() then sgs.slash_property.is_red = true end
-				if card:inherits("FireSlash") then sgs.slash_property.is_fire = true
-				elseif card:inherits("ThunderSlash") then sgs.slash_property.is_thunder = true
+				if card:isKindOf("FireSlash") then sgs.slash_property.is_fire = true
+				elseif card:isKindOf("ThunderSlash") then sgs.slash_property.is_thunder = true
 				else sgs.slash_property.is_normal = true
 				end
 			end
@@ -407,7 +407,7 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 				max_card = hcard
 			end
 
-			if hcard:getNumber() <= min_num and not (self:isFriend(lord) and hcard:inherits("Shit")) then
+			if hcard:getNumber() <= min_num and not (self:isFriend(lord) and hcard:isKindOf("Shit")) then
 				if hcard:getNumber() == min_num then
 					if min_card and self:getKeepValue(hcard) > self:getKeepValue(min_card) then
 						min_num = hcard:getNumber()
@@ -493,7 +493,7 @@ end
 sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 	local equips = {}
 	for _, card in sgs.qlist(self.player:getHandcards()) do
-		if card:inherits("Armor") or card:inherits("Weapon") then
+		if card:isKindOf("Armor") or card:isKindOf("Weapon") then
 			if not self:getSameEquip(card) then
 			else
 				table.insert(equips, card)

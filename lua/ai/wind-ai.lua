@@ -12,7 +12,7 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
 			or (amr:objectName()=="eight_diagram"))
 			
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
@@ -28,7 +28,7 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
 			or (amr:objectName()=="eight_diagram"))
 
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
@@ -40,10 +40,10 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 end
 
 sgs.ai_get_cardType=function(card)
-	if card:inherits("Weapon") then return 1 end
-	if card:inherits("Armor") then return 2 end
-	if card:inherits("OffensiveHorse")then return 3 end
-	if card:inherits("DefensiveHorse") then return 4 end
+	if card:isKindOf("Weapon") then return 1 end
+	if card:isKindOf("Armor") then return 2 end
+	if card:isKindOf("OffensiveHorse")then return 3 end
+	if card:isKindOf("DefensiveHorse") then return 4 end
 end
 
 sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
@@ -61,18 +61,18 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	local hasCard={0, 0, 0, 0}
 	
 	for _,card in ipairs(cards) do
-		if card:inherits("EquipCard") then
+		if card:isKindOf("EquipCard") then
 			hasCard[sgs.ai_get_cardType(card)] = hasCard[sgs.ai_get_cardType(card)]+1
 		end		
 	end
 	
 	for _,card in ipairs(cards) do
-		if card:inherits("EquipCard") then
+		if card:isKindOf("EquipCard") then
 			if hasCard[sgs.ai_get_cardType(card)]>1 or sgs.ai_get_cardType(card)>3 then
 				eCard = card
 				break
 			end
-			if not eCard and (not card:inherits("Armor") or card:inherits("GaleShell")) then eCard = card end
+			if not eCard and (not card:isKindOf("Armor") or card:isKindOf("GaleShell")) then eCard = card end
 		end
 	end
 	
@@ -84,7 +84,7 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
 			or (amr:objectName()=="eight_diagram") or enemy:hasSkill("bazhen"))
 
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
@@ -213,7 +213,7 @@ function sgs.ai_slash_prohibit.leiji(self, to, card)
 end
 
 function sgs.ai_cardneed.leiji(to, card, self)
-	return card:inherits("Jink") and self:getCardsNum("Jink")>1
+	return card:isKindOf("Jink") and self:getCardsNum("Jink")>1
 end
 
 local huangtianv_skill={}
@@ -232,7 +232,7 @@ huangtianv_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 	
 	for _,acard in ipairs(cards)  do
-		if acard:inherits("Jink") then
+		if acard:isKindOf("Jink") then
 			card = acard
 			break
 		end
@@ -326,7 +326,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data)
 	cards=sgs.QList2Table(cards)
 	self:sortByUseValue(cards,true)
 	for _,card in ipairs(cards) do
-		if (card:getSuit() == sgs.Card_Spade or card:getSuit() == sgs.Card_Heart) and not card:inherits("Peach") then
+		if (card:getSuit() == sgs.Card_Spade or card:getSuit() == sgs.Card_Heart) and not card:isKindOf("Peach") then
 			card_id = card:getId()
 			break
 		end
@@ -461,10 +461,10 @@ guhuo_skill.getTurnUseCard=function(self)
 
 	self:sortByUseValue(cards, true)
 	for _,card in ipairs(cards) do
-		if (card:inherits("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
-		or (card:inherits("Jink") and self:getCardsNum("Jink", self.player, "h")>=3)
-		or (card:inherits("Weapon") and self.player:getWeapon())
-		or card:inherits("Disaster") then
+		if (card:isKindOf("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
+		or (card:isKindOf("Jink") and self:getCardsNum("Jink", self.player, "h")>=3)
+		or (card:isKindOf("Weapon") and self.player:getWeapon())
+		or card:isKindOf("Disaster") then
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())

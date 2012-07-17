@@ -65,7 +65,7 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
 			or (amr:objectName()=="eight_diagram"))
 			
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
@@ -78,7 +78,7 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
 			or (amr:objectName()=="eight_diagram"))
 
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
@@ -253,7 +253,7 @@ sgs.ai_view_as.lihuo = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
+	if card:isKindOf("Slash") and not (card:isKindOf("FireSlash") or card:isKindOf("ThunderSlash")) then
 		return ("fire_slash:lihuo[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
@@ -267,7 +267,7 @@ lihuo_skill.getTurnUseCard=function(self)
 	local slash_card
 	
 	for _,card in ipairs(cards)  do
-		if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
+		if card:isKindOf("Slash") and not (card:isKindOf("FireSlash") or card:isKindOf("ThunderSlash")) then
 			slash_card = card
 			break
 		end
@@ -291,7 +291,7 @@ sgs.ai_skill_use["@@chunlao"] = function(self, prompt)
 	local cards = self.player:getCards("h")	
 	cards=sgs.QList2Table(cards)
 	for _,card in ipairs(cards)  do
-		if card:inherits("Slash") then
+		if card:isKindOf("Slash") then
 			table.insert(slashcards,card:getId()) 
 		end
 	end

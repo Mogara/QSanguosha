@@ -36,7 +36,7 @@ sgs.ai_view_as.fan = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
+	if card:isKindOf("Slash") and not (card:isKindOf("FireSlash") or card:isKindOf("ThunderSlash")) then
 		return ("fire_slash:fan[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
@@ -50,7 +50,7 @@ fan_skill.getTurnUseCard=function(self)
 	local slash_card
 	
 	for _,card in ipairs(cards)  do
-		if card:inherits("Slash") and not (card:inherits("FireSlash") or card:inherits("ThunderSlash")) then
+		if card:isKindOf("Slash") and not (card:isKindOf("FireSlash") or card:isKindOf("ThunderSlash")) then
 			slash_card = card
 			break
 		end
@@ -109,7 +109,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	if self.player:getPhase() == sgs.Player_Play then
 		if self.player:hasFlag("lexue") then
 			local lexuesrc = sgs.Sanguosha:getCard(self.player:getMark("lexue"))
-			if lexuesrc:inherits("Analeptic") then
+			if lexuesrc:isKindOf("Analeptic") then
 				local cards = sgs.QList2Table(self.player:getHandcards())
 				self:sortByUseValue(cards, true)
 				for _, hcard in ipairs(cards) do
@@ -134,8 +134,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	if card_str then return sgs.Card_Parse(card_str) end
         
 	for _, anal in ipairs(cards) do
-		if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) and
-			not isCompulsoryView(anal, "Slash", self.player, sgs.Player_PlaceHand) then
+		if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) then
 			return anal
 		end
 	end

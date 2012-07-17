@@ -12,7 +12,7 @@ end
 
 sgs.ai_skill_askforag.luoying = function(self, card_ids)
 	for _, id in ipairs(card_ids) do
-		if sgs.Sanguosha:getCard(id):inherits("Shit") then
+		if sgs.Sanguosha:getCard(id):isKindOf("Shit") then
 			return id
 		end
 	end
@@ -135,7 +135,7 @@ end
 sgs.ai_skill_cardask["@enyuan"] = function(self)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if  not (card:inherits("Peach") or card:inherits("ExNihilo")) then
+		if  not (card:isKindOf("Peach") or card:isKindOf("ExNihilo")) then
 			return card:getEffectiveId()
 		end
 	end
@@ -409,7 +409,7 @@ mingce_skill.getTurnUseCard=function(self)
 		self:sortByUseValue(hcards, true)
 
 		for _, hcard in ipairs(hcards) do
-			if hcard:inherits("Slash") or hcard:inherits("EquipCard") then
+			if hcard:isKindOf("Slash") or hcard:isKindOf("EquipCard") then
 				card = hcard
 				break
 			end
@@ -492,7 +492,7 @@ jinjiu_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 
 	for _,card in ipairs(cards)  do
-		if card:inherits("Analeptic") then
+		if card:isKindOf("Analeptic") then
 			anal_card = card
 			break
 		end
@@ -513,7 +513,7 @@ sgs.ai_filterskill_filter.jinjiu = function(card, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:inherits("Analeptic") then return ("slash:jinjiu[%s:%s]=%d"):format(suit, number, card_id) end
+	if card:isKindOf("Analeptic") then return ("slash:jinjiu[%s:%s]=%d"):format(suit, number, card_id) end
 end
 
 local xianzhen_skill={}
@@ -534,7 +534,7 @@ xianzhen_skill.getTurnUseCard=function(self)
 	local slashNum=self:getCardsNum("Slash")
 	if max_card then 
 		local max_point = max_card:getNumber()
-		if max_card:inherits("Slash") then slashNum=slashNum-1 end
+		if max_card:isKindOf("Slash") then slashNum=slashNum-1 end
 	end
 
 	self:sort(self.enemies, "hp")

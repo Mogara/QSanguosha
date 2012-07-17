@@ -37,12 +37,12 @@ local function getOwnCards(self, up, bottom, next_judge)
 			hasNext = true
 		else
 			if has_slash then 
-				if not gcard:inherits("Slash") then 
+				if not gcard:isKindOf("Slash") then 
 					table.insert(up, gcard) 
 					table.remove(bottom, index)
 				end
 			else
-				if gcard:inherits("Slash") then 
+				if gcard:isKindOf("Slash") then 
 					table.insert(up, gcard) 
 					table.remove(bottom, index)
 					has_slash = true 

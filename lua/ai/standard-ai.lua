@@ -11,7 +11,7 @@ sgs.ai_skill_invoke.hujia = function(self, data)
 		if friend:getKingdom() == "wei" and self:isEquip("EightDiagram", friend) then return true end
 	end
 	for _, card in sgs.qlist(cards) do
-		if card:inherits("Jink") then
+		if card:isKindOf("Jink") then
 			return false
 		end
 	end
@@ -94,7 +94,7 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, min_num, optional, in
 	local index = 0
 	local all_peaches = 0
 	for _, card in ipairs(cards) do
-		if card:inherits("Peach") then
+		if card:isKindOf("Peach") then
 			all_peaches = all_peaches + 1
 		end
 	end
@@ -104,7 +104,7 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, min_num, optional, in
 
 	for i = #cards, 1, -1 do
 		local card = cards[i]
-		if not card:inherits("Peach") and not self.player:isJilei(card) then
+		if not card:isKindOf("Peach") and not self.player:isJilei(card) then
 			table.insert(to_discard, card:getEffectiveId())
 			table.remove(cards, i)
 			index = index + 1
@@ -169,7 +169,7 @@ sgs.ai_skill_invoke.luoyi=function(self,data)
 	local dueltarget = 0
 	self:sort(self.enemies,"hp")
 	for _,card in ipairs(cards) do
-		if card:inherits("Slash") then
+		if card:isKindOf("Slash") then
 			for _,enemy in ipairs(self.enemies) do
 				if self.player:canSlash(enemy, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
 					if self:getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
@@ -178,7 +178,7 @@ sgs.ai_skill_invoke.luoyi=function(self,data)
 				end
 			end
 		end
-		if card:inherits("Duel") then
+		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
 				if self:getCardsNum("Slash") >= self:getCardsNum("Slash", enemy) 
 				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then 
@@ -281,7 +281,7 @@ sgs.dynamic_value.benefit.RendeCard = true
 
 table.insert(sgs.ai_global_flags, "jijiangsource")
 local jijiang_filter = function(player, carduse)
-	if carduse.card:inherits("JijiangCard") then
+	if carduse.card:isKindOf("JijiangCard") then
 		sgs.jijiangsource = player
 	else
 		sgs.jijiangsource = nil
@@ -293,7 +293,7 @@ table.insert(sgs.ai_choicemade_filter.cardUsed, jijiang_filter)
 sgs.ai_skill_invoke.jijiang = function(self, data)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:inherits("Slash") then
+		if card:isKindOf("Slash") then
 			return false
 		end
 	end
@@ -357,7 +357,7 @@ sgs.ai_view_as.wusheng = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:isRed() and not card:inherits("Peach") then
+	if card:isRed() and not card:isKindOf("Peach") then
 		return ("slash:wusheng[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
@@ -374,7 +374,7 @@ wusheng_skill.getTurnUseCard=function(self,inclusive)
 	self:sortByUseValue(cards,true)
 	
 	for _,card in ipairs(cards) do
-		if card:isRed() and not card:inherits("Slash") and not card:inherits("Peach") 				--not peach
+		if card:isRed() and not card:isKindOf("Slash") and not card:isKindOf("Peach") 				--not peach
 			and ((self:getUseValue(card)<sgs.ai_use_value.Slash) or inclusive) then
 			red_card = card
 			break
@@ -396,7 +396,7 @@ end
 
 function sgs.ai_cardneed.paoxiao(to, card)
 	if not to:containsTrick("indulgence") then
-		return card:inherits("Slash")
+		return card:isKindOf("Slash")
 	end
 end
 
@@ -427,7 +427,7 @@ longdan_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 	
 	for _,card in ipairs(cards)  do
-		if card:inherits("Jink") then
+		if card:isKindOf("Jink") then
 			jink_card = card
 			break
 		end
@@ -450,9 +450,9 @@ sgs.ai_view_as.longdan = function(card, player, card_place)
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
 	if card_place ~= sgs.Player_PlaceEquip then
-		if card:inherits("Jink") then
+		if card:isKindOf("Jink") then
 			return ("slash:longdan[%s:%s]=%d"):format(suit, number, card_id)
-		elseif card:inherits("Slash") then
+		elseif card:isKindOf("Slash") then
 			return ("jink:longdan[%s:%s]=%d"):format(suit, number, card_id)
 		end
 	end
@@ -485,7 +485,7 @@ end
 sgs.ai_chaofeng.machao = 1
 
 function sgs.ai_cardneed.jizhi(to, card)
-	if not to:containsTrick("indulgence") or card:inherits("Nullification") then
+	if not to:containsTrick("indulgence") or card:isKindOf("Nullification") then
 		return card:getTypeId() == sgs.Card_Trick
 	end
 end
@@ -525,8 +525,8 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
 		for _, zcard in sgs.qlist(zcards) do
-			if not zcard:inherits("Peach") and not zcard:inherits("ExNihilo") then
-				if self:getAllPeachNum()>0 or not zcard:inherits("Shit") then table.insert(unpreferedCards,zcard:getId()) end
+			if not zcard:isKindOf("Peach") and not zcard:isKindOf("ExNihilo") then
+				if self:getAllPeachNum()>0 or not zcard:isKindOf("Shit") then table.insert(unpreferedCards,zcard:getId()) end
 			end	
 		end
 	end
@@ -535,7 +535,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 		if self:getCardsNum("Slash")>1 then 
 			self:sortByKeepValue(cards)
 			for _,card in ipairs(cards) do
-				if card:inherits("Slash") then table.insert(unpreferedCards,card:getId()) end
+				if card:isKindOf("Slash") then table.insert(unpreferedCards,card:getId()) end
 			end
 			table.remove(unpreferedCards,1)
 		end
@@ -544,15 +544,15 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 		if self.player:getArmor() then num=num+1 end
 		if num>0 then
 			for _,card in ipairs(cards) do
-				if card:inherits("Jink") and num>0 then 
+				if card:isKindOf("Jink") and num>0 then 
 					table.insert(unpreferedCards,card:getId())
 					num=num-1
 				end
 			end
 		end
 		for _,card in ipairs(cards) do
-			if (card:inherits("Weapon") and self.player:getHandcardNum() < 3) or card:inherits("OffensiveHorse") or
-				self:getSameEquip(card, self.player) or	card:inherits("AmazingGrace") or card:inherits("Lightning") then
+			if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse") or
+				self:getSameEquip(card, self.player) or	card:isKindOf("AmazingGrace") or card:isKindOf("Lightning") then
 				table.insert(unpreferedCards,card:getId())
 			end
 		end
@@ -598,26 +598,26 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 	local has_weapon=false
 	
 	for _,card in ipairs(cards)  do
-		if card:inherits("Weapon") and card:isBlack() then has_weapon=true end
+		if card:isKindOf("Weapon") and card:isBlack() then has_weapon=true end
 	end
 	
 	for _,card in ipairs(cards)  do
 		if card:isBlack()  and ((self:getUseValue(card)<sgs.ai_use_value.Dismantlement) or inclusive or self:getOverflow()>0) then
 			local shouldUse=true
 
-			if card:inherits("Armor") then
+			if card:isKindOf("Armor") then
 				if not self.player:getArmor() then shouldUse=false 
-				elseif self:hasEquip(card) and not (card:inherits("SilverLion") and self.player:isWounded()) then shouldUse=false
+				elseif self:hasEquip(card) and not (card:isKindOf("SilverLion") and self.player:isWounded()) then shouldUse=false
 				end
 			end
 
-			if card:inherits("Weapon") then
+			if card:isKindOf("Weapon") then
 				if not self.player:getWeapon() then shouldUse=false
-				elseif self:hasEquip(card) and not has_weapon and not card:inherits("YitianSword") then shouldUse=false
+				elseif self:hasEquip(card) and not has_weapon and not card:isKindOf("YitianSword") then shouldUse=false
 				end
 			end
 			
-			if card:inherits("Slash") then
+			if card:isKindOf("Slash") then
 				local dummy_use = {isDummy = true}
 				if self:getCardsNum("Slash") == 1 then
 					self:useBasicCard(card, dummy_use)
@@ -625,7 +625,7 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 				end
 			end
 
-			if self:getUseValue(card) > sgs.ai_use_value.Dismantlement and card:inherits("TrickCard") then
+			if self:getUseValue(card) > sgs.ai_use_value.Dismantlement and card:isKindOf("TrickCard") then
 				local dummy_use = {isDummy = true}
 				self:useTrickCard(card, dummy_use)
 				if dummy_use.card then shouldUse = false end
@@ -669,7 +669,7 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 		return sgs.Card_Parse("@KurouCard=.")
 	end
 
-	if self.player:getWeapon() and self.player:getWeapon():inherits("Crossbow") then
+	if self.player:getWeapon() and self.player:getWeapon():isKindOf("Crossbow") then
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:canSlash(enemy,true) and self.player:getHp()>1 then
 				return sgs.Card_Parse("@KurouCard=.")
@@ -697,7 +697,7 @@ fanjian_skill.getTurnUseCard=function(self)
 	for _, card in sgs.qlist(cards) do
 		if card:getSuit() == sgs.Card_Diamond and self.player:getHandcardNum() == 1 then
 			return nil
-		elseif card:inherits("Peach") or card:inherits("Analeptic") then
+		elseif card:isKindOf("Peach") or card:isKindOf("Analeptic") then
 			return nil
 		end
 	end
@@ -747,24 +747,24 @@ guose_skill.getTurnUseCard=function(self,inclusive)
 	local has_weapon, has_armor = false, false
 	
 	for _,acard in ipairs(cards)  do
-		if acard:inherits("Weapon") and not (acard:getSuit() == sgs.Card_Diamond) then has_weapon=true end
+		if acard:isKindOf("Weapon") and not (acard:getSuit() == sgs.Card_Diamond) then has_weapon=true end
 	end
 	
 	for _,acard in ipairs(cards)  do
-		if acard:inherits("Armor") and not (acard:getSuit() == sgs.Card_Diamond) then has_armor=true end
+		if acard:isKindOf("Armor") and not (acard:getSuit() == sgs.Card_Diamond) then has_armor=true end
 	end
 	
 	for _,acard in ipairs(cards)  do
 		if (acard:getSuit() == sgs.Card_Diamond) and ((self:getUseValue(acard)<sgs.ai_use_value.Indulgence) or inclusive) then
 			local shouldUse=true
 			
-			if acard:inherits("Armor") then
+			if acard:isKindOf("Armor") then
 				if not self.player:getArmor() then shouldUse=false 
 				elseif self:hasEquip(acard) and not has_armor and self:evaluateArmor()>0 then shouldUse=false
 				end
 			end
 			
-			if acard:inherits("Weapon") then
+			if acard:isKindOf("Weapon") then
 				if not self.player:getWeapon() then shouldUse=false
 				elseif self:hasEquip(acard) and not has_weapon then shouldUse=false
 				end
@@ -804,7 +804,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 			cards=sgs.QList2Table(cards)
 			for _,card in ipairs(cards) do
 				if (self.player:getWeapon() and card:getId() == self.player:getWeapon():getId()) and self.player:distanceTo(enemy)>1 then
-				elseif card:inherits("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(enemy)
+				elseif card:isKindOf("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(enemy)
 					and self.player:distanceTo(enemy)>1 then
 				else
 					return "@LiuliCard="..card:getEffectiveId().."->"..enemy:objectName()
@@ -820,7 +820,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 					cards=sgs.QList2Table(cards)
 					for _,card in ipairs(cards) do
 						if (self.player:getWeapon() and card:getId() == self.player:getWeapon():getId()) and self.player:distanceTo(friend)>1 then
-						elseif card:inherits("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(friend)
+						elseif card:isKindOf("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(friend)
 							and self.player:distanceTo(friend)>1 then
 						else
 							return "@LiuliCard="..card:getEffectiveId().."->".. friend:objectName()
@@ -866,7 +866,7 @@ jieyin_skill.getTurnUseCard=function(self)
 	local first, second
 	self:sortByUseValue(cards,true)
 	for _, card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_Equip and not (card:inherits("Shit") and self:isWeak() and self:getAllPeachNum()==0) then
+		if card:getTypeId() ~= sgs.Card_Equip and not (card:isKindOf("Shit") and self:isWeak() and self:getAllPeachNum()==0) then
 			if not first then first  = cards[1]:getEffectiveId()
 			else second = cards[2]:getEffectiveId()
 			end
@@ -1022,8 +1022,8 @@ lijian_skill.getTurnUseCard=function(self)
 			cards=sgs.QList2Table(cards)
 			
 			for _, acard in ipairs(cards) do
-				if (acard:inherits("BasicCard") or acard:inherits("EquipCard") or acard:inherits("AmazingGrace"))
-					and not acard:inherits("Peach") and not acard:inherits("Shit") then 
+				if (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard") or acard:isKindOf("AmazingGrace"))
+					and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then 
 					card_id = acard:getEffectiveId()
 					break
 				end
@@ -1039,8 +1039,8 @@ lijian_skill.getTurnUseCard=function(self)
 		if not card_id then
 			cards=sgs.QList2Table(self.player:getHandcards())
 			for _, acard in ipairs(cards) do
-				if (acard:inherits("BasicCard") or acard:inherits("EquipCard") or acard:inherits("AmazingGrace"))
-					and not acard:inherits("Peach") and not acard:inherits("Shit") then 
+				if (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard") or acard:isKindOf("AmazingGrace"))
+					and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then 
 					card_id = acard:getEffectiveId()
 					break
 				end
@@ -1141,7 +1141,7 @@ sgs.ai_use_value.LijianCard = 8.5
 sgs.ai_use_priority.LijianCard = 4
 
 lijian_filter = function(player, carduse)
-	if carduse.card:inherits("LijianCard") then
+	if carduse.card:isKindOf("LijianCard") then
 		sgs.ai_lijian_effect = true
 	end
 end

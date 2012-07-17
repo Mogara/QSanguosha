@@ -191,7 +191,7 @@ global_room:writeToConsole("we are in !!!!!!!!!")
 	if not judges:isEmpty() then
 		for _, judge in sgs.qlist(judges) do
 			card = sgs.Sanguosha:getCard(judge:getEffectiveId())
-			if card:inherits("Indulgence") then
+			if card:isKindOf("Indulgence") then
 				hasindul = 1
 				break
 			end
@@ -200,13 +200,13 @@ global_room:writeToConsole("we are in !!!!!!!!!")
 	for _, card in ipairs(cards) do
 		if card:getSuit() == sgs.Card_Heart or (card:getSuit() == sgs.Card_Spade and who:hasSkill("hongyan")) then
 	        has_null = card
-            if card:inherits("Jink") then
+            if card:isKindOf("Jink") then
                 has_jink = card
 				global_room:writeToConsole("has jink !!!!!!!!!")
-            elseif card:inherits("Peach") then
+            elseif card:isKindOf("Peach") then
                 has_peach = card
 				global_room:writeToConsole("has peach !!!!!!!!!")
-            elseif card:inherits("Shit") then
+            elseif card:isKindOf("Shit") then
                 has_shit = card
 				global_room:writeToConsole("has shit !!!!!!!!!")
 			end
@@ -564,9 +564,9 @@ wuqian_skill.getTurnUseCard=function(self)
 
 	if has_enemy and self:getCardsNum("Slash") > 0 then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and self.player:canSlash(has_enemy) and
+			if card:isKindOf("Slash") and self:slashIsEffective(card, has_enemy) and self.player:canSlash(has_enemy) and
 				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) and card:isAvailable(self.player) then return sgs.Card_Parse(card_str)
-			elseif card:inherits("Duel") then return sgs.Card_Parse(card_str)
+			elseif card:isKindOf("Duel") then return sgs.Card_Parse(card_str)
 			end
 		end
 	end
@@ -666,7 +666,7 @@ sgs.ai_skill_invoke.jilve=function(self,data)
 	elseif event == sgs.CardUsed or event == sgs.CardResponsed then
 		local card = data:toCard()
 		card = card or data:toCardUse().card
-		return use or card:inherits("ExNihilo")
+		return use or card:isKindOf("ExNihilo")
 	else
 		assert(false)
 	end

@@ -4,7 +4,7 @@ sgs.ai_skill_invoke.xingshang = function(self, data)
 	local cards = damage.to:getHandcards()
 	local shit_num = 0
 	for _, card in sgs.qlist(cards) do
-		if card:inherits("Shit") then
+		if card:isKindOf("Shit") then
 			shit_num = shit_num + 1
 			if card:getSuit() == sgs.Card_Spade then
 				shit_num = shit_num + 1
@@ -80,7 +80,7 @@ duanliang_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 
 	for _,acard in ipairs(cards)  do
-		if (acard:isBlack()) and (acard:inherits("BasicCard") or acard:inherits("EquipCard")) and (self:getDynamicUsePriority(acard)<sgs.ai_use_value.SupplyShortage)then
+		if (acard:isBlack()) and (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard")) and (self:getDynamicUsePriority(acard)<sgs.ai_use_value.SupplyShortage)then
 			card = acard
 			break
 		end
