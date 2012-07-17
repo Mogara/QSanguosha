@@ -2522,11 +2522,6 @@
         <source>Warning</source>
         <translation>警告</translation>
     </message>
-    <message>
-        <location filename="../../src/util/recorder.cpp" line="111"/>
-        <source>The replay use old protocol</source>
-        <translation></translation>
-    </message>
 </context>
 <context>
     <name>RoleAssignDialog</name>

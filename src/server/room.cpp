@@ -1222,24 +1222,6 @@ void Room::clearPlayerCardLock(ServerPlayer *player){
     player->invoke("cardLock", ".");
 }
 
-void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value){
-    StatisticsStruct *statistics = player->getStatistics();
-    if(!statistics->setStatistics(property_name, value))
-        return;
-
-    player->setStatistics(statistics);
-    QString prompt = property_name + ":";
-
-    bool ok;
-    int add = value.toInt(&ok);
-    if(ok)
-        prompt += QString::number(add);
-    else
-        prompt += value.toString();
-
-    player->invoke("setStatistics", prompt);
-}
-
 void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who){
     if(flag.isEmpty()) return;
 

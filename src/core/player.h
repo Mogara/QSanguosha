@@ -3,7 +3,6 @@
 
 #include "general.h"
 #include "card.h"
-#include "statistics.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -201,9 +200,6 @@ public:
     bool isLocked(const Card *card) const;
     bool hasCardLock(const QString &card_str) const;
 
-    StatisticsStruct *getStatistics() const;
-    void setStatistics(StatisticsStruct *statistics);
-
     bool isCaoCao() const;
     void copyFrom(Player* p);
 
@@ -242,8 +238,6 @@ private:
 
     QSet<QString> jilei_set;
     QSet<QString> lock_card;
-
-    StatisticsStruct *player_statistics;
 
 signals:
     void general_changed();
