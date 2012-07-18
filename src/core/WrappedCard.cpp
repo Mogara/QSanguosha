@@ -1,10 +1,8 @@
 #include "WrappedCard.h"
 
 WrappedCard::WrappedCard(Card* card):
-             Card(card->getSuit(), card->getNumber())
+    Card(card->getSuit(), card->getNumber()), m_card(NULL), m_isModified(false)
 {
-    m_card = NULL;
-    m_isModified = false;
     copyEverythingFrom(card);
 }
 
@@ -16,10 +14,7 @@ WrappedCard::~WrappedCard()
 
 void WrappedCard::takeOver(Card* card)
 {
-    if (m_card != NULL){
-        m_isModified = true;
-        delete m_card;
-    }
+    if (m_card != NULL){m_isModified = true;delete m_card;}
     setObjectName(card->objectName());
     m_card = card;
 }

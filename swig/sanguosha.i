@@ -144,8 +144,8 @@ public:
     bool hasInnateSkill(const char *skill_name, bool includeLost = false) const;
     bool loseSkills() const;
 
-    void setEquip(const EquipCard *card);
-    void removeEquip(const EquipCard *equip);
+    void setEquip(WrappedCard *equip);
+    void removeEquip(WrappedCard *equip);
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
@@ -160,10 +160,10 @@ public:
     virtual void removeCard(const Card *card, Place place) = 0;
     virtual void addCard(const Card *card, Place place) = 0;
 
-    const Weapon *getWeapon() const;
-    const Armor *getArmor() const;
-    const Horse *getDefensiveHorse() const;
-    const Horse *getOffensiveHorse() const;
+    WrappedCard *getWeapon() const;
+    WrappedCard *getArmor() const;
+    WrappedCard *getDefensiveHorse() const;
+    WrappedCard *getOffensiveHorse() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
@@ -689,6 +689,10 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
     virtual bool isKindOf(const char* cardType) const;
+    virtual QStringList getFlags() const;
+    virtual bool isModified() const;
+    virtual QString getClassName() const;
+    virtual const Card *getRealCard() const;
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
@@ -705,7 +709,18 @@ public:
 %extend Card{
     Weapon* toWeapon(){
         return qobject_cast<Weapon*>($self);
-    }	
+    }
+	WrappedCard* toWrapped(){
+		return qobject_cast<WrappedCard*>($self);
+	}
+};
+
+class WrappedCard : public Card
+{
+public:
+	void takeOver(Card* card);
+	void copyEverythingFrom(Card* card);
+    void setModified(bool modified);
 };
 
 class SkillCard: public Card{

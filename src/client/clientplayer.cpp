@@ -36,7 +36,7 @@ void ClientPlayer::addCard(const Card *card, Place place){
             break;
         }
     case PlaceEquip: {
-            const EquipCard *equip = qobject_cast<const EquipCard*>(card);
+            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
             setEquip(equip);
             break;
         }
@@ -80,7 +80,7 @@ void ClientPlayer::removeCard(const Card *card, Place place){
             break;
         }
     case PlaceEquip:{
-            const EquipCard *equip = qobject_cast<const EquipCard*>(card);
+            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
             removeEquip(equip);
             break;
         }

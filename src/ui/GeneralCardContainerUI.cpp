@@ -418,7 +418,7 @@ void PlayerCardContainer::_updateEquips()
     for (int i = 0; i < 4; i++) {
         CardItem* equip = _m_equipCards[i];
         if (equip == NULL) continue;
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
+        const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         QPixmap pixmap = _getEquipPixmap(equip_card);
         _m_equipLabel[i]->setPixmap(pixmap);
         _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
@@ -646,7 +646,7 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
 
     foreach (CardItem* equip, equips)
     {
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
+        const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] == NULL);
         _m_equipCards[index] = equip;
@@ -687,7 +687,7 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
     QList<CardItem*> result;
     foreach (int card_id, cardIds)
     {
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getCard(card_id));
+        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getCard(card_id)->getRealCard());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] != NULL);
         CardItem* equip = _m_equipCards[index];

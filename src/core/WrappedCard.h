@@ -29,12 +29,13 @@ public:
     // to CardEffect including objectName.
     void takeOver(Card* card);
     void copyEverythingFrom(Card* card);
-    inline virtual bool isModified() const {return m_isModified;}
-    inline virtual QString getClassName() const {return m_card->metaObject()->className();}
-    inline virtual const Card *getRealCard() const {return m_card;}
+    void setModified(bool modified) {m_isModified = modified;}
 
 
     // Inherited member functions
+    inline virtual bool isModified() const {return m_isModified;}
+    inline virtual QString getClassName() const {return m_card->metaObject()->className();}
+    inline virtual const Card *getRealCard() const {return m_card;}
     inline virtual bool isOnce() const {return m_card->isOnce();}
     inline virtual bool isMute() const {return m_card->isMute();}
     inline virtual bool willThrow() const {return m_card->willThrow();}

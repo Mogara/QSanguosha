@@ -65,7 +65,7 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    const EquipCard *equipped = NULL;
+    WrappedCard *equipped = NULL;
     ServerPlayer *target = targets.value(0, source);
     if (room->getCardOwner(getId()) != source) return;
     switch(location()){

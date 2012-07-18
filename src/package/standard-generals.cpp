@@ -529,13 +529,11 @@ public:
         return  pattern == "slash";
     }
 
-    virtual bool viewFilter(const Card* to_select) const{
-        const Card *card = to_select;
-
+    virtual bool viewFilter(const Card* card) const{
         if(!card->isRed())
             return false;
 
-        if(card == Self->getWeapon() && card->objectName() == "crossbow")
+        if(Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId() && card->objectName() == "crossbow")
             return Self->canSlashWithoutCrossbow();
         else
             return true;

@@ -72,7 +72,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
         int equip_index = -1;
         const DelayedTrick *trick = NULL;
         if(place == Player::PlaceEquip){
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
             equip_index = static_cast<int>(equip->location());
         }else{
             trick = DelayedTrick::CastFrom(card);
@@ -732,7 +732,7 @@ bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Playe
         return false;
 
     const Card *card = Sanguosha->getCard(subcards.first());
-    const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+    const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
     int equip_index = static_cast<int>(equip->location());
     return to_select->getEquip(equip_index) == NULL;
 }

@@ -365,7 +365,8 @@ ArmorSkill::ArmorSkill(const QString &name)
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL) return false;
-    return target->hasArmorEffect(objectName()) && target->getArmor()->getSkill() == this;
+    const Armor *armor = qobject_cast<const Armor *>(target->getArmor()->getRealCard());
+    return target->hasArmorEffect(objectName()) && armor->getSkill() == this;
 }
 
 MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)

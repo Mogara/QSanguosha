@@ -119,10 +119,12 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     int rangefix = 0;
-    if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getEffectiveId()))
-        rangefix += Self->getWeapon()->getRange() - 1;
+    if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
+        const Weapon* weapon = qobject_cast<const Weapon*>(Self->getWeapon()->getRealCard());
+        rangefix += weapon->getRange() - 1;
+    }
 
-    if(Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getEffectiveId()))
+    if(Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
     if(Self->hasFlag("slashTargetFix") && targets.isEmpty())
@@ -258,7 +260,7 @@ public:
                 bool do_anim = false;
                 foreach(ServerPlayer *p, use.to){
                     p->addMark("qinggang");
-                    if (p->getArmor() || p->hasSkill("bazhen"))  do_anim = true;
+                    if (p->getArmor() || p->hasSkill("bazhen")) do_anim = true;
                 }
                 if (do_anim){
                     room->setEmotion(use.from, "weapon/qinggang_sword");
@@ -771,7 +773,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *victim = room->getTag("collateralVictim").value<PlayerStar>();
     room->removeTag("collateralVictim");
 
-    const Weapon *weapon = killer->getWeapon();
+    WrappedCard *weapon = killer->getWeapon();
     if(weapon == NULL || victim == NULL)
         return;
 
@@ -1096,10 +1098,15 @@ public:
 
     virtual int getCorrect(const Player *from, const Player *to) const{
         int correct = 0;
-        if(from->getOffensiveHorse())
-            correct += from->getOffensiveHorse()->getCorrect();
-        if(to->getDefensiveHorse())
-            correct += to->getDefensiveHorse()->getCorrect();
+        const Horse* horse = NULL;
+        if(from->getOffensiveHorse()){
+            horse = qobject_cast<const Horse*>(from->getOffensiveHorse()->getRealCard());
+            correct += horse->getCorrect();
+        }
+        if(to->getDefensiveHorse()){
+            horse = qobject_cast<const Horse*>(to->getOffensiveHorse()->getRealCard());
+            correct += horse->getCorrect();
+        }
 
         return correct;
     }

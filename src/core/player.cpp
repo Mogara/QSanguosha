@@ -9,7 +9,7 @@ Player::Player(QObject *parent)
     :QObject(parent), owner(false), ready(false), general(NULL), general2(NULL),
     hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
     phase(NotActive),
-    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+    weapon(-1), armor(-1), defensive_horse(-1), offensive_horse(-1),
     face_up(true), chained(false)
 {
 }
@@ -134,8 +134,11 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange() const{
-    if(weapon)
-        return weapon->getRange();
+    if(weapon > 0){
+        const Weapon *card = qobject_cast<const Weapon*>(Sanguosha->getWrappedCard(weapon)->getRealCard());
+        Q_ASSERT(card);
+        return card->getRange();
+    }
     else if(hasSkill("zhengfeng"))
         return hp;
     else
@@ -357,85 +360,94 @@ void Player::setPhaseString(const QString &phase_str){
     setPhase(phase_map.value(phase_str, NotActive));
 }
 
-void Player::setEquip(const EquipCard *card){
+void Player::setEquip(WrappedCard *equip){
+    int card_id = equip->getId();
+    const EquipCard *card = qobject_cast<const EquipCard *>(equip->getRealCard());
+    Q_ASSERT(card != NULL);
     switch(card->location()){
-    case EquipCard::WeaponLocation: weapon = qobject_cast<const Weapon*>(card); break;
-    case EquipCard::ArmorLocation: armor = qobject_cast<const Armor*>(card); break;
-    case EquipCard::DefensiveHorseLocation: defensive_horse = qobject_cast<const Horse*>(card); break;
-    case EquipCard::OffensiveHorseLocation: offensive_horse = qobject_cast<const Horse*>(card); break;
+    case EquipCard::WeaponLocation: weapon = card_id; break;
+    case EquipCard::ArmorLocation: armor = card_id; break;
+    case EquipCard::DefensiveHorseLocation: defensive_horse = card_id; break;
+    case EquipCard::OffensiveHorseLocation: offensive_horse = card_id; break;
     }
 }
 
-void Player::removeEquip(const EquipCard *equip){
-    switch(equip->location()){
-    case EquipCard::WeaponLocation: weapon = NULL; break;
-    case EquipCard::ArmorLocation: armor = NULL; break;
-    case EquipCard::DefensiveHorseLocation: defensive_horse = NULL; break;
-    case EquipCard::OffensiveHorseLocation:offensive_horse = NULL; break;
+void Player::removeEquip(WrappedCard *equip){
+    const EquipCard *card = qobject_cast<const EquipCard *>(equip->getRealCard());
+    Q_ASSERT(card != NULL);
+    switch (card->location()){
+    case EquipCard::WeaponLocation: weapon = -1; break;
+    case EquipCard::ArmorLocation: armor = -1; break;
+    case EquipCard::DefensiveHorseLocation: defensive_horse = -1; break;
+    case EquipCard::OffensiveHorseLocation:offensive_horse = -1; break;
     }
 }
 
 bool Player::hasEquip(const Card *card) const{
     Q_ASSERT(card != NULL);
-    return weapon == card ||
-           armor == card ||
-           defensive_horse == card ||
-           offensive_horse == card;
+    int cardId = card->getEffectiveId();
+    return weapon == cardId ||
+           armor == cardId ||
+           defensive_horse == cardId ||
+           offensive_horse == cardId;
 }
 
 bool Player::hasEquip() const{
-    return weapon || armor || defensive_horse || offensive_horse;
+    return weapon + armor + defensive_horse + offensive_horse > -4;
 }
 
-const Weapon *Player::getWeapon() const{
-    return weapon;
+WrappedCard *Player::getWeapon() const{
+    return Sanguosha->getWrappedCard(weapon);
 }
 
-const Armor *Player::getArmor() const{
-    return armor;
+WrappedCard *Player::getArmor() const{
+    return Sanguosha->getWrappedCard(armor);
 }
 
-const Horse *Player::getDefensiveHorse() const{
-    return defensive_horse;
+WrappedCard *Player::getDefensiveHorse() const{
+    return Sanguosha->getWrappedCard(defensive_horse);
 }
 
-const Horse *Player::getOffensiveHorse() const{
-    return offensive_horse;
+WrappedCard *Player::getOffensiveHorse() const{
+    return Sanguosha->getWrappedCard(offensive_horse);
 }
 
 QList<const Card *> Player::getEquips() const{
     QList<const Card *> equips;
-    if(weapon)
-        equips << weapon;
-    if(armor)
-        equips << armor;
-    if(defensive_horse)
-        equips << defensive_horse;
-    if(offensive_horse)
-        equips << offensive_horse;
+    if(weapon > -1)
+        equips << qobject_cast<const Card *>(getWeapon());
+    if(armor > -1)
+        equips << qobject_cast<const Card *>(getArmor());
+    if(defensive_horse > -1)
+        equips << qobject_cast<const Card *>(getDefensiveHorse());
+    if(offensive_horse > -1)
+        equips << qobject_cast<const Card *>(getOffensiveHorse());
 
     return equips;
 }
 
 const EquipCard *Player::getEquip(int index) const{
+    int equip;
     switch(index){
-    case 0: return weapon; break;
-    case 1: return armor; break;
-    case 2: return defensive_horse; break;
-    case 3: return offensive_horse; break;
+    case 0: equip = weapon; break;
+    case 1: equip = armor; break;
+    case 2: equip = defensive_horse; break;
+    case 3: equip = offensive_horse; break;
     default:
-        break;
+        return NULL;
     }
+    if(equip > -1)
+        return qobject_cast<const EquipCard *>(Sanguosha->getCard(equip)->getRealCard());
 
     return NULL;
 }
 
 bool Player::hasWeapon(const QString &weapon_name) const{
-    return weapon && weapon->objectName() == weapon_name;
+    return weapon > -1 && getWeapon()->objectName() == weapon_name;
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
-    return armor && !hasFlag("wuqian") && getMark("qinggang") == 0 && armor->objectName() == armor_name;
+    return armor > -1 && !hasFlag("wuqian") && getMark("qinggang") == 0 && getArmor()->objectName() == armor_name;
 }
 
 QList<const Card *> Player::getJudgingArea() const{
@@ -583,17 +595,13 @@ int Player::getCardCount(bool include_equip) const{
     int count = getHandcardNum();
 
     if(include_equip){
-        if(weapon)
-            count ++;
+        if(weapon > -1) count ++;
 
-        if(armor)
-            count ++;
+        if(armor > -1) count ++;
 
-        if(defensive_horse)
-            count ++;
+        if(defensive_horse > -1) count ++;
 
-        if(offensive_horse)
-            count ++;
+        if(offensive_horse > -1) count ++;
     }
 
     return count;

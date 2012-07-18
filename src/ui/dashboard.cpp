@@ -305,7 +305,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
     for (int i = 0; i < 4; i++)
     {
         if (!_m_equipCards[i]) continue;
-        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard());
+        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard()->getRealCard());
         Q_ASSERT(equip);
         // @todo: we must fix this in the server side - add a skill to the card itself instead
         // of getting it from the engine.
