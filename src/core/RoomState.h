@@ -1,8 +1,7 @@
 #ifndef _H_ROOM_STATE
 #define _H_ROOM_STATE
 #include <QHash>
-
-class Card;
+#include "WrappedCard.h"
 
 // RoomState is a singleton that stores virtual generals, cards (versus factory loaded
 // generals, cards in the Engine). Each room or roomscene should have one and only one
@@ -21,12 +20,11 @@ public:
     // @param newCard
     //        Card to be updated in the room.
     // @return
-    bool setCard(int cardId, Card *newCard);
     void resetCard(int cardId);
     // Reset all cards, generals' states of the room instance
     void reset();
 protected:
-    QHash<int, Card*> m_cards;
+    QHash<int, WrappedCard*> m_cards;
     bool m_isClient;
 };
 

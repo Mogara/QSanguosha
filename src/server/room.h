@@ -304,7 +304,6 @@ public:
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
     inline virtual RoomState* getRoomState() { return &_m_roomState; }
     inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
-    virtual void setCard(int cardId, Card* card);
 protected:
     virtual void run();
     int _m_Id;

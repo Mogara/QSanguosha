@@ -22,8 +22,6 @@ class WrappedCard : public Card
     Q_OBJECT
 
 public:
-
-    WrappedCard(Suit suit, int number, bool target_fixed = false);
     WrappedCard(Card* card);
     ~WrappedCard();
 

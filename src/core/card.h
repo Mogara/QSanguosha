@@ -128,6 +128,7 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
     inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
+    inline virtual QStringList getFlags() const { return flags; }
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
