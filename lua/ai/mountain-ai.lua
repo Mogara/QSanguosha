@@ -407,7 +407,7 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 				max_card = hcard
 			end
 
-			if hcard:getNumber() <= min_num and not (self:isFriend(lord) and hcard:isKindOf("Shit")) then
+			if hcard:getNumber() <= min_num then
 				if hcard:getNumber() == min_num then
 					if min_card and self:getKeepValue(hcard) > self:getKeepValue(min_card) then
 						min_num = hcard:getNumber()

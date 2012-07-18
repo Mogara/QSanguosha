@@ -64,6 +64,7 @@ return {
 	["#BuquDuplicate"] = "%from 时运不济啊，不屈牌中有 %arg 重复点数",
 	["#BuquDuplicateGroup"] = "第 %arg 组重复点数为 %arg2",
 	["$BuquDuplicateItem"] = "不屈重复牌: %card",
+	["$BuquRemove"] = "%from 移除了“不屈牌”：%card", 
 
 	["#yuji"] = "太平道人",
 	["yuji"] = "于吉",

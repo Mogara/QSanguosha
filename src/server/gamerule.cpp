@@ -89,7 +89,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
     case Player::Discard:{
             int discard_num, keep_num;
             QSet<const Card *> jilei_cards;
-            QList<const Card *> handcards = player->getHandcards();
+            QList<const Card *> handcards;
             do
             {
                 handcards = player->getHandcards();
@@ -328,7 +328,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 use.from = player;
                 if(player != dying.who)
                     use.to << dying.who;
-                // sunce 's jiuyuan
+                //need to remove
                 if(dying.who->hasFlag("jiuyuan") && player->getKingdom() == "wu"
                     && player->objectName() != dying.who->objectName()){
                     room->setCardFlag(use.card, "sweet");
@@ -789,7 +789,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             player->broadcastSkillInvoke("@recast");
             CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
             room->throwCard(use.card, reason, NULL);
-            player->drawCards(1, false);
+            player->drawCards(1);
             return false;
         }
 

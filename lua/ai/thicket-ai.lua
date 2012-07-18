@@ -1,19 +1,4 @@
-sgs.ai_skill_invoke.xingshang = function(self, data)
-	local damage = data:toDamageStar()
-	if not damage then return true end
-	local cards = damage.to:getHandcards()
-	local shit_num = 0
-	for _, card in sgs.qlist(cards) do
-		if card:isKindOf("Shit") then
-			shit_num = shit_num + 1
-			if card:getSuit() == sgs.Card_Spade then
-				shit_num = shit_num + 1
-			end
-		end
-	end
-	if shit_num > 1 then return false end
-	return true
-end
+sgs.ai_skill_invoke.xingshang = true
 
 sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 	self:sort(self.friends_noself)

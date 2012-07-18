@@ -1,24 +1,3 @@
-sgs.ai_skill_invoke.yitian_lost = function(self, data)
-	if next(self.enemies) then
-		return true
-	else
-		return false
-	end
-end
-
-sgs.ai_skill_playerchosen.yitian_lost = sgs.ai_skill_playerchosen.damage
-sgs.ai_playerchosen_intention.yitian_lost = 80
-
-sgs.ai_skill_invoke.yitian_sword = function(self, targets)
-	local slash=self:getCard("Slash")
-	if not slash then return false end
-	dummy_use={isDummy=true}
-	self:useBasicCard(slash,dummy_use)
-	if dummy_use.card then return true else return false end
-end
-
-sgs.weapon_range.YitianSword = 2
-
 sgs.ai_skill_invoke.weiwudi_guixin = true
 
 local function findPlayerForModifyKingdom(self, players)
@@ -477,7 +456,6 @@ sgs.ai_skill_discard.gongmou = function(self, discard_num, optional, include_equ
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local to_discard = {}
 	local compare_func = function(a, b)
-		if a:isKindOf("Shit") ~= b:isKindOf("Shit") then return a:isKindOf("Shit") end
 		return self:getKeepValue(a) < self:getKeepValue(b)
 	end
 	table.sort(cards, compare_func)
@@ -506,7 +484,7 @@ sgs.ai_cardshow.lexue = function(self, requestor)
 		end
 	else
 		for _, card in sgs.qlist(cards) do
-			if card:isKindOf("Jink") or card:isKindOf("Shit") then
+			if card:isKindOf("Jink") then
 				result = card
 				return result
 			end
@@ -606,9 +584,6 @@ sgs.ai_skill_use_func.YisheCard=function(card,use,self)
 		local cards=self.player:getHandcards()
 		cards=sgs.QList2Table(cards)
 		local usecards={}
-		for _,card in ipairs(cards) do
-			if card:isKindOf("Shit") then table.insert(usecards,card:getId()) end
-		end
 		local discards = self:askForDiscard("gamerule", math.min(self:getOverflow(),5-#usecards))
 		for _,card in ipairs(discards) do
 			table.insert(usecards,card)
@@ -655,10 +630,8 @@ sgs.ai_skill_use_func.YisheAskCard=function(card,use,self)
 	if not zhanglu or not self:isFriend(zhanglu) then return end
 	cards = sgs.QList2Table(cards)
 	for _, pcard in ipairs(cards) do
-		if not sgs.Sanguosha:getCard(pcard):isKindOf("Shit") then
-			use.card = card
-			return
-		end
+		use.card = card
+		return
 	end
 end
 

@@ -24,7 +24,7 @@ lihun_skill.getTurnUseCard=function(self)
 
 		for _, acard in ipairs(cards) do
 			if (acard:getTypeId() ~= sgs.Card_Trick or acard:isKindOf("AmazingGrace"))
-				and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then
+				and not acard:isKindOf("Peach") then
 				card_id = acard:getEffectiveId()
 				break
 			end
@@ -41,7 +41,7 @@ lihun_skill.getTurnUseCard=function(self)
 		cards=sgs.QList2Table(self.player:getHandcards())
 		for _, acard in ipairs(cards) do
 			if (acard:getTypeId() ~= sgs.Card_Trick or acard:isKindOf("AmazingGrace"))
-				and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then
+				and not acard:isKindOf("Peach") then
 				card_id = acard:getEffectiveId()
 				break
 			end
@@ -105,17 +105,7 @@ sgs.ai_skill_discard.lihun = function(self, discard_num, min_num, optional, incl
 	end
 	
 	temp = table.copyFrom(card_ids)
-	for i = 1, #temp, 1 do
-		local card = sgs.Sanguosha:getCard(temp[i])
-		if card:isKindOf("Shit") then
-			table.insert(to_discard, temp[i])
-			table.removeOne(card_ids, temp[i])
-			if #to_discard == discard_num then
-				return to_discard
-			end
-		end
-	end
-	
+
 	for i = 1, #card_ids, 1 do
 		local card = sgs.Sanguosha:getCard(card_ids[i])
 		table.insert(to_discard, card_ids[i])

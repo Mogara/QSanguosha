@@ -865,13 +865,6 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
         else return false;
     }
     
-    LogMessage log;
-    log.type = "#NullificationDetails";
-    log.from = from;
-    log.to << to;
-    log.arg = trick_name;
-    sendLog(log);
-
     broadcastInvoke("animate", QString("nullification:%1:%2")
         .arg(repliedPlayer->objectName()).arg(to->objectName()));
 
@@ -880,8 +873,16 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     use.from = repliedPlayer;
     useCard(use);
 
+    LogMessage log;
+    log.type = "#NullificationDetails";
+    log.from = from;
+    log.to << to;
+    log.arg = trick_name;
+    sendLog(log);
     QVariant decisionData = QVariant::fromValue("Nullification:" + QString(trick->metaObject()->className()) +
                             ":" + to->objectName() + ":" + (positive?"true":"false"));
+
+
     thread->trigger(ChoiceMade, this, repliedPlayer, decisionData);
     setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
     bool result = !_askForNullification((TrickCard*)card, repliedPlayer, to, !positive, aiHelper);
@@ -2543,7 +2544,7 @@ void Room::damage(DamageStruct &damage_data){
 
     damage_data = data.value<DamageStruct>();
 
-    // predamaged
+    // DamageInflicted
     bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
     if(broken)
         return;

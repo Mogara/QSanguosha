@@ -252,7 +252,7 @@ rende_skill.getTurnUseCard=function(self)
 			return sgs.Card_Parse("@RendeCard=.")
 		end
 	end
-	if (self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0 or self:getCard("Shit")) then
+	if (self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0) then
 		return sgs.Card_Parse("@RendeCard=.")
 	end
 	if self.player:getLostHp() < 2 then
@@ -526,7 +526,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 		local zcards = self.player:getCards("he")
 		for _, zcard in sgs.qlist(zcards) do
 			if not zcard:isKindOf("Peach") and not zcard:isKindOf("ExNihilo") then
-				if self:getAllPeachNum()>0 or not zcard:isKindOf("Shit") then table.insert(unpreferedCards,zcard:getId()) end
+				table.insert(unpreferedCards,zcard:getId())
 			end	
 		end
 	end
@@ -613,7 +613,7 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 
 			if card:isKindOf("Weapon") then
 				if not self.player:getWeapon() then shouldUse=false
-				elseif self:hasEquip(card) and not has_weapon and not card:isKindOf("YitianSword") then shouldUse=false
+				elseif self:hasEquip(card) and not has_weapon then shouldUse=false
 				end
 			end
 			
@@ -866,7 +866,7 @@ jieyin_skill.getTurnUseCard=function(self)
 	local first, second
 	self:sortByUseValue(cards,true)
 	for _, card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_Equip and not (card:isKindOf("Shit") and self:isWeak() and self:getAllPeachNum()==0) then
+		if card:getTypeId() ~= sgs.Card_Equip then
 			if not first then first  = cards[1]:getEffectiveId()
 			else second = cards[2]:getEffectiveId()
 			end
@@ -1023,7 +1023,7 @@ lijian_skill.getTurnUseCard=function(self)
 			
 			for _, acard in ipairs(cards) do
 				if (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard") or acard:isKindOf("AmazingGrace"))
-					and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then 
+					and not acard:isKindOf("Peach") then 
 					card_id = acard:getEffectiveId()
 					break
 				end
@@ -1040,7 +1040,7 @@ lijian_skill.getTurnUseCard=function(self)
 			cards=sgs.QList2Table(self.player:getHandcards())
 			for _, acard in ipairs(cards) do
 				if (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard") or acard:isKindOf("AmazingGrace"))
-					and not acard:isKindOf("Peach") and not acard:isKindOf("Shit") then 
+					and not acard:isKindOf("Peach") then 
 					card_id = acard:getEffectiveId()
 					break
 				end

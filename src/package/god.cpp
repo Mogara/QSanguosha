@@ -20,7 +20,7 @@ void GongxinCard::onEffect(const CardEffectStruct &effect) const{
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
-        events << Damaged;
+        events << PreHpReduced;
         frequency = Compulsory;
     }
 
@@ -627,7 +627,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getMark("@star") > 0
+        return TriggerSkill::triggerable(target) && target->getPile("stars").length() > 0
                 && target->getPhase() == Player::Draw;
     }
 
@@ -711,7 +711,6 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *shenzhuge) const{
-        shenzhuge->gainMark("@star", 7); 
         QList<int> stars;
         for (int i = 0; i < 7; i++)
         {
@@ -732,8 +731,6 @@ bool KuangfengCard::targetFilter(const QList<const Player *> &targets, const Pla
 
 void KuangfengCard::onEffect(const CardEffectStruct &effect) const{
     Qixing::DiscardStar(effect.from, 1, "kuangfeng");
-
-    effect.from->loseMark("@star");
     effect.to->gainMark("@gale");
 }
 
@@ -795,10 +792,10 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
         if(target->getPhase() == Player::Finish){
-            if(target->getMark("@star") > 0 && target->hasSkill("kuangfeng"))
+            if(target->getPile("stars").length() > 0 && target->hasSkill("kuangfeng"))
                 room->askForUseCard(target, "@@kuangfeng", "@kuangfeng-card");
 
-            if(target->getMark("@star") > 0 && target->hasSkill("dawu"))
+            if(target->getPile("stars").length() > 0 && target->hasSkill("dawu"))
                 room->askForUseCard(target, "@@dawu", "@dawu-card");
         }else if(target->getPhase() == Player::Start){
             QList<ServerPlayer *> players = room->getAllPlayers();
@@ -840,14 +837,13 @@ DawuCard::DawuCard(){
 }
 
 bool DawuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.length() < Self->getMark("@star");
+    return targets.length() < Self->getPile("stars").length();
 }
 
 void DawuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     int n = targets.length();
     Qixing::DiscardStar(source, n, "dawu");
 
-    source->loseMark("@star", n);
     foreach(ServerPlayer *target, targets){
         target->gainMark("@fog");
     }

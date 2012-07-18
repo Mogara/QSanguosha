@@ -11,11 +11,6 @@ function sgs.ai_skill_invoke.jiushi(self, data)
 end
 
 sgs.ai_skill_askforag.luoying = function(self, card_ids)
-	for _, id in ipairs(card_ids) do
-		if sgs.Sanguosha:getCard(id):isKindOf("Shit") then
-			return id
-		end
-	end
 	return -1
 end
 
@@ -106,7 +101,7 @@ sgs.ai_use_priority.XinzhanCard = 9.2
 function sgs.ai_slash_prohibit.huilei(self, to)
 	if self.player:hasSkill("jueqing") then return false end
 	if self:isFriend(to) and self:isWeak(to) then return true end
-	return #self.enemies>1 and self:isWeak(to) and (self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0)
+	return #self.enemies>1 and self:isWeak(to) and self.player:getHandcardNum()>3
 end
 
 sgs.ai_chaofeng.masu = -4
@@ -357,7 +352,7 @@ sgs.ai_skill_use_func.GanluCard = function(card, use, self)
 
 	target = nil
 	for _,friend in ipairs(self.friends) do
-		if self:isEquip("YitianSword", friend) or (self:isEquip("SilverLion",friend) and friend:isWounded()) 
+		if (self:isEquip("SilverLion",friend) and friend:isWounded())
 			or (self:hasSkills(sgs.lose_equip_skill, friend) and not friend:getEquips():isEmpty()) then target = friend break end
 	end
 	if not target then return end

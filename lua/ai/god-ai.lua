@@ -181,7 +181,6 @@ global_room:writeToConsole("we are in !!!!!!!!!")
 	cards=sgs.QList2Table(cards)
     local has_jink
 	local has_peach
-	local has_shit
 	local has_null
     local heartnum = 0
 	local hasindul = 0
@@ -206,9 +205,6 @@ global_room:writeToConsole("we are in !!!!!!!!!")
             elseif card:isKindOf("Peach") then
                 has_peach = card
 				global_room:writeToConsole("has peach !!!!!!!!!")
-            elseif card:isKindOf("Shit") then
-                has_shit = card
-				global_room:writeToConsole("has shit !!!!!!!!!")
 			end
             heartnum = heartnum + 1
 		end
@@ -226,9 +222,6 @@ global_room:writeToConsole("we are in !!!!!!!!!")
 		self.room:setPlayerFlag(self.player, "gongxin_put")
 		global_room:writeToConsole("indul ? OK  !!!!!!!!!")
 		return has_null:getEffectiveId()
-	elseif heartnum == 1 and has_shit then
-		global_room:writeToConsole("Oh Shit  !!!!!!!!!")
-		return "."
 	elseif has_null then
 		global_room:writeToConsole("Normal discard  !!!!!!!!!")
 		return has_null:getEffectiveId()
@@ -529,7 +522,7 @@ sgs.ai_skill_use["@@dawu"] = function(self, prompt)
 			if self:isWeak(friend) and not friend:hasSkill("buqu") then table.insert(targets, friend:objectName()) break end
 		end	
 	end
-	if self.player:getMark("@star") > #targets and self:isWeak() then table.insert(targets, self.player:objectName()) end
+	if self.player:getPile("stars"):length() > #targets and self:isWeak() then table.insert(targets, self.player:objectName()) end
 	if #targets > 0 then return "@DawuCard=.->" .. table.concat(targets, "+") end
 	return "."
 end

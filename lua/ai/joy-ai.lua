@@ -1,30 +1,3 @@
-function SmartAI:useCardShit(card, use)
-	if (card:getSuit() == sgs.Card_Heart or card:getSuit() == sgs.Card_Club) and self.player:isChained() and
-		#(self:getChainedFriends()) > #(self:getChainedEnemies()) then return end
-	if self.player:getHp()>3 and self.player:hasSkill("shenfen") and self.player:hasSkill("kuangbao") then use.card = card return end
-	if self.player:hasSkill("kuanggu") and card:getSuitString() ~= "spade" then use.card = card return end
-	if card:getSuit() == sgs.Card_Heart and (self:isEquip("GaleShell") or self:isEquip("Vine")) then return end
-	if not self.player:isWounded() then
-		if self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1 then
-			use.card = card
-			return
-		end
-		if sgs[self.player:getGeneralName() .. "_suit_value"] and
-			(sgs[self.player:getGeneralName() .. "_suit_value"][card:getSuitString()] or 0) > 0 then return end
-		local peach = self:getCard("Peach")
-		if peach then
-			self:sort(self.friends, "hp")
-			if not self:isWeak(self.friends[1]) then
-				use.card = card
-				return
-			end
-		end
-	end
-end
-
-sgs.ai_use_value.Shit = -10
-sgs.ai_keep_value.Shit = 6
-
 sgs.ai_skill_invoke.grab_peach = function(self, data)
 	local struct = data:toCardUse()
 	return self:isEnemy(struct.from) and (struct.to:isEmpty() or self:isEnemy(struct.to:first()))

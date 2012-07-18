@@ -394,8 +394,8 @@ sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target
 	if self:needBear() then return "." end
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:isKindOf("Slash") or card:isKindOf("Shit") or card:isKindOf("Collateral") or card:isKindOf("GodSalvation")
-		or card:isKindOf("Disaster") or card:isKindOf("EquipCard") or card:isKindOf("AmazingGrace") then
+		if card:isKindOf("Slash") or card:isKindOf("Collateral") or card:isKindOf("GodSalvation") or card:isKindOf("Disaster")
+		or card:isKindOf("EquipCard") or card:isKindOf("AmazingGrace") then
 			return "$"..card:getEffectiveId()
 		end
 	end
@@ -910,7 +910,7 @@ function SmartAI:getValuableCard(who)
 	end
 
 	if weapon then
-		if not (self:hasSkills(sgs.lose_equip_skill,who) or self:isEquip("YitianSword",who)) then
+		if not self:hasSkills(sgs.lose_equip_skill,who) then
 			for _,friend in ipairs(self.friends) do
 				if ((who:distanceTo(friend) <= who:getAttackRange()) and (who:distanceTo(friend) > 1)) or who:hasSkill("qiangxi") then
 					return weapon:getEffectiveId()

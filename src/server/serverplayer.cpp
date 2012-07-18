@@ -291,7 +291,7 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
         }
         if(Config.GameMode.endsWith("p") ||
                 Config.GameMode.endsWith("pd") ||
-                Config.GameMode.endsWith("pd"))
+                Config.GameMode.endsWith("pz"))
         {
             QStringList ban_list = Config.value("Banlist/Roles").toStringList();
 
@@ -782,7 +782,7 @@ int ServerPlayer::getGeneralMaxHp() const{
             max_hp = first + second - 3; break;
         }
 
-        max_hp = qMin(max_hp, 8);
+        max_hp = qMax(max_hp, 1);
     }
 
     if(room->hasWelfare(this))

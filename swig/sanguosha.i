@@ -591,6 +591,7 @@ enum TriggerEvent{
     CardEffect,
     CardEffected,
     CardFinished,
+    PostCardEffected, 
 
     ChoiceMade,
 
