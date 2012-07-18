@@ -1,6 +1,6 @@
 #include "RoomState.h"
 #include "engine.h"
-#include "card.h"
+#include "WrappedCard.h"
 
 Card* RoomState::getCard(int cardId) const
 {
@@ -11,34 +11,26 @@ Card* RoomState::getCard(int cardId) const
     return m_cards[cardId];
 }
 
-bool RoomState::setCard(int cardId, Card *newCard)
-{
-   Card* oldCard = getCard(cardId);
-   if (oldCard == newCard) return true;
-
-   m_cards[cardId] = newCard;
-   newCard->setId(cardId);
-   // newCard->setModified(true);
-   if (oldCard != NULL) {
-       delete oldCard;
-   }
-   return true;
-}
-
 void RoomState::resetCard(int cardId)
 {
     Card* newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
     if (newCard == NULL) return;
-    setCard(cardId, newCard);
+    m_cards[cardId]->copyEverythingFrom(newCard);
     // newCard->setModified(false);
 }
 
 // Reset all cards, generals' states of the room instance
 void RoomState::reset()
 {
+    foreach (WrappedCard* card, m_cards.values())
+    {
+        delete card;
+    }
+    m_cards.clear();
+
     int n = Sanguosha->getCardCount();
     for (int i = 0; i < n; i++)
     {
-        resetCard(i);
+        m_cards[i] = new WrappedCard(Card::Clone(Sanguosha->getEngineCard(i)));
     }
 }

@@ -402,7 +402,7 @@
     <ClCompile Include="..\..\src\core\RoomState.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="WrappedCard.cpp">
+    <ClCompile Include="..\..\src\core\WrappedCard.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_WrappedCard.cpp">
@@ -674,7 +674,7 @@
     <CustomBuild Include="..\..\src\core\RoomState.h">
       <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="WrappedCard.h">
+    <CustomBuild Include="..\..\src\core\WrappedCard.h">
       <Filter>core</Filter>
     </CustomBuild>
   </ItemGroup>

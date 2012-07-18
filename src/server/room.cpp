@@ -100,11 +100,6 @@ int Room::alivePlayerCount() const{
     return m_alivePlayers.count();
 }
 
-void Room::setCard(int cardId, Card* card)
-{
-    _m_roomState.setCard(cardId, card);
-}
-
 QList<ServerPlayer *> Room::getPlayers() const{
     return m_players;
 }
