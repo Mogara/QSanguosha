@@ -89,6 +89,7 @@ public:
     void clearFlags() const;
 
     virtual QString getPackage() const;
+    inline virtual QString getClassName() const {return metaObject()->className();}
     virtual bool isVirtualCard() const;
     virtual bool isEquipped() const;
     virtual QString getCommonEffectName() const;
@@ -117,6 +118,7 @@ public:
                               int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
     
+    inline virtual const Card *getRealCard() const {return this;}
     virtual const Card *validate(const CardUseStruct *cardUse) const;
     virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 
@@ -129,6 +131,8 @@ public:
 
     inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
     inline virtual QStringList getFlags() const { return flags; }
+
+    inline virtual bool isModified() const {return false;}
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);

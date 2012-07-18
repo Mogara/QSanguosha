@@ -572,6 +572,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem*> &tricks)
 
 QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard* equip)
 {
+    const Card *realCard = Sanguosha->getEngineCard(equip->getEffectiveId());
     QPixmap equipIcon(_m_layout->m_equipAreas[0].size());
     equipIcon.fill(Qt::transparent);
     QPainter painter(&equipIcon);
@@ -586,13 +587,13 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard* equip)
         Sanguosha->translate(equip->objectName()));
     // equip suit
     painter.drawPixmap(_m_layout->m_equipSuitArea,
-        G_ROOM_SKIN.getCardSuitPixmap(equip->getSuit()));
+        G_ROOM_SKIN.getCardSuitPixmap(realCard->getSuit()));
     // equip point
     _m_layout->m_equipPointFont.paintText(
         &painter,
         _m_layout->m_equipPointArea,
         Qt::AlignLeft | Qt::AlignVCenter,
-        equip->getNumberString());
+        realCard->getNumberString());
     // distance
     int index = (int)(equip->location());
     QString distance;

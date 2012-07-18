@@ -618,7 +618,7 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        Card *new_card = Card::Clone(originalCard);
+        Card *new_card = Sanguosha->getCard(originalCard->getEffectiveId());
         if(new_card) {
             new_card->setSuit(Card::Heart);
             new_card->setSkillName(objectName());

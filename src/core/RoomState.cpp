@@ -2,6 +2,15 @@
 #include "engine.h"
 #include "WrappedCard.h"
 
+RoomState::~RoomState()
+{
+    foreach (Card* card, m_cards.values())
+    {
+        delete card;
+    }
+    m_cards.clear();
+}
+
 Card* RoomState::getCard(int cardId) const
 {
     if (!m_cards.contains(cardId))
@@ -15,7 +24,8 @@ void RoomState::resetCard(int cardId)
 {
     Card* newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
     if (newCard == NULL) return;
-    m_cards[cardId]->copyEverythingFrom(newCard);
+    m_cards.remove(cardId);
+    m_cards[cardId] = new WrappedCard(newCard);
     // newCard->setModified(false);
 }
 

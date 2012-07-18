@@ -100,6 +100,42 @@ int Room::alivePlayerCount() const{
     return m_alivePlayers.count();
 }
 
+bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCard)
+{
+    Json::Value val(Json::arrayValue);
+    Q_ASSERT(newCard);
+    val[0] = cardId;
+    val[1] = toJsonString(Sanguosha->getWrappedCard(newCard->getId())->getClassName());
+    val[2] = (int)newCard->getSuit();
+    val[3] = newCard->getNumber();
+    val[4] = toJsonArray(newCard->getFlags());
+    val[5] = toJsonString(newCard->getSkillName());
+    doNotify(player, S_COMMAND_UPDATE_CARD, val);
+    return true;
+}
+
+
+bool Room::broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard)
+{
+    foreach (ServerPlayer* player, players)
+        notifyUpdateCard(player, cardId, newCard);
+    return true;
+}
+
+
+bool Room::notifyResetCard(ServerPlayer* player, int cardId)
+{
+    doNotify(player, S_COMMAND_UPDATE_CARD, cardId);
+    return true;
+}
+
+bool Room::broadcastResetCard(const QList<ServerPlayer*> &players, int cardId)
+{
+    foreach (ServerPlayer* player, players)
+        notifyResetCard(player, cardId);
+    return true;
+}
+
 QList<ServerPlayer *> Room::getPlayers() const{
     return m_players;
 }
@@ -2401,7 +2437,7 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
         if(card->inherits("LuaSkillCard"))
             key = "#" + card->objectName();
         else
-            key = card->metaObject()->className();
+            key = card->getClassName();
 
         bool slash_record =
             key.contains("Slash") &&
@@ -2418,7 +2454,7 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
 
     card = card_use.card->validate(&card_use);
     
-    if(card == card_use.card)
+    if(card_use.card->getRealCard() == card)
         card_use.card->onUse(this, card_use);
     else if(card){
         CardUseStruct new_use = card_use;
@@ -3273,8 +3309,135 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }
 }
 
+void Room::updateCardsOnLose(const CardsMoveStruct &move)
+{
+    if(move.to_place == Player::DiscardPile
+            || (move.to && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick)){
+        for (int i = 0; i < move.card_ids.size(); i++)
+        {
+            Card *card = getCard(move.card_ids[i]);
+            if(card->isModified())
+            {
+                resetCard(move.card_ids[i]);
+                broadcastResetCard(getPlayers(), move.card_ids[i]);
+            }
+        }
+        return;
+    }
+
+    ServerPlayer* player = (ServerPlayer*)move.from;
+    if(player != NULL && move.from_place == Player::PlaceHand
+            && move.to != NULL
+            && move.to_place != Player::PlaceDelayedTrick){
+        for (int i = 0; i < move.card_ids.size(); i++)
+        {
+            Card *card = getCard(move.card_ids[i]);
+            if(card->isModified())
+            {
+                resetCard(move.card_ids[i]);
+                notifyResetCard(player, move.card_ids[i]);
+            }
+        }
+        return;
+    }
+}
+
+void Room::updateCardsOnGet(const CardsMoveStruct &move)
+{
+    ServerPlayer* player = (ServerPlayer*)move.from;
+    if(player != NULL && move.to_place == Player::PlaceDelayedTrick){
+        for (int i = 0; i < move.card_ids.size(); i++)
+        {
+            WrappedCard* card = qobject_cast<WrappedCard* >(getCard(move.card_ids[i]));
+            const Card *engine_card = Sanguosha->getEngineCard(move.card_ids[i]);
+            if(card->getSuit() != engine_card->getSuit() || card->getNumber() != engine_card->getNumber())
+            {
+                card->setSuit(engine_card->getSuit());
+                card->setNumber(engine_card->getNumber());
+                broadcastUpdateCard(getPlayers(), move.card_ids[i], card);
+            }
+        }
+        return;
+    }
+
+    bool* cardChanged = new bool[move.card_ids.size()];
+    for (int i = 0; i < move.card_ids.size(); i++)
+    {
+        cardChanged[i] = false;
+    }
+
+    player = (ServerPlayer*)move.to;
+    if (player != NULL && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))
+    {
+        QSet<const Skill*> skills = player->getVisibleSkills();
+        QList<const FilterSkill*> filterSkills;
+        // first, get all filter skills
+        foreach (const Skill* skill, skills)
+        {
+            if (skill->inherits("FilterSkill"))
+            {
+                const FilterSkill* filter = qobject_cast<const FilterSkill*>(skill);
+                Q_ASSERT(filter);
+                filterSkills.append(filter);
+            }
+        }
+
+        if (filterSkills.size() == 0) return;
+
+        // now get all cards that need to be translated
+        QList<const Card*> cards;
+        foreach (int cardId, move.card_ids)
+        {
+            Card* card = Sanguosha->getCard(cardId);
+            Q_ASSERT(card);
+            cards.append(card);
+        }
+
+        // We run through filterSkills for multiple times to ensure that the card will converge.
+        // (Consider Hongyan and Wushen.)
+        for (int i = 0; i < cards.size(); i++)
+        {
+            const Card* card = cards[i];
+            for (int fTime = 0; fTime < filterSkills.size(); fTime++)
+            {
+                bool converged = true;
+                foreach (const FilterSkill* skill, filterSkills)
+                {
+                    Q_ASSERT(skill);
+                    if (skill->viewFilter(cards[i]))
+                    {
+                        cards[i] = skill->viewAs(card);
+                        Q_ASSERT(cards[i] != NULL);
+                        converged = false;
+                        cardChanged[i] = true;
+                    }
+                }
+                if (converged) break;
+            }
+        }
+
+        for (int i = 0; i < cards.size(); i++)
+        {
+            if (!cardChanged[i]) continue;
+            if(move.to_place == Player::PlaceHand)
+                notifyUpdateCard(player, move.card_ids[i], cards[i]);
+            else
+                broadcastUpdateCard(getPlayers(), move.card_ids[i], cards[i]);
+        }
+    }
+
+    delete cardChanged;
+}
+
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
 {
+    if (isLostPhase) {
+            foreach (CardsMoveStruct move, cards_moves)
+                updateCardsOnLose(move);
+        } else {
+            foreach (CardsMoveStruct move, cards_moves)
+                updateCardsOnGet(move);
+        }
     // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   

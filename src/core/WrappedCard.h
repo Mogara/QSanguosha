@@ -22,13 +22,16 @@ class WrappedCard : public Card
     Q_OBJECT
 
 public:
-    WrappedCard(Card* card);
+    Q_INVOKABLE WrappedCard(Card* card);
     ~WrappedCard();
 
     // Set the internal card to be the new card, update everything related
     // to CardEffect including objectName.
     void takeOver(Card* card);
     void copyEverythingFrom(Card* card);
+    inline virtual bool isModified() const {return m_isModified;}
+    inline virtual QString getClassName() const {return m_card->metaObject()->className();}
+    inline virtual const Card *getRealCard() const {return m_card;}
 
 
     // Inherited member functions
@@ -39,7 +42,7 @@ public:
     inline virtual bool hasPreAction() const {return m_card->hasPreAction();}
     inline virtual QString getPackage() const {return m_card->getPackage();}
     inline virtual bool isVirtualCard() const { return false; }
-    inline virtual bool isEquipped() const { return m_card->isEquipped(); }
+    //inline virtual bool isEquipped() const { return m_card->isEquipped(); }
     inline virtual QString getCommonEffectName() const { return m_card->getCommonEffectName(); }
     inline virtual bool match(const QString &pattern) const { return m_card->match(pattern); }
 
@@ -54,7 +57,7 @@ public:
     inline virtual QString getType() const { return m_card->getType(); }
     inline virtual QString getSubtype() const { return m_card->getSubtype(); }
     inline virtual CardType getTypeId() const { return m_card->getTypeId(); }
-    inline virtual QString toString() const { return m_card->toString(); }
+    inline virtual QString toString() const { return QString::number(id); }
     inline virtual bool isNDTrick() const
     { return m_card->isNDTrick(); }
 
@@ -86,7 +89,7 @@ public:
     inline virtual void doPreAction(Room *room, const CardUseStruct &cardUse) const 
     { m_card->doPreAction(room, cardUse); }
     
-    inline virtual void onUse(Room *room, const CardUseStruct &cardUse) const { onUse(room, cardUse); }
+    inline virtual void onUse(Room *room, const CardUseStruct &cardUse) const { m_card->onUse(room, cardUse); }
 
     inline virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
     {

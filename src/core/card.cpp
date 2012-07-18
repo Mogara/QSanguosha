@@ -358,7 +358,7 @@ const Card *Card::Parse(const QString &str){
             return NULL;
 
         QStringList texts = pattern.capturedTexts();
-        QString name = texts.at(1);
+        QString card_name = texts.at(1);
         QString skill_name = texts.at(2);
         QString suit_string = texts.at(3);
         QString number_string = texts.at(4);
@@ -381,7 +381,7 @@ const Card *Card::Parse(const QString &str){
         else
             number = number_string.toInt();
 
-        Card *card = Sanguosha->cloneCard(name, suit, number);
+        Card *card = Sanguosha->cloneCard(card_name, suit, number);
         if(card == NULL)
             return NULL;
 
@@ -507,13 +507,11 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     }
 
     if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable){
-        int card_id = this->getEffectiveId();
-        bool is_virtual = isVirtualCard();
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
         CardUseStruct card_use;
-        card_use.card = is_virtual ? this : Sanguosha->getCard(card_id);
+        card_use.card = this;
         card_use.from = source;
         card_use.to = targets;
         QVariant data = QVariant::fromValue(card_use);
