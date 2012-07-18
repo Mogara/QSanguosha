@@ -475,6 +475,8 @@ struct CardsMoveOneTimeStruct{
     Player *from, *to;
 };
 
+typedef const CardsMoveOneTimeStruct *CardsMoveOneTimeStar;
+
 struct DyingStruct{
     DyingStruct();
 
@@ -518,13 +520,14 @@ struct PindianStruct{
     QString reason;
 };
 
+typedef PindianStruct *PindianStar;
+
 struct PhaseChangeStruct{
     PhaseChangeStruct();
     Player::Phase from;
     Player::Phase to;
 };
 
-typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{
     NonTrigger,
