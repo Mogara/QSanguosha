@@ -142,7 +142,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         QuhuCard *card = new QuhuCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
         return card;
     }
 };
@@ -537,7 +537,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new TianyiCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
         return card;
     }
 };

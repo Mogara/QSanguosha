@@ -177,7 +177,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         HuangtianCard *card = new HuangtianCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
 
         return card;
     }
@@ -1037,7 +1037,7 @@ public:
         if(ClientInstance->getStatus() == Client::Responsing){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(ClientInstance->getPattern());
-            card->addSubcard(card);
+            card->addSubcard(originalCard);
             return card;
         }
 
@@ -1045,7 +1045,7 @@ public:
         if(c){
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(c->objectName());
-            card->addSubcard(card);
+            card->addSubcard(originalCard);
 
             return card;
         }else

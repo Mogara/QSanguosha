@@ -251,7 +251,7 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         Card *card = new GuicaiCard;
         card->setSuit(card->getSuit());
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
 
         return card;
     }
