@@ -187,10 +187,12 @@ void Client::updateCard(const Json::Value &val)
         QStringList flags;
         tryParse(val[4], flags);
         QString skillName = val[5].asCString();
+        QString objectName = val[6].asCString();
 
         Card* card = Sanguosha->cloneCard(cardName, suit, number, flags);
         card->setId(cardId);
         card->setSkillName(skillName);
+        card->setObjectName(objectName);
         WrappedCard* wrapped = Sanguosha->getWrappedCard(cardId);
         Q_ASSERT(wrapped != NULL);
         wrapped->copyEverythingFrom(card);

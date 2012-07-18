@@ -110,6 +110,7 @@ bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCar
     val[3] = newCard->getNumber();
     val[4] = toJsonArray(newCard->getFlags());
     val[5] = toJsonString(newCard->getSkillName());
+    val[6] = toJsonString(newCard->objectName());
     doNotify(player, S_COMMAND_UPDATE_CARD, val);
     return true;
 }

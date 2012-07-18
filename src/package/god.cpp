@@ -610,10 +610,12 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        WushenSlash *slash = new WushenSlash(Card::NoSuit, 0);
+        WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
+        slash->setSkillName(objectName());
+        slash->setId(originalCard->getId());
+        slash->setObjectName("slash");
         WrappedCard* card = Sanguosha->getWrappedCard(originalCard->getId());
-        card->takeOver(slash);
-        card->setSkillName(objectName());
+        card->copyEverythingFrom(slash);
         return card;
     }
 };
