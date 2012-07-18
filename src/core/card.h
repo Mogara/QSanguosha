@@ -78,17 +78,17 @@ public:
     void setSkillName(const QString &skill_name);
     QString getDescription() const;
     
-    bool isOnce() const;
-    bool isMute() const;
-    bool willThrow() const;
-    bool canJilei() const;
-    bool hasPreAction() const;
+    virtual bool isOnce() const;
+    virtual bool isMute() const;
+    virtual bool willThrow() const;
+    virtual bool canJilei() const;
+    virtual bool hasPreAction() const;
 
     void setFlags(const QString &flag) const;
     bool hasFlag(const QString &flag) const;
     void clearFlags() const;
 
-    QString getPackage() const;
+    virtual QString getPackage() const;
     virtual bool isVirtualCard() const;
     virtual bool isEquipped() const;
     virtual QString getCommonEffectName() const;

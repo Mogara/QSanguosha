@@ -34,6 +34,12 @@ public:
 
 
     // Inherited member functions
+    inline virtual bool isOnce() const {return m_card->isOnce();}
+    inline virtual bool isMute() const {return m_card->isMute();}
+    inline virtual bool willThrow() const {return m_card->willThrow();}
+    inline virtual bool canJilei() const {return m_card->canJilei();}
+    inline virtual bool hasPreAction() const {return m_card->hasPreAction();}
+    inline virtual QString getPackage() const {return m_card->getPackage();}
     inline virtual bool isVirtualCard() const { return false; }
     inline virtual bool isEquipped() const { return m_card->isEquipped(); }
     inline virtual QString getCommonEffectName() const { return m_card->getCommonEffectName(); }
