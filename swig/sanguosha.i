@@ -528,7 +528,6 @@ struct PhaseChangeStruct{
     Player::Phase to;
 };
 
-
 enum TriggerEvent{
     NonTrigger,
 
