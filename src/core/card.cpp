@@ -336,7 +336,7 @@ const Card *Card::Parse(const QString &str){
             user_string.remove(0, 1);
             card->setUserString(user_string);
         }
-
+        card->deleteLater();
         return card;
     }else if(str.startsWith(QChar('$'))){
         QString copy = str;
@@ -346,10 +346,11 @@ const Card *Card::Parse(const QString &str){
         foreach(QString card_str, card_strs){
             dummy->addSubcard(card_str.toInt());
         }
-
+        dummy->deleteLater();
         return dummy;
     }else if(str.startsWith(QChar('#'))){
         LuaSkillCard *new_card =  LuaSkillCard::Parse(str);
+        new_card->deleteLater();
         return new_card;
     }if(str.contains(QChar('='))){
         QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
@@ -388,6 +389,7 @@ const Card *Card::Parse(const QString &str){
             card->addSubcard(subcard_id.toInt());
 
         card->setSkillName(skill_name);
+        card->deleteLater();
         return card;
     }else{
         bool ok;
@@ -548,8 +550,7 @@ const Card *Card::validate(const CardUseStruct *) const{
     return this;
 }
 
-const Card *Card::validateInResposing(ServerPlayer *, bool *continuable) const{
-    *continuable = false;
+const Card *Card::validateInResposing(ServerPlayer *, bool &continuable) const{
     return this;
 }
 

@@ -984,15 +984,14 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         /* @todo: verify this...
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, card_use->from->objectName());
         room->throwCard(this, reason, NULL); */
-
+        use_card->deleteLater();
         return use_card;
     }else
         return NULL;
 }
 
-const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable) const{
-    *continuable = true;
-
+const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable) const{
+    continuable = true;
     Room *room = yuji->getRoom();
     room->broadcastSkillInvoke("guhuo");
 
@@ -1013,6 +1012,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
+        use_card->deleteLater();
         return use_card;
     }else
         return NULL;

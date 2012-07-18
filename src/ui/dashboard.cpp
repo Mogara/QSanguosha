@@ -755,6 +755,7 @@ void Dashboard::sortCards(bool doAnimation){
 }
 
 void Dashboard::reverseSelection(){
+    /*
     if(view_as_skill == NULL)
         return;
 
@@ -791,7 +792,7 @@ void Dashboard::reverseSelection(){
 
     pending_card = view_as_skill->viewAs(pendingCards);
     m_mutexEnableCards.unlock();
-    emit card_selected(pending_card);
+    emit card_selected(pending_card);*/
 }
 
 void Dashboard::disableAllCards(){

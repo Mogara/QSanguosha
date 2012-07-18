@@ -857,7 +857,8 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     if (card == NULL) return false;
 
     bool continuable = false;
-    card = card->validateInResposing(repliedPlayer, &continuable);
+    card = card->validateInResposing(repliedPlayer, continuable);
+
     if (card == NULL)
     {
         if (continuable) return _askForNullification(trick, from, to, positive, aiHelper);
@@ -879,10 +880,12 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     use.from = repliedPlayer;
     useCard(use);
 
-    QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
+    QVariant decisionData = QVariant::fromValue("Nullification:" + QString(trick->metaObject()->className()) +
+                            ":" + to->objectName() + ":" + (positive?"true":"false"));
     thread->trigger(ChoiceMade, this, repliedPlayer, decisionData);
     setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-    return !_askForNullification((TrickCard*)card, repliedPlayer, to, !positive, aiHelper);
+    bool result = !_askForNullification((TrickCard*)card, repliedPlayer, to, !positive, aiHelper);
+    return result;
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
@@ -955,12 +958,14 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         return NULL;
     }
 
-    bool continuable = false;
     CardUseStruct card_use;
     card_use.card = card;
     card_use.from = player;
-    card = card->validateInResposing(player, &continuable);
+        
+    bool continuable = false;
+    card = card->validateInResposing(player, continuable);
 
+    const Card* result;
     if(card){
         if(trigger_event == CardUsed){
             if(pattern != "slash"){
@@ -973,13 +978,13 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
         else if(trigger_event == CardDiscarded){
-                CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
-                moveCardTo(card, player, NULL, Player::DiscardPile, reason);
+            CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
+            moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
         else if(trigger_event != NonTrigger && trigger_event != AskForRetrial){
-                CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
-                reason.m_skillName = card->getSkillName();
-                moveCardTo(card, player, NULL, Player::DiscardPile, reason);
+            CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
+            reason.m_skillName = card->getSkillName();
+            moveCardTo(card, player, NULL, Player::DiscardPile, reason);
         }
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
@@ -1002,11 +1007,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         }
         else if(trigger_event == CardDiscarded)
             thread->trigger(CardDiscarded, this, player, card_star);
-
-    }else if(continuable)
-        return askForCard(player, pattern, prompt);
-
-    return card;
+        result = card;
+    } else if(continuable) {
+        result = askForCard(player, pattern, prompt);
+    }
+    return result;
 }
 
 bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index){
@@ -1175,18 +1180,21 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
 
         card = Card::Parse(toQString(clientReply));
 
-        if (card != NULL) 
-            card = card->validateInResposing(player, &continuable);
+        if (card != NULL)
+        {
+            card = card->validateInResposing(player, continuable);
+        }
     }
+
+    const Card* result = NULL;
     if(card){
         QVariant decisionData = QVariant::fromValue("peach:"+
             QString("%1:%2:%3").arg(dying->objectName()).arg(1 - dying->getHp()).arg(card->toString()));
         thread->trigger(ChoiceMade, this, player, decisionData);
-        return card;
+        result = card;
     }else if(continuable)
-        return askForSinglePeach(player, dying);
-    else
-        return NULL;
+        result = askForSinglePeach(player, dying);
+    return result;
 }
 
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
@@ -2413,6 +2421,7 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
     }
 
     card = card_use.card->validate(&card_use);
+    
     if(card == card_use.card)
         card_use.card->onUse(this, card_use);
     else if(card){
@@ -2420,11 +2429,6 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
         new_use.card = card;
         useCard(new_use);
     }
-
-    /*
-    if(card->isVirtualCard())
-    delete card;
-    */
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){

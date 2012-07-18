@@ -669,7 +669,7 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const;
     virtual bool isAvailable(const Player *player) const;
     virtual const Card *validate(const CardUseStruct *card_use) const;
-    virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
+    virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 
     // it can be used only once a turn or not
     bool isOnce() const;
@@ -687,7 +687,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-	virtual bool isKindOf(const char* cardType) const;
+    virtual bool isKindOf(const char* cardType) const;
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
