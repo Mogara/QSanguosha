@@ -3,13 +3,13 @@
 # This is a Shell script that ease our compilation work in Linux
 # You should has Qt, swig, and plib installed before running this script
 
-which -s qmake
+which qmake
 if [[ $? != 0 ]]; then
 	echo "Qt is not installed or its tools are not in the PATH"
 	exit 1
 fi
 
-which -s swig 
+which swig 
 if [[ $? != 0 ]]; then
 	echo "Swig is not installed!"
 	exit 1
