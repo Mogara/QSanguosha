@@ -2462,6 +2462,7 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
             Card *trick = Sanguosha->cloneCard(card);
             WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getSubcards().first());
             wrapped->takeOver(trick);
+            broadcastUpdateCard(getPlayers(), wrapped->getId(), wrapped);
             card_use.card = wrapped;
             wrapped->onUse(this, card_use);
             return;
