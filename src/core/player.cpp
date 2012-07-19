@@ -457,7 +457,7 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
 QList<const Card *> Player::getJudgingArea() const{
     QList<const Card *>cards;
     foreach(int card_id, judging_area)
-        cards.append(Sanguosha->getWrappedCard(card_id));
+        cards.append(Sanguosha->getCard(card_id));
     return cards;
 }
 

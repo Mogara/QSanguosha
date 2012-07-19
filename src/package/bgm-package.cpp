@@ -922,6 +922,65 @@ public:
     }
 };
 
+YanxiaoCard::YanxiaoCard(Suit suit, int number)
+    :DelayedTrick(suit, number)
+{
+    setObjectName("YanxiaoCard");
+}
+
+bool YanxiaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select->containsTrick(objectName()))
+        return false;
+
+    return true;
+}
+
+void YanxiaoCard::takeEffect(ServerPlayer *) const{
+}
+
+class YanxiaoVeiwAsSkill: public OneCardViewAsSkill{
+public:
+    YanxiaoVeiwAsSkill():OneCardViewAsSkill("yanxiao"){
+
+    }
+
+    virtual bool viewFilter(const Card* to_select) const{
+        return to_select->getSuit() == Card::Diamond;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        YanxiaoCard *yanxiao = new YanxiaoCard(originalCard->getSuit(), originalCard->getNumber());
+        yanxiao->addSubcard(originalCard->getId());
+        yanxiao->setSkillName(objectName());
+        return yanxiao;
+    }
+};
+
+
+class Yanxiao: public PhaseChangeSkill{
+public:
+    Yanxiao():PhaseChangeSkill("yanxiao"){
+        view_as_skill = new YanxiaoVeiwAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target && target->getPhase() == Player::Judge && target->containsTrick("YanxiaoCard");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        CardsMoveStruct move;
+        foreach(const Card* deleyed_trick, target->getJudgingArea())
+            move.card_ids << deleyed_trick->getId();
+        move.to = target;
+        move.to_place = Player::PlaceHand;
+        target->getRoom()->moveCardsAtomic(move, true);
+        return false;
+    }
+};
 
 BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3);
@@ -959,9 +1018,13 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_liubei->addSkill(new Shichou);
     related_skills.insertMulti("zhaolie", "#zhaolie");
 
+    General *bgm_daqiao = new General(this, "bgm_daqiao", "wu", 3, false);
+    bgm_daqiao->addSkill(new Yanxiao);
+
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();
     addMetaObject<TanhuCard>();
+    addMetaObject<YanxiaoCard>();
 }
 
 ADD_PACKAGE(BGM)

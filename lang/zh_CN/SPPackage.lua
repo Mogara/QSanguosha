@@ -69,6 +69,7 @@ return {
 
 	["#sp_caiwenji"] = "金璧之才",
 	["sp_caiwenji"] = "SP蔡文姬",
+	["&sp_caiwenji"] = "蔡文姬",
 	["illustrator:sp_caiwenji"] = "木美人",
 	["guixiang"] = "归乡",
 	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",

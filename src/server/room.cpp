@@ -2460,6 +2460,7 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
     if(card_use.card->getRealCard() == card){
         if(card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1){
             Card *trick = Sanguosha->cloneCard(card);
+            Q_ASSERT(trick != NULL);
             WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getSubcards().first());
             wrapped->takeOver(trick);
             broadcastUpdateCard(getPlayers(), wrapped->getId(), wrapped);
@@ -3328,7 +3329,7 @@ void Room::updateCardsOnLose(const CardsMoveStruct &move)
             || (move.to && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick)){
         for (int i = 0; i < move.card_ids.size(); i++)
         {
-            Card *card = getCard(move.card_ids[i]);
+            Card *card = Sanguosha->getCard(move.card_ids[i]);
             if(card->isModified())
             {
                 resetCard(move.card_ids[i]);
@@ -3344,7 +3345,7 @@ void Room::updateCardsOnLose(const CardsMoveStruct &move)
             && move.to_place != Player::PlaceDelayedTrick){
         for (int i = 0; i < move.card_ids.size(); i++)
         {
-            Card *card = getCard(move.card_ids[i]);
+            Card *card = Sanguosha->getCard(move.card_ids[i]);
             if(card->isModified())
             {
                 resetCard(move.card_ids[i]);
