@@ -402,6 +402,15 @@
     <ClCompile Include="..\..\src\core\RoomState.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\WrappedCard.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_WrappedCard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_WrappedCard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -663,6 +672,9 @@
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\core\RoomState.h">
+      <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\WrappedCard.h">
       <Filter>core</Filter>
     </CustomBuild>
   </ItemGroup>

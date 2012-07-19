@@ -155,7 +155,7 @@ void ServerPlayer::throwAllCards(){
     foreach(const Card *trick, tricks)
     {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, this->objectName());
-        room->throwCard(trick, NULL);
+        room->throwCard(trick, reason, NULL);
     }
 }
 
@@ -344,13 +344,14 @@ void ServerPlayer::removeCard(const Card *card, Place place){
         }
 
     case PlaceEquip: {
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-            removeEquip(equip);
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            removeEquip(wrapped);
 
             equip->onUninstall(this);
             LogMessage log;
             log.type = "$Uninstall";
-            log.card_str = card->toString();
+            log.card_str = wrapped->toString();
             log.from = this;
             room->sendLog(log);
             break;
@@ -386,8 +387,9 @@ void ServerPlayer::addCard(const Card *card, Place place){
         }
 
     case PlaceEquip: {
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-            setEquip(equip);
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            setEquip(wrapped);
             equip->onInstall(this);
             break;
         }

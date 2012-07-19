@@ -65,7 +65,7 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    const EquipCard *equipped = NULL;
+    WrappedCard *equipped = NULL;
     ServerPlayer *target = targets.value(0, source);
     if (room->getCardOwner(getId()) != source) return;
     switch(location()){
@@ -273,25 +273,6 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
         room->throwCard(this, reason, NULL);
     }
-}
-
-const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
-    DelayedTrick *trick = NULL;
-    Card::Suit suit = card->getSuit();
-    int number = card->getNumber();
-    // @TODO: this is a MUST FIX!
-    if(card->isKindOf("DelayedTrick"))
-        return qobject_cast<const DelayedTrick *>(card);
-    else if(card->getSuit() == Card::Diamond){
-        trick = new Indulgence(suit, number);
-        trick->addSubcard(card->getId());
-    }
-    else if(card->isBlack() && (card->isKindOf("BasicCard") || card->isKindOf("EquipCard"))){
-        trick = new SupplyShortage(suit, number);
-        trick->addSubcard(card->getId());
-    }
-
-    return trick;
 }
 
 Weapon::Weapon(Suit suit, int number, int range)

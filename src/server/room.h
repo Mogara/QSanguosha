@@ -193,6 +193,11 @@ public:
     //        relevant or not.
     bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible);
     bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
+    bool notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCard);
+    bool broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard);
+    bool notifyResetCard(ServerPlayer* player, int cardId);
+    bool broadcastResetCard(const QList<ServerPlayer*> &players, int cardId);
+
     bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     bool broadcastSkillInvoke(const QString &skillName);
     bool broadcastSkillInvoke(const QString &skillName, const QString &category);
@@ -304,7 +309,10 @@ public:
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
     inline virtual RoomState* getRoomState() { return &_m_roomState; }
     inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
-    virtual void setCard(int cardId, Card* card);
+    inline virtual void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
+    virtual void updateCardsOnLose(const CardsMoveStruct &move);
+    virtual void updateCardsOnGet(const CardsMoveStruct &move);
+
 protected:
     virtual void run();
     int _m_Id;

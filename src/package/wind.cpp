@@ -618,13 +618,13 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        Card *new_card = Card::Clone(originalCard);
-        if(new_card) {
-            new_card->setSuit(Card::Heart);
-            new_card->setSkillName(objectName());
-            return new_card;
-        }else
-            return originalCard;
+        WrappedCard *new_card = Sanguosha->getWrappedCard(originalCard->getEffectiveId());
+        new_card->setSkillName(objectName());
+        Card *real = Sanguosha->cloneCard(new_card->getRealCard());
+        Q_ASSERT(real != NULL);
+        real->setSuit(Card::Heart);
+        new_card->takeOver(real);
+        return new_card;
     }
 };
 
@@ -998,15 +998,14 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         /* @todo: verify this...
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, card_use->from->objectName());
         room->throwCard(this, reason, NULL); */
-
+        use_card->deleteLater();
         return use_card;
     }else
         return NULL;
 }
 
-const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable) const{
-    *continuable = true;
-
+const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable) const{
+    continuable = true;
     Room *room = yuji->getRoom();
     room->broadcastSkillInvoke("guhuo");
 
@@ -1027,6 +1026,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
+        use_card->deleteLater();
         return use_card;
     }else
         return NULL;
@@ -1048,7 +1048,7 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        if(ClientInstance->getStatus() == Client::Responsing){
+        if(ClientInstance->getStatus() == Client::Responsing) {
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(ClientInstance->getPattern());
             card->addSubcard(originalCard);
@@ -1056,14 +1056,13 @@ public:
         }
 
         CardStar c = Self->tag.value("guhuo").value<CardStar>();
-        if(c){
+        if(c) {
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(c->objectName());
             card->addSubcard(originalCard);
 
             return card;
-        }else
-            return NULL;
+        } else return NULL;
     }
 
     virtual QDialog *getDialog() const{

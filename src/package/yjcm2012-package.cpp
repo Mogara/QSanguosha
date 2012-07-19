@@ -130,12 +130,12 @@ const Card *QiceCard::validate(const CardUseStruct *card_use) const{
     use_card->setSkillName("qice");
     foreach(int id, this->getSubcards())
         use_card->addSubcard(id);
+    use_card->deleteLater();
     return use_card;
 }
 
-const Card *QiceCard::validateInResposing(ServerPlayer *xunyou, bool *continuable) const{
-    *continuable = true;
-
+const Card *QiceCard::validateInResposing(ServerPlayer *xunyou, bool &continuable) const{
+    continuable = true;
     Room *room = xunyou->getRoom();
     room->broadcastSkillInvoke("qice");
     xunyou->setFlags("QiceUsed");
@@ -144,7 +144,7 @@ const Card *QiceCard::validateInResposing(ServerPlayer *xunyou, bool *continuabl
     use_card->setSkillName("qice");
     foreach(int id, this->getSubcards())
         use_card->addSubcard(id);
-
+    use_card->deleteLater();
     return use_card;
 }
 

@@ -15,7 +15,7 @@
 #include <QMetaObject>
 #include <QThread>
 #include <QList>
-
+#include <QMutex>
 class AI;
 class Scenario;
 
@@ -36,7 +36,10 @@ public:
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
+    Card *cloneCard(const Card* card) const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
+    Card *cloneCard(const QString &name, Card::Suit suit, int number,
+                    QStringList flags) const;
     SkillCard *cloneSkillCard(const QString &name) const;
     QString getVersionNumber() const;
     QString getVersion() const;
@@ -77,7 +80,8 @@ public:
     int getCardCount() const;
     const Card *getEngineCard(int cardId) const;
     // @todo: consider making this const Card*
-    Card *getCard(int cardId) const;
+    Card *getCard(int cardId);
+    WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords() const;
     QStringList getRandomLords() const;
@@ -96,12 +100,14 @@ public:
 
     void registerRoom(QObject* room);
     void unregisterRoom();
-    QObject* currentRoom() const;
+    QObject* currentRoom();
 
 private:
+    QMutex m_mutex;
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals, hidden_generals;
     QHash<QString, const QMetaObject *> metaobjects;
+    QHash<QString, QString> className2objectName;
     QHash<QString, const Skill *> skills;
     QHash<QThread *, QObject *> m_rooms;
     QMap<QString, QString> modes;

@@ -144,26 +144,24 @@ public:
     bool hasInnateSkill(const char *skill_name, bool includeLost = false) const;
     bool loseSkills() const;
 
-    void setEquip(const EquipCard *card);
-    void removeEquip(const EquipCard *equip);
+    void setEquip(WrappedCard *equip);
+    void removeEquip(WrappedCard *equip);
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
     QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const char *trick_name) const;
-    const DelayedTrick *topDelayedTrick() const;
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
     virtual void addCard(const Card *card, Place place) = 0;
 
-    const Weapon *getWeapon() const;
-    const Armor *getArmor() const;
-    const Horse *getDefensiveHorse() const;
-    const Horse *getOffensiveHorse() const;
+    WrappedCard *getWeapon() const;
+    WrappedCard *getArmor() const;
+    WrappedCard *getDefensiveHorse() const;
+    WrappedCard *getOffensiveHorse() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
@@ -672,7 +670,7 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const;
     virtual bool isAvailable(const Player *player) const;
     virtual const Card *validate(const CardUseStruct *card_use) const;
-    virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
+    virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 
     // it can be used only once a turn or not
     bool isOnce() const;
@@ -690,7 +688,11 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-	virtual bool isKindOf(const char* cardType) const;
+    virtual bool isKindOf(const char* cardType) const;
+    virtual QStringList getFlags() const;
+    virtual bool isModified() const;
+    virtual QString getClassName() const;
+    virtual const Card *getRealCard() const;
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
@@ -707,7 +709,18 @@ public:
 %extend Card{
     Weapon* toWeapon(){
         return qobject_cast<Weapon*>($self);
-    }	
+    }
+    WrappedCard* toWrapped(){
+        return qobject_cast<WrappedCard*>($self);
+    }
+};
+
+class WrappedCard : public Card
+{
+public:
+    void takeOver(Card* card);
+    void copyEverythingFrom(Card* card);
+    void setModified(bool modified);
 };
 
 class SkillCard: public Card{
@@ -774,7 +787,7 @@ public:
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
-    const Card *getCard(int index) const;
+    const Card *getCard(int index);
 
     QStringList getLords() const;
     QStringList getRandomLords() const;

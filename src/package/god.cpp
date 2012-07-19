@@ -596,7 +596,7 @@ public:
 WushenSlash::WushenSlash(Card::Suit suit, int number)
     :Slash(suit, number)
 {
-
+    setObjectName("slash");
 }
 
 class Wushen: public FilterSkill{
@@ -610,12 +610,11 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        
         WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
-        slash->addSubcard(originalCard->getId());
-        slash->setSkillName(objectName());
-
-        return slash;
+        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+        card->setSkillName(objectName());
+        card->takeOver(slash);
+        return card;
     }
 };
 

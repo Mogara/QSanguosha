@@ -305,7 +305,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
     for (int i = 0; i < 4; i++)
     {
         if (!_m_equipCards[i]) continue;
-        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard());
+        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard()->getRealCard());
         Q_ASSERT(equip);
         // @todo: we must fix this in the server side - add a skill to the card itself instead
         // of getting it from the engine.
@@ -755,6 +755,7 @@ void Dashboard::sortCards(bool doAnimation){
 }
 
 void Dashboard::reverseSelection(){
+    /*
     if(view_as_skill == NULL)
         return;
 
@@ -791,7 +792,7 @@ void Dashboard::reverseSelection(){
 
     pending_card = view_as_skill->viewAs(pendingCards);
     m_mutexEnableCards.unlock();
-    emit card_selected(pending_card);
+    emit card_selected(pending_card);*/
 }
 
 void Dashboard::disableAllCards(){

@@ -715,10 +715,10 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
-        slash->setSkillName(objectName());
-        slash->addSubcard(originalCard);
-
-        return slash;
+        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+        card->setSkillName(objectName());
+        card->takeOver(slash);
+        return card;
     }
 };
 

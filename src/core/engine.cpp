@@ -162,8 +162,9 @@ void Engine::addPackage(Package *package){
         card->setId(cards.length());
         cards << card;
 
-        QString card_name = card->objectName();
-        metaobjects.insert(card_name, card->metaObject());
+        QString class_name = card->metaObject()->className();
+        metaobjects.insert(class_name, card->metaObject());
+        className2objectName.insert(class_name, card->objectName());
     }
 
     addSkills(package->getSkills());
@@ -273,18 +274,34 @@ int Engine::getGeneralCount(bool include_banned) const{
 }
 
 void Engine::registerRoom(QObject* room) {
+    m_mutex.lock();
     m_rooms[QThread::currentThread()] = room;
+    m_mutex.unlock();
 }
 
 void Engine::unregisterRoom() {
+    m_mutex.lock();
     m_rooms.remove(QThread::currentThread());
+    m_mutex.unlock();
 }
 
-QObject* Engine::currentRoom() const {
-    return m_rooms[QThread::currentThread()];
+QObject* Engine::currentRoom() {
+    QObject* room = NULL;
+    m_mutex.lock();
+    room = m_rooms[QThread::currentThread()];
+    Q_ASSERT(room);
+    m_mutex.unlock();
+    return room;
 }
 
-Card *Engine::getCard(int cardId) const{
+WrappedCard *Engine::getWrappedCard(int cardId) {
+    Card *card = getCard(cardId);
+    WrappedCard* wrappedCard = qobject_cast<WrappedCard*>(card);
+    Q_ASSERT(wrappedCard != NULL && wrappedCard->getId() == cardId);
+    return wrappedCard;
+}
+
+Card *Engine::getCard(int cardId) {
     Card *card = NULL;
     if (cardId < 0 || cardId >= cards.length())
         return NULL;
@@ -312,14 +329,36 @@ const Card *Engine::getEngineCard(int cardId) const{
         return cards.at(cardId);
 }
 
+Card *Engine::cloneCard(const Card* card) const{
+    QString name = card->metaObject()->className();
+    Card* result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
+    if (result == NULL)
+        return NULL;
+    result->setId(card->getEffectiveId());
+    result->setSkillName(card->getSkillName());
+    result->setObjectName(card->objectName());
+    return result;
+}
+
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
     const QMetaObject *meta = metaobjects.value(name, NULL);
+    if(meta == NULL)
+        meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
     if(meta){
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-        card_obj->setObjectName(name);
+        card_obj->setObjectName(className2objectName.value(name, name));
         return qobject_cast<Card *>(card_obj);
     }else
         return NULL;
+}
+
+Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, QStringList flags) const{
+    Card* card = cloneCard(name, suit, number);
+    if (!card) return NULL;
+    card->clearFlags();
+    foreach (QString flag, flags)
+        card->setFlags(flag);
+    return card;
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name) const{

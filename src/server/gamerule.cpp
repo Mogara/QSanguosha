@@ -48,9 +48,9 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Judge: {
-            QList<const DelayedTrick *> tricks = player->delayedTricks();
+            QList<const Card *> tricks = player->getJudgingArea();
             while(!tricks.isEmpty() && player->isAlive()){
-                const DelayedTrick *trick = tricks.takeLast();
+                const Card *trick = tricks.takeLast();
                 bool on_effect = room->cardEffect(trick, NULL, player);
                 if(!on_effect)
                     trick->onNullified(player);

@@ -31,9 +31,6 @@ Client::Client(QObject *parent, const QString &filename)
     status(NotActive), alive_count(1), swap_pile(0),
     _m_roomState(true)
 {
-
-    Sanguosha->registerRoom(this);
-    _m_roomState.reset();
     ClientInstance = this;
     m_isGameOver = false;
 
@@ -61,6 +58,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
+    m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     //callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["log"] = &Client::log;
@@ -168,6 +166,37 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc = new QTextDocument(this);
     prompt_doc->setTextWidth(350);
     prompt_doc->setDefaultFont(QFont("SimHei"));
+}
+
+void Client::updateCard(const Json::Value &val)
+{
+    if (val.isInt())
+    {
+        // reset card
+        int cardId = val.asInt();
+        _m_roomState.resetCard(cardId);
+    }
+    else
+    {
+        // update card
+        Q_ASSERT(val.size() >= 5);
+        int cardId = val[0].asInt();
+        Card::Suit suit = (Card::Suit)val[1].asInt();
+        int number = val[2].asInt();
+        QString cardName = val[3].asCString();
+        QString skillName = val[4].asCString();
+        QString objectName = val[5].asCString();
+        QStringList flags;
+        tryParse(val[6], flags);
+
+        Card* card = Sanguosha->cloneCard(cardName, suit, number, flags);
+        card->setId(cardId);
+        card->setSkillName(skillName);
+        card->setObjectName(objectName);
+        WrappedCard* wrapped = Sanguosha->getWrappedCard(cardId);
+        Q_ASSERT(wrapped != NULL);
+        wrapped->copyEverythingFrom(card);
+    }
 }
 
 void Client::signup(){
@@ -599,6 +628,9 @@ void Client::activate(const Json::Value& playerId){
 }
 
 void Client::startGame(const QString &){
+    Sanguosha->registerRoom(this);
+    _m_roomState.reset();
+
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
 
@@ -1088,6 +1120,7 @@ void Client::gameOver(const Json::Value &arg){
         p->setProperty("win", win);
     }
 
+    Sanguosha->unregisterRoom();
     emit game_over();
 }
 

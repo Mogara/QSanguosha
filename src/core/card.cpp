@@ -20,9 +20,8 @@ const Card::Suit Card::AllSuits[4] = {
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), once(false), mute(false),
      will_throw(true), has_preact(false),
-     suit(suit), number(number), id(-1)
+     m_suit(suit), m_number(number), m_id(-1)
 {
-    m_isModified = false;
     can_jilei = will_throw;
 
     if(number < 1 || number > 13)
@@ -30,7 +29,7 @@ Card::Card(Suit suit, int number, bool target_fixed)
 }
 
 QString Card::getSuitString() const{
-    return Suit2String(suit);
+    return Suit2String(m_suit);
 }
 
 QString Card::Suit2String(Suit suit){
@@ -65,19 +64,19 @@ QList<int> Card::StringsToIds(const QStringList &strings){
 }
 
 bool Card::isRed() const{
-    return suit == Heart || suit == Diamond;
+    return m_suit == Heart || m_suit == Diamond;
 }
 
 bool Card::isBlack() const{
-    return suit == Spade || suit == Club;
+    return m_suit == Spade || m_suit == Club;
 }
 
 int Card::getId() const{
-    return id;
+    return m_id;
 }
 
 void Card::setId(int id){
-    this->id = id;
+    this->m_id = id;
 }
 
 int Card::getEffectiveId() const{
@@ -87,7 +86,7 @@ int Card::getEffectiveId() const{
         else
             return subcards.first();
     }else
-        return id;
+        return m_id;
 }
 
 QString Card::getEffectIdString() const{
@@ -95,11 +94,11 @@ QString Card::getEffectIdString() const{
 }
 
 int Card::getNumber() const{
-    return number;
+    return m_number;
 }
 
 void Card::setNumber(int number){
-    this->number = number;
+    this->m_number = number;
 }
 
 QString Card::Number2String(int number){
@@ -112,15 +111,15 @@ QString Card::Number2String(int number){
 }
 
 QString Card::getNumberString() const{
-    return Number2String(number);
+    return Number2String(m_number);
 }
 
 Card::Suit Card::getSuit() const{
-    return suit;
+    return m_suit;
 }
 
 void Card::setSuit(Suit suit){
-    this->suit = suit;
+    this->m_suit = suit;
 }
 
 bool Card::sameColorWith(const Card *other) const{
@@ -128,7 +127,7 @@ bool Card::sameColorWith(const Card *other) const{
 }
 
 Card::Color Card::getColor() const{
-    switch(suit){
+    switch(m_suit){
     case Spade:
     case Club: return Black;
     case Heart:
@@ -147,10 +146,10 @@ bool Card::match(const QString &pattern) const{
 }
 
 bool Card::CompareByColor(const Card *a, const Card *b){
-    if(a->suit != b->suit)
-        return a->suit < b->suit;
+    if(a->m_suit != b->m_suit)
+        return a->m_suit < b->m_suit;
     else
-        return a->number < b->number;
+        return a->m_number < b->m_number;
 }
 
 bool Card::CompareBySuitNumber(const Card *a, const Card *b){
@@ -161,12 +160,12 @@ bool Card::CompareBySuitNumber(const Card *a, const Card *b){
     if(suit1 != suit2)
         return suit1 < suit2;
     else
-        return a->number < b->number;
+        return a->m_number < b->m_number;
 }
 
 bool Card::CompareByType(const Card *a, const Card *b){
-    int order1 = a->getTypeId() * 10000 + a->id;
-    int order2 = b->getTypeId() * 10000 + b->id;
+    int order1 = a->getTypeId() * 10000 + a->m_id;
+    int order2 = b->getTypeId() * 10000 + b->m_id;
     if(order1 != order2)
         return order1 < order2;
     else
@@ -181,7 +180,7 @@ QString Card::getPackage() const{
     if(parent())
         return parent()->objectName();
     else
-        return "";
+        return QString();
 }
 
 QString Card::getFullName(bool include_suit) const{
@@ -197,12 +196,12 @@ QString Card::getLogName() const{
     QString suit_char;
     QString number_string;
 
-    if(suit != Card::NoSuit)
+    if(m_suit != Card::NoSuit)
         suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(getSuitString());
     else
         suit_char = tr("NoSuit");
 
-    if(number != 0)
+    if(m_number != 0)
         number_string = getNumberString();
 
     return QString("%1[%2%3]").arg(getName()).arg(suit_char).arg(number_string);
@@ -217,11 +216,11 @@ QString Card::getName() const{
 }
 
 QString Card::getSkillName() const{
-    return skill_name;
+    return m_skillName;
 }
 
 void Card::setSkillName(const QString &name){
-    this->skill_name = name;
+    this->m_skillName = name;
 }
 
 QString Card::getDescription() const{
@@ -232,10 +231,10 @@ QString Card::getDescription() const{
 
 QString Card::toString() const{
     if(!isVirtualCard())
-        return QString::number(id);
+        return QString::number(m_id);
     else
         return QString("%1:%2[%3:%4]=%5")
-                .arg(objectName()).arg(skill_name)
+                .arg(objectName()).arg(m_skillName)
                 .arg(getSuitString()).arg(getNumberString()).arg(subcardString());
 }
 
@@ -260,7 +259,7 @@ int Card::subcardsLength() const{
 }
 
 bool Card::isVirtualCard() const{
-    return id < 0;
+    return m_id < 0;
 }
 
 const Card *Card::Parse(const QString &str){
@@ -313,8 +312,8 @@ const Card *Card::Parse(const QString &str){
             card->addSubcard(subcard_id.toInt());
 
         // skill name
-        QString skill_name = card_name.remove("Card").toLower();
-        card->setSkillName(skill_name);
+        QString m_skillName = card_name.remove("Card").toLower();
+        card->setSkillName(m_skillName);
         if(!card_suit.isEmpty())
             card->setSuit(suit_map.value(card_suit, Card::NoSuit));
         if(!card_number.isEmpty()){
@@ -337,7 +336,7 @@ const Card *Card::Parse(const QString &str){
             user_string.remove(0, 1);
             card->setUserString(user_string);
         }
-
+        card->deleteLater();
         return card;
     }else if(str.startsWith(QChar('$'))){
         QString copy = str;
@@ -347,10 +346,11 @@ const Card *Card::Parse(const QString &str){
         foreach(QString card_str, card_strs){
             dummy->addSubcard(card_str.toInt());
         }
-
+        dummy->deleteLater();
         return dummy;
     }else if(str.startsWith(QChar('#'))){
         LuaSkillCard *new_card =  LuaSkillCard::Parse(str);
+        new_card->deleteLater();
         return new_card;
     }if(str.contains(QChar('='))){
         QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
@@ -358,8 +358,8 @@ const Card *Card::Parse(const QString &str){
             return NULL;
 
         QStringList texts = pattern.capturedTexts();
-        QString name = texts.at(1);
-        QString skill_name = texts.at(2);
+        QString card_name = texts.at(1);
+        QString m_skillName = texts.at(2);
         QString suit_string = texts.at(3);
         QString number_string = texts.at(4);
         QString subcard_str = texts.at(5);
@@ -381,14 +381,15 @@ const Card *Card::Parse(const QString &str){
         else
             number = number_string.toInt();
 
-        Card *card = Sanguosha->cloneCard(name, suit, number);
+        Card *card = Sanguosha->cloneCard(card_name, suit, number);
         if(card == NULL)
             return NULL;
 
         foreach(QString subcard_id, subcard_ids)
             card->addSubcard(subcard_id.toInt());
 
-        card->setSkillName(skill_name);
+        card->setSkillName(m_skillName);
+        card->deleteLater();
         return card;
     }else{
         bool ok;
@@ -506,13 +507,11 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     }
 
     if(room->getCardPlace(getEffectiveId()) == Player::PlaceTable){
-        int card_id = this->getEffectiveId();
-        bool is_virtual = isVirtualCard();
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
         CardUseStruct card_use;
-        card_use.card = is_virtual ? this : Sanguosha->getCard(card_id);
+        card_use.card = this;
         card_use.from = source;
         card_use.to = targets;
         QVariant data = QVariant::fromValue(card_use);
@@ -555,8 +554,7 @@ const Card *Card::validate(const CardUseStruct *) const{
     return this;
 }
 
-const Card *Card::validateInResposing(ServerPlayer *, bool *continuable) const{
-    *continuable = false;
+const Card *Card::validateInResposing(ServerPlayer *, bool &continuable) const{
     return this;
 }
 
