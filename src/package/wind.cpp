@@ -614,16 +614,20 @@ public:
 
     }
 
+    static WrappedCard *changeToHeart(int cardId){
+        WrappedCard *new_card = Sanguosha->getWrappedCard(cardId);
+        new_card->setSkillName("hongyan");
+        new_card->setSuit(Card::Heart);
+        new_card->setModified(true);
+        return new_card;
+    }
+
     virtual bool viewFilter(const Card* to_select) const{
         return to_select->getSuit() == Card::Spade;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        WrappedCard *new_card = Sanguosha->getWrappedCard(originalCard->getEffectiveId());;
-        new_card->setSkillName(objectName());
-        new_card->setSuit(Card::Heart);
-        new_card->setModified(true);
-        return new_card;
+        return changeToHeart(originalCard->getEffectiveId());
     }
 };
 
@@ -644,12 +648,10 @@ public:
             log.arg = "hongyan";
             log.from = player;
 
-            WrappedCard *new_card = Sanguosha->getWrappedCard(judge->card->getEffectiveId());
-            new_card->setSkillName(objectName());
-            Card *real = Sanguosha->cloneCard(new_card->getRealCard());
-            real->setSuit(Card::Heart);
-            new_card->takeOver(real);
-            room->broadcastUpdateCard(room->getPlayers(), judge->card->getEffectiveId(), new_card);
+            int cardId = judge->card->getEffectiveId();
+            WrappedCard *new_card = Hongyan::changeToHeart(cardId);
+
+            room->broadcastUpdateCard(room->getPlayers(), cardId, new_card);
 
             judge->card = new_card;
             room->sendLog(log);
