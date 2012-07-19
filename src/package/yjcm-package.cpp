@@ -780,7 +780,7 @@ public:
         MingceCard *mingceCard = new MingceCard;
         mingceCard->addSubcard(originalCard);
 
-        return originalCard;
+        return mingceCard;
     }
 };
 
