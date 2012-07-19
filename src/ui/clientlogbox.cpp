@@ -43,7 +43,7 @@ void ClientLogBox::appendLog(
     if(type.startsWith("$")){
         QString log_name;
         foreach(QString one_card, card_str.split("+")){
-            const Card *card = Sanguosha->getCard(one_card.toInt());
+            const Card *card = Sanguosha->getEngineCard(one_card.toInt());
             if(log_name.isEmpty())
                 log_name = card->getLogName();
             else
@@ -69,7 +69,6 @@ void ClientLogBox::appendLog(
         }
 
         const Card *card = Card::Parse(card_str);
-        QString test = card->objectName();
         if(card == NULL)
             return;
         QString card_name = card->getLogName();

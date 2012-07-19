@@ -33,6 +33,7 @@ public:
 
 
     // Inherited member functions
+    inline virtual void onNullified(ServerPlayer *target) const {m_card->onNullified(target);}
     inline virtual bool isModified() const {return m_isModified;}
     inline virtual QString getClassName() const {return m_card->metaObject()->className();}
     inline virtual const Card *getRealCard() const {return m_card;}

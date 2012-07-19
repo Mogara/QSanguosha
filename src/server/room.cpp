@@ -104,13 +104,14 @@ bool Room::notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCar
 {
     Json::Value val(Json::arrayValue);
     Q_ASSERT(newCard);
+    QString className = Sanguosha->getWrappedCard(newCard->getId())->getClassName();
     val[0] = cardId;
-    val[1] = toJsonString(Sanguosha->getWrappedCard(newCard->getId())->getClassName());
-    val[2] = (int)newCard->getSuit();
-    val[3] = newCard->getNumber();
-    val[4] = toJsonArray(newCard->getFlags());
-    val[5] = toJsonString(newCard->getSkillName());
-    val[6] = toJsonString(newCard->objectName());
+    val[1] = (int)newCard->getSuit();
+    val[2] = newCard->getNumber();
+    val[3] = toJsonString(className);
+    val[4] = toJsonString(newCard->getSkillName());
+    val[5] = toJsonString(newCard->objectName());
+    val[6] = toJsonArray(newCard->getFlags());
     doNotify(player, S_COMMAND_UPDATE_CARD, val);
     return true;
 }
@@ -2430,7 +2431,8 @@ void Room::processResponse(ServerPlayer *player, const QSanGeneralPacket *packet
     }
 }
 
-void Room::useCard(const CardUseStruct &card_use, bool add_history){
+void Room::useCard(const CardUseStruct &use, bool add_history){
+    CardUseStruct card_use = use;
     const Card *card = card_use.card;
 
     if(card_use.from->getPhase() == Player::Play && add_history){
@@ -2455,8 +2457,17 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
 
     card = card_use.card->validate(&card_use);
     
-    if(card_use.card->getRealCard() == card)
+    if(card_use.card->getRealCard() == card){
+        if(card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1){
+            Card *trick = Sanguosha->cloneCard(card);
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getSubcards().first());
+            wrapped->takeOver(trick);
+            card_use.card = wrapped;
+            wrapped->onUse(this, card_use);
+            return;
+        }
         card_use.card->onUse(this, card_use);
+    }
     else if(card){
         CardUseStruct new_use = card_use;
         new_use.card = card;
@@ -3353,8 +3364,10 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
             const Card *engine_card = Sanguosha->getEngineCard(move.card_ids[i]);
             if(card->getSuit() != engine_card->getSuit() || card->getNumber() != engine_card->getNumber())
             {
-                card->setSuit(engine_card->getSuit());
-                card->setNumber(engine_card->getNumber());
+                Card *trick = Sanguosha->cloneCard(card->getRealCard());
+                trick->setSuit(engine_card->getSuit());
+                trick->setNumber(engine_card->getNumber());
+                card->takeOver(trick);
                 broadcastUpdateCard(getPlayers(), move.card_ids[i], card);
             }
         }
@@ -3865,14 +3878,8 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         bool nextfriend = false;
         bool hasindul = false;
         nextfriend = (shenlvmeng->getRole() == nextplayer->getRole());
-        QList<const DelayedTrick *> tricks = nextplayer->delayedTricks();
-        if(!tricks.isEmpty()){
-            const DelayedTrick *trick = tricks.takeLast();
-            if(trick->objectName() == "indulgence"){
-                hasindul = true;
-            }
-        }
-
+        if(nextplayer->containsTrick("indulgence"))
+            hasindul = true;
         foreach(const Card *card, cards){
             if(card->getSuit() == Card::Heart || (card->getSuit() == Card::Spade && target->hasSkill("hongyan"))){
                 has_null = card;

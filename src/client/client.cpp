@@ -181,13 +181,13 @@ void Client::updateCard(const Json::Value &val)
         // update card
         Q_ASSERT(val.size() >= 5);
         int cardId = val[0].asInt();
-        QString cardName = val[1].asCString();
-        Card::Suit suit = (Card::Suit)val[2].asInt();
-        int number = val[3].asInt();
+        Card::Suit suit = (Card::Suit)val[1].asInt();
+        int number = val[2].asInt();
+        QString cardName = val[3].asCString();
+        QString skillName = val[4].asCString();
+        QString objectName = val[5].asCString();
         QStringList flags;
-        tryParse(val[4], flags);
-        QString skillName = val[5].asCString();
-        QString objectName = val[6].asCString();
+        tryParse(val[6], flags);
 
         Card* card = Sanguosha->cloneCard(cardName, suit, number, flags);
         card->setId(cardId);

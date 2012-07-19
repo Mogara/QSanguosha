@@ -152,9 +152,7 @@ public:
     QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const char *trick_name) const;
-    const DelayedTrick *topDelayedTrick() const;
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;

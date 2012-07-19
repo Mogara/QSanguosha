@@ -619,13 +619,12 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         WrappedCard *new_card = Sanguosha->getWrappedCard(originalCard->getEffectiveId());
-        if(new_card) {
-            new_card->setSuit(Card::Heart);
-            new_card->setSkillName(objectName());
-            new_card->setModified(true);
-            return new_card;
-        }else
-            return originalCard;
+        new_card->setSkillName(objectName());
+        Card *real = Sanguosha->cloneCard(new_card->getRealCard());
+        Q_ASSERT(real != NULL);
+        real->setSuit(Card::Heart);
+        new_card->takeOver(real);
+        return new_card;
     }
 };
 

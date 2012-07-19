@@ -16,6 +16,10 @@ void WrappedCard::takeOver(Card* card)
 {
     if (m_card != NULL){m_isModified = true;delete m_card;}
     setObjectName(card->objectName());
+    setSuit(card->getSuit());
+    setNumber(card->getNumber());
+    if(getId() > -1)
+        m_card->setId(getId());
     m_card = card;
 }
 
@@ -23,8 +27,6 @@ void WrappedCard::copyEverythingFrom(Card* card)
 {
     takeOver(card);
     setId(card->getEffectiveId());
-    setSuit(card->getSuit());
-    setNumber(card->getNumber());
     flags = card->getFlags();
     skill_name = card->getSkillName();
 }

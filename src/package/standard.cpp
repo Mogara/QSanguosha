@@ -275,25 +275,6 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
     }
 }
 
-const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
-    DelayedTrick *trick = NULL;
-    Card::Suit suit = card->getSuit();
-    int number = card->getNumber();
-    // @TODO: this is a MUST FIX!
-    if(card->isKindOf("DelayedTrick"))
-        return qobject_cast<const DelayedTrick *>(card);
-    else if(card->getSuit() == Card::Diamond){
-        trick = new Indulgence(suit, number);
-        trick->addSubcard(card->getId());
-    }
-    else if(card->isBlack() && (card->isKindOf("BasicCard") || card->isKindOf("EquipCard"))){
-        trick = new SupplyShortage(suit, number);
-        trick->addSubcard(card->getId());
-    }
-
-    return trick;
-}
-
 Weapon::Weapon(Suit suit, int number, int range)
     :EquipCard(suit, number), range(range), attach_skill(false)
 {

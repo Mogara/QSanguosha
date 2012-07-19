@@ -319,7 +319,8 @@ const Card *Engine::getEngineCard(int cardId) const{
 }
 
 Card *Engine::cloneCard(const Card* card) const{
-    Card* result = cloneCard(card->metaObject()->className(), card->getSuit(), card->getNumber(), card->getFlags());
+    QString name = card->metaObject()->className();
+    Card* result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
     if (result == NULL)
         return NULL;
     result->setId(card->getEffectiveId());

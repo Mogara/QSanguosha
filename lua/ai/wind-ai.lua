@@ -6,7 +6,6 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 	
 	local selfSub = self.player:getHp()-self.player:getHandcardNum()
 	local selfDef = sgs.getDefense(self.player)
-	local hasJud = self.player:getJudgingArea()
 	
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)

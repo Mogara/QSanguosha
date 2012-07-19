@@ -141,9 +141,7 @@ public:
     QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const QString &trick_name) const;
-    const DelayedTrick *topDelayedTrick() const;
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
@@ -230,8 +228,7 @@ private:
     int weapon, armor, defensive_horse, offensive_horse;
     bool face_up;
     bool chained;
-    QList<const Card *> judging_area;
-    QList<const DelayedTrick *> delayed_tricks;
+    QList<int> judging_area;
     QHash<const Player *, int> fixed_distance;
 
     QSet<QString> jilei_set;

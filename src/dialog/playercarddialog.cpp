@@ -145,8 +145,9 @@ QWidget *PlayerCardDialog::createJudgingArea(){
     QVBoxLayout *layout = new QVBoxLayout;
     QList<const Card *> cards = player->getJudgingArea();
     foreach(const Card *card, cards){
-        QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+        const Card* real = Sanguosha->getEngineCard(card->getId());
+        QCommandLinkButton *button = new QCommandLinkButton(real->getFullName());
+        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(real->getSuit()));
         layout->addWidget(button);
 
         mapper.insert(button, card->getId());

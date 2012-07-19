@@ -155,7 +155,7 @@ void ServerPlayer::throwAllCards(){
     foreach(const Card *trick, tricks)
     {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, this->objectName());
-        room->throwCard(trick, NULL);
+        room->throwCard(trick, reason, NULL);
     }
 }
 

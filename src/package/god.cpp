@@ -611,11 +611,9 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
-        slash->setId(originalCard->getId());
         WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
         card->setSkillName(objectName());
         card->takeOver(slash);
-        card->setModified(true);
         return card;
     }
 };

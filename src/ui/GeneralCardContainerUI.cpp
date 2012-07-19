@@ -555,8 +555,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem*> &tricks)
         QRect start = _m_layout->m_delayedTrickFirstRegion;
         QPoint step = _m_layout->m_delayedTrickStep;
         start.translate(step * _m_judgeCards.size());
-        const DelayedTrick *realTrick = DelayedTrick::CastFrom(trick->getCard());
-        _paintPixmap(item, start, G_ROOM_SKIN.getCardJudgeIconPixmap(realTrick->objectName()));
+        _paintPixmap(item, start, G_ROOM_SKIN.getCardJudgeIconPixmap(trick->getCard()->objectName()));
         trick->setHomeOpacity(0.0);
         trick->setHomePos(start.center());
         QString toolTip;
