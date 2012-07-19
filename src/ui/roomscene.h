@@ -259,7 +259,7 @@ private:
     QPixmap m_rolesBoxBackground;
     QGraphicsPixmapItem *m_rolesBox;
     QGraphicsTextItem *m_pileCardNumInfoTextBox;
-    
+    QGraphicsPixmapItem *m_tableBg;
 #ifdef AUDIO_SUPPORT
     QSharedMemory *memory;
 #endif

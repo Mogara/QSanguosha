@@ -44,6 +44,7 @@
 "magatamas3": "image/system/magatamas/3.png",
 "magatamas4": "image/system/magatamas/4.png",
 "magatamas5": "image/system/magatamas/5.png",
+"tableBg": "image/system/tableBg.jpg",
 
 // general default directories
 "playerGeneralIcon-default-0": "image/generals/tiny/%1.png",

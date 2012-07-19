@@ -18,6 +18,8 @@ const char* QSanRoomSkin::S_SKIN_KEY_ROOM = "room";
 const char* QSanRoomSkin::S_SKIN_KEY_COMMON = "common";
 const char* QSanRoomSkin::S_SKIN_KEY_DASHBOARD = "dashboard";
 
+const char* QSanRoomSkin::S_SKIN_KEY_TABLE_BG = "tableBg";
+
 // buttons
 const char* QSanRoomSkin::S_SKIN_KEY_BUTTON = "button-%1";
 const char* QSanRoomSkin::S_SKIN_KEY_DASHBOARD_BUTTON_SET_BG = "dashboardButtonSetBg";
