@@ -15,7 +15,7 @@ WrappedCard::~WrappedCard()
 
 void WrappedCard::takeOver(Card* card)
 {
-    Q_ASSERT(getId() > 0);
+    Q_ASSERT(getId() >= 0);
     if (m_card != NULL) {
         m_isModified = true;
         delete m_card;
@@ -34,7 +34,7 @@ void WrappedCard::takeOver(Card* card)
 
 void WrappedCard::copyEverythingFrom(Card* card)
 {
-    Q_ASSERT(card->getId() > 0);
+    Q_ASSERT(card->getId() >= 0);
     if (m_card != NULL) {
         m_isModified = true;
         delete m_card;

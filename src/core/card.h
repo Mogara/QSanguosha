@@ -19,6 +19,21 @@ struct CardUseStruct;
 class Card : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString suit READ getSuitString CONSTANT)
+    Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
+    Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
+    Q_PROPERTY(int id READ getId CONSTANT)
+    Q_PROPERTY(int number READ getNumber WRITE setNumber)
+    Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
+    Q_PROPERTY(QString type READ getType CONSTANT)
+    Q_PROPERTY(bool target_fixed READ targetFixed)
+    Q_PROPERTY(bool once READ isOnce CONSTANT)
+    Q_PROPERTY(bool mute READ isMute CONSTANT)
+    Q_PROPERTY(bool equipped READ isEquipped)
+    Q_PROPERTY(Color color READ getColor)
+
+    Q_ENUMS(Suit)
+    Q_ENUMS(CardType)
 public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};

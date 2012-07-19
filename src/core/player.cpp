@@ -397,18 +397,22 @@ bool Player::hasEquip() const{
 }
 
 WrappedCard *Player::getWeapon() const{
+    if (weapon == -1) return NULL;
     return Sanguosha->getWrappedCard(weapon);
 }
 
 WrappedCard *Player::getArmor() const{
+    if (armor == -1) return NULL;
     return Sanguosha->getWrappedCard(armor);
 }
 
 WrappedCard *Player::getDefensiveHorse() const{
+    if (defensive_horse == -1) return NULL;
     return Sanguosha->getWrappedCard(defensive_horse);
 }
 
 WrappedCard *Player::getOffensiveHorse() const{
+    if (offensive_horse == -1) return NULL;
     return Sanguosha->getWrappedCard(offensive_horse);
 }
 
