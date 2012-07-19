@@ -76,7 +76,7 @@ int Card::getId() const{
 }
 
 void Card::setId(int id){
-    this->m_id = m_id;
+    this->m_id = id;
 }
 
 int Card::getEffectiveId() const{
