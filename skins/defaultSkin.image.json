@@ -51,9 +51,9 @@
 "playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[28, 46, 220, 132], [148, 89]],
 "playerGeneralIcon-default-2": ["image/generals/avatar/%1.png",[71, 28, 134, 134]],
 "playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[71, 28, 134, 134], [51, 51]], //small avatar for photo
-"playerGeneralIcon-default-5": ["image/generals/avatar/%1.png",[76, 28, 124, 134], [61, 70]],  //small avatar for dashboard
+"playerGeneralIcon-default-5": ["image/generals/avatar/%1.png",[71, 28, 124, 134], [61, 70]],  //small avatar for dashboard
 "playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[8, 46, 220, 132]],  //primary avatar for photo
-"playerGeneralIcon-default-7": ["image/generals/avatar/%1.png",[71, 28, 134, 134]],  //primary avatar for dashboard
+"playerGeneralIcon-default-7": ["image/generals/avatar/%1.png",[80, 28, 134, 134]],  //primary avatar for dashboard
 
 "generalCircleImage-0": "image/generals/double-general/circle-photo.png",
 "generalCircleImage-1": "image/generals/double-general/circle-dashboard.png",

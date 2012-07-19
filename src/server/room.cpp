@@ -2460,6 +2460,7 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
     if(card_use.card->getRealCard() == card){
         if(card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1){
             Card *trick = Sanguosha->cloneCard(card);
+            Q_ASSERT(trick != NULL);
             WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getSubcards().first());
             wrapped->takeOver(trick);
             broadcastUpdateCard(getPlayers(), wrapped->getId(), wrapped);
@@ -3106,6 +3107,9 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             }
         }
     }
+    
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     // Now, process add cards
     for (int i = 0; i <  cards_moves.size(); i++)
@@ -3138,8 +3142,6 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3194,7 +3196,6 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
 void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin)
 {
     // First, process remove card
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
     QList<Player::Place> final_places;
     QList<Player*> move_tos;
     for (int i = 0; i < cards_moves.size(); i++)
@@ -3233,6 +3234,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             }
         }
     }
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3328,7 +3330,7 @@ void Room::updateCardsOnLose(const CardsMoveStruct &move)
             || (move.to && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick)){
         for (int i = 0; i < move.card_ids.size(); i++)
         {
-            Card *card = getCard(move.card_ids[i]);
+            Card *card = Sanguosha->getCard(move.card_ids[i]);
             if(card->isModified())
             {
                 resetCard(move.card_ids[i]);
@@ -3344,7 +3346,7 @@ void Room::updateCardsOnLose(const CardsMoveStruct &move)
             && move.to_place != Player::PlaceDelayedTrick){
         for (int i = 0; i < move.card_ids.size(); i++)
         {
-            Card *card = getCard(move.card_ids[i]);
+            Card *card = Sanguosha->getCard(move.card_ids[i]);
             if(card->isModified())
             {
                 resetCard(move.card_ids[i]);
@@ -3446,13 +3448,6 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
 {
-    if (isLostPhase) {
-            foreach (CardsMoveStruct move, cards_moves)
-                updateCardsOnLose(move);
-        } else {
-            foreach (CardsMoveStruct move, cards_moves)
-                updateCardsOnGet(move);
-        }
     // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   
@@ -3481,10 +3476,16 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
             // card from/to dongchaee is also visible to dongchaer
             arg[i + 1] = cards_moves[i].toJsonValue();        
         }
-        if (isLostPhase)
+        if (isLostPhase){
             doNotify(player, S_COMMAND_LOSE_CARD, arg);
-        else
+            foreach (CardsMoveStruct move, cards_moves)
+                updateCardsOnLose(move);
+        }
+        else{
+            foreach (CardsMoveStruct move, cards_moves)
+                updateCardsOnGet(move);
             doNotify(player, S_COMMAND_GET_CARD, arg);
+        }
     }    
     return true;
 }

@@ -223,10 +223,10 @@ public:
         Room *room = simayi->getRoom();
         QVariant data = QVariant::fromValue(from);
         if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui", data)){
+            room->broadcastSkillInvoke(objectName());
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
             CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
             room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
-            room->broadcastSkillInvoke(objectName());
         }
     }
 };

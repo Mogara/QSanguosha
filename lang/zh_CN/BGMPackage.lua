@@ -90,4 +90,16 @@ return {
 	["@hate"] = "誓",
 	["ShichouGive"] = "请给目标 %arg 张牌（包括装备）",
 	["#ShichouProtect"] = "%from 的技能【%arg】被触发，%to 代其承受本次伤害。",
+	
+	["#bgm_daqiao"] = "韶光易逝",
+	["bgm_daqiao"] = "☆SP大乔",
+	["&bgm_daqiao"] = "大乔",
+	["illustrator:bgm_daqiao"] = "木美人",
+	["designer:bgm_daqiao"] = "Ecauchy",
+	["YanxiaoCard"] = "言笑牌",
+	["yanxiao"] = "言笑",
+	[":yanxiao"] = "出牌阶段，你可以将一张方块牌置于一名角色的判定区内，判定区内有“言笑”牌的角色下个判定阶段开始时，获得其判定区里的所有牌。",
+	
+	
+	
 }

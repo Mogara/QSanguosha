@@ -715,8 +715,8 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        slash->setSkillName(objectName());
         WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
-        card->setSkillName(objectName());
         card->takeOver(slash);
         return card;
     }
@@ -780,7 +780,7 @@ public:
         MingceCard *mingceCard = new MingceCard;
         mingceCard->addSubcard(originalCard);
 
-        return originalCard;
+        return mingceCard;
     }
 };
 

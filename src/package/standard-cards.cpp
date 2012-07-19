@@ -224,12 +224,9 @@ public:
                     else{
                         QString prompt = "double-sword-card:" + use.from->getGeneralName();
                         const Card *card = room->askForCard(to, ".", prompt, QVariant(), CardDiscarded);
-                        if(card){
-                            room->throwCard(card, to);
-                        }else
+                        if(!card)
                             draw_card = true;
                     }
-
                     if(draw_card)
                        use.from->drawCards(1);
                 }
@@ -853,8 +850,9 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     room->setEmotion(second, "duel");
 
     forever{
+        if (!first->isAlive())
+            break;
         if(second->hasFlag("WushuangTarget")){
-            room->broadcastSkillInvoke("wushuang");
             const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
             if(slash == NULL)
                 break;
@@ -1104,7 +1102,7 @@ public:
             correct += horse->getCorrect();
         }
         if(to->getDefensiveHorse()){
-            horse = qobject_cast<const Horse*>(to->getOffensiveHorse()->getRealCard());
+            horse = qobject_cast<const Horse*>(to->getDefensiveHorse()->getRealCard());
             correct += horse->getCorrect();
         }
 

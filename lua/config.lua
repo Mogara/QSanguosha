@@ -13,7 +13,7 @@ config = {
         "Maneuvering",
         "SPCard",
         "Nostalgia",
-	"New3v3Card",
+        "New3v3Card",
 
         "Standard",
         "Wind",
@@ -25,7 +25,7 @@ config = {
         "YJCM",
         "YJCM2012",
         "Special3v3",
-	"NostalGeneral",
+        "NostalGeneral",
         "Test";
 	},
 
