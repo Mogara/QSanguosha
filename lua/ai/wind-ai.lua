@@ -392,7 +392,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	local yuji = self.room:findPlayerBySkillName("guhuo")
 	local guhuoname = self.room:getTag("GuhuoType"):toString()
 	local guhuocard = sgs.Sanguosha:cloneCard(guhuoname, sgs.Card_NoSuit, 0)
-	local guhuotype = guhuocard:className()
+	local guhuotype = guhuocard:getClassName()
 	if guhuotype and self:getRestCardsNum(guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
 	if guhuotype and (guhuotype == "AmazingGrace" or (guhuotype:match("Slash") and not self:isEquip("Crossbow",yuji))) then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
@@ -467,7 +467,7 @@ guhuo_skill.getTurnUseCard=function(self)
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())
-				if self:getRestCardsNum(guhuocard:className()) == 0 then return end
+				if self:getRestCardsNum(guhuocard:getClassName()) == 0 then return end
 				local dummyuse = {isDummy = true}
 				if newguhuo == "peach" then self:useBasicCard(guhuocard,dummyuse,false) else self:useTrickCard(guhuocard,dummyuse) end
 				if dummyuse.card then

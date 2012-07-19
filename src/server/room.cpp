@@ -3925,6 +3925,13 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         return;
     }
 
+    foreach(int cardId, target->handCards())
+    {
+        WrappedCard *card = Sanguosha->getWrappedCard(cardId);
+        if(card->isModified())
+            notifyUpdateCard(shenlvmeng, cardId, card);
+    }
+
     Json::Value gongxinArgs(Json::arrayValue);    
     gongxinArgs[0] = toJsonString(target->objectName());
     gongxinArgs[1] = true;
@@ -4245,14 +4252,20 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     show_arg[0] = toJsonString(player->objectName());
     show_arg[1] = card_id;
 
+    WrappedCard *card = Sanguosha->getWrappedCard(card_id);
+    bool modified = card->isModified();
     if(only_viewer){
         QList<ServerPlayer *>players;
         players << only_viewer << player;
+        if(modified)
+            notifyUpdateCard(only_viewer, card_id, card);
         doBroadcastNotify(players, S_COMMAND_SHOW_CARD, show_arg);
     }
     else{
         if(card_id>0)
             setCardFlag(card_id, "visible");
+        if(modified)
+            broadcastUpdateCard(getOtherPlayers(player), card_id, card);
         doBroadcastNotify(S_COMMAND_SHOW_CARD, show_arg);
     }
 }
@@ -4267,6 +4280,18 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
     gongxinArgs[2] = toJsonArray(player->handCards());    
 
     bool isUnicast = (to != NULL);
+
+    foreach(int cardId, player->handCards())
+    {
+        WrappedCard *card = Sanguosha->getWrappedCard(cardId);
+        if(card->isModified()){
+            if(isUnicast)
+                notifyUpdateCard(to, cardId, card);
+            else
+                broadcastUpdateCard(getOtherPlayers(player), cardId, card);
+        }
+    }
+
     if (isUnicast){
         notifyMoveFocus(to, S_COMMAND_SKILL_GONGXIN);
         doRequest(to, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);

@@ -352,7 +352,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
         return NULL;
 }
 
-Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, QStringList flags) const{
+Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const{
     Card* card = cloneCard(name, suit, number);
     if (!card) return NULL;
     card->clearFlags();

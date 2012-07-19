@@ -23,14 +23,10 @@ void WrappedCard::takeOver(Card* card)
         delete m_card;
     }
     m_card = card;
+    m_card->setId(getId());
     setObjectName(card->objectName());
     setSuit(card->getSuit());
     setNumber(card->getNumber());
-    m_card->setId(getId());
-    card->setId(getId());
-    card->setSuit(getSuit());
-    card->setNumber(getNumber());
-    card->setFlags(flags);
     m_skillName = card->getSkillName();
 }
 

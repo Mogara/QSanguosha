@@ -1742,7 +1742,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(card_id));
     }
     if(move.from && move.from_place != Player::PlaceHand && move.from_place != Player::PlaceDelayedTrick
-            && move.to && move.from != move.to)
+        && move.from_place != Player::PlaceJudge && move.to && move.from != move.to)
     {
         QString from_general = move.from->getGeneralName();
         QStringList tos;
@@ -1784,8 +1784,10 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         QString type;
         if(move.to_place == Player::PlaceDelayedTrick){
             const Card *trick = Sanguosha->getCard(move.card_ids.first());
-            if(trick->objectName() == "lightning")
-                type = "$LightningMove";
+            if(trick->objectName() == "lightning"){
+                if(move.from != move.to)
+                    type = "$LightningMove";
+            }
             else
                 type = "$PasteCard";
         }
