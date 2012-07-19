@@ -25,6 +25,30 @@ public:
     Q_INVOKABLE WrappedCard(Card* card);
     ~WrappedCard();
 
+    inline virtual void setId(int id)
+    {
+        Card::setId(id);
+        m_card->setId(id);
+    }
+
+    inline virtual void setNumber(int number) 
+    {
+        Card::setNumber(number);
+        m_card->setNumber(number);
+    }
+
+    inline virtual void setSuit(Suit suit)
+    {
+        Card::setSuit(suit);
+        m_card->setSuit(suit);
+    }
+
+    inline virtual void setSkillName(const QString &skillName)
+    {
+        Card::setSkillName(skillName);
+        m_card->setSkillName(skillName);
+    }
+
     // Set the internal card to be the new card, update everything related
     // to CardEffect including objectName.
     void takeOver(Card* card);
@@ -72,15 +96,15 @@ public:
     {
         return m_card->targetFilter(targets, to_select, Self);
     }
-    
+
     inline virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
-                              int &maxVotes) const
+        int &maxVotes) const
     {
         return m_card->targetFilter(targets, to_select, Self, maxVotes);
     }
 
     inline virtual bool isAvailable(const Player *player) const { return m_card->isAvailable(player); }
-    
+
     inline virtual const Card *validate(const CardUseStruct *cardUse) const
     { return m_card->validate(cardUse); }
 
@@ -89,7 +113,7 @@ public:
 
     inline virtual void doPreAction(Room *room, const CardUseStruct &cardUse) const 
     { m_card->doPreAction(room, cardUse); }
-    
+
     inline virtual void onUse(Room *room, const CardUseStruct &cardUse) const { m_card->onUse(room, cardUse); }
 
     inline virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -98,7 +122,7 @@ public:
     }
 
     inline virtual void onEffect(const CardEffectStruct &effect) const { m_card->onEffect(effect); }
-    
+
     inline virtual bool isCancelable(const CardEffectStruct &effect) const { return m_card->isCancelable(effect); }
 
     inline virtual bool isKindOf(const char* cardType) const { return m_card->inherits(cardType); }
