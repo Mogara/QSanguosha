@@ -15,7 +15,7 @@
 #include <QMetaObject>
 #include <QThread>
 #include <QList>
-
+#include <QMutex>
 class AI;
 class Scenario;
 
@@ -80,8 +80,8 @@ public:
     int getCardCount() const;
     const Card *getEngineCard(int cardId) const;
     // @todo: consider making this const Card*
-    Card *getCard(int cardId) const;
-    WrappedCard *getWrappedCard(int cardId) const;
+    Card *getCard(int cardId);
+    WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords() const;
     QStringList getRandomLords() const;
@@ -100,9 +100,10 @@ public:
 
     void registerRoom(QObject* room);
     void unregisterRoom();
-    QObject* currentRoom() const;
+    QObject* currentRoom();
 
 private:
+    QMutex m_mutex;
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals, hidden_generals;
     QHash<QString, const QMetaObject *> metaobjects;

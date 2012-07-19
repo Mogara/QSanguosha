@@ -274,23 +274,34 @@ int Engine::getGeneralCount(bool include_banned) const{
 }
 
 void Engine::registerRoom(QObject* room) {
+    m_mutex.lock();
     m_rooms[QThread::currentThread()] = room;
+    m_mutex.unlock();
 }
 
 void Engine::unregisterRoom() {
+    m_mutex.lock();
     m_rooms.remove(QThread::currentThread());
+    m_mutex.unlock();
 }
 
-QObject* Engine::currentRoom() const {
-    return m_rooms[QThread::currentThread()];
+QObject* Engine::currentRoom() {
+    QObject* room = NULL;
+    m_mutex.lock();
+    room = m_rooms[QThread::currentThread()];
+    Q_ASSERT(room);
+    m_mutex.unlock();
+    return room;
 }
 
-WrappedCard *Engine::getWrappedCard(int cardId) const{
+WrappedCard *Engine::getWrappedCard(int cardId) {
     Card *card = getCard(cardId);
-    return qobject_cast<WrappedCard*>(card);
+    WrappedCard* wrappedCard = qobject_cast<WrappedCard*>(card);
+    Q_ASSERT(wrappedCard != NULL && wrappedCard->getId() == cardId);
+    return wrappedCard;
 }
 
-Card *Engine::getCard(int cardId) const {
+Card *Engine::getCard(int cardId) {
     Card *card = NULL;
     if (cardId < 0 || cardId >= cards.length())
         return NULL;

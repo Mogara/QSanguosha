@@ -708,16 +708,16 @@ public:
     Weapon* toWeapon(){
         return qobject_cast<Weapon*>($self);
     }
-	WrappedCard* toWrapped(){
-		return qobject_cast<WrappedCard*>($self);
-	}
+    WrappedCard* toWrapped(){
+        return qobject_cast<WrappedCard*>($self);
+    }
 };
 
 class WrappedCard : public Card
 {
 public:
-	void takeOver(Card* card);
-	void copyEverythingFrom(Card* card);
+    void takeOver(Card* card);
+    void copyEverythingFrom(Card* card);
     void setModified(bool modified);
 };
 
@@ -785,7 +785,7 @@ public:
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
-    const Card *getCard(int index) const;
+    const Card *getCard(int index);
 
     QStringList getLords() const;
     QStringList getRandomLords() const;
