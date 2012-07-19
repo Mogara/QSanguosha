@@ -1102,7 +1102,7 @@ public:
             correct += horse->getCorrect();
         }
         if(to->getDefensiveHorse()){
-            horse = qobject_cast<const Horse*>(to->getOffensiveHorse()->getRealCard());
+            horse = qobject_cast<const Horse*>(to->getDefensiveHorse()->getRealCard());
             correct += horse->getCorrect();
         }
 

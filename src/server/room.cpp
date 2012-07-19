@@ -3448,13 +3448,6 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
 {
-    if (isLostPhase) {
-            foreach (CardsMoveStruct move, cards_moves)
-                updateCardsOnLose(move);
-        } else {
-            foreach (CardsMoveStruct move, cards_moves)
-                updateCardsOnGet(move);
-        }
     // process dongcha    
     ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());    
     ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());   
@@ -3483,10 +3476,16 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
             // card from/to dongchaee is also visible to dongchaer
             arg[i + 1] = cards_moves[i].toJsonValue();        
         }
-        if (isLostPhase)
+        if (isLostPhase){
             doNotify(player, S_COMMAND_LOSE_CARD, arg);
-        else
+            foreach (CardsMoveStruct move, cards_moves)
+                updateCardsOnLose(move);
+        }
+        else{
+            foreach (CardsMoveStruct move, cards_moves)
+                updateCardsOnGet(move);
             doNotify(player, S_COMMAND_GET_CARD, arg);
+        }
     }    
     return true;
 }
