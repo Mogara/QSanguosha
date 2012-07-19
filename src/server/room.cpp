@@ -3107,6 +3107,9 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             }
         }
     }
+    
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     // Now, process add cards
     for (int i = 0; i <  cards_moves.size(); i++)
@@ -3139,8 +3142,6 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3195,7 +3196,6 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
 void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin)
 {
     // First, process remove card
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
     QList<Player::Place> final_places;
     QList<Player*> move_tos;
     for (int i = 0; i < cards_moves.size(); i++)
@@ -3234,6 +3234,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             }
         }
     }
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);

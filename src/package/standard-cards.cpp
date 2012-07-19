@@ -224,12 +224,9 @@ public:
                     else{
                         QString prompt = "double-sword-card:" + use.from->getGeneralName();
                         const Card *card = room->askForCard(to, ".", prompt, QVariant(), CardDiscarded);
-                        if(card){
-                            room->throwCard(card, to);
-                        }else
+                        if(!card)
                             draw_card = true;
                     }
-
                     if(draw_card)
                        use.from->drawCards(1);
                 }
