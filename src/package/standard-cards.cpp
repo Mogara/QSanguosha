@@ -49,17 +49,17 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if(source->getPhase() == Player::Play
+    if (source->getPhase() == Player::Play
             && source->hasUsed("Slash")
             && source->hasWeapon("crossbow"))
         room->setEmotion(source,"weapon/crossbow");
-    else if(this->isVirtualCard() && this->skill_name == "spear")
+    else if(isVirtualCard() && getSkillName() == "spear")
         room->setEmotion(source,"weapon/spear");
-    else if(targets.length()>1
+    else if (targets.length()>1
             && source->handCards().size() == 0
             && source->hasWeapon("halberd"))
         room->setEmotion(source,"weapon/halberd");
-    else if(this->isVirtualCard() && this->skill_name == "fan")
+    else if (isVirtualCard() && getSkillName() == "fan")
         room->setEmotion(source,"weapon/fan");
 
     BasicCard::use(room, source, targets);

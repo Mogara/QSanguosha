@@ -27,25 +27,29 @@ public:
 
     inline virtual void setId(int id)
     {
-        Card::setId(id);
+        m_id = id;
+        Q_ASSERT(m_card != NULL);
         m_card->setId(id);
     }
 
     inline virtual void setNumber(int number) 
     {
-        Card::setNumber(number);
+        m_number = number;
+        Q_ASSERT(m_card != NULL);
         m_card->setNumber(number);
     }
 
     inline virtual void setSuit(Suit suit)
     {
-        Card::setSuit(suit);
+        m_suit = suit;
+        Q_ASSERT(m_card != NULL);
         m_card->setSuit(suit);
     }
 
     inline virtual void setSkillName(const QString &skillName)
     {
-        Card::setSkillName(skillName);
+        m_skillName = skillName;
+        Q_ASSERT(m_card != NULL);
         m_card->setSkillName(skillName);
     }
 
@@ -57,20 +61,63 @@ public:
 
 
     // Inherited member functions
-    inline virtual void onNullified(ServerPlayer *target) const {m_card->onNullified(target);}
+    inline virtual void onNullified(ServerPlayer *target) const {
+        Q_ASSERT(m_card != NULL);
+        m_card->onNullified(target);
+    
+    }
     inline virtual bool isModified() const {return m_isModified;}
-    inline virtual QString getClassName() const {return m_card->metaObject()->className();}
-    inline virtual const Card *getRealCard() const {return m_card;}
-    inline virtual bool isOnce() const {return m_card->isOnce();}
-    inline virtual bool isMute() const {return m_card->isMute();}
-    inline virtual bool willThrow() const {return m_card->willThrow();}
-    inline virtual bool canJilei() const {return m_card->canJilei();}
-    inline virtual bool hasPreAction() const {return m_card->hasPreAction();}
-    inline virtual QString getPackage() const {return m_card->getPackage();}
+    inline virtual QString getClassName() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->metaObject()->className();
+    }
+
+    inline virtual const Card *getRealCard() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card;
+    }
+
+    inline virtual bool isOnce() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->isOnce();
+    }
+
+    inline virtual bool isMute() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->isMute();
+    }
+
+    inline virtual bool willThrow() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->willThrow();
+    }
+
+    inline virtual bool canJilei() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->canJilei();
+    }
+
+    inline virtual bool hasPreAction() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->hasPreAction();
+    }
+
+    inline virtual QString getPackage() const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->getPackage();
+    }
+
     inline virtual bool isVirtualCard() const { return false; }
     //inline virtual bool isEquipped() const { return m_card->isEquipped(); }
-    inline virtual QString getCommonEffectName() const { return m_card->getCommonEffectName(); }
-    inline virtual bool match(const QString &pattern) const { return m_card->match(pattern); }
+    inline virtual QString getCommonEffectName() const { 
+        Q_ASSERT(m_card != NULL);
+        return m_card->getCommonEffectName(); 
+    }
+
+    inline virtual bool match(const QString &pattern) const { 
+        Q_ASSERT(m_card != NULL);
+        return m_card->match(pattern); 
+    }
 
     inline virtual void addSubcard(int card_id) { Q_ASSERT(false); }
     inline virtual void addSubcard(const Card *card) { Q_ASSERT(false); }
@@ -83,7 +130,7 @@ public:
     inline virtual QString getType() const { return m_card->getType(); }
     inline virtual QString getSubtype() const { return m_card->getSubtype(); }
     inline virtual CardType getTypeId() const { return m_card->getTypeId(); }
-    inline virtual QString toString() const { return QString::number(id); }
+    inline virtual QString toString() const { return QString::number(m_id); }
     inline virtual bool isNDTrick() const
     { return m_card->isNDTrick(); }
 
@@ -101,32 +148,55 @@ public:
     inline virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
         int &maxVotes) const
     {
+        Q_ASSERT(m_card != NULL);
         return m_card->targetFilter(targets, to_select, Self, maxVotes);
     }
 
     inline virtual bool isAvailable(const Player *player) const { return m_card->isAvailable(player); }
 
     inline virtual const Card *validate(const CardUseStruct *cardUse) const
-    { return m_card->validate(cardUse); }
+    { 
+        Q_ASSERT(m_card != NULL);
+        return m_card->validate(cardUse); 
+    }
 
     inline virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const
-    { return m_card->validateInResposing(user, continuable); }
+    {
+        Q_ASSERT(m_card != NULL);
+        return m_card->validateInResposing(user, continuable);
+    }
 
     inline virtual void doPreAction(Room *room, const CardUseStruct &cardUse) const 
-    { m_card->doPreAction(room, cardUse); }
+    {
+        Q_ASSERT(m_card != NULL);
+        m_card->doPreAction(room, cardUse);
+    }
 
-    inline virtual void onUse(Room *room, const CardUseStruct &cardUse) const { m_card->onUse(room, cardUse); }
+    inline virtual void onUse(Room *room, const CardUseStruct &cardUse) const {
+        Q_ASSERT(m_card != NULL);
+        m_card->onUse(room, cardUse);
+    }
 
     inline virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
     {
+        Q_ASSERT(m_card != NULL);
         m_card->use(room, source, targets);
     }
 
-    inline virtual void onEffect(const CardEffectStruct &effect) const { m_card->onEffect(effect); }
+    inline virtual void onEffect(const CardEffectStruct &effect) const {
+        Q_ASSERT(m_card != NULL);
+        m_card->onEffect(effect);
+    }
 
-    inline virtual bool isCancelable(const CardEffectStruct &effect) const { return m_card->isCancelable(effect); }
+    inline virtual bool isCancelable(const CardEffectStruct &effect) const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->isCancelable(effect);
+    }
 
-    inline virtual bool isKindOf(const char* cardType) const { return m_card->inherits(cardType); }
+    inline virtual bool isKindOf(const char* cardType) const { 
+        Q_ASSERT(m_card != NULL);
+        return m_card->inherits(cardType);
+    }
 
 protected:
     Card* m_card;

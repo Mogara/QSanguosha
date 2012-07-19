@@ -1,8 +1,9 @@
 #include "WrappedCard.h"
 
 WrappedCard::WrappedCard(Card* card):
-    Card(card->getSuit(), card->getNumber()), m_card(NULL), m_isModified(false)
+    Card(card->getSuit(), card->getNumber()), m_card(card), m_isModified(false)
 {
+    m_id = card->getId();
     copyEverythingFrom(card);
 }
 
@@ -14,6 +15,7 @@ WrappedCard::~WrappedCard()
 
 void WrappedCard::takeOver(Card* card)
 {
+    Q_ASSERT(getId() > 0);
     if (m_card != NULL) {
         m_isModified = true;
         delete m_card;
@@ -21,18 +23,18 @@ void WrappedCard::takeOver(Card* card)
     setObjectName(card->objectName());
     setSuit(card->getSuit());
     setNumber(card->getNumber());
-    if(getId() > -1)
-        m_card->setId(getId());
+    m_card->setId(getId());
     m_card = card;
     card->setId(getId());
     card->setSuit(getSuit());
     card->setNumber(getNumber());
     card->setFlags(flags);
-    skill_name = card->getSkillName();
+    m_skillName = card->getSkillName();
 }
 
 void WrappedCard::copyEverythingFrom(Card* card)
 {
+    Q_ASSERT(card->getId() > 0);
     if (m_card != NULL) {
         m_isModified = true;
         delete m_card;
@@ -43,5 +45,5 @@ void WrappedCard::copyEverythingFrom(Card* card)
     Card::setSuit(card->getSuit());
     Card::setNumber(card->getNumber());
     flags = card->getFlags();
-    skill_name = card->getSkillName();
+    m_skillName = card->getSkillName();
 }
