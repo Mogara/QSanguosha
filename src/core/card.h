@@ -58,16 +58,16 @@ public:
     bool isRed() const;
     bool isBlack() const;
     int getId() const;
-    void setId(int id);
+    virtual void setId(int id);
     int getEffectiveId() const;
     QString getEffectIdString() const;
 
     int getNumber() const;
-    void setNumber(int number);
+    virtual void setNumber(int number);
     QString getNumberString() const;
 
     Suit getSuit() const;
-    void setSuit(Suit suit);
+    virtual void setSuit(Suit suit);
 
     bool sameColorWith(const Card *other) const;
     Color getColor() const;
@@ -75,7 +75,7 @@ public:
     QString getLogName() const;
     QString getName() const;
     QString getSkillName() const;
-    void setSkillName(const QString &skill_name);
+    virtual void setSkillName(const QString &skill_name);
     QString getDescription() const;
     
     virtual bool isOnce() const;
@@ -85,6 +85,7 @@ public:
     virtual bool hasPreAction() const;
 
     void setFlags(const QString &flag) const;
+    inline void setFlags(const QStringList &fs) { flags = fs; }
     bool hasFlag(const QString &flag) const;
     void clearFlags() const;
 
