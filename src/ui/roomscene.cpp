@@ -313,6 +313,10 @@ RoomScene::RoomScene(QMainWindow *main_window):
 
 #endif
 
+    m_tableBg = new QGraphicsPixmapItem(NULL, this);
+    m_tableBg->setPos(0, 0);
+    m_tableBg->setZValue(-100000);
+
     QHBoxLayout* skill_dock_layout = new QHBoxLayout;
     QMargins margins = skill_dock_layout->contentsMargins();
     margins.setTop(0);
@@ -605,7 +609,7 @@ void RoomScene::adjustItems()
                 photo->repaintAll();
         }
     }
-     
+
     // update the sizes since we have reloaded the skin.
     _getSceneSizes(minSize, maxSize);
 
@@ -627,12 +631,12 @@ void RoomScene::adjustItems()
     displayRegion.moveTop(displayRegion.y() + padding);
     displayRegion.setWidth(displayRegion.width() - padding * 2);
     displayRegion.setHeight(displayRegion.height() - padding * 2);
-    
+
     // set dashboard
     dashboard->setX(displayRegion.x());
     dashboard->setWidth(displayRegion.width());
     dashboard->setY(displayRegion.height() - dashboard->boundingRect().height());    
-    
+
     // set infoplane
     QRectF infoPlane;
     infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);    
@@ -651,14 +655,19 @@ void RoomScene::adjustItems()
     chat_edit->resize(infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
     chat_widget->setPos(infoPlane.right() - chat_widget->boundingRect().width(),
         chat_edit_widget->y() + (_m_roomLayout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
-    
-     if (self_box)
-         self_box->setPos(infoPlane.left() - padding - self_box->boundingRect().width(), 
-                           sceneRect().height() - padding * 3 - self_box->boundingRect().height()
-                           - G_DASHBOARD_LAYOUT.m_normalHeight - G_DASHBOARD_LAYOUT.m_floatingAreaHeight);
-     if (enemy_box)
-         enemy_box->setPos(padding * 2, padding * 2);
-    
+
+    if (self_box)
+        self_box->setPos(infoPlane.left() - padding - self_box->boundingRect().width(), 
+        sceneRect().height() - padding * 3 - self_box->boundingRect().height()
+        - G_DASHBOARD_LAYOUT.m_normalHeight - G_DASHBOARD_LAYOUT.m_floatingAreaHeight);
+    if (enemy_box)
+        enemy_box->setPos(padding * 2, padding * 2);
+
+    int tablew = log_box_widget->x();
+    int tableh = sceneRect().height() - padding - dashboard->boundingRect().height();
+    QPixmap tableBg = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_TABLE_BG)
+        .scaled(tablew, tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();     
 }
@@ -1742,7 +1751,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(card_id));
     }
     if(move.from && move.from_place != Player::PlaceHand && move.from_place != Player::PlaceDelayedTrick
-            && move.to && move.from != move.to)
+        && move.from_place != Player::PlaceJudge && move.to && move.from != move.to)
     {
         QString from_general = move.from->getGeneralName();
         QStringList tos;
@@ -1784,8 +1793,10 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         QString type;
         if(move.to_place == Player::PlaceDelayedTrick){
             const Card *trick = Sanguosha->getCard(move.card_ids.first());
-            if(trick->objectName() == "lightning")
-                type = "$LightningMove";
+            if(trick->objectName() == "lightning"){
+                if(move.from != move.to)
+                    type = "$LightningMove";
+            }
             else
                 type = "$PasteCard";
         }

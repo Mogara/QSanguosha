@@ -134,7 +134,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	if card_str then return sgs.Card_Parse(card_str) end
         
 	for _, anal in ipairs(cards) do
-		if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) then
+		if (anal:getClassName() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) then
 			return anal
 		end
 	end

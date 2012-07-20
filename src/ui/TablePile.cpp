@@ -45,14 +45,18 @@ void TablePile::clear(bool playAnimation)
     if (m_visibleCards.empty()) return;
     _m_mutex_pileCards.lock();
     // check again since we just gain the lock.
-    int shift = 1 * G_COMMON_LAYOUT.m_cardNormalWidth;
-    
+    if (m_visibleCards.empty()) 
+    {
+        _m_mutex_pileCards.unlock();
+        return;
+    }
+
     QParallelAnimationGroup* group = new QParallelAnimationGroup;
     foreach (CardItem* toRemove, m_visibleCards)
     {        
         toRemove->setZValue(0.0);
         toRemove->setHomeOpacity(0.0);
-        toRemove->setHomePos(QPointF(toRemove->x() - shift, toRemove->y()));
+        toRemove->setHomePos(QPointF(toRemove->homePos().x(), toRemove->homePos().y()));
         if (playAnimation)
         {
             connect(toRemove, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));

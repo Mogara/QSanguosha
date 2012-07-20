@@ -58,7 +58,7 @@ function SmartAI:slashIsEffective(slash, to)
 		ThunderSlash = sgs.DamageStruct_Thunder,
 	}
 
-	local nature = natures[slash:className()]
+	local nature = natures[slash:getClassName()]
 	if self.player:hasSkill("zonghuo") then nature = sgs.DamageStruct_Fire end
 	if not self:damageIsEffective(to, nature) then return false end
 
@@ -173,7 +173,7 @@ function SmartAI:useCardSlash(card, use)
 				for _, equip in ipairs(equips) do
 					local callback = sgs.ai_slash_weaponfilter[equip:objectName()]
 					if callback and type(callback) == "function" and callback(target, self) and
-						self.player:distanceTo(target) <= (sgs.weapon_range[equip:className()] or 0) then
+						self.player:distanceTo(target) <= (sgs.weapon_range[equip:getClassName()] or 0) then
 						self:useEquipCard(equip, use)
 						if use.card then return end
 					end

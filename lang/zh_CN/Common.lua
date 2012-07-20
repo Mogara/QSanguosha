@@ -135,6 +135,7 @@ return {
 	["@askforslash"] = "你可以对你攻击范围内的一名其他角色使用一张【杀】",
 	["@askforretrial"] = "请使用【%dest】技能来修改 %src 的 %arg 判定",
 	["$CheatCard"] = "%from 使用了作弊，获得了 %card",
+	["#FilterJudge"] = "%from 受到【%arg】的影响， 判定牌被改变",
 
 	["CAPITAL(1)"] = "一",
 	["CAPITAL(2)"] = "二",

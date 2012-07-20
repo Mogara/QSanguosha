@@ -20,9 +20,9 @@ if sgs.GetConfig("GameMode", ""):match("zombie") then
 	local useTrickCard = SmartAI.useTrickCard
 	function SmartAI:useTrickCard(card, use)
 		if #self.enemies == 0 then
-			if sgs.dynamic_value.damage_card[card:className()] then return end
-			if sgs.dynamic_value.control_card[card:className()] then return end
-			if sgs.dynamic_value.control_usecard[card:className()] then return end
+			if sgs.dynamic_value.damage_card[card:getClassName()] then return end
+			if sgs.dynamic_value.control_card[card:getClassName()] then return end
+			if sgs.dynamic_value.control_usecard[card:getClassName()] then return end
 		end
 		useTrickCard(self, card, use)
 	end

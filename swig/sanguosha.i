@@ -26,12 +26,6 @@ public:
     void setParent(QObject *parent);
 };
 
-%extend QObject{
-    const char *className() const{
-        return $self->metaObject()->className();
-    }
-};
-
 class General : public QObject
 {
 public:
@@ -323,7 +317,7 @@ class ClientPlayer : public Player
 public:
     explicit ClientPlayer(Client *client);
     virtual int aliveCount() const;
-    virtual int getHandcardNum() const;	
+    virtual int getHandcardNum() const;    
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
     virtual void addKnownHandCard(const Card *card);
@@ -755,7 +749,9 @@ public:
     void addPackage(Package *package);
     void addBanPackage(const char *package_name);
     QStringList getBanPackages() const;
+    Card *cloneCard(const Card* card) const;
     Card *cloneCard(const char *name, Card::Suit suit, int number) const;
+    Card *cloneCard(const char *name, Card::Suit suit, int number, const QStringList &flags) const;
     SkillCard *cloneSkillCard(const char *name) const;
     QString getVersion() const;
     QString getVersionName() const;
@@ -788,6 +784,7 @@ public:
 
     int getCardCount() const;
     const Card *getCard(int index);
+    WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords() const;
     QStringList getRandomLords() const;
@@ -799,6 +796,8 @@ public:
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
+	
+	Room* currentRoom();
 };
 
 extern Engine *Sanguosha;
@@ -937,6 +936,10 @@ public:
     bool broadcastSkillInvoke(const char *skillName, const char *category);
     bool broadcastSkillInvoke(const char *skillName, int type);
     bool broadcastSkillInvoke(const char *skillName, bool isMale, int type);
+    bool notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCard);
+    bool broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard);
+    bool notifyResetCard(ServerPlayer* player, int cardId);
+    bool broadcastResetCard(const QList<ServerPlayer*> &players, int cardId);
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
     void adjustSeats();

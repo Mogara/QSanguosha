@@ -214,7 +214,7 @@ function SmartAI:assignKeep(num,start)
 		if not self.keepValue[card:getId()] then
 			self.keepValue[card:getId()]=self:getKeepValue(card,self.kept)
 			table.insert(self.kept,card)
-			--self:log(card:className())
+			--self:log(card:getClassName())
 			self:assignKeep(num-1)
 			break
 		end
@@ -224,7 +224,7 @@ end
 function SmartAI:getKeepValue(card,kept)
 	if not kept then return self.keepValue[card:getId()] or 0 end
 
-	local class_name = card:className()
+	local class_name = card:getClassName()
 	local suit_string = card:getSuitString()
 	local value, newvalue
 	if sgs[self.player:getGeneralName().."_keep_value"] then
@@ -236,7 +236,7 @@ function SmartAI:getKeepValue(card,kept)
 	end
 	newvalue = sgs.ai_keep_value[class_name] or 0
 	for _,acard in ipairs(kept) do
-		if acard:className() == card:className() then newvalue = newvalue - 1.2
+		if acard:getClassName() == card:getClassName() then newvalue = newvalue - 1.2
 		elseif acard:isKindOf("Slash") and card:isKindOf("Slash") then newvalue = newvalue - 1
 		end
 	end
@@ -245,7 +245,7 @@ function SmartAI:getKeepValue(card,kept)
 end
 
 function SmartAI:getUseValue(card)
-	local class_name = card:className()
+	local class_name = card:getClassName()
 	local v = 0
 
 	if card:isKindOf("GuhuoCard") then
@@ -302,7 +302,7 @@ function SmartAI:getUseValue(card)
 end
 
 function SmartAI:getUsePriority(card)
-	local class_name = card:className()
+	local class_name = card:getClassName()
 	local v = 0
 	if card:isKindOf("EquipCard") then
 		if self:hasSkills(sgs.lose_equip_skill) then return 10 end
@@ -374,7 +374,7 @@ function SmartAI:getDynamicUsePriority(card)
 	local value = self:getUsePriority(card)
 	if dummy_use.card then
 		local use_card = dummy_use.card
-		local card_name = use_card:className()
+		local card_name = use_card:getClassName()
 		local dynamic_value
 
 		if use_card:getTypeId() == sgs.Card_Equips then
@@ -408,7 +408,7 @@ function SmartAI:getDynamicUsePriority(card)
 
 				if weak_enemy > weak_mate then
 					for _, card in sgs.qlist(self.player:getHandcards()) do
-						if card:isAvailable(self.player) and sgs.dynamic_value.damage_card[card:className()] then
+						if card:isAvailable(self.player) and sgs.dynamic_value.damage_card[card:getClassName()] then
 							if self:getDynamicUsePriority(card) - 0.5 > self:getUsePriority(card) then
 								dynamic_value = -5
 							end
@@ -483,7 +483,7 @@ end
 
 function SmartAI:cardNeed(card)
 	if not self.friends then self.room:writeToConsole(debug.traceback()) self.room:writeToConsole(sgs.turncount) return end
-	local class_name = card:className()
+	local class_name = card:getClassName()
 	local suit_string = card:getSuitString()
 	local value
 	if card:isKindOf("Peach") then
@@ -1087,8 +1087,8 @@ function sgs.outputProcessValues(room)
 			else rebel_hp = aplayer:getHp() end
 			if aplayer:getMaxHp() == 3 then rebel_value = rebel_value + 0.5 end
 			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer) - rebel_hp * 2, 0) * 0.7
-			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
-				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
+			if aplayer:getWeapon() and aplayer:getWeapon():getClassName() ~= "Weapon" then
+				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():getClassName()],room:alivePlayerCount()/2)/2) * 0.4
 			end
 			global_room:writeToConsole("rebelnum is " .. rebel .. " value is " .. rebel_value)
 		elseif (not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "loyalist")
@@ -1099,8 +1099,8 @@ function sgs.outputProcessValues(room)
 			else loyal_hp = aplayer:getHp() end
 			if aplayer:getMaxHp() == 3 then loyal_value = loyal_value + 0.5 end
 			loyal_value = loyal_value + (loyal_hp + math.max(sgs.getDefense(aplayer) - loyal_hp * 2, 0) * 0.7)
-			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
-				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
+			if aplayer:getWeapon() and aplayer:getWeapon():getClassName() ~= "Weapon" then
+				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():getClassName()],room:alivePlayerCount()/2)/2) * 0.4
 			end
 			global_room:writeToConsole("loyalnum is " .. loyal .. " value is " .. loyal_value)
 		end
@@ -1144,8 +1144,8 @@ function sgs.gameProcess(room)
 			else rebel_hp = aplayer:getHp() end
 			if aplayer:getMaxHp() == 3 then rebel_value = rebel_value + 0.5 end
 			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer) - rebel_hp * 2, 0) * 0.7
-			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
-				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
+			if aplayer:getWeapon() and aplayer:getWeapon():getClassName() ~= "Weapon" then
+				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():getClassName()],room:alivePlayerCount()/2)/2) * 0.4
 			end
 		elseif not sgs.isRolePredictable() and sgs.evaluatePlayerRole(aplayer) == "loyalist" then
 			local loyal_hp
@@ -1153,8 +1153,8 @@ function sgs.gameProcess(room)
 			else loyal_hp = aplayer:getHp() end
 			if aplayer:getMaxHp() == 3 then loyal_value = loyal_value + 0.5 end
 			loyal_value = loyal_value + (loyal_hp + math.max(sgs.getDefense(aplayer) - loyal_hp * 2, 0) * 0.7)
-			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
-				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],room:alivePlayerCount()/2)/2) * 0.4
+			if aplayer:getWeapon() and aplayer:getWeapon():getClassName() ~= "Weapon" then
+				loyal_value = loyal_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():getClassName()],room:alivePlayerCount()/2)/2) * 0.4
 			end
 		end
 		--end	
@@ -1625,7 +1625,7 @@ function SmartAI:filterEvent(event, player, data)
 		local from  = struct.from
 		local source =  self.room:getCurrent()
 		local str
-		str = card:className() .. card:toString() .. ":"
+		str = card:getClassName() .. card:toString() .. ":"
 		local toname = {}
 		for _, ato in ipairs(to) do
 			table.insert(toname, ato:getGeneralName())
@@ -1635,7 +1635,7 @@ function SmartAI:filterEvent(event, player, data)
 		sgs.laststr = str
 		--self.room:writeToConsole(str)
 
-		local callback = sgs.ai_card_intention[card:className()]
+		local callback = sgs.ai_card_intention[card:getClassName()]
 		if callback then
 			if type(callback) == "function" then
 				callback(card, from, to)
@@ -2695,7 +2695,7 @@ function SmartAI:getTurnUse()
 				end
 			else
 				if card:isKindOf("Weapon") then
-					self.predictedRange = sgs.weapon_range[card:className()]
+					self.predictedRange = sgs.weapon_range[card:getClassName()]
 					self.weaponUsed = true
 				end
 				if card:isKindOf("OffensiveHorse") then self.predictNewHorse = true end
@@ -2746,7 +2746,7 @@ function SmartAI:isWeak(player)
 end
 
 function SmartAI:useCardByClassName(card, use)
-	local class_name = card:className()
+	local class_name = card:getClassName()
 	local use_func = self["useCard" .. class_name]
 
 	if use_func then
@@ -3384,7 +3384,7 @@ function SmartAI:useSkillCard(card,use)
 	if card:isKindOf("LuaSkillCard") then
 		name = "#" .. card:objectName()
 	else
-		name = card:className()
+		name = card:getClassName()
 	end
 	sgs.ai_skill_use_func[name](card, use, self)
 	if use.to then
@@ -3631,7 +3631,7 @@ function SmartAI:hasTrickEffective(card, player)
 			if card and (card:isKindOf("Duel") or card:isKindOf("FireAttack")) then return false end
 		end
 		if (player:getMark("@fog") > 0 or (player:hasSkill("shenjun") and self.player:getGender() ~= player:getGender())) and
-			sgs.dynamic_value.damage_card[card:className()] then return false end
+			sgs.dynamic_value.damage_card[card:getClassName()] then return false end
 		if player:hasSkill("zuixiang") and player:isLocked(card) then return false end
 	else
 		if self.player:hasSkill("wuyan") then
@@ -3680,7 +3680,7 @@ function SmartAI:useTrickCard(card, use)
 		self:useCardByClassName(card, use)
 	end
 	if use.to then
-		if not use.to:isEmpty() and sgs.dynamic_value.damage_card[card:className()] then
+		if not use.to:isEmpty() and sgs.dynamic_value.damage_card[card:getClassName()] then
 			for _, target in sgs.qlist(use.to) do
 				if self:damageIsEffective(target) then return end
 			end
@@ -3713,7 +3713,7 @@ function SmartAI:evaluateWeapon(card)
 	local currentRange
 	if not card then return -1
 	else
-		currentRange = sgs.weapon_range[card:className()] or 0
+		currentRange = sgs.weapon_range[card:getClassName()] or 0
 	end
 	for _,enemy in ipairs(self.enemies) do
 		if self.player:distanceTo(enemy) <= currentRange then

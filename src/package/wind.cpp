@@ -32,13 +32,14 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *target = effect.to;
 
     Room *room = zhangjiao->getRoom();
-    room->setEmotion(target, "bad");
 
     JudgeStruct judge;
     judge.pattern = QRegExp("(.*):(spade):(.*)");
     judge.good = false;
     judge.reason = "leiji";
     judge.who = target;
+    judge.play_animation = true;
+    judge.negative = true;
 
     room->judge(judge);
 
@@ -613,45 +614,20 @@ public:
 
     }
 
+    static WrappedCard *changeToHeart(int cardId){
+        WrappedCard *new_card = Sanguosha->getWrappedCard(cardId);
+        new_card->setSkillName("hongyan");
+        new_card->setSuit(Card::Heart);
+        new_card->setModified(true);
+        return new_card;
+    }
+
     virtual bool viewFilter(const Card* to_select) const{
         return to_select->getSuit() == Card::Spade;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        WrappedCard *new_card = Sanguosha->getWrappedCard(originalCard->getEffectiveId());
-        new_card->setSkillName(objectName());
-        Card *real = Sanguosha->cloneCard(new_card->getRealCard());
-        Q_ASSERT(real != NULL);
-        real->setSuit(Card::Heart);
-        new_card->takeOver(real);
-        return new_card;
-    }
-};
-
-class HongyanRetrial: public TriggerSkill{
-public:
-    HongyanRetrial():TriggerSkill("#hongyan-retrial"){
-        frequency = Compulsory;
-
-        events << FinishJudge;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
-        if(judge->card->getSuit() == Card::Spade){
-            LogMessage log;
-            log.type = "#HongyanJudge";
-            log.from = player;
-
-            Card *new_card = Card::Clone(judge->card);
-            new_card->setSuit(Card::Heart);
-            new_card->setSkillName("hongyan");
-            judge->card = new_card;
-
-            player->getRoom()->sendLog(log);
-        }
-
-        return false;
+        return changeToHeart(originalCard->getEffectiveId());
     }
 };
 
@@ -1098,8 +1074,6 @@ WindPackage::WindPackage()
     General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false);
     xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new Hongyan);
-    xiaoqiao->addSkill(new HongyanRetrial);
-    related_skills.insertMulti("hongyan", "#hongyan-retrial");
 
     zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);

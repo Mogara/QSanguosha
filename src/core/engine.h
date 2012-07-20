@@ -39,7 +39,7 @@ public:
     Card *cloneCard(const Card* card) const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number,
-                    QStringList flags) const;
+                    const QStringList &flags) const;
     SkillCard *cloneSkillCard(const QString &name) const;
     QString getVersionNumber() const;
     QString getVersion() const;
@@ -100,7 +100,8 @@ public:
 
     void registerRoom(QObject* room);
     void unregisterRoom();
-    QObject* currentRoom();
+    QObject* currentRoomObject();
+    Room* currentRoom();
 
 private:
     QMutex m_mutex;

@@ -533,6 +533,8 @@ public:
             WrappedCard *new_card = Sanguosha->getWrappedCard(pindian_card->getId());
             new_card->setNumber(num);
             new_card->setSkillName(objectName());
+            new_card->setModified(true);
+            room->broadcastUpdateCard(room->getPlayers(), pindian_card->getId(), new_card);
         }
         return false;
     }
