@@ -24,7 +24,7 @@ public:
         room->setPlayerProperty(player, "maxhp", maxhp);
         room->setPlayerProperty(player, "hp", player->getMaxHp());
         room->setPlayerProperty(player, "role", "renegade");
-        player->loseSkill("peaching");
+        player->detachSkill("peaching");
 
         LogMessage log;
         log.type = "#Zombify";

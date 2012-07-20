@@ -204,6 +204,10 @@ public:
     bool broadcastSkillInvoke(const QString &skillName, int type);
     bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
 
+    void initSkillsForPlayers();
+    void changePlayerGeneral(ServerPlayer *player, const QString &new_general);
+    void changePlayerGeneral2(ServerPlayer *player, const QString &new_general);
+
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
     void adjustSeats();

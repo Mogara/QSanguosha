@@ -2759,8 +2759,8 @@ function sgs.getSkillLists(player)
 	local vsnlist = {}
 	local fsnlist = {}
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
-		if askill:inherits("ViewAsSkill") and not player:loseSkills() then table.insert(vsnlist, askill:objectName()) end --
-		if askill:inherits("FilterSkill") and not player:loseSkills() then table.insert(fsnlist, askill:objectName()) end  --
+		if askill:inherits("ViewAsSkill") then table.insert(vsnlist, askill:objectName()) end --
+		if askill:inherits("FilterSkill") then table.insert(fsnlist, askill:objectName()) end  --
 	end
 	return vsnlist, fsnlist
 end

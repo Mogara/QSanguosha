@@ -294,7 +294,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     if (thread->trigger(GameOverJudge, this, victim, data)) return;
 
     thread->trigger(Death, this, victim, data);
-    victim->loseAllSkills();
+    victim->detachAllSkills();
 
     if(Config.EnableAI){
         bool expose_roles = true;
@@ -499,7 +499,10 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
     if(!player->hasSkill(skill_name))
         return;
 
-    player->loseSkill(skill_name);
+    if(player->getAcquiredSkills().contains(skill_name))
+        player->detachSkill(skill_name);
+    else
+        player->loseSkill(skill_name);
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill && skill->isVisible()){
@@ -507,7 +510,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
             detachSkillFromPlayer(player, skill->objectName());
 
         Json::Value args;
-        args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+        args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
         args[1] = toJsonString(player->objectName());
         args[2] = toJsonString(skill_name);
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
@@ -1446,13 +1449,10 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
 
     QString m_old_general = player->getGeneralName();
     if(Config.Enable2ndGeneral && !old_general.isEmpty() && player->getGeneral2Name() == old_general){
-        m_old_general = player->getGeneral2Name();
-        setPlayerProperty(player, "general2", new_general);
-        broadcastProperty(player, "general2");
+        changePlayerGeneral2(player, new_general);
     }
     else{
-        setPlayerProperty(player, "general", new_general);
-        broadcastProperty(player, "general");
+        changePlayerGeneral(player, new_general);
     }
 
     QString transfigure_str = QString("%1:%2").arg(m_old_general).arg(new_general);
@@ -2762,6 +2762,8 @@ void Room::startGame(){
             broadcastProperty(player, "role"); 
     }
 
+    initSkillsForPlayers();
+
     broadcastInvoke("startGame");
     game_started = true;
 
@@ -3546,6 +3548,36 @@ bool Room::broadcastSkillInvoke(const QString &skill_name, bool isMale, int type
     args[3] = type;
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
     return true;
+}
+
+void Room::initSkillsForPlayers(){
+    foreach(ServerPlayer *player, m_players)
+    {
+        QList<const Skill*> skills = player->getGeneral()->getSkillList();
+        foreach(const Skill* skill, skills)
+            player->addSkill(skill->objectName());
+        if(ServerInfo.Enable2ndGeneral){
+            skills = player->getGeneral2()->getSkillList();
+            foreach(const Skill* skill, skills)
+                player->addSkill(skill->objectName());
+        }
+    }
+}
+
+void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general){
+    foreach(const Skill* skill, player->getGeneral()->getSkillList())
+        player->loseSkill(skill->objectName());
+    setPlayerProperty(player, "general", new_general);
+    foreach(const Skill* skill, player->getGeneral()->getSkillList())
+        player->addSkill(skill->objectName());
+}
+
+void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general){
+    foreach(const Skill* skill, player->getGeneral2()->getSkillList())
+        player->loseSkill(skill->objectName());
+    setPlayerProperty(player, "general2", new_general);
+    foreach(const Skill* skill, player->getGeneral2()->getSkillList())
+        player->addSkill(skill->objectName());
 }
 
 void Room::startTest(const QString &to_test){

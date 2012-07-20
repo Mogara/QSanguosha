@@ -7,8 +7,10 @@
 #include "recorder.h"
 #include "banpair.h"
 #include "lua-wrapper.h"
+#include "jsonutils.h"
 
 using namespace QSanProtocol;
+using namespace QSanProtocol::Utils;
 
 const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 
@@ -464,9 +466,6 @@ bool ServerPlayer::hasNullification() const{
             return true;
     }
 
-    if(loseSkills())
-        return false;
-
     foreach(const Skill* skill, getVisibleSkillList()){
         if(skill->inherits("ViewAsSkill")){
             const ViewAsSkill* vsskill = qobject_cast<const ViewAsSkill*>(skill);
@@ -716,6 +715,24 @@ void ServerPlayer::loseAllMarks(const QString &mark_name){
     if(n > 0){
         loseMark(mark_name, n);
     }
+}
+
+void ServerPlayer::addSkill(const QString &skill_name){
+    Player::addSkill(skill_name);
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
+    args[1] = toJsonString(objectName());
+    args[2] = toJsonString(skill_name);
+    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+}
+
+void ServerPlayer::loseSkill(const QString &skill_name){
+    Player::loseSkill(skill_name);
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+    args[1] = toJsonString(objectName());
+    args[2] = toJsonString(skill_name);
+    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
 bool ServerPlayer::isOnline() const {

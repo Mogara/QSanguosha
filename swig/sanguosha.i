@@ -48,6 +48,7 @@ public:
     void addSkill(Skill* skill);
     void addSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
+    QList<const Skill *> getSkillList() const;
     QList<const Skill *> getVisibleSkillList() const;
     QSet<const Skill *> getVisibleSkills() const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
@@ -131,12 +132,13 @@ public:
 
     bool isLord() const;
     void acquireSkill(const char *skill_name);
-    void loseSkill(const char *skill_name);
-    void loseAllSkills();
+    void detachSkill(const char *skill_name);
+    void detachAllSkills();
+    virtual void addSkill(const char *skill_name);
+    virtual void loseSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
-    bool hasLordSkill(const char *skill_name, bool includeLost = false) const;
-    bool hasInnateSkill(const char *skill_name, bool includeLost = false) const;
-    bool loseSkills() const;
+    bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
+    bool hasInnateSkill(const char *skill_name) const;
 
     void setEquip(WrappedCard *equip);
     void removeEquip(WrappedCard *equip);
@@ -940,6 +942,10 @@ public:
     bool broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard);
     bool notifyResetCard(ServerPlayer* player, int cardId);
     bool broadcastResetCard(const QList<ServerPlayer*> &players, int cardId);
+	
+    void changePlayerGeneral(ServerPlayer *player, const char *new_general);
+    void changePlayerGeneral2(ServerPlayer *player, const char *new_general);
+	
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
     void adjustSeats();

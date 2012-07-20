@@ -1133,7 +1133,7 @@ void Client::killPlayer(const QString &player_name){
             emit skill_detached(skill->objectName());
     }
 
-    player->loseAllSkills();
+    player->detachAllSkills();
 
     if(!Self->hasFlag("marshalling")){
         QString general_name = player->getGeneralName();
