@@ -436,6 +436,10 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
 
         break;
     }
+    case S_GAME_EVENT_UPDATE_SKILL:{
+        updateSkillButtons();
+        break;
+    }
     default:
         break;
     }
@@ -3277,8 +3281,6 @@ void RoomScene::onGameStart(){
             enemy_box->show();
         }
     }
-
-    updateSkillButtons();
 
     if(control_panel)
         control_panel->hide();

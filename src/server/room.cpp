@@ -2762,9 +2762,6 @@ void Room::startGame(){
             broadcastProperty(player, "role"); 
     }
 
-    if(!ServerInfo.EnableBasara)
-        initSkillsForPlayers();
-
     broadcastInvoke("startGame");
     game_started = true;
 
@@ -3563,6 +3560,10 @@ void Room::initSkillsForPlayers(){
                 player->addSkill(skill->objectName());
         }
     }
+
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general){
