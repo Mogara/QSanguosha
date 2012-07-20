@@ -83,7 +83,7 @@ public:
     virtual bool canJilei() const;
     virtual bool hasPreAction() const;
 
-    void setFlags(const QString &flag) const;
+    virtual void setFlags(const QString &flag) const;
     inline void setFlags(const QStringList &fs) { flags = fs; }
     bool hasFlag(const QString &flag) const;
     void clearFlags() const;

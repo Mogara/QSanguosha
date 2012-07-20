@@ -3567,16 +3567,20 @@ void Room::initSkillsForPlayers(){
 }
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general){
-    foreach(const Skill* skill, player->getGeneral()->getSkillList())
-        player->loseSkill(skill->objectName());
+    if(player->getGeneral() != NULL){
+        foreach(const Skill* skill, player->getGeneral()->getSkillList())
+            player->loseSkill(skill->objectName());
+    }
     setPlayerProperty(player, "general", new_general);
     foreach(const Skill* skill, player->getGeneral()->getSkillList())
         player->addSkill(skill->objectName());
 }
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general){
-    foreach(const Skill* skill, player->getGeneral2()->getSkillList())
-        player->loseSkill(skill->objectName());
+    if(player->getGeneral2() != NULL){
+        foreach(const Skill* skill, player->getGeneral2()->getSkillList())
+            player->loseSkill(skill->objectName());
+    }
     setPlayerProperty(player, "general2", new_general);
     foreach(const Skill* skill, player->getGeneral2()->getSkillList())
         player->addSkill(skill->objectName());
