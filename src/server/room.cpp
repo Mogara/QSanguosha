@@ -2762,7 +2762,8 @@ void Room::startGame(){
             broadcastProperty(player, "role"); 
     }
 
-    initSkillsForPlayers();
+    if(!ServerInfo.EnableBasara)
+        initSkillsForPlayers();
 
     broadcastInvoke("startGame");
     game_started = true;
