@@ -8,7 +8,7 @@
 
 class YitianSwordSkill : public WeaponSkill{
 public:
-    YitianSwordSkill():WeaponSkill("yitian_sword"){
+    YitianSwordSkill():WeaponSkill("YitianSword"){
         events << DamageComplete;
     }
 
@@ -16,7 +16,7 @@ public:
         if(player->getPhase() != Player::NotActive)
            return false;
 
-        if(player->askForSkillInvoke("yitian_sword"))
+        if(player->askForSkillInvoke("YitianSword"))
             player->getRoom()->askForUseCard(player, "slash", "@askforslash");
 
         return false;
@@ -26,7 +26,7 @@ public:
 /*YitianSword::YitianSword(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
-    setObjectName("yitian_sword");
+    setObjectName("YitianSword");
     skill = new YitianSwordSkill;
 }
 

@@ -287,8 +287,8 @@ public:
         switch(triggerEvent){
         case GameStart:{
             player = room->getLord();
-            room->installEquip(player, "chitu");
-            room->installEquip(player, "blade");
+            room->installEquip(player, "ChiTu");
+            room->installEquip(player, "Blade");
             room->acquireSkill(player, "flood");
             room->acquireSkill(player, "xiansheng");
 
@@ -296,14 +296,14 @@ public:
             room->acquireSkill(panglingming, "taichen_fight");
 
             ServerPlayer *huatuo = room->findPlayer("huatuo");
-            room->installEquip(huatuo, "hualiu");
+            room->installEquip(huatuo, "HuaLiu");
             room->acquireSkill(huatuo, "guagu");
 
             ServerPlayer *lvmeng = room->findPlayer("lvmeng");
             room->acquireSkill(lvmeng, "dujiang");
 
             ServerPlayer *caoren = room->findPlayer("caoren");
-            room->installEquip(caoren, "renwang_shield");
+            room->installEquip(caoren, "RenwangShield");
             room->acquireSkill(caoren, "zhiyuan");
 
 
