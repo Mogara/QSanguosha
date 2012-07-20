@@ -345,7 +345,7 @@ QString Horse::label() const{
 }
 
 QString Horse::getCommonEffectName() const{
-    return "Horse";
+    return "horse";
 }
 
 OffensiveHorse::OffensiveHorse(Card::Suit suit, int number, int correct)
