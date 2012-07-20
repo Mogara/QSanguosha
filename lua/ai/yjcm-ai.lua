@@ -29,7 +29,7 @@ sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 	end
 	for _, friend in ipairs(self.friends_noself) do
 		if self:isWeak(friend) or friend:getHandcardNum() < 2 or not friend:faceUp() 
-		or (friend:getArmor() and friend:getArmor():objectName() == "vine" and (friend:isChained() and not self:isGoodChainPartner(friend))) then
+		or (friend:getArmor() and friend:getArmor():objectName() == "Vine" and (friend:isChained() and not self:isGoodChainPartner(friend))) then
 			needfriend = needfriend + 1
 		end
 	end
@@ -41,7 +41,7 @@ sgs.ai_skill_use["@@jujian"] = function(self, prompt)
 		end
 	end
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:getArmor() and friend:getArmor():objectName() == "vine" and (friend:isChained() and not self:isGoodChainPartner(friend)) then
+		if friend:getArmor() and friend:getArmor():objectName() == "Vine" and (friend:isChained() and not self:isGoodChainPartner(friend)) then
 			return "@JujianCard="..nobasiccard.."->"..friend:objectName()
 		end
 	end
@@ -395,7 +395,7 @@ mingce_skill.getTurnUseCard=function(self)
 	if self.player:hasUsed("MingceCard") then return end
 
 	local card
-	if self.player:getArmor() and (self.player:getArmor():objectName() == "silver_lion" and self.player:isWounded()) then
+	if self.player:getArmor() and (self.player:getArmor():objectName() == "SilverLion" and self.player:isWounded()) then
 		card = self.player:getArmor()
 	end
 	if not card then

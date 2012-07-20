@@ -290,7 +290,7 @@ public:
 Monkey::Monkey(Card::Suit suit, int number)
     :OffensiveHorse(suit, number)
 {
-    setObjectName("monkey");
+    setObjectName("Monkey");
 
     grab_peach = new GrabPeach;
     grab_peach->setParent(this);
@@ -305,12 +305,12 @@ void Monkey::onUninstall(ServerPlayer *player) const{
 }
 
 QString Monkey::getCommonEffectName() const{
-    return "monkey";
+    return "Monkey";
 }
 
 class GaleShellSkill: public ArmorSkill{
 public:
-    GaleShellSkill():ArmorSkill("gale-shell"){
+    GaleShellSkill():ArmorSkill("GaleShell"){
         events << DamageInflicted;
     }
 
@@ -331,7 +331,7 @@ public:
 };
 
 GaleShell::GaleShell(Suit suit, int number) :Armor(suit, number){
-    setObjectName("gale-shell");
+    setObjectName("GaleShell");
     skill = new GaleShellSkill;
 
     target_fixed = false;
@@ -380,7 +380,7 @@ DisasterPackage::DisasterPackage()
 
 class YxSwordSkill: public WeaponSkill{
 public:
-    YxSwordSkill():WeaponSkill("yx_sword"){
+    YxSwordSkill():WeaponSkill("YxSword"){
         events << DamageCaused;
     }
 
@@ -415,7 +415,7 @@ public:
 YxSword::YxSword(Suit suit, int number)
     :Weapon(suit, number, 3)
 {
-    setObjectName("yx_sword");
+    setObjectName("YxSword");
     skill = new YxSwordSkill;
 }
 

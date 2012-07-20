@@ -86,13 +86,13 @@ PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
             pma->setScale(0.7);
         }
 
-        else if(emotion.contains("double_sword"))
+        else if(emotion.contains("DoubleSword"))
         {
             pma->moveBy(13, -85);
             pma->setScale(1.3);
         }
 
-        else if(emotion.contains("fan") || emotion.contains("guding_blade"))
+        else if(emotion.contains("Fan") || emotion.contains("GudingBlade"))
         {
             pma->moveBy(-30, -80);
             pma->setScale(1.3);

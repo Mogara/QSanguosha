@@ -642,7 +642,7 @@ bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Playe
 void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
-    if(effect.from->hasArmorEffect("eight_diagram") || effect.from->hasSkill("bazhen"))
+    if(effect.from->hasArmorEffect("EightDiagram") || effect.from->hasSkill("bazhen"))
         room->broadcastSkillInvoke("tiaoxin", 3);
     else
         room->broadcastSkillInvoke("tiaoxin", qrand() % 2 + 1);

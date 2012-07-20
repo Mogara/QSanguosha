@@ -9,7 +9,7 @@
 
 class SPMoonSpearSkill: public WeaponSkill{
 public:
-    SPMoonSpearSkill():WeaponSkill("sp_moonspear"){
+    SPMoonSpearSkill():WeaponSkill("SPMoonSpear"){
         events << CardFinished << CardResponsed;
     }
 
@@ -55,7 +55,7 @@ public:
 SPMoonSpear::SPMoonSpear(Suit suit, int number)
     :Weapon(suit, number, 3)
 {
-    setObjectName("sp_moonspear");
+    setObjectName("SPMoonSpear");
     skill = new SPMoonSpearSkill;
 }
 
