@@ -710,7 +710,9 @@ public:
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->isEquipped() && to_select->objectName() == "analeptic";
+        Room *room = Sanguosha->currentRoom();
+        Player::Place place = room->getCardPlace(to_select->getEffectiveId());
+        return place == Player::PlaceHand && to_select->objectName() == "analeptic";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

@@ -3109,13 +3109,11 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     }
     
     notifyMoveCards(true, cards_moves, forceMoveVisible);
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     // Now, process add cards
     for (int i = 0; i <  cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
-        QList<CardMoveStruct> moves = cards_move.flatten();
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
             int card_id = cards_move.card_ids[j];
@@ -3142,6 +3140,8 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
+
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3234,6 +3234,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             }
         }
     }
+
     notifyMoveCards(true, cards_moves, forceMoveVisible);
 
     //trigger event
@@ -3278,7 +3279,6 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }    
 
     // Now, process add cards
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
     for (int i = 0; i <  cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -3311,6 +3311,8 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
+
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     //trigger event
     moveOneTimes = _mergeMoves(cards_moves);
@@ -3384,7 +3386,9 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
     }
 
     player = (ServerPlayer*)move.to;
-    if (player != NULL && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))
+    if (player != NULL && (move.to_place == Player::PlaceHand
+                           || move.to_place == Player::PlaceEquip
+                           || move.to_place == Player::PlaceJudge))
     {
         QSet<const Skill*> skills = player->getVisibleSkills();
         QList<const FilterSkill*> filterSkills;
@@ -3438,8 +3442,18 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
             if (!cardChanged[i]) continue;
             if(move.to_place == Player::PlaceHand)
                 notifyUpdateCard(player, move.card_ids[i], cards[i]);
-            else
+            else{
                 broadcastUpdateCard(getPlayers(), move.card_ids[i], cards[i]);
+                if(move.to_place == Player::PlaceJudge){
+                    LogMessage log;
+                    log.type = "#FilterJudge";
+                    log.arg = cards[i]->getSkillName();
+                    log.from = player;
+
+                    sendLog(log);
+                    broadcastSkillInvoke(cards[i]->getSkillName());
+                }
+            }
         }
     }
 
@@ -3482,9 +3496,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 updateCardsOnLose(move);
         }
         else{
+            doNotify(player, S_COMMAND_GET_CARD, arg);
             foreach (CardsMoveStruct move, cards_moves)
                 updateCardsOnGet(move);
-            doNotify(player, S_COMMAND_GET_CARD, arg);
         }
     }    
     return true;

@@ -319,20 +319,20 @@ GanranEquip::GanranEquip(Card::Suit suit, int number)
 class Ganran: public FilterSkill{
 public:
     Ganran():FilterSkill("ganran"){
-
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return to_select->getTypeId() == Card::Equip;
+        Room *room = Sanguosha->currentRoom();
+        Player::Place place = room->getCardPlace(to_select->getEffectiveId());
+        return place == Player::PlaceHand && to_select->getTypeId() == Card::Equip;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        
         GanranEquip *ironchain = new GanranEquip(originalCard->getSuit(), originalCard->getNumber());
-        ironchain->addSubcard(originalCard->getId());
         ironchain->setSkillName(objectName());
-
-        return ironchain;
+        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getEffectiveId());
+        card->takeOver(ironchain);
+        return card;
     }
 };
 

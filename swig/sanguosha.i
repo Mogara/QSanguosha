@@ -796,6 +796,8 @@ public:
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
+	
+	Room* currentRoom();
 };
 
 extern Engine *Sanguosha;

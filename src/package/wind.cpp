@@ -631,37 +631,6 @@ public:
     }
 };
 
-class HongyanRetrial: public TriggerSkill{
-public:
-    HongyanRetrial():TriggerSkill("#hongyan-retrial"){
-        frequency = Compulsory;
-
-        events << FinishRetrial;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
-        if(judge->card->getSuit() == Card::Spade
-                && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge){
-            LogMessage log;
-            log.type = "#HongyanJudge";
-            log.arg = "hongyan";
-            log.from = player;
-
-            int cardId = judge->card->getEffectiveId();
-            WrappedCard *new_card = Hongyan::changeToHeart(cardId);
-
-            room->broadcastUpdateCard(room->getPlayers(), cardId, new_card);
-
-            judge->card = new_card;
-            room->sendLog(log);
-            room->broadcastSkillInvoke("hongyan");
-        }
-
-        return false;
-    }
-};
-
 TianxiangCard::TianxiangCard()
 {
 }
@@ -1105,8 +1074,6 @@ WindPackage::WindPackage()
     General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false);
     xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new Hongyan);
-    xiaoqiao->addSkill(new HongyanRetrial);
-    related_skills.insertMulti("hongyan", "#hongyan-retrial");
 
     zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);
