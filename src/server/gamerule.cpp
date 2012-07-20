@@ -945,7 +945,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     {
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player, "general", general_name);
+        room->changePlayerGeneral(player, general_name);
 
         foreach(QString skill_name, skill_mark.keys()){
             if(player->hasSkill(skill_name))
@@ -955,7 +955,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     else{
         QString transfigure_str = QString("%1:%2").arg(player->getGeneral2Name()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player,"general2",general_name);
+        room->changePlayerGeneral2(player, general_name);
     }
 
     room->getThread()->addPlayerSkills(player);

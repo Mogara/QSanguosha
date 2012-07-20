@@ -75,15 +75,20 @@ bool General::hasSkill(const QString &skill_name) const{
     return skill_set.contains(skill_name) || extra_set.contains(skill_name);
 }
 
-QList<const Skill *> General::getVisibleSkillList() const{
-    QList<const Skill *> skills;
-    foreach(const Skill *skill, findChildren<const Skill *>()){
-        if(skill->isVisible())
-            skills << skill;
-    }
+QList<const Skill *> General::getSkillList() const{
+    QList<const Skill *> skills = findChildren<const Skill *>();
 
     foreach(QString skill_name, extra_set){
         const Skill *skill = Sanguosha->getSkill(skill_name);
+        skills << skill;
+    }
+
+    return skills;
+}
+
+QList<const Skill *> General::getVisibleSkillList() const{
+    QList<const Skill *> skills;
+    foreach(const Skill *skill, getSkillList()){
         if(skill->isVisible())
             skills << skill;
     }
@@ -92,19 +97,7 @@ QList<const Skill *> General::getVisibleSkillList() const{
 }
 
 QSet<const Skill *> General::getVisibleSkills() const{
-    QSet<const Skill *> skills;
-    foreach(const Skill *skill, findChildren<const Skill *>()){
-        if(skill->isVisible())
-            skills << skill;
-    }
-
-    foreach(QString skill_name, extra_set){
-        const Skill *skill = Sanguosha->getSkill(skill_name);
-        if(skill->isVisible())
-            skills << skill;
-    }
-
-    return skills;
+    return getVisibleSkillList().toSet();
 }
 
 QSet<const TriggerSkill *> General::getTriggerSkills() const{

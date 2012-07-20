@@ -393,13 +393,13 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
 
         break;
     }
-    case S_GAME_EVENT_LOSE_SKILL:{
+    case S_GAME_EVENT_DETACH_SKILL:{
         QString player_name = arg[1].asCString();
         QString skill_name =  arg[2].asCString();
 
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
-        player->loseSkill(skill_name);
+        player->detachSkill(skill_name);
         if(player == Self)
             detachSkill(skill_name);
 
@@ -413,6 +413,26 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
 
         player->acquireSkill(skill_name);
         acquireSkill(player, skill_name);
+
+        break;
+    }
+    case S_GAME_EVENT_ADD_SKILL:{
+        QString player_name = arg[1].asCString();
+        QString skill_name =  arg[2].asCString();
+
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+        player->addSkill(skill_name);
+
+        break;
+    }
+    case S_GAME_EVENT_LOSE_SKILL:{
+        QString player_name = arg[1].asCString();
+        QString skill_name =  arg[2].asCString();
+
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+        player->loseSkill(skill_name);
 
         break;
     }

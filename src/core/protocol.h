@@ -102,8 +102,10 @@ namespace QSanProtocol
         S_GAME_EVENT_PLAYER_DYING,
         S_GAME_EVENT_SKILL_INVOKED,
         S_GAME_EVENT_JUDGE_RESULT,
-        S_GAME_EVENT_LOSE_SKILL,
-        S_GAME_EVENT_ACQUIRE_SKILL
+        S_GAME_EVENT_DETACH_SKILL,
+        S_GAME_EVENT_ACQUIRE_SKILL,
+        S_GAME_EVENT_ADD_SKILL,
+        S_GAME_EVENT_LOSE_SKILL
     };
 
     enum Game3v3ChooseOrderCommand
