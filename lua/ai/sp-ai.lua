@@ -1,6 +1,6 @@
 sgs.weapon_range.SPMoonSpear = 3
 
-sgs.ai_skill_invoke.sp_moonspear = function(self, data)
+sgs.ai_skill_invoke.SPMoonSpear = function(self, data)
 	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 	for _, target in ipairs(self.enemies) do
 		if self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
@@ -10,7 +10,7 @@ sgs.ai_skill_invoke.sp_moonspear = function(self, data)
 	return false
 end
 
-sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_skill_playerchosen.SPMoonSpear = sgs.ai_skill_playerchosen.zero_card_as_slash
 sgs.ai_playerchosen_intention.sp_moonspaer = 80
 
 function sgs.ai_slash_prohibit.weidi(self, to, card)
@@ -48,7 +48,7 @@ end
 
 sgs.ai_skill_choice.jilei = function(self, choices)
 	local tmptrick = sgs.Sanguosha:cloneCard("ex_nihilo", sgs.Card_NoSuit, 0)
-	if (self:isEquip("Crossbow",self.jilei_source) and self.jilei_source:inMyAttackRange(self.player)) or
+	if (self:isEquip("CrossBow",self.jilei_source) and self.jilei_source:inMyAttackRange(self.player)) or
 		 self.jilei_source:isJilei(tmptrick) then
 		return "basic"
 	else

@@ -285,12 +285,19 @@ void Engine::unregisterRoom() {
     m_mutex.unlock();
 }
 
-QObject* Engine::currentRoom() {
+QObject* Engine::currentRoomObject() {
     QObject* room = NULL;
     m_mutex.lock();
     room = m_rooms[QThread::currentThread()];
     Q_ASSERT(room);
     m_mutex.unlock();
+    return room;
+}
+
+Room* Engine::currentRoom(){
+    QObject* roomObject = currentRoomObject();
+    Room *room = qobject_cast<Room*>(roomObject);
+    Q_ASSERT(room != NULL);
     return room;
 }
 
@@ -305,7 +312,7 @@ Card *Engine::getCard(int cardId) {
     Card *card = NULL;
     if (cardId < 0 || cardId >= cards.length())
         return NULL;
-    QObject* room = currentRoom();
+    QObject* room = currentRoomObject();
     Q_ASSERT(room);
     Room *serverRoom = qobject_cast<Room *>(room);
     if (serverRoom != NULL)

@@ -166,19 +166,19 @@ public:
         switch(triggerEvent){
         case GameStart:{
             player = room->getLord();
-            room->installEquip(player, "renwang_shield");
-            room->installEquip(player, "hualiu");
+            room->installEquip(player, "RenwangShield");
+            room->installEquip(player, "HuaLiu");
 
             ServerPlayer *caocao = room->findPlayer("caocao");
-            room->installEquip(caocao, "qinggang_sword");
-            room->installEquip(caocao, "zhuahuangfeidian");
+            room->installEquip(caocao, "QinggangSword");
+            room->installEquip(caocao, "ZhuaHuangFeiDian");
 
             ServerPlayer *liubei = room->findPlayer("liubei");
-            room->installEquip(liubei, "double_sword");
+            room->installEquip(liubei, "DoubleSword");
 
             ServerPlayer *guanyu = room->findPlayer("guanyu");
-            room->installEquip(guanyu, "blade");
-            room->installEquip(guanyu, "chitu");
+            room->installEquip(guanyu, "Blade");
+            room->installEquip(guanyu, "ChiTu");
             room->acquireSkill(guanyu, "zhanshuangxiong");
 
 

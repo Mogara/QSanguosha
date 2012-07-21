@@ -320,6 +320,7 @@ void RoomThread::run(){
     // start game, draw initial 4 cards
     try {        
         trigger(GameStart, (Room*)room, NULL);
+        room->initSkillsForPlayers();
         constructTriggerTable();
 
         if(room->mode == "06_3v3"){

@@ -393,13 +393,13 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
 
         break;
     }
-    case S_GAME_EVENT_LOSE_SKILL:{
+    case S_GAME_EVENT_DETACH_SKILL:{
         QString player_name = arg[1].asCString();
         QString skill_name =  arg[2].asCString();
 
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
-        player->loseSkill(skill_name);
+        player->detachSkill(skill_name);
         if(player == Self)
             detachSkill(skill_name);
 
@@ -414,6 +414,30 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
         player->acquireSkill(skill_name);
         acquireSkill(player, skill_name);
 
+        break;
+    }
+    case S_GAME_EVENT_ADD_SKILL:{
+        QString player_name = arg[1].asCString();
+        QString skill_name =  arg[2].asCString();
+
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+        player->addSkill(skill_name);
+
+        break;
+    }
+    case S_GAME_EVENT_LOSE_SKILL:{
+        QString player_name = arg[1].asCString();
+        QString skill_name =  arg[2].asCString();
+
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+        player->loseSkill(skill_name);
+
+        break;
+    }
+    case S_GAME_EVENT_UPDATE_SKILL:{
+        updateSkillButtons();
         break;
     }
     default:
@@ -1168,7 +1192,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
     case Qt::Key_E: dashboard->selectCard("equip"); break;
     case Qt::Key_W: dashboard->selectCard("weapon"); break;
-    case Qt::Key_H: dashboard->selectCard("horse"); break;
+    case Qt::Key_H: dashboard->selectCard("Horse"); break;
 
     case Qt::Key_T: dashboard->selectCard("trick"); break;
     case Qt::Key_A: dashboard->selectCard("aoe"); break;
@@ -3257,8 +3281,6 @@ void RoomScene::onGameStart(){
             enemy_box->show();
         }
     }
-
-    updateSkillButtons();
 
     if(control_panel)
         control_panel->hide();

@@ -294,7 +294,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     if (thread->trigger(GameOverJudge, this, victim, data)) return;
 
     thread->trigger(Death, this, victim, data);
-    victim->loseAllSkills();
+    victim->detachAllSkills();
 
     if(Config.EnableAI){
         bool expose_roles = true;
@@ -499,7 +499,10 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
     if(!player->hasSkill(skill_name))
         return;
 
-    player->loseSkill(skill_name);
+    if(player->getAcquiredSkills().contains(skill_name))
+        player->detachSkill(skill_name);
+    else
+        player->loseSkill(skill_name);
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill && skill->isVisible()){
@@ -507,7 +510,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
             detachSkillFromPlayer(player, skill->objectName());
 
         Json::Value args;
-        args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+        args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
         args[1] = toJsonString(player->objectName());
         args[2] = toJsonString(skill_name);
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
@@ -1446,13 +1449,10 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
 
     QString m_old_general = player->getGeneralName();
     if(Config.Enable2ndGeneral && !old_general.isEmpty() && player->getGeneral2Name() == old_general){
-        m_old_general = player->getGeneral2Name();
-        setPlayerProperty(player, "general2", new_general);
-        broadcastProperty(player, "general2");
+        changePlayerGeneral2(player, new_general);
     }
     else{
-        setPlayerProperty(player, "general", new_general);
-        broadcastProperty(player, "general");
+        changePlayerGeneral(player, new_general);
     }
 
     QString transfigure_str = QString("%1:%2").arg(m_old_general).arg(new_general);
@@ -2445,7 +2445,7 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
         bool slash_record =
             key.contains("Slash") &&
             card_use.from->getSlashCount() > 0 &&
-            card_use.from->hasWeapon("crossbow");
+            card_use.from->hasWeapon("CrossBow");
 
         if(!slash_record){
             card_use.from->addHistory(key);
@@ -3109,13 +3109,11 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     }
     
     notifyMoveCards(true, cards_moves, forceMoveVisible);
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     // Now, process add cards
     for (int i = 0; i <  cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
-        QList<CardMoveStruct> moves = cards_move.flatten();
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
             int card_id = cards_move.card_ids[j];
@@ -3142,6 +3140,8 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
+
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3234,6 +3234,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             }
         }
     }
+
     notifyMoveCards(true, cards_moves, forceMoveVisible);
 
     //trigger event
@@ -3278,7 +3279,6 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }    
 
     // Now, process add cards
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
     for (int i = 0; i <  cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -3311,6 +3311,8 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
+
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     //trigger event
     moveOneTimes = _mergeMoves(cards_moves);
@@ -3384,7 +3386,9 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
     }
 
     player = (ServerPlayer*)move.to;
-    if (player != NULL && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))
+    if (player != NULL && (move.to_place == Player::PlaceHand
+                           || move.to_place == Player::PlaceEquip
+                           || move.to_place == Player::PlaceJudge))
     {
         QSet<const Skill*> skills = player->getVisibleSkills();
         QList<const FilterSkill*> filterSkills;
@@ -3438,8 +3442,18 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
             if (!cardChanged[i]) continue;
             if(move.to_place == Player::PlaceHand)
                 notifyUpdateCard(player, move.card_ids[i], cards[i]);
-            else
+            else{
                 broadcastUpdateCard(getPlayers(), move.card_ids[i], cards[i]);
+                if(move.to_place == Player::PlaceJudge){
+                    LogMessage log;
+                    log.type = "#FilterJudge";
+                    log.arg = cards[i]->getSkillName();
+                    log.from = player;
+
+                    sendLog(log);
+                    broadcastSkillInvoke(cards[i]->getSkillName());
+                }
+            }
         }
     }
 
@@ -3482,9 +3496,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 updateCardsOnLose(move);
         }
         else{
+            doNotify(player, S_COMMAND_GET_CARD, arg);
             foreach (CardsMoveStruct move, cards_moves)
                 updateCardsOnGet(move);
-            doNotify(player, S_COMMAND_GET_CARD, arg);
         }
     }    
     return true;
@@ -3532,6 +3546,44 @@ bool Room::broadcastSkillInvoke(const QString &skill_name, bool isMale, int type
     args[3] = type;
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
     return true;
+}
+
+void Room::initSkillsForPlayers(){
+    foreach(ServerPlayer *player, m_players)
+    {
+        QList<const Skill*> skills = player->getGeneral()->getSkillList();
+        foreach(const Skill* skill, skills)
+            player->addSkill(skill->objectName());
+        if(ServerInfo.Enable2ndGeneral){
+            skills = player->getGeneral2()->getSkillList();
+            foreach(const Skill* skill, skills)
+                player->addSkill(skill->objectName());
+        }
+    }
+
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+}
+
+void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general){
+    if(player->getGeneral() != NULL){
+        foreach(const Skill* skill, player->getGeneral()->getSkillList())
+            player->loseSkill(skill->objectName());
+    }
+    setPlayerProperty(player, "general", new_general);
+    foreach(const Skill* skill, player->getGeneral()->getSkillList())
+        player->addSkill(skill->objectName());
+}
+
+void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general){
+    if(player->getGeneral2() != NULL){
+        foreach(const Skill* skill, player->getGeneral2()->getSkillList())
+            player->loseSkill(skill->objectName());
+    }
+    setPlayerProperty(player, "general2", new_general);
+    foreach(const Skill* skill, player->getGeneral2()->getSkillList())
+        player->addSkill(skill->objectName());
 }
 
 void Room::startTest(const QString &to_test){

@@ -100,7 +100,8 @@ public:
 
     void registerRoom(QObject* room);
     void unregisterRoom();
-    QObject* currentRoom();
+    QObject* currentRoomObject();
+    Room* currentRoom();
 
 private:
     QMutex m_mutex;

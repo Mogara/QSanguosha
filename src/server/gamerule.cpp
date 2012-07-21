@@ -548,13 +548,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
 
-            room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
             LogMessage log;
             log.type = "$InitialJudge";
             log.from = player;
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
+
+            room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
+                CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
 
             int delay = Config.AIDelay;
             if(judge->time_consuming)
@@ -944,7 +945,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     {
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player, "general", general_name);
+        room->changePlayerGeneral(player, general_name);
 
         foreach(QString skill_name, skill_mark.keys()){
             if(player->hasSkill(skill_name))
@@ -954,7 +955,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     else{
         QString transfigure_str = QString("%1:%2").arg(player->getGeneral2Name()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player,"general2",general_name);
+        room->changePlayerGeneral2(player, general_name);
     }
 
     room->getThread()->addPlayerSkills(player);
@@ -984,8 +985,8 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
                 room->setTag("SkipNormalDeathProcess", true);
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
+                room->setPlayerProperty(sp, "general", "anjiang");
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
-                room->setPlayerProperty(sp,"general","anjiang");
                 room->setPlayerProperty(sp,"kingdom","god");
                 sp->invoke("transfigure", transfigure_str);
 
@@ -995,9 +996,8 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
 
                 if(Config.Enable2ndGeneral)
                 {
-
+                    room->setPlayerProperty(sp, "general2", "anjiang");
                     transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
-                    room->setPlayerProperty(sp,"general2","anjiang");
                     sp->invoke("transfigure", transfigure_str);
 
                     log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);

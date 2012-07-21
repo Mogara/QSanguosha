@@ -456,9 +456,9 @@ void CustomAssignDialog::doEquipCardAssign(){
 
 void CustomAssignDialog::getEquipCard(int card_id){
 	QString name = list->currentItem()->data(Qt::UserRole).toString();
-	QString card_type = Sanguosha->getCard(card_id)->getSubtype();
+	QString card_type = Sanguosha->getEngineCard(card_id)->getSubtype();
 	foreach(int id, player_equips[name]){
-		if(card_type == Sanguosha->getCard(id)->getSubtype()){
+		if(card_type == Sanguosha->getEngineCard(id)->getSubtype()){
 			emit card_addin(id);
 			player_equips[name].removeOne(id);
 			break;
@@ -515,9 +515,9 @@ void CustomAssignDialog::doJudgeCardAssign(){
 
 void CustomAssignDialog::getJudgeCard(int card_id){
 	QString name = list->currentItem()->data(Qt::UserRole).toString();
-	QString card_name = Sanguosha->getCard(card_id)->objectName();
+	QString card_name = Sanguosha->getEngineCard(card_id)->objectName();
 	foreach(int id, player_judges[name]){
-		if(Sanguosha->getCard(id)->objectName() == card_name){
+		if(Sanguosha->getEngineCard(id)->objectName() == card_name){
 			emit card_addin(id);
 			player_judges[name].removeOne(id);
 			break;
@@ -601,7 +601,7 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
 		removeJudgeButton->setEnabled(true);
 
 	foreach(int equip_id, player_equips[name]){
-		const Card* card = Sanguosha->getCard(equip_id);
+		const Card* card = Sanguosha->getEngineCard(equip_id);
 		QString card_name = Sanguosha->translate(card->objectName());
 		QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
 		QString point = card->getNumberString();
@@ -613,7 +613,7 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
 	}
 
 	foreach(int hand_id, player_handcards[name]){
-		const Card* card = Sanguosha->getCard(hand_id);
+		const Card* card = Sanguosha->getEngineCard(hand_id);
 		QString card_name = Sanguosha->translate(card->objectName());
 		QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
 		QString point = card->getNumberString();
@@ -625,7 +625,7 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
 	}
 
 	foreach(int judge_id, player_judges[name]){
-		const Card* card = Sanguosha->getCard(judge_id);
+		const Card* card = Sanguosha->getEngineCard(judge_id);
 		QString card_name = Sanguosha->translate(card->objectName());
 		QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
 		QString point = card->getNumberString();
@@ -676,7 +676,7 @@ void CustomAssignDialog::updatePileInfo(int row){
 		removePileButton->setEnabled(true);
 
 	foreach(int card_id, set_pile){
-		const Card* card = Sanguosha->getCard(card_id);
+		const Card* card = Sanguosha->getEngineCard(card_id);
 		QString card_name = Sanguosha->translate(card->objectName());
 		QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
 		QString point = card->getNumberString();
@@ -1265,7 +1265,7 @@ void CustomAssignDialog::load()
 				int num = id.toInt(&ok);
 				if(!ok){
 					for(int i = 0; i < Sanguosha->getCardCount(); i++){
-						if(Sanguosha->getCard(i)->objectName() == id){
+						if(Sanguosha->getEngineCard(i)->objectName() == id){
 							player_handcards[name].prepend(i);
 							break;
 						}
@@ -1283,7 +1283,7 @@ void CustomAssignDialog::load()
 				int num = id.toInt(&ok);
 				if(!ok){
 					for(int i = 0; i < Sanguosha->getCardCount(); i++){
-						if(Sanguosha->getCard(i)->objectName() == id){
+						if(Sanguosha->getEngineCard(i)->objectName() == id){
 							player_equips[name].prepend(i);
 							break;
 						}
@@ -1301,7 +1301,7 @@ void CustomAssignDialog::load()
 				int num = id.toInt(&ok);
 				if(!ok){
 					for(int i = 0; i < Sanguosha->getCardCount(); i++){
-						if(Sanguosha->getCard(i)->objectName() == id){
+						if(Sanguosha->getEngineCard(i)->objectName() == id){
 							player_judges[name].prepend(i);
 							break;
 						}
@@ -1683,7 +1683,7 @@ void CardAssignDialog::updateCardList(){
 			if(excluded_card.contains(i))
 				continue;
 
-			const Card *card = Sanguosha->getCard(i);
+			const Card *card = Sanguosha->getEngineCard(i);
             if(card->getType() == card_type || card->isKindOf(class_name.toStdString().c_str()))
 				reasonable_cards << card;
 		}
@@ -1693,7 +1693,7 @@ void CardAssignDialog::updateCardList(){
 			if(excluded_card.contains(i))
 				continue;
 
-			const Card *card = Sanguosha->getCard(i);
+			const Card *card = Sanguosha->getEngineCard(i);
 			reasonable_cards << card;
 		}
 	}

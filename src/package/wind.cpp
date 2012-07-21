@@ -374,39 +374,45 @@ public:
         events << TargetConfirmed << SlashProceed << CardFinished;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
     virtual bool trigger(TriggerEvent triggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            bool caninvoke = false;
-            if(use.card->isKindOf("Slash") && use.from->hasSkill(objectName())
-                && use.to.contains(player) && use.from->getPhase() == Player::Play){
-                   caninvoke = true;
-            }
-            int handcardnum = player->getHandcardNum();
-            if(caninvoke && (handcardnum >= use.from->getHp() || handcardnum <= use.from->getAttackRange()) &&
-               use.from->askForSkillInvoke("liegong", QVariant::fromValue(player))){
-                room->broadcastSkillInvoke(objectName());
-                room->setPlayerFlag(player, "LiegongTarget");
+            if(!use.card->isKindOf("Slash") || use.from != player || player->getPhase() != Player::Play)
+                   return false;
+
+            foreach(ServerPlayer *target, use.to){
+                int handcardnum = target->getHandcardNum();
+                if(handcardnum >= player->getHp() || handcardnum <= player->getAttackRange()){
+                    bool invoke = player->askForSkillInvoke("liegong", QVariant::fromValue(target));
+                    QVariantList liegongList = target->tag["Liegong"].toList();
+                    liegongList << invoke;
+                    target->tag["Liegong"] = liegongList;
+                    target->setFlags("LiegongTarget");
+                }
             }
         }
         else if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.from->hasSkill(objectName()) && effect.to->hasFlag("LiegongTarget")){
-                room->slashResult(effect, NULL);
-                return true;
+            effect.to->setFlags("-LiegongTarget");
+            QVariantList liegongList = effect.to->tag["Liegong"].toList();
+            if(!liegongList.isEmpty()){
+                bool invoke = liegongList.takeFirst().toBool();
+                effect.to->tag["Liegong"] = liegongList;
+                if(invoke){
+                    room->broadcastSkillInvoke(objectName());
+                    room->slashResult(effect, NULL);
+                    return true;
+                }
             }
-        }else if(triggerEvent == CardFinished){
-            CardUseStruct use = data.value<CardUseStruct>();
-            foreach(ServerPlayer *to, use.to){
-                if(to->hasFlag("LiegongTarget"))
-                    room->setPlayerFlag(to, "-LiegongTarget");
-            }
-
         }
+        else if(triggerEvent == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach(ServerPlayer *target, use.to){
+                if(target->hasFlag("LiegongTarget"))
+                    target->tag.remove("Liegong");
+            }
+        }
+
         return false;
     }
 };
@@ -628,37 +634,6 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         return changeToHeart(originalCard->getEffectiveId());
-    }
-};
-
-class HongyanRetrial: public TriggerSkill{
-public:
-    HongyanRetrial():TriggerSkill("#hongyan-retrial"){
-        frequency = Compulsory;
-
-        events << FinishRetrial;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
-        if(judge->card->getSuit() == Card::Spade
-                && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge){
-            LogMessage log;
-            log.type = "#HongyanJudge";
-            log.arg = "hongyan";
-            log.from = player;
-
-            int cardId = judge->card->getEffectiveId();
-            WrappedCard *new_card = Hongyan::changeToHeart(cardId);
-
-            room->broadcastUpdateCard(room->getPlayers(), cardId, new_card);
-
-            judge->card = new_card;
-            room->sendLog(log);
-            room->broadcastSkillInvoke("hongyan");
-        }
-
-        return false;
     }
 };
 
@@ -1105,8 +1080,6 @@ WindPackage::WindPackage()
     General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false);
     xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new Hongyan);
-    xiaoqiao->addSkill(new HongyanRetrial);
-    related_skills.insertMulti("hongyan", "#hongyan-retrial");
 
     zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);

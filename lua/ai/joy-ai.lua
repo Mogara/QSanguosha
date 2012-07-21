@@ -16,7 +16,7 @@ function SmartAI:useCardGaleShell(card, use)
 	end
 end
 
-sgs.ai_armor_value["gale-shell"] = function()
+sgs.ai_armor_value["GaleShell"] = function()
 	return -10
 end
 
@@ -30,8 +30,8 @@ sgs.weapon_range.YxSword = 3
 sgs.ai_skill_invoke.yx_sword = function(self, data)
 	local damage= data:toDamage()
 	local dmg = damage.damage
-	if damage.to:getArmor() and damage.to:getArmor():objectName() == "vine" and damage.nature == sgs.DamageStruct_Fire then dmg = dmg + 1 end
-	if damage.to:getArmor() and damage.to:getArmor():objectName() == "silver_lion" then dmg = 1 end
+	if damage.to:getArmor() and damage.to:getArmor():objectName() == "Vine" and damage.nature == sgs.DamageStruct_Fire then dmg = dmg + 1 end
+	if damage.to:getArmor() and damage.to:getArmor():objectName() == "SilverLion" then dmg = 1 end
 
 	if (damage.to:hasSkill("duanchang") and damage.to:getHp() - dmg < 1) or self:hasSkills("ganglie|fankui|enyuan", damage.to) then
 		return true

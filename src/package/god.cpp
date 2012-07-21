@@ -606,7 +606,9 @@ public:
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return to_select->getSuit() == Card::Heart;
+        Room *room = Sanguosha->currentRoom();
+        Player::Place place = room->getCardPlace(to_select->getEffectiveId());
+        return to_select->getSuit() == Card::Heart && place == Player::PlaceHand;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

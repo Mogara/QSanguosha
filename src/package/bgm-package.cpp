@@ -871,7 +871,7 @@ public:
             break;
         }
         case DamageInflicted:{
-            if(player->hasLordSkill("shichou", true) && !player->tag.value("ShichouTarget").isNull())
+            if(player->hasLordSkill(objectName(), true) && !player->tag.value("ShichouTarget").isNull())
             {
                 ServerPlayer *target = player->tag.value("ShichouTarget").value<PlayerStar>();
 

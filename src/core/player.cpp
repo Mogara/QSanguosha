@@ -273,13 +273,11 @@ bool Player::isLord() const{
 }
 
 bool Player::hasSkill(const QString &skill_name) const{
-    return hasInnateSkill(skill_name)
+    return skills.contains(skill_name)
             || acquired_skills.contains(skill_name);
 }
 
-bool Player::hasInnateSkill(const QString &skill_name, bool includeLost) const{
-    if(loseSkills() && !includeLost)
-        return false;
+bool Player::hasInnateSkill(const QString &skill_name) const{
     if(general && general->hasSkill(skill_name))
         return true;
 
@@ -289,9 +287,7 @@ bool Player::hasInnateSkill(const QString &skill_name, bool includeLost) const{
     return false;
 }
 
-bool Player::hasLordSkill(const QString &skill_name, bool includeLost) const{
-    if(loseSkills() && !includeLost)
-        return false;
+bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
     if(acquired_skills.contains(skill_name))
         return true;
 
@@ -300,7 +296,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool includeLost) const{
         return false;
 
     if(isLord() || ServerInfo.EnableHegemony)
-        return hasInnateSkill(skill_name, includeLost);
+        return skills.contains(skill_name) || (include_lose && hasInnateSkill(skill_name));
 
     if(hasSkill("weidi")){
         foreach(const Player *player, getSiblings()){
@@ -312,21 +308,24 @@ bool Player::hasLordSkill(const QString &skill_name, bool includeLost) const{
     return false;
 }
 
-bool Player::loseSkills() const{
-    return (getMark("@duanchang") + getMark("@huoshui") + getMark("@qingcheng")) > 0;
-}
-
-
 void Player::acquireSkill(const QString &skill_name){
     acquired_skills.insert(skill_name);
 }
 
-void Player::loseSkill(const QString &skill_name){
+void Player::detachSkill(const QString &skill_name){
     acquired_skills.remove(skill_name);
 }
 
-void Player::loseAllSkills(){
+void Player::detachAllSkills(){
     acquired_skills.clear();
+}
+
+void Player::addSkill(const QString &skill_name){
+    skills << skill_name;
+}
+
+void Player::loseSkill(const QString &skill_name){
+    skills.removeOne(skill_name);
 }
 
 QString Player::getPhaseString() const{
@@ -649,20 +648,15 @@ int Player::usedTimes(const QString &card_class) const{
 }
 
 QSet<const TriggerSkill *> Player::getTriggerSkills() const{
-    QSet<const TriggerSkill *> skills;
-    if(general)
-        skills += general->getTriggerSkills();
+    QSet<const TriggerSkill *> skillList;
 
-    if(general2)
-        skills += general2->getTriggerSkills();
-
-    foreach(QString skill_name, acquired_skills){
+    foreach(QString skill_name, skills + acquired_skills.toList()){
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if(skill)
-            skills << skill;
+            skillList << skill;
     }
 
-    return skills;
+    return skillList;
 }
 
 QSet<const Skill *> Player::getVisibleSkills() const{
@@ -670,20 +664,15 @@ QSet<const Skill *> Player::getVisibleSkills() const{
 }
 
 QList<const Skill *> Player::getVisibleSkillList() const{
-    QList<const Skill *> skills;
-    if(general)
-        skills << general->getVisibleSkillList();
+    QList<const Skill *> skillList;
 
-    if(general2)
-        skills << general2->getVisibleSkillList();
-
-    foreach(QString skill_name, acquired_skills){
+    foreach(QString skill_name, skills + acquired_skills.toList()){
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if(skill->isVisible())
-            skills << skill;
+            skillList << skill;
     }
 
-    return skills;
+    return skillList;
 }
 
 QSet<QString> Player::getAcquiredSkills() const{

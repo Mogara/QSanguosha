@@ -47,3 +47,9 @@ void WrappedCard::copyEverythingFrom(Card* card)
     flags = card->getFlags();
     m_skillName = card->getSkillName();
 }
+
+void WrappedCard::setFlags(const QString &flag) const{
+    Q_ASSERT(m_card != NULL);
+    Card::setFlags(flag);
+    m_card->setFlags(flag);
+}

@@ -64,9 +64,9 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
-		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
-			or (amr:objectName()=="eight_diagram"))
+		local eff=(not amr) or self.player:hasWeapon("QinggangSword") or not
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("Fan"))
+			or (amr:objectName()=="EightDiagram"))
 			
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
 		elseif self:slashProhibit(nil, enemy) then
@@ -77,9 +77,9 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
-		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
-			or (amr:objectName()=="eight_diagram"))
+		local eff=(not amr) or self.player:hasWeapon("QinggangSword") or not
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("Fan"))
+			or (amr:objectName()=="EightDiagram"))
 
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
 		elseif self:slashProhibit(nil, enemy) then
