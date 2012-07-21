@@ -63,16 +63,17 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
 void QSanUiUtils::makeGray(QPixmap &pixmap)
 {
     QImage img = pixmap.toImage();
-
+    QPixmap alpha = pixmap.alphaChannel();
     for(int i = 0; i < img.width(); i++){
         for(int j = 0; j < img.height(); j++){
-            QRgb color = img.pixel(i, j);
-            int gray = qGray(color);
-            img.setPixel(i, j, qRgb(gray, gray, gray));
+            QColor color = QColor::fromRgba(img.pixel(i, j));            
+            int gray = qGray(color.rgb());
+            img.setPixel(i, j, qRgba(gray, gray, gray, color.alpha()));
         }
     }
 
     pixmap = QPixmap::fromImage(img);
+    pixmap.setAlphaChannel(alpha);
 }
 
 #include <ft2build.h>
