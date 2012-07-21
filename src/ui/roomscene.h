@@ -312,7 +312,6 @@ private:
     void freeze();
     void addRestartButton(QDialog *dialog);
     QGraphicsItem *createDashboardButtons();
-    void createExtraButtons();
     void createReplayControlBar();
 
     void fillGenerals1v1(const QStringList &names);
