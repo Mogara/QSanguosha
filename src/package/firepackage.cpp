@@ -314,7 +314,7 @@ public:
 
                     return true;
                 }
-            }else if(shuangxiong->getPhase() == Player::Finish && shuangxiong->hasFlag("shuangxiong")){
+            }else if(shuangxiong->getPhase() == Player::NotActive && shuangxiong->hasFlag("shuangxiong")){
                 room->setPlayerFlag(shuangxiong, "-shuangxiong");
             }
         }else if(triggerEvent == FinishJudge){
