@@ -290,14 +290,17 @@ public:
         events << EventPhaseStart << FinishJudge;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *shuangxiong, QVariant &data) const{
         if(triggerEvent == EventPhaseStart){
             if(shuangxiong->getPhase() == Player::Start){
                 room->setPlayerMark(shuangxiong, "shuangxiong", 0);
-            }else if(shuangxiong->getPhase() == Player::Draw){
+            }else if(shuangxiong->hasSkill(objectName()) && shuangxiong->isAlive()
+                     && shuangxiong->getPhase() == Player::Draw){
                 if(shuangxiong->askForSkillInvoke(objectName())){
-                    shuangxiong->setFlags("shuangxiong");
-
                     room->broadcastSkillInvoke("shuangxiong");
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*)");
@@ -306,12 +309,13 @@ public:
                     judge.who = shuangxiong;
 
                     room->judge(judge);
-
+                    room->setPlayerFlag(shuangxiong, "shuangxiong");
                     room->setPlayerMark(shuangxiong, "shuangxiong", judge.card->isRed() ? 1 : 2);
-                    shuangxiong->setFlags("-shuangxiong");
 
                     return true;
                 }
+            }else if(shuangxiong->getPhase() == Player::Finish && shuangxiong->hasFlag("shuangxiong")){
+                room->setPlayerFlag(shuangxiong, "-shuangxiong");
             }
         }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();

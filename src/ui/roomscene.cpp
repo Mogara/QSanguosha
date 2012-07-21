@@ -3266,6 +3266,8 @@ void RoomScene::onGameStart(){
         connect(player, SIGNAL(phase_changed()), log_box, SLOT(appendSeparator()));
     }
 
+    connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
+
     trust_button->setEnabled(true);
 
 
@@ -3812,6 +3814,15 @@ void RoomScene::revealGeneral(bool self, const QString &general){
         self_box->revealGeneral(general);
     else
         enemy_box->revealGeneral(general);
+}
+
+void RoomScene::skillStateChange(const QString &skill_name){
+    if(skill_name == "shuangxiong"){
+        const Skill *skill = Sanguosha->getSkill("shuangxiong");
+        addSkillButton(skill);
+    }
+    else if(skill_name == "-shuangxiong")
+        detachSkill("shuangxiong");
 }
 
 void RoomScene::startArrange(){

@@ -158,6 +158,8 @@ void ClientPlayer::setFlags(const QString &flag){
         emit drank_changed();
     else if(flag.endsWith("actioned"))
         emit action_taken();
+
+    emit skill_state_changed(flag);
 }
 
 void ClientPlayer::setMark(const QString &mark, int value){
