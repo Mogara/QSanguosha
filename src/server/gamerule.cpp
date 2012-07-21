@@ -986,9 +986,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
                 room->setPlayerProperty(sp, "general", "anjiang");
-                QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
                 room->setPlayerProperty(sp,"kingdom","god");
-                sp->invoke("transfigure", transfigure_str);
 
                 LogMessage log;
                 log.type = "#BasaraGeneralChosen";
@@ -997,9 +995,6 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
                 if(Config.Enable2ndGeneral)
                 {
                     room->setPlayerProperty(sp, "general2", "anjiang");
-                    transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
-                    sp->invoke("transfigure", transfigure_str);
-
                     log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
                 }
 

@@ -153,7 +153,7 @@ protected:
 
 private:
     ClientSocket *socket;
-    QList<const Card *> handcards;
+    QList<int> handcards;
     QList<const Card *> m_takenOffCards;
     Room *room;
     AI *ai;

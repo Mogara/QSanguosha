@@ -2137,8 +2137,16 @@ void Room::chooseGenerals(){
         foreach(ServerPlayer *player, m_players)
         {
             QStringList names;
-            if(player->getGeneral())names.append(player->getGeneralName());
-            if(player->getGeneral2() && Config.Enable2ndGeneral)names.append(player->getGeneral2Name());
+            if(player->getGeneral()){
+                QString name = player->getGeneralName();
+                names.append(name);
+                _setPlayerGeneral(player, "anjiang", true);
+            }
+            if(player->getGeneral2() && Config.Enable2ndGeneral){
+                QString name = player->getGeneral2Name();
+                names.append(name);
+                _setPlayerGeneral(player, "anjiang", false);
+            }
             this->setTag(player->objectName(),QVariant::fromValue(names));
         }
     }
@@ -2762,6 +2770,7 @@ void Room::startGame(){
             broadcastProperty(player, "role"); 
     }
 
+    initSkillsForPlayers();
     broadcastInvoke("startGame");
     game_started = true;
 
@@ -3081,6 +3090,7 @@ void Room::moveCardsAtomic(CardsMoveStruct cards_move, bool forceMoveVisible){
 void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible)
 {
     cards_moves = _breakDownCardMoves(cards_moves);
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
     // First, process remove card
     for (int i = 0; i < cards_moves.size(); i++)
     {   
@@ -3107,8 +3117,8 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             }
         }
     }
-    
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
+
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     // Now, process add cards
     for (int i = 0; i <  cards_moves.size(); i++)
@@ -3140,8 +3150,6 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
-
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3196,12 +3204,15 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
 void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin)
 {
     // First, process remove card
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
     QList<Player::Place> final_places;
     QList<Player*> move_tos;
+    QList<Player*> move_froms;
     for (int i = 0; i < cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
         final_places.append(cards_move.to_place);
+        move_froms.append(cards_move.from);
         move_tos.append(cards_move.to);
         if (enforceOrigin)
         {
@@ -3234,8 +3245,6 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             }
         }
     }
-
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
 
     //trigger event
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
@@ -3279,12 +3288,12 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }    
 
     // Now, process add cards
+    notifyMoveCards(false, cards_moves, forceMoveVisible);
     for (int i = 0; i <  cards_moves.size(); i++)
-    {   
+    {
         CardsMoveStruct &cards_move = cards_moves[i];
         cards_move.from = NULL;
         cards_move.from_place = Player::PlaceTable;
-        QList<CardMoveStruct> moves = cards_move.flatten();
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
             int card_id = cards_move.card_ids[j];
@@ -3311,8 +3320,12 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             setCardMapping(card_id, (ServerPlayer*)cards_move.to, cards_move.to_place);
         }
     }
-
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
+    
+    for (int i = 0; i <  cards_moves.size(); i++)
+    {
+        CardsMoveStruct &cards_move = cards_moves[i];
+        cards_move.from = move_froms[i];
+    }
 
     //trigger event
     moveOneTimes = _mergeMoves(cards_moves);
@@ -3390,6 +3403,21 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
                            || move.to_place == Player::PlaceEquip
                            || move.to_place == Player::PlaceJudge))
     {
+        if(move.from != move.to){
+            for (int i = 0; i < move.card_ids.size(); i++)
+            {
+                Card *card = Sanguosha->getCard(move.card_ids[i]);
+                if(card->isModified())
+                {
+                    resetCard(move.card_ids[i]);
+                    if(move.to_place != Player::PlaceHand)
+                        broadcastResetCard(getPlayers(), move.card_ids[i]);
+                    else
+                        notifyResetCard(player, move.card_ids[i]);
+                }
+            }
+        }
+
         QSet<const Skill*> skills = player->getVisibleSkills();
         QList<const FilterSkill*> filterSkills;
         // first, get all filter skills
@@ -3982,6 +4010,8 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         WrappedCard *card = Sanguosha->getWrappedCard(cardId);
         if(card->isModified())
             notifyUpdateCard(shenlvmeng, cardId, card);
+        else
+            notifyResetCard(shenlvmeng, cardId);
     }
 
     Json::Value gongxinArgs(Json::arrayValue);    
@@ -4311,6 +4341,8 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
         players << only_viewer << player;
         if(modified)
             notifyUpdateCard(only_viewer, card_id, card);
+        else
+            notifyResetCard(only_viewer, card_id);
         doBroadcastNotify(players, S_COMMAND_SHOW_CARD, show_arg);
     }
     else{
@@ -4318,6 +4350,8 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
             setCardFlag(card_id, "visible");
         if(modified)
             broadcastUpdateCard(getOtherPlayers(player), card_id, card);
+        else
+            broadcastResetCard(getOtherPlayers(player), card_id);
         doBroadcastNotify(S_COMMAND_SHOW_CARD, show_arg);
     }
 }
@@ -4341,6 +4375,13 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
                 notifyUpdateCard(to, cardId, card);
             else
                 broadcastUpdateCard(getOtherPlayers(player), cardId, card);
+        }
+        else
+        {
+            if(isUnicast)
+                notifyResetCard(to, cardId);
+            else
+                broadcastResetCard(getOtherPlayers(player), cardId);
         }
     }
 
