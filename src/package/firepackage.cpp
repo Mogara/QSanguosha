@@ -291,16 +291,17 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+        return TriggerSkill::triggerable(target) || (target && target->hasFlag("shuangxiong"));
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *shuangxiong, QVariant &data) const{
         if(triggerEvent == EventPhaseStart){
             if(shuangxiong->getPhase() == Player::Start){
                 room->setPlayerMark(shuangxiong, "shuangxiong", 0);
-            }else if(shuangxiong->hasSkill(objectName()) && shuangxiong->isAlive()
-                     && shuangxiong->getPhase() == Player::Draw){
+            }else if(shuangxiong->getPhase() == Player::Draw){
                 if(shuangxiong->askForSkillInvoke(objectName())){
+                    room->setPlayerFlag(shuangxiong, "shuangxiong");
+
                     room->broadcastSkillInvoke("shuangxiong");
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*)");
@@ -309,7 +310,6 @@ public:
                     judge.who = shuangxiong;
 
                     room->judge(judge);
-                    room->setPlayerFlag(shuangxiong, "shuangxiong");
                     room->setPlayerMark(shuangxiong, "shuangxiong", judge.card->isRed() ? 1 : 2);
 
                     return true;
@@ -546,21 +546,20 @@ public:
     }
 };
 
-class Tianyi: public PhaseChangeSkill{
+class Tianyi: public TriggerSkill{
 public:
-    Tianyi():PhaseChangeSkill("tianyi"){
+    Tianyi():TriggerSkill("tianyi"){
         view_as_skill = new TianyiViewAsSkill;
+        events << EventLoseSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::NotActive){
-            Room *room = target->getRoom();
-            if(target->hasFlag("tianyi_failed"))
-                room->setPlayerFlag(target, "-tianyi_failed");
-            if(target->hasFlag("tianyi_success")){
-                room->setPlayerFlag(target, "-tianyi_success");
-            }
-        }
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target && target->hasFlag("tianyi_success");
+    }
+
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *taishici, QVariant &data) const{
+        if(data.toString() == objectName())
+            room->setPlayerFlag(taishici, "-tianyi_success");
 
         return false;
     }

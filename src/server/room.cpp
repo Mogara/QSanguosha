@@ -3391,100 +3391,18 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
         return;
     }
 
-    bool* cardChanged = new bool[move.card_ids.size()];
-    for (int i = 0; i < move.card_ids.size(); i++)
-    {
-        cardChanged[i] = false;
-    }
-
     player = (ServerPlayer*)move.to;
     if (player != NULL && (move.to_place == Player::PlaceHand
                            || move.to_place == Player::PlaceEquip
                            || move.to_place == Player::PlaceJudge))
     {
-        if(move.from != move.to){
-            for (int i = 0; i < move.card_ids.size(); i++)
-            {
-                Card *card = Sanguosha->getCard(move.card_ids[i]);
-                if(card->isModified())
-                {
-                    resetCard(move.card_ids[i]);
-                    if(move.to_place != Player::PlaceHand)
-                        broadcastResetCard(getPlayers(), move.card_ids[i]);
-                    else
-                        notifyResetCard(player, move.card_ids[i]);
-                }
-            }
-        }
-
-        QSet<const Skill*> skills = player->getVisibleSkills();
-        QList<const FilterSkill*> filterSkills;
-        // first, get all filter skills
-        foreach (const Skill* skill, skills)
-        {
-            if (skill->inherits("FilterSkill"))
-            {
-                const FilterSkill* filter = qobject_cast<const FilterSkill*>(skill);
-                Q_ASSERT(filter);
-                filterSkills.append(filter);
-            }
-        }
-
-        if (filterSkills.size() == 0) return;
-
-        // now get all cards that need to be translated
         QList<const Card*> cards;
-        foreach (int cardId, move.card_ids)
-        {
-            Card* card = Sanguosha->getCard(cardId);
-            Q_ASSERT(card);
-            cards.append(card);
+        foreach(int cardId, move.card_ids){
+            cards.append(Sanguosha->getCard(cardId));
         }
-
-        // We run through filterSkills for multiple times to ensure that the card will converge.
-        // (Consider Hongyan and Wushen.)
-        for (int i = 0; i < cards.size(); i++)
-        {
-            const Card* card = cards[i];
-            for (int fTime = 0; fTime < filterSkills.size(); fTime++)
-            {
-                bool converged = true;
-                foreach (const FilterSkill* skill, filterSkills)
-                {
-                    Q_ASSERT(skill);
-                    if (skill->viewFilter(cards[i]))
-                    {
-                        cards[i] = skill->viewAs(card);
-                        Q_ASSERT(cards[i] != NULL);
-                        converged = false;
-                        cardChanged[i] = true;
-                    }
-                }
-                if (converged) break;
-            }
-        }
-
-        for (int i = 0; i < cards.size(); i++)
-        {
-            if (!cardChanged[i]) continue;
-            if(move.to_place == Player::PlaceHand)
-                notifyUpdateCard(player, move.card_ids[i], cards[i]);
-            else{
-                broadcastUpdateCard(getPlayers(), move.card_ids[i], cards[i]);
-                if(move.to_place == Player::PlaceJudge){
-                    LogMessage log;
-                    log.type = "#FilterJudge";
-                    log.arg = cards[i]->getSkillName();
-                    log.from = player;
-
-                    sendLog(log);
-                    broadcastSkillInvoke(cards[i]->getSkillName());
-                }
-            }
-        }
+        filterCards(player, cards, move.from != player);
     }
 
-    delete cardChanged;
 }
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible)
@@ -3595,6 +3513,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
     setPlayerProperty(player, "general", new_general);
     foreach(const Skill* skill, player->getGeneral()->getSkillList())
         player->addSkill(skill->objectName());
+    filterCards(player, player->getCards("he"), true);
 }
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general){
@@ -3605,6 +3524,90 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
     setPlayerProperty(player, "general2", new_general);
     foreach(const Skill* skill, player->getGeneral2()->getSkillList())
         player->addSkill(skill->objectName());
+    filterCards(player, player->getCards("he"), true);
+}
+
+void Room::filterCards(ServerPlayer* player, QList<const Card *> cards, bool refilter){
+    if(refilter){
+        for (int i = 0; i < cards.size(); i++)
+        {
+            const Card *card = cards[i];
+            if(card->isModified())
+            {
+                int cardId = card->getId();
+                resetCard(cardId);
+                if(getCardPlace(cardId) != Player::PlaceHand)
+                    broadcastResetCard(getPlayers(), cardId);
+                else
+                    notifyResetCard(player, cardId);
+            }
+        }
+    }
+    
+    bool* cardChanged = new bool[cards.size()];
+    for (int i = 0; i < cards.size(); i++)
+    {
+        cardChanged[i] = false;
+    }
+
+    QSet<const Skill*> skills = player->getVisibleSkills();
+    QList<const FilterSkill*> filterSkills;
+
+    foreach (const Skill* skill, skills)
+    {
+        if (skill->inherits("FilterSkill"))
+        {
+            const FilterSkill* filter = qobject_cast<const FilterSkill*>(skill);
+            Q_ASSERT(filter);
+            filterSkills.append(filter);
+        }
+    }
+
+    if (filterSkills.size() == 0) return;
+
+    for (int i = 0; i < cards.size(); i++)
+    {
+        const Card* card = cards[i];
+        for (int fTime = 0; fTime < filterSkills.size(); fTime++)
+        {
+            bool converged = true;
+            foreach (const FilterSkill* skill, filterSkills)
+            {
+                Q_ASSERT(skill);
+                if (skill->viewFilter(cards[i]))
+                {
+                    cards[i] = skill->viewAs(card);
+                    Q_ASSERT(cards[i] != NULL);
+                    converged = false;
+                    cardChanged[i] = true;
+                }
+            }
+            if (converged) break;
+        }
+    }
+
+    for (int i = 0; i < cards.size(); i++)
+    {
+        int cardId = cards[i]->getId();
+        Player::Place place = getCardPlace(cardId);
+        if (!cardChanged[i]) continue;
+        if(place == Player::PlaceHand)
+            notifyUpdateCard(player, cardId, cards[i]);
+        else{
+            broadcastUpdateCard(getPlayers(), cardId, cards[i]);
+            if(place == Player::PlaceJudge){
+                LogMessage log;
+                log.type = "#FilterJudge";
+                log.arg = cards[i]->getSkillName();
+                log.from = player;
+
+                sendLog(log);
+                broadcastSkillInvoke(cards[i]->getSkillName());
+            }
+        }
+    }
+
+    delete cardChanged;
 }
 
 void Room::startTest(const QString &to_test){

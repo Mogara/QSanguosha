@@ -945,6 +945,7 @@ public:
 	
     void changePlayerGeneral(ServerPlayer *player, const char *new_general);
     void changePlayerGeneral2(ServerPlayer *player, const char *new_general);
+    void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);
 	
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);

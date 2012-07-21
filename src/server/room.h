@@ -207,6 +207,7 @@ public:
     void initSkillsForPlayers();
     void changePlayerGeneral(ServerPlayer *player, const QString &new_general);
     void changePlayerGeneral2(ServerPlayer *player, const QString &new_general);
+    void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
