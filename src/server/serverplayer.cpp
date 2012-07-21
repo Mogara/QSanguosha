@@ -27,7 +27,7 @@ ServerPlayer::ServerPlayer(Room *room)
 }
 
 void ServerPlayer::drawCard(const Card *card){
-    handcards << card;
+    handcards << card->getId();
 }
 
 Room *ServerPlayer::getRoom() const{
@@ -70,7 +70,7 @@ int ServerPlayer::getRandomHandCardId() const{
 
 const Card *ServerPlayer::getRandomHandCard() const{
     int index = qrand() % handcards.length();
-    return handcards.at(index);
+    return Sanguosha->getCard(handcards.at(index));
 }
 
 void ServerPlayer::obtainCard(const Card *card, bool unhide){
@@ -341,7 +341,7 @@ QString ServerPlayer::reportHeader() const{
 void ServerPlayer::removeCard(const Card *card, Place place){
     switch(place){
     case PlaceHand: {
-            handcards.removeOne(card);
+            handcards.removeOne(card->getEffectiveId());
             break;
         }
 
@@ -384,7 +384,7 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 void ServerPlayer::addCard(const Card *card, Place place){
     switch(place){
     case PlaceHand: {
-            handcards << card;
+            handcards << card->getEffectiveId();
             break;
         }
 
@@ -411,11 +411,11 @@ bool ServerPlayer::isLastHandCard(const Card *card) const{
     if (!card->isVirtualCard()){
         if(handcards.length() != 1)
             return false;
-        return handcards.first()->getEffectiveId() == card->getEffectiveId();
+        return handcards.first() == card->getEffectiveId();
     }
     else if (card->getSubcards().length() > 0){
         foreach (int card_id, card->getSubcards()){
-            if (!handcards.contains(Sanguosha->getCard(card_id)))
+            if (!handcards.contains(card_id))
                     return false;
         }
         return handcards.length() == card->getSubcards().length();
@@ -424,21 +424,20 @@ bool ServerPlayer::isLastHandCard(const Card *card) const{
 }
 
 QList<int> ServerPlayer::handCards() const{
-    QList<int> card_ids;
-    foreach(const Card *card, handcards)
-        card_ids << card->getId();
-
-    return card_ids;
+    return handcards;
 }
 
 QList<const Card *> ServerPlayer::getHandcards() const{
-    return handcards;
+    QList<const Card *> cards;
+    foreach(int cardId, handcards)
+        cards << Sanguosha->getCard(cardId);
+    return cards;
 }
 
 QList<const Card *> ServerPlayer::getCards(const QString &flags) const{
     QList<const Card *> cards;
     if(flags.contains("h"))
-        cards << handcards;
+        cards << getHandcards();
 
     if(flags.contains("e"))
         cards << getEquips();
@@ -454,14 +453,14 @@ DummyCard *ServerPlayer::wholeHandCards() const{
         return NULL;
 
     DummyCard *dummy_card = new DummyCard;
-    foreach(const Card *card, handcards)
-        dummy_card->addSubcard(card->getId());
+    foreach(int cardId, handcards)
+        dummy_card->addSubcard(cardId);
 
     return dummy_card;
 }
 
 bool ServerPlayer::hasNullification() const{
-    foreach(const Card *card, handcards){
+    foreach(const Card *card, getHandcards()){
         if(card->objectName() == "nullification")
             return true;
     }
@@ -870,8 +869,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
                            .arg(getHandcardNum()));
         }else{
             QStringList card_str;
-            foreach(const Card *card, handcards){
-                card_str << QString::number(card->getId());
+            foreach(int cardId, handcards){
+                card_str << QString::number(cardId);
             }
 
             player->invoke("drawCards", card_str.join("+"));
@@ -968,7 +967,7 @@ void ServerPlayer::copyFrom(ServerPlayer* sp)
     ServerPlayer *b = this;
     ServerPlayer *a = sp;
 
-    b->handcards    = QList<const Card *> (a->handcards);
+    b->handcards    = QList<int> (a->handcards);
     b->phases       = QList<ServerPlayer::Phase> (a->phases);
     b->selected     = QStringList (a->selected);
 
