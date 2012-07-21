@@ -174,6 +174,8 @@ void Client::updateCard(const Json::Value &val)
     {
         // reset card
         int cardId = val.asInt();
+        Card *card = _m_roomState.getCard(cardId);
+        if(!card->isModified()) return;
         _m_roomState.resetCard(cardId);
     }
     else

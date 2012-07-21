@@ -31,7 +31,7 @@ void ClientPlayer::addCard(const Card *card, Place place){
     switch(place){
     case PlaceHand: {
             if(card)
-                known_cards << card->getEffectiveId();
+                known_cards << card;
             handcard_num++;
             break;
         }
@@ -51,19 +51,19 @@ void ClientPlayer::addCard(const Card *card, Place place){
 }
 
 void ClientPlayer::addKnownHandCard(const Card *card){
-    if(!known_cards.contains(card->getEffectiveId()))
-        known_cards << card->getEffectiveId();
+    if(!known_cards.contains(card))
+        known_cards << card;
 }
 
 bool ClientPlayer::isLastHandCard(const Card *card) const{
     if (!card->isVirtualCard()){
         if(known_cards.length() != 1)
             return false;
-        return known_cards.first() == card->getEffectiveId();
+        return known_cards.first()->getId() == card->getEffectiveId();
     }
     else if (card->getSubcards().length() > 0){
         foreach (int card_id, card->getSubcards()){
-            if (!known_cards.contains(card_id))
+            if (!known_cards.contains(Sanguosha->getCard(card_id)))
                     return false;
         }
         return known_cards.length() == card->getSubcards().length();
@@ -76,7 +76,7 @@ void ClientPlayer::removeCard(const Card *card, Place place){
     case PlaceHand: {
             handcard_num--;
             if(card)
-                known_cards.removeOne(card->getEffectiveId());
+                known_cards.removeOne(card);
             break;
         }
     case PlaceEquip:{
@@ -96,17 +96,13 @@ void ClientPlayer::removeCard(const Card *card, Place place){
 }
 
 QList<const Card *> ClientPlayer::getCards() const{
-    QList<const Card *> cards;
-    foreach(int cardId, known_cards){
-        cards << Sanguosha->getCard(cardId);
-    }
-
-    return cards;
+    return known_cards;
 }
 
 void ClientPlayer::setCards(const QList<int> &card_ids){
     known_cards.clear();
-    known_cards.append(card_ids);
+    foreach(int cardId, card_ids)
+        known_cards.append(Sanguosha->getCard(cardId));
 }
 
 QTextDocument *ClientPlayer::getMarkDoc() const{
