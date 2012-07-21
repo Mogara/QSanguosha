@@ -37,7 +37,7 @@ void WrappedCard::copyEverythingFrom(Card* card)
     Q_ASSERT(m_card != card);
     if (m_card != NULL) {
         m_isModified = true;
-        delete m_card;
+        m_card->deleteLater();
     }
     setObjectName(card->objectName());
     m_card = card;
