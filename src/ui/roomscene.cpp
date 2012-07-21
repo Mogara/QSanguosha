@@ -474,38 +474,8 @@ QGraphicsItem *RoomScene::createDashboardButtons(){
     return widget;
 }
 
-void RoomScene::createExtraButtons(){
-    // @todo: this complication must be disentangled... We cannot tolerate
-    // something created by dashboard, forward to roomscene, and push back
-    // to dashboard again...
-    m_reverseSelectionButton = dashboard->createButton("reverse-select");
-    m_reverseSelectionButton->setEnabled(true);
-    dashboard->addWidget(m_reverseSelectionButton, _m_roomLayout->m_scenePadding, true);
-    connect(m_reverseSelectionButton, SIGNAL(clicked()), dashboard, SLOT(reverseSelection()));
-
-    m_sortHandcardButton = dashboard->addButton("sort-handcard", 
-                                                m_reverseSelectionButton->pos().x() +
-                                                m_reverseSelectionButton->width() +
-                                                _m_roomLayout->m_scenePadding, true);
-    m_sortHandcardButton->setEnabled(true);
-    connect(m_sortHandcardButton, SIGNAL(clicked()), dashboard, SLOT(sortCards()));
-    
-    // add free discard button
-    /*if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
-        m_freeDiscardButton = dashboard->addButton("free-discard",
-            m_sortHandcardButton->pos().x() + m_sortHandcardButton->width()
-            + _m_roomLayout->m_scenePadding, true);
-        m_freeDiscardButton->setToolTip(tr("Discard cards freely"));
-        FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
-        button2skill.insert(m_freeDiscardButton, discard_skill);
-        connect(m_freeDiscardButton, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-
-        skill_buttons << m_freeDiscardButton;
-    }*/
-}
-
 ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
-    QHBoxLayout *layout = new QHBoxLayout;
+    /*QHBoxLayout *layout = new QHBoxLayout;
 
     QPushButton *play, *uniform, *slow_down, *speed_up;
 
@@ -546,7 +516,7 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
     setParentItem(dashboard);
     setPos(0,-35);
 
-    duration_str = FormatTime(replayer->getDuration());
+    duration_str = FormatTime(replayer->getDuration());*/
 }
 
 QString ReplayerControlBar::FormatTime(int secs){
@@ -3286,8 +3256,6 @@ void RoomScene::onGameStart(){
         control_panel->hide();
 
     log_box->append(tr("<font color='white'>------- Game Start --------</font>"));
-
-    createExtraButtons();
 
     // updateStatus(ClientInstance->getStatus(), ClientInstance->getStatus());
 
