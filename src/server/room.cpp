@@ -3213,23 +3213,15 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     QList<CardsMoveStruct> origin = QList<CardsMoveStruct>(cards_moves);
 
     // First, process remove card
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
+    notifyMoveCards(true, origin, forceMoveVisible);
     QList<Player::Place> final_places;
     QList<Player*> move_tos;
-    QList<Player*> move_froms;
     for (int i = 0; i < cards_moves.size(); i++)
     {   
         CardsMoveStruct &cards_move = cards_moves[i];
         final_places.append(cards_move.to_place);
-        move_froms.append(cards_move.from);
         move_tos.append(cards_move.to);
-        if (enforceOrigin)
-        {
-            if (cards_move.to && !cards_move.to->isAlive()){
-                final_places[i] = Player::DiscardPile;
-                move_tos[i] = NULL;
-            }
-        }
+
         cards_move.to_place = Player::PlaceTable;
         cards_move.to = NULL;
         for (int j = 0; j < cards_move.card_ids.size(); j++)
@@ -3299,11 +3291,10 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }    
 
     // Now, process add cards
-    notifyMoveCards(false, cards_moves, forceMoveVisible);
+    notifyMoveCards(false, origin, forceMoveVisible);
     for (int i = 0; i <  cards_moves.size(); i++)
     {
         CardsMoveStruct &cards_move = cards_moves[i];
-        cards_move.from = NULL;
         cards_move.from_place = Player::PlaceTable;
         for (int j = 0; j < cards_move.card_ids.size(); j++)
         {
@@ -3334,12 +3325,6 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 
     foreach (CardsMoveStruct move, origin)
         updateCardsOnGet(move);
-
-    for (int i = 0; i <  cards_moves.size(); i++)
-    {
-        CardsMoveStruct &cards_move = cards_moves[i];
-        cards_move.from = move_froms[i];
-    }
 
     //trigger event
     moveOneTimes = _mergeMoves(cards_moves);
