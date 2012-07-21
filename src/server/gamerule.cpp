@@ -284,8 +284,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 break;
             }
 
-            DyingStruct dying = data.value<DyingStruct>();
-
             LogMessage log;
             log.type = "#AskForPeaches";
             log.from = player;
@@ -376,7 +374,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
             if(player->isChained() && damage.nature != DamageStruct::Normal){
                 room->setPlayerProperty(player, "chained", false);
-                room->setPlayerFlag(player, "chained");
+                player->tag["chained"] = true;
 
                 LogMessage log;
                 log.type = "#IronChainDamage";
@@ -413,8 +411,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 if(!new_general.isEmpty())
                     changeGeneral1v1(player);
             }
-            if(player->hasFlag("chained")){
-                room->setPlayerFlag(player, "-chained");
+            if(player->tag.value("chained", false).toBool()){
+                player->tag["chained"] = false;
                 // iron chain effect
                 if(!damage.chain){
                     QList<ServerPlayer *> chained_players;
@@ -423,7 +421,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                     else
                         chained_players = room->getAllPlayers();
                     foreach(ServerPlayer *chained_player, chained_players){
-                        if(chained_player->isChained()){
+                        if(chained_player->isChained() && chained_player->isAlive()){
 
                             DamageStruct chain_damage = damage;
                             chain_damage.to = chained_player;
