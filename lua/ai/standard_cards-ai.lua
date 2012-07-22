@@ -161,7 +161,7 @@ function SmartAI:useCardSlash(card, use)
 		and self:slashIsEffective(card, target) and
 		not (target:hasSkill("xiangle") and basicnum < 2) and not canliuli and
 		not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
-			and self:getOverflow() > 0 and not self:isEquip("CrossBow")) then
+			and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
 			-- fill the card use struct
 			local usecard = card
 			if not use.to or use.to:isEmpty() then
@@ -179,7 +179,7 @@ function SmartAI:useCardSlash(card, use)
 					end
 				end
 				if target:isChained() and self:isGoodChainTarget(target) and not use.card then
-					if self:isEquip("CrossBow") and card:isKindOf("NatureSlash") then
+					if self:isEquip("Crossbow") and card:isKindOf("NatureSlash") then
 						local slashes = self:getCards("Slash")
 						for _, slash in ipairs(slashes) do
 							if not slash:isKindOf("NatureSlash") and self:slashIsEffective(slash, target)
@@ -764,7 +764,7 @@ function SmartAI:useCardDuel(duel, use)
 				useduel = false
 			elseif n1 > 0 then
 				local percard = 0.35
-				if target:hasSkill("paoxiao") or target:hasWeapon("CrossBow") then percard = 0.2 end
+				if target:hasSkill("paoxiao") or target:hasWeapon("Crossbow") then percard = 0.2 end
 				local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
 				if math.random() > poss then useduel = true end
 			end
@@ -798,7 +798,7 @@ function SmartAI:useCardDuel(duel, use)
 			useduel = false
 		elseif n1 > 0 then
 			local percard = 0.35
-			if target:hasSkill("paoxiao") or target:hasWeapon("CrossBow") then percard = 0.2 end
+			if target:hasSkill("paoxiao") or target:hasWeapon("Crossbow") then percard = 0.2 end
 			local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
 			if math.random() > poss then useduel = true end
 		end
@@ -853,7 +853,7 @@ sgs.dynamic_value.benefit.ExNihilo = true
 
 function SmartAI:getDangerousCard(who)
 	local weapon = who:getWeapon()
-	if (weapon and weapon:isKindOf("CrossBow")) then return  weapon:getEffectiveId() end
+	if (weapon and weapon:isKindOf("Crossbow")) then return  weapon:getEffectiveId() end
 	if (weapon and weapon:isKindOf("Spear") and who:hasSkill("paoxiao"))  then return  weapon:getEffectiveId() end
 	if (weapon and weapon:isKindOf("Axe") and self:hasSkills("luoyi|pojun|jiushi|jiuchi", who)) then return weapon:getEffectiveId() end
 	if (who:getArmor() and who:getArmor():isKindOf("EightDiagram") and who:getArmor():getSuit() == sgs.Card_Spade and who:hasSkill("leiji")) then return who:getArmor():getEffectiveId() end

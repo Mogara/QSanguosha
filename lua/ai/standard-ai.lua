@@ -669,7 +669,7 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 		return sgs.Card_Parse("@KurouCard=.")
 	end
 
-	if self.player:getWeapon() and self.player:getWeapon():isKindOf("CrossBow") then
+	if self.player:getWeapon() and self.player:getWeapon():isKindOf("Crossbow") then
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:canSlash(enemy,true) and self.player:getHp()>1 then
 				return sgs.Card_Parse("@KurouCard=.")

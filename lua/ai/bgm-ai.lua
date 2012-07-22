@@ -347,7 +347,7 @@ sgs.dynamic_value.control_card.TanhuCard = true
 sgs.ai_use_priority.TanhuCard = 8
 
 sgs.ai_skill_invoke.mouduan = function(self, data)
-	return self:isEquip("CrossBow") or self:getCardsNum("CrossBow") > 0
+	return self:isEquip("Crossbow") or self:getCardsNum("Crossbow") > 0
 end
 
 sgs.ai_skill_invoke.zhaolie = function(self, data)

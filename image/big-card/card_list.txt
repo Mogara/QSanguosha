@@ -6,7 +6,7 @@ Blade.png
 card_list.txt
 ChiTu.png
 collateral.png
-CrossBow.png
+Crossbow.png
 DaYuan.png
 deluge.png
 DiLu.png

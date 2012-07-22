@@ -533,7 +533,7 @@ public:
         if(!card->isRed())
             return false;
 
-        if(Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId() && card->objectName() == "CrossBow")
+        if(Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId() && card->objectName() == "Crossbow")
             return Self->canSlashWithoutCrossbow();
         else
             return true;

@@ -2453,7 +2453,7 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
         bool slash_record =
             key.contains("Slash") &&
             card_use.from->getSlashCount() > 0 &&
-            card_use.from->hasWeapon("CrossBow");
+            card_use.from->hasWeapon("Crossbow");
 
         if(!slash_record){
             card_use.from->addHistory(key);
