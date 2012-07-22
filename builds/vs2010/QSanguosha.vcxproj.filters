@@ -345,15 +345,6 @@
     <ClCompile Include="Release\moc_TimedProgressBar.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ui\GeneralCardContainerUI.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_GeneralCardContainerUI.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_GeneralCardContainerUI.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\core\structs.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -410,6 +401,15 @@
     </ClCompile>
     <ClCompile Include="Release\moc_WrappedCard.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_GenericCardContainerUI.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_GenericCardContainerUI.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\GenericCardContainerUI.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -656,9 +656,6 @@
     <CustomBuild Include="..\..\src\ui\TimedProgressBar.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\GeneralCardContainerUI.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\ui\qsanbutton.h">
       <Filter>ui</Filter>
     </CustomBuild>
@@ -676,6 +673,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\core\WrappedCard.h">
       <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\GenericCardContainerUI.h">
+      <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

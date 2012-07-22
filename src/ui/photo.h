@@ -6,7 +6,7 @@
 #include "carditem.h"
 #include "protocol.h"
 
-#include "GeneralCardContainerUI.h"
+#include "GenericCardContainerUI.h"
 #include <QGraphicsObject>
 #include <QPixmap>
 #include <QComboBox>

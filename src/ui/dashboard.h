@@ -9,7 +9,7 @@
 #include "sprite.h"
 #include "protocol.h"
 #include "TimedProgressBar.h"
-#include "GeneralCardContainerUI.h"
+#include "GenericCardContainerUI.h"
 #include "pixmapanimation.h"
 
 #include <QPushButton>

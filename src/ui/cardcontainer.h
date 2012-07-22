@@ -6,7 +6,7 @@ class ClientPlayer;
 
 #include "QSanSelectableItem.h"
 #include "carditem.h"
-#include "GeneralCardContainerUI.h"
+#include "GenericCardContainerUI.h"
 
 #include <QStack>
 
@@ -25,7 +25,7 @@ signals:
 };
 
 
-class CardContainer : public GeneralCardContainer
+class CardContainer : public GenericCardContainer
 {
     Q_OBJECT
 

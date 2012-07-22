@@ -1,4 +1,4 @@
-#include "GeneralCardContainerUI.h"
+#include "GenericCardContainerUI.h"
 #include <QParallelAnimationGroup>
 #include <qpropertyanimation.h>
 #include <QGraphicsSceneMouseEvent>
@@ -14,11 +14,11 @@
 
 using namespace QSanProtocol;
 
-QList<CardItem*> GeneralCardContainer::cloneCardItems(QList<int> card_ids){
+QList<CardItem*> GenericCardContainer::cloneCardItems(QList<int> card_ids){
     return _createCards(card_ids);
 }
 
-QList<CardItem*> GeneralCardContainer::_createCards(QList<int> card_ids)
+QList<CardItem*> GenericCardContainer::_createCards(QList<int> card_ids)
 {
     QList<CardItem*> result;
     foreach (int card_id, card_ids)
@@ -29,7 +29,7 @@ QList<CardItem*> GeneralCardContainer::_createCards(QList<int> card_ids)
     return result;
 }
 
-CardItem* GeneralCardContainer::_createCard(int card_id)
+CardItem* GenericCardContainer::_createCard(int card_id)
 {
     const Card* card = Sanguosha->getCard(card_id);
     CardItem *item = new CardItem(card);
@@ -38,25 +38,25 @@ CardItem* GeneralCardContainer::_createCard(int card_id)
     return item;
 }
 
-void GeneralCardContainer::_destroyCard()
+void GenericCardContainer::_destroyCard()
 {
     CardItem* card = (CardItem*)sender();
     card->setVisible(false);
     card->deleteLater();
 }
 
-bool GeneralCardContainer::_horizontalPosLessThan(const CardItem* card1, const CardItem* card2)
+bool GenericCardContainer::_horizontalPosLessThan(const CardItem* card1, const CardItem* card2)
 {
     return (card1->x() < card2->x());
 }
 
-void GeneralCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRegion,
+void GenericCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRegion,
                                             Qt::Alignment align, bool useHomePos, bool keepOrder)
 {
     int numCards = cards.size();
     if (numCards == 0) return;
     if (!keepOrder)
-        qSort(cards.begin(), cards.end(), GeneralCardContainer::_horizontalPosLessThan);
+        qSort(cards.begin(), cards.end(), GenericCardContainer::_horizontalPosLessThan);
     double maxWidth = fillRegion.width();
     int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;
     double step = qMin((double)cardWidth, (maxWidth - cardWidth) / (numCards - 1));
@@ -81,16 +81,16 @@ void GeneralCardContainer::_disperseCards(QList<CardItem*> &cards, QRectF fillRe
     }
 }
 
-void GeneralCardContainer::onAnimationFinished()
+void GenericCardContainer::onAnimationFinished()
 {
 }
 
-void GeneralCardContainer::_doUpdate()
+void GenericCardContainer::_doUpdate()
 {
     update();
 }
 
-void GeneralCardContainer::_playMoveCardsAnimation(QList<CardItem*> &cards, bool destroyCards)
+void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem*> &cards, bool destroyCards)
 {    
     if (destroyCards)    
     {
@@ -112,7 +112,7 @@ void GeneralCardContainer::_playMoveCardsAnimation(QList<CardItem*> &cards, bool
     animation->start();
 }
 
-void GeneralCardContainer::addCardItems(QList<CardItem*> &card_items, Player::Place place)
+void GenericCardContainer::addCardItems(QList<CardItem*> &card_items, Player::Place place)
 {
     foreach (CardItem* card_item, card_items)
     {        

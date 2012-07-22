@@ -5,15 +5,15 @@
 #include "player.h"
 #include "carditem.h"
 #include "protocol.h"
-#include "GeneralCardContainerUI.h"
+#include "GenericCardContainerUI.h"
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class TablePile: public GeneralCardContainer
+class TablePile: public GenericCardContainer
 {
     Q_OBJECT
 public:  
-    inline TablePile() : GeneralCardContainer() {}
+    inline TablePile() : GenericCardContainer() {}
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids, Player::Place place);
     inline void setSize(QSize newSize) 
     {
