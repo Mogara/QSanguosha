@@ -259,8 +259,9 @@ public:
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from != player || !move->from_places.contains(Player::PlaceEquip))
                 return false;
-            foreach(int card_id, move->card_ids){
-                const Card *card = Sanguosha->getCard(card_id);
+            for(int i = 0; i < move->card_ids.size(); i++){
+                if(move->from_places[i] != Player::PlaceEquip) continue;
+                const Card *card = Sanguosha->getEngineCard(move->card_ids[i]);
                 if(card->objectName() == objectName()){
                     room->setPlayerFlag(player, "-lion_rec");
                     if (player->isWounded()){

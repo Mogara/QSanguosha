@@ -227,7 +227,7 @@ private:
     bool alive;
 
     Phase phase;
-    int weapon, armor, defensive_horse, offensive_horse;
+    WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse;
     bool face_up;
     bool chained;
     QList<int> judging_area;

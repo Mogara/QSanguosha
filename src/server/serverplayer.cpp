@@ -347,8 +347,11 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 
     case PlaceEquip: {
             WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
             removeEquip(wrapped);
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            if(equip == NULL)
+                equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->getEffectiveId()));
+            Q_ASSERT(equip != NULL);
 
             equip->onUninstall(this);
             LogMessage log;

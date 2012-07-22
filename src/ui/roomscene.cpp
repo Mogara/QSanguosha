@@ -1746,7 +1746,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach(int card_id, move.card_ids)
             log_box->appendLog("$RecycleCard", to_general, QStringList(), QString::number(card_id));
     }
-    if(move.from && move.from_place != Player::PlaceHand && move.from_place != Player::PlaceDelayedTrick
+    if(move.from && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick
         && move.from_place != Player::PlaceJudge && move.to && move.from != move.to)
     {
         QString from_general = move.from->getGeneralName();

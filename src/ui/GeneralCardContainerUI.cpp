@@ -686,7 +686,7 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
     QList<CardItem*> result;
     foreach (int card_id, cardIds)
     {
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getCard(card_id)->getRealCard());
+        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id));
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] != NULL);
         CardItem* equip = _m_equipCards[index];
