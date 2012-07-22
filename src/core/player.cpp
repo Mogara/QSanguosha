@@ -411,10 +411,14 @@ WrappedCard *Player::getOffensiveHorse() const{
 
 QList<const Card *> Player::getEquips() const{
     QList<const Card *> equips;
-    equips << weapon
-           << armor
-           << defensive_horse
-           << offensive_horse;
+    if(weapon)
+        equips << weapon;
+    if(armor)
+        equips << armor;
+    if(defensive_horse)
+        equips << defensive_horse;
+    if(offensive_horse)
+        equips << offensive_horse;
 
     return equips;
 }
