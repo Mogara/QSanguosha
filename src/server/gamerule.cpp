@@ -376,14 +376,16 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             if(!chained)
                 break;
 
-            if(player->isChained() && damage.nature != DamageStruct::Normal){
+            if(chained && damage.nature != DamageStruct::Normal){
                 room->setPlayerProperty(player, "chained", false);
-                player->tag["chained"] = true;
+                damage.trigger_chain = true;
 
                 LogMessage log;
                 log.type = "#IronChainDamage";
                 log.from = player;
                 room->sendLog(log);
+
+                data = QVariant::fromValue(damage);
             }
 
             break;
@@ -415,8 +417,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 if(!new_general.isEmpty())
                     changeGeneral1v1(player);
             }
-            if(player->tag.value("chained", false).toBool()){
-                player->tag["chained"] = false;
+            if(damage.trigger_chain){
                 // iron chain effect
                 if(!damage.chain){
                     QList<ServerPlayer *> chained_players;

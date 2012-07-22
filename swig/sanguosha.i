@@ -415,6 +415,7 @@ struct DamageStruct{
     Nature nature;
     bool chain;
     bool transfer;
+    bool trigger_chain;
 };
 
 struct CardEffectStruct{
