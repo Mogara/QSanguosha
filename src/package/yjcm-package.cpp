@@ -1222,8 +1222,19 @@ bool Shangshi::trigger(TriggerEvent triggerEvent,  Room* room, ServerPlayer *pla
     if(triggerEvent == EventAcquireSkill && data.toString() != getEffectName())
         return false;
 
-    if(triggerEvent == HpRecover && player:getHp() <= 0)
+    if(triggerEvent == HpRecover && player->getHp() <= 0)
         return false;
+
+    if(triggerEvent == PostHpReduced || triggerEvent == HpLost){
+        int delta = 0;
+        if (triggerEvent == PostHpReduced)
+            delta = data.value<DamageStruct>().damage;
+        else
+            delta = data.toInt();
+
+        if (delta + player->getHp() <= 0)
+            return false;
+    }
 
     if(triggerEvent == CardsMoveOneTime)
     {

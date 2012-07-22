@@ -3403,7 +3403,7 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
         foreach(int cardId, move.card_ids){
             cards.append(Sanguosha->getCard(cardId));
         }
-        filterCards(player, cards, move.from != player);
+        filterCards(player, cards, (move.from_place != Player::DrawPile && move.from != player));
     }
 
 }
@@ -4285,6 +4285,9 @@ void Room::takeAG(ServerPlayer *player, int card_id){
     if(player){
         player->addCard(Sanguosha->getCard(card_id), Player::PlaceHand);
         setCardMapping(card_id, player, Player::PlaceHand);
+        QList<const Card*>cards;
+        cards << Sanguosha->getCard(card_id);
+        filterCards(player, cards, false);
         broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
         CardsMoveOneTimeStruct move;
         move.from = NULL;
