@@ -813,7 +813,7 @@ bool Room::isCanceled(const CardEffectStruct &effect){
     if(effect.from && effect.from->hasSkill("tanhu") && effect.to && effect.to->hasFlag("TanhuTarget"))
         return false;
 
-    const TrickCard *trick = qobject_cast<const TrickCard *>(effect.card);
+    const TrickCard *trick = qobject_cast<const TrickCard *>(effect.card->getRealCard());
     if(trick){
         QVariant decisionData = QVariant::fromValue(effect.to);
         setTag("NullifyingTarget",decisionData);
@@ -921,7 +921,7 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
 
     thread->trigger(ChoiceMade, this, repliedPlayer, decisionData);
     setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
-    bool result = !_askForNullification((TrickCard*)card, repliedPlayer, to, !positive, aiHelper);
+    bool result = !_askForNullification((TrickCard*)card->getRealCard(), repliedPlayer, to, !positive, aiHelper);
     return result;
 }
 
@@ -2573,55 +2573,58 @@ void Room::damage(DamageStruct &damage_data){
 
     QVariant data = QVariant::fromValue(damage_data);
 
+    do{
+        if(!damage_data.chain && !damage_data.transfer && damage_data.from){
+            // ComfirmDamage
+            thread->trigger(ConfirmDamage, this, damage_data.from, data);
+            damage_data = data.value<DamageStruct>();
 
-    if(!damage_data.chain && !damage_data.transfer && damage_data.from){
-        // ComfirmDamage
-        thread->trigger(ConfirmDamage, this, damage_data.from, data);
+            // Predamage
+            if(thread->trigger(Predamage, this, damage_data.from, data))
+                break;
+        }
+
+        // DamageForseen
+        bool prevent = thread->trigger(DamageForseen, this, damage_data.to, data);
+        if(prevent)
+            break;
+
+        // DamageCaused
+        if(damage_data.from){
+            if(thread->trigger(DamageCaused, this, damage_data.from, data))
+                break;
+        }
+
         damage_data = data.value<DamageStruct>();
 
-        // Predamage
-        if(thread->trigger(Predamage, this, damage_data.from, data))
-            return;
-    }
+        // DamageInflicted
+        bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
+        if(broken)
+            break;
 
-    // DamageForseen
-    bool prevent = thread->trigger(DamageForseen, this, damage_data.to, data);
-    if(prevent)
-        return;
+        // PreHpReduced
+        prevent = thread->trigger(PreHpReduced, this, damage_data.to, data);
+        if(prevent)
+            break;
 
-    // DamageCaused
-    if(damage_data.from){
-        if(thread->trigger(DamageCaused, this, damage_data.from, data))
-            return;
-    }
+        // damage done, should not cause damage process broken
+        thread->trigger(DamageDone, this, damage_data.to, data);
+
+        // PostHpReduced
+        broken = thread->trigger(PostHpReduced, this, damage_data.to, data);
+        if(broken)
+            break;
+
+        // damage
+        if(damage_data.from){
+            thread->trigger(Damage, this, damage_data.from, data);
+        }
+
+        // damaged
+        thread->trigger(Damaged, this, damage_data.to, data);
+    }while(false);
 
     damage_data = data.value<DamageStruct>();
-
-    // DamageInflicted
-    bool broken = thread->trigger(DamageInflicted, this, damage_data.to, data);
-    if(broken)
-        return;
-
-    // PreHpReduced
-    prevent = thread->trigger(PreHpReduced, this, damage_data.to, data);
-    if(prevent)
-        return;
-
-    // damage done, should not cause damage process broken
-    thread->trigger(DamageDone, this, damage_data.to, data);
-
-    // PostHpReduced
-    broken = thread->trigger(PostHpReduced, this, damage_data.to, data);
-    if(broken)
-        return;
-
-    // damage
-    if(damage_data.from){
-        thread->trigger(Damage, this, damage_data.from, data);
-    }
-
-    // damaged
-    thread->trigger(Damaged, this, damage_data.to, data);
 
     thread->trigger(DamageComplete, this, damage_data.to, data);
 }

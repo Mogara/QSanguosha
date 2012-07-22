@@ -246,12 +246,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
         const Skill *skill = Sanguosha->getSkill(skill_name);
         bool refilter = skill->inherits("FilterSkill");
 
-        foreach(const Skill *rel, Sanguosha->getRelatedSkills(skill_name))
-            if(rel->inherits("FilterSkill") && player->hasSkill(rel->objectName())){
-                refilter = true;
-                break;
-            }
-
         if (refilter)
             room->filterCards(player, player->getCards("he"), triggerEvent == EventLoseSkill);
 
