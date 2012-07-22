@@ -59,6 +59,10 @@ int Player::getMaxHp() const{
     return max_hp;
 }
 
+int Player::getMaxHP() const{
+    return getMaxHp();
+}
+
 void Player::setMaxHp(int max_hp){
     if(this->max_hp == max_hp)
         return;
@@ -66,6 +70,10 @@ void Player::setMaxHp(int max_hp){
     if(hp > max_hp)
         hp = max_hp;
     emit hp_changed();
+}
+
+void Player::setMaxHP(int max_hp){
+    setMaxHp(max_hp);
 }
 
 int Player::getLostHp() const{

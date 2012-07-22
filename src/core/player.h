@@ -64,7 +64,9 @@ public:
     int getHp() const;
     void setHp(int hp);
     int getMaxHp() const;
+    int getMaxHP() const;
     void setMaxHp(int max_hp);
+    void setMaxHP(int max_hp);
     int getLostHp() const;
     bool isWounded() const;
     General::Gender getGender() const;

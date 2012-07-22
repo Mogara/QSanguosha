@@ -78,10 +78,10 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
 
     LogMessage log;
     log.type = "#MiniSceneChanged";
-    log.arg = number;
+    log.arg = id;
     log.arg2 = objectName();
     room->sendLog(log);
-    log.type = QString("#mini_%1").arg(number);
+    log.type = QString("#mini_%1").arg(id);
     room->sendLog(log);
 
     QList<ServerPlayer*> players = room->getAllPlayers();
@@ -329,7 +329,7 @@ void MiniScene::setupCustom(QString name) const
         name = "custom_scenario";
 
     MiniSceneRule* arule = qobject_cast<MiniSceneRule*>(this->getRule());
-    arule->number = name;
+    arule->id = name;
     name.prepend("etc/customScenes/");
     name.append(".txt");
     arule->loadSetting(name);
