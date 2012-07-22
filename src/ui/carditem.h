@@ -60,6 +60,11 @@ public:
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
     
+    struct UiHelper
+    {
+        int tablePileClearTimeStamp;
+    } m_uiHelper;
+
 protected:
     void _initialize();
     QAbstractAnimation* m_currentAnimation;

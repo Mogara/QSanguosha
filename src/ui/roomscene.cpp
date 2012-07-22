@@ -1528,7 +1528,7 @@ void RoomScene::toggleDiscards(){
     overview->show();
 }
 
-GeneralCardContainer* RoomScene::_getGeneralCardContainer(Player::Place place, Player* player)
+GenericCardContainer* RoomScene::_getGenericCardContainer(Player::Place place, Player* player)
 {
     if (place == Player::DiscardPile || place == Player::PlaceJudge
             || place == Player::DrawPile || place == Player::PlaceTable)
@@ -1575,6 +1575,37 @@ bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost){
     return false;
 }
 
+void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
+{
+    for (int i = 0; i < card_moves.size(); i++) 
+    {
+        CardsMoveStruct &movement = card_moves[i];
+        bool skipMove = _processCardsMove(movement, false);
+        if(skipMove) continue;
+        if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
+        card_container->m_currentPlayer = (ClientPlayer*)movement.to;
+        GenericCardContainer* to_container = _getGenericCardContainer(movement.to_place, movement.to);
+        QList<CardItem*> cards = _m_cardsMoveStash[moveId][i];
+        for (int j = 0; j < cards.size(); j++)
+        {            
+            CardItem* card = cards[j];
+            int card_id = card->getId();
+            if (!card_moves[i].card_ids.contains(card_id))
+            {
+                cards.removeAt(j);
+                j--;
+            }
+            else card->setEnabled(true);
+            card->setFootnote(_translateMovementReason(movement.reason));
+        }
+        bringToFront(to_container);
+        to_container->addCardItems(cards, movement.to_place);
+        keepGetCardLog(movement);
+    }
+    _m_cardsMoveStash[moveId].clear();
+}
+
+
 void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
     for (int i = 0; i < card_moves.size(); i++) 
@@ -1584,7 +1615,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
         if(skipMove) continue;
         if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
         card_container->m_currentPlayer = (ClientPlayer*)movement.to;
-        GeneralCardContainer* from_container = _getGeneralCardContainer(movement.from_place, movement.from);
+        GenericCardContainer* from_container = _getGenericCardContainer(movement.from_place, movement.from);
         QList<CardItem*> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach (CardItem* card, cards)
         {      
@@ -1681,36 +1712,6 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
 
     //QString("%1:%2:%3:%4").arg(movement.reason.m_reason)
     //            .arg(movement.reason.m_skillName).arg(movement.reason.m_eventName
-}
-
-void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
-{
-    for (int i = 0; i < card_moves.size(); i++) 
-    {
-        CardsMoveStruct &movement = card_moves[i];
-        bool skipMove = _processCardsMove(movement, false);
-        if(skipMove) continue;
-        if (_shouldIgnoreDisplayMove(movement.from_place, movement.to_place)) continue;
-        card_container->m_currentPlayer = (ClientPlayer*)movement.to;
-        GeneralCardContainer* to_container = _getGeneralCardContainer(movement.to_place, movement.to);
-        QList<CardItem*> cards = _m_cardsMoveStash[moveId][i];
-        for (int j = 0; j < cards.size(); j++)
-        {            
-            CardItem* card = cards[j];
-            int card_id = card->getId();
-            if (!card_moves[i].card_ids.contains(card_id))
-            {
-                cards.removeAt(j);
-                j--;
-            }
-            else card->setEnabled(true);
-            card->setFootnote(_translateMovementReason(movement.reason));
-        }
-        bringToFront(to_container);
-        to_container->addCardItems(cards, movement.to_place);
-        keepGetCardLog(movement);
-    }
-    _m_cardsMoveStash[moveId].clear();
 }
 
 void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
@@ -1844,7 +1845,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
 }
 
 void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
-    GeneralCardContainer* dest =  _getGeneralCardContainer(Player::PlaceHand, (Player*)player);
+    GenericCardContainer* dest =  _getGenericCardContainer(Player::PlaceHand, (Player*)player);
     Q_ASSERT(dest != NULL);
     QGraphicsTextItem *item = new QGraphicsTextItem(Sanguosha->translate(skill_name), NULL, this);
     QPointF center = item->boundingRect().center();
@@ -3024,7 +3025,7 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
         QString from_general = taker->getGeneralName();
         QString card_str = QString::number(card_id);
         log_box->appendLog(type, from_general, QStringList(), card_str);
-        GeneralCardContainer* container = _getGeneralCardContainer(Player::PlaceHand, taker);
+        GenericCardContainer* container = _getGenericCardContainer(Player::PlaceHand, taker);
         bringToFront(container);
         container->addCardItems(items, Player::PlaceHand);
     }
@@ -3036,7 +3037,7 @@ void RoomScene::showCard(const QString &player_name, int card_id){
     card_ids << card_id;
     const ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
-    GeneralCardContainer* container = _getGeneralCardContainer(Player::PlaceHand, (Player*)player);
+    GenericCardContainer* container = _getGenericCardContainer(Player::PlaceHand, (Player*)player);
     QList<CardItem*> card_items = container->cloneCardItems(card_ids);
     CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
     card_items[0]->setFootnote(_translateMovementReason(reason));

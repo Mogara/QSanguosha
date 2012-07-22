@@ -208,7 +208,7 @@ private:
     const QSanRoomSkin* _m_roomSkin;
     QGraphicsItem* _m_last_front_item;
     double _m_last_front_ZValue;
-    GeneralCardContainer* _getGeneralCardContainer(Player::Place place, Player* player);
+    GenericCardContainer* _getGenericCardContainer(Player::Place place, Player* player);
     QMap<int, QList<QList<CardItem*> > > _m_cardsMoveStash;
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;

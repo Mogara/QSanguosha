@@ -15,11 +15,11 @@
 #include "magatamasItem.h"
 #include "rolecombobox.h"
 
-class GeneralCardContainer: public QGraphicsObject
+class GenericCardContainer: public QGraphicsObject
 {    
     Q_OBJECT
 public:
-    inline GeneralCardContainer() { _m_highestZ = 10000; }
+    inline GenericCardContainer() { _m_highestZ = 10000; }
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids,  Player::Place place) = 0;
     virtual void addCardItems(QList<CardItem*> &card_items, Player::Place place);
     virtual QList<CardItem*> cloneCardItems(QList<int> card_ids);
@@ -44,7 +44,7 @@ signals:
     void animation_finished();
 };
 
-class PlayerCardContainer: public GeneralCardContainer
+class PlayerCardContainer: public GenericCardContainer
 {
     Q_OBJECT
 
