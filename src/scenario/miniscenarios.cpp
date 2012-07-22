@@ -41,8 +41,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
 {
 
 
-    if(event == PhaseChange)
-    {
+    if(event == PhaseChange){
         if(player == room->getTag("Starter").value<PlayerStar>()){
             if(player->getPhase() == Player::Start){
                 room->setTag("Round", room->getTag("Round").toInt()+1);
@@ -62,9 +61,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
             }
         }
 
-        if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL
-                )
-        {
+        if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL){
             if(player->tag["playerHasPlayed"].toBool())
                 room->gameOver(this->players.first()["beforeNext"]);
             else player->tag["playerHasPlayed"] = true;
@@ -75,8 +72,17 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
             return false;
         room->gameOver(this->players.first()["singleTurn"]);
     }
+
     if(player->getRoom()->getTag("WaitForPlayer").toBool())
         return true;
+
+    LogMessage log;
+    log.type = "#MiniSceneChanged";
+    log.arg = number;
+    log.arg2 = objectName();
+    room->sendLog(log);
+    log.type = QString("#mini_%1").arg(number);
+    room->sendLog(log);
 
     QList<ServerPlayer*> players = room->getAllPlayers();
     while(players.first()->getState() == "robot")
@@ -319,13 +325,14 @@ MiniScene::MiniScene(const QString &name)
 
 void MiniScene::setupCustom(QString name) const
 {
-    if(name == NULL)name = "custom_scenario";
-    name.prepend("etc/customScenes/");
-    name.append(".txt");
+    if(name == NULL)
+        name = "custom_scenario";
 
     MiniSceneRule* arule = qobject_cast<MiniSceneRule*>(this->getRule());
+    arule->number = name;
+    name.prepend("etc/customScenes/");
+    name.append(".txt");
     arule->loadSetting(name);
-
 }
 
 void MiniScene::onTagSet(Room *room, const QString &key) const

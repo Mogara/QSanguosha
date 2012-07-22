@@ -21,6 +21,7 @@ public:
     void setOptions(QStringList option);
     void setPile(QString cardList);
     void loadSetting(QString path);
+    QString number;
 
 private:
     QList< QMap<QString, QString> > players;
