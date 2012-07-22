@@ -99,6 +99,7 @@ void Photo::_adjustComponentZValues()
     _layBetween(_m_mainFrame, _m_faceTurnedIcon, _m_equipRegions[3]);    
     _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
     _layBetween(_m_skillNameItem, _m_chainIcon, _m_roleComboBox);
+    _m_progressBarItem->setZValue(_m_groupMain->zValue() + 1);
 }
 
 void Photo::setEmotion(const QString &emotion, bool permanent){
