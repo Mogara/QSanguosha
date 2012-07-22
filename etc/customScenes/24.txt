@@ -1,6 +1,6 @@
 
 setPile:99,98,102,101,72,66,21,23,143,113,14,91,65,35,48,40
-general:masu general2:select role:rebel starter:true singleTurn:rebel draw:0 equip:53 hand:2,1,0,12 
+general:masu general2:select role:rebel starter:true singleTurn:lord+loyalist draw:0 equip:53 hand:12,0,1,2 
 general:dongzhuo role:lord draw:0 
 general:sujiangf role:loyalist draw:0 
 general:sujiang role:loyalist draw:0 
