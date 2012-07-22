@@ -90,6 +90,7 @@ public:
     QString findReasonable(const QStringList &generals, bool no_unreasonable = false);
     void clearSelected();
 
+    int getGeneralMaxHP() const;
     int getGeneralMaxHp() const;
     virtual QString getGameMode() const;
 
