@@ -1222,6 +1222,9 @@ bool Shangshi::trigger(TriggerEvent triggerEvent,  Room* room, ServerPlayer *pla
     if(triggerEvent == EventAcquireSkill && data.toString() != getEffectName())
         return false;
 
+    if(triggerEvent == HpRecover && player:getHp() <= 0)
+        return false;
+
     if(triggerEvent == CardsMoveOneTime)
     {
         if(player->getPhase() == Player::Discard)
