@@ -394,7 +394,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	local guhuocard = sgs.Sanguosha:cloneCard(guhuoname, sgs.Card_NoSuit, 0)
 	local guhuotype = guhuocard:getClassName()
 	if guhuotype and self:getRestCardsNum(guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
-	if guhuotype and (guhuotype == "AmazingGrace" or (guhuotype:match("Slash") and not self:isEquip("CrossBow",yuji))) then return "noquestion" end
+	if guhuotype and (guhuotype == "AmazingGrace" or (guhuotype:match("Slash") and not self:isEquip("Crossbow",yuji))) then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 	local yuji
@@ -442,7 +442,7 @@ guhuo_skill.getTurnUseCard=function(self)
 	if card_str then return sgs.Card_Parse(card_str) end
 
 	local slash_str = self:getGuhuoCard("Slash", self.player, true) or self:getGuhuoCard("Analeptic", self.player, true)
-	if slash_str and self:slashIsAvailable() and (self.player:canSlashWithoutCrossBow() or self:isEquip("CrossBow")) then return sgs.Card_Parse(slash_str) end
+	if slash_str and self:slashIsAvailable() and (self.player:canSlashWithoutCrossBow() or self:isEquip("Crossbow")) then return sgs.Card_Parse(slash_str) end
 
 	local guhuo = "peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
 	local guhuos = guhuo:split("|")
@@ -460,7 +460,7 @@ guhuo_skill.getTurnUseCard=function(self)
 
 	self:sortByUseValue(cards, true)
 	for _,card in ipairs(cards) do
-		if (card:isKindOf("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("CrossBow"))
+		if (card:isKindOf("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
 		or (card:isKindOf("Jink") and self:getCardsNum("Jink", self.player, "h")>=3)
 		or (card:isKindOf("Weapon") and self.player:getWeapon())
 		or card:isKindOf("Disaster") then

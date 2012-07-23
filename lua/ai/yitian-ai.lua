@@ -550,7 +550,7 @@ function xunzhi_skill.getTurnUseCard(self)
 		if self:getAllPeachNum() == 0 and self.player:getHp() == 1 then
 			return sgs.Card_Parse("@XunzhiCard=.")
 		end
-		if self:isWeak() and self.role == "rebel" and self.player:inMyAttackRange(self.room:getLord()) and self:isEquip("CrossBow") then
+		if self:isWeak() and self.role == "rebel" and self.player:inMyAttackRange(self.room:getLord()) and self:isEquip("Crossbow") then
 			return sgs.Card_Parse("@XunzhiCard=.")
 		end
 	end

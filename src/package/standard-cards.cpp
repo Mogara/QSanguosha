@@ -24,7 +24,7 @@ bool Slash::IsAvailable(const Player *player){
     if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed"))
         return false;
 
-    return (player->hasWeapon("CrossBow") || player->canSlashWithoutCrossbow());
+    return (player->hasWeapon("Crossbow") || player->canSlashWithoutCrossbow());
 }
 
 bool Slash::isAvailable(const Player *player) const{
@@ -51,7 +51,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if (source->getPhase() == Player::Play
             && source->hasUsed("Slash")
-            && source->hasWeapon("CrossBow"))
+            && source->hasWeapon("Crossbow"))
         room->setEmotion(source,"weapon/crossbow");
     else if(isVirtualCard() && getSkillName() == "Spear")
         room->setEmotion(source,"weapon/spear");
@@ -199,7 +199,7 @@ bool Peach::isAvailable(const Player *player) const{
 Crossbow::Crossbow(Suit suit, int number)
     :Weapon(suit, number, 1)
 {
-    setObjectName("CrossBow");
+    setObjectName("Crossbow");
 }
 
 class DoubleSwordSkill: public WeaponSkill{
