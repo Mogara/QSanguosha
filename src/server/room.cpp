@@ -2676,12 +2676,13 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
 }
 
 void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
+    /*
     player->setSocket(socket);
     player->setState("online");
 
     marshal(player);
 
-    broadcastProperty(player, "state");
+    broadcastProperty(player, "state"); */
 }
 
 void Room::marshal(ServerPlayer *player){

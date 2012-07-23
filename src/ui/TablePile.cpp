@@ -49,7 +49,10 @@ void TablePile::timerEvent(QTimerEvent *)
     {
         if (m_currentTime - toRemove->m_uiHelper.tablePileClearTimeStamp
             > S_CLEARANCE_DELAY_BUCKETS)
+        {
             oldCards.append(toRemove);
+            m_visibleCards.removeOne(toRemove);
+        }
         else if (m_currentTime > toRemove->m_uiHelper.tablePileClearTimeStamp)
             toRemove->setEnabled(false); // @todo: this is a dirty trick. Use another property in the future
     }
@@ -59,24 +62,19 @@ void TablePile::timerEvent(QTimerEvent *)
         return;
     }
 
-    QParallelAnimationGroup* group = new QParallelAnimationGroup;
-    foreach (CardItem* toRemove, oldCards)
-    {
-        toRemove->setZValue(0.0);
-        toRemove->setHomeOpacity(0.0);
-        toRemove->setHomePos(QPointF(toRemove->homePos().x(), toRemove->homePos().y()));
-        connect(toRemove, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
-        group->addAnimation(toRemove->getGoBackAnimation(true));
-        m_visibleCards.removeAll(toRemove);
-    }
-
-    group->start(QAbstractAnimation::DeleteWhenStopped);
+    _fadeOutCardsLocked(oldCards);
     _m_mutex_pileCards.unlock();
     
     adjustCards();
 }
 
-void TablePile::clear(bool playAnimation)
+void TablePile::_markClearance(CardItem* item)
+{
+    if (item->m_uiHelper.tablePileClearTimeStamp > m_currentTime)
+        item->m_uiHelper.tablePileClearTimeStamp = m_currentTime;
+}
+
+void TablePile::clear(bool delayRequest)
 {
     if (m_visibleCards.empty()) return;
     _m_mutex_pileCards.lock();
@@ -87,41 +85,60 @@ void TablePile::clear(bool playAnimation)
         return;
     }
 
-    
-    foreach (CardItem* toRemove, m_visibleCards)
-    {        
-        if (playAnimation)
-        {
-            toRemove->m_uiHelper.tablePileClearTimeStamp = m_currentTime;
+    if (delayRequest)
+    {    
+        foreach (CardItem* toRemove, m_visibleCards)
+        {      
+            _markClearance(toRemove);
         }
-        else
-        {
-            m_visibleCards.removeAll(toRemove);
-            toRemove->deleteLater();
-        }
+    }
+    else
+    {
+        _fadeOutCardsLocked(m_visibleCards);
+        m_visibleCards.clear();
     }
 
     _m_mutex_pileCards.unlock();
 }
 
-void TablePile::_showJudgeResult(){
-    if(m_judge_card == NULL)
-        return;
-
-    m_judge_card->setParentItem(this);
-    m_visibleCards.append(m_judge_card);
-    _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);
-    m_judge_card->setOpacity(1.0);
-    m_judge_card->goBack(false);
-    PixmapAnimation::GetPixmapAnimation(m_judge_card, m_judge_emotion);
-    m_judge_card = NULL;
+void TablePile::_fadeOutCardsLocked(const QList<CardItem *> &cards)
+{
+    QParallelAnimationGroup* group = new QParallelAnimationGroup;
+    foreach (CardItem* toRemove, cards)
+    {
+        toRemove->setZValue(0.0);
+        toRemove->setHomeOpacity(0.0);
+        toRemove->setHomePos(QPointF(toRemove->homePos().x(), toRemove->homePos().y()));
+        toRemove->deleteLater();
+        group->addAnimation(toRemove->getGoBackAnimation(true, false, 100));
+    }
+    group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void TablePile::showJudgeResult(CardItem *card, bool take_effect){
-    m_judge_card = card;
-    m_judge_emotion = take_effect ? "judgegood" : "judgebad";
-    clear(false);
-    QTimer::singleShot(Settings::S_MOVE_CARD_ANIMATION_DURAION + 100, this, SLOT(_showJudgeResult()));
+void TablePile::showJudgeResult(int cardId, bool takeEffect){
+    _m_mutex_pileCards.lock();
+    CardItem* judgeCard = NULL;
+    QList<CardItem*> cardsToClear;
+    for (int i = m_visibleCards.size() - 1; i >= 0; i--)
+    {
+        CardItem* item = m_visibleCards[i];
+        if (item->getCard()->getId() == cardId)
+        {
+            judgeCard = m_visibleCards[i];
+        }
+        else
+        {
+            cardsToClear.append(item);
+        }
+    }
+    if (judgeCard == NULL)
+        judgeCard = _createCard(cardId);
+    m_visibleCards.clear();
+    m_visibleCards.append(judgeCard);
+    _fadeOutCardsLocked(cardsToClear);
+    PixmapAnimation::GetPixmapAnimation(judgeCard, takeEffect ? "judgegood" : "judgebad");
+    _m_mutex_pileCards.unlock();
+    adjustCards();
 }
 
 bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
@@ -144,7 +161,7 @@ bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
     for (int i = 0; i <  numRemoved; i++)
     {
         CardItem* toRemove = m_visibleCards[i];
-        toRemove->m_uiHelper.tablePileClearTimeStamp = m_currentTime;
+        _markClearance(toRemove);
     }
     
     foreach (CardItem* card_item, card_items)

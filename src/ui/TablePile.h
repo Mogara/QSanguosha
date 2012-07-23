@@ -25,25 +25,23 @@ public:
     inline virtual void paint(QPainter *,const QStyleOptionGraphicsItem *,QWidget *) {}    
     void adjustCards();
     virtual QRectF boundingRect() const;
-    void showJudgeResult(CardItem* card, bool take_effect);
+    void showJudgeResult(int cardId, bool takeEffect);
 public slots:
-    void clear(bool playAnimation = true);
+    void clear(bool delayRequest = true);
 protected:
+    // This function must be called with mutex_pileCards locked.
+    void _fadeOutCardsLocked(const QList<CardItem *> &cards);
     static const int S_CLEARANCE_UPDATE_INTERVAL_MSEC = 1000;
     static const int S_CLEARANCE_DELAY_BUCKETS = 3;
     virtual void timerEvent(QTimerEvent *);
     virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    void _markClearance(CardItem* item);
     QList<CardItem*> m_visibleCards;
     QMutex _m_mutex_pileCards;
     int m_numCardsVisible;
     QRect m_cardsDisplayRegion;
     int m_timer;
     int m_currentTime;
-private:
-    CardItem *m_judge_card;
-    QString m_judge_emotion;
-private slots:
-    void _showJudgeResult();
 };
 
 #endif

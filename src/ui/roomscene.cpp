@@ -385,12 +385,9 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
         break;
     }
     case S_GAME_EVENT_JUDGE_RESULT:{
-        int card_id = arg[1].asInt();
-        bool take_effect = arg[2].asBool();
-        QString who = arg[3].asCString();
-        QString reason = arg[4].asCString();
-        showJudgeResult(card_id, take_effect, who, reason);
-
+        int cardId = arg[1].asInt();
+        bool takeEffect = arg[2].asBool();
+        m_tablePile->showJudgeResult(cardId, takeEffect);
         break;
     }
     case S_GAME_EVENT_DETACH_SKILL:{
@@ -3121,15 +3118,6 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 void RoomScene::showOwnerButtons(bool owner){
     if(control_panel && !game_started)
         control_panel->setVisible(owner);
-}
-
-void RoomScene::showJudgeResult(int card_id, bool take_effect, const QString &who, const QString reason){
-    QList<int> card_ids;
-    card_ids.append(card_id);
-    CardItem *judge_result = m_tablePile->removeCardItems(card_ids, Player::DiscardPile).first();
-    CardMoveReason _reason(CardMoveReason::S_REASON_JUDGEDONE, who, QString(), reason);
-    judge_result->setFootnote(_translateMovementReason(_reason));
-    m_tablePile->showJudgeResult(judge_result, take_effect);
 }
 
 void RoomScene::showPlayerCards(){

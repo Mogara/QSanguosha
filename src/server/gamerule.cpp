@@ -581,7 +581,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             room->sendLog(log);
 
             room->removeTag("retrial");
-
+            QThread::currentThread()->wait(Config.S_JUDGE_RESULT_DELAY);
             break;
         }
 

@@ -356,7 +356,6 @@ private slots:
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);
     void showOwnerButtons(bool owner);
-    void showJudgeResult(int card_id, bool take_effect, const QString &who, const QString reason);
     void showPlayerCards();
     void updateRolesBox();
     void updateRoles(const QString &roles);

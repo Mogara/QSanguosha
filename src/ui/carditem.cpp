@@ -129,7 +129,7 @@ void CardItem::goBack(bool playAnimation, bool doFade){
     }
 }
 
-QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade, bool smoothTransition)
+QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade, bool smoothTransition, int duration)
 {
     m_animationMutex.lock();
     if (m_currentAnimation != NULL)
@@ -141,7 +141,7 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
     goback->setEndValue(home_pos);
     goback->setEasingCurve(QEasingCurve::OutQuad);
-    goback->setDuration(Config.S_MOVE_CARD_ANIMATION_DURAION);
+    goback->setDuration(duration);
 
     if(doFade){
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
@@ -154,7 +154,7 @@ QAbstractAnimation* CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
         {
             disappear->setKeyValueAt(0.2, middleOpacity);
             disappear->setKeyValueAt(0.8, middleOpacity);
-            disappear->setDuration(Config.S_MOVE_CARD_ANIMATION_DURAION);
+            disappear->setDuration(duration);
         }
 
         group->addAnimation(goback);
