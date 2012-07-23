@@ -92,7 +92,7 @@ SOURCES += \
     src/ui/chatwidget.cpp \
     src/ui/clientlogbox.cpp \
     src/ui/dashboard.cpp \
-    src/ui/GeneralCardContainerUI.cpp \
+    src/ui/GenericCardContainerUI.cpp \
     src/ui/indicatoritem.cpp \
     src/ui/magatamasItem.cpp \
     src/ui/photo.cpp \
@@ -229,7 +229,7 @@ HEADERS += \
     src/ui/chatwidget.h \
     src/ui/clientlogbox.h \
     src/ui/dashboard.h \
-    src/ui/GeneralCardContainerUI.h \
+    src/ui/GenericCardContainerUI.h \
     src/ui/indicatoritem.h \
     src/ui/magatamasItem.h \
     src/ui/photo.h \
