@@ -201,9 +201,10 @@ public:
             foreach(int card_id, move->card_ids){
                 card = Sanguosha->getCard(card_id);
                 if(card->isRed() && (move->from_places[i] == Player::PlaceHand || move->from_places[i] == Player::PlaceEquip)
-                    && player->askForSkillInvoke(objectName(), data))
+                    && player->askForSkillInvoke(objectName(), data)){
                     room->broadcastSkillInvoke(objectName());
                     player->drawCards(1);
+                }
                 i++;
             }
         }
