@@ -905,7 +905,7 @@ public:
 	QString askForKingdom(ServerPlayer *player);
 	bool askForSkillInvoke(ServerPlayer *player, const char *skill_name, const QVariant &data = QVariant());
 	QString askForChoice(ServerPlayer *player, const char *skill_name, const char *choices, const QVariant &data = QVariant());
-	bool askForDiscard(ServerPlayer *target, const char *reason, int discard_num, int min_num, bool optional = false, bool include_equip = false);
+	bool askForDiscard(ServerPlayer *target, const char *reason, int discard_num, int min_num = 100, bool optional = false, bool include_equip = false);
 	const Card *askForExchange(ServerPlayer *player, const char *reason, int discard_num);
 	bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
 	bool isCanceled(const CardEffectStruct &effect);

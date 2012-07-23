@@ -3260,6 +3260,8 @@ QString Room::askForKingdom(ServerPlayer *player){
 
 bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool optional, bool include_equip){
     notifyMoveFocus(player, S_COMMAND_DISCARD_CARD);
+    if(min_num > discard_num)
+        min_num = discard_num;
     AI *ai = player->getAI();
     QList<int> to_discard;
     if (ai) {
