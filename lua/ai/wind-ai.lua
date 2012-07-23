@@ -6,14 +6,13 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 	
 	local selfSub = self.player:getHp()-self.player:getHandcardNum()
 	local selfDef = sgs.getDefense(self.player)
-	local hasJud = self.player:getJudgingArea()
 	
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
-		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
-			or (amr:objectName()=="eight_diagram"))
+		local eff=(not amr) or self.player:hasWeapon("QinggangSword") or not
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("Fan"))
+			or (amr:objectName()=="EightDiagram"))
 			
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
 		elseif self:slashProhibit(nil, enemy) then
@@ -27,9 +26,9 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
-		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
-			or (amr:objectName()=="eight_diagram"))
+		local eff=(not amr) or self.player:hasWeapon("QinggangSword") or not
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("Fan"))
+			or (amr:objectName()=="EightDiagram"))
 
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
 		elseif self:slashProhibit(nil, enemy) then
@@ -83,9 +82,9 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
-		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
-			or (amr:objectName()=="eight_diagram") or enemy:hasSkill("bazhen"))
+		local eff=(not amr) or self.player:hasWeapon("QinggangSword") or not
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("Fan"))
+			or (amr:objectName()=="EightDiagram") or enemy:hasSkill("bazhen"))
 
 		if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
 		elseif self:slashProhibit(nil, enemy) then
@@ -114,7 +113,7 @@ sgs.xiahouyuan_keep_value =
 {
 	Peach = 6,
 	Jink = 5.1,
-	Crossbow = 5,
+	CrossBow = 5,
 	Blade = 5,
 	Spear = 5,
 	DoubleSword =5,
@@ -393,7 +392,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	local yuji = self.room:findPlayerBySkillName("guhuo")
 	local guhuoname = self.room:getTag("GuhuoType"):toString()
 	local guhuocard = sgs.Sanguosha:cloneCard(guhuoname, sgs.Card_NoSuit, 0)
-	local guhuotype = guhuocard:className()
+	local guhuotype = guhuocard:getClassName()
 	if guhuotype and self:getRestCardsNum(guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
 	if guhuotype and (guhuotype == "AmazingGrace" or (guhuotype:match("Slash") and not self:isEquip("Crossbow",yuji))) then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
@@ -443,7 +442,7 @@ guhuo_skill.getTurnUseCard=function(self)
 	if card_str then return sgs.Card_Parse(card_str) end
 
 	local slash_str = self:getGuhuoCard("Slash", self.player, true) or self:getGuhuoCard("Analeptic", self.player, true)
-	if slash_str and self:slashIsAvailable() and (self.player:canSlashWithoutCrossbow() or self:isEquip("Crossbow")) then return sgs.Card_Parse(slash_str) end
+	if slash_str and self:slashIsAvailable() and (self.player:canSlashWithoutCrossBow() or self:isEquip("Crossbow")) then return sgs.Card_Parse(slash_str) end
 
 	local guhuo = "peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
 	local guhuos = guhuo:split("|")
@@ -468,7 +467,7 @@ guhuo_skill.getTurnUseCard=function(self)
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())
-				if self:getRestCardsNum(guhuocard:className()) == 0 then return end
+				if self:getRestCardsNum(guhuocard:getClassName()) == 0 then return end
 				local dummyuse = {isDummy = true}
 				if newguhuo == "peach" then self:useBasicCard(guhuocard,dummyuse,false) else self:useTrickCard(guhuocard,dummyuse) end
 				if dummyuse.card then

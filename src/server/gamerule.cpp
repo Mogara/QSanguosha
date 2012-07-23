@@ -48,9 +48,9 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Judge: {
-            QList<const DelayedTrick *> tricks = player->delayedTricks();
+            QList<const Card *> tricks = player->getJudgingArea();
             while(!tricks.isEmpty() && player->isAlive()){
-                const DelayedTrick *trick = tricks.takeLast();
+                const Card *trick = tricks.takeLast();
                 bool on_effect = room->cardEffect(trick, NULL, player);
                 if(!on_effect)
                     trick->onNullified(player);
@@ -240,11 +240,15 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             break;
     }
 
-    case EventAcquireSkill:{
-        break;
-    }
-
+    case EventAcquireSkill:
     case EventLoseSkill:{
+        QString skill_name = data.toString();
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        bool refilter = skill->inherits("FilterSkill");
+
+        if (refilter)
+            room->filterCards(player, player->getCards("he"), triggerEvent == EventLoseSkill);
+
         break;
     }
 
@@ -283,8 +287,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 player->setFlags("-dying");
                 break;
             }
-
-            DyingStruct dying = data.value<DyingStruct>();
 
             LogMessage log;
             log.type = "#AskForPeaches";
@@ -374,14 +376,16 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             if(!chained)
                 break;
 
-            if(player->isChained() && damage.nature != DamageStruct::Normal){
+            if(chained && damage.nature != DamageStruct::Normal){
                 room->setPlayerProperty(player, "chained", false);
-                room->setPlayerFlag(player, "chained");
+                damage.trigger_chain = true;
 
                 LogMessage log;
                 log.type = "#IronChainDamage";
                 log.from = player;
                 room->sendLog(log);
+
+                data = QVariant::fromValue(damage);
             }
 
             break;
@@ -413,8 +417,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 if(!new_general.isEmpty())
                     changeGeneral1v1(player);
             }
-            if(player->hasFlag("chained")){
-                room->setPlayerFlag(player, "-chained");
+            if(damage.trigger_chain){
                 // iron chain effect
                 if(!damage.chain){
                     QList<ServerPlayer *> chained_players;
@@ -423,7 +426,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                     else
                         chained_players = room->getAllPlayers();
                     foreach(ServerPlayer *chained_player, chained_players){
-                        if(chained_player->isChained()){
+                        if(chained_player->isChained() && chained_player->isAlive()){
 
                             DamageStruct chain_damage = damage;
                             chain_damage.to = chained_player;
@@ -548,13 +551,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
 
-            room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
             LogMessage log;
             log.type = "$InitialJudge";
             log.from = player;
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
+
+            room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
+                CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
 
             int delay = Config.AIDelay;
             if(judge->time_consuming)
@@ -577,7 +581,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             room->sendLog(log);
 
             room->removeTag("retrial");
-
+            QThread::currentThread()->wait(Config.S_JUDGE_RESULT_DELAY);
             break;
         }
 
@@ -944,7 +948,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     {
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player, "general", general_name);
+        room->changePlayerGeneral(player, general_name);
 
         foreach(QString skill_name, skill_mark.keys()){
             if(player->hasSkill(skill_name))
@@ -954,7 +958,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     else{
         QString transfigure_str = QString("%1:%2").arg(player->getGeneral2Name()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
-        room->setPlayerProperty(player,"general2",general_name);
+        room->changePlayerGeneral2(player, general_name);
     }
 
     room->getThread()->addPlayerSkills(player);
@@ -984,10 +988,8 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
                 room->setTag("SkipNormalDeathProcess", true);
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
-                QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
-                room->setPlayerProperty(sp,"general","anjiang");
+                room->setPlayerProperty(sp, "general", "anjiang");
                 room->setPlayerProperty(sp,"kingdom","god");
-                sp->invoke("transfigure", transfigure_str);
 
                 LogMessage log;
                 log.type = "#BasaraGeneralChosen";
@@ -995,11 +997,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
 
                 if(Config.Enable2ndGeneral)
                 {
-
-                    transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
-                    room->setPlayerProperty(sp,"general2","anjiang");
-                    sp->invoke("transfigure", transfigure_str);
-
+                    room->setPlayerProperty(sp, "general2", "anjiang");
                     log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
                 }
 

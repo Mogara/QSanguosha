@@ -70,12 +70,9 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
         Player::Place place = room->getCardPlace(card_id);
 
         int equip_index = -1;
-        const DelayedTrick *trick = NULL;
         if(place == Player::PlaceEquip){
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
             equip_index = static_cast<int>(equip->location());
-        }else{
-            trick = DelayedTrick::CastFrom(card);
         }
 
         QList<ServerPlayer *> tos;
@@ -84,13 +81,10 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
                 if(p->getEquip(equip_index) == NULL)
                     tos << p;
             }else{
-                if(!zhanghe->isProhibited(p, trick) && !p->containsTrick(trick->objectName()))
+                if(!zhanghe->isProhibited(p, card) && !p->containsTrick(card->objectName()))
                     tos << p;
             }
         }
-
-        if(trick && trick->isVirtualCard())
-            delete trick;
 
         room->setTag("QiaobianTarget", QVariant::fromValue(from));
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian");
@@ -648,7 +642,7 @@ bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Playe
 void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
-    if(effect.from->hasArmorEffect("eight_diagram") || effect.from->hasSkill("bazhen"))
+    if(effect.from->hasArmorEffect("EightDiagram") || effect.from->hasSkill("bazhen"))
         room->broadcastSkillInvoke("tiaoxin", 3);
     else
         room->broadcastSkillInvoke("tiaoxin", qrand() % 2 + 1);
@@ -732,7 +726,7 @@ bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Playe
         return false;
 
     const Card *card = Sanguosha->getCard(subcards.first());
-    const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+    const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
     int equip_index = static_cast<int>(equip->location());
     return to_select->getEquip(equip_index) == NULL;
 }

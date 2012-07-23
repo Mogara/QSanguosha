@@ -7,8 +7,10 @@
 #include "recorder.h"
 #include "banpair.h"
 #include "lua-wrapper.h"
+#include "jsonutils.h"
 
 using namespace QSanProtocol;
+using namespace QSanProtocol::Utils;
 
 const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 
@@ -155,7 +157,7 @@ void ServerPlayer::throwAllCards(){
     foreach(const Card *trick, tricks)
     {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, this->objectName());
-        room->throwCard(trick, NULL);
+        room->throwCard(trick, reason, NULL);
     }
 }
 
@@ -344,13 +346,17 @@ void ServerPlayer::removeCard(const Card *card, Place place){
         }
 
     case PlaceEquip: {
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-            removeEquip(equip);
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+            removeEquip(wrapped);
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            if(equip == NULL)
+                equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->getEffectiveId()));
+            Q_ASSERT(equip != NULL);
 
             equip->onUninstall(this);
             LogMessage log;
             log.type = "$Uninstall";
-            log.card_str = card->toString();
+            log.card_str = wrapped->toString();
             log.from = this;
             room->sendLog(log);
             break;
@@ -386,8 +392,9 @@ void ServerPlayer::addCard(const Card *card, Place place){
         }
 
     case PlaceEquip: {
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-            setEquip(equip);
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            setEquip(wrapped);
             equip->onInstall(this);
             break;
         }
@@ -420,11 +427,10 @@ bool ServerPlayer::isLastHandCard(const Card *card) const{
 }
 
 QList<int> ServerPlayer::handCards() const{
-    QList<int> card_ids;
-    foreach(const Card *card, handcards)
-        card_ids << card->getId();
-
-    return card_ids;
+    QList<int> cardIds;
+    foreach(const Card* card, handcards)
+        cardIds << card->getId();
+    return cardIds;
 }
 
 QList<const Card *> ServerPlayer::getHandcards() const{
@@ -450,7 +456,7 @@ DummyCard *ServerPlayer::wholeHandCards() const{
         return NULL;
 
     DummyCard *dummy_card = new DummyCard;
-    foreach(const Card *card, handcards)
+    foreach(const Card* card, handcards)
         dummy_card->addSubcard(card->getId());
 
     return dummy_card;
@@ -461,9 +467,6 @@ bool ServerPlayer::hasNullification() const{
         if(card->objectName() == "nullification")
             return true;
     }
-
-    if(loseSkills())
-        return false;
 
     foreach(const Skill* skill, getVisibleSkillList()){
         if(skill->inherits("ViewAsSkill")){
@@ -716,6 +719,24 @@ void ServerPlayer::loseAllMarks(const QString &mark_name){
     }
 }
 
+void ServerPlayer::addSkill(const QString &skill_name){
+    Player::addSkill(skill_name);
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
+    args[1] = toJsonString(objectName());
+    args[2] = toJsonString(skill_name);
+    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+}
+
+void ServerPlayer::loseSkill(const QString &skill_name){
+    Player::loseSkill(skill_name);
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+    args[1] = toJsonString(objectName());
+    args[2] = toJsonString(skill_name);
+    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+}
+
 bool ServerPlayer::isOnline() const {
     return getState() == "online";
 }
@@ -851,7 +872,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
                            .arg(getHandcardNum()));
         }else{
             QStringList card_str;
-            foreach(const Card *card, handcards){
+            foreach(const Card* card, handcards){
                 card_str << QString::number(card->getId());
             }
 
@@ -949,7 +970,7 @@ void ServerPlayer::copyFrom(ServerPlayer* sp)
     ServerPlayer *b = this;
     ServerPlayer *a = sp;
 
-    b->handcards    = QList<const Card *> (a->handcards);
+    b->handcards    = QList<const Card*> (a->handcards);
     b->phases       = QList<ServerPlayer::Phase> (a->phases);
     b->selected     = QStringList (a->selected);
 

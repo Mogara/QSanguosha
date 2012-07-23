@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #include "general.h"
-#include "card.h"
+#include "WrappedCard.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -125,34 +125,33 @@ public:
     bool isLord() const;
 
     void acquireSkill(const QString &skill_name);
-    void loseSkill(const QString &skill_name);
-    void loseAllSkills();
+    void detachSkill(const QString &skill_name);
+    void detachAllSkills();
+    virtual void addSkill(const QString &skill_name);
+    virtual void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
-    bool hasInnateSkill(const QString &skill_name, bool includeLost = false) const;
-    bool hasLordSkill(const QString &skill_name, bool includeLost = false) const;
-    bool loseSkills() const;
+    bool hasInnateSkill(const QString &skill_name) const;
+    bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
 
-    void setEquip(const EquipCard *card);
-    void removeEquip(const EquipCard *equip);
+    void setEquip(WrappedCard *equip);
+    void removeEquip(WrappedCard *equip);
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
     QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const QString &trick_name) const;
-    const DelayedTrick *topDelayedTrick() const;
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
     virtual void addCard(const Card *card, Place place) = 0;
 
-    const Weapon *getWeapon() const;
-    const Armor *getArmor() const;
-    const Horse *getDefensiveHorse() const;
-    const Horse *getOffensiveHorse() const;
+    WrappedCard *getWeapon() const;
+    WrappedCard *getArmor() const;
+    WrappedCard *getDefensiveHorse() const;
+    WrappedCard *getOffensiveHorse() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
@@ -211,6 +210,7 @@ protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
     QSet<QString> acquired_skills;
+    QStringList skills;
     QSet<QString> flags;
     QHash<QString, int> history;
 
@@ -227,13 +227,10 @@ private:
     bool alive;
 
     Phase phase;
-    const Weapon *weapon;
-    const Armor *armor;
-    const Horse *defensive_horse, *offensive_horse;
+    WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse;
     bool face_up;
     bool chained;
-    QList<const Card *> judging_area;
-    QList<const DelayedTrick *> delayed_tricks;
+    QList<int> judging_area;
     QHash<const Player *, int> fixed_distance;
 
     QSet<QString> jilei_set;

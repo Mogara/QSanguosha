@@ -35,7 +35,7 @@ QString LogMessage::toString() const{
 }
 
 DamageStruct::DamageStruct()
-    :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false)
+    :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false), trigger_chain(false)
 {
 }
 
@@ -407,11 +407,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *ta
     event_stack.push_back(triplet);
 
     bool broken = false;
+    QList<const TriggerSkill*> triggered;
     const QList<const TriggerSkill*> &skills = skill_table[triggerEvent];
     for (int i = 0; i < skills.size(); i++)
     {
         const TriggerSkill *skill = skills[i];
-        if (skill->triggerable(target)) {
+        if (skill->triggerable(target) && !triggered.contains(skill)) {
+            triggered.append(skill);
             broken = skill->trigger(triggerEvent, room, target, data);
             if(broken)
                 break;

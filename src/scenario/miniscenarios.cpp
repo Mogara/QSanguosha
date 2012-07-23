@@ -120,9 +120,9 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 }
                 general = room->askForGeneral(sp,available);
             }
+            room->changePlayerGeneral(sp, general);
             QString trans = QString("%1:%2").arg(original).arg(general);
-            sp->invoke("transfigure",trans);
-            room->setPlayerProperty(sp,"general",general);
+            sp->invoke("transfigure", trans);
         }
         general = this->players.at(i)["general2"];
         if(!general.isEmpty()){
@@ -148,9 +148,9 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 general = room->askForGeneral(sp,available);
             }
             if(general == sp->getGeneralName())general = this->players.at(i)["general3"];
+            room->changePlayerGeneral2(sp, general);
             QString trans = QString("%1:%2").arg("sujiang").arg(general);
-            sp->invoke("transfigure",trans);
-            room->setPlayerProperty(sp,"general2",general);
+            sp->invoke("transfigure", trans);
         }
 
         room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());

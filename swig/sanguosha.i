@@ -26,12 +26,6 @@ public:
     void setParent(QObject *parent);
 };
 
-%extend QObject{
-    const char *className() const{
-        return $self->metaObject()->className();
-    }
-};
-
 class General : public QObject
 {
 public:
@@ -54,6 +48,7 @@ public:
     void addSkill(Skill* skill);
     void addSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
+    QList<const Skill *> getSkillList() const;
     QList<const Skill *> getVisibleSkillList() const;
     QSet<const Skill *> getVisibleSkills() const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
@@ -137,33 +132,32 @@ public:
 
     bool isLord() const;
     void acquireSkill(const char *skill_name);
-    void loseSkill(const char *skill_name);
-    void loseAllSkills();
+    void detachSkill(const char *skill_name);
+    void detachAllSkills();
+    virtual void addSkill(const char *skill_name);
+    virtual void loseSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
-    bool hasLordSkill(const char *skill_name, bool includeLost = false) const;
-    bool hasInnateSkill(const char *skill_name, bool includeLost = false) const;
-    bool loseSkills() const;
+    bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
+    bool hasInnateSkill(const char *skill_name) const;
 
-    void setEquip(const EquipCard *card);
-    void removeEquip(const EquipCard *equip);
+    void setEquip(WrappedCard *equip);
+    void removeEquip(WrappedCard *equip);
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
     QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const char *trick_name) const;
-    const DelayedTrick *topDelayedTrick() const;
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
     virtual void addCard(const Card *card, Place place) = 0;
 
-    const Weapon *getWeapon() const;
-    const Armor *getArmor() const;
-    const Horse *getDefensiveHorse() const;
-    const Horse *getOffensiveHorse() const;
+    WrappedCard *getWeapon() const;
+    WrappedCard *getArmor() const;
+    WrappedCard *getDefensiveHorse() const;
+    WrappedCard *getOffensiveHorse() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
@@ -325,7 +319,7 @@ class ClientPlayer : public Player
 public:
     explicit ClientPlayer(Client *client);
     virtual int aliveCount() const;
-    virtual int getHandcardNum() const;	
+    virtual int getHandcardNum() const;    
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
     virtual void addKnownHandCard(const Card *card);
@@ -421,6 +415,7 @@ struct DamageStruct{
     Nature nature;
     bool chain;
     bool transfer;
+    bool trigger_chain;
 };
 
 struct CardEffectStruct{
@@ -475,6 +470,8 @@ struct CardsMoveOneTimeStruct{
     Player *from, *to;
 };
 
+typedef const CardsMoveOneTimeStruct *CardsMoveOneTimeStar;
+
 struct DyingStruct{
     DyingStruct();
 
@@ -518,13 +515,13 @@ struct PindianStruct{
     QString reason;
 };
 
+typedef PindianStruct *PindianStar;
+
 struct PhaseChangeStruct{
     PhaseChangeStruct();
     Player::Phase from;
     Player::Phase to;
 };
-
-typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{
     NonTrigger,
@@ -670,7 +667,7 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const;
     virtual bool isAvailable(const Player *player) const;
     virtual const Card *validate(const CardUseStruct *card_use) const;
-    virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
+    virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 
     // it can be used only once a turn or not
     bool isOnce() const;
@@ -688,7 +685,11 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-	virtual bool isKindOf(const char* cardType) const;
+    virtual bool isKindOf(const char* cardType) const;
+    virtual QStringList getFlags() const;
+    virtual bool isModified() const;
+    virtual QString getClassName() const;
+    virtual const Card *getRealCard() const;
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
@@ -705,7 +706,18 @@ public:
 %extend Card{
     Weapon* toWeapon(){
         return qobject_cast<Weapon*>($self);
-    }	
+    }
+    WrappedCard* toWrapped(){
+        return qobject_cast<WrappedCard*>($self);
+    }
+};
+
+class WrappedCard : public Card
+{
+public:
+    void takeOver(Card* card);
+    void copyEverythingFrom(Card* card);
+    void setModified(bool modified);
 };
 
 class SkillCard: public Card{
@@ -740,7 +752,9 @@ public:
     void addPackage(Package *package);
     void addBanPackage(const char *package_name);
     QStringList getBanPackages() const;
+    Card *cloneCard(const Card* card) const;
     Card *cloneCard(const char *name, Card::Suit suit, int number) const;
+    Card *cloneCard(const char *name, Card::Suit suit, int number, const QStringList &flags) const;
     SkillCard *cloneSkillCard(const char *name) const;
     QString getVersion() const;
     QString getVersionName() const;
@@ -772,7 +786,8 @@ public:
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
-    const Card *getCard(int index) const;
+    const Card *getCard(int index);
+    WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords() const;
     QStringList getRandomLords() const;
@@ -784,6 +799,8 @@ public:
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
+	
+	Room* currentRoom();
 };
 
 extern Engine *Sanguosha;
@@ -922,6 +939,15 @@ public:
     bool broadcastSkillInvoke(const char *skillName, const char *category);
     bool broadcastSkillInvoke(const char *skillName, int type);
     bool broadcastSkillInvoke(const char *skillName, bool isMale, int type);
+    bool notifyUpdateCard(ServerPlayer* player, int cardId, const Card* newCard);
+    bool broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard);
+    bool notifyResetCard(ServerPlayer* player, int cardId);
+    bool broadcastResetCard(const QList<ServerPlayer*> &players, int cardId);
+	
+    void changePlayerGeneral(ServerPlayer *player, const char *new_general);
+    void changePlayerGeneral2(ServerPlayer *player, const char *new_general);
+    void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);
+	
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
     void adjustSeats();

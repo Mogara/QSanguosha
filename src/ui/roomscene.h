@@ -208,7 +208,7 @@ private:
     const QSanRoomSkin* _m_roomSkin;
     QGraphicsItem* _m_last_front_item;
     double _m_last_front_ZValue;
-    GeneralCardContainer* _getGeneralCardContainer(Player::Place place, Player* player);
+    GenericCardContainer* _getGenericCardContainer(Player::Place place, Player* player);
     QMap<int, QList<QList<CardItem*> > > _m_cardsMoveStash;
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;
@@ -259,7 +259,7 @@ private:
     QPixmap m_rolesBoxBackground;
     QGraphicsPixmapItem *m_rolesBox;
     QGraphicsTextItem *m_pileCardNumInfoTextBox;
-    
+    QGraphicsPixmapItem *m_tableBg;
 #ifdef AUDIO_SUPPORT
     QSharedMemory *memory;
 #endif
@@ -312,7 +312,6 @@ private:
     void freeze();
     void addRestartButton(QDialog *dialog);
     QGraphicsItem *createDashboardButtons();
-    void createExtraButtons();
     void createReplayControlBar();
 
     void fillGenerals1v1(const QStringList &names);
@@ -357,7 +356,6 @@ private slots:
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);
     void showOwnerButtons(bool owner);
-    void showJudgeResult(int card_id, bool take_effect, const QString &who, const QString reason);
     void showPlayerCards();
     void updateRolesBox();
     void updateRoles(const QString &roles);
@@ -408,6 +406,7 @@ private slots:
     void changeGeneral(const QString &general);
     void revealGeneral(bool self, const QString &general);
 
+    void skillStateChange(const QString &skill_name);
 signals:
     void restart();
     void return_to_start();

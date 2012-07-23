@@ -488,15 +488,11 @@ public:
         events << Pindian;
     }
 
-    virtual int getPriority() const{
-        return 0;
-    }
-
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *zhangzhao = room->findPlayerBySkillName(objectName());
         if(!zhangzhao)
             return false;
@@ -534,15 +530,11 @@ public:
 
             const Card *pindian_card = target == pindian->from ? pindian->from_card : pindian->to_card;
             int num = pindian_card->getNumber() + intervention->getNumber() / 2;
-            Card *use_card = Sanguosha->cloneCard(pindian_card->objectName(), pindian_card->getSuit(), num);
-            use_card->setSkillName(objectName());
-            use_card->addSubcard(pindian_card);
-            if(target == pindian->from)
-                pindian->from_card = use_card;
-            else
-                pindian->to_card = use_card;
-
-            data = QVariant::fromValue(pindian);
+            WrappedCard *new_card = Sanguosha->getWrappedCard(pindian_card->getId());
+            new_card->setNumber(num);
+            new_card->setSkillName(objectName());
+            new_card->setModified(true);
+            room->broadcastUpdateCard(room->getPlayers(), pindian_card->getId(), new_card);
         }
         return false;
     }

@@ -155,7 +155,7 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty())
         return false;
 
-    if(!subcards.isEmpty() && Self->getWeapon() == Sanguosha->getCard(subcards.first()))
+    if(!subcards.isEmpty() && Self->getWeapon() && Self->getWeapon()->getId() == subcards.first())
         return Self->distanceTo(to_select) <= 1;
 
     return Self->inMyAttackRange(to_select);
@@ -290,13 +290,17 @@ public:
         events << EventPhaseStart << FinishJudge;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) || (target && target->hasFlag("shuangxiong"));
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *shuangxiong, QVariant &data) const{
         if(triggerEvent == EventPhaseStart){
             if(shuangxiong->getPhase() == Player::Start){
                 room->setPlayerMark(shuangxiong, "shuangxiong", 0);
             }else if(shuangxiong->getPhase() == Player::Draw){
                 if(shuangxiong->askForSkillInvoke(objectName())){
-                    shuangxiong->setFlags("shuangxiong");
+                    room->setPlayerFlag(shuangxiong, "shuangxiong");
 
                     room->broadcastSkillInvoke("shuangxiong");
                     JudgeStruct judge;
@@ -306,12 +310,12 @@ public:
                     judge.who = shuangxiong;
 
                     room->judge(judge);
-
                     room->setPlayerMark(shuangxiong, "shuangxiong", judge.card->isRed() ? 1 : 2);
-                    shuangxiong->setFlags("-shuangxiong");
 
                     return true;
                 }
+            }else if(shuangxiong->getPhase() == Player::NotActive && shuangxiong->hasFlag("shuangxiong")){
+                room->setPlayerFlag(shuangxiong, "-shuangxiong");
             }
         }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
@@ -542,21 +546,20 @@ public:
     }
 };
 
-class Tianyi: public PhaseChangeSkill{
+class Tianyi: public TriggerSkill{
 public:
-    Tianyi():PhaseChangeSkill("tianyi"){
+    Tianyi():TriggerSkill("tianyi"){
         view_as_skill = new TianyiViewAsSkill;
+        events << EventLoseSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::NotActive){
-            Room *room = target->getRoom();
-            if(target->hasFlag("tianyi_failed"))
-                room->setPlayerFlag(target, "-tianyi_failed");
-            if(target->hasFlag("tianyi_success")){
-                room->setPlayerFlag(target, "-tianyi_success");
-            }
-        }
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target && target->hasFlag("tianyi_success");
+    }
+
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *taishici, QVariant &data) const{
+        if(data.toString() == objectName())
+            room->setPlayerFlag(taishici, "-tianyi_success");
 
         return false;
     }

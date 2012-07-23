@@ -47,6 +47,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     
     // only do this after you create all frames.
     _createControls();
+    _createExtraButtons();
 }
 
 bool Dashboard::isAvatarUnderMouse()
@@ -290,14 +291,6 @@ void Dashboard::setWidth(int width){
     _updateDeathIcon();
 }
 
-QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool toLeft){
-    QGraphicsProxyWidget *proxy_widget = new QGraphicsProxyWidget(this);
-    proxy_widget->setWidget(widget);
-    proxy_widget->setParentItem(toLeft ? _m_leftFrame : _m_rightFrame);
-    proxy_widget->setPos(x, -32);
-    return proxy_widget;
-}
-
 QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
 {
     // if it's a equip skill, add it to equip bar
@@ -305,7 +298,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
     for (int i = 0; i < 4; i++)
     {
         if (!_m_equipCards[i]) continue;
-        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard());
+        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard()->getRealCard());
         Q_ASSERT(equip);
         // @todo: we must fix this in the server side - add a skill to the card itself instead
         // of getting it from the engine.
@@ -386,27 +379,15 @@ void Dashboard::highlightEquip(QString skillName, bool highlight)
     }
 }
 
-QPushButton *Dashboard::createButton(const QString &name){
-    QPushButton *button = new QPushButton;
-    button->setEnabled(false);
-
-    // @todo: We put half of the skins in qss but half in json file. This is not acceptable
-    // and must be moved.
-    QPixmap icon_pixmap(QString("image/system/button/%1.png").arg(name));
-    QPixmap icon_pixmap_disabled(QString("image/system/button/%1-disabled.png").arg(name));
-
-    QIcon icon(icon_pixmap);
-    icon.addPixmap(icon_pixmap_disabled, QIcon::Disabled);
-
-    button->setIcon(icon);
-    button->setIconSize(icon_pixmap.size());
-    button->setFixedSize(icon_pixmap.size());
-    // button->setObjectName(name);
-    // button->setProperty("game_control",true);
-
-    button->setAttribute(Qt::WA_TranslucentBackground);
-
-    return button;
+void Dashboard::_createExtraButtons(){
+    QSanButton *btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
+    QSanButton *btnSortHandcard = new QSanButton("handcard", "sort", this);
+    // @todo: make the position configurable and also support auto hide.
+    btnReverseSelection->setPos(3, -btnReverseSelection->boundingRect().height());
+    btnSortHandcard->setPos(btnReverseSelection->boundingRect().right() + 6,
+                            -btnReverseSelection->boundingRect().height());
+    connect(btnReverseSelection, SIGNAL(clicked()), this, SLOT(reverseSelection()));
+    connect(btnSortHandcard, SIGNAL(clicked()), this, SLOT(sortCards()));
 }
 
 void Dashboard::skillButtonActivated(){
@@ -456,12 +437,6 @@ void Dashboard::selectAll(){
         updatePending();
     }
     adjustCards(true);
-}
-
-QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
-    QPushButton *button = createButton(name);
-    addWidget(button, x, from_left);
-    return button;
 }
 
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
@@ -755,6 +730,7 @@ void Dashboard::sortCards(bool doAnimation){
 }
 
 void Dashboard::reverseSelection(){
+    /*
     if(view_as_skill == NULL)
         return;
 
@@ -791,7 +767,7 @@ void Dashboard::reverseSelection(){
 
     pending_card = view_as_skill->viewAs(pendingCards);
     m_mutexEnableCards.unlock();
-    emit card_selected(pending_card);
+    emit card_selected(pending_card);*/
 }
 
 void Dashboard::disableAllCards(){

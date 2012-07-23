@@ -6,7 +6,7 @@
 #include "carditem.h"
 #include "protocol.h"
 
-#include "GeneralCardContainerUI.h"
+#include "GenericCardContainerUI.h"
 #include <QGraphicsObject>
 #include <QPixmap>
 #include <QComboBox>
@@ -56,7 +56,7 @@ protected:
     inline virtual QGraphicsItem* _getMarkParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem* _getPhaseParent() { return _m_groupMain; }
     inline virtual QGraphicsItem* _getRoleComboBoxParent() { return _m_groupMain; }
-    inline virtual QGraphicsItem* _getProgressBarParent() { return _m_groupMain;}
+    inline virtual QGraphicsItem* _getProgressBarParent() { return this;}
     inline virtual QGraphicsItem* _getFocusFrameParent() { return _m_groupMain; }
     inline virtual QGraphicsItem* _getDeathIconParent() { return _m_groupDeath;}
     virtual QGraphicsItem* _getPileParent() { return _m_groupMain; }

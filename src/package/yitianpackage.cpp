@@ -8,7 +8,7 @@
 
 class YitianSwordSkill : public WeaponSkill{
 public:
-    YitianSwordSkill():WeaponSkill("yitian_sword"){
+    YitianSwordSkill():WeaponSkill("YitianSword"){
         events << DamageComplete;
     }
 
@@ -16,7 +16,7 @@ public:
         if(player->getPhase() != Player::NotActive)
            return false;
 
-        if(player->askForSkillInvoke("yitian_sword"))
+        if(player->askForSkillInvoke("YitianSword"))
             player->getRoom()->askForUseCard(player, "slash", "@askforslash");
 
         return false;
@@ -26,7 +26,7 @@ public:
 /*YitianSword::YitianSword(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
-    setObjectName("yitian_sword");
+    setObjectName("YitianSword");
     skill = new YitianSwordSkill;
 }
 
@@ -1792,7 +1792,7 @@ bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty() || to_select->isAllNude())
         return false;
 
-    if(!subcards.isEmpty() && Sanguosha->getCard(subcards.first()) == Self->getWeapon() && !Self->hasSkill("zhengfeng"))
+    if(!subcards.isEmpty() && Self->getWeapon() &&subcards.first() == Self->getWeapon()->getId() && !Self->hasSkill("zhengfeng"))
         return Self->distanceTo(to_select) == 1;
     else
         return Self->inMyAttackRange(to_select);

@@ -36,7 +36,7 @@ void ClientPlayer::addCard(const Card *card, Place place){
             break;
         }
     case PlaceEquip: {
-            const EquipCard *equip = qobject_cast<const EquipCard*>(card);
+            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
             setEquip(equip);
             break;
         }
@@ -59,7 +59,7 @@ bool ClientPlayer::isLastHandCard(const Card *card) const{
     if (!card->isVirtualCard()){
         if(known_cards.length() != 1)
             return false;
-        return known_cards.first()->getEffectiveId() == card->getEffectiveId();
+        return known_cards.first()->getId() == card->getEffectiveId();
     }
     else if (card->getSubcards().length() > 0){
         foreach (int card_id, card->getSubcards()){
@@ -80,7 +80,7 @@ void ClientPlayer::removeCard(const Card *card, Place place){
             break;
         }
     case PlaceEquip:{
-            const EquipCard *equip = qobject_cast<const EquipCard*>(card);
+            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
             removeEquip(equip);
             break;
         }
@@ -101,10 +101,8 @@ QList<const Card *> ClientPlayer::getCards() const{
 
 void ClientPlayer::setCards(const QList<int> &card_ids){
     known_cards.clear();
-
-    foreach(int card_id, card_ids){
-        known_cards << Sanguosha->getCard(card_id);
-    }
+    foreach(int cardId, card_ids)
+        known_cards.append(Sanguosha->getCard(cardId));
 }
 
 QTextDocument *ClientPlayer::getMarkDoc() const{
@@ -160,6 +158,8 @@ void ClientPlayer::setFlags(const QString &flag){
         emit drank_changed();
     else if(flag.endsWith("actioned"))
         emit action_taken();
+
+    emit skill_state_changed(flag);
 }
 
 void ClientPlayer::setMark(const QString &mark, int value){

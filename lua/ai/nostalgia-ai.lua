@@ -63,7 +63,7 @@ sgs.ai_skill_use_func.NosJujianCard = function(card, use, self)
 					table.insert(abandon_handcard, card:getId())
 					index = 5
 				elseif card:isKindOf("Slash") and slash_num > 1 then
-					if (self.player:getWeapon() and not self.player:getWeapon():objectName()=="crossbow") or
+					if (self.player:getWeapon() and not self.player:getWeapon():objectName()=="Crossbow") or
 						not self.player:getWeapon() then
 						table.insert(abandon_handcard, card:getId())
 						index = 5

@@ -217,7 +217,7 @@ sgs.ai_view_as.kanpo = function(card, player, card_place)
 	end
 end
 
-sgs.ai_skill_invoke.bazhen = sgs.ai_skill_invoke.eight_diagram
+sgs.ai_skill_invoke.bazhen = sgs.ai_skill_invoke.EightDiagram
 
 function sgs.ai_armor_value.bazhen(card)
 	if not card then return 4 end

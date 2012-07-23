@@ -34,7 +34,6 @@ class Card : public QObject
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
-
 public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
@@ -58,46 +57,57 @@ public:
     bool isRed() const;
     bool isBlack() const;
     int getId() const;
-    void setId(int id);
+    virtual void setId(int id);
     int getEffectiveId() const;
     QString getEffectIdString() const;
 
     int getNumber() const;
-    void setNumber(int number);
+    virtual void setNumber(int number);
     QString getNumberString() const;
 
     Suit getSuit() const;
-    void setSuit(Suit suit);
+    virtual void setSuit(Suit suit);
 
     bool sameColorWith(const Card *other) const;
     Color getColor() const;
-    bool isEquipped() const;
-
-    virtual QString getCommonEffectName() const;
-    QString getPackage() const;
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
     QString getName() const;
     QString getSkillName() const;
-    void setSkillName(const QString &skill_name);
+    virtual void setSkillName(const QString &skill_name);
     QString getDescription() const;
+    
+    virtual bool isOnce() const;
+    virtual bool isMute() const;
+    virtual bool willThrow() const;
+    virtual bool canJilei() const;
+    virtual bool hasPreAction() const;
 
-    bool isVirtualCard() const;
+    virtual void setFlags(const QString &flag) const;
+    inline void setFlags(const QStringList &fs) { flags = fs; }
+    bool hasFlag(const QString &flag) const;
+    void clearFlags() const;
+
+    virtual QString getPackage() const;
+    inline virtual QString getClassName() const {return metaObject()->className();}
+    virtual bool isVirtualCard() const;
+    virtual bool isEquipped() const;
+    virtual QString getCommonEffectName() const;
     virtual bool match(const QString &pattern) const;
 
-    void addSubcard(int card_id);
-    void addSubcard(const Card *card);
-    QList<int> getSubcards() const;
-    void clearSubcards();
-    QString subcardString() const;
-    void addSubcards(const QList<const Card *> &cards);
-    int subcardsLength() const;
+    virtual void addSubcard(int card_id);
+    virtual void addSubcard(const Card *card);
+    virtual QList<int> getSubcards() const;
+    virtual void clearSubcards();
+    virtual QString subcardString() const;
+    virtual void addSubcards(const QList<const Card *> &cards);
+    virtual int subcardsLength() const;
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;
     virtual QString toString() const;
-    bool isNDTrick() const;
+    virtual bool isNDTrick() const;
 
     // card target selection
     virtual bool targetFixed() const;
@@ -107,18 +117,11 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
                               int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
-    virtual const Card *validate(const CardUseStruct *card_use) const;
-    virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
+    
+    inline virtual const Card *getRealCard() const {return this;}
+    virtual const Card *validate(const CardUseStruct *cardUse) const;
+    virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 
-    bool isOnce() const;
-    bool isMute() const;
-    bool willThrow() const;
-    bool canJilei() const;
-    bool hasPreAction() const;
-
-    void setFlags(const QString &flag) const;
-    bool hasFlag(const QString &flag) const;
-    void clearFlags() const;
 
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
@@ -127,6 +130,10 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
     inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
+    inline virtual QStringList getFlags() const { return flags; }
+
+    inline virtual bool isModified() const {return false;}
+    inline virtual void onNullified(ServerPlayer *target) const {return;}
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
@@ -143,15 +150,14 @@ protected:
     QList<int> subcards;
     bool target_fixed;
     bool once;
-    QString skill_name;
     bool mute;
     bool will_throw;
     bool can_jilei;
     bool has_preact;
-    bool m_isModified;
-    Suit suit;
-    int number;
-    int id;
+    Suit m_suit;
+    int m_number;
+    int m_id;
+    QString m_skillName;
 
     mutable QStringList flags;
 };

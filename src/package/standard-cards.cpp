@@ -24,7 +24,7 @@ bool Slash::IsAvailable(const Player *player){
     if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed"))
         return false;
 
-    return (player->hasWeapon("crossbow") || player->canSlashWithoutCrossbow());
+    return (player->hasWeapon("Crossbow") || player->canSlashWithoutCrossbow());
 }
 
 bool Slash::isAvailable(const Player *player) const{
@@ -49,17 +49,17 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if(source->getPhase() == Player::Play
+    if (source->getPhase() == Player::Play
             && source->hasUsed("Slash")
-            && source->hasWeapon("crossbow"))
+            && source->hasWeapon("Crossbow"))
         room->setEmotion(source,"weapon/crossbow");
-    else if(this->isVirtualCard() && this->skill_name == "spear")
+    else if(isVirtualCard() && getSkillName() == "Spear")
         room->setEmotion(source,"weapon/spear");
-    else if(targets.length()>1
+    else if (targets.length()>1
             && source->handCards().size() == 0
-            && source->hasWeapon("halberd"))
+            && source->hasWeapon("Halberd"))
         room->setEmotion(source,"weapon/halberd");
-    else if(this->isVirtualCard() && this->skill_name == "fan")
+    else if (isVirtualCard() && getSkillName() == "Fan")
         room->setEmotion(source,"weapon/fan");
 
     BasicCard::use(room, source, targets);
@@ -96,7 +96,7 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int slash_targets = 1;
-    if(Self->hasWeapon("halberd") && Self->isLastHandCard(this))
+    if(Self->hasWeapon("Halberd") && Self->isLastHandCard(this))
         slash_targets += 2;
 
     if(Self->hasSkill("lihuo") && isKindOf("FireSlash"))
@@ -119,10 +119,12 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     int rangefix = 0;
-    if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getEffectiveId()))
-        rangefix += Self->getWeapon()->getRange() - 1;
+    if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
+        const Weapon* weapon = qobject_cast<const Weapon*>(Self->getWeapon()->getRealCard());
+        rangefix += weapon->getRange() - 1;
+    }
 
-    if(Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getEffectiveId()))
+    if(Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
     if(Self->hasFlag("slashTargetFix") && targets.isEmpty())
@@ -197,12 +199,12 @@ bool Peach::isAvailable(const Player *player) const{
 Crossbow::Crossbow(Suit suit, int number)
     :Weapon(suit, number, 1)
 {
-    setObjectName("crossbow");
+    setObjectName("Crossbow");
 }
 
 class DoubleSwordSkill: public WeaponSkill{
 public:
-    DoubleSwordSkill():WeaponSkill("double_sword"){
+    DoubleSwordSkill():WeaponSkill("DoubleSword"){
         events << TargetConfirmed;
     }
 
@@ -222,12 +224,9 @@ public:
                     else{
                         QString prompt = "double-sword-card:" + use.from->getGeneralName();
                         const Card *card = room->askForCard(to, ".", prompt, QVariant(), CardDiscarded);
-                        if(card){
-                            room->throwCard(card, to);
-                        }else
+                        if(!card)
                             draw_card = true;
                     }
-
                     if(draw_card)
                        use.from->drawCards(1);
                 }
@@ -241,13 +240,13 @@ public:
 DoubleSword::DoubleSword(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
-    setObjectName("double_sword");
+    setObjectName("DoubleSword");
     skill = new DoubleSwordSkill;
 }
 
 class QinggangSwordSkill: public WeaponSkill{
 public:
-    QinggangSwordSkill():WeaponSkill("qinggang_sword"){
+    QinggangSwordSkill():WeaponSkill("QinggangSword"){
         events << TargetConfirmed << Death;
     }
 
@@ -258,7 +257,7 @@ public:
                 bool do_anim = false;
                 foreach(ServerPlayer *p, use.to){
                     p->addMark("qinggang");
-                    if (p->getArmor() || p->hasSkill("bazhen"))  do_anim = true;
+                    if (p->getArmor() || p->hasSkill("bazhen")) do_anim = true;
                 }
                 if (do_anim){
                     room->setEmotion(use.from, "weapon/qinggang_sword");
@@ -276,14 +275,14 @@ public:
 QinggangSword::QinggangSword(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
-    setObjectName("qinggang_sword");
+    setObjectName("QinggangSword");
 
     skill = new QinggangSwordSkill;
 }
 
 class BladeSkill : public WeaponSkill{
 public:
-    BladeSkill():WeaponSkill("blade"){
+    BladeSkill():WeaponSkill("Blade"){
         events << SlashMissed;
     }
 
@@ -309,13 +308,13 @@ public:
 Blade::Blade(Suit suit, int number)
     :Weapon(suit, number, 3)
 {
-    setObjectName("blade");
+    setObjectName("Blade");
     skill = new BladeSkill;
 }
 
 class SpearSkill: public ViewAsSkill{
 public:
-    SpearSkill():ViewAsSkill("spear"){
+    SpearSkill():ViewAsSkill("Spear"){
 
     }
 
@@ -356,13 +355,13 @@ public:
 Spear::Spear(Suit suit, int number)
     :Weapon(suit, number, 3)
 {
-    setObjectName("spear");
+    setObjectName("Spear");
     attach_skill = true;
 }
 
 class AxeViewAsSkill: public ViewAsSkill{
 public:
-    AxeViewAsSkill():ViewAsSkill("axe"){
+    AxeViewAsSkill():ViewAsSkill("Axe"){
 
     }
 
@@ -397,7 +396,7 @@ public:
 
 class AxeSkill: public WeaponSkill{
 public:
-    AxeSkill():WeaponSkill("axe"){
+    AxeSkill():WeaponSkill("Axe"){
         events << SlashMissed;
     }
 
@@ -438,7 +437,7 @@ public:
 Axe::Axe(Suit suit, int number)
     :Weapon(suit, number, 3)
 {
-    setObjectName("axe");
+    setObjectName("Axe");
     skill = new AxeSkill;
     attach_skill = true;
 }
@@ -446,12 +445,12 @@ Axe::Axe(Suit suit, int number)
 Halberd::Halberd(Suit suit, int number)
     :Weapon(suit, number, 4)
 {
-    setObjectName("halberd");
+    setObjectName("Halberd");
 }
 
 class KylinBowSkill: public WeaponSkill{
 public:
-    KylinBowSkill():WeaponSkill("kylin_bow"){
+    KylinBowSkill():WeaponSkill("KylinBow"){
         events << DamageCaused;
     }
 
@@ -493,13 +492,13 @@ public:
 KylinBow::KylinBow(Suit suit, int number)
     :Weapon(suit, number, 5)
 {
-    setObjectName("kylin_bow");
+    setObjectName("KylinBow");
     skill = new KylinBowSkill;
 }
 
 class EightDiagramSkill: public ArmorSkill{
 private:
-    EightDiagramSkill():ArmorSkill("eight_diagram"){
+    EightDiagramSkill():ArmorSkill("EightDiagram"){
         events << CardAsked;
     }
 
@@ -548,7 +547,7 @@ public:
 
 EightDiagram::EightDiagram(Suit suit, int number)
     :Armor(suit, number){
-        setObjectName("eight_diagram");
+        setObjectName("EightDiagram");
         skill = EightDiagramSkill::getInstance();
 }
 
@@ -771,7 +770,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *victim = room->getTag("collateralVictim").value<PlayerStar>();
     room->removeTag("collateralVictim");
 
-    const Weapon *weapon = killer->getWeapon();
+    WrappedCard *weapon = killer->getWeapon();
     if(weapon == NULL || victim == NULL)
         return;
 
@@ -851,7 +850,9 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     room->setEmotion(second, "duel");
 
     forever{
-        if(second->hasFlag("WushuangTarget")){
+        if (!first->isAlive())
+            break;
+        if(this->hasFlag("WushuangInvke") && second->hasSkill("wushuang")){
             room->broadcastSkillInvoke("wushuang");
             const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
             if(slash == NULL)
@@ -1019,7 +1020,7 @@ void Lightning::takeEffect(ServerPlayer *target) const{
 
 class IceSwordSkill: public WeaponSkill{
 public:
-    IceSwordSkill():WeaponSkill("ice_sword"){
+    IceSwordSkill():WeaponSkill("IceSword"){
         events << DamageCaused;
     }
 
@@ -1027,16 +1028,16 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.card && damage.card->isKindOf("Slash") && !damage.to->isNude()
-            && !damage.chain && !damage.transfer && player->askForSkillInvoke("ice_sword", data)){
+            && !damage.chain && !damage.transfer && player->askForSkillInvoke("IceSword", data)){
             room->setEmotion(player,"weapon/ice_sword");
-                int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+                int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword");
                 CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, damage.to->objectName());
                 reason.m_playerId = damage.from->objectName();
                 reason.m_targetId = damage.to->objectName();
                 room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::DiscardPile, reason);
 
                 if(!damage.to->isNude()){
-                    card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+                    card_id = room->askForCardChosen(player, damage.to, "he", "IceSword");
                     CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, damage.to->objectName());
                     reason.m_playerId = damage.from->objectName();
                     reason.m_targetId = damage.to->objectName();
@@ -1053,13 +1054,13 @@ public:
 IceSword::IceSword(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
-    setObjectName("ice_sword");
+    setObjectName("IceSword");
     skill = new IceSwordSkill;
 }
 
 class RenwangShieldSkill: public ArmorSkill{
 public:
-    RenwangShieldSkill():ArmorSkill("renwang_shield"){
+    RenwangShieldSkill():ArmorSkill("RenwangShield"){
         events << SlashEffected;
     }
 
@@ -1084,22 +1085,27 @@ public:
 RenwangShield::RenwangShield(Suit suit, int number)
     :Armor(suit, number)
 {
-    setObjectName("renwang_shield");
+    setObjectName("RenwangShield");
     skill = new RenwangShieldSkill;
 }
 
 class HorseSkill: public DistanceSkill{
 public:
-    HorseSkill():DistanceSkill("horse"){
+    HorseSkill():DistanceSkill("Horse"){
 
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
         int correct = 0;
-        if(from->getOffensiveHorse())
-            correct += from->getOffensiveHorse()->getCorrect();
-        if(to->getDefensiveHorse())
-            correct += to->getDefensiveHorse()->getCorrect();
+        const Horse* horse = NULL;
+        if(from->getOffensiveHorse()){
+            horse = qobject_cast<const Horse*>(from->getOffensiveHorse()->getRealCard());
+            correct += horse->getCorrect();
+        }
+        if(to->getDefensiveHorse()){
+            horse = qobject_cast<const Horse*>(to->getDefensiveHorse()->getRealCard());
+            correct += horse->getCorrect();
+        }
 
         return correct;
     }
@@ -1197,12 +1203,12 @@ StandardCardPackage::StandardCardPackage()
             << new OffensiveHorse(Card::Spade, 13)
             << new OffensiveHorse(Card::Diamond, 13);
 
-        horses.at(0)->setObjectName("jueying");
-        horses.at(1)->setObjectName("dilu");
-        horses.at(2)->setObjectName("zhuahuangfeidian");
-        horses.at(3)->setObjectName("chitu");
-        horses.at(4)->setObjectName("dayuan");
-        horses.at(5)->setObjectName("zixing");
+        horses.at(0)->setObjectName("JueYing");
+        horses.at(1)->setObjectName("DiLu");
+        horses.at(2)->setObjectName("ZhuaHuangFeiDian");
+        horses.at(3)->setObjectName("ChiTu");
+        horses.at(4)->setObjectName("DaYuan");
+        horses.at(5)->setObjectName("ZiXing");
 
         cards << horses;
 

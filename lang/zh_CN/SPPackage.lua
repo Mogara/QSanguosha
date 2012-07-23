@@ -69,6 +69,7 @@ return {
 
 	["#sp_caiwenji"] = "金璧之才",
 	["sp_caiwenji"] = "SP蔡文姬",
+	["&sp_caiwenji"] = "蔡文姬",
 	["illustrator:sp_caiwenji"] = "木美人",
 	["guixiang"] = "归乡",
 	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
@@ -127,9 +128,9 @@ return {
 	
 --sp_card
 	["sp_cards"] = "SP卡牌包",
-	["sp_moonspear"] = "SP银月枪",
-	[":sp_moonspear"] = "装备牌·武器\
+	["SPMoonSpear"] = "SP银月枪",
+	[":SPMoonSpear"] = "装备牌·武器\
 攻击范围：３\
 武器特效：你的回合外，每当你使用或打出一张黑色手牌时，你可以令你攻击范围内的一名其他角色打出一张【闪】，否则受到你对其造成的1点伤害",
-	["@moon-spear-jink"] = "受到SP银月枪技能的影响，你必须打出一张【闪】",
+	["@moon-Spear-jink"] = "受到SP银月枪技能的影响，你必须打出一张【闪】",
 }

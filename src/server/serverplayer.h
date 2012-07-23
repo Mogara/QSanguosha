@@ -66,6 +66,9 @@ public:
     void loseMark(const QString &mark, int n = 1);
     void loseAllMarks(const QString &mark_name);
 
+    virtual void addSkill(const QString &skill_name);
+    virtual void loseSkill(const QString &skill_name);
+
     void setAI(AI *ai);
     AI *getAI() const;
     AI *getSmartAI() const;
@@ -150,8 +153,7 @@ protected:
 
 private:
     ClientSocket *socket;
-    QList<const Card *> handcards;
-    QList<const Card *> m_takenOffCards;
+    QList<const Card*> handcards;
     Room *room;
     AI *ai;
     AI *trust_ai;

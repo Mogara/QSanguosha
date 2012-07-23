@@ -42,7 +42,7 @@ sgs.ai_view_as.fan = function(card, player, card_place)
 end
 
 local fan_skill={}
-fan_skill.name="fan"
+fan_skill.name="Fan"
 table.insert(sgs.ai_skills,fan_skill)
 fan_skill.getTurnUseCard=function(self)
 	local cards = self.player:getCards("h")	
@@ -97,11 +97,11 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	local allcards = self.player:getCards("he")
 	allcards = sgs.QList2Table(allcards)
 
-	if enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion" then
+	if enemy:getArmor() and enemy:getArmor():objectName() == "SilverLion" then
 		return
 	end
 
-	if ((enemy:getArmor() and enemy:getArmor():objectName() == "eight_diagram") or enemy:getHandcardNum() > 2) 
+	if ((enemy:getArmor() and enemy:getArmor():objectName() == "EightDiagram") or enemy:getHandcardNum() > 2) 
 		and not ((self:isEquip("Axe") and #allcards > 4) or self.player:getHandcardNum() > 1+self.player:getHp()) then
 		return
 	end
@@ -134,7 +134,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	if card_str then return sgs.Card_Parse(card_str) end
         
 	for _, anal in ipairs(cards) do
-		if (anal:className() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) then
+		if (anal:getClassName() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) then
 			return anal
 		end
 	end

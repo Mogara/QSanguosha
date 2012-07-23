@@ -9,7 +9,7 @@
 #include "sprite.h"
 #include "protocol.h"
 #include "TimedProgressBar.h"
-#include "GeneralCardContainerUI.h"
+#include "GenericCardContainerUI.h"
 #include "pixmapanimation.h"
 
 #include <QPushButton>
@@ -37,10 +37,6 @@ public:
         rect.moveTopLeft(topLeft);
         return rect;
     }
-    QGraphicsProxyWidget *addWidget(QWidget *widget, int x, bool from_left);
-    // @TODO: the following function needs to be removed
-    QPushButton *createButton(const QString &name);
-    QPushButton *addButton(const QString &name, int x, bool from_left);
     
     QSanSkillButton *removeSkillButton(const QString &skillName);
     QSanSkillButton *addSkillButton(const QString &skillName);
@@ -90,6 +86,7 @@ public slots:
     void selectAll();
 
 protected:
+    void _createExtraButtons();
     virtual void _adjustComponentZValues();
     virtual void addHandCards(QList<CardItem*> &cards);
     virtual QList<CardItem*> removeHandCards(const QList<int> &cardIds);

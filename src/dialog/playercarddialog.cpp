@@ -89,7 +89,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
     QGroupBox *area = new QGroupBox(tr("Equip area"));
     QVBoxLayout *layout = new QVBoxLayout;
 
-    const Weapon *weapon = player->getWeapon();
+    WrappedCard *weapon = player->getWeapon();
     if(weapon){
         QCommandLinkButton *button = new QCommandLinkButton(weapon->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(weapon->getSuit()));
@@ -99,7 +99,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
         layout->addWidget(button);
     }
 
-    const Armor *armor = player->getArmor();
+    WrappedCard *armor = player->getArmor();
     if(armor){
         QCommandLinkButton *button = new QCommandLinkButton(armor->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(armor->getSuit()));
@@ -109,7 +109,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
         layout->addWidget(button);
     }
 
-    const Horse *horse = player->getDefensiveHorse();
+    WrappedCard *horse = player->getDefensiveHorse();
     if(horse){
         QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(+1 horse)"));
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(horse->getSuit()));
@@ -145,8 +145,9 @@ QWidget *PlayerCardDialog::createJudgingArea(){
     QVBoxLayout *layout = new QVBoxLayout;
     QList<const Card *> cards = player->getJudgingArea();
     foreach(const Card *card, cards){
-        QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+        const Card* real = Sanguosha->getEngineCard(card->getId());
+        QCommandLinkButton *button = new QCommandLinkButton(real->getFullName());
+        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(real->getSuit()));
         layout->addWidget(button);
 
         mapper.insert(button, card->getId());

@@ -177,15 +177,16 @@ bool TrustAI::useCard(const Card *card){
     if(card->isKindOf("Peach"))
         return self->isWounded();
     else if(card->isKindOf("EquipCard")){
-        const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+        const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
         switch(equip->location()){
         case EquipCard::WeaponLocation:{
-                const Weapon *weapon = self->getWeapon();
+                WrappedCard *weapon = self->getWeapon();
                 if(weapon == NULL)
                     return true;
 
                 const Weapon *new_weapon = qobject_cast<const Weapon *>(equip);
-                return new_weapon->getRange() > weapon->getRange();
+                const Weapon *ole_weapon = qobject_cast<const Weapon *>(weapon->getRealCard());
+                return new_weapon->getRange() > ole_weapon->getRange();
             }
         case EquipCard::ArmorLocation: return !self->getArmor();
         case EquipCard::OffensiveHorseLocation: return !self->getOffensiveHorse();
@@ -249,18 +250,6 @@ const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *,
         foreach(const Card *card, cards){
             if(card->isKindOf("Nullification"))
                 return card;
-        }
-
-        if(self->hasSkill("kanpo")){
-            foreach(const Card *card, cards){
-                if(card->isBlack()){
-                    Nullification *ncard = new Nullification(card->getSuit(), card->getNumber());
-                    ncard->addSubcard(card);
-                    ncard->setSkillName("kanpo");
-
-                    return ncard;
-                }
-            }
         }
     }
 

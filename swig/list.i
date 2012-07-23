@@ -28,3 +28,5 @@ public:
 %template(ItemList) QList<CardItem *>;
 %template(DelayedTrickList) QList<const DelayedTrick *>;
 %template(CardsMoveList) QList<CardsMoveStruct>;
+%template(PlaceList) QList<Player::Place>;
+%template(PhaseList) QList<Player::Phase>;

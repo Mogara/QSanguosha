@@ -34,7 +34,8 @@ public:
     // For move card animation
     void setHomePos(QPointF home_pos);
     QPointF homePos() const;    
-    QAbstractAnimation* getGoBackAnimation(bool doFadeEffect, bool smoothTransition = false);
+    QAbstractAnimation* getGoBackAnimation(bool doFadeEffect, bool smoothTransition = false, 
+                                           int duration = Config.S_MOVE_CARD_ANIMATION_DURAION);
     void goBack(bool playAnimation, bool doFade = true);
     inline QAbstractAnimation* getCurrentAnimation(bool doFade) { return m_currentAnimation; }
     inline void setHomeOpacity(double opacity) { m_opacityAtHome = opacity; }
@@ -60,6 +61,11 @@ public:
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
     
+    struct UiHelper
+    {
+        int tablePileClearTimeStamp;
+    } m_uiHelper;
+
 protected:
     void _initialize();
     QAbstractAnimation* m_currentAnimation;

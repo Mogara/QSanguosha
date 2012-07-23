@@ -596,7 +596,7 @@ public:
 WushenSlash::WushenSlash(Card::Suit suit, int number)
     :Slash(suit, number)
 {
-
+    setObjectName("slash");
 }
 
 class Wushen: public FilterSkill{
@@ -606,16 +606,17 @@ public:
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return to_select->getSuit() == Card::Heart;
+        Room *room = Sanguosha->currentRoom();
+        Player::Place place = room->getCardPlace(to_select->getEffectiveId());
+        return to_select->getSuit() == Card::Heart && place == Player::PlaceHand;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        
         WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
-        slash->addSubcard(originalCard->getId());
         slash->setSkillName(objectName());
-
-        return slash;
+        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+        card->takeOver(slash);
+        return card;
     }
 };
 

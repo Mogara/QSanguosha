@@ -913,7 +913,7 @@ sgs.sunshangxiang_keep_value =
 {
 	Peach = 6,
 	Jink = 5.1,
-	Crossbow = 5,
+	CrossBow = 5,
 	Blade = 5,
 	Spear = 5,
 	DoubleSword =5,

@@ -24,7 +24,9 @@ const int Settings::S_PROGRESS_BAR_UPDATE_INTERVAL = 200;
 const int Settings::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
 const int Settings::S_MOVE_CARD_ANIMATION_DURAION = 600;
 const int Settings::S_JUDGE_ANIMATION_DURATION = 2600;
-const int Settings::S_REGULAR_ANIMATION_SLOW_DURAION = 1200;
+const int Settings::S_REGULAR_ANIMATION_SLOW_DURAION = 1500;
+const int Settings::S_JUDGE_RESULT_DELAY = 1500;
+
 Settings::Settings()
 
 #ifdef Q_OS_WIN32

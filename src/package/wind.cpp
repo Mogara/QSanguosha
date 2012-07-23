@@ -32,13 +32,14 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *target = effect.to;
 
     Room *room = zhangjiao->getRoom();
-    room->setEmotion(target, "bad");
 
     JudgeStruct judge;
     judge.pattern = QRegExp("(.*):(spade):(.*)");
     judge.good = false;
     judge.reason = "leiji";
     judge.who = target;
+    judge.play_animation = true;
+    judge.negative = true;
 
     room->judge(judge);
 
@@ -373,39 +374,45 @@ public:
         events << TargetConfirmed << SlashProceed << CardFinished;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
     virtual bool trigger(TriggerEvent triggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            bool caninvoke = false;
-            if(use.card->isKindOf("Slash") && use.from->hasSkill(objectName())
-                && use.to.contains(player) && use.from->getPhase() == Player::Play){
-                   caninvoke = true;
-            }
-            int handcardnum = player->getHandcardNum();
-            if(caninvoke && (handcardnum >= use.from->getHp() || handcardnum <= use.from->getAttackRange()) &&
-               use.from->askForSkillInvoke("liegong", QVariant::fromValue(player))){
-                room->broadcastSkillInvoke(objectName());
-                room->setPlayerFlag(player, "LiegongTarget");
+            if(!use.card->isKindOf("Slash") || use.from != player || player->getPhase() != Player::Play)
+                   return false;
+
+            foreach(ServerPlayer *target, use.to){
+                int handcardnum = target->getHandcardNum();
+                if(handcardnum >= player->getHp() || handcardnum <= player->getAttackRange()){
+                    bool invoke = player->askForSkillInvoke("liegong", QVariant::fromValue(target));
+                    QVariantList liegongList = target->tag["Liegong"].toList();
+                    liegongList << invoke;
+                    target->tag["Liegong"] = liegongList;
+                    target->setFlags("LiegongTarget");
+                }
             }
         }
         else if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.from->hasSkill(objectName()) && effect.to->hasFlag("LiegongTarget")){
-                room->slashResult(effect, NULL);
-                return true;
+            effect.to->setFlags("-LiegongTarget");
+            QVariantList liegongList = effect.to->tag["Liegong"].toList();
+            if(!liegongList.isEmpty()){
+                bool invoke = liegongList.takeFirst().toBool();
+                effect.to->tag["Liegong"] = liegongList;
+                if(invoke){
+                    room->broadcastSkillInvoke(objectName());
+                    room->slashResult(effect, NULL);
+                    return true;
+                }
             }
-        }else if(triggerEvent == CardFinished){
-            CardUseStruct use = data.value<CardUseStruct>();
-            foreach(ServerPlayer *to, use.to){
-                if(to->hasFlag("LiegongTarget"))
-                    room->setPlayerFlag(to, "-LiegongTarget");
-            }
-
         }
+        else if(triggerEvent == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach(ServerPlayer *target, use.to){
+                if(target->hasFlag("LiegongTarget"))
+                    target->tag.remove("Liegong");
+            }
+        }
+
         return false;
     }
 };
@@ -613,45 +620,20 @@ public:
 
     }
 
+    static WrappedCard *changeToHeart(int cardId){
+        WrappedCard *new_card = Sanguosha->getWrappedCard(cardId);
+        new_card->setSkillName("hongyan");
+        new_card->setSuit(Card::Heart);
+        new_card->setModified(true);
+        return new_card;
+    }
+
     virtual bool viewFilter(const Card* to_select) const{
         return to_select->getSuit() == Card::Spade;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        Card *new_card = Card::Clone(originalCard);
-        if(new_card) {
-            new_card->setSuit(Card::Heart);
-            new_card->setSkillName(objectName());
-            return new_card;
-        }else
-            return originalCard;
-    }
-};
-
-class HongyanRetrial: public TriggerSkill{
-public:
-    HongyanRetrial():TriggerSkill("#hongyan-retrial"){
-        frequency = Compulsory;
-
-        events << FinishJudge;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
-        if(judge->card->getSuit() == Card::Spade){
-            LogMessage log;
-            log.type = "#HongyanJudge";
-            log.from = player;
-
-            Card *new_card = Card::Clone(judge->card);
-            new_card->setSuit(Card::Heart);
-            new_card->setSkillName("hongyan");
-            judge->card = new_card;
-
-            player->getRoom()->sendLog(log);
-        }
-
-        return false;
+        return changeToHeart(originalCard->getEffectiveId());
     }
 };
 
@@ -998,15 +980,14 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         /* @todo: verify this...
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, card_use->from->objectName());
         room->throwCard(this, reason, NULL); */
-
+        use_card->deleteLater();
         return use_card;
     }else
         return NULL;
 }
 
-const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable) const{
-    *continuable = true;
-
+const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable) const{
+    continuable = true;
     Room *room = yuji->getRoom();
     room->broadcastSkillInvoke("guhuo");
 
@@ -1027,6 +1008,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
+        use_card->deleteLater();
         return use_card;
     }else
         return NULL;
@@ -1048,7 +1030,7 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        if(ClientInstance->getStatus() == Client::Responsing){
+        if(ClientInstance->getStatus() == Client::Responsing) {
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(ClientInstance->getPattern());
             card->addSubcard(originalCard);
@@ -1056,14 +1038,13 @@ public:
         }
 
         CardStar c = Self->tag.value("guhuo").value<CardStar>();
-        if(c){
+        if(c) {
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(c->objectName());
             card->addSubcard(originalCard);
 
             return card;
-        }else
-            return NULL;
+        } else return NULL;
     }
 
     virtual QDialog *getDialog() const{
@@ -1099,8 +1080,6 @@ WindPackage::WindPackage()
     General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false);
     xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new Hongyan);
-    xiaoqiao->addSkill(new HongyanRetrial);
-    related_skills.insertMulti("hongyan", "#hongyan-retrial");
 
     zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);

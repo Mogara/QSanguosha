@@ -83,7 +83,7 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
 
 class FireFanSkill: public WeaponSkill{
 public:
-    FireFanSkill():WeaponSkill("fan"){
+    FireFanSkill():WeaponSkill("Fan"){
         events << SlashEffect;
     }
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -103,7 +103,7 @@ public:
 
 class FanSkill: public OneCardViewAsSkill{
 public:
-    FanSkill():OneCardViewAsSkill("fan"){
+    FanSkill():OneCardViewAsSkill("Fan"){
 
     }
 
@@ -129,14 +129,14 @@ public:
 
 
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
-    setObjectName("fan");
+    setObjectName("Fan");
     skill = new FireFanSkill;
     attach_skill = true;
 }
 
 class GudingBladeSkill: public WeaponSkill{
 public:
-    GudingBladeSkill():WeaponSkill("guding_blade"){
+    GudingBladeSkill():WeaponSkill("GudingBlade"){
         events << DamageCaused;
     }
 
@@ -163,13 +163,13 @@ public:
 };
 
 GudingBlade::GudingBlade(Suit suit, int number):Weapon(suit, number, 2){
-    setObjectName("guding_blade");
+    setObjectName("GudingBlade");
     skill = new GudingBladeSkill;
 }
 
 class VineSkill: public ArmorSkill{
 public:
-    VineSkill():ArmorSkill("vine"){
+    VineSkill():ArmorSkill("Vine"){
         events << DamageInflicted << SlashEffected << CardEffected;
     }
 
@@ -220,13 +220,13 @@ public:
 };
 
 Vine::Vine(Suit suit, int number):Armor(suit, number){
-    setObjectName("vine");
+    setObjectName("Vine");
     skill = new VineSkill;
 }
 
 class SilverLionSkill: public ArmorSkill{
 public:
-    SilverLionSkill():ArmorSkill("silver_lion"){
+    SilverLionSkill():ArmorSkill("SilverLion"){
         events << DamageInflicted << CardsMoveOneTime;
     }
 
@@ -259,8 +259,9 @@ public:
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from != player || !move->from_places.contains(Player::PlaceEquip))
                 return false;
-            foreach(int card_id, move->card_ids){
-                const Card *card = Sanguosha->getCard(card_id);
+            for(int i = 0; i < move->card_ids.size(); i++){
+                if(move->from_places[i] != Player::PlaceEquip) continue;
+                const Card *card = Sanguosha->getEngineCard(move->card_ids[i]);
                 if(card->objectName() == objectName()){
                     room->setPlayerFlag(player, "-lion_rec");
                     if (player->isWounded()){
@@ -279,7 +280,7 @@ public:
 };
 
 SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
-    setObjectName("silver_lion");
+    setObjectName("SilverLion");
     skill = new SilverLionSkill;
 }
 
@@ -480,7 +481,7 @@ ManeuveringPackage::ManeuveringPackage()
             << new FireAttack(Card::Diamond, 12);
 
     DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
-    hualiu->setObjectName("hualiu");
+    hualiu->setObjectName("HuaLiu");
 
     cards << hualiu;
 
