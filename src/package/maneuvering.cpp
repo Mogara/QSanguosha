@@ -95,8 +95,8 @@ public:
         if(!effect.slash->getSkillName().isEmpty() && effect.slash->getSubcards().length() > 0)
             return false;
         if(effect.nature == DamageStruct::Normal){
-            if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
-                player->getRoom()->setEmotion(player,"weapon/fan");
+            if(room->askForSkillInvoke(player, objectName(), data)){
+                room->setEmotion(player,"weapon/fan");
                 effect.nature = DamageStruct::Fire;
                 data = QVariant::fromValue(effect);
             }
@@ -190,7 +190,7 @@ public:
                 log.type = "#ArmorNullify";
                 log.arg = objectName();
                 log.arg2 = effect.slash->objectName();
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 return true;
             }
@@ -203,7 +203,7 @@ public:
                 log.type = "#ArmorNullify";
                 log.arg = objectName();
                 log.arg2 = effect.card->objectName();
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 return true;
             }
@@ -216,7 +216,7 @@ public:
                 log.from = player;
                 log.arg = QString::number(damage.damage);
                 log.arg2 = QString::number(damage.damage + 1);
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
@@ -247,7 +247,7 @@ public:
             log.from = player;
             log.arg = QString::number(damage.damage);
             log.arg2 = objectName();
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             damage.damage = 1;
             data = QVariant::fromValue(damage);

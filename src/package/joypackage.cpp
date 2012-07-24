@@ -264,7 +264,6 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("Peach")){
-            Room *room = player->getRoom();
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
 
             foreach(ServerPlayer *p, players){
@@ -319,7 +318,7 @@ public:
             log.from = player;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(damage.damage + 1);
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             damage.damage ++;
             data = QVariant::fromValue(damage);

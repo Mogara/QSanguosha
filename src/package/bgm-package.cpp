@@ -335,9 +335,7 @@ public:
         type[Card::Equip] = "EquipCard";
     }
 
-    void doZuixiang(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-
+    void doZuixiang(Room *room, ServerPlayer *player) const{
         QList<int> ids = room->getNCards(3);
         foreach(int id, ids){
             const Card *cd = Sanguosha->getCard(id);
@@ -375,9 +373,9 @@ public:
                     if(!sp_pangtong->askForSkillInvoke(objectName()))
                         return false;
                     sp_pangtong->loseMark("@sleep", 1);
-                    doZuixiang(sp_pangtong);
+                    doZuixiang(room, sp_pangtong);
                 }else
-                    doZuixiang(sp_pangtong);
+                    doZuixiang(room, sp_pangtong);
             }
         }
         else if(event == CardEffected){

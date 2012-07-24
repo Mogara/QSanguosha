@@ -710,7 +710,7 @@ public:
         if(player->isKongcheng()){
             CardMoveStar move = data.value<CardMoveStar>();
             if(move->from_place == Player::Hand)
-                player->getRoom()->playSkillEffect("kongcheng");
+                room->playSkillEffect("kongcheng");
         }
 
         return false;

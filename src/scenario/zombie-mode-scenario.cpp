@@ -88,7 +88,7 @@ public:
                 else if(killer->getGeneral2Name()=="zombie"){
                     zombify(player, killer);
                     room->setPlayerProperty(player, "role", "renegade");
-                    player->getRoom()->revivePlayer(player);
+                    room->revivePlayer(player);
                     room->setPlayerProperty(killer,"role","rebel");
 
                 }

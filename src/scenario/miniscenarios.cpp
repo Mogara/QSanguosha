@@ -73,7 +73,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player
         room->gameOver(this->players.first()["singleTurn"]);
     }
 
-    if(player->getRoom()->getTag("WaitForPlayer").toBool())
+    if(room->getTag("WaitForPlayer").toBool())
         return true;
 
     LogMessage log;

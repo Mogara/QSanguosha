@@ -1087,7 +1087,7 @@ public:
             log.from = player;
             log.arg = objectName();
             log.arg2 = effect.slash->objectName();
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             room->setEmotion(player, "armor/renwang_shield");
 

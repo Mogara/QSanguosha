@@ -166,7 +166,7 @@ public:
         events << CardEffected;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.card->inherits("SavageAssault")){
             LogMessage log;
@@ -174,7 +174,7 @@ public:
             log.from = player;
             log.arg = avoid_skill;
             log.arg2 = "savage_assault";
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             return true;
         }else

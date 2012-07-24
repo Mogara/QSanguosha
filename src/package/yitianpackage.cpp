@@ -17,7 +17,7 @@ public:
            return false;
 
         if(player->askForSkillInvoke("yitian_sword"))
-            player->getRoom()->askForUseCard(player, "slash", "@askforslash");
+            room->askForUseCard(player, "slash", "@askforslash");
 
         return false;
     }
@@ -1002,11 +1002,10 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.nature != DamageStruct::Fire){
             effect.nature = DamageStruct::Fire;
-            Room *room = player->getRoom();
             data = QVariant::fromValue(effect);
 
             room->playSkillEffect(objectName());
@@ -1380,7 +1379,6 @@ public:
         ServerPlayer *killer = damage ? damage->from : NULL;
 
         if(killer){
-            Room *room = player->getRoom();
             if(killer != player && !killer->hasSkill("benghuai")){
                 killer->gainMark("@collapse");
                 room->acquireSkill(killer, "benghuai");
@@ -1742,7 +1740,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(player->getRoom()->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data))
+        if(room->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data))
             player->obtainCard(effect.jink);
 
         return false;
@@ -1764,7 +1762,7 @@ public:
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(damage.damage - 1);
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             damage.damage --;
             data.setValue(damage);

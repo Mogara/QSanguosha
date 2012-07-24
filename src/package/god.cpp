@@ -433,10 +433,10 @@ public:
         log.from = player;
         log.arg = QString::number(damage.damage);
         log.arg2 = objectName();
-        player->getRoom()->sendLog(log);
+        room->sendLog(log);
 
         player->gainMark("@wrath", damage.damage);
-        player->getRoom()->playSkillEffect(objectName());
+        room->playSkillEffect(objectName());
 
         return false;
     }
@@ -458,7 +458,6 @@ public:
             card = data.value<CardStar>();
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
-            Room *room = player->getRoom();
             room->playSkillEffect(objectName());
 
             int num = player->getMark("@wrath");
@@ -756,7 +755,7 @@ public:
         return target != NULL && target->getMark("@gale") > 0;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.nature == DamageStruct::Fire){
             LogMessage log;
@@ -764,7 +763,7 @@ public:
             log.from = player;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(damage.damage + 1);
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             damage.damage ++;
             data = QVariant::fromValue(damage);
@@ -876,11 +875,9 @@ public:
         return target != NULL && target->getMark("@fog") > 0;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.nature != DamageStruct::Thunder){
-            Room *room = player->getRoom();
-
             LogMessage log;
             log.type = "#FogProtect";
             log.from = player;
@@ -1096,7 +1093,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
         ServerPlayer *killer = damage ? damage->from : NULL;
 
@@ -1108,7 +1105,6 @@ public:
             log.from = killer;
             log.to << player;
 
-            Room *room = player->getRoom();
             log.arg = room->getCurrent()->getGeneralName();
             room->sendLog(log);
         }

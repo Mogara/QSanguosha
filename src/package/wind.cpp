@@ -449,8 +449,6 @@ public:
         }else if(event == Damage && player->hasSkill("kuanggu") && player->isAlive()){
             bool invoke = player->tag.value("InvokeKuanggu", false).toBool();
             if(invoke){
-                Room *room = player->getRoom();
-
                 room->playSkillEffect(objectName());
 
                 LogMessage log;
@@ -660,7 +658,7 @@ public:
             new_card->setSkillName("hongyan");
             judge->card = new_card;
 
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
         }
 
         return false;

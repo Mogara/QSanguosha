@@ -95,9 +95,7 @@ public:
             return false;
 
         if(effect.card->getTypeId() == Card::Trick){
-            Room *room = player->getRoom();
-
-            if((effect.from && effect.from->hasSkill(objectName()))){
+            if(effect.from && effect.from->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanBaD";
                 log.from = effect.from;

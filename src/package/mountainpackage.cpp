@@ -341,7 +341,6 @@ public:
             player->tag.remove("InvokeTuntian");
 
             if(player->askForSkillInvoke("tuntian", data)){
-                Room *room = player->getRoom();
                 room->playSkillEffect("tuntian");
 
                 JudgeStruct judge;
@@ -358,7 +357,6 @@ public:
             player->tag.remove("InvokeTuntian");
 
             if(player->askForSkillInvoke("tuntian", data)){
-                Room *room = player->getRoom();
                 room->playSkillEffect("tuntian");
 
                 JudgeStruct judge;

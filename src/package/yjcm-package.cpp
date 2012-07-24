@@ -19,25 +19,21 @@ public:
         return TriggerSkill::triggerable(target) && target->getArmor() == NULL;
     }
 
-	virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-		SlashEffectStruct effect = data.value<SlashEffectStruct>();
-
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.slash->isBlack()){
-            player->getRoom()->playSkillEffect(objectName());
+            room->playSkillEffect(objectName());
+            LogMessage log;
+            log.type = "#SkillNullify";
+            log.from = player;
+            log.arg = objectName();
+            log.arg2 = effect.slash->objectName();
 
-			LogMessage log;
-			log.type = "#SkillNullify";
-			log.from = player;
-			log.arg = objectName();
-			log.arg2 = effect.slash->objectName();
-
-			player->getRoom()->sendLog(log);
-
-			return true;
-		}
-
-		return false;
-	}
+            room->sendLog(log);
+            return true;
+        }
+        return false;
+    }
 };
 
 class Luoying: public TriggerSkill{
@@ -123,26 +119,26 @@ public:
 class JiushiViewAsSkill: public ZeroCardViewAsSkill{
 public:
     JiushiViewAsSkill():ZeroCardViewAsSkill("jiushi"){
-            Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
-            analeptic->setSkillName("jiushi");
+        Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
+        analeptic->setSkillName("jiushi");
 
-            this->analeptic = analeptic;
+        this->analeptic = analeptic;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-            return Analeptic::IsAvailable(player) && player->faceUp();
+        return Analeptic::IsAvailable(player) && player->faceUp();
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-            return  pattern.contains("analeptic") && player->faceUp();
+        return pattern.contains("analeptic") && player->faceUp();
     }
 
     virtual const Card *viewAs() const{
-            return analeptic;
+        return analeptic;
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-            return qrand() % 2 + 1;
+        return qrand() % 2 + 1;
     }
 
 private:
@@ -159,14 +155,14 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->getSkillName() == "jiushi")
+            if(use.card->getSkillName() == objectName())
                 player->turnOver();
         }else if(event == DamageInflicted){
             player->tag["PredamagedFace"] = player->faceUp();
         }else if(event == DamageComplete){
             bool faceup = player->tag.value("PredamagedFace").toBool();
-            if(!faceup && player->askForSkillInvoke("jiushi", data)){
-                player->getRoom()->playSkillEffect("jiushi", 3);
+            if(!faceup && player->askForSkillInvoke(objectName(), data)){
+                room->playSkillEffect(objectName(), 3);
                 player->turnOver();
             }
         }
@@ -475,8 +471,6 @@ public:
         DamageStar damage = data.value<DamageStar>();
         ServerPlayer *killer = damage ? damage->from : NULL;
         if(killer){
-            Room *room = player->getRoom();
-
             LogMessage log;
             log.type = "#HuileiThrow";
             log.from = player;
@@ -628,9 +622,9 @@ public:
 
             int x = qMin(5, damage.to->getHp());
                 if (x >= 3)
-                    player->getRoom()->playSkillEffect(objectName(), 2);
+                    room->playSkillEffect(objectName(), 2);
                 else
-                    player->getRoom()->playSkillEffect(objectName(), 1);
+                    room->playSkillEffect(objectName(), 1);
             damage.to->drawCards(x);
             damage.to->turnOver();
         }
@@ -838,7 +832,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
         if(player->getPhase() == Player::NotActive)
-            player->getRoom()->setTag("Zhichi", QVariant());
+            room->setTag("Zhichi", QVariant());
 
         return false;
     }
