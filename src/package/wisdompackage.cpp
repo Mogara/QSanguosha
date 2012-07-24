@@ -20,10 +20,8 @@ bool JuaoCard::targetFilter(const QList<const Player *> &targets, const Player *
 }
 
 void JuaoCard::onEffect(const CardEffectStruct &effect) const{
-    foreach(int cardid, this->getSubcards()){
-        //source->getRoom()->moveCardTo(Sanguosha->getCard(cardid), targets.first(), Player::PlaceSpecial);
+    foreach(int cardid, this->getSubcards())
         effect.to->addToPile("hautain", cardid, false);
-    }
     effect.to->addMark("juao");
 }
 
@@ -104,7 +102,6 @@ public:
         if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *from = damage.from;
-            Room *room = xuyou->getRoom();
             if(from && !from->isKongcheng() && !xuyou->isKongcheng() && room->askForSkillInvoke(xuyou, objectName(), data)){
                 xuyou->pindian(from, "tanlan");
             }
@@ -172,7 +169,6 @@ public:
             card = data.value<CardStar>();
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
-            Room *room = jiangwei->getRoom();
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
             room->throwCard(card);
@@ -194,7 +190,6 @@ public:
             if(move->from_place != Player::Hand)
                 return false;
 
-            Room *room = jiangwei->getRoom();
             QList<ServerPlayer *> players;
             foreach(ServerPlayer *player, room->getOtherPlayers(jiangwei)){
                 if(player->hasSkill("kongcheng") && player->isKongcheng())
@@ -352,7 +347,6 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *sunce, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(!effect.to->isNude() && !sunce->isKongcheng() && !effect.to->isKongcheng()){
-            Room *room = sunce->getRoom();
             if(room->askForSkillInvoke(sunce, objectName(), data)){
                 bool success = sunce->pindian(effect.to, objectName(), NULL);
                 if(success){
@@ -439,8 +433,7 @@ public:
         if(dying.who != sunce)
             return false;
 
-        sunce->getRoom()->askForUseCard(sunce, "@@weidai", "@weidai");
-
+        room->askForUseCard(sunce, "@@weidai", "@weidai");
         return false;
     }
 };
@@ -624,7 +617,7 @@ public:
                 log.to << damage.to;
                 log.arg = QString::number(damage.damage);
                 log.arg2 = QString::number(damage.damage + 1);
-                hua->getRoom()->sendLog(log);
+                room->sendLog(log);
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
             }
@@ -723,7 +716,7 @@ public:
         log.type = "#YuwenEffect";
         log.from = tianfeng;
         log.arg = objectName();
-        tianfeng->getRoom()->sendLog(log);
+        room->sendLog(log);
 
         return false;
     }

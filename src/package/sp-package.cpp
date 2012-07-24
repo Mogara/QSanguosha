@@ -207,7 +207,6 @@ public:
             int x = getKingdoms(yuanshu);
             data = data.toInt() + x;
 
-            Room *room = yuanshu->getRoom();
             LogMessage log;
             log.type = "#YongsiGood";
             log.from = yuanshu;

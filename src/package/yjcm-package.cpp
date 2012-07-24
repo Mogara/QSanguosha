@@ -194,108 +194,106 @@ public:
                 room->sendLog(log);
                 room->playSkillEffect(objectName());
 
-				return true;
-			}
+                return true;
+            }
 
             if(event == DamageCaused && damage.from && damage.from->isAlive() && damage.from->hasSkill(objectName())){
-				LogMessage log;
-				log.type = "#WuyanBad";
-				log.from = player;
-				log.arg = damage.card->objectName();
-				log.arg2 = objectName();
-				room->sendLog(log);
+                LogMessage log;
+                log.type = "#WuyanBad";
+                log.from = player;
+                log.arg = damage.card->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
                 room->playSkillEffect(objectName());
 
-				return true;
-			}
-		}
-
-		return false;
-	}
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 JujianCard::JujianCard(){
 }
 
 bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-	if(!targets.isEmpty())
-		return false;
+    if(!targets.isEmpty())
+        return false;
 
-	if(to_select == Self)
-		return false;
+    if(to_select == Self)
+        return false;
 
-	return !Self->isKongcheng();
+    return !Self->isKongcheng();
 }
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
-	Room *room = effect.from->getRoom();
-        room->throwCard(this,effect.from);
-	QStringList choicelist;
-	choicelist << "draw";
-	if (effect.to->getLostHp() != 0)
-		choicelist << "recover";
-	if (!effect.to->faceUp() || effect.to->isChained())
-		choicelist << "reset";
-		QString choice;
-	if (choicelist.length() >=2)
-		choice = room->askForChoice(effect.to, "jujian", choicelist.join("+"));
-	else
-		choice = "draw";
-	if(choice == "draw")
-		effect.to->drawCards(2);
-	else if(choice == "recover"){
-		RecoverStruct recover;
-		recover.who = effect.to;
-		room->recover(effect.to, recover);
-	}
-	else if(choice == "reset"){
-		room->setPlayerProperty(effect.to, "chained", false);
-		if(!effect.to->faceUp())
-			effect.to->turnOver();
-	}
+    Room *room = effect.from->getRoom();
+    room->throwCard(this,effect.from);
+    QStringList choicelist;
+    choicelist << "draw";
+    if (effect.to->getLostHp() != 0)
+            choicelist << "recover";
+    if (!effect.to->faceUp() || effect.to->isChained())
+        choicelist << "reset";
+    QString choice;
+    if (choicelist.length() >=2)
+        choice = room->askForChoice(effect.to, "jujian", choicelist.join("+"));
+    else
+        choice = "draw";
+    if(choice == "draw")
+        effect.to->drawCards(2);
+    else if(choice == "recover"){
+        RecoverStruct recover;
+        recover.who = effect.to;
+        room->recover(effect.to, recover);
+    }
+    else if(choice == "reset"){
+        room->setPlayerProperty(effect.to, "chained", false);
+        if(!effect.to->faceUp())
+            effect.to->turnOver();
+    }
 }
 
 class JujianViewAsSkill: public OneCardViewAsSkill{
 public:
-	JujianViewAsSkill():OneCardViewAsSkill("jujian"){
-	}
+    JujianViewAsSkill():OneCardViewAsSkill("jujian"){
+    }
 
-	virtual const Card *viewAs(CardItem *card_item) const{
-		JujianCard *card = new JujianCard;
-		card->addSubcard(card_item->getFilteredCard());
-		return card;
-	}
+    virtual const Card *viewAs(CardItem *card_item) const{
+        JujianCard *card = new JujianCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
 
-	virtual bool viewFilter(const CardItem *to_select) const{
-		return !to_select->getCard()->inherits("BasicCard");
-	}
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->getCard()->inherits("BasicCard");
+    }
 
-	virtual bool isEnabledAtPlay(const Player *player) const{
-		return false;
-	}
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
 
-	virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-		return pattern == "@@jujian";
-	}
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@@jujian";
+    }
 };
 
 class Jujian:public PhaseChangeSkill{
 public:
-	Jujian():PhaseChangeSkill("jujian"){
-		view_as_skill = new JujianViewAsSkill;
-	}
+    Jujian():PhaseChangeSkill("jujian"){
+        view_as_skill = new JujianViewAsSkill;
+    }
 
-	virtual QString getDefaultChoice(ServerPlayer *) const{
-		return "draw";
-	}
+    virtual QString getDefaultChoice(ServerPlayer *) const{
+        return "draw";
+    }
 
-	virtual bool onPhaseChange(ServerPlayer *xushu) const{
-		Room *room = xushu->getRoom();
-		if(xushu->getPhase() == Player::Finish){
-			room->askForUseCard(xushu, "@@jujian", "@jujian-card");
-		}
-		return false;
-	}
+    virtual bool onPhaseChange(ServerPlayer *xushu) const{
+        Room *room = xushu->getRoom();
+        if(xushu->getPhase() == Player::Finish)
+            room->askForUseCard(xushu, "@@jujian", "@jujian-card");
+        return false;
+    }
 };
 
 class Enyuan: public TriggerSkill{
@@ -728,10 +726,9 @@ public:
 
         if(event == Death || event == PhaseChange){
             if((event == Death || gaoshun->getPhase() == Player::Finish) && target){
-                    Room *room = gaoshun->getRoom();
-                    room->setFixedDistance(gaoshun, target, -1);
-                    gaoshun->tag.remove("XianzhenTarget");
-                    room->setPlayerFlag(target, "-wuqian");
+                room->setFixedDistance(gaoshun, target, -1);
+                gaoshun->tag.remove("XianzhenTarget");
+                room->setPlayerFlag(target, "-wuqian");
             }
         }
         return false;

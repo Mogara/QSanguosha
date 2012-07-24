@@ -215,7 +215,7 @@ public:
             if(use.from->getGeneral()->isMale() != to->getGeneral()->isMale()
                 && use.card->inherits("Slash")){
                 if(use.from->askForSkillInvoke(objectName())){
-                    to->getRoom()->setEmotion(use.from,"weapon/double_sword");
+                    room->setEmotion(use.from,"weapon/double_sword");
                     bool draw_card = false;
 
                     if(to->isKongcheng())

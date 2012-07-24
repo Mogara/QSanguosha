@@ -501,7 +501,7 @@ public:
         if(use.from->objectName() == sunce->objectName() || use.to.contains(sunce)){
             if(use.card->inherits("Duel") || (use.card->inherits("Slash") && use.card->isRed())){
                 if(sunce->askForSkillInvoke(objectName(), data)){
-                    sunce->getRoom()->playSkillEffect(objectName());
+                    room->playSkillEffect(objectName());
                     sunce->drawCards(1);
                 }
             }
@@ -1231,14 +1231,14 @@ public:
         events << TurnStart;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *zuoci = room->findPlayerBySkillName(objectName());
         if(!zuoci || player->objectName() != zuoci->objectName() || !zuoci->faceUp())
             return false;
         if(zuoci->askForSkillInvoke("huashen")){
             QString skill_name = Huashen::SelectSkill(zuoci, false);
             if(!skill_name.isEmpty())
-                zuoci->getRoom()->acquireSkill(zuoci, skill_name);
+                room->acquireSkill(zuoci, skill_name);
         }
         return false;
     }

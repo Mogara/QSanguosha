@@ -305,7 +305,6 @@ public:
                 lingtong->tag["InvokeNosXuanfeng"] = true;
         }else if(event == CardLostDone && lingtong->tag.value("InvokeNosXuanfeng", false).toBool()){
             lingtong->tag.remove("InvokeNosXuanfeng");
-            Room *room = lingtong->getRoom();
 
             QStringList choicelist;
             choicelist << "nothing";

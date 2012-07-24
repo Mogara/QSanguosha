@@ -214,7 +214,6 @@ public:
         ServerPlayer *target = damage.to;
         if(damage.card && damage.card->inherits("Slash") && !zhurong->isKongcheng()
             && !target->isKongcheng() && target != zhurong && !damage.chain && !damage.transfer){
-            Room *room = zhurong->getRoom();
             if(room->askForSkillInvoke(zhurong, objectName(), data)){
                 room->playSkillEffect(objectName(), 1);
 
@@ -766,25 +765,15 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.from->hasSkill(objectName()) && effect.to->getGeneral()->isFemale()){
             // dongzhuo slash female
-            ServerPlayer *dongzhuo = effect.from;
-            ServerPlayer *female = effect.to;
-            Room *room = dongzhuo->getRoom();
-
             room->playSkillEffect(objectName(), 1);
-
-            room->slashResult(effect, askForDoubleJink(female, "roulin1"));
+            room->slashResult(effect, askForDoubleJink(effect.to, "roulin1"));
             return true;
 
         }else if(effect.from->getGeneral()->isFemale() && effect.to->hasSkill(objectName())){
             // female slash dongzhuo
-
-            ServerPlayer *female = effect.from;
-            ServerPlayer *dongzhuo = effect.to;
-            Room *room = female->getRoom();
-
             int index = effect.drank ? 3 : 2;
             room->playSkillEffect(objectName(), index);
-            room->slashResult(effect, askForDoubleJink(dongzhuo, "roulin2"));
+            room->slashResult(effect, askForDoubleJink(effect.to, "roulin2"));
 
             return true;
         }

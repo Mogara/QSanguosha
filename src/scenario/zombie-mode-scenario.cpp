@@ -69,8 +69,8 @@ public:
                         break;
                     }
                 }
-
-            }else hasHuman=true;
+            }else
+                hasHuman=true;
 
             DamageStar damage = data.value<DamageStar>();
             if(damage && damage->from){
@@ -81,7 +81,8 @@ public:
                     recover.who = killer;
                     recover.recover = killer->getLostHp();
                     room->recover(killer, recover);
-                    if(player->getRole()=="renegade")killer->drawCards(3);
+                    if(player->getRole()=="renegade")
+                        killer->drawCards(3);
 
                 }
 
@@ -90,11 +91,10 @@ public:
                     room->setPlayerProperty(player, "role", "renegade");
                     room->revivePlayer(player);
                     room->setPlayerProperty(killer,"role","rebel");
-
                 }
             }
-
-            if(!hasHuman)room->gameOver("rebel");
+            if(!hasHuman)
+                room->gameOver("rebel");
 
             break;
         }
@@ -109,19 +109,17 @@ public:
                     qShuffle(players);
 
                     bool hasZombie=false;
-                    foreach(ServerPlayer *p,players)
-                    {
-                        if (p->getGeneral2Name()=="zombie")
-                        {
+                    foreach(ServerPlayer *p,players){
+                        if (p->getGeneral2Name()=="zombie"){
                             hasZombie=true;
                             break;
                         }
                     }
 
-                    if(round>2&&!hasZombie)room->gameOver("lord+loyalist");
+                    if(round>2&&!hasZombie)
+                        room->gameOver("lord+loyalist");
 
-                    if(player->getMark("@round") > 7)
-                    {
+                    if(player->getMark("@round") > 7){
                         LogMessage log;
                         log.type = "#survive_victory";
                         log.from = player;
@@ -187,11 +185,14 @@ bool ZombieScenario::generalSelection() const{
 }
 
 AI::Relation ZombieScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
-    bool aZombie=true;
-    bool bZombie=true;
-    if(a->isLord() || a->getRoleEnum()==Player::Loyalist)aZombie=false;
-    if(b->isLord() || b->getRoleEnum()==Player::Loyalist)bZombie=false;
-    if(aZombie==bZombie)return AI::Friend;
+    bool aZombie = true;
+    bool bZombie = true;
+    if(a->isLord() || a->getRoleEnum() == Player::Loyalist)
+        aZombie = false;
+    if(b->isLord() || b->getRoleEnum() == Player::Loyalist)
+        bZombie = false;
+    if(aZombie == bZombie)
+        return AI::Friend;
     return AI::Enemy;
 }
 
@@ -224,18 +225,16 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zombie, QVariant &) const{
         if(event == PhaseChange && zombie->getPhase() == Player::Play){
-        int x = getNumDiff(zombie);
-        if(x > 0){
-            Room *room = zombie->getRoom();
-            LogMessage log;
-            log.type = "#ZaibianGood";
-            log.from = zombie;
-            log.arg = QString::number(x);
-            log.arg2 = objectName();
-            room->sendLog(log);
-            zombie->drawCards(x);
-        }
-
+            int x = getNumDiff(zombie);
+            if(x > 0){
+                LogMessage log;
+                log.type = "#ZaibianGood";
+                log.from = zombie;
+                log.arg = QString::number(x);
+                log.arg2 = objectName();
+                room->sendLog(log);
+                zombie->drawCards(x);
+            }
         }
         return false;
     }
@@ -263,9 +262,10 @@ public:
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(damage.damage + 1);
-            zombie->getRoom()->sendLog(log);
+            room->sendLog(log);
 
-            if(zombie->getHp()>1)zombie->getRoom()->loseHp(zombie);
+            if(zombie->getHp()>1)
+                room->loseHp(zombie);
 
             damage.damage ++;
             data = QVariant::fromValue(damage);

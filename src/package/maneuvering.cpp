@@ -145,13 +145,11 @@ public:
         events << DamageCaused;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
-            damage.to->isKongcheng() && !damage.chain && !damage.transfer)
-        {
-            Room *room = damage.to->getRoom();
-            room->setEmotion(player,"weapon/guding_blade");
+            damage.to->isKongcheng() && !damage.chain && !damage.transfer){
+            room->setEmotion(player, "weapon/guding_blade");
 
             LogMessage log;
             log.type = "#GudingBladeEffect";

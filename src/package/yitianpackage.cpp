@@ -374,9 +374,7 @@ public:
                 return false;
             }
         }
-
         lukang->setMark("kegou", 1);
-
 
         Room *room = lukang->getRoom();
 
@@ -879,7 +877,6 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *caizhaoji, QVariant &data) const{
         if(event == PhaseChange && caizhaoji->getPhase() == Player::Finish){
             int times = 0;
-            Room *room = caizhaoji->getRoom();
             while(caizhaoji->askForSkillInvoke(objectName())){
                 caizhaoji->setFlags("caizhaoji_hujia");
 
@@ -1420,7 +1417,6 @@ public:
                 log.arg = QString::number(x);
                 log.arg2 = objectName();
 
-                Room *room = elai->getRoom();
                 room->sendLog(log);
                 room->loseHp(elai, x);
             }
@@ -1456,7 +1452,7 @@ public:
                 log.from = elai;
                 log.arg = QString::number(x);
                 log.arg2 = QString::number(damage.damage);
-                elai->getRoom()->sendLog(log);
+                room->sendLog(log);
             }
         }
 

@@ -30,7 +30,7 @@ public:
 
         if(damage.from && damage.from != player){
             damage.from->gainMark("@nightmare", damage.damage);
-            damage.from->getRoom()->playSkillEffect(objectName(), 1);
+            room->playSkillEffect(objectName(), 1);
         }
 
         return false;
