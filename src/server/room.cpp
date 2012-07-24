@@ -2491,7 +2491,6 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
     log.type = hp - victim->getHp() == 0 ? "#LoseMaxHp" : "#LostMaxHpPlus";
     log.from = victim;
     log.arg = QString::number(lose);
-    log.arg2 = QString::number(hp - victim->getHp());
     sendLog(log);
 
     if(victim->getMaxHp() == 0)

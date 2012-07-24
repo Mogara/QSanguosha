@@ -126,7 +126,7 @@ return {
 	["#IronChainDamage"] = "%from 处于连环状态",
 	["#LoseHp"] = "%from 失去 %arg 点体力",
 	["#LoseMaxHp"] = "%from 减 %arg 点体力上限",
-	["#LostMaxHpPlus"] = "%from 减 %arg 点体力上限，并将当前的体力值调整为%arg2",
+	["#LostMaxHpPlus"] = "%from 减 %arg 点体力上限，并根据体力上限重新调整了当前的体力值",
 	["#ChangeKingdom"] = "%from 把 %to 的国籍由原来的 %arg 改成了 %arg2",
 	["#AnalepticBuff"] = "%from 喝过【%arg】，对 %to 造成的伤害 +1",
 	["#GetMark"] = "%from 得到了 %arg2 枚 %arg 标记",

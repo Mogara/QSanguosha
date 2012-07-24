@@ -120,38 +120,39 @@ public:
     }
 };
 
-class Jiushi: public ZeroCardViewAsSkill{
+class JiushiViewAsSkill: public ZeroCardViewAsSkill{
 public:
-	Jiushi():ZeroCardViewAsSkill("jiushi"){
-		Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
-		analeptic->setSkillName("jiushi");
+    JiushiViewAsSkill():ZeroCardViewAsSkill("jiushi"){
+            Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
+            analeptic->setSkillName("jiushi");
 
-		this->analeptic = analeptic;
-	}
+            this->analeptic = analeptic;
+    }
 
-	virtual bool isEnabledAtPlay(const Player *player) const{
-		return Analeptic::IsAvailable(player) && player->faceUp();
-	}
+    virtual bool isEnabledAtPlay(const Player *player) const{
+            return Analeptic::IsAvailable(player) && player->faceUp();
+    }
 
-	virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-		return  pattern.contains("analeptic") && player->faceUp();
-	}
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+            return  pattern.contains("analeptic") && player->faceUp();
+    }
 
-	virtual const Card *viewAs() const{
-		return analeptic;
-	}
+    virtual const Card *viewAs() const{
+            return analeptic;
+    }
 
-	virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-		return qrand() % 2 + 1;
-	}
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+            return qrand() % 2 + 1;
+    }
 
 private:
-	const Analeptic *analeptic;
+    const Analeptic *analeptic;
 };
 
-class JiushiFlip: public TriggerSkill{
+class Jiushi: public TriggerSkill{
 public:
-    JiushiFlip():TriggerSkill("#jiushi-flip"){
+    Jiushi():TriggerSkill("jiushi"){
+        view_as_skill = new JiushiViewAsSkill;
         events << CardUsed << DamageInflicted << DamageComplete;
     }
 
@@ -852,9 +853,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if (player == NULL) return false;
-
-        if(player->getPhase() != Player::NotActive)
+        if(player == NULL || player->getPhase() != Player::NotActive)
             return false;
 
         if(event == Damaged){
@@ -1220,8 +1219,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
     caozhi->addSkill(new Luoying);
     caozhi->addSkill(new Jiushi);
-    caozhi->addSkill(new JiushiFlip);
-    related_skills.insertMulti("jiushi", "#jiushi-flip");
 
     General *chengong = new General(this, "chengong", "qun", 3);
     chengong->addSkill(new Zhichi);
@@ -1257,7 +1254,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *yujin = new General(this, "yujin", "wei");
     yujin->addSkill(new Yizhong);
-
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);
