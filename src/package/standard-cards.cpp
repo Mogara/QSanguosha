@@ -370,7 +370,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@axe";
+        return pattern == "@Axe";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -406,7 +406,7 @@ public:
         if (!effect.to->isAlive())
             return false;
 
-        CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
+        CardStar card = room->askForCard(player, "@Axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
             room->setEmotion(effect.to, "weapon/axe");
 
