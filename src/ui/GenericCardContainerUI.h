@@ -137,6 +137,8 @@ protected:
     void _layBetween(QGraphicsItem* middle, QGraphicsItem* item1, QGraphicsItem* item2);
     void _layUnder(QGraphicsItem* item);
 
+    QPixmap _getAvatarIcon(QString generalName);
+
     // layout
     const QSanRoomSkin::PlayerCardContainerLayout* _m_layout;
     QGraphicsRectItem *_m_avatarArea, *_m_smallAvatarArea;
@@ -155,6 +157,8 @@ protected:
     QGraphicsPixmapItem *_m_kingdomIcon;
     QGraphicsPixmapItem *_m_saveMeIcon;
     QGraphicsPixmapItem *_m_phaseIcon;
+    QGraphicsPixmapItem *_m_extraSkillBg;
+    QGraphicsPixmapItem *_m_extraSkillText;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame;
     QMap<QString, QGraphicsProxyWidget*> _m_privatePiles;

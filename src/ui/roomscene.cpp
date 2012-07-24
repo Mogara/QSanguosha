@@ -1859,33 +1859,6 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
 }
 
 void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
-    GenericCardContainer* dest =  _getGenericCardContainer(Player::PlaceHand, (Player*)player);
-    Q_ASSERT(dest != NULL);
-    QGraphicsTextItem *item = new QGraphicsTextItem(Sanguosha->translate(skill_name), NULL, this);
-    QPointF center = item->boundingRect().center();
-    item->setFont(Config.BigFont);
-    item->setZValue(20000);
-    QGraphicsDropShadowEffect *drop = new QGraphicsDropShadowEffect;
-    drop->setBlurRadius(5);
-    drop->setOffset(0);
-    drop->setColor(Qt::yellow);
-    item->setGraphicsEffect(drop);
-
-    QPropertyAnimation *move = new QPropertyAnimation(item, "pos");
-    move->setStartValue(m_tableCenterPos - center);
-    QPointF destPos;
-    if (player == Self)
-    {
-        destPos = dashboard->mapToScene(dashboard->getAvatarArea().center()) - center;
-    }
-    else
-        destPos = dest->pos() - center;
-    move->setEndValue(destPos);
-    move->setDuration(Config.S_REGULAR_ANIMATION_SLOW_DURAION);
-
-    move->start(QAbstractAnimation::DeleteWhenStopped);
-    connect(move, SIGNAL(finished()), item, SLOT(deleteLater()));
-
     QString type = "#AcquireSkill";
     QString from_general = player->getGeneralName();
     QString arg = skill_name;

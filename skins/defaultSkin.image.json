@@ -45,21 +45,23 @@
 "magatamas4": "image/system/magatamas/4.png",
 "magatamas5": "image/system/magatamas/5.png",
 "tableBg": "image/system/tableBg.jpg",
+"photoExtraSkillBg": "image/system/huashenSkillBg.png",
+"dashboardExtraSkillBg": "image/system/huashenSkillBg.png",
 
 // general default directories
 "playerGeneralIcon-default-0": "image/generals/tiny/%1.png",
 "playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[28, 46, 220, 132], [148, 89]],
-"playerGeneralIcon-default-2": ["image/generals/avatar/%1.png",[71, 28, 134, 134]],
-"playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[71, 28, 134, 134], [51, 51]], //small avatar for photo
+"playerGeneralIcon-default-2": ["image/generals/avatar/%1.png",[71, 28, 145, 145], [134, 134]],
+"playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[53, 20, 126, 178], [63, 89]], //secondary avatar for photo
 "playerGeneralIcon-default-5": ["image/generals/avatar/%1.png",[71, 28, 124, 134], [61, 70]],  //small avatar for dashboard
-"playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[8, 46, 220, 132]],  //primary avatar for photo
+"playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[60, 30, 208, 125], [148, 89]],  	//primary avatar for photo
 "playerGeneralIcon-default-7": ["image/generals/avatar/%1.png",[80, 28, 134, 134]],  //primary avatar for dashboard
 
 "generalCircleImage-0": "image/generals/double-general/circle-photo.png",
 "generalCircleImage-1": "image/generals/double-general/circle-dashboard.png",
 
-"generalCircleMask-0": ["image/generals/double-general/circle-photo-mask.png", [21, 38, 51, 51]],
-"generalCircleMask-1": ["image/generals/double-general/circle-dashboard-mask.png", [73, 0, 71, 71]],
+"generalCircleMask-0": "image/generals/double-general/circle-photo-mask.png",
+"generalCircleMask-1": ["image/generals/double-general/circle-dashboard-mask.png", [73, 0, 61, 70]],
 
 // generals defined later will override default path and also previously defined generals
 "playerGeneralIcon-anjiang-2": "image/generals/big/anjiang.png", 

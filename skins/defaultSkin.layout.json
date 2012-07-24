@@ -78,7 +78,7 @@
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
     "avatarArea": [4, 27, 148, 89],
-    "secondaryAvatarArea": [20, 65, 51, 51],
+    "secondaryAvatarArea": [89, 27, 63, 89],
     "circleArea": [4, 27, 148, 89],
     "avatarNameArea": [1, 24, 40, 60],
     "avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
@@ -86,14 +86,14 @@
     "kingdomIconArea": [2, 0, 28, 28],
     "kingdomMaskArea": [-2, 15, 36, 98],
     "screenNameArea": [0, 12, 157, 13],
-    "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
+    "screenNameFont": ["simsun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
     "magatamaSize": [14, 17],
     "magatamaImageArea": [0, 0, 14, 17],
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [163, 115]],
     "cardMoveArea": [-50, 35, 200, 130],
-    "phaseArea": [25, 174, 140, 16],	
+    "phaseArea": [25, 174, 140, 12],
     "onlineStatusArea": [122, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["simsun", 12, 0, [255, 255, 255, 255], 2, 20, [0, 0], [20, 20, 20, 128]],
@@ -111,7 +111,10 @@
     "readyIconRegion": [97, 125, 44, 53],
     "deathIconRegion": [0, 50, 157, 102],
     "drankMaskColor": [250, 0, 0, 115],
-    "deathEffectColor": [50, 50, 50, 255]
+    "deathEffectColor": [50, 50, 50, 255],
+    "extraSkillArea": [26, 94, 56, 20],
+    "extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
+    "extraSkillTextArea": [26, 91, 56, 20]
 },
 "dashboard":
 {
