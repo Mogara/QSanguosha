@@ -114,9 +114,11 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(targets.length() >= slash_targets)
         return false;
 
-    if (isKindOf("WushenSlash")) {
+    if(isKindOf("WushenSlash"))
         distance_limit = false;
-    }
+
+    if(Self->hasFlag("jiangchi_invoke"))
+        distance_limit = false;
 
     int rangefix = 0;
     if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
