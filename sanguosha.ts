@@ -458,12 +458,12 @@
     <message>
         <location filename="../../src/client/client.cpp" line="865"/>
         <source>Do you want to use nullification to trick card %1 from %2?</source>
-        <translation>是否对 %1 的 %2 使用无懈可击？</translation>
+        <translation>是否对 %2 的 %1 使用无懈可击？</translation>
     </message>
     <message>
         <location filename="../../src/client/client.cpp" line="869"/>
         <source>%1 used trick card %2 to %3 &lt;br&gt;Do you want to use nullification?</source>
-        <translation>%1 对 %3 使用锦囊 %2 &lt;br&gt;是否使用无懈可击？/translation>
+        <translation>%1 对 %3 使用锦囊 %2 &lt;br&gt;是否使用无懈可击？</translation>
     </message>
     <message>
         <location filename="../../src/client/client.cpp" line="1055"/>
