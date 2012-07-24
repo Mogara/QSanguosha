@@ -436,3 +436,76 @@ sgs.ai_skill_playerchosen.shichou = function(self, targets)
 end
 
 sgs.ai_skill_discard.shichou = sgs.ai_skill_discard.lihun
+
+function SmartAI:useCardYanxiaoCard(card, use)
+	local players = self.room:getOtherPlayers(self.player)
+	local tricks
+	for _, friend in ipairs(self.friends_noself) do
+		local judges = friend:getJudgingArea()
+		if not judges:isEmpty() and not friend:containsTrick("YanxiaoCard") then
+			use.card = card
+			if use.to then
+				use.to:append(friend)
+			end
+			return
+		end
+	end
+	if not target and not self.player:containsTrick("YanxiaoCard") then
+		use.card = card
+		if use.to then
+			use.to:append(self.player)
+		end
+		return
+	end
+end
+
+sgs.ai_use_priority.YanxiaoCard = 3.9
+
+local yanxiao_skill={}
+yanxiao_skill.name="yanxiao"
+table.insert(sgs.ai_skills,yanxiao_skill)
+yanxiao_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+
+	local diamond_card
+
+	self:sortByUseValue(cards,true)
+
+	for _,card in ipairs(cards)  do
+		if card:getSuitString()=="diamond" then--and (self:getUseValue(card)<sgs.ai_use_value.Slash) then
+			diamond_card = card
+			break
+		end
+	end
+
+	if diamond_card then
+		local suit = diamond_card:getSuitString()
+		local number = diamond_card:getNumberString()
+		local card_id = diamond_card:getEffectiveId()
+		local card_str = ("YanxiaoCard:yanxiao[%s:%s]=%d"):format(suit, number, card_id)
+		local yanxiaocard = sgs.Card_Parse(card_str)
+
+		assert(yanxiaocard)
+
+		return yanxiaocard
+	end
+end
+
+sgs.ai_skill_invoke.anxian = function(self, data)
+	local damage = data:toDamage()
+	local target = damage.to
+	if self:isFriend(target) and not self:hasSkills(sgs.masochism_skill,target) then return true end
+	if self:isEnemy(target) and self:hasSkills(sgs.masochism_skill,target) then return true end
+	if damage.damage>1 then return false end
+	return false 
+end
+
+sgs.ai_skill_cardask["@anxian-discard"] = function(self, data)
+	if self:getCardsNum("Jink") > 0 or self.player:isKongcheng() then return "." end
+	local cards = self.player:getHandcards()
+	cards=sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+
+	return "$" .. cards[1]:getEffectiveId()
+end

@@ -697,7 +697,7 @@ public:
             choicelist << "recover";
         QString choice;
         if (choicelist.length() >=2)
-            choice = room->askForChoice(jiangwei, "objectName()", choicelist.join("+"));
+            choice = room->askForChoice(jiangwei, objectName(), choicelist.join("+"));
         else
             choice = "draw";
         if(choice == "recover"){
