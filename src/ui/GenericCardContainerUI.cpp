@@ -740,8 +740,12 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
          _m_layout->m_avatarArea.topLeft(),
          _getAvatarParent(),
          _m_huashenItem);
-     _m_huashenItem->setZValue(_m_avatarIcon->zValue() + 0.01);
      _m_huashenAnimation->start();
+     _paintPixmap(_m_extraSkillBg, _m_layout->m_extraSkillArea, QSanRoomSkin::S_SKIN_KEY_EXTRA_SKILL_BG, _getAvatarParent());
+     _m_layout->m_extraSkillFont.paintText(_m_extraSkillText, _m_layout->m_extraSkillTextArea, Qt::AlignCenter,
+                                           Sanguosha->translate(skillName).left(2));
+     _m_extraSkillText->show();
+     _adjustComponentZValues();
  }
 
  void PlayerCardContainer::stopHuaShen()
@@ -753,6 +757,8 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
          delete _m_huashenItem;
          _m_huashenAnimation = NULL;
          _m_huashenItem = NULL;
+         _clearPixmap(_m_extraSkillBg);
+         _clearPixmap(_m_extraSkillText);
      }
  }
 
@@ -783,6 +789,8 @@ PlayerCardContainer::PlayerCardContainer()
     }
     _m_huashenItem = NULL;
     _m_huashenAnimation = NULL;
+    _m_extraSkillBg = NULL;
+    _m_extraSkillText = NULL;
 
     _m_floatingArea = NULL;
     _m_votesGot = 0;
@@ -864,11 +872,14 @@ void PlayerCardContainer::_adjustComponentZValues()
     for (int i = 0; i < 4; i++)
         _layUnder(_m_equipRegions[i]);
     _layUnder(_m_selectedFrame);
-    _layUnder(_m_faceTurnedIcon);   
+    _layUnder(_m_extraSkillText);
+    _layUnder(_m_extraSkillBg);
+    _layUnder(_m_faceTurnedIcon);  
     _layUnder(_m_smallAvatarArea);
     _layUnder(_m_avatarArea);
     _layUnder(_m_circleItem);
     _layUnder(_m_smallAvatarIcon);
+    _layUnder(_m_huashenItem);
     _layUnder(_m_avatarIcon);    
 }
 
@@ -899,10 +910,13 @@ void PlayerCardContainer::_createControls()
     _m_avatarArea = new QGraphicsRectItem(_m_layout->m_avatarArea, _getAvatarParent());
     _m_avatarArea->setPen(Qt::NoPen);
     _m_avatarNameItem = new QGraphicsPixmapItem(_getAvatarParent());
-
+    
     _m_smallAvatarArea = new QGraphicsRectItem(_m_layout->m_smallAvatarArea, _getAvatarParent());
     _m_smallAvatarArea->setPen(Qt::NoPen);
     _m_smallAvatarNameItem = new QGraphicsPixmapItem(_getAvatarParent());
+    
+    _m_extraSkillText = new QGraphicsPixmapItem(_getAvatarParent());
+    _m_extraSkillText->hide();
     
     _m_handCardNumText = new QGraphicsPixmapItem(_getAvatarParent());
 
