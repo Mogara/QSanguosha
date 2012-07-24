@@ -203,6 +203,12 @@ void PlayerCardContainer::showProgressBar(Countdown countdown)
 }
 
 
+QPixmap PlayerCardContainer::_getAvatarIcon(QString heroName)
+{
+    int avatarSize = ServerInfo.Enable2ndGeneral ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
+    return G_ROOM_SKIN.getGeneralPixmap(heroName, (QSanRoomSkin::GeneralIconSize)avatarSize);
+}
+
 void PlayerCardContainer::updateAvatar()
 {
     const General *general = NULL;
@@ -215,10 +221,7 @@ void PlayerCardContainer::updateAvatar()
     }
     if (general != NULL) {
         _m_avatarArea->setToolTip(general->getSkillDescription());
-        int avatarSize = ServerInfo.Enable2ndGeneral ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
-        QPixmap avatarIcon = G_ROOM_SKIN.getGeneralPixmap(
-                     general->objectName(),
-                     (QSanRoomSkin::GeneralIconSize)avatarSize);
+        QPixmap avatarIcon = _getAvatarIcon(general->objectName());
         _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
@@ -730,8 +733,7 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
      _m_huashenGeneralName = generalName;
      _m_huashenSkillName = skillName;
      Q_ASSERT(m_player->hasSkill("huashen"));
-     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName,
-         (QSanRoomSkin::GeneralIconSize)_m_layout->m_avatarSize);
+     QPixmap pixmap = _getAvatarIcon(generalName);
      if (pixmap.size() != _m_layout->m_avatarArea.size())
          pixmap = pixmap.scaled(_m_layout->m_avatarArea.size());
      stopHuaShen();
