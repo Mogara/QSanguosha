@@ -83,6 +83,10 @@ bool CardContainer::_addCardItems(QList<CardItem*> &card_items, Player::Place pl
     return true;    
 }
 
+bool CardContainer::retained(){
+    return close_button != NULL && close_button->isVisible();
+}
+
 void CardContainer::clear(){
     foreach(CardItem *item, items){
         item->deleteLater();

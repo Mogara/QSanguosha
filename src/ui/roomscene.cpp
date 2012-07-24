@@ -2168,8 +2168,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             else if (oldStatus == Client::AskForGuanxing ||
                      oldStatus == Client::AskForGongxin)
             {
-                guanxing_box->hide();
-                card_container->hide();
+                guanxing_box->clear();
+                if(!card_container->retained())
+                    card_container->clear();
             }
             prompt_box->disappear();
             ClientInstance->getPromptDoc()->clear();
