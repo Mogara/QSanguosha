@@ -1,14 +1,13 @@
-
 -- this script to store the basic configuration for game program itself
 -- and it is a little different from config.ini
 
 config = {
-	version = "20120405",
-	version_name = "踏青版",
-	mod_name = "official",
-	kingdoms = { "wei", "shu", "wu", "qun", "god"},
-	package_names = {
-	"StandardCard",
+    version = "20120724",
+    version_name = "新太阳神三国杀",
+    mod_name = "official",
+    kingdoms = { "wei", "shu", "wu", "qun", "god"},
+    package_names = {
+    "StandardCard",
         "StandardExCard",
         "Maneuvering",
         "SPCard",
@@ -25,18 +24,19 @@ config = {
         "YJCM",
         "YJCM2012",
         "Special3v3",
-        "NostalGeneral",
-        "Test";
-	},
+        "Ling",
+        "BGM",
+        "NostalGeneral"
+    },
 
-	scene_names = {
-	"Guandu",
+    scene_names = {
+    "Guandu",
         "Fancheng",
         "Couple",
         "Zombie",
         "Impasse",
         "Custom",
-	},
+    },
 
         color_wei = "#547998",
         color_shu = "#D0796C",
@@ -46,7 +46,7 @@ config = {
 }
 
 for i=1, 21 do
-	local scene_name = ("MiniScene_%02d"):format(i)
-	table.insert(config.scene_names, scene_name)
+    local scene_name = ("MiniScene_%02d"):format(i)
+    table.insert(config.scene_names, scene_name)
 end
 
