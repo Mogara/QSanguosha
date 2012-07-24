@@ -748,6 +748,7 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
      _m_layout->m_extraSkillFont.paintText(_m_extraSkillText, _m_layout->m_extraSkillTextArea, Qt::AlignCenter,
                                            Sanguosha->translate(skillName).left(2));
      _m_extraSkillText->show();
+     _m_extraSkillBg->setToolTip(Sanguosha->getSkill(skillName)->getDescription());
      _adjustComponentZValues();
  }
 
