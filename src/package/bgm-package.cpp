@@ -982,6 +982,58 @@ public:
     }
 };
 
+class Anxian: public TriggerSkill{
+public:
+    Anxian():TriggerSkill("anxian"){
+        events << DamageCaused << TargetConfirming << SlashEffected;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *daqiao, QVariant &data) const{
+        if(event == DamageCaused){
+            DamageStruct damage = data.value<DamageStruct>();
+
+            if(damage.card && damage.card->isKindOf("Slash") &&
+               !damage.chain && !damage.transfer && !damage.to->isKongcheng()
+                && daqiao->askForSkillInvoke(objectName(), data)){
+
+                LogMessage log;
+                log.type = "#Anxian";
+                log.from = daqiao;
+                log.arg = objectName();
+                room->sendLog(log);
+                room->askForDiscard(damage.to, "anxian", 1, 1);
+                daqiao->drawCards(1);
+                return true;
+            }
+        }
+        else if(event == TargetConfirming){
+
+            CardUseStruct use = data.value<CardUseStruct>();
+
+            if(use.card && use.card->isKindOf("Slash")){
+                if(room->askForCard(daqiao, ".", "@anxian-discard", QVariant(), CardDiscarded)){
+                    daqiao->addMark("anxian");
+                    use.from->drawCards(1);
+                    LogMessage log;
+                    log.type = "#AnxianAvoid";
+                    log.from = use.from;
+                    log.to << daqiao;
+                    log.arg = objectName();
+                    room->sendLog(log);
+                }
+
+            }
+        }
+        else {
+            if(daqiao->getMark("anxian") > 0){
+                daqiao->setMark("anxian", daqiao->getMark("anxian")-1);
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
 BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3);
     bgm_zhaoyun->addSkill("longdan");
@@ -1020,6 +1072,7 @@ BGMPackage::BGMPackage():Package("BGM"){
 
     General *bgm_daqiao = new General(this, "bgm_daqiao", "wu", 3, false);
     bgm_daqiao->addSkill(new Yanxiao);
+    bgm_daqiao->addSkill(new Anxian);
 
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();
