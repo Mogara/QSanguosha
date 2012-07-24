@@ -1315,6 +1315,7 @@ void Client::takeAG(const QString &take_str){
         emit ag_taken(taker, card_id);
     }else{
         discarded_list.prepend(card);
+        updatePileNum();
         emit ag_taken(NULL, card_id);
     }
 }
