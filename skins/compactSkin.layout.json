@@ -73,6 +73,9 @@
     "readyIconRegion": [77, 95, 44, 53],
     "deathIconRegion": [0, 34, 131, 85],
     "drankMaskColor": [250, 0, 0, 115],
-    "deathEffectColor": [50, 50, 50, 255]
+    "deathEffectColor": [50, 50, 50, 255],
+    "extraSkillArea": [26, 67, 48, 17],
+    "extraSkillFont": ["SimLi", [14, 14, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
+    "extraSkillTextArea": [26, 64, 48, 17]
 }
 }

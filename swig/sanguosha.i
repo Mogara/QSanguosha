@@ -816,6 +816,11 @@ public:
         Wake
     };
 
+    enum Location{
+        Left,
+        Right
+    };
+
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
@@ -825,6 +830,8 @@ public:
     virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
+
+    virtual Location getLocation() const;
 
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
@@ -1032,7 +1039,25 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason);
+    QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());    
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
+
+    void toggleReadyCommand(ServerPlayer *player, const QString &);
+    void speakCommand(ServerPlayer *player, const QString &arg);
+    void trustCommand(ServerPlayer *player, const QString &arg);
+    void kickCommand(ServerPlayer *player, const QString &arg);
+    void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket* arg);
+    void addRobotCommand(ServerPlayer *player, const QString &arg);
+    void fillRobotsCommand(ServerPlayer *player, const QString &arg);
+    void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
+    void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
+    void startTest(const QString &to_test);
+    void networkDelayTestCommand(ServerPlayer *player, const QString &);
+    inline virtual RoomState* getRoomState() { return &_m_roomState; }
+    inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
+    inline virtual void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
+    virtual void updateCardsOnLose(const CardsMoveStruct &move);
+    virtual void updateCardsOnGet(const CardsMoveStruct &move);
 };
 
 %extend Room {

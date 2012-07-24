@@ -110,7 +110,7 @@ void TablePile::_fadeOutCardsLocked(const QList<CardItem *> &cards)
         toRemove->setHomeOpacity(0.0);
         toRemove->setHomePos(QPointF(toRemove->homePos().x(), toRemove->homePos().y()));
         toRemove->deleteLater();
-        group->addAnimation(toRemove->getGoBackAnimation(true, false, 100));
+        group->addAnimation(toRemove->getGoBackAnimation(true, false, 1000));
     }
     group->start(QAbstractAnimation::DeleteWhenStopped);
 }
