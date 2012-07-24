@@ -14,6 +14,7 @@
 #include <QPen>
 #include <QPainter>
 #include <QGraphicsPixmapItem>
+#include <QAbstractAnimation>
 
 class QSanPixmapCache
 {
@@ -80,17 +81,18 @@ public:
     };
     static const char* S_SKIN_KEY_DEFAULT;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
-              const QString &audioConfigFileName);
+              const QString &audioConfigFileName, const QString &animationConfigFileName);
     QPixmap getPixmap(const QString &key, const QString &arg = QString()) const;
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName) const;
     QStringList getAudioFileNames(const QString &key) const;
-    QStringList getAnimationFileNames() const;
     QString getRandomAudioFileName(const QString &key) const;
     bool isImageKeyDefined(const QString &key) const;
+    QStringList getAnimationFileNames() const;
 protected:
     virtual bool _loadLayoutConfig(const Json::Value &config) = 0;
     virtual bool _loadImageConfig(const Json::Value &config);
+    virtual bool _loadAnimationConfig(const Json::Value &config) = 0;
     QString _readConfig(const Json::Value &dictionary, const QString &key,
                         const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
@@ -99,6 +101,7 @@ protected:
     
     Json::Value _m_imageConfig;
     Json::Value _m_audioConfig;
+    Json::Value _m_animationConfig;
     // image key -> image file name
     static QHash<QString, QString> S_IMAGE_KEY2FILE;
     static QHash<QString, QPixmap> S_IMAGE_KEY2PIXMAP;
@@ -259,6 +262,7 @@ public:
         QSize m_chooseGeneralBoxDenseIconSize;
         int m_chooseGeneralBoxSwitchIconSizeThreshold;
     };
+
     enum GeneralIconSize
     {
         S_GENERAL_ICON_SIZE_TINY,
@@ -296,6 +300,10 @@ public:
     QString getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index = -1) const;
     QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1) const;
     QPixmap getProgressBarPixmap(int percentile) const;
+
+    // Animations
+    QAbstractAnimation* createHuaShenAnimation(QPixmap &huashenAvatar, QPoint topLeft, QGraphicsItem *parent,
+                                               QGraphicsItem* &huashenItemCreated) const;
 
     // static consts
     // main keys
@@ -363,6 +371,7 @@ protected:
     CommonLayout _m_commonLayout;
     DashboardLayout _m_dashboardLayout;
     virtual bool _loadLayoutConfig(const Json::Value &layoutConfig);
+    virtual bool _loadAnimationConfig(const Json::Value &animationConfig);
 };
 
 class QSanSkinScheme

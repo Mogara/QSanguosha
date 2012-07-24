@@ -765,6 +765,8 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
 
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data){
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
+    QStringList validChoices = choices.split("+");
+    Q_ASSERT(validChoices.size() >= 2);
     AI *ai = player->getAI();
     QString answer;
     if(ai)
@@ -784,7 +786,13 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
         }
         else answer = toQString(clientReply);
     }
-    QVariant decisionData = QVariant::fromValue("skillChoice:"+skill_name+":"+answer);
+    
+    if (!validChoices.contains(answer))
+    {
+        answer = validChoices[0];
+    }
+
+    QVariant decisionData = QVariant::fromValue("skillChoice:" + skill_name + ":" + answer);
     thread->trigger(ChoiceMade, this, player, decisionData);
     return answer;
 }

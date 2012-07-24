@@ -3,7 +3,8 @@
 {
 "roomLayoutConfigFile": "skins/defaultSkin.layout.json",
 "roomImageConfigFile": "skins/defaultSkin.image.json",
-"roomAudioConfigFile": "skins/defaultSkin.audio.json"
+"roomAudioConfigFile": "skins/defaultSkin.audio.json",
+"roomAnimationConfigFile": "skins/defaultSkin.animation.json"
 },
 "compact":
 {

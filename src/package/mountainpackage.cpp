@@ -9,6 +9,7 @@
 #include "clientplayer.h"
 #include "client.h"
 #include "ai.h"
+#include "jsonutils.h"
 
 #include <QCommandLinkButton>
 
@@ -1086,9 +1087,10 @@ public:
 
         QStringList skill_names;
         QString skill_name;
+        const General* general = NULL;
         AI* ai = zuoci->getAI();
         if(ai){
-            QHash<QString, const General*>hash;
+            QHash<QString, const General*> hash;
             foreach(QString general_name, huashen_generals){
                 const General* general = Sanguosha->getGeneral(general_name);
                 foreach(const Skill *skill, general->getVisibleSkillList()){
@@ -1104,28 +1106,14 @@ public:
             }
             Q_ASSERT(skill_names.length() > 0);
             skill_name = ai->askForChoice("huashen", skill_names.join("+"), QVariant());
-            const General* general = hash[skill_name];
+            general = hash[skill_name];
             Q_ASSERT(general != NULL);
-            QString kingdom = general->getKingdom();
-            if(zuoci->getKingdom() != kingdom){
-                if(kingdom == "god")
-                    kingdom = room->askForKingdom(zuoci);
-                room->setPlayerProperty(zuoci, "kingdom", kingdom);
-            }
-            if(zuoci->getGeneral()->isMale() != general->isMale())
-                room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
+            
         }
         else{
             QString general_name = room->askForGeneral(zuoci, huashen_generals);
-            const General *general = Sanguosha->getGeneral(general_name);
+            general = Sanguosha->getGeneral(general_name);
             QString kingdom = general->getKingdom();
-            if(zuoci->getKingdom() != kingdom){
-                if(kingdom == "god")
-                    kingdom = room->askForKingdom(zuoci);
-                room->setPlayerProperty(zuoci, "kingdom", kingdom);
-            }
-            if(zuoci->getGeneral()->isMale() != general->isMale())
-                room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
 
             foreach(const Skill *skill, general->getVisibleSkillList()){
                 if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
@@ -1144,10 +1132,29 @@ public:
                 skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
         }
 
-        zuoci->tag["HuashenSkill"] = skill_name;
+        QString kingdom = general->getKingdom();
+        
+        if(zuoci->getKingdom() != kingdom){
+            if(kingdom == "god")
+                kingdom = room->askForKingdom(zuoci);
+            room->setPlayerProperty(zuoci, "kingdom", kingdom);
+        }
 
-        if(acquire_instant)
-            room->acquireSkill(zuoci, skill_name);
+        if(zuoci->getGeneral()->isMale() != general->isMale())
+            room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
+
+        Q_ASSERT(!skill_name.isNull() && !skill_name.isEmpty());
+
+        Json::Value arg(Json::arrayValue);
+        arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+        arg[1] = QSanProtocol::Utils::toJsonString(zuoci->objectName());
+        arg[2] = QSanProtocol::Utils::toJsonString(general->objectName());
+        arg[3] = QSanProtocol::Utils::toJsonString(skill_name);
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
+        zuoci->tag["HuashenSkill"] = skill_name;
+        
+        room->acquireSkill(zuoci, skill_name);
 
         if(zuoci->getHp() <= 0)
             room->enterDying(zuoci, NULL);
@@ -1156,6 +1163,9 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *zuoci) const{
+
+        // @todo: this is another dirty hack here that violates the rule. Zuoci will always
+        // be the primary general.
         if(zuoci->getGeneral2Name().startsWith("zuoci")){
             zuoci->getRoom()->setPlayerProperty(zuoci, "general2", zuoci->getGeneralName());
             zuoci->getRoom()->setPlayerProperty(zuoci, "general", "zuoci");
@@ -1206,9 +1216,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *zuoci) const{
         if(zuoci->askForSkillInvoke("huashen")){
-            QString skill_name = Huashen::SelectSkill(zuoci, false);
-            if(!skill_name.isEmpty())
-                zuoci->getRoom()->acquireSkill(zuoci, skill_name);
+            QString skill_name = Huashen::SelectSkill(zuoci);
         }
         return false;
     }

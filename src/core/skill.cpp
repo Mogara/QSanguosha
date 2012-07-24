@@ -322,7 +322,20 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
     if(player->askForSkillInvoke(objectName())){
         Room *room = player->getRoom();
-        room->setPlayerProperty(player, "general", to);
+
+        // @todo: this is a dirty hack for now. If both generals have the same
+        // SP convert skill, then we are in trouble.
+        // If the skill belongs to the second general, then don't bother.
+        if (!player->getGeneral()->hasSkill(objectName()) &&
+            player->getGeneral2() != NULL &&
+            player->getGeneral2()->hasSkill(objectName()))
+        {
+            room->setPlayerProperty(player, "general2", to);
+        }
+        else
+        {
+            room->setPlayerProperty(player, "general", to);
+        }
 
         const General *general = Sanguosha->getGeneral(to);
         const QString kingdom = general->getKingdom();

@@ -364,20 +364,32 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
 {
     GameEventType eventType = (GameEventType)arg[0].asInt();
     switch(eventType){
-    case S_GAME_EVENT_PLAYER_DYING:{
+
+    case S_GAME_EVENT_PLAYER_DYING: {
         /* the codes below causes crash
         const Player* player = name2photo[arg[1].asCString()]->getPlayer();
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath("sos", player->getGeneral()->isMale())); */
         break;
     }
+
+    case S_GAME_EVENT_HUASHEN: {
+
+        ClientPlayer* player = ClientInstance->getPlayer(arg[1].asCString());
+        QString huashenGeneral = arg[2].asCString();
+        QString huashenSkill = arg[3].asCString();
+        PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
+        container->startHuaShen(huashenGeneral, huashenSkill);
+        break;
+    }
+
     case S_GAME_EVENT_SKILL_INVOKED:{
         QString skillName = arg[1].asCString();
         QString category;
-        if(arg[2].isBool()){
+        if(arg[2].isBool()) {
             bool isMale = arg[2].asBool();
             category = isMale ? "male" : "female";
         }
-        else if(arg[2].isString())
+        else if(arg[2].isString()) 
             category = arg[2].asCString();
         int type = arg[3].asInt();
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
@@ -395,11 +407,16 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
         QString skill_name =  arg[2].asCString();
 
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
-
         player->detachSkill(skill_name);
         if(player == Self)
             detachSkill(skill_name);
 
+        // stop huashen animation
+        PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
+        if (!player->hasSkill("huashen"))
+        {
+            container->stopHuaShen();
+        }
         break;
     }
     case S_GAME_EVENT_ACQUIRE_SKILL:{

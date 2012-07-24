@@ -106,7 +106,8 @@ namespace QSanProtocol
         S_GAME_EVENT_ACQUIRE_SKILL,
         S_GAME_EVENT_ADD_SKILL,
         S_GAME_EVENT_LOSE_SKILL,
-        S_GAME_EVENT_UPDATE_SKILL
+        S_GAME_EVENT_UPDATE_SKILL,
+        S_GAME_EVENT_HUASHEN
     };
 
     enum Game3v3ChooseOrderCommand

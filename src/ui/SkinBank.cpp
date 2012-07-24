@@ -8,6 +8,9 @@
 #include <QTextItem>
 #include <QStyleOptionGraphicsItem>
 #include <QMessageBox>
+#include <QPropertyAnimation>
+#include <QLabel>
+#include <QGraphicsProxyWidget>
 
 using namespace std;
 using namespace QSanProtocol::Utils;
@@ -61,7 +64,7 @@ const char* QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-
 const char* QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
 
 // Animations
-const char* QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "animations";
+const char* QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
 
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
@@ -189,7 +192,7 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem* pixm
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
     QPainter imagePainter(&image);
-    // @todo: currently, we have not considered _m_sahdowOffset yet
+    // @todo: currently, we have not considered _m_shadowOffset yet
     QSanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius,
         pos.width() - m_shadowRadius * 2, pos.height() - m_shadowRadius * 2), align, text);
     QImage shadow = QSanUiUtils::produceShadow(image, m_shadowColor, m_shadowRadius, m_shadowDecadeFactor);
@@ -529,7 +532,7 @@ bool IQSanComponentSkin::_loadImageConfig(const Json::Value &config)
 }
 
 bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &imageConfigName,
-                              const QString &audioConfigName)
+                              const QString &audioConfigName, const QString &animationConfigName)
 {   
     bool success = true;
     QString errorMsg;
@@ -583,6 +586,23 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         }
         audioFile.close();
     }
+
+    if (!animationConfigName.isNull())
+    {
+        Json::Reader reader;
+        ifstream animFile(animationConfigName.toAscii());
+        if (animFile.bad() ||
+            !reader.parse(animFile, _m_animationConfig) ||
+            !_m_animationConfig.isObject())
+        {
+            errorMsg = QString("Error when reading animation config file \"%1\": \n%2")
+                       .arg(animationConfigName).arg(reader.getFormattedErrorMessages().c_str());
+            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            success = false;
+        }
+        animFile.close();
+    }
+
     return success;
 }
 
@@ -604,7 +624,7 @@ QStringList IQSanComponentSkin::getAnimationFileNames() const
 {
     QStringList animations;
 
-    Json::Value result = _m_imageConfig[QSanRoomSkin::S_SKIN_KEY_ANIMATIONS];
+    Json::Value result = _m_animationConfig[QSanRoomSkin::S_SKIN_KEY_ANIMATIONS];
     tryParse(result, animations);
     return animations;
 }
@@ -725,6 +745,45 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
  QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const
 {
     return QSanPixmapCache::getPixmap(fileName, fileName);
+}
+
+bool QSanRoomSkin::_loadAnimationConfig(const Json::Value &animationConfig)
+{
+    return true;
+}
+
+QAbstractAnimation* 
+QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar, QPoint topLeft, QGraphicsItem *parent,
+                                     QGraphicsItem* &huashenAvatarCreated) const
+{
+    QLabel* avatar = new QLabel;
+    avatar->setStyleSheet("QLabel{ background-color: transparent;}");
+    avatar->setPixmap(huashenAvatar);
+    QGraphicsProxyWidget* widget = new QGraphicsProxyWidget(parent);
+    widget->setWidget(avatar);
+    widget->setPos(topLeft);
+    // widget->setOpacity(0.0);
+
+    QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity");
+    animation->setLoopCount(2000);
+    Json::Value huashenConfig = _m_animationConfig["huashen"];
+    int duration;
+    if (tryParse(huashenConfig[0], duration) && huashenConfig[1].isArray())
+    {
+        animation->setDuration(duration);
+        Json::Value keyValues = huashenConfig[1];
+        for (unsigned int i = 0; i < keyValues.size(); i++)
+        {
+            Json::Value keyValue = keyValues[i];
+            if (!keyValue.isArray() || keyValue.size() != 2) continue;
+            double step;
+            double val;
+            if (!tryParse(keyValue[0], step) || !tryParse(keyValue[1], val)) continue;
+            animation->setKeyValueAt(step, val);
+        }
+    }
+    huashenAvatarCreated = widget;
+    return animation;
 }
 
 const QSanRoomSkin::RoomLayout& QSanRoomSkin::getRoomLayout() const
@@ -973,11 +1032,12 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
 bool QSanSkinScheme::load(Json::Value configs)
 {
     if (!configs.isObject()) return false;
-    QString layoutFile, imageFile, audioFile;
+    QString layoutFile, imageFile, audioFile, animFile;
     tryParse(configs["roomLayoutConfigFile"], layoutFile); 
     tryParse(configs["roomImageConfigFile"], imageFile);
     tryParse(configs["roomAudioConfigFile"], audioFile);
-    return _m_roomSkin.load(layoutFile, imageFile, audioFile);
+    tryParse(configs["roomAnimationConfigFile"], animFile);
+    return _m_roomSkin.load(layoutFile, imageFile, audioFile, animFile);
 }
 
 const QSanRoomSkin& QSanSkinScheme::getRoomSkin() const

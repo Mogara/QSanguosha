@@ -715,6 +715,31 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
     return result;
  }
 
+ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName)
+ {
+     Q_ASSERT(m_player->hasSkill("huashen"));
+     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName,
+         (QSanRoomSkin::GeneralIconSize)_m_layout->m_avatarSize);
+     stopHuaShen();
+     _m_huashenAnimation = G_ROOM_SKIN.createHuaShenAnimation(
+         pixmap,
+         _m_layout->m_avatarArea.topLeft(),
+         _getAvatarParent(),
+         _m_huashenItem);
+     _m_huashenItem->setZValue(_m_avatarIcon->zValue() + 0.01);
+     _m_huashenAnimation->start();
+ }
+
+ void PlayerCardContainer::stopHuaShen()
+ {
+     if (_m_huashenAnimation != NULL)
+     {
+         _m_huashenAnimation->stop();
+         _m_huashenAnimation->deleteLater();
+         delete _m_huashenItem;
+     }
+ }
+
 PlayerCardContainer::PlayerCardContainer()
 {
     _m_layout = NULL;
@@ -740,6 +765,8 @@ PlayerCardContainer::PlayerCardContainer()
         _m_equipAnim[i] = NULL;
         _m_equipLabel[i] = NULL;
     }
+    _m_huashenItem = NULL;
+    _m_huashenAnimation = NULL;
 
     _m_floatingArea = NULL;
     _m_votesGot = 0;

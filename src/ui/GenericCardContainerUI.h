@@ -69,6 +69,8 @@ public:
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem* getMouseClickReceiver() = 0;
+    virtual void startHuaShen(QString generalName, QString skillName);
+    virtual void stopHuaShen();
 
     inline void hookMouseEvents();
 
@@ -190,6 +192,10 @@ protected:
     int _m_votesGot, _m_maxVotes;
     QGraphicsPixmapItem *_m_votesItem;
     
+    // animations
+    QAbstractAnimation *_m_huashenAnimation;
+    QGraphicsItem *_m_huashenItem;
+
 protected slots:
     virtual void _onEquipSelectChanged();
 private:   
