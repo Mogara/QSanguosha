@@ -195,6 +195,8 @@ protected:
     // animations
     QAbstractAnimation *_m_huashenAnimation;
     QGraphicsItem *_m_huashenItem;
+    QString _m_huashenGeneralName;
+    QString _m_huashenSkillName;
 
 protected slots:
     virtual void _onEquipSelectChanged();
