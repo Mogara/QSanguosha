@@ -968,23 +968,20 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if(card){
         if(trigger_event == CardUsed){
             if(pattern != "slash"){
-				throwCard(card);
+                throwCard(card);
             }
         }
         else if(pattern == "nullification"){
-			throwCard(card);
+            throwCard(card);
         }
-        else
-            if(trigger_event == CardDiscarded){
-				throwCard(card);
-
+        else if(trigger_event == CardDiscarded){
+            throwCard(card);
         }
-        else
-            if(trigger_event != NonTrigger){    // Danm it! the fxxking nosenyuan!!!!!!
-				throwCard(card);
+        else if(trigger_event != NonTrigger){
+            throwCard(card);    // Danm it! the fxxking nosenyuan!!!!!!
         }
         else{
-			throwCard(card);
+            throwCard(card);
         }
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");

@@ -176,7 +176,7 @@ return {
 	["$jilve1"] = "天意如何，我命由我。", -- guicai
 	["$jilve2"] = "远逐敌雠，拔除异己。", -- fangzhu
 	["$jilve3"] = "心狠手毒，方能成事。", -- wansha
-	["$jilve4"] = "且暂思量，再作打算。", -- zhiheng
+	["$jilve4"] = "暂且思量，再作打算。", -- zhiheng
 	["$jilve5"] = "此计即成，彼计亦得。", -- jizhi
 	["$lianpo"] = "敌军已乱，乘胜追击。",
 	["~shensimayi"] = "我已谋划至此，奈何……",

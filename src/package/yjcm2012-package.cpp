@@ -214,7 +214,7 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         QVariant source = QVariant::fromValue(from);
-        if(from && from->isAlive() && target->askForSkillInvoke(objectName(), source)){
+        if(target->askForSkillInvoke(objectName(), source)){
             target->drawCards(1);
 
             Room *room = target->getRoom();
@@ -231,8 +231,8 @@ public:
                 }
             }
 
-            if(same_color && damage.from && !damage.from->isKongcheng())
-                room->askForDiscard(damage.from, objectName(), 1, 1);
+            if(from && from->isAlive() && same_color && !from->isKongcheng())
+                room->askForDiscard(from, objectName(), 1);
         }
     }
 };

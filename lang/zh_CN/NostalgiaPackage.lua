@@ -13,6 +13,8 @@ return {
 
 	["#nosfazheng"] = "蜀汉的辅翼",
 	["nosfazheng"] = "旧版法正",
+	["illustrator:nosfazheng"] = "雷没才",
+	["designer:nosfazheng"] = "michael_lee",
 	["nosenyuan"] = "恩怨",
 	[":nosenyuan"] = "<b>锁定技</b>，其他角色每令你回复1点体力，该角色摸一张牌；其他角色每对你造成一次伤害后，需交给你一张红桃手牌，否则该角色失去1点体力。",
 	["nosxuanhuo"] = "眩惑",
@@ -22,6 +24,8 @@ return {
 
 	["#nosxushu"] = "忠孝的侠士",
 	["nosxushu"] = "旧版徐庶",
+	["illustrator:nosxushu"] = "XINA",
+	["designer:nosxushu"] = "双叶松",
 	["noswuyan"] = "无言",
 	[":noswuyan"] = "<b>锁定技</b>，你使用的非延时类锦囊牌对其他角色无效；其他角色使用的非延时类锦囊牌对你无效。",
 	["nosjujian"] = "举荐",
@@ -32,6 +36,8 @@ return {
 
 	["#noslingtong"] = "豪情烈胆",
 	["noslingtong"] = "旧版凌统",
+	["illustrator:noslingtong"] = "绵 Myan",
+	["designer:noslingtong"] = "奇迹之瞳",
 	["nosxuanfeng"] = "旋风",
 	[":nosxuanfeng"] = "当你失去一次装备区里的牌时，你可以选择一项：1. 视为对一名其他角色使用一张【杀】；你以此法使用【杀】时无距离限制且不计入出牌阶段内的使用次数限制。2. 对距离为1的一名角色造成1点伤害。",
 	["nosxuanfeng:nothing"] = "不发动",
