@@ -665,7 +665,8 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
         _m_equipLabel[index]->setPixmap(pixmap);
 
         _mutexEquipAnim.lock();
-        _m_equipRegions[index]->setPos(_m_layout->m_equipAreas[index].topRight());
+        _m_equipRegions[index]->setPos(_m_layout->m_equipAreas[index].topLeft() + 
+                                       QPoint(_m_layout->m_equipAreas[index].width() / 2, 0));
         _m_equipRegions[index]->setOpacity(0);
         _m_equipRegions[index]->show();
         _m_equipAnim[index]->stop();
@@ -706,7 +707,8 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
         QPropertyAnimation* anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
-        anim->setEndValue(_m_layout->m_equipAreas[index].topRight());
+        anim->setEndValue(_m_layout->m_equipAreas[index].topLeft() + 
+                          QPoint(_m_layout->m_equipAreas[index].width() / 2, 0));
         anim->setDuration(200);
         _m_equipAnim[index]->addAnimation(anim);
         anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
