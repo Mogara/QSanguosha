@@ -37,6 +37,7 @@ const char* QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME = "%1MiddleFrame";
 const char* QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM = "%1HandCardNum";
 const char* QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK = "%1FaceTurnedMask";
 const char* QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL = "%1BlankGeneral";
+const char* QSanRoomSkin::S_SKIN_KEY_EXTRA_SKILL_BG = "%1ExtraSkillBg";
 const char* QSanRoomSkin::S_SKIN_KEY_CHAIN = "%1Chain";
 const char* QSanRoomSkin::S_SKIN_KEY_PHASE = "%1Phase%2";
 const char* QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME = "%1FrameWhenSelected";
@@ -937,6 +938,9 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
         tryParse(playerConfig["deathEffectColor"], layout->m_deathEffectColor);
+        tryParse(playerConfig["extraSkillArea"], layout->m_extraSkillArea);
+        layout->m_extraSkillFont.tryParse(playerConfig["extraSkillFont"]);
+        tryParse(playerConfig["extraSkillTextArea"], layout->m_extraSkillTextArea);
     }
 
 

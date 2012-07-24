@@ -201,6 +201,10 @@ public:
         QRect m_votesIconRegion;
         QColor m_drankMaskColor;
         QColor m_deathEffectColor;
+
+        QRect m_extraSkillArea;
+        QSanShadowTextFont m_extraSkillFont;
+        QRect m_extraSkillTextArea;
     };
 
     struct PhotoLayout : public PlayerCardContainerLayout
@@ -350,6 +354,7 @@ public:
     static const char* S_SKIN_KEY_HAND_CARD_NUMBER_RED;
     static const char* S_SKIN_KEY_HAND_CARD_FRAME;
     static const char* S_SKIN_KEY_PLAYER_GENERAL_ICON;
+    static const char* S_SKIN_KEY_EXTRA_SKILL_BG;
     static const char* S_SKIN_KEY_MAGATAMAS_BG;
     static const char* S_SKIN_KEY_MAGATAMAS;
     static const char* S_SKIN_KEY_PLAYER_AUDIO_EFFECT;
