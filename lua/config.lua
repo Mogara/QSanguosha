@@ -24,10 +24,9 @@ config = {
         "YJCM",
         "YJCM2012",
         "Special3v3",
-		"Ling",
+        "Ling",
         "BGM",
-        "NostalGeneral",
-		"Test"
+        "NostalGeneral"
     },
 
     scene_names = {

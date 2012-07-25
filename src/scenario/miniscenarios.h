@@ -26,6 +26,7 @@ private:
     QList< QMap<QString, QString> > players;
     QString setup;
     QMap<QString, QVariant> ex_options;
+    static const QString _S_DEFAULT_HERO;
 };
 
 class MiniScene : public Scenario
