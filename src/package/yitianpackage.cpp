@@ -938,11 +938,13 @@ public:
             QString gender = room->askForChoice(player, objectName(), "male+female");
             bool is_male = player->isMale();
             if(gender == "female"){
-                if(is_male)
+                if (is_male) {
                     player->setGender(General::Female);
-            }else if(gender == "male"){
-                if(!is_male)
+                }
+            } else if (gender == "male") {
+                if(!is_male) {
                     player->setGender(General::Male);
+                }
             }
             LogMessage log;
             log.type = "#ShenjunChoose";

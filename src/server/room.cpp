@@ -152,19 +152,18 @@ QList<ServerPlayer *> Room::getAllPlayers() const{
         return m_alivePlayers;
 
     QList<ServerPlayer *> all_players;
-    int i;
-    for(i=index; i<m_alivePlayers.length(); i++)
-        all_players << m_alivePlayers.at(i);
+    for (int i = index; i < m_alivePlayers.length(); i++)
+        all_players << m_alivePlayers[i];
 
-    for(i=0; i<index; i++)
-        all_players << m_alivePlayers.at(i);
+    for (int i = 0; i < index; i++)
+        all_players << m_alivePlayers[i];
 
     return all_players;
 }
 
 QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except) const{
     QList<ServerPlayer *> other_players = getAllPlayers();
-    if (except->isAlive())
+    if (except && except->isAlive())
         other_players.removeOne(except);
     return other_players;
 }

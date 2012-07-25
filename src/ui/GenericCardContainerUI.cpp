@@ -205,7 +205,7 @@ void PlayerCardContainer::showProgressBar(Countdown countdown)
 
 QPixmap PlayerCardContainer::_getAvatarIcon(QString heroName)
 {
-    int avatarSize = ServerInfo.Enable2ndGeneral ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
+    int avatarSize = m_player->getGeneral2() ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
     return G_ROOM_SKIN.getGeneralPixmap(heroName, (QSanRoomSkin::GeneralIconSize)avatarSize);
 }
 
@@ -261,6 +261,7 @@ QPixmap PlayerCardContainer::paintByMask(QPixmap &source){
 
 void PlayerCardContainer::updateSmallAvatar()
 {
+    updateAvatar();
     const General *general = NULL;
     if (m_player) general = m_player->getGeneral2();
     if (general != NULL) {

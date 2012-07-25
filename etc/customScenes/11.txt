@@ -1,5 +1,5 @@
 general:select  general2:select  role:lord  starter:true
     general:pangde  equip:Blade  role:rebel
     general:ganning  general2:sunjian  maxhp:4  role:rebel  equip:GudingBlade
-    general:zhangliao  general2:sp_caiwenji  equip:IceSword  role:rebel
+    general:zhangliao  equip:IceSword  role:rebel
     general:sunshangxiang  general2:lingtong  maxhp:4  role:loyalist
