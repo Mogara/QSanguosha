@@ -3,6 +3,8 @@
 #include <QMessageBox>
 #include <QFile>
 
+const QString MiniSceneRule::_S_DEFAULT_HERO = "caocao";
+
 MiniSceneRule::MiniSceneRule(Scenario *scenario)
     :ScenarioRule(scenario)
 {
@@ -10,11 +12,11 @@ MiniSceneRule::MiniSceneRule(Scenario *scenario)
 }
 
 void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const{
-    for(int i=0;i<players.length();i++)
+    for(int i = 0; i < players.length(); i++)
     {
-        QMap<QString,QString> sp =players.at(i);
+        QMap<QString,QString> sp = players.at(i);
         QString name = sp["general"];
-        if(name == "select")name = "sujiang";
+        if (name == "select") name = _S_DEFAULT_HERO;
         generals << name;
         roles << sp["role"];
     }
@@ -27,11 +29,11 @@ QStringList MiniSceneRule::existedGenerals() const
     {
         QMap<QString,QString> sp =players.at(i);
         QString name = sp["general"];
-        if(name == "select")name = "sujiang";
+        if (name == "select") name = _S_DEFAULT_HERO;
         names << name;
         name = sp["general2"];
-        if(name == NULL )continue;
-        if(name == "select")name = "sujiang";
+        if (name.isNull()) continue;
+        if (name == "select") name = _S_DEFAULT_HERO;
         names << name;
     }
     return names;

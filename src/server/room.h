@@ -310,7 +310,6 @@ public:
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
     void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
-    void startTest(const QString &to_test);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
     inline virtual RoomState* getRoomState() { return &_m_roomState; }
     inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }

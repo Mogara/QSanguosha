@@ -175,22 +175,6 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
-    if(hasFlag("sweet")){
-        room->setCardFlag(this, "-sweet");
-        recover.recover = 2;
-
-        LogMessage log;
-        log.type = "#JiuyuanExtraRecover";
-        log.from = effect.to;
-        log.to << effect.from;
-        log.arg = objectName();
-        room->sendLog(log);
-        if(effect.from->getGender() == effect.to->getGender())
-            room->broadcastSkillInvoke("jiuyuan", 2);
-        else
-            room->broadcastSkillInvoke("jiuyuan", 3);
-    }
-
     room->recover(effect.to, recover);
 }
 

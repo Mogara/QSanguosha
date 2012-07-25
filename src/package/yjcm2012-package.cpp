@@ -606,10 +606,7 @@ public:
                     use.card = peach;
                     use.from = handang;
                     use.to << target;
-                    if(dying.who->hasFlag("jiuyuan") && handang->getKingdom() == "wu"
-                        && handang->objectName() != dying.who->objectName()){
-                        room->setCardFlag(use.card, "sweet");
-                    }
+
                     room->setCardFlag(damage.card, "jiefan_success");
                     room->useCard(use);
                 }
