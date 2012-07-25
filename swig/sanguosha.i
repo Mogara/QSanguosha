@@ -41,7 +41,7 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    enum Gender {Male, Female, Neuter};
+    enum Gender {SexLess, Male, Female, Neuter};
     Gender getGender() const;
     void setGender(Gender gender);
 
@@ -71,7 +71,6 @@ public:
 
     void setScreenName(const char *screen_name);
     QString screenName() const;
-    General::Gender getGender() const;
 
     // property setters/getters
     int getHp() const;
@@ -80,6 +79,12 @@ public:
     void setMaxHp(int max_hp);
     int getLostHp() const;
     bool isWounded() const;
+    General::Gender getGender() const;
+    virtual void setGender(General::Gender gender);
+    bool isSexLess() const;
+    bool isMale() const;
+    bool isFemale() const;
+    bool isNeuter() const;
 
     int getMaxCards() const;
 

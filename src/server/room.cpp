@@ -2764,7 +2764,7 @@ void Room::startGame(){
             broadcastProperty(player, "role"); 
     }
 
-    initSkillsForPlayers();
+    preparePlayers();
     broadcastInvoke("startGame");
     game_started = true;
 
@@ -3481,7 +3481,7 @@ bool Room::broadcastSkillInvoke(const QString &skill_name, bool isMale, int type
     return true;
 }
 
-void Room::initSkillsForPlayers(){
+void Room::preparePlayers(){
     foreach(ServerPlayer *player, m_players)
     {
         QList<const Skill*> skills = player->getGeneral()->getSkillList();
@@ -3492,6 +3492,7 @@ void Room::initSkillsForPlayers(){
             foreach(const Skill* skill, skills)
                 player->addSkill(skill->objectName());
         }
+        player->setGender(player->getGeneral()->getGender());
     }
 
     Json::Value args;
@@ -3505,6 +3506,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
             player->loseSkill(skill->objectName());
     }
     setPlayerProperty(player, "general", new_general);
+    player->setGender(player->getGeneral()->getGender());
     foreach(const Skill* skill, player->getGeneral()->getSkillList())
         player->addSkill(skill->objectName());
     filterCards(player, player->getCards("he"), true);

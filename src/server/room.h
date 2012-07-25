@@ -204,7 +204,7 @@ public:
     bool broadcastSkillInvoke(const QString &skillName, int type);
     bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
 
-    void initSkillsForPlayers();
+    void preparePlayers();
     void changePlayerGeneral(ServerPlayer *player, const QString &new_general);
     void changePlayerGeneral2(ServerPlayer *player, const QString &new_general);
     void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);

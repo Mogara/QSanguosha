@@ -802,7 +802,7 @@ public:
             RecoverStruct rec = data.value<RecoverStruct>();
             if(rec.card && rec.card->hasFlag("jiuyuan"))
             {
-                int index = rec.who->getGeneral()->isMale() ? 2 : 3;
+                int index = rec.who->isMale() ? 2 : 3;
 
                 room->broadcastSkillInvoke("jiuyuan", index);
 
@@ -1365,6 +1365,8 @@ void StandardPackage::addGenerals(){
     diaochan->addSkill(new Biyue);
     diaochan->addSkill(new SPConvertSkill("tuoqiao", "diaochan", "sp_diaochan"));
 
+    new General(this, "anjiang", "god", 4,true, true, true);
+
     // for skill cards
     addMetaObject<ZhihengCard>();
     addMetaObject<RendeCard>();
@@ -1569,8 +1571,6 @@ TestPackage::TestPackage()
 
     new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);
-
-    new General(this, "anjiang", "god", 4,true, true, true);
     addMetaObject<YihunCard>();
 }
 

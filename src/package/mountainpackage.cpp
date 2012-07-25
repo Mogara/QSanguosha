@@ -267,8 +267,8 @@ public:
             damage->from->gainMark("@duanchang");
             if(damage->from->getKingdom() != damage->from->getGeneral()->getKingdom())
                 room->setPlayerProperty(damage->from, "kingdom", damage->from->getGeneral()->getKingdom());
-            if(damage->from->getGeneralName() == "zuocif")
-                room->setPlayerProperty(damage->from, "general", "zuoci");
+            if(damage->from->getGender() != damage->from->getGeneral()->getGender())
+                damage->from->setGender(damage->from->getGeneral()->getGender());
             if(damage->from->getHp() <= 0)
                 room->enterDying(damage->from,NULL);
             damage->from->clearPrivatePiles();
@@ -1015,7 +1015,7 @@ public:
     }
 
     static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name){
-        zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->getGender() == General::Male, -1);
+        zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->isMale(), -1);
     }
 
     static void AcquireGenerals(ServerPlayer *zuoci, int n){
@@ -1067,7 +1067,7 @@ public:
         return (all - banned - huashen_set - room_set).toList();
     }
 
-    static QString SelectSkill(ServerPlayer *zuoci, bool acquire_instant = true){
+    static QString SelectSkill(ServerPlayer *zuoci){
         Room *room = zuoci->getRoom();
         playAudioEffect(zuoci, "huashen");
 
@@ -1113,7 +1113,6 @@ public:
         else{
             QString general_name = room->askForGeneral(zuoci, huashen_generals);
             general = Sanguosha->getGeneral(general_name);
-            QString kingdom = general->getKingdom();
 
             foreach(const Skill *skill, general->getVisibleSkillList()){
                 if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
@@ -1140,8 +1139,8 @@ public:
             room->setPlayerProperty(zuoci, "kingdom", kingdom);
         }
 
-        if(zuoci->getGeneral()->isMale() != general->isMale())
-            room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
+        if(zuoci->getGender() != general->getGender())
+            zuoci->setGender(general->getGender());
 
         Q_ASSERT(!skill_name.isNull() && !skill_name.isEmpty());
 
@@ -1163,14 +1162,6 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *zuoci) const{
-
-        // @todo: this is another dirty hack here that violates the rule. Zuoci will always
-        // be the primary general.
-        if(zuoci->getGeneral2Name().startsWith("zuoci")){
-            zuoci->getRoom()->setPlayerProperty(zuoci, "general2", zuoci->getGeneralName());
-            zuoci->getRoom()->setPlayerProperty(zuoci, "general", "zuoci");
-        }
-
         AcquireGenerals(zuoci, 2);
         SelectSkill(zuoci);
     }
@@ -1299,12 +1290,6 @@ MountainPackage::MountainPackage()
     zuoci->addSkill(new HuashenBegin);
     zuoci->addSkill(new HuashenEnd);
     zuoci->addSkill(new Xinsheng);
-
-    General *zuocif = new General(this, "zuocif", "qun", 3, false, true);
-    zuocif->addSkill("huashen");
-    zuocif->addSkill("#huashen-begin");
-    zuocif->addSkill("#huashen-end");
-    zuocif->addSkill("xinsheng");
 
     related_skills.insertMulti("huashen", "#huashen-begin");
     related_skills.insertMulti("huashen", "#huashen-end");

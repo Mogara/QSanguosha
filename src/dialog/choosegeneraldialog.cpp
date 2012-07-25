@@ -244,6 +244,9 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 	QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
 	QMap<QString, QList<const General*> > map;
 	foreach(const General *general, all_generals){
+        if(general->isTotallyHidden())
+            continue;
+
 		map[general->getKingdom()] << general;
 	}
 
@@ -309,49 +312,46 @@ void FreeChooseDialog::chooseGeneral(){
 }
 
 QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals){
-	QWidget *tab = new QWidget;
+    QWidget *tab = new QWidget;
 
-	QGridLayout *layout = new QGridLayout;
-	layout->setOriginCorner(Qt::TopLeftCorner);
-	QIcon lord_icon("image/system/roles/lord.png");
+    QGridLayout *layout = new QGridLayout;
+    layout->setOriginCorner(Qt::TopLeftCorner);
+    QIcon lord_icon("image/system/roles/lord.png");
 
-	const int columns = 4;
+    const int columns = 4;
 
-	for(int i=0; i<generals.length(); i++){
-		const General *general = generals.at(i);
-		QString general_name = general->objectName();
-		if(general->isTotallyHidden())
-			continue;
+    for(int i=0; i<generals.length(); i++){
+        const General *general = generals.at(i);
+        QString general_name = general->objectName();
+        QString text = QString("%1[%2]")
+                .arg(Sanguosha->translate(general_name))
+                .arg(Sanguosha->translate(general->getPackage()));
 
-		QString text = QString("%1[%2]")
-					   .arg(Sanguosha->translate(general_name))
-					   .arg(Sanguosha->translate(general->getPackage()));
+        QAbstractButton *button;
+        if(pair_choose)
+            button = new QCheckBox(text);
+        else
+            button = new QRadioButton(text);
+        button->setObjectName(general_name);
+        button->setToolTip(general->getSkillDescription());
+        if(general->isLord())
+            button->setIcon(lord_icon);
 
-		QAbstractButton *button;
-		if(pair_choose)
-			button = new QCheckBox(text);
-		else
-			button = new QRadioButton(text);
-		button->setObjectName(general_name);
-		button->setToolTip(general->getSkillDescription());
-		if(general->isLord())
-			button->setIcon(lord_icon);
+        group->addButton(button);
 
-		group->addButton(button);
+        int row = i / columns;
+        int column = i % columns;
+        layout->addWidget(button, row, column);
+    }
 
-		int row = i / columns;
-		int column = i % columns;
-		layout->addWidget(button, row, column);
-	}
+    tab->setLayout(layout);
 
-	tab->setLayout(layout);
+    if(pair_choose){
+        connect(group, SIGNAL(buttonClicked(QAbstractButton*)),
+                this, SLOT(uncheckExtraButton(QAbstractButton*)));
+    }
 
-	if(pair_choose){
-		connect(group, SIGNAL(buttonClicked(QAbstractButton*)),
-				this, SLOT(uncheckExtraButton(QAbstractButton*)));
-	}
-
-	return tab;
+    return tab;
 }
 
 void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button){

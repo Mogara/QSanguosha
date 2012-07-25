@@ -64,7 +64,7 @@ LihunCard::LihunCard(){
 }
 
 bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!to_select->getGeneral()->isMale())
+    if(!to_select->isMale())
         return false;
 
     if(!targets.isEmpty())

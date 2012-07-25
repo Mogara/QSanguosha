@@ -368,7 +368,7 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
     case S_GAME_EVENT_PLAYER_DYING: {
         /* the codes below causes crash
         const Player* player = name2photo[arg[1].asCString()]->getPlayer();
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath("sos", player->getGeneral()->isMale())); */
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath("sos", player->isMale())); */
         break;
     }
 
@@ -454,6 +454,18 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
         updateSkillButtons();
         break;
     }
+
+    case S_GAME_EVENT_CHANGE_GENDER:{
+        QString player_name = arg[1].asCString();
+        General::Gender gender =  (General::Gender)arg[2].asInt();
+
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+
+        player->setGender(gender);
+
+        break;
+    }
+
     default:
         break;
     }
@@ -2524,7 +2536,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
         case -1: {
                 ClientPlayer *player = ClientInstance->getPlayer(who);
                 int r = qrand() % 3 + 1;
-                if(player->getGeneral()->isMale())
+                if(player->isMale())
                     damage_effect = QString("injure1-male%1").arg(r);
                 else
                     damage_effect = QString("injure1-female%1").arg(r);

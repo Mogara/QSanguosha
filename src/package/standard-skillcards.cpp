@@ -63,7 +63,7 @@ bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player
     if(!targets.isEmpty())
         return false;
 
-    return to_select->getGeneral()->isMale() && to_select->isWounded();
+    return to_select->isMale() && to_select->isWounded();
 }
 
 void JieyinCard::onEffect(const CardEffectStruct &effect) const{
@@ -76,7 +76,7 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     room->recover(effect.to, recover, true);
 
     int index = -1;
-    if(effect.from->getGeneral()->isMale()){
+    if(effect.from->isMale()){
         if(effect.from == effect.to)
             index = 5;
         else if(effect.from->getHp() >= effect.to->getHp())
@@ -168,8 +168,8 @@ LijianCard::LijianCard(){
     once = true;
 }
 
-bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!to_select->getGeneral()->isMale())
+bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
+    if(!to_select->isMale())
         return false;
 
     if(targets.isEmpty() && to_select->hasSkill("kongcheng") && to_select->isKongcheng()){

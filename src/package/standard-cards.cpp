@@ -194,12 +194,16 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return WeaponSkill::triggerable(target) && !target->isSexLess();
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.from->objectName() != player->objectName())
-            return false;
+
         foreach(ServerPlayer *to, use.to){
-            if(use.from->getGeneral()->isMale() != to->getGeneral()->isMale()
+            if(use.from->isMale() != to->isMale()
+                && !to->isSexLess()
                 && use.card->isKindOf("Slash")){
                 if(use.from->askForSkillInvoke(objectName())){
                     to->getRoom()->setEmotion(use.from,"weapon/double_sword");

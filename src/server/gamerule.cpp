@@ -984,6 +984,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
                 room->setPlayerProperty(sp, "general", "anjiang");
+                sp->setGender(General::SexLess);
                 room->setPlayerProperty(sp,"kingdom","god");
 
                 LogMessage log;
@@ -1047,8 +1048,8 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
         if(Config.EnableHegemony){
             if(player->getGeneralName() == "anjiang"){
                 QStringList generals = room->getTag(player->objectName()).toStringList();
-                room->setPlayerProperty(player, "general", generals.at(0));
-                if(Config.Enable2ndGeneral)room->setPlayerProperty(player, "general2", generals.at(1));
+                room->changePlayerGeneral(player, generals.at(0));
+                if(Config.Enable2ndGeneral)room->changePlayerGeneral2(player, generals.at(1));
                 room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
                 room->setPlayerProperty(player, "role", getMappedRole(player->getKingdom()));
             }
