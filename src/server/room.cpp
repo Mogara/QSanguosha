@@ -1449,24 +1449,22 @@ void Room::resetAI(ServerPlayer *player){
 }
 
 void Room::changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool invokeStart,
-                      bool isSecondaryHero){
+                      bool isSecondaryHero, bool sendLog)
+{
+    Json::Value arg(Json::arrayValue);
+    arg[0] = S_GAME_EVENT_CHANGE_HERO;
+    arg[1] = toJsonString(player->objectName());
+    arg[2] = toJsonString(new_general);
+    arg[3] = isSecondaryHero;
+    arg[4] = sendLog;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
-
-    QString m_old_general = player->getGeneralName();
     if(isSecondaryHero){
         changePlayerGeneral2(player, new_general);
     }
     else{
         changePlayerGeneral(player, new_general);
     }
-
-    Json::Value arg(Json::arrayValue);
-    arg[0] = S_GAME_EVENT_CHANGE_HERO;
-    arg[1] = toJsonString(player->objectName());
-    arg[2] = toJsonString(new_general);
-    arg[3] = isSecondaryHero;
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-
     thread->addPlayerSkills(player, invokeStart);
 
     player->setMaxHp(player->getGeneralMaxHp());

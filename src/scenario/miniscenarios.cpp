@@ -100,7 +100,6 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
 
         QString general = this->players.at(i)["general"];
         {
-            QString original = sp->getGeneralName();
             if(general == "select")
             {
                 QStringList available,all,existed;
@@ -109,6 +108,10 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 qShuffle(all);
                 for(int i=0;i<5;i++)
                 {
+                    if(sp->getGeneral() != NULL){
+                        foreach(const Skill* skill, sp->getGeneral()->getSkillList())
+                            sp->loseSkill(skill->objectName());
+                    }
                     sp->setGeneral(NULL);
                     QString choice = sp->findReasonable(all);
                     if(existed.contains(choice))
@@ -122,8 +125,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 }
                 general = room->askForGeneral(sp,available);
             }
-            room->changePlayerGeneral(sp, general);
-            room->changeHero(sp, general, false, false, false);
+            room->changeHero(sp, general, false, false, false, false);
         }
         general = this->players[i]["general2"];
         if(!general.isEmpty()){
@@ -135,6 +137,10 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 qShuffle(all);
                 for(int i=0;i<5;i++)
                 {
+                    if(sp->getGeneral2() != NULL){
+                        foreach(const Skill* skill, sp->getGeneral2()->getSkillList())
+                            sp->loseSkill(skill->objectName());
+                    }
                     room->setPlayerProperty(sp,"general2", QVariant());
                     QString choice = sp->findReasonable(all);
                     if(existed.contains(choice))
@@ -149,8 +155,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 general = room->askForGeneral(sp,available);
             }
             if(general == sp->getGeneralName())general = this->players.at(i)["general3"];
-            room->changePlayerGeneral2(sp, general);
-            room->changeHero(sp, general, false, false, true);
+            room->changeHero(sp, general, false, false, true, false);
         }
 
         room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());
@@ -353,5 +358,17 @@ ADD_CUSTOM_SCENARIO(18)
 ADD_CUSTOM_SCENARIO(19)
 ADD_CUSTOM_SCENARIO(20)
 ADD_CUSTOM_SCENARIO(21)
+ADD_CUSTOM_SCENARIO(22)
+ADD_CUSTOM_SCENARIO(23)
+ADD_CUSTOM_SCENARIO(24)
+ADD_CUSTOM_SCENARIO(25)
+ADD_CUSTOM_SCENARIO(26)
+ADD_CUSTOM_SCENARIO(27)
+ADD_CUSTOM_SCENARIO(28)
+ADD_CUSTOM_SCENARIO(29)
+ADD_CUSTOM_SCENARIO(30)
+ADD_CUSTOM_SCENARIO(31)
+ADD_CUSTOM_SCENARIO(32)
+ADD_CUSTOM_SCENARIO(33)
 
 ADD_SCENARIO(Custom)

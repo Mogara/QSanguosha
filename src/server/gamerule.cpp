@@ -941,18 +941,14 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 
     if(player->getGeneralName() == "anjiang")
     {
-        room->changePlayerGeneral(player, general_name);
-        room->changeHero(player, general_name, false, false, false);
-
+        room->changeHero(player, general_name, false, false, false, false);
         foreach(QString skill_name, skill_mark.keys()){
             if(player->hasSkill(skill_name))
                 room->setPlayerMark(player, skill_mark[skill_name], 1);
         }
     }
-    else{
-        room->changePlayerGeneral2(player, general_name);
-        room->changeHero(player, general_name, false, false, true);
-    }
+    else
+        room->changeHero(player, general_name, false, false, true, false);
 
     room->getThread()->addPlayerSkills(player);
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());

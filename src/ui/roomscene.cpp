@@ -470,8 +470,10 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         QString playerName = arg[1].asCString();
         QString newHeroName =  arg[2].asCString();
         bool isSecondaryHero = arg[3].asBool();
+        bool senLog = arg[4].asBool();
         ClientPlayer *player = ClientInstance->getPlayer(playerName);
-        log_box->appendLog("#Transfigure", player->getGeneralName(), QStringList(), QString(), newHeroName);
+        if(senLog)
+            log_box->appendLog("#Transfigure", player->getGeneralName(), QStringList(), QString(), newHeroName);
         if (player != Self) break;     
         const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
         const General* newHero = Sanguosha->getGeneral(newHeroName);

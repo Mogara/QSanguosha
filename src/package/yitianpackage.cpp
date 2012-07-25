@@ -943,6 +943,7 @@ public:
             }else if(gender == "male"){
                 if(!is_male)
                     player->setGender(General::Male);
+            }
             LogMessage log;
             log.type = "#ShenjunChoose";
             log.from = player;
