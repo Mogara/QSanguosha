@@ -26,7 +26,8 @@ config = {
         "Special3v3",
         "Ling",
         "BGM",
-        "NostalGeneral"
+        "NostalGeneral",
+		"Test"
     },
 
     scene_names = {
