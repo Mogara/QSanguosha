@@ -1563,12 +1563,11 @@ void Room::prepareForStart(){
         scenario->assign(generals, roles);
 
         bool expose_roles = scenario->exposeRoles();
-        int i;
-        for(i = 0; i < m_players.length(); i++){
+        for(int i = 0; i < m_players.length(); i++){
             ServerPlayer *player = m_players.at(i);
-            if(generals.length()>0)
+            if (!generals[i].isNull())
             {
-                player->setGeneralName(generals.at(i));
+                player->setGeneralName(generals[i]);
                 broadcastProperty(player, "general");
             }
             player->setRole(roles.at(i));
@@ -1596,8 +1595,7 @@ void Room::prepareForStart(){
 
     }else if(mode == "04_1v3"){
         ServerPlayer *lord = m_players.at(qrand() % 4);
-        int i = 0;
-        for(i=0; i<4; i++){
+        for(int i = 0; i < 4; i++){
             ServerPlayer *player = m_players.at(i);
             if(player == lord)
                 player->setRole("lord");
@@ -2188,7 +2186,7 @@ void Room::run(){
     }else
         broadcastInvoke("startInXs", "0");
 
-    if(scenario && !scenario->generalSelection())
+    if (scenario && !scenario->generalSelection())
         startGame();
     else if(mode == "06_3v3"){
         thread_3v3 = new RoomThread3v3(this);
@@ -2731,29 +2729,13 @@ void Room::startGame(){
     if(Config.ContestMode)
         tag.insert("StartTime", QDateTime::currentDateTime());
 
-    QString to_test = property("to_test").toString();
-    if(!to_test.isEmpty()){
-        bool found = false;
-
-        foreach(ServerPlayer *p, m_players){
-            if(p->getGeneralName() == to_test){
-                found = true;
-                break;
-            }
-        }
-
-        if(!found){
-            int r = qrand() % m_players.length();
-            m_players.at(r)->setGeneralName(to_test);
-        }
-    }
-
     m_alivePlayers = m_players;
     for(int i = 0; i < player_count - 1; i++)
         m_players.at(i)->setNext(m_players.at(i + 1));
     m_players.last()->setNext(m_players.first());
 
     foreach (ServerPlayer *player, m_players){
+        Q_ASSERT(player->getGeneral());
         // we set hp before maxhp in order to get rid of the unnecessary "save me" icon
         // on the client side
         player->setMaxHp(player->getGeneralMaxHp());
@@ -3620,11 +3602,6 @@ void Room::filterCards(ServerPlayer* player, QList<const Card *> cards, bool ref
     }
 
     delete cardChanged;
-}
-
-void Room::startTest(const QString &to_test){
-    fillRobotsCommand(NULL, ".");
-    setProperty("to_test", to_test);
 }
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){

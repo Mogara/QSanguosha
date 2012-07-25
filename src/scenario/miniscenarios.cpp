@@ -10,11 +10,11 @@ MiniSceneRule::MiniSceneRule(Scenario *scenario)
 }
 
 void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const{
-    for(int i=0;i<players.length();i++)
+    for(int i = 0; i < players.length(); i++)
     {
-        QMap<QString,QString> sp =players.at(i);
+        QMap<QString,QString> sp = players.at(i);
         QString name = sp["general"];
-        if(name == "select")name = "sujiang";
+        if (name == "select") name = "caocao";
         generals << name;
         roles << sp["role"];
     }

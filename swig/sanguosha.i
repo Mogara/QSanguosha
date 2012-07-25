@@ -799,8 +799,8 @@ public:
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
-	
-	Room* currentRoom();
+    
+    Room* currentRoom();
 };
 
 extern Engine *Sanguosha;
@@ -950,11 +950,11 @@ public:
     bool broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard);
     bool notifyResetCard(ServerPlayer* player, int cardId);
     bool broadcastResetCard(const QList<ServerPlayer*> &players, int cardId);
-	
+    
     void changePlayerGeneral(ServerPlayer *player, const char *new_general);
     void changePlayerGeneral2(ServerPlayer *player, const char *new_general);
     void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);
-	
+    
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
     void adjustSeats();
