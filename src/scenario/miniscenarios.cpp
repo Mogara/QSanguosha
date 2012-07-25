@@ -83,13 +83,24 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
         players.append(players.takeFirst());
 
     QStringList cards= setup.split(",", QString::SkipEmptyParts);
-    foreach(QString id,cards)
+    CardsMoveStruct moves;
+    QList<int>& drawPile = room->getDrawPile();
+    foreach(QString sid,cards)
     {
-        room->moveCardTo(Sanguosha->getCard(id.toInt()), NULL, Player::DrawPile, true);
+        int id = sid.toInt();
+        if (drawPile.contains(id))
+        {
+            drawPile.removeOne(id);
+            drawPile.prepend(id);
+        }
+        else
+        {
+            room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DrawPile, true);
+        }
         room->broadcastInvoke("addHistory","pushPile");
     }
-
-    int i=0, j=0;
+        
+    int i, j;
     for(i = ex_options["randomRoles"].toString() == "true" ?
         qrand() % players.length() : 0, j = 0; j < players.length(); i++, j++)
     {
@@ -135,7 +146,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 existed = existedGenerals();
                 all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
                 qShuffle(all);
-                for(int i=0;i<5;i++)
+                for(int i = 0; i < 5; i++)
                 {
                     if(sp->getGeneral2() != NULL){
                         foreach(const Skill* skill, sp->getGeneral2()->getSkillList())

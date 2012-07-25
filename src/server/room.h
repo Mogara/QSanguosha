@@ -214,7 +214,8 @@ public:
     void adjustSeats();
     void swapPile();
     QList<int> getDiscardPile();
-    QList<int> getDrawPile();
+    inline QList<int>& getDrawPile() { return *m_drawPile; }
+    inline const QList<int>& getDrawPile() const { return *m_drawPile; }
     int getCardFromPile(const QString &card_name);
     QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_dead = false) const;
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
@@ -382,7 +383,7 @@ private:
     ServerPlayer *current;
     QList<int> pile1, pile2;
     QList<int> table_cards;
-    QList<int> *draw_pile, *discard_pile;
+    QList<int> *m_drawPile, *m_discardPile;
     bool game_started;
     bool game_finished;
     lua_State *L;
