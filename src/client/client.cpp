@@ -70,13 +70,12 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
     m_callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::askForGongxin;
     m_callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
-    m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleEventEffect;
+    m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     //callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["addHistory"] = &Client::addHistory;
     callbacks["animate"] = &Client::animate;
     callbacks["setScreenName"] = &Client::setScreenName;
     callbacks["setFixedDistance"] = &Client::setFixedDistance;
-    callbacks["transfigure"] = &Client::transfigure;
     callbacks["jilei"] = &Client::jilei;
     callbacks["cardLock"] = &Client::cardLock;
     callbacks["pile"] = &Client::pile;
@@ -231,7 +230,7 @@ void Client::replyToServer(CommandType command, const Json::Value &arg){
     }
 }
 
-void Client::handleEventEffect(const Json::Value &arg)
+void Client::handleGameEvent(const Json::Value &arg)
 {
     emit event_received(arg);
 }
@@ -1642,23 +1641,6 @@ void Client::pile(const QString &pile_str){
 
     if(player)
         player->changePile(name, add, card_ids);
-}
-
-void Client::transfigure(const QString &transfigure_tr){
-    QStringList generals = transfigure_tr.split(":");
-
-    if(generals.length() >= 2){
-        const General *furui = Sanguosha->getGeneral(generals.first());
-        const General *atarashi = Sanguosha->getGeneral(generals.last());
-
-        if(furui)foreach(const Skill *skill, furui->getVisibleSkills()){
-            emit skill_detached(skill->objectName());
-        }
-
-        if(atarashi)foreach(const Skill *skill, atarashi->getVisibleSkills()){
-            emit skill_attached(skill->objectName(), false);
-        }
-    }
 }
 
 void Client::fillGenerals(const QString &generals){

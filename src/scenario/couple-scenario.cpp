@@ -23,13 +23,13 @@ public:
                     room->setTag("SkipNormalDeathProcess", true);
                 }else if(player->getGeneralName() == "lvbu"){
                     if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "dongzhuo", true);
+                        room->changeHero(player, "dongzhuo", true);
                 }else if(player->getGeneralName() == "zhugeliang"){
                     if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "wolong", true);
+                        room->changeHero(player, "wolong", true);
                 }else if(player->getGeneralName() == "caopi"){
                     if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "caozhi", true);
+                        room->changeHero(player, "caozhi", true);
                 }
             }
             break;

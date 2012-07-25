@@ -934,7 +934,10 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == GameStart){
+        if (!player) return false;
+        bool isSecondaryHero = !((player->getGeneralName() == "luboyan") ||
+                                 (player->getGeneralName() == "luboyanf"));
+        if (triggerEvent == GameStart){
             if(player->getGeneral2Name().startsWith("luboyan")){
                 room->setPlayerProperty(player, "general2", player->getGeneralName());
                 room->setPlayerProperty(player, "general", "luboyan");
@@ -942,12 +945,13 @@ public:
 
             QString gender = room->askForChoice(player, objectName(), "male+female");
             bool is_male = player->getGeneral()->isMale();
-            if(gender == "female"){
+            
+            if (gender == "female"){
                 if(is_male)
-                    room->transfigure(player, "luboyanf", false, false, "luboyan");
+                    room->changeHero(player, "luboyanf", false, false, isSecondaryHero);
             }else if(gender == "male"){
                 if(!is_male)
-                    room->transfigure(player, "luboyan", false, false, "luboyanf");
+                    room->changeHero(player, "luboyan", false, false, isSecondaryHero);
             }
 
             LogMessage log;
@@ -968,7 +972,7 @@ public:
                 if(player->getGeneral()->isMale())
                     new_general.append("f");
                 QString old_general = new_general.endsWith("f")?"luboyan":"luboyanf";
-                room->transfigure(player, new_general, false, false, old_general);
+                room->changeHero(player, new_general, false, false, isSecondaryHero);
             }
         }else if(triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
@@ -1290,7 +1294,8 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 
     QString general = room->askForGeneral(source, shu_generals);
     source->tag["newgeneral"] = general;
-    room->transfigure(source, general, false, false, "jiangboyue");
+    bool isSecondaryHero = !(source->getGeneralName() == "jiangboyue");
+    room->changeHero(source, general, false, false, isSecondaryHero);
     room->acquireSkill(source, "xunzhi", false);
     room->setPlayerFlag(source, "xunzhi");
 }
@@ -1320,7 +1325,8 @@ public:
            target->hasFlag("xunzhi"))
         {
             Room *room = target->getRoom();
-            room->transfigure(target, parent()->objectName(), false, false, target->tag.value("newgeneral", "").toString());
+            bool isSecondaryHero = !(target->getGeneralName() == target->tag.value("newgeneral", "").toString());
+            room->changeHero(target, parent()->objectName(), false, false, isSecondaryHero);
             room->killPlayer(target);
         }
 

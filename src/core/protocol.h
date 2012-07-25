@@ -94,7 +94,7 @@ namespace QSanProtocol
         S_COMMAND_LOSE_CARD,
         S_COMMAND_LOG_EVENT,
         S_COMMAND_LOG_SKILL,
-       S_COMMAND_UPDATE_CARD
+        S_COMMAND_UPDATE_CARD
     };
 
     enum GameEventType
@@ -107,7 +107,8 @@ namespace QSanProtocol
         S_GAME_EVENT_ADD_SKILL,
         S_GAME_EVENT_LOSE_SKILL,
         S_GAME_EVENT_UPDATE_SKILL,
-        S_GAME_EVENT_HUASHEN
+        S_GAME_EVENT_HUASHEN,
+        S_GAME_EVENT_CHANGE_HERO
     };
 
     enum Game3v3ChooseOrderCommand
