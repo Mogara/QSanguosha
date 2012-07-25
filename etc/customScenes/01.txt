@@ -1,2 +1,2 @@
 ﻿general:select|role:rebel|starter:true
-general:zhaoyun|general2:zhangfei|maxhp:5|hp:5|role:lord|draw:5|equip:qinggang_sword,zixing
+general:zhaoyun|general2:zhangfei|maxhp:5|hp:5|role:lord|draw:5|equip:QinggangSword,ZiXing
