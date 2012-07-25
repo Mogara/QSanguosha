@@ -2188,7 +2188,7 @@ void Room::run(){
     }else
         broadcastInvoke("startInXs", "0");
 
-    if(scenario && !scenario->generalSelection())
+    if (scenario && !scenario->generalSelection())
         startGame();
     else if(mode == "06_3v3"){
         thread_3v3 = new RoomThread3v3(this);
@@ -2730,23 +2730,6 @@ void Room::marshal(ServerPlayer *player){
 void Room::startGame(){
     if(Config.ContestMode)
         tag.insert("StartTime", QDateTime::currentDateTime());
-
-    QString to_test = property("to_test").toString();
-    if(!to_test.isEmpty()){
-        bool found = false;
-
-        foreach(ServerPlayer *p, m_players){
-            if(p->getGeneralName() == to_test){
-                found = true;
-                break;
-            }
-        }
-
-        if(!found){
-            int r = qrand() % m_players.length();
-            m_players.at(r)->setGeneralName(to_test);
-        }
-    }
 
     m_alivePlayers = m_players;
     for(int i = 0; i < player_count - 1; i++)
@@ -3620,11 +3603,6 @@ void Room::filterCards(ServerPlayer* player, QList<const Card *> cards, bool ref
     }
 
     delete cardChanged;
-}
-
-void Room::startTest(const QString &to_test){
-    fillRobotsCommand(NULL, ".");
-    setProperty("to_test", to_test);
 }
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
