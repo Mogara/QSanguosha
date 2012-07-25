@@ -1653,7 +1653,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
             card->setFootnote(_translateMovementReason(movement.reason));
         }
         bringToFront(to_container);
-        to_container->addCardItems(cards, movement.to_place);
+        to_container->addCardItems(cards, movement);
         keepGetCardLog(movement);
     }
     _m_cardsMoveStash[moveId].clear();
@@ -3059,7 +3059,12 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id){
         log_box->appendLog(type, from_general, QStringList(), card_str);
         GenericCardContainer* container = _getGenericCardContainer(Player::PlaceHand, taker);
         bringToFront(container);
-        container->addCardItems(items, Player::PlaceHand);
+        CardsMoveStruct move;
+        move.card_ids.append(card_id);
+        move.from_place = Player::PlaceWuGu;
+        move.to_place = Player::PlaceHand;
+        move.to = taker;
+        container->addCardItems(items, move);
     }
     else delete copy;
 }
@@ -3074,7 +3079,10 @@ void RoomScene::showCard(const QString &player_name, int card_id){
     CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
     card_items[0]->setFootnote(_translateMovementReason(reason));
     bringToFront(m_tablePile);
-    m_tablePile->addCardItems(card_items, Player::PlaceTable);
+    CardsMoveStruct move;
+    move.from_place = Player::PlaceHand;
+    move.to_place = Player::PlaceTable;
+    m_tablePile->addCardItems(card_items, move);
 
     QString card_str = QString::number(card_id);
     log_box->appendLog("$ShowCard", player->getGeneralName(), QStringList(), card_str);
@@ -3540,10 +3548,15 @@ void RoomScene::doHuashen(const QString &, const QStringList &args){
     foreach(QString arg, args){
         huashen_list << arg;
         CardItem *item = new CardItem(arg);
-        item->scaleSmoothly(0.5);
+        item->setPos(this->m_tableCenterPos);
+        addItem(item);
         generals.append(item);
-    }    
-    dashboard->addCardItems(generals, Player::PlaceSpecial);
+    }
+    CardsMoveStruct move;
+    move.from_place = Player::DrawPile;
+    move.to_place = Player::PlaceSpecial;
+    move.to_pile_name = "huashen";
+    dashboard->addCardItems(generals, move);
 
     Self->tag["Huashens"] = huashen_list;
 }

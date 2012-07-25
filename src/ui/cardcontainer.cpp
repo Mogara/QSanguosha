@@ -91,7 +91,7 @@ void CardContainer::fillCards(const QList<int> &card_ids){
     }    
 }
 
-bool CardContainer::_addCardItems(QList<CardItem*> &card_items, Player::Place place){
+bool CardContainer::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo){
     // foreach(CardItem* card_item, card_items) card_item->setHomePos
 
     return true;    

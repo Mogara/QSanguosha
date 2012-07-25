@@ -79,7 +79,8 @@ public:
     static const int S_MOVE_CARD_ANIMATION_DURAION;
     static const int S_JUDGE_ANIMATION_DURATION;
     static const int S_REGULAR_ANIMATION_SLOW_DURAION;
-    static const int S_JUDGE_RESULT_DELAY;
+    static const int S_JUDGE_SHORT_DELAY;
+    static const int S_JUDGE_LONG_DELAY;
 };
 
 extern Settings Config;

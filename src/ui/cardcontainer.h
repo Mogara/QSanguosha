@@ -48,7 +48,7 @@ public slots:
 
 protected:
     QRectF _m_boundingRect;
-    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    virtual bool _addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo);
 
 private:
     QList<CardItem *> items;

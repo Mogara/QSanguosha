@@ -112,14 +112,14 @@ void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem*> &cards, bool
     animation->start();
 }
 
-void GenericCardContainer::addCardItems(QList<CardItem*> &card_items, Player::Place place)
+void GenericCardContainer::addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo)
 {
     foreach (CardItem* card_item, card_items)
     {        
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);        
     }
-    bool destroy = _addCardItems(card_items, place);
+    bool destroy = _addCardItems(card_items, moveInfo);
     _playMoveCardsAnimation(card_items, destroy);
 }
 

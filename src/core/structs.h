@@ -137,8 +137,8 @@ public:
     static const int S_REASON_ROB = 0x57;               // got a definite card from other's hand
 
     //subcategory of show
-    static const int S_REASON_TURNOVER = 0x18;          // show n cards  from drawpile
-    static const int S_REASON_JUDGE = 0x28;             // show a card  from drawpile for judge
+    static const int S_REASON_TURNOVER = 0x18;          // show n cards from drawpile
+    static const int S_REASON_JUDGE = 0x28;             // show a card from drawpile for judge
     static const int S_REASON_PREVIEW = 0x38;           // Not done yet, plan for view some cards for self only(guanxing yiji miji)
     static const int S_REASON_DEMONSTRATE = 0x48;       // show a card which copy one to move to table
 
@@ -149,6 +149,7 @@ public:
 
     //subcategory of put
     static const int S_REASON_NATURAL_ENTER = 0x1A;     //  a card with no-owner move into discardpile
+                                                        //  e.g. delayed trick enters discardpile
     static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
     static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
 

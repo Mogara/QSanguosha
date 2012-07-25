@@ -21,11 +21,11 @@ class GenericCardContainer: public QGraphicsObject
 public:
     inline GenericCardContainer() { _m_highestZ = 10000; }
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids,  Player::Place place) = 0;
-    virtual void addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    virtual void addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo);
     virtual QList<CardItem*> cloneCardItems(QList<int> card_ids);
 protected:
     // @return Whether the card items should be destroyed after animation
-    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place toPlace) = 0;
+    virtual bool _addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo) = 0;
     QList<CardItem*> _createCards(QList<int> card_ids);
     CardItem* _createCard(int card_id);    
     void _disperseCards(QList<CardItem*> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);

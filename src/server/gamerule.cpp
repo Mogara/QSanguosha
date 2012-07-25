@@ -553,13 +553,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             room->sendLog(log);
 
             room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
-
-            int delay = Config.AIDelay;
-            if(judge->time_consuming)
-                delay /= 4;
-            room->getThread()->delay(delay);
-
+                             CardMoveReason(CardMoveReason::S_REASON_JUDGE,
+                             judge->who->objectName(),
+                             QString(), QString(), judge->reason), true);
+            room->getThread()->delay(Config.S_JUDGE_SHORT_DELAY);
             break;
         }
 
@@ -575,19 +572,17 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
-            room->removeTag("retrial");
-            QThread::currentThread()->wait(Config.S_JUDGE_RESULT_DELAY);
+            room->removeTag("retrial");            
             break;
         }
 
     case FinishJudge:{
             JudgeStar judge = data.value<JudgeStar>();
-
+            room->getThread()->delay(Config.S_JUDGE_LONG_DELAY);
             if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge){
                 CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
-            }
-
+            }            
             break;
         }
 

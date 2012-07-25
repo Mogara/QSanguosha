@@ -104,7 +104,7 @@ protected:
     inline virtual QGraphicsItem* _getDeathIconParent() { return _m_middleFrame;}
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
     
-    bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    bool _addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
