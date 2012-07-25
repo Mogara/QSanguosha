@@ -168,7 +168,8 @@ public:
         QString prompt = prompt_list.join(":");
 
         player->tag["Judge"] = data;
-        const Card *card = room->askForCard(player, "@huanshi", prompt, data, AskForRetrial);
+        QString pattern = ServerInfo.GameMode == "06_3v3" ? "@huanshi" : "@huanshi!";
+        const Card *card = room->askForCard(player, pattern, prompt, data, AskForRetrial);
 
         room->retrial(card, player, judge, objectName());
 

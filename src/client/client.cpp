@@ -861,16 +861,15 @@ void Client::askForNullification(const Json::Value &arg){
         }
     }
 
-    QString trick_path = G_ROOM_SKIN.getCardMainPixmapPath(trick_card->objectName());
-    QString arrow_src = "<img src='image/system/to.png' />";
-    QString to = G_ROOM_SKIN.getGeneralPixmapPath(target_player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
-    QString to_src = QString("<img src='%1' width='96' height='96'/>").arg(to);
     if(source == NULL){
-        prompt_doc->setHtml(QString("<img src='%1' /> %2 %3").arg(trick_path).arg(arrow_src).arg(to_src));
+        prompt_doc->setHtml(tr("Do you want to use nullification to trick card %1 from %2?")
+                            .arg(Sanguosha->translate(trick_card->objectName()))
+                            .arg(Sanguosha->translate(target_player->getGeneralName())));
     }else{
-        QString from = G_ROOM_SKIN.getGeneralPixmapPath(source->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
-        QString from_src = QString("<img src='%1' width='96' height='96'/>").arg(from);
-        prompt_doc->setHtml(QString("<img src='%1' /> %2 %3 %4").arg(trick_path).arg(from_src).arg(arrow_src).arg(to_src));
+        prompt_doc->setHtml(tr("%1 used trick card %2 to %3 <br>Do you want to use nullification?")
+                            .arg(Sanguosha->translate(source->getGeneralName()))
+                            .arg(Sanguosha->translate(trick_card->objectName()))
+                            .arg(Sanguosha->translate(target_player->getGeneralName())));
     }
 
     card_pattern = "nullification";
@@ -1316,6 +1315,7 @@ void Client::takeAG(const QString &take_str){
         emit ag_taken(taker, card_id);
     }else{
         discarded_list.prepend(card);
+        updatePileNum();
         emit ag_taken(NULL, card_id);
     }
 }

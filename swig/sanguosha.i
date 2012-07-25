@@ -816,6 +816,11 @@ public:
         Wake
     };
 
+    enum Location{
+        Left,
+        Right
+    };
+
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
@@ -825,6 +830,8 @@ public:
     virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
+
+    virtual Location getLocation() const;
 
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
@@ -1032,7 +1039,10 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason);
+    QString askForGeneral(ServerPlayer *player, const QStringList &generals, char *default_choice = NULL);    
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
+
+    void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
 };
 
 %extend Room {

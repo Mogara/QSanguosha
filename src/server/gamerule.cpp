@@ -319,23 +319,18 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
             while(dying.who->getHp() <= 0){
                 if(!current->hasSkill("wansha") || current->isDead() || dying.who->objectName() == player->objectName()
-                    || player->hasFlag("dying") || player->objectName() == jiaxu->objectName())
+                        || player->hasFlag("dying") || player == jiaxu)
                     if(dying.who->isAlive())
                         peach = room->askForSinglePeach(player, dying.who);
-                    if(peach == NULL)
-                        break;
+                if(peach == NULL)
+                    break;
 
                 CardUseStruct use;
                 use.card = peach;
                 use.from = player;
                 if(player != dying.who)
                     use.to << dying.who;
-                //need to remove
-                if(dying.who->hasFlag("jiuyuan") && player->getKingdom() == "wu"
-                    && player->objectName() != dying.who->objectName()){
-                    room->setCardFlag(use.card, "sweet");
 
-                }
                 room->useCard(use, false);
             }
 

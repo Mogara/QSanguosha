@@ -410,7 +410,7 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
         player->detachSkill(skill_name);
         if(player == Self)
             detachSkill(skill_name);
-
+        
         // stop huashen animation
         PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
         if (!player->hasSkill("huashen"))
@@ -2140,7 +2140,22 @@ void RoomScene::showPromptBox()
     prompt_box->appear();
 }
 
-void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus){    
+void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus){
+    foreach (QSanSkillButton *button, m_skillButtons){
+        Q_ASSERT(button != NULL);
+        const ViewAsSkill* vsSkill = button->getViewAsSkill();
+        if (vsSkill != NULL)
+            button->setEnabled(vsSkill->isAvailable()
+            && !ClientInstance->getPattern().endsWith("!"));
+        else{
+            const Skill *skill = button->getSkill();
+            if(skill->getFrequency() == Skill::Wake)
+                button->setEnabled(Self->getMark(skill->objectName()) > 0);
+            else
+                button->setEnabled(false);
+        }
+    }
+
     switch(newStatus){
     case Client::NotActive:{
             if (oldStatus == Client::ExecDialog)
@@ -2153,8 +2168,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             else if (oldStatus == Client::AskForGuanxing ||
                      oldStatus == Client::AskForGongxin)
             {
-                guanxing_box->hide();
-                card_container->hide();
+                guanxing_box->clear();
+                if(!card_container->retained())
+                    card_container->clear();
             }
             prompt_box->disappear();
             ClientInstance->getPromptDoc()->clear();
@@ -2182,17 +2198,23 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             discard_button->setEnabled(false);
 
             QString pattern = ClientInstance->getPattern();
-            QRegExp rx("@@?(\\w+)!?");
+            QRegExp rx("@@?([A-Za-z]+)(\\d+)?!?");
             if(rx.exactMatch(pattern)){
                 QString skill_name = rx.capturedTexts().at(1);
                 const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
-                if (skill)
+                if (skill){
+                    foreach (QSanSkillButton *button, m_skillButtons){
+                        Q_ASSERT(button != NULL);
+                        const ViewAsSkill* vsSkill = button->getViewAsSkill();
+                        if (vsSkill != NULL && vsSkill->objectName() == skill_name && vsSkill->isAvailable())
+                            button->click();
+                    }
                     dashboard->startPending(skill);
+                }
             }else{
                 response_skill->setPattern(pattern);
                 dashboard->startPending(response_skill);
             }
-
             break;
         }
 
@@ -2273,12 +2295,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            QString description;
-            const Skill *skill = Sanguosha->getSkill(ClientInstance->skill_name);
-            if(skill)
-                description = skill->getDescription();
-            else
-                description = Sanguosha->translate(ClientInstance->skill_name);
+            QString description = Sanguosha->translate(ClientInstance->skill_name);
 
             if(!description.isEmpty() && description != ClientInstance->skill_name)
                 ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player<br/> <b>Source</b>: %1<br/>").arg(description));
@@ -2330,21 +2347,6 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             discard_button->setEnabled(false);
 
             break;
-        }
-    }
-
-
-    foreach (QSanSkillButton *button, m_skillButtons){
-        Q_ASSERT(button != NULL);
-        const ViewAsSkill* vsSkill = button->getViewAsSkill();
-        if (vsSkill != NULL)
-            button->setEnabled(vsSkill->isAvailable());
-        else{
-            const Skill *skill = button->getSkill();
-            if(skill->getFrequency() == Skill::Wake)
-                button->setEnabled(Self->getMark(skill->objectName()) > 0);
-            else
-                button->setEnabled(false);
         }
     }
 
@@ -2420,6 +2422,9 @@ void RoomScene::doCancelButton(){
     case Client::Responsing:{
             dashboard->skillButtonDeactivated();
             QString pattern = ClientInstance->getPattern();
+            if(pattern.isEmpty())
+                return;
+
             dashboard->unselectAll();
 
             if(!pattern.startsWith("@")){
