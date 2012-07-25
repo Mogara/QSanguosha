@@ -1448,25 +1448,26 @@ void Room::resetAI(ServerPlayer *player){
     }
 }
 
-void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start, const QString &old_general){
-    LogMessage log;
-    log.type = "#Transfigure";
-    log.from = player;
-    log.arg = new_general;
-    sendLog(log);
+void Room::changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool invokeStart,
+                      bool isSecondaryHero){
+
 
     QString m_old_general = player->getGeneralName();
-    if(Config.Enable2ndGeneral && !old_general.isEmpty() && player->getGeneral2Name() == old_general){
+    if(isSecondaryHero){
         changePlayerGeneral2(player, new_general);
     }
     else{
         changePlayerGeneral(player, new_general);
     }
 
-    QString transfigure_str = QString("%1:%2").arg(m_old_general).arg(new_general);
-    player->invoke("transfigure", transfigure_str);
+    Json::Value arg(Json::arrayValue);
+    arg[0] = S_GAME_EVENT_CHANGE_HERO;
+    arg[1] = toJsonString(player->objectName());
+    arg[2] = toJsonString(new_general);
+    arg[3] = isSecondaryHero;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
-    thread->addPlayerSkills(player, invoke_start);
+    thread->addPlayerSkills(player, invokeStart);
 
     player->setMaxHp(player->getGeneralMaxHp());
    
@@ -4185,7 +4186,7 @@ bool Room::makeCheat(ServerPlayer* player){
     {
         if (!arg[1].isString()) return false;
         QString generalName = toQString(arg[1]);
-        transfigure(player, generalName, false, true);
+        changeHero(player, generalName, false, true);
     }
     arg = Json::Value::null;
     return true;
@@ -4562,14 +4563,14 @@ void Room::copyFrom(Room* rRoom)
 {
     QMap<ServerPlayer*, ServerPlayer*> player_map;
 
-    for(int i=0; i<m_players.length(); i++)
+    for(int i = 0; i < m_players.length(); i++)
     {
 
         ServerPlayer* a = rRoom->m_players.at(i);
         ServerPlayer* b = m_players.at(i);
         player_map.insert(a, b);
 
-        transfigure(b, a->getGeneralName(), false);
+        changeHero(b, a->getGeneralName(), false);
 
         b->copyFrom(a);
     }

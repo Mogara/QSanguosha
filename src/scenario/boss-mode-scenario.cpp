@@ -289,7 +289,7 @@ public:
                 new_lord = all_generals[seed];
             }while(boss_banlist.contains(new_lord));
 
-            room->transfigure(player, new_lord, false);
+            room->changeHero(player, new_lord, false);
             return;
         }
 

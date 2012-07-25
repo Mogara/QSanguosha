@@ -124,7 +124,6 @@ public:
     void setScreenName(const QString &set_str);
     void setFixedDistance(const QString &set_str);
     void pile(const QString &pile_str);
-    void transfigure(const QString &transfigure_tr);
     void updateStateItem(const QString &state_str);
     void setCardFlag(const QString &pattern_str);
     void playSystemAudioEffect(const QString &effect_str);
@@ -156,7 +155,7 @@ public:
     void askForGongxin(const Json::Value &);
     void askForAssign(const Json::Value &); // Assign roles at the beginning of game
     void askForSurrender(const Json::Value &);
-    void handleEventEffect(const Json::Value &);
+    void handleGameEvent(const Json::Value &);
     //3v3 & 1v1
     void askForOrder(const Json::Value &);
     void askForRole3v3(const Json::Value &);

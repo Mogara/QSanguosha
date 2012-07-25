@@ -182,7 +182,7 @@ public slots:
     void makeReviving();
     void doScript();
 
-    void handleEventEffect(const Json::Value &arg);
+    void handleGameEvent(const Json::Value &arg);
 
     EffectAnimation * getEA() const{return animations;}
     

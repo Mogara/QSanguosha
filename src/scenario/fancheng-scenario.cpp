@@ -44,7 +44,7 @@ void DujiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &)
     log.arg = "dujiang";
     room->sendLog(log);
 
-    room->transfigure(source, "shenlvmeng", false);
+    room->changeHero(source, "shenlvmeng", false);
 
     room->setTag("Dujiang", true);
 }
@@ -215,7 +215,7 @@ public:
             if(guanyu->askForSkillInvoke("xiansheng")){
                 guanyu->throwAllHandCardsAndEquips();
 
-                room->transfigure(guanyu, "shenguanyu", true);
+                room->changeHero(guanyu, "shenguanyu", true);
 
                 room->drawCards(guanyu, 3);
             }

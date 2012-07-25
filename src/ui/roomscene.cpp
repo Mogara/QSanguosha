@@ -157,7 +157,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
     connect(ClientInstance, SIGNAL(animated(QString,QStringList)), this, SLOT(doAnimation(QString,QStringList)));
     connect(ClientInstance, SIGNAL(role_state_changed(QString)),this, SLOT(updateRoles(QString)));
-    connect(ClientInstance, SIGNAL(event_received(const Json::Value)), this, SLOT(handleEventEffect(const Json::Value))); 
+    connect(ClientInstance, SIGNAL(event_received(const Json::Value)), this, SLOT(handleGameEvent(const Json::Value))); 
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over()), this, SLOT(onGameOver()));
@@ -360,7 +360,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
     animations = new EffectAnimation();
 }
 
-void RoomScene::handleEventEffect(const Json::Value &arg)
+void RoomScene::handleGameEvent(const Json::Value &arg)
 {
     GameEventType eventType = (GameEventType)arg[0].asInt();
     switch(eventType){
@@ -466,10 +466,36 @@ void RoomScene::handleEventEffect(const Json::Value &arg)
         break;
     }
 
+    case S_GAME_EVENT_CHANGE_HERO: {
+        QString playerName = arg[1].asCString();
+        QString newHeroName =  arg[2].asCString();
+        bool isSecondaryHero = arg[3].asBool();
+        ClientPlayer *player = ClientInstance->getPlayer(playerName);
+        log_box->appendLog("#Transfigure", player->getGeneralName(), QStringList(), QString(), newHeroName);
+        if (player != Self) break;     
+        const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
+        const General* newHero = Sanguosha->getGeneral(newHeroName);
+        if (oldHero) 
+        {
+            foreach (const Skill *skill, oldHero->getVisibleSkills()){
+                detachSkill(skill->objectName());
+            }
+        }
+
+        if (newHero)
+        {
+            foreach (const Skill *skill, newHero->getVisibleSkills()){
+                attachSkill(skill->objectName(), false);
+            }            
+        }
+        break;
+    }
+
     default:
         break;
     }
 }
+     
 
 QGraphicsItem *RoomScene::createDashboardButtons(){
     QGraphicsItem *widget = new QGraphicsPixmapItem(

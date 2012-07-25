@@ -627,7 +627,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     Room *room = player->getRoom();
     QString new_general = player->tag["1v1ChangeGeneral"].toString();
     player->tag.remove("1v1ChangeGeneral");
-    room->transfigure(player, new_general, true, true);
+    room->changeHero(player, new_general, true, true);
     room->revivePlayer(player);
 
     if(player->getKingdom() != player->getGeneral()->getKingdom())
@@ -754,7 +754,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
     switch(triggerEvent) {
     case StageChange: {
         ServerPlayer* lord = room->getLord();
-        room->transfigure(lord, "shenlvbu2", true, true);
+        room->changeHero(lord, "shenlvbu2", true, true);
         room->setPlayerMark(lord, "secondMode", 1);
 
         QList<const Card *> tricks = lord->getJudgingArea();
@@ -941,9 +941,8 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 
     if(player->getGeneralName() == "anjiang")
     {
-        QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
-        player->invoke("transfigure", transfigure_str);
         room->changePlayerGeneral(player, general_name);
+        room->changeHero(player, general_name, false, false, false);
 
         foreach(QString skill_name, skill_mark.keys()){
             if(player->hasSkill(skill_name))
@@ -951,9 +950,8 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         }
     }
     else{
-        QString transfigure_str = QString("%1:%2").arg(player->getGeneral2Name()).arg(general_name);
-        player->invoke("transfigure", transfigure_str);
         room->changePlayerGeneral2(player, general_name);
+        room->changeHero(player, general_name, false, false, true);
     }
 
     room->getThread()->addPlayerSkills(player);
