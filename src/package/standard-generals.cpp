@@ -766,12 +766,12 @@ public:
 class Jiuyuan: public TriggerSkill{
 public:
     Jiuyuan():TriggerSkill("jiuyuan$"){
-        events << Dying << AskForPeachesDone;
+        events << Dying << AskForPeachesDone << TargetConfirmed << HpRecover;
         frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasLordSkill("jiuyuan");
+        return target != NULL && target->hasLordSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *sunquan, QVariant &data) const{
@@ -780,7 +780,6 @@ public:
                 foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
                     if(wu->getKingdom() == "wu"){
                         room->broadcastSkillInvoke("jiuyuan", 1);
-                        room->setPlayerFlag(sunquan, "jiuyuan");
                         break;
                     }
                 }
@@ -788,11 +787,46 @@ public:
                 break;
             }
 
+        case TargetConfirmed: {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->isKindOf("Peach") && use.from && use.from->getKingdom() == "wu"
+                    && sunquan != use.from && sunquan->hasFlag("dying"))
+            {
+                room->setPlayerFlag(sunquan, "jiuyuan");
+                room->setCardFlag(use.card, "jiuyuan");
+            }
+            break;
+        }
+
+        case HpRecover: {
+            RecoverStruct rec = data.value<RecoverStruct>();
+            if(rec.card && rec.card->hasFlag("jiuyuan"))
+            {
+                int index = rec.who->getGeneral()->isMale() ? 2 : 3;
+
+                room->broadcastSkillInvoke("jiuyuan", index);
+
+                LogMessage log;
+                log.type = "#JiuyuanExtraRecover";
+                log.from = sunquan;
+                log.to << rec.who;
+                log.arg = objectName();
+                room->sendLog(log);
+
+                rec.recover ++;
+
+                data = QVariant::fromValue(rec);
+            }
+            break;
+        }
+
         case AskForPeachesDone:{
                 if(sunquan->hasFlag("jiuyuan")){
                     room->setPlayerFlag(sunquan, "-jiuyuan");
-                    if(sunquan->getHp() > 0)
+                    if(sunquan->getHp() > 0){
+                        room->getThread()->delay(2000);
                         room->broadcastSkillInvoke("jiuyuan", 4);
+                    }
                 }
 
                 break;
