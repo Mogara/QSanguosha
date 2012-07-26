@@ -350,7 +350,6 @@ void Room::sendJudgeResult(const JudgeStar judge){
     arg[3] = toJsonString(judge->who->objectName());
     arg[4] = toJsonString(judge->reason);
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-    thread->delay(Settings::S_JUDGE_ANIMATION_DURATION);
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
