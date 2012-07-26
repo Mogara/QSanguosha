@@ -4390,6 +4390,8 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     if(skill_name != "jilve")
         broadcastSkillInvoke(skill_name);
 
+    bool triggerResponsed = getCardOwner(card->getEffectiveId()) != NULL;
+
     const Card* oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
 
@@ -4429,9 +4431,11 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     moves.append(move2);
     moveCardsAtomic(moves, true);
 
-    ResponsedStruct resp(card, judge->who);
-    QVariant data = QVariant::fromValue(resp);
-    thread->trigger(CardResponsed, this, player, data);
+    if  (triggerResponsed){
+        ResponsedStruct resp(card, judge->who);
+        QVariant data = QVariant::fromValue(resp);
+        thread->trigger(CardResponsed, this, player, data);
+    }
     tag["retrial"] = true;
 }
 
