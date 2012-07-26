@@ -2,18 +2,18 @@ require "middleclass"
 
 --- a SkillCard class
 -- @example
---  HujiaCard = class("HujiaCard", SkillCard, {
+--  TuxiCard = class("TuxiCard", SkillCard, {
 --    initialize = function(self)
 --      SkillCard.initialize(self)
---      self.name = "hujia"
---      self.target_fixed = true
+--      self.name = "tuxi"
+--      self.target_fixed = false
 --    end,
 --    
---    on_use = function(self, card, room, source, targets)
+--    on_effect = function(self, card, effect)
 --      ...
 --    end
 --  })
---  hujia_card = HujiaCard:create() -- need at file scope
+--  tuxi_card = TuxiCard:create() -- need at file scope
 SkillCard = class("SkillCard", {
   static = {
     create = function(self)
@@ -62,19 +62,19 @@ Skill = class("Skill", {
 
 --- a ViewAsSkill class
 -- @example
---   Foo = class("Foo", ViewAsSkill, {
+--   Tuxi = class("Tuxi", ViewAsSkill, {
 --     initialize = function(self)
 --       ViewAsSkill.initialize(self)
 --       self.name = "foo"
---       self.n = 1
+--       self.n = 0
 --     end,
 --
 --     view_as = function(self, skill, cards)
 --       ...
 --     end
 --   })
---   foo = Foo:create() -- need at file scope
---   caocao:addSkill(foo)
+--   tuxi = Tuxi:create() -- need at file scope
+--   zhangliao:addSkill(tuxi)
 ViewAsSkill = class("ViewAsSkill", Skill, {
   initialize = function(self)
     Skill.initialize(self)
