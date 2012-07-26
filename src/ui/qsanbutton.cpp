@@ -150,7 +150,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
 
     Q_ASSERT(_m_state != S_STATE_DISABLED);
     if (_m_style == S_STYLE_TOGGLE)
-        return;    
+        return;
     setState(S_STATE_DOWN);
 }
 
@@ -161,7 +161,6 @@ void QSanButton::_onMouseClick(bool inside)
         // Q_ASSERT(_m_state == S_STATE_DOWN);
         setState(S_STATE_UP);        
     }
-
     else if (_m_style == S_STYLE_TOGGLE) {
         if (_m_state == S_STATE_HOVER)
             _m_state = S_STATE_UP; // temporarily set, do not use setState!
@@ -273,7 +272,11 @@ void QSanSkillButton::setSkill(const Skill* skill)
          else
              _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
 
-         setStyle(QSanButton::S_STYLE_TOGGLE);
+         if (skill->inherits("ZeroCardViewAsSkill"))
+             setStyle(QSanButton::S_STYLE_PUSH);
+         else
+             setStyle(QSanButton::S_STYLE_TOGGLE);
+
          _m_emitDeactivateSignal = true;
 
          _m_emitActivateSignal = true;
