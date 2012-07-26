@@ -23,13 +23,13 @@ public:
                     room->setTag("SkipNormalDeathProcess", true);
                 }else if(player->getGeneralName() == "lvbu"){
                     if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "dongzhuo", true);
+                        room->changeHero(player, "dongzhuo", true);
                 }else if(player->getGeneralName() == "zhugeliang"){
                     if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "wolong", true);
+                        room->changeHero(player, "wolong", true);
                 }else if(player->getGeneralName() == "caopi"){
                     if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "caozhi", true);
+                        room->changeHero(player, "caozhi", true);
                 }
             }
             break;
@@ -38,7 +38,7 @@ public:
         case GameOverJudge:{
                 if(player->isLord()){
                     scenario->marryAll(room);
-                }else if(player->getGeneral()->isMale()){
+                }else if(player->isMale()){
                     ServerPlayer *loyalist = NULL;
                     foreach(ServerPlayer *player, room->getAlivePlayers()){
                         if(player->getRoleEnum() == Player::Loyalist){
@@ -47,7 +47,7 @@ public:
                         }
                     }
                     ServerPlayer *widow = scenario->getSpouse(player);
-                    if(widow && widow->isAlive() && widow->getGeneral()->isFemale() && room->getLord()->isAlive() && loyalist == NULL)
+                    if(widow && widow->isAlive() && widow->isFemale() && room->getLord()->isAlive() && loyalist == NULL)
                         scenario->remarry(room->getLord(), widow);
                 }else if(player->getRoleEnum() == Player::Loyalist){
                     room->setPlayerProperty(player, "role", "renegade");
@@ -201,7 +201,7 @@ ServerPlayer *CoupleScenario::getSpouse(const ServerPlayer *player) const{
 }
 
 bool CoupleScenario::isWidow(ServerPlayer *player) const{
-    if(player->getGeneral()->isMale())
+    if(player->isMale())
         return false;
 
     ServerPlayer *spouse = getSpouse(player);
@@ -248,7 +248,7 @@ AI::Relation CoupleScenario::relationTo(const ServerPlayer *a, const ServerPlaye
     if(getSpouse(a) == b)
         return AI::Friend;
 
-    if((a->isLord() || b->isLord()) && a->getGeneral()->isMale() != b->getGeneral()->isMale())
+    if((a->isLord() || b->isLord()) && a->isMale() != b->isMale())
         return AI::Neutrality;
 
     return AI::Enemy;

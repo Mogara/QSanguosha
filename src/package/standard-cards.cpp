@@ -114,9 +114,11 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(targets.length() >= slash_targets)
         return false;
 
-    if (isKindOf("WushenSlash")) {
+    if(isKindOf("WushenSlash"))
         distance_limit = false;
-    }
+
+    if(Self->hasFlag("jiangchi_invoke"))
+        distance_limit = false;
 
     int rangefix = 0;
     if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
@@ -173,22 +175,6 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
-    if(hasFlag("sweet")){
-        room->setCardFlag(this, "-sweet");
-        recover.recover = 2;
-
-        LogMessage log;
-        log.type = "#JiuyuanExtraRecover";
-        log.from = effect.to;
-        log.to << effect.from;
-        log.arg = objectName();
-        room->sendLog(log);
-        if(effect.from->getGender() == effect.to->getGender())
-            room->broadcastSkillInvoke("jiuyuan", 2);
-        else
-            room->broadcastSkillInvoke("jiuyuan", 3);
-    }
-
     room->recover(effect.to, recover);
 }
 
@@ -208,12 +194,16 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return WeaponSkill::triggerable(target) && !target->isSexLess();
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.from->objectName() != player->objectName())
-            return false;
+
         foreach(ServerPlayer *to, use.to){
-            if(use.from->getGeneral()->isMale() != to->getGeneral()->isMale()
+            if(use.from->isMale() != to->isMale()
+                && !to->isSexLess()
                 && use.card->isKindOf("Slash")){
                 if(use.from->askForSkillInvoke(objectName())){
                     to->getRoom()->setEmotion(use.from,"weapon/double_sword");
@@ -370,7 +360,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@axe";
+        return pattern == "@Axe";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -406,7 +396,7 @@ public:
         if (!effect.to->isAlive())
             return false;
 
-        CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
+        CardStar card = room->askForCard(player, "@Axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
             room->setEmotion(effect.to, "weapon/axe");
 
@@ -631,7 +621,12 @@ SavageAssault::SavageAssault(Suit suit, int number)
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:"+ effect.from->objectName());
+    const Card *slash = room->askForCard(effect.to,
+                                         "slash",
+                                         "savage-assault-slash:"+ effect.from->objectName(),
+                                         QVariant(),
+                                         CardResponsed,
+                                         effect.from->isAlive() ? effect.from : NULL);
     if(slash)
         room->setEmotion(effect.to, "killer");
     else{
@@ -658,7 +653,12 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->objectName());
+    const Card *jink = room->askForCard(effect.to,
+                                        "jink",
+                                        "archery-attack-jink:" + effect.from->objectName(),
+                                        QVariant(),
+                                        CardResponsed,
+                                        effect.from->isAlive() ? effect.from : NULL);
     if(jink){
         room->setEmotion(effect.to, "jink");
     }
@@ -854,16 +854,30 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
             break;
         if(this->hasFlag("WushuangInvke") && second->hasSkill("wushuang")){
             room->broadcastSkillInvoke("wushuang");
-            const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
+            const Card *slash = room->askForCard(first,
+                                                 "slash",
+                                                 "@wushuang-slash-1:" + second->objectName(),
+                                                 QVariant(),
+                                                 CardResponsed,
+                                                 second);
             if(slash == NULL)
                 break;
 
-            slash = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->objectName());
+            slash = room->askForCard(first, "slash",
+                                     "@wushuang-slash-2:" + second->objectName(),
+                                     QVariant(),
+                                     CardResponsed,
+                                     second);
             if(slash == NULL)
                 break;
 
         }else{
-            const Card *slash = room->askForCard(first, "slash", "duel-slash:" + second->objectName());
+            const Card *slash = room->askForCard(first,
+                                                 "slash",
+                                                 "duel-slash:" + second->objectName(),
+                                                 QVariant(),
+                                                 CardResponsed,
+                                                 second);
             if(slash == NULL)
                 break;
         }

@@ -41,7 +41,7 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    enum Gender {Male, Female, Neuter};
+    enum Gender {SexLess, Male, Female, Neuter};
     Gender getGender() const;
     void setGender(Gender gender);
 
@@ -71,7 +71,6 @@ public:
 
     void setScreenName(const char *screen_name);
     QString screenName() const;
-    General::Gender getGender() const;
 
     // property setters/getters
     int getHp() const;
@@ -80,6 +79,12 @@ public:
     void setMaxHp(int max_hp);
     int getLostHp() const;
     bool isWounded() const;
+    General::Gender getGender() const;
+    virtual void setGender(General::Gender gender);
+    bool isSexLess() const;
+    bool isMale() const;
+    bool isFemale() const;
+    bool isNeuter() const;
 
     int getMaxCards() const;
 
@@ -799,8 +804,8 @@ public:
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
-	
-	Room* currentRoom();
+    
+    Room* currentRoom();
 };
 
 extern Engine *Sanguosha;
@@ -816,6 +821,11 @@ public:
         Wake
     };
 
+    enum Location{
+        Left,
+        Right
+    };
+
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
@@ -825,6 +835,8 @@ public:
     virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
+
+    virtual Location getLocation() const;
 
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
@@ -943,11 +955,11 @@ public:
     bool broadcastUpdateCard(const QList<ServerPlayer*> &players, int cardId, const Card* newCard);
     bool notifyResetCard(ServerPlayer* player, int cardId);
     bool broadcastResetCard(const QList<ServerPlayer*> &players, int cardId);
-	
+    
     void changePlayerGeneral(ServerPlayer *player, const char *new_general);
     void changePlayerGeneral2(ServerPlayer *player, const char *new_general);
     void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);
-	
+    
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
     void adjustSeats();
@@ -960,7 +972,8 @@ public:
     QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const char *equip_name);
     void resetAI(ServerPlayer *player);
-    void transfigure(ServerPlayer *player, const char *new_general, bool full_state, bool invoke_start = true);
+    void changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool invokeStart,
+                    bool isSecondaryHero, bool sendLog);
     void swapSeat(ServerPlayer *a, ServerPlayer *b);
     lua_State *getLuaState() const;
     void setFixedDistance(Player *from, const Player *to, int distance);
@@ -1023,7 +1036,9 @@ public:
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
-    const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
+    const Card *askForCard(ServerPlayer *player, const char *pattern,
+							const char *prompt, const QVariant &data = QVariant(),
+							TriggerEvent trigger_event = CardResponsed, ServerPlayer *to = NULL);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
     bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt);
     bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt);
@@ -1032,7 +1047,10 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason);
+    QString askForGeneral(ServerPlayer *player, const QStringList &generals, char *default_choice = NULL);    
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
+
+    void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
 };
 
 %extend Room {

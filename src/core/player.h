@@ -38,7 +38,6 @@ class Player : public QObject
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
     Q_PROPERTY(bool ready READ isReady WRITE setReady)
     Q_PROPERTY(int atk READ getAttackRange)
-    Q_PROPERTY(General::Gender gender READ getGender)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
@@ -51,7 +50,9 @@ class Player : public QObject
 
 public:
     enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone};
-    enum Place {PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge, PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown};
+    enum Place { PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
+                 PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
+                 PlaceWuGu};
     enum Role {Lord, Loyalist, Rebel, Renegade};
 
     explicit Player(QObject *parent);
@@ -67,6 +68,11 @@ public:
     int getLostHp() const;
     bool isWounded() const;
     General::Gender getGender() const;
+    virtual void setGender(General::Gender gender);
+    bool isSexLess() const;
+    bool isMale() const;
+    bool isFemale() const;
+    bool isNeuter() const;
 
     bool isOwner() const;
     void setOwner(bool owner);
@@ -219,6 +225,7 @@ private:
     bool owner;
     bool ready;
     const General *general, *general2;
+    General::Gender m_gender;
     int hp, max_hp;
     QString kingdom;
     QString role;

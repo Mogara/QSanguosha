@@ -149,8 +149,9 @@ void Dashboard::setTrust(bool trust){
     trusting_text->setVisible(trust);
 }
 
-bool Dashboard::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
+bool Dashboard::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo)
 {
+    Player::Place place = moveInfo.to_place;
     if (place == Player::PlaceSpecial)
     {
         foreach(CardItem* card, card_items)

@@ -1,0 +1,6 @@
+
+setPile:1,41,46,26,123,60,59,58,24,27
+general:select general2:select role:renegade starter:true hp:2 beforeNext:lord+loyalist draw:0 
+general:xushu role:lord hp:2 draw:0 equip:66 hand:2 judge:103 
+general:gongsunzan role:loyalist hp:2 draw:0 
+general:yujin role:loyalist hp:2 draw:0 

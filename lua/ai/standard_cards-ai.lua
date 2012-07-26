@@ -368,7 +368,7 @@ sgs.ai_keep_value.Jink = 4
 
 sgs.dynamic_value.benefit.Peach = true
 
-sgs.weapon_range.CrossBow = 1
+sgs.weapon_range.Crossbow = 1
 sgs.weapon_range.DoubleSword = 2
 sgs.weapon_range.QinggangSword = 2
 sgs.weapon_range.IceSword = 2

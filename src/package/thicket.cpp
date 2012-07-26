@@ -27,7 +27,7 @@ public:
             if(caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)){
                 if(player->isCaoCao()){
                     room->broadcastSkillInvoke(objectName(), 3);
-                }else if(player->getGeneral()->isMale())
+                }else if(player->isMale())
                     room->broadcastSkillInvoke(objectName(), 1);
                 else
                     room->broadcastSkillInvoke(objectName(), 2);
@@ -125,7 +125,7 @@ public:
             foreach(ServerPlayer *p, players){
                 QVariant who = QVariant::fromValue(p);
                 if(p->hasLordSkill("songwei") && player->askForSkillInvoke("songwei", who)){
-                    if(player->getGeneral()->isMale())
+                    if(player->isMale())
                         room->broadcastSkillInvoke(objectName(), 1);
                     else
                         room->broadcastSkillInvoke(objectName(), 2);
@@ -757,13 +757,13 @@ public:
         frequency = Compulsory;
     }
 
-    const Card *askForDoubleJink(ServerPlayer *player, const QString &reason) const{
+    const Card *askForDoubleJink(ServerPlayer *player, ServerPlayer *slasher, const QString &reason) const{
         Room *room = player->getRoom();
 
         const Card *first_jink = NULL, *second_jink = NULL;
-        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), CardUsed);
+        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), CardUsed, slasher);
         if(first_jink)
-            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), CardUsed);
+            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), CardUsed, slasher);
 
         Card *jink = NULL;
         if(first_jink && second_jink){
@@ -776,32 +776,27 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && (target->hasSkill(objectName()) || target->getGeneral()->isFemale());
+        return target != NULL && (target->hasSkill(objectName()) || target->isFemale());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(effect.from->hasSkill(objectName()) && effect.to->getGeneral()->isFemale()){
+        if(effect.from->hasSkill(objectName()) && effect.to->isFemale()){
             // dongzhuo slash female
-            ServerPlayer *dongzhuo = effect.from;
             ServerPlayer *female = effect.to;
-            Room *room = dongzhuo->getRoom();
 
             room->broadcastSkillInvoke(objectName(), 1);
 
-            room->slashResult(effect, askForDoubleJink(female, "roulin1"));
+            room->slashResult(effect, askForDoubleJink(female, effect.from, "roulin1"));
             return true;
 
-        }else if(effect.from->getGeneral()->isFemale() && effect.to->hasSkill(objectName())){
+        }else if(effect.from->isFemale() && effect.to->hasSkill(objectName())){
             // female slash dongzhuo
-
-            ServerPlayer *female = effect.from;
             ServerPlayer *dongzhuo = effect.to;
-            Room *room = female->getRoom();
 
             int index = effect.drank ? 3 : 2;
             room->broadcastSkillInvoke(objectName(), index);
-            room->slashResult(effect, askForDoubleJink(dongzhuo, "roulin2"));
+            room->slashResult(effect, askForDoubleJink(dongzhuo, effect.from, "roulin2"));
 
             return true;
         }
@@ -840,7 +835,7 @@ public:
         if(trigger_this){
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+maxhp");
 
-            int index = dongzhuo->getGeneral()->isFemale() ? 2: 1;
+            int index = dongzhuo->isFemale() ? 2: 1;
             room->broadcastSkillInvoke(objectName(), index);
             room->setEmotion(dongzhuo, "bad");
 

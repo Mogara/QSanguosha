@@ -62,7 +62,7 @@ protected:
     virtual QGraphicsItem* _getPileParent() { return _m_groupMain; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_PHOTO; }
     virtual void _adjustComponentZValues();
-    bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    bool _addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo);
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 

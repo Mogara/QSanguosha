@@ -1316,7 +1316,7 @@ void CustomAssignDialog::load()
 	}
 
 	updateNumber(numPlayer-2);
-	for(int i=list->count()-1;i>=0;i--)
+	for (int i = list->count() - 1;i >= 0;i--)
 	{
 		list->setCurrentItem(list->item(i));
 		if(list->item(i)->data(Qt::UserRole).toString() == starter)

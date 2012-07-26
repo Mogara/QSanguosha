@@ -34,7 +34,7 @@ protected:
     static const int S_CLEARANCE_UPDATE_INTERVAL_MSEC = 1000;
     static const int S_CLEARANCE_DELAY_BUCKETS = 3;
     virtual void timerEvent(QTimerEvent *);
-    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    virtual bool _addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo);
     void _markClearance(CardItem* item);
     QList<CardItem*> m_visibleCards;
     QMutex _m_mutex_pileCards;

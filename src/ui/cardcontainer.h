@@ -40,6 +40,7 @@ public:
     virtual QRectF boundingRect() const;
     ClientPlayer* m_currentPlayer;
     virtual void paint(QPainter *,const QStyleOptionGraphicsItem *,QWidget *);
+    bool retained();
 public slots:
     void fillCards(const QList<int> &card_ids = QList<int>());
     void clear();
@@ -47,7 +48,7 @@ public slots:
 
 protected:
     QRectF _m_boundingRect;
-    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    virtual bool _addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo);
 
 private:
     QList<CardItem *> items;

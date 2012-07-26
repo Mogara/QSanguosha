@@ -141,11 +141,29 @@ void TablePile::showJudgeResult(int cardId, bool takeEffect){
     adjustCards();
 }
 
-bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
+bool TablePile::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo)
 {
     if (card_items.isEmpty()) return false;
+    else if (moveInfo.from_place == Player::PlaceDelayedTrick &&
+             moveInfo.reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER)
+    {
+       foreach (CardItem* item, card_items)
+       {
+          item->deleteLater();
+          card_items.clear();
+       }
+       return false;
+    }
 
     _m_mutex_pileCards.lock();
+
+    QPointF rightMostPos = m_cardsDisplayRegion.center();
+    if (m_visibleCards.length() > 0)
+    {
+       rightMostPos = m_visibleCards.last()->homePos();
+       rightMostPos += QPointF(G_COMMON_LAYOUT.m_cardNormalWidth, 0);
+    }
+
     m_visibleCards.append(card_items);
     int numAdded = card_items.size();
     int numRemoved = m_visibleCards.size() - qMax(m_numCardsVisible, numAdded + 1);
@@ -167,6 +185,14 @@ bool TablePile::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
     foreach (CardItem* card_item, card_items)
     {
         card_item->setHomeOpacity(1.0);
+        if (moveInfo.from_place == Player::DrawPile ||
+            moveInfo.from_place == Player::PlaceJudge ||
+            moveInfo.from_place == Player::PlaceTable)
+        {           
+           card_item->setOpacity(0.0);
+           card_item->setPos(rightMostPos);
+           rightMostPos += QPointF(G_COMMON_LAYOUT.m_cardNormalWidth, 0);
+        }
         card_item->m_uiHelper.tablePileClearTimeStamp = INT_MAX;
     }
 

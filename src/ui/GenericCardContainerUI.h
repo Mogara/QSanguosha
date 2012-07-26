@@ -21,11 +21,11 @@ class GenericCardContainer: public QGraphicsObject
 public:
     inline GenericCardContainer() { _m_highestZ = 10000; }
     virtual QList<CardItem*> removeCardItems(const QList<int> &card_ids,  Player::Place place) = 0;
-    virtual void addCardItems(QList<CardItem*> &card_items, Player::Place place);
+    virtual void addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo);
     virtual QList<CardItem*> cloneCardItems(QList<int> card_ids);
 protected:
     // @return Whether the card items should be destroyed after animation
-    virtual bool _addCardItems(QList<CardItem*> &card_items, Player::Place toPlace) = 0;
+    virtual bool _addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo) = 0;
     QList<CardItem*> _createCards(QList<int> card_ids);
     CardItem* _createCard(int card_id);    
     void _disperseCards(QList<CardItem*> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);
@@ -137,6 +137,8 @@ protected:
     void _layBetween(QGraphicsItem* middle, QGraphicsItem* item1, QGraphicsItem* item2);
     void _layUnder(QGraphicsItem* item);
 
+    QPixmap _getAvatarIcon(QString generalName);
+
     // layout
     const QSanRoomSkin::PlayerCardContainerLayout* _m_layout;
     QGraphicsRectItem *_m_avatarArea, *_m_smallAvatarArea;
@@ -155,6 +157,8 @@ protected:
     QGraphicsPixmapItem *_m_kingdomIcon;
     QGraphicsPixmapItem *_m_saveMeIcon;
     QGraphicsPixmapItem *_m_phaseIcon;
+    QGraphicsPixmapItem *_m_extraSkillBg;
+    QGraphicsPixmapItem *_m_extraSkillText;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame;
     QMap<QString, QGraphicsProxyWidget*> _m_privatePiles;

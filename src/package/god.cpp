@@ -471,10 +471,9 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
         }else if(triggerEvent == CardResponsed)
-            card = data.value<CardStar>();
+            card = data.value<ResponsedStruct>().m_card;
 
         if(card->isNDTrick()){
-            Room *room = player->getRoom();
             room->broadcastSkillInvoke(objectName());
 
             int num = player->getMark("@wrath");
@@ -1043,11 +1042,11 @@ public:
             if(triggerEvent == CardUsed)
                 card = data.value<CardUseStruct>().card;
             else
-                card = data.value<CardStar>();
+                card = data.value<ResponsedStruct>().m_card;
 
             if(card->isNDTrick() && !player->hasSkill("jizhi") && player->askForSkillInvoke("jilve", data)){
                 player->loseMark("@bear");
-                room->broadcastSkillInvoke("jilve",5);
+                room->broadcastSkillInvoke("jilve", 5);
                 player->drawCards(1);
             }
         }else if(triggerEvent == AskForRetrial){

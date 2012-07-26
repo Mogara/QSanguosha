@@ -111,4 +111,12 @@ public:
 	void setValue(const CardsMoveOneTimeStruct *move){
 		$self->setValue(QVariant::fromValue(move));
 	}
+
+	ResponsedStruct toResponsed() const{
+		return $self->value<ResponsedStruct>();
+	}
+	
+	void setValue(ResponsedStruct *resp){
+		$self->setValue(QVariant::fromValue(*resp));
+	}
 };

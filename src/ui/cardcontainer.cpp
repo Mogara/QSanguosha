@@ -31,12 +31,25 @@ QRectF CardContainer::boundingRect() const
 }
 
 void CardContainer::fillCards(const QList<int> &card_ids){
-    if(card_ids.isEmpty()) return;
-    else if(!items.isEmpty()){
-        items_stack.push(items);
+    QList<CardItem*> card_items;
+    if(card_ids.isEmpty() && items.isEmpty()) return;
+    else if(card_ids.isEmpty() && !items.isEmpty())
+    {
+        card_items = items;
         items.clear();
     }
-    QList<CardItem*> card_items = _createCards(card_ids);
+    else if(!items.isEmpty()){
+        if(retained()) clear();
+        else{
+            items_stack.push(items);
+            foreach(CardItem *item, items)
+                item->hide();
+            items.clear();
+        }
+    }
+
+    if(card_items.isEmpty())
+        card_items = _createCards(card_ids);
 
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     QPointF pos1(30 + card_width / 2, 40 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
@@ -74,13 +87,18 @@ void CardContainer::fillCards(const QList<int> &card_ids){
         item->setOpacity(1.0);
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
+        item->show();
     }    
 }
 
-bool CardContainer::_addCardItems(QList<CardItem*> &card_items, Player::Place place){
+bool CardContainer::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo){
     // foreach(CardItem* card_item, card_items) card_item->setHomePos
 
     return true;    
+}
+
+bool CardContainer::retained(){
+    return close_button != NULL && close_button->isVisible();
 }
 
 void CardContainer::clear(){

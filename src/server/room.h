@@ -204,7 +204,7 @@ public:
     bool broadcastSkillInvoke(const QString &skillName, int type);
     bool broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
 
-    void initSkillsForPlayers();
+    void preparePlayers();
     void changePlayerGeneral(ServerPlayer *player, const QString &new_general);
     void changePlayerGeneral2(ServerPlayer *player, const QString &new_general);
     void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);
@@ -214,14 +214,16 @@ public:
     void adjustSeats();
     void swapPile();
     QList<int> getDiscardPile();
-    QList<int> getDrawPile();
+    inline QList<int>& getDrawPile() { return *m_drawPile; }
+    inline const QList<int>& getDrawPile() const { return *m_drawPile; }
     int getCardFromPile(const QString &card_name);
     QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_dead = false) const;
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);
     void resetAI(ServerPlayer *player);
-    void transfigure(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start = true, const QString &old_general = QString(""));
+    void changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start = true,
+                    bool isSecondaryHero = false, bool sendLog = true);
     void swapSeat(ServerPlayer *a, ServerPlayer *b);
     lua_State *getLuaState() const;
     void setFixedDistance(Player *from, const Player *to, int distance);
@@ -289,7 +291,7 @@ public:
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
-                           const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
+                           const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed, ServerPlayer *to = NULL);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1);
     bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt);
     bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt);
@@ -310,7 +312,6 @@ public:
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
     void broadcastInvoke(const QSanProtocol::QSanPacket* packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
-    void startTest(const QString &to_test);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
     inline virtual RoomState* getRoomState() { return &_m_roomState; }
     inline virtual Card* getCard(int cardId) const { return _m_roomState.getCard(cardId); }
@@ -382,7 +383,7 @@ private:
     ServerPlayer *current;
     QList<int> pile1, pile2;
     QList<int> table_cards;
-    QList<int> *draw_pile, *discard_pile;
+    QList<int> *m_drawPile, *m_discardPile;
     bool game_started;
     bool game_finished;
     lua_State *L;

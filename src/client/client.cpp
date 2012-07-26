@@ -70,13 +70,12 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
     m_callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::askForGongxin;
     m_callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
-    m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleEventEffect;
+    m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     //callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["addHistory"] = &Client::addHistory;
     callbacks["animate"] = &Client::animate;
     callbacks["setScreenName"] = &Client::setScreenName;
     callbacks["setFixedDistance"] = &Client::setFixedDistance;
-    callbacks["transfigure"] = &Client::transfigure;
     callbacks["jilei"] = &Client::jilei;
     callbacks["cardLock"] = &Client::cardLock;
     callbacks["pile"] = &Client::pile;
@@ -231,7 +230,7 @@ void Client::replyToServer(CommandType command, const Json::Value &arg){
     }
 }
 
-void Client::handleEventEffect(const Json::Value &arg)
+void Client::handleGameEvent(const Json::Value &arg)
 {
     emit event_received(arg);
 }
@@ -861,16 +860,15 @@ void Client::askForNullification(const Json::Value &arg){
         }
     }
 
-    QString trick_path = G_ROOM_SKIN.getCardMainPixmapPath(trick_card->objectName());
-    QString arrow_src = "<img src='image/system/to.png' />";
-    QString to = G_ROOM_SKIN.getGeneralPixmapPath(target_player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
-    QString to_src = QString("<img src='%1' width='96' height='96'/>").arg(to);
     if(source == NULL){
-        prompt_doc->setHtml(QString("<img src='%1' /> %2 %3").arg(trick_path).arg(arrow_src).arg(to_src));
+        prompt_doc->setHtml(tr("Do you want to use nullification to trick card %1 from %2?")
+                            .arg(Sanguosha->translate(trick_card->objectName()))
+                            .arg(Sanguosha->translate(target_player->getGeneralName())));
     }else{
-        QString from = G_ROOM_SKIN.getGeneralPixmapPath(source->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
-        QString from_src = QString("<img src='%1' width='96' height='96'/>").arg(from);
-        prompt_doc->setHtml(QString("<img src='%1' /> %2 %3 %4").arg(trick_path).arg(from_src).arg(arrow_src).arg(to_src));
+        prompt_doc->setHtml(tr("%1 used trick card %2 to %3 <br>Do you want to use nullification?")
+                            .arg(Sanguosha->translate(source->getGeneralName()))
+                            .arg(Sanguosha->translate(trick_card->objectName()))
+                            .arg(Sanguosha->translate(target_player->getGeneralName())));
     }
 
     card_pattern = "nullification";
@@ -1316,6 +1314,7 @@ void Client::takeAG(const QString &take_str){
         emit ag_taken(taker, card_id);
     }else{
         discarded_list.prepend(card);
+        updatePileNum();
         emit ag_taken(NULL, card_id);
     }
 }
@@ -1642,23 +1641,6 @@ void Client::pile(const QString &pile_str){
 
     if(player)
         player->changePile(name, add, card_ids);
-}
-
-void Client::transfigure(const QString &transfigure_tr){
-    QStringList generals = transfigure_tr.split(":");
-
-    if(generals.length() >= 2){
-        const General *furui = Sanguosha->getGeneral(generals.first());
-        const General *atarashi = Sanguosha->getGeneral(generals.last());
-
-        if(furui)foreach(const Skill *skill, furui->getVisibleSkills()){
-            emit skill_detached(skill->objectName());
-        }
-
-        if(atarashi)foreach(const Skill *skill, atarashi->getVisibleSkills()){
-            emit skill_attached(skill->objectName(), false);
-        }
-    }
 }
 
 void Client::fillGenerals(const QString &generals){

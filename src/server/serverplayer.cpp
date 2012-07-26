@@ -35,7 +35,7 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const{
-    room->broadcastSkillInvoke(card_name, getGeneral()->isMale(), -1);
+    room->broadcastSkillInvoke(card_name, isMale(), -1);
 }
 
 void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
@@ -734,6 +734,17 @@ void ServerPlayer::loseSkill(const QString &skill_name){
     args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
     args[1] = toJsonString(objectName());
     args[2] = toJsonString(skill_name);
+    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+}
+
+void ServerPlayer::setGender(General::Gender gender){
+    if (gender == getGender())
+        return;
+    Player::setGender(gender);
+    Json::Value args;
+    args[0] = QSanProtocol::S_GAME_EVENT_CHANGE_GENDER;
+    args[1] = toJsonString(objectName());
+    args[2] = (int)gender;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 

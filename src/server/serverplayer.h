@@ -68,6 +68,7 @@ public:
 
     virtual void addSkill(const QString &skill_name);
     virtual void loseSkill(const QString &skill_name);
+    virtual void setGender(General::Gender gender);
 
     void setAI(AI *ai);
     AI *getAI() const;

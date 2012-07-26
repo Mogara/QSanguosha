@@ -28,18 +28,18 @@
     "equipAreas": [[3, 94, 150, 13], [3, 108, 150, 13], [3, 122, 150, 13], [3, 136, 150, 13]],
     "equipImageArea": [1, 1, 11, 11],
     //"equipTextArea": [35, -5, 85, 21], // need adjustment
-    "equipSuitArea": [107, -3, 21, 17],
+    "equipSuitArea": [108, -1, 17, 15],
     //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
-    "equipPointArea": [98, -8, 25, 25],
+    "equipPointArea": [98, -6, 25, 25],
     //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["Arial", [13, 13, 3], 80, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]], 
+    "equipPointFont": ["Arial", [11, 11, 3], 0, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]], 
     "delayedTrickFirstRegion": [-10, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [104, 1],
     "borderWidth": 13,
     "avatarImageType": 1,
     "secondaryAvatarImageType": 0,
-    "primaryAvatarImageType": 1,
+    "primaryAvatarImageType": 6,
     "avatarArea": [7, 27, 119, 60],
     "secondaryAvatarArea": [82, 36, 42, 36],
     "avatarNameArea": [4, 24, 40, 50],
@@ -73,6 +73,9 @@
     "readyIconRegion": [77, 95, 44, 53],
     "deathIconRegion": [0, 34, 131, 85],
     "drankMaskColor": [250, 0, 0, 115],
-    "deathEffectColor": [50, 50, 50, 255]
+    "deathEffectColor": [50, 50, 50, 255],
+    "extraSkillArea": [26, 67, 48, 17],
+    "extraSkillFont": ["SimLi", [14, 14, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
+    "extraSkillTextArea": [26, 64, 48, 17]
 }
 }

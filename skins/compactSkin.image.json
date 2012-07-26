@@ -16,7 +16,7 @@
 "photoFrameWhenSelected": "image/compact/frame/photoSelected.png",
 
 "playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[28, 58, 220, 111], [119, 60]],
-"playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[40, 58, 220, 111], [119, 60]],  //primary avatar for photo
+"playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[55, 58, 220, 111], [119, 60]],  //primary avatar for photo
 
 "generalCircleMask-0": ["image/generals/double-general/circle-photo-mask-compact.png", [78, 12, 41, 36]],
 

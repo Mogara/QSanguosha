@@ -198,11 +198,14 @@ QList<CardItem*> Photo::removeCardItems(const QList<int> &card_ids, Player::Plac
     return result;
 }
 
-bool Photo::_addCardItems(QList<CardItem*> &card_items, Player::Place place)
+bool Photo::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo)
 {
     _disperseCards(card_items, G_PHOTO_LAYOUT.m_cardMoveRegion, Qt::AlignCenter, true, false);
     double homeOpacity = 0.0;
     bool destroy = true;
+
+    Player::Place place = moveInfo.to_place;
+
     foreach (CardItem* card_item, card_items)
         card_item->setHomeOpacity(homeOpacity);
     if (place == Player::PlaceEquip)

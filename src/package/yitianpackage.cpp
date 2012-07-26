@@ -394,7 +394,7 @@ LianliCard::LianliCard(){
 }
 
 bool LianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->getGeneral()->isMale();
+    return targets.isEmpty() && to_select->isMale();
 }
 
 void LianliCard::onEffect(const CardEffectStruct &effect) const{
@@ -433,7 +433,7 @@ public:
 
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         foreach(ServerPlayer *player, players){
-            if(player->getGeneral()->isMale())
+            if(player->isMale())
                 room->attachSkillToPlayer(player, "lianli-slash");
         }
     }
@@ -923,7 +923,7 @@ public:
     virtual QString getDefaultChoice(ServerPlayer *player) const{
         int males = 0;
         foreach(ServerPlayer *player, player->getRoom()->getAlivePlayers()){
-            if(player->getGender() == General::Male)
+            if(player->isMale())
                 males ++;
         }
 
@@ -935,21 +935,17 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == GameStart){
-            if(player->getGeneral2Name().startsWith("luboyan")){
-                room->setPlayerProperty(player, "general2", player->getGeneralName());
-                room->setPlayerProperty(player, "general", "luboyan");
-            }
-
             QString gender = room->askForChoice(player, objectName(), "male+female");
-            bool is_male = player->getGeneral()->isMale();
+            bool is_male = player->isMale();
             if(gender == "female"){
-                if(is_male)
-                    room->transfigure(player, "luboyanf", false, false, "luboyan");
-            }else if(gender == "male"){
-                if(!is_male)
-                    room->transfigure(player, "luboyan", false, false, "luboyanf");
+                if (is_male) {
+                    player->setGender(General::Female);
+                }
+            } else if (gender == "male") {
+                if(!is_male) {
+                    player->setGender(General::Male);
+                }
             }
-
             LogMessage log;
             log.type = "#ShenjunChoose";
             log.from = player;
@@ -964,16 +960,15 @@ public:
                 log.arg = objectName();
                 room->sendLog(log);
 
-                QString new_general = "luboyan";
-                if(player->getGeneral()->isMale())
-                    new_general.append("f");
-                QString old_general = new_general.endsWith("f")?"luboyan":"luboyanf";
-                room->transfigure(player, new_general, false, false, old_general);
+                if(player->isMale())
+                    player->setGender(General::Female);
+                else
+                    player->setGender(General::Male);
             }
         }else if(triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature != DamageStruct::Thunder && damage.from &&
-               damage.from->getGeneral()->isMale() != player->getGeneral()->isMale()){
+               damage.from->isMale() != player->isMale()){
 
                 LogMessage log;
                 log.type = "#ShenjunProtect";
@@ -1290,7 +1285,8 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 
     QString general = room->askForGeneral(source, shu_generals);
     source->tag["newgeneral"] = general;
-    room->transfigure(source, general, false, false, "jiangboyue");
+    bool isSecondaryHero = !(source->getGeneralName() == "jiangboyue");
+    room->changeHero(source, general, false, false, isSecondaryHero);
     room->acquireSkill(source, "xunzhi", false);
     room->setPlayerFlag(source, "xunzhi");
 }
@@ -1320,7 +1316,8 @@ public:
            target->hasFlag("xunzhi"))
         {
             Room *room = target->getRoom();
-            room->transfigure(target, parent()->objectName(), false, false, target->tag.value("newgeneral", "").toString());
+            bool isSecondaryHero = !(target->getGeneralName() == target->tag.value("newgeneral", "").toString());
+            room->changeHero(target, parent()->objectName(), false, false, isSecondaryHero);
             room->killPlayer(target);
         }
 
@@ -1895,11 +1892,6 @@ YitianPackage::YitianPackage()
     luboyan->addSkill(new Shenjun);
     luboyan->addSkill(new Shaoying);
     luboyan->addSkill(new Zonghuo);
-
-    General *luboyanf = new General(this, "luboyanf", "wu", 3, false, true);
-    luboyanf->addSkill("shenjun");
-    luboyanf->addSkill("shaoying");
-    luboyanf->addSkill("zonghuo");
 
     General *zhongshiji = new General(this, "zhongshiji", "wei");
     zhongshiji->addSkill(new Gongmou);
