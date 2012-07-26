@@ -207,6 +207,7 @@ void Player::setGeneral(const General *new_general){
 
 void Player::setGeneralName(const QString &general_name){
     const General *new_general = Sanguosha->getGeneral(general_name);
+    Q_ASSERT(general_name.isNull() || general_name.isEmpty() || new_general != NULL);
     setGeneral(new_general);
 }
 

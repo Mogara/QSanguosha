@@ -1557,13 +1557,14 @@ void Room::prepareForStart(){
         scenario->assign(generals, roles);
 
         bool expose_roles = scenario->exposeRoles();
-        for(int i = 0; i < m_players.length(); i++){
-            ServerPlayer *player = m_players.at(i);
-            if (!generals[i].isNull())
+        for (int i = 0; i < m_players.length(); i++){
+            ServerPlayer *player = m_players[i];
+            if (generals.size() > i && !generals[i].isNull())
             {
                 player->setGeneralName(generals[i]);
                 broadcastProperty(player, "general");
             }
+
             player->setRole(roles.at(i));
 
             if(player->isLord())
