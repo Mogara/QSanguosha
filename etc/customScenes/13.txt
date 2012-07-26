@@ -1,6 +1,6 @@
 general:select  role:loyalist  equip:DiLu
     general:lvmeng  role:rebel
-    general:jiaxu  general2:jiawenhe  maxhp:4  role:rebel  marks:@chaos*3
+    general:jiaxu  maxhp:4  role:rebel  marks:@chaos*3
     general:shensimayi  role:rebel
     general:xushu  role:loyalist
     general:liushan  role:lord  maxhp:3  starter:true
