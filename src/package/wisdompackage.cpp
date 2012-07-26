@@ -172,10 +172,9 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
         }else if(triggerEvent == CardResponsed)
-            card = data.value<CardStar>();
+            card = data.value<ResponsedStruct>().m_card;
 
         if(card->isNDTrick()){
-            Room *room = jiangwei->getRoom();
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
             // @todo: fix this!
@@ -386,7 +385,7 @@ void WeidaiCard::use(Room *room, ServerPlayer *sunce, QList<ServerPlayer *> &) c
             return;
         QVariant tohelp = QVariant::fromValue((PlayerStar)sunce);
         QString prompt = QString("@weidai-analeptic:%1").arg(sunce->objectName());
-        const Card *analeptic = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp);
+        const Card *analeptic = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp, CardResponsed, sunce);
         if(analeptic){
             LogMessage log;
             log.type = "$DiscardCard";
@@ -674,7 +673,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
         }else if(triggerEvent == CardResponsed)
-            card = data.value<CardStar>();
+            card = data.value<ResponsedStruct>().m_card;
 
         if(card->isKindOf("BasicCard") && !card->isVirtualCard()){
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
@@ -821,7 +820,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
         }else if(triggerEvent == CardResponsed)
-            card = data.value<CardStar>();
+            card = data.value<ResponsedStruct>().m_card;
 
         if(card->isNDTrick()){
             ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());

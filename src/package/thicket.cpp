@@ -757,13 +757,13 @@ public:
         frequency = Compulsory;
     }
 
-    const Card *askForDoubleJink(ServerPlayer *player, const QString &reason) const{
+    const Card *askForDoubleJink(ServerPlayer *player, ServerPlayer *slasher, const QString &reason) const{
         Room *room = player->getRoom();
 
         const Card *first_jink = NULL, *second_jink = NULL;
-        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), CardUsed);
+        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), CardUsed, slasher);
         if(first_jink)
-            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), CardUsed);
+            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), CardUsed, slasher);
 
         Card *jink = NULL;
         if(first_jink && second_jink){
@@ -787,7 +787,7 @@ public:
 
             room->broadcastSkillInvoke(objectName(), 1);
 
-            room->slashResult(effect, askForDoubleJink(female, "roulin1"));
+            room->slashResult(effect, askForDoubleJink(female, effect.from, "roulin1"));
             return true;
 
         }else if(effect.from->isFemale() && effect.to->hasSkill(objectName())){
@@ -796,7 +796,7 @@ public:
 
             int index = effect.drank ? 3 : 2;
             room->broadcastSkillInvoke(objectName(), index);
-            room->slashResult(effect, askForDoubleJink(dongzhuo, "roulin2"));
+            room->slashResult(effect, askForDoubleJink(dongzhuo, effect.from, "roulin2"));
 
             return true;
         }

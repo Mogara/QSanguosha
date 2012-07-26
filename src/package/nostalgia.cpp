@@ -25,7 +25,7 @@ public:
                 card = NULL;
             }
         }else if(triggerEvent == CardResponsed){
-            card = data.value<CardStar>();
+            card = data.value<ResponsedStruct>().m_card;
             player->tag["MoonSpearSlash"] = data;
         }
 

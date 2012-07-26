@@ -970,7 +970,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 }
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
-    const QVariant &data, TriggerEvent trigger_event)
+    const QVariant &data, TriggerEvent trigger_event, ServerPlayer *to)
 {
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
     const Card *card = NULL;
@@ -1041,13 +1041,14 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
-            log.type = QString("#%1").arg(card->metaObject()->className());
+            log.type = QString("#%1").arg(card->getClassName());
             sendLog(log);
 
             player->broadcastSkillInvoke(card);
-            /* the first is the right one,but for convenient, we use the second one
-            thread->trigger(trigger_event, this, player, card_star);   */
-            thread->trigger(CardResponsed, this, player, card_star);
+
+            ResponsedStruct resp(card, to);
+            QVariant data = QVariant::fromValue(resp);
+            thread->trigger(CardResponsed, this, player, data);
         }
         else if(trigger_event == CardDiscarded)
             thread->trigger(CardDiscarded, this, player, card_star);
@@ -4428,9 +4429,9 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     moves.append(move2);
     moveCardsAtomic(moves, true);
 
-    CardStar card_ptr = card;
-    QVariant card_star = QVariant::fromValue(card_ptr);
-    thread->trigger(CardResponsed, this, player, card_star);
+    ResponsedStruct resp(card, judge->who);
+    QVariant data = QVariant::fromValue(resp);
+    thread->trigger(CardResponsed, this, player, data);
     tag["retrial"] = true;
 }
 

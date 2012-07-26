@@ -291,7 +291,7 @@ public:
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
-                           const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
+                           const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed, ServerPlayer *to = NULL);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1);
     bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt);
     bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt);

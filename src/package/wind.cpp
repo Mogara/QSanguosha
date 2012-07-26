@@ -57,6 +57,7 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
 }
 
 HuangtianCard::HuangtianCard(){
+    will_throw = false;
 }
 
 void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
@@ -248,7 +249,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhangjiao, QVariant &data) const{
         if (zhangjiao == NULL) return false;
-        CardStar card_star = data.value<CardStar>();
+        CardStar card_star = data.value<ResponsedStruct>().m_card;
         if(!card_star->isKindOf("Jink"))
             return false;
         room->askForUseCard(zhangjiao, "@@leiji", "@leiji");

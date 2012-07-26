@@ -337,6 +337,29 @@ struct PhaseStruct{
     bool finished;
 };
 
+struct ResponsedStruct{
+    inline ResponsedStruct()
+    {
+        m_card = NULL;
+        m_who = NULL;
+    }
+
+    inline ResponsedStruct(const Card* card)
+    {
+        m_card = card;
+        m_who = NULL;
+    }
+
+    inline ResponsedStruct(const Card* card, ServerPlayer *who)
+    {
+        m_card = card;
+        m_who = who;
+    }
+
+    const Card *m_card;
+    ServerPlayer *m_who;
+};
+
 enum TriggerEvent{
     NonTrigger,
 
@@ -438,4 +461,5 @@ Q_DECLARE_METATYPE(JudgeStar)
 Q_DECLARE_METATYPE(DamageStar)
 Q_DECLARE_METATYPE(PindianStar)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
+Q_DECLARE_METATYPE(ResponsedStruct)
 #endif // STRUCTS_H

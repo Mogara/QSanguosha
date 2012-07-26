@@ -26,7 +26,7 @@ public:
                 card = NULL;
             }
         }else if(triggerEvent == CardResponsed){
-            card = data.value<CardStar>();
+            card = data.value<ResponsedStruct>().m_card;
             player->tag["MoonSpearSlash"] = data;
         }
 
@@ -42,7 +42,7 @@ public:
         }
         if(targets.isEmpty()) return false;
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
-        if(!room->askForCard(target, "jink", "@moon-spear-jink")){
+        if(!room->askForCard(target, "jink", "@moon-spear-jink", QVariant(), CardResponsed, player)){
             DamageStruct damage;
             damage.from = player;
             damage.to = target;

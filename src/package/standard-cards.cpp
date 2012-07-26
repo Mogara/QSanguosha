@@ -621,7 +621,12 @@ SavageAssault::SavageAssault(Suit suit, int number)
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:"+ effect.from->objectName());
+    const Card *slash = room->askForCard(effect.to,
+                                         "slash",
+                                         "savage-assault-slash:"+ effect.from->objectName(),
+                                         QVariant(),
+                                         CardResponsed,
+                                         effect.from->isAlive() ? effect.from : NULL);
     if(slash)
         room->setEmotion(effect.to, "killer");
     else{
@@ -648,7 +653,12 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->objectName());
+    const Card *jink = room->askForCard(effect.to,
+                                        "jink",
+                                        "archery-attack-jink:" + effect.from->objectName(),
+                                        QVariant(),
+                                        CardResponsed,
+                                        effect.from->isAlive() ? effect.from : NULL);
     if(jink){
         room->setEmotion(effect.to, "jink");
     }
@@ -844,16 +854,30 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
             break;
         if(this->hasFlag("WushuangInvke") && second->hasSkill("wushuang")){
             room->broadcastSkillInvoke("wushuang");
-            const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
+            const Card *slash = room->askForCard(first,
+                                                 "slash",
+                                                 "@wushuang-slash-1:" + second->objectName(),
+                                                 QVariant(),
+                                                 CardResponsed,
+                                                 second);
             if(slash == NULL)
                 break;
 
-            slash = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->objectName());
+            slash = room->askForCard(first, "slash",
+                                     "@wushuang-slash-2:" + second->objectName(),
+                                     QVariant(),
+                                     CardResponsed,
+                                     second);
             if(slash == NULL)
                 break;
 
         }else{
-            const Card *slash = room->askForCard(first, "slash", "duel-slash:" + second->objectName());
+            const Card *slash = room->askForCard(first,
+                                                 "slash",
+                                                 "duel-slash:" + second->objectName(),
+                                                 QVariant(),
+                                                 CardResponsed,
+                                                 second);
             if(slash == NULL)
                 break;
         }

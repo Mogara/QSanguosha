@@ -13,47 +13,27 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == CardResponsed){
-            CardStar card = data.value<CardStar>();
-            if(card->getSkillName() == "longdan"){
-                ServerPlayer *target = NULL;
-                foreach(ServerPlayer* p, room->getOtherPlayers(player)){
-                    if(p->hasFlag("Chongzhen")){
-                        room->setPlayerFlag(p, "-Chongzhen");
-                        if(!p->isKongcheng()){
-                            target = p;
-                            break;
-                        }
-                    }
-                }
-                if(target && player->askForSkillInvoke(objectName())){
-                    int card_id = room->askForCardChosen(player, target, "h", objectName());
-                    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
-                    room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
-                    if(card->isKindOf("Jink"))
-                        room->broadcastSkillInvoke("chongzhen", 1);
-                    else
-                        room->broadcastSkillInvoke("chongzhen", 2);
-                }
+            ResponsedStruct resp = data.value<ResponsedStruct>();
+            if(resp.m_card->getSkillName() == "longdan"
+                    && resp.m_who != NULL && !resp.m_who->isKongcheng()
+                    && player->askForSkillInvoke(objectName()))
+            {
+                room->broadcastSkillInvoke("chongzhen", 1);
+                int card_id = room->askForCardChosen(player, resp.m_who, "h", objectName());
+                CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+                room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
             }
         }
         else{
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.from->objectName() == player->objectName() && use.card->getSkillName() == "longdan"){
+            if(use.from == player && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
-                    if(p->isKongcheng()) continue;
-                    if(use.card->isKindOf("Jink"))
-                        room->broadcastSkillInvoke("chongzhen", 1);
-                    else
-                        room->broadcastSkillInvoke("chongzhen", 2);
+                    if(p->isKongcheng() || !player->askForSkillInvoke(objectName())) continue;
+                    room->broadcastSkillInvoke("chongzhen", 2);
                     int card_id = room->askForCardChosen(player, p, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
                 }
-            }
-            else if(use.to.contains(player) && !use.card->isKindOf("Collateral")
-                    && use.card->getSkillName() != "luanwu"
-                    && use.card->getSkillName() != "tiaoxin"){
-                room->setPlayerFlag(use.from, "Chongzhen");
             }
         }
         return false;
@@ -510,7 +490,9 @@ public:
                                                 .arg(effect.from->objectName())
                                                 .arg(bgm_zhangfei->objectName())
                                                 .arg(objectName()),
-                                                data, CardUsed);
+                                                data,
+                                                CardUsed,
+                                                bgm_zhangfei);
             if(jink && jink->getSuit() != Card::Heart){
                 LogMessage log;
                 log.type = "#DaheEffect";
