@@ -1,15 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
 # This is a Shell script that ease our compilation work in Linux
 # You should has Qt, swig, and plib installed before running this script
 
-which qmake
+echo "****"
+echo "This script is considered obsolete, please use 'make -f linux.mk' instead"
+echo "****"
+
+which -s qmake
 if [[ $? != 0 ]]; then
 	echo "Qt is not installed or its tools are not in the PATH"
 	exit 1
 fi
 
-which swig 
+which -s swig 
 if [[ $? != 0 ]]; then
 	echo "Swig is not installed!"
 	exit 1
