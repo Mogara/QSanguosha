@@ -78,6 +78,6 @@ sgs.ai_skill_playerchosen.yx_sword = function(self, targets)
 			if self:isEnemy(who) then return self.room:getLord() end
 		end
 	end
-	
+
 	return self.enemies[1]
 end

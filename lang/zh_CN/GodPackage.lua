@@ -2,7 +2,7 @@
 
 return {
 	["god"] = "神",
-	
+
 	["#shenguanyu"] = "鬼神再临",
 	["shenguanyu"] = "神关羽",
 	["wushen"] = "武神",
@@ -23,7 +23,7 @@ return {
 	[":gongxin:"] = "请问如何处理这张红桃牌:",
 	["gongxin:discard"] = "弃置",
 	["gongxin:put"] = "置于牌堆顶",
-	
+
 	["#shenzhouyu"] = "赤壁的火神",
 	["shenzhouyu"] = "神周瑜",
 	["qinyin"] = "琴音",

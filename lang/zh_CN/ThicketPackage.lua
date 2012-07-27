@@ -78,7 +78,7 @@ return {
 	["luanwu:no"] = "放弃",
 	["weimu"] = "帷幕",
 	[":weimu"] = "<b>锁定技</b>，你不能被选择为黑色锦囊牌的目标。",
-	
+
 	["#dongzhuo"] = "魔王",
 	["dongzhuo"] = "董卓",
 	["jiuchi"] = "酒池",

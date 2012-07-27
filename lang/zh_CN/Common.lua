@@ -27,7 +27,7 @@ return {
 	["put"] = "放进弃牌堆",
 	["throw"] = "弃置",
 	["enter"] = "置入弃牌堆",
-	["backinto"] = "从游戏外移回到弃牌堆",		
+	["backinto"] = "从游戏外移回到弃牌堆",
 	["draw"] = "摸牌",
 	["play"] = "出牌",
 	["discard"] = "弃牌",
@@ -154,6 +154,6 @@ return {
 	["custom"] = "自定义模式",
 	["UnknowNick"] = "无称号",
 	["DefaultIllustrator"] = "KayaK",
-	
+
 	["@waked"] = "觉醒",
 }

@@ -55,7 +55,7 @@ return {
 	["#HongyanJudge"] = "%from 受到【红颜】的影响， 判定牌由黑桃变成了红桃",
 	["hongyan"] = "红颜",
 	[":hongyan"] = "<b>锁定技</b>，你的黑桃牌均视为红桃牌。",
-	
+
 	["#zhoutai"] = "历战之驱",
 	["zhoutai"] = "周泰",
 	["buqu"] = "不屈",

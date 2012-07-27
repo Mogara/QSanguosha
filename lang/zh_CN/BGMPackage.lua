@@ -45,7 +45,7 @@ return {
 	["#ZuiXiang2"] = "%from 的技能【%arg2】被触发，【%arg】对其无效",
 	["@sleep"] = "醉乡",
 	["dream"] = "梦",
-	
+
 	["#bgm_zhangfei"] = "横矛立马",
 	["bgm_zhangfei"] = "☆SP张飞",
 	["&bgm_zhangfei"] = "张飞",
@@ -59,24 +59,24 @@ return {
 	["$dahe"] = "燕人张飞在此！",
 	["@dahe-jink"] = "%src 使用了【杀】，请打出一张【闪】（由于 %dest 的技能【%arg】被触发，你本次响应的非红桃【闪】将无效）",
 	["dahe:yes"] = "分配对方拼点牌",
-	["dahe:no"] = "不分配",	
+	["dahe:no"] = "不分配",
 	["#DaheEffect"] = "%from 的技能【%arg2】被触发，%to 使用的 %arg 【闪】无效",
-	
+
 	["#bgm_lvmeng"] = "国士之风",
 	["bgm_lvmeng"] = "☆SP吕蒙",
 	["&bgm_lvmeng"] = "吕蒙",
 	["illustrator:bgm_lvmeng"] = "YellowKiss",
 	["designer:bgm_lvmeng"] = "如水法师卞程",
-	["tanhu"] = "探虎",	
+	["tanhu"] = "探虎",
 	[":tanhu"] = "出牌阶段，你可以与一名其他角色拼点。若你赢，你获得以下技能直到回合结束：你与该角色的距离为1.你对该角色使用的非延时类锦囊不能被【无懈可击】抵消，每阶段限一次。",
 	["mouduan"] = "谋断",
 	[":mouduan"] = "<b>转化技</b>，通常状态下，你拥有标记“武”并拥有技能“激昂”和“谦逊”。当你的手牌数为2张或以下时，你须将你的标记翻面为“文”，将该两项技能转化为“英姿”和“克己”。任一角色的回合开始前，你可弃一张牌将标记翻回。",
 	["@wen"] = "文",
 	["@wu"] = "武",
-	
+
 	["#bgm_liubei"] = "汉昭烈帝",
 	["bgm_liubei"] = "☆SP刘备",
-	["&bgm_liubei"] = "刘备", 
+	["&bgm_liubei"] = "刘备",
 	["illustrator:bgm_liubei"] = "FOOL头",
 	["designer:bgm_liubei"] = "妄想线条",
 	["zhaolie"] = "昭烈",
@@ -88,13 +88,13 @@ return {
 	["@hate"] = "誓仇",
 	["hate"] = "誓仇",
 	["#ShichouProtect"] = "%from 的技能【%arg】被触发，%to 代其承受本次伤害。",
-	
+
 	["#bgm_daqiao"] = "韶光易逝",
 	["bgm_daqiao"] = "☆SP大乔",
 	["&bgm_daqiao"] = "大乔",
 	["illustrator:bgm_daqiao"] = "木美人",
 	["designer:bgm_daqiao"] = "Ecauchy",
-	["yanxiao"] = "言笑",	
+	["yanxiao"] = "言笑",
 	[":yanxiao"] = "出牌阶段你可以将一张方块牌置于一名角色的武将牌上，武将牌上有“言笑”牌的角色下一个判定阶段开始时，获得其判定区内的所有牌及“言笑”牌。",
 	["smile"] = "言笑",
 	["anxian"] = "安娴",

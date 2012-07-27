@@ -50,7 +50,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 				end
 			end
 		end
-		
+
 		if #targets > 0 then
 			if card:inherits("Weapon") or card:inherits("OffensiveHorse") then
 				self:sort(targets, "threat")
@@ -142,7 +142,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 				table.insert(targets, enemy)
 			end
 		end
-		
+
 		if #targets > 0 then
 			self:sort(targets, "defense")
 			return "@QiaobianCard=" .. card:getEffectiveId() .."->".. targets[#targets]:objectName()
@@ -280,8 +280,8 @@ sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, i
 			index = index + 1
 			if index == 1 then break end
 		end
-	end	
-	if #to_discard < 1 then return {} 
+	end
+	if #to_discard < 1 then return {}
 	else
 		return to_discard
 	end
@@ -473,7 +473,7 @@ function sgs.ai_card_intention.ZhibaCard(card, from, tos, source)
 	local number = sgs.Sanguosha:getCard(card:getSubcards():first()):getNumber()
 	if number < 6 then sgs.updateIntention(from, tos[1], -60)
 	elseif number > 8 then sgs.updateIntention(from, tos[1], 60) end
-end 
+end
 
 local zhijian_skill={}
 zhijian_skill.name="zhijian"
@@ -592,7 +592,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 		for _, askill in ipairs(("yizhong|bazhen"):split("|")) do
 				if str:matchOne(askill) and not self.player:getArmor() then return askill end
 		end
-		 
+
 		for _, askill in ipairs(("wuyan|weimu|kanpo|liuli|qingguo|longdan|xiangle|jiang|" ..
 		"danlao|qianxun|juxiang|huoshou|zhichi|jilei|feiying|yicong|wusheng|wushuang|tianxiang|leiji|" ..
 		"xuanfeng|luoying|xiliang|guhuo|guidao|guicai|lianying|xiaoji|zhiyu|hongyan|tiandu|guzheng|xingshang|weidi|badao|gushou"):split("|")) do

@@ -68,7 +68,7 @@ return {
         ["$dangxian"] = "先锋一职，老夫责无旁贷。",
 	["$fuli"] = "心系蜀汉，虽死必归。",
 	["~liaohua"] = "阅尽兴亡，此生无憾矣.",
-	
+
 	["#guanxingzhangbao"] = "将门虎子",
 	["guanxingzhangbao"] = "关兴张苞",
 	["designer:guanxingzhangbao"] = "诺思冥羽",

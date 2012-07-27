@@ -73,7 +73,7 @@ return {
 	["guixiang"] = "归乡",
 	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
 	["cv:sp_caiwenji"] = "呼呼",
-	
+
 	["#sp_jiaxu"] = "算无遗策",
 	["sp_jiaxu"] = "SP贾诩",
 	["&sp_jiaxu"] = "贾诩",
@@ -81,7 +81,7 @@ return {
 	["guiwei"] = "归魏",
 	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
 	["cv:sp_jiaxu"] = "落凤一箭",
-	
+
 	["#sp_pangde"] = "枱榇之悟",
 	["sp_pangde"] = "SP庞德",
 	["&sp_pangde"] = "庞德",
@@ -124,7 +124,7 @@ return {
 	["weapon_recast"] = "武器重铸",
 	["Hulaopass:recover"] = "恢复1点体力",
 	["Hulaopass:draw"] = "摸1张牌",
-	
+
 --sp_card
 	["sp_cards"] = "SP卡牌包",
 	["sp_moonspear"] = "SP银月枪",

@@ -21,10 +21,10 @@ sgs.ai_skill_use_func.QuhuCard = function(card, use, self)
 				allknown = allknown + 1
 			end
 			if (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown > 0)
-				or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10) 
+				or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10)
 				or (not enemy_max_card and max_point > 10) then
 				for _, enemy2 in ipairs(self.enemies) do
-					if (enemy:objectName() ~= enemy2:objectName()) 
+					if (enemy:objectName() ~= enemy2:objectName())
 					and enemy:distanceTo(enemy2) <= enemy:getAttackRange() then
 						local card_id = max_card:getEffectiveId()
 						local card_str = "@QuhuCard=" .. card_id
@@ -89,7 +89,7 @@ sgs.ai_skill_use["@@jieming"] = function(self, prompt)
 		end
 	end
 	self:sort(friends)
-	
+
 	local max_x = 0
 	local target
 	for _, friend in ipairs(friends) do
@@ -223,7 +223,7 @@ function sgs.ai_armor_value.bazhen(card)
 	if not card then return 4 end
 end
 
-sgs.wolong_suit_value = 
+sgs.wolong_suit_value =
 {
 	spade = 3.9,
 	club = 3.9
@@ -289,7 +289,7 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 		if use.to then use.to:append(zhugeliang) end
 		return
 	end
-	
+
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
@@ -317,7 +317,7 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 					allknown = allknown + 1
 				end
 				if (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown > 0)
-					or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10) 
+					or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10)
 					or (not enemy_max_card and max_point > 10) then
 					use.card = sgs.Card_Parse("@TianyiCard=" .. max_card:getId())
 					if use.to then use.to:append(enemy) end
@@ -394,7 +394,7 @@ luanji_skill.getTurnUseCard=function(self)
 				first_card = fcard
 				first_found = true
 				for _, scard in ipairs(cards) do
-					if first_card ~= scard and scard:getSuitString() == first_card:getSuitString() and 
+					if first_card ~= scard and scard:getSuitString() == first_card:getSuitString() and
 						not (scard:inherits("Peach") or scard:inherits("ExNihilo") or scard:inherits("AOE")) then
 						second_card = scard
 						second_found = true
@@ -438,10 +438,10 @@ sgs.ai_skill_invoke.shuangxiong=function(self,data)
 	handnum=handnum/2
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
-		if (self:getCardsNum("Slash", enemy)+enemy:getHp()<=handnum) and (self:getCardsNum("Slash")>=self:getCardsNum("Slash", enemy)) 
+		if (self:getCardsNum("Slash", enemy)+enemy:getHp()<=handnum) and (self:getCardsNum("Slash")>=self:getCardsNum("Slash", enemy))
 			and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then target = target + 1 end
 	end
-	
+
 	return self.player:getHandcardNum()>=self.player:getHp() and target > 0
 end
 
@@ -456,7 +456,7 @@ shuangxiong_skill.getTurnUseCard=function(self)
 	local cards = self.player:getCards("h")
 	cards=sgs.QList2Table(cards)
 	self:sortByUseValue(cards,true)
-	
+
 	local card
 	for _,acard in ipairs(cards)  do
 		if (acard:isRed() and (mark==2)) or (acard:isBlack() and (mark==1)) then

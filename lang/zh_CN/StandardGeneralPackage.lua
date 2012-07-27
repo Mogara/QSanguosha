@@ -312,12 +312,12 @@ return {
 	["wuxingzhuge"] = "五星诸葛",
 	["super_guanxing"] = "超级观星",
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底",
-		
+
 	["#sp_shenzhaoyun"] = "真龙下凡",
 	["sp_shenzhaoyun"] = "初版神赵云",
 	["longnu"] = "绝境",
 	[":longnu"] = "你至少保留4张手牌。",
-	
+
 	["#nanhua"] = "黄天的指引者",
 	["nanhua"] = "南华老仙",
 	["yihun"] = "移魂",

@@ -8,7 +8,7 @@ sgs.ai_skill_choice.RevealGeneral = function(self, choices)
 		player:setGeneral(sgs.Sanguosha:getGeneral(general))
 		table.insert(players, player)
 	end
-	
+
 	if event == sgs.Predamaged then
 		local damage = data:toDamage()
 		for _, player in ipairs(players) do
