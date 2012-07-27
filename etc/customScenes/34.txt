@@ -1,0 +1,9 @@
+
+setPile:103,106,67,43,105,131,91,86,135,77,138,90,73,61,33,118,95,68,87,16,15,14,13,12,11,10
+general:caocao role:lord starter:true maxhp:4 chained:true singleTurn:rebel draw:0 
+general:xuchu role:loyalist hp:2 chained:true draw:0 equip:108 hand:18,32,144,30 
+general:xunyu role:loyalist chained:true draw:0 hand:5 
+general:shenzhouyu role:rebel nationality:wu draw:0 equip:159 hand:42 
+general:shenzhugeliang role:rebel nationality:shu draw:0 equip:65 
+general:xiahoudun role:loyalist hp:3 chained:true draw:0 hand:76,88 
+general:xuhuang role:loyalist hp:3 chained:true draw:0 hand:158,84,85 

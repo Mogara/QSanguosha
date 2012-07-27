@@ -438,7 +438,7 @@ void Room::gameOver(const QString &winner){
             if((stage == current) && stage < Settings::S_MINI_SCENE_STAGE_TOTAL)
             {
                 Config.setValue("MiniSceneStage",current+1);
-                id = QString::number(stage+1).rightJustified(2,'0');
+                id = QString::number(stage + 1).rightJustified(2, '0');
                 id.prepend("_mini_");
                 Config.setValue("GameMode",id);
                 Config.GameMode = id;

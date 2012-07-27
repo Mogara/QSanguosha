@@ -607,7 +607,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
 		mini_scene_ComboBox = new QComboBox;
 		int index = -1;
 		int stage = Config.value("MiniSceneStage",1).toInt();
-		for(int i = 1;i <= stage;i++)
+		for(int i = 1; i <= stage; i++)
 		{
 			QString name = QString::number(i);
 			name = name.rightJustified(2,'0');
@@ -621,7 +621,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
 			if(name == Config.GameMode)index = i-1;
 		}
 
-		if(index>=0)
+		if(index >= 0)
 		{
 			mini_scene_ComboBox->setCurrentIndex(index);
 			mini_scenes->setChecked(true);
@@ -646,7 +646,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
 	QVBoxLayout *left = new QVBoxLayout;
 	QVBoxLayout *right = new QVBoxLayout;
 
-	for(int i=0; i<item_list.length(); i++){
+	for(int i = 0; i < item_list.length(); i++){
 		QObject *item = item_list.at(i);
 
 		QVBoxLayout *side = i < item_list.length()/2 - 2 ? left : right;

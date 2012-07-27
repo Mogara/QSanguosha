@@ -46,7 +46,7 @@ config = {
         color_god = "#96943D",
 }
 
-for i=1, 33 do
+for i=1, 36 do
     local scene_name = ("MiniScene_%02d"):format(i)
     table.insert(config.scene_names, scene_name)
 end
