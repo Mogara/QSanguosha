@@ -95,6 +95,22 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(Self->hasFlag("slashTargetFix")){
+        if(targets.isEmpty())
+            return  to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, false);
+        else
+        {
+            bool canSelect = false;
+            foreach(const Player *p, targets){
+                if(p->hasFlag("SlashAssignee")){
+                    canSelect = true;
+                    break;
+                }
+            }
+            return canSelect && Self->canSlash(to_select, false);
+        }
+    }
+    
     int slash_targets = 1;
     if(Self->hasWeapon("Halberd") && Self->isLastHandCard(this))
         slash_targets += 2;
@@ -129,8 +145,6 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
-    if(Self->hasFlag("slashTargetFix") && targets.isEmpty())
-        return  to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, false);
     return Self->canSlash(to_select, distance_limit, rangefix);
 }
 
