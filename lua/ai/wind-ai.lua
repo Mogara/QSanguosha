@@ -442,7 +442,7 @@ guhuo_skill.getTurnUseCard=function(self)
 	if card_str then return sgs.Card_Parse(card_str) end
 
 	local slash_str = self:getGuhuoCard("Slash", self.player, true) or self:getGuhuoCard("Analeptic", self.player, true)
-	if slash_str and self:slashIsAvailable() and (self.player:canSlashWithoutCrossBow() or self:isEquip("Crossbow")) then return sgs.Card_Parse(slash_str) end
+	if slash_str and self:slashIsAvailable() and (self.player:canSlashWithoutCrossbow() or self:isEquip("Crossbow")) then return sgs.Card_Parse(slash_str) end
 
 	local guhuo = "peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
 	local guhuos = guhuo:split("|")

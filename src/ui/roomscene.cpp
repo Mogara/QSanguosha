@@ -517,7 +517,7 @@ QGraphicsItem *RoomScene::createDashboardButtons(){
     trust_button = new QSanButton("platter", "trust", widget);
     trust_button->setStyle(QSanButton::S_STYLE_TOGGLE);
     trust_button->setRect(G_DASHBOARD_LAYOUT.m_trustButtonArea);
-    connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+    connect(trust_button, SIGNAL(clicked()), this, SLOT(trust()));
     connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
 
     // set them all disabled
@@ -3439,9 +3439,19 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args){
     item->setZValue(10086.0);
     addItem(item);
 
-    QPointF from = getAnimationObject(args.at(0))->scenePos();
-    QPointF to = getAnimationObject(args.at(1))->scenePos();
+    QGraphicsObject *fromItem = getAnimationObject(args.at(0));
+    QGraphicsObject *toItem = getAnimationObject(args.at(1));
 
+    QPointF from = fromItem->scenePos();
+    QPointF to = toItem->scenePos();
+    if(fromItem == dashboard)
+    {
+        from.setX(fromItem->boundingRect().width() / 2);
+    }
+    if(toItem == dashboard)
+    {
+        to.setX(toItem->boundingRect().width() / 2);
+    }
     QSequentialAnimationGroup *group = new QSequentialAnimationGroup;
 
     QPropertyAnimation *move = new QPropertyAnimation(item, "pos");
@@ -3860,6 +3870,11 @@ void RoomScene::skillStateChange(const QString &skill_name){
     }
     else if(skill_name == "-shuangxiong")
         detachSkill("shuangxiong");
+}
+
+void RoomScene::trust(){
+    doCancelButton();
+    ClientInstance->trust();
 }
 
 void RoomScene::startArrange(){

@@ -81,6 +81,7 @@ void Dashboard::_createMiddle() {
 
     trusting_item = new QGraphicsRectItem(this);
     trusting_text = new QGraphicsSimpleTextItem(tr("Trusting ..."), _m_middleFrame);
+    trusting_text->setPos(this->boundingRect().width() / 2, 50);
 
     QBrush trusting_brush(QColor(0x26, 0x1A, 0x42));
     trusting_item->setBrush(trusting_brush);

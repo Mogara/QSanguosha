@@ -407,6 +407,7 @@ private slots:
     void revealGeneral(bool self, const QString &general);
 
     void skillStateChange(const QString &skill_name);
+    void trust();
 signals:
     void restart();
     void return_to_start();
