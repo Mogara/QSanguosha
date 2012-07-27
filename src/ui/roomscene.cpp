@@ -1180,12 +1180,16 @@ void RoomScene::updateSelectedTargets(){
             selected_targets.append(player);
         else{
             selected_targets.removeAll(player);
-            //======================================
-            if(player->hasFlag("SlashAssignee")){
-                selected_targets.clear();
-                unselectAllTargets(NULL);
+            foreach(const Player *cp, selected_targets)
+            {
+                QList<const Player*> tempPlayers = QList<const Player*>(selected_targets);
+                tempPlayers.removeAll(cp);
+                if(!card->targetFilter(tempPlayers, cp, Self)){
+                    selected_targets.clear();
+                    unselectAllTargets();
+                    return;
+                }
             }
-            //======================================
         }
 
         ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
