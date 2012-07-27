@@ -200,8 +200,9 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.from->objectName() != player->objectName())
+        if(use.from != player)
             return false;
+
         foreach(ServerPlayer *to, use.to){
             if(use.from->isMale() != to->isMale()
                 && !to->isSexLess()
