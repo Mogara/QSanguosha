@@ -460,7 +460,7 @@ public:
 class BuquRemove: public TriggerSkill{
 public:
     BuquRemove():TriggerSkill("#buqu-remove"){
-        events << HpRecover;
+        events << HpRecover << EventLoseSkill;
     }
 
     virtual int getPriority() const{
@@ -505,10 +505,19 @@ public:
         }
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhoutai, QVariant &) const{
-        if(zhoutai->getPile("buqu").length() > 0)
-            Remove(zhoutai);
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
 
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *zhoutai, QVariant &data) const{
+        if(triggerEvent == HpRecover && TriggerSkill::triggerable(zhoutai)
+                && zhoutai->getPile("buqu").length() > 0)
+            Remove(zhoutai);
+        else if(triggerEvent == EventLoseSkill && data.toString() == "buqu"){
+            zhoutai->removePileByName("buqu");
+            if(zhoutai->getHp() <= 0)
+                room->enterDying(zhoutai, NULL);
+        }
         return false;
     }
 };

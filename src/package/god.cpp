@@ -20,18 +20,28 @@ void GongxinCard::onEffect(const CardEffectStruct &effect) const{
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
-        events << PreHpReduced;
+        events << Damaged << EventLoseSkill;
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
 
-        if(damage.from && damage.from != player){
-            damage.from->gainMark("@nightmare", damage.damage);
-            damage.from->getRoom()->broadcastSkillInvoke(objectName(), 1);
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(triggerEvent == Damaged && TriggerSkill::triggerable(player)){
+            DamageStruct damage = data.value<DamageStruct>();
+
+            if(damage.from && damage.from != player){
+                damage.from->gainMark("@nightmare", damage.damage);
+                damage.from->getRoom()->broadcastSkillInvoke(objectName(), 1);
+            }
         }
-
+        else if(triggerEvent == EventLoseSkill && data.toString() == objectName()){
+            foreach(ServerPlayer *player, room->getAllPlayers()){
+                player->loseAllMarks("@nightmare");
+            }
+        }
         return false;
     }
 };
@@ -623,12 +633,11 @@ class Qixing: public TriggerSkill{
 public:
     Qixing():TriggerSkill("qixing"){
         frequency = Frequent;
-        events << EventPhaseEnd;
+        events << EventPhaseEnd << EventLoseSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && target->getPile("stars").length() > 0
-                && target->getPhase() == Player::Draw;
+        return target != NULL;
     }
 
     static void Exchange(ServerPlayer *shenzhuge){
@@ -694,8 +703,13 @@ public:
 
     }
 
-    virtual bool trigger(TriggerEvent , Room *, ServerPlayer *shenzhuge, QVariant &) const{
-        Exchange(shenzhuge);
+    virtual bool trigger(TriggerEvent triggerEvent, Room *, ServerPlayer *shenzhuge, QVariant &data) const{
+        if(triggerEvent == EventPhaseEnd && TriggerSkill::triggerable(shenzhuge)
+                && shenzhuge->getPile("stars").length() > 0 && shenzhuge->getPhase() == Player::Draw)
+            Exchange(shenzhuge);
+        else if(triggerEvent == EventLoseSkill && data.toString() == objectName()){
+            shenzhuge->removePileByName("stars");
+        }
         return false;
     }
 };
@@ -711,6 +725,7 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *shenzhuge) const{
+        shenzhuge->getRoom()->setPlayerMark(shenzhuge, "qixingOwner", 1);
         QList<int> stars;
         for (int i = 0; i < 7; i++)
         {
@@ -797,16 +812,7 @@ public:
 
             if(target->getPile("stars").length() > 0 && target->hasSkill("dawu"))
                 room->askForUseCard(target, "@@dawu", "@dawu-card");
-        }else if(target->getPhase() == Player::Start){
-            QList<ServerPlayer *> players = room->getAllPlayers();
-            foreach(ServerPlayer *player, players){
-                if(player->getMark("@gale") > 0)
-                    player->loseMark("@gale");
-                if(player->getMark("@fog") > 0)
-                    player->loseMark("@fog");
-            }
         }
-
         return false;
     }
 };
@@ -814,18 +820,32 @@ public:
 class QixingClear: public TriggerSkill{
 public:
     QixingClear():TriggerSkill("#qixing-clear"){
-        events << Death;
+        events << Death << EventPhaseStart;
+    }
+
+    virtual int getPriority() const{
+        return 3;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasSkill(objectName());
+        return target != NULL && target->getMark("qixingOwner") > 0;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
-        QList<ServerPlayer *> players = room->getAllPlayers();
-        foreach(ServerPlayer *player, players){
-            player->loseAllMarks("@gale");
-            player->loseAllMarks("@fog");
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+        if(triggerEvent == Death){
+            QList<ServerPlayer *> players = room->getAllPlayers();
+            foreach(ServerPlayer *player, players){
+                player->loseAllMarks("@gale");
+                player->loseAllMarks("@fog");
+            }
+        }
+        else if(triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart){
+            foreach(ServerPlayer *player, room->getAllPlayers()){
+                if(player->getMark("@gale") > 0)
+                    player->loseMark("@gale");
+                if(player->getMark("@fog") > 0)
+                    player->loseMark("@fog");
+            }
         }
 
         return false;
@@ -904,24 +924,34 @@ public:
 class Renjie: public TriggerSkill{
 public:
     Renjie():TriggerSkill("renjie"){
-        events << Damaged << CardDiscarded;
+        events << Damaged << CardDiscarded << EventLoseSkill;
         frequency = Compulsory;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == CardDiscarded){
-            if(player->getPhase() == Player::Discard){
-                CardStar card = data.value<CardStar>();
-                int n = card->subcardsLength();
-                if(n > 0){
-                    room->broadcastSkillInvoke(objectName());
-                    player->gainMark("@bear", n);
+        if(TriggerSkill::triggerable(player))
+        {
+            if(triggerEvent == CardDiscarded){
+                if(player->getPhase() == Player::Discard){
+                    CardStar card = data.value<CardStar>();
+                    int n = card->subcardsLength();
+                    if(n > 0){
+                        room->broadcastSkillInvoke(objectName());
+                        player->gainMark("@bear", n);
+                    }
                 }
+            }else if(triggerEvent == Damaged){
+                DamageStruct damage = data.value<DamageStruct>();
+                room->broadcastSkillInvoke(objectName());
+                player->gainMark("@bear", damage.damage);
             }
-        }else if(triggerEvent == Damaged){
-            DamageStruct damage = data.value<DamageStruct>();
-            room->broadcastSkillInvoke(objectName());
-            player->gainMark("@bear", damage.damage);
+        }
+        else if(triggerEvent == EventLoseSkill && data.toString() == objectName()){
+            player->loseAllMarks("@bear");
         }
 
         return false;

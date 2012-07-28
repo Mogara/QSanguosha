@@ -244,13 +244,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
 
-        if(Config.EnableBasara){
-            // @:todo if the killer is anjiang,do nothing;else turn him to anjiang again
-            return false;
-        }
-        if(damage && damage->from && damage->from->getGeneralName() != "anjiang"){
-            if (player == NULL) return false;
-
+        if(damage && damage->from){
             LogMessage log;
             log.type = "#DuanchangLoseSkills";
             log.from = player;
@@ -269,27 +263,6 @@ public:
                 room->setPlayerProperty(damage->from, "kingdom", damage->from->getGeneral()->getKingdom());
             if(damage->from->getGender() != damage->from->getGeneral()->getGender())
                 damage->from->setGender(damage->from->getGeneral()->getGender());
-            if(damage->from->getHp() <= 0)
-                room->enterDying(damage->from,NULL);
-            damage->from->clearPrivatePiles();
-            if(damage->from->hasSkill("qixing")){
-                if(damage->from->getMark("@star") > 0)
-                    damage->from->loseAllMarks("@star");
-                QList<ServerPlayer *> players = room->getAllPlayers();
-                foreach(ServerPlayer *player, players){
-                    player->loseAllMarks("@gale");
-                    player->loseAllMarks("@fog");
-                }
-            }
-            else if(damage->from->hasSkill("wuhun")){
-                QList<ServerPlayer *> players = room->getAllPlayers();
-                foreach(ServerPlayer *player, players){
-                    player->loseAllMarks("@nightmare");
-                }
-            }
-            else if(damage->from->hasSkill("renjie")){
-                damage->from->loseAllMarks("@bear");
-            }
         }
 
         return false;
@@ -313,35 +286,40 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardsMoveOneTime << FinishJudge;
+        events << CardsMoveOneTime << FinishJudge << EventLoseSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && TriggerSkill::triggerable(target) && target->getPhase() == Player::NotActive;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == CardsMoveOneTime){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from == player &&
-                    (move->from_places.contains(Player::PlaceHand)
-                     || move->from_places.contains(Player::PlaceEquip))
-                    && player->askForSkillInvoke("tuntian", data)){
-                room->broadcastSkillInvoke("tuntian");
-                JudgeStruct judge;
-                judge.pattern = QRegExp("(.*):(heart):(.*)");
-                judge.good = false;
-                judge.reason = "tuntian";
-                judge.who = player;
-                room->judge(judge);
-            }
-        }else if(triggerEvent == FinishJudge){
-            JudgeStar judge = data.value<JudgeStar>();
-            if(judge->reason == "tuntian" && judge->isGood()){
-                player->addToPile("field", judge->card->getEffectiveId());
-                return true;
+        if(TriggerSkill::triggerable(player) && player->getPhase() == Player::NotActive)
+        {
+            if(triggerEvent == CardsMoveOneTime){
+                CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+                if(move->from == player &&
+                        (move->from_places.contains(Player::PlaceHand)
+                         || move->from_places.contains(Player::PlaceEquip))
+                        && player->askForSkillInvoke("tuntian", data)){
+                    room->broadcastSkillInvoke("tuntian");
+                    JudgeStruct judge;
+                    judge.pattern = QRegExp("(.*):(heart):(.*)");
+                    judge.good = false;
+                    judge.reason = "tuntian";
+                    judge.who = player;
+                    room->judge(judge);
+                }
+            }else if(triggerEvent == FinishJudge){
+                JudgeStar judge = data.value<JudgeStar>();
+                if(judge->reason == "tuntian" && judge->isGood()){
+                    player->addToPile("field", judge->card->getEffectiveId());
+                    return true;
+                }
             }
         }
+        else if (triggerEvent == EventLoseSkill && data.toString() == "tuntian")
+            player->removePileByName("field");
 
         return false;
     }
@@ -1072,10 +1050,8 @@ public:
         playAudioEffect(zuoci, "huashen");
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
-        if(!huashen_skill.isEmpty()){
+        if(!huashen_skill.isEmpty())
             room->detachSkillFromPlayer(zuoci, huashen_skill);
-            zuoci->clearPrivatePiles();
-        }
 
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         if(huashens.isEmpty())
@@ -1154,9 +1130,6 @@ public:
         zuoci->tag["HuashenSkill"] = skill_name;
         
         room->acquireSkill(zuoci, skill_name);
-
-        if(zuoci->getHp() <= 0)
-            room->enterDying(zuoci, NULL);
 
         return skill_name;
     }

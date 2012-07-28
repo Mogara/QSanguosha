@@ -1064,6 +1064,23 @@ public:
     }
 };
 
+class QuanjiRemove: public TriggerSkill{
+public:
+    QuanjiRemove():TriggerSkill("#quanji-remove"){
+        events << EventLoseSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent , Room *, ServerPlayer *player, QVariant &data) const{
+        if(data.toString() == "quanji")
+            player->removePileByName("power");
+        return false;
+    }
+};
+
 class Zili: public PhaseChangeSkill{
 public:
     Zili():PhaseChangeSkill("zili"){
@@ -1350,10 +1367,12 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);
+    zhonghui->addSkill(new QuanjiRemove);
     zhonghui->addSkill(new Quanji);
     zhonghui->addSkill(new Zili);
     zhonghui->addRelateSkill("paiyi");
     related_skills.insertMulti("quanji", "#quanji");
+    related_skills.insertMulti("quanji", "#quanji-remove");
 
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();

@@ -55,9 +55,7 @@ void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets
         room->setEmotion(source,"weapon/crossbow");
     else if(isVirtualCard() && getSkillName() == "Spear")
         room->setEmotion(source,"weapon/spear");
-    else if (targets.length()>1
-            && source->handCards().size() == 0
-            && source->hasWeapon("Halberd"))
+    else if (targets.length()>1 && source->isKongcheng() && source->hasWeapon("Halberd"))
         room->setEmotion(source,"weapon/halberd");
     else if (isVirtualCard() && getSkillName() == "Fan")
         room->setEmotion(source,"weapon/fan");
@@ -107,7 +105,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
                     break;
                 }
             }
-            return canSelect && Self->canSlash(to_select, false);
+            if(!canSelect) return false;
         }
     }
     

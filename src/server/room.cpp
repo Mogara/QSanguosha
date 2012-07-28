@@ -518,14 +518,10 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         log.from = player;
         log.arg = skill_name;
         sendLog(log);
-
         QVariant data = skill_name;
         thread->trigger(EventLoseSkill, this, player, data);
     }
 }
-
-
-
 
 bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, bool wait)
 {     
