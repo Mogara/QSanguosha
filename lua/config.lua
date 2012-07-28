@@ -2,9 +2,6 @@
 -- and it is a little different from config.ini
 
 config = {
-    version = "20120724",
-    version_name = "新太阳神三国杀",
-    mod_name = "official",
     kingdoms = { "wei", "shu", "wu", "qun", "god"},
     package_names = {
     "StandardCard",

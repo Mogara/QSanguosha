@@ -379,7 +379,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return GetConfigFromLuaState(lua, "version").toString();
+    return "20120724";
 }
 
 QString Engine::getVersion() const{
@@ -392,11 +392,11 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return GetConfigFromLuaState(lua, "version_name").toString();
+    return "NewQSanguosha";
 }
 
 QString Engine::getMODName() const{
-    return GetConfigFromLuaState(lua, "mod_name").toString();
+    return "official";
 }
 
 QStringList Engine::getExtensions() const{
