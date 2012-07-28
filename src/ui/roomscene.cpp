@@ -3877,7 +3877,8 @@ void RoomScene::skillStateChange(const QString &skill_name){
 }
 
 void RoomScene::trust(){
-    doCancelButton();
+    if(Self->getState() != "trust")
+        doCancelButton();
     ClientInstance->trust();
 }
 

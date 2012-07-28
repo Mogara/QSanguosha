@@ -2205,6 +2205,8 @@ void Room::run(){
 
         QStringList names;
         foreach(const General *general, generals){
+            if(general->isTotallyHidden())
+                continue;
             names << general->objectName();
         }
 
