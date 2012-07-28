@@ -16,7 +16,7 @@ its graphics view framework is suitable for my game developing.
 
 Our site: qsanguosha.org
 
-API reference: http://gaodayihao.github.com/QSanguosha
+API reference: http://gaodayihao.github.com/QSanguosha/api
 
 Features
 ----------
