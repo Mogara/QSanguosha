@@ -528,6 +528,12 @@ struct PhaseChangeStruct{
     Player::Phase to;
 };
 
+struct ResponsedStruct{
+    ResponsedStruct();
+    const Card *m_card;
+    ServerPlayer *m_who;
+};
+
 enum TriggerEvent{
     NonTrigger,
 
