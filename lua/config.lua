@@ -4,7 +4,7 @@
 config = {
     kingdoms = { "wei", "shu", "wu", "qun", "god"},
     package_names = {
-    "StandardCard",
+        "StandardCard",
         "StandardExCard",
         "Maneuvering",
         "SPCard",
@@ -24,7 +24,7 @@ config = {
         "Ling",
         "BGM",
         "NostalGeneral",
-		"Test"
+        "Test"
     },
 
     scene_names = {
