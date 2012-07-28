@@ -2712,7 +2712,7 @@ void RoomScene::addRestartButton(QDialog *dialog){
         id.replace("_mini_", "");
         int stage = Config.value("MiniSceneStage", 1).toInt();
         int current = id.toInt();
-        if((stage == current) && stage < Settings::S_MINI_SCENE_STAGE_TOTAL)
+        if((stage == current) && stage < Sanguosha->getMiniSceneCounts())
             goto_next = true;
     }
 

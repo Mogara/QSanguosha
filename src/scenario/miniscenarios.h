@@ -34,6 +34,7 @@ class MiniScene : public Scenario
     Q_OBJECT
 
 public:
+    static const char* S_KEY_MINISCENE;
     MiniScene(const QString &name);
     void setupCustom(QString name) const;
     virtual void onTagSet(Room *room, const QString &key) const;
@@ -66,9 +67,9 @@ class LoadedScenario : public MiniScene
     Q_OBJECT
 public:
     LoadedScenario(const QString &name)
-        :MiniScene(QString("_mini_%1").arg(name))
+        :MiniScene(QString(MiniScene::S_KEY_MINISCENE).arg(name))
     {
-        setupCustom(QString("%1").arg(name));
+        setupCustom(name);
     }
 };
 

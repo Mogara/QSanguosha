@@ -81,7 +81,6 @@ public:
     static const int S_REGULAR_ANIMATION_SLOW_DURAION;
     static const int S_JUDGE_SHORT_DELAY;
     static const int S_JUDGE_LONG_DELAY;
-    static const int S_MINI_SCENE_STAGE_TOTAL;
 };
 
 extern Settings Config;

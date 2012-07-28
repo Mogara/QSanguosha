@@ -305,7 +305,3 @@ void GuanduScenario::onTagSet(Room *room, const QString &key) const{
         }
     }
 }
-
-ADD_SCENARIO(Guandu);
-
-

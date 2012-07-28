@@ -222,9 +222,6 @@
     <ClCompile Include="..\..\src\scenario\couple-scenario.cpp">
       <Filter>scenario</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scenario\fancheng-scenario.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\scenario\guandu-scenario.cpp">
       <Filter>scenario</Filter>
     </ClCompile>
@@ -235,9 +232,6 @@
       <Filter>scenario</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\scenario\scenerule.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\zombie-mode-scenario.cpp">
       <Filter>scenario</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\chatwidget.cpp">
@@ -411,6 +405,15 @@
     <ClCompile Include="..\..\src\ui\GenericCardContainerUI.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_zombie-scenario.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_zombie-scenario.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scenario\zombie-scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -572,9 +575,6 @@
     <CustomBuild Include="..\..\src\package\package.h">
       <Filter>package</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\zombie-mode-scenario.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\boss-mode-scenario.h">
       <Filter>scenario</Filter>
     </CustomBuild>
@@ -585,9 +585,6 @@
       <Filter>scenario</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\miniscenarios.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\fancheng-scenario.h">
       <Filter>scenario</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\guandu-scenario.h">
@@ -676,6 +673,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\GenericCardContainerUI.h">
       <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\zombie-scenario.h">
+      <Filter>scenario</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -827,12 +827,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_engine.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_fancheng-scenario.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_fancheng-scenario.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_firepackage.cpp">
@@ -1151,12 +1145,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_yjcm2012-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_zombie-mode-scenario.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_zombie-mode-scenario.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <CustomBuild Include="debug\scenerule.moc">

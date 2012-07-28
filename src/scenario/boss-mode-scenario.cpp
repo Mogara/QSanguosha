@@ -548,4 +548,3 @@ ImpasseScenario::ImpasseScenario()
 
 }
 
-ADD_SCENARIO(Impasse);

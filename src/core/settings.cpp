@@ -27,7 +27,6 @@ const int Settings::S_JUDGE_ANIMATION_DURATION = 2600;
 const int Settings::S_REGULAR_ANIMATION_SLOW_DURAION = 1500;
 const int Settings::S_JUDGE_SHORT_DELAY = 800;
 const int Settings::S_JUDGE_LONG_DELAY = 1500;
-const int Settings::S_MINI_SCENE_STAGE_TOTAL = 36;
 
 Settings::Settings()
 

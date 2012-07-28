@@ -1,4 +1,4 @@
-#include "zombie-mode-scenario.h"
+#include "zombie-scenario.h"
 #include "engine.h"
 #include "standard-skillcards.h"
 #include "clientplayer.h"
@@ -355,4 +355,3 @@ ZombieScenario::ZombieScenario()
     addMetaObject<GanranEquip>();
 }
 
-ADD_SCENARIO(Zombie)

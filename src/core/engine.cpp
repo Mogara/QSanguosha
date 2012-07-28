@@ -12,14 +12,53 @@
 #include "structs.h"
 #include "RoomState.h"
 
+#include "guandu-scenario.h"
+#include "couple-scenario.h"
+#include "boss-mode-scenario.h"
+#include "zombie-scenario.h"
+
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
 #include <QMessageBox>
 #include <QDir>
+#include <QFile>
 #include <QApplication>
+#include <scenario.h>
+#include <miniscenarios.h>
 
 Engine *Sanguosha = NULL;
+
+int Engine::getMiniSceneCounts()
+{
+    return m_miniScenes.size();
+}
+
+void Engine::_loadMiniScenarios()
+{
+    static bool loaded = false;
+    if (loaded) return;
+    int i = 1;
+    while(true)
+    {
+        if (!QFile::exists(QString("etc/customScenes/%1.txt").arg(QString::number(i))))
+            break;
+
+        QString sceneKey = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
+        m_scenarios[sceneKey] = new LoadedScenario(QString::number(i));
+        i++;
+    }
+    loaded = true;
+}
+
+void Engine::_loadModScenarios()
+{
+    addScenario(new GuanduScenario());
+    addScenario(new CoupleScenario());
+    addScenario(new ZombieScenario());
+    addScenario(new ImpasseScenario());
+    addScenario(new CustomScenario());
+}
 
 void Engine::addPackage(const QString &name){
     Package *pack = PackageAdder::packages()[name];
@@ -27,14 +66,6 @@ void Engine::addPackage(const QString &name){
         addPackage(pack);
     else
         qWarning("Package %s cannot be loaded!", qPrintable(name));
-}
-
-void Engine::addScenario(const QString &name){
-    Scenario *scenario = ScenarioAdder::scenarios()[name];
-    if(scenario)
-        addScenario(scenario);
-    else
-        qWarning("Scenario %s cannot be loaded!", qPrintable(name));
 }
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
@@ -52,9 +83,8 @@ Engine::Engine()
     foreach(QString name, package_names)
         addPackage(name);
 
-    QStringList scene_names = GetConfigFromLuaState(lua, "scene_names").toStringList();
-    foreach(QString name, scene_names)
-        addScenario(name);
+    _loadMiniScenarios();
+    _loadModScenarios();
 
     DoLuaScript(lua, "lua/sanguosha.lua");
 
@@ -111,20 +141,19 @@ Engine::~Engine(){
 }
 
 QStringList Engine::getScenarioNames() const{
-    QStringList names;
-    foreach(QString name, scenarios.keys())
-        if(!name.contains("_mini_") && !name.contains("custom_scenario")) names << name;
-    return names;
+    return m_scenarios.keys();
 }
 
 void Engine::addScenario(Scenario *scenario){
-    scenarios.insert(scenario->objectName(), scenario);
-
+    m_scenarios[scenario->objectName()] = scenario;
     addPackage(scenario);
 }
 
 const Scenario *Engine::getScenario(const QString &name) const{
-    return scenarios.value(name, NULL);
+    if (m_scenarios.contains(name))
+        return m_scenarios[name];
+    else
+        return m_miniScenes[name];
 }
 
 void Engine::addSkills(const QList<const Skill *> &all_skills){

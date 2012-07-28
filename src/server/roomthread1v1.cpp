@@ -23,9 +23,8 @@ void RoomThread1v1::run(){
     QStringList known_list = general_names.mid(0, 6);
     unknown_list = general_names.mid(6, 4);
 
-    int i;
-    for(i=0; i<4; i++){
-        general_names[i + 6] = QString("x%1").arg(i);
+    for (int i = 0; i < 4; i++) {
+        general_names[i + 6] = QString("x%1").arg(QString::number(i));
     }
 
     QString unknown_str = "+x0+x1+x2+x3";

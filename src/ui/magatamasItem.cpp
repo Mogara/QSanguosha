@@ -37,7 +37,7 @@ void MagatamasBoxItem::_updateLayout()
 
     for (int i = 0; i < 6; i++)
     {
-        _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(i)).
+        _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i))).
             scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
@@ -54,7 +54,7 @@ void MagatamasBoxItem::_updateLayout()
             bgSize.setWidth((yStep + 1) * i);
             bgSize.setHeight(m_iconSize.width());
         }
-        _bgImages[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG).arg(i)).
+        _bgImages[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG).arg(QString::number(i))).
             scaled(bgSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 }

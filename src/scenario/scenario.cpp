@@ -55,8 +55,3 @@ bool Scenario::generalSelection() const{
 AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
     return AI::GetRelation(a, b);
 }
-
-Q_GLOBAL_STATIC(ScenarioHash, Scenarios)
-ScenarioHash& ScenarioAdder::scenarios(){
-    return *(::Scenarios());
-}

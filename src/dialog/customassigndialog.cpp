@@ -1402,9 +1402,9 @@ bool CustomAssignDialog::save(QString path)
 		line.append("\n");
 	}
 
-	for(int i=0;i<list->count();i++)
+	for(int i = 0; i<list->count(); i++)
 	{
-		QString name = i==0 ? "Player" : QString("AI%1").arg(i);
+		QString name = i==0 ? "Player" : QString("AI%1").arg(QString::number(i));
 
 		if(free_choose_general[name])line.append("general:select ");
 		else if(general_mapping[name].isEmpty()){
