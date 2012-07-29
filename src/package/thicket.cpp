@@ -105,10 +105,29 @@ public:
     }
 };
 
+class DummyViewAsSkill: public ViewAsSkill{
+public:
+    DummyViewAsSkill(): ViewAsSkill(""){
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *) const{
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &) const{
+        return NULL;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+};
+
 class Songwei: public TriggerSkill{
 public:
     Songwei():TriggerSkill("songwei$"){
         events << FinishJudge;
+        view_as_skill = new DummyViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -858,6 +877,7 @@ class Baonue: public TriggerSkill{
 public:
     Baonue():TriggerSkill("baonue$"){
         events << Damage << PreHpReduced;
+        view_as_skill = new DummyViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

@@ -155,11 +155,9 @@ const Scenario *Engine::getScenario(const QString &name) const{
         return m_scenarios[name];
     else if (m_miniScenes.contains(name))
         return m_miniScenes[name];
-    else
-    {
-        Q_ASSERT(name == "custom_scenario");
+    else if (name == "custom_scenario")
         return m_customScene;
-    }
+    else return NULL;
 }
 
 void Engine::addSkills(const QList<const Skill *> &all_skills){
