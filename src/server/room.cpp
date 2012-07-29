@@ -14,7 +14,7 @@
 #include "generalselector.h"
 #include "jsonutils.h"
 #include "structs.h"
-#include "compiler-specific.h"
+#include "miniscenarios.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -419,7 +419,7 @@ void Room::gameOver(const QString &winner){
         foreach(ServerPlayer * sp, m_players)
         {
             if(sp->getState() != "robot" &&
-                (winners.contains(sp->getRole()) ||
+               (winners.contains(sp->getRole()) ||
                 winners.contains(sp->objectName()))
                 )
             {
@@ -430,7 +430,6 @@ void Room::gameOver(const QString &winner){
 
         if(playerWinner)
         {
-
             QString id = Config.GameMode;
             id.replace("_mini_","");
             int stage = Config.value("MiniSceneStage",1).toInt();
@@ -438,10 +437,9 @@ void Room::gameOver(const QString &winner){
             if((stage == current) && stage < Sanguosha->getMiniSceneCounts())
             {
                 Config.setValue("MiniSceneStage",current+1);
-                id = QString::number(stage + 1).rightJustified(2, '0');
-                id.prepend("_mini_");
-                Config.setValue("GameMode",id);
-                Config.GameMode = id;
+                QString mode = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(stage + 1));
+                Config.setValue("GameMode", mode);
+                Config.GameMode = mode;
             }
         }
     }
@@ -1535,7 +1533,7 @@ const ProhibitSkill *Room::isProhibited(const Player *from, const Player *to, co
 int Room::drawCard(){
     if(m_drawPile->isEmpty())
         swapPile();
-
+    thread->trigger(FetchDrawPileCard, this, NULL);
     return m_drawPile->takeFirst();
 }
 

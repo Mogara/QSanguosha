@@ -9,10 +9,10 @@ class MiniSceneRule : public ScenarioRule
 {
     Q_OBJECT
 public:
+    static const char* S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN;
+
     MiniSceneRule(Scenario *scenario);
-
     void assign(QStringList &generals, QStringList &roles) const;
-
     QStringList existedGenerals() const;
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
@@ -22,11 +22,12 @@ public:
     void setPile(QString cardList);
     void loadSetting(QString path);
 
-private:
+protected:
     QList< QMap<QString, QString> > players;
     QString setup;
     QMap<QString, QVariant> ex_options;
     static const QString _S_DEFAULT_HERO;
+    QList<int> m_fixedDrawCards;
 };
 
 class MiniScene : public Scenario

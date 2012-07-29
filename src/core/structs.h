@@ -432,6 +432,9 @@ enum TriggerEvent{
     // For hulao pass only
     StageChange,
 
+    // For miniscenarios only
+    FetchDrawPileCard,
+
     NumOfEvents
 };
 
