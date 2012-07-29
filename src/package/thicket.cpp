@@ -141,16 +141,19 @@ public:
         if(card->isBlack()){
             if (player == NULL) return false;
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
+            QList<ServerPlayer *> caopis;
             foreach(ServerPlayer *p, players){
-                QVariant who = QVariant::fromValue(p);
-                if(p->hasLordSkill("songwei") && player->askForSkillInvoke("songwei", who)){
-                    if(player->isMale())
-                        room->broadcastSkillInvoke(objectName(), 1);
-                    else
-                        room->broadcastSkillInvoke(objectName(), 2);
-                    p->drawCards(1);
-                }
+                if(p->hasLordSkill("songwei"))
+                    caopis << p;
             }
+            
+            while(!caopis.isEmpty())
+                if(player->askForSkillInvoke("songwei")){
+                    ServerPlayer *target = room->askForPlayerChosen(player, caopis, objectName());
+                    target->drawCards(1);
+                    caopis.removeOne(target);
+                }else
+                    break;
         }
 
         return false;
@@ -898,9 +901,9 @@ public:
                 }
             }
 
-            foreach(ServerPlayer *dongzhuo, dongzhuos){
-                QVariant who = QVariant::fromValue(dongzhuo);
-                if(player->askForSkillInvoke(objectName(), who)){
+            while(!dongzhuos.isEmpty())
+                if(player->askForSkillInvoke("baonue")){
+                    ServerPlayer *target = room->askForPlayerChosen(player, dongzhuos, objectName());
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*):(spade):(.*)");
                     judge.good = true;
@@ -914,12 +917,12 @@ public:
 
                         RecoverStruct recover;
                         recover.who = player;
-                        room->recover(dongzhuo, recover);
+                        room->recover(target, recover);
                     }
-                }
-            }
+					dongzhuos.removeOne(target);
+                }else
+                    break;
         }
-
         return false;
     }
 };
