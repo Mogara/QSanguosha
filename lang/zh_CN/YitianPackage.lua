@@ -171,6 +171,9 @@ return {
 	["#SizhanLoseHP"] = "%from 的锁定技【%arg2】被触发，流失了 %arg 点体力",
 	["#ShenliBuff"] = "%from 的锁定技【神力】被触发，【杀】的伤害增加了 %arg, 达到了 %arg2 点",
 	["@struggle"] = "死战",
+	["$shenli"] = "死!",
+	["$sizhan1"] = "曹公为安，死战不休",
+	["$sizhan2"] = "哼，不痛不痒！",
 
 	-- 邓艾
 	["#dengshizai"] = "破蜀首功",
@@ -290,7 +293,7 @@ return {
 
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["illustrator:guzhielai"] = "火凤燎原",
-	["cv:guzhielai"] = "",
+	["cv:guzhielai"] = "Jr. Wakaran",
 
 	["designer:dengshizai"] = "Bu懂",
 	["illustrator:dengshizai"] = "三国豪杰传",
