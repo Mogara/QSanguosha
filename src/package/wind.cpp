@@ -751,7 +751,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
 
         if(player->getState()=="online")
             player->invoke("log", message);
-        QString choice = room->askForChoice(player, "guhuo", "question+noquestion");
+        QString choice = room->askForChoice(player, "guhuo", "noquestion+question");
         if(choice == "question"){
             room->setEmotion(player, "question");
             questioned << player;

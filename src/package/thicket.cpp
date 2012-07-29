@@ -154,6 +154,10 @@ public:
             while(!caopis.isEmpty())
                 if(player->askForSkillInvoke("songwei")){
                     ServerPlayer *target = room->askForPlayerChosen(player, caopis, objectName());
+                    if(player->isMale())
+                        room->broadcastSkillInvoke(objectName(), 1);
+                    else
+                        room->broadcastSkillInvoke(objectName(), 2);
                     target->drawCards(1);
                     caopis.removeOne(target);
                 }else
