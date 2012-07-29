@@ -785,7 +785,7 @@ public:
     const CardPattern *getPattern(const char *name) const;
     QList<const Skill *> getRelatedSkills(const char *skill_name) const;
 
-    QStringList getScenarioNames() const;
+    QStringList getModScenarioNames() const;
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const char *name) const;
 
@@ -1044,8 +1044,8 @@ public:
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
     const Card *askForCard(ServerPlayer *player, const char *pattern,
-							const char *prompt, const QVariant &data = QVariant(),
-							TriggerEvent trigger_event = CardResponsed, ServerPlayer *to = NULL);
+                            const char *prompt, const QVariant &data = QVariant(),
+                            TriggerEvent trigger_event = CardResponsed, ServerPlayer *to = NULL);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
     bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt);
     bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt);

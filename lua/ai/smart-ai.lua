@@ -3897,7 +3897,7 @@ end
 dofile "lua/ai/sp-ai.lua"
 dofile "lua/ai/special3v3-ai.lua"
 
-for _, ascenario in ipairs(sgs.Sanguosha:getScenarioNames()) do
+for _, ascenario in ipairs(sgs.Sanguosha:getModScenarioNames()) do
 	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then
 		dofile("lua/ai/" .. string.lower(ascenario) .. "-ai.lua")
 	end

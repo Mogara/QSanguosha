@@ -70,12 +70,11 @@ SOURCES += \
     src/package/yjcm2012-package.cpp \
     src/scenario/boss-mode-scenario.cpp \
     src/scenario/couple-scenario.cpp \
-    src/scenario/fancheng-scenario.cpp \
     src/scenario/guandu-scenario.cpp \
     src/scenario/miniscenarios.cpp \
     src/scenario/scenario.cpp \
     src/scenario/scenerule.cpp \
-    src/scenario/zombie-mode-scenario.cpp \
+    src/scenario/zombie-scenario.cpp \
     src/server/ai.cpp \
     src/server/contestdb.cpp \
     src/server/gamerule.cpp \
@@ -207,12 +206,11 @@ HEADERS += \
     src/package/yjcm2012-package.h \
     src/scenario/boss-mode-scenario.h \
     src/scenario/couple-scenario.h \
-    src/scenario/fancheng-scenario.h \
     src/scenario/guandu-scenario.h \
     src/scenario/miniscenarios.h \
     src/scenario/scenario.h \
     src/scenario/scenerule.h \
-    src/scenario/zombie-mode-scenario.h \
+    src/scenario/zombie-scenario.h \
     src/server/ai.h \
     src/server/contestdb.h \
     src/server/gamerule.h \

@@ -45,7 +45,7 @@ void Engine::_loadMiniScenarios()
             break;
 
         QString sceneKey = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
-        m_scenarios[sceneKey] = new LoadedScenario(QString::number(i));
+        m_miniScenes[sceneKey] = new LoadedScenario(QString::number(i));
         i++;
     }
     loaded = true;
@@ -57,7 +57,6 @@ void Engine::_loadModScenarios()
     addScenario(new CoupleScenario());
     addScenario(new ZombieScenario());
     addScenario(new ImpasseScenario());
-    addScenario(new CustomScenario());
 }
 
 void Engine::addPackage(const QString &name){
@@ -85,6 +84,7 @@ Engine::Engine()
 
     _loadMiniScenarios();
     _loadModScenarios();
+    m_customScene = new CustomScenario();
 
     DoLuaScript(lua, "lua/sanguosha.lua");
 
@@ -140,20 +140,26 @@ Engine::~Engine(){
 #endif
 }
 
-QStringList Engine::getScenarioNames() const{
+QStringList Engine::getModScenarioNames() const{
     return m_scenarios.keys();
 }
 
-void Engine::addScenario(Scenario *scenario){
-    m_scenarios[scenario->objectName()] = scenario;
+void Engine::addScenario(Scenario *scenario) {
+    QString key = scenario->objectName();
+    m_scenarios[key] = scenario;
     addPackage(scenario);
 }
 
 const Scenario *Engine::getScenario(const QString &name) const{
     if (m_scenarios.contains(name))
         return m_scenarios[name];
-    else
+    else if (m_miniScenes.contains(name))
         return m_miniScenes[name];
+    else
+    {
+        Q_ASSERT(name == "custom_scenario");
+        return m_customScene;
+    }
 }
 
 void Engine::addSkills(const QList<const Skill *> &all_skills){
@@ -525,9 +531,9 @@ int Engine::getPlayerCount(const QString &mode) const{
             return rx.capturedTexts().first().toInt();
     }else{
         // scenario mode
-        const Scenario *scenario = scenarios.value(mode, NULL);
-        if(scenario)
-            return scenario->getPlayerCount();
+        const Scenario *scenario = getScenario(mode);
+        Q_ASSERT(scenario);
+        return scenario->getPlayerCount();
     }
 
     return -1;

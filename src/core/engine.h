@@ -62,7 +62,7 @@ public:
     const CardPattern *getPattern(const QString &name) const;
     QList<const Skill *> getRelatedSkills(const QString &skill_name) const;
 
-    QStringList getScenarioNames() const;
+    QStringList getModScenarioNames() const;
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
     void addPackage(const QString &name);
@@ -123,13 +123,12 @@ private:
     QList<const DistanceSkill *> distance_skills;
     QList<const MaxCardsSkill *> maxcards_skills;
 
-    QHash<QString, const Scenario *> scenarios;
-
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;
     QSet<QString> ban_package;
     QHash<QString, Scenario *> m_scenarios;
     QHash<QString, Scenario *> m_miniScenes;
+    Scenario *m_customScene;
 
     lua_State *lua;
 };

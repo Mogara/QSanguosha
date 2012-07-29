@@ -848,7 +848,7 @@ void RoomScene::updateTable()
         QRectF(0, 0, col1 + col2, row1)
     };
 
-    Qt::Alignment aligns[] = {
+    static Qt::Alignment aligns[] = {
         Qt::AlignRight | Qt::AlignTop,
         Qt::AlignHCenter | Qt::AlignTop,
         Qt::AlignLeft | Qt::AlignTop,
@@ -856,6 +856,17 @@ void RoomScene::updateTable()
         Qt::AlignLeft | Qt::AlignVCenter,
         Qt::AlignRight | Qt::AlignVCenter,
         Qt::AlignLeft | Qt::AlignVCenter,
+        Qt::AlignHCenter | Qt::AlignTop,
+    };
+
+    static Qt::Alignment kofAligns[] = {
+        Qt::AlignRight | Qt::AlignTop,
+        Qt::AlignHCenter | Qt::AlignTop,
+        Qt::AlignLeft | Qt::AlignTop,
+        Qt::AlignRight | Qt::AlignBottom,
+        Qt::AlignLeft | Qt::AlignBottom,
+        Qt::AlignRight | Qt::AlignBottom,
+        Qt::AlignLeft | Qt::AlignBottom,
         Qt::AlignHCenter | Qt::AlignTop,
     };
 
@@ -915,7 +926,9 @@ void RoomScene::updateTable()
     for (int i = 0; i < C_NUM_REGIONS; i++)
     {
         if (photosInRegion[i].isEmpty()) continue;
-        Qt::Alignment align = aligns[i];
+        Qt::Alignment align;
+        if (pkMode) align = kofAligns[i];
+        else align = aligns[i];
         Qt::Orientation orient = orients[i];
         
         // if (pkMode) align = Qt::AlignBottom;
