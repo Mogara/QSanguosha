@@ -130,6 +130,10 @@ public:
         view_as_skill = new DummyViewAsSkill;
     }
 
+    virtual int getPriority() const{
+        return 2;
+    }
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL && target->getKingdom() == "wei";
     }
@@ -919,7 +923,7 @@ public:
                         recover.who = player;
                         room->recover(target, recover);
                     }
-					dongzhuos.removeOne(target);
+                    dongzhuos.removeOne(target);
                 }else
                     break;
         }
