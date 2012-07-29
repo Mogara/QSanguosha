@@ -814,8 +814,8 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	end
 	if self:isWeak() then
 		for _, friend in ipairs(self.friends_noself) do
-		if not self:isWeak(friend) then
-			if self.player:canSlash(friend,true) and not (source:objectName() == friend:objectName()) then
+			if not self:isWeak(friend) then
+				if self.player:canSlash(friend,true) and not (source:objectName() == friend:objectName()) then
 					local cards = self.player:getCards("he")
 					cards=sgs.QList2Table(cards)
 					for _,card in ipairs(cards) do
