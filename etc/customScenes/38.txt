@@ -1,0 +1,4 @@
+setPile:89,143,0,54,77
+general:select role:rebel starter:true hp:1 acquireSkills:yingzi singleTurn:lord+loyalist draw:0 hand:53,55,56,57,59,60,61 
+general:yangxiu general2:chengong role:lord maxhp:2 acquireSkills:qingguo,jijiu,feiying draw:0 equip:147,64,67,122 
+general:sujiang role:rebel hp:2 draw:0 equip:58
