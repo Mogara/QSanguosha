@@ -376,28 +376,27 @@ public:
 
     }
 
-    const Card *getCard(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        int card_id = room->drawCard();
-        const Card *card = Sanguosha->getCard(card_id);
-        room->moveCardTo(card, NULL, player, Player::PlaceTable,
-            CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->getGeneralName(), "fuhun", QString()), true);
-        room->getThread()->delay();
-
-        player->obtainCard(card, true);
-
-        return card;
-    }
-
     virtual bool onPhaseChange(ServerPlayer *shuangying) const{
         switch(shuangying->getPhase()){
         case Player::Draw:{
             if(shuangying->askForSkillInvoke(objectName())){
-                const Card *first = getCard(shuangying);
-                const Card *second = getCard(shuangying);
+                Room* room = shuangying->getRoom();
+                int card1 = room->drawCard();
+                int card2 = room->drawCard();
+                CardsMoveStruct move, move2;
+                move.card_ids.append(card1);
+                move.card_ids.append(card2);
+                move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, shuangying->getGeneralName(), "fuhun", QString());
+                move.to_place = Player::PlaceTable;
+                room->moveCardsAtomic(move, true);
+                room->getThread()->delay();
+                move2 = move;
+                move2.to_place = Player::PlaceHand;
+                move2.to = shuangying;
+                move2.reason.m_reason = CardMoveReason::S_REASON_DRAW;
+                room->moveCardsAtomic(move2, true);
 
-                Room *room = shuangying->getRoom();
-                if(first->getColor() != second->getColor()){
+                if (Sanguosha->getCard(card1)->getColor() != Sanguosha->getCard(card2)->getColor()){
                     room->broadcastSkillInvoke(objectName(), 1);
                     room->setEmotion(shuangying, "good");
                     room->acquireSkill(shuangying, "wusheng");
