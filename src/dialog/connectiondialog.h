@@ -18,7 +18,8 @@ class ConnectionDialog : public QDialog {
 public:
     ConnectionDialog(QWidget *parent);
     ~ConnectionDialog();
-
+    void hideAvatarList();
+    void showAvatarList();
 private:
     Ui::ConnectionDialog *ui;
 
