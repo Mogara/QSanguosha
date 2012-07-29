@@ -260,9 +260,6 @@ private:
     QGraphicsPixmapItem *m_rolesBox;
     QGraphicsTextItem *m_pileCardNumInfoTextBox;
     QGraphicsPixmapItem *m_tableBg;
-#ifdef AUDIO_SUPPORT
-    QSharedMemory *memory;
-#endif
 
     // for 3v3 & 1v1 mode
     QSanSelectableItem *selector_box;

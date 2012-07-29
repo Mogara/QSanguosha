@@ -294,10 +294,6 @@ RoomScene::RoomScene(QMainWindow *main_window):
         addItem(prompt_box);
     }
 
-#ifdef AUDIO_SUPPORT
-    memory = new QSharedMemory("QSanguosha", this);
-#endif
-
     timer_id = 0;
     tick = 0;
 
@@ -3323,30 +3319,6 @@ void RoomScene::onGameStart(){
 #ifdef AUDIO_SUPPORT
 
     if(!Config.EnableBgMusic)
-        return;
-
-    bool play_music = false;
-    if(memory->isAttached() || memory->attach()){
-        memory->lock();
-
-        char *username = static_cast<char *>(memory->data());
-        const char *my_username = Config.UserName.toAscii();
-        play_music = qstrcmp(username, my_username) == 0;
-
-        memory->unlock();
-    }else if(memory->create(255)){
-        memory->lock();
-
-        void *data = memory->data();
-        const char *username = Config.UserName.toAscii();
-        memcpy(data, username, qstrlen(username));
-
-        play_music = true;
-
-        memory->unlock();
-    }
-
-    if(!play_music)
         return;
 
     // start playing background music
