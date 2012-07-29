@@ -434,10 +434,10 @@ void Room::gameOver(const QString &winner){
             id.replace("_mini_","");
             int stage = Config.value("MiniSceneStage",1).toInt();
             int current = id.toInt();
-            if((stage == current) && stage < Sanguosha->getMiniSceneCounts())
+            if (current < Sanguosha->getMiniSceneCounts())
             {
-                Config.setValue("MiniSceneStage",current + 1);
-                QString mode = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(stage + 1));
+                if (current + 1 > stage) Config.setValue("MiniSceneStage",current + 1);
+                QString mode = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(current + 1));
                 Config.setValue("GameMode", mode);
                 Config.GameMode = mode;
             }

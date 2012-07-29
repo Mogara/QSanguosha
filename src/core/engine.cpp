@@ -364,9 +364,15 @@ Card *Engine::getCard(int cardId) {
 
 const Card *Engine::getEngineCard(int cardId) const{
     if(cardId < 0 || cardId >= cards.length())
+    {
+        Q_ASSERT(FALSE);
         return NULL;
+    }
     else
-        return cards.at(cardId);
+    {
+        Q_ASSERT(cards[cardId] != NULL);
+        return cards[cardId];
+    }
 }
 
 Card *Engine::cloneCard(const Card* card) const{

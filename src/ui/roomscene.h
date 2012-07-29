@@ -331,7 +331,8 @@ private:
     void _dispersePhotos(QList<Photo*> &photos, QRectF disperseRegion,
                          Qt::Orientation orientation, Qt::Alignment align);
 
-
+    // for miniscenes
+    int _m_currentStage;
 private slots:
     void fillCards(const QList<int>& card_ids);
     void updateSkillButtons();

@@ -402,9 +402,11 @@ void PlayerCardContainer::updateDrankState()
 
 void PlayerCardContainer::updateHandcardNum()
 {
-    if (!m_player || !m_player->getGeneral()) return;
+    int num = 0;    
+    if (m_player && m_player->getGeneral()) num = m_player->getHandcardNum();
+    Q_ASSERT(num >= 0);
     _m_layout->m_handCardFont.paintText(_m_handCardNumText, _m_layout->m_handCardArea, 
-        Qt::AlignCenter, QString::number(m_player->getHandcardNum()));
+        Qt::AlignCenter, QString::number(num));
     _m_handCardNumText->setVisible(true);
 }
 

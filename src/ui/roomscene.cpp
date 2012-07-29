@@ -2719,10 +2719,12 @@ void RoomScene::addRestartButton(QDialog *dialog){
     {
         QString id = Config.GameMode;
         id.replace("_mini_", "");
-        int stage = Config.value("MiniSceneStage", 1).toInt();
         int current = id.toInt();
-        if((stage == current) && stage < Sanguosha->getMiniSceneCounts())
+        if (current != _m_currentStage)
+        {
+            Q_ASSERT(_m_currentStage == current - 1);
             goto_next = true;
+        }
     }
 
     QPushButton *restart_button;
@@ -3285,8 +3287,13 @@ void RoomScene::onGameStart(){
     }
 
 #endif
-
-    if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
+    if (Config.GameMode.contains("_mini_"))
+    {
+        QString id = Config.GameMode;
+        id.replace("_mini_", "");
+        _m_currentStage = id.toInt();
+    }
+    else if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
         selector_box->deleteLater();
         selector_box = NULL;
 
