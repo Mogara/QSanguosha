@@ -84,7 +84,7 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
         map_good.set("renegade", "rebel", Friend, true);
 
         map_bad = map;
-        map_bad.set("renegade", "loyalist", Friend, true);
+        map_bad.set("renegade", "loyalist", Neutrality, true);
         map_bad.set("renegade", "rebel", Enemy, true);
     }
 
@@ -92,14 +92,27 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
         return Enemy;
     }
 
+    QString roleA = a->getRole();
+    QString roleB = b->getRole();
     Room *room = a->getRoom();
-    QString process = room->getTag("GameProcess").toString();
-    if(process == "Balance")
-        return map.get(a->getRole(), b->getRole());
-    else if(process == "LordSuperior")
-        return map_good.get(a->getRole(), b->getRole());
-    else
-        return map_bad.get(a->getRole(), b->getRole());
+    
+    int good = 0, bad = 0;
+    QList<ServerPlayer *> players = room->getAlivePlayers();
+    foreach(ServerPlayer *player, players){
+        switch(player->getRoleEnum()){
+        case Player::Lord:
+        case Player::Loyalist: good ++; break;
+        case Player::Rebel: bad++; break;
+        case Player::Renegade: break;
+        }
+    }
+
+    if (bad > good)
+        return map_bad.get(roleA, roleB);
+    else if (good > bad)
+        return map_good.get(roleA, roleB);
+    else 
+        return map.get(roleA, roleB);
 }
 
 AI::Relation AI::relationTo(const ServerPlayer *other) const{

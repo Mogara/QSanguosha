@@ -8,8 +8,6 @@ class GameRule : public TriggerSkill{
 
 public:
     GameRule(QObject *parent);
-    void setGameProcess(Room *room) const;
-
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual int getPriority() const;
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;

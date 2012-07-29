@@ -129,29 +129,6 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
     }
 }
 
-void GameRule::setGameProcess(Room *room) const{
-    int good = 0, bad = 0;
-    QList<ServerPlayer *> players = room->getAlivePlayers();
-    foreach(ServerPlayer *player, players){
-        switch(player->getRoleEnum()){
-        case Player::Lord:
-        case Player::Loyalist: good ++; break;
-        case Player::Rebel: bad++; break;
-        case Player::Renegade: break;
-        }
-    }
-
-    QString process;
-    if(good == bad)
-        process = "Balance";
-    else if(good > bad)
-        process = "LordSuperior";
-    else
-        process = "RebelSuperior";
-
-    room->setTag("GameProcess", process);
-}
-
 bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
     if(room->getTag("SkipGameRule").toBool()){
         room->removeTag("SkipGameRule");
@@ -175,7 +152,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                     room->sendLog(log);
                 }                
             }
-            setGameProcess(room);
             room->setTag("FirstRound", true);
             room->drawCards(room->getPlayers(), 4, false);
         }
@@ -518,8 +494,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             if(killer){
                 rewardAndPunish(killer, player);
             }
-
-            setGameProcess(room);
 
             if(room->getMode() == "02_1v1"){
                 QStringList list = player->tag["1v1Arrange"].toStringList();
