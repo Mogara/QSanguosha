@@ -158,7 +158,8 @@ public:
                     can_invoke = true;
         }
         else
-            can_invoke = true;
+            if(room->askForSkillInvoke(player,objectName()))
+                can_invoke = true;
         if(!can_invoke)
             return false;
 
