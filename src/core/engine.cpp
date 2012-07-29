@@ -363,7 +363,8 @@ Card *Engine::getCard(int cardId) {
 }
 
 const Card *Engine::getEngineCard(int cardId) const{
-    if(cardId < 0 || cardId >= cards.length())
+    if (cardId == Card::S_UNKNOWN_CARD_ID) return NULL;
+    else if(cardId < 0 || cardId >= cards.length())
     {
         Q_ASSERT(FALSE);
         return NULL;

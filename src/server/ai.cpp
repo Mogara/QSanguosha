@@ -94,6 +94,7 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
 
     QString roleA = a->getRole();
     QString roleB = b->getRole();
+    
     Room *room = a->getRoom();
     
     int good = 0, bad = 0;
