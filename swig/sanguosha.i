@@ -722,6 +722,9 @@ public:
     WrappedCard* toWrapped(){
         return qobject_cast<WrappedCard*>($self);
     }
+    TrickCard* toTrick(){
+        return qobject_cast<TrickCard*>($self);
+    }
 };
 
 class WrappedCard : public Card
