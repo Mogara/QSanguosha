@@ -101,9 +101,9 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
     foreach(ServerPlayer *player, players){
         switch(player->getRoleEnum()){
         case Player::Lord:
-        case Player::Loyalist: good ++; break;
+        case Player::Loyalist: good++; break;
         case Player::Rebel: bad++; break;
-        case Player::Renegade: break;
+        case Player::Renegade: good++; break;
         }
     }
 
