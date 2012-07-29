@@ -146,10 +146,9 @@ public:
             if (player == NULL) return false;
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
             QList<ServerPlayer *> caopis;
-            foreach(ServerPlayer *p, players){
+            foreach(ServerPlayer *p, players)
                 if(p->hasLordSkill("songwei"))
                     caopis << p;
-            }
             
             while(!caopis.isEmpty())
                 if(player->askForSkillInvoke("songwei")){
@@ -159,9 +158,14 @@ public:
                     else
                         room->broadcastSkillInvoke(objectName(), 2);
                     target->drawCards(1);
+                    room->setPlayerFlag(target, "songweiused");      //for AI
                     caopis.removeOne(target);
                 }else
                     break;
+                    
+            foreach(ServerPlayer *p, room->getAllPlayers())        //for AI
+                if(p->hasFlag("songweiused"))
+                    room->setPlayerFlag(p, "-songweiused");
         }
 
         return false;
@@ -927,9 +931,14 @@ public:
                         recover.who = player;
                         room->recover(target, recover);
                     }
+                    room->setPlayerFlag(target, "baonueused");     //for AI
                     dongzhuos.removeOne(target);
                 }else
                     break;
+                    
+            foreach(ServerPlayer *p, room->getAllPlayers())        //for AI
+                if(p->hasFlag("baonueused"))
+                    room->setPlayerFlag(p, "-baonueused");
         }
         return false;
     }

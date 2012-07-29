@@ -41,8 +41,21 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 end
 
 sgs.ai_skill_invoke.songwei = function(self, data)
-	local who = data:toPlayer()
-	return self:isFriend(who) and self.player:isAlive()
+	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if p:hasLordSkill("songwei") and self:isFriend(p) and not p:hasFlag("songweiused") and p:isAlive() then
+			return true
+		end
+	end
+end
+
+sgs.ai_skill_playerchosen.songwei = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	for _, target in ipairs(targets) do
+		if self:isFriend(target) and not target:hasFlag("songweiused") and target:isAlive() then 
+			return target 
+		end 
+	end
+	return targets[1]
 end
 
 sgs.ai_card_intention.FangzhuCard = function(card, from, tos)
@@ -373,7 +386,23 @@ end
 sgs.ai_skill_cardask["@roulin1-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]
 sgs.ai_skill_cardask["@roulin2-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]
 
-sgs.ai_skill_invoke.baonue = sgs.ai_skill_invoke.songwei
+sgs.ai_skill_invoke.baonue = function(self, data)
+	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if p:hasLordSkill("baonue") and self:isFriend(p) and not p:hasFlag("baonueused") and p:isAlive() then
+			return true
+		end
+	end
+end
+
+sgs.ai_skill_playerchosen.baonue = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	for _, target in ipairs(targets) do
+		if self:isFriend(target) and not target:hasFlag("baonueused") and target:isAlive() then 
+			return target 
+		end 
+	end
+	return targets[1]
+end
 
 sgs.dongzhuo_suit_value = 
 {
