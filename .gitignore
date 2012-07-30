@@ -33,3 +33,5 @@ builds/vs2010/QSanguosha.suo
 Bin/
 tags
 /extensions
+*~
+*.kdev4
