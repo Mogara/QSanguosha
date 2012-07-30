@@ -1,6 +1,11 @@
 Open Source Sanguosha
 ==========
 
+| Homepage:      | https://qsanguosha.org                        |
+|----------------|-----------------------------------------------|
+| API reference: | http://gaodayihao.github.com/QSanguosha/api   |
+| Documentation: | https://github.com/gaodayihao/QSanguosha/wiki (Chinese) |
+
 Introduction
 ----------
 
@@ -13,10 +18,6 @@ such as SDL, HGE, Clanlib and others,
 but many of them lack some important features. 
 Although Qt is an application framework instead of a game engine, 
 its graphics view framework is suitable for my game developing.
-
-Our site: qsanguosha.org
-
-API reference: http://gaodayihao.github.com/QSanguosha/api
 
 Features
 ----------
