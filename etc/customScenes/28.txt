@@ -1,5 +1,5 @@
 
-setPile:38,36,35,34,21,75,48,126,129,54,37,53,59,114,11,7,47,90,29
+setPile:38,36,35,34,21,75,48,126,129,54,37,53,59,114,11,7,47,52,29
 general:select general2:select role:renegade starter:true hp:1 chained:true singleTurn:lord+loyalist draw:0 hand:135 
 general:sunquan role:lord hp:1 chained:true draw:0 
 general:gongsunzan role:loyalist chained:true draw:0 

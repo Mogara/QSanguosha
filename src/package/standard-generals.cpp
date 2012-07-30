@@ -1431,8 +1431,9 @@ public:
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from != sp_shenzhaoyun)
                 return false;
-            if(sp_shenzhaoyun->getHandcardNum()<4 && sp_shenzhaoyun->getPhase() != Player::Discard && room->askForSkillInvoke(sp_shenzhaoyun,objectName()))
-                sp_shenzhaoyun->drawCards(4-sp_shenzhaoyun->getHandcardNum());
+            if(sp_shenzhaoyun->getHandcardNum() < 4 && sp_shenzhaoyun->getPhase() != Player::Discard && 
+               room->askForSkillInvoke(sp_shenzhaoyun,objectName()))
+                sp_shenzhaoyun->drawCards(4 - sp_shenzhaoyun->getHandcardNum());
         }
         return false;
     }
