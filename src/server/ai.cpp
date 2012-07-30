@@ -17,9 +17,10 @@ AI::AI(ServerPlayer *player)
 typedef QPair<QString, QString> RolePair;
 
 struct RoleMapping: public QMap<RolePair, AI::Relation> {
-    void set(const QString &role1, const QString &role2, AI::Relation relation, bool reverse = false){
+    void set(const QString &role1, const QString &role2, AI::Relation relation,
+             bool bidirectional = false){
         insert(qMakePair(role1, role2), relation);
-        if(reverse)
+        if(bidirectional)
             insert(qMakePair(role2, role1), relation);
     }
 
@@ -56,9 +57,12 @@ AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *
     return aKingdom == bKingdom ? Friend :Enemy;
 }
 
-AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
-    RoleMapping map, map_good, map_bad;
-    if(map.isEmpty()){
+AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b)
+{
+    if (a == b) return Friend;
+    static RoleMapping map, map_good, map_bad;
+    if (map.isEmpty())
+    {
         map.set("lord", "lord", Friend);
         map.set("lord", "rebel", Enemy);
         map.set("lord", "loyalist", Friend);
@@ -80,8 +84,8 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
         map.set("renegade", "renegade", Neutrality);
 
         map_good = map;
-        map_good.set("renegade", "loyalist", Enemy, true);
-        map_good.set("renegade", "rebel", Friend, true);
+        map_good.set("renegade", "loyalist", Enemy, false);
+        map_good.set("renegade", "rebel", Friend, false);
 
         map_bad = map;
         map_bad.set("renegade", "loyalist", Neutrality, true);
@@ -116,7 +120,8 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
         return map.get(roleA, roleB);
 }
 
-AI::Relation AI::relationTo(const ServerPlayer *other) const{
+AI::Relation AI::relationTo(const ServerPlayer *other) const
+{
     if(self == other)
         return Friend;
 
@@ -132,18 +137,21 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
     return GetRelation(self, other);
 }
 
-bool AI::isFriend(const ServerPlayer *other) const{
+bool AI::isFriend(const ServerPlayer *other) const
+{
     return relationTo(other) == Friend;
 }
 
-bool AI::isEnemy(const ServerPlayer *other) const{
+bool AI::isEnemy(const ServerPlayer *other) const
+{
     return relationTo(other) == Enemy;
 }
 
-QList<ServerPlayer *> AI::getEnemies() const{
+QList<ServerPlayer *> AI::getEnemies() const
+{
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> enemies;
-    foreach(ServerPlayer *p, players){
+    foreach(ServerPlayer *p, players) {
         if(isEnemy(p))
             enemies << p;
     }
@@ -450,7 +458,7 @@ bool LuaAI::getTable(lua_State *L, QList<int> &table){
 
     size_t len = lua_objlen(L, -1);
     size_t i;
-    for(i=0; i<len; i++){
+    for(i = 0; i < len; i++){
         lua_rawgeti(L, -1, i+1);
         table << lua_tointeger(L, -1);
         lua_pop(L, 1);
@@ -491,11 +499,10 @@ void LuaAI::pushCallback(lua_State *L, const char *function_name){
 
 void LuaAI::pushQIntList(lua_State *L, const QList<int> &list){
     lua_createtable(L, list.length(), 0);
-
-    int i;
-    for(i=0; i<list.length(); i++){
+        
+    for(int i = 0; i < list.length(); i++){
         lua_pushinteger(L, list.at(i));
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -2, i + 1);
     }
 }
 

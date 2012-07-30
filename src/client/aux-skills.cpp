@@ -121,16 +121,19 @@ YijiViewAsSkill::YijiViewAsSkill()
     card = new RendeCard;
 }
 
-void YijiViewAsSkill::setCards(const QString &card_str){
+void YijiViewAsSkill::setCards(const QString &card_str)
+{
     QStringList cards = card_str.split("+");
     ids = Card::StringsToIds(cards);
 }
 
-bool YijiViewAsSkill::viewFilter(const QList<const Card *> &, const Card* card) const{
+bool YijiViewAsSkill::viewFilter(const QList<const Card *> &, const Card* card) const
+{
     return ids.contains(card->getId());
 }
 
-const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const{
+const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const
+{
     if(cards.isEmpty())
         return NULL;
 
