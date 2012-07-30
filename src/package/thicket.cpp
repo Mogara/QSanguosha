@@ -143,29 +143,30 @@ public:
         CardStar card = judge->card;
 
         if(card->isBlack()){
-            if (player == NULL) return false;
-            QList<ServerPlayer *> players = room->getOtherPlayers(player);
             QList<ServerPlayer *> caopis;
-            foreach(ServerPlayer *p, players)
-                if(p->hasLordSkill("songwei"))
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if(p->hasLordSkill(objectName()))
                     caopis << p;
+            }
             
-            while(!caopis.isEmpty())
-                if(player->askForSkillInvoke("songwei")){
-                    ServerPlayer *target = room->askForPlayerChosen(player, caopis, objectName());
+            while(!caopis.isEmpty()){
+                if(player->askForSkillInvoke(objectName())){
+                    ServerPlayer *caopi = room->askForPlayerChosen(player, caopis, objectName());
                     if(player->isMale())
                         room->broadcastSkillInvoke(objectName(), 1);
                     else
                         room->broadcastSkillInvoke(objectName(), 2);
-                    target->drawCards(1);
-                    room->setPlayerFlag(target, "songweiused");      //for AI
-                    caopis.removeOne(target);
+                    caopi->drawCards(1);
+                    caopi->setFlags("songweiused");      //for AI
+                    caopis.removeOne(caopi);
                 }else
                     break;
+            }
                     
-            foreach(ServerPlayer *p, room->getAllPlayers())        //for AI
-                if(p->hasFlag("songweiused"))
-                    room->setPlayerFlag(p, "-songweiused");
+            foreach(ServerPlayer *caopi, caopis){        //for AI
+                if(caopi->hasFlag("songweiused"))
+                    caopi->setFlags("-songweiused");
+            }
         }
 
         return false;
@@ -906,20 +907,21 @@ public:
         else if (triggerEvent == Damage && player->tag.value("InvokeBaonue", false).toBool())
         {
             QList<ServerPlayer *> dongzhuos;
-            QList<ServerPlayer *> players = room->getOtherPlayers(player);
-            foreach(ServerPlayer *p, players){
-                if(p->hasLordSkill("baonue")){
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if(p->hasLordSkill(objectName())){
                     dongzhuos << p;
                 }
             }
 
-            while(!dongzhuos.isEmpty())
-                if(player->askForSkillInvoke("baonue")){
-                    ServerPlayer *target = room->askForPlayerChosen(player, dongzhuos, objectName());
+            while(!dongzhuos.isEmpty()){
+                if(player->askForSkillInvoke(objectName())){
+                    ServerPlayer *dongzhuo = room->askForPlayerChosen(player, dongzhuos, objectName());
+                    dongzhuo->setFlags("baonueused");           //for AI
+                    dongzhuos.removeOne(dongzhuo);
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*):(spade):(.*)");
                     judge.good = true;
-                    judge.reason = "baonue";
+                    judge.reason = objectName();
                     judge.who = player;
 
                     room->judge(judge);
@@ -929,16 +931,16 @@ public:
 
                         RecoverStruct recover;
                         recover.who = player;
-                        room->recover(target, recover);
+                        room->recover(dongzhuo, recover);
                     }
-                    room->setPlayerFlag(target, "baonueused");     //for AI
-                    dongzhuos.removeOne(target);
                 }else
                     break;
-                    
-            foreach(ServerPlayer *p, room->getAllPlayers())        //for AI
-                if(p->hasFlag("baonueused"))
-                    room->setPlayerFlag(p, "-baonueused");
+            }
+
+            foreach(ServerPlayer *dongzhuo, dongzhuos){        //for AI
+                if(dongzhuo->hasFlag("baonueused"))
+                    dongzhuo->setFlags("-baonueused");
+            }
         }
         return false;
     }

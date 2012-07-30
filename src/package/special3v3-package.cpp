@@ -138,7 +138,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && TriggerSkill::triggerable(target) && !target->isNude();
+        return TriggerSkill::triggerable(target) && !target->isNude();
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -147,19 +147,18 @@ public:
         bool can_invoke = false;
         if(ServerInfo.GameMode == "06_3v3"){
             foreach(ServerPlayer *teammate, getTeammates(player)){
-                if(teammate->objectName() == judge->who->objectName()){
+                if(teammate == judge->who){
                     can_invoke = true;
                     break;
                 }
             }
-        }else if(judge->who->objectName() != player->objectName()){
+        }else if(judge->who != player){
             if(room->askForSkillInvoke(player,objectName()))
                 if(room->askForChoice(judge->who, objectName(), "yes+no") == "yes")
                     can_invoke = true;
         }
-        else
-            if(room->askForSkillInvoke(player,objectName()))
-                can_invoke = true;
+        else can_invoke = true;
+
         if(!can_invoke)
             return false;
 
@@ -169,8 +168,12 @@ public:
         QString prompt = prompt_list.join(":");
 
         player->tag["Judge"] = data;
-        QString pattern = ServerInfo.GameMode == "06_3v3" ? "@huanshi" : "@huanshi!";
+        bool force = !(ServerInfo.GameMode == "06_3v3" || player == judge->who);
+        QString pattern = force ? "@huanshi!" : "@huanshi";
         const Card *card = room->askForCard(player, pattern, prompt, data, AskForRetrial);
+
+        if(force && card == NULL)
+            card = player->getCards("he").at(qrand() % player->getCardCount(true));
 
         room->retrial(card, player, judge, objectName());
 
