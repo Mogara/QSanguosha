@@ -171,9 +171,6 @@ return {
 	["#SizhanLoseHP"] = "%from 的锁定技【%arg2】被触发，流失了 %arg 点体力",
 	["#ShenliBuff"] = "%from 的锁定技【神力】被触发，【杀】的伤害增加了 %arg, 达到了 %arg2 点",
 	["@struggle"] = "死战",
-	["$shenli"] = "死!",
-	["$sizhan1"] = "曹公为安，死战不休",
-	["$sizhan2"] = "哼，不痛不痒！",
 
 	-- 邓艾
 	["#dengshizai"] = "破蜀首功",
@@ -228,6 +225,11 @@ return {
 	["designer:caochong"] = "太阳神上",
 	["illustrator:caochong"] = "三国志大战",
 	["cv:caochong"] = "",
+	["$chengxiang1"] = "置象舟上，刻其水痕所至。" --发动技能
+	["$chengxiang2"] = "称物载之，则校可知矣。" --恢复体力
+	["$conghui"] = "吾虽年幼，智意所及，有若成人。",
+	["$zaoyao"] = "仓舒，仓舒……（女声）",
+	["~caochong"] = "天下无道，凤凰远引，凤凰，凤凰！凤——凰——！",
 
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["illustrator:zhangjunyi"] = "火凤燎原",
@@ -294,6 +296,9 @@ return {
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["illustrator:guzhielai"] = "火凤燎原",
 	["cv:guzhielai"] = "Jr. Wakaran",
+	["$shenli"] = "死!",
+	["$sizhan1"] = "曹公为安，死战不休",
+	["$sizhan2"] = "哼，不痛不痒！",
 
 	["designer:dengshizai"] = "Bu懂",
 	["illustrator:dengshizai"] = "三国豪杰传",

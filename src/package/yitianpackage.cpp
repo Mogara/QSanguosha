@@ -1402,8 +1402,8 @@ public:
             log.arg = QString::number(damage.damage);
             log.arg2 = objectName();
 
-            elai->getRoom()->playSkillEffect(objectName());
-            elai->getRoom()->sendLog(log);
+            room->playSkillEffect(objectName());
+            room->sendLog(log);
 
             elai->gainMark("@struggle", damage.damage);
 
@@ -1456,7 +1456,7 @@ public:
                 log.arg2 = QString::number(damage.damage);
                 room->sendLog(log);
 
-                elai->getRoom()->playSkillEffect(objectName());
+                room->playSkillEffect(objectName());
             }
         }
 
