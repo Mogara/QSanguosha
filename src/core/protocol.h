@@ -24,6 +24,22 @@ namespace QSanProtocol
         S_CLIENT_NOTIFICATION
     };
 
+    enum PacketDescription
+    {
+      S_DESC_UNKNOWN,
+      S_TYPE_REQUEST = 0x1,
+      S_TYPE_REPLY = 0x2,
+      S_TYPE_NOTIFICATION = 0x4,
+      S_FROM_ROOM = 0x10,
+      S_FROM_LOBBY = 0x20,
+      S_FROM_CLIENT = 0x40,
+      S_TO_ROOM = 0x100,
+      S_TO_LOBBY = 0x200,
+      S_TO_CLIENT = 0x400,
+
+      S_DESC_DUMMY
+    };
+
     enum ProcessInstanceType
     {
         S_SERVER_INSTANCE,
