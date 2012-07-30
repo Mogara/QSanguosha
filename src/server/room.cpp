@@ -235,6 +235,14 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
         killer->addVictim(victim);
     }
 
+    if(Config.EnableHegemony && victim->getGeneralName() != "anjiang"){
+        QVariant victims;
+        QStringList victim_list;
+        victim_list << victim->objectName();
+        victims.setValue(victim_list);
+        setTag("RecordVictimsOfHegemony", victims);
+    }
+
     victim->setAlive(false);
 
     int index = m_alivePlayers.indexOf(victim);

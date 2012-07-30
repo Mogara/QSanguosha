@@ -1156,7 +1156,10 @@ void Client::gameOver(const Json::Value &arg){
     QSet<QString> winners = winner.split("+").toSet();
     foreach(const ClientPlayer *player, players){
         QString role = player->getRole();
-        bool win = winners.contains(player->objectName()) || winners.contains(role);
+        QString kingdom = player->getKingdom();
+        bool win = winners.contains(player->objectName())
+                || winners.contains(role)
+                || winners.contains(kingdom);
 
         ClientPlayer *p = const_cast<ClientPlayer *>(player);
         p->setProperty("win", win);

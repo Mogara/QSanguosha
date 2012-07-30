@@ -1429,7 +1429,9 @@ TestPackage::TestPackage()
     new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);
 
-    new General(this, "anjiang", "god", 4,true, true, true);
+
+    //@todo: Add images of no nationality's general, it cannot use god to express that.
+    new General(this, "anjiang", "god", 4, false, true, true, false);
 }
 
 ADD_PACKAGE(Test)

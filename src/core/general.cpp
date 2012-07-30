@@ -7,8 +7,16 @@
 #include <QSize>
 #include <QFile>
 
-General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden, bool never_shown)
-    :QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female), hidden(hidden), never_shown(never_shown)
+General::General(
+        Package *package,
+        const QString &name,
+        const QString &kingdom,
+        int max_hp,
+        bool male,
+        bool hidden,
+        bool never_shown,
+        bool female)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), hidden(hidden), never_shown(never_shown)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -20,6 +28,13 @@ General::General(Package *package, const QString &name, const QString &kingdom, 
         lord = false;
         setObjectName(name);
     }
+
+    if(male)
+        gender = Male;
+    else if(female)
+        gender = Female;
+    else
+        gender = Neuter;
 }
 
 int General::getMaxHp() const{
