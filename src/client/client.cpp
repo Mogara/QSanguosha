@@ -867,7 +867,7 @@ void Client::askForNullification(const Json::Value &arg){
     }else{
         prompt_doc->setHtml(tr("%1 used trick card %2 to %3 <br>Do you want to use nullification?")
                             .arg(Sanguosha->translate(source->getGeneralName()))
-                            .arg(Sanguosha->translate(trick_card->objectName()))
+                            .arg(Sanguosha->translate(trick_name))
                             .arg(Sanguosha->translate(target_player->getGeneralName())));
     }
 
