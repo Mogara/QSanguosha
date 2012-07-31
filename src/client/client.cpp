@@ -220,10 +220,10 @@ void Client::networkDelayTest(const QString &){
     request("networkDelayTest .");
 }
 
-void Client::replyToServer(CommandType command, const Json::Value &arg){    
+void Client::replyToServer(CommandType command, const Json::Value &arg){
     if(socket)
     {
-        QSanGeneralPacket packet(S_CLIENT_REPLY, command);
+        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.m_localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
         socket->send(toQString(packet.toString()));
@@ -236,10 +236,10 @@ void Client::handleGameEvent(const Json::Value &arg)
 }
 
 void Client::requestToServer(CommandType command, const Json::Value &arg)
-{    
+{
     if(socket)
     {
-        QSanGeneralPacket packet(S_CLIENT_REQUEST, command);        
+        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(toQString(packet.toString()));
     }
@@ -295,14 +295,14 @@ void Client::processServerPacket(const char *cmd){
     QSanGeneralPacket packet;
     if (packet.parse(cmd))
     {
-        if (packet.getPacketType() == S_SERVER_NOTIFICATION)
+        if (packet.getPacketType() == S_TYPE_NOTIFICATION)
         {
             CallBack callback = m_callbacks[packet.getCommandType()];
             if (callback) {            
                 (this->*callback)(packet.getMessageBody());
             }
         }
-        else if (packet.getPacketType() == S_SERVER_REQUEST)
+        else if (packet.getPacketType() == S_TYPE_REQUEST)
             processServerRequest(packet);
     }
     else processObsoleteServerPacket(cmd);

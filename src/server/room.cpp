@@ -529,7 +529,7 @@ bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, co
 
 bool Room::doRequest(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut, bool wait)
 {
-    QSanGeneralPacket packet(S_SERVER_REQUEST, command);
+    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_REQUEST | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     player->acquireLock(ServerPlayer::SEMA_MUTEX);    
     player->m_isClientResponseReady = false;
@@ -645,8 +645,8 @@ ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::C
 
 bool Room::doNotify(ServerPlayer* player, QSanProtocol::CommandType command, const Json::Value &arg)
 {
-    QSanGeneralPacket packet(S_SERVER_NOTIFICATION, command);
-    packet.setMessageBody(arg);     
+    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    packet.setMessageBody(arg);
     player->invoke(&packet);
     return true;
 }
@@ -1048,6 +1048,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         result = card;
     } else if(continuable) {
         result = askForCard(player, pattern, prompt);
+    } else {
+        result = NULL;
     }
     return result;
 }
@@ -1845,7 +1847,7 @@ void Room::processClientPacket(const QString &request){
     if (packet.parse(request.toAscii().constData()))
     {    
         ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());
-        if (packet.getPacketType() == S_CLIENT_REPLY)
+        if (packet.getPacketType() == S_TYPE_REPLY)
         {    
             if (player == NULL) return; 
             player->setClientReplyString(request);            
@@ -1853,7 +1855,7 @@ void Room::processClientPacket(const QString &request){
         }
         //@todo: make sure that cheat is binded to Config.FreeChoose, better make
         // a seperate variable called EnableCheat
-        else if (packet.getPacketType() == S_CLIENT_REQUEST)
+        else if (packet.getPacketType() == S_TYPE_REQUEST)
         {
             CallBack callback = m_callbacks[packet.getCommandType()];
             if (!callback) return;

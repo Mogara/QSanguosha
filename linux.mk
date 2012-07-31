@@ -23,7 +23,7 @@ $(BUILD)/libfmodex.so:
 swig/sanguosha_wrap.cxx: swig/sanguosha.i
 	cd swig && swig -c++ -lua sanguosha.i
 
-$(BUILD)/Makefile:
+$(BUILD)/Makefile: $(OLDPWD)/QSanguosha.pro
 	cd $(BUILD) && qmake $(OLDPWD)/QSanguosha.pro
 
 $(BUILD)/swig/sanguosha_wrap.cxx: swig/sanguosha_wrap.cxx

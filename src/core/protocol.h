@@ -12,30 +12,28 @@ namespace QSanProtocol
         bool isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
         bool isIntArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
     }
-
-    enum PacketType
+    enum PacketType_bak
     {
-        S_UNKNOWN_PACKET,
-        S_SERVER_REQUEST,
-        S_SERVER_REPLY,
-        S_SERVER_NOTIFICATION,
-        S_CLIENT_REQUEST,
-        S_CLIENT_REPLY,
-        S_CLIENT_NOTIFICATION
+        S_UNKNOWN_PACKET1,
+        S_SERVER_REQUEST1,
+        S_SERVER_REPLY1,
+        S_SERVER_NOTIFICATION1,
+        S_CLIENT_REQUEST1,
+        S_CLIENT_REPLY1,
+        S_CLIENT_NOTIFICATION1
     };
-
     enum PacketDescription
     {
       S_DESC_UNKNOWN,
       S_TYPE_REQUEST = 0x1,
       S_TYPE_REPLY = 0x2,
       S_TYPE_NOTIFICATION = 0x4,
-      S_FROM_ROOM = 0x10,
-      S_FROM_LOBBY = 0x20,
-      S_FROM_CLIENT = 0x40,
-      S_TO_ROOM = 0x100,
-      S_TO_LOBBY = 0x200,
-      S_TO_CLIENT = 0x400,
+      S_SRC_ROOM = 0x10,
+      S_SRC_LOBBY = 0x20,
+      S_SRC_CLIENT = 0x40,
+      S_DEST_ROOM = 0x100,
+      S_DEST_LOBBY = 0x200,
+      S_DEST_CLIENT = 0x400,
 
       S_DESC_DUMMY
     };
@@ -191,22 +189,25 @@ namespace QSanProtocol
     public:
         virtual bool parse(const std::string&) = 0;
         virtual std::string toString() const = 0;
-        virtual PacketType getPacketType() const = 0;
-        virtual CommandType getCommandType() const = 0;        
+        virtual PacketDescription getPacketDestination() const = 0;
+        virtual PacketDescription getPacketSource() const = 0;
+        virtual PacketDescription getPacketType() const = 0;
+        virtual PacketDescription getPacketDescription() const = 0;
+        virtual CommandType getCommandType() const = 0;
     };
-        
+
     class QSanGeneralPacket: public QSanPacket
     {
     public:
         //format: [global_serial,local_serial,packet_type,command_name,command_body]
         unsigned int m_globalSerial;
         unsigned int m_localSerial;        
-        inline QSanGeneralPacket(PacketType packetType = S_UNKNOWN_PACKET, CommandType command = S_COMMAND_UNKNOWN)
+        inline QSanGeneralPacket(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN)
         {
             _m_globalSerial++;
             m_globalSerial = _m_globalSerial;
             m_localSerial = 0;
-            m_packetType = packetType;
+            m_packetDescription = static_cast<PacketDescription>(packetDescription);
             m_command = command;
             m_msgBody = Json::nullValue;
         }
@@ -215,12 +216,18 @@ namespace QSanProtocol
         inline const Json::Value& getMessageBody() const {return m_msgBody;}
         virtual bool parse(const std::string&);
         virtual std::string toString() const;
-        inline virtual PacketType getPacketType() const { return m_packetType; }
-        inline virtual CommandType getCommandType() const { return m_command; }
+        virtual PacketDescription getPacketDestination() const
+        { return static_cast<PacketDescription>(m_packetDescription & 0x700); }
+        virtual PacketDescription getPacketSource() const
+        { return static_cast<PacketDescription>(m_packetDescription & 0x70); }
+        virtual PacketDescription getPacketType() const
+        { return static_cast<PacketDescription>(m_packetDescription & 0x7); }
+        virtual PacketDescription getPacketDescription() const { return m_packetDescription; }
+        virtual CommandType getCommandType() const { return m_command; }
     protected:
         static unsigned int _m_globalSerial;
         CommandType m_command;
-        PacketType m_packetType;
+        PacketDescription m_packetDescription;
         Json::Value m_msgBody;
         inline virtual bool parseBody(const Json::Value &value) { m_msgBody = value; return true; }
         virtual const Json::Value& constructBody() const { return m_msgBody; }
