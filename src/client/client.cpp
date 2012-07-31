@@ -1559,28 +1559,14 @@ void Client::speak(const QString &speak_data){
 }
 
 void Client::moveFocus(const Json::Value &focus){
-    QString who;
+    QStringList players;
     Countdown countdown;
-    if (focus.isString())
-    {
-        who = toQString(focus);
-        countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
-    }
-    else
-    {
-        Q_ASSERT(focus.isArray() && focus.size() == 2);
-        who = toQString(focus[0]);
-    
-        bool success = countdown.tryParse(focus[1]);
-        if (!success)
-        {
-            Q_ASSERT(focus[1].isInt());
-            CommandType command = (CommandType)focus[1].asInt();
-            countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
-            countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
-        }
-    }
-    emit focus_moved(who, countdown);
+
+    Q_ASSERT(focus.isArray() && focus.size() == 3);
+    tryParse(focus[0], players);
+    // focus[1] is the moveFocus reason, which is unused for now.
+    countdown.tryParse(focus[2]);
+    emit focus_moved(players, countdown);
 }
 
 void Client::setEmotion(const QString &set_str){

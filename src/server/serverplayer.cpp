@@ -196,8 +196,7 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip){
     QList<const Card *> all_cards = getCards(flags);
     qShuffle(all_cards);
 
-    int i;
-    for(i=0; i<discard_num; i++)
+    for(int i = 0; i < discard_num; i++)
         to_discard << all_cards.at(i)->getId();
 
     return to_discard;
@@ -215,8 +214,7 @@ void ServerPlayer::setSocket(ClientSocket *socket){
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(const char*)), this, SLOT(getMessage(const char*)));
-
-        connect(this, SIGNAL(message_cast(QString)), this, SLOT(castMessage(QString)));
+        connect(this, SIGNAL(message_ready(QString)), this, SLOT(sendMessage(QString)));
     }else{
         if(this->socket){
             this->disconnect(this->socket);
@@ -225,7 +223,7 @@ void ServerPlayer::setSocket(ClientSocket *socket){
             this->socket->deleteLater();
         }
 
-        disconnect(this, SLOT(castMessage(QString)));
+        disconnect(this, SLOT(sendMessage(QString)));
     }
 
     this->socket = socket;
@@ -239,8 +237,10 @@ void ServerPlayer::getMessage(const char *message){
     emit request_got(request);
 }
 
-void ServerPlayer::unicast(const QString &message) const{
-    emit message_cast(message);
+void ServerPlayer::unicast(const QString &message)
+{
+    emit message_ready(message);
+    //sendMessage(message);
 
     if(recorder)
         recorder->recordLine(message);
@@ -327,7 +327,8 @@ void ServerPlayer::clearSelected(){
     selected.clear();
 }
 
-void ServerPlayer::castMessage(const QString &message){
+void ServerPlayer::sendMessage(const QString &message)
+{
     if(socket){
         socket->send(message);
 

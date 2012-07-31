@@ -613,9 +613,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
         {
             QString name = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
             QString scenario_name = Sanguosha->translate(name);
-            const Scenario *scenario = Sanguosha->getScenario(name);
-            int count = scenario->getPlayerCount();
-            QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
+            QString text = tr("%1").arg(scenario_name);
             mini_scene_ComboBox->addItem(text, name);
 
             if (name == Config.GameMode) index = i - 1;

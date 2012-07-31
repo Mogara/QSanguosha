@@ -65,7 +65,7 @@ void RoomScene::resetPiles()
 #include "qsanbutton.h"
 
 RoomScene::RoomScene(QMainWindow *main_window):
-    focused(NULL), main_window(main_window),game_started(false)
+           main_window(main_window),game_started(false)
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
@@ -151,7 +151,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
-    connect(ClientInstance, SIGNAL(focus_moved(QString, QSanProtocol::Countdown)), this, SLOT(moveFocus(QString, QSanProtocol::Countdown)));
+    connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
@@ -2408,7 +2408,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     // do timeout    
     if(newStatus != Client::NotActive){    
-        if(focused) focused->hideProgressBar();
+        // _cancelAllFocus();
         QApplication::alert(main_window);
         connect(dashboard, SIGNAL(progressBarTimedOut()), this, SLOT(doTimeout()));        
         dashboard->showProgressBar(ClientInstance->getCountdown());
@@ -3361,25 +3361,32 @@ void RoomScene::freeze(){
     main_window->setStatusBar(NULL);
 }
 
-void RoomScene::moveFocus(const QString &who, Countdown countdown){
-    if (who == Self->objectName() && focused != NULL)
+void RoomScene::_cancelAllFocus()
+{
+    foreach (Photo* photo, photos)
     {
-        focused->hideProgressBar();
-        if (focused->getPlayer()->getPhase() == Player::NotActive)
-            focused->setFrame(Photo::S_FRAME_NO_FRAME);        
+        photo->hideProgressBar();
+        if (photo->getPlayer()->getPhase() == Player::NotActive)
+            photo->setFrame(Photo::S_FRAME_NO_FRAME);        
     }
-    Photo *photo = name2photo[who];
-    if(photo){
-        if(focused != photo && focused){
-            focused->hideProgressBar();
-            if(focused->getPlayer()->getPhase() == Player::NotActive)
-                focused->setFrame(Photo::S_FRAME_NO_FRAME);
+}
+
+void RoomScene::moveFocus(const QStringList &players, Countdown countdown)
+{
+    _cancelAllFocus();
+    foreach (QString player, players)
+    {
+        Photo *photo = name2photo[player];
+        if (!photo)
+        {
+            Q_ASSERT(player == Self->objectName());
+            continue;
         }
 
-        focused = photo;
-        focused->showProgressBar(countdown);
-        if(focused->getPlayer()->getPhase() == Player::NotActive)
-            focused->setFrame(Photo::S_FRAME_RESPONSING);
+        if (ServerInfo.OperationTimeout > 0)
+            photo->showProgressBar(countdown);
+        else if (photo->getPlayer()->getPhase() == Player::NotActive)
+            photo->setFrame(Photo::S_FRAME_RESPONSING);
     }
 }
 
@@ -3687,7 +3694,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     const static int start_x = 43  + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
     const static int width = 86;
     const static int start_y = 60  + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
-    const static int height = 116;
+    const static int height = 121;
 
     foreach(QString name, names){
         CardItem *item =  new CardItem(name);
@@ -3698,7 +3705,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     qShuffle(general_items);
 
     int n = names.length();
-    double scaleRatio = (double)116 / G_COMMON_LAYOUT.m_cardNormalHeight;
+    double scaleRatio = (double)115 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for(int i = 0; i < n; i++){
 
         int row, column;
@@ -3884,9 +3891,9 @@ void RoomScene::startArrange(){
                 << QPointF(489, 291);
     }else{
         mode = "1v1";
-        positions << QPointF(84, 269)
-                << QPointF(214, 269)
-                << QPointF(344, 269);
+        positions << QPointF(130, 335)
+                << QPointF(260, 335)
+                << QPointF(390, 335);
     }
 
     selector_box->load(QString("image/system/%1/arrange.png").arg(mode));
@@ -3958,8 +3965,8 @@ void RoomScene::toggleArrange(){
         if(ServerInfo.GameMode == "06_3v3")
             pos = QPointF(62 + i * 86, 451);
         else
-            pos = QPointF(43 + i * 86, 60 + 120 * 3);
-
+            pos = QPointF(43 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86,
+                          60 + G_COMMON_LAYOUT.m_cardNormalHeight / 2 + 3 * 120);
         CardItem *item = down_generals.at(i);
         item->setHomePos(pos);
         item->goBack(true);

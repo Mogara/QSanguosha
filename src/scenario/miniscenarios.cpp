@@ -24,23 +24,6 @@ void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const{
     }
 }
 
-QStringList MiniSceneRule::existedGenerals() const
-{
-    QStringList names;
-    for(int i = 0;i < players.length();i++)
-    {
-        QMap<QString,QString> sp =players.at(i);
-        QString name = sp["general"];
-        if (name == "select") name = _S_DEFAULT_HERO;
-        names << name;
-        name = sp["general2"];
-        if (name.isNull()) continue;
-        if (name == "select") name = _S_DEFAULT_HERO;
-        names << name;
-    }
-    return names;
-}
-
 bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const
 {
     if(triggerEvent == EventPhaseStart)
@@ -128,7 +111,6 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 if(general == "select")
                 {
                     QStringList available, all, existed;
-                    existed = existedGenerals();
                     all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
                     qShuffle(all);
                     for(int i = 0; i < 5; i++)
@@ -139,12 +121,6 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                         }
                         sp->setGeneral(NULL);
                         QString choice = sp->findReasonable(all);
-                        if(existed.contains(choice))
-                        {
-                            all.removeOne(choice);
-                            i--;
-                            continue;
-                        }
                         available << choice;
                         all.removeOne(choice);
                     }
@@ -157,7 +133,6 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 if(general == "select")
                 {
                     QStringList available,all,existed;
-                    existed = existedGenerals();
                     all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
                     qShuffle(all);
                     for(int i = 0; i < 5; i++)
@@ -168,12 +143,6 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                         }
                         room->setPlayerProperty(sp,"general2", QVariant());
                         QString choice = sp->findReasonable(all);
-                        if(existed.contains(choice))
-                        {
-                            all.removeOne(choice);
-                            i--;
-                            continue;
-                        }
                         available << choice;
                         all.removeOne(choice);
                     }

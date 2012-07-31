@@ -178,6 +178,7 @@ public:
     // Notification functions
     bool notifyMoveFocus(ServerPlayer* player);
     bool notifyMoveFocus(ServerPlayer* player, QSanProtocol::CommandType command);
+    bool notifyMoveFocus(const QList<ServerPlayer*> &players, QSanProtocol::CommandType command, QSanProtocol::Countdown countdown);
 
     // Notify client side to move cards from one place to another place. A movement should always be completed by
     // calling notifyMoveCards in pairs, one with isLostPhase equaling true followed by one with isLostPhase
