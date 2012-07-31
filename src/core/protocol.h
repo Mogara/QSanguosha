@@ -19,12 +19,15 @@ namespace QSanProtocol
       S_TYPE_REQUEST = 0x1,
       S_TYPE_REPLY = 0x2,
       S_TYPE_NOTIFICATION = 0x4,
+      S_TYPE_MASK = 0xf,
       S_SRC_ROOM = 0x10,
       S_SRC_LOBBY = 0x20,
       S_SRC_CLIENT = 0x40,
+      S_SRC_MASK = 0xf0,
       S_DEST_ROOM = 0x100,
       S_DEST_LOBBY = 0x200,
       S_DEST_CLIENT = 0x400,
+      S_DEST_MASK = 0xf00,
 
       S_DESC_DUMMY
     };
@@ -208,11 +211,11 @@ namespace QSanProtocol
         virtual bool parse(const std::string&);
         virtual std::string toString() const;
         virtual PacketDescription getPacketDestination() const
-        { return static_cast<PacketDescription>(m_packetDescription & 0x700); }
+        { return static_cast<PacketDescription>(m_packetDescription & S_DEST_MASK); }
         virtual PacketDescription getPacketSource() const
-        { return static_cast<PacketDescription>(m_packetDescription & 0x70); }
+        { return static_cast<PacketDescription>(m_packetDescription & S_SRC_MASK); }
         virtual PacketDescription getPacketType() const
-        { return static_cast<PacketDescription>(m_packetDescription & 0x7); }
+        { return static_cast<PacketDescription>(m_packetDescription & S_TYPE_MASK); }
         virtual PacketDescription getPacketDescription() const { return m_packetDescription; }
         virtual CommandType getCommandType() const { return m_command; }
     protected:
