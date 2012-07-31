@@ -143,6 +143,7 @@ void GameRule::setGameProcess(Room *room) const{
         case Player::Lord:
         case Player::Loyalist: good ++; break;
         case Player::Rebel: bad++; break;
+        case Player::Careerist:
         case Player::Renegade: break;
         }
     }
@@ -865,6 +866,7 @@ QString BasaraMode::getMappedRole(const QString &role){
         roles["shu"] = "loyalist";
         roles["wu"] = "rebel";
         roles["qun"] = "renegade";
+        roles["careerist"] = "careerist";
     }
     return roles[role];
 }
@@ -878,22 +880,6 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
     QStringList names = room->getTag(player->objectName()).toStringList();
     if(names.isEmpty())
         return;
-
-    //@todo: change the rule of showing generals,
-    //when the shown generals which have a same
-    //nationality with the showing general, the showing
-    //general's role will change to careerist automatically.
-    //images are needed.
-    if(Config.EnableHegemony){
-        QMap<QString, int> kingdom_roles;
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-            kingdom_roles[p->getKingdom()]++;
-        }
-
-        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= 2
-                && player->getGeneralName() == "anjiang")
-            return;
-    }
 
     QString answer = room->askForChoice(player, "RevealGeneral", "yes+no");
     if(answer == "yes"){
@@ -912,6 +898,18 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     QStringList names = room->getTag(player->objectName()).toStringList();
     if(names.isEmpty())return;
 
+    bool is_careerist = false;
+    if(Config.EnableHegemony){
+        QMap<QString, int> kingdom_roles;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            kingdom_roles[p->getKingdom()]++;
+        }
+
+        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= room->getAlivePlayers().length()/2
+                && player->getGeneralName() == "anjiang")
+            is_careerist = true;
+    }
+
     if(player->getGeneralName() == "anjiang")
     {
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
@@ -929,9 +927,10 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         room->setPlayerProperty(player,"general2",general_name);
     }
 
-    room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+    QString kingdom = is_careerist ? "careerist" : player->getGeneral()->getKingdom();
+    room->setPlayerProperty(player, "kingdom", kingdom);
     if(Config.EnableHegemony)
-        room->setPlayerProperty(player, "role", getMappedRole(player->getGeneral()->getKingdom()));
+        room->setPlayerProperty(player, "role", getMappedRole(kingdom));
 
     names.removeOne(general_name);
     room->setTag(player->objectName(),QVariant::fromValue(names));
@@ -962,6 +961,7 @@ bool BasaraMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, Q
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
                 sp->invoke("transfigure", transfigure_str);
                 room->setPlayerProperty(sp,"general","anjiang");
+                //@todo: change the kingdom of anjiang.
                 room->setPlayerProperty(sp,"kingdom","god");
 
                 LogMessage log;

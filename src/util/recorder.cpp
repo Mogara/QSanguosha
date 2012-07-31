@@ -128,7 +128,7 @@ QByteArray Replayer::PNG2TXT(const QString filename){
 QString &Replayer::commandProceed(QString &cmd){
     static QStringList split_flags;
     if(split_flags.isEmpty()){
-        split_flags << ":" << "+" << "_" << "->";
+        split_flags << ":" << "+" << "->";
     }
 
     foreach(QString flag, split_flags){

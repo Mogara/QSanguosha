@@ -2086,7 +2086,7 @@ void Room::chooseGenerals(){
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
         if(Config.EnableSame)
-            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 7).toInt());
         else if(the_lord->getState() == "robot")
             if(qrand()%100 < nonlord_prob)
                 lord_list = Sanguosha->getRandomGenerals(1);

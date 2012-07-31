@@ -571,14 +571,42 @@ QStringList Engine::getRandomLords() const{
 
 QStringList Engine::getLimitedGeneralNames() const{
     QStringList general_names;
-    QHashIterator<QString, const General *> itor(generals);
-    while(itor.hasNext()){
-        itor.next();
-        if(!ban_package.contains(itor.value()->getPackage())){
-            general_names << itor.key();
+    //something wrong with the list, probably the number
+    //of the generals is not enough to assign to each
+    //players.
+    /*
+    if(ServerInfo.EnableHegemony){
+        //@todo: luxun, huangyueying, zhanghe need to change the skill for hegemony mode.
+        general_names << "caocao" << "caopi" << "zhenji" << "guojia" << "simayi"
+                      << "xunyu" << "xiahoudun" << "xiayouyuan" << "zhanghe" << "zhangliao"
+                      << "xuhuang" << "xuchu" << "dianwei" << "caoren";
+        // << "yuejin";
+
+        general_names << "liubei" << "zhugeliang" << "huangyueying" << "wolong" << "pangtong"
+                      << "guanyu" << "zhangfei" << "zhaoyun" << "machao" << "huangzhong"
+                      << "weiyan" << "liushan" << "menghuo" << "zhurong";
+        // << "ganfuren";
+
+        general_names << "sunquan" << "sunshangxiang" << "zhouyu" << "xiaoqiao" << "daqiao"
+                      << "luxun" << "lusu" << "sunjian" << "taishici" << "ganning" << "huanggai"
+                      << "dingfeng" << "lvmeng" << "zhoutai" << "erzhang";
+
+        general_names << "lvbu" << "diaochan" << "zhangjiao" << "yuanshao" << "yanliangwenchou"
+                      << "jiaxu" << "caiwenji" << "huatuo" << "pangde";
+        //<< "mateng" << "kongrong" << "zoushi" << "tianfeng" << "jiling" << "pangfeng";
+
+    }
+    else
+    */
+    {
+        QHashIterator<QString, const General *> itor(generals);
+        while(itor.hasNext()){
+            itor.next();
+            if(!ban_package.contains(itor.value()->getPackage())){
+                general_names << itor.key();
+            }
         }
     }
-
     return general_names;
 }
 
@@ -590,8 +618,6 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     if(Config.EnableBasara) general_set =
             general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
-    if(Config.EnableHegemony) general_set =
-            general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
 
     if(ServerInfo.GameMode.endsWith("p") ||
                       ServerInfo.GameMode.endsWith("pd"))
