@@ -167,6 +167,7 @@ bool TablePile::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruc
     m_visibleCards.append(card_items);
     int numAdded = card_items.size();
     int numRemoved = m_visibleCards.size() - qMax(m_numCardsVisible, numAdded + 1);
+#if 0
     int shift;
     
     if (numRemoved > 0)
@@ -175,6 +176,7 @@ bool TablePile::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruc
         QPointF oldPos = forerunner->pos();
         shift = oldPos.x() + 10;
     }
+#endif
     
     for (int i = 0; i <  numRemoved; i++)
     {
