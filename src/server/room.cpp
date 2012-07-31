@@ -584,7 +584,10 @@ ServerPlayer* Room::doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanPr
     Countdown countdown;
     countdown.m_max = timeOut;
     countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-    notifyMoveFocus(players, command, countdown);
+    if (command == S_COMMAND_NULLIFICATION)
+        notifyMoveFocus(getAllPlayers(), command, countdown);
+    else
+        notifyMoveFocus(players, command, countdown);
     foreach (ServerPlayer* player, players)
     {
         doRequest(player, command, player->m_commandArgs, timeOut, false);
