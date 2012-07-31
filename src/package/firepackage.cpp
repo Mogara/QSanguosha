@@ -235,15 +235,15 @@ public:
     }
     virtual int getExtra(const Player *target) const{
         int extra = 0;
-        const Player *lord = NULL;
-        if(target->isLord())
-            lord = target;
+        //const Player *lord = NULL;
+        //if(target->isLord())
+        //    lord = target;
         QList<const Player *> players = target->getSiblings();
         foreach(const Player *player, players){
             if(player->isAlive() && player->getKingdom() == "qun")
                 extra += 2;
-            if(player->isLord())
-                lord = player;
+            //if(player->isLord())
+            //    lord = player;
         }
         if(target->hasLordSkill(objectName()))
             return extra;

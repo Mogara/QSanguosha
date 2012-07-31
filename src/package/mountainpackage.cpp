@@ -518,15 +518,15 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     source->pindian(sunce, "zhiba", this);
     QList<ServerPlayer *> sunces;
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
-    ServerPlayer *lordplayer = NULL;
-    if(source->isLord())
-        lordplayer = source;
+    //ServerPlayer *lordplayer = NULL;
+    //if(source->isLord())
+    //    lordplayer = source;
     foreach(ServerPlayer *p, players){
         if(p->hasLordSkill("sunce_zhiba") && !p->hasFlag("ZhibaInvoked")){
             sunces << p;
         }
-        if(p->isLord())
-            lordplayer = p;
+        //if(p->isLord())
+        //    lordplayer = p;
     }
     if(sunces.empty())
         room->setPlayerFlag(source, "ForbidZhiba");
@@ -539,14 +539,14 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        const Player *lord = NULL;
-        if(player->isLord())
-            lord = player;
-        QList<const Player *> players = player->getSiblings();
-        foreach(const Player *p, players){
-            if(p->isLord())
-                lord = p;
-        }
+        //const Player *lord = NULL;
+        //if(player->isLord())
+        //    lord = player;
+        //QList<const Player *> players = player->getSiblings();
+        //foreach(const Player *p, players){
+        //    if(p->isLord())
+        //        lord = p;
+        //}
         return player->getKingdom() == "wu" && !player->isKongcheng() && !player->hasFlag("ForbidZhiba");
     }
 
