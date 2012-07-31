@@ -225,8 +225,8 @@ return {
 	["designer:caochong"] = "太阳神上",
 	["illustrator:caochong"] = "三国志大战",
 	["cv:caochong"] = "",
-	["$chengxiang1"] = "置象舟上，刻其水痕所至。" --发动技能
-	["$chengxiang2"] = "称物载之，则校可知矣。" --恢复体力
+	["$chengxiang1"] = "置象舟上，刻其水痕所至。", --发动技能
+	["$chengxiang2"] = "称物载之，则校可知矣。", --恢复体力
 	["$conghui"] = "吾虽年幼，智意所及，有若成人。",
 	["$zaoyao"] = "仓舒，仓舒……（女声）",
 	["~caochong"] = "天下无道，凤凰远引，凤凰，凤凰！凤——凰——！",
