@@ -3691,9 +3691,9 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     addItem(selector_box);
     selector_box->setZValue(10000); 
     
-    const static int start_x = 43  + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
+    const static int start_x = 42  + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
     const static int width = 86;
-    const static int start_y = 60  + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
+    const static int start_y = 59  + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
     const static int height = 121;
 
     foreach(QString name, names){
@@ -3705,7 +3705,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     qShuffle(general_items);
 
     int n = names.length();
-    double scaleRatio = (double)115 / G_COMMON_LAYOUT.m_cardNormalHeight;
+    double scaleRatio = (double)116 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for(int i = 0; i < n; i++){
 
         int row, column;
@@ -3739,12 +3739,12 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
     selector_box->setZValue(10000);
     selector_box->setPos(m_tableCenterPos);
 
-    const static int start_x = 108;
-    const static int width = 83;
+    const static int start_x = 109;
+    const static int width = 86;
     const static int row_y[4] = {150, 271, 394, 516};
 
     int n = names.length();
-    double scaleRatio = 120.0 / G_COMMON_LAYOUT.m_cardNormalHeight;
+    double scaleRatio = (double)116 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for(int i = 0; i < n; i++){
 
         int row, column;
@@ -3809,8 +3809,8 @@ void RoomScene::takeGeneral(const QString &who, const QString &name){
 
     int x , y;
     if(ServerInfo.GameMode == "06_3v3"){
-        x = 62 + (to_add->length() - 1) * (148 - 62);
-        y = self_taken ? 451 : 85;
+        x = 63 + (to_add->length() - 1) * (148 - 62);
+        y = self_taken ? 452 : 85;
     }else{
         x = 43 + (to_add->length() - 1) * 86;
         y = self_taken ? 60 + 120 * 3 : 60;
@@ -3886,9 +3886,9 @@ void RoomScene::startArrange(){
     QList<QPointF> positions;
     if(ServerInfo.GameMode == "06_3v3"){
         mode = "3v3";
-        positions << QPointF(233, 291)
-                << QPointF(361, 291)
-                << QPointF(489, 291);
+        positions << QPointF(279, 356)
+                << QPointF(407, 356)
+                << QPointF(535, 356);
     }else{
         mode = "1v1";
         positions << QPointF(130, 335)
@@ -3960,10 +3960,11 @@ void RoomScene::toggleArrange(){
         down_generals << last;
     }
 
-    for(i=0; i<down_generals.length(); i++){
+    for(i = 0; i < down_generals.length(); i++) {
         QPointF pos;
         if(ServerInfo.GameMode == "06_3v3")
-            pos = QPointF(62 + i * 86, 451);
+            pos = QPointF(65 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86,
+                          452 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
         else
             pos = QPointF(43 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86,
                           60 + G_COMMON_LAYOUT.m_cardNormalHeight / 2 + 3 * 120);
