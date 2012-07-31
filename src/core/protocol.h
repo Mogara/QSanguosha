@@ -12,16 +12,7 @@ namespace QSanProtocol
         bool isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
         bool isIntArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
     }
-    enum PacketType_bak
-    {
-        S_UNKNOWN_PACKET1,
-        S_SERVER_REQUEST1,
-        S_SERVER_REPLY1,
-        S_SERVER_NOTIFICATION1,
-        S_CLIENT_REQUEST1,
-        S_CLIENT_REPLY1,
-        S_CLIENT_NOTIFICATION1
-    };
+
     enum PacketDescription
     {
       S_DESC_UNKNOWN,
