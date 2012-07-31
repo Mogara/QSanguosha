@@ -574,18 +574,23 @@ bool Room::doBroadcastRequest(QList<ServerPlayer*> &players, QSanProtocol::Comma
 }
 
 ServerPlayer* Room::doBroadcastRaceRequest(QList<ServerPlayer*> &players, QSanProtocol::CommandType command, 
-    time_t timeOut, ResponseVerifyFunction validateFunc, void* funcArg)
+                                           time_t timeOut, ResponseVerifyFunction validateFunc, void* funcArg)
 {
     _m_semRoomMutex.acquire();
     _m_raceStarted = true;
     _m_raceWinner = NULL;
     while (_m_semRaceRequest.tryAcquire(1)) ; //drain lock
     _m_semRoomMutex.release();
+    Countdown countdown;
+    countdown.m_max = timeOut;
+    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+    notifyMoveFocus(players, command, countdown);
     foreach (ServerPlayer* player, players)
     {
         doRequest(player, command, player->m_commandArgs, timeOut, false);
-    }    
-    return getRaceResult(players, command, timeOut, validateFunc, funcArg);
+    }
+    ServerPlayer* winner = getRaceResult(players, command, timeOut, validateFunc, funcArg);
+    return winner;
 }
 
 ServerPlayer* Room::getRaceResult(QList<ServerPlayer*> &players, QSanProtocol::CommandType , time_t timeOut,
@@ -707,18 +712,39 @@ bool Room::getResult(ServerPlayer* player, time_t timeOut){
 
 bool Room::notifyMoveFocus(ServerPlayer* player)
 {
-    return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, toJsonString(player->objectName()));
+    QList<ServerPlayer *> players;
+    players.append(player);
+    Countdown countdown;
+    countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
+    notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
+    return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
 }
 
 bool Room::notifyMoveFocus(ServerPlayer* player, CommandType command)
 {
+    QList<ServerPlayer *> players;
+    players.append(player);
+    Countdown countdown;
+    countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+    return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
+}
+
+bool Room::notifyMoveFocus(const QList<ServerPlayer*> &players, CommandType command, Countdown countdown)
+{
     Json::Value arg(Json::arrayValue);
-    arg[0] = toJsonString(player->objectName());
+    int n = players.size();
+    for (int i = 0; i < n; i++)
+    {
+        arg[0][i] = toJsonString(players[i]->objectName());
+    }
     arg[1] = (int)command;
+    arg[2] = countdown.toJsonValue();
     return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg);
 }
 
-bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
+bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data)
+{
     notifyMoveFocus(player, S_COMMAND_INVOKE_SKILL);
     bool invoked = false;
     AI *ai = player->getAI();
@@ -755,7 +781,8 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     return invoked;
 }
 
-QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data){
+QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data)
+{
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
     QStringList validChoices = choices.split("+");
     Q_ASSERT(validChoices.size() >= 2);
@@ -808,9 +835,9 @@ void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
 }
 
 bool Room::isCanceled(const CardEffectStruct &effect){
-    if(!effect.card->isCancelable(effect))
+    if (!effect.card->isCancelable(effect))
         return false;
-    if(effect.from && effect.from->hasSkill("tanhu") && effect.to && effect.to->hasFlag("TanhuTarget"))
+    if (effect.from && effect.from->hasSkill("tanhu") && effect.to && effect.to->hasFlag("TanhuTarget"))
         return false;
 
     const TrickCard *trick = qobject_cast<const TrickCard *>(effect.card->getRealCard());
@@ -843,7 +870,8 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
     return _askForNullification(trick, from, to, positive, aiHelper);
 }
 
-bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper aiHelper){
+bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to,
+                                bool positive, _NullificationAiHelper aiHelper){
     // @todo: should develop a mechanism to notifyMoveFocus(Everyone, ...)
     QString trick_name = trick->objectName();
     QList<ServerPlayer *> validHumanPlayers;
@@ -870,7 +898,8 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
     ServerPlayer* repliedPlayer = NULL;
     time_t timeOut = ServerInfo.getCommandTimeout(S_COMMAND_NULLIFICATION, S_SERVER_INSTANCE);
     if (!validHumanPlayers.empty())
-        repliedPlayer = doBroadcastRaceRequest(validHumanPlayers, S_COMMAND_NULLIFICATION, timeOut, &Room::verifyNullificationResponse);
+        repliedPlayer = doBroadcastRaceRequest(validHumanPlayers, S_COMMAND_NULLIFICATION,
+                                               timeOut, &Room::verifyNullificationResponse);
 
     const Card* card = NULL;
     if (repliedPlayer != NULL && repliedPlayer->getClientReply().isString())

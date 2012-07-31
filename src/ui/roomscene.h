@@ -213,7 +213,6 @@ private:
     Button* add_robot, *fill_robots;
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
-    Photo *focused;
     Dashboard *dashboard;
     TablePile *m_tablePile;
     // QQueue<CardItem*> piled_discards;
@@ -331,6 +330,7 @@ private:
     void _dispersePhotos(QList<Photo*> &photos, QRectF disperseRegion,
                          Qt::Orientation orientation, Qt::Alignment align);
 
+    void _cancelAllFocus();
     // for miniscenes
     int _m_currentStage;
 private slots:
@@ -348,7 +348,7 @@ private slots:
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
-    void moveFocus(const QString &who, QSanProtocol::Countdown);
+    void moveFocus(const QStringList &who, QSanProtocol::Countdown);
     void setEmotion(const QString &who, const QString &emotion);
     void setEmotion(const QString &who, const QString &emotion, bool permanent);
     void showSkillInvocation(const QString &who, const QString &skill_name);

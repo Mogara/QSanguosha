@@ -237,7 +237,6 @@ public:
     void setSocket(ClientSocket *socket);
     void invoke(const char *method, const char *arg = ".");
     QString reportHeader() const;
-    void unicast(const char *message) const;
     void drawCard(const Card *card);
     Room *getRoom() const;
     void broadcastSkillInvoke(const Card *card) const;

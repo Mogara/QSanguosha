@@ -65,7 +65,7 @@ void RoomScene::resetPiles()
 #include "qsanbutton.h"
 
 RoomScene::RoomScene(QMainWindow *main_window):
-    focused(NULL), main_window(main_window),game_started(false)
+           main_window(main_window),game_started(false)
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
@@ -151,7 +151,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
-    connect(ClientInstance, SIGNAL(focus_moved(QString, QSanProtocol::Countdown)), this, SLOT(moveFocus(QString, QSanProtocol::Countdown)));
+    connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
@@ -2408,7 +2408,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     // do timeout    
     if(newStatus != Client::NotActive){    
-        if(focused) focused->hideProgressBar();
+        // _cancelAllFocus();
         QApplication::alert(main_window);
         connect(dashboard, SIGNAL(progressBarTimedOut()), this, SLOT(doTimeout()));        
         dashboard->showProgressBar(ClientInstance->getCountdown());
@@ -3361,25 +3361,32 @@ void RoomScene::freeze(){
     main_window->setStatusBar(NULL);
 }
 
-void RoomScene::moveFocus(const QString &who, Countdown countdown){
-    if (who == Self->objectName() && focused != NULL)
+void RoomScene::_cancelAllFocus()
+{
+    foreach (Photo* photo, photos)
     {
-        focused->hideProgressBar();
-        if (focused->getPlayer()->getPhase() == Player::NotActive)
-            focused->setFrame(Photo::S_FRAME_NO_FRAME);        
+        photo->hideProgressBar();
+        if (photo->getPlayer()->getPhase() == Player::NotActive)
+            photo->setFrame(Photo::S_FRAME_NO_FRAME);        
     }
-    Photo *photo = name2photo[who];
-    if(photo){
-        if(focused != photo && focused){
-            focused->hideProgressBar();
-            if(focused->getPlayer()->getPhase() == Player::NotActive)
-                focused->setFrame(Photo::S_FRAME_NO_FRAME);
+}
+
+void RoomScene::moveFocus(const QStringList &players, Countdown countdown)
+{
+    _cancelAllFocus();
+    foreach (QString player, players)
+    {
+        Photo *photo = name2photo[player];
+        if (!photo)
+        {
+            Q_ASSERT(player == Self->objectName());
+            continue;
         }
 
-        focused = photo;
-        focused->showProgressBar(countdown);
-        if(focused->getPlayer()->getPhase() == Player::NotActive)
-            focused->setFrame(Photo::S_FRAME_RESPONSING);
+        if (ServerInfo.OperationTimeout > 0)
+            photo->showProgressBar(countdown);
+        else if (photo->getPlayer()->getPhase() == Player::NotActive)
+            photo->setFrame(Photo::S_FRAME_RESPONSING);
     }
 }
 

@@ -27,7 +27,7 @@ public:
     void invoke(const QSanProtocol::QSanPacket* packet);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
-    void unicast(const QString &message) const;
+    void unicast(const QString &message);
     void drawCard(const Card *card);
     Room *getRoom() const;
     void broadcastSkillInvoke(const Card *card) const;
@@ -172,12 +172,12 @@ private:
 
 private slots:
     void getMessage(const char *message);
-    void castMessage(const QString &message);
+    void sendMessage(const QString &message);
 
 signals:
     void disconnected();
     void request_got(const QString &request);
-    void message_cast(const QString &message) const;
+    void message_ready(const QString &msg);
 };
 
 #endif // SERVERPLAYER_H
