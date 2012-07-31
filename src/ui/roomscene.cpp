@@ -3958,8 +3958,8 @@ void RoomScene::toggleArrange(){
         if(ServerInfo.GameMode == "06_3v3")
             pos = QPointF(62 + i * 86, 451);
         else
-            pos = QPointF(89 + i * 86, 122 + 121 * 3);
-
+            pos = QPointF(43 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86,
+                          60 + G_COMMON_LAYOUT.m_cardNormalHeight / 2 + 3 * 120);
         CardItem *item = down_generals.at(i);
         item->setHomePos(pos);
         item->goBack(true);
