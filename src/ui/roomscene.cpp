@@ -1732,6 +1732,7 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
     hegemony_mode["loyalist"] = tr("Shu");
     hegemony_mode["rebel"] = tr("Wu");
     hegemony_mode["renegade"] = tr("Qun");
+    hegemony_mode["careerist"] = tr("Careerist");
 
     QMap<QString, QString> *map = NULL;
     switch(Sanguosha->getRoleIndex()){
@@ -1748,6 +1749,7 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
         hegemony_roles["loyalist"] = "shu";
         hegemony_roles["rebel"] = "wu";
         hegemony_roles["renegade"] = "qun";
+        hegemony_roles["careerist"] = "careerist";
 
         role_combobox->setItemText(1, map->value(new_role));
         role_combobox->setItemIcon(1, QIcon(QString("image/kingdom/icon/%1.png").arg(hegemony_roles[new_role])));

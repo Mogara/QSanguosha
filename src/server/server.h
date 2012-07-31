@@ -127,6 +127,7 @@ private slots:
     void select3v3Generals();
     void edit1v1Banlist();
     void updateButtonEnablility(QAbstractButton* button);
+    void updateCheckBoxState(bool toggled);
 
     void doCustomAssign();
     void setMiniCheckBox();

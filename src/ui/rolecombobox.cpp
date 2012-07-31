@@ -31,6 +31,9 @@ RoleCombobox::RoleCombobox(Photo *photo)
             << new RoleComboboxItem("rebel", index)
             << new RoleComboboxItem("renegade", index);
 
+    if(index == 5)
+        items << new RoleComboboxItem("careerist", index);
+
     setupItems();
 
     foreach(RoleComboboxItem *item, items){

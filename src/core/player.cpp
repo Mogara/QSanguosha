@@ -254,6 +254,7 @@ Player::Role Player::getRoleEnum() const{
         role_map.insert("loyalist", Loyalist);
         role_map.insert("rebel", Rebel);
         role_map.insert("renegade", Renegade);
+        role_map.insert("careerist", Careerist);
     }
 
     return role_map.value(role);

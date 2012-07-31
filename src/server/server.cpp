@@ -206,6 +206,8 @@ QWidget *ServerDialog::createAdvancedTab(){
     hegemony_checkbox->setChecked(Config.EnableHegemony);
     hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
     connect(basara_checkbox,SIGNAL(toggled(bool)),hegemony_checkbox, SLOT(setEnabled(bool)));
+    connect(hegemony_checkbox,SIGNAL(toggled(bool)),second_general_checkbox, SLOT(setChecked(bool)));
+    connect(second_general_checkbox,SIGNAL(toggled(bool)), this, SLOT(updateCheckBoxState(bool)));
 
     announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
     announce_ip_checkbox->setChecked(Config.AnnounceIP);
@@ -314,6 +316,13 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button)
         second_general_checkbox->setEnabled(true);
         mini_scene_button->setEnabled(false);
     }
+}
+
+void ServerDialog::updateCheckBoxState(bool toggled){
+    if(!toggled)
+        hegemony_checkbox->setChecked(false);
+
+    hegemony_checkbox->setEnabled(toggled);
 }
 
 void BanlistDialog::switchTo(int item)

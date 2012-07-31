@@ -2019,8 +2019,9 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
             existed << player->getGeneral2Name();
     }
 
-    const int max_choice = (Config.EnableHegemony && Config.Enable2ndGeneral) ? 5
-        : Config.value("MaxChoice", 5).toInt();
+    int n = getPlayers().length() >= 9 ? 5 : 7;
+    const int max_choice = (Config.EnableHegemony && Config.Enable2ndGeneral) ? n
+        : Config.value("MaxChoice", n).toInt();
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total-existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
