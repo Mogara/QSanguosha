@@ -3687,7 +3687,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     const static int start_x = 43  + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
     const static int width = 86;
     const static int start_y = 60  + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
-    const static int height = 116;
+    const static int height = 121;
 
     foreach(QString name, names){
         CardItem *item =  new CardItem(name);
@@ -3698,7 +3698,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
     qShuffle(general_items);
 
     int n = names.length();
-    double scaleRatio = (double)116 / G_COMMON_LAYOUT.m_cardNormalHeight;
+    double scaleRatio = (double)115 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for(int i = 0; i < n; i++){
 
         int row, column;
@@ -3884,9 +3884,9 @@ void RoomScene::startArrange(){
                 << QPointF(489, 291);
     }else{
         mode = "1v1";
-        positions << QPointF(84, 269)
-                << QPointF(214, 269)
-                << QPointF(344, 269);
+        positions << QPointF(130, 335)
+                << QPointF(260, 335)
+                << QPointF(390, 335);
     }
 
     selector_box->load(QString("image/system/%1/arrange.png").arg(mode));
@@ -3958,7 +3958,7 @@ void RoomScene::toggleArrange(){
         if(ServerInfo.GameMode == "06_3v3")
             pos = QPointF(62 + i * 86, 451);
         else
-            pos = QPointF(43 + i * 86, 60 + 120 * 3);
+            pos = QPointF(89 + i * 86, 122 + 121 * 3);
 
         CardItem *item = down_generals.at(i);
         item->setHomePos(pos);
