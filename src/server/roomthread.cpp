@@ -107,9 +107,10 @@ JudgeStructPattern &JudgeStructPattern::operator =(const QString &str){
     return *this;
 }
 
+// members should be initilized the same order as defined
 JudgeStruct::JudgeStruct()
-    :who(NULL), card(NULL), good(true), time_consuming(false),
-      negative(false), play_animation(false)
+    : negative(false), play_animation(false), who(NULL), card(NULL),
+    good(true), time_consuming(false)
 {
 
 }
