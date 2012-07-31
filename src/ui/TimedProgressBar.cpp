@@ -20,7 +20,7 @@ void TimedProgressBar::hide()
     if (m_timer != 0)
     {        
         killTimer(m_timer);
-        m_timer = NULL;
+        m_timer = 0;
     }
     QProgressBar::hide();
 }
@@ -34,7 +34,7 @@ void TimedProgressBar::timerEvent(QTimerEvent* timerEvent)
         else
         {            
             killTimer(m_timer);
-            m_timer = NULL;
+            m_timer = 0;
         }
         emit timedOut();    
     }
