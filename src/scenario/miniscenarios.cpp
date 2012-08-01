@@ -228,21 +228,21 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 QVariant data = QVariant::fromValue(sp);
                 room->setTag("Starter", data);
             }
-            if(this->players.at(i)["nationality"] != NULL){
+            if(this->players[i]["nationality"] != NULL){
                 room->setPlayerProperty(sp, "kingdom", this->players.at(i)["nationality"]);
             }
 
-            str = this->players.at(i)["draw"];
-            if(str == NULL)str = "4";
+            str = this->players[i]["draw"];
+            if (str == NULL) str = "4";
             room->drawCards(sp,str.toInt());
-            if(this->players.at(i)["marks"] != NULL)
+            if(this->players[i]["marks"] != NULL)
             {
-                QStringList marks = this->players.at(i)["marks"].split(",");
+                QStringList marks = this->players[i]["marks"].split(",");
                 foreach(QString qs,marks)
                 {
                     QStringList keys = qs.split("*");
-                    str = keys.at(1);
-                    room->setPlayerMark(sp, keys.at(0), str.toInt());
+                    str = keys[1];
+                    room->setPlayerMark(sp, keys[0], str.toInt());
                 }
             }
         }
