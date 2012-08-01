@@ -16,7 +16,7 @@ public:
             ResponsedStruct resp = data.value<ResponsedStruct>();
             if(resp.m_card->getSkillName() == "longdan"
                     && resp.m_who != NULL && !resp.m_who->isKongcheng()
-                    && player->askForSkillInvoke(objectName()))
+                    && player->askForSkillInvoke(objectName(), data))
             {
                 room->broadcastSkillInvoke("chongzhen", 1);
                 int card_id = room->askForCardChosen(player, resp.m_who, "h", objectName());
