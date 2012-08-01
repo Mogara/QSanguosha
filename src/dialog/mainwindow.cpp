@@ -461,7 +461,8 @@ void MainWindow::setBackgroundBrush(bool centerAsOrigin){
 }
 
 void MainWindow::changeBackground(){
-    setBackgroundBrush(false);
+    bool centerAsOrigin = scene != NULL && !scene->inherits("RoomScene");
+    setBackgroundBrush(centerAsOrigin);
 
     if(scene->inherits("StartScene")){
         StartScene *start_scene = qobject_cast<StartScene *>(scene);
