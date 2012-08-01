@@ -52,6 +52,17 @@ public:
             main_window->setBackgroundBrush(false);
             return;
         }
+        // @TODO: Need to remove after release
+        else if(scene()->inherits("StartScene"))
+        {
+            StartScene *start_scene = qobject_cast<StartScene *>(scene());
+            QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
+                                event->size().width(), event->size().height());
+            start_scene->setSceneRect(newSceneRect);
+            setSceneRect(start_scene->sceneRect());
+            if (newSceneRect != start_scene->sceneRect())
+                fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
+        }
         if(main_window)
             main_window->setBackgroundBrush(true);           
     }
