@@ -85,6 +85,7 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b)
 
         map_good = map;
         map_good.set("renegade", "loyalist", Enemy, false);
+        map_good.set("renegade", "lord", Neutrality, true);
         map_good.set("renegade", "rebel", Friend, false);
 
         map_bad = map;
