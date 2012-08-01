@@ -61,7 +61,7 @@ void StartScene::switchToServer(Server *server){
 
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
-    logo_shift->setEndValue(Config.Rect.topLeft());
+    logo_shift->setEndValue(QPointF(Config.Rect.center().rx() - 200, Config.Rect.center().ry() - 175));
 
     QPropertyAnimation *logo_shrink = new QPropertyAnimation(logo, "scale");
     logo_shrink->setEndValue(0.5);
