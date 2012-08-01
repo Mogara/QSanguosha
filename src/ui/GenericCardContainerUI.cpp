@@ -524,6 +524,8 @@ void PlayerCardContainer::setPlayer(ClientPlayer* player)
         _m_markItem->setDocument(textDoc);
         connect(textDoc, SIGNAL(contentsChanged()), this, SLOT(updateMarks()));
     }
+    // @TODO: Need to remove after release
+    updateAvatar();
     refresh();
 }
 
