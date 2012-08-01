@@ -14,9 +14,10 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == CardResponsed){
             ResponsedStruct resp = data.value<ResponsedStruct>();
+            QVariant toChongzhen = QVariant::fromValue((PlayerStar)resp.m_who);
             if(resp.m_card->getSkillName() == "longdan"
                     && resp.m_who != NULL && !resp.m_who->isKongcheng()
-                    && player->askForSkillInvoke(objectName(), data))
+                    && player->askForSkillInvoke(objectName(), toChongzhen))
             {
                 room->broadcastSkillInvoke("chongzhen", 1);
                 int card_id = room->askForCardChosen(player, resp.m_who, "h", objectName());
@@ -28,7 +29,8 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.from == player && use.card->getSkillName() == "longdan"){
                 foreach(ServerPlayer *p, use.to){
-                    if(p->isKongcheng() || !player->askForSkillInvoke(objectName())) continue;
+                    QVariant toChongzhen = QVariant::fromValue((PlayerStar)p);
+                    if(p->isKongcheng() || !player->askForSkillInvoke(objectName(), toChongzhen)) continue;
                     room->broadcastSkillInvoke("chongzhen", 2);
                     int card_id = room->askForCardChosen(player, p, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());

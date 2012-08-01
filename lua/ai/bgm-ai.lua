@@ -1,5 +1,5 @@
 sgs.ai_skill_invoke.chongzhen = function(self, data)
-	local target = data:toResponsed().m_who
+	local target = data:toPlayer()
 	if self:isFriend(target) then
 		return target:hasSkill("kongcheng") and target:getHandcardNum() == 1
 	else
