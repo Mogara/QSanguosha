@@ -55,7 +55,7 @@ protected:
 };
 
 MainWindow::MainWindow(QWidget *parent)
-    :QMainWindow(parent), ui(new Ui::MainWindow)
+    :QMainWindow(parent), ui(new Ui::MainWindow), server_tag(false)
 {
     ui->setupUi(this);
     scene = NULL;
@@ -610,19 +610,22 @@ void MainWindow::on_actionAcknowledgement_triggered()
 
 void MainWindow::on_actionPC_Console_Start_triggered()
 {
-    ServerDialog *dialog = new ServerDialog(this);
-    dialog->ensureEnableAI();
-    if(!dialog->config())
-        return;
+    if(!server_tag){
+        ServerDialog *dialog = new ServerDialog(this);
+        dialog->ensureEnableAI();
+        if(!dialog->config())
+            return;
 
-    Server *server = new Server(this);
-    if(! server->listen()){
-        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        Server *server = new Server(this);
+        if(! server->listen()){
+            QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
 
-        return;
+            return;
+        }
+        server_tag = true;
+
+        server->createNewRoom();
     }
-
-    server->createNewRoom();
 
     Config.HostAddress = "127.0.0.1";
     startConnection();

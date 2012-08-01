@@ -105,6 +105,8 @@ private:
     ConfigDialog *config_dialog;
     QSystemTrayIcon *systray;
 
+    bool server_tag;
+
     void restoreFromConfig();
 
 public slots:
