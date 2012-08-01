@@ -73,7 +73,12 @@ void Photo::refresh()
         QPixmap pixmap = QPixmap::fromImage(image);
         _paintPixmap(_m_onlineStatusItem, rect, pixmap, _m_groupMain);
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
+        if (!_m_onlineStatusItem->isVisible())
+            _m_onlineStatusItem->show();
     }
+    else if (_m_onlineStatusItem != NULL && state_str == "online")
+        _m_onlineStatusItem->hide();
+
 }
 
 QRectF Photo::boundingRect() const
