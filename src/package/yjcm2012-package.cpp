@@ -21,7 +21,7 @@ public:
 
 
         if(player->askForSkillInvoke(objectName(), data)){
-            room->playSkillEffect(objectName());
+            room->playSkillEffect(objectName(), room->getCurrent() == player ? 2 : 1);
             int card_id = room->drawCard();
             room->getThread()->delay();
             room->throwCard(judge->card, judge->who);
@@ -51,10 +51,11 @@ public:
     virtual bool onPhaseChange(ServerPlayer *wangyi) const{
         if(!wangyi->isWounded())
             return false;
-        if(wangyi->getPhase() == Player::Start || wangyi->getPhase() == Player::Finish){
-            if(!wangyi->askForSkillInvoke(objectName()))
-                return false;
+        if(wangyi->getPhase() != Player::Start && wangyi->getPhase() != Player::Finish)
+            return false;
+        if(wangyi->askForSkillInvoke(objectName())){
             Room *room = wangyi->getRoom();
+            room->playSkillEffect(objectName(), 1);
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(club|spade):(.*)");
             judge.good = true;
@@ -64,10 +65,16 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
-                room->playSkillEffect(objectName());
                 int x = wangyi->getLostHp();
                 wangyi->drawCards(x);
                 ServerPlayer *target = room->askForPlayerChosen(wangyi, room->getAllPlayers(), objectName());
+
+                int n = 3;
+                if(target == wangyi)
+                    n = 2;
+                else if(target->hasSkill("tieji"))
+                    n = 4;
+                room->playSkillEffect(objectName(), n);
 
                 QList<const Card *> miji_cards = wangyi->getHandcards().mid(wangyi->getHandcardNum() - x);
                 foreach(const Card *card, miji_cards)

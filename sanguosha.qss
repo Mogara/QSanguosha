@@ -65,6 +65,11 @@ QScrollBar::up-arrow:vertical
     border-image: url(image/system/button/scroll-up-arrow.png);
 }
 
+QScrollBar::handle:vertical
+{
+    border-image: url(image/system/button/scroll-handle.png);
+}
+
 QScrollBar::down-arrow:vertical
 {
     border-image: url(image/system/button/scroll-down-arrow.png);
