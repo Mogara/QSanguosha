@@ -3514,7 +3514,7 @@ void Room::preparePlayers(){
         QList<const Skill*> skills = player->getGeneral()->getSkillList();
         foreach(const Skill* skill, skills)
             player->addSkill(skill->objectName());
-        if(ServerInfo.Enable2ndGeneral){
+        if(player->getGeneral2()){
             skills = player->getGeneral2()->getSkillList();
             foreach(const Skill* skill, skills)
                 player->addSkill(skill->objectName());
