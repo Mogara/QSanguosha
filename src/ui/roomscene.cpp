@@ -3230,6 +3230,7 @@ void KOFOrderBox::killPlayer(const QString &general_name){
         if(avatar->isEnabled() && avatar->objectName() == general_name){
             QPixmap pixmap("image/system/death/unknown.png");
             QGraphicsPixmapItem *death = new QGraphicsPixmapItem(pixmap, avatar);
+            death->setScale(0.5);
             death->moveBy(10, 0);
             avatar->makeGray();
             avatar->setEnabled(false);
