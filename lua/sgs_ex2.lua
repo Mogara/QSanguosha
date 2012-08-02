@@ -14,20 +14,19 @@ require "middleclass"
 --    end
 --  })
 --  tuxi_card = TuxiCard:create() -- need at file scope
-SkillCard = class("SkillCard", {
-  static = {
-    create = function(self)
-      return self:new():to_card()
-    end,
-  },
+SkillCard = class("SkillCard")
 
-  initialize = function(self)
+  function SkillCard.static:create()
+    return self:new():to_card()
+  end
+
+  function SkillCard:initialize()
     self.name = nil
     self.target_fixed = false
     self.will_throw = true
-  end,
+  end
 
-  to_card = function(self)
+  function SkillCard:to_card()
     assert(type(self.name) == "string")
 
     local card = sgs.LuaSkillCard(self.name)
@@ -45,43 +44,43 @@ SkillCard = class("SkillCard", {
 
     return card
   end
-})
 
-Skill = class("Skill", {
-  static = {
-    create = function(self)
-      return self:new():to_skill()
-    end,
-  },
+Skill = class("Skill")
 
-  initialize = function(self)
+  function Skill.static:create()
+    return self:new():to_skill()
+  end
+
+  function Skill:initialize()
     self.name = nil
     self.frequency = sgs.Skill_NotFrequent
-  end,
-})
+  end
 
 --- a ViewAsSkill class
 -- @example
---   Tuxi = class("Tuxi", ViewAsSkill, {
---     initialize = function(self)
+--
+--   Tuxi = class("Tuxi", ViewAsSkill) 
+--
+--     function Tuxi:initialize()
 --       ViewAsSkill.initialize(self)
 --       self.name = "foo"
 --       self.n = 0
---     end,
+--     end
 --
---     view_as = function(self, skill, cards)
+--     function Tuxi:view_as(skill, cards)
 --       ...
 --     end
---   })
+--
 --   tuxi = Tuxi:create() -- need at file scope
 --   zhangliao:addSkill(tuxi)
-ViewAsSkill = class("ViewAsSkill", Skill, {
-  initialize = function(self)
+ViewAsSkill = class("ViewAsSkill", Skill)
+
+  function ViewAsSkill:initialize()
     Skill.initialize(self)
     self.n = 0
-  end,
+  end
 
-  to_skill = function(self)
+  function ViewAsSkill:to_skill()
     assert(type(self.name) == "string")
 
     local skill = sgs.LuaViewAsSkill(self.name)
@@ -109,17 +108,16 @@ ViewAsSkill = class("ViewAsSkill", Skill, {
 
     return skill
   end
-})
 
+TriggerSkill = class("TriggerSkill", Skill)
 
-TriggerSkill = class("TriggerSkill", Skill, {
-  initialize = function(self)
+  function TriggerSkill:initialize()
     Skill.initialize(self)
     self.events = {}
     self.priority = 1
-  end,
+  end
 
-  to_skill = function(self)
+  function TriggerSkill:to_skill()
     assert(type(self.name) == "string")
     assert(type(self.on_trigger) == "function")
 
@@ -149,11 +147,11 @@ TriggerSkill = class("TriggerSkill", Skill, {
     
     return skill
   end
-})
 
 
-ProhibitSkill = class("ProhibitSkill", Skill, {
-  to_skill = function(self)
+ProhibitSkill = class("ProhibitSkill", Skill)
+
+  function ProhibitSkill:to_skill()
     assert(type(self.name) == "string")
     assert(type(self.is_prohibited) == "function")
     
@@ -165,10 +163,10 @@ ProhibitSkill = class("ProhibitSkill", Skill, {
 
     return skill
   end
-})
 
-DistanceSkill = class("DistanceSkill", Skill, {
-  to_skill = function(self)
+DistanceSkill = class("DistanceSkill", Skill) 
+
+  function DistanceSkill:to_skill()
     assert(type(self.name) == "string")
     assert(type(self.correct_func) == "function")
 
@@ -180,10 +178,10 @@ DistanceSkill = class("DistanceSkill", Skill, {
 
     return skill
   end
-})
 
-MaxCardsSkill = class("MaxCardsSkill", Skill, {
-  to_skill = function(self)
+MaxCardsSkill = class("MaxCardsSkill", Skill)
+
+  function MaxCardsSkill:to_skill()
     assert(type(self.name) == "string")
     assert(type(self.extra_func) == "function")
 
@@ -195,41 +193,40 @@ MaxCardsSkill = class("MaxCardsSkill", Skill, {
 
     return skill
   end
-})
 
-GameStartSkill = class("GameStartSkill", TriggerSkill, {
-  initialize = function(self)
+GameStartSkill = class("GameStartSkill", TriggerSkill)
+
+  function GameStartSkill:initialize()
     TriggerSkill.initialize(self)
     self.events = {sgs.GameStart}
-  end,
+  end
 
-  on_trigger = function(self, skill, event, player, data)
+  function GameStartSkill:on_trigger(skill, event, player, data)
     self.on_gamestart(self, skill, player)
     return false
-  end,
+  end
 
-  to_skill = function(self)
+  function GameStartSkill:to_skill()
     assert(type(self.on_gamestart) == "function")
 
     return TriggerSkill.to_skill(self) 
   end
-})
 
-MasochismSkill = class("MasochismSkill", TriggerSkill, {
-  initialize = function(self)
+MasochismSkill = class("MasochismSkill", TriggerSkill)
+
+  function MasochismSkill:initialize()
     TriggerSkill.initialize(self)
     self.events = {sgs.Damaged}
     self.priority = -1
-  end,
+  end
 
-  on_trigger = function(self, skill, event, player, data)
+  function MasochismSkill:on_trigger(skill, event, player, data)
     self.on_damaged(self, skill, player)
     return false
-  end,
+  end
 
-  to_skill = function(self)
+  function MasochismSkill:to_skill()
     assert(type(self.on_damaged) == "function")
 	
     return TriggerSkill.to_skill(self)
   end
-})
