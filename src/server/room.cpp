@@ -2169,12 +2169,14 @@ void Room::chooseGenerals(){
             if(player->getGeneral()){
                 QString name = player->getGeneralName();
                 names.append(name);
-                _setPlayerGeneral(player, "anjiang", true);
+                player->setGeneralName("anjiang");
+                notifyProperty(player, player, "general");
             }
             if(player->getGeneral2() && Config.Enable2ndGeneral){
                 QString name = player->getGeneral2Name();
                 names.append(name);
-                _setPlayerGeneral(player, "anjiang", false);
+                player->setGeneral2Name("anjiang");
+                notifyProperty(player, player, "general2");
             }
             this->setTag(player->objectName(),QVariant::fromValue(names));
         }
