@@ -311,7 +311,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
                     if(role == "god")
                         role = Sanguosha->getGeneral(getTag(player->objectName()).toStringList().at(0))->getKingdom();
                     role = BasaraMode::getMappedRole(role);
-                    broadcast(QString("#%1 role %2").arg(player->objectName()).arg(role));
+                    broadcastProperty(player, "role", role);
                 }
                 else
                     broadcastProperty(player, "role");
