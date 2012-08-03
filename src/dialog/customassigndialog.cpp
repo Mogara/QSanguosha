@@ -155,6 +155,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *pileAssign = new QPushButton(tr("PileCardAssign"));
 
     random_roles_box = new QCheckBox(tr("RandomRoles"));
+    ended_by_pile_box = new QCheckBox(tr("EndedByPileEnds"));
+    ended_by_pile_box->setEnabled(set_pile.length() > 0);
 
     max_hp_prompt = new QCheckBox(tr("Max Hp"));
     max_hp_prompt->setChecked(false);
@@ -225,6 +227,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(random_roles_box);
     vlayout->addWidget(extra_skill_set);
     vlayout->addWidget(starter_group);
+    vlayout->addWidget(ended_by_pile_box);
     vlayout->addWidget(single_turn);
     vlayout->addLayout(HLay(single_turn_text, single_turn_text2, single_turn_box));
     vlayout->addWidget(before_next);
@@ -670,10 +673,8 @@ void CustomAssignDialog::updatePileInfo(int row){
 
     pile_list->clear();
 
-    if(set_pile.isEmpty())
-        removePileButton->setEnabled(false);
-    else
-        removePileButton->setEnabled(true);
+    removePileButton->setDisabled(set_pile.isEmpty());
+    ended_by_pile_box->setDisabled(set_pile.isEmpty());
 
     foreach(int card_id, set_pile){
         const Card* card = Sanguosha->getEngineCard(card_id);
@@ -689,6 +690,7 @@ void CustomAssignDialog::updatePileInfo(int row){
 
     if(pile_list->count() > 0)
         pile_list->setCurrentRow(0);
+
 }
 
 void CustomAssignDialog::updatePlayerHpInfo(QString name){
@@ -849,8 +851,11 @@ void CustomAssignDialog::removePileCard(){
         pile_list->takeItem(row);
         if(pile_list->count() > 0)
             pile_list->setCurrentRow(row >= pile_list->count() ? row-1 : row);
-        else
+        else{
             removePileButton->setEnabled(false);
+            ended_by_pile_box->setEnabled(false);
+            ended_by_pile_box->setChecked(false);
+        }
     }
 }
 
@@ -1189,6 +1194,7 @@ void CustomAssignDialog::load()
             }
 
             if(option_map["randomRoles"] == "true") is_random_roles = true;
+            ended_by_pile_box->setChecked(option_map["gameOverIfExtraCardDrawn"] == "true");
 
             continue;
         }
@@ -1378,7 +1384,7 @@ bool CustomAssignDialog::save(QString path)
 
     QString line;
 
-    set_options << is_random_roles;
+    set_options << is_random_roles << ended_by_pile_box->isChecked();
     foreach(bool option, set_options){
         if(option){
             line.append("extraOptions:");
@@ -1386,6 +1392,7 @@ bool CustomAssignDialog::save(QString path)
         }
     }
     if(is_random_roles) line.append("randomRoles:true ");
+    if(ended_by_pile_box->isChecked()) line.append("gameOverIfExtraCardDrawn:true ");
     line.remove(line.length()-1, 1);
     line.append("\n");
 
