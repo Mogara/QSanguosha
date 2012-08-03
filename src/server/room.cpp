@@ -1184,7 +1184,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     if(card_ids.length() == 1 && !refusable)
         return card_ids.first();
 
-    int card_id;
+    int card_id = -1;
 
     AI *ai = player->getAI();
     if(ai){

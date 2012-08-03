@@ -335,6 +335,10 @@ void MainWindow::enterRoom(){
 }
 
 void MainWindow::gotoStartScene(){
+    QList<Server *> servers = findChildren<Server *>();
+    if(!servers.isEmpty())
+        servers.first()->deleteLater();
+
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
@@ -631,7 +635,6 @@ void MainWindow::on_actionPC_Console_Start_triggered()
     Server *server = new Server(this);
     if(! server->listen()){
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
-
         return;
     }
 
