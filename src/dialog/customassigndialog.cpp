@@ -35,7 +35,7 @@ CustomAssignDialog *CustomInstance = NULL;
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
       choose_general2(false),
-      is_single_turn(false), is_before_next(false), is_random_roles(false)
+      is_single_turn(false), is_before_next(false)
 {
     setWindowTitle(tr("Custom mini scene"));
 
@@ -420,7 +420,7 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
 }
 
 QString CustomAssignDialog::setListText(QString name, QString role, int index){
-    QString text = is_random_roles ? QString("[%1]").arg(Sanguosha->translate(role)) :
+    QString text = random_roles_box->isChecked() ? QString("[%1]").arg(Sanguosha->translate(role)) :
                       QString("%1[%2]").arg(Sanguosha->translate(name)).arg(Sanguosha->translate(role));
 
     if(index >= 0)
@@ -712,7 +712,6 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name){
 }
 
 void CustomAssignDialog::updateAllRoles(bool toggled){
-    is_random_roles = toggled;
 
     int i = 0;
     for(i = 0; i < list->count(); i++){
@@ -1150,7 +1149,6 @@ void CustomAssignDialog::load()
 
     is_single_turn = false;
     is_before_next = false;
-    is_random_roles = false;
 
     int i = 0;
     for(i = 0; i < mark_icons.length(); i++)
@@ -1163,6 +1161,7 @@ void CustomAssignDialog::load()
     role_index["renegade"] = 1;
     role_index["rebel"] = 2;
 
+    QList<QString> options;
     while (!in.atEnd()) {
         QString line = in.readLine();
         line = line.trimmed();
@@ -1176,7 +1175,7 @@ void CustomAssignDialog::load()
 
         if(line.startsWith("setPile:"))
         {
-            QStringList list = line.replace("setPile:","").split(",");
+            QStringList list = line.remove("setPile:").split(",");
             foreach(QString id,list)
             {
                 set_pile.prepend(id.toInt());
@@ -1186,15 +1185,11 @@ void CustomAssignDialog::load()
         else if(line.startsWith("extraOptions:")){
             line.remove("extraOptions:");
 
-            QMap<QString, QString> option_map;
             foreach(QString option, line.split(" ")){
                 if(option.isEmpty()) continue;
 
-                option_map[option.split(":").first()] = option.split(":").last();
+                options << option;
             }
-
-            if(option_map["randomRoles"] == "true") is_random_roles = true;
-            ended_by_pile_box->setChecked(option_map["gameOverIfExtraCardDrawn"] == "true");
 
             continue;
         }
@@ -1332,7 +1327,9 @@ void CustomAssignDialog::load()
 
     player_draw->setValue(player_start_draw[list->currentItem()->data(Qt::UserRole).toString()]);
     num_ComboBox->setCurrentIndex(list->count()-2);
-    random_roles_box->setChecked(is_random_roles);
+
+    random_roles_box->setChecked(options.contains(MiniSceneRule::S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN));
+    ended_by_pile_box->setChecked(options.contains(MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES));
 
     updatePileInfo();
     file.close();
@@ -1384,15 +1381,21 @@ bool CustomAssignDialog::save(QString path)
 
     QString line;
 
-    set_options << is_random_roles << ended_by_pile_box->isChecked();
+    set_options << random_roles_box->isChecked() << ended_by_pile_box->isChecked();
     foreach(bool option, set_options){
         if(option){
             line.append("extraOptions:");
             break;
         }
     }
-    if(is_random_roles) line.append("randomRoles:true ");
-    if(ended_by_pile_box->isChecked()) line.append("gameOverIfExtraCardDrawn:true ");
+    if(random_roles_box->isChecked()) {
+        line.append(MiniSceneRule::S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN);
+        line.append(" ");
+    }
+    if(ended_by_pile_box->isChecked()) {
+        line.append(MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES);
+        line.append(" ");
+    }
     line.remove(line.length()-1, 1);
     line.append("\n");
 

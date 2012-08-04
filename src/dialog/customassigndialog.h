@@ -90,7 +90,6 @@ private:
     bool choose_general2;
     QString starter;
     bool is_single_turn, is_before_next;
-    bool is_random_roles;
 
     QList<bool> set_options;
 
