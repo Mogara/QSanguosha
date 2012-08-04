@@ -714,19 +714,20 @@ void MainWindow::on_actionRecord_analysis_triggered(){
 
 
     QDialog *rec_dialog = new QDialog(this);
-    rec_dialog->resize(800, 400);
+    rec_dialog->setWindowTitle(tr("Record Analysis"));
+    rec_dialog->resize(1000, 400);
     QTableWidget *table = new QTableWidget;
 
     RecAnalysis *record = new RecAnalysis(filename);
     QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
-    table->setColumnCount(7);
+    table->setColumnCount(9);
     table->setRowCount(record_map.keys().length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     static QStringList labels;
     if(labels.isEmpty()){
-        labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Recover")
-               << tr("Damage") << tr("Kill") << tr("Designation");
+        labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Living") << tr("WinOrLose")
+               << tr("Recover") << tr("Damage") << tr("Kill") << tr("Designation");
     }
     table->setHorizontalHeaderLabels(labels);
     table->setSelectionBehavior(QTableWidget::SelectRows);
@@ -750,24 +751,43 @@ void MainWindow::on_actionRecord_analysis_triggered(){
         table->setItem(i, 2, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_recover));
+        item->setText(rec->m_isAlive ? tr("Alive") : tr("Dead"));
         table->setItem(i, 3, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_damage));
+        bool is_win = record->getRecordWinners().contains(rec->m_role) ||
+                        record->getRecordWinners().contains(rec->m_generalName);
+        item->setText(is_win ? tr("Win") : tr("Lose"));
         table->setItem(i, 4, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_kill));
+        item->setText(QString::number(rec->m_recover));
         table->setItem(i, 5, item);
 
         item = new QTableWidgetItem;
-  //      item->setText(Sanguosha->translate(rec->m_designation));
+        item->setText(QString::number(rec->m_damage));
         table->setItem(i, 6, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_kill));
+        table->setItem(i, 7, item);
+
+        item = new QTableWidgetItem;
+  //      item->setText(Sanguosha->translate(rec->m_designation));
+        table->setItem(i, 8, item);
         i++;
     }
 
+    QLabel *label = new QLabel;
+    QString text = tr("Packages:") ;
+    foreach(QString package, record->getRecordPackages()){
+        text += Sanguosha->translate(package) + ",";
+    }
+    text.remove(text.size()-1);
+    label->setText(text);
+
     QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(label);
     layout->addWidget(table);
     rec_dialog->setLayout(layout);
 

@@ -1955,13 +1955,13 @@
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="366"/>
-        <location filename="src/dialog/mainwindow.cpp" line="803"/>
+        <location filename="src/dialog/mainwindow.cpp" line="823"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="371"/>
-        <location filename="src/dialog/mainwindow.cpp" line="826"/>
+        <location filename="src/dialog/mainwindow.cpp" line="846"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -2088,8 +2088,8 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="455"/>
         <location filename="src/dialog/mainwindow.cpp" line="568"/>
-        <location filename="src/dialog/mainwindow.cpp" line="807"/>
-        <location filename="src/dialog/mainwindow.cpp" line="830"/>
+        <location filename="src/dialog/mainwindow.cpp" line="827"/>
+        <location filename="src/dialog/mainwindow.cpp" line="850"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -2099,53 +2099,93 @@
         <translation>载入录像记录</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="728"/>
+        <location filename="src/dialog/mainwindow.cpp" line="717"/>
+        <source>Record Analysis</source>
+        <translation>录像数据分析</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="729"/>
         <source>ScreenName</source>
         <translation>玩家</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="728"/>
+        <location filename="src/dialog/mainwindow.cpp" line="729"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="728"/>
+        <location filename="src/dialog/mainwindow.cpp" line="729"/>
         <source>Role</source>
         <translation>身份</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="728"/>
+        <location filename="src/dialog/mainwindow.cpp" line="729"/>
+        <source>Living</source>
+        <translation>存活</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="729"/>
+        <source>WinOrLose</source>
+        <translation>胜负</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="730"/>
         <source>Recover</source>
         <translation>回血</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="729"/>
+        <location filename="src/dialog/mainwindow.cpp" line="730"/>
         <source>Damage</source>
         <translation>受伤</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="729"/>
+        <location filename="src/dialog/mainwindow.cpp" line="730"/>
         <source>Kill</source>
         <translation>击杀</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="729"/>
+        <location filename="src/dialog/mainwindow.cpp" line="730"/>
         <source>Designation</source>
         <translation>称号</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="src/dialog/mainwindow.cpp" line="754"/>
+        <source>Alive</source>
+        <translation>存活</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="754"/>
+        <source>Dead</source>
+        <translation>阵亡</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="760"/>
+        <source>Win</source>
+        <translation>胜</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="760"/>
+        <source>Lose</source>
+        <translation>负</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="782"/>
+        <source>Packages:</source>
+        <translation>武将包：</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="813"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="797"/>
-        <location filename="src/dialog/mainwindow.cpp" line="821"/>
+        <location filename="src/dialog/mainwindow.cpp" line="817"/>
+        <location filename="src/dialog/mainwindow.cpp" line="841"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="817"/>
+        <location filename="src/dialog/mainwindow.cpp" line="837"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
@@ -2165,12 +2205,12 @@
         <translation>请选择一个重放文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="779"/>
+        <location filename="src/dialog/mainwindow.cpp" line="799"/>
         <source>Send low level command</source>
         <translation>发送底层命令</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="779"/>
+        <location filename="src/dialog/mainwindow.cpp" line="799"/>
         <source>Please input the raw low level command</source>
         <translation>请输入要发送的底层命令</translation>
     </message>
@@ -2184,8 +2224,8 @@
         <translation type="obsolete">论坛: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="800"/>
-        <location filename="src/dialog/mainwindow.cpp" line="823"/>
+        <location filename="src/dialog/mainwindow.cpp" line="820"/>
+        <location filename="src/dialog/mainwindow.cpp" line="843"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>

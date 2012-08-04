@@ -14,10 +14,12 @@ public:
     void initialize(QString dir = QString());
     PlayerRecordStruct *getPlayerRecord(const Player *player) const;
     QMap<QString, PlayerRecordStruct *> getRecordMap() const;
+    QList<QString> getRecordPackages() const;
+    QList<QString> getRecordWinners() const;
 
 private:
     QMap<QString, PlayerRecordStruct *> m_recordMap;
-    QList<QString> m_recordPackages;
+    QList<QString> m_recordPackages, m_recordWinners;
 };
 
 struct PlayerRecordStruct{
@@ -30,6 +32,7 @@ struct PlayerRecordStruct{
     int m_recover;
     int m_damage;
     int m_kill;
+    bool m_isAlive;
     QList<QString> m_designation;
 };
 

@@ -111,10 +111,18 @@ void RecAnalysis::initialize(QString dir){
         if(line.contains("#Murder")){
             QString object = line.split(":").at(1).split("->").first();
             m_recordMap[object]->m_kill++;
+            object = line.split(":").at(1).split("->").last();
+            m_recordMap[object]->m_isAlive = false;
 
             continue;
         }
     }
+
+    QString winners = records_line.last();
+    winners.remove(winners.lastIndexOf("[")-1, winners.length());
+    winners = winners.split("[").last();
+    m_recordWinners = winners.remove("\"").split("+");
+
 }
 
 PlayerRecordStruct *RecAnalysis::getPlayerRecord(const Player *player) const{
@@ -128,7 +136,14 @@ QMap<QString, PlayerRecordStruct *> RecAnalysis::getRecordMap() const{
     return m_recordMap;
 }
 
+QList<QString> RecAnalysis::getRecordPackages() const{
+    return m_recordPackages;
+}
+
+QList<QString> RecAnalysis::getRecordWinners() const{
+    return m_recordWinners;
+}
 
 PlayerRecordStruct::PlayerRecordStruct()
-    :m_statue("online"), m_recover(0), m_damage(0), m_kill(0)
+    :m_statue("online"), m_recover(0), m_damage(0), m_kill(0), m_isAlive(true)
 {}
