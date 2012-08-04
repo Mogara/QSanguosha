@@ -41,6 +41,12 @@ bool Recorder::save(const QString &filename) const{
         return false;
 }
 
+QList<QString> Recorder::getRecords() const{
+    QString record_data(data);
+    QList<QString> records = record_data.split("\n");
+    return records;
+}
+
 QImage Recorder::TXT2PNG(QByteArray txtData){
     QByteArray data = qCompress(txtData, 9);
     qint32 actual_size = data.size();

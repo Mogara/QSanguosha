@@ -10,6 +10,7 @@
 #include "window.h"
 #include "halldialog.h"
 #include "pixmapanimation.h"
+#include "record-analysis.h"
 
 #include <cmath>
 #include <QGraphicsView>
@@ -702,6 +703,75 @@ void MainWindow::on_actionReplay_file_convert_triggered()
                 tosave_file.write(data);
         }
     }
+}
+
+void MainWindow::on_actionRecord_analysis_triggered(){
+    QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Load replay record"),
+                                                    location,
+                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+
+
+    QDialog *rec_dialog = new QDialog(this);
+    rec_dialog->resize(800, 400);
+    QTableWidget *table = new QTableWidget;
+
+    RecAnalysis *record = new RecAnalysis(filename);
+    QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
+    table->setColumnCount(7);
+    table->setRowCount(record_map.keys().length());
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    static QStringList labels;
+    if(labels.isEmpty()){
+        labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Recover")
+               << tr("Damage") << tr("Kill") << tr("Designation");
+    }
+    table->setHorizontalHeaderLabels(labels);
+    table->setSelectionBehavior(QTableWidget::SelectRows);
+
+    int i = 0;
+    foreach(PlayerRecordStruct *rec, record_map.values()){
+        QTableWidgetItem *item = new QTableWidgetItem;
+        QString screen_name = Sanguosha->translate(rec->m_screenName);
+        if(rec->m_statue == "robot")
+            screen_name += "(" + Sanguosha->translate("robot") + ")";
+
+        item->setText(screen_name);
+        table->setItem(i, 0, item);
+
+        item = new QTableWidgetItem;
+        item->setText(Sanguosha->translate(rec->m_generalName));
+        table->setItem(i, 1, item);
+
+        item = new QTableWidgetItem;
+        item->setText(Sanguosha->translate(rec->m_role));
+        table->setItem(i, 2, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_recover));
+        table->setItem(i, 3, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_damage));
+        table->setItem(i, 4, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_kill));
+        table->setItem(i, 5, item);
+
+        item = new QTableWidgetItem;
+  //      item->setText(Sanguosha->translate(rec->m_designation));
+        table->setItem(i, 6, item);
+        i++;
+    }
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(table);
+    rec_dialog->setLayout(layout);
+
+    rec_dialog->exec();
 }
 
 void MainWindow::sendLowLevelCommand()
