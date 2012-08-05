@@ -73,10 +73,16 @@ void RecAnalysis::initialize(QString dir){
             foreach(QString object, m_recordMap.keys()){
                 if(line.contains(object)){
                     QString general = line.split(",").last();
-                    m_recordMap[object]->m_generalName = general.remove("\"");
-                    m_recordMap[object]->m_generalName = general.remove("]");
+                    general.remove("\"");
+                    general.remove("]");
+
+                    line.contains("general2") ?
+                            m_recordMap[object]->m_general2Name = general :
+                            m_recordMap[object]->m_generalName = general;
                 }
             }
+
+            continue;
         }
 
         if(line.contains("state") && line.contains("robot")){

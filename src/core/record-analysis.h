@@ -25,7 +25,7 @@ private:
 struct PlayerRecordStruct{
     PlayerRecordStruct();
 
-    QString m_generalName;
+    QString m_generalName, m_general2Name;
     QString m_screenName;
     QString m_statue;
     QString m_role;
