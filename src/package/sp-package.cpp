@@ -351,8 +351,7 @@ public:
 class YicongEffect: public TriggerSkill{
 public:
     YicongEffect():TriggerSkill("#yicong_effect"){
-        events << DamageDone << HpLost << HpRecover << MaxHpChanged;
-        frequency = Compulsory;
+        events << DamageDone << HpLost << HpRecover;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

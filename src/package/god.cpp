@@ -1083,7 +1083,6 @@ public:
             const TriggerSkill *guicai = Sanguosha->getTriggerSkill("guicai");
             if(guicai && !player->isKongcheng() && !player->hasSkill("guicai") && player->askForSkillInvoke("jilve", data)){
                 player->loseMark("@bear");
-                room->broadcastSkillInvoke("jilve",1);
                 guicai->trigger(triggerEvent, room, player, data);
             }
         }else if(triggerEvent == Damaged){

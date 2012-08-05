@@ -237,7 +237,7 @@ LingPackage::LingPackage()
 
     General * neo_gongsunzan = new General(this, "neo_gongsunzan", "qun");
     neo_gongsunzan->addSkill("yicong");
-	neo_gongsunzan->addSkill("#yicong_effect");
+    neo_gongsunzan->addSkill("#yicong_effect");
     neo_gongsunzan->addSkill(new Zhulou);
 
 
