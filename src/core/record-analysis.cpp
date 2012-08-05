@@ -31,6 +31,7 @@ void RecAnalysis::initialize(QString dir){
     }
     else{
         QMessageBox::warning(NULL, tr("Warning"), tr("The file is unreadable"));
+        return;
     }
     records_line.removeAll(QString());
 

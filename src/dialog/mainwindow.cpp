@@ -759,7 +759,7 @@ void MainWindow::on_actionRecord_analysis_triggered(){
 
         item = new QTableWidgetItem;
         bool is_win = record->getRecordWinners().contains(rec->m_role) ||
-                        record->getRecordWinners().contains(rec->m_generalName);
+                        record->getRecordWinners().contains(record_map.key(rec));
         item->setText(is_win ? tr("Win") : tr("Lose"));
         table->setItem(i, 4, item);
 
