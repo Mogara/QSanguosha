@@ -4418,10 +4418,6 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
 
     if(card == NULL)
         return;
-    
-    if(skill_name != "jilve")
-        broadcastSkillInvoke(skill_name);
-
     bool triggerResponsed = getCardOwner(card->getEffectiveId()) == player;
 
     const Card* oldJudge = judge->card;

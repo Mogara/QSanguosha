@@ -156,8 +156,10 @@ public:
         QString prompt = prompt_list.join(":");
         const Card *card = room->askForCard(player, "@guidao", prompt, data, AskForRetrial);
 
-        room->retrial(card, player, judge, objectName(), true);
-
+        if (card != NULL){
+            room->broadcastSkillInvoke(objectName());
+            room->retrial(card, player, judge, objectName(), true);
+        }
         return false;
     }
 };
