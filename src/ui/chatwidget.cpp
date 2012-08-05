@@ -189,6 +189,7 @@ void ChatWidget::sendText()
 {
     chat_face_board->setVisible(false);
     easy_text_board->setVisible(false);
+
     emit(return_button_click());
 }
 
