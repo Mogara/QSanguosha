@@ -1102,7 +1102,7 @@
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="193"/>
         <source>After this turn </source>
-        <translation>次回合结束后</translation>
+        <translation>此回合结束后</translation>
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="194"/>
