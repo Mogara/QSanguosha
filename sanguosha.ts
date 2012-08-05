@@ -1955,13 +1955,13 @@
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="366"/>
-        <location filename="src/dialog/mainwindow.cpp" line="832"/>
+        <location filename="src/dialog/mainwindow.cpp" line="831"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="371"/>
-        <location filename="src/dialog/mainwindow.cpp" line="855"/>
+        <location filename="src/dialog/mainwindow.cpp" line="854"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -2088,8 +2088,8 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="455"/>
         <location filename="src/dialog/mainwindow.cpp" line="568"/>
-        <location filename="src/dialog/mainwindow.cpp" line="836"/>
-        <location filename="src/dialog/mainwindow.cpp" line="859"/>
+        <location filename="src/dialog/mainwindow.cpp" line="835"/>
+        <location filename="src/dialog/mainwindow.cpp" line="858"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -2184,18 +2184,23 @@
         <translation>武将包：</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="822"/>
+        <location filename="src/dialog/mainwindow.cpp" line="794"/>
+        <source>GameMode:</source>
+        <translation>服务器选项：</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="821"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="826"/>
-        <location filename="src/dialog/mainwindow.cpp" line="850"/>
+        <location filename="src/dialog/mainwindow.cpp" line="825"/>
+        <location filename="src/dialog/mainwindow.cpp" line="849"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="846"/>
+        <location filename="src/dialog/mainwindow.cpp" line="845"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
@@ -2215,12 +2220,12 @@
         <translation>请选择一个重放文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="808"/>
+        <location filename="src/dialog/mainwindow.cpp" line="807"/>
         <source>Send low level command</source>
         <translation>发送底层命令</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="808"/>
+        <location filename="src/dialog/mainwindow.cpp" line="807"/>
         <source>Please input the raw low level command</source>
         <translation>请输入要发送的底层命令</translation>
     </message>
@@ -2234,8 +2239,8 @@
         <translation type="obsolete">论坛: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="829"/>
-        <location filename="src/dialog/mainwindow.cpp" line="852"/>
+        <location filename="src/dialog/mainwindow.cpp" line="828"/>
+        <location filename="src/dialog/mainwindow.cpp" line="851"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
@@ -2613,6 +2618,54 @@
         <location filename="src/ui/QSanSelectableItem.cpp" line="38"/>
         <source>Warning</source>
         <translation>警告</translation>
+    </message>
+</context>
+<context>
+    <name>RecAnalysis</name>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="33"/>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="33"/>
+        <source>The file is unreadable</source>
+        <translation>文件不可读</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="55"/>
+        <source>FreeChoose</source>
+        <translation>自由选将</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="56"/>
+        <source>Enable2ndGeneral</source>
+        <translation>开启双将</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="57"/>
+        <source>EnableScene</source>
+        <translation>场景模式</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="58"/>
+        <source>EnableSame</source>
+        <translation>同将模式</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="59"/>
+        <source>EnableBasara</source>
+        <translation>暗将模式</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="60"/>
+        <source>EnableHegemony</source>
+        <translation>国战模式</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="61"/>
+        <source>EnableAI</source>
+        <translation>开启AI</translation>
     </message>
 </context>
 <context>

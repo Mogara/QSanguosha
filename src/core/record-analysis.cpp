@@ -11,7 +11,7 @@ RecAnalysis::RecAnalysis(QString dir){
 }
 
 void RecAnalysis::initialize(QString dir){
-    QList<QString> records_line;
+    QStringList records_line;
     if(dir.isEmpty())
         records_line = ClientInstance->getRecords();
     else if(dir.endsWith(".png")){
@@ -30,42 +30,52 @@ void RecAnalysis::initialize(QString dir){
         }
     }
     else{
-        //Weird, I cannot find the header file of tr function
-    //    QMessageBox::warning(NULL, tr("Warning"), tr("The file is unreadable"));
+        QMessageBox::warning(NULL, tr("Warning"), tr("The file is unreadable"));
     }
+    records_line.removeAll(QString());
 
-    QList<QString> role_list;
+    QStringList role_list;
     m_recordMap["sgs1"] = new PlayerRecordStruct;
     m_recordMap["sgs1"]->m_screenName = Config.UserName;
     foreach(QString line, records_line){
         if(line.contains("setup")){
-            QRegExp rx("(.*):(\\w+):(\\w+):(.*):(\\w+)");
+            QRegExp rx("(.*):(\\w+):(\\w+):(.*):([FSCTBHAM12]*)(\\s+)?");
             if(!rx.exactMatch(line))
                 continue;
 
             QStringList texts = rx.capturedTexts();
-            QList<QString> ban_packages = texts.at(4).split("+");
+            QStringList ban_packages = texts.at(4).split("+");
             foreach(Package *package, Sanguosha->findChildren<Package *>()){
                 if(!ban_packages.contains(package->objectName()) &&
                         Sanguosha->getScenario(package->objectName()) == NULL)
-                    m_recordPackages << package->objectName();
+                    m_recordPackages << Sanguosha->translate(package->objectName());
             }
+
+            QString flags = texts.at(5);
+            if(flags.contains("F")) m_recordGameMode << tr("FreeChoose");
+            if(flags.contains("S")) m_recordGameMode << tr("Enable2ndGeneral");
+            if(flags.contains("C")) m_recordGameMode << tr("EnableScene");
+            if(flags.contains("T")) m_recordGameMode << tr("EnableSame");
+            if(flags.contains("B")) m_recordGameMode << tr("EnableBasara");
+            if(flags.contains("H")) m_recordGameMode << tr("EnableHegemony");
+            if(flags.contains("A")) m_recordGameMode << tr("EnableAI");
 
             continue;
         }
 
         if(line.contains("arrangeSeats")){
-            role_list = line.split(" ").last().split("+");
+            QStringList line_struct = line.split(QRegExp("\\s+"));
+            line_struct.removeAll(QString());
+            role_list = line_struct.last().split("+");
 
             continue;
         }
 
         if(line.contains("addPlayer")){
             PlayerRecordStruct *player_rec = new PlayerRecordStruct;
-            QList<QString> info_assemble = line.split(" ").last().split(":");
+            QStringList info_assemble = line.split(" ").last().split(":");
             player_rec->m_screenName = QString::fromUtf8(QByteArray::fromBase64(info_assemble.at(1).toAscii()));
             m_recordMap[info_assemble.at(0)] = player_rec;
-
             continue;
         }
 
@@ -73,8 +83,7 @@ void RecAnalysis::initialize(QString dir){
             foreach(QString object, m_recordMap.keys()){
                 if(line.contains(object)){
                     QString general = line.split(",").last();
-                    general.remove("\"");
-                    general.remove("]");
+                    general.remove(QRegExp("[^a-z_]+"));
 
                     line.contains("general2") ?
                             m_recordMap[object]->m_general2Name = general :
@@ -97,7 +106,7 @@ void RecAnalysis::initialize(QString dir){
         }
 
         if(line.contains("hpChange")){
-            QList<QString> info_assemble = line.split(" ").last().split(":");
+            QStringList info_assemble = line.split(" ").last().split(":");
             QString hp = info_assemble.at(1);
             bool ok = false;
             int hp_change = hp.remove(QRegExp("[TF]")).toInt(&ok);
@@ -142,10 +151,11 @@ void RecAnalysis::initialize(QString dir){
 
     winners = records_line.last().remove("\"");
     winners.remove(0, winners.lastIndexOf("[")+1);
-    QList<QString> roles_order = winners.remove("]").split(",");
+    QStringList roles_order = winners.remove(QRegExp("[^a-z,]+")).split(",");
     int i = 0;
-    for(; i<role_list.length(); i++)
+    for(; i<role_list.length(); i++){
         m_recordMap[role_list.at(i)]->m_role = roles_order.at(i);
+    }
 }
 
 PlayerRecordStruct *RecAnalysis::getPlayerRecord(const Player *player) const{
@@ -159,12 +169,16 @@ QMap<QString, PlayerRecordStruct *> RecAnalysis::getRecordMap() const{
     return m_recordMap;
 }
 
-QList<QString> RecAnalysis::getRecordPackages() const{
+QStringList RecAnalysis::getRecordPackages() const{
     return m_recordPackages;
 }
 
-QList<QString> RecAnalysis::getRecordWinners() const{
+QStringList RecAnalysis::getRecordWinners() const{
     return m_recordWinners;
+}
+
+QStringList RecAnalysis::getRecordGameMode() const{
+    return m_recordGameMode;
 }
 
 PlayerRecordStruct::PlayerRecordStruct()

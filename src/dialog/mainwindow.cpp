@@ -788,15 +788,14 @@ void MainWindow::on_actionRecord_analysis_triggered(){
     table->resizeColumnsToContents();
 
     QLabel *label = new QLabel;
-    QString text = tr("Packages:") ;
-    foreach(QString package, record->getRecordPackages()){
-        text += Sanguosha->translate(package) + ",";
-    }
-    text.remove(text.size()-1);
-    label->setText(text);
+    label->setText(tr("Packages:") + record->getRecordPackages().join(","));
+
+    QLabel *label_options = new QLabel;
+    label_options->setText(tr("GameMode:") + record->getRecordGameMode().join(","));
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(label);
+    layout->addWidget(label_options);
     layout->addWidget(table);
     rec_dialog->setLayout(layout);
 

@@ -5,21 +5,27 @@
 #include "engine.h"
 #include "serverplayer.h"
 
+#include <QObject>
+
 struct PlayerRecordStruct;
 
-class RecAnalysis{
+class RecAnalysis : public QObject{
+    Q_OBJECT
+
 public:
     explicit RecAnalysis(QString dir = QString());
 
     void initialize(QString dir = QString());
     PlayerRecordStruct *getPlayerRecord(const Player *player) const;
     QMap<QString, PlayerRecordStruct *> getRecordMap() const;
-    QList<QString> getRecordPackages() const;
-    QList<QString> getRecordWinners() const;
+    QStringList getRecordPackages() const;
+    QStringList getRecordWinners() const;
+    QStringList getRecordGameMode() const;
 
 private:
     QMap<QString, PlayerRecordStruct *> m_recordMap;
-    QList<QString> m_recordPackages, m_recordWinners;
+    QStringList m_recordPackages, m_recordWinners;
+    QStringList m_recordGameMode;
 };
 
 struct PlayerRecordStruct{
@@ -34,7 +40,7 @@ struct PlayerRecordStruct{
     int m_damaged;
     int m_kill;
     bool m_isAlive;
-    QList<QString> m_designation;
+    QStringList m_designation;
 };
 
 #endif // RECORDANALYSIS_H
