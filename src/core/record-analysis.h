@@ -31,6 +31,7 @@ struct PlayerRecordStruct{
     QString m_role;
     int m_recover;
     int m_damage;
+    int m_damaged;
     int m_kill;
     bool m_isAlive;
     QList<QString> m_designation;

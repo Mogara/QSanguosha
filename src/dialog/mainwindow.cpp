@@ -715,19 +715,19 @@ void MainWindow::on_actionRecord_analysis_triggered(){
 
     QDialog *rec_dialog = new QDialog(this);
     rec_dialog->setWindowTitle(tr("Record Analysis"));
-    rec_dialog->resize(1000, 400);
+    rec_dialog->resize(800, 300);
     QTableWidget *table = new QTableWidget;
 
     RecAnalysis *record = new RecAnalysis(filename);
     QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
-    table->setColumnCount(9);
+    table->setColumnCount(10);
     table->setRowCount(record_map.keys().length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     static QStringList labels;
     if(labels.isEmpty()){
         labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Living") << tr("WinOrLose")
-               << tr("Recover") << tr("Damage") << tr("Kill") << tr("Designation");
+               << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
     }
     table->setHorizontalHeaderLabels(labels);
     table->setSelectionBehavior(QTableWidget::SelectRows);
@@ -769,14 +769,20 @@ void MainWindow::on_actionRecord_analysis_triggered(){
         table->setItem(i, 6, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_kill));
+        item->setText(QString::number(rec->m_damaged));
         table->setItem(i, 7, item);
 
         item = new QTableWidgetItem;
-  //      item->setText(Sanguosha->translate(rec->m_designation));
+        item->setText(QString::number(rec->m_kill));
         table->setItem(i, 8, item);
+
+        item = new QTableWidgetItem;
+  //      item->setText(Sanguosha->translate(rec->m_designation));
+        table->setItem(i, 9, item);
         i++;
     }
+
+    table->resizeColumnsToContents();
 
     QLabel *label = new QLabel;
     QString text = tr("Packages:") ;

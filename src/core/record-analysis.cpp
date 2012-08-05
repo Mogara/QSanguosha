@@ -1,6 +1,7 @@
 #include "record-analysis.h"
 #include "recorder.h"
 #include "settings.h"
+#include "engine.h"
 
 #include <QFile>
 #include <QMessageBox>
@@ -42,7 +43,13 @@ void RecAnalysis::initialize(QString dir){
                 continue;
 
             QStringList texts = rx.capturedTexts();
-            m_recordPackages = texts.at(4).split("+");
+            QList<QString> ban_packages = texts.at(4).split("+");
+            foreach(Package *package, Sanguosha->findChildren<Package *>()){
+                if(!ban_packages.contains(package->objectName()) &&
+                        Sanguosha->getScenario(package->objectName()) == NULL)
+                    m_recordPackages << package->objectName();
+            }
+
             continue;
         }
 
@@ -50,7 +57,6 @@ void RecAnalysis::initialize(QString dir){
             PlayerRecordStruct *player_rec = new PlayerRecordStruct;
             QList<QString> info_assemble = line.split(" ").last().split(":");
             player_rec->m_screenName = QString::fromUtf8(QByteArray::fromBase64(info_assemble.at(1).toAscii()));
-            player_rec->m_generalName = info_assemble.at(2);
             m_recordMap[info_assemble.at(0)] = player_rec;
 
             continue;
@@ -85,9 +91,7 @@ void RecAnalysis::initialize(QString dir){
             if(!ok)
                 continue;
 
-            if(hp_change < 0)
-                m_recordMap[info_assemble.at(0)]->m_damage += -hp_change;
-            else
+            if(hp_change > 0)
                 m_recordMap[info_assemble.at(0)]->m_recover += hp_change;
 
             continue;
@@ -105,6 +109,21 @@ void RecAnalysis::initialize(QString dir){
                 }
             }
 
+            continue;
+        }
+
+        if(line.contains("#Damage")){
+            QRegExp rx("(.*):(.*)::(\\d+):(\\w+)");
+            if(!rx.exactMatch(line))
+                continue;
+
+            QStringList texts = rx.capturedTexts();
+            QString object_damage = line.contains("#DamageNoSource") ? QString() : texts.at(2).split("->").first();
+            QString object_damaged = texts.at(2).split("->").last();
+            int damage = texts.at(3).toInt();
+
+            if(!object_damage.isEmpty()) m_recordMap[object_damage]->m_damage += damage;
+            m_recordMap[object_damaged]->m_damaged += damage;
             continue;
         }
 
@@ -145,5 +164,6 @@ QList<QString> RecAnalysis::getRecordWinners() const{
 }
 
 PlayerRecordStruct::PlayerRecordStruct()
-    :m_statue("online"), m_recover(0), m_damage(0), m_kill(0), m_isAlive(true)
+    :m_statue("online"), m_recover(0), m_damage(0),
+      m_damaged(0), m_kill(0), m_isAlive(true)
 {}
