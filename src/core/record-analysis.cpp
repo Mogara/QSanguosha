@@ -79,6 +79,17 @@ void RecAnalysis::initialize(QString dir){
             continue;
         }
 
+        if(line.contains("speak")){
+            QString speaker = line.split(":").first();
+            speaker.remove(0, speaker.lastIndexOf(" ")+1);
+            QString words = line.split(":").last().remove(" ");
+            words = QString::fromUtf8(QByteArray::fromBase64(words.toAscii()));
+            m_recordChat += m_recordMap[speaker]->m_screenName+": "+words;
+            m_recordChat.append("<br/>");
+
+            continue;
+        }
+
         if(line.contains("general")){
             foreach(QString object, m_recordMap.keys()){
                 if(line.contains(object)){
@@ -179,6 +190,10 @@ QStringList RecAnalysis::getRecordWinners() const{
 
 QStringList RecAnalysis::getRecordGameMode() const{
     return m_recordGameMode;
+}
+
+QString RecAnalysis::getRecordChat() const{
+    return m_recordChat;
 }
 
 PlayerRecordStruct::PlayerRecordStruct()

@@ -21,11 +21,13 @@ public:
     QStringList getRecordPackages() const;
     QStringList getRecordWinners() const;
     QStringList getRecordGameMode() const;
+    QString getRecordChat() const;
 
 private:
     QMap<QString, PlayerRecordStruct *> m_recordMap;
     QStringList m_recordPackages, m_recordWinners;
     QStringList m_recordGameMode;
+    QString m_recordChat;
 };
 
 struct PlayerRecordStruct{

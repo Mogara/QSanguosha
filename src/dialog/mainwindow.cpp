@@ -715,7 +715,7 @@ void MainWindow::on_actionRecord_analysis_triggered(){
 
     QDialog *rec_dialog = new QDialog(this);
     rec_dialog->setWindowTitle(tr("Record Analysis"));
-    rec_dialog->resize(800, 300);
+    rec_dialog->resize(800, 500);
     QTableWidget *table = new QTableWidget;
 
     RecAnalysis *record = new RecAnalysis(filename);
@@ -793,10 +793,20 @@ void MainWindow::on_actionRecord_analysis_triggered(){
     QLabel *label_options = new QLabel;
     label_options->setText(tr("GameMode:") + record->getRecordGameMode().join(","));
 
+    QTextEdit *chat_info = new QTextEdit;
+    chat_info->setReadOnly(chat_info);
+    chat_info->setText(record->getRecordChat());
+
+    QLabel *table_chat_title = new QLabel;
+    table_chat_title->setText(tr("Chat Infomation:"));
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(label);
     layout->addWidget(label_options);
     layout->addWidget(table);
+    layout->addSpacing(15);
+    layout->addWidget(table_chat_title);
+    layout->addWidget(chat_info);
     rec_dialog->setLayout(layout);
 
     rec_dialog->exec();

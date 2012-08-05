@@ -1955,13 +1955,13 @@
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="366"/>
-        <location filename="src/dialog/mainwindow.cpp" line="831"/>
+        <location filename="src/dialog/mainwindow.cpp" line="841"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="371"/>
-        <location filename="src/dialog/mainwindow.cpp" line="854"/>
+        <location filename="src/dialog/mainwindow.cpp" line="864"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -2088,8 +2088,8 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="455"/>
         <location filename="src/dialog/mainwindow.cpp" line="568"/>
-        <location filename="src/dialog/mainwindow.cpp" line="835"/>
-        <location filename="src/dialog/mainwindow.cpp" line="858"/>
+        <location filename="src/dialog/mainwindow.cpp" line="845"/>
+        <location filename="src/dialog/mainwindow.cpp" line="868"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -2189,18 +2189,23 @@
         <translation>服务器选项：</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="821"/>
+        <location filename="src/dialog/mainwindow.cpp" line="801"/>
+        <source>Chat Infomation:</source>
+        <translation>聊天信息：</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="831"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="825"/>
-        <location filename="src/dialog/mainwindow.cpp" line="849"/>
+        <location filename="src/dialog/mainwindow.cpp" line="835"/>
+        <location filename="src/dialog/mainwindow.cpp" line="859"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="845"/>
+        <location filename="src/dialog/mainwindow.cpp" line="855"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
@@ -2220,12 +2225,12 @@
         <translation>请选择一个重放文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="807"/>
+        <location filename="src/dialog/mainwindow.cpp" line="817"/>
         <source>Send low level command</source>
         <translation>发送底层命令</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="807"/>
+        <location filename="src/dialog/mainwindow.cpp" line="817"/>
         <source>Please input the raw low level command</source>
         <translation>请输入要发送的底层命令</translation>
     </message>
@@ -2239,8 +2244,8 @@
         <translation type="obsolete">论坛: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="828"/>
-        <location filename="src/dialog/mainwindow.cpp" line="851"/>
+        <location filename="src/dialog/mainwindow.cpp" line="838"/>
+        <location filename="src/dialog/mainwindow.cpp" line="861"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
