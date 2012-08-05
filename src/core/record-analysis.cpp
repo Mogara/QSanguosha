@@ -34,6 +34,7 @@ void RecAnalysis::initialize(QString dir){
     //    QMessageBox::warning(NULL, tr("Warning"), tr("The file is unreadable"));
     }
 
+    QList<QString> role_list;
     m_recordMap["sgs1"] = new PlayerRecordStruct;
     m_recordMap["sgs1"]->m_screenName = Config.UserName;
     foreach(QString line, records_line){
@@ -49,6 +50,12 @@ void RecAnalysis::initialize(QString dir){
                         Sanguosha->getScenario(package->objectName()) == NULL)
                     m_recordPackages << package->objectName();
             }
+
+            continue;
+        }
+
+        if(line.contains("arrangeSeats")){
+            role_list = line.split(" ").last().split("+");
 
             continue;
         }
@@ -97,21 +104,6 @@ void RecAnalysis::initialize(QString dir){
             continue;
         }
 
-        if(line.contains("role")){
-            foreach(QString object, m_recordMap.keys()){
-                if(line.contains(object)){
-                    if(line.contains("lord")) m_recordMap[object]->m_role = "lord";
-                    else if(line.contains("loyalist")) m_recordMap[object]->m_role = "loyalist";
-                    else if(line.contains("rebel")) m_recordMap[object]->m_role = "rebel";
-                    else if(line.contains("renegade")) m_recordMap[object]->m_role = "renegade";
-
-                    break;
-                }
-            }
-
-            continue;
-        }
-
         if(line.contains("#Damage")){
             QRegExp rx("(.*):(.*)::(\\d+):(\\w+)");
             if(!rx.exactMatch(line))
@@ -142,6 +134,12 @@ void RecAnalysis::initialize(QString dir){
     winners = winners.split("[").last();
     m_recordWinners = winners.remove("\"").split("+");
 
+    winners = records_line.last().remove("\"");
+    winners.remove(0, winners.lastIndexOf("[")+1);
+    QList<QString> roles_order = winners.remove("]").split(",");
+    int i = 0;
+    for(; i<role_list.length(); i++)
+        m_recordMap[role_list.at(i)]->m_role = roles_order.at(i);
 }
 
 PlayerRecordStruct *RecAnalysis::getPlayerRecord(const Player *player) const{
