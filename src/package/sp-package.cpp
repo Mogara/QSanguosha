@@ -354,20 +354,20 @@ public:
         events << DamageDone << HpLost << HpRecover;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         int hp = player->getHp();
         int index = 0;
-        if (event == DamageDone){
+        if (triggerEvent == DamageDone){
             DamageStruct damage = data.value<DamageStruct>();
             if (hp > 2 && hp - damage.damage <= 2)
                 index = 2;
         }
-        else if (event == HpLost){
+        else if (triggerEvent == HpLost){
             int lost = data.toInt();
             if (hp > 2 && hp - lost <= 2)
                 index = 2;
         }
-        else if (event == HpRecover){
+        else if (triggerEvent == HpRecover){
             RecoverStruct recover = data.value<RecoverStruct>();
             if (hp <= 2 && hp + recover.recover > 2)
                 index = 1;

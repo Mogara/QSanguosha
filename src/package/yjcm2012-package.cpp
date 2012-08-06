@@ -54,7 +54,6 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
-                room->broadcastSkillInvoke(objectName());
                 int x = wangyi->getLostHp();
                 wangyi->drawCards(x); //It should be preview, not draw
                 ServerPlayer *target = room->askForPlayerChosen(wangyi, room->getAllPlayers(), objectName());
