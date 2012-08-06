@@ -1,19 +1,23 @@
 require "middleclass"
 
 --- a SkillCard class
--- @example
---  TuxiCard = class("TuxiCard", SkillCard, {
---    initialize = function(self)
+--
+-- @usage
+--
+--  TuxiCard = class("TuxiCard", SkillCard)
+--
+--    function TuxiCard:initialize()
 --      SkillCard.initialize(self)
 --      self.name = "tuxi"
 --      self.target_fixed = false
---    end,
+--    end
 --    
---    on_effect = function(self, card, effect)
+--    function TuxiCard:on_effect(card, effect)
 --      ...
 --    end
---  })
+--
 --  tuxi_card = TuxiCard:create() -- need at file scope
+--
 SkillCard = class("SkillCard")
 
   function SkillCard.static:create()
@@ -57,7 +61,8 @@ Skill = class("Skill")
   end
 
 --- a ViewAsSkill class
--- @example
+--
+-- @usage
 --
 --   Tuxi = class("Tuxi", ViewAsSkill) 
 --
@@ -73,6 +78,7 @@ Skill = class("Skill")
 --
 --   tuxi = Tuxi:create() -- need at file scope
 --   zhangliao:addSkill(tuxi)
+--
 ViewAsSkill = class("ViewAsSkill", Skill)
 
   function ViewAsSkill:initialize()
@@ -109,6 +115,22 @@ ViewAsSkill = class("ViewAsSkill", Skill)
     return skill
   end
 
+--- a TriggerSkill class
+--
+-- @usage
+--
+--   Hujia = class("Hujia", TriggerSkill)
+--
+--     function Hujia:initialize()
+--       self.name = "hujia"
+--       self.events = {sgs.CardAsked}
+--     end
+--
+--     function Hujia:on_trigger(skill, event, player, data)
+--       ...
+--     end
+--
+--   hujia = Hujia:create()
 TriggerSkill = class("TriggerSkill", Skill)
 
   function TriggerSkill:initialize()
