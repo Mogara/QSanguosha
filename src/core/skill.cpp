@@ -243,9 +243,9 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
-int MasochismSkill::getPriority() const{
+/*int MasochismSkill::getPriority() const{
     return -1;
-}
+}*/
 
 bool MasochismSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
     DamageStruct damage = data.value<DamageStruct>();
