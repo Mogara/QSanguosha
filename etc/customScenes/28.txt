@@ -4,3 +4,4 @@ general:select general2:select role:renegade starter:true hp:1 chained:true sing
 general:sunquan role:lord hp:1 chained:true draw:0 
 general:gongsunzan role:loyalist chained:true draw:0 
 general:zhoutai role:loyalist hp:1 chained:true draw:0 
+extraOptions:gameOverIfExtraCardDrawn:lord+loyalist
