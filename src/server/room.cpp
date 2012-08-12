@@ -311,7 +311,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
                     if(role == "god")
                         role = Sanguosha->getGeneral(getTag(player->objectName()).toStringList().at(0))->getKingdom();
                     role = BasaraMode::getMappedRole(role);
-                    broadcast(QString("#%1 role %2").arg(player->objectName()).arg(role));
+                    broadcastProperty(player, "role", role);
                 }
                 else
                     broadcastProperty(player, "role");
@@ -1185,7 +1185,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     if(card_ids.length() == 1 && !refusable)
         return card_ids.first();
 
-    int card_id;
+    int card_id = -1;
 
     AI *ai = player->getAI();
     if(ai){
@@ -2170,12 +2170,14 @@ void Room::chooseGenerals(){
             if(player->getGeneral()){
                 QString name = player->getGeneralName();
                 names.append(name);
-                _setPlayerGeneral(player, "anjiang", true);
+                player->setGeneralName("anjiang");
+                notifyProperty(player, player, "general");
             }
             if(player->getGeneral2() && Config.Enable2ndGeneral){
                 QString name = player->getGeneral2Name();
                 names.append(name);
-                _setPlayerGeneral(player, "anjiang", false);
+                player->setGeneral2Name("anjiang");
+                notifyProperty(player, player, "general2");
             }
             this->setTag(player->objectName(),QVariant::fromValue(names));
         }
@@ -3513,7 +3515,7 @@ void Room::preparePlayers(){
         QList<const Skill*> skills = player->getGeneral()->getSkillList();
         foreach(const Skill* skill, skills)
             player->addSkill(skill->objectName());
-        if(ServerInfo.Enable2ndGeneral){
+        if(player->getGeneral2()){
             skills = player->getGeneral2()->getSkillList();
             foreach(const Skill* skill, skills)
                 player->addSkill(skill->objectName());
@@ -4418,10 +4420,6 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
 
     if(card == NULL)
         return;
-    
-    if(skill_name != "jilve")
-        broadcastSkillInvoke(skill_name);
-
     bool triggerResponsed = getCardOwner(card->getEffectiveId()) == player;
 
     const Card* oldJudge = judge->card;

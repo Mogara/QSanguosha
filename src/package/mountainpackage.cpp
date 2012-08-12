@@ -749,6 +749,9 @@ public:
         ServerPlayer *current = room->getCurrent();
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
 
+        if((move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_DISCARD)
+            return false;
+
         if(player != move->from || erzhang == NULL || erzhang == current)
             return false;
 

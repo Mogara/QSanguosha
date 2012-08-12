@@ -76,6 +76,7 @@ public:
     ClientPlayer *getPlayer(const QString &name);
     void kick(const QString &to_kick);
     bool save(const QString &filename) const;
+    QList<QString> getRecords() const;
     void setLines(const QString &skill_name);
     QString getSkillLine() const;
     Replayer *getReplayer() const;

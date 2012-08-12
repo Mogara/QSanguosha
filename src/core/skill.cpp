@@ -263,7 +263,7 @@ MasochismSkill::MasochismSkill(const QString &name)
 }
 
 int MasochismSkill::getPriority() const{
-    return -1;
+    return 1;
 }
 
 bool MasochismSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

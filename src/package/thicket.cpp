@@ -349,6 +349,7 @@ class Juxiang: public TriggerSkill{
 public:
     Juxiang():TriggerSkill("juxiang"){
         events << PostCardEffected;
+        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

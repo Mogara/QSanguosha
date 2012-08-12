@@ -19,10 +19,9 @@ public:
         if(judge->who->objectName() != player->objectName())
             return false;
 
-
         if(player->askForSkillInvoke(objectName(), data)){
             int card_id = room->drawCard();
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), room->getCurrent() == player ? 2 : 1);
             room->getThread()->delay();
             const Card *card = Sanguosha->getCard(card_id);
 
@@ -45,6 +44,7 @@ public:
             if(!wangyi->askForSkillInvoke(objectName()))
                 return false;
             Room *room = wangyi->getRoom();
+            room->broadcastSkillInvoke(objectName(), 1);
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(club|spade):(.*)");
             judge.good = true;
@@ -54,10 +54,16 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
-                room->broadcastSkillInvoke(objectName());
                 int x = wangyi->getLostHp();
-                wangyi->drawCards(x);
+                wangyi->drawCards(x); //It should be preview, not draw
                 ServerPlayer *target = room->askForPlayerChosen(wangyi, room->getAllPlayers(), objectName());
+
+                if (target == wangyi)
+                    room->broadcastSkillInvoke(objectName(), 2);
+                else if (target->getGeneralName().contains("machao"))
+                    room->broadcastSkillInvoke(objectName(), 4);
+                else
+                    room->broadcastSkillInvoke(objectName(), 3);
 
                 QList<const Card *> miji_cards = wangyi->getHandcards().mid(wangyi->getHandcardNum() - x);
                 foreach(const Card *card, miji_cards){

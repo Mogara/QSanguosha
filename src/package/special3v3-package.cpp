@@ -175,7 +175,10 @@ public:
         if(force && card == NULL)
             card = player->getCards("he").at(qrand() % player->getCardCount(true));
 
-        room->retrial(card, player, judge, objectName());
+        if (card != NULL){
+            room->broadcastSkillInvoke(objectName());
+            room->retrial(card, player, judge, objectName());
+        }
 
         return false;
     }

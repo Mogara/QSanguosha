@@ -238,6 +238,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
         // chat edit
         chat_edit = new QLineEdit;        
         chat_edit->setObjectName("chat_edit");
+        chat_edit->setMaxLength(50);
         chat_edit_widget = addWidget(chat_edit);
         chat_edit_widget->setObjectName("chat_edit_widget");
         chat_edit_widget->setZValue(-2.0);
@@ -3180,6 +3181,7 @@ void KOFOrderBox::killPlayer(const QString &general_name){
         if(avatar->isEnabled() && avatar->objectName() == general_name){
             QPixmap pixmap("image/system/death/unknown.png");
             QGraphicsPixmapItem *death = new QGraphicsPixmapItem(pixmap, avatar);
+            death->setScale(0.5);
             death->moveBy(10, 0);
             avatar->makeGray();
             avatar->setEnabled(false);

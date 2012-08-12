@@ -348,6 +348,38 @@ public:
     }
 };
 
+class YicongEffect: public TriggerSkill{
+public:
+    YicongEffect():TriggerSkill("#yicong_effect"){
+        events << DamageDone << HpLost << HpRecover;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        int hp = player->getHp();
+        int index = 0;
+        if (triggerEvent == DamageDone){
+            DamageStruct damage = data.value<DamageStruct>();
+            if (hp > 2 && hp - damage.damage <= 2)
+                index = 2;
+        }
+        else if (triggerEvent == HpLost){
+            int lost = data.toInt();
+            if (hp > 2 && hp - lost <= 2)
+                index = 2;
+        }
+        else if (triggerEvent == HpRecover){
+            RecoverStruct recover = data.value<RecoverStruct>();
+            if (hp <= 2 && hp + recover.recover > 2)
+                index = 1;
+        }
+
+        if (index){
+            room->broadcastSkillInvoke("yicong", index);
+        }
+        return false;
+    }
+};
+
 class Xiuluo: public PhaseChangeSkill{
 public:
     Xiuluo():PhaseChangeSkill("xiuluo"){
@@ -469,6 +501,8 @@ SPPackage::SPPackage()
 
     General *gongsunzan = new General(this, "gongsunzan", "qun");
     gongsunzan->addSkill(new Yicong);
+    gongsunzan->addSkill(new YicongEffect);
+    related_skills.insertMulti("yicong", "#yicong_effect");
 
     General *yuanshu = new General(this, "yuanshu", "qun");
     yuanshu->addSkill(new Yongsi);

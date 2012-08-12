@@ -980,6 +980,13 @@ bool Client::save(const QString &filename) const{
         return false;
 }
 
+QList<QString> Client::getRecords() const{
+    if(recorder)
+        return recorder->getRecords();
+    else
+        return QList<QString>();
+}
+
 void Client::setLines(const QString &filename){
     QRegExp rx(".+/(\\w+\\d?).ogg");
     if(rx.exactMatch(filename)){

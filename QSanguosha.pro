@@ -148,7 +148,8 @@ SOURCES += \
     src/jsoncpp/src/json_internalarray.inl \	
     swig/sanguosha_wrap.cxx \
     src/core/RoomState.cpp \
-    src/core/WrappedCard.cpp
+    src/core/WrappedCard.cpp \
+    src/core/record-analysis.cpp
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -283,7 +284,8 @@ HEADERS += \
     src/jsoncpp/include/json/autolink.h \
     src/jsoncpp/include/json/assertions.h \
     src/core/RoomState.h \
-    src/core/WrappedCard.h
+    src/core/WrappedCard.h \
+    src/core/record-analysis.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

@@ -91,27 +91,15 @@ function Object.static:new(...)
   return instance
 end
 
-function Object.static:subclass(name, spec)
+function Object.static:subclass(name)
   assert(_classes[self], "Make sure that you are using 'Class:subclass' instead of 'Class.subclass'")
   assert(type(name) == "string", "You must provide a name(string) for your class")
-
-  spec = spec or {}
 
   local subclass = _createClass(name, self)
   _setClassMetamethods(subclass)
   _setDefaultInitializeMethod(subclass, self)
   self.subclasses[subclass] = true
   self:subclassed(subclass)
-
-  for k, v in pairs(spec) do
-    if k == "static" then
-      for k1, v1 in pairs(v) do
-        subclass.static[k1] = v1
-      end
-    else
-      subclass[k] = v
-    end
-  end
 
   return subclass
 end
@@ -128,17 +116,9 @@ function Object:initialize() end
 
 function Object:__tostring() return "instance of " .. tostring(self.class) end
 
-function class(name, ...)
-  local super, spec = ...
-  if not super then
-    super = Object
-    spec = {}
-  elseif not _classes[super] then
-    spec = super
-    super = Object
-  end
-
-  return super:subclass(name, spec)
+function class(name, super, ...)
+  super = super or Object
+  return super:subclass(name, ...)
 end
 
 function instanceOf(aClass, obj)

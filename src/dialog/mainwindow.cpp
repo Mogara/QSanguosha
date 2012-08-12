@@ -10,6 +10,7 @@
 #include "window.h"
 #include "halldialog.h"
 #include "pixmapanimation.h"
+#include "record-analysis.h"
 
 #include <cmath>
 #include <QGraphicsView>
@@ -335,6 +336,10 @@ void MainWindow::enterRoom(){
 }
 
 void MainWindow::gotoStartScene(){
+    QList<Server *> servers = findChildren<Server *>();
+    if(!servers.isEmpty())
+        servers.first()->deleteLater();
+
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
@@ -631,7 +636,6 @@ void MainWindow::on_actionPC_Console_Start_triggered()
     Server *server = new Server(this);
     if(! server->listen()){
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
-
         return;
     }
 
@@ -699,6 +703,113 @@ void MainWindow::on_actionReplay_file_convert_triggered()
                 tosave_file.write(data);
         }
     }
+}
+
+void MainWindow::on_actionRecord_analysis_triggered(){
+    QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Load replay record"),
+                                                    location,
+                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+
+
+    QDialog *rec_dialog = new QDialog(this);
+    rec_dialog->setWindowTitle(tr("Record Analysis"));
+    rec_dialog->resize(800, 500);
+    QTableWidget *table = new QTableWidget;
+
+    RecAnalysis *record = new RecAnalysis(filename);
+    QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
+    table->setColumnCount(10);
+    table->setRowCount(record_map.keys().length());
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    static QStringList labels;
+    if(labels.isEmpty()){
+        labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Living") << tr("WinOrLose")
+               << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
+    }
+    table->setHorizontalHeaderLabels(labels);
+    table->setSelectionBehavior(QTableWidget::SelectRows);
+
+    int i = 0;
+    foreach(PlayerRecordStruct *rec, record_map.values()){
+        QTableWidgetItem *item = new QTableWidgetItem;
+        QString screen_name = Sanguosha->translate(rec->m_screenName);
+        if(rec->m_statue == "robot")
+            screen_name += "(" + Sanguosha->translate("robot") + ")";
+
+        item->setText(screen_name);
+        table->setItem(i, 0, item);
+
+        item = new QTableWidgetItem;
+        QString generals = Sanguosha->translate(rec->m_generalName);
+        if(!rec->m_general2Name.isEmpty())
+            generals += "+" + Sanguosha->translate(rec->m_general2Name) + tr("(General2)");
+        item->setText(generals);
+        table->setItem(i, 1, item);
+
+        item = new QTableWidgetItem;
+        item->setText(Sanguosha->translate(rec->m_role));
+        table->setItem(i, 2, item);
+
+        item = new QTableWidgetItem;
+        item->setText(rec->m_isAlive ? tr("Alive") : tr("Dead"));
+        table->setItem(i, 3, item);
+
+        item = new QTableWidgetItem;
+        bool is_win = record->getRecordWinners().contains(rec->m_role) ||
+                        record->getRecordWinners().contains(record_map.key(rec));
+        item->setText(is_win ? tr("Win") : tr("Lose"));
+        table->setItem(i, 4, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_recover));
+        table->setItem(i, 5, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_damage));
+        table->setItem(i, 6, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_damaged));
+        table->setItem(i, 7, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_kill));
+        table->setItem(i, 8, item);
+
+        item = new QTableWidgetItem;
+  //      item->setText(Sanguosha->translate(rec->m_designation));
+        table->setItem(i, 9, item);
+        i++;
+    }
+
+    table->resizeColumnsToContents();
+
+    QLabel *label = new QLabel;
+    label->setText(tr("Packages:") + record->getRecordPackages().join(","));
+
+    QLabel *label_options = new QLabel;
+    label_options->setText(tr("GameMode:") + record->getRecordGameMode().join(","));
+
+    QTextEdit *chat_info = new QTextEdit;
+    chat_info->setReadOnly(chat_info);
+    chat_info->setText(record->getRecordChat());
+
+    QLabel *table_chat_title = new QLabel;
+    table_chat_title->setText(tr("Chat Infomation:"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(label);
+    layout->addWidget(label_options);
+    layout->addWidget(table);
+    layout->addSpacing(15);
+    layout->addWidget(table_chat_title);
+    layout->addWidget(chat_info);
+    rec_dialog->setLayout(layout);
+
+    rec_dialog->exec();
 }
 
 void MainWindow::sendLowLevelCommand()

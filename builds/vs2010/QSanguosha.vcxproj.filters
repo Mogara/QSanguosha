@@ -414,6 +414,15 @@
     <ClCompile Include="..\..\src\scenario\zombie-scenario.cpp">
       <Filter>scenario</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\record-analysis.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_record-analysis.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_record-analysis.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -676,6 +685,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\zombie-scenario.h">
       <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\record-analysis.h">
+      <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

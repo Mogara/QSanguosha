@@ -5,6 +5,7 @@
 
 const char* MiniScene::S_KEY_MINISCENE = "_mini_%1";
 const char* MiniSceneRule::S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN = "gameOverIfExtraCardDrawn";
+const char* MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES = "randomRoles";
 const QString MiniSceneRule::_S_DEFAULT_HERO = "caocao";
 
 MiniSceneRule::MiniSceneRule(Scenario *scenario)
