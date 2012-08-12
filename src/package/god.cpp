@@ -10,7 +10,7 @@ GongxinCard::GongxinCard(){
 }
 
 bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self ; 
+    return targets.isEmpty(); 
 }
 
 void GongxinCard::onEffect(const CardEffectStruct &effect) const{

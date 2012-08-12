@@ -916,6 +916,7 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
             card = ai->askForNullification(aiHelper.m_trick, aiHelper.m_from, aiHelper.m_to, positive);
             if (card != NULL)
             {
+                thread->delay(Config.AIDelay);
                 repliedPlayer = player;
                 break;
             }
@@ -1118,7 +1119,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
         }
     }
 
-    if (isCardUsed && card_use.isValid()){
+    if (isCardUsed && card_use.isValid(CardUseStruct::CARD_USE_REASON_RESPONSE, pattern)){
         QVariant decisionData = QVariant::fromValue(card_use);
         thread->trigger(ChoiceMade, this, player, decisionData);
         useCard(card_use);
@@ -3727,12 +3728,13 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         if (!success || clientReply.isNull()) return;
 
         card_use.from = player;
-        if (!card_use.tryParse(clientReply, this) || !card_use.isValid()){
+        if (!card_use.tryParse(clientReply, this)){
             emit room_message(tr("Card can not parse:\n %1").arg(toQString(clientReply[0])));
             return;
         }
     }
-
+    if (!card_use.isValid(CardUseStruct::CARD_USE_REASON_PLAY, QString()))
+        return;
     QVariant data = QVariant::fromValue(card_use);
     thread->trigger(ChoiceMade, this, player, data);
 }

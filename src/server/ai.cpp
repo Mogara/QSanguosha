@@ -272,7 +272,10 @@ const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *,
 
         foreach(const Card *card, cards){
             if(card->isKindOf("Nullification"))
+            {
+                
                 return card;
+            }
         }
     }
 

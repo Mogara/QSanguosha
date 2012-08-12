@@ -135,10 +135,12 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 }
 
-bool ViewAsSkill::isAvailable() const{
-    switch(ClientInstance->getStatus()){
-    case Client::Playing: return isEnabledAtPlay(Self);
-    case Client::Responsing: return isEnabledAtResponse(Self, ClientInstance->getPattern());
+bool ViewAsSkill::isAvailable(CardUseStruct::CardUseReason reason, const QString &pattern) const
+{
+    switch(reason) 
+    {
+    case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(Self);
+    case CardUseStruct::CARD_USE_REASON_RESPONSE: return isEnabledAtResponse(Self, pattern);
     default:
         return false;
     }
@@ -154,6 +156,23 @@ bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &) const{
 
 bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer *) const{
     return false;
+}
+
+const ViewAsSkill* ViewAsSkill::parseViewAsSkill(const Skill *skill)
+{
+    if (skill == NULL) return NULL;
+    if (skill->inherits("ViewAsSkill"))
+    {
+        const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
+        return view_as_skill;
+    }
+    if (skill->inherits("TriggerSkill")) {
+        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+        Q_ASSERT(trigger_skill != NULL);
+        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
+        if (view_as_skill != NULL) return view_as_skill;
+    }
+    return NULL;
 }
 
 ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)

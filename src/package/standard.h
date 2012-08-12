@@ -247,7 +247,6 @@ public:
 
 protected:
     int range;
-    bool attach_skill;
 };
 
 class Armor:public EquipCard{

@@ -58,8 +58,15 @@ struct SlashEffectStruct{
 };
 
 struct CardUseStruct{
+    enum CardUseReason
+    {
+        CARD_USE_REASON_UNKNOWN,
+        CARD_USE_REASON_PLAY,
+        CARD_USE_REASON_RESPONSE
+    };
+
     CardUseStruct();
-    bool isValid() const;
+    bool isValid(CardUseReason reason, const QString &pattern) const;
     void parse(const QString &str, Room *room);
     bool tryParse(const Json::Value&, Room *room);
 
@@ -307,7 +314,9 @@ public:
 
 struct JudgeStruct{
     JudgeStruct();
-    bool isGood(const Card *card = NULL) const;
+    bool isGood() const;
+    bool isGood(const Card *card) const;
+    void updateResult();
     bool isEffected();
     bool isBad() const;
 
@@ -319,6 +328,13 @@ struct JudgeStruct{
     bool good;
     QString reason;
     bool time_consuming;
+private:
+    enum TrialResult
+    {
+        TRIAL_RESULT_UNKNOWN,
+        TRIAL_RESULT_GOOD,
+        TRIAL_RESULT_BAD
+    } _m_result;
 };
 
 struct PhaseChangeStruct{

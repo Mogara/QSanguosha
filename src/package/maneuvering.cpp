@@ -131,7 +131,6 @@ public:
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("Fan");
     skill = new FireFanSkill;
-    attach_skill = true;
 }
 
 class GudingBladeSkill: public WeaponSkill{

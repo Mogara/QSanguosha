@@ -78,7 +78,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             while(player->isAlive()){
                 CardUseStruct card_use;
                 room->activate(player, card_use);
-                if(card_use.isValid()){
+                if(card_use.isValid(CardUseStruct::CARD_USE_REASON_PLAY, QString())){
                     room->useCard(card_use);
                 }else
                     break;
@@ -161,7 +161,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
     switch(triggerEvent){
     case TurnStart:{
             player = room->getCurrent();
-            if(!player->faceUp())
+            if (player->hasFlag("drank")) {
+                room->setPlayerFlag(player, "-drank");
+            }
+            if (!player->faceUp())
                 player->turnOver();
             else if(player->isAlive())
                 player->play();
@@ -537,6 +540,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
     case FinishRetrial:{
             JudgeStar judge = data.value<JudgeStar>();
 
+            judge->updateResult();
             if(judge->play_animation)
                 room->sendJudgeResult(judge);
 

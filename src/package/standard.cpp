@@ -276,7 +276,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 }
 
 Weapon::Weapon(Suit suit, int number, int range)
-    :EquipCard(suit, number), range(range), attach_skill(false)
+    :EquipCard(suit, number), range(range)
 {
 }
 

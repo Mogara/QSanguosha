@@ -224,24 +224,6 @@ void QSanSkillButton::onMouseClick()
     }
 }
 
-const ViewAsSkill* QSanSkillButton::_parseViewAsSkill() const
-{
-    if (_m_skill == NULL) return NULL;
-    const Skill* skill = _m_skill;
-    if (skill->inherits("ViewAsSkill"))
-    {
-        const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
-        return view_as_skill;
-    }
-    if (skill->inherits("TriggerSkill")) {
-        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-        Q_ASSERT(trigger_skill != NULL);
-        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL) return view_as_skill;
-    }
-    return NULL;
-}
-
 void QSanSkillButton::setSkill(const Skill* skill)
 {
      Q_ASSERT(skill != NULL);
@@ -249,7 +231,7 @@ void QSanSkillButton::setSkill(const Skill* skill)
      // This is a nasty trick because the server side decides to choose a nasty design
      // such that sometimes the actual viewas skill is nested inside a trigger skill.
      // Since the trigger skill is not relevant, we flatten it before we create the button.
-     _m_viewAsSkill = _parseViewAsSkill();
+     _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
      if (skill == NULL) skill = _m_skill;
 
      Skill::Frequency freq = skill->getFrequency();

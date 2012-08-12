@@ -796,6 +796,16 @@ const Skill *Engine::getSkill(const QString &skill_name) const{
     return skills.value(skill_name, NULL);
 }
 
+const Skill *Engine::getSkill(const EquipCard *equip) const{
+    const Skill* skill;
+    if (equip == NULL) skill = NULL;
+    else {
+        skill = Sanguosha->getSkill(equip->objectName());
+        if (skill == NULL) skill = equip->getSkill();
+    }
+    return skill;
+}
+
 QStringList Engine::getSkillNames() const{
     return skills.keys();
 }

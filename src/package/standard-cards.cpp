@@ -72,7 +72,11 @@ void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets
 
 void Slash::onEffect(const CardEffectStruct &card_effect) const{
     Room *room = card_effect.from->getRoom();
-    if(card_effect.from->hasFlag("drank")){
+    bool drank = false;
+    if (card_effect.from->hasFlag("drank")) {
+        drank = true;
+    }
+    if (drank) {
         room->setCardFlag(this, "drank");
         room->setPlayerFlag(card_effect.from, "-drank");
     }
@@ -83,9 +87,12 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     effect.slash = this;
 
     effect.to = card_effect.to;
-    effect.drank = this->hasFlag("drank");
+    effect.drank = drank;
 
     room->slashEffect(effect);
+    if (drank) {
+        room->setCardFlag(this, "-drank");
+    }
 }
 
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
@@ -360,7 +367,6 @@ Spear::Spear(Suit suit, int number)
     :Weapon(suit, number, 3)
 {
     setObjectName("Spear");
-    attach_skill = true;
 }
 
 class AxeViewAsSkill: public ViewAsSkill{
@@ -443,7 +449,6 @@ Axe::Axe(Suit suit, int number)
 {
     setObjectName("Axe");
     skill = new AxeSkill;
-    attach_skill = true;
 }
 
 Halberd::Halberd(Suit suit, int number)

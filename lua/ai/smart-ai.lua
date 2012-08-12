@@ -1544,7 +1544,7 @@ function SmartAI:filterEvent(event, player, data)
 	sgs.lasteventdata = eventdata
 	if event == sgs.ChoiceMade and self == sgs.recorder then
 		local carduse = data:toCardUse()
-		if carduse and carduse:isValid() then
+		if carduse and carduse.card ~= nil then
 			for _, aflag in ipairs(sgs.ai_global_flags) do
 				sgs[aflag] = nil
 			end
@@ -2724,7 +2724,7 @@ function SmartAI:activate(use)
 			local type = card:getTypeId()
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
 
-			if use:isValid() then
+			if use:isValid(1, nil) then
 				self.toUse = nil
 				return
 			end

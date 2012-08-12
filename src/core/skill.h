@@ -49,7 +49,6 @@ public:
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;
     QStringList getSources() const;
-
 protected:
     Frequency frequency;
     QString default_choice;
@@ -68,10 +67,11 @@ public:
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const = 0;
     virtual const Card *viewAs(const QList<const Card *> &cards) const = 0;
 
-    bool isAvailable() const;
+    bool isAvailable(CardUseStruct::CardUseReason reason, const QString &pattern) const;
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
+    static const ViewAsSkill* parseViewAsSkill(const Skill* skill);
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill{

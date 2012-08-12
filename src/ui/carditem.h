@@ -56,8 +56,8 @@ public:
     void setFrozen(bool is_frozen);
     bool isFrozen() const;
 
-    inline void showFootnote() { _m_showFootnote = false; }
-    inline void hideFootnote() { _m_showFootnote = true; }
+    inline void showFootnote() { _m_showFootnote = true; }
+    inline void hideFootnote() { _m_showFootnote = false; }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
     

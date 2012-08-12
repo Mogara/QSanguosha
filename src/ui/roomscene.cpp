@@ -1298,67 +1298,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 }
 
 
-//THIS FUNCTION CAUSES CRASH ASSOCIATED WITH RIGHT MOUSE BUTTON.
-//THE FEATURE PROVIDED BY THIS FUNCTION IS NOT DESIRABLE.
-/*
-
-void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
-    QGraphicsScene::contextMenuEvent(event);
-
-    QGraphicsItem *item = itemAt(event->scenePos());
-    if (item == NULL) return;
-
-    const ClientPlayer *player = item2player[(PlayerCardContainer*)item];
-    if(player){
-        if(player == Self)
-            return;
-
-        QList<const Card *> cards = player->getCards();
-        QMenu *menu = known_cards_menu;
-        menu->clear();
-        menu->setTitle(player->objectName());
-
-        QAction *view = menu->addAction(tr("View in popup window ..."));
-        view->setData(player->objectName());
-        connect(view, SIGNAL(triggered()), this, SLOT(showPlayerCards()));
-
-        menu->addSeparator();
-
-        if(cards.isEmpty()){
-            menu->addAction(tr("There is no known cards"))->setEnabled(false);
-        }else{
-            foreach(const Card *card, cards)
-                menu->addAction(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()), card->getFullName());
-        }
-
-        // acquired skills
-        QSet<QString> skill_names = player->getAcquiredSkills();
-        QList<const Skill *> skills;
-        foreach(QString skill_name, skill_names){
-            const Skill *skill = Sanguosha->getSkill(skill_name);
-            if(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"))
-                skills << skill;
-        }
-
-        if(!skills.isEmpty()){
-            menu->addSeparator();
-            foreach(const Skill *skill, skills){
-                QString tooltip = skill->getDescription();
-                menu->addAction(Sanguosha->translate(skill->objectName()))->setToolTip(tooltip);
-            }
-        }
-
-        menu->popup(event->screenPos());
-    }else if(ServerInfo.FreeChoose && arrange_button){
-        QGraphicsObject *obj = item->toGraphicsObject();
-        if(obj && Sanguosha->getGeneral(obj->objectName())){
-            to_change = qobject_cast<CardItem *>(obj);
-            change_general_menu->popup(event->screenPos());
-        }
-    }
-}
-*/
-
 void RoomScene::chooseGeneral(const QStringList &generals){
     QApplication::alert(main_window);
     if(!main_window->isActiveWindow())
@@ -1664,6 +1603,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
             }
             else card->setEnabled(true);
             card->setFootnote(_translateMovementReason(movement.reason));
+            card->hideFootnote();
         }
         bringToFront(to_container);
         to_container->addCardItems(cards, movement);
@@ -2060,7 +2000,7 @@ void RoomScene::onEnabledChange()
 
 
 void RoomScene::useCard(const Card *card){
-    if(card->targetFixed() || card->targetsFeasible(selected_targets, Self))
+    if (card->targetFixed() || card->targetsFeasible(selected_targets, Self))
         ClientInstance->onPlayerUseCard(card, selected_targets);
     
     /*selected_targets.clear();
@@ -2198,9 +2138,18 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         Q_ASSERT(button != NULL);
         const ViewAsSkill* vsSkill = button->getViewAsSkill();
         if (vsSkill != NULL)
-            button->setEnabled(vsSkill->isAvailable()
-            && !ClientInstance->getPattern().endsWith("!"));
-        else{
+        {
+            CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
+            if (newStatus == Client::Responsing)
+                reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
+            else if (newStatus == Client::Playing)
+                reason = CardUseStruct::CARD_USE_REASON_PLAY;
+            QString pattern = ClientInstance->getPattern();
+            button->setEnabled(vsSkill->isAvailable(reason, pattern)
+                               && !pattern.endsWith("!"));
+        } 
+        else
+        {
             const Skill *skill = button->getSkill();
             if(skill->getFrequency() == Skill::Wake)
                 button->setEnabled(Self->getMark(skill->objectName()) > 0);
@@ -2259,7 +2208,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     foreach (QSanSkillButton *button, m_skillButtons){
                         Q_ASSERT(button != NULL);
                         const ViewAsSkill* vsSkill = button->getViewAsSkill();
-                        if (vsSkill != NULL && vsSkill->objectName() == skill_name && vsSkill->isAvailable())
+                        if (vsSkill != NULL && vsSkill->objectName() == skill_name && 
+                            vsSkill->isAvailable(CardUseStruct::CARD_USE_REASON_RESPONSE, pattern))
                             button->click();
                     }
                     dashboard->startPending(skill);

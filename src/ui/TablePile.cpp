@@ -167,16 +167,6 @@ bool TablePile::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruc
     m_visibleCards.append(card_items);
     int numAdded = card_items.size();
     int numRemoved = m_visibleCards.size() - qMax(m_numCardsVisible, numAdded + 1);
-#if 0
-    int shift;
-    
-    if (numRemoved > 0)
-    {
-        CardItem* forerunner = m_visibleCards.first();
-        QPointF oldPos = forerunner->pos();
-        shift = oldPos.x() + 10;
-    }
-#endif
     
     for (int i = 0; i <  numRemoved; i++)
     {
@@ -187,6 +177,7 @@ bool TablePile::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruc
     foreach (CardItem* card_item, card_items)
     {
         card_item->setHomeOpacity(1.0);
+        card_item->showFootnote();
         if (moveInfo.from_place == Player::DrawPile ||
             moveInfo.from_place == Player::PlaceJudge ||
             moveInfo.from_place == Player::PlaceTable)

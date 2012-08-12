@@ -449,9 +449,17 @@ struct SlashEffectStruct{
 };
 
 struct CardUseStruct{
+    enum CardUseReason
+    {
+        CARD_USE_REASON_UNKNOWN,
+        CARD_USE_REASON_PLAY,
+        CARD_USE_REASON_RESPONSE
+    };
+
     CardUseStruct();
-    bool isValid() const;
-    void parse(const char *str, Room *room);
+    bool isValid(CardUseReason reason, const char *pattern) const;
+    void parse(const QString &str, Room *room);
+    bool tryParse(const Json::Value&, Room *room);
 
     const Card *card;
     ServerPlayer *from;
