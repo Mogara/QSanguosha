@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QIcon>
+#include "json/json.h"
 
 class Room;
 class Player;
@@ -106,7 +107,6 @@ public:
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;
-    virtual QString toString() const;
     virtual bool isNDTrick() const;
 
     // card target selection
@@ -139,13 +139,20 @@ public:
     static bool CompareByColor(const Card *a, const Card *b);
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
-    static const Card *Parse(const QString &str);
     static Card *Clone(const Card *card);
     static QString Suit2String(Suit suit);
     static QString Number2String(int number);
     static QStringList IdsToStrings(const QList<int> &ids);
     static QList<int> StringsToIds(const QStringList &strings);
     static const int S_UNKNOWN_CARD_ID;
+
+    static Card *tryParse(Json::Value val);
+    virtual Json::Value toJsonValue() const;
+
+    // to be deprecated
+    static const Card *Parse(const QString &str);
+    virtual QString toString() const;
+    
 protected:
     QList<int> subcards;
     bool target_fixed;

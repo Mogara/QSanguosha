@@ -262,6 +262,18 @@ bool Card::isVirtualCard() const{
     return m_id < 0;
 }
 
+Card *Card::tryParse(Json::Value val)
+{
+    Q_ASSERT(FALSE); // NOT_IMPLEMENTED!
+    return NULL;
+}
+
+Json::Value Card::toJsonValue() const
+{
+    Q_ASSERT(FALSE); // NOT_IMPLEMENTED!
+    return Json::Value::null;
+}
+
 const Card *Card::Parse(const QString &str){
     static QMap<QString, Card::Suit> suit_map;
     if(suit_map.isEmpty()){
