@@ -67,7 +67,6 @@ void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets
         log.type = "#UnsetDrank";
         log.from = source;
         room->sendLog(log);
-        room->setCardFlag(this,"-drank");
     }
 }
 
