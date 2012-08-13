@@ -87,7 +87,7 @@ bool QiceCard::targetFilter(const QList<const Player *> &targets, const Player *
 }
 
 bool QiceCard::targetFixed() const{
-    if(ClientInstance->getStatus() == Client::Responsing)
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
 
     CardStar card = Self->tag.value("qice").value<CardStar>();
@@ -168,10 +168,10 @@ public:
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if(cards.length() < Self->getHandcardNum())
+        if (cards.length() < Self->getHandcardNum())
             return NULL;
 
-        if(ClientInstance->getStatus() == Client::Responsing){
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE){
             QiceCard *card = new QiceCard;
             card->setUserString("nullification");
             card->addSubcards(cards);

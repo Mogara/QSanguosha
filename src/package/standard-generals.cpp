@@ -559,14 +559,14 @@ public:
     virtual bool viewFilter(const Card* to_select) const{
         const Card *card = to_select;
 
-        switch(ClientInstance->getStatus()){
-        case Client::Playing:{
+        switch(Sanguosha->currentRoomState()->getCurrentCardUseReason()){
+        case CardUseStruct::CARD_USE_REASON_PLAY:{
                 // jink as slash
                 return card->isKindOf("Jink");
             }
 
-        case Client::Responsing:{
-                QString pattern = ClientInstance->getPattern();
+        case CardUseStruct::CARD_USE_REASON_RESPONSE:{
+                QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
                 if(pattern == "slash")
                     return card->isKindOf("Jink");
                 else if(pattern == "jink")

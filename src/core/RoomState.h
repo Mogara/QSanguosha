@@ -1,6 +1,8 @@
 #ifndef _H_ROOM_STATE
 #define _H_ROOM_STATE
 #include <QHash>
+#include "player.h"
+#include "structs.h"
 #include "WrappedCard.h"
 
 // RoomState is a singleton that stores virtual generals, cards (versus factory loaded
@@ -14,6 +16,13 @@ public:
     ~RoomState();
     inline bool isClient() const { return m_isClient; }
     Card* getCard(int cardId) const;
+    inline void setCurrentPlayer(Player* player) { m_currentPlayer = player; }
+    inline QString getCurrentCardUsePattern() const { return m_currentCardUsePattern; }
+    inline void setCurrentCardUsePattern(const QString& newPattern) 
+    { m_currentCardUsePattern = newPattern; }
+    inline Player* getCurrentPlayer() const { return m_currentPlayer; }
+    inline CardUseStruct::CardUseReason getCurrentCardUseReason() const { return m_currentCardUseReason; }
+    inline void setCurrentCardUseReason(CardUseStruct::CardUseReason reason) { m_currentCardUseReason = reason; }
 
     // Update a card in the room.
     // @param cardId
@@ -27,6 +36,9 @@ public:
 protected:
     QHash<int, WrappedCard*> m_cards;
     bool m_isClient;
+    Player *m_currentPlayer;
+    QString m_currentCardUsePattern;
+    CardUseStruct::CardUseReason m_currentCardUseReason;
 };
 
 #endif

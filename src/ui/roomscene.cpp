@@ -2145,7 +2145,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
             else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
-            QString pattern = ClientInstance->getPattern();
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             button->setEnabled(vsSkill->isAvailable(reason, pattern)
                                && !pattern.endsWith("!"));
         } 
@@ -2200,7 +2200,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
             discard_button->setEnabled(false);
 
-            QString pattern = ClientInstance->getPattern();
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             QRegExp rx("@@?([A-Za-z]+)(\\d+)?!?");
             if(rx.exactMatch(pattern)){
                 QString skill_name = rx.capturedTexts().at(1);
@@ -2229,7 +2229,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);
 
-        QString pattern = ClientInstance->getPattern();
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         showorpindian_skill->setPattern(pattern);
         dashboard->startPending(showorpindian_skill);
 
@@ -2330,7 +2330,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             cancel_button->setEnabled(true);
             discard_button->setEnabled(false);
 
-            yiji_skill->setCards(ClientInstance->getPattern());
+            yiji_skill->setCards(Sanguosha->currentRoomState()->getCurrentCardUsePattern());
             dashboard->startPending(yiji_skill);
 
             showPromptBox();
@@ -2425,7 +2425,7 @@ void RoomScene::doCancelButton(){
 
     case Client::Responsing:{
             dashboard->skillButtonDeactivated();
-            QString pattern = ClientInstance->getPattern();
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             if(pattern.isEmpty())
                 return;
 

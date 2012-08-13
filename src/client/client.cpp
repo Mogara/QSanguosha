@@ -565,7 +565,7 @@ void Client::onPlayerUseCard(const Card *card, const QList<const Player *> &targ
         //    request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
 
         if(status == Responsing)
-            card_pattern.clear();
+            _m_roomState.setCurrentCardUsePattern(QString());
     }
 
     setStatus(NotActive);
@@ -663,6 +663,12 @@ void Client::hpChange(const QString &change_str){
 void Client::setStatus(Status status){    
     Status old_status = this->status;
     this->status = status;
+    if (status == Client::Playing)
+        _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_PLAY);
+    else if (status == Client::Responsing)
+        _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE);
+    else
+        _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_UNKNOWN);
     emit status_changed(old_status, status);
 }
 
@@ -699,10 +705,6 @@ QString Client::getPlayerName(const QString &str){
 
     }else
         return Sanguosha->translate(str);
-}
-
-QString Client::getPattern() const{
-    return card_pattern;
 }
 
 QString Client::getSkillNameToInvoke() const{
@@ -755,7 +757,8 @@ QString Client::_processCardPattern(const QString &pattern){
 void Client::_askForCardOrUseCard(const Json::Value &cardUsage){
     if (!cardUsage.isArray() || !cardUsage[0].isString() || !cardUsage[1].isString())
         return;
-    card_pattern = toQString(cardUsage[0]);
+    QString card_pattern = toQString(cardUsage[0]);
+    _m_roomState.setCurrentCardUsePattern(card_pattern);
     QStringList texts = toQString(cardUsage[1]).split(":");
     int index = -1;
     if(cardUsage[2].isInt())
@@ -871,7 +874,7 @@ void Client::askForNullification(const Json::Value &arg){
                             .arg(Sanguosha->translate(target_player->getGeneralName())));
     }
 
-    card_pattern = "nullification";
+    _m_roomState.setCurrentCardUsePattern("nullification");
     m_isDiscardActionRefusable = true;
     m_isUseCard = false;
 
@@ -955,7 +958,7 @@ void Client::onPlayerResponseCard(const Card *card){
         replyToServer(S_COMMAND_RESPONSE_CARD, Json::Value::null);
         //request("responseCard .");
 
-    card_pattern.clear();
+    _m_roomState.setCurrentCardUsePattern(QString());
     setStatus(NotActive);
 }
 
@@ -1337,13 +1340,14 @@ void Client::askForSinglePeach(const Json::Value &arg){
     ClientPlayer *dying = getPlayer(toQString(arg[0]));
     int peaches = arg[1].asInt();
 
+    // @todo: anti-cheating of askForSinglePeach is not done yet!!!
     if(dying == Self){
         prompt_doc->setHtml(tr("You are dying, please provide %1 peach(es)(or analeptic) to save yourself").arg(peaches));
-        card_pattern = "peach+analeptic";
+        _m_roomState.setCurrentCardUsePattern("peach+analeptic");
     }else{
         QString dying_general = Sanguosha->translate(dying->getGeneralName());
         prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
-        card_pattern = "peach";
+        _m_roomState.setCurrentCardUsePattern("peach");
     }
 
     m_isDiscardActionRefusable = true;
@@ -1356,7 +1360,7 @@ void Client::askForCardShow(const Json::Value &requestor){
     QString name = Sanguosha->translate(toQString(requestor));
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
-    card_pattern = ".";
+    _m_roomState.setCurrentCardUsePattern(".");
     m_isUseCard = false;
     setStatus(AskForShowOrPindian);
 }
@@ -1476,7 +1480,7 @@ void Client::askForPindian(const Json::Value &ask_str){
         prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(requestor));
     }
     m_isUseCard = false;
-    card_pattern = ".";
+    _m_roomState.setCurrentCardUsePattern(".");
     setStatus(AskForShowOrPindian);
 }
 
@@ -1488,7 +1492,7 @@ void Client::askForYiji(const Json::Value &card_list){
     QStringList card_str;
     for (unsigned int i = 0; i < card_list.size(); i++)
         card_str << QString::number(card_list[i].asInt());       
-    card_pattern = card_str.join("+");
+    _m_roomState.setCurrentCardUsePattern(card_str.join("+"));
     setStatus(AskForYiji);
 }
 

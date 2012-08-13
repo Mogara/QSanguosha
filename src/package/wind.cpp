@@ -298,7 +298,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        if(ClientInstance->getPattern().endsWith("1"))
+        if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1"))
             return false;
         else
             return selected.isEmpty() && to_select->isKindOf("EquipCard");
@@ -309,7 +309,7 @@ public:
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if(ClientInstance->getPattern().endsWith("1")){
+        if(Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1")){
             if(cards.isEmpty())
                 return new ShensuCard;
             else
@@ -859,7 +859,7 @@ GuhuoDialog::GuhuoDialog(const QString &object, bool left, bool right):object_na
 }
 
 void GuhuoDialog::popup(){
-    if(ClientInstance->getStatus() != Client::Playing)
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY)
         return;
 
     foreach(QAbstractButton *button, group->buttons()){
@@ -952,7 +952,7 @@ bool GuhuoCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 bool GuhuoCard::targetFixed() const{
-    if(ClientInstance->getStatus() == Client::Responsing)
+    if(Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE)
     {
         if(!ClientInstance->hasNoTargetResponsing()){
             CardStar card = Sanguosha->cloneCard(user_string, NoSuit, 0);
@@ -1042,9 +1042,9 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        if(ClientInstance->getStatus() == Client::Responsing) {
+        if(Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
             GuhuoCard *card = new GuhuoCard;
-            card->setUserString(ClientInstance->getPattern());
+            card->setUserString(Sanguosha->currentRoomState()->getCurrentCardUsePattern());
             card->addSubcard(originalCard);
             return card;
         }

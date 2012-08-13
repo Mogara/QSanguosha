@@ -1276,8 +1276,8 @@ public:
             return card->getSuit() == suit;
         }
 
-        switch(ClientInstance->getStatus()){
-        case Client::Playing:{
+        switch(Sanguosha->currentRoomState()->getCurrentCardUseReason()){
+        case CardUseStruct::CARD_USE_REASON_PLAY:{
                 if(Self->isWounded() && card->getSuit() == Card::Heart)
                     return true;
                 else if(Slash::IsAvailable(Self) && card->getSuit() == Card::Diamond)
@@ -1286,8 +1286,9 @@ public:
                     return false;
             }
 
-        case Client::Responsing:{
-                QString pattern = ClientInstance->getPattern();
+        case CardUseStruct::CARD_USE_REASON_RESPONSE: 
+            {
+                QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
                 if(pattern == "jink")
                     return card->getSuit() == Card::Club;
                 else if(pattern == "nullification")

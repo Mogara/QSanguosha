@@ -103,6 +103,7 @@ public:
     void unregisterRoom();
     QObject* currentRoomObject();
     Room* currentRoom();
+    RoomState* currentRoomState();
 
 private:
     void _loadMiniScenarios();

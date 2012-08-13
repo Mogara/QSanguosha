@@ -1089,6 +1089,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
 bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index){
     notifyMoveFocus(player, S_COMMAND_USE_CARD);
+    _m_roomState.setCurrentCardUsePattern(pattern);
+    _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE);
     CardUseStruct card_use;
     bool isCardUsed = false;
     AI *ai = player->getAI();
@@ -3694,6 +3696,9 @@ void Room::setEmotion(ServerPlayer *target, const QString &emotion){
 
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     notifyMoveFocus(player, S_COMMAND_PLAY_CARD);
+    _m_roomState.setCurrentCardUsePattern(QString());
+    _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_PLAY);
+
     AI *ai = player->getAI();
     if(ai){
         QElapsedTimer timer;
