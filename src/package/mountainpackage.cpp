@@ -498,6 +498,7 @@ public:
 ZhibaCard::ZhibaCard(){
     mute = true;
     will_throw = false;
+    m_skillName = "zhiba_pindian";
 }
 
 bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -516,7 +517,7 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     }
 
     room->broadcastSkillInvoke("sunce_zhiba", 1);
-    source->pindian(sunce, "zhiba", this);
+    source->pindian(sunce, "zhiba_pindian", this);
     QList<ServerPlayer *> sunces;
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     //ServerPlayer *lordplayer = NULL;
@@ -585,7 +586,7 @@ public:
             }
         }else if(triggerEvent == Pindian){
             PindianStar pindian = data.value<PindianStar>();
-            if(pindian->reason != "zhiba" || !pindian->to->hasLordSkill(objectName()))
+            if(pindian->reason != "zhiba_pindian" || !pindian->to->hasLordSkill(objectName()))
                 return false;
             if(!pindian->isSuccess()){
                 room->broadcastSkillInvoke(objectName(), 2);

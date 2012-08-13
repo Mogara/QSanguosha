@@ -756,12 +756,12 @@ public:
 
         ZhihengCard *zhiheng_card = new ZhihengCard;
         zhiheng_card->addSubcards(cards);
-
+        zhiheng_card->setSkillName(objectName());
         return zhiheng_card;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("ZhihengCard");
+        return !player->hasUsed("ZhihengCard");
     }
 };
 
@@ -1385,7 +1385,8 @@ void StandardPackage::addGenerals(){
 
 class Zhiba: public Zhiheng{
 public:
-    Zhiba(){
+    Zhiba()
+    {
         setObjectName("zhiba");
     }
 

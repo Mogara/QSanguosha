@@ -3736,7 +3736,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
 
         card_use.from = player;
         if (!card_use.tryParse(clientReply, this)){
-            emit room_message(tr("Card can not parse:\n %1").arg(toQString(clientReply[0])));
+            emit room_message(tr("Card cannot be parsed:\n %1").arg(toQString(clientReply[0])));
             return;
         }
     }
