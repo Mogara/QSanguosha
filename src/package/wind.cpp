@@ -58,6 +58,7 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
 
 HuangtianCard::HuangtianCard(){
     will_throw = false;
+    m_skillName = "huangtianv";
 }
 
 void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{

@@ -197,6 +197,7 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 
 GreatYeyanCard::GreatYeyanCard(){
     mute = true;
+    m_skillName = "yeyan";
 }
 
 bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets,
@@ -274,6 +275,7 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
 
 SmallYeyanCard::SmallYeyanCard(){
     mute = true;
+    m_skillName = "yeyan";
 }
 
 bool SmallYeyanCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
