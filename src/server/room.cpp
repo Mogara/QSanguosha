@@ -4455,11 +4455,12 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
     log.to << judge->who;
     log.card_str = card->getEffectIdString();
     sendLog(log);
-
+  
     QList<CardsMoveStruct> moves;
     moves.append(move1);
     moves.append(move2);
     moveCardsAtomic(moves, true);
+    judge->updateResult();
 
     if  (triggerResponsed){
         ResponsedStruct resp(card, judge->who);

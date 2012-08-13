@@ -308,6 +308,7 @@ public:
                     judge.good = false;
                     judge.reason = "tuntian";
                     judge.who = player;
+                    judge.play_animation = true;
                     room->judge(judge);
                 }
             }else if(triggerEvent == FinishJudge){

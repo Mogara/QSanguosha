@@ -519,7 +519,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
     case StartJudge:{
             int card_id = room->drawCard();
-
+            room->getThread()->delay(Config.S_JUDGE_SHORT_DELAY);
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
 
@@ -533,14 +533,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                              CardMoveReason(CardMoveReason::S_REASON_JUDGE,
                              judge->who->objectName(),
                              QString(), QString(), judge->reason), true);
+            judge->updateResult();
             room->getThread()->delay(Config.S_JUDGE_SHORT_DELAY);
             break;
         }
 
     case FinishRetrial:{
             JudgeStar judge = data.value<JudgeStar>();
-
-            judge->updateResult();
             if(judge->play_animation)
                 room->sendJudgeResult(judge);
 

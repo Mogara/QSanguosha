@@ -85,8 +85,10 @@ public:
         JudgeStruct judge;
         judge.pattern = QRegExp("(Peach|GodSalvation):(.*):(.*)");
         judge.good = true;
+        judge.negative = true;
         judge.reason = "wuhun";
         judge.who = foe;
+        judge.play_animation = true;
 
         room->judge(judge);
 
