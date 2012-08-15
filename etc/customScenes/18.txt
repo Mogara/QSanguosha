@@ -1,5 +1,5 @@
 general:select  role:renegade  starter:true
     general:sunquan  general2:lusu  maxhp:3  role:rebel
     general:liubei  general2:xunyu  maxhp:3  role:rebel
-    general:zhoutai  general2:huangzhong  maxhp:4  hp:2  role:loyalist
+    general:huangzhong  general2:zhoutai  maxhp:4  hp:2  role:loyalist
     general:bgm_diaochan  general2:xiaoqiao  maxhp:3  role:lord

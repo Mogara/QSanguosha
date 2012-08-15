@@ -25,20 +25,20 @@ void DiscardSkill::setIncludeEquip(bool include_equip){
     this->include_equip = include_equip;
 }
 
-bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card* card) const{
     if(selected.length() >= num)
         return false;
 
-    if(!include_equip && to_select->isEquipped())
+    if(!include_equip && card->isEquipped())
         return false;
 
-    if(Self->isJilei(to_select->getFilteredCard()))
+    if(Self->isJilei(card))
         return false;
 
     return true;
 }
 
-const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{
+const Card* DiscardSkill::viewAs(const QList<const Card*> &cards) const{
     if(cards.length() >= minnum){
         card->clearSubcards();
         card->addSubcards(cards);
@@ -66,13 +66,12 @@ bool ResponseSkill::matchPattern(const Player *player, const Card *card) const{
     return pattern && pattern->match(player, card);
 }
 
-bool ResponseSkill::viewFilter(const CardItem *to_select) const{
-    const Card *card = to_select->getFilteredCard();
+bool ResponseSkill::viewFilter(const Card *card) const{
     return matchPattern(Self, card);
 }
 
-const Card *ResponseSkill::viewAs(CardItem *card_item) const{
-    return card_item->getFilteredCard();
+const Card *ResponseSkill::viewAs(const Card *originalCard) const{
+    return originalCard;
 }
 
 // -------------------------------------------
@@ -99,11 +98,11 @@ bool FreeDiscardSkill::isEnabledAtPlay(const Player *) const{
     return true;
 }
 
-bool FreeDiscardSkill::viewFilter(const QList<CardItem *> &, const CardItem *) const{
+bool FreeDiscardSkill::viewFilter(const QList<const Card *> &, const Card *) const{
     return true;
 }
 
-const Card *FreeDiscardSkill::viewAs(const QList<CardItem *> &cards) const{
+const Card *FreeDiscardSkill::viewAs(const QList<const Card *> &cards) const{
     if(!cards.isEmpty()){
 
         card->clearSubcards();
@@ -122,16 +121,19 @@ YijiViewAsSkill::YijiViewAsSkill()
     card = new RendeCard;
 }
 
-void YijiViewAsSkill::setCards(const QString &card_str){
+void YijiViewAsSkill::setCards(const QString &card_str)
+{
     QStringList cards = card_str.split("+");
     ids = Card::StringsToIds(cards);
 }
 
-bool YijiViewAsSkill::viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
-    return ids.contains(to_select->getCard()->getId());
+bool YijiViewAsSkill::viewFilter(const QList<const Card *> &, const Card* card) const
+{
+    return ids.contains(card->getId());
 }
 
-const Card *YijiViewAsSkill::viewAs(const QList<CardItem *> &cards) const{
+const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const
+{
     if(cards.isEmpty())
         return NULL;
 

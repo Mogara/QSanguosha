@@ -1,4 +1,4 @@
- general:select  general2:select  role:lord  equip:double_sword  starter:true
+ general:select  general2:select  role:lord  equip:DoubleSword  starter:true
     general:daqiao  role:rebel
     general:zhenji  role:loyalist
     general:sp_sunshangxiang  maxhp:4  role:rebel

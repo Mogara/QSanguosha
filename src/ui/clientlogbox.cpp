@@ -43,7 +43,11 @@ void ClientLogBox::appendLog(
     if(type.startsWith("$")){
         QString log_name;
         foreach(QString one_card, card_str.split("+")){
-            const Card *card = Sanguosha->getCard(one_card.toInt());
+            const Card *card;
+            if(type == "$JudgeResult")
+                card = Sanguosha->getCard(one_card.toInt());
+            else
+                card = Sanguosha->getEngineCard(one_card.toInt());
             if(log_name.isEmpty())
                 log_name = card->getLogName();
             else
@@ -91,7 +95,7 @@ void ClientLogBox::appendLog(
                 if(subcard_list.isEmpty() || !skill_card->willThrow())
                     log = tr("%from use skill [%1]").arg(skill_name);
                 else{
-                    if(card->inherits("DummyCard"))
+                    if(card->isKindOf("DummyCard"))
                         skill_name = bold(Sanguosha->translate("free-discard"), Qt::yellow);
                     log = tr("%from use skill [%1], and the cost is %2").arg(skill_name).arg(subcard_str);
                 }
@@ -106,7 +110,19 @@ void ClientLogBox::appendLog(
             }
 
             delete card;
-        }else
+        }else if(card->isModified()){
+            const Card *real = Sanguosha->getEngineCard(card->getEffectiveId());
+            QString skill_name = Sanguosha->translate(card->getSkillName());
+            skill_name = bold(skill_name, Qt::yellow);
+
+            QString subcard_str = bold(real->getLogName(), Qt::yellow);
+
+            log = tr("%from use skill [%1] use %2 as %3")
+                    .arg(skill_name)
+                    .arg(subcard_str)
+                    .arg(card_name);
+        }
+        else
             log = tr("%from use %1").arg(card_name);
 
         if(!to.isEmpty())

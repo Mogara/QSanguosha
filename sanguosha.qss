@@ -13,33 +13,32 @@ QProgressBar::chunk{
 QTextEdit{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
-    background-color: rgba(43,45,31,120);
+    background-color: rgba(43,45,31,255);
 }
 
 QTextEdit[description="true"]{
     border: 10px;
-	border-image: none;
+    border-image: none;
     background-color: rgba(255,255,255,255);
 }
 
 QTextEdit QScrollBar:vertical  {
-
      margin: 22px 0 22px 0;
 }
 
 QScrollBar:add-page
 {
-     background-color: rgba(0,0,0,200);
+     background-color: rgba(0,0,0,255);
 }
 
 QScrollBar:sub-page
 {
-     background-color: rgba(0,0,0,200);
+     background-color: rgba(0,0,0,255);
 }
 
  QScrollBar::add-line:vertical  {
 
-     background-color: rgba(43,45,31,200);
+     background-color: rgba(43,45,31,255);
      height: 15px;
      subcontrol-position: bottom;
      subcontrol-origin: margin;
@@ -47,13 +46,13 @@ QScrollBar:sub-page
 
  QScrollBar::sub-line:vertical  {
 
-     background-color: rgba(43,45,31,200);
+     background-color: rgba(43,45,31,255);
      height: 15px;
      subcontrol-position: top;
      subcontrol-origin: margin;
  }
 
-QScrollBar::handle:vertical    {
+QScrollBar::handle:vertical    {    
     border : 2px solid gray;
     border-radius: 6px;
     background-color: solid gray;
@@ -65,18 +64,13 @@ QScrollBar::up-arrow:vertical
     border-image: url(image/system/button/scroll-up-arrow.png);
 }
 
-QScrollBar::handle:vertical
-{
-    border-image: url(image/system/button/scroll-handle.png);
-}
-
 QScrollBar::down-arrow:vertical
 {
     border-image: url(image/system/button/scroll-down-arrow.png);
 }
 
  QLineEdit#chat_edit{
-    background-color: rgba(20,20,20,200);
+    background-color: rgba(20,20,20,255);
     color: white;
     border: 10px transparent;
     height: 20px;
@@ -88,19 +82,19 @@ QStatusBar::item {
  }
  
 QStatusBar{
-	background-image: url(image/system/skill-dock.png);
-	color:white;
+    background-image: url(image/system/skill-dock.png);
+    color:white;
 }
 
 QMenu[private_pile="true"]{
-    background-color: rgba(43,63,53,100);
-    border-radius: 5px;
+    background-color: rgba(43,63,53,200);
+    border-radius: 1px;
     color: white;
 }
 
 QPushButton[private_pile="true"]{
-    background-color: rgba(43,63,53,100);
-    border-radius: 5px;
+    background-color: rgba(43,63,53,200);
+    border-radius: 1px;
     color: white;
 }
 
@@ -109,22 +103,6 @@ QPushButton[game_control="true"]{
     font: 12px;
     border-radius: 5px;
     padding: 6px 12px 6px 12px;
-}
-
-QPushButton#free-discard{
-    background-image: url(image/system/button/free-discard.png);
-}
-
-QPushButton#free-discard:disabled{
-    background-image: url(image/system/button/free-discard-disabled.png);
-}
-
-QPushButton#reverse-select{
-    background-image: url(image/system/button/reverse-select.png);
-}
-
-QPushButton#reverse-select:disabled{
-    background-image: url(image/system/button/reverse-select-disabled.png);
 }
 
 QPushButton#pause{
@@ -148,70 +126,70 @@ QPushButton#uniform{
 }
 
 #skill_bar_container QPushButton{
-	background-image: url(image/system/button/back.png);
+    background-image: url(image/system/button/back.png);
         border: 1px solid gray;
         border-radius: 4px;
-	color: yellow;
-	font: 12px;
-	padding: 6px 12px 6px 12px;
+    color: yellow;
+    font: 12px;
+    padding: 6px 12px 6px 12px;
 }
 #skill_bar_container QPushButton:disabled{
-	background-image: url(image/system/button/back_shade.png);
+    background-image: url(image/system/button/back_shade.png);
         border-radius: 4px;
-	color: white;
-	font: 12px;
+    color: white;
+    font: 12px;
 }
 #skill_bar_container QCheckBox{
-	border: 1px solid gray;
+    border: 1px solid gray;
         border-radius: 4px;
-	color: yellow;
-	font: 12px;
-	padding: 1px 12px 1px 8px;
+    color: yellow;
+    font: 12px;
+    padding: 1px 12px 1px 8px;
 }
 #skill_bar_container QCheckBox::indicator{
-	height: 0px;
-	width: 0px;
+    height: 0px;
+    width: 0px;
 }
 #skill_bar_container QCheckBox:unchecked{
-	background-image: url(image/system/button/frequent_checkbox/unchecked.png);
+    background-image: url(image/system/button/frequent_checkbox/unchecked.png);
 }
 #skill_bar_container QCheckBox:unchecked:hover{
-	background-image: url(image/system/button/frequent_checkbox/unchecked_hover.png);
+    background-image: url(image/system/button/frequent_checkbox/unchecked_hover.png);
 }
 #skill_bar_container QCheckBox:unchecked:pressed{
-	background-image: url(image/system/button/frequent_checkbox/unchecked_press.png);
+    background-image: url(image/system/button/frequent_checkbox/unchecked_press.png);
 }
 #skill_bar_container QCheckBox:checked{
-	background-image: url(image/system/button/frequent_checkbox/checked.png);
+    background-image: url(image/system/button/frequent_checkbox/checked.png);
 }
 #skill_bar_container QCheckBox:checked:hover{
-	background-image: url(image/system/button/frequent_checkbox/checked_hover.png);
+    background-image: url(image/system/button/frequent_checkbox/checked_hover.png);
 }
 #skill_bar_container QCheckBox:checked:pressed{
-	background-image: url(image/system/button/frequent_checkbox/checked_press.png);
+    background-image: url(image/system/button/frequent_checkbox/checked_press.png);
 }
 #skill_bar_container QComboBox{
-	background-image: url(image/system/button/back2.png);
-	border: 1px solid gray;
-	border-radius: 3px;
-	color: white;
-	padding: 1px 18px 1px 3px;
+    background-image: url(image/system/button/back2.png);
+    border: 1px solid gray;
+    border-radius: 3px;
+    color: white;
+    padding: 1px 18px 1px 3px;
 }
 #skill_bar_container QComboBox:on{
-	padding-left: 4px;
-	padding-top: 3px;
+    padding-left: 4px;
+    padding-top: 3px;
 }
 #skill_bar_container QComboBox::drop-down{
-	border-bottom-right-radius: 3px;
-	border-left-color: darkgray;
-	border-left-style: solid;
-	border-left-width: 1px;
-	border-top-right-radius: 3px;
-	subcontrol-origin: padding;
-	subcontrol-position: top right;
-	width: 15px;
+    border-bottom-right-radius: 3px;
+    border-left-color: darkgray;
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-top-right-radius: 3px;
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
 }
 #skill_bar_container QComboBox::down-arrow:on{
-	left: 1px;
-	top: 1px;
+    left: 1px;
+    top: 1px;
 }

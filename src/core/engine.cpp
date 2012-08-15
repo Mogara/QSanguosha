@@ -10,15 +10,54 @@
 #include "protocol.h"
 #include "jsonutils.h"
 #include "structs.h"
+#include "RoomState.h"
+
+#include "guandu-scenario.h"
+#include "couple-scenario.h"
+#include "boss-mode-scenario.h"
+#include "zombie-scenario.h"
 
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
 #include <QMessageBox>
 #include <QDir>
+#include <QFile>
 #include <QApplication>
+#include <scenario.h>
+#include <miniscenarios.h>
 
 Engine *Sanguosha = NULL;
+
+int Engine::getMiniSceneCounts()
+{
+    return m_miniScenes.size();
+}
+
+void Engine::_loadMiniScenarios()
+{
+    static bool loaded = false;
+    if (loaded) return;
+    int i = 1;
+    while(true)
+    {
+        if (!QFile::exists(QString("etc/customScenes/%1.txt").arg(QString::number(i))))
+            break;
+
+        QString sceneKey = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
+        m_miniScenes[sceneKey] = new LoadedScenario(QString::number(i));
+        i++;
+    }
+    loaded = true;
+}
+
+void Engine::_loadModScenarios()
+{
+    addScenario(new GuanduScenario());
+    addScenario(new CoupleScenario());
+    addScenario(new ZombieScenario());
+    addScenario(new ImpasseScenario());
+}
 
 void Engine::addPackage(const QString &name){
     Package *pack = PackageAdder::packages()[name];
@@ -28,12 +67,8 @@ void Engine::addPackage(const QString &name){
         qWarning("Package %s cannot be loaded!", qPrintable(name));
 }
 
-void Engine::addScenario(const QString &name){
-    Scenario *scenario = ScenarioAdder::scenarios()[name];
-    if(scenario)
-        addScenario(scenario);
-    else
-        qWarning("Scenario %s cannot be loaded!", qPrintable(name));
+static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
+    return GetValueFromLuaState(L, "config", key);
 }
 
 Engine::Engine()
@@ -47,9 +82,9 @@ Engine::Engine()
     foreach(QString name, package_names)
         addPackage(name);
 
-    QStringList scene_names = GetConfigFromLuaState(lua, "scene_names").toStringList();
-    foreach(QString name, scene_names)
-        addScenario(name);
+    _loadMiniScenarios();
+    _loadModScenarios();
+    m_customScene = new CustomScenario();
 
     DoLuaScript(lua, "lua/sanguosha.lua");
 
@@ -105,21 +140,24 @@ Engine::~Engine(){
 #endif
 }
 
-QStringList Engine::getScenarioNames() const{
-    QStringList names;
-    foreach(QString name, scenarios.keys())
-        if(!name.contains("_mini_") && !name.contains("custom_scenario")) names << name;
-    return names;
+QStringList Engine::getModScenarioNames() const{
+    return m_scenarios.keys();
 }
 
-void Engine::addScenario(Scenario *scenario){
-    scenarios.insert(scenario->objectName(), scenario);
-
+void Engine::addScenario(Scenario *scenario) {
+    QString key = scenario->objectName();
+    m_scenarios[key] = scenario;
     addPackage(scenario);
 }
 
 const Scenario *Engine::getScenario(const QString &name) const{
-    return scenarios.value(name, NULL);
+    if (m_scenarios.contains(name))
+        return m_scenarios[name];
+    else if (m_miniScenes.contains(name))
+        return m_miniScenes[name];
+    else if (name == "custom_scenario")
+        return m_customScene;
+    else return NULL;
 }
 
 void Engine::addSkills(const QList<const Skill *> &all_skills){
@@ -157,8 +195,9 @@ void Engine::addPackage(Package *package){
         card->setId(cards.length());
         cards << card;
 
-        QString card_name = card->objectName();
-        metaobjects.insert(card_name, card->metaObject());
+        QString class_name = card->metaObject()->className();
+        metaobjects.insert(class_name, card->metaObject());
+        className2objectName.insert(class_name, card->objectName());
     }
 
     addSkills(package->getSkills());
@@ -247,8 +286,9 @@ int Engine::getGeneralCount(bool include_banned) const{
             total--;
 
         else if( (ServerInfo.GameMode.endsWith("p") ||
-                  ServerInfo.GameMode.endsWith("pd"))
-                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
+                  ServerInfo.GameMode.endsWith("pd") ||
+                  ServerInfo.GameMode.endsWith("pz"))
+                 && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
 
         else if(ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
@@ -256,31 +296,134 @@ int Engine::getGeneralCount(bool include_banned) const{
 
         else if(ServerInfo.EnableBasara &&
                 Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
-            total -- ;
+            total-- ;
 
         else if(ServerInfo.EnableHegemony &&
                 Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
-            total -- ;
+            total-- ;
     }
 
     return total;
 }
 
-const Card *Engine::getCard(int index) const{
-    if(index < 0 || index >= cards.length())
-        return NULL;
+void Engine::registerRoom(QObject* room) {
+    m_mutex.lock();
+    m_rooms[QThread::currentThread()] = room;
+    m_mutex.unlock();
+}
+
+void Engine::unregisterRoom() {
+    m_mutex.lock();
+    m_rooms.remove(QThread::currentThread());
+    m_mutex.unlock();
+}
+
+QObject* Engine::currentRoomObject()
+{
+    QObject* room = NULL;
+    m_mutex.lock();
+    room = m_rooms[QThread::currentThread()];
+    Q_ASSERT(room);
+    m_mutex.unlock();
+    return room;
+}
+
+Room* Engine::currentRoom()
+{
+    QObject* roomObject = currentRoomObject();
+    Room *room = qobject_cast<Room*>(roomObject);
+    Q_ASSERT(room != NULL);
+    return room;
+}
+
+RoomState* Engine::currentRoomState()
+{
+    QObject *roomObject = currentRoomObject();
+    Room *room = qobject_cast<Room*>(roomObject);
+    if (room != NULL)
+    {
+        return room->getRoomState();
+    }
     else
-        return cards.at(index);
+    {
+        Client *client = qobject_cast<Client*>(roomObject);
+        Q_ASSERT(client != NULL);
+        return client->getRoomState();
+    }
+}
+
+WrappedCard *Engine::getWrappedCard(int cardId) {
+    Card *card = getCard(cardId);
+    WrappedCard* wrappedCard = qobject_cast<WrappedCard*>(card);
+    Q_ASSERT(wrappedCard != NULL && wrappedCard->getId() == cardId);
+    return wrappedCard;
+}
+
+Card *Engine::getCard(int cardId) {
+    Card *card = NULL;
+    if (cardId < 0 || cardId >= cards.length())
+        return NULL;
+    QObject* room = currentRoomObject();
+    Q_ASSERT(room);
+    Room *serverRoom = qobject_cast<Room *>(room);
+    if (serverRoom != NULL)
+    {
+        card = serverRoom->getCard(cardId);
+    }
+    else
+    {
+        Client *clientRoom = qobject_cast<Client *>(room);
+        Q_ASSERT(clientRoom != NULL);
+        card = clientRoom->getCard(cardId);
+    }
+    Q_ASSERT(card);
+    return card;
+}
+
+const Card *Engine::getEngineCard(int cardId) const{
+    if (cardId == Card::S_UNKNOWN_CARD_ID) return NULL;
+    else if(cardId < 0 || cardId >= cards.length())
+    {
+        Q_ASSERT(FALSE);
+        return NULL;
+    }
+    else
+    {
+        Q_ASSERT(cards[cardId] != NULL);
+        return cards[cardId];
+    }
+}
+
+Card *Engine::cloneCard(const Card* card) const{
+    QString name = card->metaObject()->className();
+    Card* result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
+    if (result == NULL)
+        return NULL;
+    result->setId(card->getEffectiveId());
+    result->setSkillName(card->getSkillName());
+    result->setObjectName(card->objectName());
+    return result;
 }
 
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
     const QMetaObject *meta = metaobjects.value(name, NULL);
+    if(meta == NULL)
+        meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
     if(meta){
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-        card_obj->setObjectName(name);
+        card_obj->setObjectName(className2objectName.value(name, name));
         return qobject_cast<Card *>(card_obj);
     }else
         return NULL;
+}
+
+Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const{
+    Card* card = cloneCard(name, suit, number);
+    if (!card) return NULL;
+    card->clearFlags();
+    foreach (QString flag, flags)
+        card->setFlags(flag);
+    return card;
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name) const{
@@ -294,7 +437,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return GetConfigFromLuaState(lua, "version").toString();
+    return "20120802";
 }
 
 QString Engine::getVersion() const{
@@ -307,11 +450,11 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return GetConfigFromLuaState(lua, "version_name").toString();
+    return tr("NewQSanguosha");
 }
 
 QString Engine::getMODName() const{
-    return GetConfigFromLuaState(lua, "mod_name").toString();
+    return "official";
 }
 
 QStringList Engine::getExtensions() const{
@@ -411,23 +554,21 @@ int Engine::getPlayerCount(const QString &mode) const{
             return rx.capturedTexts().first().toInt();
     }else{
         // scenario mode
-        const Scenario *scenario = scenarios.value(mode, NULL);
-        if(scenario)
-            return scenario->getPlayerCount();
+        const Scenario *scenario = getScenario(mode);
+        Q_ASSERT(scenario);
+        return scenario->getPlayerCount();
     }
 
     return -1;
 }
 
-void Engine::getRoles(const QString &mode, char *roles) const{
+QString Engine::getRoles(const QString &mode) const{
     int n = getPlayerCount(mode);
 
-    if(mode == "02_1v1"){
-        qstrcpy(roles, "ZN");
-        return;
-    }else if(mode == "04_1v3"){
-        qstrcpy(roles, "ZFFF");
-        return;
+    if(mode == "02_1v1"){        
+        return "ZN";
+    }else if(mode == "04_1v3"){        
+        return "ZFFF";
     }
 
     if(modes.contains(mode)){
@@ -470,28 +611,28 @@ void Engine::getRoles(const QString &mode, char *roles) const{
             rolechar.replace("C", "N");
         }
 
-        qstrcpy(roles, rolechar.toStdString().c_str());
+        return rolechar;
     }else if(mode.startsWith("@")){
         if(n == 8)
-            qstrcpy(roles, "ZCCCNFFF");
+            return "ZCCCNFFF";
         else if(n == 6)
-            qstrcpy(roles, "ZCCNFF");
+            return "ZCCNFF";
 
     }else{
         const Scenario *scenario = getScenario(mode);
         if(scenario)
-            scenario->getRoles(roles);
+            return scenario->getRoles();
     }
+    return QString();
 }
 
 QStringList Engine::getRoleList(const QString &mode) const{
-    char roles[100];
-    getRoles(mode, roles);
+    QString roles = getRoles(mode);
 
     QStringList role_list;
     for(int i=0; roles[i] != '\0'; i++){
         QString role;
-        switch(roles[i]){
+        switch(roles[i].toAscii()){
         case 'Z': role = "lord"; break;
         case 'C': role = "loyalist"; break;
         case 'N': role = "renegade"; break;
@@ -571,42 +712,14 @@ QStringList Engine::getRandomLords() const{
 
 QStringList Engine::getLimitedGeneralNames() const{
     QStringList general_names;
-    //something wrong with the list, probably the number
-    //of the generals is not enough to assign to each
-    //players.
-    /*
-    if(ServerInfo.EnableHegemony){
-        //@todo: luxun, huangyueying, zhanghe need to change the skill for hegemony mode.
-        general_names << "caocao" << "caopi" << "zhenji" << "guojia" << "simayi"
-                      << "xunyu" << "xiahoudun" << "xiayouyuan" << "zhanghe" << "zhangliao"
-                      << "xuhuang" << "xuchu" << "dianwei" << "caoren";
-        // << "yuejin";
-
-        general_names << "liubei" << "zhugeliang" << "huangyueying" << "wolong" << "pangtong"
-                      << "guanyu" << "zhangfei" << "zhaoyun" << "machao" << "huangzhong"
-                      << "weiyan" << "liushan" << "menghuo" << "zhurong";
-        // << "ganfuren";
-
-        general_names << "sunquan" << "sunshangxiang" << "zhouyu" << "xiaoqiao" << "daqiao"
-                      << "luxun" << "lusu" << "sunjian" << "taishici" << "ganning" << "huanggai"
-                      << "dingfeng" << "lvmeng" << "zhoutai" << "erzhang";
-
-        general_names << "lvbu" << "diaochan" << "zhangjiao" << "yuanshao" << "yanliangwenchou"
-                      << "jiaxu" << "caiwenji" << "huatuo" << "pangde";
-        //<< "mateng" << "kongrong" << "zoushi" << "tianfeng" << "jiling" << "pangfeng";
-
-    }
-    else
-    */
-    {
-        QHashIterator<QString, const General *> itor(generals);
-        while(itor.hasNext()){
-            itor.next();
-            if(!ban_package.contains(itor.value()->getPackage())){
-                general_names << itor.key();
-            }
+    QHashIterator<QString, const General *> itor(generals);
+    while(itor.hasNext()){
+        itor.next();
+        if(!ban_package.contains(itor.value()->getPackage())){
+            general_names << itor.key();
         }
     }
+
     return general_names;
 }
 
@@ -618,9 +731,12 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     if(Config.EnableBasara) general_set =
             general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
+    if(Config.EnableHegemony) general_set =
+            general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
 
     if(ServerInfo.GameMode.endsWith("p") ||
-                      ServerInfo.GameMode.endsWith("pd"))
+            ServerInfo.GameMode.endsWith("pd")||
+            ServerInfo.GameMode.endsWith("pz"))
         general_set.subtract(Config.value("Banlist/Roles","").toStringList().toSet());
 
     all_generals = general_set.subtract(ban_set).toList();
@@ -650,7 +766,7 @@ QList<int> Engine::getRandomCards() const{
     foreach(Card *card, cards){
         card->clearFlags();
 
-        if(exclude_disaters && card->inherits("Disaster"))
+        if(exclude_disaters && card->isKindOf("Disaster"))
             continue;
 
         if(card->getPackage() == "New3v3Card" && using_new_3v3){
@@ -670,11 +786,11 @@ QString Engine::getRandomGeneralName() const{
     return generals.keys().at(qrand() % generals.size());
 }
 
-void Engine::playAudio(const QString &name) const{
-    playEffect(QString("audio/system/%1.ogg").arg(name));
+void Engine::playSystemAudioEffect(const QString &name) const{
+    playAudioEffect(QString("audio/system/%1.ogg").arg(name));
 }
 
-void Engine::playEffect(const QString &filename) const{
+void Engine::playAudioEffect(const QString &filename) const{
 #ifdef AUDIO_SUPPORT
 
     if(!Config.EnableEffects)
@@ -688,28 +804,24 @@ void Engine::playEffect(const QString &filename) const{
 #endif
 }
 
-void Engine::playSkillEffect(const QString &skill_name, int index) const{
+void Engine::playSkillAudioEffect(const QString &skill_name, int index) const{
     const Skill *skill = skills.value(skill_name, NULL);
     if(skill)
-        skill->playEffect(index);
-}
-
-void Engine::playCardEffect(const QString &card_name, bool is_male) const{
-    QString path;
-    if(card_name.startsWith("@")){
-        QString gender = is_male ? "male" : "female";
-        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(card_name);
-    }else{
-        const Card *card = findChild<const Card *>(card_name);
-        if(card)
-            path = card->getEffectPath(is_male);
-    }
-
-    playEffect(path);
+        skill->playAudioEffect(index);
 }
 
 const Skill *Engine::getSkill(const QString &skill_name) const{
     return skills.value(skill_name, NULL);
+}
+
+const Skill *Engine::getSkill(const EquipCard *equip) const{
+    const Skill* skill;
+    if (equip == NULL) skill = NULL;
+    else {
+        skill = Sanguosha->getSkill(equip->objectName());
+        if (skill == NULL) skill = equip->getSkill();
+    }
+    return skill;
 }
 
 QStringList Engine::getSkillNames() const{

@@ -34,6 +34,7 @@ void NativeServerSocket::processNewDatagram(){
 
         QByteArray data = Config.ServerName.toUtf8();
         daemon->writeDatagram(data, from, Config.DetectorPort);
+        daemon->flush();
     }
 }
 
@@ -99,6 +100,7 @@ void NativeClientSocket::disconnectFromHost(){
 void NativeClientSocket::send(const QString &message){
     socket->write(message.toAscii());
     socket->write("\n");
+    socket->flush();
 }
 
 bool NativeClientSocket::isConnected() const{

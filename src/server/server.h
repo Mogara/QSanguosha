@@ -101,10 +101,10 @@ private:
     QCheckBox *basara_checkbox;
     QCheckBox *hegemony_checkbox;
     QLabel *max_hp_label;
-    QComboBox *max_hp_scheme_combobox;
+    QComboBox *max_hp_scheme_ComboBox;
     QCheckBox *announce_ip_checkbox;
-    QComboBox *scenario_combobox;
-    QComboBox *mini_scene_combobox;
+    QComboBox *scenario_ComboBox;
+    QComboBox *mini_scene_ComboBox;
     QPushButton *mini_scene_button;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
@@ -114,7 +114,7 @@ private:
     QSpinBox *ai_delay_spinbox;
     QRadioButton *standard_3v3_radiobutton;
     QRadioButton *new_3v3_radiobutton;
-    QComboBox *role_choose_combobox;
+    QComboBox *role_choose_ComboBox;
     QCheckBox *exclude_disaster_checkbox;
 
     QButtonGroup *extension_group;
@@ -127,7 +127,6 @@ private slots:
     void select3v3Generals();
     void edit1v1Banlist();
     void updateButtonEnablility(QAbstractButton* button);
-    void updateCheckBoxState(bool toggled);
 
     void doCustomAssign();
     void setMiniCheckBox();
@@ -159,7 +158,7 @@ private:
 
 private slots:
     void processNewConnection(ClientSocket *socket);
-    void processRequest(char *request);
+    void processRequest(const char *request);
     void cleanup();
     void gameOver();
 

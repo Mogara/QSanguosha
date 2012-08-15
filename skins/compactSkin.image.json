@@ -1,0 +1,31 @@
+{
+"photoMainFrame": "image/compact/photo-back.png",
+"photoFaceTurnedMask": ["image/generals/small/faceturned.png",[12, 17, 119, 60]],
+"photoBlankGeneral": "image/generals/small/blank.png",
+"photoChain": ["image/system/chain.png",[0, 0, 131, 19]],
+"photoPhase0": "image/system/phase/round_start.png",
+"photoPhase1": "image/system/phase/start.png",
+"photoPhase2": "image/system/phase/judge.png",
+"photoPhase3": "image/system/phase/draw.png",
+"photoPhase4": "image/system/phase/play.png",
+"photoPhase5": "image/system/phase/discard.png",
+"photoPhase6": "image/system/phase/finish.png",
+"photoFocusFrame0": "image/compact/frame/playing.png",
+"photoFocusFrame1": "image/compact/frame/responsing.png",
+"photoFocusFrame2": "image/compact/frame/sos.png",
+"photoFrameWhenSelected": "image/compact/frame/photoSelected.png",
+
+"playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[28, 58, 220, 111], [119, 60]],
+"playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[55, 58, 220, 111], [119, 60]],  //primary avatar for photo
+
+"generalCircleMask-0": ["image/generals/double-general/circle-photo-mask-compact.png", [78, 12, 41, 36]],
+
+"playerGeneralIcon-anjiang-1": "image/compact/generals/small/anjiang.png", 
+"playerGeneralIcon-yanliangwenchou-1": "image/compact/generals/small/yanliangwenchou.png",
+"playerGeneralIcon-erzhang-1": "image/compact/generals/small/erzhang.png",
+"playerGeneralIcon-guanxingzhangbao-1": "image/compact/generals/small/guanxingzhangbao.png",
+"playerGeneralIcon-anjiang-6": "image/compact/generals/small/anjiang.png", 
+"playerGeneralIcon-yanliangwenchou-6": "image/compact/generals/small/yanliangwenchou.png",
+"playerGeneralIcon-erzhang-6": "image/compact/generals/small/erzhang.png",
+"playerGeneralIcon-guanxingzhangbao-6": "image/compact/generals/small/guanxingzhangbao.png"
+}

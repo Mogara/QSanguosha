@@ -51,7 +51,7 @@ protected:
 
 private:
     QListWidget *list, *equip_list, *hand_list, *judge_list, *pile_list;
-    QComboBox *role_combobox, *num_combobox, *marks_combobox;
+    QComboBox *role_ComboBox, *num_ComboBox, *marks_ComboBox;
     QCheckBox  *starter_box;
     LabelButton *general_label, *general_label2;
     QCheckBox *max_hp_prompt,*hp_prompt;
@@ -61,7 +61,7 @@ private:
     QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
     QCheckBox *set_turned, *set_chained;
     QComboBox *single_turn_box, *before_next_box;
-    QCheckBox *random_roles_box;
+    QCheckBox *random_roles_box, *ended_by_pile_box;
     QCheckBox *single_turn, *before_next;
     QLabel *single_turn_text, *single_turn_text2, *before_next_text, *before_next_text2;
     QPushButton *extra_skill_set;
@@ -90,7 +90,6 @@ private:
     bool choose_general2;
     QString starter;
     bool is_single_turn, is_before_next;
-    bool is_random_roles;
 
     QList<bool> set_options;
 

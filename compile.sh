@@ -1,7 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # This is a Shell script that ease our compilation work in Linux
 # You should has Qt, swig, and plib installed before running this script
+
+echo "****"
+echo "This script is considered obsolete, please use 'make -f linux.mk' instead"
+echo "****"
 
 which -s qmake
 if [[ $? != 0 ]]; then

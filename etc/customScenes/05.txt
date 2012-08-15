@@ -1,5 +1,0 @@
-general:select  role:rebel  equip:axe  starter:true
-    general:machao  role:rebel
-    general:dianwei  role:loyalist
-    general:caocao  role:lord  hp:4  draw:2
-    general:xuchu  role:loyalist

@@ -13,7 +13,7 @@ bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, con
     return targets.isEmpty() && to_select->getGeneralName() == "yanliangwenchou" && !to_select->isKongcheng();
 }
 
-void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *shuangxiong = targets.first();
 
     DamageStruct damage;
@@ -38,7 +38,7 @@ public:
     virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         Room *room = guojia->getRoom();
 
-        room->playSkillEffect(objectName());
+        room->broadcastSkillInvoke(objectName());
         int n = damage.damage * 3;
         guojia->drawCards(n);
         QList<int> yiji_cards = guojia->handCards().mid(guojia->getHandcardNum() - n);
@@ -95,7 +95,7 @@ bool SmallTuxiCard::targetFilter(const QList<const Player *> &targets, const Pla
 void SmallTuxiCard::onEffect(const CardEffectStruct &effect) const{
     TuxiCard::onEffect(effect);
 
-    effect.from->getRoom()->playSkillEffect("tuxi");
+    effect.from->getRoom()->broadcastSkillInvoke("tuxi");
 }
 
 class SmallTuxiViewAsSkill: public ZeroCardViewAsSkill{
@@ -144,7 +144,7 @@ public:
                 }
             }
 
-            if(!can_invoke || !room->askForUseCard(zhangliao, "@@smalltuxi", "@tuxi-card"))
+            if(!can_invoke || !room->askForUseCard(zhangliao, "@@smalltuxi", "@smalltuxi-card"))
                 zhangliao->drawCards(1, false);
 
             return true;
@@ -159,38 +159,38 @@ public:
     GuanduRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << PhaseChange << Damaged << GameOverJudge;
+        events << GameStart << EventPhaseStart << Damaged << GameOverJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        switch(event){
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        switch(triggerEvent){
         case GameStart:{
-                if(player->isLord()){
-                    room->installEquip(player, "renwang_shield");
-                    room->installEquip(player, "hualiu");
+            player = room->getLord();
+            room->installEquip(player, "RenwangShield");
+            room->installEquip(player, "HuaLiu");
 
             ServerPlayer *caocao = room->findPlayer("caocao");
-            room->installEquip(caocao, "qinggang_sword");
-            room->installEquip(caocao, "zhuahuangfeidian");
+            room->installEquip(caocao, "QinggangSword");
+            room->installEquip(caocao, "ZhuaHuangFeiDian");
 
             ServerPlayer *liubei = room->findPlayer("liubei");
-            room->installEquip(liubei, "double_sword");
+            room->installEquip(liubei, "DoubleSword");
 
             ServerPlayer *guanyu = room->findPlayer("guanyu");
-            room->installEquip(guanyu, "blade");
-            room->installEquip(guanyu, "chitu");
+            room->installEquip(guanyu, "Blade");
+            room->installEquip(guanyu, "ChiTu");
             room->acquireSkill(guanyu, "zhanshuangxiong");
 
 
-                    ServerPlayer *zhangliao = room->findPlayer("zhangliao");
-                    room->detachSkillFromPlayer(zhangliao, "tuxi");
-                    room->acquireSkill(zhangliao, "smalltuxi");
-                }
+            ServerPlayer *zhangliao = room->findPlayer("zhangliao");
+            room->detachSkillFromPlayer(zhangliao, "tuxi");
+            room->acquireSkill(zhangliao, "smalltuxi");
+
 
             break;
                        }
 
-        case PhaseChange:{
+        case EventPhaseStart:{
                 if(player->getPhase() == Player::Draw){
                     bool burned = room->getTag("BurnWuchao").toBool();
                     if(!burned){
@@ -228,7 +228,7 @@ public:
                             break;
                         }
 
-                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::Judging, true);
+                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::PlaceDelayedTrick, true);
                     }
                 }
 
@@ -305,7 +305,3 @@ void GuanduScenario::onTagSet(Room *room, const QString &key) const{
         }
     }
 }
-
-ADD_SCENARIO(Guandu);
-
-

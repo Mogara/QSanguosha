@@ -25,84 +25,84 @@ local t = {
 使用目标：1、已受伤的你。2、处于濒死状态的一名角色。\
 作用效果：目标角色回复1点体力。",
 
-	["crossbow"] = "诸葛连弩",
-	[":crossbow"] = "装备牌·武器\
+	["Crossbow"] = "诸葛连弩",
+	[":Crossbow"] = "装备牌·武器\
 攻击范围：１\
 武器特效：<b>锁定技</b>，你在出牌阶段内使用【杀】时无次数限制。",
 
-	["double_sword"] = "雌雄双股剑",
-	[":double_sword"] = "装备牌·武器\
+	["DoubleSword"] = "雌雄双股剑",
+	[":DoubleSword"] = "装备牌·武器\
 攻击范围：２\
 武器特效：当你使用【杀】指定一名异性角色为目标后，你可以令其选择一项：弃置一张手牌，或令你摸一张牌。",
 	["double-sword-card"] = "%src 发动了雌雄双股剑特效，您必须弃置一张手牌或让 %src 摸一张牌",
-	["double_sword:yes"] = "您可以让对方选择自弃置一牌或让您摸一张牌",
+	["DoubleSword:yes"] = "您可以让对方选择自弃置一牌或让您摸一张牌",
 
-	["qinggang_sword"] = "青釭剑",
-	[":qinggang_sword"] = "装备牌·武器\
+	["QinggangSword"] = "青釭剑",
+	[":QinggangSword"] = "装备牌·武器\
 攻击范围：２\
 武器特效：<b>锁定技</b>，当你使用【杀】指定一名角色为目标后，你无视其防具。\◆你使用【杀】指定A为目标后触发【青釭剑】无视A的防具，效果持续到该【杀】被【闪】抵消或A受到的伤害被防止或A受到的伤害进行伤害结算计算出最终的伤害值时为止。",
 
-	["blade"] = "青龙偃月刀",
-	[":blade"] = "装备牌·武器\
+	["Blade"] = "青龙偃月刀",
+	[":Blade"] = "装备牌·武器\
 攻击范围：３\
 武器特效：当你使用的【杀】被【闪】抵消时，你可以对相同的目标再使用一张【杀】（无距离限制）。",
-	["blade-slash"] = "您可以发动青龙偃月刀的追杀效果对目标再使用一张【杀】",
+	["blade-slash"] = "您可以对目标使用一张【杀】发动青龙偃月刀的追杀效果",
 
-	["spear"] = "丈八蛇矛",
-	[":spear"] = "装备牌·武器\
+	["Spear"] = "丈八蛇矛",
+	[":Spear"] = "装备牌·武器\
 攻击范围：３\
 武器特效：你可以将两张手牌当【杀】使用或打出。",
 
-	["axe"] = "贯石斧",
-	[":axe"] = "装备牌·武器\
+	["Axe"] = "贯石斧",
+	[":Axe"] = "装备牌·武器\
 攻击范围：３\
 武器特效：当你使用的【杀】被【闪】抵消时，你可以弃置两张牌，则此【杀】依然造成伤害。",
 	["@axe"] = "你可再弃置两张牌（包括装备）使此杀强制命中",
-	["~axe"] = "选择两张牌——点击确定",
+	["~Axe"] = "选择两张牌——点击确定",
 	["#AxeSkill"] = "%from 使用了【%arg】的技能，弃置了2张牌以对 %to 强制命中",
 
-	["halberd"] = "方天画戟",
-	[":halberd"] = "装备牌·武器\
+	["Halberd"] = "方天画戟",
+	[":Halberd"] = "装备牌·武器\
 攻击范围：４\
 武器特效：当你使用【杀】时，若此【杀】是你最后的手牌，你可以额外选择至多两个目标。",
 
-	["kylin_bow"] = "麒麟弓",
-	[":kylin_bow"] = "装备牌·武器\
+	["KylinBow"] = "麒麟弓",
+	[":KylinBow"] = "装备牌·武器\
 攻击范围：５\
 武器特效：每当你使用【杀】对目标角色造成伤害时，你可以弃置其装备区里的一张坐骑牌。",
-	["kylin_bow:yes"] = "弃置目标角色的一张坐骑牌",
-	["kylin_bow:dhorse"] = "【+1坐骑】",
-	["kylin_bow:ohorse"] = "【-1坐骑】",
+	["KylinBow:yes"] = "弃置目标角色的一张坐骑牌",
+	["KylinBow:dhorse"] = "【+1坐骑】",
+	["KylinBow:ohorse"] = "【-1坐骑】",
 
-	["eight_diagram"] = "八卦阵",
-	[":eight_diagram"] = "装备牌·防具\
+	["EightDiagram"] = "八卦阵",
+	[":EightDiagram"] = "装备牌·防具\
 防具效果：当你需要使用或打出一张【闪】时，你可以进行一次判定，若判定结果为红色，则视为你使用或打出了一张【闪】。\
 ◆若判定结果为黑色，你仍可以用其他方式使用或打出一张【闪】。",
-	["eight_diagram:yes"] = "进行一次判定，若判定结果为红色，则视为你打出了一张【闪】",
+	["EightDiagram:yes"] = "进行一次判定，若判定结果为红色，则视为你打出了一张【闪】",
 
 	["standard_ex_cards"] = "标准EX卡牌包",
 
-	["renwang_shield"] = "仁王盾",
-	[":renwang_shield"] = "装备牌·防具\
+	["RenwangShield"] = "仁王盾",
+	[":RenwangShield"] = "装备牌·防具\
 防具效果：<b>锁定技</b>，黑色的【杀】对你无效。",
 
-	["ice_sword"] = "寒冰剑",
-	[":ice_sword"] = "装备牌·武器\
+	["IceSword"] = "寒冰剑",
+	[":IceSword"] = "装备牌·武器\
 攻击范围：２\
 武器特效：每当你使用【杀】对目标角色造成伤害时，若该角色有牌，你可以防止此伤害，改为依次弃置其两张牌。",
-	["ice_sword:yes"] = "您可以弃置其两张牌",
+	["IceSword:yes"] = "您可以弃置其两张牌",
 
-	["horse"] = "马",
-	[":+1 horse"] = "装备牌·坐骑\
+	["Horse"] = "马",
+	[":+1 Horse"] = "装备牌·坐骑\
 坐骑效果：<b>锁定技</b>，其他角色计算的与你的距离+1。",
-	["jueying"] = "绝影",
-	["dilu"] = "的卢",
-	["zhuahuangfeidian"] = "爪黄飞电",
-	[":-1 horse"] = "装备牌·坐骑\
+	["JueYing"] = "绝影",
+	["DiLu"] = "的卢",
+	["ZhuaHuangFeiDian"] = "爪黄飞电",
+	[":-1 Horse"] = "装备牌·坐骑\
 坐骑效果：<b>锁定技</b>，你计算的与其他角色的距离-1。",
-	["chitu"] = "赤兔",
-	["dayuan"] = "大宛",
-	["zixing"] = "紫骍",
+	["ChiTu"] = "赤兔",
+	["DaYuan"] = "大宛",
+	["ZiXing"] = "紫骍",
 
 	["amazing_grace"] = "五谷丰登",
 	[":amazing_grace"] = "锦囊牌\
@@ -193,15 +193,15 @@ local t = {
 
 }
 
-local ohorses = {"chitu", "dayuan", "zixing"}
-local dhorses = {"zhuahuangfeidian", "dilu", "jueying", "hualiu"}
+local ohorses = {"ChiTu", "DaYuan", "ZiXing"}
+local dhorses = {"ZhuaHuangFeiDian", "DiLu", "JueYing", "HuaLiu"}
 
 for _, horse in ipairs(ohorses) do
-	t[":" .. horse] = t[":-1 horse"]
+	t[":" .. horse] = t[":-1 Horse"]
 end
 
 for _, horse in ipairs(dhorses) do
-	t[":" .. horse] = t[":+1 horse"]
+	t[":" .. horse] = t[":+1 Horse"]
 end
 
 return t

@@ -10,15 +10,14 @@
 StartScene::StartScene()
 {
     // game logo
-    logo = new Pixmap("image/logo/logo.png");
-    logo->shift();
+    logo = new QSanSelectableItem("image/logo/logo.png", true);
     logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);
 
     //the website URL
     QFont website_font(Config.SmallFont);
     website_font.setStyle(QFont::StyleItalic);
-    QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.org", website_font);
+    QGraphicsSimpleTextItem *website_text = addSimpleText("", website_font);
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width()/2 - website_text->boundingRect().width(),
                        Config.Rect.height()/2 - website_text->boundingRect().height());
@@ -62,7 +61,7 @@ void StartScene::switchToServer(Server *server){
 
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
-    logo_shift->setEndValue(Config.Rect.topLeft());
+    logo_shift->setEndValue(QPointF(Config.Rect.center().rx() - 200, Config.Rect.center().ry() - 175));
 
     QPropertyAnimation *logo_shrink = new QPropertyAnimation(logo, "scale");
     logo_shrink->setEndValue(0.5);

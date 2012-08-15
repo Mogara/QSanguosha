@@ -33,7 +33,7 @@ public:
 
     QList<ServerPlayer *> getEnemies() const;
     QList<ServerPlayer *> getFriends() const;
-
+    
     virtual void activate(CardUseStruct &card_use) = 0;
     virtual Card::Suit askForSuit(const QString& reason) = 0;
     virtual QString askForKingdom() = 0;

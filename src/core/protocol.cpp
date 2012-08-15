@@ -9,6 +9,7 @@ using namespace QSanProtocol;
 unsigned int QSanProtocol::QSanGeneralPacket::_m_globalSerial = 0;
 const unsigned int QSanProtocol::QSanGeneralPacket::S_MAX_PACKET_SIZE = 1000;
 const string QSanProtocol::Countdown::S_COUNTDOWN_MAGIC = "MG_COUNTDOWN";
+const char* QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
 bool QSanProtocol::Countdown::tryParse(Json::Value val)
 {
@@ -90,7 +91,7 @@ bool QSanProtocol::QSanGeneralPacket::parse(const string &s)
 
     m_globalSerial = (unsigned int)result[0].asInt();
     m_localSerial = (unsigned int)result[1].asInt();
-    m_packetType = (PacketType)result[2].asInt();
+    m_packetDescription = static_cast<PacketDescription>(result[2].asInt());
     m_command = (CommandType)result[3].asInt();
 
     if (result.size() == 5)
@@ -103,7 +104,7 @@ string QSanProtocol::QSanGeneralPacket::toString() const
     Json::Value result(Json::arrayValue);
     result[0] = m_globalSerial;
     result[1] = m_localSerial;
-    result[2] = m_packetType;
+    result[2] = m_packetDescription;
     result[3] = m_command;
     const Json::Value &body = constructBody();
     if (body != Json::nullValue)

@@ -24,15 +24,7 @@ class General : public QObject
     Q_PROPERTY(bool hidden READ isHidden CONSTANT)
 
 public:
-    explicit General(
-            Package *package,
-            const QString &name,
-            const QString &kingdom,
-            int max_hp = 4,
-            bool male = true,
-            bool hidden = false,
-            bool never_shown = false,
-            bool female = true);  // the priority of this gender classify tag is lower than the above one.
+    explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
 
     // property getters/setters
     int getMaxHp() const;
@@ -44,13 +36,14 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    enum Gender {Male, Female, Neuter};
+    enum Gender {SexLess, Male, Female, Neuter};
     Gender getGender() const;
     void setGender(Gender gender);
 
     void addSkill(Skill* skill);
     void addSkill(const QString &skill_name);    
     bool hasSkill(const QString &skill_name) const;
+    QList<const Skill *> getSkillList() const;
     QList<const Skill *> getVisibleSkillList() const;
     QSet<const Skill *> getVisibleSkills() const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
@@ -58,13 +51,8 @@ public:
     void addRelateSkill(const QString &skill_name);
     QStringList getRelatedSkillNames() const;
 
-    QString getPixmapPath(const QString &category) const;
     QString getPackage() const;
     QString getSkillDescription() const;
-
-    static QSize BigIconSize;
-    static QSize SmallIconSize;
-    static QSize TinyIconSize;
 
 public slots:
     void lastWord() const;

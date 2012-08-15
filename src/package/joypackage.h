@@ -25,7 +25,7 @@ public:
     JoyEquipPackage();
 };
 
-class Shit:public BasicCard{
+/*class Shit:public BasicCard{
     Q_OBJECT
 
 public:
@@ -34,7 +34,7 @@ public:
     virtual void onMove(const CardMoveStruct &move) const;
 
     static bool HasShit(const Card *card);
-};
+};*/
 
 
 
@@ -88,7 +88,7 @@ public:
 
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
-    virtual QString getEffectPath(bool is_male) const;
+    virtual QString getCommonEffectName() const;
 
 private:
     TriggerSkill *grab_peach;

@@ -19,18 +19,17 @@ bool Scenario::exposeRoles() const{
     return true;
 }
 
-void Scenario::getRoles(char *roles) const{
-    qstrcpy(roles, "Z");
+QString Scenario::getRoles() const{
+    QString roles = "Z";   
+    for(int i = 0; i < loyalists.length(); i++)
+        roles.append('C');
 
-    int i;
-    for(i=0; i<loyalists.length(); i++)
-        strcat(roles, "C");
+    for (int i = 0; i < rebels.length(); i++)
+        roles.append('N');
 
-    for(i=0; i<rebels.length(); i++)
-        strcat(roles, "N");
-
-    for(i=0; i<rebels.length(); i++)
-        strcat(roles, "F");
+    for(int i = 0; i < rebels.length(); i++)
+        roles.append('F');
+    return roles;
 }
 
 void Scenario::assign(QStringList &generals, QStringList &roles) const{
@@ -55,9 +54,4 @@ bool Scenario::generalSelection() const{
 
 AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
     return AI::GetRelation(a, b);
-}
-
-Q_GLOBAL_STATIC(ScenarioHash, Scenarios)
-ScenarioHash& ScenarioAdder::scenarios(){
-    return *(::Scenarios());
 }

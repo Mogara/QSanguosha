@@ -45,6 +45,7 @@
     <addaction name="actionBroadcast"/>
     <addaction name="actionAI_Melee"/>
     <addaction name="actionReplay_file_convert"/>
+    <addaction name="actionRecord_analysis"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionExpand_dashboard"/>
@@ -373,6 +374,11 @@
   <action name="actionExecute_script_at_server_side">
    <property name="text">
     <string>Execute script at server side ...</string>
+   </property>
+  </action>
+  <action name="actionRecord_analysis">
+   <property name="text">
+    <string>Record analysis</string>
    </property>
   </action>
  </widget>

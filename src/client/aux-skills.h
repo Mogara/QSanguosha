@@ -10,16 +10,16 @@ public:
     explicit DiscardSkill();
 
     void setNum(int num);
-	void setMinNum(int minnum);
+    void setMinNum(int minnum);
     void setIncludeEquip(bool include_equip);
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
 private:
     DummyCard *card;
     int num;
-	int minnum;
+    int minnum;
     bool include_equip;
 };
 
@@ -33,8 +33,8 @@ public:
     virtual bool matchPattern(const Player *player, const Card *card) const;
 
     virtual void setPattern(const QString &pattern);
-    virtual bool viewFilter(const CardItem *to_select) const;
-    virtual const Card *viewAs(CardItem *card_item) const;
+    virtual bool viewFilter(const Card* to_select) const;
+    virtual const Card *viewAs(const Card *originalCard) const;
 
 protected:
     const CardPattern *pattern;
@@ -56,8 +56,8 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *) const;
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
+    virtual const Card* viewAs(const QList<const Card *> &cards) const;
 
 private:
     DummyCard *card;
@@ -70,8 +70,8 @@ public:
     explicit YijiViewAsSkill();
     void setCards(const QString &card_str);
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
+    virtual const Card* viewAs(const QList<const Card *> &cards) const;
 
 private:
     Card *card;

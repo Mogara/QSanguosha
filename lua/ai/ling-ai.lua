@@ -10,12 +10,12 @@ neoluoyi_skill.getTurnUseCard=function(self)
 	local equipnum = 0
 	self:sort(self.enemies,"hp")
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not (card:inherits("Weapon") and self:hasEquip(card))  then
+		if card:isKindOf("EquipCard") and not (card:isKindOf("Weapon") and self:hasEquip(card))  then
 			equipnum = equipnum + 1
 		end
 	end
 	for _,card in ipairs(cards) do
-		if card:inherits("Slash") then
+		if card:isKindOf("Slash") then
 			for _,enemy in ipairs(self.enemies) do
 				if self.player:canSlash(enemy, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
 					if self:getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
@@ -24,15 +24,15 @@ neoluoyi_skill.getTurnUseCard=function(self)
 				end
 			end
 		end
-		if card:inherits("Duel") then
+		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
-				if self:getCardsNum("Slash") >= self:getCardsNum("Slash", enemy)
-				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then
-					dueltarget = dueltarget + 1
+				if self:getCardsNum("Slash") >= self:getCardsNum("Slash", enemy) 
+				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and enemy:getMark("@fog") < 1 then 
+					dueltarget = dueltarget + 1 
 				end
 			end
 		end
-	end
+	end		
 	if (slashtarget+dueltarget) > 0 and equipnum > 0 then
 		self:speak("luoyi")
 		return sgs.Card_Parse("@LuoyiCard=.")
@@ -45,12 +45,12 @@ end
 
 sgs.ai_skill_cardask["@luoyi-discard"] = function(self, data)
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not self.player:hasEquip(card) then
+		if card:isKindOf("EquipCard") and not self.player:hasEquip(card) then 
 			return "$" .. card:getEffectiveId()
 		end
 	end
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not card:inherits("Weapon") then
+		if card:isKindOf("EquipCard") and not card:isKindOf("Weapon") then 
 			return "$" .. card:getEffectiveId()
 		end
 	end
@@ -72,14 +72,14 @@ neofanjian_skill.getTurnUseCard=function(self)
 	local fanjianCard = sgs.Card_Parse(card_str)
 	assert(fanjianCard)
 
-	return fanjianCard
+	return fanjianCard		
 end
 
 sgs.ai_skill_use_func.NeoFanjianCard=function(card,use,self)
 	self:sort(self.enemies, "hp")
-
-	for _, enemy in ipairs(self.enemies) do
-		if self:objectiveLevel(enemy) <= 3 or self:cantbeHurt(enemy) or enemy:getMark("@fog") > 0 then
+			
+	for _, enemy in ipairs(self.enemies) do		
+		if self:objectiveLevel(enemy) <= 3 or self:cantbeHurt(enemy) or enemy:getMark("@fog") > 0 then						
 		elseif (not enemy:hasSkill("qingnang")) or (enemy:getHp() == 1 and enemy:getHandcardNum() == 0 and not enemy:getEquips()) then
 			use.card = card
 			if use.to then use.to:append(enemy) end
@@ -89,8 +89,6 @@ sgs.ai_skill_use_func.NeoFanjianCard=function(card,use,self)
 end
 
 sgs.ai_skill_cardchosen.neofanjian = function(self)
-	local shit = self:getCard("Shit")
-	if shit then return shit end
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	return cards[1]
@@ -106,7 +104,7 @@ sgs.ai_skill_invoke.zhongyi = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
 	if self:isFriend(target) then return false end
-	return target:getCards("e"):length() > 0
+	return target:getCards("e"):length() > 0 
 end
 
 sgs.ai_skill_invoke.zhulou = function(self, data)
@@ -120,14 +118,14 @@ sgs.ai_skill_choice.zhulou = function(self, choices)
 	local weaponnum = 0
 	local weapon_card
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("Weapon") then
+		if card:isKindOf("Weapon") then
 			weapon_card = card
 			weaponnum = weaponnum + 1
 		end
 	end
 	if weaponnum > 0 then
 		return "throw"
-	else
+	else 
 		return "losehp"
 	end
 end
@@ -159,7 +157,7 @@ sgs.ai_skill_choice.neoganglie = function(self, choices)
 			self.room:setPlayerFlag(target, "-ganglie_target")
 		end
 	end
-	if self:hasSkills(sgs.masochism_skill,target) and target:getHp() >= target:getHandcardNum()
+	if self:hasSkills(sgs.masochism_skill,target) and target:getHp() >= target:getHandcardNum() 
 		and target:getHandcardNum() > 1 then
 			return "throw"
 	end
@@ -181,6 +179,6 @@ sgs.ai_skill_discard.neoganglie = function(self, discard_num, min_num, optional,
 			index = index + 1
 			if index == 2 then break end
 		end
-	end
+	end	
 	return to_discard
 end

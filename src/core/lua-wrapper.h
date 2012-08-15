@@ -39,8 +39,8 @@ class LuaViewAsSkill: public ViewAsSkill{
 public:
     LuaViewAsSkill(const char *name);
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
+    virtual const Card* viewAs(const QList<const Card *> &cards) const;
 
     void pushSelf(lua_State *L) const;
 
@@ -53,7 +53,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
-    virtual bool isEnabledAtNullification(const Player *player) const;
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
 };
 
 class LuaFilterSkill: public FilterSkill{
@@ -62,8 +62,8 @@ class LuaFilterSkill: public FilterSkill{
 public:
     LuaFilterSkill(const char *name);
 
-    virtual bool viewFilter(const CardItem *to_select) const;
-    virtual const Card *viewAs(CardItem *card_item) const;
+    virtual bool viewFilter(const Card* to_select) const;
+    virtual const Card *viewAs(const Card *originalCard) const;
 
     LuaFunction view_filter;
     LuaFunction view_as;
@@ -78,6 +78,17 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const;
 
     LuaFunction correct_func;
+};
+
+class LuaMaxCardsSkill: public MaxCardsSkill{
+    Q_OBJECT
+
+public:
+    LuaMaxCardsSkill(const char *name);
+
+    virtual int getExtra(const Player *target) const;
+
+    LuaFunction extra_func;
 };
 
 class LuaSkillCard: public SkillCard{
@@ -98,7 +109,7 @@ public:
     // these functions are defined at swig/luaskills.i
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 
     // the lua callbacks

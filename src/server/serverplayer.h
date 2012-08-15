@@ -9,6 +9,7 @@ class Recorder;
 #include "player.h"
 #include "socket.h"
 #include "protocol.h"
+#include "structs.h"
 
 #include <QSemaphore>
 #include <QDateTime>
@@ -26,21 +27,22 @@ public:
     void invoke(const QSanProtocol::QSanPacket* packet);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
-    void sendProperty(const char *property_name, const Player *player = NULL) const;
-    void unicast(const QString &message) const;
+    void unicast(const QString &message);
     void drawCard(const Card *card);
     Room *getRoom() const;
-    void playCardEffect(const Card *card) const;
-    void playCardEffect(const QString &card_name) const;
+    void broadcastSkillInvoke(const Card *card) const;
+    void broadcastSkillInvoke(const QString &card_name) const;
     int getRandomHandCardId() const;
     const Card *getRandomHandCard() const;
     void obtainCard(const Card *card, bool unhide = true);
     void throwAllEquips();
     void throwAllHandCards();
+    void throwAllHandCardsAndEquips();
     void throwAllCards();
     void bury();
     void throwAllMarks();
     void clearPrivatePiles();
+    void removePileByName(const QString &pileName);
     void drawCards(int n, bool set_emotion = true, const QString &reason = QString());
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
@@ -53,20 +55,28 @@ public:
     bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
     void turnOver();
     void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
+    bool changePhase(Player::Phase from, Player::Phase to);
 
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase);
     void skip();
+    void insertPhase(Player::Phase phase);
+    bool isSkipped(Player::Phase phase);
     
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);
     void loseAllMarks(const QString &mark_name);
 
+    virtual void addSkill(const QString &skill_name);
+    virtual void loseSkill(const QString &skill_name);
+    virtual void setGender(General::Gender gender);
+
     void setAI(AI *ai);
     AI *getAI() const;
     AI *getSmartAI() const;
 
-    bool isOnline() const;
+    bool isOnline() const; // @todo: better rename this to be re
+    inline bool isOffline() const { return getState() == "robot" || getState() == "offline"; }
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
@@ -91,7 +101,6 @@ public:
     void clearSelected();
 
     int getGeneralMaxHp() const;
-    int getGeneralMaxHP() const;
     virtual QString getGameMode() const;
 
     QString getIp() const;
@@ -100,6 +109,7 @@ public:
 
     void addToPile(const QString &pile_name, const Card *card, bool open = true);
     void addToPile(const QString &pile_name, int card_id, bool open = true);
+    void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true);
     void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
 
     void copyFrom(ServerPlayer* sp);
@@ -145,13 +155,15 @@ protected:
 
 private:
     ClientSocket *socket;
-    QList<const Card *> handcards;
+    QList<const Card*> handcards;
     Room *room;
     AI *ai;
     AI *trust_ai;
     QList<ServerPlayer *> victims;
     Recorder *recorder;
     QList<Phase> phases;
+    int _m_phases_index;
+    QList<PhaseStruct> _m_phases_state;
     ServerPlayer *next;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
@@ -159,13 +171,13 @@ private:
     Json::Value _m_clientResponse;    
 
 private slots:
-    void getMessage(char *message);
-    void castMessage(const QString &message);
+    void getMessage(const char *message);
+    void sendMessage(const QString &message);
 
 signals:
     void disconnected();
     void request_got(const QString &request);
-    void message_cast(const QString &message) const;
+    void message_ready(const QString &msg);
 };
 
 #endif // SERVERPLAYER_H

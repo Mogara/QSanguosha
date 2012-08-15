@@ -1,0 +1,2 @@
+ general:select  role:rebel
+    general:caocao  maxhp:5  hp:5  role:lord  equip:QinggangSword  starter:true

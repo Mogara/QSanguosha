@@ -3,10 +3,11 @@
 #include "engine.h"
 #include "clientstruct.h"
 #include "client.h"
+#include "SkinBank.h"
 
 static CardOverview *Overview;
 
-CardOverview *CardOverview::GetInstance(QWidget *main_window){
+CardOverview *CardOverview::getInstance(QWidget *main_window){
     if(Overview == NULL)
         Overview = new CardOverview(main_window);
 
@@ -34,10 +35,10 @@ CardOverview::CardOverview(QWidget *parent) :
 }
 
 void CardOverview::loadFromAll(){
-    int i, n = Sanguosha->getCardCount();
+    int n = Sanguosha->getCardCount();
     ui->tableWidget->setRowCount(n);
-    for(i=0; i<n ;i++){
-        const Card *card = Sanguosha->getCard(i);
+    for (int i = 0; i < n ;i++){
+        const Card *card = Sanguosha->getEngineCard(i);
         addCard(i, card);
     }
 
@@ -46,12 +47,12 @@ void CardOverview::loadFromAll(){
 }
 
 void CardOverview::loadFromList(const QList<const Card*> &list){
-    int i, n = list.length();
+    int n = list.length();
     ui->tableWidget->setRowCount(n);
-    for(i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
         addCard(i, list.at(i));    
 
-    if(n>0)
+    if (n > 0)
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
 }
 
@@ -84,7 +85,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 {
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = Sanguosha->getEngineCard(card_id);
     QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
     ui->cardLabel->setPixmap(pixmap_path);
 
@@ -113,8 +114,8 @@ void CardOverview::on_malePlayButton_clicked()
     int row = ui->tableWidget->currentRow();
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        const Card *card = Sanguosha->getCard(card_id);
-        Sanguosha->playCardEffect(card->objectName(), true);
+        const Card *card = Sanguosha->getEngineCard(card_id);
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), true));
     }
 }
 
@@ -123,7 +124,7 @@ void CardOverview::on_femalePlayButton_clicked()
     int row = ui->tableWidget->currentRow();
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        const Card *card = Sanguosha->getCard(card_id);
-        Sanguosha->playCardEffect(card->objectName(), false);
+        const Card *card = Sanguosha->getEngineCard(card_id);
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), false));
     }
 }

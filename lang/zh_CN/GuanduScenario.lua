@@ -4,7 +4,7 @@ return {
 	["guandu"] = "官渡之战",
 	["smalltuxi"] = "小突袭",
 	["@smalltuxi-card"] = "你可以发动技能【小突袭】",
-	["~smalltuxi"] = "选择一名角色——点击确定",
+	["~smalltuxi"] = "选择一名角色→点击确定",
 	["zhanshuangxiong"] = "斩颜良诛文丑",
 	["greatyiji"] = "遗计定辽东",
 	[":smalltuxi"] = "摸牌阶段，你可以放弃摸牌，改为从一名其他角色手里抽一张牌",

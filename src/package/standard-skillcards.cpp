@@ -9,10 +9,14 @@
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
     once = true;
+    mute = true;
+    will_throw = false;
 }
 
-void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void ZhihengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->throwCard(this, source);
+    if(!source->hasSkill("jilve"))
+        room->broadcastSkillInvoke("zhiheng");
     if(source->isAlive())
         room->drawCards(source, subcards.length());
 }
@@ -22,7 +26,7 @@ RendeCard::RendeCard(){
     will_throw = false;
 }
 
-void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = NULL;
     if(targets.isEmpty()){
         foreach(ServerPlayer *player, room->getAlivePlayers()){
@@ -34,7 +38,9 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     }else
         target = targets.first();
 
-    room->obtainCard(target, this, false);
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
+    reason.m_playerId = target->objectName();
+    room->obtainCard(target, this, reason, false);
 
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
@@ -51,19 +57,17 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 JieyinCard::JieyinCard(){
     once = true;
     mute = true;
-    owner_discarded = true;
 }
 
 bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
-    return to_select->getGeneral()->isMale() && to_select->isWounded();
+    return to_select->isMale() && to_select->isWounded();
 }
 
 void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
@@ -72,7 +76,7 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     room->recover(effect.to, recover, true);
 
     int index = -1;
-    if(effect.from->getGeneral()->isMale()){
+    if(effect.from->isMale()){
         if(effect.from == effect.to)
             index = 5;
         else if(effect.from->getHp() >= effect.to->getHp())
@@ -83,7 +87,7 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
         index = 1 + qrand() % 2;
     }
 
-    room->playSkillEffect("jieyin", index);
+    room->broadcastSkillInvoke("jieyin", index);
 }
 
 TuxiCard::TuxiCard(){
@@ -99,15 +103,22 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
     return !to_select->isKongcheng();
 }
 
-void TuxiCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-    if(!effect.to->isKongcheng()){
-    int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
-    room->obtainCard(effect.from, card_id, false);
-
-        room->setEmotion(effect.to, "bad");
-        room->setEmotion(effect.from, "good");
+void TuxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    QList<CardsMoveStruct> moves;
+    CardsMoveStruct move1;
+    move1.card_ids << room->askForCardChosen(source, targets[0], "h", "tuxi");
+    move1.to = source;
+    move1.to_place = Player::PlaceHand;
+    moves.push_back(move1);
+    if(targets.length() == 2)
+    {
+        CardsMoveStruct move2;
+        move2.card_ids << room->askForCardChosen(source, targets[1], "h", "tuxi");
+        move2.to = source;
+        move2.to_place = Player::PlaceHand;
+        moves.push_back(move2);
     }
+    room->moveCards(moves, false);
 }
 
 FanjianCard::FanjianCard(){
@@ -147,7 +158,7 @@ KurouCard::KurouCard(){
     target_fixed = true;
 }
 
-void KurouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void KurouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->loseHp(source);
     if(source->isAlive())
         room->drawCards(source, 2);
@@ -155,33 +166,52 @@ void KurouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
 LijianCard::LijianCard(){
     once = true;
-    target_asigned = true;
 }
 
-bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!to_select->getGeneral()->isMale())
+bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
+    if(!to_select->isMale())
         return false;
 
     if(targets.isEmpty() && to_select->hasSkill("kongcheng") && to_select->isKongcheng()){
         return false;
     }
 
-    return true;
+    return targets.length() < 2;
 }
 
 bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return targets.length() == 2;
 }
 
-void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *diaochan = card_use.from;
+
+    LogMessage log;
+    log.from = diaochan;
+    log.to << card_use.to[1];
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+
+    thread->trigger(CardUsed, room, diaochan, data);
+
+    thread->trigger(CardFinished, room, diaochan, data);
+
+}
+
+void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->broadcastSkillInvoke("lijian");
     room->throwCard(this, source);
-    room->playSkillEffect("lijian");
 
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);
 
     Duel *duel = new Duel(Card::NoSuit, 0);
     duel->setCancelable(false);
+    duel->setSkillName("lijian");
 
     CardUseStruct use;
     use.from = from;
@@ -202,9 +232,7 @@ bool QingnangCard::targetsFeasible(const QList<const Player *> &targets, const P
     return targets.value(0, Self)->isWounded();
 }
 
-void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this, source);
-
+void QingnangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
 
     CardEffectStruct effect;
@@ -228,13 +256,12 @@ GuicaiCard::GuicaiCard(){
     can_jilei = true;
 }
 
-void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void GuicaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
 
 }
 
 LiuliCard::LiuliCard()
 {
-    owner_discarded = true;
 }
 
 
@@ -251,14 +278,21 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
     int card_id = subcards.first();
     if(Self->getWeapon() && Self->getWeapon()->getId() == card_id)
         return Self->distanceTo(to_select) <= 1;
-    else if(Self->getOffensiveHorse() && Self->getOffensiveHorse()->getId() == card_id)
-        return Self->distanceTo(to_select) <= (Self->getWeapon()?Self->getWeapon()->getRange():1);
+    else if(Self->getOffensiveHorse() && Self->getOffensiveHorse()->getId() == card_id){
+        int distance = 1;
+        if(Self->getWeapon()){
+            const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
+            distance = weapon->getRange();
+        }
+        return Self->distanceTo(to_select, 1) <= distance;
+    }
     else
         return true;
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->setPlayerFlag(effect.to, "liuli_target");
+    Room *room = effect.to->getRoom();
+    room->setPlayerFlag(effect.to, "liuli_target");
 }
 
 JijiangCard::JijiangCard(){
@@ -266,16 +300,17 @@ JijiangCard::JijiangCard(){
 }
 
 bool JijiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && Self->canSlash(to_select);
+    Slash *slash= new Slash(NoSuit, 0);
+    return slash->targetFilter(targets, to_select, Self);
 }
 
-void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer *> &targets) const{
+void JijiangCard::use(Room *room, ServerPlayer *liubei, QList<ServerPlayer *> &targets) const{
     QList<ServerPlayer *> lieges = room->getLieges("shu", liubei);
     const Card *slash = NULL;
 
     QVariant tohelp = QVariant::fromValue((PlayerStar)liubei);
     foreach(ServerPlayer *liege, lieges){
-        slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), tohelp);
+        slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), tohelp, CardResponsed, liubei);
         if(slash){
             CardUseStruct card_use;
             card_use.card = slash;
@@ -286,5 +321,6 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer
             return;
         }
     }
+    room->setPlayerFlag(liubei, "jijiang_failed");
 }
 

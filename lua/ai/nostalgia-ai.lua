@@ -19,7 +19,7 @@ sgs.ai_skill_use_func.NosJujianCard = function(card, use, self)
 		cards=sgs.QList2Table(cards)
 		self:sortByUseValue(cards, true)
 		for _, card in ipairs(cards) do
-			if card:getTypeId() == sgs.Card_Trick and not card:inherits("ExNihilo") then trick_num = trick_num + 1
+			if card:getTypeId() == sgs.Card_Trick and not card:isKindOf("ExNihilo") then trick_num = trick_num + 1
 			elseif card:getTypeId() == sgs.Card_Basic then basic_num = basic_num + 1
 			elseif card:getTypeId() == sgs.Card_Equip then equip_num = equip_num + 1
 			end
@@ -33,7 +33,7 @@ sgs.ai_skill_use_func.NosJujianCard = function(card, use, self)
 		for _, friend in ipairs(self.friends_noself) do
 			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) and not friend:hasSkill("manjuan") then
 				for _, fcard in ipairs(cards) do
-					if fcard:inherits(result_class) and not fcard:inherits("ExNihilo") then
+					if fcard:isKindOf(result_class) and not fcard:isKindOf("ExNihilo") then
 						table.insert(abandon_handcard, fcard:getId())
 						index = index + 1
 					end
@@ -57,19 +57,19 @@ sgs.ai_skill_use_func.NosJujianCard = function(card, use, self)
 		if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) or self.player:isWounded() then
 			for _, card in ipairs(cards) do
 				if #abandon_handcard >= 3 then break end
-				if not card:inherits("Nullification") and not card:inherits("EquipCard") and
-					not card:inherits("Peach") and not card:inherits("Jink") and
-					not card:inherits("Indulgence") and not card:inherits("SupplyShortage") then
+				if not card:isKindOf("Nullification") and not card:isKindOf("EquipCard") and
+					not card:isKindOf("Peach") and not card:isKindOf("Jink") and
+					not card:isKindOf("Indulgence") and not card:isKindOf("SupplyShortage") then
 					table.insert(abandon_handcard, card:getId())
 					index = 5
-				elseif card:inherits("Slash") and slash_num > 1 then
-					if (self.player:getWeapon() and not self.player:getWeapon():objectName()=="crossbow") or
+				elseif card:isKindOf("Slash") and slash_num > 1 then
+					if (self.player:getWeapon() and not self.player:getWeapon():objectName()=="Crossbow") or
 						not self.player:getWeapon() then
 						table.insert(abandon_handcard, card:getId())
 						index = 5
 						slash_num = slash_num - 1
 					end
-				elseif card:inherits("Jink") and jink_num > 1 then
+				elseif card:isKindOf("Jink") and jink_num > 1 then
 					table.insert(abandon_handcard, card:getId())
 					index = 5
 					jink_num = jink_num - 1
@@ -101,7 +101,7 @@ sgs.dynamic_value.benefit.NosJujianCard = true
 sgs.ai_skill_cardask["@enyuanheart"] = function(self)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:getSuit() == sgs.Card_Heart and not (card:inherits("Peach") or card:inherits("ExNihilo")) then
+		if card:getSuit() == sgs.Card_Heart and not (card:isKindOf("Peach") or card:isKindOf("ExNihilo")) then
 			return card:getEffectiveId()
 		end
 	end
@@ -143,7 +143,7 @@ sgs.ai_skill_use_func.NosXuanhuoCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if not enemy:isKongcheng() then
 				for _, card in ipairs(cards)do
-					if card:getSuit() == sgs.Card_Heart and not card:inherits("Peach")  and self.player:getHandcardNum() > 1 then
+					if card:getSuit() == sgs.Card_Heart and not card:isKindOf("Peach")  and self.player:getHandcardNum() > 1 then
 						use.card = sgs.Card_Parse("@NosXuanhuoCard=" .. card:getEffectiveId())
 						target = enemy
 						break
@@ -164,14 +164,14 @@ end
 
 sgs.ai_skill_playerchosen.nosxuanhuo = function(self, targets)
 	for _, player in sgs.qlist(targets) do
-		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player)
+		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) 
 			and not player:hasFlag("xuanhuo_target") and not self:needKongcheng(player) and not player:hasSkill("manjuan") then
 			return player
 		end
 	end
 end
 
-sgs.nosfazheng_suit_value =
+sgs.nosfazheng_suit_value = 
 {
 	heart = 3.9
 }

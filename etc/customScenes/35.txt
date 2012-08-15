@@ -1,0 +1,4 @@
+
+setPile:115,13,111,3,9,125,67,54,83,82,81,80,126,112,27,6,2,140,0,79,77,73,74,76,55,57,1,89,156,31,30,128,70,32,96,120,121,84,33,42,34,35,39,157,44,7,48,127
+general:caozhi role:rebel maxhp:3 hp:3 draw:0 equip:69 hand:86,98,158,61 
+general:caopi general2:yujin role:lord starter:true maxhp:5 hp:3 draw:0 equip:108,68,64 hand:75,78,4,113 

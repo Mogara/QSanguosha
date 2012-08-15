@@ -20,7 +20,7 @@ return {
 	["@luoyi-discard"] = "请弃置一张装备牌",
 	["luoyi:yes"] = "本回合你的【杀】和【决斗】所造成的伤害都+1",
 	["#LuoyiBuff"] = "%from 赤膊上阵，伤害从 %arg 点上升至 %arg2 点。",
-
+	
 	["#neo_caoren"] = "大将军",
 	["neo_caoren"] = "翼曹仁",
 	["neojushou"] = "据守",
@@ -38,13 +38,13 @@ return {
 	["$yishi2"] = "全都退下！丞相你走吧。",              --delaytrick
 	["$yishi3"] = "且饶汝性命！快换马来厮杀！",          --equip
 	["$yishi4"] = "吾杀汝犹杀狗彘耳，空污刀斧。",        --hand
-
+	
 	["#neo_zhangfei"] = "万夫不当",
 	["neo_zhangfei"] = "翼张飞",
 	["tannang"] = "探囊",
 	[":tannang"] = "<b>锁定技</b>，你计算的与其他角色的距离-X（X为你已损失的体力值）。",
 	["designer:neo_zhangfei"] = "凌天翼",
-
+		
 	["#neo_zhaoyun"] = "少年将军",
 	["neo_zhaoyun"] = "翼赵云",
 	["designer:neo_zhaoyun"] = "凌天翼",

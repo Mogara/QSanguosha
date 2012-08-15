@@ -1,2 +1,0 @@
-general:select role:rebel
-general:caocao role:lord starter:true maxhp:5 hp:5 acquireSkills:feiying equip:yitian_sword

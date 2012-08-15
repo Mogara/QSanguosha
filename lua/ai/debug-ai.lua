@@ -56,20 +56,20 @@ function sgs.checkMisjudge(player)
 			elseif role == "loyalist" then loyalist_num = loyalist_num + 1
 			elseif role == "renegade" then renegade_num = renegade_num + 1
 			end
-
+			
 			if sgs.evaluatePlayerRole(p) == "rebel" then evaluate_rebel = evaluate_rebel + 1
 			elseif sgs.evaluatePlayerRole(p) == "loyalist" then evaluate_loyalist = evaluate_loyalist + 1
 			elseif sgs.evaluatePlayerRole(p) == "renegade" then evaluate_renegade = evaluate_renegade + 1
 			end
 		end
-
-		if evaluate_renegade < 1 then
-			if (evaluate_rebel >= rebel_num+renegade_num and evaluate_rebel > rebel_num) or
+		
+		if evaluate_renegade < 1 then 
+			if (evaluate_rebel >= rebel_num+renegade_num and evaluate_rebel > rebel_num) or 
 				(evaluate_loyalist >= loyalist_num+renegade_num and evaluate_loyalist > loyalist_num) or
 				(evaluate_rebel == rebel_num+1 and evaluate_loyalist == loyalist_num+1) then
 				outputPlayersEvaluation()
-				if evaluate_rebel >= rebel_num+renegade_num and evaluate_rebel > rebel_num  then sgs.modifiedRoleTrends("rebel")
-				elseif evaluate_loyalist >= loyalist_num+renegade_num and evaluate_loyalist > loyalist_num and rebel_num > 0 then sgs.modifiedRoleTrends("loyalist")
+				if evaluate_rebel >= rebel_num+renegade_num and evaluate_rebel > rebel_num  then sgs.modifiedRoleTrends("rebel") 
+				elseif evaluate_loyalist >= loyalist_num+renegade_num and evaluate_loyalist > loyalist_num and rebel_num > 0 then sgs.modifiedRoleTrends("loyalist") 
 				elseif  evaluate_rebel > rebel_num and evaluate_loyalist > loyalist_num then
 					sgs.modifiedRoleTrends("rebel")
 					sgs.modifiedRoleTrends("loyalist")
@@ -89,7 +89,7 @@ end
 local cardparse = sgs.Card_Parse
 function sgs.Card_Parse(str)
 	if not str then global_room:writeToConsole(debug.traceback()) end
-	if type(str) ~= "string" and type(str) ~= "number" and str.toString then
+	if type(str) ~= "string" and type(str) ~= "number" and str.toString then 
 		global_room:writeToConsole(str:toString())
 	end
 	return cardparse(str)

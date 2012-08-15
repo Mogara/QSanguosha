@@ -22,13 +22,18 @@ const int Settings::S_GUANXING_TIMEOUT = 20;
 const int Settings::S_SURRNDER_REQUEST_MIN_INTERVAL = 60;
 const int Settings::S_PROGRESS_BAR_UPDATE_INTERVAL = 200;
 const int Settings::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
+const int Settings::S_MOVE_CARD_ANIMATION_DURAION = 600;
+const int Settings::S_JUDGE_ANIMATION_DURATION = 2600;
+const int Settings::S_REGULAR_ANIMATION_SLOW_DURAION = 1500;
+const int Settings::S_JUDGE_SHORT_DELAY = 800;
+const int Settings::S_JUDGE_LONG_DELAY = 1500;
 
 Settings::Settings()
 
 #ifdef Q_OS_WIN32
     :QSettings("config.ini", QSettings::IniFormat)
 #else
-    :QSettings("QSanguosha.org", "QSanguosha")
+    :QSettings("QSanguosha.com", "QSanguosha")
 #endif
 
      ,Rect(-ViewWidth/2, -ViewHeight/2, ViewWidth, ViewHeight)
@@ -37,7 +42,7 @@ Settings::Settings()
 
 void Settings::init(){
     if(!qApp->arguments().contains("-server")){
-        QString font_path = value("DefaultFontPath", "font/font.ttf").toString();
+        QString font_path = value("DefaultFontPath", "font/simli.ttf").toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if(font_id!=-1){
             QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
@@ -65,9 +70,9 @@ void Settings::init(){
     if(!contains("BanPackages")){
         QStringList banlist;
         banlist << "nostalgia" << "nostal_general" << "yitian" << "wisdom"
-                << "disaster" << "god" << "YJCM" << "yitian_cards" << "test"
+                << "disaster" << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
                 << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                << "New3v3Card" << "joy" << "joy_equip" << "hegemony_card" 
+                << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
                 << "hegemony" << "ling";
 
         setValue("BanPackages", banlist);
@@ -107,7 +112,6 @@ void Settings::init(){
     DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 15).toInt();
 
-    FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
@@ -121,11 +125,11 @@ void Settings::init(){
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
+    BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
-    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "huaxiong" << "bgm_lvmeng";
+    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "zhugejin";
 
     hegemony_ban.append(basara_ban);
     hegemony_ban << "xiahoujuan" << "zhugejin";
@@ -134,7 +138,7 @@ void Settings::init(){
             hegemony_ban << general;
     }
 
-    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua" << "bgm_pangtong"
+    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua"
               << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
                 << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
                 << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlvbu" << "dengshizai+bgm_diaochan"
@@ -146,7 +150,7 @@ void Settings::init(){
                 << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao"
                 << "jiangboyue+yanliangwenchou" << "jiangboyue+ganning" << "jiangboyue+luxun" << "jiangboyue+zhanggongqi"
                 << "weiyan+huanggai" << "caoren+shenlvbu" << "bgm_pangtong+huanggai"
-                << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+noslingtong"
+                << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
                 << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
                 << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlvbu"
                 << "yuanshu+lvmeng" << "yuanshu+caochong" << "huatuo+guojia"
@@ -157,10 +161,7 @@ void Settings::init(){
                 << "guanxingzhangbao+luxun" << "guanxingzhangbao+sunce" << "bgm_caoren+caoren"
                 << "bgm_caoren+caozhi" << "bgm_caoren+shenlvbu" << "bgm_caoren+bgm_diaochan"
                 << "bgm_caoren+dengshizai" << "bgm_caoren+caizhaoji" << "bgm_pangtong+huanggai"
-                << "huanggai+guanxingzhangbao" << "xushu+zhugeliang" << "nosxushu+zhugeliang"
-                << "zhugejin+caizhaoji" << "zhugejin+zhenji" << "zhugejin+huatuo" << "zhugejin+dengai"
-                << "fazheng+xiahoudun" << "nosfazheng+xiahoudun" << "bgm_zhangfei+guanyu"
-                << "bgm_zhangfei+sp_guanyu" << "bgm_liugei+zhugeliang";
+                << "huanggai+guanxingzhangbao";
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     if(banlist.isEmpty()){

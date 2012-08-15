@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QIcon>
+#include "json/json.h"
 
 class Room;
 class Player;
@@ -26,7 +27,6 @@ class Card : public QObject
     Q_PROPERTY(int number READ getNumber WRITE setNumber)
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
-    Q_PROPERTY(QString pixmap_path READ getPixmapPath)
     Q_PROPERTY(bool target_fixed READ targetFixed)
     Q_PROPERTY(bool once READ isOnce CONSTANT)
     Q_PROPERTY(bool mute READ isMute CONSTANT)
@@ -35,7 +35,6 @@ class Card : public QObject
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
-
 public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
@@ -48,7 +47,7 @@ public:
         Skill,
         Basic,
         Trick,
-        Equip,
+        Equip
     };
 
     // constructor
@@ -59,107 +58,113 @@ public:
     bool isRed() const;
     bool isBlack() const;
     int getId() const;
-    void setId(int id);
+    virtual void setId(int id);
     int getEffectiveId() const;
     QString getEffectIdString() const;
 
     int getNumber() const;
-    void setNumber(int number);
+    virtual void setNumber(int number);
     QString getNumberString() const;
 
     Suit getSuit() const;
-    void setSuit(Suit suit);
+    virtual void setSuit(Suit suit);
 
     bool sameColorWith(const Card *other) const;
     Color getColor() const;
-    bool isEquipped() const;
-
-    QString getPixmapPath() const;
-    QString getIconPath() const;
-    QString getPackage() const;
-    QIcon getSuitIcon() const;
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
     QString getName() const;
     QString getSkillName() const;
-    void setSkillName(const QString &skill_name);
+    virtual void setSkillName(const QString &skill_name);
     QString getDescription() const;
-    QString getEffectPath() const;
+    
+    virtual bool isOnce() const;
+    virtual bool isMute() const;
+    virtual bool willThrow() const;
+    virtual bool canJilei() const;
+    virtual bool hasPreAction() const;
 
-    bool isVirtualCard() const;
+    virtual void setFlags(const QString &flag) const;
+    inline virtual void setFlags(const QStringList &fs) { flags = fs; }
+    bool hasFlag(const QString &flag) const;
+    virtual void clearFlags() const;
+
+    virtual QString getPackage() const;
+    inline virtual QString getClassName() const {return metaObject()->className();}
+    virtual bool isVirtualCard() const;
+    virtual bool isEquipped() const;
+    virtual QString getCommonEffectName() const;
     virtual bool match(const QString &pattern) const;
 
-    void addSubcard(int card_id);
-    void addSubcard(const Card *card);
-    QList<int> getSubcards() const;
-    void clearSubcards();
-    QString subcardString() const;
-    void addSubcards(const QList<CardItem *> &card_items);
-    int subcardsLength() const;
+    virtual void addSubcard(int card_id);
+    virtual void addSubcard(const Card *card);
+    virtual QList<int> getSubcards() const;
+    virtual void clearSubcards();
+    virtual QString subcardString() const;
+    virtual void addSubcards(const QList<const Card *> &cards);
+    virtual int subcardsLength() const;
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;
-    virtual QString toString() const;
-    virtual QString getEffectPath(bool is_male) const;
-    bool isNDTrick() const;
+    virtual bool isNDTrick() const;
 
     // card target selection
     virtual bool targetFixed() const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+    // @todo: the following two functions should be merged into one.
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual int targetFilterMultiple(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
+                              int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
-    virtual const Card *validate(const CardUseStruct *card_use) const;
-    virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
+    
+    inline virtual const Card *getRealCard() const {return this;}
+    virtual const Card *validate(const CardUseStruct *cardUse) const;
+    virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 
-    bool isOnce() const;
-    bool isMute() const;
-    bool willThrow() const;
-    bool canJilei() const;
-    bool isOwnerDiscarded() const;
-    bool hasPreAction() const;
-    bool isTargetAsigned() const;
-
-    void setFlags(const QString &flag) const;
-    bool hasFlag(const QString &flag) const;
-    void clearFlags() const;
 
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-    virtual void onMove(const CardMoveStruct &move) const;
+    inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
+    inline virtual QStringList getFlags() const { return flags; }
+
+    inline virtual bool isModified() const {return false;}
+    inline virtual void onNullified(ServerPlayer *target) const {return;}
 
     // static functions
     static bool CompareByColor(const Card *a, const Card *b);
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
-    static const Card *Parse(const QString &str);
-    static Card * Clone(const Card *card);
+    static Card *Clone(const Card *card);
     static QString Suit2String(Suit suit);
     static QString Number2String(int number);
     static QStringList IdsToStrings(const QList<int> &ids);
     static QList<int> StringsToIds(const QStringList &strings);
+    static const int S_UNKNOWN_CARD_ID;
 
+    static Card *tryParse(Json::Value val);
+    virtual Json::Value toJsonValue() const;
+
+    // to be deprecated
+    static const Card *Parse(const QString &str);
+    virtual QString toString() const;
+    
 protected:
     QList<int> subcards;
     bool target_fixed;
     bool once;
-    QString skill_name;
     bool mute;
     bool will_throw;
     bool can_jilei;
-    bool owner_discarded;
-    bool target_asigned;
     bool has_preact;
-
-private:
-    Suit suit;
-    int number;
-    int id;
+    Suit m_suit;
+    int m_number;
+    int m_id;
+    QString m_skillName;
 
     mutable QStringList flags;
 };

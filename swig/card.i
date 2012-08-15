@@ -30,7 +30,6 @@ class DelayedTrick:public TrickCard{
 
 public:
 	DelayedTrick(Suit suit, int number, bool movable = false);
-	static const DelayedTrick *CastFrom(const Card *card);
 
 private:
 	bool movable;
@@ -50,8 +49,7 @@ public:
 
 	virtual QString getType() const;
 	virtual CardType getTypeId() const;
-	virtual QString getEffectPath(bool is_male) const;
-	virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+	virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 
 	// should be pure virtual
 	virtual void onInstall(ServerPlayer *player) const;
@@ -78,7 +76,6 @@ public:
 
 protected:
 	int range;
-	bool attach_skill;
 };
 
 class Armor:public EquipCard{
@@ -93,7 +90,6 @@ public:
 class Horse:public EquipCard{
 public:
 	Horse(Suit suit, int number, int correct);
-	virtual QString getEffectPath(bool is_male) const;
 
 	virtual Location location() const;
 	virtual void onInstall(ServerPlayer *player) const;

@@ -4,108 +4,102 @@
 
 #include <QGraphicsScene>
 
-RoleComboboxItem::RoleComboboxItem(const QString &role, int number)
-    :role(role)
+RoleComboBoxItem::RoleComboBoxItem(const QString &role, int number, QSize size)
+    :m_role(role), m_number(number), m_size(size)
 {
-    if(number != 0 )
-        changePixmap(QString("image/system/roles/%1-%2.png").arg(role).arg(number));
+    setRole(role);
+    this->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
+}
+
+QString RoleComboBoxItem::getRole() const{
+    return m_role;
+}
+
+void RoleComboBoxItem::setRole(const QString& role){
+    m_role = role;
+    if(m_number != 0 && role != "unknown")
+        load(QString("image/system/roles/%1-%2.png").arg(m_role).arg(m_number), m_size, false);
     else
-        changePixmap(QString("image/system/roles/%1.png").arg(role));
+        load(QString("image/system/roles/%1.png").arg(m_role), m_size, false);
 }
 
-QString RoleComboboxItem::getRole() const{
-    return role;
-}
-
-void RoleComboboxItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
+void RoleComboBoxItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
     emit clicked();
 }
 
-RoleCombobox::RoleCombobox(Photo *photo)
-    :QObject(photo)
+RoleComboBox::RoleComboBox(QGraphicsItem *parent) : QGraphicsObject(parent)
 {
     int index = Sanguosha->getRoleIndex();
-    items << new RoleComboboxItem("unknown", 0)
-          << new RoleComboboxItem("lord", index)
-            << new RoleComboboxItem("loyalist", index)
-            << new RoleComboboxItem("rebel", index)
-            << new RoleComboboxItem("renegade", index);
-
-    if(index == 5)
-        items << new RoleComboboxItem("careerist", index);
-
-    setupItems();
-
-    foreach(RoleComboboxItem *item, items){
-        item->setParentItem(photo);
-        item->hide();
-
-        connect(item, SIGNAL(clicked()), this, SLOT(onItemClicked()));
-    }
-
-    items.first()->show();
-}
-
-void RoleCombobox::setupItems(){
-    qreal height = items.first()->boundingRect().height();
-    int i;
-    for(i=0; i<items.length(); i++){
-        qreal x = 85;
-        qreal y = 15 + i*height;
-
-        RoleComboboxItem *item = items.at(i);
-        item->setPos(x, y);
+    QSize size(S_ROLE_COMBO_BOX_WIDTH, S_ROLE_COMBO_BOX_HEIGHT);
+    m_currentRole = new RoleComboBoxItem("unknown", index, size);
+    m_currentRole->setParentItem(this);
+    connect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
+    if(ServerInfo.EnableHegemony)
+        items << new RoleComboBoxItem("lord", index, size);
+    items << new RoleComboBoxItem("loyalist", index, size)
+          << new RoleComboBoxItem("rebel", index, size)
+          << new RoleComboBoxItem("renegade", index, size);
+    for(int i = 0; i < items.length(); i++){
+        RoleComboBoxItem *item = items.at(i);
+        item->setPos(0, (i + 1) * (S_ROLE_COMBO_BOX_HEIGHT + S_ROLE_COMBO_BOX_GAP));
         item->setZValue(1.0);
     }
-}
-
-void RoleCombobox::hide(){
-    foreach(QGraphicsItem *item, items)
+    foreach(RoleComboBoxItem *item, items){
+        item->setParentItem(this);
         item->hide();
-}
-
-void RoleCombobox::show(){
-    foreach(QGraphicsItem *item, items)
-        item->show();
-}
-
-void RoleCombobox::onItemClicked(){
-    if(items.length() < 2)
-        return;
-
-    bool expand = items.at(1)->isVisible();
-    RoleComboboxItem *item = qobject_cast<RoleComboboxItem *>(sender());
-
-    if(expand){
-        QPointF a = items.first()->pos();
-        QPointF b = item->pos();
-
-        item->setPos(a);
-        items.first()->setPos(b);
-
-        int i = items.indexOf(item);
-        items.swap(i, 0);
-
-        for(i=1; i<items.length(); i++)
-            items.at(i)->hide();
-    }else{
-        foreach(RoleComboboxItem *item, items)
-            item->show();
+        connect(item, SIGNAL(clicked()), this, SLOT(collapse()));
     }
 }
 
-void RoleCombobox::fix(const QString &role){
-    // create the only one
-    QPointF first_pos = items.first()->pos();
-    RoleComboboxItem *fixed = new RoleComboboxItem(role, Sanguosha->getRoleIndex());
-    fixed->setPos(first_pos);
-    fixed->show();
-    fixed->setEnabled(false);
-    fixed->setParentItem(qobject_cast<QGraphicsObject *>(parent()));
+void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+}
 
+QRectF RoleComboBox::boundingRect() const
+{
+    if (items.empty())
+        return QRect(0, 0, 0, 0);
+    else
+        return items[0]->boundingRect();
+}
+
+void RoleComboBox::collapse(){
+    disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(collapse()));
+    connect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
+    RoleComboBoxItem *clicked_item = qobject_cast<RoleComboBoxItem *>(sender());
+    foreach (RoleComboBoxItem *item, items) item->hide();
+    m_currentRole->setRole(clicked_item->getRole());
+}
+
+void RoleComboBox::expand() {
+    foreach(RoleComboBoxItem *item, items)
+        item->show();
+    m_currentRole->setRole("unknown");
+    connect(m_currentRole, SIGNAL(clicked()), this, SLOT(collapse()));
+}
+
+void RoleComboBox::toggle() {
+    Q_ASSERT(!_m_fixedRole.isNull());
+    if (!isEnabled()) return;
+    QString displayed = m_currentRole->getRole();
+    if (displayed == "unknown")
+        m_currentRole->setRole(_m_fixedRole);
+    else
+        m_currentRole->setRole("unknown");
+}
+
+void RoleComboBox::fix(const QString &role){
+    if (_m_fixedRole.isNull())
+    {
+        disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
+        connect(m_currentRole, SIGNAL(clicked()), this, SLOT(toggle()));
+    }
+    m_currentRole->setRole(role);
+    _m_fixedRole = role;
     // delete all
-    foreach(RoleComboboxItem *item, items)
+    foreach(RoleComboBoxItem *item, items)
+    {
         delete item;
+    }
     items.clear();
-    items << fixed;
 }

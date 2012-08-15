@@ -18,7 +18,7 @@ public:
     QList<const Card *> getCards() const;
     void setCards(const QList<int> &card_ids);
     QTextDocument *getMarkDoc() const;
-    void changePile(const QString &name, bool add, int card_id);
+    void changePile(const QString &name, bool add, QList<int> card_ids);
     QString getDeathPixmapPath() const;
     void setHandcardNum(int n);
     virtual QString getGameMode() const;
@@ -41,6 +41,7 @@ signals:
     void pile_changed(const QString &name);
     void drank_changed();
     void action_taken();
+    void skill_state_changed(const QString &skill_name);
 };
 
 extern ClientPlayer *Self;

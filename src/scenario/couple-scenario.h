@@ -15,7 +15,7 @@ public:
 
     virtual void assign(QStringList &generals, QStringList &roles) const;
     virtual int getPlayerCount() const;
-    virtual void getRoles(char *roles) const;
+    virtual QString getRoles() const;
     virtual void onTagSet(Room *room, const QString &key) const;
     virtual AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
 

@@ -78,6 +78,16 @@ function sgs.CreateDistanceSkill(spec)
 	return skill
 end
 
+function sgs.CreateMaxCardsSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.extra_func) == "function")
+
+	local skill = sgs.LuaMaxCardsSkill(spec.name)
+	skill.extra_func = spec.extra_func
+
+	return skill
+end
+
 function sgs.CreateMasochismSkill(spec)
 	assert(type(spec.on_damaged) == "function")
 	
@@ -85,7 +95,7 @@ function sgs.CreateMasochismSkill(spec)
 	
 	function spec.on_trigger(skill, event, player, data)
 		spec.on_damaged(skill, player)
-		return false		
+		return false
 	end
 	
 	return sgs.CreateTriggerSkill(spec)

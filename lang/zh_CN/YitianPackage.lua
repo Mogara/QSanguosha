@@ -4,11 +4,11 @@ return {
 	["yitian"] = "倚天包",
 	["yitian_cards"] = "倚天卡牌包",
 
-	["yitian_sword"] = "倚天剑",
-	[":yitian_sword"] = "装备牌·武器\
+	["YitianSword"] = "倚天剑",
+	[":YitianSword"] = "装备牌·武器\
 攻击范围：２\
 武器特效：1、你的回合外，你每受到一次伤害，在其结算完后你可以立即使用一张【杀】。2、当此剑从装备区失去时，你可用此剑指定一名其他角色受到你造成的1点无属性伤害",
-	["yitian_sword:yes"] = "你可以使用指定任意一名角色受到你的一点无属性伤害",
+	["YitianSword:yes"] = "你可以使用指定任意一名角色受到你的一点无属性伤害",
 	["yitian-lost"] = "倚天剑",
 	["@yitian-sword"] = "您在回合外获得了一张【杀】，您可以此时将此【杀】打出",
 
@@ -32,7 +32,7 @@ return {
 	["chengxiang"] = "称象",
 	[":chengxiang"] = "每当你受到1次伤害，你可打出X张牌（X小于等于3），它们的点数之和与造成伤害的牌的点数相等，你可令X名角色各恢复1点体力（若其满体力则摸2张牌）",
 	["@chengxiang-card"] = "请打出点数之和为 %arg 的卡牌以发动【称象】技能",
-	["~chengxiang-card"] = "选择若干张牌——点击确定",
+	["~chengxiang-card"] = "选择若干张牌→点击确定",
 	["conghui"] = "聪慧",
 	[":conghui"] = "<b>锁定技</b>，你将永远跳过你的弃牌阶段",
 	["zaoyao"] = "早夭",
@@ -80,7 +80,7 @@ return {
 	["@lianli-jink"] = "请提供一张闪给你的连理对象",
 	[":lianli-slash"] = "与你处于连理状态的女性角色可以替你出杀",
 	["@lianli-card"] = "请选择一名要连理的对象",
-	["~lianli"] = "选择一名男性角色——点击确定",
+	["~lianli"] = "选择一名男性角色→点击确定",
 	["#LianliConnection"] = "%from 与 %to 结为连理",
 	["@tied"] = "连理",
 
@@ -225,11 +225,6 @@ return {
 	["designer:caochong"] = "太阳神上",
 	["illustrator:caochong"] = "三国志大战",
 	["cv:caochong"] = "",
-	["$chengxiang1"] = "置象舟上，刻其水痕所至。", --发动技能
-	["$chengxiang2"] = "称物载之，则校可知矣。", --恢复体力
-	["$conghui"] = "吾虽年幼，智意所及，有若成人。",
-	["$zaoyao"] = "仓舒，仓舒……（女声）",
-	["~caochong"] = "天下无道，凤凰远引，凤凰，凤凰！凤——凰——！",
 
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["illustrator:zhangjunyi"] = "火凤燎原",
@@ -295,10 +290,7 @@ return {
 
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["illustrator:guzhielai"] = "火凤燎原",
-	["cv:guzhielai"] = "Jr. Wakaran",
-	["$shenli"] = "死!",
-	["$sizhan1"] = "曹公为安，死战不休",
-	["$sizhan2"] = "哼，不痛不痒！",
+	["cv:guzhielai"] = "",
 
 	["designer:dengshizai"] = "Bu懂",
 	["illustrator:dengshizai"] = "三国豪杰传",

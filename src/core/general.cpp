@@ -7,16 +7,8 @@
 #include <QSize>
 #include <QFile>
 
-General::General(
-        Package *package,
-        const QString &name,
-        const QString &kingdom,
-        int max_hp,
-        bool male,
-        bool hidden,
-        bool never_shown,
-        bool female)
-    :QObject(package), kingdom(kingdom), max_hp(max_hp), hidden(hidden), never_shown(never_shown)
+General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden, bool never_shown)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female), hidden(hidden), never_shown(never_shown)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -28,13 +20,6 @@ General::General(
         lord = false;
         setObjectName(name);
     }
-
-    if(male)
-        gender = Male;
-    else if(female)
-        gender = Female;
-    else
-        gender = Neuter;
 }
 
 int General::getMaxHp() const{
@@ -77,14 +62,6 @@ bool General::isTotallyHidden() const{
     return never_shown;
 }
 
-QString General::getPixmapPath(const QString &category) const{
-    QString suffix = "png";
-    if(category == "card")
-        suffix = "jpg";
-
-    return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
-}
-
 void General::addSkill(Skill *skill){
     skill->setParent(this);
     skill_set << skill->objectName();
@@ -98,15 +75,20 @@ bool General::hasSkill(const QString &skill_name) const{
     return skill_set.contains(skill_name) || extra_set.contains(skill_name);
 }
 
-QList<const Skill *> General::getVisibleSkillList() const{
-    QList<const Skill *> skills;
-    foreach(const Skill *skill, findChildren<const Skill *>()){
-        if(skill->isVisible())
-            skills << skill;
-    }
+QList<const Skill *> General::getSkillList() const{
+    QList<const Skill *> skills = findChildren<const Skill *>();
 
     foreach(QString skill_name, extra_set){
         const Skill *skill = Sanguosha->getSkill(skill_name);
+        skills << skill;
+    }
+
+    return skills;
+}
+
+QList<const Skill *> General::getVisibleSkillList() const{
+    QList<const Skill *> skills;
+    foreach(const Skill *skill, getSkillList()){
         if(skill->isVisible())
             skills << skill;
     }
@@ -115,19 +97,7 @@ QList<const Skill *> General::getVisibleSkillList() const{
 }
 
 QSet<const Skill *> General::getVisibleSkills() const{
-    QSet<const Skill *> skills;
-    foreach(const Skill *skill, findChildren<const Skill *>()){
-        if(skill->isVisible())
-            skills << skill;
-    }
-
-    foreach(QString skill_name, extra_set){
-        const Skill *skill = Sanguosha->getSkill(skill_name);
-        if(skill->isVisible())
-            skills << skill;
-    }
-
-    return skills;
+    return getVisibleSkillList().toSet();
 }
 
 QSet<const TriggerSkill *> General::getTriggerSkills() const{
@@ -173,21 +143,18 @@ QString General::getSkillDescription() const{
 
 void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
-    QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly)){
+    bool fileExists = QFile::exists(filename);
+    if(!fileExists){
         QStringList origin_generals = objectName().split("_");
         if(origin_generals.length()>1)
             filename = QString("audio/death/%1.ogg").arg(origin_generals.at(1));
     }
-    if(!file.open(QIODevice::ReadOnly) && objectName().endsWith("f")){
+    if(!fileExists && objectName().endsWith("f")){
         QString origin_general = objectName();
         origin_general.chop(1);
         if(Sanguosha->getGeneral(origin_general))
             filename = QString("audio/death/%1.ogg").arg(origin_general);
     }
-    Sanguosha->playEffect(filename);
+    Sanguosha->playAudioEffect(filename);
 }
 
-QSize General::BigIconSize(94, 96);
-QSize General::SmallIconSize(122, 50);
-QSize General::TinyIconSize(42, 36);

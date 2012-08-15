@@ -48,7 +48,7 @@ void Button::init()
     de->setColor(QColor(255,165,0));
 
     title_item->setGraphicsEffect(de);
-
+    
     QImage bgimg("image/system/button/button.png");
     outimg = new QImage(size.toSize(),QImage::Format_ARGB32);
 
@@ -83,9 +83,9 @@ void Button::init()
     QGraphicsDropShadowEffect * effect = new QGraphicsDropShadowEffect;
     effect->setBlurRadius(5);
     effect->setOffset(this->boundingRect().height()/7.0);
-    effect->setColor(QColor(0,0,0,200));
+    effect->setColor(QColor(0, 0, 0, 200));
     this->setGraphicsEffect(effect);
-
+    
     glow = 0;
 
     timer_id = 0;
@@ -115,7 +115,7 @@ void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *){
 #ifdef AUDIO_SUPPORT
 
     if(!mute)
-        Sanguosha->playAudio("button-hover");
+        Sanguosha->playSystemAudioEffect("button-hover");
 
 #endif
 
@@ -130,7 +130,7 @@ void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
 #ifdef AUDIO_SUPPORT
 
     if(!mute)
-        Sanguosha->playAudio("button-down");
+        Sanguosha->playSystemAudioEffect("button-down");
 
 #endif
 
@@ -153,12 +153,13 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 void Button::timerEvent(QTimerEvent *)
 {
     update();
-    if(hasFocus())
+    if (hasFocus())
     {
-        if(glow<5)glow++;
-    }else
+        if (glow < 5) glow++;
+    }
+    else
     {
-        if(glow>0)glow--;
+        if (glow > 0) glow--;
         else if(timer_id)
         {
             QObject::killTimer(timer_id);

@@ -12,9 +12,11 @@ LuoyiCard::LuoyiCard(){
     target_fixed = true;
 }
 
-void LuoyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded))
+void LuoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded)){
+        room->broadcastSkillInvoke("luoyi");
         source->setFlags("luoyi");
+    }
 }
 
 class NeoLuoyi: public ZeroCardViewAsSkill{
@@ -41,6 +43,7 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = zhouyu->getRoom();
 
     int card_id = room->askForCardChosen(zhouyu, zhouyu, "h", "neofanjian");
+    room->broadcastSkillInvoke("fanjian");
     const Card *card = Sanguosha->getCard(card_id);
     Card::Suit suit = room->askForSuit(target, "neofanjian");
 
@@ -88,25 +91,27 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(damage.card && damage.card->inherits("Slash") && damage.card->getSuit() == Card::Heart &&
-           !damage.chain && !damage.transfer && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
-
-            room->playSkillEffect("yishi", 1);
+        if(damage.card && damage.card->isKindOf("Slash") && damage.card->getSuit() == Card::Heart &&
+           !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)){
+		   
+            room->broadcastSkillInvoke("yishi", 1);
             LogMessage log;
             log.type = "#Yishi";
             log.from = player;
             log.arg = objectName();
             log.to << damage.to;
             room->sendLog(log);
-            int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
-            if(room->getCardPlace(card_id) == Player::Judging)
-                room->playSkillEffect("yishi", 2);
-            else if(room->getCardPlace(card_id) == Player::Equip)
-                room->playSkillEffect("yishi", 3);
-            else
-                room->playSkillEffect("yishi", 4);
-   
-            room->obtainCard(player, card_id, room->getCardPlace(card_id) != Player::Hand);
+			if(!damage.to->isAllNude()){
+                int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
+			    if(room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
+                    room->broadcastSkillInvoke("yishi", 2);
+                else if(room->getCardPlace(card_id) == Player::PlaceEquip)
+                    room->broadcastSkillInvoke("yishi", 3);
+                else
+                    room->broadcastSkillInvoke("yishi", 4);
+                CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+                room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+			}
             return true;
         }
         return false;
@@ -122,7 +127,7 @@ public:
         Room *room = gongsun->getRoom();
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
-			room->playSkillEffect("zhulou", qrand() % 2 + 1);
+            room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
             QString choice = room->askForChoice(gongsun, "zhulou", "throw+losehp");
             if(choice == "losehp" || !room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
                 room->loseHp(gongsun);
@@ -158,7 +163,7 @@ public:
                 target->drawCards(2+target->getLostHp());
                 target->turnOver();
 
-                room->playSkillEffect("jushou");
+                room->broadcastSkillInvoke("jushou");
             }
         }
 
@@ -177,8 +182,8 @@ public:
         Room *room = xiahou->getRoom();
         QVariant source = QVariant::fromValue(from);
 
-        if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
-            room->playSkillEffect("ganglie");
+        if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "neoganglie", source)){
+            room->broadcastSkillInvoke("ganglie");
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
@@ -192,7 +197,11 @@ public:
                 choicelist << "damage";
                 if (from->getHandcardNum() > 1)
                     choicelist << "throw";
-                QString choice = room->askForChoice(xiahou, "neoganglie", choicelist.join("+"));
+                QString choice;
+                if (choicelist.length() == 1)
+                    choice = choicelist.first();
+                else
+                    choice = room->askForChoice(xiahou, "neoganglie", choicelist.join("+"));
                 if(choice == "damage"){
                     DamageStruct damage;
                     damage.from = xiahou;
@@ -228,6 +237,7 @@ LingPackage::LingPackage()
 
     General * neo_gongsunzan = new General(this, "neo_gongsunzan", "qun");
     neo_gongsunzan->addSkill("yicong");
+    neo_gongsunzan->addSkill("#yicong_effect");
     neo_gongsunzan->addSkill(new Zhulou);
 
 
@@ -238,6 +248,7 @@ LingPackage::LingPackage()
     General * neo_zhaoyun = new General(this, "neo_zhaoyun", "shu");
     neo_zhaoyun->addSkill("longdan");
     neo_zhaoyun->addSkill("yicong");
+    neo_zhaoyun->addSkill("#yicong_effect");
 
     General * neo_caoren = new General(this, "neo_caoren", "wei");
     neo_caoren->addSkill(new NeoJushou);

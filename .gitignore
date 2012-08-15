@@ -18,8 +18,10 @@ QSanguosha.pro.user*
 etc/customScenes/custom_scenario.txt
 *.dylib
 QSanguosha.exe
+QSanguosha
 lib/jsoncpp.lib
 lib/lua.lib
+lib/breakpad.lib
 tools/
 builds/vs2010/Win32/
 builds/vs2010/ipch/
@@ -29,3 +31,10 @@ builds/vs2010/*.user
 builds/vs2010/*.opensdf
 builds/vs2010/QSanguosha.suo
 Bin/
+tags
+/extensions
+*~
+*.kdev4
+.cproject
+.project
+.settings

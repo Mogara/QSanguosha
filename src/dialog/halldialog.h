@@ -10,7 +10,7 @@ class HallDialog : public QDialog
 {
     Q_OBJECT
 public:
-    static HallDialog *GetInstance(MainWindow *main_window);
+    static HallDialog *getInstance(MainWindow *main_window);
 
     void refreshRooms(int page);
     void joinRoom(int room_id);

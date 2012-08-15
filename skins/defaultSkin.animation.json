@@ -1,0 +1,27 @@
+{
+// animations
+"preloads": [
+   // standard
+   "analeptic", "chain", "damage",
+   "duel", "equipborder", "fire_slash",
+   "jink", "killer", "no-success", "peach",
+   "slash_black", "slash_red", "success",
+   "thunder_slash",
+   // equip
+   "armor/eight_diagram", "armor/renwang_shield",
+   "armor/silver_lion", "armor/vine",
+   "armor/vineburn", "weapon/axe", "weapon/blade",
+   "weapon/crossbow", "weapon/double_sword", "weapon/fan",
+   "weapon/guding_blade", "weapon/halberd",
+   "weapon/ice_sword", "weapon/kylin_bow",
+   "weapon/qinggang_sword", "weapon/sp_moonspear",
+   "weapon/spear"],
+
+"huashen": [
+7000,
+[[0, 1], [0.4, 1], [0.47, 0], [0.53, 0], [0.6, 1], [1, 1]]
+]
+
+}
+
+

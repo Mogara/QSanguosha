@@ -1,6 +1,6 @@
 sgs.weapon_range.SPMoonSpear = 3
 
-sgs.ai_skill_invoke.sp_moonspear = function(self, data)
+sgs.ai_skill_invoke.SPMoonSpear = function(self, data)
 	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 	for _, target in ipairs(self.enemies) do
 		if self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
@@ -10,8 +10,8 @@ sgs.ai_skill_invoke.sp_moonspear = function(self, data)
 	return false
 end
 
-sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash
-sgs.ai_playerchosen_intention.sp_moonspaer = 80
+sgs.ai_skill_playerchosen.SPMoonSpear = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_playerchosen_intention.SPMoonSpear = 80
 
 function sgs.ai_slash_prohibit.weidi(self, to, card)
 	if to:isLord() then return false end
@@ -29,9 +29,9 @@ sgs.ai_chaofeng.yuanshu = 3
 sgs.ai_skill_invoke.danlao = function(self, data)
 	local effect = data:toCardUse()
 	local current = self.room:getCurrent()
-	if effect.card:inherits("GodSalvation") and self.player:isWounded() then
+	if effect.card:isKindOf("GodSalvation") and self.player:isWounded() then
 		return false
-	elseif effect.card:inherits("AmazingGrace") and
+	elseif effect.card:isKindOf("AmazingGrace") and
 		(self.player:getSeat() - current:getSeat()) % (global_room:alivePlayerCount()) < global_room:alivePlayerCount()/2 then
 		return false
 	else
@@ -44,7 +44,7 @@ sgs.ai_skill_invoke.jilei = function(self, data)
 	if not damage then return false end
 	self.jilei_source = damage.from
 	return self:isEnemy(damage.from)
-end
+end	
 
 sgs.ai_skill_choice.jilei = function(self, choices)
 	local tmptrick = sgs.Sanguosha:cloneCard("ex_nihilo", sgs.Card_NoSuit, 0)

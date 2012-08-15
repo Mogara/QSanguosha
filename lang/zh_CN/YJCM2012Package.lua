@@ -33,8 +33,8 @@ return {
 	["#wangyi"] = "决意的巾帼",
 	["wangyi"] = "王异",
 	["designer:wangyi"] = "Virgopal",
-	["cv:wangyi"] = "蒲小猫",
 	["illustrator:wangyi"] = "木美人",
+	["cv:wangyi"] = "蒲小猫",
 	["zhenlie"] = "贞烈",
 	[":zhenlie"] = "在你的判定牌生效前，你可以从牌堆顶亮出一张牌代替之。",
 	["miji"] = "秘计",
@@ -56,8 +56,8 @@ return {
 	["qianxi"] = "潜袭",
 	[":qianxi"] = "每当你使用【杀】对距离为1的目标角色造成伤害时，你可以进行一次判定，若判定结果不为红桃，你防止此伤害，改为令其减1点体力上限。",
 	["#Qianxi"] = "%to 背后中枪，秀了自己的上限（谁干的呢？）",
-	["$qianxi1"] = "（拔剑声）", -- 发动前
-	["$qianxi2"] = "我敢杀你！",
+	["$qianxi1"] = "（拔剑声）",
+	["$qianxi2"] = "我敢杀你！",                   -- 成功
 	["$qianxi3"] = "竟然有防备？只能力战搏杀之！ ", -- 潜袭失败
 	["~madai"] = "未能完成丞相遗命，辱没了我马家的威名呀~",
 
@@ -71,10 +71,10 @@ return {
 	["fuli"] = "伏枥",
 	[":fuli"] = "<b>限定技</b>，当你处于濒死状态时，你可以将体力回复至X点（X为现存势力数），然后将你的武将牌翻面。",
 	["@laoji"] = "老骥",
-        ["$dangxian"] = "先锋一职，老夫责无旁贷。",
+    ["$dangxian"] = "先锋一职，老夫责无傍贷。",
 	["$fuli"] = "心系蜀汉，虽死必归。",
 	["~liaohua"] = "阅尽兴亡，此生无憾矣.",
-
+	
 	["#guanxingzhangbao"] = "将门虎子",
 	["guanxingzhangbao"] = "关兴张苞",
 	["designer:guanxingzhangbao"] = "诺思冥羽",
@@ -93,11 +93,11 @@ return {
 ◆醇是移出游戏的牌。",
 	["wine"] = "醇",
 	["@chunlao"] = "你可以发动技能【醇醪】",
-	["~chunlao"] = "选择若干张【杀】——点击确定",
+	["~chunlao"] = "选择若干张【杀】→点击确定",
 
 	["#bulianshi"] = "无冕之后",
 	["bulianshi"] = "步练师",
-	["designer:bulianshi"] = "猫月坊秋山",
+	["designer:bulianshi"] = "Anais",
 	["illustrator:bulianshi"] = "勺子妞",
 	["anxu"] = "安恤",
 	[":anxu"] = "出牌阶段，你可以选择两名手牌数不相等的其他角色，令其中手牌少的角色获得手牌多的角色的一张手牌并展示之，若此牌不为黑桃，你摸一张牌。每阶段限一次。",
@@ -120,6 +120,7 @@ return {
 	["#JiefanNull1"] = "%from 已经脱离了濒死状态，解烦效果二无法执行。",
 	["#JiefanNull2"] = "%from 已经死透了，解烦效果二无法执行。",
 	["#JiefanNull3"] = "因为当前为 %from 的回合， %to 不处于濒死状态，解烦效果二无法执行。",
+
 	["#liubiao"] = "跨蹈汉南",
 	["liubiao"] = "刘表",
 	["designer:liubiao"] = "管乐",

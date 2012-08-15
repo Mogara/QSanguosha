@@ -44,7 +44,7 @@ ContestDB::ContestDB(QObject *parent) :
                "winner TEXT)");
 }
 
-ContestDB *ContestDB::GetInstance(){
+ContestDB *ContestDB::getInstance(){
     static ContestDB *db;
     if(db == NULL)
         db = new ContestDB(Sanguosha);

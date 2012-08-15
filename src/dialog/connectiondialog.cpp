@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "engine.h"
 #include "detector.h"
+#include "SkinBank.h"
 
 #include <QMessageBox>
 #include <QTimer>
@@ -11,6 +12,27 @@
 
 static const int ShrinkWidth = 285;
 static const int ExpandWidth = 826;
+
+void ConnectionDialog::hideAvatarList()
+{
+    if (!ui->avatarList->isVisible()) return;
+    ui->avatarList->hide();
+    ui->avatarList->clear();    
+}
+
+void ConnectionDialog::showAvatarList()
+{
+    if (ui->avatarList->isVisible()) return;
+    ui->avatarList->clear();
+    QList<const General*> generals = Sanguosha->findChildren<const General*>();
+    foreach(const General *general, generals){
+        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+        QString text = Sanguosha->translate(general->objectName());
+        QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
+        item->setData(Qt::UserRole, general->objectName());
+    }
+    ui->avatarList->show();
+}
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent), ui(new Ui::ConnectionDialog)
@@ -25,21 +47,10 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     ui->connectButton->setFocus();
 
-    const General *avatar_general = Sanguosha->getGeneral(Config.UserAvatar);
-    if(avatar_general){
-        QPixmap avatar(avatar_general->getPixmapPath("big"));
-        ui->avatarPixmap->setPixmap(avatar);
-    }
-
-    QList<const General*> generals = Sanguosha->findChildren<const General*>();
-    foreach(const General *general, generals){
-        QIcon icon(general->getPixmapPath("big"));
-        QString text = Sanguosha->translate(general->objectName());
-        QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
-        item->setData(Qt::UserRole, general->objectName());
-    }
-
-    ui->avatarList->hide();
+    ui->avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar,
+                                QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+    
+    hideAvatarList();
 
     ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
 
@@ -79,11 +90,11 @@ void ConnectionDialog::on_changeAvatarButton_clicked()
         if(selected)
             on_avatarList_itemDoubleClicked(selected);
         else{
-            ui->avatarList->hide();
+            hideAvatarList();
             setFixedWidth(ShrinkWidth);
         }
     }else{
-        ui->avatarList->show();
+        showAvatarList();
         setFixedWidth(ExpandWidth);
     }
 }
@@ -91,16 +102,13 @@ void ConnectionDialog::on_changeAvatarButton_clicked()
 void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
 {
     QString general_name = item->data(Qt::UserRole).toString();
-    const General *general = Sanguosha->getGeneral(general_name);
-    if(general){
-        QPixmap avatar(general->getPixmapPath("big"));
-        ui->avatarPixmap->setPixmap(avatar);
-        Config.UserAvatar = general_name;
-        Config.setValue("UserAvatar", general_name);
-        ui->avatarList->hide();
+    QPixmap avatar(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+    ui->avatarPixmap->setPixmap(avatar);
+    Config.UserAvatar = general_name;
+    Config.setValue("UserAvatar", general_name);
+    hideAvatarList();
 
-        setFixedWidth(ShrinkWidth);
-    }
+    setFixedWidth(ShrinkWidth);
 }
 
 void ConnectionDialog::on_clearHistoryButton_clicked()

@@ -16,7 +16,7 @@ class GuidaoCard: public SkillCard{
 public:
     Q_INVOKABLE GuidaoCard();
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class LeijiCard: public SkillCard{
@@ -35,7 +35,7 @@ class HuangtianCard: public SkillCard{
 public:
     Q_INVOKABLE HuangtianCard();
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
 
@@ -46,7 +46,7 @@ public:
     Q_INVOKABLE ShensuCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class TianxiangCard: public SkillCard{
@@ -70,7 +70,7 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
     virtual const Card *validate(const CardUseStruct *card_use) const;
-    virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
+    virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 };
 
 class GuhuoDialog: public QDialog{

@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QEasingCurve>
 
-#include "pixmap.h"
+#include "QSanSelectableItem.h"
 
 class Sprite : public QObject, public QGraphicsPixmapItem
 {
@@ -37,7 +37,7 @@ public slots:
 private:
     struct AnimationLine
     {
-        AnimationLine(){frames[0] = 1;}
+        AnimationLine(){ frames[0] = 1; }
         QString name;
         QMap<int,qreal> frames;
         QMap<int,QEasingCurve::Type> easings;

@@ -16,7 +16,7 @@
 #include <QMainWindow>
 #include <QFontDialog>
 
-class Pixmap;
+class QSanSelectableItem;
 
 class BlackEdgeTextItem: public QGraphicsObject{
     Q_OBJECT
@@ -140,7 +140,7 @@ protected:
 #endif
 
 private:
-    Pixmap *photo;
+    QSanSelectableItem *photo;
     QGraphicsPixmapItem *frame;
     QList<QGraphicsPixmapItem *> magatamas;
     BlackEdgeTextItem *name, *title;
@@ -163,7 +163,7 @@ public:
 
 private:
     CardScene *card_scene;
-    QComboBox *kingdom_combobox;
+    QComboBox *kingdom_ComboBox;
     QCheckBox *lord_checkbox;
     QSpinBox *ratio_spinbox;
     QMap<QFontDialog *, QPushButton *> dialog2button;

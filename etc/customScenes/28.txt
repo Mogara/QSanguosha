@@ -1,6 +1,7 @@
 
-setPile:4,3,2,70,114,96,79,53,47
-general:caocao role:lord starter:true maxhp:5 hp:1 beforeNext:Rebel draw:0 hand:31,76,72,75 
-general:zhurong role:rebel maxhp:4 hp:1 equip:62,59 hand:0 
-general:yuanshu role:loyalist maxhp:4 hp:2 
-general:weiyan role:rebel 
+setPile:38,36,35,34,21,75,48,126,129,54,37,53,59,114,11,7,47,52,29
+general:select general2:select role:renegade starter:true hp:1 chained:true singleTurn:lord+loyalist draw:0 hand:135 
+general:sunquan role:lord hp:1 chained:true draw:0 
+general:gongsunzan role:loyalist chained:true draw:0 
+general:zhoutai role:loyalist hp:1 chained:true draw:0 
+extraOptions:gameOverIfExtraCardDrawn:lord+loyalist

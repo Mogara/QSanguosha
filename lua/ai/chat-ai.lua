@@ -1,7 +1,7 @@
 function speak(to,type)
 	if not sgs.GetConfig("AIChat", true) then return end
 	if to:getState() ~= "robot" then return end
-
+	
 	local i =math.random(1,#sgs.ai_chat[type])
 	to:speak(sgs.ai_chat[type][i])
 end
@@ -13,19 +13,19 @@ function speakTrigger(card,from,to,event)
 
 	if not card then return end
 
-	if card:inherits("Indulgence") and (to:getHandcardNum()>to:getHp()) then
+	if card:isKindOf("Indulgence") and (to:getHandcardNum()>to:getHp()) then
 		speak(to,"indulgence")
-	elseif card:inherits("LeijiCard") then
+	elseif card:isKindOf("LeijiCard") then
 		speak(from,"leiji_jink")
-	elseif card:inherits("QuhuCard") then
+	elseif card:isKindOf("QuhuCard") then
 		speak(from,"quhu")
-	elseif card:inherits("Slash") and from:hasSkill("wusheng") and to:hasSkill("yizhong") then
+	elseif card:isKindOf("Slash") and from:hasSkill("wusheng") and to:hasSkill("yizhong") then
 		speak(from,"wusheng_yizhong")
-	elseif card:inherits("Slash") and to:hasSkill("yiji") and (to:getHp()<=1) then
+	elseif card:isKindOf("Slash") and to:hasSkill("yiji") and (to:getHp()<=1) then
 		speak(to,"guojia_weak")
-	elseif card:inherits("SavageAssault") and (to:hasSkill("kongcheng") or to:hasSkill("huoji")) then
+	elseif card:isKindOf("SavageAssault") and (to:hasSkill("kongcheng") or to:hasSkill("huoji")) then
 		speak(to,"daxiang")
-	elseif card:inherits("FireAttack") and to:hasSkill("luanji") then
+	elseif card:isKindOf("FireAttack") and to:hasSkill("luanji") then
 		speak(to,"yuanshao_fire")
 	end
 end
@@ -34,7 +34,7 @@ end
 function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", true) then return end
 	if self.player:getState() ~= "robot" then return end
-
+	
 	local i =math.random(1,#sgs.ai_chat[type])
 	if isFemale then
 		type = type .. "_female"

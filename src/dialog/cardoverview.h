@@ -14,7 +14,7 @@ namespace Ui {
 class CardOverview : public QDialog {
     Q_OBJECT
 public:
-    static CardOverview *GetInstance(QWidget *main_window);
+    static CardOverview *getInstance(QWidget *main_window);
 
     CardOverview(QWidget *parent = 0);
     void loadFromAll();

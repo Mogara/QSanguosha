@@ -19,9 +19,10 @@ public:
     static QImage TXT2PNG(QByteArray data);
     bool save(const QString &filename) const;
     void recordLine(const QString &line);
+    QList<QString> getRecords() const;
 
 public slots:
-    void record(char *line);
+    void record(const char *line);
 
 private:
     QTime watch;
@@ -36,8 +37,6 @@ public:
     explicit Replayer(QObject *parent, const QString &filename);
     static QByteArray PNG2TXT(const QString filename);
 
-    void initCommandPair();
-    QString &commandTranslation(QString &cmd);
     QString &commandProceed(QString &cmd);
     int getDuration() const;
     qreal getSpeed();
@@ -66,10 +65,6 @@ private:
         QString cmd;
     };
     QList<Pair> pairs;
-
-    QMap<QString, QString> m_nameTranslation;
-    QMap<QString, QSanProtocol::CommandType> m_commandMapping;
-    QMap<QSanProtocol::PacketType, QList<QSanProtocol::CommandType> > m_packetTypeMapping;
 
 signals:
     void command_parsed(const QString &cmd);

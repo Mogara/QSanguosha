@@ -23,9 +23,8 @@ void RoomThread1v1::run(){
     QStringList known_list = general_names.mid(0, 6);
     unknown_list = general_names.mid(6, 4);
 
-    int i;
-    for(i=0; i<4; i++){
-        general_names[i + 6] = QString("x%1").arg(i);
+    for (int i = 0; i < 4; i++) {
+        general_names[i + 6] = QString("x%1").arg(QString::number(i));
     }
 
     QString unknown_str = "+x0+x1+x2+x3";
@@ -55,7 +54,7 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player){
     if(general_names.length() == 1)
         name = general_names.first();
     else if(player->getState() != "online"){
-        GeneralSelector *selector = GeneralSelector::GetInstance();
+        GeneralSelector *selector = GeneralSelector::getInstance();
         name = selector->select1v1(general_names);
     }
 
@@ -92,7 +91,7 @@ void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name){
 
 void RoomThread1v1::startArrange(ServerPlayer *player){
     if(player->getState() != "online"){        
-        GeneralSelector *selector = GeneralSelector::GetInstance();
+        GeneralSelector *selector = GeneralSelector::getInstance();
         arrange(player, selector->arrange1v1(player));
     }else{
         player->invoke("startArrange");

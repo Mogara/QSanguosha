@@ -1,2 +1,0 @@
-﻿general:select  role:rebel
-    general:sunce  maxhp:5  hp:1  role:lord  equip:guding_blade,hualiu  starter:true

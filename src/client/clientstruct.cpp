@@ -10,6 +10,27 @@ ServerInfoStruct ServerInfo;
 #include <QListWidget>
 #include <QCheckBox>
 
+time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance)
+{
+    time_t timeOut;
+    if (OperationTimeout == 0) return 0;
+    else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
+    {
+        timeOut = Config.S_CHOOSE_GENERAL_TIMEOUT * 1000;
+    }
+    else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING)
+    {
+        timeOut = Config.S_GUANXING_TIMEOUT * 1000;
+    }
+    else
+    {
+        timeOut = OperationTimeout * 1000;
+    }
+    if (instance == QSanProtocol::S_SERVER_INSTANCE)
+        timeOut += Config.S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+    return timeOut;
+}
+
 bool ServerInfoStruct::parse(const QString &str){
     QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCTBHAM12]*)");
     if(!rx.exactMatch(str)){
@@ -180,41 +201,4 @@ void ServerInfoWidget::clear(){
     free_choose_label->clear();
     time_limit_label->clear();
     list_widget->clear();
-}
-
-
-bool CardMoveStructForClient::parse(const QString &str){
-    static QMap<QString, Player::Place> place_map;
-    if(place_map.isEmpty()){
-        place_map["hand"] = Player::Hand;
-        place_map["equip"] = Player::Equip;
-        place_map["judging"] = Player::Judging;
-        place_map["special"] = Player::Special;
-        place_map["_"] = Player::DiscardedPile;
-        place_map["="] = Player::DrawPile;
-    }
-
-    // example: 12:tenshi@equip->moligaloo@hand
-    QRegExp pattern("(-?\\d+):(.+)@(.+)->(.+)@(.+)");
-    if(!pattern.exactMatch(str)){
-        return false;
-    }
-
-    QStringList words = pattern.capturedTexts();
-
-    card_id = words.at(1).toInt();
-
-    if(words.at(2) == "_")
-        from = NULL;
-    else
-        from = ClientInstance->getPlayer(words.at(2));
-    from_place = place_map.value(words.at(3), Player::DiscardedPile);
-
-    if(words.at(4) == "_")
-        to = NULL;
-    else
-        to = ClientInstance->getPlayer(words.at(4));
-    to_place = place_map.value(words.at(5), Player::DiscardedPile);
-
-    return true;
 }
