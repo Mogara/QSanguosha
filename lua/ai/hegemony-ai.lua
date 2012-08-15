@@ -24,7 +24,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 			if player:getGeneralName() == "anjiang" then table.insert(anjiang, player:getSeat()) end
 		end
 
-		if event == sgs.Predamaged then
+		if event == sgs.DamageInflicted then
 			local damage = data:toDamage()
 			for _, player in ipairs(players) do
 				if self:hasSkills(sgs.masochism_skill, player) and self:isEnemy(damage.from) then return "yes" end

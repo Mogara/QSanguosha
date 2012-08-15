@@ -1565,14 +1565,14 @@ function SmartAI:filterEvent(event, player, data)
 				end
 			end
 		end
-	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.Death or event == sgs.PhaseChange then
+	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.Death or event == sgs.EventPhaseStart then
 		self:updatePlayers()
 	end
 	
 	if event == sgs.Death then
 		if self == sgs.recorder then self:updateAlivePlayerRoles() end
 	end
-	if event == sgs.PhaseChange then
+	if event == sgs.EventPhaseStart then
 		if self.room:getCurrent():getPhase() == sgs.Player_NotActive then sgs.modifiedRoleEvaluation() end
 	end
 
@@ -1668,7 +1668,7 @@ function SmartAI:filterEvent(event, player, data)
 			if player:objectName() == caiwenji:objectName() then intention = 0 end
 			sgs.ai_card_intention.general(caiwenji, player, intention)
 		end
-	elseif event == sgs.PhaseChange and player:isLord() and player:getPhase()== sgs.Player_Finish then
+	elseif event == sgs.EventPhaseStart and player:isLord() and player:getPhase()== sgs.Player_Finish then
 		sgs.turncount = sgs.turncount + 1
 		--self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)
 	elseif event == sgs.GameStart then
