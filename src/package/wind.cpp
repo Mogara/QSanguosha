@@ -59,12 +59,14 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
 HuangtianCard::HuangtianCard(){
     will_throw = false;
     m_skillName = "huangtianv";
+    mute = true;
 }
 
 void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *zhangjiao = targets.first();
     if(zhangjiao->hasLordSkill("huangtian")){
         room->setPlayerFlag(zhangjiao, "HuangtianInvoked");
+        room->broadcastSkillInvoke("huangtian");
         zhangjiao->obtainCard(this);
         QList<int> subcards = this->getSubcards();
         foreach(int card_id, subcards)
@@ -72,15 +74,10 @@ void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
         room->setEmotion(zhangjiao, "good");
         QList<ServerPlayer *> zhangjiaos;
         QList<ServerPlayer *> players = room->getOtherPlayers(source);
-        //ServerPlayer *lordplayer = NULL;
-        //if(source->isLord())
-        //    lordplayer = source;
         foreach(ServerPlayer *p, players){
             if(p->hasLordSkill("huangtian") && !p->hasFlag("HuangtianInvoked")){
                 zhangjiaos << p;
             }
-            //if(p->isLord())
-            //    lordplayer = p;
         }
         if(zhangjiaos.empty())
             room->setPlayerFlag(source, "ForbidHuangtian");
@@ -191,7 +188,7 @@ public:
 class Huangtian: public TriggerSkill{
 public:
     Huangtian():TriggerSkill("huangtian$"){
-        events << GameStart << EventPhaseStart;
+        events << GameStart << EventPhaseChanging;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -205,7 +202,10 @@ public:
                     room->attachSkillToPlayer(p, "huangtianv");
             }
         }
-        else if(triggerEvent == EventPhaseStart && player->getPhase() == Player::NotActive){
+        else if(triggerEvent == EventPhaseChanging){
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.from != Player::Play)
+                  return false;
             if(player->hasFlag("ForbidHuangtian")){
                 room->setPlayerFlag(player, "-ForbidHuangtian");
             }
