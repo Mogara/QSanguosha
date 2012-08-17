@@ -520,15 +520,10 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     source->pindian(sunce, "zhiba_pindian", this);
     QList<ServerPlayer *> sunces;
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
-    //ServerPlayer *lordplayer = NULL;
-    //if(source->isLord())
-    //    lordplayer = source;
     foreach(ServerPlayer *p, players){
         if(p->hasLordSkill("sunce_zhiba") && !p->hasFlag("ZhibaInvoked")){
             sunces << p;
         }
-        //if(p->isLord())
-        //    lordplayer = p;
     }
     if(sunces.empty())
         room->setPlayerFlag(source, "ForbidZhiba");
@@ -541,14 +536,6 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        //const Player *lord = NULL;
-        //if(player->isLord())
-        //    lord = player;
-        //QList<const Player *> players = player->getSiblings();
-        //foreach(const Player *p, players){
-        //    if(p->isLord())
-        //        lord = p;
-        //}
         return player->getKingdom() == "wu" && !player->isKongcheng() && !player->hasFlag("ForbidZhiba");
     }
 
@@ -567,7 +554,7 @@ public:
 class SunceZhiba: public TriggerSkill{
 public:
     SunceZhiba():TriggerSkill("sunce_zhiba$"){
-        events << GameStart << Pindian << EventPhaseStart;
+        events << GameStart << Pindian << EventPhaseChanging;
     }
 
     virtual int getPriority() const{
@@ -589,13 +576,22 @@ public:
             if(pindian->reason != "zhiba_pindian" || !pindian->to->hasLordSkill(objectName()))
                 return false;
             if(!pindian->isSuccess()){
-                room->broadcastSkillInvoke(objectName(), 2);
-                pindian->to->obtainCard(pindian->from_card);
-                pindian->to->obtainCard(pindian->to_card);
+                if (room->askForChoice(pindian->to, "sunce_zhiba", "yes+no") == "yes") {
+                    room->broadcastSkillInvoke(objectName(), 2);
+                    
+					pindian->to->obtainCard(pindian->from_card);
+                    pindian->to->obtainCard(pindian->to_card);
+                }
+                else {
+                    room->broadcastSkillInvoke(objectName(), 4);
+                }
             }
             else
                 room->broadcastSkillInvoke(objectName(), 3);
-        }else if(triggerEvent == EventPhaseStart && player->getPhase() == Player::NotActive){
+        }else if(triggerEvent == EventPhaseChanging){
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.from != Player::Play)
+                return false;
             if(player->hasFlag("ForbidZhiba")){
                 room->setPlayerFlag(player, "-ForbidZhiba");
             }
