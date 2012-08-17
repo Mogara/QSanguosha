@@ -579,7 +579,7 @@ public:
                 if (room->askForChoice(pindian->to, "sunce_zhiba", "yes+no") == "yes") {
                     room->broadcastSkillInvoke(objectName(), 2);
                     
-					pindian->to->obtainCard(pindian->from_card);
+                    pindian->to->obtainCard(pindian->from_card);
                     pindian->to->obtainCard(pindian->to_card);
                 }
                 else {
