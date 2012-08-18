@@ -265,7 +265,7 @@ public:
 
         dummy_skills << "xinsheng" << "wuhu" << "kuangfeng" << "dawu" << "wumou" << "wuqian" 
                      << "shenfen" << "renjie" << "weidi" << "danji" << "shiyong" << "zhiba"
-                     << "super_guanxing" << "yihun" << "shihun" << "chongzhen" << "tongxin"
+                     << "super_guanxing" << "chongzhen" << "tongxin"
                      << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian";
                      
         available_wake_skills << "hunzi" << "zhiji" << "kegou";
