@@ -195,7 +195,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == GameStart && player->hasLordSkill(objectName())){
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if(!p->hasSkill("huangtianv"))
