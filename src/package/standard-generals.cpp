@@ -7,6 +7,7 @@
 #include "serverplayer.h"
 #include "room.h"
 #include "standard-skillcards.h"
+#include "maneuvering.h"
 #include "ai.h"
 
 class Jianxiong:public MasochismSkill{
