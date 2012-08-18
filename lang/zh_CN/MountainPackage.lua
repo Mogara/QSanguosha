@@ -49,8 +49,6 @@ return {
 	["jiangwei"] = "姜维",
 	["tiaoxin"] = "挑衅",
 	[":tiaoxin"] = "出牌阶段，你可以令一名你在其攻击范围内的其他角色选择一项：对你使用一张【杀】，或令你弃置其一张牌。每阶段限一次。",
-	["tiaoxin:yes"] = "继续追加目标",
-	["tiaoxin:no"] = "放弃",
 	["zhiji"] = "志继",
 	[":zhiji"] = "<b>觉醒技</b>，回合开始阶段开始时，若你没有手牌，你须选择一项：回复1点体力，或摸两张牌。然后你减1点体力上限，并获得技能“观星”。",
 	["zhiji:draw"] = "摸两张牌",
@@ -71,6 +69,8 @@ return {
 	["#HunziWake"] = "%from 的体力为 1，触发【%arg】",
 	["zhiba_pindian:accept"] = "接受",
 	["zhiba_pindian:reject"] = "拒绝",
+	["sunce_zhiba:yes"] = "获得拼点牌",
+	["sunce_zhiba:no"] = "不获得",
 
 	["#erzhang"] = "经天纬地",
 	["erzhang"] = "张昭张纮",
