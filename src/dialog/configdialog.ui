@@ -303,23 +303,10 @@
        <string>Fit in view</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="circularViewCheckBox">
-      <property name="geometry">
-       <rect>
-        <x>160</x>
-        <y>100</y>
-        <width>101</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Circular view</string>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="noIndicatorCheckBox">
       <property name="geometry">
        <rect>
-        <x>330</x>
+        <x>170</x>
         <y>100</y>
         <width>95</width>
         <height>16</height>
