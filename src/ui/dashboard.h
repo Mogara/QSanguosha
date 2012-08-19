@@ -38,6 +38,9 @@ public:
         return rect;
     }
     
+    void hideControlButtons();
+    void showControlButtons();
+
     QSanSkillButton *removeSkillButton(const QString &skillName);
     QSanSkillButton *addSkillButton(const QString &skillName);
     bool isAvatarUnderMouse();
@@ -117,6 +120,8 @@ protected:
     QMutex m_mutex;
     QMutex m_mutexEnableCards;
     
+    QSanButton *m_btnReverseSelection;
+    QSanButton *m_btnSortHandcard;
     QGraphicsPixmapItem *_m_leftFrame, *_m_middleFrame, *_m_rightFrame;    
     // we can not draw bg directly _m_rightFrame because then it will always be
     // under avatar (since it's avatar's parent).

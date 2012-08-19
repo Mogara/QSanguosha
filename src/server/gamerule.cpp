@@ -78,10 +78,10 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             while(player->isAlive()){
                 CardUseStruct card_use;
                 room->activate(player, card_use);
-                if(card_use.isValid(CardUseStruct::CARD_USE_REASON_PLAY, QString())){
+                if (card_use.card != NULL) {
                     room->useCard(card_use);
-                }else
-                    break;
+                }
+                else break;
             }
             break;
         }

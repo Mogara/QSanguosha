@@ -93,17 +93,21 @@ private:
     int revealed;
 };
 
-class ReplayerControlBar: public QGraphicsProxyWidget{
+class ReplayerControlBar: public QGraphicsObject
+{
     Q_OBJECT
 
 public:
     ReplayerControlBar(Dashboard *dashboard);
     static QString FormatTime(int secs);
+    virtual QRectF boundingRect() const;
 
 public slots:
-    void toggle();
     void setTime(int secs);
     void setSpeed(qreal speed);
+    
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
     QLabel *time_label;
@@ -219,7 +223,6 @@ private:
     QMainWindow *main_window;
     QSanButton *ok_button, *cancel_button, *discard_button;
     QSanButton *trust_button;
-    QPushButton *m_reverseSelectionButton, *m_sortHandcardButton, *m_freeDiscardButton;
     QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;
     QGraphicsItem *control_panel;
@@ -269,6 +272,7 @@ private:
     Button *arrange_button;
     KOFOrderBox *enemy_box, *self_box;
     QPointF m_tableCenterPos;
+    ReplayerControlBar *m_replayControl;
 
     struct _MoveCardsClassifier
     {

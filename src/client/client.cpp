@@ -303,7 +303,10 @@ void Client::processServerPacket(const char *cmd){
             }
         }
         else if (packet.getPacketType() == S_TYPE_REQUEST)
-            processServerRequest(packet);
+        {
+            if (!replayer)
+                processServerRequest(packet);
+        }
     }
     else processObsoleteServerPacket(cmd);
 }

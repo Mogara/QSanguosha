@@ -55,6 +55,18 @@ bool Dashboard::isAvatarUnderMouse()
     return _m_avatarArea->isUnderMouse();
 }
 
+void Dashboard::hideControlButtons()
+{
+    m_btnReverseSelection->hide();
+    m_btnSortHandcard->hide();
+}
+
+void Dashboard::showControlButtons()
+{
+    m_btnReverseSelection->show();
+    m_btnSortHandcard->show();
+}
+
 QGraphicsItem* Dashboard::getMouseClickReceiver()  
 {
     return _m_avatarIcon; 
@@ -383,14 +395,14 @@ void Dashboard::highlightEquip(QString skillName, bool highlight)
 }
 
 void Dashboard::_createExtraButtons(){
-    QSanButton *btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
-    QSanButton *btnSortHandcard = new QSanButton("handcard", "sort", this);
+    m_btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
+    m_btnSortHandcard = new QSanButton("handcard", "sort", this);
     // @todo: make the position configurable and also support auto hide.
-    btnReverseSelection->setPos(3, -btnReverseSelection->boundingRect().height());
-    btnSortHandcard->setPos(btnReverseSelection->boundingRect().right() + 6,
-                            -btnReverseSelection->boundingRect().height());
-    connect(btnReverseSelection, SIGNAL(clicked()), this, SLOT(reverseSelection()));
-    connect(btnSortHandcard, SIGNAL(clicked()), this, SLOT(sortCards()));
+    m_btnReverseSelection->setPos(3, -m_btnReverseSelection->boundingRect().height());
+    m_btnSortHandcard->setPos(m_btnReverseSelection->boundingRect().right() + 6,
+                              -m_btnReverseSelection->boundingRect().height());
+    connect(m_btnReverseSelection, SIGNAL(clicked()), this, SLOT(reverseSelection()));
+    connect(m_btnSortHandcard, SIGNAL(clicked()), this, SLOT(sortCards()));
 }
 
 void Dashboard::skillButtonActivated(){

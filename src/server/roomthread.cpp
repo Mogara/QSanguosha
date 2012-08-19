@@ -154,7 +154,7 @@ CardUseStruct::CardUseStruct()
 {
 }
 
-bool CardUseStruct::isValid(CardUseReason reason, const QString &pattern) const{
+bool CardUseStruct::isValid(const QString &pattern) const{
     if (card == NULL) return false;
     if (!card->getSkillName().isEmpty())
     {
@@ -177,7 +177,7 @@ bool CardUseStruct::isValid(CardUseReason reason, const QString &pattern) const{
             const ViewAsSkill *vsSkill = ViewAsSkill::parseViewAsSkill(skill);
             if (vsSkill)
             {
-                if (!vsSkill->isAvailable(reason, pattern)) return false;
+                if (!vsSkill->isAvailable(from, m_reason, pattern)) return false;
                 else 
                 {
                     validSkill = true;

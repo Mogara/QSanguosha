@@ -135,12 +135,14 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 }
 
-bool ViewAsSkill::isAvailable(CardUseStruct::CardUseReason reason, const QString &pattern) const
+bool ViewAsSkill::isAvailable(const Player* invoker,
+                              CardUseStruct::CardUseReason reason, 
+                              const QString &pattern) const
 {
     switch(reason) 
     {
-    case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(Self);
-    case CardUseStruct::CARD_USE_REASON_RESPONSE: return isEnabledAtResponse(Self, pattern);
+    case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
+    case CardUseStruct::CARD_USE_REASON_RESPONSE: return isEnabledAtResponse(invoker, pattern);
     default:
         return false;
     }

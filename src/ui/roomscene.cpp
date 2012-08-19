@@ -111,8 +111,12 @@ RoomScene::RoomScene(QMainWindow *main_window):
     // add role ComboBox
     connect(Self, SIGNAL(role_changed(QString)), dashboard, SLOT(updateRole(QString)));
 
+    m_replayControl = NULL;
     if(ClientInstance->getReplayer())
+    {
+        dashboard->hideControlButtons();
         createReplayControlBar();
+    }
 
     response_skill = new ResponseSkill;
     showorpindian_skill = new ShowOrPindianSkill;
@@ -525,32 +529,39 @@ QGraphicsItem *RoomScene::createDashboardButtons(){
     return widget;
 }
 
+QRectF ReplayerControlBar::boundingRect() const
+{
+    return QRectF(0, 0, 25 * 4 + 3 * 3, 21);
+}
+
+void ReplayerControlBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+}
+
 ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
-    /*QHBoxLayout *layout = new QHBoxLayout;
+    QSanButton *play, *uniform, *slow_down, *speed_up;
 
-    QPushButton *play, *uniform, *slow_down, *speed_up;
+    uniform = new QSanButton("replay", "uniform", this);
+    slow_down = new QSanButton("replay", "slow-down", this);
+    play = new QSanButton("replay", "pause", this);
+    speed_up = new QSanButton("replay", "speed-up", this);
 
-    uniform = dashboard->createButton("uniform");
-    slow_down = dashboard->createButton("slow-down");
-    play = dashboard->createButton("pause");
-    speed_up = dashboard->createButton("speed-up");
+    int gap = 3;
+    int width = 25;
+    int height = 21;
+    int step = gap + width;
+    uniform->setPos(0, 0);
+    slow_down->setPos(step, 0);
+    play->setPos(step * 2, 0);
+    speed_up->setPos(step * 3, 0);
 
     time_label = new QLabel;
     QPalette palette;
     palette.setColor(QPalette::WindowText, Config.TextEditColor);
     time_label->setPalette(palette);
 
-    QWidgetList widgets;
-    widgets << uniform << slow_down << play << speed_up << time_label;
-
-    foreach(QWidget *widget, widgets){
-        widget->setEnabled(true);
-        layout->addWidget(widget);
-    }
-
     Replayer *replayer = ClientInstance->getReplayer();
     connect(play, SIGNAL(clicked()), replayer, SLOT(toggle()));
-    connect(play, SIGNAL(clicked()), this, SLOT(toggle()));
     connect(uniform, SIGNAL(clicked()), replayer, SLOT(uniform()));
     connect(slow_down, SIGNAL(clicked()), replayer, SLOT(slowDown()));
     connect(speed_up, SIGNAL(clicked()), replayer, SLOT(speedUp()));
@@ -558,32 +569,16 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
     connect(replayer, SIGNAL(speed_changed(qreal)), this, SLOT(setSpeed(qreal)));
 
     speed = replayer->getSpeed();
-
-    QWidget *widget = new QWidget;
-    widget->setAttribute(Qt::WA_TranslucentBackground);
-    widget->setLayout(layout);
-    setWidget(widget);
-
     setParentItem(dashboard);
-    setPos(0,-35);
+    setPos(gap, -gap - height);
 
-    duration_str = FormatTime(replayer->getDuration());*/
+    duration_str = FormatTime(replayer->getDuration());
 }
 
 QString ReplayerControlBar::FormatTime(int secs){
     int minutes = secs / 60;
     int remainder  = secs % 60;
     return QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(remainder, 2, 10, QChar('0'));
-}
-
-void ReplayerControlBar::toggle(){
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
-
-    if(button){
-        QString new_name = button->objectName() == "pause" ? "play" : "pause";
-        button->setObjectName(new_name);
-        button->setIcon(QIcon(QString("image/system/button/%1.png").arg(new_name)));
-    }
 }
 
 void ReplayerControlBar::setSpeed(qreal speed){
@@ -598,10 +593,7 @@ void ReplayerControlBar::setTime(int secs){
 }
 
 void RoomScene::createReplayControlBar(){
-    // hide all buttons    
-    m_reverseSelectionButton->hide();
-
-    new ReplayerControlBar(dashboard);
+    m_replayControl = new ReplayerControlBar(dashboard);
 }
 
 void RoomScene::_getSceneSizes(QSize& minSize, QSize &maxSize)
@@ -1826,14 +1818,14 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     //SPConvertSkill is not important around the game, except on game start.
     //Even it isn't a skill, it's only a temporary product of generals replacement system.
     //So I think it is not necessary to exist in dashboard.
-    if(skill->inherits("SPConvertSkill") || ClientInstance->getReplayer())
+    if(skill->inherits("SPConvertSkill"))
         return;
     // check duplication
     QSanSkillButton* btn = dashboard->addSkillButton(skill->objectName());
     if(btn == NULL)
         return;
 
-    if (btn->getViewAsSkill() != NULL)
+    if (btn->getViewAsSkill() != NULL  && !m_replayControl)
     {
         connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(skillButtonActivated()));
         connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
@@ -1842,13 +1834,14 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     }
     
     QDialog *dialog = skill->getDialog();
-    if(dialog){
+    if(dialog && !m_replayControl){
         dialog->setParent(main_window, Qt::Dialog);
         connect(btn, SIGNAL(skill_activated()), dialog, SLOT(popup()));
         connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));
         if(dialog->objectName() == "qice")
             connect(dialog, SIGNAL(onButtonClick()), dashboard, SLOT(selectAll()));
     }
+   
     m_skillButtons.append(btn);
 }
 
@@ -2146,7 +2139,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            button->setEnabled(vsSkill->isAvailable(reason, pattern)
+            button->setEnabled(vsSkill->isAvailable(Self, reason, pattern)
                                && !pattern.endsWith("!"));
         } 
         else
@@ -2210,7 +2203,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                         Q_ASSERT(button != NULL);
                         const ViewAsSkill* vsSkill = button->getViewAsSkill();
                         if (vsSkill != NULL && vsSkill->objectName() == skill_name && 
-                            vsSkill->isAvailable(CardUseStruct::CARD_USE_REASON_RESPONSE, pattern))
+                            vsSkill->isAvailable(Self, CardUseStruct::CARD_USE_REASON_RESPONSE, pattern))
                             button->click();
                     }
                     dashboard->startPending(skill);

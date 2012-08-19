@@ -454,10 +454,10 @@ struct CardUseStruct{
         CARD_USE_REASON_UNKNOWN,
         CARD_USE_REASON_PLAY,
         CARD_USE_REASON_RESPONSE
-    };
+    } m_reason;
 
     CardUseStruct();
-    bool isValid(CardUseReason reason, const char *pattern) const;
+    bool isValid(const char *pattern) const;
     void parse(const QString &str, Room *room);
     bool tryParse(const Json::Value&, Room *room);
 
