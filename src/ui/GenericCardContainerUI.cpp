@@ -740,7 +740,7 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
      Q_ASSERT(m_player->hasSkill("huashen"));
      QPixmap pixmap = _getAvatarIcon(generalName);
      if (pixmap.size() != _m_layout->m_avatarArea.size())
-         pixmap = pixmap.scaled(_m_layout->m_avatarArea.size());
+         pixmap = pixmap.scaled(_m_layout->m_avatarArea.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
      stopHuaShen();
      _m_huashenAnimation = G_ROOM_SKIN.createHuaShenAnimation(
          pixmap,
@@ -1005,6 +1005,7 @@ void PlayerCardContainer::updateVotes(){
                      _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(_m_votesGot)),
                      _getAvatarParent());
         _m_votesItem->setZValue(1);
+        _m_votesItem->show();
     }
 }
 

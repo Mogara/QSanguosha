@@ -772,7 +772,7 @@ void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion,
 
 void RoomScene::updateTable()
 {
-    int pad = _m_roomLayout->m_scenePadding;
+    int pad = _m_roomLayout->m_scenePadding + _m_roomLayout->m_photoRoomPadding;
     int tablew = log_box_widget->x() - pad * 2;
     int tableh = sceneRect().height() - pad * 2 -
                  dashboard->boundingRect().height() -
@@ -826,14 +826,14 @@ void RoomScene::updateTable()
     const int C_NUM_REGIONS = 8;
     QRectF seatRegions[] = 
     {
-        QRectF(col2, 0, col1, row1),
-        QRectF(col1, 0, col2 - col1, row1),
-        QRectF(0, 0, col1, row1),
+        QRectF(col2, pad, col1, row1),
+        QRectF(col1, pad, col2 - col1, row1),
+        QRectF(pad, pad, col1, row1),
         QRectF(col2, row1, col1, row2 - row1),
-        QRectF(0, row1, col1, row2 - row1),
-        QRectF(col2, 0, col1, row2),
-        QRectF(0, 0, col1, row2),
-        QRectF(0, 0, col1 + col2, row1)
+        QRectF(pad, row1, col1, row2 - row1),
+        QRectF(col2, pad, col1, row2),
+        QRectF(pad, pad, col1, row2),
+        QRectF(pad, pad, col1 + col2, row1)
     };
 
     static Qt::Alignment aligns[] = {

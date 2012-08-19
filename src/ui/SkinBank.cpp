@@ -749,12 +749,12 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
     return S_IMAGE_KEY2PIXMAP[totalKey];
 }
 
- QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const
+QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const
  {
      return _readConfig(_m_imageConfig, key);
  }
 
- QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const
+QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const
 {
     return QSanPixmapCache::getPixmap(fileName, fileName);
 }
@@ -868,6 +868,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["photoHDistance"], _m_roomLayout.m_photoHDistance);
     tryParse(config["photoVDistance"], _m_roomLayout.m_photoVDistance);
     tryParse(config["photoDashboardPadding"], _m_roomLayout.m_photoDashboardPadding);
+    tryParse(config["photoRoomPadding"], _m_roomLayout.m_photoRoomPadding);
     tryParse(config["roleBoxHeight"], _m_roomLayout.m_roleBoxHeight);
     tryParse(config["scenePadding"], _m_roomLayout.m_scenePadding);
 
@@ -887,8 +888,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
         }
 
         tryParse(playerConfig["normalHeight"], layout->m_normalHeight);
-        // @todo: focusFrameArea has not been parsed for dashboard
-        // @todo: rename this to "handCardNumIconArea"
+
         tryParse(playerConfig["handCardNumIconArea"], layout->m_handCardArea);
         for (int j = 0; j < 4; j++)
         {

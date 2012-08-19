@@ -125,6 +125,7 @@ public:
         double m_chatBoxHeightPercentage;
         double m_infoPlaneWidthPercentage;
         double m_photoDashboardPadding;
+        double m_photoRoomPadding;
         int m_photoHDistance;
         int m_photoVDistance;
         QSize m_minimumSceneSize;
