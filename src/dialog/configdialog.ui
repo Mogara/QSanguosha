@@ -290,23 +290,10 @@
        </item>
       </layout>
      </widget>
-     <widget class="QCheckBox" name="fitInViewCheckBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>100</y>
-        <width>151</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Fit in view</string>
-      </property>
-     </widget>
      <widget class="QCheckBox" name="noIndicatorCheckBox">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>10</x>
         <y>100</y>
         <width>95</width>
         <height>16</height>
