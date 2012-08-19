@@ -516,10 +516,14 @@ xianzhen_skill.name="xianzhen"
 table.insert(sgs.ai_skills,xianzhen_skill)
 xianzhen_skill.getTurnUseCard=function(self)
 
-	if self.player:hasUsed("XianzhenCard") and self.player:hasFlag("xianzhen_success") then
-		local card_str = "@XianzhenSlashCard=."
-		local card = sgs.Card_Parse(card_str)
-		return card
+	if self.player:hasUsed("XianzhenCard") then
+		if self.player:hasFlag("xianzhen_success") then
+			local card_str = "@XianzhenSlashCard=."
+			local card = sgs.Card_Parse(card_str)
+			return card
+		else
+			return
+		end
 	end
 
 	local cards = self.player:getCards("h")
