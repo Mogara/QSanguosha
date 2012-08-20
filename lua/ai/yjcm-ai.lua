@@ -515,59 +515,11 @@ local xianzhen_skill={}
 xianzhen_skill.name="xianzhen"
 table.insert(sgs.ai_skills,xianzhen_skill)
 xianzhen_skill.getTurnUseCard=function(self)
-
-	if self.player:hasUsed("XianzhenCard") then
-		if self.player:hasFlag("xianzhen_success") then
-			local card_str = "@XianzhenSlashCard=."
-			local card = sgs.Card_Parse(card_str)
-			return card
-		else
-			return
-		end
-	end
-
-	local cards = self.player:getCards("h")
-	cards=sgs.QList2Table(cards)
-
-	local max_card = self:getMaxCard()
-	local slashNum=self:getCardsNum("Slash")
-	if max_card then 
-		local max_point = max_card:getNumber()
-		if max_card:isKindOf("Slash") then slashNum=slashNum-1 end
-	end
-
-	self:sort(self.enemies, "hp")
-
-	for _, enemy in ipairs(self.enemies) do
-		local enemy_max_card = self:getMaxCard(enemy)
-
-		if not enemy:isKongcheng() and enemy_max_card and max_point and max_point > enemy_max_card:getNumber() and slashNum > 0 then
-
-			local slash=self:getCard("Slash")
-			local dummy_use={}
-			dummy_use.isDummy=true
-
-			local no_distance=true
-			self:useBasicCard(slash,dummy_use,no_distance)
-
-			if dummy_use.card then
-				local card_id = max_card:getEffectiveId()
-				local card_str = "@XianzhenCard=" .. card_id
-				local card = sgs.Card_Parse(card_str)
-				return card
-			end
-		end
-	end
-	self:sortByUseValue(cards, true)
-	if self:getOverflow()>0	then
-		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() and not enemy:hasSkill("tuntian") then
-				local card_id = cards[1]:getEffectiveId()
-				local card_str = "@XianzhenCard=" .. card_id
-				local card = sgs.Card_Parse(card_str)
-				return card
-			end
-		end
+	if not self.player:hasUsed("XianzhenCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@XianzhenCard=.") 
+	elseif self.player:hasUsed("XianzhenCard") and self.player:hasFlag("xianzhen_success") then
+		local card_str = "@XianzhenSlashCard=."
+		local card = sgs.Card_Parse(card_str)
+		return card
 	end
 end
 
@@ -583,28 +535,44 @@ end
 sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 
 	self:sort(self.enemies, "handcard")
-	local max_card = self:getMaxCard(self.player)
+	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
+	local slashcount = self:getCardsNum("Slash")
+	if max_card:isKindOf("Slash") then slashcount = slashcount - 1 end
 
-	for _, enemy in ipairs(self.enemies) do
-		local enemy_max_card = self:getMaxCard(enemy)
-		if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1)
-			and not enemy:isKongcheng()
-			and (enemy_max_card and max_point > enemy_max_card:getNumber()) then
-			if use.to then
-				use.to:append(enemy)
+	if slashcount > 0  then
+		local slash = self:getCard("Slash")
+		assert(slash)
+		local dummy_use = {isDummy = true}
+		self:useBasicCard(slash, dummy_use)
+		for _, enemy in ipairs(self.enemies) do
+			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
+				local enemy_max_card = self:getMaxCard(enemy)
+				local allknown = 0
+				if self:getKnownNum(enemy) == enemy:getHandcardNum() then
+					allknown = allknown + 1
+				end
+				if (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown > 0)
+					or (enemy_max_card and max_point > enemy_max_card:getNumber() and allknown < 1 and max_point > 10) 
+					or (not enemy_max_card and max_point > 10) then
+					use.card = sgs.Card_Parse("@XianzhenCard=" .. max_card:getId())
+					if use.to then use.to:append(enemy) end
+					return
+				end
 			end
-			use.card=card
-			return
 		end
 	end
-	if self:getOverflow()>0	then
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByUseValue(cards, true)
+	if self:getUseValue(cards[1]) >= 6 or self:getKeepValue(cards[1]) >= 6 then return end
+	local shouldUse = self:getOverflow() > 0
+	if shouldUse then
 		for _, enemy in ipairs(self.enemies) do
-			if use.to and not enemy:isKongcheng() then
-				use.to:append(enemy)
+			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() and not enemy:hasSkill("tuntian") then
+				use.card = sgs.Card_Parse("@XianzhenCard=" .. cards[1]:getId())
+				if use.to then use.to:append(enemy) end
+				return
 			end
-			use.card=card
-			break
 		end
 	end
 end
