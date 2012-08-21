@@ -3364,34 +3364,26 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 
 void Room::updateCardsOnLose(const CardsMoveStruct &move)
 {
-    if(move.to_place == Player::DiscardPile
-            || (move.to && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick)){
-        for (int i = 0; i < move.card_ids.size(); i++)
+    for (int i = 0; i < move.card_ids.size(); i++)
+    {
+        Card *card = Sanguosha->getCard(move.card_ids[i]);
+        if(card->isModified())
         {
-            Card *card = Sanguosha->getCard(move.card_ids[i]);
-            if(card->isModified())
+            if (move.to_place == Player::DiscardPile ||
+                (move.to && move.to_place != Player::PlaceDelayedTrick))
             {
                 resetCard(move.card_ids[i]);
-                broadcastResetCard(getPlayers(), move.card_ids[i]);
+                if (move.to_place != Player::PlaceHand)
+                    broadcastResetCard(getPlayers(), move.card_ids[i]);
             }
-        }
-        return;
-    }
 
-    ServerPlayer* player = (ServerPlayer*)move.from;
-    if(player != NULL && move.from_place == Player::PlaceHand
-            && move.to != NULL
-            && move.to_place != Player::PlaceDelayedTrick){
-        for (int i = 0; i < move.card_ids.size(); i++)
-        {
-            Card *card = Sanguosha->getCard(move.card_ids[i]);
-            if(card->isModified())
+            else if (move.from != NULL && move.from_place == Player::PlaceHand &&
+                     move.to != NULL && move.to_place != Player::PlaceDelayedTrick)
             {
                 resetCard(move.card_ids[i]);
-                notifyResetCard(player, move.card_ids[i]);
+                notifyResetCard((ServerPlayer*)move.from, move.card_ids[i]);
             }
         }
-        return;
     }
 }
 

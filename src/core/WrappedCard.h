@@ -201,7 +201,7 @@ public:
 
 protected:
     Card* m_card;
-    bool m_isModified;
+    mutable bool m_isModified;
 };
 
 
