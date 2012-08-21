@@ -3,3 +3,4 @@ general:select role:lord starter:true singleTurn:rebel draw:0 equip:61 hand:73
 general:shencaocao role:rebel hp:1 draw:0 hand:27,16 
 general:gongsunzan role:rebel hp:1 draw:0 hand:35,0 
 general:shenguanyu role:rebel hp:1 draw:0 
+extraOptions:gameOverIfExtraCardDrawn:rebel

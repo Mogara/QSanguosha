@@ -6,3 +6,4 @@ general:gongsunzan role:loyalist hp:1 draw:0 hand:1
 general:xushu role:lord maxhp:3 hp:3 draw:0 hand:75 
 general:gongsunzan role:loyalist hp:1 draw:0 hand:2 
 general:gongsunzan role:loyalist hp:1 draw:0 hand:3 
+extraOptions:gameOverIfExtraCardDrawn:lord+loyalist
