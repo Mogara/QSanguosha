@@ -545,7 +545,8 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
     slow_down = new QSanButton("replay", "slow-down", this);
     play = new QSanButton("replay", "pause", this);
     speed_up = new QSanButton("replay", "speed-up", this);
-
+    play->setStyle(QSanButton::S_STYLE_TOGGLE);
+    uniform->setStyle(QSanButton::S_STYLE_TOGGLE);
     int gap = 3;
     int width = 25;
     int height = 21;
