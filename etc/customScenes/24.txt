@@ -5,3 +5,4 @@ general:dongzhuo role:lord draw:0
 general:sujiangf role:loyalist draw:0 
 general:sujiang role:loyalist draw:0 
 general:sujiangf role:loyalist draw:0 
+extraOptions:gameOverIfExtraCardDrawn:lord+loyalist

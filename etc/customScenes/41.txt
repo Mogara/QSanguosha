@@ -1,6 +1,6 @@
 
 setPile:49,48,47,46,45,53,3,2,1,55,85,115,118,143,0,32,129,158,50
-general:select general2:select role:renegade starter:true singleTurn:lord+loyalist draw:0 hand:74,76,90 
+general:select general2:select role:renegade maxhp:2 hp:2 starter:true singleTurn:lord+loyalist draw:0 hand:74,76,90 
 general:dongzhuo role:lord draw:0 
 general:zhurong general2:masu role:loyalist maxhp:4 hp:2 draw:0 
 general:xiahoudun general2:guojia role:renegade hp:2 draw:0 equip:62

@@ -3,3 +3,4 @@ setPile:36,35,33,3,1,0,89,22,140,132,53,21,116,96
 general:guojia role:rebel starter:true maxhp:3 hp:1 draw:0 equip:63 hand:95,110,123 
 general:dongzhuo role:lord maxhp:9 hp:9 hand:73,74,75 
 general:lvbu role:rebel maxhp:4 hp:1 equip:60 hand:137 
+extraOptions:gameOverIfExtraCardDrawn:rebel
