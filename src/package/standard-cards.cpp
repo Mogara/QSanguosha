@@ -90,9 +90,6 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     effect.drank = drank;
 
     room->slashEffect(effect);
-    if (drank) {
-        room->setCardFlag(this, "-drank");
-    }
 }
 
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
