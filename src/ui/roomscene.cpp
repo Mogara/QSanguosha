@@ -531,7 +531,7 @@ QGraphicsItem *RoomScene::createDashboardButtons(){
 
 QRectF ReplayerControlBar::boundingRect() const
 {
-    return QRectF(0, 0, 25 * 4 + 3 * 3, 21);
+    return QRectF(0, 0, S_BUTTON_WIDTH * 4 + S_BUTTON_GAP * 3, S_BUTTON_HEIGHT);
 }
 
 void ReplayerControlBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -547,10 +547,8 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
     speed_up = new QSanButton("replay", "speed-up", this);
     play->setStyle(QSanButton::S_STYLE_TOGGLE);
     uniform->setStyle(QSanButton::S_STYLE_TOGGLE);
-    int gap = 3;
-    int width = 25;
-    int height = 21;
-    int step = gap + width;
+
+    int step = S_BUTTON_GAP + S_BUTTON_WIDTH;
     uniform->setPos(0, 0);
     slow_down->setPos(step, 0);
     play->setPos(step * 2, 0);
@@ -571,7 +569,7 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
 
     speed = replayer->getSpeed();
     setParentItem(dashboard);
-    setPos(gap, -gap - height);
+    setPos(S_BUTTON_GAP, -S_BUTTON_GAP - S_BUTTON_HEIGHT);
 
     duration_str = FormatTime(replayer->getDuration());
 }

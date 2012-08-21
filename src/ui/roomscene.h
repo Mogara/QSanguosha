@@ -108,7 +108,9 @@ public slots:
     
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
+    static const int S_BUTTON_GAP = 3;
+    static const int S_BUTTON_WIDTH = 25;
+    static const int S_BUTTON_HEIGHT = 21;
 private:
     QLabel *time_label;
     QString duration_str;
