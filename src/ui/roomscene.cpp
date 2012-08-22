@@ -315,7 +315,6 @@ RoomScene::RoomScene(QMainWindow *main_window):
 #endif
 
     m_tableBg = new QGraphicsPixmapItem(NULL, this);
-    m_tableBg->setPos(0, 0);
     m_tableBg->setZValue(-100000);
 
     QHBoxLayout* skill_dock_layout = new QHBoxLayout;
@@ -671,7 +670,7 @@ void RoomScene::adjustItems()
     // set dashboard
     dashboard->setX(displayRegion.x());
     dashboard->setWidth(displayRegion.width());
-    dashboard->setY(displayRegion.height() - dashboard->boundingRect().height());    
+    dashboard->setY(displayRegion.y() + displayRegion.height() - dashboard->boundingRect().height());
 
     // set infoplane
     QRectF infoPlane;
@@ -699,10 +698,12 @@ void RoomScene::adjustItems()
     if (enemy_box)
         enemy_box->setPos(padding * 2, padding * 2);
 
-    int tablew = log_box_widget->x();
-    int tableh = sceneRect().height() - padding - dashboard->boundingRect().height();
+    m_tablew = displayRegion.width() - infoPlane.width();
+    m_tableh = displayRegion.height() - dashboard->boundingRect().height();
     QPixmap tableBg = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_TABLE_BG)
-        .scaled(tablew, tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    m_tableh -= _m_roomLayout->m_photoDashboardPadding;
+    m_tableBg->setPos(padding, padding);
     m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();     
@@ -772,13 +773,6 @@ void RoomScene::_dispersePhotos(QList<Photo*> &photos, QRectF fillRegion,
 
 void RoomScene::updateTable()
 {
-    int pad = _m_roomLayout->m_scenePadding + _m_roomLayout->m_photoRoomPadding;
-    int tablew = log_box_widget->x() - pad * 2;
-    int tableh = sceneRect().height() - pad * 2 -
-                 dashboard->boundingRect().height() -
-                 _m_roomLayout->m_photoDashboardPadding;
-    int photow = _m_photoLayout->m_normalWidth;
-    int photoh = _m_photoLayout->m_normalHeight;
     // Layout:
     //    col1           col2
     // _______________________
@@ -815,25 +809,30 @@ void RoomScene::updateTable()
         {1, 1, 1, 4, 4}, // rebel (left), same with loyalist (left)
         {3, 3, 1, 1, 1} // loyalist (right), same with rebel (right)
     };
-    
-    double hGap = _m_roomLayout->m_photoHDistance;
-    double vGap = _m_roomLayout->m_photoVDistance;
-    double col1 = photow + hGap;
-    double col2 = tablew - col1;
-    double row1 = photoh + vGap;
-    double row2 = tableh;
+
+    int pad1 = _m_roomLayout->m_scenePadding;
+    int pad2 = _m_roomLayout->m_photoRoomPadding;
+    int pad = pad1 + pad2;
+
+    int photow = _m_photoLayout->m_normalWidth + _m_roomLayout->m_photoHDistance;
+    int photoh = _m_photoLayout->m_normalHeight + _m_roomLayout->m_photoVDistance;
+
+    double col1 = pad1 + (pad2 + photow);
+    double col2 = pad1 + (m_tablew - pad2 - photow);
+    double row1 = pad1 + (pad2 + photoh);
+    double row2 = pad1 + m_tableh;
 
     const int C_NUM_REGIONS = 8;
     QRectF seatRegions[] = 
     {
-        QRectF(col2, pad, col1, row1),
-        QRectF(col1, pad, col2 - col1, row1),
-        QRectF(pad, pad, col1, row1),
-        QRectF(col2, row1, col1, row2 - row1),
-        QRectF(pad, row1, col1, row2 - row1),
-        QRectF(col2, pad, col1, row2),
-        QRectF(pad, pad, col1, row2),
-        QRectF(pad, pad, col1 + col2, row1)
+        QRectF(col2, pad, photow, photoh),
+        QRectF(col1, pad, col2 - col1, photoh),
+        QRectF(pad, pad, photow, photoh),
+        QRectF(col2, row1, photow, row2 - row1),
+        QRectF(pad, row1, photow, row2 - row1),
+        QRectF(col2, pad, photow, m_tableh),
+        QRectF(pad, pad, photow, m_tableh),
+        QRectF(pad, pad, m_tablew, photoh)
     };
 
     static Qt::Alignment aligns[] = {
