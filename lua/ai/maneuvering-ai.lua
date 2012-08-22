@@ -23,7 +23,7 @@ sgs.ai_use_priority.Fan = 2.655
 sgs.ai_use_priority.Vine = 0.6
 
 	
-sgs.ai_skill_invoke.fan = function(self, data)
+sgs.ai_skill_invoke.Fan = function(self, data)
     local target = data:toSlashEffect().to
     if self:isFriend(target) then
       return target:isChained() and self:isGoodChainTarget(target)
@@ -32,7 +32,7 @@ sgs.ai_skill_invoke.fan = function(self, data)
 	end
 end
 
-sgs.ai_view_as.fan = function(card, player, card_place)
+sgs.ai_view_as.Fan = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
@@ -68,11 +68,11 @@ fan_skill.getTurnUseCard=function(self)
 		
 end
 
-function sgs.ai_weapon_value.fan(self, enemy)
+function sgs.ai_weapon_value.Fan(self, enemy)
 	if enemy and (self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy)) then return 3 end
 end
 
-function sgs.ai_armor_value.vine(player, self)
+function sgs.ai_armor_value.Vine(player, self)
 	for _, enemy in ipairs(self:getEnemies(player)) do
 		if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or self:hasSkills("huoji|shaoying", enemy) then return -1 end
 		if enemy:objectName() == self.player:objectName() and (self:getCardId("FireSlash", enemy) or self:getCardId("FireAttack",enemy)) then return -1 end
