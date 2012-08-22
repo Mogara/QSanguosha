@@ -84,7 +84,7 @@ public:
                     }
                 }
 
-                return true;
+                break;
             }
 
         case Death:{
@@ -119,8 +119,8 @@ CoupleScenario::CoupleScenario()
     rule = new CoupleScenarioRule(this);
 
     map["caopi"] = "zhenji";
-    map["guojia"] = "simayi";
-    map["liubei"] = "sunshangxiang";
+    map["simayi"] = "zhangchunhua";
+    map["liubei"] = "sp_sunshangxiang";
     map["zhugeliang"] = "huangyueying";
     map["menghuo"] = "zhurong";
     map["zhouyu"] = "xiaoqiao";
