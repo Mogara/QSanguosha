@@ -2724,7 +2724,7 @@ function SmartAI:activate(use)
 			local type = card:getTypeId()
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
 
-			if use:isValid(1, nil) then
+			if use:isValid(nil) then
 				self.toUse = nil
 				return
 			end
