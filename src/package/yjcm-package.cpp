@@ -210,7 +210,7 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
     if(to_select == Self)
         return false;
 
-    return !Self->isKongcheng();
+    return true;
 }
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
@@ -276,7 +276,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *xushu) const{
         Room *room = xushu->getRoom();
-        if(xushu->getPhase() == Player::Finish){
+        if(xushu->getPhase() == Player::Finish && !xushu->isNude()){
             room->askForUseCard(xushu, "@@jujian", "@jujian-card");
         }
         return false;
@@ -442,7 +442,6 @@ public:
         DamageStar damage = data.value<DamageStar>();
         ServerPlayer *killer = damage ? damage->from : NULL;
         if(killer){
-            Room *room = player->getRoom();
 
             LogMessage log;
             log.type = "#HuileiThrow";
