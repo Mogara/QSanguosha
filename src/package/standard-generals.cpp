@@ -157,21 +157,22 @@ public:
         room->broadcastSkillInvoke(objectName());
 
         int x = damage.damage, i;
-        for(i=0; i<x; i++){
-            guojia->drawCards(2, true, objectName());
+        for(i = 0; i < x; i++)
+        {
             QList<int> yiji_cards;
-            foreach(const Card *card, guojia->getHandcards()){
-                if(card->hasFlag(objectName())){
-                    room->setCardFlag(card, "-" + objectName());
-                    yiji_cards << card->getEffectiveId();
-                }
-            }
+            yiji_cards.append(room->drawCard());
+            yiji_cards.append(room->drawCard());
+            CardsMoveStruct move;
+            move.card_ids = yiji_cards;
+            move.to = guojia;
+            move.to_place = Player::PlaceHand;
+            move.reason = CardMoveReason(CardMoveReason::S_REASON_SHOW, guojia->objectName(), "yiji", QString());
+            room->moveCards(move, false);
 
             if(yiji_cards.isEmpty())
                 continue;
 
-            while(room->askForYiji(guojia, yiji_cards))
-                ; // empty loop
+            while(room->askForYiji(guojia, yiji_cards));
         }
 
     }
@@ -1580,7 +1581,7 @@ public:
 class NosDuojian: public TriggerSkill{
 public:
     NosDuojian():TriggerSkill("#noslonghun_duojian"){
-	    events << EventPhaseStart;
+        events << EventPhaseStart;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *gaodayihao, QVariant &data) const{
@@ -1598,7 +1599,7 @@ public:
                     break;
                 }
             }
-		}        	
+        }        	
 
         return false;		
     }
@@ -1619,7 +1620,7 @@ TestPackage::TestPackage()
 
     General *sp_shenzhaoyun = new General(this, "sp_shenzhaoyun", "god", 1, true, true);
     sp_shenzhaoyun->addSkill(new NosJuejing);
-	sp_shenzhaoyun->addSkill(new NosLonghun);
+    sp_shenzhaoyun->addSkill(new NosLonghun);
     sp_shenzhaoyun->addSkill(new NosDuojian);
     related_skills.insertMulti("noslonghun", "#noslonghun_duojian");
 
