@@ -1588,12 +1588,7 @@ public:
         if (gaodayihao->getPhase() == Player::Start){
             foreach(ServerPlayer *p, room->getOtherPlayers(gaodayihao)){
                if (p->getWeapon() && p->getWeapon()->objectName() == "QinggangSword"){
-                   if (room->askForSkillInvoke(gaodayihao,objectName())){
-                        LogMessage log;
-                        log.type = "#TriggerSkill";
-                        log.from = gaodayihao;
-                        log.arg = "#noslonghun_duojian";
-                        room->sendLog(log);
+                   if (room->askForSkillInvoke(gaodayihao, objectName())){
                         gaodayihao->obtainCard(p->getWeapon());
                     }
                     break;
