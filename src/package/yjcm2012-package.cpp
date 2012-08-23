@@ -129,9 +129,7 @@ int QiceCard::getNumber(QList<int> cardid_list) const{
 }
 
 const Card *QiceCard::validate(const CardUseStruct *card_use) const{
-    Room *room = card_use->from->getRoom();
     card_use->from->setFlags("QiceUsed");
-    room->broadcastSkillInvoke("qice");
     Card *use_card = Sanguosha->cloneCard(user_string, getSuit(this->getSubcards()), getNumber(this->getSubcards()));
     use_card->setSkillName("qice");
     foreach(int id, this->getSubcards())
