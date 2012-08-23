@@ -582,13 +582,12 @@ public:
             return false;
 
         if(damage.card && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer){
-            Room *room = player->getRoom();
             if(room->askForSkillInvoke(player, objectName(), data)){
                 int x = qMin(5, damage.to->getHp());
                 if (x >= 3)
-                    player->getRoom()->broadcastSkillInvoke(objectName(), 2);
+                    room->broadcastSkillInvoke(objectName(), 2);
                 else
-                    player->getRoom()->broadcastSkillInvoke(objectName(), 1);
+                    room->broadcastSkillInvoke(objectName(), 1);
                 damage.to->drawCards(x);
                 damage.to->turnOver();
             }
@@ -755,7 +754,14 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
 
         if(!targets.isEmpty()){
             ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "mingce");
-            room->cardEffect(new Slash(Card::NoSuit, 0), effect.to, target);
+
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            slash->setSkillName("mingce");
+            CardUseStruct card_use;
+            card_use.from = effect.to;
+            card_use.to << target;
+            card_use.card = slash;
+            room->useCard(card_use, false);
         }
     }else if(choice == "draw"){
         effect.to->drawCards(1, true);
