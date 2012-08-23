@@ -446,7 +446,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
         Room *room = liubiao->getRoom();
-        if(room->askForSkillInvoke(liubiao, objectName())){
+        if(liubiao->isWounded() && room->askForSkillInvoke(liubiao, objectName())){
             room->broadcastSkillInvoke(objectName());
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
