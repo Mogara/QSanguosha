@@ -154,7 +154,8 @@ void MainWindow::gotoScene(QGraphicsScene *scene){
         this->scene->deleteLater();
     this->scene = scene;
     view->setScene(scene);
-    QResizeEvent e(view->size(), view->size());
+    /* @todo: Need a better way to replace the magic number '4' */
+    QResizeEvent e(QSize(view->size().width() - 4, view->size().height() - 4), view->size());
     view->resizeEvent(&e);
     changeBackground();
 }
@@ -358,7 +359,7 @@ void MainWindow::gotoStartScene(){
         start_scene->addButton(action);
 
     setCentralWidget(view);
-    restoreFromConfig();
+    //restoreFromConfig();
 
     ui->menuCheat->setEnabled(false);
     ui->actionGet_card->disconnect();
@@ -462,14 +463,13 @@ void MainWindow::setBackgroundBrush(bool centerAsOrigin){
     if(scene){
         QPixmap pixmap(Config.BackgroundImage);        
         QBrush brush(pixmap);
-        qreal sx = qMax((qreal)width(), scene->width()) / qreal(pixmap.width());
-        qreal sy = qMax((qreal)height(), scene->height()) / qreal(pixmap.height());
+        qreal sx = (qreal)width() / qreal(pixmap.width());
+        qreal sy = (qreal)height() / qreal(pixmap.height());
                
 
         QTransform transform;
         if (centerAsOrigin)
-            transform.translate(-qMax((qreal)width(), scene->width()) / 2,
-                -qMax((qreal)height(), scene->height()) / 2);        
+            transform.translate(-(qreal)width() / 2, -(qreal)height() / 2);
         transform.scale(sx, sy);
         brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
