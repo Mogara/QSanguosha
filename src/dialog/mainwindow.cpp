@@ -154,7 +154,8 @@ void MainWindow::gotoScene(QGraphicsScene *scene){
         this->scene->deleteLater();
     this->scene = scene;
     view->setScene(scene);
-    QResizeEvent e(view->size(), view->size());
+    /* @todo: Need a better way to replace the magic number '4' */
+    QResizeEvent e(QSize(view->size().width() - 4, view->size().height() - 4), view->size());
     view->resizeEvent(&e);
     changeBackground();
 }
