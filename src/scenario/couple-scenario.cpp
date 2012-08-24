@@ -125,7 +125,7 @@ CoupleScenario::CoupleScenario()
     map["menghuo"] = "zhurong";
     map["zhouyu"] = "xiaoqiao";
     map["lvbu"] = "diaochan";
-    map["zhangfei"] = "xiahoujuan";
+    //map["zhangfei"] = "xiahoujuan";
     map["sunjian"] = "wuguotai";
     map["sunce"] = "daqiao";
     map["sunquan"] = "bulianshi";
