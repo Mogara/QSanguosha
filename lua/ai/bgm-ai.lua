@@ -509,3 +509,196 @@ sgs.ai_skill_cardask["@anxian-discard"] = function(self, data)
 
 	return "$" .. cards[1]:getEffectiveId()
 end
+
+local yinling_skill={}
+yinling_skill.name="yinling"
+table.insert(sgs.ai_skills,yinling_skill)
+yinling_skill.getTurnUseCard=function(self,inclusive)
+    local cards = self.player:getCards("he")
+    cards=sgs.QList2Table(cards)
+    
+    local black_card
+    
+    self:sortByUseValue(cards,true)
+    
+    local has_weapon=false
+    
+    for _,card in ipairs(cards)  do
+        if card:isKindOf("Weapon") and card:isBlack() then has_weapon=true end
+    end
+    
+    for _,card in ipairs(cards)  do
+        if card:isBlack()  and ((self:getUseValue(card)<sgs.ai_use_value.YinlingCard) or inclusive or self:getOverflow()>0) then
+            local shouldUse=true
+
+            if card:isKindOf("Armor") then
+                if not self.player:getArmor() then shouldUse=false 
+                elseif self:hasEquip(card) and not (card:isKindOf("SilverLion") and self.player:isWounded()) then shouldUse=false
+                end
+            end
+
+            if card:isKindOf("Weapon") then
+                if not self.player:getWeapon() then shouldUse=false
+                elseif self:hasEquip(card) and not has_weapon then shouldUse=false
+                end
+            end
+            
+            if card:isKindOf("Slash") then
+                local dummy_use = {isDummy = true}
+                if self:getCardsNum("Slash") == 1 then
+                    self:useBasicCard(card, dummy_use)
+                    if dummy_use.card then shouldUse = false end
+                end
+            end
+
+            if self:getUseValue(card) > sgs.ai_use_value.YinlingCard and card:isKindOf("TrickCard") then
+                local dummy_use = {isDummy = true}
+                self:useTrickCard(card, dummy_use)
+                if dummy_use.card then shouldUse = false end
+            end
+
+            if shouldUse then
+                black_card = card
+                break
+            end
+            
+        end
+    end
+
+    if black_card then
+        local card_id = black_card:getEffectiveId()
+        local card_str = ("@YinlingCard="..card_id)
+        local yinling = sgs.Card_Parse(card_str)
+        
+        assert(yinling)
+
+        return yinling
+    end
+end
+
+sgs.ai_skill_use_func.YinlingCard=function(card,use,self)
+	if self.player:getPile("brocade"):length() >= 4 then return end
+	local players = self.room:getOtherPlayers(self.player)
+	players = self:exclude(players, card)
+
+	self:sort(self.enemies,"defense")
+	if #self.enemies > 0 and sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
+	local enemies = self:exclude(self.enemies, card)
+	self:sort(self.friends_noself,"defense")
+	local friends = self:exclude(self.friends_noself, card)
+	local hasLion, target
+	for _, enemy in ipairs(enemies) do
+		if not enemy:isNude() and self:hasTrickEffective(card, enemy) then
+			if self:getDangerousCard(enemy) then
+				use.card = card
+				if use.to then
+					sgs.ai_skill_cardchosen.yinling = self:getDangerousCard(enemy)
+					use.to:append(enemy)
+					self:speak("hostile", self.player:isFemale())
+				end
+				return
+			end
+		end
+	end
+
+	for _, friend in ipairs(friends) do
+		if self:isEquip("SilverLion", friend) and self:hasTrickEffective(card, friend) and 
+		friend:isWounded() and not self:hasSkills("longhun|duanliang|qixi|guidao|lijian|jujian",friend) then
+			hasLion = true
+			target = friend
+		end
+	end
+
+	for _, enemy in ipairs(enemies) do
+		if not enemy:isNude() and self:hasTrickEffective(card, enemy) then
+			if self:getValuableCard(enemy) then
+				use.card = card
+				if use.to then
+					sgs.ai_skill_cardchosen.yinling = self:getValuableCard(enemy)
+					use.to:append(enemy)
+					self:speak("hostile", self.player:isFemale())
+				end
+				return
+			end
+		end
+	end
+
+	if hasLion then
+		use.card = card
+		if use.to then 
+			sgs.ai_skill_cardchosen.yinling = target:getArmor():getEffectiveId()
+			use.to:append(target) 
+		end
+		return
+	end
+
+	return
+end
+
+sgs.ai_use_value.YinlingCard = sgs.ai_use_value.Dismantlement + 1
+sgs.ai_use_priority.YinlingCard = sgs.ai_use_priority.Dismantlement + 1
+sgs.ai_card_intention.YinlingCard = sgs.ai_card_intention.Dismantlement
+
+sgs.ai_skill_invoke.junwei = function(self, data)
+	return #self.enemies > 0
+end
+
+sgs.ai_skill_playerchosen.junwei = function(self, targets)
+	local tos = {}
+	for _, target in sgs.qlist(targets) do
+		if not self:isFriend(target) then
+			table.insert(tos, target)
+		end
+	end 
+
+	if #tos > 0 then
+		self:sort(tos, "defense")
+		return tos[1]
+	end
+end
+
+sgs.ai_skill_playerchosen.junweigive = function(self, targets)
+	local tos = {}
+	for _, target in sgs.qlist(targets) do
+		if self:isFriend(target) and not target:hasSkill("manjuan") and not (target:hasSkill("kongcheng") and target:isKongcheng()) then
+			table.insert(tos, target) 
+		end
+	end 
+
+	if #tos > 0 then
+		self:sort(tos, "defense")
+		return tos[1]
+	end
+end
+
+sgs.ai_skill_cardchosen.junwei = function(self, who, flags)
+	if flags == "e" then
+		local equips = who:getCards("e")
+		for _, equip in sgs.qlist(equips) do
+			if equip:isKindOf("OffensiveHorse") then card = equip break
+			elseif equip:isKindOf("DefensiveHorse") then card = equip break
+			elseif equip:isKindOf("Weapon") then card = equip break
+			elseif equip:isKindOf("Armor") then card = equip break
+			end
+		end
+	end
+end
+
+sgs.ai_skill_cardask["@junwei-show"] = function(self, data)
+	local ganning = data.toPlayer()
+	local cards = self.player:getHandcards()
+	cards=sgs.QList2Table(cards)
+	for _,card in ipairs(cards) do
+		if card:isKindOf("Jink") then
+			return "$" .. card:getEffectiveId()
+		end
+	end
+	return "."
+end
+
+sgs.bgm_ganning_suit_value = 
+{
+    spade = 3.9,
+    club = 3.9
+}
+

@@ -1018,6 +1018,150 @@ public:
     }
 };
 
+YinlingCard::YinlingCard()
+{
+}
+
+bool YinlingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select != Self;
+}
+
+void YinlingCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    if (effect.to->isNude() || effect.from->getPile("brocade").length() >= 4)
+        return;
+    int card_id = room->askForCardChosen(effect.from, effect.to, "he", "yinling");
+    effect.from->addToPile("brocade", card_id);
+}
+
+class Yinling: public OneCardViewAsSkill{
+public:
+    Yinling():OneCardViewAsSkill("yinling"){
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return to_select->isBlack();
+    }
+
+    virtual const Card *viewAs(const Card *originalcard) const{
+        YinlingCard *card = new YinlingCard;
+        card->addSubcard(originalcard);
+        return card;
+    }
+};
+
+class JunweiPattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return card->isKindOf("Jink");
+    }
+
+    virtual bool willThrow() const{
+        return false;
+    }
+};
+
+class Junwei:public TriggerSkill{
+public:
+    Junwei():TriggerSkill("junwei") {
+        events << EventPhaseStart;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *ganning, QVariant &) const{
+        if (ganning->getPhase() == Player::Finish && ganning->getPile("brocade").length() >= 3 && ganning->askForSkillInvoke(objectName())) {
+            QList<int> brocade = ganning->getPile("brocade");
+            room->broadcastSkillInvoke(objectName());
+
+            int ai_delay = Config.AIDelay;
+            Config.AIDelay = 0;
+
+            for(int i = 0; i < 3; i++) {
+                int card_id = 0;
+                room->fillAG(brocade, ganning);
+                if (brocade.length() == 3 - i)
+                    card_id = brocade.first();
+                else
+                    card_id = room->askForAG(ganning, brocade, false, objectName());
+                ganning->invoke("clearAG");
+
+                brocade.removeOne(card_id);
+
+                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
+                room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+            }
+
+            Config.AIDelay = ai_delay;
+
+            ServerPlayer *target = room->askForPlayerChosen(ganning, room->getAllPlayers(), objectName());
+            QVariant ai_data = QVariant::fromValue((PlayerStar)ganning);
+            const Card *card = room->askForCard(target, ".junwei", "@junwei-show", ai_data, NonTrigger);
+            if (card) {
+                room->showCard(target, card->getEffectiveId());
+                ServerPlayer *receiver = room->askForPlayerChosen(ganning, room->getAllPlayers(), "junweigive");
+                if (receiver != target)
+                    receiver->obtainCard(card);
+            } else {
+                room->loseHp(target, 1);
+                if (!target->isAlive()) return false;
+                if (target->hasEquip()) {
+                    int card_id = room->askForCardChosen(ganning, target, "e", objectName());
+                    target->addToPile("junwei-equip", card_id);
+                }
+            }
+        }
+        return false;
+    }
+};
+
+class JunweiGot: public TriggerSkill {
+public:
+    JunweiGot(): TriggerSkill("#junwei-got") {
+        events << EventPhaseChanging;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to != Player::NotActive || player->getPile("junwei-equip").length() == 0)
+            return false;
+        foreach(int card_id, player->getPile("junwei-equip")){
+            const Card *card = Sanguosha->getCard(card_id);
+
+            int equip_index = -1;
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            equip_index = static_cast<int>(equip->location());
+
+            QList<CardsMoveStruct> exchangeMove;
+            CardsMoveStruct move1;
+            move1.card_ids << card_id;
+            move1.to = player;
+            move1.to_place = Player::PlaceEquip;
+            move1.reason = CardMoveReason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, player->objectName());
+            exchangeMove.push_back(move1);
+            if(player->getEquip(equip_index) != NULL)
+            {
+                CardsMoveStruct move2;
+                move2.card_ids << player->getEquip(equip_index)->getId();
+                move2.to = NULL;
+                move2.to_place = Player::DiscardPile;
+                move2.reason = CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, player->objectName());
+                exchangeMove.push_back(move2);
+            }
+            LogMessage log;
+            log.from = player;
+            log.type = "$JunweiGot";
+            log.card_str = QString::number(card_id);
+            room->sendLog(log);
+
+            room->moveCardsAtomic(exchangeMove, true);
+        }
+        return false;
+    }
+};
+
 BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3);
     bgm_zhaoyun->addSkill("longdan");
@@ -1058,10 +1202,18 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_daqiao->addSkill(new Yanxiao);
     bgm_daqiao->addSkill(new Anxian);
 
+    General *bgm_ganning = new General(this, "bgm_ganning", "qun");
+    bgm_ganning->addSkill(new Yinling);
+    bgm_ganning->addSkill(new Junwei);
+    bgm_ganning->addSkill(new JunweiGot);
+    patterns.insert(".junwei", new JunweiPattern);
+    related_skills.insertMulti("junwei", "#junwei-got");
+
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();
     addMetaObject<TanhuCard>();
     addMetaObject<YanxiaoCard>();
+    addMetaObject<YinlingCard>();
 }
 
 ADD_PACKAGE(BGM)
