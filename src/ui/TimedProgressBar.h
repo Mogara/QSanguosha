@@ -4,6 +4,7 @@
 #include <QTimerEvent>
 #include <QShowEvent>
 #include <QPaintEvent>
+#include <QMutex>
 
 class TimedProgressBar : public QProgressBar
 {
@@ -13,15 +14,22 @@ public:
     {
         this->setTextVisible(false);
     }
-    inline void setTimerEnabled(bool enabled) { m_hasTimer = enabled; }
+    inline void setTimerEnabled(bool enabled) 
+    {
+        m_mutex.lock();
+        m_hasTimer = enabled;
+        m_mutex.unlock();
+    }
     inline void setCountdown(time_t maximum, time_t startVal = 0)
     {
+        m_mutex.lock();
         m_max = maximum;
         m_val = startVal;
+        m_mutex.unlock();
     }
     inline void setAutoHide(bool enabled) { m_autoHide = enabled; }
     inline void setUpdateInterval(time_t step) { m_step = step; }
-    virtual void showEvent(QShowEvent* showEvent);
+    virtual void show();
     virtual void hide();    
 signals:
     void timedOut();
@@ -30,6 +38,7 @@ protected:
     bool m_hasTimer;
     bool m_autoHide;
     int m_timer;
+    QMutex m_mutex;
     time_t m_step, m_max, m_val;
 };
 
