@@ -12,24 +12,28 @@ LuoyiCard::LuoyiCard(){
     target_fixed = true;
 }
 
-void LuoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded)){
-        room->broadcastSkillInvoke("luoyi");
-        source->setFlags("luoyi");
-    }
+void LuoyiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    source->setFlags("luoyi");
 }
 
-class NeoLuoyi: public ZeroCardViewAsSkill{
+class NeoLuoyi: public OneCardViewAsSkill{
 public:
-    NeoLuoyi():ZeroCardViewAsSkill("neoluoyi"){
+    NeoLuoyi():OneCardViewAsSkill("neoluoyi"){
+
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("LuoyiCard") && !player->isNude();
     }
 
-    virtual const Card *viewAs() const{
-        return new LuoyiCard;
+    virtual bool viewFilter(const Card *card) const{
+        return card->isKindOf("EquipCard");
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        LuoyiCard *card = new LuoyiCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
@@ -128,8 +132,7 @@ public:
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
             room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
-            QString choice = room->askForChoice(gongsun, "zhulou", "throw+losehp");
-            if(choice == "losehp" || !room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
+            if(!room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
                 room->loseHp(gongsun);
         }
         return false;

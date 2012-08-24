@@ -35,26 +35,25 @@ neoluoyi_skill.getTurnUseCard=function(self)
 	end		
 	if (slashtarget+dueltarget) > 0 and equipnum > 0 then
 		self:speak("luoyi")
-		return sgs.Card_Parse("@LuoyiCard=.")
+		local luoyicard
+		for _, card in sgs.qlist(self.player:getCards("he")) do
+			if card:isKindOf("EquipCard") and not self.player:hasEquip(card) then 
+				luoyicard = card
+				break
+			end
+		end
+		for _, card in sgs.qlist(self.player:getCards("he")) do
+			if card:isKindOf("EquipCard") and not card:isKindOf("Weapon") then 
+				luoyicard = card
+				break
+			end
+		end
+		return sgs.Card_Parse("@LuoyiCard=" .. luoyicard:getEffectiveId())
 	end
 end
 
 sgs.ai_skill_use_func.LuoyiCard=function(card,use,self)
 	use.card = card
-end
-
-sgs.ai_skill_cardask["@luoyi-discard"] = function(self, data)
-	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:isKindOf("EquipCard") and not self.player:hasEquip(card) then 
-			return "$" .. card:getEffectiveId()
-		end
-	end
-	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:isKindOf("EquipCard") and not card:isKindOf("Weapon") then 
-			return "$" .. card:getEffectiveId()
-		end
-	end
-	return "."
 end
 
 sgs.ai_use_priority.LuoyiCard = 9.2
@@ -114,23 +113,22 @@ sgs.ai_skill_invoke.zhulou = function(self, data)
 	return false
 end
 
-sgs.ai_skill_choice.zhulou = function(self, choices)
-	local weaponnum = 0
-	local weapon_card
+sgs.ai_skill_cardask["@zhulou-discard"] = function(self, data)
+	if self.player:getArmor() and self.player:getArmor():isKindOf("SilverLion") and self.player:isWounded() then
+		return "$" .. self.player:getArmor():getEffectiveId()
+	end
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:isKindOf("Weapon") then
-			weapon_card = card
-			weaponnum = weaponnum + 1
+		if card:isKindOf("EquipCard") and not self.player:hasEquip(card) then 
+			return "$" .. card:getEffectiveId()
 		end
 	end
-	if weaponnum > 0 then
-		return "throw"
-	else 
-		return "losehp"
+	for _, card in sgs.qlist(self.player:getCards("he")) do
+		if card:isKindOf("EquipCard") then 
+			return "$" .. card:getEffectiveId()
+		end
 	end
+	return "."
 end
-
-sgs.ai_skill_cardask["@zhulou-discard"] = sgs.ai_skill_cardask["@xiaoguo-discard"]
 
 function sgs.ai_skill_invoke.neojushou(self, data)
 	if not self.player:faceUp() then return true end
