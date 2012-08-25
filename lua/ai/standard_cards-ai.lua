@@ -604,7 +604,7 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
     if sgs.hujiasource and not self:isFriend(sgs.hujiasource) then return false end
     if sgs.lianlisource and not self:isFriend(sgs.lianlisource) then return false end
     if self.player:hasSkill("tiandu") then return true end
-    if self:hasSkills("leiji", self.enemies) and self:getFinalRetrial(sgs.hujiasource) == 2 then
+    if self:hasSkills("guidao", self.enemies) and self:getFinalRetrial(sgs.hujiasource) == 2 then
         return false
     end	
     if self:getDamagedEffects(self) then return false end
