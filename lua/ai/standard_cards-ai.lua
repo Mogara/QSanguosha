@@ -427,11 +427,11 @@ sgs.ai_skill_invoke.IceSword=function(self, data)
     end
 end
 
-function sgs.ai_slash_weaponfilter.guding_Blade(to)
+function sgs.ai_slash_weaponfilter.GudingBlade(to)
     return to:isKongcheng()
 end
 
-function sgs.ai_weapon_value.guding_Blade(self, enemy)
+function sgs.ai_weapon_value.GudingBlade(self, enemy)
     if not enemy then return end
     local value = 2
     if enemy:getHandcardNum() < 1 then value = 4 end
@@ -482,16 +482,16 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
     end
 end
 
-function sgs.ai_slash_weaponfilter.axe(to, self)
+function sgs.ai_slash_weaponfilter.Axe(to, self)
     return self:getOverflow() > 0
 end
 
-function sgs.ai_weapon_value.axe(self, enemy)
+function sgs.ai_weapon_value.Axe(self, enemy)
     if self:hasSkills("jiushi|jiuchi|luoyi|pojun",self.player) then return 6 end
     if enemy and enemy:getHp() < 3 then return 3 - enemy:getHp() end
 end
 
-sgs.ai_skill_cardask["Blade-slash"] = function(self, data, pattern, target)
+sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
     if target and self:isFriend(target) and not (target:hasSkill("leiji") and self:getCardsNum("Jink", target, "h") > 0) then
         return "."
     end
@@ -566,7 +566,7 @@ Spear_skill.getTurnUseCard=function(self,inclusive)
     return slash	
 end
 
-function sgs.ai_slash_weaponfilter.fan(to)
+function sgs.ai_slash_weaponfilter.Fan(to)
     local armor = to:getArmor()
     return armor and (armor:isKindOf("Vine") or armor:isKindOf("GaleShell"))
 end
@@ -612,7 +612,7 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 end
 
 function sgs.ai_armor_value.EightDiagram(player, self)
-    local haszj = self:hasSkills("leiji", self:getEnemies(player))
+    local haszj = self:hasSkills("guidao", self:getEnemies(player))
     if haszj then 
         return 2
     end
@@ -626,7 +626,7 @@ function sgs.ai_armor_value.RenwangShield()
     return 4
 end
 
-function sgs.ai_armor_value.silver_lion(player, self)
+function sgs.ai_armor_value.SilverLion(player, self)
     if self:hasWizard(self:getEnemies(player), true) then
         for _, player in sgs.qlist(self.room:getAlivePlayers()) do
             if player:containsTrick("lightning") then return 5 end
