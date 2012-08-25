@@ -310,7 +310,6 @@ public:
                     //fix this!
                     const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
                     if(card){
-                        room->showCard(source, card->getEffectiveId());
                         player->obtainCard(card);
                     }else{
                         room->loseHp(source);
@@ -998,7 +997,6 @@ void XinzhanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &)
             left.removeOne(card_id);
 
             source->obtainCard(Sanguosha->getCard(card_id));
-            room->showCard(source, card_id);
         }
 
         source->invoke("clearAG");

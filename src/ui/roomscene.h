@@ -299,7 +299,7 @@ private:
 
     // @todo: this function shouldn't be here. But it's here anyway, before someone find a better
     // home for it.
-    QString _translateMovementReason(const CardMoveReason& reason);
+    QString _translateMovement(const CardsMoveStruct& move);
 
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);

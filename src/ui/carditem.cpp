@@ -14,6 +14,7 @@
 
 void CardItem::_initialize()
 {
+    setFlag(QGraphicsItem::ItemIsMovable);
     m_opacityAtHome = 1.0;
     m_currentAnimation = NULL;
     _m_width = G_COMMON_LAYOUT.m_cardNormalWidth;
@@ -250,6 +251,7 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent){
 }
 
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent){
+    if (!(flags() & QGraphicsItem::ItemIsMovable)) return;
     QPointF newPos = mapToParent(mouseEvent->pos());
     QPointF totalMove = newPos - _m_lastMousePressScenePos;
     if(totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() 

@@ -59,7 +59,6 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
 
     room->getThread()->delay();
     target->obtainCard(card);
-    room->showCard(target, card_id);
 
     if(card->getSuit() != suit){
         DamageStruct damage;

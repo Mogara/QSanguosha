@@ -82,6 +82,7 @@ public:
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
     void doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target);
     int drawCard();
+    QList<int> drawCards(int num);
     const Card *peek();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL);
     void takeAG(ServerPlayer *player, int card_id);

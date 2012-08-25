@@ -218,7 +218,6 @@ public:
 
                 const Card *card = room->askForCard(source, ".enyuan", "@enyuanheart", QVariant(), NonTrigger);
                 if(card){
-                    room->showCard(source, card->getEffectiveId());
                     player->obtainCard(card);
                 }else{
                     room->loseHp(source);

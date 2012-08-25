@@ -24,10 +24,10 @@ return {
 	["judge"] = "判定",
 	["retrial"] = "改判",
 	["judgedone"] = "的判定结果",
-	["put"] = "放进弃牌堆",
+	["put"] = "放进",
 	["throw"] = "弃置",
-	["enter"] = "置入弃牌堆",
-	["backinto"] = "从游戏外移回到弃牌堆",		
+	["enter"] = "置入",
+	["backinto"] = "从游戏外移回到弃牌堆",
 	["draw"] = "摸牌",
 	["play"] = "出牌",
 	["discard"] = "弃牌",
@@ -51,6 +51,8 @@ return {
 	["no"] = "否",
 	["male"] = "男性",
 	["female"] = "女性",
+	["discardPile"] = "弃牌堆";
+	["drawPileTop"] = "牌堆顶";
 
 	["use upon"] = "对",
 	["yourself"] = "你";

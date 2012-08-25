@@ -111,7 +111,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
-    addAction(ui->actionMinimize_to_system_tray);
 
     systray = NULL;
 }
@@ -135,12 +134,6 @@ void MainWindow::restoreFromConfig(){
 void MainWindow::closeEvent(QCloseEvent *event){
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
-
-    if(systray){
-        systray->showMessage(windowTitle(), tr("Game is minimized"));
-        hide();
-        event->ignore();
-    }
 }
 
 MainWindow::~MainWindow()
@@ -372,7 +365,6 @@ void MainWindow::gotoStartScene(){
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
-    addAction(ui->actionMinimize_to_system_tray);
 
     systray = NULL;
     delete ClientInstance;

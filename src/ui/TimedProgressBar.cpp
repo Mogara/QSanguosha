@@ -34,6 +34,7 @@ void TimedProgressBar::timerEvent(QTimerEvent* timerEvent)
 {
     bool emitTimeout = false;
     bool doHide = false;
+    int val = 0;
     m_mutex.lock();
     m_val += m_step;
     if(m_val >= m_max){
@@ -46,8 +47,9 @@ void TimedProgressBar::timerEvent(QTimerEvent* timerEvent)
         }
         emitTimeout = true; 
     }
-    this->setValue(m_val);
+    val = m_val;
     m_mutex.unlock();
+    this->setValue(val);
     if (doHide)
         hide();
     if (emitTimeout)
@@ -76,7 +78,6 @@ void QSanCommandProgressBar::paintEvent(QPaintEvent *e)
     int val = this->m_val;
     int max = this->m_max;
     m_mutex.unlock();
-    if (val <= 0) return;
     int width = this->width();
     int height = this->height();
     QPainter painter(this);

@@ -10,7 +10,8 @@ class TimedProgressBar : public QProgressBar
 {
 Q_OBJECT
 public:
-    inline TimedProgressBar():m_hasTimer(false), m_autoHide(false), m_timer(0), m_step(0), m_max(0), m_val(0)
+    inline TimedProgressBar():m_hasTimer(false), m_autoHide(false), m_timer(0), 
+                              m_step(0), m_max(0), m_val(0), m_mutex(QMutex::Recursive)
     {
         this->setTextVisible(false);
     }

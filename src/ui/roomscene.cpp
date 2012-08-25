@@ -1586,6 +1586,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
         for (int j = 0; j < cards.size(); j++)
         {            
             CardItem* card = cards[j];
+            card->setFlag(QGraphicsItem::ItemIsMovable, false);
             int card_id = card->getId();
             if (!card_moves[i].card_ids.contains(card_id))
             {
@@ -1593,7 +1594,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
                 j--;
             }
             else card->setEnabled(true);
-            card->setFootnote(_translateMovementReason(movement.reason));
+            card->setFootnote(_translateMovement(movement));
             card->hideFootnote();
         }
         bringToFront(to_container);
@@ -1627,8 +1628,9 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
     }
 }
 
-QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
+QString RoomScene::_translateMovement(const CardsMoveStruct &move)
 {
+    const CardMoveReason &reason = move.reason;
     if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN) return QString();
     Photo* srcPhoto = name2photo[reason.m_playerId];
     Photo* dstPhoto = name2photo[reason.m_targetId];
@@ -1695,9 +1697,19 @@ QString RoomScene::_translateMovementReason(const CardMoveReason &reason)
     }
     else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_PUT){
         if(reason.m_reason == CardMoveReason::S_REASON_PUT)
+        {
             result.append(Sanguosha->translate("put"));
+            if (move.to_place == Player::DiscardPile)
+                result.append(Sanguosha->translate("discardPile"));
+            else if (move.to_place == Player::DrawPile)
+                result.append(Sanguosha->translate("drawPileTop"));
+        }
         else if (reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER){
             result.append(Sanguosha->translate("enter"));
+            if (move.to_place == Player::DiscardPile)
+                result.append(Sanguosha->translate("discardPile"));
+            else if (move.to_place == Player::DrawPile)
+                result.append(Sanguosha->translate("drawPileTop"));
         }
         else if (reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE){
             result.append(Sanguosha->translate("judgedone"));
@@ -3034,11 +3046,12 @@ void RoomScene::showCard(const QString &player_name, int card_id){
     GenericCardContainer* container = _getGenericCardContainer(Player::PlaceHand, (Player*)player);
     QList<CardItem*> card_items = container->cloneCardItems(card_ids);
     CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
-    card_items[0]->setFootnote(_translateMovementReason(reason));
     bringToFront(m_tablePile);
     CardsMoveStruct move;
     move.from_place = Player::PlaceHand;
     move.to_place = Player::PlaceTable;
+    move.reason = reason;
+    card_items[0]->setFootnote(_translateMovement(move));
     m_tablePile->addCardItems(card_items, move);
 
     QString card_str = QString::number(card_id);
