@@ -33,11 +33,12 @@ void TimedProgressBar::hide()
 void TimedProgressBar::timerEvent(QTimerEvent* timerEvent)
 {
     bool emitTimeout = false;
+    bool doHide = false;
     m_mutex.lock();
     m_val += m_step;
     if(m_val >= m_max){
         m_val = m_max;
-        if (m_autoHide) hide();
+        if (m_autoHide) doHide = true;
         else
         {            
             killTimer(m_timer);
@@ -47,10 +48,10 @@ void TimedProgressBar::timerEvent(QTimerEvent* timerEvent)
     }
     this->setValue(m_val);
     m_mutex.unlock();
+    if (doHide)
+        hide();
     if (emitTimeout)
-    {
         emit timedOut();
-    }
 }
 
 using namespace QSanProtocol;
