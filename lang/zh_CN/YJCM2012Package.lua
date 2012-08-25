@@ -22,6 +22,7 @@ return {
 	["caozhang"] = "曹彰",
 	["designer:caozhang"] = "潜龙勿用",
 	["illustrator:caozhang"] = "Yi章",
+	["cv:caozhang"] = "墨宣砚韵",
 	["jiangchi"] = "将驰",
 	[":jiangchi"] = "摸牌阶段，你可以选择一项：1、额外摸一张牌，若如此做，你不能使用或打出【杀】，直到回合结束。2、少摸一张牌，若如此做，出牌阶段你使用【杀】时无距离限制且你可以额外使用一张【杀】，直到回合结束。",
 	["#Jiangchi1"] = "%from 发动【%arg①】",
@@ -29,6 +30,9 @@ return {
 	["jiangchi:jiang"] = "将驰①：额外摸一张牌，不能使用或打出杀",
 	["jiangchi:chi"] = "将驰②：少摸一张牌，额外使用一张杀且无视距离",
 	["jiangchi:cancel"] = "不发动",
+	["$jiangchi1"] = "吾有美妾，可换骏马。", --额外摸一张牌
+	["$jiangchi2"] = "披坚执锐，临难不顾！", --少摸一张牌
+	["~caozhang"] = "难成卫霍之功，恨矣悲哉！",
 
 	["#wangyi"] = "决意的巾帼",
 	["wangyi"] = "王异",
