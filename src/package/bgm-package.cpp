@@ -1068,7 +1068,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* , ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent, Room* , ServerPlayer *player, QVariant &data) const{
         if (data.toString() != "yinling")
             return false;
         player->removePileByName("brocade");
