@@ -1058,6 +1058,24 @@ public:
     }
 };
 
+class YinlingClear: public TriggerSkill{
+public:
+    YinlingClear():TriggerSkill("#yinling-clear"){
+        events << EventLoseSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room* , ServerPlayer *player, QVariant &) const{
+        if (data.toString() != "yinling")
+            return false;
+        player->removePileByName("brocade");
+        return false;
+    }
+};
+
 class JunweiPattern: public CardPattern{
 public:
     virtual bool match(const Player *player, const Card *card) const{
@@ -1212,9 +1230,11 @@ BGMPackage::BGMPackage():Package("BGM"){
 
     General *bgm_ganning = new General(this, "bgm_ganning", "qun");
     bgm_ganning->addSkill(new Yinling);
+    bgm_ganning->addSkill(new YinlingClear);
     bgm_ganning->addSkill(new Junwei);
     bgm_ganning->addSkill(new JunweiGot);
     patterns.insert(".junwei", new JunweiPattern);
+    related_skills.insertMulti("yinling", "#yinling-clear");
     related_skills.insertMulti("junwei", "#junwei-got");
 
     addMetaObject<LihunCard>();

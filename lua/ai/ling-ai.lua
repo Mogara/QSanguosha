@@ -114,16 +114,13 @@ sgs.ai_skill_invoke.zhulou = function(self, data)
 end
 
 sgs.ai_skill_cardask["@zhulou-discard"] = function(self, data)
-	if self.player:getArmor() and self.player:getArmor():isKindOf("SilverLion") and self.player:isWounded() then
-		return "$" .. self.player:getArmor():getEffectiveId()
-	end
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:isKindOf("EquipCard") and not self.player:hasEquip(card) then 
+		if card:isKindOf("Weapon") and not self.player:hasEquip(card) then 
 			return "$" .. card:getEffectiveId()
 		end
 	end
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:isKindOf("EquipCard") then 
+		if card:isKindOf("Weapon") then 
 			return "$" .. card:getEffectiveId()
 		end
 	end
