@@ -1051,6 +1051,10 @@ public:
         return to_select->isBlack();
     }
 
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getPile("brocade").length() < 4;
+    }
+
     virtual const Card *viewAs(const Card *originalcard) const{
         YinlingCard *card = new YinlingCard;
         card->addSubcard(originalcard);
