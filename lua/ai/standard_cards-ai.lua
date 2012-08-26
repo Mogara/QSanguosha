@@ -7,6 +7,8 @@ local function hasExplicitRebel(room)
 end
 
 function SmartAI:slashProhibit(card,enemy)
+    local mode = self.room:getMode()
+    if mode:find("_mini_36") then return self.player:hasSkill("keji") end
     card = card or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
     for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
         local filter = sgs.ai_slash_prohibit[askill:objectName()]
