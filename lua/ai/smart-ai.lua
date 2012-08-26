@@ -2065,10 +2065,10 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
 	local sunshangxiang = self.room:findPlayerBySkillName("jieyin")
 	if sunshangxiang and sunshangxiang:isWounded() and self:isFriend(sunshangxiang) and not self.player:isWounded() 
-		and self.player:getGeneral():isMale() then
+		and self.player:isMale() then
 		self:sort(self.friends, "hp")
 		for _, friend in ipairs(self.friends) do
-			if friend:getGeneral():isMale() and friend:isWounded() then return end
+			if friend:isMale() and friend:isWounded() then return end
 		end
 		return "."
 	end

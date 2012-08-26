@@ -128,7 +128,7 @@ function SmartAI:useCardSlash(card, use)
                     use.card = card
                     if use.to then
                         use.to:append(friend)
-                        self:speak("hostile", self.player:getGeneral():isFemale())
+			self:speak("hostile", self.player:isFemale())
                         if self.slash_targets <= use.to:length() then return end
                     end
                 end
@@ -292,7 +292,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
         if not target:hasSkill("jueqing") then
             if target:hasSkill("rende") and self.player:hasSkill("jieming") then return "." end
             if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
-            if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
+            if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:isMale()) and not self.player:hasSkill("leiji") then return "." end
             if self.player:isChained() and self:isGoodChainTarget(self.player) then return "." end
         end
     else
@@ -344,7 +344,7 @@ function SmartAI:useCardPeach(card, use)
     if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
         self:sort(self.friends, "hp")
         for _, friend in ipairs(self.friends) do
-            if friend:isWounded() and friend:getGeneral():isMale() then return end
+            if friend:isWounded() and friend:isMale() then return end
         end
     end
         
@@ -386,7 +386,7 @@ function sgs.ai_slash_weaponfilter.DoubleSword(to, self)
 end
 
 function sgs.ai_weapon_value.DoubleSword(self, enemy)
-    if enemy and enemy:getGeneral():isMale() ~= self.player:getGeneral():isMale() then return 3 end
+    if enemy and enemy:isMale() ~= self.player:isMale() then return 3 end
 end
 
 sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target)
@@ -772,7 +772,7 @@ function SmartAI:useCardDuel(duel, use)
                 use.card = duel
                 if use.to then
                     use.to:append(target)
-                    self:speak("duel", self.player:getGeneral():isFemale())
+                    self:speak("duel", self.player:isFemale())
                 end
                 return
             end
@@ -806,7 +806,7 @@ function SmartAI:useCardDuel(duel, use)
             use.card = duel
             if use.to then
                 use.to:append(target)
-                self:speak("duel", self.player:getGeneral():isFemale())
+                self:speak("duel", self.player:isFemale())
             end
             return
         end
@@ -967,7 +967,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                 if use.to then
                     sgs.ai_skill_cardchosen[name] = self:getDangerousCard(enemy)
                     use.to:append(enemy)
-                    self:speak("hostile", self.player:getGeneral():isFemale())
+                    self:speak("hostile", self.player:isFemale())
                 end
                 return
             end
@@ -1010,7 +1010,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                 if use.to then
                     sgs.ai_skill_cardchosen[name] = self:getValuableCard(enemy)
                     use.to:append(enemy)
-                    self:speak("hostile", self.player:getGeneral():isFemale())
+                    self:speak("hostile", self.player:isFemale())
                 end
                 return
             end
@@ -1024,7 +1024,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                 if use.to then
                     sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "h")
                     use.to:append(enemy)
-                    self:speak("hostile", self.player:getGeneral():isFemale())
+                    self:speak("hostile", self.player:isFemale())
                 end
                 return	
             end
@@ -1054,7 +1054,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                     if use.to then 
                         sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "he") 
                         use.to:append(enemy)
-                        self:speak("hostile", self.player:getGeneral():isFemale())
+                        self:speak("hostile", self.player:isFemale())
                     end
                     return
                 else
@@ -1065,7 +1065,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                         else 
                             sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "h") end
                         use.to:append(enemy)
-                        self:speak("hostile", self.player:getGeneral():isFemale())
+                        self:speak("hostile", self.player:isFemale())
                     end
                     return
                 end
@@ -1180,7 +1180,7 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target,
             end 
         end
     end
-    self:speak("collateral", self.player:getGeneral():isFemale())
+    self:speak("collateral", self.player:isFemale())
     return "."
 end
 

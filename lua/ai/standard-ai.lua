@@ -885,13 +885,13 @@ end
 sgs.ai_skill_use_func.JieyinCard=function(card,use,self)
     self:sort(self.friends_noself, "hp")
     local lord = self.room:getLord()
-    if self:isFriend(lord) and not sgs.isLordHealthy()  and lord:getGeneral():isMale() and lord:isWounded() then
+    if self:isFriend(lord) and not sgs.isLordHealthy()  and lord:isMale() and lord:isWounded() then
         use.card=card
         if use.to then use.to:append(lord) end
         return
     end
     for _, friend in ipairs(self.friends_noself) do
-        if friend:getGeneral():isMale() and friend:isWounded() and
+        if friend:isMale() and friend:isWounded() and
             not (friend:hasSkill("longhun") and friend:getCards("he"):length()>2 ) and
             not (friend:hasSkill("hunzi") and friend:getMark("hunzi") == 0 and (friend:getSeat() - self.player:getSeat()) % (global_room:alivePlayerCount()) < 3) then 
             use.card=card
@@ -899,7 +899,7 @@ sgs.ai_skill_use_func.JieyinCard=function(card,use,self)
             return
         end
     end
-    if self.player:getGeneral():isMale() and self.player:isWounded() then
+    if self.player:isMale() and self.player:isWounded() then
         use.card = card
         if use.to then use.to:append(self.player) end
         return
@@ -1064,7 +1064,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
         local maxSlash = 0
         local friend_maxSlash
         for _, friend in ipairs(self.friends_noself) do
-            if (self:getCardsNum("Slash", friend)> maxSlash) and friend:getGeneral():isMale() then
+            if (self:getCardsNum("Slash", friend)> maxSlash) and friend:isMale() then
                 maxSlash=self:getCardsNum("Slash", friend)
                 friend_maxSlash = friend
             end
@@ -1089,7 +1089,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
         for _, enemy in ipairs(self.enemies) do
             --if zhugeliang_kongcheng and #males==1 and self:damageIsEffective(zhugeliang_kongcheng, sgs.DamageStruct_Normal, males[1]) 
                 --then table.insert(males, zhugeliang_kongcheng) end
-            if enemy:getGeneral():isMale() and not enemy:hasSkill("wuyan") then
+            if enemy:isMale() and not enemy:hasSkill("wuyan") then
                 if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then	zhugeliang_kongcheng=enemy
                 else
                     if #males == 0 and self:hasTrickEffective(duel, enemy) then table.insert(males, enemy)
@@ -1116,7 +1116,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
                 if self.player:isLord() or sgs.isRolePredictable() then 
                     local friend_maxSlash = findFriend_maxSlash(self,first)
                     if friend_maxSlash then second=friend_maxSlash end
-                elseif (lord:getGeneral():isMale()) and (not lord:hasSkill("wuyan")) then 
+                elseif (lord:isMale()) and (not lord:hasSkill("wuyan")) then 
                     if (self.role=="rebel") and (not first:isLord()) and self:damageIsEffective(lord, sgs.DamageStruct_Normal, first) then
                         second = lord
                     else
