@@ -128,7 +128,7 @@ function SmartAI:useCardSlash(card, use)
                     use.card = card
                     if use.to then
                         use.to:append(friend)
-			self:speak("hostile", self.player:isFemale())
+                        self:speak("hostile", self.player:isFemale())
                         if self.slash_targets <= use.to:length() then return end
                     end
                 end
