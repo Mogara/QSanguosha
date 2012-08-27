@@ -100,6 +100,12 @@ void Skill::playAudioEffect(int index) const{
         QString filename;
         if(index >= 0 && index < sources.length())
             filename = sources.at(index);
+        else if (index >= sources.length()) {
+            while (index >= sources.length()) {
+                index -= sources.length();
+            }
+            filename = sources.at(index);
+        }
         else
             filename = sources.first();
 
