@@ -685,7 +685,7 @@ sgs.ai_skill_cardchosen.junwei = function(self, who, flags)
 end
 
 sgs.ai_skill_cardask["@junwei-show"] = function(self, data)
-	local ganning = data.toPlayer()
+	local ganning = data:toPlayer()
 	local cards = self.player:getHandcards()
 	cards=sgs.QList2Table(cards)
 	for _,card in ipairs(cards) do

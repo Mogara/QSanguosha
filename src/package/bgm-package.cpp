@@ -19,7 +19,7 @@ public:
                     && resp.m_who != NULL && !resp.m_who->isKongcheng()
                     && player->askForSkillInvoke(objectName(), toChongzhen))
             {
-                room->broadcastSkillInvoke("chongzhen", 1);
+                room->broadcastSkillInvoke(objectName());
                 int card_id = room->askForCardChosen(player, resp.m_who, "h", objectName());
                 CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                 room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
@@ -31,7 +31,7 @@ public:
                 foreach(ServerPlayer *p, use.to){
                     QVariant toChongzhen = QVariant::fromValue((PlayerStar)p);
                     if(p->isKongcheng() || !player->askForSkillInvoke(objectName(), toChongzhen)) continue;
-                    room->broadcastSkillInvoke("chongzhen", 2);
+                    room->broadcastSkillInvoke(objectName());
                     int card_id = room->askForCardChosen(player, p, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
@@ -43,6 +43,7 @@ public:
 };
 
 LihunCard::LihunCard(){
+    mute = true;
 }
 
 bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -280,6 +281,7 @@ public:
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->to != sp_pangtong || move->to_place != Player::PlaceHand || move->to == move->from)
                 return false;
+            room->broadcastSkillInvoke(objectName());
             foreach(int card_id, move->card_ids){
                 const Card* card = Sanguosha->getCard(card_id);
                 room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
@@ -288,6 +290,7 @@ public:
         else if(triggerEvent == CardDrawing){
             if(room->getTag("FirstRound").toBool())
                 return false;
+            room->broadcastSkillInvoke(objectName());
             card_id = data.toInt();
             const Card* card = Sanguosha->getCard(card_id);
             room->moveCardTo(card, NULL, NULL, Player::DiscardPile, reason);
@@ -336,6 +339,7 @@ public:
 
     void doZuixiang(ServerPlayer *player) const{
         Room *room = player->getRoom();
+        room->broadcastSkillInvoke("zuixiang");
 
         QList<int> ids = room->getNCards(3);
         player->addToPile("dream", ids, true);
@@ -574,8 +578,12 @@ bool TanhuCard::targetFilter(const QList<const Player *> &targets, const Player 
 void TanhuCard::use(Room *room, ServerPlayer *lvmeng, QList<ServerPlayer *> &targets) const{
     bool success = lvmeng->pindian(targets.first(), "tanhu", this);
     if(success){
+        room->broadcastSkillInvoke("tanhu", 2);
         room->setPlayerFlag(targets.first(), "TanhuTarget");
         room->setFixedDistance(lvmeng, targets.first(), 1);
+    }
+    else {
+        room->broadcastSkillInvoke("tanhu", 3);
     }
 }
 
@@ -621,6 +629,10 @@ public:
 
         return false;
     }
+	
+	virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return 1;
+    }
 };
 
 class MouduanStart: public GameStartSkill{
@@ -657,6 +669,7 @@ public:
         if(triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from == player && (player->getMark("@wu") > 0) && player->getHandcardNum() <= 2){
+                room->broadcastSkillInvoke(objectName());
                 player->loseMark("@wu");
                 player->gainMark("@wen");
                 room->detachSkillFromPlayer(player, "jiang");
@@ -670,6 +683,7 @@ public:
                 room->askForDiscard(lvmeng, "mouduan", 1, 1, false, true);
                 if(lvmeng->getHandcardNum() > 2)
                 {
+                    room->broadcastSkillInvoke(objectName());
                     lvmeng->loseMark("@wen");
                     lvmeng->gainMark("@wu");
                     room->detachSkillFromPlayer(lvmeng, "yingzi");

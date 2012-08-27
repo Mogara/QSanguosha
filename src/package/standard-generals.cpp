@@ -672,7 +672,10 @@ public:
            zhuge->askForSkillInvoke(objectName()))
         {
             Room *room = zhuge->getRoom();
-            room->broadcastSkillInvoke(objectName());
+            int index = qrand() % 2 + 1;
+            if (!zhuge->hasInnateSkill(objectName()) && zhuge->hasSkill("zhiji"))
+                index += 2;
+            room->broadcastSkillInvoke(objectName(), index);
 
             int n = qMin(5, room->alivePlayerCount());
             room->askForGuanxing(zhuge, room->getNCards(n, false), false);
@@ -853,7 +856,12 @@ public:
     virtual int getDrawNum(ServerPlayer *zhouyu, int n) const{
         Room *room = zhouyu->getRoom();
         if(room->askForSkillInvoke(zhouyu, objectName())){
-            room->broadcastSkillInvoke(objectName());
+            int index = qrand() % 2 + 1;
+            if (!zhouyu->hasInnateSkill(objectName()) && zhouyu->hasSkill("hunzi"))
+                index += 4;
+            if (!zhouyu->hasInnateSkill(objectName()) && zhouyu->hasSkill("mouduan"))
+                index += 2;
+            room->broadcastSkillInvoke(objectName(), index);
             return n + 1;
         }else
             return n;
@@ -896,7 +904,12 @@ public:
                         lvmeng->getSlashCount() == 0 &&
                         lvmeng->askForSkillInvoke("keji"))
                 {
-                    room->broadcastSkillInvoke("keji");
+                    if (lvmeng->getHandcardNum() > lvmeng->getMaxCards()) {
+                        int index = qrand() % 2 + 1;
+                        if (!lvmeng->hasInnateSkill(objectName()) && lvmeng->hasSkill("mouduan"))
+                            index += 2;
+                        room->broadcastSkillInvoke(objectName(), index);
+                    }
 
                     lvmeng->skip(Player::Discard);
                 }
@@ -1408,7 +1421,8 @@ public:
            zhuge->askForSkillInvoke(objectName()))
         {
             Room *room = zhuge->getRoom();
-            room->broadcastSkillInvoke("guanxing");
+            int index = qrand() % 2 + 1;
+            room->broadcastSkillInvoke("guanxing", index);
 
             room->askForGuanxing(zhuge, room->getNCards(5, false), false);
         }

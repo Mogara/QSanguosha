@@ -391,7 +391,10 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
 
     bool good = false;
     if(x == 1){
-        room->broadcastSkillInvoke("yinghun", 1);
+        if (effect.from->hasInnateSkill("yinghun") || !effect.from->hasSkill("hunzi"))
+            room->broadcastSkillInvoke("yinghun", 1);
+        else
+            room->broadcastSkillInvoke("yinghun", 3);
 
         effect.to->drawCards(1);
         room->askForDiscard(effect.to, "yinghun", 1, 1, false, true);
@@ -399,14 +402,20 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
     }else{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
-            room->broadcastSkillInvoke("yinghun", 2);
+            if (effect.from->hasInnateSkill("yinghun") || !effect.from->hasSkill("hunzi"))
+                room->broadcastSkillInvoke("yinghun", 2);
+            else
+                room->broadcastSkillInvoke("yinghun", 4);
 
             effect.to->drawCards(1);
             x = qMin(x, effect.to->getCardCount(true));
             room->askForDiscard(effect.to, "yinghun", x, x, false, true);
             good = false;
         }else{
-            room->broadcastSkillInvoke("yinghun", 1);
+            if (effect.from->hasInnateSkill("yinghun") || !effect.from->hasSkill("hunzi"))
+                room->broadcastSkillInvoke("yinghun", 1);
+            else
+                room->broadcastSkillInvoke("yinghun", 3);
 
             effect.to->drawCards(x);
             room->askForDiscard(effect.to, "yinghun", 1, 1, false, true);

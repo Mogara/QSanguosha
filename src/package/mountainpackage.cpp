@@ -448,7 +448,10 @@ public:
         if(use.from->objectName() == sunce->objectName() || use.to.contains(sunce)){
             if(use.card->isKindOf("Duel") || (use.card->isKindOf("Slash") && use.card->isRed())){
                 if(sunce->askForSkillInvoke(objectName(), data)){
-                    sunce->getRoom()->broadcastSkillInvoke(objectName());
+                    int index = qrand() % 2 + 1;
+                    if (!sunce->hasInnateSkill(objectName()) && sunce->hasSkill("mouduan"))
+                        index += 2;
+                    room->broadcastSkillInvoke(objectName(), index);
                     sunce->drawCards(1);
                 }
             }
