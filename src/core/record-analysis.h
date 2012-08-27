@@ -24,6 +24,8 @@ public:
     QString getRecordChat() const;
 
 private:
+    PlayerRecordStruct *getPlayer(QString object_name, const QString &addition_name = QString());
+
     QMap<QString, PlayerRecordStruct *> m_recordMap;
     QStringList m_recordPackages, m_recordWinners;
     QStringList m_recordGameMode;
@@ -33,6 +35,9 @@ private:
 struct PlayerRecordStruct{
     PlayerRecordStruct();
 
+    bool isNull();
+
+    QString m_additionName;
     QString m_generalName, m_general2Name;
     QString m_screenName;
     QString m_statue;
