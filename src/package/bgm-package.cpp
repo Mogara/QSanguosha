@@ -505,8 +505,8 @@ public:
                 room->sendLog(log);
 
                 room->slashResult(effect, NULL);
-            }
-            room->slashResult(effect, jink);
+            } else
+                room->slashResult(effect, jink);
 
             return true;
         }
