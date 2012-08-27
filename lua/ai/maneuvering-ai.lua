@@ -37,7 +37,7 @@ sgs.ai_view_as.Fan = function(card, player, card_place)
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
 	if card:isKindOf("Slash") and not (card:isKindOf("FireSlash") or card:isKindOf("ThunderSlash")) then
-		return ("fire_slash:fan[%s:%s]=%d"):format(suit, number, card_id)
+		return ("fire_slash:Fan[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
 
@@ -60,7 +60,7 @@ fan_skill.getTurnUseCard=function(self)
 	local suit = slash_card:getSuitString()
 	local number = slash_card:getNumberString()
 	local card_id = slash_card:getEffectiveId()
-	local card_str = ("fire_slash:fan[%s:%s]=%d"):format(suit, number, card_id)
+	local card_str = ("fire_slash:Fan[%s:%s]=%d"):format(suit, number, card_id)
 	local fireslash = sgs.Card_Parse(card_str)
 	assert(fireslash)
 	
