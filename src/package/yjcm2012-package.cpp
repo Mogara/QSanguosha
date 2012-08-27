@@ -744,13 +744,23 @@ public:
         view_as_skill = new LihuoViewAsSkill;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == DamageDone){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.card && damage.card->isKindOf("Slash") && damage.card->getSkillName() == objectName())
-                player->tag["Invokelihuo"] = true;
+                damage.from->tag["Invokelihuo"] = true;
         }
-        else if(player->tag.value("Invokelihuo", false).toBool()){
+        else if(TriggerSkill::triggerable(player) && player->tag.value("Invokelihuo", false).toBool()){
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = objectName();
+            room->sendLog(log);
+
             player->tag["Invokelihuo"] = false;
             room->loseHp(player, 1);
         }
