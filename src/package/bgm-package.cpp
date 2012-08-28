@@ -848,7 +848,7 @@ public:
 
                 QList<ServerPlayer *> victims;
 
-                foreach(ServerPlayer *p, room->getAlivePlayers()){
+                foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                     if(p->getKingdom() == "shu"){
                         if(!p->tag.value("ShichouTarget").isNull()
                                 && p->tag.value("ShichouTarget").value<PlayerStar>() == player)
