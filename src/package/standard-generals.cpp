@@ -857,10 +857,13 @@ public:
         Room *room = zhouyu->getRoom();
         if(room->askForSkillInvoke(zhouyu, objectName())){
             int index = qrand() % 2 + 1;
-            if (!zhouyu->hasInnateSkill(objectName()) && zhouyu->hasSkill("hunzi"))
-                index += 4;
-            if (!zhouyu->hasInnateSkill(objectName()) && zhouyu->hasSkill("mouduan"))
-                index += 2;
+            if (!zhouyu->hasInnateSkill(objectName())) {
+                if (zhouyu->hasSkill("mouduan"))
+                    index += 2;
+                else if (zhouyu->hasSkill("hunzi"))
+                    index += 4;
+            }
+
             room->broadcastSkillInvoke(objectName(), index);
             return n + 1;
         }else

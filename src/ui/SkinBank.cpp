@@ -358,7 +358,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
 
     QString key = QString(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(category).arg(eventName);
 
-    if (index == -1)
+    if (index < 0)
         fileName = getRandomAudioFileName(key);
     else
     {
@@ -366,7 +366,11 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
         if(!fileNames.isEmpty())
         {
             if (fileNames.length() >= index) return fileNames[index - 1];
-            else return fileNames[qrand() % fileNames.length()];
+            else {
+                while (index > fileNames.length())
+                    index -= fileNames.length();
+                return fileNames[index - 1];
+            }
         }
     }
 
@@ -377,12 +381,16 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
         if(skill) fileNames = skill->getSources();
         if(!fileNames.isEmpty())
         {
-            if (index == -1)
+            if (index < 0)
                 fileName = fileNames.at(qrand() % fileNames.length());
             else
             {
                 if (fileNames.length() >= index) return fileNames[index - 1];
-                else return fileNames[qrand() % fileNames.length()];
+                else {
+                    while (index > fileNames.length())
+                        index -= fileNames.length();
+                    return fileNames[index - 1];
+                }
             }
         }
     }
