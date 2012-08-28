@@ -39,8 +39,8 @@ protected:
     bool m_hasTimer;
     bool m_autoHide;
     int m_timer;
-    QMutex m_mutex;
     time_t m_step, m_max, m_val;
+    QMutex m_mutex;
 };
 
 #include "protocol.h"
