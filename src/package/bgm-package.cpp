@@ -340,6 +340,10 @@ public:
     void doZuixiang(ServerPlayer *player) const{
         Room *room = player->getRoom();
         room->broadcastSkillInvoke("zuixiang");
+		if (player->getPile("dream").isEmpty()) {
+            room->broadcastInvoke("animate", "lightbox:$zuixiang:3000");
+            room->getThread()->delay(3000);
+        }
 
         QList<int> ids = room->getNCards(3);
         player->addToPile("dream", ids, true);
