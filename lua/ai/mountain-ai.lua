@@ -1,4 +1,106 @@
-sgs.ai_skill_invoke.qiaobian = true
+-- sgs.ai_skill_invoke.qiaobian = true
+
+sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, include_equip)
+	local to_discard = {}
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards, true)
+	local card = cards[1]
+	table.insert(to_discard, card:getEffectiveId())
+	if #to_discard < 1 then return {} end
+	current_phase = self.player:getMark("qiaobianPhase")
+	if current_phase == sgs.Player_Judge then
+		if (self.player:containsTrick("supply_shortage") and self.player:getHp() > self.player:getHandcardNum()) or
+			(self.player:containsTrick("indulgence") and self.player:getHandcardNum() > self.player:getHp()-1) or
+			(self.player:containsTrick("lightning") and not self:hasWizard(self.friends) and self:hasWizard(self.enemies)) or
+			(self.player:containsTrick("lightning") and #self.friends > #self.enemies) then
+			return to_discard
+		end
+	elseif current_phase == sgs.Player_Draw then
+		local cardstr = sgs.ai_skill_use["@@tuxi"](self, "@tuxi")
+		if cardstr:match("->") then
+			return to_discard
+		end
+	elseif current_phase == sgs.Player_Play then
+		self:sortByKeepValue(cards)
+		table.remove(to_discard)
+		table.insert(to_discard, cards[1]:getEffectiveId())
+		--[[self:sort(self.enemies, "hp")
+		for _, friend in ipairs(self.friends) do
+			-- if not friend:getCards("j"):isEmpty() and card_for_qiaobian(self, friend, "target") then
+			if not friend:getCards("j"):isEmpty() then
+				return to_discard
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			-- if not friend:getCards("e"):isEmpty() and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, "target") then
+			if not friend:getCards("e"):isEmpty() and self:hasSkills(sgs.lose_equip_skill, friend) then
+				return to_discard
+			end
+		end
+
+		local top_value = 0
+		for _, hcard in ipairs(cards) do
+			if not hcard:isKindOf("Jink") then
+				if self:getUseValue(hcard) > top_value then	top_value = self:getUseValue(hcard) end
+			end
+		end
+		if top_value >= 3.7 and #(self:getTurnUse())>0 then return {} end
+
+		local targets = {}
+		for _, enemy in ipairs(self.enemies) do
+			-- if card_for_qiaobian(self, enemy, "target") then
+			if not enemy:getCards("e"):isEmpty() then
+				return to_discard
+			end
+		end]]
+		-- if self.player:getHandcardNum()-2 > self.player:getHp() then return "." end
+		self:sort(self.enemies, "hp")
+		for _, friend in ipairs(self.friends) do
+			if not friend:getCards("j"):isEmpty() and card_for_qiaobian(self, friend, ".") then
+				-- return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
+				return to_discard
+			end
+		end
+
+		for _, friend in ipairs(self.friends_noself) do
+			if not friend:getCards("e"):isEmpty() and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, ".") then
+				return to_discard
+			end
+		end
+
+		local top_value = 0
+		for _, hcard in ipairs(cards) do
+			if not hcard:isKindOf("Jink") then
+				if self:getUseValue(hcard) > top_value then	top_value = self:getUseValue(hcard) end
+			end
+		end
+		if top_value >= 3.7 and #(self:getTurnUse())>0 then return "." end
+
+		local targets = {}
+		for _, enemy in ipairs(self.enemies) do
+			if card_for_qiaobian(self, enemy, ".") then
+				table.insert(targets, enemy)
+			end
+		end
+		
+		if #targets > 0 then
+			self:sort(targets, "defense")
+			-- return "@QiaobianCard=" .. card:getEffectiveId() .."->".. targets[#targets]:objectName()
+			return to_discard
+		end
+	elseif current_phase == sgs.Player_Discard then
+		self:sortByKeepValue(cards)
+		table.remove(to_discard)
+		table.insert(to_discard, cards[1]:getEffectiveId())
+		if self.player:getHandcardNum()-1 > self.player:getHp() then
+			return to_discard
+		end
+	end
+
+	return {}
+end
 
 local function card_for_qiaobian(self, who, return_prompt)
 	local card, target
@@ -38,7 +140,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 			end
 		end
 	else
-		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():isKindOf("GaleShell")) then return end
+		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():isKindOf("GaleShell")) then return nil end
 		local card_id = self:askForCardChosen(who, "e", "snatch")
 		if card_id >= 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
 		local targets = {}
@@ -90,42 +192,32 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	self:sortByUseValue(cards, true)
 	local card = cards[1]
 
-	if prompt == "@qiaobian-judge" then
-		if (self.player:containsTrick("supply_shortage") and self.player:getHp() > self.player:getHandcardNum()) or
-			(self.player:containsTrick("indulgence") and self.player:getHandcardNum() > self.player:getHp()-1) or
-			(self.player:containsTrick("lightning") and not self:hasWizard(self.friends) and self:hasWizard(self.enemies)) or
-			(self.player:containsTrick("lightning") and #self.friends > #self.enemies) then
-			return "@QiaobianCard=" .. card:getEffectiveId() .."->."
-		end
-	end
-
-	if prompt == "@qiaobian-draw" then
+	if prompt == "@qiaobian-2" then
 		local cardstr = sgs.ai_skill_use["@@tuxi"](self, "@tuxi")
 		if cardstr:match("->") then
 			local targetstr = cardstr:split("->")[2]
-			return "@QiaobianCard=" .. card:getEffectiveId() .. "->" .. targetstr
+			-- return "@QiaobianCard=." .. card:getEffectiveId() .. "->" .. targetstr
+			return "@QiaobianCard=.->" .. targetstr
 		else
 			return "."
 		end
 	end
 
-	if prompt == "@qiaobian-play" then
+	if prompt == "@qiaobian-3" then
 		-- if self.player:getHandcardNum()-2 > self.player:getHp() then return "." end
 
 		self:sort(self.enemies, "hp")
-		local has_armor = true
-		local judge
 		for _, friend in ipairs(self.friends) do
 			if not friend:getCards("j"):isEmpty() and card_for_qiaobian(self, friend, ".") then
-				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
+				-- return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
+				return "@QiaobianCard=.->".. friend:objectName()
 			end
 		end
 
 		for _, friend in ipairs(self.friends_noself) do
 			if not friend:getCards("e"):isEmpty() and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, ".") then
-				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
+				return "@QiaobianCard=.->".. friend:objectName()
 			end
-			if not friend:getArmor() then has_armor = false end
 		end
 
 		local top_value = 0
@@ -145,13 +237,8 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 		
 		if #targets > 0 then
 			self:sort(targets, "defense")
-			return "@QiaobianCard=" .. card:getEffectiveId() .."->".. targets[#targets]:objectName()
-		end
-	end
-
-	if prompt == "@qiaobian-discard" then
-		if self.player:getHandcardNum()-1 > self.player:getHp() then
-			return "@QiaobianCard=" .. card:getEffectiveId() .."->."
+			-- return "@QiaobianCard=" .. card:getEffectiveId() .."->".. targets[#targets]:objectName()
+			return "@QiaobianCard=.->".. targets[#targets]:objectName()
 		end
 	end
 
@@ -443,7 +530,9 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 
 		if zhiba_str then
 			use.card = sgs.Card_Parse(zhiba_str)
-			if use.to then use.to:append(lord) end
+			if use.to then 
+				use.to:append(lord) 
+			end
 			return
 		end
 	end
@@ -456,7 +545,11 @@ sgs.ai_skill_choice.zhiba_pindian = function(self, choices)
 	end
 end
 
-function sgs.ai_skill_pindian.zhiba_pindian(minusecard, self, requestor, maxcard)
+sgs.ai_skill_choice.sunce_zhiba = function(self, choices)
+	return "yes"
+end
+
+function sgs.ai_skill_pindian.zhiba(minusecard, self, requestor, maxcard)
 	local cards, maxcard = sgs.QList2Table(self.player:getHandcards())
 	local function compare_func(a, b)
 		return a:getNumber() > b:getNumber()
@@ -466,10 +559,6 @@ function sgs.ai_skill_pindian.zhiba_pindian(minusecard, self, requestor, maxcard
 		if self:getUseValue(card) < 6 then maxcard = card break end
 	end
 	return maxcard or cards[1]
-end
-
-sgs.ai_skill_choice.sunce_zhiba = function(self, choices)
-	return "yes"
 end
 
 function sgs.ai_card_intention.ZhibaCard(card, from, tos, source)
