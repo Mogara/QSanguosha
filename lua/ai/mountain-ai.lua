@@ -549,7 +549,7 @@ sgs.ai_skill_choice.sunce_zhiba = function(self, choices)
 	return "yes"
 end
 
-function sgs.ai_skill_pindian.zhiba(minusecard, self, requestor, maxcard)
+function sgs.ai_skill_pindian.zhiba_pindian(minusecard, self, requestor, maxcard)
 	local cards, maxcard = sgs.QList2Table(self.player:getHandcards())
 	local function compare_func(a, b)
 		return a:getNumber() > b:getNumber()
