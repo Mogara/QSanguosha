@@ -1,6 +1,5 @@
-
-setPile:118,122,81,119,136,37,71,70
+setPile:28,27,26,25,24,142,118,82,33,122,81,136,37,71,70
 general:guanyu role:rebel starter:true singleTurn:lord+loyalist draw:2 equip:57 
 general:sp_pangde role:loyalist hp:1 draw:0 
-general:caoren role:lord hp:1 draw:0 hand:129 
+general:caoren role:lord hp:1 draw:0 hand:129
 extraOptions:gameOverIfExtraCardDrawn:lord+loyalist
