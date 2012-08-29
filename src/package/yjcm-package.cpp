@@ -763,6 +763,7 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
             room->useCard(card_use, false);
         }
     }else if(choice == "draw"){
+        room->broadcastSkillInvoke("mingce", 1);
         effect.to->drawCards(1, true);
     }
 }
@@ -787,6 +788,13 @@ public:
         mingceCard->addSubcard(originalCard);
 
         return mingceCard;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        if (card->isKindOf("Slash"))
+            return 2;
+        else
+            return 0;
     }
 };
 
