@@ -128,7 +128,7 @@ return {
 	["#bgm_ganning"] = "怀铃的乌羽",
 	["bgm_ganning"] = "☆SP甘宁",
 	["&bgm_ganning"] = "甘宁",
-	["illustrator:bgm_ganning"] = "",
+	["illustrator:bgm_ganning"] = "张帅",
 	["designer:bgm_ganning"] = "飞雪",
 	["yinling"] = "银铃",
 	[":yinling"] = "出牌阶段，你可以弃置一张黑色牌并指定一名其他角色。若如此做，你获得其一张牌并置于你的武将牌上，称为“锦”。（数量最多为四）",
