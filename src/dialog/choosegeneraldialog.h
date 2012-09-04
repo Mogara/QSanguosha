@@ -16,6 +16,7 @@ class OptionButton : public QToolButton
     Q_OBJECT
 public:
     explicit OptionButton(const QString icon_path, const QString &caption = "", QWidget *parent = 0);
+    virtual QSize sizeHint() const { return iconSize(); }
 
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *);
