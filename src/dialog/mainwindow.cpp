@@ -704,6 +704,7 @@ void MainWindow::on_actionRecord_analysis_triggered(){
                                                     location,
                                                     tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
+    if(filename.isEmpty()) return;
 
     QDialog *rec_dialog = new QDialog(this);
     rec_dialog->setWindowTitle(tr("Record Analysis"));
@@ -772,7 +773,7 @@ void MainWindow::on_actionRecord_analysis_triggered(){
         table->setItem(i, 8, item);
 
         item = new QTableWidgetItem;
-  //      item->setText(Sanguosha->translate(rec->m_designation));
+        item->setText(Sanguosha->translate(rec->m_designation.join(",")));
         table->setItem(i, 9, item);
         i++;
     }
