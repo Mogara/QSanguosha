@@ -77,6 +77,7 @@ public:
     void kick(const QString &to_kick);
     bool save(const QString &filename) const;
     QList<QString> getRecords() const;
+    QString getReplayPath() const;
     void setLines(const QString &skill_name);
     QString getSkillLine() const;
     Replayer *getReplayer() const;

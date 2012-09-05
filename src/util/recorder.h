@@ -41,6 +41,8 @@ public:
     int getDuration() const;
     qreal getSpeed();
 
+    QString getPath() const;
+
     bool m_isOldVersion;
     int m_commandSeriesCounter;
 

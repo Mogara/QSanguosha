@@ -2920,7 +2920,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    RecAnalysis *record = new RecAnalysis;
+    RecAnalysis *record = new RecAnalysis(ClientInstance->getReplayPath());
     QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
 
     static QStringList labels;

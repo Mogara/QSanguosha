@@ -993,6 +993,13 @@ QList<QString> Client::getRecords() const{
         return QList<QString>();
 }
 
+QString Client::getReplayPath() const{
+    if(replayer)
+        return replayer->getPath();
+    else
+        return QString();
+}
+
 void Client::setLines(const QString &filename){
     QRegExp rx(".+/(\\w+\\d?).ogg");
     if(rx.exactMatch(filename)){
