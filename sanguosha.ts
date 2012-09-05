@@ -2681,11 +2681,31 @@
     </message>
     <message>
         <location filename="src/core/record-analysis.cpp" line="320"/>
+        <source>Vanguard</source>
+        <translation>破敌先锋</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="321"/>
+        <source>Fierce Lord</source>
+        <translation>一世枭雄</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="322"/>
+        <source>Legatus</source>
+        <translation>破军功臣</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="323"/>
+        <source>Frightful Lord</source>
+        <translation>势敌万军</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="324"/>
         <source>Blood Judgement</source>
         <translation>嗜血判官</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="330"/>
+        <location filename="src/core/record-analysis.cpp" line="334"/>
         <source>Unrealized Aspiration</source>
         <translation>大业未成</translation>
     </message>
@@ -2710,22 +2730,22 @@
         <translation>和平主义者</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="321"/>
+        <location filename="src/core/record-analysis.cpp" line="325"/>
         <source>Rampage</source>
         <translation>横扫千军</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="327"/>
+        <location filename="src/core/record-analysis.cpp" line="331"/>
         <source>Master Tank</source>
         <translation>我是肉盾</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="326"/>
+        <location filename="src/core/record-analysis.cpp" line="330"/>
         <source>Fire Target</source>
         <translation>集火目标</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="322"/>
+        <location filename="src/core/record-analysis.cpp" line="326"/>
         <source>Wrath Warlord</source>
         <translation>暴走战神</translation>
     </message>
@@ -2735,12 +2755,12 @@
         <translation>天道威仪</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="324"/>
+        <location filename="src/core/record-analysis.cpp" line="328"/>
         <source>Recovery</source>
         <translation>妙手回春</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="323"/>
+        <location filename="src/core/record-analysis.cpp" line="327"/>
         <source>Peaceful</source>
         <translation>甘霖之润</translation>
     </message>
@@ -2755,12 +2775,12 @@
         <translation>MVP</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="328"/>
+        <location filename="src/core/record-analysis.cpp" line="332"/>
         <source>War Spirit</source>
         <translation>军魂</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="329"/>
+        <location filename="src/core/record-analysis.cpp" line="333"/>
         <source>Conspiracy</source>
         <translation>老谋深算</translation>
     </message>

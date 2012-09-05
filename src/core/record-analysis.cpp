@@ -317,6 +317,10 @@ void RecAnalysis::setDesignation(){
     addDesignation(tr("Awe Prestige"), MostKill|MostDamage, true, "lord", true);
     addDesignation(tr("Wisely Loyalist"), ZeroDamaged, true, "lord", true, false, true);
 
+    addDesignation(tr("Vanguard"), MostKill, true, "~lord");
+    addDesignation(tr("Fierce Lord"), MostKill, true, "lord");
+    addDesignation(tr("Legatus"), MostDamage, true, "~lord");
+    addDesignation(tr("Frightful Lord"), MostDamage, true, "lord");
     addDesignation(tr("Blood Judgement"), MostKill, findPlayerOfKills(m_recordPlayers/2));
     addDesignation(tr("Rampage"), MostKill, findPlayerOfKills(m_recordPlayers-1));
     addDesignation(tr("Wrath Warlord"), MostDamage, findPlayerOfDamage(15));
