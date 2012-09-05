@@ -15,6 +15,7 @@
 #include "audio.h"
 #include "SkinBank.h"
 #include "wind.h"
+#include "record-analysis.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -2621,7 +2622,7 @@ void RoomScene::onGameOver(){
 #endif
 
     QDialog *dialog = new QDialog(main_window);
-    dialog->resize(500, 600);
+    dialog->resize(800, 600);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
 
     QGroupBox *winner_box = new QGroupBox(tr("Winner(s)"));
@@ -2915,10 +2916,12 @@ void RoomScene::doScript(){
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
-   // table->setColumnCount(9);
-    table->setColumnCount(4);
+    table->setColumnCount(9);
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    RecAnalysis *record = new RecAnalysis;
+    QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
 
     static QStringList labels;
     if(labels.isEmpty()){
@@ -2928,9 +2931,10 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         else
             labels << tr("Role");
 
+        labels << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
+
     }
     table->setHorizontalHeaderLabels(labels);
-
     table->setSelectionBehavior(QTableWidget::SelectRows);
         
     for(int i = 0; i < players.length(); i++){
@@ -2965,7 +2969,30 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         if(!player->isAlive())
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         table->setItem(i, 3, item);
+
+        PlayerRecordStruct *rec = record_map.value(player->objectName());
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_recover));
+        table->setItem(i, 4, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_damage));
+        table->setItem(i, 5, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_damaged));
+        table->setItem(i, 6, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(rec->m_kill));
+        table->setItem(i, 7, item);
+
+        item = new QTableWidgetItem;
+        item->setText(Sanguosha->translate(rec->m_designation.join(",")));
+        table->setItem(i, 8, item);
     }
+
+    table->resizeColumnsToContents();
 }
 
 void RoomScene::killPlayer(const QString &who){

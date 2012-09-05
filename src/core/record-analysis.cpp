@@ -240,33 +240,33 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
     return m_recordMap[object_name];
 }
 
-const bool RecAnalysis::findPlayerOfDamage(int n) const{
+const bool RecAnalysis::findPlayerOfDamage(int n, bool is_less) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(s->m_damage >= n) return true;
+        if(is_less ? s->m_damage <= n : s->m_damage >= n) return true;
     }
 
     return false;
 }
 
-const bool RecAnalysis::findPlayerOfDamaged(int n) const{
+const bool RecAnalysis::findPlayerOfDamaged(int n, bool is_less) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(s->m_damaged >= n) return true;
+        if(is_less ? s->m_damaged <= n : s->m_damaged >= n) return true;
     }
 
     return false;
 }
 
-const bool RecAnalysis::findPlayerOfKills(int n) const{
+const bool RecAnalysis::findPlayerOfKills(int n, bool is_less) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(s->m_kill >= n) return true;
+        if(is_less ? s->m_recover <= n : s->m_recover >= n) return true;
     }
 
     return false;
 }
 
-const bool RecAnalysis::findPlayerOfRecover(int n) const{
+const bool RecAnalysis::findPlayerOfRecover(int n, bool is_less) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(s->m_recover >= n) return true;
+        if(is_less ? s->m_kill <= n : s->m_kill >= n) return true;
     }
 
     return false;
