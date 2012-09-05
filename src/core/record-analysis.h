@@ -66,6 +66,8 @@ private:
     QStringList m_recordGameMode;
     QString m_recordChat;
     int m_recordPlayers;
+
+    mutable QStringList m_tempSatisfiedObject;
 };
 
 struct PlayerRecordStruct{
