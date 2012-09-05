@@ -2670,77 +2670,92 @@
         <translation>开启AI</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="278"/>
+        <location filename="src/core/record-analysis.cpp" line="285"/>
+        <source>Wisely Loyalist</source>
+        <translation>能臣巧吏</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="287"/>
         <source>Blood Judgement</source>
         <translation>嗜血判官</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="279"/>
+        <location filename="src/core/record-analysis.cpp" line="297"/>
+        <source>Unrealized Aspiration</source>
+        <translation>大业未成</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="278"/>
         <source>Soy</source>
         <translation>打酱油的</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="280"/>
+        <location filename="src/core/record-analysis.cpp" line="279"/>
         <source>Warrior Soul</source>
         <translation>战魂</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="281"/>
+        <location filename="src/core/record-analysis.cpp" line="283"/>
         <source>Bloody Warrior</source>
         <translation>屠戮之士</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="282"/>
+        <location filename="src/core/record-analysis.cpp" line="280"/>
         <source>Peaceful Watcher</source>
         <translation>和平主义者</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="283"/>
+        <location filename="src/core/record-analysis.cpp" line="288"/>
         <source>Rampage</source>
         <translation>横扫千军</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="284"/>
+        <location filename="src/core/record-analysis.cpp" line="294"/>
         <source>Master Tank</source>
         <translation>我是肉盾</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="285"/>
+        <location filename="src/core/record-analysis.cpp" line="293"/>
         <source>Fire Target</source>
         <translation>集火目标</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="286"/>
+        <location filename="src/core/record-analysis.cpp" line="289"/>
         <source>Wrath Warlord</source>
         <translation>暴走战神</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="287"/>
+        <location filename="src/core/record-analysis.cpp" line="284"/>
         <source>Awe Prestige</source>
         <translation>天道威仪</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="288"/>
+        <location filename="src/core/record-analysis.cpp" line="291"/>
         <source>Recovery</source>
         <translation>妙手回春</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="289"/>
+        <location filename="src/core/record-analysis.cpp" line="290"/>
         <source>Peaceful</source>
         <translation>甘霖之润</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="290"/>
+        <location filename="src/core/record-analysis.cpp" line="282"/>
         <source>Fodder</source>
         <translation>炮灰</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="291"/>
+        <location filename="src/core/record-analysis.cpp" line="281"/>
         <source>MVP</source>
         <translation>MVP</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="292"/>
+        <location filename="src/core/record-analysis.cpp" line="295"/>
+        <source>War Spirit</source>
+        <translation>军魂</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="296"/>
         <source>Conspiracy</source>
         <translation>老谋深算</translation>
     </message>
