@@ -55,7 +55,7 @@ void RecAnalysis::initialize(QString dir){
                 continue;
 
             QStringList texts = rx.capturedTexts();
-            m_recordPlayers = texts.at(3).split("_").first().remove(QRegExp("[^0-9]")).toInt();
+            m_recordPlayers = texts.at(2).split("_").first().remove(QRegExp("[^0-9]")).toInt();
             QStringList ban_packages = texts.at(4).split("+");
             foreach(Package *package, Sanguosha->findChildren<Package *>()){
                 if(!ban_packages.contains(package->objectName()) &&
@@ -240,33 +240,65 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
     return m_recordMap[object_name];
 }
 
-const bool RecAnalysis::findPlayerOfDamage(int n, bool is_less) const{
+const bool RecAnalysis::findPlayerOfDamage(int n) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(is_less ? s->m_damage <= n : s->m_damage >= n) return true;
+        if(s->m_damage >= n) return true;
     }
 
     return false;
 }
 
-const bool RecAnalysis::findPlayerOfDamaged(int n, bool is_less) const{
+const bool RecAnalysis::findPlayerOfDamaged(int n) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(is_less ? s->m_damaged <= n : s->m_damaged >= n) return true;
+        if(s->m_damaged >= n) return true;
     }
 
     return false;
 }
 
-const bool RecAnalysis::findPlayerOfKills(int n, bool is_less) const{
+const bool RecAnalysis::findPlayerOfKills(int n) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(is_less ? s->m_recover <= n : s->m_recover >= n) return true;
+        if(s->m_kill >= n) return true;
     }
 
     return false;
 }
 
-const bool RecAnalysis::findPlayerOfRecover(int n, bool is_less) const{
+const bool RecAnalysis::findPlayerOfRecover(int n) const{
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
-        if(is_less ? s->m_kill <= n : s->m_kill >= n) return true;
+        if(s->m_recover >= n) return true;
+    }
+
+    return false;
+}
+
+const bool RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
+    foreach(PlayerRecordStruct *s, m_recordMap.values()){
+        if(s->m_damage >= upper && s->m_damage <= lower) return true;
+    }
+
+    return false;
+}
+
+const bool RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
+    foreach(PlayerRecordStruct *s, m_recordMap.values()){
+        if(s->m_damaged >= upper && s->m_damaged <= lower) return true;
+    }
+
+    return false;
+}
+
+const bool RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
+    foreach(PlayerRecordStruct *s, m_recordMap.values()){
+        if(s->m_recover >= upper && s->m_recover <= lower) return true;
+    }
+
+    return false;
+}
+
+const bool RecAnalysis::findPlayerOfKills(int upper, int lower) const{
+    foreach(PlayerRecordStruct *s, m_recordMap.values()){
+        if(s->m_kill >= upper && s->m_kill <= lower) return true;
     }
 
     return false;
@@ -279,7 +311,8 @@ void RecAnalysis::setDesignation(){
     addDesignation(tr("Warrior Soul"), MostDamage);
     addDesignation(tr("Peaceful Watcher"), ZeroDamage|ZeroDamaged);
     addDesignation(tr("MVP"), MostDamage|MostDamaged|MostRecover);
-    addDesignation(tr("Fodder"), MostDamaged, true, "~lord");
+    addDesignation(tr("Useless alive"), ZeroDamage|ZeroDamaged|ZeroRecover|ZeroKill);
+    addDesignation(tr("Fodder"), MostDamaged, true, "~lord", false, true);
     addDesignation(tr("Bloody Warrior"), MostDamage, true, QString(), true);
     addDesignation(tr("Awe Prestige"), MostKill|MostDamage, true, "lord", true);
     addDesignation(tr("Wisely Loyalist"), ZeroDamaged, true, "lord", true, false, true);
@@ -288,7 +321,7 @@ void RecAnalysis::setDesignation(){
     addDesignation(tr("Rampage"), MostKill, findPlayerOfKills(m_recordPlayers-1));
     addDesignation(tr("Wrath Warlord"), MostDamage, findPlayerOfDamage(15));
     addDesignation(tr("Peaceful"), MostRecover, findPlayerOfRecover(10));
-    addDesignation(tr("Recovery"), MostRecover, findPlayerOfRecover(5) && findPlayerOfRecover(9, true));
+    addDesignation(tr("Recovery"), MostRecover, findPlayerOfRecover(5, 9));
 
     addDesignation(tr("Fire Target"), MostDamaged, findPlayerOfDamaged(10), QString(), false, true);
     addDesignation(tr("Master Tank"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, true);

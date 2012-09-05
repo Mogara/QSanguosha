@@ -52,10 +52,14 @@ public:
 
 private:
     PlayerRecordStruct *getPlayer(QString object_name, const QString &addition_name = QString());
-    const bool findPlayerOfDamage(int n, bool is_less = false) const;
-    const bool findPlayerOfDamaged(int n, bool is_less = false) const;
-    const bool findPlayerOfKills(int n, bool is_less = false) const;
-    const bool findPlayerOfRecover(int n, bool is_less = false) const;
+    const bool findPlayerOfDamage(int n) const;
+    const bool findPlayerOfDamaged(int n) const;
+    const bool findPlayerOfKills(int n) const;
+    const bool findPlayerOfRecover(int n) const;
+    const bool findPlayerOfDamage(int upper, int lower) const;
+    const bool findPlayerOfDamaged(int upper, int lower) const;
+    const bool findPlayerOfKills(int upper, int lower) const;
+    const bool findPlayerOfRecover(int upper, int lower) const;
 
     QMap<QString, PlayerRecordStruct *> m_recordMap;
     QStringList m_recordPackages, m_recordWinners;
