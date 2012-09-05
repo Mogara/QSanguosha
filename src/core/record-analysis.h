@@ -16,6 +16,7 @@ public:
     explicit RecAnalysis(QString dir = QString());
 
     enum DesignationType{
+        NoOption = 0x00,
         MostKill = 0x01,
         MostRecover = 0x02,
         MostDamage = 0x04,
@@ -43,8 +44,10 @@ public:
                         unsigned long designation_union,
                         const QString &addition_option_role = QString(),
                         bool need_alive = false,
+                        bool need_dead = false,
                         bool custom_condition = true,
-                        bool need_win = false);
+                        bool need_win = false,
+                        bool need_lose = false);
     void initialDesignation();
 
 private:

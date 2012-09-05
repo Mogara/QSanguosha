@@ -275,31 +275,35 @@ const bool RecAnalysis::findPlayerOfRecover(int n, bool is_less) const{
 void RecAnalysis::setDesignation(){
     initialDesignation();
 
-    addDesignation(tr("Blood Judgement"), MostKill);
+    addDesignation(tr("Blood Judgement"), MostKill, QString(), false, false, findPlayerOfKills(m_recordPlayers/2));
     addDesignation(tr("Soy"), ZeroDamage|ZeroRecover);
     addDesignation(tr("Warrior Soul"), MostDamage);
     addDesignation(tr("Bloody Warrior"), MostDamage, QString(), true);
     addDesignation(tr("Peaceful Watcher"), ZeroDamage|ZeroDamaged);
-    addDesignation(tr("Rampage"), MostKill, QString(), false, findPlayerOfKills(m_recordPlayers-1));
-    addDesignation(tr("Master Tank"), MostDamaged, QString(), true, findPlayerOfDamaged(10));
-    addDesignation(tr("Wrath Warlord"), MostDamage, QString(), false, findPlayerOfDamage(15));
+    addDesignation(tr("Rampage"), MostKill, QString(), false, false, findPlayerOfKills(m_recordPlayers-1));
+    addDesignation(tr("Master Tank"), MostDamaged, QString(), true, false, findPlayerOfDamaged(10));
+    addDesignation(tr("Fire Target"), MostDamaged, QString(), false, true, findPlayerOfDamaged(10));
+    addDesignation(tr("Wrath Warlord"), MostDamage, QString(), false, false, findPlayerOfDamage(15));
     addDesignation(tr("Awe Prestige"), MostKill|MostDamage, "lord", true);
-    addDesignation(tr("Peaceful"), MostRecover, QString(), false, findPlayerOfRecover(10));
-    addDesignation(tr("Fodder"), MostDamaged);
+    addDesignation(tr("Recovery"), MostRecover, QString(), false, false, findPlayerOfRecover(9, true));
+    addDesignation(tr("Peaceful"), MostRecover, QString(), false, false, findPlayerOfRecover(10));
+    addDesignation(tr("Fodder"), MostDamaged, "~lord");
     addDesignation(tr("MVP"), MostDamage|MostDamaged|MostRecover);
-    addDesignation(tr("Conspiracy"), ZeroDamaged, "renegade", true, m_recordWinners.contains("renegade"));
+    addDesignation(tr("Conspiracy"), ZeroDamaged, "renegade", true, false, m_recordWinners.contains("renegade"));
 }
 
 void RecAnalysis::addDesignation(const QString &designation,
                                  unsigned long designation_union,
                                  const QString &addition_option_role,
                                  bool need_alive,
+                                 bool need_dead,
                                  bool custom_condition,
-                                 bool need_win){
+                                 bool need_win,
+                                 bool need_lose){
     if(!custom_condition) return;
 
     QList<DesignationType> des_union;
-    for(long i = ZeroDamaged; i >= 0 && designation_union > 0; i/=2){
+    for(long i = ZeroDamaged; i > 0 && designation_union > 0; i/=2){
         if((unsigned long)i <= designation_union){
             des_union <<  static_cast<DesignationType>(i);
             designation_union -= (unsigned long)i;
@@ -316,14 +320,30 @@ void RecAnalysis::addDesignation(const QString &designation,
                 has_player = false;
                 break;
             }
+
+            if(need_lose &&
+                    (m_recordWinners.contains(m_recordMap[objectName]->m_role) ||
+                    m_recordWinners.contains(objectName))){
+                has_player = false;
+                break;
+            }
         }
 
         if(!has_player) continue;
 
-        if(!addition_option_role.isEmpty())
-            has_player &= m_recordMap[objectName]->m_role == addition_option_role;
+        if(!addition_option_role.isEmpty()){
+            if(addition_option_role.startsWith("~")){
+                QString role = addition_option_role;
+                role.remove("~");
+                has_player &= m_recordMap[objectName]->m_role != role;
+            }
+            else
+                has_player &= m_recordMap[objectName]->m_role == addition_option_role;
+        }
         if(need_alive)
             has_player &= m_recordMap[objectName]->m_isAlive;
+        if(need_dead)
+            has_player &= !m_recordMap[objectName]->m_isAlive;
 
         if(has_player){
             m_recordMap[objectName]->m_designation << designation;

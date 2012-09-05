@@ -2706,31 +2706,41 @@
     </message>
     <message>
         <location filename="src/core/record-analysis.cpp" line="285"/>
+        <source>Fire Target</source>
+        <translation>集火目标</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="286"/>
         <source>Wrath Warlord</source>
         <translation>暴走战神</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="286"/>
+        <location filename="src/core/record-analysis.cpp" line="287"/>
         <source>Awe Prestige</source>
         <translation>天道威仪</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="287"/>
+        <location filename="src/core/record-analysis.cpp" line="288"/>
+        <source>Recovery</source>
+        <translation>妙手回春</translation>
+    </message>
+    <message>
+        <location filename="src/core/record-analysis.cpp" line="289"/>
         <source>Peaceful</source>
         <translation>甘霖之润</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="288"/>
+        <location filename="src/core/record-analysis.cpp" line="290"/>
         <source>Fodder</source>
         <translation>炮灰</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="289"/>
+        <location filename="src/core/record-analysis.cpp" line="291"/>
         <source>MVP</source>
         <translation>MVP</translation>
     </message>
     <message>
-        <location filename="src/core/record-analysis.cpp" line="290"/>
+        <location filename="src/core/record-analysis.cpp" line="292"/>
         <source>Conspiracy</source>
         <translation>老谋深算</translation>
     </message>
