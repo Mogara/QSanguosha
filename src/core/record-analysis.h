@@ -41,22 +41,24 @@ public:
     void setDesignation();
     void addDesignation(const QString &designation,
                         unsigned long designation_union,
-                        const QString &addition_option_rule = QString(),
+                        const QString &addition_option_role = QString(),
                         bool need_alive = false,
-                        bool custom_condition = true);
+                        bool custom_condition = true,
+                        bool need_win = false);
     void initialDesignation();
 
 private:
     PlayerRecordStruct *getPlayer(QString object_name, const QString &addition_name = QString());
-    const int getPlayerDamage(const QString &object_name) const;
-    const int getPlayerDamaged(const QString &object_name) const;
-    const int getPlayerKills(const QString &object_name) const;
-    const int getPlayerRecover(const QString &object_name) const;
+    const bool findPlayerOfDamage(int n) const;
+    const bool findPlayerOfDamaged(int n) const;
+    const bool findPlayerOfKills(int n) const;
+    const bool findPlayerOfRecover(int n) const;
 
     QMap<QString, PlayerRecordStruct *> m_recordMap;
     QStringList m_recordPackages, m_recordWinners;
     QStringList m_recordGameMode;
     QString m_recordChat;
+    int m_recordPlayers;
 };
 
 struct PlayerRecordStruct{
