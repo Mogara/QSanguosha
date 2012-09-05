@@ -42,10 +42,10 @@ public:
     void setDesignation();
     void addDesignation(const QString &designation,
                         unsigned long designation_union,
+                        bool custom_condition = true,
                         const QString &addition_option_role = QString(),
                         bool need_alive = false,
                         bool need_dead = false,
-                        bool custom_condition = true,
                         bool need_win = false,
                         bool need_lose = false);
     void initialDesignation();

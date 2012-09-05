@@ -275,29 +275,34 @@ const bool RecAnalysis::findPlayerOfRecover(int n, bool is_less) const{
 void RecAnalysis::setDesignation(){
     initialDesignation();
 
-    addDesignation(tr("Blood Judgement"), MostKill, QString(), false, false, findPlayerOfKills(m_recordPlayers/2));
     addDesignation(tr("Soy"), ZeroDamage|ZeroRecover);
     addDesignation(tr("Warrior Soul"), MostDamage);
-    addDesignation(tr("Bloody Warrior"), MostDamage, QString(), true);
     addDesignation(tr("Peaceful Watcher"), ZeroDamage|ZeroDamaged);
-    addDesignation(tr("Rampage"), MostKill, QString(), false, false, findPlayerOfKills(m_recordPlayers-1));
-    addDesignation(tr("Master Tank"), MostDamaged, QString(), true, false, findPlayerOfDamaged(10));
-    addDesignation(tr("Fire Target"), MostDamaged, QString(), false, true, findPlayerOfDamaged(10));
-    addDesignation(tr("Wrath Warlord"), MostDamage, QString(), false, false, findPlayerOfDamage(15));
-    addDesignation(tr("Awe Prestige"), MostKill|MostDamage, "lord", true);
-    addDesignation(tr("Recovery"), MostRecover, QString(), false, false, findPlayerOfRecover(9, true));
-    addDesignation(tr("Peaceful"), MostRecover, QString(), false, false, findPlayerOfRecover(10));
-    addDesignation(tr("Fodder"), MostDamaged, "~lord");
     addDesignation(tr("MVP"), MostDamage|MostDamaged|MostRecover);
-    addDesignation(tr("Conspiracy"), ZeroDamaged, "renegade", true, false, m_recordWinners.contains("renegade"));
+    addDesignation(tr("Fodder"), MostDamaged, true, "~lord");
+    addDesignation(tr("Bloody Warrior"), MostDamage, true, QString(), true);
+    addDesignation(tr("Awe Prestige"), MostKill|MostDamage, true, "lord", true);
+    addDesignation(tr("Wisely Loyalist"), ZeroDamaged, true, "lord", true, false, true);
+
+    addDesignation(tr("Blood Judgement"), MostKill, findPlayerOfKills(m_recordPlayers/2));
+    addDesignation(tr("Rampage"), MostKill, findPlayerOfKills(m_recordPlayers-1));
+    addDesignation(tr("Wrath Warlord"), MostDamage, findPlayerOfDamage(15));
+    addDesignation(tr("Peaceful"), MostRecover, findPlayerOfRecover(10));
+    addDesignation(tr("Recovery"), MostRecover, findPlayerOfRecover(5) && findPlayerOfRecover(9, true));
+
+    addDesignation(tr("Fire Target"), MostDamaged, findPlayerOfDamaged(10), QString(), false, true);
+    addDesignation(tr("Master Tank"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, true);
+    addDesignation(tr("War Spirit"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, false, true);
+    addDesignation(tr("Conspiracy"), ZeroDamaged, true, "renegade", true, false, true);
+    addDesignation(tr("Unrealized Aspiration"), MostKill, true, QString(), false, false, false, true);
 }
 
 void RecAnalysis::addDesignation(const QString &designation,
                                  unsigned long designation_union,
+                                 bool custom_condition,
                                  const QString &addition_option_role,
                                  bool need_alive,
                                  bool need_dead,
-                                 bool custom_condition,
                                  bool need_win,
                                  bool need_lose){
     if(!custom_condition) return;
