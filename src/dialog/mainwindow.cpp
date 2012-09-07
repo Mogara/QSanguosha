@@ -773,7 +773,7 @@ void MainWindow::on_actionRecord_analysis_triggered(){
         table->setItem(i, 8, item);
 
         item = new QTableWidgetItem;
-        item->setText(Sanguosha->translate(rec->m_designation.join(", ")));
+        item->setText(rec->m_designation.join(", "));
         table->setItem(i, 9, item);
         i++;
     }

@@ -6,7 +6,7 @@
 #include <QFile>
 #include <QMessageBox>
 
-RecAnalysis::RecAnalysis(QString dir) : m_recordPlayers(0){
+RecAnalysis::RecAnalysis(QString dir) : m_recordPlayers(0), m_recordHasCheat(false){
     initialize(dir);
 }
 
@@ -64,7 +64,7 @@ void RecAnalysis::initialize(QString dir){
             }
 
             QString flags = texts.at(5);
-            if(flags.contains("F")) m_recordGameMode << tr("FreeChoose");
+            if(flags.contains("F")) { m_recordGameMode << tr("FreeChoose"), m_recordHasCheat = true; }
             if(flags.contains("S")) m_recordGameMode << tr("Enable2ndGeneral");
             if(flags.contains("C")) m_recordGameMode << tr("EnableScene");
             if(flags.contains("T")) m_recordGameMode << tr("EnableSame");
@@ -297,33 +297,42 @@ const bool RecAnalysis::findPlayerOfKills(int upper, int lower) const{
 }
 
 void RecAnalysis::setDesignation(){
+    if(m_recordHasCheat) return;
+
     initialDesignation();
 
     addDesignation(tr("Soy"), ZeroDamage|ZeroRecover);
-    addDesignation(tr("Peaceful Watcher"), ZeroDamage|ZeroDamaged);
-    addDesignation(tr("MVP"), MostDamage|MostDamaged|MostRecover);
+    addDesignation(tr("Burning Soul"), MostDamage|MostDamaged);
+    addDesignation(tr("Regretful Lose"), MostDamage|ZeroKill);
+    addDesignation(tr("Wicked Kill"), LeastDamage|MostKill);
+    addDesignation(tr("Peaceful Watcher"), ZeroDamage|ZeroDamaged, findPlayerOfRecover(1));
+    addDesignation(tr("MVP"), MostKill|MostDamage|MostRecover, findPlayerOfKills(10) && findPlayerOfDamage(10) && findPlayerOfRecover(10));
     addDesignation(tr("Useless alive"), ZeroDamage|ZeroDamaged|ZeroRecover|ZeroKill);
-    addDesignation(tr("Fodder"), MostDamaged, true, "~lord", false, true);
-    addDesignation(tr("Bloody Warrior"), MostDamage, true, QString(), true);
     addDesignation(tr("Awe Prestige"), MostKill|MostDamage, true, "lord", true);
-    addDesignation(tr("Wisely Loyalist"), ZeroDamaged, true, "lord", true, false, true);
 
-    addDesignation(tr("Vanguard"), MostKill, true, "~lord");
-    addDesignation(tr("Fierce Lord"), MostKill, true, "lord");
-    addDesignation(tr("Legatus"), MostDamage, true, "~lord");
-    addDesignation(tr("Frightful Lord"), MostDamage, true, "lord");
+    addDesignation(tr("Wisely Loyalist"), ZeroDamaged, true, "lord", true, false, true);
+    addDesignation(tr("Conspiracy"), ZeroDamaged, true, "renegade", true, false, true);
+
+    addDesignation(tr("Vanguard"), MostKill, findPlayerOfKills(2), "~lord", true);
+    addDesignation(tr("Fierce Lord"), MostKill, findPlayerOfKills(2), "lord", true);
     addDesignation(tr("Blood Judgement"), MostKill, findPlayerOfKills((int)(m_recordPlayers/2.0+0.5)));
     addDesignation(tr("Rampage"), MostKill, findPlayerOfKills(m_recordPlayers-1));
-    addDesignation(tr("Warrior Soul"), MostDamage, findPlayerOfDamage(10, 14));
-    addDesignation(tr("Wrath Warlord"), MostDamage, findPlayerOfDamage(15));
+    addDesignation(tr("Unrealized Aspiration"), MostKill, true, QString(), false, false, false, true);
+    addDesignation(tr("Break Point"), MostKill, !findPlayerOfKills(2), "rebel", false, false, true);
+
+    addDesignation(tr("Legatus"), MostDamage, true, "~lord", true);
+    addDesignation(tr("Frightful Lord"), MostDamage, true, "lord", true);
+    addDesignation(tr("Bloody Warrior"), MostDamage, findPlayerOfDamage(10, 14));
+    addDesignation(tr("Warrior Soul"), MostDamage, findPlayerOfDamage(15, 19));
+    addDesignation(tr("Wrath Warlord"), MostDamage, findPlayerOfDamage(20));
+
     addDesignation(tr("Peaceful"), MostRecover, findPlayerOfRecover(10));
     addDesignation(tr("Recovery"), MostRecover, findPlayerOfRecover(5, 9));
 
-    addDesignation(tr("Fire Target"), MostDamaged, findPlayerOfDamaged(10), QString(), false, true);
+    addDesignation(tr("Fodder"), MostDamaged, true, "~lord", false, true);
+    addDesignation(tr("Fire Target"), MostDamaged, findPlayerOfDamaged(15));
     addDesignation(tr("Master Tank"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, true);
     addDesignation(tr("War Spirit"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, false, true);
-    addDesignation(tr("Conspiracy"), ZeroDamaged, true, "renegade", true, false, true);
-    addDesignation(tr("Unrealized Aspiration"), MostKill, true, QString(), false, false, false, true);
 
     int loyal_num = 0, rebel_num = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()){

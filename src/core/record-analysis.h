@@ -67,6 +67,7 @@ private:
     QString m_recordChat;
     int m_recordPlayers;
 
+    bool m_recordHasCheat;
     mutable QStringList m_tempSatisfiedObject;
 };
 
