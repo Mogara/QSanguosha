@@ -241,6 +241,7 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
 }
 
 const bool RecAnalysis::findPlayerOfDamage(int n) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damage >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
@@ -248,6 +249,7 @@ const bool RecAnalysis::findPlayerOfDamage(int n) const{
 }
 
 const bool RecAnalysis::findPlayerOfDamaged(int n) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damaged >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
@@ -255,6 +257,7 @@ const bool RecAnalysis::findPlayerOfDamaged(int n) const{
 }
 
 const bool RecAnalysis::findPlayerOfKills(int n) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_kill >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
@@ -262,6 +265,7 @@ const bool RecAnalysis::findPlayerOfKills(int n) const{
 }
 
 const bool RecAnalysis::findPlayerOfRecover(int n) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_recover >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
@@ -269,6 +273,7 @@ const bool RecAnalysis::findPlayerOfRecover(int n) const{
 }
 
 const bool RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damage >= upper && s->m_damage <= lower) m_tempSatisfiedObject << m_recordMap.key(s);
     }
@@ -276,6 +281,7 @@ const bool RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
 }
 
 const bool RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damaged >= upper && s->m_damaged <= lower) m_tempSatisfiedObject << m_recordMap.key(s);
     }
@@ -283,6 +289,7 @@ const bool RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
 }
 
 const bool RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_recover >= upper && s->m_recover <= lower) m_tempSatisfiedObject << m_recordMap.key(s);
     }
@@ -301,22 +308,22 @@ void RecAnalysis::setDesignation(){
 
     initialDesignation();
 
-    addDesignation(tr("Soy"), ZeroDamage|ZeroRecover);
+    addDesignation(tr("Soy"), ZeroDamage|ZeroRecover, true, "~lord", true);
     addDesignation(tr("Burning Soul"), MostDamage|MostDamaged);
-    addDesignation(tr("Regretful Lose"), MostDamage|ZeroKill);
+    addDesignation(tr("Regretful Lose"), MostDamage|ZeroKill, true, QString(), false, false, false, true);
     addDesignation(tr("Wicked Kill"), LeastDamage|MostKill);
-    addDesignation(tr("Peaceful Watcher"), ZeroDamage|ZeroDamaged, findPlayerOfRecover(1));
-    addDesignation(tr("MVP"), MostKill|MostDamage|MostRecover, findPlayerOfKills(10) && findPlayerOfDamage(10) && findPlayerOfRecover(10));
+    addDesignation(tr("Peaceful Watcher"), ZeroDamage|LeastDamaged, findPlayerOfRecover(1));
+    addDesignation(tr("MVP"), MostDamaged|MostDamage|MostRecover, findPlayerOfDamaged(10) && findPlayerOfDamage(10) && findPlayerOfRecover(10));
     addDesignation(tr("Useless alive"), ZeroDamage|ZeroDamaged|ZeroRecover|ZeroKill);
-    addDesignation(tr("Awe Prestige"), MostKill|MostDamage, true, "lord", true);
+    addDesignation(tr("Awe Prestige"), MostKill|MostDamage, findPlayerOfKills(3), "lord", true);
 
-    addDesignation(tr("Wisely Loyalist"), ZeroDamaged, true, "lord", true, false, true);
+    addDesignation(tr("Wisely Loyalist"), ZeroDamaged, m_recordPlayers >= 5, "lord", true, false, true);
     addDesignation(tr("Conspiracy"), ZeroDamaged, true, "renegade", true, false, true);
 
     addDesignation(tr("Vanguard"), MostKill, findPlayerOfKills(2), "~lord", true);
     addDesignation(tr("Fierce Lord"), MostKill, findPlayerOfKills(2), "lord", true);
     addDesignation(tr("Blood Judgement"), MostKill, findPlayerOfKills((int)(m_recordPlayers/2.0+0.5)));
-    addDesignation(tr("Rampage"), MostKill, findPlayerOfKills(m_recordPlayers-1));
+    addDesignation(tr("Rampage"), MostKill, findPlayerOfKills(m_recordPlayers-1) && m_recordPlayers >= 5);
     addDesignation(tr("Unrealized Aspiration"), MostKill, true, QString(), false, false, false, true);
     addDesignation(tr("Break Point"), MostKill, !findPlayerOfKills(2), "rebel", false, false, true);
 
@@ -329,7 +336,7 @@ void RecAnalysis::setDesignation(){
     addDesignation(tr("Peaceful"), MostRecover, findPlayerOfRecover(10));
     addDesignation(tr("Recovery"), MostRecover, findPlayerOfRecover(5, 9));
 
-    addDesignation(tr("Fodder"), MostDamaged, true, "~lord", false, true);
+    addDesignation(tr("Fodder"), MostDamaged|ZeroDamage, true, "~lord", false, true);
     addDesignation(tr("Fire Target"), MostDamaged, findPlayerOfDamaged(15));
     addDesignation(tr("Master Tank"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, true);
     addDesignation(tr("War Spirit"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, false, true);
@@ -381,10 +388,8 @@ void RecAnalysis::addDesignation(const QString &designation,
 
         if(!has_player) continue;
 
-        if(!m_tempSatisfiedObject.isEmpty()){
+        if(!m_tempSatisfiedObject.isEmpty())
             has_player = m_tempSatisfiedObject.contains(objectName);
-            m_tempSatisfiedObject.clear();
-        }
 
         if(!addition_option_role.isEmpty()){
             if(addition_option_role.startsWith("~")){
