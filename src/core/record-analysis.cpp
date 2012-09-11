@@ -240,67 +240,68 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
     return m_recordMap[object_name];
 }
 
-const bool RecAnalysis::findPlayerOfDamage(int n) const{
+const QStringList RecAnalysis::findPlayerOfDamage(int n) const{
     m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damage >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
-const bool RecAnalysis::findPlayerOfDamaged(int n) const{
+const QStringList RecAnalysis::findPlayerOfDamaged(int n) const{
     m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damaged >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
-const bool RecAnalysis::findPlayerOfKills(int n) const{
+const QStringList RecAnalysis::findPlayerOfKills(int n) const{
     m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_kill >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
-const bool RecAnalysis::findPlayerOfRecover(int n) const{
+const QStringList RecAnalysis::findPlayerOfRecover(int n) const{
     m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_recover >= n) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
-const bool RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
+const QStringList RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
     m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damage >= upper && s->m_damage <= lower) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
-const bool RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
+const QStringList RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
     m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_damaged >= upper && s->m_damaged <= lower) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
-const bool RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
+const QStringList RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
     m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_recover >= upper && s->m_recover <= lower) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
-const bool RecAnalysis::findPlayerOfKills(int upper, int lower) const{
+const QStringList RecAnalysis::findPlayerOfKills(int upper, int lower) const{
+    m_tempSatisfiedObject.clear();
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_kill >= upper && s->m_kill <= lower) m_tempSatisfiedObject << m_recordMap.key(s);
     }
-    return !m_tempSatisfiedObject.isEmpty();
+    return m_tempSatisfiedObject;
 }
 
 void RecAnalysis::setDesignation(){
@@ -313,7 +314,6 @@ void RecAnalysis::setDesignation(){
     addDesignation(tr("Regretful Lose"), MostDamage|ZeroKill, true, QString(), false, false, false, true);
     addDesignation(tr("Wicked Kill"), LeastDamage|MostKill);
     addDesignation(tr("Peaceful Watcher"), ZeroDamage|LeastDamaged, findPlayerOfRecover(1));
-    addDesignation(tr("MVP"), MostDamaged|MostDamage|MostRecover, findPlayerOfDamaged(10) && findPlayerOfDamage(10) && findPlayerOfRecover(10));
     addDesignation(tr("Useless alive"), ZeroDamage|ZeroDamaged|ZeroRecover|ZeroKill);
     addDesignation(tr("Awe Prestige"), MostKill|MostDamage, findPlayerOfKills(3), "lord", true);
 
@@ -323,9 +323,9 @@ void RecAnalysis::setDesignation(){
     addDesignation(tr("Vanguard"), MostKill, findPlayerOfKills(2), "~lord", true);
     addDesignation(tr("Fierce Lord"), MostKill, findPlayerOfKills(2), "lord", true);
     addDesignation(tr("Blood Judgement"), MostKill, findPlayerOfKills((int)(m_recordPlayers/2.0+0.5)));
-    addDesignation(tr("Rampage"), MostKill, findPlayerOfKills(m_recordPlayers-1) && m_recordPlayers >= 5);
+    addDesignation(tr("Rampage"), MostKill, (!findPlayerOfKills(m_recordPlayers-1).isEmpty()) && m_recordPlayers >= 5);
     addDesignation(tr("Unrealized Aspiration"), MostKill, true, QString(), false, false, false, true);
-    addDesignation(tr("Break Point"), MostKill, !findPlayerOfKills(2), "rebel", false, false, true);
+    addDesignation(tr("Break Point"), MostKill, findPlayerOfKills(0, 1), "rebel", false, false, true);
 
     addDesignation(tr("Legatus"), MostDamage, true, "~lord", true);
     addDesignation(tr("Frightful Lord"), MostDamage, true, "lord", true);
@@ -341,6 +341,23 @@ void RecAnalysis::setDesignation(){
     addDesignation(tr("Master Tank"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, true);
     addDesignation(tr("War Spirit"), MostDamaged, findPlayerOfDamaged(10), QString(), true, false, false, true);
 
+    QList<QStringList> intersect_objects;
+    intersect_objects << findPlayerOfDamaged(10)
+            << findPlayerOfDamage(10)
+            << findPlayerOfRecover(10);
+
+    QStringList temp;
+    foreach(QStringList o, intersect_objects){
+        if(temp.isEmpty())
+            temp = o;
+        else{
+            temp = temp.toSet().intersect(o.toSet()).toList();
+            if(temp.isEmpty()) break;
+        }
+    }
+    m_tempSatisfiedObject = temp;
+    addDesignation(tr("MVP"), MostDamaged|MostDamage|MostRecover, !m_tempSatisfiedObject.isEmpty());
+
     int loyal_num = 0, rebel_num = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()){
         if(s->m_role == "loyalist" && s->m_isAlive) loyal_num ++;
@@ -348,6 +365,24 @@ void RecAnalysis::setDesignation(){
     }
     addDesignation(tr("Priority Honor"), NoOption, loyal_num == 1, "loyalist", true, false, true);
     addDesignation(tr("Impasse Strike"), NoOption, rebel_num == 1, "rebel", true, false, true);
+}
+
+void RecAnalysis::addDesignation(const QString &designation,
+                                 unsigned long designation_union,
+                                 QStringList custom_condition,
+                                 const QString &addition_option_role,
+                                 bool need_alive,
+                                 bool need_dead,
+                                 bool need_win,
+                                 bool need_lose){
+    addDesignation(designation,
+                   designation_union,
+                   !custom_condition.isEmpty(),
+                   addition_option_role,
+                   need_alive,
+                   need_dead,
+                   need_win,
+                   need_lose);
 }
 
 void RecAnalysis::addDesignation(const QString &designation,

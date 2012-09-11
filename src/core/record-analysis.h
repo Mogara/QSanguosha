@@ -42,6 +42,15 @@ public:
     void setDesignation();
     void addDesignation(const QString &designation,
                         unsigned long designation_union,
+                        QStringList custom_condition,
+                        const QString &addition_option_role = QString(),
+                        bool need_alive = false,
+                        bool need_dead = false,
+                        bool need_win = false,
+                        bool need_lose = false);
+
+    void addDesignation(const QString &designation,
+                        unsigned long designation_union,
                         bool custom_condition = true,
                         const QString &addition_option_role = QString(),
                         bool need_alive = false,
@@ -52,14 +61,14 @@ public:
 
 private:
     PlayerRecordStruct *getPlayer(QString object_name, const QString &addition_name = QString());
-    const bool findPlayerOfDamage(int n) const;
-    const bool findPlayerOfDamaged(int n) const;
-    const bool findPlayerOfKills(int n) const;
-    const bool findPlayerOfRecover(int n) const;
-    const bool findPlayerOfDamage(int upper, int lower) const;
-    const bool findPlayerOfDamaged(int upper, int lower) const;
-    const bool findPlayerOfKills(int upper, int lower) const;
-    const bool findPlayerOfRecover(int upper, int lower) const;
+    const QStringList findPlayerOfDamage(int n) const;
+    const QStringList findPlayerOfDamaged(int n) const;
+    const QStringList findPlayerOfKills(int n) const;
+    const QStringList findPlayerOfRecover(int n) const;
+    const QStringList findPlayerOfDamage(int upper, int lower) const;
+    const QStringList findPlayerOfDamaged(int upper, int lower) const;
+    const QStringList findPlayerOfKills(int upper, int lower) const;
+    const QStringList findPlayerOfRecover(int upper, int lower) const;
 
     QMap<QString, PlayerRecordStruct *> m_recordMap;
     QStringList m_recordPackages, m_recordWinners;
