@@ -105,6 +105,7 @@ return {
 	["$RecycleCard"] = "%from 捡回了%card",
 	["$Dismantlement"] = "%from 的%card被弃置",
 	["$ShowCard"] = "%from 展示了 %card",
+	["$ShowAllCards"] = "%from 展示了所有手牌 %card",
 	["$PutCard"] = "%from 的 %card 被置于牌堆顶",
 	["normal_nature"] = "无属性",
 	["fire_nature"] = "火焰属性",

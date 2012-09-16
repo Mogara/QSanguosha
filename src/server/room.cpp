@@ -4427,8 +4427,18 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
         doRequest(to, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
     }
     else{
-        foreach(int card_id, player->handCards())
+        LogMessage log;
+        log.type = "$ShowAllCards";
+        log.from = player;
+        foreach(int card_id, player->handCards()){
             setCardFlag(card_id, "visible");
+            if(log.card_str.isEmpty())
+                log.card_str = QString::number(card_id);
+            else
+                log.card_str += "+" + QString::number(card_id);
+        }
+        sendLog(log);
+
         doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
     }
 }
