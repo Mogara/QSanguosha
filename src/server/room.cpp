@@ -1034,8 +1034,39 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     bool continuable = false;
     card = card->validateInResposing(player, continuable);
+    const Card* result = NULL;
+	
+    if(card){
+        if (trigger_event == CardResponsed || trigger_event == CardUsed) {
+            LogMessage log;
+            log.card_str = card->toString();
+            log.from = player;
+            log.type = QString("#%1").arg(card->getClassName());
+            if (trigger_event == CardResponsed)
+                log.type += "_Resp";
+            sendLog(log);
+            player->broadcastSkillInvoke(card);
+        } else if (trigger_event == CardDiscarded) {
+            LogMessage log;
+            log.type = "$DiscardCard";
+            log.from = player;
+            QList<int> to_discard;
+            if(card->isVirtualCard())
+                to_discard.append(card->getSubcards());
+            else
+                to_discard << card->getEffectiveId();
 
-    const Card* result;
+            foreach(int card_id, to_discard){
+                setCardFlag(card_id, "visible");
+                if(log.card_str.isEmpty())
+                    log.card_str = QString::number(card_id);
+                else
+                    log.card_str += "+" + QString::number(card_id);
+            }
+            sendLog(log);
+        }
+    }
+
     if(card){
         if(trigger_event == CardUsed){
             if(pattern != "slash"){
@@ -1064,14 +1095,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         QVariant card_star = QVariant::fromValue(card_ptr);
 
         if(trigger_event == CardResponsed || trigger_event == CardUsed){
-            LogMessage log;
-            log.card_str = card->toString();
-            log.from = player;
-            log.type = QString("#%1").arg(card->getClassName());
-            sendLog(log);
-
-            player->broadcastSkillInvoke(card);
-
             ResponsedStruct resp(card, to);
             QVariant data = QVariant::fromValue(resp);
             thread->trigger(CardResponsed, this, player, data);

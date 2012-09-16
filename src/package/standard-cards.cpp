@@ -417,16 +417,6 @@ public:
         if(card){
             room->setEmotion(effect.to, "weapon/axe");
 
-            QList<int> card_ids = card->getSubcards();
-            foreach(int card_id, card_ids){
-                LogMessage log;
-                log.type = "$DiscardCard";
-                log.from = player;
-                log.card_str = QString::number(card_id);
-
-                room->sendLog(log);
-            }
-
             LogMessage log;
             log.type = "#AxeSkill";
             log.from = player;
