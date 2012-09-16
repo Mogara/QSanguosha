@@ -493,7 +493,7 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *>
         while(map[sp] > 0){
             if(!sp->isNude()){
                 int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng");
-                room->throwCard(card_id, sp);
+                room->throwCard(card_id, sp, lingtong);
             }
             map[sp]--;
         }

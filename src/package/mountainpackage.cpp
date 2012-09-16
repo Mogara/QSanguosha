@@ -628,7 +628,7 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
         room->broadcastSkillInvoke("tiaoxin", qrand() % 2 + 1);
 
     if(!room->askForUseSlashTo(effect.to, effect.from, "@tiaoxin-slash:" + effect.from->objectName()) && !effect.to->isNude())
-        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to);
+        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to, effect.from);
 }
 
 class Tiaoxin: public ZeroCardViewAsSkill{

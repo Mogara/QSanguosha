@@ -75,11 +75,7 @@ JiemingCard::JiemingCard(){
 }
 
 bool JiemingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
-        return false;
-
-    int upper = qMin(5, to_select->getMaxHp());
-    return to_select->getHandcardNum() < upper;
+    return !targets.isEmpty();
 }
 
 void JiemingCard::onEffect(const CardEffectStruct &effect) const{
@@ -235,15 +231,10 @@ public:
     }
     virtual int getExtra(const Player *target) const{
         int extra = 0;
-        //const Player *lord = NULL;
-        //if(target->isLord())
-        //    lord = target;
         QList<const Player *> players = target->getSiblings();
         foreach(const Player *player, players){
             if(player->isAlive() && player->getKingdom() == "qun")
                 extra += 2;
-            //if(player->isLord())
-            //    lord = player;
         }
         if(target->hasLordSkill(objectName()))
             return extra;
@@ -342,14 +333,10 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *pangde, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.to->isAlive() && !effect.to->isNude()){
-            Room *room = pangde->getRoom();
             if(pangde->askForSkillInvoke(objectName(), data)){
                 room->broadcastSkillInvoke(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
-                CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, effect.to->objectName());
-                reason.m_playerId = pangde->objectName();
-                reason.m_targetId = effect.to->objectName();
-                room->moveCardTo(Sanguosha->getCard(to_throw), NULL, NULL, Player::DiscardPile, reason);
+                room->throwCard(Sanguosha->getCard(to_throw), effect.to, pangde);
             }
         }
 

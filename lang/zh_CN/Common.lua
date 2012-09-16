@@ -101,6 +101,8 @@ return {
 	["$PasteCard"] = "%from 给 %to 贴了张 %card",
 	["$LightningMove"] = "%card 从 %from 移动到 %to",
 	["$DiscardCard"] = "%from 弃置了 %card",
+	["$DiscardCardByOther"] = "%from 弃置了 %to 的卡牌 %card",
+	["$EnterDiscardPile"] = "%card 被置入弃牌堆",
 	["$GotCardBack"] = "%from 收回了%card",
 	["$RecycleCard"] = "%from 捡回了%card",
 	["$Dismantlement"] = "%from 的%card被弃置",

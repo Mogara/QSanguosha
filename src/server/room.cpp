@@ -2643,7 +2643,7 @@ void Room::damage(DamageStruct &damage_data){
 
     QVariant data = QVariant::fromValue(damage_data);
 	
-	if(!damage_data.chain && !damage_data.transfer && damage_data.from){
+    if(!damage_data.chain && !damage_data.transfer && damage_data.from){
         // ComfirmDamage
         thread->trigger(ConfirmDamage, this, damage_data.from, data);
         damage_data = data.value<DamageStruct>();
@@ -2929,13 +2929,23 @@ void Room::drawCards(QList<ServerPlayer*> players, int n, const QString &reason)
     }      
 }
 
-void Room::throwCard(const Card *card, ServerPlayer *who){
-    CardMoveReason reason(CardMoveReason::S_REASON_THROW, who ? who->objectName() : QString());
+// 'thrower == NULL' means that it is 'who' himself that throws the card
+// otherwise the thrower throws the card of who
+void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower){
+    CardMoveReason reason;
+    if (thrower == NULL) {
+        reason.m_reason = CardMoveReason::S_REASON_THROW;
+        reason.m_playerId = who ? who->objectName() : QString();
+    } else {
+        reason.m_reason = CardMoveReason::S_REASON_DISMANTLE;
+        reason.m_targetId = who ? who->objectName() : QString();
+        reason.m_playerId = thrower->objectName();
+    }
     reason.m_skillName = card->getSkillName();
-    throwCard(card, reason, who);
+    throwCard(card, reason, who, thrower);
 }
 
-void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who){
+void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who, ServerPlayer *thrower){
     if(card == NULL)
         return;
 
@@ -2945,20 +2955,27 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
     else
         to_discard << card->getEffectiveId();
 
+    LogMessage log;
     if (who) {
-        LogMessage log;
-        log.type = "$DiscardCard";
-        log.from = who;       
-
-        foreach(int card_id, to_discard){
-            setCardFlag(card_id, "visible");
-            if(log.card_str.isEmpty())
-                log.card_str = QString::number(card_id);
-            else
-                log.card_str += "+" + QString::number(card_id);
+        if (thrower == NULL) {
+            log.type = "$DiscardCard";
+            log.from = who;
+        } else {
+            log.type = "$DiscardCardByOther";
+            log.from = thrower;
+            log.to << who;
         }
-        sendLog(log);
+    } else {
+        log.type = "$EnterDiscardPile";
     }
+    foreach(int card_id, to_discard){
+        setCardFlag(card_id, "visible");
+        if(log.card_str.isEmpty())
+            log.card_str = QString::number(card_id);
+        else
+            log.card_str += "+" + QString::number(card_id);
+    }
+    sendLog(log);
 
     QList<CardsMoveStruct> moves;
     if(who){
@@ -2980,8 +2997,8 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
     }
 }
 
-void Room::throwCard(int card_id, ServerPlayer *who){
-    throwCard(Sanguosha->getCard(card_id), who);
+void Room::throwCard(int card_id, ServerPlayer *who, ServerPlayer *thrower){
+    throwCard(Sanguosha->getCard(card_id), who, thrower);
 }
 
 RoomThread *Room::getThread() const{
