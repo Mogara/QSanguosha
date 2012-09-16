@@ -75,7 +75,7 @@ JiemingCard::JiemingCard(){
 }
 
 bool JiemingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return !targets.isEmpty();
+    return targets.isEmpty();
 }
 
 void JiemingCard::onEffect(const CardEffectStruct &effect) const{
