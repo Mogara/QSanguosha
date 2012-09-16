@@ -852,6 +852,10 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["cardAvatarArea"], _m_commonLayout.m_cardAvatarArea);
     tryParse(config["chooseGeneralBoxSwitchIconSizeThreshold"], 
              _m_commonLayout.m_chooseGeneralBoxSwitchIconSizeThreshold);
+    tryParse(config["chooseGeneralBoxSwitchIconEachRow"],
+             _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRow);
+    tryParse(config["chooseGeneralBoxSwitchIconEachRowForTooManyGenerals"],
+             _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals);
     tryParse(config["chooseGeneralBoxDenseIconSize"],
              _m_commonLayout.m_chooseGeneralBoxDenseIconSize);
     tryParse(config["chooseGeneralBoxSparseIconSize"],

@@ -266,6 +266,8 @@ public:
         // when # of generals < switchIconSizeThreadshold
         QSize m_chooseGeneralBoxDenseIconSize;
         int m_chooseGeneralBoxSwitchIconSizeThreshold;
+        int m_chooseGeneralBoxSwitchIconEachRow;
+        int m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals;
     };
 
     enum GeneralIconSize

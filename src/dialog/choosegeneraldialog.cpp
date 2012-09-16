@@ -115,11 +115,12 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     }
 
     QLayout *layout = NULL;
-    const int columns = tooManyGenerals ? 6 : 5;
+    const int columns = tooManyGenerals ? G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRow :
+                                          G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals;
     if(generals.length() <= columns){
         layout = new QHBoxLayout;
 
-        if(lord_name.size())
+        if(lord_name.size() && !ServerInfo.EnableHegemony)
         {
             const General * lord = Sanguosha->getGeneral(lord_name);
 
