@@ -684,8 +684,8 @@ void ServerPlayer::skip(Player::Phase phase){
 void ServerPlayer::insertPhase(Player::Phase phase){
     PhaseStruct _phase;
     _phase.phase = phase;
-    phases.insert(_m_phases_index + 1, phase);
-    _m_phases_state.insert(_m_phases_index + 1, _phase);
+    phases.insert(_m_phases_index, phase);
+    _m_phases_state.insert(_m_phases_index, _phase);
 }
 
 bool ServerPlayer::isSkipped(Player::Phase phase){
@@ -980,7 +980,7 @@ void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){
     ServerPlayer *current = room->getCurrent();
 
     room->setCurrent(this);
-    room->removeTag("Zhichi");
+
     if(clearflag)
         clearflag->clearFlags();
     room->setPlayerFlag(this, "isExtraTurn");

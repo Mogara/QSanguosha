@@ -321,7 +321,7 @@ public:
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *liaohua, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if(change.to == Player::Start){
+        if(change.to == Player::Start && change.from != Player::Play){
             room->broadcastSkillInvoke(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";
@@ -329,8 +329,9 @@ public:
             log.arg = objectName();
             room->sendLog(log);
 
+            change.to = Player::Play;
+            data = QVariant::fromValue(change);
             liaohua->insertPhase(Player::Play);
-            return true;
         }
         return false;
     }
