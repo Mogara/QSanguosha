@@ -17,11 +17,11 @@ GameRule::GameRule(QObject *)
 
     events << GameStart << TurnStart << EventPhaseStart << CardUsed
            << CardEffected << CardFinished
-           << HpRecover << HpLost
+           << HpRecover << HpLost << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
            << AskForPeaches << AskForPeachesDone << Dying << Death << GameOverJudge
            << SlashHit << SlashMissed << SlashEffected << SlashProceed
-           << ConfirmDamage << PreHpReduced << DamageDone << PostHpReduced << DamageComplete
+           << ConfirmDamage << PreHpReduced << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge
            << Pindian;
 }
@@ -244,7 +244,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
     case HpLost:{
             int lose = data.toInt();
 
-
             LogMessage log;
             log.type = "#LoseHp";
             log.from = player;
@@ -255,7 +254,20 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             QString str = QString("%1:%2L").arg(player->objectName()).arg(-lose);
             room->broadcastInvoke("hpChange", str);
 
-            if(player->getHp() <= 0)
+            QVariant data2 = QVariant::fromValue(lose);
+            room->getThread()->trigger(PostHpReduced, room, player, data2);
+
+            break;
+    }
+
+    case PostHpReduced:{
+            if (player->getHp() > 0)
+                break;
+
+            if (data.canConvert<DamageStruct>()) {
+                DamageStruct damage = data.value<DamageStruct>();
+                room->enterDying(player, &damage);
+            } else
                 room->enterDying(player, NULL);
 
             break;
@@ -370,20 +382,9 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             room->sendDamageLog(damage);
 
             room->applyDamage(player, damage);
-            
+            room->getThread()->trigger(PostHpReduced, room, player, data);
             break;
         }
-
-    case PostHpReduced:{
-            DamageStruct damage = data.value<DamageStruct>();
-
-            if(player->getHp() <= 0){
-                room->enterDying(player, &damage);
-            }
-            
-            break;
-        }
-
     case DamageComplete:{
             DamageStruct damage = data.value<DamageStruct>();
             if(room->getMode() == "02_1v1" && player->isDead()){

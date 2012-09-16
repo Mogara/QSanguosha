@@ -2619,18 +2619,18 @@ void Room::damage(DamageStruct &damage_data){
         return;
 
     QVariant data = QVariant::fromValue(damage_data);
+	
+	if(!damage_data.chain && !damage_data.transfer && damage_data.from){
+        // ComfirmDamage
+        thread->trigger(ConfirmDamage, this, damage_data.from, data);
+        damage_data = data.value<DamageStruct>();
+
+        // Predamage
+        if(thread->trigger(Predamage, this, damage_data.from, data))
+            return;
+    }
 
     do{
-        if(!damage_data.chain && !damage_data.transfer && damage_data.from){
-            // ComfirmDamage
-            thread->trigger(ConfirmDamage, this, damage_data.from, data);
-            damage_data = data.value<DamageStruct>();
-
-            // Predamage
-            if(thread->trigger(Predamage, this, damage_data.from, data))
-                break;
-        }
-
         // DamageForseen
         bool prevent = thread->trigger(DamageForseen, this, damage_data.to, data);
         if(prevent)
@@ -2656,11 +2656,6 @@ void Room::damage(DamageStruct &damage_data){
 
         // damage done, should not cause damage process broken
         thread->trigger(DamageDone, this, damage_data.to, data);
-
-        // PostHpReduced
-        broken = thread->trigger(PostHpReduced, this, damage_data.to, data);
-        if(broken)
-            break;
 
         // damage
         if(damage_data.from){
@@ -3943,12 +3938,14 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_
         bottom_cards.clear();
     }
 
-    LogMessage log;
-    log.type = "#GuanxingResult";
-    log.from = zhuge;
-    log.arg = QString::number(top_cards.length());
-    log.arg2 = QString::number(bottom_cards.length());
-    sendLog(log);
+    if (!up_only) {
+        LogMessage log;
+        log.type = "#GuanxingResult";
+        log.from = zhuge;
+        log.arg = QString::number(top_cards.length());
+        log.arg2 = QString::number(bottom_cards.length());
+        sendLog(log);
+    }
 
     QListIterator<int> i(top_cards);
     i.toBack();

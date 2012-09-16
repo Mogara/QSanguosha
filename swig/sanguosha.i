@@ -557,6 +557,7 @@ enum TriggerEvent{
     HpLost,
     HpChanged,
     MaxHpChanged,
+    PostHpReduced,
 
     EventLoseSkill,
     EventAcquireSkill,
@@ -576,7 +577,6 @@ enum TriggerEvent{
     DamageInflicted,  // the moment for -- tianxiang..
     PreHpReduced,     // the moment before Hpreduce
     DamageDone,       // it's time to do the damage
-    PostHpReduced,    // the moment after Hpreduce
     Damage,           // the moment for -- lieren..
     Damaged,          // the moment for -- yiji..
     DamageComplete,   // the moment for trigger iron chain
