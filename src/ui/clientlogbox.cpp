@@ -78,6 +78,12 @@ void ClientLogBox::appendLog(
         QString card_name = card->getLogName();
         card_name = bold(card_name, Qt::yellow);
 
+        QString reason = tr("using");
+        if (type.endsWith("_Resp"))
+            reason = tr("playing");
+        if (type.endsWith("_Recast"))
+            reason = tr("recasting");
+
         if(card->isVirtualCard()){
             QString skill_name = Sanguosha->translate(card->getSkillName());
             skill_name = bold(skill_name, Qt::yellow);
@@ -101,29 +107,31 @@ void ClientLogBox::appendLog(
                 }
             }else{
                 if(subcard_list.isEmpty())
-                    log = tr("%from use skill [%1], played [%2]").arg(skill_name).arg(card_name);
+                    log = tr("%from use skill [%1], %3 [%2]").arg(skill_name).arg(card_name).arg(reason);
                 else
-                    log = tr("%from use skill [%1] use %2 as %3")
+                    log = tr("%from use skill [%1] %4 %2 as %3")
                           .arg(skill_name)
                           .arg(subcard_str)
-                          .arg(card_name);
+                          .arg(card_name)
+                          .arg(reason);
             }
 
             delete card;
-        }else if(card->isModified()){
+        }else if(card->isModified() && card->getSkillName() != QString()){
             const Card *real = Sanguosha->getEngineCard(card->getEffectiveId());
             QString skill_name = Sanguosha->translate(card->getSkillName());
             skill_name = bold(skill_name, Qt::yellow);
 
             QString subcard_str = bold(real->getLogName(), Qt::yellow);
 
-            log = tr("%from use skill [%1] use %2 as %3")
+            log = tr("%from use skill [%1] %4 %2 as %3")
                     .arg(skill_name)
                     .arg(subcard_str)
-                    .arg(card_name);
+                    .arg(card_name)
+                    .arg(reason);
         }
         else
-            log = tr("%from use %1").arg(card_name);
+            log = tr("%from %2 %1").arg(card_name).arg(reason);
 
         if(!to.isEmpty())
             log.append(tr(", target is %to"));

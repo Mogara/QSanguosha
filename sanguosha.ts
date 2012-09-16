@@ -597,39 +597,54 @@
 </context>
 <context>
     <name>ClientLogBox</name>
+	<message>
+        <location filename="src/ui/clientlogbox.cpp" line="81"/>
+        <source>using</source>
+        <translation>使用</translation>
+    </message>
+	<message>
+        <location filename="src/ui/clientlogbox.cpp" line="83"/>
+        <source>playing</source>
+        <translation>打出</translation>
+    </message>
+	<message>
+        <location filename="src/ui/clientlogbox.cpp" line="85"/>
+        <source>recasting</source>
+        <translation>重铸</translation>
+    </message>
     <message>
-        <location filename="src/ui/clientlogbox.cpp" line="96"/>
+        <location filename="src/ui/clientlogbox.cpp" line="102"/>
         <source>%from use skill [%1]</source>
         <translation>%from 发动了技能【%1】</translation>
     </message>
     <message>
-        <location filename="src/ui/clientlogbox.cpp" line="100"/>
+        <location filename="src/ui/clientlogbox.cpp" line="106"/>
         <source>%from use skill [%1], and the cost is %2</source>
         <translation>%from 发动了技能【%1】，所用的牌为 %2</translation>
     </message>
     <message>
-        <location filename="src/ui/clientlogbox.cpp" line="104"/>
-        <source>%from use skill [%1], played [%2]</source>
-        <translation>%from 使用了【%1】技能，打出了 【%2】</translation>
+        <location filename="src/ui/clientlogbox.cpp" line="110"/>
+        <source>%from use skill [%1], %3 [%2]</source>
+        <translation>%from 使用了【%1】技能，%3了 【%2】</translation>
     </message>
     <message>
-        <location filename="src/ui/clientlogbox.cpp" line="106"/>
-        <location filename="src/ui/clientlogbox.cpp" line="120"/>
-        <source>%from use skill [%1] use %2 as %3</source>
-        <translation>%from 使用了技能【%1】将 %2 当成了 %3</translation>
+        <location filename="src/ui/clientlogbox.cpp" line="112"/>
+        <location filename="src/ui/clientlogbox.cpp" line="127"/>
+        <source>%from use skill [%1] %4 %2 as %3</source>
+        <translation>%from 使用了技能【%1】将 %2 当成了 %3 %4</translation>
     </message>
     <message>
-        <location filename="src/ui/clientlogbox.cpp" line="126"/>
-        <source>%from use %1</source>
-        <translation>%from 使用了 %1</translation>
+        <location filename="src/ui/clientlogbox.cpp" line="134"/>
+        <source>%from %2 %1</source>
+        <translation>%from %2了 %1</translation>
     </message>
     <message>
-        <location filename="src/ui/clientlogbox.cpp" line="129"/>
+        <location filename="src/ui/clientlogbox.cpp" line="137"/>
         <source>, target is %to</source>
         <translation>, 目标是 %to</translation>
     </message>
     <message>
-        <location filename="src/ui/clientlogbox.cpp" line="163"/>
+        <location filename="src/ui/clientlogbox.cpp" line="171"/>
         <source>Log string is not well formatted: %1</source>
         <translation>提示信息没有格式化好: %1</translation>
     </message>

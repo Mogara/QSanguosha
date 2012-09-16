@@ -363,6 +363,13 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
         reason.m_skillName = this->getSkillName();
         room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
         card_use.from->broadcastSkillInvoke("@recast");
+
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = card_use.from;
+        log.card_str = card_use.card->toString();
+        room->sendLog(log);
+
         card_use.from->drawCards(1);
     }else
         TrickCard::onUse(room, card_use);
