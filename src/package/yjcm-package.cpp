@@ -147,7 +147,7 @@ public:
         }else if(triggerEvent == DamageComplete){
             bool faceup = player->tag.value("PredamagedFace", true).toBool();
             player->tag.remove("PredamagedFace");
-            if(!faceup && player->askForSkillInvoke("jiushi", data)){
+            if(!faceup && !player->faceUp() && player->askForSkillInvoke("jiushi", data)){
                 room->broadcastSkillInvoke("jiushi", 3);
                 player->turnOver();
             }
