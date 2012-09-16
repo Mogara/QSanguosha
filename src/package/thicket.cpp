@@ -163,7 +163,7 @@ public:
                     break;
             }
                     
-            foreach(ServerPlayer *caopi, caopis){        //for AI
+            foreach(ServerPlayer *caopi, room->getAllPlayers()){        //for AI
                 if(caopi->hasFlag("songweiused"))
                     caopi->setFlags("-songweiused");
             }
@@ -947,7 +947,7 @@ public:
                     break;
             }
 
-            foreach(ServerPlayer *dongzhuo, dongzhuos){        //for AI
+            foreach(ServerPlayer *dongzhuo, room->getAllPlayers()){        //for AI
                 if(dongzhuo->hasFlag("baonueused"))
                     dongzhuo->setFlags("-baonueused");
             }
