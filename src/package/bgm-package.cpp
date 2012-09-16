@@ -751,7 +751,7 @@ public:
             CardsMoveStruct move;
             move.card_ids = cardIds;
             move.to_place = Player::PlaceTable;
-            move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, QString(), QString(), "zhaolie", QString());
+            move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, liubei->objectName(), QString(), "zhaolie", QString());
             room->moveCards(move, true);
             room->getThread()->delay();
             for(int i = 0; i < 3; i++)

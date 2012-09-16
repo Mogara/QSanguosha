@@ -1821,6 +1821,22 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach(int card_id, move.card_ids)
             log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
     }
+    if (move.reason.m_reason == CardMoveReason::S_REASON_TURNOVER) {
+        QString type = "$TurnOver";
+        Photo *srcphoto = name2photo[move.reason.m_playerId];
+        QString to_general;
+        if (srcphoto != NULL)
+            to_general = srcphoto->getPlayer()->getGeneralName();
+        else if (move.reason.m_playerId == Self->objectName())
+            to_general = Self->getGeneralName();
+        QString card_str = QString();
+        foreach(int card_id, move.card_ids)
+            if(card_str.isEmpty())
+                card_str = QString::number(card_id);
+            else
+                card_str += "+" + QString::number(card_id);
+        log_box->appendLog(type, to_general, QStringList(), card_str);
+    }
 }
 
 inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }

@@ -391,7 +391,7 @@ public:
                 CardsMoveStruct move, move2;
                 move.card_ids.append(card1);
                 move.card_ids.append(card2);
-                move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, shuangying->getGeneralName(), "fuhun", QString());
+                move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, shuangying->objectName(), "fuhun", QString());
                 move.to_place = Player::PlaceTable;
                 room->moveCardsAtomic(move, true);
                 room->getThread()->delay();
