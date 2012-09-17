@@ -115,8 +115,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     }
 
     QLayout *layout = NULL;
-    const int columns = tooManyGenerals ? G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRow :
-                                          G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals;
+    const int columns = tooManyGenerals ? G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals :
+                                          G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRow;
     if(generals.length() <= columns){
         layout = new QHBoxLayout;
 
