@@ -11,8 +11,8 @@
     "cardAvatarArea": [44, 87, 42, 36],
     "cardFootnoteFont": ["simsun", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
     "chooseGeneralBoxSwitchIconSizeThreshold": 10,
-    "chooseGeneralBoxSwitchIconEachRow": 6,
-    "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 5,
+    "chooseGeneralBoxSwitchIconEachRow": 5,
+    "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 6,
     "chooseGeneralBoxSparseIconSize": [160, 232],
     "chooseGeneralBoxDenseIconSize": [94, 94],
     // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
