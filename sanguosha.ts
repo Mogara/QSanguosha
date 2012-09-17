@@ -597,7 +597,7 @@
 </context>
 <context>
     <name>ClientLogBox</name>
-	<message>
+    <message>
         <location filename="src/ui/clientlogbox.cpp" line="81"/>
         <source>using</source>
         <translation>使用</translation>

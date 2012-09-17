@@ -602,12 +602,12 @@
         <source>using</source>
         <translation>使用</translation>
     </message>
-	<message>
+    <message>
         <location filename="../../src/ui/clientlogbox.cpp" line="83"/>
         <source>playing</source>
         <translation>打出</translation>
     </message>
-	<message>
+    <message>
         <location filename="../../src/ui/clientlogbox.cpp" line="85"/>
         <source>recasting</source>
         <translation>重铸</translation>
