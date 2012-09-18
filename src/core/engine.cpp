@@ -689,7 +689,7 @@ QStringList Engine::getRandomLords() const{
     if (lord_num != -1 && lord_num < lords.length()) {
         int to_remove = lords.length() - lord_num;
         for (int i = 0; i < to_remove; i++) {
-            lords.removeOne(lords[qrand() % lords.length()]);
+            lords.removeAt(qrand() % lords.length());
         }
     }
 
