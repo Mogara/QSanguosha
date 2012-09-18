@@ -1,5 +1,26 @@
 sgs.ai_skill_invoke.zishou = function(self, data)
-	return self.player:getHandcardNum() < 2 and self.player:isWounded()
+	local chance_value = 1
+	if (self.player:getHp() <= 2) then chance_value = chance_value + 1 end
+	
+	local kingdoms = {false,false,false,false}
+	for _, player in sgs.qlist(self.room:getAlivePlayers()) do
+		if     player:getKingdom() == "wei" then kingdoms[0] = true
+		elseif player:getKingdom() == "shu" then kingdoms[1] = true
+		elseif player:getKingdom() == "wu"  then kingdoms[2] = true
+		elseif player:getKingdom() == "qun" then kingdoms[3] = true end
+	end
+	
+	local kingdoms_num = 0;
+	for i=0, 3 do
+		if kingdoms[i] then kingdoms_num = kingdoms_num + 1 end
+	end
+	
+	local peach_num = self:getCardsNum("Peach")
+	local can_save_card_num = self.player:getHp() + kingdoms_num - self.player:getHandcardNum()
+	
+	return self.player:isWounded()
+		and (self.player:isSkipped(sgs.Player_Play)
+			or ((self.player:getLostHp() + 2) - (can_save_card_num + peach_num)  <= chance_value))
 end
 
 sgs.ai_skill_invoke.qianxi = function(self, data)
