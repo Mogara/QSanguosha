@@ -100,6 +100,7 @@ return {
 	["$MoveCard"] = "%to 从 %from 处得到了 %card",
 	["$PasteCard"] = "%from 给 %to 贴了张 %card",
 	["$LightningMove"] = "%card 从 %from 移动到 %to",
+	["$TurnOver"] = "%from 亮出了牌堆顶的 %card",
 	["$DiscardCard"] = "%from 弃置了 %card",
 	["$DiscardCardByOther"] = "%from 弃置了 %to 的卡牌 %card",
 	["$EnterDiscardPile"] = "%card 被置入弃牌堆",
