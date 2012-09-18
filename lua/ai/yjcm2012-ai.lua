@@ -1,13 +1,21 @@
 sgs.ai_skill_invoke.zishou = function(self, data)
-	return self.player:getHandcardNum() < 2 and self.player:isWounded()
+	local chance_value = 1
+	if (self.player:getHp() <= 2) then chance_value = chance_value + 1 end
+
+	local peach_num = self:getCardsNum("Peach")
+	local can_save_card_num = self.player:getMaxCards() - self.player:getHandcardNum()
+
+	return self.player:isSkipped(sgs.Player_Play)
+			or ((self.player:getLostHp() + 2) - can_save_card_num + peach_num  <= chance_value)
 end
 
 sgs.ai_skill_invoke.qianxi = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
 	if self:isFriend(target) then return false end
+	if target:getLostHp() >= 2 and target:getHp() <= 1 then return false end
 	if self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill,target) or self:hasSkills("longhun|buqu",target) then return true end
-	if damage.card:hasFlag("drank") then return false end
+	if damage.damage > 1 then return false end
 	return (target:getMaxHp() - target:getHp()) < 2 
 end
 
