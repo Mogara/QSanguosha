@@ -179,8 +179,6 @@
 "handCardMainPhoto-default": "image/card/%1.jpg",
 "handCardMainPhoto-unknown": "image/system/card-back.png",
 
-"handCardMainPhoto-noszhangchunhua": "image/card/zhangchunhua.jpg",
-
 "handCardNumber-black-default": "image/system/black/%1.png",
 "handCardNumber-red-default": "image/system/red/%1.png",
 "handCardSuit-default": "image/system/cardsuit/%1.png",
