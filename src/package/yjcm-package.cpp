@@ -305,12 +305,14 @@ public:
             if(!source || source == player) return false;
             int x = damage.damage, i;
             for(i = 0; i < x; i++) {
-                if (room->askForSkillInvoke(player,objectName(),data)){
+                if (room->askForSkillInvoke(player, objectName(), data)){
                     room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
-                    //fix this!
-                    const Card *card = room->askForCard(source, ".", "@enyuan", QVariant(), NonTrigger);
+                    const Card *card = room->askForExchange(source, objectName(), 1, false, "EnyuanGive", true);
                     if(card){
-                        player->obtainCard(card);
+                        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(),
+                                              player->objectName(), objectName(), QString());
+                        reason.m_playerId = player->objectName();
+                        room->moveCardTo(card, source, player, Player::PlaceHand, reason);
                     }else{
                         room->loseHp(source);
                     }

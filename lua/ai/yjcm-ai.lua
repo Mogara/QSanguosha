@@ -127,14 +127,17 @@ sgs.ai_skill_invoke.enyuan = function(self, data)
 	end
 end
 
-sgs.ai_skill_cardask["@enyuan"] = function(self)
+sgs.ai_skill_discard.enyuan = function(self, discard_num, min_num, optional, include_equip)
+	local to_discard = {}
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if  not (card:isKindOf("Peach") or card:isKindOf("ExNihilo")) then
-			return card:getEffectiveId()
+		if not (card:isKindOf("Peach") or card:isKindOf("ExNihilo")) then
+			table.insert(to_discard, card:getEffectiveId())
+			return to_discard
 		end
 	end
-	return "."
+	
+	return {}
 end
 
 function sgs.ai_slash_prohibit.enyuan(self)
