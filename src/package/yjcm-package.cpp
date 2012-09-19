@@ -356,6 +356,12 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
         }
         victim = room->askForPlayerChosen(effect.from, targets, "xuanhuo");
 
+        LogMessage log;
+        log.type = "#CollateralSlash";
+        log.from = effect.from;
+        log.to << victim;
+        room->sendLog(log);
+
         QString prompt = QString("xuanhuo-slash:%1:%2")
                 .arg(effect.from->objectName()).arg(victim->objectName());
         if (!room->askForUseSlashTo(effect.to, victim, prompt)){

@@ -772,6 +772,12 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *victim = room->getTag("collateralVictim").value<PlayerStar>();
     room->removeTag("collateralVictim");
 
+    LogMessage log;
+    log.type = "#CollateralSlash";
+    log.from = source;
+    log.to << victim;
+    room->sendLog(log);
+
     WrappedCard *weapon = killer->getWeapon();
     if(weapon == NULL || victim == NULL)
         return;

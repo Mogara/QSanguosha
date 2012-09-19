@@ -32,7 +32,6 @@ return {
 	["xuanhuo:slash"] = "对攻击范围内的一名角色使用一张【杀】",
 	["xuanhuo:give"] = "对方获得你的两张牌",
 	["xuanhuo-slash"] = "请对已选择的目标使用一张【杀】",
-	["@enyuan"] = "请交给法正一张手牌",
 
 	["#masu"] = "怀才自负",
 	["masu"] = "马谡",
