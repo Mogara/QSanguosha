@@ -3892,7 +3892,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
     QList<int> to_exchange;
     if(ai){
         // share the same callback interface
-        to_exchange = ai->askForDiscard(reason, discard_num, discard_num, optional, false);
+        to_exchange = ai->askForDiscard(reason, discard_num, discard_num, optional, include_equip);
     }else{
         Json::Value exchange_str(Json::arrayValue);
         exchange_str[0] = discard_num;
@@ -3907,7 +3907,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
             || !tryParse(clientReply, to_exchange))
         {
             if (optional) return NULL;
-            to_exchange = player->forceToDiscard(discard_num, false);
+            to_exchange = player->forceToDiscard(discard_num, include_equip);
         }
     }
 
