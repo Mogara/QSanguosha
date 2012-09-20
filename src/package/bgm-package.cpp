@@ -705,7 +705,34 @@ public:
     }
 };
 
-class Zhaolie:public DrawCardsSkill{
+class MouduanClear: public TriggerSkill{
+public:
+    MouduanClear():TriggerSkill("#mouduan-clear"){
+        events << EventLoseSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill("mouduan");
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (data.toString() == "mouduan") {
+            if (player->getMark("@wu") > 0) {
+                player->loseMark("@wu");
+                room->detachSkillFromPlayer(player, "jiang");
+                room->detachSkillFromPlayer(player, "qianxun");
+            }
+            else if (player->getMark("@wen") > 0) {
+                player->loseMark("@wen");
+                room->detachSkillFromPlayer(player, "yingzi");
+                room->detachSkillFromPlayer(player, "keji");
+            }
+        }
+        return false;
+    }
+};
+
+class Zhaolie: public DrawCardsSkill{
 public:
     Zhaolie():DrawCardsSkill("zhaolie"){
     }
@@ -1242,7 +1269,9 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_lvmeng->addSkill(new Tanhu);
     bgm_lvmeng->addSkill(new MouduanStart);
     bgm_lvmeng->addSkill(new Mouduan);
+    bgm_lvmeng->addSkill(new MouduanClear);
     related_skills.insertMulti("mouduan", "#mouduan");
+    related_skills.insertMulti("mouduan", "#mouduan-clear");
 
     General *bgm_liubei = new General(this, "bgm_liubei$", "shu");
     bgm_liubei->addSkill(new Zhaolie);
