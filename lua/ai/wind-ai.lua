@@ -220,7 +220,7 @@ huangtianv_skill.name="huangtianv"
 table.insert(sgs.ai_skills,huangtianv_skill)
 
 huangtianv_skill.getTurnUseCard=function(self)
-	if self.player:hasUsed("HuangtianCard") then return nil end
+	if self.player:hasFlag("ForbidHuangtian") then return nil end
 	if self.player:getKingdom() ~= "qun" then return nil end
 
 	local cards = self.player:getCards("h")	
@@ -252,7 +252,7 @@ end
 sgs.ai_skill_use_func.HuangtianCard=function(card,use,self)
 	local targets = {}
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:hasLordSkill("huangtian") then
+		if friend:hasLordSkill("huangtian") and not friend:hasFlag("HuangtianInvoked") then
 			table.insert(targets, friend)
 		end
 	end
@@ -325,7 +325,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data)
 	cards=sgs.QList2Table(cards)
 	self:sortByUseValue(cards,true)
 	for _,card in ipairs(cards) do
-		if (card:getSuit() == sgs.Card_Spade or card:getSuit() == sgs.Card_Heart) and not card:isKindOf("Peach") then
+		if ((card:getSuit() == sgs.Card_Spade and self:hasSkill("hongyan")) or card:getSuit() == sgs.Card_Heart) and not card:isKindOf("Peach") then
 			card_id = card:getId()
 			break
 		end
@@ -355,10 +355,10 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data)
 	end
 
 	for _, enemy in ipairs(self.enemies) do
-		if (enemy:getLostHp() <= 1) or dmg.damage>1 then
+		if enemy:getLostHp() <= 1 or dmg.damage>1 then
 
-		if (enemy:getHandcardNum() <= 2)
-			or enemy:containsTrick("indulgence") or self:hasSkills("guose|leiji|ganglie|enyuan|qingguo|wuyan|kongcheng", enemy)
+			if (enemy:getHandcardNum() <= 2)
+				or enemy:containsTrick("indulgence") or self:hasSkills("guose|leiji|ganglie|enyuan|qingguo|wuyan|kongcheng", enemy)
 			then return "@TianxiangCard="..card_id.."->"..enemy:objectName() end
 		end
 	end
