@@ -476,95 +476,95 @@
         <translation>请弃掉 %1 张手牌</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1092"/>
+        <location filename="../../src/client/client.cpp" line="1093"/>
         <source>Exchange string is not well formatted!</source>
         <translation>交换字符串没有格式化好!</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1103"/>
+        <location filename="../../src/client/client.cpp" line="1104"/>
         <source>Please give %1 cards to exchange</source>
         <translation>请选择用于交换的 %1 张手牌</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1174"/>
+        <location filename="../../src/client/client.cpp" line="1175"/>
         <source>%1[dead]</source>
         <translation>%1【阵亡】</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1193"/>
+        <location filename="../../src/client/client.cpp" line="1194"/>
         <source>Game is over now</source>
         <translation>游戏已经结束</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1195"/>
+        <location filename="../../src/client/client.cpp" line="1196"/>
         <source>The server require password to signup</source>
         <translation>服务器要求密码才能登录</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1197"/>
+        <location filename="../../src/client/client.cpp" line="1198"/>
         <source>Your password is wrong</source>
         <translation>密码错误</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1199"/>
+        <location filename="../../src/client/client.cpp" line="1200"/>
         <source>Invalid signup string</source>
         <translation>无效的登录字符串</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1201"/>
+        <location filename="../../src/client/client.cpp" line="1202"/>
         <source>Your level is not enough</source>
         <translation>您的等级不够</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1203"/>
+        <location filename="../../src/client/client.cpp" line="1204"/>
         <source>Unknown warning: %1</source>
         <translation>未知警告: %1</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1356"/>
+        <location filename="../../src/client/client.cpp" line="1357"/>
         <source>You are dying, please provide %1 peach(es)(or analeptic) to save yourself</source>
         <translation>您正在死亡线上挣扎，请提供 %1 个桃子（或酒）来救您自己</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1360"/>
+        <location filename="../../src/client/client.cpp" line="1361"/>
         <source>%1 is dying, please provide %2 peach(es) to save him</source>
         <translation>%1 正在死亡线上挣扎，请提供 %2 个桃子来拯救他</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1372"/>
+        <location filename="../../src/client/client.cpp" line="1373"/>
         <source>%1 request you to show one hand card</source>
         <translation>%1 要求您展示一张手牌</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1488"/>
+        <location filename="../../src/client/client.cpp" line="1489"/>
         <source>Please play a card for pindian</source>
         <translation>请打出一张卡牌以用于拼点</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1491"/>
+        <location filename="../../src/client/client.cpp" line="1492"/>
         <source>%1 ask for you to play a card to pindian</source>
         <translation>%1 要求你打出一张卡牌以用于拼点</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1501"/>
+        <location filename="../../src/client/client.cpp" line="1502"/>
         <source>Please distribute %1 cards as you wish</source>
         <translation>请将 %1 张牌任意分配</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1561"/>
+        <location filename="../../src/client/client.cpp" line="1562"/>
         <source>&lt;font color=&apos;red&apos;&gt;System: %1&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;red&apos;&gt;系统: %1&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/client/client.cpp" line="1577"/>
+        <location filename="../../src/client/client.cpp" line="1578"/>
         <source>&lt;font color=&apos;%1&apos;&gt;[%2] said: %3 &lt;/font&gt;</source>
         <translation>&lt;font color=&apos;%1&apos;&gt;[%2] 说: %3 &lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/client/client.cpp" line="276"/>
         <location filename="../../src/client/client.cpp" line="354"/>
-        <location filename="../../src/client/client.cpp" line="1092"/>
-        <location filename="../../src/client/client.cpp" line="1206"/>
+        <location filename="../../src/client/client.cpp" line="1093"/>
+        <location filename="../../src/client/client.cpp" line="1207"/>
         <location filename="../../src/dialog/halldialog.cpp" line="184"/>
         <source>Warning</source>
         <translation>警告</translation>
@@ -2648,6 +2648,199 @@
     </message>
 </context>
 <context>
+    <name>RecAnalysis</name>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="33"/>
+        <source>Warning</source>
+        <translation type="unfinished">警告</translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="33"/>
+        <source>The file is unreadable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="67"/>
+        <source>FreeChoose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="68"/>
+        <source>Enable2ndGeneral</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="69"/>
+        <source>EnableScene</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="70"/>
+        <source>EnableSame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="71"/>
+        <source>EnableBasara</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="72"/>
+        <source>EnableHegemony</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="73"/>
+        <source>EnableAI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="312"/>
+        <source>Soy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="313"/>
+        <source>Burning Soul</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="314"/>
+        <source>Regretful Lose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="315"/>
+        <source>Wicked Kill</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="316"/>
+        <source>Peaceful Watcher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="317"/>
+        <source>Useless alive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="318"/>
+        <source>Awe Prestige</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="320"/>
+        <source>Wisely Loyalist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="321"/>
+        <source>Conspiracy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="323"/>
+        <source>Vanguard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="324"/>
+        <source>Fierce Lord</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="325"/>
+        <source>Blood Judgement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="326"/>
+        <source>Rampage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="327"/>
+        <source>Unrealized Aspiration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="328"/>
+        <source>Break Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="330"/>
+        <source>Legatus</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="331"/>
+        <source>Frightful Lord</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="332"/>
+        <source>Bloody Warrior</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="333"/>
+        <source>Warrior Soul</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="334"/>
+        <source>Wrath Warlord</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="336"/>
+        <source>Peaceful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="337"/>
+        <source>Recovery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="339"/>
+        <source>Fodder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="340"/>
+        <source>Fire Target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="341"/>
+        <source>Master Tank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="342"/>
+        <source>War Spirit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="359"/>
+        <source>MVP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="366"/>
+        <source>Priority Honor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/core/record-analysis.cpp" line="367"/>
+        <source>Impasse Strike</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Replayer</name>
     <message>
         <location filename="../../src/util/recorder.cpp" line="110"/>
@@ -2739,7 +2932,7 @@
     <message>
         <location filename="../../src/server/room.cpp" line="1749"/>
         <location filename="../../src/server/room.cpp" line="2055"/>
-        <location filename="../../src/server/room.cpp" line="4627"/>
+        <location filename="../../src/server/room.cpp" line="4632"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
@@ -2797,7 +2990,7 @@
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="4626"/>
+        <location filename="../../src/server/room.cpp" line="4631"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
