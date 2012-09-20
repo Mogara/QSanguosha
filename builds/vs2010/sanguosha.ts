@@ -2657,187 +2657,187 @@
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="33"/>
         <source>The file is unreadable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">文件不可读</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="67"/>
         <source>FreeChoose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">启用自由选将</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="68"/>
         <source>Enable2ndGeneral</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">启用双将</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="69"/>
         <source>EnableScene</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">启用场景模式</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="70"/>
         <source>EnableSame</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">启用同将模式</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="71"/>
         <source>EnableBasara</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">启用暗将模式</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="72"/>
         <source>EnableHegemony</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">启用国战模式</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="73"/>
         <source>EnableAI</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">启用 AI</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="312"/>
         <source>Soy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">打酱油的</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="313"/>
         <source>Burning Soul</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">血战</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="314"/>
         <source>Regretful Lose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">含恨而终</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="315"/>
         <source>Wicked Kill</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">直刺咽喉</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="316"/>
         <source>Peaceful Watcher</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">和平主义者</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="317"/>
         <source>Useless alive</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">无存在感</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="318"/>
         <source>Awe Prestige</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">天道威仪</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="320"/>
         <source>Wisely Loyalist</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">能臣巧吏</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="321"/>
         <source>Conspiracy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">老谋深算</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="323"/>
         <source>Vanguard</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">破敌先锋</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="324"/>
         <source>Fierce Lord</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">一世枭雄</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="325"/>
         <source>Blood Judgement</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">嗜血判官</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="326"/>
         <source>Rampage</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">横扫千军</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="327"/>
         <source>Unrealized Aspiration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">大业未成</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="328"/>
         <source>Break Point</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">直捣黄龙</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="330"/>
         <source>Legatus</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">破军功臣</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="331"/>
         <source>Frightful Lord</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">势敌万军</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="332"/>
         <source>Bloody Warrior</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">屠戮之士</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="333"/>
         <source>Warrior Soul</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">战魂</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="334"/>
         <source>Wrath Warlord</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">暴走战神</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="336"/>
         <source>Peaceful</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">甘霖之润</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="337"/>
         <source>Recovery</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">妙手回春</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="339"/>
         <source>Fodder</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">炮灰</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="340"/>
         <source>Fire Target</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">集火目标</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="341"/>
         <source>Master Tank</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">我是肉盾</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="342"/>
         <source>War Spirit</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">军魂</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="359"/>
         <source>MVP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">MVP</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="366"/>
         <source>Priority Honor</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">竭忠尽智</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="367"/>
         <source>Impasse Strike</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">华丽的逆袭</translation>
     </message>
 </context>
 <context>
