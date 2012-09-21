@@ -100,24 +100,25 @@ public:
                     maxs << p;
                 if (maxs.size() != 1)
                     return false;
-            ServerPlayer *mosthp = maxs.first();
-            if (room->askForSkillInvoke(mosthp, objectName())) {
-                QSet<const Card *> jilei_cards;
-                QList<const Card *> handcards = mosthp->getHandcards();
-                foreach(const Card *card, handcards){
-                    if(mosthp->isJilei(card))
-                        jilei_cards << card;
-                }
-                int total = handcards.size() - jilei_cards.size() + target->getEquips().length();
+                ServerPlayer *mosthp = maxs.first();
+                if (room->askForSkillInvoke(mosthp, objectName())) {
+                    QSet<const Card *> jilei_cards;
+                    QList<const Card *> handcards = mosthp->getHandcards();
+                    foreach(const Card *card, handcards){
+                        if(mosthp->isJilei(card))
+                            jilei_cards << card;
+                    }
+                    int total = handcards.size() - jilei_cards.size() + mosthp->getEquips().length();
 
-                if(total <= 2)
-                    mosthp->throwAllHandCardsAndEquips();
-                else {
-                    room->askForDiscard(mosthp, objectName(), 2, 2, false, true);
-                    mosthp->drawCards(2);
-			    }
+                    if(total <= 2)
+                        mosthp->throwAllHandCardsAndEquips();
+                    else {
+                        room->askForDiscard(mosthp, objectName(), 2, 2, false, true);
+                        mosthp->drawCards(2);
+			        }
+                }
             }
-        }
+		}
 
         return false;
     }
@@ -193,7 +194,7 @@ public:
 
         ServerPlayer *winner = pindian->isSuccess() ? pindian->from : pindian->to;
         ServerPlayer *loser = pindian->isSuccess() ? pindian->to : pindian->from;
-        Slash *slash = new Slash(Card::NoSuitNoColor, 0);
+        Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName("mizhao");
         CardUseStruct card_use;
         card_use.from = winner;
