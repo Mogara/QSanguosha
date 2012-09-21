@@ -44,7 +44,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-		return(!player->isKongcheng() && !player->hasUsed("MizhaoCard"));
+        return(!player->isKongcheng() && !player->hasUsed("MizhaoCard"));
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -54,7 +54,7 @@ public:
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if (cards.length() < Self->getHandcardNum())
             return NULL;
-		return NULL;
+        return NULL;
     }
 };
 
@@ -64,7 +64,22 @@ public:
         events << DamageCaused << DamageInflicted;
     }
 
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(triggerEvent == DamageCaused){
+            if(damage.to->getHp() >= player->getHp())
+                if(player->askForSkillInvoke(objectName()) && room->askForCard(player, ".black", "@JieYuanIncrease", QVariant(), CardDiscarded)){
+                    damage.damage ++;
+                    data = QVariant::fromValue(damage);
+                }
+        }else if(triggerEvent == DamageInflicted){
+            if(damage.from->getHp() >= player->getHp())
+                if(player->askForSkillInvoke(objectName()) && room->askForCard(player, ".red", "@JieYuanDecrease", QVariant(), CardDiscarded)){
+                    damage.damage --;
+                    data = QVariant::fromValue(damage);
+                }
+        }
+
         return false;
     }
 };
@@ -96,7 +111,7 @@ AssassinsPackage::AssassinsPackage():Package("assassins"){
     wujiangbing->addSkill(new JieYuan);
     wujiangbing->addSkill(new FenXin);
 
-	addMetaObject<MizhaoCard>();
+    addMetaObject<MizhaoCard>();
 }
 
 ADD_PACKAGE(Assassins)

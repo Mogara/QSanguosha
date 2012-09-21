@@ -1,13 +1,13 @@
 -- translation for Assassins Package
 
 return {
-	["Assassins"] = "铜雀台",
+	["assassins"] = "铜雀台",
 
 	--["#wujiangjia"] = "",
 	["wujiangjia"] = "武将甲",
 	--["cv:wujiangjia"] = "",
 	--["illustrator:wujiangjia"] = "",
-	["designer:wujiangjia"] = "嘉言",
+	["designer:wujiangjia"] = "嘉言懿行",
 	["moukui"] = "谋溃",
 	[":moukui"] = "当你使用【杀】指定一名角色为目标后，你可以选择一项：摸一张牌，或弃置其一张牌。若如此做，此【杀】被【闪】抵消时，该角色弃置你的一张牌。",
 
@@ -26,6 +26,8 @@ return {
 	["designer:wujiangbing"] = "韩旭",
 	["jieyuan"] = "竭缘",
 	[":jieyuan"] = "当你对一名其他角色造成伤害时，若其体力值大于或等于你的体力值，你可弃置一张黑色手牌令此伤害+1；当你受到一名其他角色造成的伤害时，若其体力值大于或等于你的体力值，你可弃置一张红色手牌令此伤害-1",
+	["@JieYuanIncrease"] = "你可以弃一张黑色手牌令此伤害+1",
+	["@JieYuanDecrease"] = "你可以弃一张红色手牌令此伤害-1",
 	["fenxin"] = "焚心",
 	[":fenxin"] = "<b>限定技</b>，当你杀死一名非主公角色时，在其翻开身份牌之前，你可以与该角色交换身份牌。（你的身份为主公时不能发动此技能。）",
 }
