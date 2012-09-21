@@ -423,6 +423,15 @@
     <ClCompile Include="Release\moc_record-analysis.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\package\assassinspackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_assassinspackage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_assassinspackage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -688,6 +697,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\core\record-analysis.h">
       <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\assassinspackage.h">
+      <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
