@@ -79,6 +79,7 @@ public:
 };
 
 MizhaoCard::MizhaoCard(){
+	will_throw=false;
 }
 
 bool MizhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -86,7 +87,36 @@ bool MizhaoCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void MizhaoCard::onEffect(const CardEffectStruct &effect) const{
+	effect.to->obtainCard(effect.card, false);
+	Room* room=effect.from->getRoom();
 
+	ServerPlayer *target;
+	QList<ServerPlayer *> targets;
+	foreach(ServerPlayer *p, room->getOtherPlayers(effect.to))
+		if(!p->isKongcheng())
+			targets << p;
+
+	if(!effect.to->isKongcheng())
+		target = room->askForPlayerChosen(effect.from, targets, "mizhao");
+	
+	if(target){
+		bool win = effect.to->pindian(target, "mizhao", NULL);
+		Slash *slash = new Slash(Card::NoSuit, 0);
+		slash->setSkillName("mizhao");
+		if(win){
+			CardUseStruct use;
+			use.card = slash;
+			use.from = effect.to;
+			use.to << target;
+			room->useCard(use);
+		}else{
+			CardUseStruct use;
+			use.card = slash;
+			use.from = target;
+			use.to << effect.to;
+			room->useCard(use);
+		}
+	}
 }
 
 class MiZhao: public ViewAsSkill{
@@ -105,6 +135,11 @@ public:
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if (cards.length() < Self->getHandcardNum())
             return NULL;
+
+		MizhaoCard *card = new MizhaoCard;
+		card->addSubcards(cards);
+        return card;
+
         return NULL;
     }
 };
@@ -158,7 +193,7 @@ AssassinsPackage::AssassinsPackage():Package("assassins"){
     wujiangyi->addSkill(new TianMing);
     wujiangyi->addSkill(new MiZhao);
 
-    General *wujiangbing = new General(this, "wujiangbing", "qun", 3);
+    General *wujiangbing = new General(this, "wujiangbing", "qun", 3, false);
     wujiangbing->addSkill(new JieYuan);
     wujiangbing->addSkill(new FenXin);
 
