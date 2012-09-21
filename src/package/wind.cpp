@@ -530,6 +530,10 @@ public:
     Buqu():TriggerSkill("buqu"){
         events << PostHpReduced << AskForPeachesDone;
     }
+	
+	virtual int getPriority() const{
+        return 2;
+    }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhoutai, QVariant &) const{
         if(event == PostHpReduced && zhoutai->getHp() < 1){

@@ -528,9 +528,6 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     pindian_struct.reason = reason;
 
     PindianStar pindian_star = &pindian_struct;
-    QVariant data = QVariant::fromValue(pindian_star);
-    room->getThread()->trigger(Pindian, room, this, data);
-
     bool success = pindian_star->from_card->getNumber() > pindian_star->to_card->getNumber();
     log.type = success ? "#PindianSuccess" : "#PindianFailure";
     log.from = this;
@@ -543,6 +540,9 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->setEmotion(this, "success");
     else
         room->setEmotion(this, "no-success");
+
+    QVariant data = QVariant::fromValue(pindian_star);
+    room->getThread()->trigger(Pindian, room, this, data);
 
     return success;
 }
