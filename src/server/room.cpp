@@ -2584,6 +2584,8 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
     log.arg2 = QString::number(victim->getHp());
     sendLog(log);
 
+    broadcastInvoke("maxhpChange", QString("%1:%2").arg(victim->objectName()).arg(-lose));
+
     if(victim->getMaxHp() == 0)
         killPlayer(victim);
 }

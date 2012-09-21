@@ -102,6 +102,7 @@ public:
     void activate(const Json::Value &playerId);
     void startGame(const QString &);
     void hpChange(const QString &change_str);
+    void maxhpChange(const QString &change_str);
     void resetPiles(const QString &);
     void setPileNumber(const QString &pile_num);
     void gameOver(const Json::Value &);
@@ -280,6 +281,7 @@ signals:
     
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
+    void maxhp_changed(const QString &who, int delta);
     void status_changed(Client::Status oldStatus, Client::Status newStatus);
     void avatars_hiden();
     void pile_reset();
