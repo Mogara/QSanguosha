@@ -151,6 +151,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
     connect(ClientInstance, SIGNAL(status_changed(Client::Status, Client::Status)), this, SLOT(updateStatus(Client::Status, Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
     connect(ClientInstance, SIGNAL(hp_changed(QString,int,DamageStruct::Nature,bool)), SLOT(changeHp(QString,int,DamageStruct::Nature,bool)));
+    connect(ClientInstance, SIGNAL(maxhp_changed(QString,int)), SLOT(changeMaxHp(QString,int)));
     connect(ClientInstance, SIGNAL(pile_reset()), this, SLOT(resetPiles()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
@@ -2570,7 +2571,6 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
         Sanguosha->playSystemAudioEffect(damage_effect);
 
         if(photo){
-            //photo->setEmotion("damage");
             setEmotion(who, "damage");
             photo->tremble();
         }
@@ -2587,6 +2587,11 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 
         log_box->appendLog(type, from_general, QStringList(), QString(), n);
     }
+}
+
+void RoomScene::changeMaxHp(const QString &who, int delta) {
+    if (delta < 0)
+        Sanguosha->playSystemAudioEffect("maxhplost");
 }
 
 void RoomScene::onStandoff(){
@@ -2667,10 +2672,6 @@ void RoomScene::onGameOver(){
             winner_list << player;
         else
             loser_list << player;
-
-        if(player != Self){
-            setEmotion(player->objectName(),win ? "good" : "bad",true);
-        }
     }
 
     fillTable(winner_table, winner_list);

@@ -55,6 +55,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
 
     callbacks["hpChange"] = &Client::hpChange;
+    callbacks["maxhpChange"] = &Client::maxhpChange;
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
@@ -661,6 +662,19 @@ void Client::hpChange(const QString &change_str){
         nature = DamageStruct::Normal;
 
     emit hp_changed(who, delta, nature, nature_str == "L");
+}
+
+void Client::maxhpChange(const QString &change_str){
+    QRegExp rx("(.+):(-?\\d+)");
+
+    if(!rx.exactMatch(change_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    QString who = texts.at(1);
+    int delta = texts.at(2).toInt();
+
+    emit maxhp_changed(who, delta);
 }
 
 void Client::setStatus(Status status){    
