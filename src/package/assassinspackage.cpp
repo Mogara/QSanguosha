@@ -115,7 +115,7 @@ public:
                     else {
                         room->askForDiscard(mosthp, objectName(), 2, 2, false, true);
                         mosthp->drawCards(2);
-			        }
+                    }
                 }
             }
 		}
