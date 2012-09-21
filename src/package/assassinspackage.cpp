@@ -23,6 +23,57 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card && use.card->isKindOf("Slash") && player->askForSkillInvoke(objectName())){
+            if(!player->isNude()){
+                int total = 0;
+                QSet<const Card *> jilei_cards;
+                QList<const Card *> handcards = player->getHandcards();
+                foreach(const Card *card, handcards){
+                    if(player->isJilei(card))
+                        jilei_cards << card;
+                }
+                total = handcards.size() - jilei_cards.size() + player->getEquips().length();
+
+                if(total <= 2)
+                    player->throwAllHandCardsAndEquips();
+                else
+                    room->askForDiscard(player, objectName(), 2, 2, false, true);
+            }
+
+            player->drawCards(2);
+
+            int max = 0;
+            foreach(ServerPlayer *p, room->getAlivePlayers())
+                if(p->getHp() > max)
+                    max = p->getHp();
+
+            QList<ServerPlayer *> maxs;
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
+                if(p->getHp() == max)
+                    maxs << p;
+                if(maxs.size() != 1)
+                    return false;
+                else if(maxs.first() == player)
+                    return false;
+                else{
+                    ServerPlayer *target = maxs.first();
+                    QSet<const Card *> jilei_cards;
+                    QList<const Card *> handcards = target->getHandcards();
+                    foreach(const Card *card, handcards){
+                        if(target->isJilei(card))
+                            jilei_cards << card;
+                    }
+                    int total = handcards.size() - jilei_cards.size() + target->getEquips().length();
+
+                    if(total <= 2)
+                        target->throwAllHandCardsAndEquips();
+                    else
+                        room->askForDiscard(target, objectName(), 2, 2, false, true);
+                }
+            }
+        }
+
         return false;
     }
 };
