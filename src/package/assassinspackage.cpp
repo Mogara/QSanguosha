@@ -283,17 +283,17 @@ public:
 };
 
 AssassinsPackage::AssassinsPackage():Package("assassins"){
-    General *jiping = new General(this, "jiping", "qun", 4);
-    jiping->addSkill(new Moukui);
+    General *mushun = new General(this, "mushun", "qun", 4);
+    mushun->addSkill(new Moukui);
 
     General *liuxie = new General(this, "liuxie", "qun", 3);
     liuxie->addSkill(new Tianming);
     liuxie->addSkill(new Mizhao);
 
-    General *fuhuanghou = new General(this, "fuhuanghou", "qun", 3, false);
-    fuhuanghou->addSkill(new Jieyuan);
-    fuhuanghou->addSkill(new Fenxin);
-    fuhuanghou->addSkill(new MarkAssignSkill("@burnheart", 1));
+    General *lingju = new General(this, "lingju", "qun", 3, false);
+    lingju->addSkill(new Jieyuan);
+    lingju->addSkill(new Fenxin);
+    lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
 
     addMetaObject<MizhaoCard>();
 }
