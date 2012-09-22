@@ -553,14 +553,14 @@ sgs.ai_compare_funcs = {
 		local players = sgs.QList2Table(a:getRoom():getOtherPlayers(a))
 		local d1 = a:getHandcardNum()
 		for _, player in ipairs(players) do
-			if a:canSlash(player,true) then
+			if a:canSlash(player, nil, true) then
 				d1 = d1+10/(sgs.getDefense(player))
 			end
 		end
 		players = sgs.QList2Table(b:getRoom():getOtherPlayers(b))
 		local d2 = b:getHandcardNum()
 		for _, player in ipairs(players) do
-			if b:canSlash(player,true) then
+			if b:canSlash(player, nil, true) then
 				d2 = d2+10/(sgs.getDefense(player))
 			end
 		end
@@ -2206,7 +2206,7 @@ function SmartAI:getCardNeedPlayer(cards)
 		local redcardnum = 0
 		for _,acard in ipairs(cards) do
 			if acard:isKindOf("Slash") then
-				if self.player:canSlash(xunyu, not no_distance) and self:slashIsEffective(acard, xunyu) then
+				if self.player:canSlash(xunyu, nil, not no_distance) and self:slashIsEffective(acard, xunyu) then
 					keptslash = keptslash + 1
 				end
 				if keptslash > 0 then
@@ -2372,8 +2372,8 @@ function SmartAI:getCardNeedPlayer(cards)
 			(self.player:getHandcardNum() == 1 and self.player:usedTimes("RendeCard") == 1) then
 			for _, enemy in ipairs(self.enemies) do
 				if self:isEquip("GudingBlade", enemy) and 
-				(enemy:canSlash(self.player, true) or enemy:hasSkill("shensu") or enemy:hasSkill("wushen") or enemy:hasSkill("jiangchi")) then return end
-				if enemy:canSlash(self.player, true) and enemy:hasSkill("qianxi") and enemy:distanceTo(self.player) == 1 then return end
+				(enemy:canSlash(self.player, nil, true) or enemy:hasSkill("shensu") or enemy:hasSkill("wushen") or enemy:hasSkill("jiangchi")) then return end
+				if enemy:canSlash(self.player, nil, true) and enemy:hasSkill("qianxi") and enemy:distanceTo(self.player) == 1 then return end
 			end
 			for _, friend in ipairs(self.friends_noself) do
 				local card_id = self:getCardRandomly(self.player, "h")

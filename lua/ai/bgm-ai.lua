@@ -208,7 +208,7 @@ sgs.ai_skill_use_func.DaheCard=function(card,use,self)
 		self:useBasicCard(slash, dummy_use)
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1 and enemy:getHp() > self.player:getHp()) 
-				and not enemy:isKongcheng() and self.player:canSlash(enemy, true) then
+				and not enemy:isKongcheng() and self.player:canSlash(enemy, nil, true) then
 				local enemy_max_card = self:getMaxCard(enemy)
 				local allknown = 0
 				if self:getKnownNum(enemy) == enemy:getHandcardNum() then
@@ -285,7 +285,7 @@ sgs.ai_skill_use_func.TanhuCard = function(card, use, self)
 	local ptarget = self:getPriorTarget()
 	local slashcount = self:getCardsNum("Slash")
 	if max_card:isKindOf("Slash") then slashcount = slashcount - 1 end
-	if not ptarget:isKongcheng() and slashcount > 0 and self.player:canSlash(ptarget, true) 
+	if not ptarget:isKongcheng() and slashcount > 0 and self.player:canSlash(ptarget, nil, true) 
 	and not ptarget:hasSkill("kongcheng") and ptarget:getHandcardNum() == 1 then
 		local card_id = max_card:getEffectiveId()
 		local card_str = "@TanhuCard=" .. card_id
@@ -464,7 +464,7 @@ sgs.ai_use_priority.YanxiaoCard = 3.9
 local yanxiao_skill={}
 yanxiao_skill.name="yanxiao"
 table.insert(sgs.ai_skills,yanxiao_skill)
-yanxiao_skill.getTurnUseCard=function(self)
+yanxiao_skill.getTurnUseCard = function(self)
 	local cards = self.player:getCards("he")
 	cards=sgs.QList2Table(cards)
 
@@ -497,7 +497,7 @@ sgs.ai_skill_invoke.anxian = function(self, data)
 	local target = damage.to
 	if self:isFriend(target) and not self:hasSkills(sgs.masochism_skill,target) then return true end
 	if self:isEnemy(target) and self:hasSkills(sgs.masochism_skill,target) then return true end
-	if damage.damage>1 then return false end
+	if damage.damage > 1 then return false end
 	return false 
 end
 
@@ -646,7 +646,7 @@ end
 sgs.ai_skill_playerchosen.junwei = function(self, targets)
 	local tos = {}
 	for _, target in sgs.qlist(targets) do
-		if not self:isFriend(target) then
+		if not self:isFriend(target) and not (self:isEquip("SilverLion", target) and target:getCards("e"):length() == 1)then
 			table.insert(tos, target)
 		end
 	end 
@@ -673,14 +673,10 @@ end
 
 sgs.ai_skill_cardchosen.junwei = function(self, who, flags)
 	if flags == "e" then
-		local equips = who:getCards("e")
-		for _, equip in sgs.qlist(equips) do
-			if equip:isKindOf("OffensiveHorse") then card = equip break
-			elseif equip:isKindOf("DefensiveHorse") then card = equip break
-			elseif equip:isKindOf("Weapon") then card = equip break
-			elseif equip:isKindOf("Armor") then card = equip break
-			end
-		end
+		if who:getArmor() then return who:getArmor() end
+		if who:getDefensiveHorse() then return who:getDefensiveHorse() end
+		if who:getOffensiveHorse() then return who:getOffensiveHorse() end
+		if who:getWeapon() then return who:getWeapon() end
 	end
 end
 

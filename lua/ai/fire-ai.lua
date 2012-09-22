@@ -263,7 +263,7 @@ sgs.ai_skill_invoke.niepan = function(self, data)
 	local cards = self.player:getHandcards()
 	local n = 0
 	for _, card in sgs.qlist(cards) do
-		if card:isKindOf "Peach" or card:isKindOf "Analeptic" then
+		if card:isKindOf("Peach") or card:isKindOf("Analeptic") then
 			n = n + 1
 		end
 	end

@@ -194,13 +194,15 @@ public:
 
         ServerPlayer *winner = pindian->isSuccess() ? pindian->from : pindian->to;
         ServerPlayer *loser = pindian->isSuccess() ? pindian->to : pindian->from;
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("mizhao");
-        CardUseStruct card_use;
-        card_use.from = winner;
-        card_use.to << loser;
-        card_use.card = slash;
-        room->useCard(card_use, false);
+        if (winner->canSlash(loser, NULL, false)) {
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            slash->setSkillName("mizhao");
+            CardUseStruct card_use;
+            card_use.from = winner;
+            card_use.to << loser;
+            card_use.card = slash;
+            room->useCard(card_use, false);
+        }
 
         return false;
     }
@@ -216,7 +218,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if(triggerEvent == DamageCaused){
             if(damage.to->getHp() >= player->getHp() || damage.to != player)
-                if(room->askForCard(player, ".black", "@JieyuanIncrease", QVariant(), CardDiscarded)){
+                if(room->askForCard(player, ".black", "@JieyuanIncrease", data, CardDiscarded)){
                     LogMessage log;
                     log.type = "#JieyuanIncrease";
                     log.from = player;
@@ -228,7 +230,7 @@ public:
                 }
         }else if(triggerEvent == DamageInflicted){
             if(damage.from->getHp() >= player->getHp() && damage.from != player)
-                if(room->askForCard(player, ".red", "@JieyuanDecrease", QVariant(), CardDiscarded)){
+                if(room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
                     LogMessage log;
                     log.type = "#JieyuanDecrease";
                     log.from = player;
@@ -268,7 +270,7 @@ public:
             return false;
         if (!killer->hasSkill(objectName()) || killer->getMark("@burnheart") == 0)
             return false;
-        if (room->askForSkillInvoke(killer, objectName())) {
+        if (room->askForSkillInvoke(killer, objectName(), QVariant::fromValue(player))) {
             killer->loseMark("@burnheart");
             QString role1 = killer->getRole();
             killer->setRole(player->getRole());

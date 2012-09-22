@@ -293,7 +293,7 @@ public:
                 choicelist << "nothing";
                 QList<ServerPlayer *> targets1;
                 foreach(ServerPlayer *target, room->getAlivePlayers()){
-                    if(lingtong->canSlash(target, false))
+                    if(lingtong->canSlash(target, NULL, false))
                         targets1 << target;
                 }
                 if (!targets1.isEmpty()) choicelist << "slash";

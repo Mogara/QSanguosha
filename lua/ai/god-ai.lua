@@ -529,8 +529,9 @@ end
 
 sgs.ai_card_intention.DawuCard = -70
 
-sgs.ai_skill_invoke.guixin = function(self,data)
-	return self.room:alivePlayerCount() > 2
+sgs.ai_skill_invoke.guixin = function(self, data)
+	local damage = data:toDamage()
+	return self.room:alivePlayerCount() > 2 or damage.damage > 1
 end
 
 sgs.ai_chaofeng.shencaocao = -6
@@ -557,7 +558,7 @@ wuqian_skill.getTurnUseCard=function(self)
 
 	if has_enemy and self:getCardsNum("Slash") > 0 then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:isKindOf("Slash") and self:slashIsEffective(card, has_enemy) and self.player:canSlash(has_enemy) and
+			if card:isKindOf("Slash") and self:slashIsEffective(card, has_enemy) and self.player:canSlash(has_enemy, card) and
 				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) and card:isAvailable(self.player) then return sgs.Card_Parse(card_str)
 			elseif card:isKindOf("Duel") then return sgs.Card_Parse(card_str)
 			end

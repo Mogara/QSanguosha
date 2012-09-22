@@ -181,7 +181,7 @@ public:
     void setChained(bool chained);
     bool isChained() const;
 
-    bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0) const;
+    bool canSlash(const Player *other, const Card *slash = NULL, bool distance_limit = true, int rangefix = 0) const;
     int getCardCount(bool include_equip) const;
 
     QList<int> getPile(const char *pile_name);

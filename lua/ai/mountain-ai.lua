@@ -364,8 +364,7 @@ sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, i
 		if not card:isKindOf("Peach") and not self.player:isJilei(card) then
 			table.insert(to_discard, card:getEffectiveId())
 			table.remove(cards, i)
-			index = index + 1
-			if index == 1 then break end
+			break
 		end
 	end	
 	if #to_discard < 1 then return {} 
@@ -477,7 +476,7 @@ end
 sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 	local lords = {}
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:hasLordSkill("sunce_zhiba") and not player:isKongcheng() then table.insert(lords, player) end
+		if player:hasLordSkill("sunce_zhiba") and not player:isKongcheng() and not player:hasFlag("ZhibaInvoked") then table.insert(lords, player) end
 	end
 	if #lords == 0 then return end
 	if self:needBear() then return end

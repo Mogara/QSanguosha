@@ -637,7 +637,7 @@ void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(target == NULL || target->isDead())
         return;
 
-    if(!card_use.from->canSlash(target, false))
+    if(!card_use.from->canSlash(target, NULL, false))
         return;
 
     room->askForUseSlashTo(card_use.from, target, "@xianzhen-slash");

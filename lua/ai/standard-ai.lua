@@ -173,7 +173,7 @@ sgs.ai_skill_invoke.luoyi=function(self,data)
     for _,card in ipairs(cards) do
         if card:isKindOf("Slash") then
             for _,enemy in ipairs(self.enemies) do
-                if self.player:canSlash(enemy, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
+                if self.player:canSlash(enemy, card, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
                     if self:getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
                         slashtarget = slashtarget + 1
                     end
@@ -324,7 +324,7 @@ sgs.ai_skill_use_func.JijiangCard=function(card,use,self)
     self:sort(self.enemies, "defense")
     local target_count=0
     for _, enemy in ipairs(self.enemies) do
-        if (self.player:canSlash(enemy, not no_distance) or
+        if (self.player:canSlash(enemy, nil, not no_distance) or
             (use.isDummy and self.player:distanceTo(enemy)<=(self.predictedRange or self.player:getAttackRange())))
             and self:objectiveLevel(enemy)>3 and self:slashIsEffective(card, enemy) then
             use.card=card
@@ -673,7 +673,7 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 
     if self.player:getWeapon() and self.player:getWeapon():isKindOf("Crossbow") then
         for _, enemy in ipairs(self.enemies) do
-            if self.player:canSlash(enemy,true) and self.player:getHp()>1 then
+            if self.player:canSlash(enemy, nil, true) and self.player:getHp()>1 then
                 return sgs.Card_Parse("@KurouCard=.")
             end
         end
@@ -791,6 +791,7 @@ end
 sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 
     local others=self.room:getOtherPlayers(self.player)
+    local slash = self.player:getTag("liuli-card"):toCard()
     others=sgs.QList2Table(others)
     local source
     for _, player in ipairs(others) do
@@ -801,7 +802,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
     end
     self:sort(self.enemies, "defense")
     for _, enemy in ipairs(self.enemies) do
-        if self.player:canSlash(enemy,true) and not (source and (source:objectName() == enemy:objectName())) then
+        if self.player:canSlash(enemy, slash, true) and not (source and (source:objectName() == enemy:objectName())) then
             local cards = self.player:getCards("he")
             cards=sgs.QList2Table(cards)
             for _,card in ipairs(cards) do
@@ -817,7 +818,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
     if self:isWeak() then
         for _, friend in ipairs(self.friends_noself) do
             if not self:isWeak(friend) then
-                if self.player:canSlash(friend,true) and not (source:objectName() == friend:objectName()) then
+                if self.player:canSlash(friend, slash, true) and not (source:objectName() == friend:objectName()) then
                     local cards = self.player:getCards("he")
                     cards=sgs.QList2Table(cards)
                     for _,card in ipairs(cards) do
@@ -842,7 +843,7 @@ end
 function sgs.ai_slash_prohibit.liuli(self, to, card)
     if self:isFriend(to) then return false end
     for _, friend in ipairs(self.friends_noself) do
-        if to:canSlash(friend,true) and self:slashIsEffective(card, friend) then return true end
+        if to:canSlash(friend, card, true) and self:slashIsEffective(card, friend) then return true end
     end
 end
 

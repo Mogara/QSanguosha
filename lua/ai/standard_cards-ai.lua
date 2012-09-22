@@ -124,7 +124,7 @@ function SmartAI:useCardSlash(card, use)
         or (friend:hasSkill("jieming") and self.player:hasSkill("rende") and (huatuo and self:isFriend(huatuo)))
         then
             if not slash_prohibit then
-                if ((self.player:canSlash(friend, not no_distance)) or
+                if ((self.player:canSlash(friend, card, not no_distance)) or
                     (use.isDummy and (self.player:distanceTo(friend) <= self.predictedRange))) and
                     self:slashIsEffective(card, friend) then
                     use.card = card
@@ -157,7 +157,7 @@ function SmartAI:useCardSlash(card, use)
         for _, friend in ipairs(self.friends_noself) do
             if self:canLiuli(target, friend) and self:slashIsEffective(card, friend) and #target > 1 and friend:getHp() < 3 then canliuli = true end
         end
-        if (self.player:canSlash(target, not no_distance) or
+        if (self.player:canSlash(target, card, not no_distance) or
         (use.isDummy and self.predictedRange and (self.player:distanceTo(target) <= self.predictedRange))) and
         self:objectiveLevel(target) > 3
         and self:slashIsEffective(card, target) and
@@ -210,7 +210,7 @@ function SmartAI:useCardSlash(card, use)
             local slash_prohibit = false
             slash_prohibit = self:slashProhibit(card, friend)
             if not slash_prohibit then
-                if ((self.player:canSlash(friend, not no_distance)) or
+                if ((self.player:canSlash(friend, card, not no_distance)) or
                     (use.isDummy and (self.player:distanceTo(friend) <= self.predictedRange))) and
                     self:slashIsEffective(card, friend) then
                     use.card = card
@@ -229,7 +229,7 @@ sgs.ai_skill_use.slash = function(self, prompt)
     local slash = self:getCard("Slash")
     if not slash then return "." end
     for _, enemy in ipairs(self.enemies) do
-        if self.player:canSlash(enemy, true) and not self:slashProhibit(slash, enemy) 
+        if self.player:canSlash(enemy, slash, true) and not self:slashProhibit(slash, enemy) 
         and self:slashIsEffective(slash, enemy) and not (self.player:hasFlag("slashTargetFix") and not enemy:hasFlag("SlashAssignee")) then
             return ("%s->%s"):format(slash:toString(), enemy:objectName())
         end
@@ -1106,7 +1106,7 @@ function SmartAI:useCardCollateral(card, use)
             and not self.room:isProhibited(self.player, friend, card) then
 
             for _, enemy in ipairs(self.enemies) do
-                if friend:canSlash(enemy) then
+                if friend:canSlash(enemy, card) then
                     use.card = card
                 end
                 if use.to then use.to:append(friend) end
@@ -1126,7 +1126,7 @@ function SmartAI:useCardCollateral(card, use)
             and enemy:getWeapon() then
 
             for _, enemy2 in ipairs(self.enemies) do
-                if enemy:canSlash(enemy2) then
+                if enemy:canSlash(enemy2, card) then
                     if enemy:getHandcardNum() == 0 then
                         use.card = card
                         if use.to then use.to:append(enemy) end

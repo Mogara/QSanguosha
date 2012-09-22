@@ -563,7 +563,7 @@ public:
                     break;
                 }
 
-                if(dying.who->getHp() > 0 || handang->isNude() || current->isDead() || !handang->canSlash(current, false))
+                if(dying.who->getHp() > 0 || handang->isNude() || current->isDead() || !handang->canSlash(current, NULL, false))
                     break;
 
                 room->setPlayerFlag(handang, "jiefanUsed");

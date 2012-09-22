@@ -167,11 +167,12 @@ LijianCard::LijianCard(){
     once = true;
 }
 
-bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
+bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!to_select->isMale())
         return false;
 
-    if(targets.isEmpty() && to_select->hasSkill("kongcheng") && to_select->isKongcheng()){
+    Duel *duel = new Duel(Card::NoSuit, 0);
+    if(targets.isEmpty() && Self->isProhibited(to_select, duel)){
         return false;
     }
 
@@ -271,7 +272,8 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
     if(to_select->hasFlag("slash_source"))
         return false;
 
-    if(!Self->canSlash(to_select))
+    CardStar slash = Self->tag["liuli-card"].value<CardStar>();
+    if(!Self->canSlash(to_select, slash))
         return false;
 
     int card_id = subcards.first();

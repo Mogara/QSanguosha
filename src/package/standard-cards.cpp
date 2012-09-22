@@ -97,24 +97,8 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(Self->hasFlag("slashTargetFix")){
-        if(targets.isEmpty())
-            return  to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, false);
-        else
-        {
-            bool canSelect = false;
-            foreach(const Player *p, targets){
-                if(p->hasFlag("SlashAssignee")){
-                    canSelect = true;
-                    break;
-                }
-            }
-            if(!canSelect) return false;
-        }
-    }
-    
     int slash_targets = 1;
-    if(Self->hasWeapon("Halberd") && Self->isLastHandCard(this))
+    if(Self->hasWeapon("halberd") && Self->isLastHandCard(this))
         slash_targets += 2;
 
     if(Self->hasSkill("lihuo") && isKindOf("FireSlash"))
@@ -129,14 +113,20 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         slash_targets++;
     }
 
-    if(targets.length() >= slash_targets)
-        return false;
+    if(targets.length() >= slash_targets) {
+        if (Self->hasSkill("duanbing") && targets.length() == slash_targets)
+            return Self->canSlash(to_select, this) && Self->distanceTo(to_select) == 1;
+        else
+            return false;
+    }
 
-    if(isKindOf("WushenSlash"))
+	if(Self->hasFlag("jiangchi_invoke")){
         distance_limit = false;
+    }
 
-    if(Self->hasFlag("jiangchi_invoke"))
+    if (isKindOf("WushenSlash")) {
         distance_limit = false;
+    }
 
     int rangefix = 0;
     if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
@@ -147,7 +137,23 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if(Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
-    return Self->canSlash(to_select, distance_limit, rangefix);
+    if(Self->hasFlag("slashTargetFix")){
+        if(targets.isEmpty())
+            return  to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, this, distance_limit, rangefix);
+        else
+        {
+            bool canSelect = false;
+            foreach(const Player *p, targets){
+                if(p->hasFlag("SlashAssignee")){
+                    canSelect = true;
+                    break;
+                }
+            }
+            if(!canSelect) return false;
+        }
+    }
+
+    return Self->canSlash(to_select, this, distance_limit, rangefix);
 }
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){
@@ -303,7 +309,7 @@ public:
 
         if (!effect.to->isAlive())
             return false;
-        if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
+        if (!effect.from->canSlash(effect.to, NULL, false))
             return false;
 
         if(room->askForUseSlashTo(player, effect.to, "blade-slash:" + effect.to->objectName()))

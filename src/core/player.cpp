@@ -608,9 +608,14 @@ int Player::getMark(const QString &mark) const
     return marks.value(mark, 0);
 }
 
-bool Player::canSlash(const Player *other, bool distance_limit, int rangefix) const
+bool Player::canSlash(const Player *other, const Card *slash, bool distance_limit, int rangefix) const
 {
-    if(other == this)
+    if(other == this || !other->isAlive())
+        return false;
+
+    if (!slash)
+        slash = new Slash(Card::NoSuit, 0);
+    if (isProhibited(other, slash))
         return false;
 
     if(distance_limit)

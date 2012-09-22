@@ -19,10 +19,9 @@ public:
         Room *room = caocao->getRoom();
         const Card *card = damage.card;
         if(card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable){
-
             QVariant data = QVariant::fromValue(card);
             if(room->askForSkillInvoke(caocao, "jianxiong", data)){
-            room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName());
                 caocao->obtainCard(card);
             }
         }
@@ -485,7 +484,6 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *liubei, QVariant &data) const{
-        if (liubei == NULL) return false;
         QString pattern = data.toString();
         if(pattern != "slash")
             return false;
@@ -1032,7 +1030,7 @@ public:
 
             bool can_invoke = false;
             foreach(ServerPlayer *p, players){
-                if(daqiao->inMyAttackRange(p)){
+                if(daqiao->canSlash(p, use.card)){
                     can_invoke = true;
                     break;
                 }
@@ -1041,7 +1039,9 @@ public:
             if(can_invoke){
                 QString prompt = "@liuli:" + use.from->objectName();
                 room->setPlayerFlag(use.from, "slash_source");
+                daqiao->tag["liuli-card"] = QVariant::fromValue((CardStar)use.card);
                 if(room->askForUseCard(daqiao, "@@liuli", prompt)){
+                    daqiao->tag.remove("liuli-card");
                     foreach(ServerPlayer *p, players){
                         if(p->hasFlag("liuli_target")){
                             use.to.insert(use.to.indexOf(daqiao), p);
@@ -1055,6 +1055,7 @@ public:
                         }
                     }
                 }
+                daqiao->tag.remove("liuli-card");
             }
         }
 
