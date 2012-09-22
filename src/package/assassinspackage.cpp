@@ -189,8 +189,6 @@ public:
         PindianStar pindian = data.value<PindianStar>();
         if (pindian->reason != objectName())
             return false;
-        if (pindian->from_card->getNumber() == pindian->to_card->getNumber())
-            return false;
 
         ServerPlayer *winner = pindian->isSuccess() ? pindian->from : pindian->to;
         ServerPlayer *loser = pindian->isSuccess() ? pindian->to : pindian->from;
