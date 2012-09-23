@@ -118,7 +118,7 @@ public:
                     }
                 }
             }
-		}
+        }
 
         return false;
     }
@@ -217,7 +217,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(triggerEvent == DamageCaused){
-            if(damage.to->getHp() >= player->getHp() && damage.to != player)
+            if(damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng())
                 if(room->askForCard(player, ".black", "@JieyuanIncrease", data, CardDiscarded)){
                     LogMessage log;
                     log.type = "#JieyuanIncrease";
@@ -229,7 +229,7 @@ public:
                     data = QVariant::fromValue(damage);
                 }
         }else if(triggerEvent == DamageInflicted){
-            if(damage.from->getHp() >= player->getHp() && damage.from != player)
+            if(damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
                 if(room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
                     LogMessage log;
                     log.type = "#JieyuanDecrease";
@@ -238,8 +238,14 @@ public:
                     log.arg2 = QString::number(--damage.damage);
                     room->sendLog(log);
 
-                    if (damage.damage < 1)
+                    if (damage.damage < 1){
+                        LogMessage log;
+                        log.type = "#ZeroDamage";
+                        log.from = damage.from;
+                        log.to << player;
+                        room->sendLog(log);
                         return true;
+                    }
                     data = QVariant::fromValue(damage);
                 }
         }

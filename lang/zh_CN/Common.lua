@@ -87,6 +87,7 @@ return {
 	["#PindianFailure"] = "%from (对 %to) 拼点失败！-_-！",
 	["#Damage"] = "%from 对 %to 造成了 %arg 点伤害[%arg2]",
 	["#DamageNoSource"] = "%to 受到了 %arg 点伤害[%arg2]",
+	["#ZeroDamage"] = "%from 对 %to 造成的本次伤害减至 0 或更低，防止了此次伤害。",
 	["#Recover"] = "%from 恢复了 %arg 点体力",
 	["#AskForPeaches"] = "%from 向 %to 求桃，一共需要 %arg 个桃子",
 	["#ChooseKingdom"] = "%from 选择了 %arg 作为他的国籍",
