@@ -266,7 +266,7 @@ public:
         if (dying.damage == NULL)
             return false;
         ServerPlayer *killer = dying.damage->from;
-        if (killer->isLord() || player->isLord() || player->getHp() > 0)
+        if (killer == NULL || killer->isLord() || player->isLord() || player->getHp() > 0)
             return false;
         if (!killer->hasSkill(objectName()) || killer->getMark("@burnheart") == 0)
             return false;
