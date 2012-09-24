@@ -1,6 +1,22 @@
 sgs.ai_skill_invoke.zishou = function(self, data)
 	local chance_value = 1
-	if (self.player:getHp() <= 2) then chance_value = chance_value + 1 end
+	if (self.player:getHp() <= 2) then
+		chance_value = chance_value + 1
+	else
+		local can_slash_card_num = 0
+		for _, card in ipairs(sgs.QList2Table(self.player:getHandcards())) do
+			if card:isKindOf("Slash") then
+				for _,enemy in ipairs(self.enemies) do
+					if self:slashIsEffective(card, enemy) 
+						and self.player:distanceTo(enemy) <= self.player:getAttackRange() then 
+						can_slash_card_num = can_slash_card_num + 1
+						break
+					end 
+				end
+			end
+		end
+		if(can_slash_card_num >= 1) then chance_value = chance_value - 1 end
+	end
 
 	local peach_num = self:getCardsNum("Peach")
 	local can_save_card_num = self.player:getMaxCards() - self.player:getHandcardNum()
