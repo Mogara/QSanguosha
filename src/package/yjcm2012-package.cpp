@@ -633,6 +633,7 @@ public:
 
 AnxuCard::AnxuCard(){
     once = true;
+    mute = true;
 }
 
 bool AnxuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -654,10 +655,16 @@ void AnxuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHandcardNum() < selecteds.last()->getHandcardNum() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
+    if (to->getGeneralName().contains("sunquan"))
+        room->broadcastSkillInvoke("anxu", 2);
+    else
+        room->broadcastSkillInvoke("anxu", 1);
     int id = room->askForCardChosen(from, to, "h", "anxu");
     const Card *cd = Sanguosha->getCard(id);
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
     room->obtainCard(from, cd, reason);
+    if (room->getCardOwner(id) == from)
+        room->showCard(from, id);
     if(cd->getSuit() != Card::Spade){
         source->drawCards(1);
     }
@@ -685,7 +692,7 @@ protected:
 class Zhuiyi: public TriggerSkill{
 public:
     Zhuiyi():TriggerSkill("zhuiyi"){
-        events << Death ;
+        events << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -702,7 +709,10 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
 
-        room->broadcastSkillInvoke(objectName());
+        if (target->getGeneralName().contains("sunquan"))
+            room->broadcastSkillInvoke(objectName(), qrand() % 2 + 2);
+        else
+            room->broadcastSkillInvoke(objectName(), 1);
         target->drawCards(3);
         RecoverStruct recover;
         recover.who = target;
