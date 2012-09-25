@@ -291,8 +291,8 @@ public:
 };
 
 AssassinsPackage::AssassinsPackage():Package("assassins"){
-    General *mushun = new General(this, "mushun", "qun", 4);
-    mushun->addSkill(new Moukui);
+    General *fuwan = new General(this, "fuwan", "qun", 4);
+    fuwan->addSkill(new Moukui);
 
     General *liuxie = new General(this, "liuxie", "qun", 3);
     liuxie->addSkill(new Tianming);

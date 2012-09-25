@@ -3,11 +3,11 @@
 return {
 	["assassins"] = "铜雀台",
 
-	--["#mushun"] = "",
-	["mushun"] = "穆顺",
-	--["cv:mushun"] = "",
-	--["illustrator:mushun"] = "",
-	["designer:mushun"] = "嘉言懿行",
+	--["#fuwan"] = "",
+	["fuwan"] = "伏完",
+	--["cv:fuwan"] = "",
+	--["illustrator:fuwan"] = "",
+	["designer:fuwan"] = "嘉言懿行",
 	["moukui"] = "谋溃",
 	[":moukui"] = "当你使用【杀】指定一名角色为目标后，你可以选择一项：摸一张牌，或弃置其一张牌。若如此做，此【杀】被【闪】抵消时，该角色弃置你的一张牌。",
 	["moukui:draw"] = "摸一张牌",
