@@ -207,6 +207,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     max_hp_scheme_ComboBox->addItem(tr("Sum - 3"));
     max_hp_scheme_ComboBox->addItem(tr("Minimum"));
     max_hp_scheme_ComboBox->addItem(tr("Average"));
+    max_hp_scheme_ComboBox->addItem(tr("Sum - 4"));
     max_hp_scheme_ComboBox->setCurrentIndex(Config.MaxHpScheme);
     second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 

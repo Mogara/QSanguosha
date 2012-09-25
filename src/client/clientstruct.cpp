@@ -32,7 +32,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 }
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCTBHAM12]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCTBHAM123]*)");
     if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -77,6 +77,8 @@ bool ServerInfoStruct::parse(const QString &str){
         MaxHPScheme = 1;
     else if(flags.contains("2"))
         MaxHPScheme = 2;
+    else if(flags.contains("3"))
+        MaxHPScheme = 3;
     else
         MaxHPScheme = 0;
 
