@@ -1247,11 +1247,11 @@ public:
         events << Damaged << DamageInflicted;
     }
 
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &) const {
-        if (event == Damaged) {
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const {
+        if (triggerEvent == Damaged) {
             if (player->getMark("@fenyong") == 0 && room->askForSkillInvoke(player, objectName()))
                 player->gainMark("@fenyong");
-        } else if (event == DamageInflicted) {
+        } else if (triggerEvent == DamageInflicted) {
             if (player->getMark("@fenyong") > 0) {
                 LogMessage log;
                 log.type = "#FenyongAvoid";
@@ -1353,7 +1353,7 @@ public:
 class XuehenAvoidTriggeringCardsMove: public TriggerSkill{
 public:
     XuehenAvoidTriggeringCardsMove():TriggerSkill("#xuehen-avoid-triggering-cards-move"){
-        events << CardsMoving << CardsMoveOneTime;
+        events << CardsMoveOneTime;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
