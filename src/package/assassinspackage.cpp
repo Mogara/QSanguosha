@@ -217,8 +217,8 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(triggerEvent == DamageCaused){
-			if(damage.to && damage.to->isAlive()
-			   && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng())
+            if(damage.to && damage.to->isAlive()
+               && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng())
                 if(room->askForCard(player, ".black", "@JieyuanIncrease", data, CardDiscarded)){
                     LogMessage log;
                     log.type = "#JieyuanIncrease";
@@ -231,7 +231,7 @@ public:
                 }
         }else if(triggerEvent == DamageInflicted){
             if(damage.from && damage.from->isAlive()
-			   && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
+               && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
                 if(room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
                     LogMessage log;
                     log.type = "#JieyuanDecrease";

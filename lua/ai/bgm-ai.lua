@@ -698,3 +698,24 @@ sgs.bgm_ganning_suit_value =
     club = 3.9
 }
 
+sgs.ai_skill_invoke.fenyong = function(self, data)
+	return true
+end
+
+sgs.ai_skill_choice.xuehen = function(self, choices)
+	local current = self.room:getCurrent();
+	if self:isFriend(current) then return "slash" end
+	for _,enemy in ipairs(self.enemies) do
+		local def=sgs.getDefense(enemy)
+		local amr=enemy:getArmor()
+		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
+			or (amr:objectName()=="eight_diagram"))
+
+		if self.player:canSlash(enemy, nil ,false) and not self:slashProhibit(nil, enemy) and eff and def < 8 then
+			sgs.ai_skill_playerchosen.xuehen = enemy
+			return "slash"
+		end
+	end
+	return "discard"
+end

@@ -225,13 +225,13 @@ sgs.ai_skill_invoke.fenxin = function(self, data)
 	local target = data:toPlayer()
     local target_role = sgs.evaluatePlayerRole(target)
 	local self_role = self.player:getRole()
-	if target_role == "renegade" then return false end
+	if target_role == "renegade" or target_role == "unknown" then return false end
 	local count1, count2 = 1, 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-	    if sgs.evaluatePlayerRole(target) == "loyalist" then count1 = count1 + 1 end
-		if sgs.evaluatePlayerRole(target) == "rebel" then count2 = count2 + 1 end
+	    if target_role == "loyalist" then count1 = count1 + 1 end
+	    if target_role == "rebel" then count2 = count2 + 1 end
 	end
-	if self_role ~= "loyalist" and count1 > count2 then return true end
-	if self_role ~= "rebel" and count1 < count2 then return true end
+	if self_role ~= "loyalist" and target_role == "loyalist" and count1 >= count2 then return true end
+	if self_role ~= "rebel" and target_role == "rebel" and count1 < count2 then return true end
 	return false
 end
