@@ -122,10 +122,10 @@ public:
 
             if (target->getGeneralName().contains("lvbu"))
                 room->broadcastSkillInvoke(objectName(), 3);
-			else if (target->getGeneralName().contains("dongzhuo"))
-			    room->broadcastSkillInvoke(objectName(), 4);
-			else
-			    room->broadcastSkillInvoke(objectName(), 1);
+            else if (target->getGeneralName().contains("dongzhuo"))
+                room->broadcastSkillInvoke(objectName(), 4);
+            else
+                room->broadcastSkillInvoke(objectName(), 1);
             DummyCard *to_goback;
             if(diaochan->getCardCount(true) <= target->getHp())
             {
