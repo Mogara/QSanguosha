@@ -710,7 +710,7 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
 
         if (target->getGeneralName().contains("sunquan"))
-            room->broadcastSkillInvoke(objectName(), qrand() % 2 + 2);
+            room->broadcastSkillInvoke(objectName(), 2);
         else
             room->broadcastSkillInvoke(objectName(), 1);
         target->drawCards(3);
