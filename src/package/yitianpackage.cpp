@@ -1540,7 +1540,7 @@ public:
 
         QList<ServerPlayer *> players = room->getOtherPlayers(dengshizai), targets;
         foreach(ServerPlayer *player, players){
-            if(dengshizai->canSlash(player, NULL)){
+            if(dengshizai->canSlash(player, NULL, false)){
                 targets << player;
             }
         }
