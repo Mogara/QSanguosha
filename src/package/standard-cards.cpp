@@ -98,7 +98,7 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int slash_targets = 1;
-    if(Self->hasWeapon("halberd") && Self->isLastHandCard(this))
+    if(Self->hasWeapon("Halberd") && Self->isLastHandCard(this))
         slash_targets += 2;
 
     if(Self->hasSkill("lihuo") && isKindOf("FireSlash"))
@@ -114,9 +114,9 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if(targets.length() >= slash_targets) {
-        if (Self->hasSkill("duanbing") && targets.length() == slash_targets)
+        /*if (Self->hasSkill("duanbing") && targets.length() == slash_targets)
             return Self->canSlash(to_select, this) && Self->distanceTo(to_select) == 1;
-        else
+        else*/
             return false;
     }
 
