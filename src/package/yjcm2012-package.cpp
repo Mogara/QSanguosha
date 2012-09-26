@@ -446,10 +446,11 @@ public:
     virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
         Room *room = liubiao->getRoom();
         if(liubiao->isWounded() && room->askForSkillInvoke(liubiao, objectName())){
-            room->broadcastSkillInvoke(objectName());
+            int losthp = liubiao->getLostHp();
+            room->broadcastSkillInvoke(objectName(), qMin(3, losthp));
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
-            return n + liubiao->getLostHp();
+            return n + losthp;
         }else
             return n;
     }
