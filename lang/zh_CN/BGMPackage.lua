@@ -20,9 +20,15 @@ return {
 	["&bgm_diaochan"] = "貂蝉",
 	["illustrator:bgm_diaochan"] = "木美人",
 	["designer:bgm_diaochan"] = "Danny",
+	["cv:bgm_diaochan"] = "蒲小猫",
 	["lihun"] = "离魂",
 	["LihunGoBack"] = "请分配给对方 %arg 张牌（包括装备）",
 	[":lihun"] = "出牌阶段，你可以弃置一张牌并将你的武将牌翻面，若如此做，指定一名男性角色，获得其所有手牌。出牌阶段结束时，你须为该角色每一点体力分配给其一张牌。每回合限一次。",
+	["$lihun1"] = "倾国之舞，离魂天外。",
+	["$lihun2"] = "舞眩人眼，乱人心神。",
+	["$lihun3"] = "将军，此舞如何？", --吕布
+	["$lihun4"] = "太师，别看呆了哦~", --董卓
+	["~bgm_diaochan"] = "董贼已除，我又当何如……",
 
 	["#bgm_caoren"] = "险不辞难",
 	["bgm_caoren"] = "☆SP曹仁",
@@ -116,6 +122,7 @@ return {
 	["&bgm_daqiao"] = "大乔",
 	["illustrator:bgm_daqiao"] = "木美人",
 	["designer:bgm_daqiao"] = "Ecauchy",
+	["cv:bgm_daqiao"] = "蒲小猫",
 	["YanxiaoCard"] = "言笑牌",
 	["yanxiao"] = "言笑",
 	[":yanxiao"] = "出牌阶段，你可以将一张方块牌置于一名角色的判定区内，判定区内有“言笑”牌的角色下个判定阶段开始时，获得其判定区里的所有牌。",
@@ -124,6 +131,11 @@ return {
 	["#Anxian"] = "%from 发动了技能【%arg】，防止了此次伤害。",
 	["#AnxianAvoid"] = "%to 使用了【%arg】，%from 对其使用的【杀】无效。",
 	["@anxian-discard"] = "你可以弃置一张手牌令此【杀】失效",
+	["$yanxiao1"] = "言笑之间，忧散愁消。",
+	["$yanxiao2"] = "吾夫有忧色，妾当为解之。", --孙策
+	["$anxian1"] = "安淑娴静，岂愿伤人~",
+	["$anxian2"] = "岂可如此无礼！",
+	["~bgm_daqiao"] = "青灯常伴，了此余生…",
 	
 	["#bgm_ganning"] = "怀铃的乌羽",
 	["bgm_ganning"] = "☆SP甘宁",

@@ -59,6 +59,7 @@ bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player 
 void LihunCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     effect.from->turnOver();
+    room->broadcastSkillInvoke("lihun", 1);
 
     DummyCard *dummy_card = new DummyCard;
     foreach(const Card *cd, effect.to->getHandcards()){
@@ -66,10 +67,6 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     }
     if (!effect.to->isKongcheng())
     {
-        if(effect.to->getGeneralName().contains("lvbu"))
-            room->broadcastSkillInvoke("lihun", 2);
-        else
-            room->broadcastSkillInvoke("lihun", 1);
         CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, effect.from->objectName(),
             effect.to->objectName(), "lihun", QString());
         room->moveCardTo(dummy_card, effect.to, effect.from, Player::PlaceHand, reason, false);
@@ -123,6 +120,12 @@ public:
             if(!target || target->getHp() < 1 || diaochan->isNude())
                 return false;
 
+            if (target->getGeneralName().contains("lvbu"))
+                room->broadcastSkillInvoke(objectName(), 3);
+            else if (target->getGeneralName().contains("dongzhuo"))
+                room->broadcastSkillInvoke(objectName(), 4);
+            else
+                room->broadcastSkillInvoke(objectName(), 1);
             DummyCard *to_goback;
             if(diaochan->getCardCount(true) <= target->getHp())
             {
@@ -966,6 +969,7 @@ public:
 YanxiaoCard::YanxiaoCard(Suit suit, int number)
     :DelayedTrick(suit, number)
 {
+    mute = true;
     setObjectName("YanxiaoCard");
 }
 
@@ -980,12 +984,28 @@ bool YanxiaoCard::targetFilter(const QList<const Player *> &targets, const Playe
     return true;
 }
 
+void YanxiaoCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    bool has_sunce = false;
+    foreach(ServerPlayer *to, card_use.to)
+        if (to->getGeneralName().contains("sunce")){
+            has_sunce = true;
+            break;
+        }
+    int index = 0;
+    if (has_sunce)
+        index = 2;
+    else
+        index = 1;
+    room->broadcastSkillInvoke("yanxiao", index);
+    DelayedTrick::onUse(room, card_use);
+}
+
 void YanxiaoCard::takeEffect(ServerPlayer *) const{
 }
 
-class YanxiaoVeiwAsSkill: public OneCardViewAsSkill{
+class YanxiaoViewAsSkill: public OneCardViewAsSkill{
 public:
-    YanxiaoVeiwAsSkill():OneCardViewAsSkill("yanxiao"){
+    YanxiaoViewAsSkill():OneCardViewAsSkill("yanxiao"){
 
     }
 
@@ -1005,7 +1025,7 @@ public:
 class Yanxiao: public PhaseChangeSkill{
 public:
     Yanxiao():PhaseChangeSkill("yanxiao"){
-        view_as_skill = new YanxiaoVeiwAsSkill;
+        view_as_skill = new YanxiaoViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

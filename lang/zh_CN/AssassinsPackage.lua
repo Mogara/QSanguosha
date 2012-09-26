@@ -3,17 +3,17 @@
 return {
 	["assassins"] = "铜雀台",
 
-	--["#mushun"] = "",
-	["mushun"] = "穆顺",
-	--["cv:mushun"] = "",
-	--["illustrator:mushun"] = "",
-	["designer:mushun"] = "嘉言懿行",
+	["#fuwan"] = "沉毅的国丈",
+	["fuwan"] = "伏完",
+	--["cv:fuwan"] = "",
+	--["illustrator:fuwan"] = "",
+	["designer:fuwan"] = "嘉言懿行",
 	["moukui"] = "谋溃",
 	[":moukui"] = "当你使用【杀】指定一名角色为目标后，你可以选择一项：摸一张牌，或弃置其一张牌。若如此做，此【杀】被【闪】抵消时，该角色弃置你的一张牌。",
 	["moukui:draw"] = "摸一张牌",
 	["moukui:discard"] = "弃置目标角色一张牌",
 
-	--["#liuxie"] = "",
+	["#liuxie"] = "受困天子",
 	["liuxie"] = "刘协",
 	--["illustrator:liuxie"] = "",
 	["designer:liuxie"] = "韩旭",
@@ -22,7 +22,7 @@ return {
 	["mizhao"] = "密诏",
 	[":mizhao"] = "出牌阶段，你可以将所有手牌（至少一张）交给一名其他角色。若如此做，你令该角色与你指定的另一名有手牌的角色拼点。视为拼点赢的角色对没赢的角色使用一张【杀】。每阶段限一次",
 
-	--["#lingju"] = "",
+	["#lingju"] = "情随梦逝",
 	["lingju"] = "灵雎",
 	--["illustrator:lingju"] = "",
 	["designer:lingju"] = "韩旭",
