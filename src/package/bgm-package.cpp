@@ -1347,7 +1347,7 @@ public:
                 card_use.card = slash;
                 room->useCard(card_use, false);
             } else {
-				room->broadcastSkillInvoke(objectName(), 1);
+                room->broadcastSkillInvoke(objectName(), 1);
                 room->setPlayerFlag(player, "XuehenTarget_InTempMoving");
                 DummyCard *dummy = new DummyCard;
                 QList<int> card_ids;
@@ -1373,9 +1373,9 @@ public:
         return false;
     }
 
-	virtual int getEffectIndex(const ServerPlayer *, const Card *card) const {
-		return 2;
-	}
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const {
+        return 2;
+    }
 };
 
 class XuehenAvoidTriggeringCardsMove: public TriggerSkill{
