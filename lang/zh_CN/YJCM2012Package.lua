@@ -133,7 +133,7 @@ return {
 	["liubiao"] = "刘表",
 	["designer:liubiao"] = "管乐",
 	["illustrator:liubiao"] = "关东煮",
-	["cv:liubiao"] = "Kevin",
+	["cv:liubiao"] = "喵小林",
 	["zishou"] = "自守",
 	[":zishou"] = "摸牌阶段，若你已受伤，你可以额外摸X张牌（X为你已损失的体力值），然后跳过你的出牌阶段。",
 	["zongshi"] = "宗室",
