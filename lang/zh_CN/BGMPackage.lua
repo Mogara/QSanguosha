@@ -156,6 +156,7 @@ return {
 	["&bgm_xiahoudun"] = "夏侯惇",
 	["illustrator:bgm_xiahoudun"] = "XXX",
 	["designer:bgm_xiahoudun"] = "舟亢",
+	["cv:bgm_xiahoudun"] = "喵小林",
 	["fenyong"] = "愤勇",
 	[":fenyong"] = "每当你受到一次伤害后，你可以竖置你的体力牌；当你的体力牌为竖置状态时，防止你受到的所有伤害。",
 	["#FenyongAvoid"] = "%from 的“%arg”被触发，防止了本次伤害",
@@ -164,4 +165,9 @@ return {
 	["@fenyong"] = "愤勇",
 	["xuehen:discard"] = "弃置当前回合角色X张牌",
 	["xuehen:slash"] = "视为使用一张【杀】",
+	["$fenyong1"] = "独目苍狼，虽伤亦勇！",
+	["$fenyong2"] = "愤勇当先，鬼神难当！",
+	["$xuehen1"] = "汝等凶逆，岂欲望生乎！",
+	["$xuehen2"] = "夺目之恨犹在，今必斩汝！",
+	["~bgm_xiahoudun"] = "凛然领军出，马革裹尸还……"
 }

@@ -4379,7 +4379,7 @@ void Room::provide(const Card *card){
 
 QList<ServerPlayer *> Room::getLieges(const QString &kingdom, ServerPlayer *lord) const{
     QList<ServerPlayer *> lieges;
-    foreach(ServerPlayer *player, m_alivePlayers){
+    foreach(ServerPlayer *player, getAllPlayers()){
         if(player != lord && player->getKingdom() == kingdom)
             lieges << player;
     }

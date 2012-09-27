@@ -1269,10 +1269,13 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const {
         if (triggerEvent == Damaged) {
-            if (player->getMark("@fenyong") == 0 && room->askForSkillInvoke(player, objectName()))
+            if (player->getMark("@fenyong") == 0 && room->askForSkillInvoke(player, objectName())) {
                 player->gainMark("@fenyong");
+                room->broadcastSkillInvoke(objectName(), 1);
+            }
         } else if (triggerEvent == DamageInflicted) {
             if (player->getMark("@fenyong") > 0) {
+                room->broadcastSkillInvoke(objectName(), 2);
                 LogMessage log;
                 log.type = "#FenyongAvoid";
                 log.from = player;
@@ -1344,6 +1347,7 @@ public:
                 card_use.card = slash;
                 room->useCard(card_use, false);
             } else {
+				room->broadcastSkillInvoke(objectName(), 1);
                 room->setPlayerFlag(player, "XuehenTarget_InTempMoving");
                 DummyCard *dummy = new DummyCard;
                 QList<int> card_ids;
@@ -1368,6 +1372,10 @@ public:
         }
         return false;
     }
+
+	virtual int getEffectIndex(const ServerPlayer *, const Card *card) const {
+		return 2;
+	}
 };
 
 class XuehenAvoidTriggeringCardsMove: public TriggerSkill{
