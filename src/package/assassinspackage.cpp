@@ -45,7 +45,7 @@ public:
             if (!effect.from->isAlive() || !effect.to->isAlive() || effect.from->isNude())
                 return false;
             int disc = room->askForCardChosen(effect.to, effect.from, "he", objectName());
-            room->throwCard(disc, effect.from, player);
+            room->throwCard(disc, effect.from, effect.to);
             room->setPlayerMark(effect.to, objectName() + effect.slash->getEffectIdString(),
                                 effect.to->getMark(objectName() + effect.slash->getEffectIdString()) - 1);
         } else if (triggerEvent == CardFinished) {
