@@ -125,7 +125,7 @@ public:
             else if (target->getGeneralName().contains("dongzhuo"))
                 room->broadcastSkillInvoke(objectName(), 4);
             else
-                room->broadcastSkillInvoke(objectName(), 1);
+                room->broadcastSkillInvoke(objectName(), 2);
             DummyCard *to_goback;
             if(diaochan->getCardCount(true) <= target->getHp())
             {
