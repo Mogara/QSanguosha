@@ -492,7 +492,13 @@ public:
         if(damage.card && damage.card->isKindOf("Slash") &&
                 (damage.card->isRed() || damage.card->hasFlag("drank"))){
 
-            room->broadcastSkillInvoke(objectName());
+            int index = 1;
+            if (damage.from->getGeneralName().contains("guanyu"))
+                index = 3;
+            else if (damage.card->hasFlag("drank"))
+                index = 2;
+            room->broadcastSkillInvoke(objectName(), index);
+			
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = player;

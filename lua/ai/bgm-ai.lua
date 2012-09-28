@@ -704,7 +704,6 @@ end
 
 sgs.ai_skill_choice.xuehen = function(self, choices)
 	local current = self.room:getCurrent();
-	if self:isFriend(current) then return "slash" end
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
@@ -717,5 +716,11 @@ sgs.ai_skill_choice.xuehen = function(self, choices)
 			return "slash"
 		end
 	end
+	if self:isFriend(current) then
+		sgs.ai_skill_playerchosen.xuehen = sgs.ai_skill_playerchosen.zero_card_as_slash
+		return "slash"
+	end
 	return "discard"
 end
+
+sgs.ai_skill_playerchosen.xuehen = sgs.ai_skill_playerchosen.zero_card_as_slash

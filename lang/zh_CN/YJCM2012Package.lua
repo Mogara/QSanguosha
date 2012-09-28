@@ -147,6 +147,11 @@ return {
 	["huaxiong"] = "华雄",
 	["designer:huaxiong"] = "小立",
 	["illustrator:huaxiong"] = "地狱许",
+	["cv:huaxiong"] = "玉皇贰弟",
 	["shiyong"] = "恃勇",
 	[":shiyong"] = "<b>锁定技</b>，每当你受到一次红色的【杀】或因【酒】生效而伤害+1的【杀】造成的伤害后，你减1点体力上限。",
+	["$shiyong1"] = "都是小伤，不必理会！",
+	["$shiyong2"] = "这厮好大的力气！",
+	["$shiyong3"] = "唉，这厮不易对付！", --关羽
+	["~huaxiong"] = "太自负了么……",
 }

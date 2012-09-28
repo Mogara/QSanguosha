@@ -153,7 +153,7 @@ sgs.ai_skill_use_func.MizhaoCard=function(card,use,self)
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:isKongcheng() then count = count + 1 end
 	end
-	if handcardnum == 1 and trash and #self.enemies - count >= 2 then
+	if handcardnum == 1 and trash and #self.enemies - count >= 2 and #self.friends_noself == 0 then
 		self:sort(self.enemies, "hp")
 		use.card = card
         if use.to then use.to:append(self.enemies[1]) end

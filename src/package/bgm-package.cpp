@@ -819,6 +819,7 @@ public:
                 choice = "damage";
             }
             if(choice == "damage"){
+                room->broadcastSkillInvoke("zhaolie", 1);
                 if(no_basic > 0){
                     DamageStruct damage;
                     damage.card = NULL;
@@ -841,6 +842,7 @@ public:
                 }
             }
             else{
+                room->broadcastSkillInvoke("zhaolie", 2);
                 if(no_basic > 0){
                     while(no_basic > 0){
                         room->askForDiscard(victim, "zhaolie", 1, 1, false, true);
@@ -899,6 +901,9 @@ public:
                     return false;
 
                 if(player->askForSkillInvoke(objectName())){
+                    room->broadcastSkillInvoke(objectName());
+                    room->broadcastInvoke("animate", "lightbox:$shichou:4500");
+                    room->getThread()->delay(4500);
                     player->loseMark("@hate", 1);
                     room->setPlayerMark(player, "shichouInvoke", 1);
                     room->broadcastSkillInvoke(objectName());
@@ -991,11 +996,9 @@ void YanxiaoCard::onUse(Room *room, const CardUseStruct &card_use) const{
             has_sunce = true;
             break;
         }
-    int index = 0;
+    int index = 1;
     if (has_sunce)
         index = 2;
-    else
-        index = 1;
     room->broadcastSkillInvoke("yanxiao", index);
     DelayedTrick::onUse(room, card_use);
 }
@@ -1034,8 +1037,19 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         CardsMoveStruct move;
-        foreach(const Card* deleyed_trick, target->getJudgingArea())
-            move.card_ids << deleyed_trick->getId();
+        LogMessage log;
+        log.type = "$YanxiaoGot";
+        log.from = target;
+
+        foreach(const Card* delayed_trick, target->getJudgingArea()){
+            int id = delayed_trick->getId();
+            move.card_ids << id;
+            if (log.card_str.isEmpty())
+                log.card_str = QString::number(id);
+            else
+                log.card_str += "+" +  QString::number(id);
+        }
+        target->getRoom()->sendLog(log);
         move.to = target;
         move.to_place = Player::PlaceHand;
         target->getRoom()->moveCardsAtomic(move, true);
@@ -1057,12 +1071,14 @@ public:
                !damage.chain && !damage.transfer && !damage.to->isKongcheng()
                 && daqiao->askForSkillInvoke(objectName(), data)){
 
+                room->broadcastSkillInvoke(objectName(), 1);
                 LogMessage log;
                 log.type = "#Anxian";
                 log.from = daqiao;
                 log.arg = objectName();
                 room->sendLog(log);
-                room->askForDiscard(damage.to, "anxian", 1, 1);
+                if (!damage.to->isKongcheng())
+                    room->askForDiscard(damage.to, "anxian", 1, 1);
                 daqiao->drawCards(1);
                 return true;
             }
@@ -1073,6 +1089,7 @@ public:
 
             if(use.card && use.card->isKindOf("Slash")){
                 if(room->askForCard(daqiao, ".", "@anxian-discard", QVariant(), CardDiscarded)){
+                    room->broadcastSkillInvoke(objectName(), 2);
                     daqiao->addMark("anxian");
                     use.from->drawCards(1);
                     LogMessage log;

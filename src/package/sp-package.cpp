@@ -466,6 +466,9 @@ public:
             log.arg = QString::number(guanyu->getHandcardNum());
             log.arg2 = QString::number(guanyu->getHp());
             room->sendLog(log);
+            room->broadcastSkillInvoke(objectName());
+            room->broadcastInvoke("animate", "lightbox:$danji:5000");
+            room->getThread()->delay(5000);
 
             guanyu->setMark("danji", 1);
 			guanyu->gainMark("@waked");
