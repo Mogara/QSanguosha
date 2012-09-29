@@ -60,10 +60,12 @@ private:
     QCheckBox *self_select_general, *self_select_general2;
     QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
     QCheckBox *set_turned, *set_chained;
-    QComboBox *single_turn_box, *before_next_box;
-    QCheckBox *random_roles_box, *ended_by_pile_box;
-    QCheckBox *single_turn, *before_next;
-    QLabel *single_turn_text, *single_turn_text2, *before_next_text, *before_next_text2;
+    QComboBox *ended_by_pile_box, *single_turn_box, *before_next_box;
+    QCheckBox *random_roles_box;
+    QCheckBox *ended_by_pile, *single_turn, *before_next;
+    QLabel *ended_by_pile_text, *ended_by_pile_text2,
+           *single_turn_text, *single_turn_text2,
+           *before_next_text, *before_next_text2;
     QPushButton *extra_skill_set;
     QPushButton *move_list_up_button, *move_list_down_button;
     QCheckBox *move_list_check, *move_pile_check;
@@ -89,7 +91,7 @@ private:
     QString general_name, general_name2;
     bool choose_general2;
     QString starter;
-    bool is_single_turn, is_before_next;
+    bool is_ended_by_pile, is_single_turn, is_before_next;
 
     QList<bool> set_options;
 
@@ -141,6 +143,7 @@ private slots:
 
     void checkSingleTurnBox(bool toggled);
     void checkBeforeNextBox(bool toggled);
+    void checkEndedByPileBox(bool toggled);
 
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 

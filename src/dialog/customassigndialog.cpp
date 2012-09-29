@@ -35,7 +35,7 @@ CustomAssignDialog *CustomInstance = NULL;
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
       choose_general2(false),
-      is_single_turn(false), is_before_next(false)
+      is_ended_by_pile(false), is_single_turn(false), is_before_next(false)
 {
     setWindowTitle(tr("Custom mini scene"));
 
@@ -155,8 +155,6 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *pileAssign = new QPushButton(tr("PileCardAssign"));
 
     random_roles_box = new QCheckBox(tr("RandomRoles"));
-    ended_by_pile_box = new QCheckBox(tr("EndedByPileEnds"));
-    ended_by_pile_box->setEnabled(set_pile.length() > 0);
 
     max_hp_prompt = new QCheckBox(tr("Max Hp"));
     max_hp_prompt->setChecked(false);
@@ -189,6 +187,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     nationalities->setEnabled(false);
 
     extra_skill_set = new QPushButton(tr("Set Extra Skills"));
+    ended_by_pile_text = new QLabel(tr("When pile ends"));
+    ended_by_pile_text2 = new QLabel(tr("win"));
+    ended_by_pile_box = new QComboBox();
+    ended_by_pile = new QCheckBox(tr("Ended by pile ends"));
+    ended_by_pile->setEnabled(set_pile.length() > 0);
+    ended_by_pile_box->addItem(tr("Lord"), "lord+loyalist");
+    ended_by_pile_box->addItem(tr("Renegade"), "renegade");
+    ended_by_pile_box->addItem(tr("Rebel"), "rebel");
 
     single_turn_text = new QLabel(tr("After this turn "));
     single_turn_text2 = new QLabel(tr("win"));
@@ -227,7 +233,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(random_roles_box);
     vlayout->addWidget(extra_skill_set);
     vlayout->addWidget(starter_group);
-    vlayout->addWidget(ended_by_pile_box);
+    vlayout->addWidget(ended_by_pile);
+    vlayout->addLayout(HLay(ended_by_pile_text, ended_by_pile_text2, ended_by_pile_box));
     vlayout->addWidget(single_turn);
     vlayout->addLayout(HLay(single_turn_text, single_turn_text2, single_turn_box));
     vlayout->addWidget(before_next);
@@ -237,6 +244,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addLayout(HLay(loadButton, saveButton));
     vlayout->addLayout(HLay(okButton, cancelButton));
 
+    ended_by_pile_text->hide();
+    ended_by_pile_text2->hide();
+    ended_by_pile_box->hide();
     single_turn_text->hide();
     single_turn_text2->hide();
     single_turn_box->hide();
@@ -348,6 +358,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
     connect(judgeAssign, SIGNAL(clicked()), this, SLOT(doJudgeCardAssign()));
     connect(pileAssign, SIGNAL(clicked()), this, SLOT(doPileCardAssign()));
+    connect(ended_by_pile, SIGNAL(toggled(bool)), this, SLOT(checkEndedByPileBox(bool)));
     connect(single_turn, SIGNAL(toggled(bool)), this, SLOT(checkBeforeNextBox(bool)));
     connect(before_next, SIGNAL(toggled(bool)), this, SLOT(checkSingleTurnBox(bool)));
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -674,7 +685,7 @@ void CustomAssignDialog::updatePileInfo(int row){
     pile_list->clear();
 
     removePileButton->setDisabled(set_pile.isEmpty());
-    ended_by_pile_box->setDisabled(set_pile.isEmpty());
+    ended_by_pile->setDisabled(set_pile.isEmpty());
 
     foreach(int card_id, set_pile){
         const Card* card = Sanguosha->getEngineCard(card_id);
@@ -852,8 +863,8 @@ void CustomAssignDialog::removePileCard(){
             pile_list->setCurrentRow(row >= pile_list->count() ? row-1 : row);
         else{
             removePileButton->setEnabled(false);
-            ended_by_pile_box->setEnabled(false);
-            ended_by_pile_box->setChecked(false);
+            ended_by_pile->setEnabled(false);
+            ended_by_pile->setChecked(false);
         }
     }
 }
@@ -1040,6 +1051,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     set_turned->setChecked(player_turned.value(player_name, false));
     set_chained->setChecked(player_chained.value(player_name, false));
 
+    ended_by_pile->setChecked(is_ended_by_pile);
     single_turn->setChecked(is_single_turn);
     before_next->setChecked(is_before_next);
 
@@ -1111,6 +1123,23 @@ void CustomAssignDialog::checkSingleTurnBox(bool toggled){
     }
 }
 
+void CustomAssignDialog::checkEndedByPileBox(bool toggled){
+    if(toggled){
+        is_ended_by_pile = true;
+
+        ended_by_pile_text->show();
+        ended_by_pile_text2->show();
+        ended_by_pile_box->show();
+    }
+    else{
+        is_ended_by_pile = false;
+
+        ended_by_pile_text->hide();
+        ended_by_pile_text2->hide();
+        ended_by_pile_box->hide();
+    }
+}
+
 void CustomAssignDialog::load()
 {
     QString filename;
@@ -1147,6 +1176,7 @@ void CustomAssignDialog::load()
     free_choose_general.clear();
     free_choose_general2.clear();
 
+    is_ended_by_pile = false;
     is_single_turn = false;
     is_before_next = false;
 
@@ -1208,48 +1238,52 @@ void CustomAssignDialog::load()
             player.insert(keys.at(0),keys.at(1));
         }
 
-        if(player["role"]!= NULL)role_mapping[name] = player["role"];
+        if(player["role"]!= QString())role_mapping[name] = player["role"];
 
         if(player["general"]=="select")free_choose_general[name] = true;
-        else if(player["general"]!=NULL)general_mapping[name]=player["general"];
+        else if(player["general"]!=QString())general_mapping[name]=player["general"];
 
         if(player["general2"]=="select")free_choose_general2[name] = true;
-        else if(player["general2"]!=NULL)general2_mapping[name]=player["general2"];
+        else if(player["general2"]!=QString())general2_mapping[name]=player["general2"];
 
-        if(player["maxhp"]!=NULL){
+        if(player["maxhp"]!=QString()){
             player_maxhp[name] = player["maxhp"].toInt();
             if(player_hp[name]>player_maxhp[name]) player_hp[name] = player_maxhp[name];
         }
-        if(player["hp"]!=NULL)player_hp[name]=player["hp"].toInt();
-        if(player["draw"]!=NULL)player_start_draw[name]=player["draw"].toInt();
+        if(player["hp"]!=QString())player_hp[name]=player["hp"].toInt();
+        if(player["draw"]!=QString())player_start_draw[name]=player["draw"].toInt();
         else player_start_draw[name] = 4;
 
-        if(player["starter"]!=NULL)starter = name;
-        if(player["chained"]!=NULL)player_chained[name]=true;
-        if(player["turned"]!=NULL)player_turned[name]=true;
-        if(player["nationality"] != NULL){
+        if(player["starter"]!=QString())starter = name;
+        if(player["chained"]!=QString())player_chained[name]=true;
+        if(player["turned"]!=QString())player_turned[name]=true;
+        if(player["nationality"] != QString()){
             assign_nationality[name] = player["nationality"];
             set_nationality[name] = true;
         }
         else{
             set_nationality[name] = false;
         }
-        if(player["acquireSkills"] != NULL){
+        if(player["acquireSkills"] != QString()){
             QStringList skills;
             foreach(QString skill_name, player["acquireSkills"].split(","))
                 skills << skill_name;
 
             player_exskills[name].append(skills);
         }
-        if(player["singleTurn"] != NULL){
+        if(player["endedByPile"] != QString()){
+            ended_by_pile_box->setCurrentIndex(role_index.value(player["endedByPile"], 0));
+            is_ended_by_pile = true;
+        }
+        if(player["singleTurn"] != QString()){
             single_turn_box->setCurrentIndex(role_index.value(player["singleTurn"], 0));
             is_single_turn = true;
         }
-        if(player["beforeNext"] != NULL){
+        if(player["beforeNext"] != QString()){
             before_next_box->setCurrentIndex(role_index.value(player["beforeNext"], 0));
             is_before_next = true;
         }
-        if(player["marks"] != NULL){
+        if(player["marks"] != QString()){
             foreach(QString mark, player["marks"].split(",")){
                 QString mark_name = mark.split("*").at(0);
                 int mark_number = mark.split("*").at(1).toInt();
@@ -1258,7 +1292,7 @@ void CustomAssignDialog::load()
             }
         }
 
-        if(player["hand"]!=NULL)
+        if(player["hand"]!=QString())
         {
             foreach(QString id,player["hand"].split(","))
             {
@@ -1276,7 +1310,7 @@ void CustomAssignDialog::load()
             }
         }
 
-        if(player["equip"]!=NULL)
+        if(player["equip"]!=QString())
         {
             foreach(QString id,player["equip"].split(","))
             {
@@ -1294,7 +1328,7 @@ void CustomAssignDialog::load()
             }
         }
 
-        if(player["judge"]!=NULL)
+        if(player["judge"]!=QString())
         {
             foreach(QString id,player["judge"].split(","))
             {
@@ -1328,8 +1362,7 @@ void CustomAssignDialog::load()
     player_draw->setValue(player_start_draw[list->currentItem()->data(Qt::UserRole).toString()]);
     num_ComboBox->setCurrentIndex(list->count()-2);
 
-    random_roles_box->setChecked(options.contains(MiniSceneRule::S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN));
-    ended_by_pile_box->setChecked(options.contains(MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES));
+    random_roles_box->setChecked(options.contains(MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES));
 
     updatePileInfo();
     file.close();
@@ -1381,7 +1414,7 @@ bool CustomAssignDialog::save(QString path)
 
     QString line;
 
-    set_options << random_roles_box->isChecked() << ended_by_pile_box->isChecked();
+    set_options << random_roles_box->isChecked();
     foreach(bool option, set_options){
         if(option){
             line.append("extraOptions:");
@@ -1389,10 +1422,6 @@ bool CustomAssignDialog::save(QString path)
         }
     }
     if(random_roles_box->isChecked()) {
-        line.append(MiniSceneRule::S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN);
-        line.append(" ");
-    }
-    if(ended_by_pile_box->isChecked()) {
         line.append(MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES);
         line.append(" ");
     }
@@ -1462,6 +1491,10 @@ bool CustomAssignDialog::save(QString path)
             line.append(" ");
         }
         if(i == 0){
+            if(is_ended_by_pile) {
+                QString winner = ended_by_pile_box->itemData(ended_by_pile_box->currentIndex()).toString();
+                line.append(QString("endedByPile:%1 ").arg(winner));
+            }
             if(is_single_turn){
                 QString winner = single_turn_box->itemData(single_turn_box->currentIndex()).toString();
                 line.append(QString("singleTurn:%1 ").arg(winner));
@@ -1711,7 +1744,7 @@ void CardAssignDialog::updateCardList(){
     for(i = 0; i < reasonable_cards.length(); i++)
         addCard(reasonable_cards.at(i));
 
-    if(n>0)
+    if(n > 0)
         card_list->setCurrentRow(0);
 }
 

@@ -4,7 +4,6 @@
 #include <QFile>
 
 const char* MiniScene::S_KEY_MINISCENE = "_mini_%1";
-const char* MiniSceneRule::S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN = "gameOverIfExtraCardDrawn";
 const char* MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES = "randomRoles";
 const QString MiniSceneRule::_S_DEFAULT_HERO = "caocao";
 
@@ -48,8 +47,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             }
         }
 
-        if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL
-            )
+        if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != QString())
         {
             if(player->tag["playerHasPlayed"].toBool())
                 room->gameOver(this->players.first()["beforeNext"]);
@@ -57,12 +55,12 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
         }
 
         if(player->getPhase() != Player::NotActive)return false;
-        if(player->getState() == "robot" || this->players.first()["singleTurn"] == NULL)
+        if(player->getState() == "robot" || this->players.first()["singleTurn"] == QString())
             return false;
         room->gameOver(this->players.first()["singleTurn"]);
         return true;
     } else if (triggerEvent == FetchDrawPileCard) {
-        if (ex_options.contains(S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN))
+        if (this->players.first()["endedByPile"] != QString())
         {
             const QList<int>& drawPile = room->getDrawPile();
             foreach (int id, m_fixedDrawCards)
@@ -70,7 +68,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 if (drawPile.contains(id))
                     return false;
             }
-            room->gameOver(ex_options[S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN].toString());
+            room->gameOver(this->players.first()["endedByPile"]);
             return true;
         }
         return false;
@@ -98,12 +96,16 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             room->broadcastInvoke("addHistory","pushPile");
         }
 
-        int i, j;
-        for (i = ex_options["randomRoles"].toString() == "true" ?
-            qrand() % players.length() : 0, j = 0; j < players.length(); i++, j++)
+        int i = 0, j = 0;
+        QList<int> int_list;
+        for (i = 0; i < players.length(); i++)
+            int_list << i;
+        if (ex_options.contains("randomRoles"))
+            qShuffle(int_list);
+        for (j = 0; j < players.length(); j++)
         {
-            i = i < players.length() ? i : i % players.length();
-            ServerPlayer *sp = players.at(ex_options["randomRoles"].toString() == "true" ? j : i);
+            i = int_list[j];
+            ServerPlayer *sp = players.at(j);
 
             room->setPlayerProperty(sp,"role",this->players.at(i)["role"]);
 
@@ -111,10 +113,10 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             {
                 if(general == "select")
                 {
-                    QStringList available, all, existed;
+                    QStringList available, all;
                     all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
                     qShuffle(all);
-                    for(int i = 0; i < 5; i++)
+                    for(int k = 0; k < 5; k++)
                     {
                         if(sp->getGeneral() != NULL){
                             foreach(const Skill* skill, sp->getGeneral()->getSkillList())
@@ -133,10 +135,10 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             if(!general.isEmpty()){
                 if(general == "select")
                 {
-                    QStringList available,all,existed;
+                    QStringList available, all;
                     all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
                     qShuffle(all);
-                    for(int i = 0; i < 5; i++)
+                    for(int k = 0; k < 5; k++)
                     {
                         if(sp->getGeneral2() != NULL){
                             foreach(const Skill* skill, sp->getGeneral2()->getSkillList())
@@ -156,16 +158,16 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());
 
             QString str = this->players.at(i)["maxhp"];
-            if (str == NULL) str = QString::number(sp->getGeneralMaxHp());
+            if (str == QString()) str = QString::number(sp->getGeneralMaxHp());
             room->setPlayerProperty(sp,"maxhp",str.toInt());
 
             str = this->players.at(i)["hpadj"];
-            if(str != NULL)
+            if(str != QString())
                 room->setPlayerProperty(sp,"maxhp",sp->getMaxHp()+str.toInt());
             str=QString::number(sp->getMaxHp());
 
             QString str2 = this->players.at(i)["hp"];
-            if(str2 != NULL)str = str2;
+            if(str2 != QString())str = str2;
             room->setPlayerProperty(sp,"hp",str.toInt());
 
             str = this->players.at(i)["equip"];
@@ -179,7 +181,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             }
 
             str = this->players.at(i)["judge"];
-            if(str != NULL)
+            if(str != QString())
             {
                 QStringList judges = str.split(",");
                 foreach(QString judge,judges)
@@ -189,7 +191,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             }
 
             str = this->players.at(i)["hand"];
-            if(str !=NULL)
+            if(str !=QString())
             {
                 QStringList hands = str.split(",");
                 foreach(QString hand,hands)
@@ -210,12 +212,12 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
             }
 
             QString skills = this->players.at(i)["acquireSkills"];
-            if(skills != NULL){
+            if(skills != QString()){
                 foreach(QString skill_name, skills.split(","))
                     room->acquireSkill(sp, skill_name);
             }
 
-            if(this->players.at(i)["chained"] != NULL){
+            if(this->players.at(i)["chained"] != QString()){
                 sp->setChained(true);
                 room->broadcastProperty(sp, "chained");
                 room->setEmotion(sp, "chain");
@@ -224,19 +226,19 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
                 if(sp->faceUp())
                     sp->turnOver();
             }
-            if(this->players.at(i)["starter"] != NULL){
+            if(this->players.at(i)["starter"] != QString()){
                 room->setCurrent(sp);
                 QVariant data = QVariant::fromValue(sp);
                 room->setTag("Starter", data);
             }
-            if(this->players[i]["nationality"] != NULL){
+            if(this->players[i]["nationality"] != QString()){
                 room->setPlayerProperty(sp, "kingdom", this->players.at(i)["nationality"]);
             }
 
             str = this->players[i]["draw"];
-            if (str == NULL) str = "4";
+            if (str == QString()) str = "4";
             room->drawCards(sp,str.toInt());
-            if(this->players[i]["marks"] != NULL)
+            if(this->players[i]["marks"] != QString())
             {
                 QStringList marks = this->players[i]["marks"].split(",");
                 foreach(QString qs,marks)
@@ -325,7 +327,7 @@ MiniScene::MiniScene(const QString &name)
 
 void MiniScene::setupCustom(QString name) const
 {
-    if(name == NULL)name = "custom_scenario";
+    if(name == QString())name = "custom_scenario";
     name.prepend("etc/customScenes/");
     name.append(".txt");
 

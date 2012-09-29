@@ -1,6 +1,5 @@
 setPile:53,3,2,1,58,68,115,103,21,0,32,129,158,50
-general:zuoci general2:select role:renegade starter:true maxhp:2 hp:2 singleTurn:lord+loyalist draw:0 hand:109,74,76 
+general:zuoci general2:select role:renegade starter:true maxhp:2 hp:2 endedByPile:lord+loyalist singleTurn:lord+loyalist draw:0 hand:109,74,76 
 general:dongzhuo role:lord draw:0 
 general:zhurong general2:masu role:loyalist maxhp:4 hp:2 draw:0 
-general:xiahoudun general2:guojia role:renegade hp:2 draw:0 equip:62 
-extraOptions:gameOverIfExtraCardDrawn:lord+loyalist
+general:xiahoudun general2:guojia role:renegade hp:2 draw:0 equip:62

@@ -1,7 +1,6 @@
 setPile:140,137,112,111,3,10,2,1,0,95,66,4,64,109,46,45,117,56,147,98,73,85,101,60,78,99
-general:select general2:select role:loyalist starter:true hp:1 chained:true beforeNext:rebel draw:0 hand:80,132 judge:124 
+general:select general2:select role:loyalist starter:true hp:1 chained:true endedByPile:rebel beforeNext:rebel draw:0 hand:80,132 judge:124 
 general:sp_guanyu general2:huatuo role:rebel maxhp:3 hp:1 chained:true acquireSkills:mashu draw:0 equip:54,159 hand:30,32 
 general:liubei general2:wuguotai role:rebel hp:3 draw:0 hand:96,135,65 
 general:zhangfei general2:caozhi role:rebel hp:2 draw:0 hand:86 
-general:caocao general2:luxun role:lord hp:1 chained:true draw:0 equip:53,68 hand:12 judge:103 
-extraOptions:gameOverIfExtraCardDrawn:rebel
+general:caocao general2:luxun role:lord hp:1 chained:true draw:0 equip:53,68 hand:12 judge:103
