@@ -135,6 +135,7 @@ void StartScene::printServerInfo(){
         case 1: scheme_str = tr("minimum"); break;
         case 2: scheme_str = tr("average"); break;
         case 3: scheme_str = tr("sum - 4"); break;
+        case 4: scheme_str = tr("maximum"); break;
         }
 
         server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
