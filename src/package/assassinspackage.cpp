@@ -95,28 +95,27 @@ public:
                 return false;
 
             QList<ServerPlayer *> maxs;
-            foreach(ServerPlayer *p, room->getAllPlayers()){
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if (p->getHp() == max)
                     maxs << p;
-                if (maxs.size() != 1)
+                if (maxs.size() > 1)
                     return false;
-                ServerPlayer *mosthp = maxs.first();
-                if (room->askForSkillInvoke(mosthp, objectName())) {
-                    QSet<const Card *> jilei_cards;
-                    QList<const Card *> handcards = mosthp->getHandcards();
-                    foreach(const Card *card, handcards){
-                        if(mosthp->isJilei(card))
-                            jilei_cards << card;
-                    }
-                    int total = handcards.size() - jilei_cards.size() + mosthp->getEquips().length();
-
-                    if(total <= 2)
-                        mosthp->throwAllHandCardsAndEquips();
-                    else {
-                        room->askForDiscard(mosthp, objectName(), 2, 2, false, true);
-                        mosthp->drawCards(2);
-                    }
+		    }
+            ServerPlayer *mosthp = maxs.first();
+            if (room->askForSkillInvoke(mosthp, objectName())) {
+                QSet<const Card *> jilei_cards;
+                QList<const Card *> handcards = mosthp->getHandcards();
+                foreach(const Card *card, handcards){
+                    if(mosthp->isJilei(card))
+                        jilei_cards << card;
                 }
+                int total = handcards.size() - jilei_cards.size() + mosthp->getEquips().length();
+
+                if(total <= 2)
+                    mosthp->throwAllHandCardsAndEquips();
+                else 
+                    room->askForDiscard(mosthp, objectName(), 2, 2, false, true);
+                mosthp->drawCards(2);
             }
         }
 
