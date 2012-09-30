@@ -76,6 +76,17 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
         if(room->getTag("WaitForPlayer").toBool())
             return true;
 
+        if (objectName().startsWith("_mini_")) {
+            room->broadcastInvoke("animate", "lightbox:" + objectName() + ":2000");
+            room->getThread()->delay(2000);
+
+            LogMessage log;
+            log.type = "#WelcomeToMiniScenario";
+            log.arg = objectName().mid(6);
+            log.arg2 = objectName();
+            room->sendLog(log);
+        }
+
         QList<ServerPlayer*> players = room->getAllPlayers();
         while(players.first()->getState() == "robot")
             players.append(players.takeFirst());
