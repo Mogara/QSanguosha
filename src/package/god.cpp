@@ -10,11 +10,12 @@ GongxinCard::GongxinCard(){
 }
 
 bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty(); 
+    return targets.isEmpty() && to_select != Self; 
 }
 
 void GongxinCard::onEffect(const CardEffectStruct &effect) const{
-    effect.from->getRoom()->doGongxin(effect.from, effect.to);
+    if (!effect.to->isKongcheng())
+        effect.from->getRoom()->doGongxin(effect.from, effect.to);
 }
 
 class Wuhun: public TriggerSkill{
@@ -146,11 +147,12 @@ public:
         while(!card_ids.isEmpty()){
             int card_id = room->askForAG(shenlvmeng, card_ids, false, "shelie");
             card_ids.removeOne(card_id);
-            room->takeAG(shenlvmeng, card_id);
-
             // throw the rest cards that matches the same suit
             const Card *card = Sanguosha->getCard(card_id);
             Card::Suit suit = card->getSuit();
+
+            room->takeAG(shenlvmeng, card_id);
+
             QMutableListIterator<int> itor(card_ids);
             while(itor.hasNext()){
                 const Card *c = Sanguosha->getCard(itor.next());
