@@ -1,5 +1,6 @@
 #include "scenario.h"
 #include "skill.h"
+#include "maneuvering.h"
 #include "guandu-scenario.h"
 #include "clientplayer.h"
 #include "client.h"
@@ -228,7 +229,14 @@ public:
                             break;
                         }
 
-                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::PlaceDelayedTrick, true);
+                        const Card *originalCard = Sanguosha->getCard(card_id);
+                        SupplyShortage *shortage = new SupplyShortage(originalCard->getSuit(), originalCard->getNumber());
+                        shortage->setSkillName("duanliang");
+                        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+                        card->takeOver(shortage);
+                        room->broadcastUpdateCard(room->getPlayers(), card->getId(), card);
+                        room->moveCardTo(card, to, Player::PlaceDelayedTrick, true);
+                        shortage->deleteLater();
                     }
                 }
 
