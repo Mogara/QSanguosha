@@ -1182,14 +1182,14 @@ void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 
     if(target==zhonghui)
-        room->broadcastSkillInvoke(objectName(),1);
+        room->broadcastSkillInvoke("paiyi", 1);
     else
-        room->broadcastSkillInvoke(objectName(),2);
+        room->broadcastSkillInvoke("paiyi", 2);
 
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(),
         target->objectName(), "paiyi", QString());
     room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
-    room->drawCards(target, 2,"paiyi");
+    room->drawCards(target, 2, "paiyi");
     if(target->getHandcardNum() > zhonghui->getHandcardNum()){
         DamageStruct damage;
         damage.card = NULL;
