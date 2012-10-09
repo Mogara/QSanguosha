@@ -1348,6 +1348,7 @@ public:
             foreach (ServerPlayer *p, room->getOtherPlayers(xiahou))
                 if (xiahou->canSlash(p, NULL, false))
                     targets << p;
+            targets << xiahou;
             QString choice;
             if (targets.isEmpty())
                 choice = "discard";

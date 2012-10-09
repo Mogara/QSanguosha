@@ -1,6 +1,5 @@
 setPile:44,43,42,41,40,39,38,37,36,34,33
-general:select role:lord starter:true singleTurn:rebel draw:0 equip:61 hand:73 
-general:shencaocao role:rebel hp:1 draw:0 hand:27,16 
-general:gongsunzan role:rebel hp:1 draw:0 hand:35,0 
+general:select role:lord starter:true endedByPile:rebel singleTurn:rebel draw:0 equip:61 hand:73 
 general:shenguanyu role:rebel hp:1 draw:0 
-extraOptions:gameOverIfExtraCardDrawn:rebel
+general:gongsunzan role:rebel hp:1 draw:0 hand:35,0 
+general:shencaocao role:rebel hp:1 draw:0 hand:27,16 

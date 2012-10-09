@@ -1,6 +1,6 @@
 
 setPile:19,17,15,13,12,11,10,9,45,50,49,48,47,46,8,7,53,83,82
-general:guanyu role:renegade starter:true maxhp:4 hp:1 singleTurn:rebel draw:0 equip:60 hand:80,81 
+general:guanyu role:renegade starter:true maxhp:4 hp:1 endedByPile:rebel singleTurn:rebel draw:0 equip:60 hand:80,81 
 general:zhenji role:loyalist maxhp:3 hp:1 draw:0 equip:62 
 general:caocao role:lord maxhp:5 hp:3 draw:0 equip:61 
-extraOptions:gameOverIfExtraCardDrawn:rebel
+

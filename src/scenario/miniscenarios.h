@@ -9,7 +9,6 @@ class MiniSceneRule : public ScenarioRule
 {
     Q_OBJECT
 public:
-    static const char* S_EXTRA_OPTION_LOSE_ON_DRAWPILE_DRAIN;
     static const char* S_EXTRA_OPTION_RANDOM_ROLES;
 
     MiniSceneRule(Scenario *scenario);

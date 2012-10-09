@@ -1,4 +1,71 @@
--- sgs.ai_skill_invoke.qiaobian = true
+local function card_for_qiaobian(self, who, return_prompt)
+	local card, target
+	if self:isFriend(who) then
+		local judges = who:getJudgingArea()
+		if not judges:isEmpty() then
+			for _, judge in sgs.qlist(judges) do
+				card = sgs.Sanguosha:getCard(judge:getEffectiveId())
+				for _, enemy in ipairs(self.enemies) do
+					if not enemy:containsTrick(judge:objectName()) and not self.room:isProhibited(self.player, enemy, judge) then
+						target = enemy
+						break
+					end
+				end
+				if target then break end
+			end
+		end
+
+		local equips = who:getCards("e")
+		if not target and not equips:isEmpty() and self:hasSkills(sgs.lose_equip_skill, who) then
+			for _, equip in sgs.qlist(equips) do
+				if equip:isKindOf("OffensiveHorse") then card = equip break
+				elseif equip:isKindOf("DefensiveHorse") then card = equip break
+				elseif equip:isKindOf("Weapon") then card = equip break
+				elseif equip:isKindOf("Armor") then card = equip break
+				end
+			end
+
+			if card then
+				for _, friend in ipairs(self.friends) do
+					if friend == who then
+					elseif friend:getCards("e"):isEmpty() or not self:getSameEquip(card, friend) then
+						target = friend
+						break
+					end
+				end
+			end
+		end
+	else
+		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():isKindOf("GaleShell")) then return nil end
+		local card_id = self:askForCardChosen(who, "e", "snatch")
+		if card_id >= 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
+		local targets = {}
+		if card then
+			for _, friend in ipairs(self.friends) do
+				if friend:getCards("e"):isEmpty() or not self:getSameEquip(card, friend) then
+					table.insert(targets, friend)
+					break
+				end
+			end
+		end
+		
+		if #targets > 0 then
+			if card:isKindOf("Weapon") or card:isKindOf("OffensiveHorse") then
+				self:sort(targets, "threat")
+				target = targets[#targets]
+			else
+				self:sort(targets,"defense")
+				target = targets[1]
+			end
+		end
+	end
+
+	if return_prompt == "card" then return card
+	elseif return_prompt == "target" then return target
+	else
+		return (card and target)
+	end
+end
 
 sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, include_equip)
 	local to_discard = {}
@@ -100,75 +167,6 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 	end
 
 	return {}
-end
-
-local function card_for_qiaobian(self, who, return_prompt)
-	local card, target
-	if self:isFriend(who) then
-		local judges = who:getJudgingArea()
-		if not judges:isEmpty() then
-			for _, judge in sgs.qlist(judges) do
-				card = sgs.Sanguosha:getCard(judge:getEffectiveId())
-				for _, enemy in ipairs(self.enemies) do
-					if not enemy:containsTrick(judge:objectName()) and not self.room:isProhibited(self.player, enemy, judge) then
-						target = enemy
-						break
-					end
-				end
-				if target then break end
-			end
-		end
-
-		local equips = who:getCards("e")
-		if not target and not equips:isEmpty() and self:hasSkills(sgs.lose_equip_skill, who) then
-			for _, equip in sgs.qlist(equips) do
-				if equip:isKindOf("OffensiveHorse") then card = equip break
-				elseif equip:isKindOf("DefensiveHorse") then card = equip break
-				elseif equip:isKindOf("Weapon") then card = equip break
-				elseif equip:isKindOf("Armor") then card = equip break
-				end
-			end
-
-			if card then
-				for _, friend in ipairs(self.friends) do
-					if friend == who then
-					elseif friend:getCards("e"):isEmpty() or not self:getSameEquip(card, friend) then
-						target = friend
-						break
-					end
-				end
-			end
-		end
-	else
-		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():isKindOf("GaleShell")) then return nil end
-		local card_id = self:askForCardChosen(who, "e", "snatch")
-		if card_id >= 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
-		local targets = {}
-		if card then
-			for _, friend in ipairs(self.friends) do
-				if friend:getCards("e"):isEmpty() or not self:getSameEquip(card, friend) then
-					table.insert(targets, friend)
-					break
-				end
-			end
-		end
-		
-		if #targets > 0 then
-			if card:isKindOf("Weapon") or card:isKindOf("OffensiveHorse") then
-				self:sort(targets, "threat")
-				target = targets[#targets]
-			else
-				self:sort(targets,"defense")
-				target = targets[1]
-			end
-		end
-	end
-
-	if return_prompt == "card" then return card
-	elseif return_prompt == "target" then return target
-	else
-		return (card and target)
-	end
 end
 
 sgs.ai_skill_cardchosen.qiaobian = function(self, who, flags)

@@ -1,6 +1,5 @@
 
 setPile:102,101,100,99,98,97,96,95,54,150,107,25
-general:luxun general2:select role:lord beforeNext:renegade draw:0 equip:66 hand:138,142,141 
+general:luxun general2:select role:lord endedByPile:renegade beforeNext:renegade draw:0 equip:66 hand:138,142,141 
 general:caocao role:loyalist draw:0 hand:1,0 
 general:daqiao general2:lvmeng role:renegade starter:true maxhp:3 draw:0 hand:21,22,23,24,25,26
-extraOptions:gameOverIfExtraCardDrawn:renegade

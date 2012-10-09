@@ -28,9 +28,12 @@ public:
                         choice = "draw";
                     else
                         choice = room->askForChoice(player, objectName(), "draw+discard");
-                    if (choice == "draw")
+                    if (choice == "draw") {
+                        room->broadcastSkillInvoke(objectName(), 1);
                         player->drawCards(1);
+                    }
                     else {
+                        room->broadcastSkillInvoke(objectName(), 2);
                         int disc = room->askForCardChosen(player, p, "he", objectName());
                         room->throwCard(disc, p, player);
                     }
@@ -45,6 +48,7 @@ public:
             if (!effect.from->isAlive() || !effect.to->isAlive() || effect.from->isNude())
                 return false;
             int disc = room->askForCardChosen(effect.to, effect.from, "he", objectName());
+            room->broadcastSkillInvoke(objectName(), 3);
             room->throwCard(disc, effect.from, effect.to);
             room->setPlayerMark(effect.to, objectName() + effect.slash->getEffectIdString(),
                                 effect.to->getMark(objectName() + effect.slash->getEffectIdString()) - 1);
@@ -100,7 +104,7 @@ public:
                     maxs << p;
                 if (maxs.size() > 1)
                     return false;
-		    }
+            }
             ServerPlayer *mosthp = maxs.first();
             if (room->askForSkillInvoke(mosthp, objectName())) {
                 QSet<const Card *> jilei_cards;

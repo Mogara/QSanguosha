@@ -1,7 +1,6 @@
 
 setPile:104,108,61,58,57,56,55,54,53,60,59,125,130,52,4
-general:select role:rebel maxhp:3 hp:3 starter:true singleTurn:lord+loyalist draw:0 hand:136,115 judge:103 
+general:select role:rebel maxhp:3 hp:3 starter:true endedByPile:lord+loyalist singleTurn:lord+loyalist draw:0 hand:136,115 judge:103 
 general:zhenji role:loyalist chained:true draw:0 hand:3 
 general:nosxushu role:lord chained:true draw:0 equip:122 hand:33 
 general:sp_caiwenji role:renegade chained:true draw:0 equip:109 hand:22
-extraOptions:gameOverIfExtraCardDrawn:lord+loyalist 
