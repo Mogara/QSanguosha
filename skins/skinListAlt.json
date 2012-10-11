@@ -1,0 +1,14 @@
+{
+"default":
+{
+"roomLayoutConfigFile": "skins/defaultSkinAlt.layout.json",
+"roomImageConfigFile": "skins/defaultSkin.image.json",
+"roomAudioConfigFile": "skins/defaultSkin.audio.json",
+"roomAnimationConfigFile": "skins/defaultSkin.animation.json"
+},
+"compact":
+{
+"roomLayoutConfigFile": "skins/compactSkinAlt.layout.json",
+"roomImageConfigFile": "skins/compactSkin.image.json"
+}
+}
