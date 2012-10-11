@@ -134,7 +134,7 @@
     "equipSuitArea": [128, 5, 21, 17],
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
-    "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
+    "equipFont": ["simli", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
     "equipPointFont": ["arial", [14, 14, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
     "delayedTrickFirstRegion": [3, 3, 28, 28],
     "delayedTrickStep": [28, 0],

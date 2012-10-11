@@ -44,7 +44,7 @@
     "secondaryAvatarArea": [82, 36, 42, 36],
     "avatarNameArea": [4, 24, 40, 50],
     "circleArea": [1, 1, 1, 1],
-    "avatarNameFont": ["@SimLi", [16, 16, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "avatarNameFont": ["@simli", [16, 16, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     //"smallAvatarNameFont": ["LiSu", 10, 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     "kingdomIconArea": [2, 0, 28, 28],
     "kingdomMaskArea": [1, 9, 36, 98],
@@ -60,7 +60,7 @@
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["SimSun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
     "skillNameArea": [0, 25, 131, 50],
-    "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
+    "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [133, 10]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [32, 26],
@@ -75,7 +75,7 @@
     "drankMaskColor": [250, 0, 0, 115],
     "deathEffectColor": [50, 50, 50, 255],
     "extraSkillArea": [26, 67, 48, 17],
-    "extraSkillFont": ["SimLi", [14, 14, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
+    "extraSkillFont": ["simli", [14, 14, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [26, 64, 48, 17]
 }
 }
