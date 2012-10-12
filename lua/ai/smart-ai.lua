@@ -64,7 +64,14 @@ sgs.ai_choicemade_filter = 	{
 	playerChosen =			{}
 }
 
+sgs.current_state = 1
+
 function setInitialTables()
+	sgs.agents =   {}
+	sgs.env_actions = {}
+
+	--------------------------------------
+
 	sgs.current_mode_players = 	{loyalist = 0, rebel = 0, renegade = 0}
 	sgs.ai_type_name = 			{"Skill", "Basic", "Trick", "Equip"}
 	sgs.target = 				{loyalist = nil, rebel = nil, renegade = nil } -- obsolete
@@ -80,6 +87,8 @@ function setInitialTables()
 	sgs.exclusive_skill = 		"huilei|duanchang|enyuan|wuhun|buqu|yiji|ganglie|guixin|jieming|miji"
 	sgs.cardneed_skill =        "paoxiao|tianyi|xianzhen|shuangxiong|jizhi|guose|duanliang|qixi|qingnang|" ..
 								"jieyin|renjie|zhiheng|rende|jujian|guicai|guidao|jilve|longhun|wusheng|longdan"
+								
+	sgs.offensive_skill =       "qiangxi|jizhi|qixi|duanliang|guose|dimeng|lihun|tuxi"
 	sgs.drawpeach_skill =       "tuxi|qiaobian"
 	sgs.recover_skill =         "rende|kuanggu|zaiqi|jieyin|qingnang|yinghun"
 	
@@ -93,6 +102,158 @@ function setInitialTables()
 	end
 	
 end
+
+--@@for global function
+
+function isWeak(player)
+	local hcard = player:getHandcardNum()
+	if player:hasSkill("longhun") then hcard = player:getCards("he"):length() end
+	return ((player:getHp() <= 2 and hcard <= 2) or (player:getHp() <= 1 and not (player:hasSkill("longhun") and hcard > 2))) and not player:hasSkill("buqu")
+end
+
+------------------------
+
+--record all actions for the environment
+function SmartAI:recordAction(_from, _to, _card, _isGood)
+	local action_table = 
+	{
+		from = _from,
+		to = _to,
+		card = _card,
+		isGood = _isGood
+	}
+	table.insert(sgs.env_actions, action_table)
+	
+	if sgs.agents[_from:objectName()] == nil then sgs.agents[_from:objectName()] = { agentActions = {}, agentFriends = {}, agentEnemies = {} } end
+	table.insert(sgs.agents[_from:objectName()].agentActions, action_table)
+	
+	sgs.state = sgs.current_state + 1
+end
+
+function SmartAI:getActionByState(index, actions)
+	if actions then
+		if #actions < index or #actions > index then return nil else return actions[index] end
+	end
+	
+	if #sgs.env_actions < index or #sgs.env_actions > index then return nil else
+		return sgs.env_actions[index]
+	end
+end
+
+function SmartAI:getLatestActions(n, actions)
+	local ac = actions or sgs.env_actions
+	local x = 0
+	local actions_table = {}
+	for i=n, 1, -1 do
+		if #ac - x <= 0 then break end
+		
+		table.insert(actions_table, ac[#ac-x])
+		x = x + 1
+	end
+	
+	return actions_table
+end
+
+--@for MAS agent
+function SmartAI:updateAgent(action, object_name)
+    object_name = object_name or self.player:objectName()
+	
+	self:updateFriendsNEnemies(action)
+end
+
+function SmartAI:getAgentActions(object_name)
+	return sgs.agents[object_name].agentActions
+end
+
+function SmartAI:getAgentFriends(object_name)
+	return sgs.agents[object_name].agentFriends
+end
+
+function SmartAI:getAgentEnemies(object_name)
+	return sgs.agents[object_name].agentEnemies
+end
+
+--@@todo:get power value of agent, maybe use all the actions the env recorded.
+function SmartAI:getAgentState(agent_plyer)
+	
+	--@@todo:make formula for the calulation of state evaluation
+	return sgs.getOffense(agent_player)/2 + sgs.getDefense(agent_player) + sgs.getValue(agent_player)/3
+end
+
+function SmartAI:updateFriendsNEnemies(action)
+	local value = self:getActionValue()
+	
+	for to in ipairs(action.to) do
+		local friends = self:getAgentFriends(to:objectName())
+		local enemies = self:getAgentEnemies(to:objectName())
+		
+		
+		if action.isGood then 
+			for _, friend in ipairs(friends) do
+				if action.from:objectName() == friend.objectName then 
+					friend.value = friend.value + value
+					break
+				end
+			end
+			for _, enemy in ipairs(enemies) do
+				if action.from:objectName() == enemy.objectName then
+					enemy.value = enemy.value - value
+					if enemy.value < 0 then
+						table.remove(sgs.agents[to:objectName()].agentEnemies, enemy)
+						table.insert(sgs.agents[to:objectName()].agentFriends, enemy)
+					end
+					break
+				end
+			end
+		
+			if #friends == 0 and #enemies == 0 then
+				local friend_struct = { objectName = action.from:objectName(), value = value }
+				table.insert(sgs.agents[to:objectName()].agentFriends, friend_struct)
+			end
+		else			
+			for _, enemy in ipairs(enemies) do
+				if action.from:objectName() == enemy.objectName then
+					enemy.value = enemy.value + value
+					break
+				end
+			end
+				
+			for _, friend in ipairs(friends) do
+				if action.from:objectName() == friend.objectName then 
+					friend.value = friend.value - value
+					if friend.value < 0 then
+						table.remove(sgs.agents[to:objectName()].agentFriends, friend)
+						table.insert(sgs.agents[to:objectName()].agentEnemies, friend)
+					end
+					break
+				end
+			end
+			
+			if #friends == 0 and #enemies == 0 then
+				local enemy_struct = { objectName = action.from:objectName(), value = value }
+				table.insert(sgs.agents[to:objectName()].agentEnemies, enemy_struct)
+			end
+		end
+	end
+end
+
+-----------------
+
+--@for MAS environment
+function SmartAI:getEnvironmentValue(player)
+
+	return
+end
+
+--action values can present the offensive power and defensive power by analysing all the actions in the environment
+function SmartAI:getActionValue(action)
+	local card_value = math.abs(sgs.ai_card_intention[action.card:className()])
+	
+	--@@todo: get the card use frequency to do inverse frequency
+	return card_value
+end
+-----------------
+	
 
 function SmartAI:initialize(player)
 	self.player = player
@@ -154,6 +315,17 @@ function SmartAI:initialize(player)
 		end
 	end
 	
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.room:getLord())) do
+		local mate_struct = { objectName = self.room:getLord():objectName(), value = 99999 }
+		sgs.agents[p:objectName()] = { agentActions = {}, agentFriends = {}, agentEnemies = {}}
+		
+		if p:getRole() == "loyalist" then 
+			table.insert(sgs.agents[p:objectName()].agentFriends, mate_struct)
+		elseif p:getRole() == "rebel" then
+			table.insert(sgs.agents[p:objectName()].agentEnemies, mate_struct)
+		end
+	end
+	
 	self:updateAlivePlayerRoles()
 	self:updatePlayers()
 end
@@ -161,6 +333,15 @@ end
 function sgs.getValue(player)
 	if not player then global_room:writeToConsole(debug.traceback()) end
 	return player:getHp() * 2 + player:getHandcardNum()
+end
+
+function sgs.getOffense(player)
+	local offense = 1
+	if player:getWeapon() and player:getHandcardNum() > 3 then offense = offense + 1.5 end
+	
+	if self:hasSkills(sgs.offensive_skill, player) and not isWeak(player) then offense = offense + 3 end
+	
+	return offense
 end
 
 function sgs.getDefense(player)
@@ -2697,6 +2878,8 @@ function SmartAI:getTurnUse()
 				if card:isKindOf("Weapon") then
 					self.predictedRange = sgs.weapon_range[card:getClassName()]
 					self.weaponUsed = true
+				else
+					self.predictedRange = 1
 				end
 				if card:isKindOf("OffensiveHorse") then self.predictNewHorse = true end
 				if card:objectName() == "Crossbow" then slashAvail = 100 end
@@ -2725,6 +2908,8 @@ function SmartAI:activate(use)
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
 
 			if use:isValid(nil) then
+				
+				
 				self.toUse = nil
 				return
 			end
@@ -2740,9 +2925,7 @@ end
 
 function SmartAI:isWeak(player)
 	player = player or self.player
-	local hcard = player:getHandcardNum()
-	if player:hasSkill("longhun") then hcard = player:getCards("he"):length() end
-	return ((player:getHp() <= 2 and hcard <= 2) or (player:getHp() <= 1 and not (player:hasSkill("longhun") and hcard > 2))) and not player:hasSkill("buqu")
+	return isWeak(player)
 end
 
 function SmartAI:useCardByClassName(card, use)
