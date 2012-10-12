@@ -175,9 +175,11 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     // role prompt
     QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
-    if(lord_name.size())role_label->setText(tr("The lord has chosen %1. %2")
+    QLabel *seat_label = new QLabel(tr("Your seat is %1").arg(Self->getSeat()));
+    if(lord_name.size())role_label->setText(tr("The lord has chosen %1. %2, %3.")
                                             .arg(Sanguosha->translate(lord_name))
-                                            .arg(role_label->text()));
+                                            .arg(role_label->text())
+                                            .arg(seat_label->text()));
     dialog_layout->addWidget(role_label);
 
     // progress bar & free choose button

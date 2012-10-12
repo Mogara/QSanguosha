@@ -387,8 +387,17 @@
     </message>
     <message>
         <location filename="../../src/dialog/choosegeneraldialog.cpp" line="178"/>
+        <source>Your seat is %1</source>
+        <translation>您的座次是 %1 </translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/choosegeneraldialog.cpp" line="179"/>
+        <source>The lord has chosen %1. %2, %3.</source>
+        <translation>主公选择了 %1，%2，%3。</translation>
+    </message>
+    <message>
         <source>The lord has chosen %1. %2</source>
-        <translation>主公选择了 %1，%2</translation>
+        <translation type="obsolete">主公选择了 %1，%2</translation>
     </message>
     <message>
         <location filename="../../src/dialog/choosegeneraldialog.cpp" line="199"/>
