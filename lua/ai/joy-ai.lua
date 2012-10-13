@@ -11,9 +11,13 @@ function SmartAI:useCardGaleShell(card, use)
 			if use.to then
 				use.to:append(enemy)
 			end
+			
+			sgs.actionIsGoodwill = false
 			return
 		end
 	end
+	
+	return
 end
 
 sgs.ai_armor_value["GaleShell"] = function()
