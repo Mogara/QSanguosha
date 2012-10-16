@@ -383,7 +383,7 @@
     <message>
         <location filename="../../src/dialog/choosegeneraldialog.cpp" line="177"/>
         <source>Your role is %1</source>
-        <translation>您的角色是 %1</translation>
+        <translation>您的身份是 %1</translation>
     </message>
     <message>
         <location filename="../../src/dialog/choosegeneraldialog.cpp" line="178"/>
@@ -411,7 +411,7 @@
     <message>
         <location filename="../../src/client/client.cpp" line="621"/>
         <source>Your role is %1</source>
-        <translation>您的角色是 %1</translation>
+        <translation>您的身份是 %1</translation>
     </message>
     <message>
         <location filename="../../src/client/client.cpp" line="623"/>
@@ -1065,7 +1065,7 @@
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="157"/>
         <source>RandomRoles</source>
-        <translation>所有角色随机位置</translation>
+        <translation>所有身份随机位置</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="159"/>
@@ -1273,7 +1273,7 @@
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="1402"/>
         <source>Two many lords in the game</source>
-        <translation>主公角色设置过多</translation>
+        <translation>主公身份设置过多</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="1411"/>
@@ -3262,7 +3262,7 @@
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="2953"/>
         <source>Role</source>
-        <translation>角色</translation>
+        <translation>身份</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="2955"/>
