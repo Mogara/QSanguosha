@@ -383,12 +383,12 @@
     <message>
         <location filename="src/dialog/choosegeneraldialog.cpp" line="177"/>
         <source>Your role is %1</source>
-        <translation>您处于 %1 号位</translation>
+        <translation>您的身份是 %1 </translation>
     </message>
     <message>
         <location filename="src/dialog/choosegeneraldialog.cpp" line="178"/>
         <source>Your seat is %1</source>
-        <translation>您的座次是 %1 </translation>
+        <translation>您处于 %1 号位</translation>
     </message>
     <message>
         <location filename="src/dialog/choosegeneraldialog.cpp" line="181"/>
