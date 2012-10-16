@@ -383,7 +383,7 @@
     <message>
         <location filename="src/dialog/choosegeneraldialog.cpp" line="177"/>
         <source>Your role is %1</source>
-        <translation>您的角色是 %1</translation>
+        <translation>您处于 %1 号位</translation>
     </message>
     <message>
         <location filename="src/dialog/choosegeneraldialog.cpp" line="178"/>
@@ -391,7 +391,7 @@
         <translation>您的座次是 %1 </translation>
     </message>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="179"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="181"/>
         <source>The lord has chosen %1. %2, %3.</source>
         <translation>主公选择了 %1，%2，%3。</translation>
     </message>
@@ -400,7 +400,7 @@
         <translation type="obsolete">主公选择了 %1，%2</translation>
     </message>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="201"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="203"/>
         <source>Free choose ...</source>
         <translation>自由选将 ...</translation>
     </message>
@@ -1575,17 +1575,17 @@
 <context>
     <name>FreeChooseDialog</name>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="241"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="243"/>
         <source>Free choose generals</source>
         <translation>自由选择武将</translation>
     </message>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="270"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="272"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="273"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="275"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
