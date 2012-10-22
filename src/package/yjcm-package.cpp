@@ -735,44 +735,48 @@ MingceCard::MingceCard(){
 }
 
 void MingceCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->obtainCard(this);
-
     Room *room = effect.to->getRoom();
-    QString choice;
     bool can_use = false;
+    QList <ServerPlayer *> targets;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
         if (effect.to->canSlash(p)){
+            targets << p;
             can_use = true;
-            break;
         }
     }
-    if (can_use){
-        choice = room->askForChoice(effect.to, "mingce", "use+draw");
+
+    ServerPlayer *target;
+    QStringList choicelist;
+    choicelist << "draw";
+    if (can_use && effect.from->isAlive()){
+        target = room->askForPlayerChosen(effect.from, targets, "mingce");
+
+        LogMessage log;
+        log.type = "#CollateralSlash";
+        log.from = effect.from;
+        log.to << target;
+        room->sendLog(log);
+
+        choicelist << "use";
     }
+
+    effect.to->obtainCard(this);
+	QString choice;
+	if (choicelist.length() > 1)
+        choice = room->askForChoice(effect.to, "mingce", choicelist.join("+"));
     else
-        choice = "draw";
+	    choice = choicelist.first();    
 
-    if(choice == "use"){
-        QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), targets;
-        foreach(ServerPlayer *player, players){
-            if(effect.to->canSlash(player))
-                targets << player;
-        }
-
-        if(!targets.isEmpty()){
-            ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "mingce");
-
-            Slash *slash = new Slash(Card::NoSuit, 0);
-            slash->setSkillName("mingce");
-            CardUseStruct card_use;
-            card_use.from = effect.to;
-            card_use.to << target;
-            card_use.card = slash;
-            room->useCard(card_use, false);
-        }
-    }else if(choice == "draw"){
-        room->broadcastSkillInvoke("mingce", 1);
-        effect.to->drawCards(1, true);
+    if (choice == "use") {
+        Slash *slash = new Slash(Card::NoSuitNoColor, 0);
+        slash->setSkillName("mingce");
+        CardUseStruct card_use;
+        card_use.from = effect.to;
+        card_use.to << target;
+        card_use.card = slash;
+        room->useCard(card_use, false);
+    } else if(choice == "draw") {
+        effect.to->drawCards(1);
     }
 }
 
@@ -800,9 +804,9 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         if (card->isKindOf("Slash"))
-            return 2;
+            return -2;
         else
-            return 0;
+            return -1;
     }
 };
 

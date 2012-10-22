@@ -55,7 +55,9 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
         if(index == 0)
             return;
 
-        if(index == -1 && skill->getSources().isEmpty()){
+        if((index == -1 && (skill->getSources().isEmpty()
+                           || skill->objectName() == "hongyan"))
+           || index == -2){
             if(card->getCommonEffectName().isNull())
                 broadcastSkillInvoke(card->objectName());
             else room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
