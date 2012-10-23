@@ -768,7 +768,7 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
 	    choice = choicelist.first();    
 
     if (choice == "use") {
-        Slash *slash = new Slash(Card::NoSuitNoColor, 0);
+        Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName("mingce");
         CardUseStruct card_use;
         card_use.from = effect.to;
