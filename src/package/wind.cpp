@@ -545,7 +545,7 @@ public:
                 int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
                 int n = need - buqu.length();
                 if(n > 0){
-                    QList<int> card_ids = room->getNCards(n);
+                    QList<int> card_ids = room->getNCards(n, false);
                     zhoutai->addToPile("buqu", card_ids);
                 }
                 const QList<int> &buqunew = zhoutai->getPile("buqu");
