@@ -982,9 +982,10 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             // randomly choose a card
             QList<const Card *> cards = who->getCards(flags);
             int r = qrand() % cards.length();
-            return cards.at(r)->getId();
+            card_id = cards.at(r)->getId();
+        } else {
+            card_id = clientReply.asInt();
         }
-        card_id = clientReply.asInt();
     }
 
     if(card_id == -1)
