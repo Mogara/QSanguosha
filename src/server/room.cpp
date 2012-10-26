@@ -961,13 +961,21 @@ bool Room::_askForNullification(const TrickCard *trick, ServerPlayer *from, Serv
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
-    //@todo: whoever wrote this had better put a explantory note here
-    if(!who->hasFlag("dongchaee") && who != player){
-        if(flags == "h" || (flags == "he" && !who->hasEquip()))
-            return who->getRandomHandCardId();
-    }
 
     int card_id;
+
+    //@todo: whoever wrote this had better put a explantory note here
+    if(!who->hasFlag("dongchaee") && who != player){
+        if(flags == "h" || (flags == "he" && !who->hasEquip())){
+            card_id = who->getRandomHandCardId();
+
+            QVariant decisionData = QVariant::fromValue("cardChosen:"+reason+":"+QString::number(card_id));
+            thread->trigger(ChoiceMade, this, player, decisionData);
+
+            return card_id;
+        }
+    }
+
 
     AI *ai = player->getAI();
     if(ai){
