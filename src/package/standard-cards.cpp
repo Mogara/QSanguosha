@@ -39,6 +39,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.from->hasFlag("slashTargetFix"))
     {
         room->setPlayerFlag(card_use.from, "-slashTargetFix");
+        room->setPlayerFlag(card_use.from, "-slashTargetFixToOne");
         foreach(ServerPlayer *target, room->getAlivePlayers())
             if(target->hasFlag("SlashAssignee")){
                 room->setPlayerFlag(target, "-SlashAssignee");

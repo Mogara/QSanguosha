@@ -1171,6 +1171,8 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
 
     //The realization of this function in the Slash::onUse and Slash::targetFilter.
     setPlayerFlag(slasher, "slashTargetFix");
+    if (victims.length() == 1)
+        setPlayerFlag(slasher, "slashTargetFixToOne");
     foreach(ServerPlayer *victim, victims)
     {
         setPlayerFlag(victim, "SlashAssignee");
@@ -1196,6 +1198,7 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
 
     if(!use){
         setPlayerFlag(slasher, "-slashTargetFix");
+        setPlayerFlag(slasher, "-slashTargetFixToOne");
         foreach(ServerPlayer *victim, victims)
         {
             setPlayerFlag(victim, "-SlashAssignee");

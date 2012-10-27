@@ -56,21 +56,172 @@ sgs.ai_skill_choice.jilei = function(self, choices)
 	end
 end
 
+local function yuanhu_validate(self, equip_type, is_handcard)
+	local is_SilverLion = false
+	if equip_type == "SilverLion" then
+		equip_type = "Armor"
+		is_SilverLion = true
+	end
+	local targets
+	if is_handcard then targets = self.friends else targets = self.friends_noself end
+	if equip_type ~= "Weapon" then
+		if equip_type == "DefensiveHorse" or equip_type == "OffensiveHorse" then self:sort(targets, "hp") end
+		if equip_type == "Armor" then self:sort(targets, "handcard") end
+		if is_SilverLion then
+			for _, enemy in ipairs(self.enemies) do
+				if enemy:hasSkill("kongcheng") and enemy:isKongcheng()
+					and math.abs(self.player:getSeat() - enemy:getSeat()) >= self.room:alivePlayerCount() / 2.5 then
+					return enemy
+				end
+			end
+			for _, enemy in ipairs(self.enemies) do
+				if enemy:hasSkill("bazhen") or enemy:hasSkill("yizhong") then
+					return enemy
+				end
+			end
+		end
+		for _, friend in ipairs(targets) do
+			if not self:isEquip(equip_type, friend) then
+				if equip_type == "Armor" then
+					if not self:needKongcheng(friend) and not self:hasSkills("bazhen|yizhong", friend) then return friend end
+				else
+					if friend:isWounded() and not friend:hasSkill("longhun") then return friend end
+				end
+			end
+		end
+	else
+		for _, friend in ipairs(targets) do
+			if not self:isEquip(equip_type, friend) then
+				for _, aplayer in sgs.qlist(self.room:getAllPlayers()) do
+					if friend:distanceTo(aplayer) == 1 then
+						if self:isFriend(aplayer) and not friend:containsTrick("YanxiaoCard")
+							and (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")
+								or (friend:containsTrick("lightning") and self:hasWizard(self.enemies))) then
+							self.room:setPlayerFlag(aplayer, "YuanhuToChoose")
+							return friend
+						end
+					end
+				end
+				self:sort(self.enemies, "defense")
+				for _, enemy in ipairs(self.enemies) do
+					if friend:distanceTo(enemy) == 1 and not enemy:isNude() then
+						self.room:setPlayerFlag(enemy, "YuanhuToChoose")
+						return friend
+					end
+				end
+			end
+		end
+	end
+	return nil
+end
+
+sgs.ai_skill_use["@@yuanhu"] = function(self, prompt)
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+	if self:isEquip("SilverLion") and yuanhu_validate(self, "SilverLion", false) then
+		local player = yuanhu_validate(self, "SilverLion", false)
+		local card_id = self.player:getArmor():getEffectiveId()
+		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+	end
+	if self.player:getOffensiveHorse() and yuanhu_validate(self, "OffensiveHorse", false) then
+		local player = yuanhu_validate(self, "OffensiveHorse", false)
+		local card_id = self.player:getOffensiveHorse():getEffectiveId()
+		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+	end
+	if self.player:getWeapon() and yuanhu_validate(self, "Weapon", false) then
+		local player = yuanhu_validate(self, "Weapon", false)
+		local card_id = self.player:getWeapon():getEffectiveId()
+		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+	end
+	if self.player:getArmor() and self.player:getLostHp() <= 1 and self.player:getHandcardNum() >= 3
+		and yuanhu_validate(self, "Armor", false) then
+		local player = yuanhu_validate(self, "Weapon", false)
+		local card_id = self.player:getWeapon():getEffectiveId()
+		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+	end
+	for _, card in ipairs(cards) do
+		if card:isKindOf("DefensiveHorse") and yuanhu_validate(self, "DefensiveHorse", true) then
+			local player = yuanhu_validate(self, "DefensiveHorse", true)
+			local card_id = card:getEffectiveId()
+			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		end
+	end
+	for _, card in ipairs(cards) do
+		if card:isKindOf("OffensiveHorse") and yuanhu_validate(self, "OffensiveHorse", true) then
+			local player = yuanhu_validate(self, "OffensiveHorse", true)
+			local card_id = card:getEffectiveId()
+			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		end
+	end
+	for _, card in ipairs(cards) do
+		if card:isKindOf("Weapon") and yuanhu_validate(self, "Weapon", true) then
+			local player = yuanhu_validate(self, "Weapon", true)
+			local card_id = card:getEffectiveId()
+			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		end
+	end
+	for _, card in ipairs(cards) do
+		if card:isKindOf("SilverLion") and yuanhu_validate(self, "SilverLion", true) then
+			local player = yuanhu_validate(self, "SilverLion", true)
+			local card_id = card:getEffectiveId()
+			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		end
+		if card:isKindOf("Armor") and yuanhu_validate(self, "Armor", true) then
+			local player = yuanhu_validate(self, "Armor", true)
+			local card_id = card:getEffectiveId()
+			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		end
+	end
+end
+
+sgs.ai_skill_playerchosen.yuanhu = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	for _, p in ipairs(targets) do
+		if p:hasFlag("YuanhuToChoose") then 
+			self.room:setPlayerFlag(p, "-YuanhuToChoose")
+			return p 
+		end 
+	end
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		if p:hasFlag("YuanhuToChoose") then 
+			self.room:setPlayerFlag(p, "-YuanhuToChoose")
+		end 
+	end
+end
+
+sgs.ai_card_intention.YuanhuCard = -30
+
 sgs.ai_skill_invoke.chujia = function(self, data)
-	return self.room:getLord():getKingdom() == "shu"
+	local lord = self.room:getLord()
+	if lord:hasLordSkill("shichou") then
+		return self:isFriend(lord)
+	end
+	return lord:getKingdom() == "shu"
 end
 
 sgs.ai_chaofeng.sp_sunshangxiang = sgs.ai_chaofeng.sunshangxiang
 
 sgs.ai_skill_invoke.guixiang = function(self, data)
-	return self.room:getLord():getKingdom() == "wei"
+	local lord = self.room:getLord()
+	if lord:hasLordSkill("xueyi") then
+		return not self:isFriend(lord)
+	end
+	return lord:getKingdom() == "wei"
 end
 
 sgs.ai_chaofeng.sp_caiwenji = sgs.ai_chaofeng.caiwenji
 
 sgs.ai_skill_invoke.fanqun = function(self, data)
 	local lord = self.room:getLord()
-	return self:isFriend(lord) and lord:getKingdom() == "qun"
+	if lord:hasSkill("xueyi") then
+		return self:isFriend(lord) 
+	end
+	if lord:hasLordSkill("shichou") then
+		return not self:isFriend(lord)
+	end
+	
+	return lord:getKingdom() == "qun"
 end
 
 sgs.ai_chaofeng.sp_machao = sgs.ai_chaofeng.machao

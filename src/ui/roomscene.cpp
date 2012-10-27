@@ -472,10 +472,13 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         QString playerName = arg[1].asCString();
         QString newHeroName =  arg[2].asCString();
         bool isSecondaryHero = arg[3].asBool();
-        bool senLog = arg[4].asBool();
+        bool sendLog = arg[4].asBool();
         ClientPlayer *player = ClientInstance->getPlayer(playerName);
-        if(senLog)
+        if(sendLog)
             log_box->appendLog("#Transfigure", player->getGeneralName(), QStringList(), QString(), newHeroName);
+        /*if (player->getGeneralName() == "shenlvbu1" && newHeroName == "shenlvbu2"
+            && player->getMark("secondMode") > 0)
+            Sanguosha->playSystemAudioEffect("stagechange");*/
         if (player != Self) break;     
         const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
         const General* newHero = Sanguosha->getGeneral(newHeroName);
@@ -499,7 +502,6 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         break;
     }
 }
-     
 
 QGraphicsItem *RoomScene::createDashboardButtons(){
     QGraphicsItem *widget = new QGraphicsPixmapItem(
@@ -940,8 +942,7 @@ void RoomScene::updateTable()
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
-    int i;
-    for(i=0; i<photos.length(); i++){
+    for (int i = 0; i < photos.length(); i++) {
         Photo *photo = photos[i];
         if(photo->getPlayer() == NULL){
             photo->setPlayer(player);
@@ -1121,8 +1122,31 @@ void RoomScene::enableTargets(const Card *card) {
 
     updateTargetsEnablity(card);
 
-    if(Config.EnableAutoTarget)
-        selectNextTarget(false);
+    if (selected_targets.isEmpty()) {
+        if (card->isKindOf("Slash") && Self->hasFlag("slashTargetFixToOne")) {
+            unselectAllTargets();
+            foreach(Photo *photo, photos){
+                if(photo->flags() & QGraphicsItem::ItemIsSelectable)
+                    if(!photo->isSelected()){
+                        photo->setSelected(true);
+                        break;
+                    }
+            }
+        } else if (Config.EnableAutoTarget) {
+            if (!card->targetsFeasible(selected_targets, Self)) {
+                unselectAllTargets();
+                int count = 0;
+                foreach(Photo *photo, photos)
+                    if(photo->flags() & QGraphicsItem::ItemIsSelectable)
+                        count++;
+                if (dashboard->flags() & QGraphicsItem::ItemIsSelectable)
+                    count++;
+                if (count == 1) {
+                    selectNextTarget(false);
+                }
+            }
+        }
+    }
 
     ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
 }
@@ -1267,9 +1291,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_8:
     case Qt::Key_9:{
             int seat = event->key() - Qt::Key_0 + 1;
-            int i;
-            for(i=0; i<photos.length(); i++){
-                if(photos.at(i)->getPlayer()->getSeat() == seat){
+            for (int i = 0; i < photos.length(); i++) {
+                if (photos.at(i)->getPlayer()->getSeat() == seat) {
                     selectTarget(i, control_is_down);
                     break;
                 }
@@ -1739,8 +1762,21 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
     if (move.from_place == Player::DrawPile && move.to_place == Player::PlaceHand)
     {
         QString to_general = move.to->getGeneralName();
-        log_box->appendLog("#DrawNCards", to_general, QStringList(), QString(),
-                            QString::number(move.card_ids.length()));
+        QString card_str;
+        if (move.to == Self) {
+            foreach(int card_id, move.card_ids){
+                if(card_str.isEmpty())
+                    card_str = QString::number(card_id);
+                else
+                    card_str += "+" + QString::number(card_id);
+            }
+            log_box->appendLog("$DrawCards", to_general, QStringList(), card_str,
+                               QString::number(move.card_ids.length()));
+        }
+        else {
+            log_box->appendLog("#DrawNCards", to_general, QStringList(), QString(),
+                               QString::number(move.card_ids.length()));
+        }
     }
     if(move.from_place == Player::PlaceTable && move.to_place == Player::PlaceHand)
     {
@@ -1856,7 +1892,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
         connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
         connect(btn, SIGNAL(skill_deactivated()), dashboard, SLOT(skillButtonDeactivated()));
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
-        if (btn->getViewAsSkill()->objectName() == "#mizhao")
+        if (btn->getViewAsSkill()->objectName() == "mizhao")
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
     }
     

@@ -129,6 +129,8 @@ public:
 
 MizhaoCard::MizhaoCard(){
     will_throw = false;
+    mute = true;
+    once = true;
 }
 
 bool MizhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -138,6 +140,11 @@ bool MizhaoCard::targetFilter(const QList<const Player *> &targets, const Player
 void MizhaoCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(effect.card, false);
     Room *room = effect.from->getRoom();
+
+    int index = 1;
+    if (effect.to->getGeneralName().contains("liubei"))
+        index = 2;
+    room->broadcastSkillInvoke("mizhao", index);
 
     QList<ServerPlayer *> targets;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to))
@@ -152,7 +159,7 @@ void MizhaoCard::onEffect(const CardEffectStruct &effect) const{
 
 class MizhaoViewAsSkill: public ViewAsSkill{
 public:
-    MizhaoViewAsSkill():ViewAsSkill("#mizhao"){
+    MizhaoViewAsSkill():ViewAsSkill("mizhao"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -208,6 +215,10 @@ public:
         }
 
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
+        return -2;
     }
 };
 
@@ -281,6 +292,7 @@ public:
             return false;
         if (!killer->hasSkill(objectName()) || killer->getMark("@burnheart") == 0)
             return false;
+        room->setPlayerFlag(player, "FenxinTarget");
         if (room->askForSkillInvoke(killer, objectName(), QVariant::fromValue(player))) {
             killer->loseMark("@burnheart");
             QString role1 = killer->getRole();
@@ -289,6 +301,7 @@ public:
             player->setRole(role1);
             room->setPlayerProperty(player, "role", role1);
         }
+        room->setPlayerFlag(player, "-FenxinTarget");
         return false;
     }
 };
