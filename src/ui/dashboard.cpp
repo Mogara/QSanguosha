@@ -98,11 +98,11 @@ void Dashboard::_createMiddle() {
     QBrush trusting_brush(QColor(0x26, 0x1A, 0x42));
     trusting_item->setBrush(trusting_brush);
     trusting_item->setOpacity(0.36);
-    trusting_item->setZValue(2.0);
+    trusting_item->setZValue(1002.0);
     
     trusting_text->setFont(Config.BigFont);
     trusting_text->setBrush(Qt::white);
-    trusting_text->setZValue(2.1);
+    trusting_text->setZValue(1002.1);
 
     trusting_item->hide();
     trusting_text->hide();
@@ -149,8 +149,11 @@ void Dashboard::_updateFrames()
     QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0, 
         this->width() - G_DASHBOARD_LAYOUT.m_rightWidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
-    trusting_item->setRect(rect);
-    trusting_item->setPos(G_DASHBOARD_LAYOUT.m_leftWidth, 0);
+    QRect rect2 = QRect(0, 0, this->width(), G_DASHBOARD_LAYOUT.m_normalHeight);
+    trusting_item->setRect(rect2);
+    trusting_item->setPos(0, 0);
+    trusting_text->setPos((rect2.width() - Config.BigFont.pixelSize() * 4.5) / 2,
+                          (rect2.height() - Config.BigFont.pixelSize()) / 2);
     _m_rightFrame->setX(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth);
     Q_ASSERT(button_widget);
     button_widget->setX(rect.width() - getButtonWidgetWidth());

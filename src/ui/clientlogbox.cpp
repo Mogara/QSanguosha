@@ -60,13 +60,23 @@ void ClientLogBox::appendLog(
         log.replace("%to", to);
         log.replace("%card", log_name);
 
+        if(!arg2.isEmpty()){
+            arg2 = bold(Sanguosha->translate(arg2), Qt::yellow);
+            log.replace("%arg2", arg2);
+        }
+
+        if(!arg.isEmpty()){
+            arg = bold(Sanguosha->translate(arg), Qt::yellow);
+            log.replace("%arg", arg);
+        }
+
         log = QString("<font color='%2'>%1</font>").arg(log).arg(Config.TextEditColor.name());
         append(log);
 
         return;
     }
 
-    if(!card_str.isEmpty()){
+    if(!card_str.isEmpty() && !from_general.isEmpty()){
         // do Indicator animation
         foreach(QString to, tos){
             RoomSceneInstance->showIndicator(from_general, to);
@@ -135,9 +145,6 @@ void ClientLogBox::appendLog(
 
         if(!to.isEmpty())
             log.append(tr(", target is %to"));
-
-
-
     }else
         log = Sanguosha->translate(type);
 
@@ -194,5 +201,5 @@ void ClientLogBox::appendSeparator(){
 
 void ClientLogBox::append(const QString &text)
 {
-    QTextEdit::append(QString("<p style=\"margin:3px p2x; line-height:120%;\">%1</p>").arg(text));
+    QTextEdit::append(QString("<p style=\"margin:3px 2px; line-height:120%;\">%1</p>").arg(text));
 }

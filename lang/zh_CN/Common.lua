@@ -119,6 +119,7 @@ return {
 	["#SkillNullify"] = "【%arg2】受到【%arg】的影响，对%from 无效",
 	["#ArmorNullify"] = "【%arg2】受到【%arg】的影响，对%from 无效",
 	["#DrawNCards"] = "%from 摸了 %arg 张牌",
+	["$DrawCards"] = "%from 摸了 %arg 张牌 %card",
 	["#MoveNCards"] = "%to 获得了 %from 的 %arg 张牌",
 	["$TakeAG"] = "%from 获得%card",
 	["$Install"] = "%from 装备了 %card",
