@@ -84,7 +84,7 @@ public:
                     }
                 }
 
-                break;
+                return true;
             }
 
         case Death:{
@@ -97,7 +97,7 @@ public:
                         return false;
 
                     if(scenario->getSpouse(killer) == player)
-                        killer->throwAllCards();
+                        killer->throwAllHandCardsAndEquips();
                     else
                         killer->drawCards(3);
                 }

@@ -72,9 +72,8 @@ local function yuanhu_validate(self, equip_type, is_handcard)
 				if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
 					local seat_diff = enemy:getSeat() - self.player:getSeat()
 					local alive_count = self.room:alivePlayerCount()
-					if seat_diff >= alive_count / 2.5 or seat_diff + alive_count >= alive_count / 2.5 then
-						return enemy
-					end
+					if seat_diff < 0 then seat_diff = seat_diff + alive_count end
+					if seat_diff > alive_count / 2.5 + 1 then return enemy	end
 				end
 			end
 			for _, enemy in ipairs(self.enemies) do
