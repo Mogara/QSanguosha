@@ -663,6 +663,7 @@ SPPackage::SPPackage()
     caohong->addSkill(new Yuanhu);
 	
     addMetaObject<WeidiCard>();
+    addMetaObject<YuanhuCard>();
 }
 
 ADD_PACKAGE(SP)
