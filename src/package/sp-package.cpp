@@ -659,6 +659,9 @@ SPPackage::SPPackage()
     sp_jiaxu->addSkill("weimu");
     sp_jiaxu->addSkill("#@chaos-1");
 
+    General *caohong = new General(this, "caohong", "wei");
+    caohong->addSkill(new Yuanhu);
+	
     addMetaObject<WeidiCard>();
 }
 

@@ -69,9 +69,12 @@ local function yuanhu_validate(self, equip_type, is_handcard)
 		if equip_type == "Armor" then self:sort(targets, "handcard") end
 		if is_SilverLion then
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:hasSkill("kongcheng") and enemy:isKongcheng()
-					and math.abs(self.player:getSeat() - enemy:getSeat()) >= self.room:alivePlayerCount() / 2.5 then
-					return enemy
+				if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
+					local seat_diff = enemy:getSeat() - self.player:getSeat()
+					local alive_count = self.room:alivePlayerCount()
+					if seat_diff >= alive_count / 2.5 or seat_diff + alive_count >= alive_count / 2.5 then
+						return enemy
+					end
 				end
 			end
 			for _, enemy in ipairs(self.enemies) do
