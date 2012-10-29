@@ -1066,9 +1066,14 @@ public:
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason);
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, char *default_choice = NULL);    
+    QString askForGeneral(ServerPlayer *player, const char *generals, char *default_choice = NULL);
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
 
     void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
+
+    void updateStateItem();
+    bool notifyProperty(ServerPlayer* playerToNotify, const ServerPlayer* propertyOwner, const char *propertyName, const QString &value = QString());
+    bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
 };
 
 %extend Room {

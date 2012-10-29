@@ -4211,6 +4211,10 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
     return default_choice;
 }
 
+QString Room::askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice){
+    return askForGeneral(player, generals.split("+"), default_choice);
+}
+
 void Room::kickCommand(ServerPlayer *player, const QString &arg){
     // kicking is not allowed at contest mode
     if(Config.ContestMode)
