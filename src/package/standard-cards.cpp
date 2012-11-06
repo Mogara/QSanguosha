@@ -4,7 +4,6 @@
 #include "engine.h"
 #include "client.h"
 #include "room.h"
-#include "carditem.h"
 
 Slash::Slash(Suit suit, int number): BasicCard(suit, number)
 {
@@ -115,17 +114,15 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if(targets.length() >= slash_targets) {
-        /*if (Self->hasSkill("duanbing") && targets.length() == slash_targets)
-            return Self->canSlash(to_select, this) && Self->distanceTo(to_select) == 1;
-        else*/
-            return false;
+        return false;
     }
 
 	if(Self->hasFlag("jiangchi_invoke")){
         distance_limit = false;
     }
 
-    if (isKindOf("WushenSlash")) {
+    if (isKindOf("WushenSlash")
+        || (getSuit() == Card::Heart && Self->hasSkill("wushen"))) { // Be care!!!!
         distance_limit = false;
     }
 
@@ -558,8 +555,8 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
 }
 
 void AmazingGrace::doPreAction(Room *room, const CardUseStruct &card_use) const{
-    QList<ServerPlayer *> players = card_use.to.isEmpty() ? room->getAllPlayers() : card_use.to;
-    QList<int> card_ids = room->getNCards(players.length());
+    //QList<ServerPlayer *> players = card_use.to.isEmpty() ? room->getAllPlayers() : card_use.to;
+    QList<int> card_ids = room->getNCards(room->getAllPlayers().length());
     room->fillAG(card_ids);
 
     QVariantList ag_list;
@@ -610,7 +607,7 @@ GodSalvation::GodSalvation(Suit suit, int number)
 }
 
 bool GodSalvation::isCancelable(const CardEffectStruct &effect) const{
-    return effect.to->isWounded();
+    return effect.to->isWounded() && TrickCard::isCancelable(effect);
 }
 
 void GodSalvation::onEffect(const CardEffectStruct &effect) const{
@@ -636,8 +633,10 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
                                          QVariant(),
                                          CardResponsed,
                                          effect.from->isAlive() ? effect.from : NULL);
-    if(slash)
+    if(slash){
+        if (slash->getSkillName() == "spear") room->setEmotion(effect.to, "weapon/spear");
         room->setEmotion(effect.to, "killer");
+    }
     else{
         DamageStruct damage;
         damage.card = this;
@@ -741,7 +740,11 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
         Q_ASSERT(targets.length() <= 2);
         if (targets.length() == 2) return false;
         const Player* slashFrom = targets[0];
-        if (slashFrom->canSlash(to_select)) return true;
+        if (to_select == Self && to_select->hasSkill("kongcheng")){ // Be care!!!
+            if (to_select->isLastHandCard(this)) return false;
+        }
+        if (slashFrom->canSlash(to_select))
+		    return true;
         else return false;
     }
 
@@ -762,10 +765,9 @@ void Collateral::onUse(Room *room, const CardUseStruct &card_use) const{
     SingleTargetTrick::onUse(room, new_use);
 }
 
-
 bool Collateral::doCollateral(Room *room, ServerPlayer *killer, ServerPlayer *victim, const QString &prompt) const{
     bool useSlash = false;
-    if(killer->canSlash(victim))
+    if(killer->canSlash(victim, NULL, false))
     {
         useSlash = room->askForUseSlashTo(killer, victim, prompt);
     }
@@ -925,7 +927,7 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     if(to_select == Self)
         return false;
 
-    if(Self->distanceTo(to_select) > 1 && !Self->hasSkill("qicai"))
+    if(Self->distanceTo(to_select, getSkillName() == "jixi" ? 1 : 0) > 1 && !Self->hasSkill("qicai")) // Be care!!!
         return false;
 
     return true;

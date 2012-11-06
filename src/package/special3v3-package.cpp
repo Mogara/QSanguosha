@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "standard.h"
 #include "server.h"
-#include "carditem.h"
 #include "engine.h"
 #include "ai.h"
 #include "maneuvering.h"

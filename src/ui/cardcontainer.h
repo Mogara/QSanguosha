@@ -55,6 +55,7 @@ private:
     CloseButton* close_button;
     QPixmap _m_background;
     QStack<QList<CardItem *> > items_stack;
+    bool last_retained;
 
     void _addCardItem(int card_id, const QPointF &pos);
 

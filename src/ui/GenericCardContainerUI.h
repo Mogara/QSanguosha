@@ -87,6 +87,7 @@ public slots:
     void updateRole(const QString &role);
     void updateMarks();
     void updateVotes();
+    void showDistance();
     virtual void refresh();
 
 protected:
@@ -195,6 +196,9 @@ protected:
     // The following stuffs for mulitple votes required for yeyan
     int _m_votesGot, _m_maxVotes;
     QGraphicsPixmapItem *_m_votesItem;
+
+    // The following stuffs for showing distance
+    QGraphicsPixmapItem *_m_distanceItem;
     
     // animations
     QAbstractAnimation *_m_huashenAnimation;

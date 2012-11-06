@@ -155,7 +155,8 @@ CardUseStruct::CardUseStruct()
 }
 
 bool CardUseStruct::isValid(const QString &pattern) const{
-    if (card == NULL) return false;
+    return card != NULL;
+    /*if (card == NULL) return false;
     if (!card->getSkillName().isEmpty())
     {
         bool validSkill = false;
@@ -200,7 +201,7 @@ bool CardUseStruct::isValid(const QString &pattern) const{
         foreach (const ServerPlayer* player, to)
             targets.push_back(player);
         return card->targetsFeasible(targets, from);
-    }
+    }*/
 }
 
 bool CardUseStruct::tryParse(const Json::Value &usage, Room *room){
@@ -497,10 +498,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *ta
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){
-    if(skillSet.contains(skill))
+    if(skill == NULL || skillSet.contains(skill->objectName()))
         return;
 
-    skillSet << skill;
+    skillSet << skill->objectName();
 
     QList<TriggerEvent> events = skill->getTriggerEvents();
     foreach(TriggerEvent triggerEvent, events){
@@ -513,7 +514,8 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
     if(skill->isVisible()){
         foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill->objectName())){
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            addTriggerSkill(trigger_skill);
+            if (trigger_skill)
+                addTriggerSkill(trigger_skill);
         }
     }
 }

@@ -1,10 +1,10 @@
 #include "skill.h"
 #include "wind.h"
 #include "client.h"
-#include "carditem.h"
 #include "engine.h"
 #include "nostalgia.h"
 #include "yjcm-package.h"
+#include "settings.h"
 
 class MoonSpearSkill: public WeaponSkill{
 public:
@@ -77,7 +77,6 @@ public:
             return false;
 
         if(effect.card->getTypeId() == Card::Trick){
-            Room *room = player->getRoom();
 
             if((effect.from && effect.from->hasSkill(objectName()))){
                 LogMessage log;

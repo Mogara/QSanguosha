@@ -1,7 +1,6 @@
 #include "maneuvering.h"
 #include "client.h"
 #include "engine.h"
-#include "carditem.h"
 #include "general.h"
 #include "room.h"
 
@@ -182,7 +181,7 @@ public:
                 log.type = "#ArmorNullify";
                 log.arg = objectName();
                 log.arg2 = effect.slash->objectName();
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 return true;
             }
@@ -195,7 +194,7 @@ public:
                 log.type = "#ArmorNullify";
                 log.arg = objectName();
                 log.arg2 = effect.card->objectName();
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 return true;
             }
@@ -208,7 +207,7 @@ public:
                 log.from = player;
                 log.arg = QString::number(damage.damage);
                 log.arg2 = QString::number(++ damage.damage);
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 data = QVariant::fromValue(damage);
             }
@@ -248,7 +247,7 @@ public:
                 log.from = player;
                 log.arg = QString::number(damage.damage);
                 log.arg2 = objectName();
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 damage.damage = 1;
                 data = QVariant::fromValue(damage);
@@ -264,7 +263,7 @@ public:
                 if(card->objectName() == objectName()){
                     room->setPlayerFlag(player, "-lion_rec");
                     if (player->isWounded()){
-                        player->getRoom()->setEmotion(player, "armor/silver_lion");
+                        room->setEmotion(player, "armor/silver_lion");
                         RecoverStruct recover;
                         recover.card = card;
                         room->recover(player, recover);
@@ -319,7 +318,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     QString suit_str = card->getSuitString();
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
     QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->getGeneralName()).arg(suit_str);
-    if(room->askForCard(effect.from, pattern, prompt, QVariant(), CardDiscarded)){
+    if(effect.from->isAlive() && room->askForCard(effect.from, pattern, prompt, QVariant(), CardDiscarded)){
         DamageStruct damage;
         damage.card = this;
         damage.from = effect.from;
@@ -411,7 +410,8 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
     if (Self->hasSkill("qicai"))
         return true;
 
-    int distance = Self->distanceTo(to_select);
+    int distance_fix = (Self->getOffensiveHorse() && Self->getOffensiveHorse()->getId() == this->getEffectiveId()) ? 1 : 0;
+    int distance = Self->distanceTo(to_select, distance_fix);
     if (Self->hasSkill("duanliang"))
         return distance <= 2;
     else

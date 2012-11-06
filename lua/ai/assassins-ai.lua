@@ -8,6 +8,7 @@ sgs.ai_skill_choice.moukui = function(self, choices)
 end
 
 sgs.ai_skill_invoke.tianming = function(self, data)
+	if self:hasSkill("manjuan") and self.room:getCurrent() ~= self.player then return false end
 	if self:getCardsNum("Jink") == 0 then return true end
     local unpreferedCards={}
     local cards=sgs.QList2Table(self.player:getHandcards())
@@ -170,6 +171,7 @@ sgs.ai_skill_use_func.MizhaoCard=function(card,use,self)
 end
 
 sgs.ai_use_priority.MizhaoCard = 1.5
+sgs.ai_card_intention.MizhaoCard = 20
 
 sgs.ai_skill_playerchosen.mizhao = function(self, targets)
 	self:sort(self.enemies, "hp")
@@ -201,7 +203,7 @@ sgs.ai_skill_cardask["@JieyuanIncrease"] = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
 	if self:isFriend(target) then return "." end
-	if target:getArmor() and target:getArmor():getClassName() == "SilverLion" then return "." end
+	if self:isEquip("SilverLion", target) then return "." end
 	local cards=sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	for _,card in ipairs(cards) do

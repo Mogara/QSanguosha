@@ -86,6 +86,7 @@ public:
     Q_INVOKABLE GlobalEffect(Card::Suit suit, int number):TrickCard(suit, number, false){ target_fixed = true;}
     virtual QString getSubtype() const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual bool isAvailable(const Player *player) const;
 };
 
 class GodSalvation:public GlobalEffect{

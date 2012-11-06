@@ -69,8 +69,8 @@ int Skill::getEffectIndex(const ServerPlayer *, const Card *) const{
 }
 
 void Skill::initMediaSource(){
-    sources.clear();int i;
-    for(i=1; ;i++){
+    sources.clear();
+    for (int i = 1; ;i++) {
         QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(QString::number(i));
         if(QFile::exists(effect_file))
             sources << effect_file;
@@ -239,7 +239,6 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
 
 int TriggerSkill::getPriority() const{
     switch(frequency){
-    case Compulsory:
     case Wake: return 2;
     default:
         return 1;
@@ -302,23 +301,6 @@ DrawCardsSkill::DrawCardsSkill(const QString &name)
 bool DrawCardsSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
     int n = data.toInt();
     data = getDrawNum(player, n);
-    return false;
-}
-
-SlashBuffSkill::SlashBuffSkill(const QString &name)
-    :TriggerSkill(name)
-{
-    events << SlashProceed;
-}
-
-bool SlashBuffSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-    if(data.canConvert<SlashEffectStruct>()){
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-
-        if(player->isAlive())
-            return buff(effect);
-    }
-
     return false;
 }
 
@@ -405,8 +387,7 @@ ArmorSkill::ArmorSkill(const QString &name)
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL || target->getArmor() == NULL) return false;
-    const Armor *armor = qobject_cast<const Armor *>(target->getArmor()->getRealCard());
-    return target->hasArmorEffect(objectName()) && armor->getSkill() == this;
+    return target->hasArmorEffect(objectName());
 }
 
 MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)

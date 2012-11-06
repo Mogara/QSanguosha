@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "client.h"
 #include "engine.h"
-#include "carditem.h"
 #include "settings.h"
 #include "room.h"
 #include "maneuvering.h"
@@ -194,7 +193,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
         if(jiangwei->isKongcheng()){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from != jiangwei && move->from_places.contains(Player::PlaceHand))
+            if(move->from != jiangwei || !move->from_places.contains(Player::PlaceHand))
                 return false;
 
             QList<ServerPlayer *> players;

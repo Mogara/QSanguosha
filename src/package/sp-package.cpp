@@ -2,7 +2,6 @@
 #include "general.h"
 #include "skill.h"
 #include "standard-skillcards.h"
-#include "carditem.h"
 #include "engine.h"
 #include "maneuvering.h"
 #include "wisdompackage.h"
@@ -289,15 +288,19 @@ void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
         ServerPlayer* target = room->askForPlayerChosen(yuanshu, targets, "jijiang");
         if(target){
+            JijiangCard *jijiang = new JijiangCard;
+            jijiang->setSkillName("weidi");
             CardUseStruct use;
-            use.card = new JijiangCard;
+            use.card = jijiang;
             use.from = yuanshu;
             use.to << target;
             room->useCard(use);
         }
     }else{
+		WeidaiCard *weidai = new WeidaiCard;
+		weidai->setSkillName("weidi");
         CardUseStruct use;
-        use.card = new WeidaiCard;
+        use.card = weidai;
         use.from = yuanshu;
         room->useCard(use);
     }
@@ -419,7 +422,7 @@ void YuanhuCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *caohong = effect.from;
     Room *room = caohong->getRoom();
     room->moveCardTo(this, caohong, effect.to, Player::PlaceEquip,
-                     CardMoveReason(CardMoveReason::S_REASON_USE, caohong->objectName(), "yuanhu", QString()));
+                     CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "yuanhu", QString()));
 
     const Card *card = Sanguosha->getCard(subcards.first());
 
@@ -518,6 +521,7 @@ public:
             QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
             QString prompt = QString("@xiuluo:::%1").arg(suit_str);
             if(room->askForCard(target, pattern, prompt, QVariant(), CardDiscarded)){
+                room->broadcastSkillInvoke(objectName());
                 room->throwCard(card, NULL);
                 once_success = true;
             }
@@ -534,6 +538,7 @@ public:
     }
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
+        player->getRoom()->broadcastSkillInvoke("shenwei");
         return n + 2;
     }
 };

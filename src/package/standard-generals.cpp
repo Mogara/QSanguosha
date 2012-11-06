@@ -3,7 +3,6 @@
 #include "skill.h"
 #include "engine.h"
 #include "client.h"
-#include "carditem.h"
 #include "serverplayer.h"
 #include "room.h"
 #include "standard-skillcards.h"

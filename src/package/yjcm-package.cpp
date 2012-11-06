@@ -2,7 +2,6 @@
 #include "standard.h"
 #include "maneuvering.h"
 #include "clientplayer.h"
-#include "carditem.h"
 #include "engine.h"
 #include "ai.h"
 #include "general.h"
@@ -22,7 +21,7 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         if(effect.slash->isBlack()){
-            player->getRoom()->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName());
 
             LogMessage log;
             log.type = "#SkillNullify";
@@ -30,7 +29,7 @@ public:
             log.arg = objectName();
             log.arg2 = effect.slash->objectName();
 
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             return true;
         }
@@ -339,6 +338,8 @@ bool XuanhuoCard::targetFilter(const QList<const Player *> &targets, const Playe
 void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->drawCards(effect.to,2);
+    if (!effect.from->isAlive() || !effect.to->isAlive())
+        return;
 
     bool can_use = false;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
@@ -1156,6 +1157,7 @@ public:
 };
 
 PaiyiCard::PaiyiCard(){
+    mute = true;
     once = true;
 }
 
@@ -1173,12 +1175,19 @@ void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(powers.isEmpty())
         return ;
 
+    LogMessage log;
+    log.from = zhonghui;
+    log.to = card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
     int card_id;
     if(powers.length() == 1)
         card_id = powers.first();
     else{
         room->fillAG(powers, zhonghui);
-        card_id = room->askForAG(zhonghui, powers, true, "paiyi");
+        card_id = room->askForAG(zhonghui, powers, false, "paiyi");
         zhonghui->invoke("clearAG");
 
         if(card_id == -1)

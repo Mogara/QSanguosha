@@ -270,13 +270,13 @@ void QSanSkillButton::setSkill(const Skill* skill)
          _m_emitDeactivateSignal = false;
          _m_canEnable = true;
          _m_canDisable = true;
-     } else if (freq == Skill::Compulsory) {
-         setState(QSanButton::S_STATE_DISABLED);
+     } else if (freq == Skill::Compulsory) { // Be care!!!! For WeiDi
+         setState(QSanButton::S_STATE_UP);
          setStyle(QSanButton::S_STYLE_PUSH);
          _setSkillType(QSanInvokeSkillButton::S_SKILL_COMPULSORY);
          _m_emitActivateSignal = false;
          _m_emitDeactivateSignal = false;
-         _m_canEnable = false;
+         _m_canEnable = true;
          _m_canDisable = true;
      } else Q_ASSERT(false);
      setToolTip(skill->getDescription());

@@ -166,16 +166,6 @@ public:
     virtual int getDrawNum(ServerPlayer *player, int n) const = 0;
 };
 
-class SlashBuffSkill: public TriggerSkill{
-    Q_OBJECT
-
-public:
-    SlashBuffSkill(const QString &name);
-
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
-    virtual bool buff(const SlashEffectStruct &effect) const = 0;
-};
-
 class GameStartSkill: public TriggerSkill{
     Q_OBJECT
 
