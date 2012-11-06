@@ -65,9 +65,11 @@ neofanjian_skill.getTurnUseCard=function(self)
 	if self.player:isKongcheng() then return nil end
 	if self.player:usedTimes("NeoFanjianCard")>0 then return nil end
 
-	local cards = self.player:getHandcards()
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	local card_id = cards[1]:getEffectiveId()
 
-	local card_str = "@NeoFanjianCard=."
+	local card_str = "@NeoFanjianCard=" .. card_id
 	local fanjianCard = sgs.Card_Parse(card_str)
 	assert(fanjianCard)
 
@@ -85,12 +87,6 @@ sgs.ai_skill_use_func.NeoFanjianCard=function(card,use,self)
 			return
 		end
 	end
-end
-
-sgs.ai_skill_cardchosen.neofanjian = function(self)
-	local cards = sgs.QList2Table(self.player:getHandcards())
-	self:sortByKeepValue(cards)
-	return cards[1]
 end
 
 sgs.ai_card_intention.NeoFanjianCard = 70
@@ -147,7 +143,7 @@ end
 sgs.ai_skill_choice.neoganglie = function(self, choices)
 	local target
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:hasFlag("xuanhuo_target") then
+		if player:hasFlag("ganglie_target") then
 			target = player
 			self.room:setPlayerFlag(target, "-ganglie_target")
 		end

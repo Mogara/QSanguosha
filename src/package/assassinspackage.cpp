@@ -71,7 +71,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card && use.card->isKindOf("Slash") && player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName(), 1);
-			if(!player->isNude()){
+            if(!player->isNude()){
                 int total = 0;
                 QSet<const Card *> jilei_cards;
                 QList<const Card *> handcards = player->getHandcards();
@@ -105,7 +105,7 @@ public:
             }
             ServerPlayer *mosthp = maxs.first();
             if (room->askForSkillInvoke(mosthp, objectName())) {
-			    int index = 2;
+                int index = 2;
                 if (mosthp->isFemale())
                     index = 3;
                 room->broadcastSkillInvoke(objectName(), index);
