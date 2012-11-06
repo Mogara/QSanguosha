@@ -1011,9 +1011,9 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable
         guhuo_list << "peach";
         if (!Sanguosha->getBanPackages().contains("maneuvering"))
             guhuo_list << "analeptic";
-		if (guhuo_list.length() == 1)
-		    to_guhuo = guhuo_list.first();
-		else
+        if (guhuo_list.length() == 1)
+            to_guhuo = guhuo_list.first();
+        else
             to_guhuo = room->askForChoice(yuji, "guhuo_saveself", guhuo_list.join("+"));
         yuji->tag["GuhuoSaveSelf"] = QVariant(to_guhuo);
     }

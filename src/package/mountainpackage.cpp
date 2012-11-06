@@ -1051,7 +1051,7 @@ public:
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci){
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
-		Room *room = zuoci->getRoom();
+        Room *room = zuoci->getRoom();
         if (room->getMode().endsWith("p")
             || room->getMode().endsWith("pd")
             || room->getMode().endsWith("pz"))

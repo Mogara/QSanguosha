@@ -1295,7 +1295,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
                 doDiscardButton();
         }
 		
-	case Qt::Key_0:
+    case Qt::Key_0:
     case Qt::Key_1:
     case Qt::Key_2:
     case Qt::Key_3:

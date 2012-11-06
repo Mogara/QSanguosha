@@ -309,11 +309,11 @@ public:
                 }
                 if (!card_to_throw.isEmpty()) {
                     DummyCard *dummy = new DummyCard;
-					foreach (int id, card_to_throw)
-						dummy->addSubcard(id);
+                    foreach (int id, card_to_throw)
+                        dummy->addSubcard(id);
 
-					RecoverStruct recover;
-					recover.card = dummy;
+                    RecoverStruct recover;
+                    recover.card = dummy;
                     recover.who = menghuo;
                     recover.recover = card_to_throw.length();
                     room->recover(menghuo, recover);
@@ -326,7 +326,7 @@ public:
                 if (!card_to_gotback.isEmpty()) {
                     DummyCard *dummy2 = new DummyCard;
                     foreach (int id, card_to_gotback)
-						dummy2->addSubcard(id);
+                        dummy2->addSubcard(id);
 
                     CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, menghuo->objectName());
                     room->obtainCard(menghuo, dummy2, reason);

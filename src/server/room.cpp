@@ -4404,7 +4404,7 @@ void Room::takeAG(ServerPlayer *player, int card_id){
         QVariant data = QVariant::fromValue(move_star);
         thread->trigger(CardsMoveOneTime, this, player, data);
     }else{
-		LogMessage log;
+        LogMessage log;
         log.type = "$EnterDiscardPile";
         log.card_str = QString::number(card_id);
         sendLog(log);
