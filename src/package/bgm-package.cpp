@@ -153,7 +153,7 @@ public:
     Kuiwei(): TriggerSkill("kuiwei"){
         events << EventPhaseStart;
     }
-	
+    
     virtual bool triggerable(const ServerPlayer *target) const{
         return target && target->isAlive() && (target->hasSkill(objectName()) || target->getMark("@kuiwei")>0);
     }
@@ -640,8 +640,8 @@ public:
 
         return false;
     }
-	
-	virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+    
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return 1;
     }
 };
@@ -1393,7 +1393,7 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
         return -2;
-	}
+    }
 };
 
 class XuehenAvoidTriggeringCardsMove: public TriggerSkill{

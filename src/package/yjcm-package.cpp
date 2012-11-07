@@ -762,11 +762,11 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     effect.to->obtainCard(this);
-	QString choice;
-	if (choicelist.length() > 1)
+    QString choice;
+    if (choicelist.length() > 1)
         choice = room->askForChoice(effect.to, "mingce", choicelist.join("+"));
     else
-	    choice = choicelist.first();    
+        choice = choicelist.first();    
 
     if (choice == "use") {
         Slash *slash = new Slash(Card::NoSuit, 0);

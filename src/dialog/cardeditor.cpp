@@ -742,7 +742,7 @@ CardEditor::CardEditor(QWidget *parent) :
     QGraphicsView *view = new QGraphicsView;
 
     view->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |
-                        QPainter::SmoothPixmapTransform	|
+                        QPainter::SmoothPixmapTransform    |
                         QPainter::HighQualityAntialiasing
                         );
 

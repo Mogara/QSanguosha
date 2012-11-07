@@ -176,7 +176,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
-	ui->generalPhoto->setPixmap(G_ROOM_SKIN.getCardMainPixmap(general->objectName()));
+    ui->generalPhoto->setPixmap(G_ROOM_SKIN.getCardMainPixmap(general->objectName()));
     QList<const Skill *> skills = general->getVisibleSkillList();
 
     foreach(QString skill_name, general->getRelatedSkillNames()){

@@ -1294,7 +1294,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
             else if (discard_button->isEnabled())
                 doDiscardButton();
         }
-		
+        
     case Qt::Key_0:
     case Qt::Key_1:
     case Qt::Key_2:
@@ -3094,11 +3094,11 @@ void RoomScene::killPlayer(const QString &who){
             enemy_box->killPlayer(general->objectName());
     }
 
-	ClientPlayer *player = ClientInstance->getPlayer(who);
-	if (player) {
-	    PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
-		container->stopHuaShen();
-	}
+    ClientPlayer *player = ClientInstance->getPlayer(who);
+    if (player) {
+        PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
+        container->stopHuaShen();
+    }
 
     if(Config.EnableLastWord && !Self->hasFlag("marshalling"))
         general->lastWord();

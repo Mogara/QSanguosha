@@ -529,8 +529,8 @@ public:
     Buqu():TriggerSkill("buqu"){
         events << PostHpReduced << AskForPeachesDone;
     }
-	
-	virtual int getPriority() const{
+    
+    virtual int getPriority() const{
         return 2;
     }
 

@@ -338,10 +338,10 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         button->setProperty("private_pile", "true");
         QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
         button_widget->setWidget(button);
-        _m_privatePiles[pile_name] = button_widget;		
+        _m_privatePiles[pile_name] = button_widget;        
     }
     else
-    {		
+    {        
         button = (QPushButton*)(_m_privatePiles[pile_name]->widget());
         menu = button->menu();
     }

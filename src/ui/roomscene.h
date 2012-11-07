@@ -200,7 +200,7 @@ protected:
     //this method causes crashes
     //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QMutex m_roomMutex;
-    QMutex m_zValueMutex;	
+    QMutex m_zValueMutex;    
 
 private:
     void _getSceneSizes(QSize& minSize, QSize& maxSize);

@@ -2,16 +2,16 @@
 %typemap(in) LuaFunction
 %{
 if(lua_isfunction(L, $input)){
-	lua_pushvalue(L, $input);
-	$1 = luaL_ref(L, LUA_REGISTRYINDEX);
+    lua_pushvalue(L, $input);
+    $1 = luaL_ref(L, LUA_REGISTRYINDEX);
 }else{
-	$1 = 0;
+    $1 = 0;
 }
 %}
 
 %typemap(out) LuaFunction
 %{
-lua_rawgeti(L, LUA_REGISTRYINDEX, $1);	
+lua_rawgeti(L, LUA_REGISTRYINDEX, $1);    
 SWIG_arg ++;
 %}
 
@@ -37,10 +37,10 @@ size_t len = lua_objlen(L, $input);
 
 int i;
 for(i=0; i<len; i++){
-	lua_rawgeti(L, $input, i+1);
-	const char *elem = luaL_checkstring(L, -1);
-	$1 << elem;
-	lua_pop(L, 1);
+    lua_rawgeti(L, $input, i+1);
+    const char *elem = luaL_checkstring(L, -1);
+    $1 << elem;
+    lua_pop(L, 1);
 }
 
 %}
@@ -51,9 +51,9 @@ lua_createtable(L, $1.length(), 0);
 
 int i;
 for(i=0; i<$1.length(); i++){
-	QString str = $1.at(i);
-	lua_pushstring(L, str.toUtf8());
-	lua_rawseti(L, -2, i+1);
+    QString str = $1.at(i);
+    lua_pushstring(L, str.toUtf8());
+    lua_rawseti(L, -2, i+1);
 }
 
 SWIG_arg++;

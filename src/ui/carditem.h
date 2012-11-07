@@ -66,7 +66,7 @@ public:
         int tablePileClearTimeStamp;
     } m_uiHelper;
 
-	void clickItem() {emit clicked();}
+    void clickItem() {emit clicked();}
 
 protected:
     void _initialize();

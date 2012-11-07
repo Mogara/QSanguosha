@@ -21,7 +21,7 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
 #define _OLD_PIXEL(x, y) (oldImage[(y * cols + x) * 4 + 3])
 
     for (int y = 0; y < rows; y++)
-    {		
+    {        
         for (int x = 0; x < cols; x++)
         {
             _NEW_PIXEL_CHANNEL(x, y, 0) = shadowColor.blue();
@@ -32,7 +32,7 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
     }
 
     for (int y = 0; y < rows; y++)
-    {		
+    {        
         for (int x = 0; x < cols; x++)
         {
             uchar oldVal = _OLD_PIXEL(x, y);

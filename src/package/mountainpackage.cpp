@@ -1006,7 +1006,7 @@ public:
             room->recover(liushan, recover);
 
             if (liushan->isLord()){
-            	room->acquireSkill(liushan, "jijiang");
+                room->acquireSkill(liushan, "jijiang");
             }
         }
 

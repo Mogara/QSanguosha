@@ -359,8 +359,8 @@ void RoomThread::run(){
     GameRule *game_rule;
     if(room->getMode() == "04_1v3")
         game_rule = new HulaoPassMode(this);
-    else if(Config.EnableScene)	//changjing
-        game_rule = new SceneRule(this);	//changjing
+    else if(Config.EnableScene)    //changjing
+        game_rule = new SceneRule(this);    //changjing
     else
         game_rule = new GameRule(this);
 

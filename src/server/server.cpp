@@ -197,7 +197,7 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     scene_checkbox  = new QCheckBox(tr("Enable Scene"));
 
-    scene_checkbox->setChecked(Config.EnableScene);	//changjing
+    scene_checkbox->setChecked(Config.EnableScene);    //changjing
 
     same_checkbox  = new QCheckBox(tr("Enable Same"));
     same_checkbox->setChecked(Config.EnableSame);
@@ -885,7 +885,7 @@ bool ServerDialog::config(){
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
-    Config.EnableScene = scene_checkbox->isChecked();		//changjing
+    Config.EnableScene = scene_checkbox->isChecked();        //changjing
     Config.EnableSame = same_checkbox->isChecked();
     Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
@@ -924,7 +924,7 @@ bool ServerDialog::config(){
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
-    Config.setValue("EnableScene", Config.EnableScene);	//changjing
+    Config.setValue("EnableScene", Config.EnableScene);    //changjing
     Config.setValue("EnableSame", Config.EnableSame);
     Config.setValue("EnableBasara",Config.EnableBasara);
     Config.setValue("EnableHegemony",Config.EnableHegemony);

@@ -117,7 +117,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         return false;
     }
 
-	if(Self->hasFlag("jiangchi_invoke")){
+    if(Self->hasFlag("jiangchi_invoke")){
         distance_limit = false;
     }
 
@@ -744,7 +744,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
             if (to_select->isLastHandCard(this)) return false;
         }
         if (slashFrom->canSlash(to_select))
-		    return true;
+            return true;
         else return false;
     }
 

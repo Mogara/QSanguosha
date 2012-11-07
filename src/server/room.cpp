@@ -1015,7 +1015,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
     const Card *card = NULL;
     QVariant asked = pattern;
-    if ((trigger_event == CardUsed || trigger_event == CardResponded) && !player->hasFlag("continuing"))
+    if ((trigger_event == CardUsed || trigger_event == CardResponsed) && !player->hasFlag("continuing"))
         thread->trigger(CardAsked, this, player, asked);
     if (player->hasFlag("continuing"))
         setPlayerFlag(player, "-continuing");
@@ -1052,7 +1052,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     bool continuable = false;
     card = card->validateInResposing(player, continuable);
     const Card* result = NULL;
-	
+    
     if(card){
         if (trigger_event == CardResponsed || trigger_event == CardUsed) {
             LogMessage log;
@@ -2672,7 +2672,7 @@ void Room::damage(DamageStruct &damage_data){
         return;
 
     QVariant data = QVariant::fromValue(damage_data);
-	
+    
     if(!damage_data.chain && !damage_data.transfer && damage_data.from){
         // ComfirmDamage
         thread->trigger(ConfirmDamage, this, damage_data.from, data);
@@ -3642,8 +3642,8 @@ void Room::filterCards(ServerPlayer* player, QList<const Card *> cards, bool ref
             //    else
             //        notifyResetCard(player, cardId);
             //}
-			// Be care!!
-			// card->isModified() doesn't work here. It's only a temp way to fix the bug
+            // Be care!!
+            // card->isModified() doesn't work here. It's only a temp way to fix the bug
         }
     }
 

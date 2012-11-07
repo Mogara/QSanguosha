@@ -485,7 +485,7 @@ public:
             else if (damage.card->hasFlag("drank"))
                 index = 2;
             room->broadcastSkillInvoke(objectName(), index);
-			
+            
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = player;
@@ -612,7 +612,7 @@ public:
                         && target->isLord())
                         room->setPlayerFlag(handang, "JiefanToLord");
                     room->useCard(use);
-					room->setPlayerFlag(handang, "-JiefanToLord");
+                    room->setPlayerFlag(handang, "-JiefanToLord");
                 }
                 return true;
             }

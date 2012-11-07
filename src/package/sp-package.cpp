@@ -297,8 +297,8 @@ void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
             room->useCard(use);
         }
     }else{
-		WeidaiCard *weidai = new WeidaiCard;
-		weidai->setSkillName("weidi");
+        WeidaiCard *weidai = new WeidaiCard;
+        weidai->setSkillName("weidi");
         CardUseStruct use;
         use.card = weidai;
         use.from = yuanshu;
@@ -584,7 +584,7 @@ public:
             room->getThread()->delay(5000);
 
             guanyu->setMark("danji", 1);
-			guanyu->gainMark("@waked");
+            guanyu->gainMark("@waked");
             room->loseMaxHp(guanyu);
             room->acquireSkill(guanyu, "mashu");
         }
@@ -666,7 +666,7 @@ SPPackage::SPPackage()
 
     General *caohong = new General(this, "caohong", "wei");
     caohong->addSkill(new Yuanhu);
-	
+    
     addMetaObject<WeidiCard>();
     addMetaObject<YuanhuCard>();
 }
