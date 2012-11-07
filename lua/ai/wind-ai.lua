@@ -393,7 +393,8 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	local guhuoname = self.room:getTag("GuhuoType"):toString()
 	local guhuocard = sgs.Sanguosha:cloneCard(guhuoname, sgs.Card_NoSuit, 0)
 	local guhuotype = guhuocard:getClassName()
-	if guhuotype and self:getRestCardsNum(guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
+	--it seems that getBanPackages() cannot return a proper value
+	--if guhuotype and self:getRestCardsNum(guhuotype) == 0 and self.player:getHp() > 0 then return "question" end
 	if guhuotype and (guhuotype == "AmazingGrace" or (guhuotype:match("Slash") and not self:isEquip("Crossbow",yuji))) then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
