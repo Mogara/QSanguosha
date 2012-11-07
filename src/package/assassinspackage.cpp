@@ -332,13 +332,13 @@ void MixinCard::onEffect(const CardEffectStruct &effect) const{
     if(others.isEmpty())
         return;
 
-    ServerPlayer *target2 = room->askForPlayerChosen(source, others, "#mixin1");
+    ServerPlayer *target2 = room->askForPlayerChosen(source, others, "mixin");
     LogMessage log;
     log.type = "#CollateralSlash";
     log.from = source;
     log.to << target2;
     room->sendLog(log);
-	if(room->askForUseSlashTo(target, target2, "#mixin2"))
+	if(room->askForUseSlashTo(target, target2, "#mixin"))
         room->broadcastSkillInvoke("mixin", 2);
     else {
         room->broadcastSkillInvoke("mixin", 3);
@@ -408,6 +408,9 @@ public:
 
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             ServerPlayer *target = room->getCurrent();
+			if(target->isDead())
+				return false;
+
             if(move->from == player && move->to != player) {
                 bool invoke = false;
                 for(int i = 0; i < move->card_ids.size(); i++)
@@ -416,21 +419,30 @@ public:
                         break;
                     }
 
+				room->setPlayerFlag(player, "cangnilose");    //for AI
+
                 if(invoke && !target->isNude() && player->askForSkillInvoke(objectName())) {
 					room->broadcastSkillInvoke("cangni", 3);
                     room->askForDiscard(target, objectName(), 1, 1, false, true);
 				}
 
+				room->setPlayerFlag(player, "-cangnilose");    //for AI
+
                 return false;
             }
         
             if(move->to == player && move->from != player)
-                if(move->to_place == Player::PlaceHand || move->to_place == Player::PlaceEquip)
+                if(move->to_place == Player::PlaceHand || move->to_place == Player::PlaceEquip){
+					room->setPlayerFlag(player, "cangniget");    //for AI
+
                     if(!target->hasFlag("cangni_used") && player->askForSkillInvoke(objectName())) {
                         room->setPlayerFlag(target, "cangni_used");
 						room->broadcastSkillInvoke("cangni", 2);
                         target->drawCards(1);
                     }
+					
+					room->setPlayerFlag(player, "-cangniget");    //for AI
+				}
         }
 
         return false;
@@ -447,7 +459,7 @@ void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
     int id = card_ids.first();
     room->fillAG(card_ids, NULL);
     room->getThread()->delay();
-    ServerPlayer *target = room->askForPlayerChosen(source, room->getAlivePlayers(), objectName());
+    ServerPlayer *target = room->askForPlayerChosen(source, room->getAlivePlayers(), "duyi");
     const Card *card = Sanguosha->getCard(id);
     target->obtainCard(card);
     if(card->isBlack()) {
@@ -602,8 +614,7 @@ FengyinCard::FengyinCard(){
     mute = true;
 }
 
-void FengyinCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
+void FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     ServerPlayer *target = room->getCurrent();
     target->obtainCard(this);
     room->broadcastSkillInvoke("fengyin");

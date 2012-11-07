@@ -48,7 +48,7 @@ class FengyinCard: public SkillCard{
 public:
     Q_INVOKABLE FengyinCard();
 
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
 };
 
 #endif // ASSASSINSPACKAGE_H

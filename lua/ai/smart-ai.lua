@@ -256,7 +256,7 @@ end
 
 --action values can present the offensive power and defensive power by analysing all the actions in the environment
 function SmartAI:getActionValue(action)
-	local card_value = math.abs(sgs.ai_card_intention[action.card:className()])
+	local card_value = math.abs(sgs.ai_card_intention[action.card:getClassName()])
 	
 	--@@todo: get the card use frequency to do inverse frequency
 	return card_value
