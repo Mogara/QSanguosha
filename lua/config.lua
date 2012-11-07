@@ -24,7 +24,8 @@ config = {
         "Ling",
         "BGM",
         "NostalGeneral",
-        "Test"
+        "Test",
+		"Assassins"
     },
     color_wei = "#547998",
     color_shu = "#D0796C",

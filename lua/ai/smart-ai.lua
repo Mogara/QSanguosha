@@ -3015,7 +3015,7 @@ function SmartAI:useCardByClassName(card, use)
 	if use_func then
 		use_func(self, card, use)
 		
-		if (use.to or #sgs.actionTargets ~= 0) not use.isDummy then
+		if (use.to or #sgs.actionTargets ~= 0) and not use.isDummy then
 			self:recordAction(use.from, use.to or sgs.actionTargets, use.card, sgs.actionIsGoodwill)
 		end
 	end

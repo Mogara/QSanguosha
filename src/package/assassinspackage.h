@@ -23,4 +23,32 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class MixinCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MixinCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class DuyiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DuyiCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
+};
+
+class FengyinCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE FengyinCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 #endif // ASSASSINSPACKAGE_H
