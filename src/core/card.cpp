@@ -4,7 +4,6 @@
 #include "client.h"
 #include "room.h"
 #include "structs.h"
-#include "carditem.h"
 #include "lua-wrapper.h"
 #include <QFile>
 
@@ -142,7 +141,11 @@ bool Card::isEquipped() const{
 }
 
 bool Card::match(const QString &pattern) const{
-    return objectName() == pattern || getType() == pattern || getSubtype() == pattern;
+    QStringList patterns = pattern.split("+");
+    foreach (QString ptn, patterns)
+        if (objectName() == ptn || getType() == ptn || getSubtype() == ptn)
+            return true;
+    return false;
 }
 
 bool Card::CompareByColor(const Card *a, const Card *b){
@@ -607,8 +610,7 @@ void Card::setFlags(const QString &flag) const{
         QString copy = flag;
         copy.remove(symbol_c);
         flags.removeOne(copy);
-    }
-    else
+    } else if (!flags.contains(flag))
         flags << flag;
 }
 

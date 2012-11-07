@@ -2,8 +2,8 @@
 #include "skill.h"
 #include "standard.h"
 #include "clientplayer.h"
-#include "carditem.h"
 #include "engine.h"
+#include "settings.h"
 
 class ChongZhen: public TriggerSkill{
 public:
@@ -1221,7 +1221,7 @@ public:
                 if (!target->isAlive()) return false;
                 if (target->hasEquip()) {
                     int card_id = room->askForCardChosen(ganning, target, "e", objectName());
-                    target->addToPile("junwei-equip", card_id);
+                    target->addToPile("junwei_equip", card_id);
                 }
             }
         }
@@ -1243,7 +1243,7 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to != Player::NotActive || player->getPile("junwei-equip").length() == 0)
             return false;
-        foreach(int card_id, player->getPile("junwei-equip")){
+        foreach (int card_id, player->getPile("junwei_equip")) {
             const Card *card = Sanguosha->getCard(card_id);
 
             int equip_index = -1;
@@ -1355,6 +1355,8 @@ public:
             else
                 choice = room->askForChoice(xiahou, objectName(), "discard+slash");
             if (choice == "slash") {
+                room->broadcastSkillInvoke(objectName(), 2);
+
                 ServerPlayer *victim = room->askForPlayerChosen(xiahou, targets, objectName());
 
                 Slash *slash = new Slash(Card::NoSuit, 0);
@@ -1378,22 +1380,20 @@ public:
                     dummy->addSubcard(card_ids[i]);
                     player->addToPile("#xuehen", card_ids[i], false);
                 }
-                if (dummy->subcardsLength() == 0)
-                    return false;
-                else
-                    for (int i = 0; i < dummy->subcardsLength(); i++)
-                        room->moveCardTo(Sanguosha->getCard(card_ids[i]), player, original_places[i], false);
+                for (int i = 0; i < dummy->subcardsLength(); i++)
+                    room->moveCardTo(Sanguosha->getCard(card_ids[i]), player, original_places[i], false);
                 room->setPlayerFlag(player, "-XuehenTarget_InTempMoving");
-                room->throwCard(dummy, player, xiahou);
+                if (dummy->subcardsLength() > 0)
+                    room->throwCard(dummy, player, xiahou);
                 dummy->deleteLater();
             }
         }
         return false;
     }
 
-    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const {
-        return 2;
-    }
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
+        return -2;
+	}
 };
 
 class XuehenAvoidTriggeringCardsMove: public TriggerSkill{

@@ -1,10 +1,10 @@
 #include "mountainpackage.h"
 
 #include "general.h"
+#include "settings.h"
 #include "skill.h"
 #include "engine.h"
 #include "standard.h"
-#include "carditem.h"
 #include "generaloverview.h"
 #include "clientplayer.h"
 #include "client.h"
@@ -379,7 +379,7 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
         card_id = fields.first();
     else{
         room->fillAG(fields, dengai);
-        card_id = room->askForAG(dengai, fields, true, "jixi");
+        card_id = room->askForAG(dengai, fields, false, "jixi");
         dengai->invoke("clearAG");
 
         if(card_id == -1)
@@ -395,8 +395,6 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     QList<const Player *> empty_list;
     foreach(ServerPlayer *p, room->getAlivePlayers()){
         if(!snatch->targetFilter(empty_list, p, dengai))
-            continue;
-        if(dengai->distanceTo(p,1) > 1)
             continue;
         if(dengai->isProhibited(p, snatch))
             continue;
@@ -714,7 +712,7 @@ bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Playe
 void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *erzhang = effect.from;
     erzhang->getRoom()->moveCardTo(this, erzhang, effect.to, Player::PlaceEquip,
-        CardMoveReason(CardMoveReason::S_REASON_USE, erzhang->objectName(), "zhijian", QString()));
+        CardMoveReason(CardMoveReason::S_REASON_PUT, erzhang->objectName(), "zhijian", QString()));
 
     LogMessage log;
     log.type = "$ZhijianEquip";
@@ -1007,7 +1005,9 @@ public:
             recover.who = liushan;
             room->recover(liushan, recover);
 
-            room->acquireSkill(liushan, "jijiang");
+            if (liushan->isLord()){
+            	room->acquireSkill(liushan, "jijiang");
+            }
         }
 
         return false;
@@ -1051,11 +1051,15 @@ public:
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci){
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
+        Room *room = zuoci->getRoom();
+        if (room->getMode().endsWith("p")
+            || room->getMode().endsWith("pd")
+            || room->getMode().endsWith("pz"))
+            all.subtract(Config.value("Banlist/Roles","").toStringList().toSet());
         QSet<QString> huashen_set, room_set;
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         foreach(QVariant huashen, huashens)
             huashen_set << huashen.toString();
-        Room *room = zuoci->getRoom();
         QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
         foreach(const ServerPlayer *player, players){
             room_set << player->getGeneralName();
@@ -1065,7 +1069,7 @@ public:
 
         static QSet<QString> banned;
         if(banned.isEmpty()){
-            banned << "zuoci" << "zuocif" << "guzhielai" << "dengshizai" << "caochong"
+            banned << "zuoci" << "guzhielai" << "dengshizai" << "caochong"
                    << "jiangboyue" << "bgm_xiahoudun";
         }
 

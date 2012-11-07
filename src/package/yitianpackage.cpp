@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "engine.h"
 #include "client.h"
-#include "carditem.h"
 #include "god.h"
 #include "standard.h"
 

@@ -409,7 +409,7 @@ void ServerPlayer::addCard(const Card *card, Place place){
 
     case PlaceEquip: {
             WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            const EquipCard *equip = qobject_cast<const EquipCard *>(wrapped->getRealCard());
             setEquip(wrapped);
             equip->onInstall(this);
             break;
@@ -521,6 +521,8 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     }
 
     const Card *card2 = room->askForPindian(target, this, target, reason);
+
+    if (card1 == NULL || card2 == NULL) return false;
 
     PindianStruct pindian_struct;
     pindian_struct.from = this;

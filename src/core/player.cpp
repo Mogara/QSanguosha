@@ -151,7 +151,7 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange() const{
-    if(weapon > 0){
+    if (weapon != NULL) {
         const Weapon *card = qobject_cast<const Weapon*>(weapon->getRealCard());
         Q_ASSERT(card);
         return card->getRange();

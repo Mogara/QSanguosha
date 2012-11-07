@@ -3,7 +3,6 @@
 #include "standard.h"
 #include "client.h"
 #include "clientplayer.h"
-#include "carditem.h"
 #include "engine.h"
 #include "god.h"
 #include "maneuvering.h"
@@ -87,9 +86,6 @@ bool QiceCard::targetFilter(const QList<const Player *> &targets, const Player *
 }
 
 bool QiceCard::targetFixed() const{
-    /*if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE)
-        return true;*/
-
     CardStar card = Self->tag.value("qice").value<CardStar>();
     return card && card->targetFixed();
 }
@@ -129,26 +125,24 @@ int QiceCard::getNumber(QList<int> cardid_list) const{
 }
 
 const Card *QiceCard::validate(const CardUseStruct *card_use) const{
-    card_use->from->setFlags("QiceUsed");
+    Room *room = card_use->from->getRoom();
+    room->setPlayerFlag(card_use->from, "QiceUsed");
     Card *use_card = Sanguosha->cloneCard(user_string, getSuit(this->getSubcards()), getNumber(this->getSubcards()));
     use_card->setSkillName("qice");
     foreach(int id, this->getSubcards())
         use_card->addSubcard(id);
+    bool available = true;
+    foreach (ServerPlayer *to, card_use->to)
+        if (card_use->from->isProhibited(to, use_card)) {
+            available = false;
+            break;
+        }
+    available = available && use_card->isAvailable(card_use->from);
     use_card->deleteLater();
-    return use_card;
-}
-
-const Card *QiceCard::validateInResposing(ServerPlayer *xunyou, bool &continuable) const{
-    continuable = true;
-    Room *room = xunyou->getRoom();
-    room->broadcastSkillInvoke("qice");
-    xunyou->setFlags("QiceUsed");
-
-    Card *use_card = Sanguosha->cloneCard(user_string, getSuit(this->getSubcards()), getNumber(this->getSubcards()));
-    use_card->setSkillName("qice");
-    foreach(int id, this->getSubcards())
-        use_card->addSubcard(id);
-    use_card->deleteLater();
+    if (!available) {
+        room->setPlayerFlag(card_use->from, "-QiceUsed");
+        return NULL;
+    }
     return use_card;
 }
 
@@ -169,13 +163,6 @@ public:
         if (cards.length() < Self->getHandcardNum())
             return NULL;
 
-        /*if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE){
-            QiceCard *card = new QiceCard;
-            card->setUserString("nullification");
-            card->addSubcards(cards);
-            return card;
-        }*/
-
         CardStar c = Self->tag.value("qice").value<CardStar>();
         if(c){
             QiceCard *card = new QiceCard;
@@ -191,7 +178,7 @@ protected:
         if(player->isKongcheng())
             return false;
         else
-            return !player->hasUsed("QiceCard");
+            return !player->hasFlag("QiceUsed");
     }
 
 };
@@ -340,7 +327,7 @@ public:
 class Fuli: public TriggerSkill{
 public:
     Fuli():TriggerSkill("fuli"){
-        events << Dying;
+        events << AskForPeaches;
         frequency = Limited;
     }
 
@@ -619,7 +606,13 @@ public:
                     use.to << target;
 
                     room->setCardFlag(damage.card, "jiefan_success");
+                    if ((target->getGeneralName().contains("sunquan")
+                        || target->getGeneralName().contains("sunce")
+                        || target->getGeneralName().contains("sunjian"))
+                        && target->isLord())
+                        room->setPlayerFlag(handang, "JiefanToLord");
                     room->useCard(use);
+					room->setPlayerFlag(handang, "-JiefanToLord");
                 }
                 return true;
             }
@@ -635,6 +628,13 @@ public:
         }
 
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const {
+        if (player->hasFlag("JiefanToLord"))
+            return 2;
+        else
+            return 1;
     }
 };
 
@@ -662,7 +662,7 @@ void AnxuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHandcardNum() < selecteds.last()->getHandcardNum() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
-    if (to->getGeneralName().contains("sunquan"))
+    if (from->getGeneralName().contains("sunquan"))
         room->broadcastSkillInvoke("anxu", 2);
     else
         room->broadcastSkillInvoke("anxu", 1);
@@ -780,9 +780,14 @@ public:
             room->sendLog(log);
 
             player->tag["Invokelihuo"] = false;
+            room->broadcastSkillInvoke("lihuo", 2);
             room->loseHp(player, 1);
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
+        return 1;
     }
 };
 
@@ -861,6 +866,16 @@ public:
             }
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const {
+        if (card->isKindOf("Analeptic")) {
+            if (player->getGeneralName().contains("zhouyu"))
+                return 3;
+            else
+                return 2;
+        } else
+            return 1;
     }
 };
 

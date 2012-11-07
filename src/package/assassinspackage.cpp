@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "standard.h"
 #include "clientplayer.h"
-#include "carditem.h"
 #include "engine.h"
 
 class Moukui: public TriggerSkill{
@@ -18,11 +17,10 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(!player->hasSkill(objectName()) || player->objectName() != use.from->objectName() || !use.card->isKindOf("Slash"))
+            if (player != use.from || !TriggerSkill::triggerable(player) || !use.card->isKindOf("Slash"))
                 return false;
-            foreach(ServerPlayer *p, use.to){
-                if(player->askForSkillInvoke(objectName(), QVariant::fromValue(p))){
-                    room->broadcastSkillInvoke(objectName());
+            foreach (ServerPlayer *p, use.to) {
+                if (player->askForSkillInvoke(objectName(), QVariant::fromValue(p))) {
                     QString choice;
                     if (p->isNude())
                         choice = "draw";
@@ -31,8 +29,7 @@ public:
                     if (choice == "draw") {
                         room->broadcastSkillInvoke(objectName(), 1);
                         player->drawCards(1);
-                    }
-                    else {
+                    } else {
                         room->broadcastSkillInvoke(objectName(), 2);
                         int disc = room->askForCardChosen(player, p, "he", objectName());
                         room->throwCard(disc, p, player);
@@ -73,6 +70,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card && use.card->isKindOf("Slash") && player->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName(), 1);
             if(!player->isNude()){
                 int total = 0;
                 QSet<const Card *> jilei_cards;
@@ -107,6 +105,11 @@ public:
             }
             ServerPlayer *mosthp = maxs.first();
             if (room->askForSkillInvoke(mosthp, objectName())) {
+                int index = 2;
+                if (mosthp->isFemale())
+                    index = 3;
+                room->broadcastSkillInvoke(objectName(), index);
+				
                 QSet<const Card *> jilei_cards;
                 QList<const Card *> handcards = mosthp->getHandcards();
                 foreach(const Card *card, handcards){

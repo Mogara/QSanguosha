@@ -538,7 +538,7 @@ function SmartAI:getUsePriority(card)
 		if v then return v else return sgs.ai_use_priority[class_name] end
 	end
 	if self.player:hasSkill("rende") then
-		if card:isKindOf("ExNihio") then v = 8.9 end
+		if card:isKindOf("ExNihilo") then v = 8.9 end
 		return v or sgs.ai_use_priority[class_name]
 	end
 
@@ -1065,7 +1065,7 @@ function sgs.modifiedRoleTrends(role)
 				sgs.role_evaluation[name]["rebel"] = sgs.role_evaluation[name][role] + 15	
 			end
 		end
-		global_room:writeToConsole("The evaluation role of " .. modifier:getGeneralName() .. " " ..  " is " .. sgs.evaluatePlayerRole(modifier))
+		global_room:writeToConsole("The evaluation role of " .. modifier:getGeneralName() ..  " is " .. sgs.evaluatePlayerRole(modifier))
 	end
 	
 	global_room:writeToConsole("Modified Role Trends Success!")
@@ -1102,7 +1102,7 @@ end
 function sgs.isRolePredictable()
 	if sgs.GetConfig("RolePredictable", true) then return true end
 	local mode = string.lower(global_room:getMode())
-	if not mode:find("0") or mode:find("03p") or mode:find("02_1v1") or mode:find("04_1v3") or mode == "06_3v3" or mode:find("mini") then return true end
+	if not mode:find("0") or mode:find("02p") or mode:find("02_1v1") or mode:find("04_1v3") or mode == "06_3v3" or mode:find("mini") then return true end
 	return false
 end
 
@@ -1691,6 +1691,7 @@ function SmartAI:updateRoleTargets()
 end
 
 function SmartAI:updatePlayers()
+	if self.role ~= self.player:getRole() then self.role = self.player:getRole() end
 	for _, aflag in ipairs(sgs.ai_global_flags) do
 		sgs[aflag] = nil
 	end
@@ -1825,6 +1826,17 @@ function SmartAI:filterEvent(event, player, data)
 					callback(player, promptlist)
 				end
 			end
+			if data:toString() == "skillInvoke:fenxin:yes" then
+				for _, aplayer in sgs.qlist(self.room:getAllPlayers()) do
+					if aplayer:hasFlag("FenxinTarget") then
+						local temp_table = sgs.role_evaluation[player:objectName()]
+						sgs.role_evaluation[player:objectName()] = sgs.role_evaluation[aplayer:objectName()]
+						sgs.role_evaluation[aplayer:objectName()] = temp_table
+						self:updatePlayers()
+						break
+					end
+				end
+			end
 		end
 	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.Death or event == sgs.EventPhaseStart then
 		self:updatePlayers()
@@ -1904,21 +1916,23 @@ function SmartAI:filterEvent(event, player, data)
 				sgs.updateIntentions(from, to, callback, card)
 			end
 		end
-	elseif event == sgs.CardLost then
-		local move = data:toCardMove()
+	elseif event == sgs.CardsMoveOneTime then
+		local move = data:toMoveOneTime()
 		local from = move.from
-		local place = move.from_place
-		local card = sgs.Sanguosha:getCard(move.card_id)
-		if sgs.ai_snat_disma_effect then
-			sgs.ai_snat_disma_effect = false
-			local intention = 70
-			if place == sgs.Player_PlaceDelayedTrick then
-				if not card:isKindOf("Disaster") then intention = -intention else intention = 0 end
-			elseif place == sgs.Player_PlaceEquip then
-				if player:getLostHp() > 1 and card:isKindOf("SilverLion") then intention = -intention end
-				if self:hasSkills(sgs.lose_equip_skill, player) or card:isKindOf("GaleShell") then intention = 0 end
+		for i = 1, move.card_ids:length() do
+			local place = move.from_places:at(i)
+			local card = sgs.Sanguosha:getCard(move.card_ids:at(i))
+			if sgs.ai_snat_disma_effect then
+				sgs.ai_snat_disma_effect = false
+				local intention = 70
+				if place == sgs.Player_PlaceDelayedTrick then
+					if not card:isKindOf("Disaster") then intention = -intention else intention = 0 end
+				elseif place == sgs.Player_PlaceEquip then
+					if player:getLostHp() > 1 and card:isKindOf("SilverLion") then intention = -intention end
+					if self:hasSkills(sgs.lose_equip_skill, player) then intention = 0 end
+				end
+				sgs.updateIntention(sgs.ai_snat_dism_from, from, intention)
 			end
-			sgs.updateIntention(sgs.ai_snat_dism_from, from, intention)
 		end
 	elseif event == sgs.StartJudge then
 		local judge = data:toJudge()
@@ -1970,7 +1984,7 @@ function SmartAI:askForChoice(skill_name, choices, data)
 		if skill and choices:match(skill:getDefaultChoice(self.player)) then
 			return skill:getDefaultChoice(self.player)
 		else
-			local choice_table = choices:split("+");
+			local choice_table = choices:split("+")
 			for index, achoice in ipairs(choice_table) do
 				if achoice == "benghuai" then table.remove(choice_table, index) break end
 			end
@@ -2178,7 +2192,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 	end
 
 	if self:isFriend(who) then
-		if flags:match("j") then
+		if flags:match("j") and not who:containsTrick("YanxiaoCard") then
 			local tricks = who:getCards("j")
 			local lightning, indulgence, supply_shortage
 			for _, trick in sgs.qlist(tricks) do
@@ -2255,14 +2269,19 @@ function SmartAI:askForCardChosen(who, flags, reason)
 
 		if flags:match("j") then
 			local tricks = who:getCards("j")
-			local lightning
+			local lightning, yanxiao
 			for _, trick in sgs.qlist(tricks) do
 				if trick:isKindOf("Lightning") then
 					lightning = trick:getId()
+				elseif trick:isKindOf("YanxiaoCard") then
+					yanxiao = trick:getId()
 				end
 			end
 			if self:hasWizard(self.enemies,true) and lightning then
 				return lightning
+			end
+			if yanxiao then
+				return yanxiao
 			end
 		end
 
@@ -2435,7 +2454,7 @@ function sgs.ai_cardneed.equip(to, card, self)
 end
 
 function SmartAI:needKongcheng(player)
-	return (player:isKongcheng() and (player:hasSkill("kongcheng") or (player:hasSkill("zhiji") and not player:hasSkill("guanxing")))) or
+	return (player:isKongcheng() and (player:hasSkill("kongcheng") or (player:hasSkill("zhiji") and player:getMark("zhiji") == 0))) or
 			(not self:isWeak(player) and self:hasSkills(sgs.need_kongcheng,player))
 end
 
@@ -2988,8 +3007,6 @@ function SmartAI:activate(use)
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
 
 			if use:isValid(nil) then
-				
-				
 				self.toUse = nil
 				return
 			end
@@ -3567,7 +3584,7 @@ function SmartAI:evaluatePlayerCardsNum(class_name, player)
 	end
 	
 	local percentage = (#(self:getCardsFromGame(class_name)) - #(self:getCardsFromDiscardPile(class_name)))/length
-	local modified = 1;
+	local modified = 1
 	if class_name == "Jink" then modified = 1.23
 	elseif class_name == "Analeptic" then modified = 1.17
 	elseif class_name == "Peach" then modified = 1.19

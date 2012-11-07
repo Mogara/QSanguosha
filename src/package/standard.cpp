@@ -109,10 +109,14 @@ void EquipCard::onInstall(ServerPlayer *player) const{
 
     if(skill)
         room->getThread()->addTriggerSkill(skill);
+    if (Sanguosha->getSkill(this) && Sanguosha->getSkill(this)->inherits("ViewAsSkill"))
+        room->attachSkillToPlayer(player, this->objectName());
 }
 
 void EquipCard::onUninstall(ServerPlayer *player) const{
-
+    Room *room = player->getRoom();
+    if (Sanguosha->getSkill(this) && Sanguosha->getSkill(this)->inherits("ViewAsSkill"))
+        room->detachSkillFromPlayer(player, this->objectName(), true);
 }
 
 QString GlobalEffect::getSubtype() const{
@@ -120,9 +124,44 @@ QString GlobalEffect::getSubtype() const{
 }
 
 void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *source = card_use.from;
+    QList<ServerPlayer *> targets, all_players = room->getAllPlayers();
+    foreach(ServerPlayer *player, all_players){
+        const ProhibitSkill *skill = room->isProhibited(source, player, this);
+        if(skill){
+            LogMessage log;
+            log.type = "#SkillAvoid";
+            log.from = player;
+            log.arg = skill->objectName();
+            log.arg2 = objectName();
+            room->sendLog(log);
+
+            room->broadcastSkillInvoke(skill->objectName());
+        }else
+            targets << player;
+    }
+
     CardUseStruct use = card_use;
-    use.to = room->getAllPlayers();
+    use.to = targets;
     TrickCard::onUse(room, use);
+}
+
+bool GlobalEffect::isAvailable(const Player *player) const{
+    bool canUse = false;
+    QList<const Player *> players = player->getSiblings();
+    players << player;
+    foreach(const Player *p, players){
+        if(p->isDead())
+            continue;
+
+        if(player->isProhibited(p, this))
+            continue;
+
+        canUse = true;
+        break;
+    }
+
+    return canUse && TrickCard::isAvailable(player);
 }
 
 QString AOE::getSubtype() const{

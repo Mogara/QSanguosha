@@ -3,9 +3,7 @@
 #include "skill.h"
 #include "standard.h"
 #include "client.h"
-#include "carditem.h"
 #include "engine.h"
-
 
 LuoyiCard::LuoyiCard(){
     once = true;
@@ -39,6 +37,8 @@ public:
 
 NeoFanjianCard::NeoFanjianCard(){
     once = true;
+    mute = true;
+    will_throw = false;
 }
 
 void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
@@ -46,9 +46,9 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *target = effect.to;
     Room *room = zhouyu->getRoom();
 
-    int card_id = room->askForCardChosen(zhouyu, zhouyu, "h", "neofanjian");
     room->broadcastSkillInvoke("fanjian");
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = Sanguosha->getCard(getSubcards().first());
+	int card_id = card->getEffectiveId();
     Card::Suit suit = room->askForSuit(target, "neofanjian");
 
     LogMessage log;
@@ -58,7 +58,8 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
     room->sendLog(log);
 
     room->getThread()->delay();
-    target->obtainCard(card);
+    target->obtainCard(this);
+    room->showCard(target, card_id);
 
     if(card->getSuit() != suit){
         DamageStruct damage;
@@ -70,18 +71,23 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class NeoFanjian:public ZeroCardViewAsSkill{
+class NeoFanjian:public OneCardViewAsSkill{
 public:
-    NeoFanjian():ZeroCardViewAsSkill("neofanjian"){
-
+    NeoFanjian():OneCardViewAsSkill("neofanjian"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->isKongcheng() && ! player->hasUsed("NeoFanjianCard");
     }
 
-    virtual const Card *viewAs() const{
-        return new NeoFanjianCard;
+    virtual bool viewFilter(const Card* to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Card *card = new NeoFanjianCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
@@ -162,7 +168,7 @@ public:
         if(target->getPhase() == Player::Finish){
             Room *room = target->getRoom();
             if(room->askForSkillInvoke(target, objectName())){
-                target->drawCards(2+target->getLostHp());
+                target->drawCards(2 + target->getLostHp());
                 target->turnOver();
 
                 room->broadcastSkillInvoke("jushou");

@@ -3,7 +3,6 @@
 #include "skill.h"
 #include "standard.h"
 #include "client.h"
-#include "carditem.h"
 #include "engine.h"
 #include "maneuvering.h"
 
@@ -114,9 +113,8 @@ public:
 
     virtual void onDamaged(ServerPlayer *xunyu, const DamageStruct &damage) const{
         Room *room = xunyu->getRoom();
-        int x = damage.damage, i;
-        for(i=0; i<x; i++){
-            if(!room->askForUseCard(xunyu, "@@jieming", "@jieming"))
+        for(int i = 0; i < damage.damage; i++) {
+            if (!room->askForUseCard(xunyu, "@@jieming", "@jieming"))
                 break;
         }
     }

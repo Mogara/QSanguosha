@@ -412,6 +412,12 @@ sgs.ai_skill_invoke.shichou = function(self, data)
 	local shu = 0
 	local first = self.room:getTag("FirstRound"):toBool()
 	local players = self.room:getOtherPlayers(self.player)
+	local shenguanyu = self.room:findPlayerBySkillName("wuhun");
+	if shenguanyu ~= nil then
+		if shenguanyu:getKingdom() == "shu" then
+			return true
+		end
+	end
 	for _, player in sgs.qlist(players) do
 		if player:getKingdom() == "shu" then
 			shu = shu + 1
@@ -427,6 +433,11 @@ end
 sgs.ai_skill_playerchosen.shichou = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets, "hp", true)
+	for _, target in ipairs(targets) do
+		if target:hasSkill("wuhun") then 
+			return target 
+		end 
+	end
 	for _, target in ipairs(targets) do
 		if self:isEnemy(target) then 
 			return target 
@@ -460,6 +471,7 @@ function SmartAI:useCardYanxiaoCard(card, use)
 end
 
 sgs.ai_use_priority.YanxiaoCard = 3.9
+sgs.ai_card_intention.YanxiaoCard = -80
 
 local yanxiao_skill={}
 yanxiao_skill.name="yanxiao"
@@ -631,6 +643,16 @@ sgs.ai_skill_use_func.YinlingCard=function(card,use,self)
 		end
 		return
 	end
+	
+	for _, enemy in ipairs(enemies) do
+		if enemy:getHandcardNum() > enemy:getHp() - 2 or (enemy:getHandcardNum() == 1 and not self:needKongcheng(enemy)) then
+			use.card = card
+			if use.to then
+				sgs.ai_skill_cardchosen.yinling = target:getRandomHandCardId()
+				use.to:append(target) 
+			end
+		end
+	end
 
 	return
 end
@@ -704,23 +726,43 @@ end
 
 sgs.ai_skill_choice.xuehen = function(self, choices)
 	local current = self.room:getCurrent();
+	self:sort(self.enemies, "defense")
 	for _,enemy in ipairs(self.enemies) do
 		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
-			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan"))
-			or (amr:objectName()=="eight_diagram"))
+			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan")))
 
 		if self.player:canSlash(enemy, nil ,false) and not self:slashProhibit(nil, enemy) and eff and def < 8 then
-			sgs.ai_skill_playerchosen.xuehen = enemy
+			self.room:setPlayerFlag(enemy, "XuehenToChoose")
 			return "slash"
 		end
 	end
 	if self:isFriend(current) then
-		sgs.ai_skill_playerchosen.xuehen = sgs.ai_skill_playerchosen.zero_card_as_slash
-		return "slash"
+		for _,enemy in ipairs(self.enemies) do
+			local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
+				((amr:isKindOf("Vine") and not self.player:hasWeapon("fan")))
+
+			if self.player:canSlash(enemy, nil ,false) and not self:slashProhibit(nil, enemy) then
+				self.room:setPlayerFlag(enemy, "XuehenToChoose")
+				return "slash"
+			end
+		end
 	end
 	return "discard"
 end
 
-sgs.ai_skill_playerchosen.xuehen = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_skill_playerchosen.xuehen = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	for _, enemy in ipairs(targets) do
+		if enemy:hasFlag("XuehenToChoose") then 
+			self.room:setPlayerFlag(enemy, "-XuehenToChoose")
+			return enemy 
+		end 
+	end
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		if p:hasFlag("XuehenToChoose") then 
+			self.room:setPlayerFlag(p, "-XuehenToChoose")
+		end 
+	end
+end

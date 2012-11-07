@@ -224,8 +224,9 @@ bool GreatYeyanCard::targetsFeasible(const QList<const Player *> &targets, const
     }
     
     //We can only assign 2 damage to one player
+    //If we select only one target only once, we assign 3 damage to the target
     if(targets.toSet().size() == 1)
-        return targets.size() > 1;
+        return true;
     else if(targets.toSet().size() == 2)
         return targets.size() == 3;
     return false;
@@ -249,6 +250,9 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
 
     foreach(ServerPlayer* sp, targets)
         map[sp]++;
+
+    if (targets.size() == 1)
+        map[targets.first()] += 2;
 
     foreach(ServerPlayer* sp,map.keys()){
         if(map[sp] > 1)
@@ -338,7 +342,6 @@ public:
         return card;
     }
 };
-
 
 class Qinyin: public TriggerSkill{
 public:

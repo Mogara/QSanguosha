@@ -1,8 +1,8 @@
 #include "thicket.h"
 #include "general.h"
+#include "settings.h"
 #include "skill.h"
 #include "room.h"
-#include "carditem.h"
 #include "maneuvering.h"
 #include "clientplayer.h"
 #include "client.h"
@@ -105,33 +105,10 @@ public:
     }
 };
 
-class DummyViewAsSkill: public ViewAsSkill{
-public:
-    DummyViewAsSkill(): ViewAsSkill(""){
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &, const Card *) const{
-        return false;
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &) const{
-        return NULL;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-};
-
 class Songwei: public TriggerSkill{
 public:
     Songwei():TriggerSkill("songwei$"){
         events << FinishJudge;
-        view_as_skill = new DummyViewAsSkill;
-    }
-
-    virtual int getPriority() const{
-        return 2;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -204,6 +181,8 @@ public:
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.card->isKindOf("SavageAssault")){
+            room->broadcastSkillInvoke(avoid_skill);
+
             LogMessage log;
             log.type = "#SkillNullify";
             log.from = player;
@@ -306,30 +285,52 @@ public:
         if(menghuo->getPhase() == Player::Draw && menghuo->isWounded()){
             Room *room = menghuo->getRoom();
             if(room->askForSkillInvoke(menghuo, objectName())){
-                int x = menghuo->getLostHp(), i;
+                int x = menghuo->getLostHp();
 
                 room->broadcastSkillInvoke(objectName(), 1);
                 bool has_heart = false;
 
-                for(i = 0; i < x; i++){
-                    int card_id = room->drawCard();
-                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, NULL, Player::PlaceTable,
-                        CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), QString(), "zaiqi", QString()), true);
-                    room->getThread()->delay();
+                QList<int> ids = room->getNCards(x, false);
+                CardsMoveStruct move;
+                move.card_ids = ids;
+                move.to = menghuo;
+                move.to_place = Player::PlaceTable;
+                move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), "zaiqi", QString());
+                room->moveCardsAtomic(move, true);
+                room->getThread()->delay(2 * Config.AIDelay);
 
-                    const Card *card = Sanguosha->getCard(card_id);
-                    if(card->getSuit() == Card::Heart){
-                        RecoverStruct recover;
-                        recover.card = card;
-                        recover.who = menghuo;
-                        room->recover(menghuo, recover);
-                        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, menghuo->objectName(), "zaiqi", QString());
-                        room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
-                        has_heart = true;
-                    }else{
-                        CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, menghuo->objectName());
-                        room->obtainCard(menghuo, Sanguosha->getCard(card_id), reason);
-                    }
+                QList<int> card_to_throw;
+                QList<int> card_to_gotback;
+                for (int i = 0; i < x; i++) {
+                    if (Sanguosha->getCard(ids[i])->getSuit() == Card::Heart)
+                        card_to_throw << ids[i];
+                    else
+                        card_to_gotback << ids[i];
+                }
+                if (!card_to_throw.isEmpty()) {
+                    DummyCard *dummy = new DummyCard;
+                    foreach (int id, card_to_throw)
+                        dummy->addSubcard(id);
+
+                    RecoverStruct recover;
+                    recover.card = dummy;
+                    recover.who = menghuo;
+                    recover.recover = card_to_throw.length();
+                    room->recover(menghuo, recover);
+
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, menghuo->objectName(), "zaiqi", QString());
+                    room->throwCard(dummy, reason, NULL);
+                    dummy->deleteLater();
+                    has_heart = true;
+                }
+                if (!card_to_gotback.isEmpty()) {
+                    DummyCard *dummy2 = new DummyCard;
+                    foreach (int id, card_to_gotback)
+                        dummy2->addSubcard(id);
+
+                    CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, menghuo->objectName());
+                    room->obtainCard(menghuo, dummy2, reason);
+                    dummy2->deleteLater();
                 }
 
                 if(has_heart)
@@ -763,7 +764,7 @@ public:
     }
 
     virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
-        return card->isKindOf("TrickCard") && card->isBlack();
+        return card->isKindOf("TrickCard") && card->isBlack() && card->getSkillName() != "guhuo"; // Be care!!!!!!
     }
 };
 
@@ -903,7 +904,6 @@ class Baonue: public TriggerSkill{
 public:
     Baonue():TriggerSkill("baonue$"){
         events << Damage << PreHpReduced;
-        view_as_skill = new DummyViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

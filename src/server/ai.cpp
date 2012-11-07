@@ -231,8 +231,15 @@ Card::Suit TrustAI::askForSuit(const QString &){
 QString TrustAI::askForKingdom(){
     QString role;
     switch(self->getRoleEnum()){
-    case Player::Lord:
-    case Player::Rebel: role = "wei"; break;
+    case Player::Lord: role = "wei"; break;
+    case Player::Rebel: {
+        ServerPlayer *lord = room->getLord();
+        if (lord->hasLordSkill("xueyi") || lord->hasLordSkill("shichou"))
+            role = "wei";
+        else
+            role = lord->getKingdom();
+        break;
+    }
     case Player::Loyalist:
     case Player::Renegade:
         role = room->getLord()->getKingdom(); break;
@@ -272,10 +279,7 @@ const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *,
 
         foreach(const Card *card, cards){
             if(card->isKindOf("Nullification"))
-            {
-                
                 return card;
-            }
         }
     }
 

@@ -39,13 +39,11 @@ void CardContainer::fillCards(const QList<int> &card_ids){
         items.clear();
     }
     else if(!items.isEmpty()){
-        if(retained()) clear();
-        else{
-            items_stack.push(items);
-            foreach(CardItem *item, items)
-                item->hide();
-            items.clear();
-        }
+        last_retained = retained();
+        items_stack.push(items);
+        foreach(CardItem *item, items)
+            item->hide();
+        items.clear();
     }
 
     if(card_items.isEmpty())
@@ -109,6 +107,8 @@ void CardContainer::clear(){
     items.clear();
     if(!items_stack.isEmpty()){
         items = items_stack.pop();
+        if (last_retained && close_button)
+            close_button->show();
         fillCards();
     }
     else{

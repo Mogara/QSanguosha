@@ -60,7 +60,9 @@ private:
     QString order;
 
     QList<const TriggerSkill *> skill_table[NumOfEvents];
-    QSet<const TriggerSkill *> skillSet;
+    // I temporarily use the set of skill names instead of the skills themselves
+    // in order to avoid duplication. Maybe we need a better solution later.
+    QSet<QString> skillSet;
 
     QList<EventTriplet> event_stack;
 };
