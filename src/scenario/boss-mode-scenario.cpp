@@ -261,14 +261,15 @@ public:
 
         boss_banlist << "yuanshao" << "yanliangwenchou" << "zhaoyun" << "guanyu" << "shencaocao";
 
-        boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
+        boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin" << "fenyong" << "xuehen";
 
         dummy_skills << "xinsheng" << "wuhu" << "kuangfeng" << "dawu" << "wumou" << "wuqian" 
                      << "shenfen" << "renjie" << "weidi" << "danji" << "shiyong" << "zhiba"
                      << "super_guanxing" << "chongzhen" << "tongxin"
-                     << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian";
+                     << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian"
+                     << "fenyong" << "xuehen";
                      
-        available_wake_skills << "hunzi" << "zhiji" << "kegou";
+        available_wake_skills << "hunzi" << "zhiji" ;
     }
 
     void getRandomSkill(ServerPlayer *player, bool need_trans = false) const{
@@ -430,23 +431,22 @@ public:
 
         case Death:{
             QList<ServerPlayer *> players = room->getAlivePlayers();
-            bool hasRebel = false, hasLord = false;
-            foreach(ServerPlayer *each, players){
-                if(each->getRole() == "rebel")
-                    hasRebel = true;
-                if(each->getRole() == "lord"){
-                    hasLord = true;
-                    if(each->getMaxHp() > 3)
-                        room->setPlayerProperty(each, "maxhp", each->getMaxHp()-1);
+            ServerPlayer *lord = room->getLord();
 
-                    if(each->getMark("@frantic") > (players.length()-1))
-                        each->loseMark("@frantic");
-                }
-            }
-            if(!hasRebel)
-                room->gameOver("lord");
-            if(!hasLord)
+            if (player->isLord()) room->gameOver("rebel");
+            if (players.length()==1 && lord->isAlive()) room->gameOver("lord");
+
+            if(lord->getMaxHp() > 3)
+                room->setPlayerProperty(lord, "maxhp", lord->getMaxHp()-1);
+
+            if(lord->getMark("@frantic") > (players.length()-1))
+                lord->loseMark("@frantic");
+
+            QStringList alive_roles = room->aliveRoles();
+            if(alive_roles.contains("rebel") && !alive_roles.contains("lord"))
                 room->gameOver("rebel");
+            if(alive_roles.contains("lord") && !alive_roles.contains("rebel"))
+                room->gameOver("lord");
 
             DamageStar damage = data.value<DamageStar>();
             if(damage && damage->from){
