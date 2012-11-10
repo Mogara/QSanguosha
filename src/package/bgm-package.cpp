@@ -180,7 +180,7 @@ public:
             int n = getWeaponCount(caoren);
             caoren->drawCards(n+2);
             caoren->turnOver();
-            room->broadcastSkillInvoke("kuiwei", 1);
+            room->broadcastSkillInvoke("kuiwei");
             if(caoren->getMark("@kuiwei") == 0)
                 caoren->gainMark("@kuiwei");
         }
@@ -196,7 +196,7 @@ public:
                 log.arg = QString::number(n);
                 log.arg2 = objectName();
                 room->sendLog(log);
-                room->broadcastSkillInvoke("kuiwei", 2);
+                //room->broadcastSkillInvoke("kuiwei", 2);
                 if(caoren->getCards("he").length() <= n){
                     caoren->throwAllHandCardsAndEquips();
                 }

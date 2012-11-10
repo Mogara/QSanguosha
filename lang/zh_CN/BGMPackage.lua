@@ -40,7 +40,11 @@ return {
 	["yanzheng"] = "严整",
 	[":yanzheng"] = "若你的手牌数大于你的体力值，你可以将你装备区内的牌当【无懈可击】使用。",
 	["@kuiwei"] = "溃围",
-	["#KuiweiDiscard"] = "%from 的【%arg2】技能被触发，需要弃掉 %arg 张牌";
+	["#KuiweiDiscard"] = "%from 的【%arg2】技能被触发，需要弃掉 %arg 张牌",
+	["cv:bgm_caoren"] = "喵小林",
+	["$kuiwei"] = "熬过此战，可见胜机！",
+	["$yanzheng"] = "整装列阵，不留破绽！",
+	["~bgm_caoren"] = "城在人在，城破人亡……",
 
 	["#bgm_pangtong"] = "荆楚之高俊",
 	["bgm_pangtong"] = "☆SP庞统",

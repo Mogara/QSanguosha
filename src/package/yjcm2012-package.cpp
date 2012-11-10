@@ -389,14 +389,14 @@ public:
                 room->moveCardsAtomic(move2, true);
 
                 if (Sanguosha->getCard(card1)->getColor() != Sanguosha->getCard(card2)->getColor()){
-                    room->broadcastSkillInvoke(objectName(), 1);
+                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
                     room->setEmotion(shuangying, "good");
                     room->acquireSkill(shuangying, "wusheng");
                     room->acquireSkill(shuangying, "paoxiao");
 
                     shuangying->setFlags(objectName());
                 }else{
-                    room->broadcastSkillInvoke(objectName(), 2);
+                    room->broadcastSkillInvoke(objectName(), 3);
                     room->setEmotion(shuangying, "bad");
                 }
 
