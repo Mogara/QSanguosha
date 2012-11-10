@@ -149,6 +149,13 @@ return {
 	["Hulaopass:recover"] = "恢复1点体力",
 	["Hulaopass:draw"] = "摸1张牌",
 	
+	["cv:shenlvbu2"] = "风叹息",
+	["$shenwei"] = "飞将之威，上天亦知！",
+	["$shenji"] = "神戟在手，何人能及！",
+	["$xiuluo"] = "哼！鬼蜮伎俩，休想阻我！",
+	["~shenlvbu2"] = "什么？我败了？！",
+	["$StageChange"] = "杂鱼们，好戏才刚刚开始！",
+	
 --sp_card
 	["sp_cards"] = "SP卡牌包",
 	["SPMoonSpear"] = "SP银月枪",

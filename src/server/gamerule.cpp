@@ -727,8 +727,10 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
     switch(triggerEvent) {
     case StageChange: {
         ServerPlayer* lord = room->getLord();
-        room->changeHero(lord, "shenlvbu2", true, true);
         room->setPlayerMark(lord, "secondMode", 1);
+        room->changeHero(lord, "shenlvbu2", true, true);
+        room->broadcastInvoke("animate", "lightbox:$StageChange:5000");
+        room->getThread()->delay(5000);
 
         QList<const Card *> tricks = lord->getJudgingArea();
         foreach(const Card *trick, tricks)

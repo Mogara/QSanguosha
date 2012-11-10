@@ -454,19 +454,8 @@ void Room::gameOver(const QString &winner){
 void Room::slashEffect(const SlashEffectStruct &effect){
     effect.from->addMark("SlashCount");
 
-    if(effect.from->getMark("SlashCount") > 1 && effect.from->hasSkill("paoxiao"))
-        broadcastSkillInvoke("paoxiao");
-
     QVariant data = QVariant::fromValue(effect);
 
-    if(effect.nature ==DamageStruct::Thunder)setEmotion(effect.from, "thunder_slash");
-    else if(effect.nature == DamageStruct::Fire)setEmotion(effect.from, "fire_slash");
-    else if(effect.slash->isBlack())setEmotion(effect.from, "slash_black");
-    else if(effect.slash->isRed())setEmotion(effect.from, "slash_red");
-    else setEmotion(effect.from, "killer");
-    setEmotion(effect.to, "victim");
-
-    setTag("LastSlashEffect", data);
     bool broken = thread->trigger(SlashEffect, this, effect.from, data);
     if(!broken)
         thread->trigger(SlashEffected, this, effect.to, data);

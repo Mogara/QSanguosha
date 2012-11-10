@@ -35,30 +35,53 @@ QString Slash::getSubtype() const{
 }
 
 void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
-    if(card_use.from->hasFlag("slashTargetFix"))
+    ServerPlayer *player = card_use.from;
+
+    if(player->hasFlag("slashTargetFix"))
     {
-        room->setPlayerFlag(card_use.from, "-slashTargetFix");
-        room->setPlayerFlag(card_use.from, "-slashTargetFixToOne");
+        room->setPlayerFlag(player, "-slashTargetFix");
+        room->setPlayerFlag(player, "-slashTargetFixToOne");
         foreach(ServerPlayer *target, room->getAlivePlayers())
             if(target->hasFlag("SlashAssignee")){
                 room->setPlayerFlag(target, "-SlashAssignee");
             }
     }
 
-    BasicCard::onUse(room, card_use);
+    if (player->getPhase() == Player::Play
+        && player->getMark("SlashCount") >= 1
+        && player->hasSkill("paoxiao"))
+        room->broadcastSkillInvoke("paoxiao");
+    if (card_use.to.size() > 1 && player->hasSkill("shenji"))
+        room->broadcastSkillInvoke("shenji");
+    else if (card_use.to.size() > 1 && player->hasSkill("lihuo") && getSkillName() != "lihuo")
+        room->broadcastSkillInvoke("lihuo", 1);
+
+    if (isVirtualCard() && getSkillName() == "Spear")
+        room->setEmotion(player,"weapon/spear");
+    else if (card_use.to.size() > 1 && player->hasWeapon("Halberd") && player->isLastHandCard(this))
+        room->setEmotion(player,"weapon/halberd");
+    else if (isVirtualCard() && getSkillName() == "Fan")
+        room->setEmotion(player,"weapon/fan");
+    if (player->getPhase() == Player::Play
+        && player->getMark("SlashCount") >= 1
+        && player->hasWeapon("Crossbow")
+        && !player->hasSkill("paoxiao"))
+        room->setEmotion(player,"weapon/crossbow");
+    if (isKindOf("ThunderSlash"))
+        room->setEmotion(player, "thunder_slash");
+    else if (isKindOf("FireSlash"))
+        room->setEmotion(player, "fire_slash");
+    else if (isRed())
+        room->setEmotion(player, "slash_red");
+    else if (isBlack())
+        room->setEmotion(player, "slash_black");
+    else
+        room->setEmotion(player, "killer");
+
+    BasicCard::onUse(room, use);
 }
 
 void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (source->getPhase() == Player::Play
-            && source->hasUsed("Slash")
-            && source->hasWeapon("Crossbow"))
-        room->setEmotion(source,"weapon/crossbow");
-    else if(isVirtualCard() && getSkillName() == "Spear")
-        room->setEmotion(source,"weapon/spear");
-    else if (targets.length()>1 && source->isKongcheng() && source->hasWeapon("Halberd"))
-        room->setEmotion(source,"weapon/halberd");
-    else if (isVirtualCard() && getSkillName() == "Fan")
-        room->setEmotion(source,"weapon/fan");
 
     BasicCard::use(room, source, targets);
 

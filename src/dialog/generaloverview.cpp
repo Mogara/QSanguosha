@@ -181,7 +181,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     foreach(QString skill_name, general->getRelatedSkillNames()){
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if(skill)
+        if(skill && skill->isVisible())
             skills << skill;
     }
 
@@ -229,6 +229,17 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
         win_button->setObjectName("audio/system/win-cc.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
+    }
+
+    if(general_name == "shenlvbu1" || general_name == "shenlvbu2"){
+        QCommandLinkButton *stage_change_button = new QCommandLinkButton(tr("Stage Change"), tr(
+                "Trashes, the real fun is just beginning!"));
+
+        button_layout->addWidget(stage_change_button);
+        addCopyAction(stage_change_button);
+
+        stage_change_button->setObjectName("audio/system/stagechange.ogg");
+        connect(stage_change_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
 
     QString designer_text = Sanguosha->translate("designer:" + general->objectName());

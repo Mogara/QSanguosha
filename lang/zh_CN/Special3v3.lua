@@ -6,7 +6,7 @@ return {
 	["#zhugejin"] = "联盟的维系者",
 	["zhugejin"] = "诸葛瑾",
 	["illustrator:zhugejin"] = "LiuHeng",
-	["cv:zhugejin"] = "王乾龙",
+	["cv:zhugejin"] = "风叹息",
 	["designer:zhugejin"] = "韩旭",
 	["~zhugejin"] = "君臣不相负，来世复君臣。",
 	["huanshi"] = "缓释",

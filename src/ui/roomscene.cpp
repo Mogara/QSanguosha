@@ -476,9 +476,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         ClientPlayer *player = ClientInstance->getPlayer(playerName);
         if(sendLog)
             log_box->appendLog("#Transfigure", player->getGeneralName(), QStringList(), QString(), newHeroName);
-        /*if (player->getGeneralName() == "shenlvbu1" && newHeroName == "shenlvbu2"
+        if (player->getGeneralName() == "shenlvbu1" && newHeroName == "shenlvbu2"
             && player->getMark("secondMode") > 0)
-            Sanguosha->playSystemAudioEffect("stagechange");*/
+            Sanguosha->playSystemAudioEffect("stagechange");
         if (player != Self) break;     
         const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
         const General* newHero = Sanguosha->getGeneral(newHeroName);

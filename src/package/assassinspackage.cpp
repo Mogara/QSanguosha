@@ -237,6 +237,8 @@ public:
             if(damage.to && damage.to->isAlive()
                && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng())
                 if(room->askForCard(player, ".black", "@JieyuanIncrease", data, CardDiscarded)){
+                    room->broadcastSkillInvoke(objectName(), 1);
+
                     LogMessage log;
                     log.type = "#JieyuanIncrease";
                     log.from = player;
@@ -250,6 +252,8 @@ public:
             if(damage.from && damage.from->isAlive()
                && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
                 if(room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
+                    room->broadcastSkillInvoke(objectName(), 2);
+
                     LogMessage log;
                     log.type = "#JieyuanDecrease";
                     log.from = player;
@@ -297,6 +301,9 @@ public:
             return false;
         room->setPlayerFlag(player, "FenxinTarget");
         if (room->askForSkillInvoke(killer, objectName(), QVariant::fromValue(player))) {
+            room->broadcastSkillInvoke(objectName());
+            room->broadcastInvoke("animate", "lightbox:$fenxin");
+            room->getThread()->delay(1500);
             killer->loseMark("@burnheart");
             QString role1 = killer->getRole();
             killer->setRole(player->getRole());
