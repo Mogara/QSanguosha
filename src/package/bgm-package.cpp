@@ -436,6 +436,11 @@ public:
         if(!damage.card || !damage.card->isKindOf("Slash") || !damage.card->isRed())
             return false;
 
+        int index = 1;
+        if (damage.to->getGeneralName().contains("lvbu"))
+            index = 2;
+        room->broadcastSkillInvoke(objectName(), index);
+
         LogMessage log;
         log.type = "#Jie";
         log.from = player;
