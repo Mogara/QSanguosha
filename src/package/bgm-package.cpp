@@ -19,7 +19,7 @@ public:
                     && resp.m_who != NULL && !resp.m_who->isKongcheng()
                     && player->askForSkillInvoke(objectName(), toChongzhen))
             {
-                room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName(), 1);
                 int card_id = room->askForCardChosen(player, resp.m_who, "h", objectName());
                 CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                 room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
@@ -31,7 +31,7 @@ public:
                 foreach(ServerPlayer *p, use.to){
                     QVariant toChongzhen = QVariant::fromValue((PlayerStar)p);
                     if(p->isKongcheng() || !player->askForSkillInvoke(objectName(), toChongzhen)) continue;
-                    room->broadcastSkillInvoke(objectName());
+                    room->broadcastSkillInvoke(objectName(), 2);
                     int card_id = room->askForCardChosen(player, p, "h", objectName());
                     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                     room->obtainCard(player, Sanguosha->getCard(card_id), reason, false);
