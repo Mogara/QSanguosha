@@ -303,6 +303,7 @@ duyi_skill={}
 duyi_skill.name="duyi"
 table.insert(sgs.ai_skills, duyi_skill)
 duyi_skill.getTurnUseCard=function(self)
+	if self.player:hasUsed("DuyiCard") then return end
 	return sgs.Card_Parse("@DuyiCard=.")
 end
 
