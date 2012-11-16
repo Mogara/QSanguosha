@@ -78,7 +78,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     else
         room->setEmotion(player, "killer");
 
-    BasicCard::onUse(room, use);
+    BasicCard::onUse(room, card_use);
 }
 
 void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{

@@ -97,8 +97,8 @@ local function yuanhu_validate(self, equip_type, is_handcard)
 				for _, aplayer in sgs.qlist(self.room:getAllPlayers()) do
 					if friend:distanceTo(aplayer) == 1 then
 						if self:isFriend(aplayer) and not friend:containsTrick("YanxiaoCard")
-							and (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")
-								or (friend:containsTrick("lightning") and self:hasWizard(self.enemies))) then
+							and (aplayer:containsTrick("indulgence") or aplayer:containsTrick("supply_shortage")
+								or (aplayer:containsTrick("lightning") and self:hasWizard(self.enemies))) then
 							self.room:setPlayerFlag(aplayer, "YuanhuToChoose")
 							return friend
 						end

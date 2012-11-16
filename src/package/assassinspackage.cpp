@@ -558,7 +558,7 @@ public:
         if(splayer == NULL)
             return false;
 
-        CardUseStruct &use = data.value<CardUseStruct>();
+        CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->getTypeId() == Card::Skill || use.from == splayer || !use.to.contains(splayer))
             return false;
         
@@ -712,7 +712,7 @@ public:
         if(triggerEvent == EventPhaseStart && splayer == player && player->getPhase() == Player::Discard) {
             if(player->getHandcardNum() > player->getHp()){
                 LogMessage log;
-                log.type = "#chizhong";
+                log.type = "#Chizhong";
                 log.from = splayer;
 				log.arg = objectName();
                 room->sendLog(log);
@@ -721,13 +721,14 @@ public:
             return false;
         }
 
-        if(player == splayer)
+        if(triggerEvent != Death || player == splayer)
             return false;
 
         room->setPlayerProperty(splayer, "maxhp", splayer->getMaxHp()+1);
         LogMessage log;
         log.type = "#TriggerSkill";
         log.from = splayer;
+		log.arg = objectName();
         room->sendLog(log);
         room->broadcastSkillInvoke("chizhong", 2);
 
@@ -767,6 +768,7 @@ AssassinsPackage::AssassinsPackage():Package("assassins"){
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();
     addMetaObject<DuyiCard>();
+	addMetaObject<FengyinCard>();
 }
 
 ADD_PACKAGE(Assassins)

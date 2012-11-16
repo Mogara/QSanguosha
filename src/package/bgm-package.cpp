@@ -1246,7 +1246,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to != Player::NotActive || player->getPile("junwei-equip").length() == 0)
+        if (change.to != Player::NotActive || player->getPile("junwei_equip").length() == 0)
             return false;
         foreach (int card_id, player->getPile("junwei_equip")) {
             const Card *card = Sanguosha->getCard(card_id);
