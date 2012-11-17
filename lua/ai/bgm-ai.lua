@@ -648,8 +648,8 @@ sgs.ai_skill_use_func.YinlingCard=function(card,use,self)
 		if not enemy:isKongcheng() and (enemy:getHandcardNum() > enemy:getHp() - 2 or (enemy:getHandcardNum() == 1 and not self:needKongcheng(enemy))) then
 			use.card = card
 			if use.to then
-				sgs.ai_skill_cardchosen.yinling = target:getRandomHandCardId()
-				use.to:append(target) 
+				sgs.ai_skill_cardchosen.yinling = enemy:getRandomHandCardId()
+				use.to:append(enemy) 
 			end
 			return
 		end
