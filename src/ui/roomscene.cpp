@@ -1417,6 +1417,9 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
         button->setObjectName(option);
         button->setText(translated);
 
+        QString tooltip = Sanguosha->translate(QString(":%1").arg(option));
+        if (tooltip != QString(":%1").arg(option)) button->setToolTip(tooltip);
+
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
         connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
 
