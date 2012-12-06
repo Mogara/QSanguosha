@@ -17,8 +17,7 @@ public:
     void zombify(ServerPlayer *player, ServerPlayer *killer = NULL) const{
         Room *room = player->getRoom();
 
-        room->setPlayerProperty(player, "general2", "zombie");
-        room->getThread()->addPlayerSkills(player, false);
+        room->changeHero(player, "zombie", false, false, true, false);
 
         int maxhp = killer ? (killer->getMaxHp() + 1)/2 : 5;
         room->setPlayerProperty(player, "maxhp", maxhp);
@@ -38,14 +37,22 @@ public:
         player->tag.remove("zombie");
     }
 
+    void gameOverJudge(Room *room) const{
+        bool hasZombie=false;
+        foreach(ServerPlayer *p,room->getAlivePlayers()){
+             if (p->getGeneral2Name()=="zombie"){
+                 hasZombie=true;
+                 break;
+             }
+        }
+        int round = room->getTag("Round").toInt();
+        if (round>2&&!hasZombie) room->gameOver("lord+loyalist");
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(triggerEvent){
         case GameStart:{
-            foreach (ServerPlayer* player, room->getPlayers())
-            {
-                room->acquireSkill(player, "peaching");
                 break;
-            }
             }
 
         case GameOverJudge:{
@@ -91,7 +98,7 @@ public:
                 else if(killer->getGeneral2Name()=="zombie"){
                     zombify(player, killer);
                     room->setPlayerProperty(player, "role", "renegade");
-                    player->getRoom()->revivePlayer(player);
+                    room->revivePlayer(player);
                     room->setPlayerProperty(killer,"role","rebel");
 
                 }
@@ -99,6 +106,7 @@ public:
 
             if(!hasHuman)room->gameOver("rebel");
 
+            gameOverJudge(room);
             break;
         }
 
@@ -107,21 +115,6 @@ public:
                 if(player->isLord()){
                     room->setTag("Round", ++round);
                     player->gainMark("@round");
-
-                    QList<ServerPlayer *> players = room->getOtherPlayers(player);
-                    qShuffle(players);
-
-                    bool hasZombie=false;
-                    foreach(ServerPlayer *p,players)
-                    {
-                        if (p->getGeneral2Name()=="zombie")
-                        {
-                            hasZombie=true;
-                            break;
-                        }
-                    }
-
-                    if(round>2&&!hasZombie)room->gameOver("lord+loyalist");
 
                     if(player->getMark("@round") > 7)
                     {
@@ -133,6 +126,8 @@ public:
                         room->gameOver("lord+loyalist");
                     }
                     else if(round == 2){
+                        QList<ServerPlayer *> players = room->getOtherPlayers(room->getLord());
+                        qShuffle(players);
                         players.at(0)->tag["zombie"]=true;
                         players.at(1)->tag["zombie"]=true;
                     }
@@ -148,6 +143,9 @@ public:
                     player->drawCards(5);
                     room->getThread()->delay();
                 }
+
+                if (round == 1) room->acquireSkill(player, "peaching");
+                gameOverJudge(room);
             }
 
         default:
