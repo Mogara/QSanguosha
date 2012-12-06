@@ -2299,6 +2299,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             }else{
                 response_skill->setPattern(pattern);
                 dashboard->startPending(response_skill);
+                dashboard->selectCard(pattern);
             }
             break;
         }
