@@ -742,6 +742,8 @@ bool Player::canSlashWithoutCrossbow() const
         valid_slash_count++;
     if(hasFlag("jiangchi_invoke"))
         valid_slash_count++;
+    if(getMark("huxiao") > 0)
+        valid_slash_count += getMark("huxiao");
     return slash_count < valid_slash_count;
 }
 

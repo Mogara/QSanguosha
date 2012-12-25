@@ -345,9 +345,13 @@ void MixinCard::onEffect(const CardEffectStruct &effect) const{
     log.from = source;
     log.to << target2;
     room->sendLog(log);
-	if(room->askForUseSlashTo(target, target2, "#mixin"))
+	room->setPlayerFlag(target, "jiefanUsed");
+    if(room->askForUseSlashTo(target, target2, "#mixin")) {
+		room->setPlayerFlag(target, "-jiefanUsed");
         room->broadcastSkillInvoke("mixin", 2);
+	}
     else {
+		room->setPlayerFlag(target, "-jiefanUsed");
         room->broadcastSkillInvoke("mixin", 3);
         QList<int> card_ids = target->handCards();
         room->fillAG(card_ids, target2);
@@ -415,8 +419,8 @@ public:
 
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             ServerPlayer *target = room->getCurrent();
-			if(target->isDead())
-				return false;
+            if(target->isDead())
+                return false;
 
             if(move->from == player && move->to != player) {
                 bool invoke = false;
@@ -426,30 +430,30 @@ public:
                         break;
                     }
 
-				room->setPlayerFlag(player, "cangnilose");    //for AI
+                room->setPlayerFlag(player, "cangnilose");    //for AI
 
                 if(invoke && !target->isNude() && player->askForSkillInvoke(objectName())) {
-					room->broadcastSkillInvoke("cangni", 3);
+                    room->broadcastSkillInvoke("cangni", 3);
                     room->askForDiscard(target, objectName(), 1, 1, false, true);
-				}
+                }
 
-				room->setPlayerFlag(player, "-cangnilose");    //for AI
+                room->setPlayerFlag(player, "-cangnilose");    //for AI
 
                 return false;
             }
         
             if(move->to == player && move->from != player)
                 if(move->to_place == Player::PlaceHand || move->to_place == Player::PlaceEquip){
-					room->setPlayerFlag(player, "cangniget");    //for AI
+                    room->setPlayerFlag(player, "cangniget");    //for AI
 
                     if(!target->hasFlag("cangni_used") && player->askForSkillInvoke(objectName())) {
                         room->setPlayerFlag(target, "cangni_used");
-						room->broadcastSkillInvoke("cangni", 2);
+                        room->broadcastSkillInvoke("cangni", 2);
                         target->drawCards(1);
                     }
-					
-					room->setPlayerFlag(player, "-cangniget");    //for AI
-				}
+
+                    room->setPlayerFlag(player, "-cangniget");    //for AI
+                }
         }
 
         return false;
@@ -477,7 +481,7 @@ void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
         log.type = "#duyi_eff";
         log.from = source;
         log.to << target;
-		log.arg = "duyi";
+        log.arg = "duyi";
         room->sendLog(log);
         room->broadcastSkillInvoke("duyi", 1);
     }
@@ -535,7 +539,7 @@ public:
                     LogMessage log;
                     log.type = "#duyi_clear";
                     log.from = p;
-					log.arg = objectName();
+                    log.arg = objectName();
                     room->sendLog(log);
                 }
 
@@ -714,7 +718,7 @@ public:
                 LogMessage log;
                 log.type = "#Chizhong";
                 log.from = splayer;
-				log.arg = objectName();
+                log.arg = "chizhong";
                 room->sendLog(log);
                 room->broadcastSkillInvoke("chizhong", 1);
             }
@@ -728,7 +732,7 @@ public:
         LogMessage log;
         log.type = "#TriggerSkill";
         log.from = splayer;
-		log.arg = objectName();
+        log.arg = "chizhong";
         room->sendLog(log);
         room->broadcastSkillInvoke("chizhong", 2);
 
@@ -768,7 +772,7 @@ AssassinsPackage::AssassinsPackage():Package("assassins"){
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();
     addMetaObject<DuyiCard>();
-	addMetaObject<FengyinCard>();
+    addMetaObject<FengyinCard>();
 }
 
 ADD_PACKAGE(Assassins)

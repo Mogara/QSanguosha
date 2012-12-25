@@ -181,9 +181,8 @@ struct CardMoveStruct{
     bool open;    
     bool tryParse(const Json::Value&);
     Json::Value toJsonValue() const;
-    inline bool isRelevant(Player* player)
-    {
-        return (player != NULL && (from == player || to == player));
+    inline bool isRelevant(const Player* player) {
+        return player != NULL && (from == player || (to == player && to_place != Player::PlaceSpecial));
     }
     inline bool hasSameSourceAs(const CardMoveStruct &move)
     {
@@ -267,9 +266,8 @@ struct CardsMoveStruct{
     bool countAsOneTime; // helper to identify distinct move counted as one time
     bool tryParse(const Json::Value&);
     Json::Value toJsonValue() const;
-    inline bool isRelevant(const Player* player)
-    {
-        return (player != NULL && (from == player || to == player));
+    inline bool isRelevant(const Player* player) {
+        return player != NULL && (from == player || (to == player && to_place != Player::PlaceSpecial));
     }
     QList<CardMoveStruct> flatten();    
 };
