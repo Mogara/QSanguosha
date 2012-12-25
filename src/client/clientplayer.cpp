@@ -110,17 +110,19 @@ QTextDocument *ClientPlayer::getMarkDoc() const{
 }
 
 void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids){
-    if(add)
+    if (add)
         piles[name].append(card_ids);
     else
-        foreach (int card_id, card_ids){
+        foreach (int card_id, card_ids) {
             //todo: Fix it !!!
-            if(piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
+            int length = piles[name].length();
+            if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
                 piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
             else piles[name].removeOne(card_id);
+            if (length == piles[name].length() && name == "bifa") piles[name].takeFirst();
         }
 
-    if(!name.startsWith("#"))
+    if (!name.startsWith("#"))
         emit pile_changed(name);
 }
 

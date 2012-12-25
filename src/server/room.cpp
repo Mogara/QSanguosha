@@ -1043,7 +1043,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     const Card* result = NULL;
     
     if(card){
-        if (trigger_event == CardResponsed || trigger_event == CardUsed) {
+        if (trigger_event == CardResponsed || (trigger_event == CardUsed && !(trigger_event == CardUsed && pattern == "slash"))) {
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;

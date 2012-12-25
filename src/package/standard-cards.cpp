@@ -48,9 +48,30 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 
     if (player->getPhase() == Player::Play
-        && player->getMark("SlashCount") >= 1
-        && player->hasSkill("paoxiao"))
+            && player->getMark("SlashCount") >= 1
+            && player->hasSkill("paoxiao"))
         room->broadcastSkillInvoke("paoxiao");
+    else if (player->getPhase() == Player::Play
+            && player->hasSkill("huxiao")) {
+        int n = 1;
+        if (player->hasFlag("tianyi_success"))
+			n ++;
+		if (player->hasFlag("jiangchi_invoke"))
+			n ++;
+		if (player->getMark("SlashCount") >= n) {
+			bool toSunquan = false;
+			foreach(ServerPlayer *p, card_use.to)
+				if(p->getGeneralName().contains("sunquan")) {
+					toSunquan = true;
+					break;
+				}
+
+			if(toSunquan)
+				room->broadcastSkillInvoke("huxiao", 3);
+			else
+				room->broadcastSkillInvoke("huxiao", qrand() % 2 + 1);
+		}
+	}
     if (card_use.to.size() > 1 && player->hasSkill("shenji"))
         room->broadcastSkillInvoke("shenji");
     else if (card_use.to.size() > 1 && player->hasSkill("lihuo") && getSkillName() != "lihuo")
@@ -141,6 +162,10 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if(Self->hasFlag("jiangchi_invoke")){
+        distance_limit = false;
+    }
+
+    if(Self->hasFlag("jiefanUsed")){
         distance_limit = false;
     }
 
@@ -333,8 +358,29 @@ public:
         if (!effect.from->canSlash(effect.to, NULL, false))
             return false;
 
-        if(room->askForUseSlashTo(player, effect.to, "blade-slash:" + effect.to->objectName()))
-            room->setEmotion(player,"weapon/blade");
+		const Card *card = NULL;
+        room->setCardFlag(player->getWeapon()->getId(), "using");
+        card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), QVariant(), CardUsed, effect.to);
+        if (player->getWeapon())
+            room->setCardFlag(player->getWeapon()->getId(), "-using");
+        if(card){
+            room->setEmotion(player, "weapon/blade");
+            // if player is drank, unset his flag
+            if(player->hasFlag("drank"))
+                room->setPlayerFlag(player, "-drank");
+
+            LogMessage log;
+            log.type = "#BladeUse";
+            log.from = effect.from;
+            log.to << effect.to;
+            room->sendLog(log);
+
+            CardUseStruct use;
+            use.card = card;
+            use.from = player;
+            use.to << effect.to;
+            room->useCard(use, false);
+        }
 
         return false;
     }

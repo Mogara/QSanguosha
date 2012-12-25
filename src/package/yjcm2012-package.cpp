@@ -127,7 +127,7 @@ int QiceCard::getNumber(QList<int> cardid_list) const{
 const Card *QiceCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
     room->setPlayerFlag(card_use->from, "QiceUsed");
-    Card *use_card = Sanguosha->cloneCard(user_string, getSuit(this->getSubcards()), getNumber(this->getSubcards()));
+    Card *use_card = Sanguosha->cloneCard(user_string, getSuit(getSubcards()), getNumber(getSubcards()));
     use_card->setSkillName("qice");
     foreach(int id, this->getSubcards())
         use_card->addSubcard(id);
@@ -181,6 +181,21 @@ protected:
             return !player->hasFlag("QiceUsed");
     }
 
+};
+
+class QiceRemove: public TriggerSkill {
+public:
+    QiceRemove(): TriggerSkill("#qice") {
+        events << EventPhaseChanging;
+    }
+
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if(player->hasFlag("QiceUsed") && change.from == Player::Play)
+            room->setPlayerFlag(player, "-QiceUsed");
+
+        return false;
+    }
 };
 
 class Zhiyu: public MasochismSkill{
@@ -548,10 +563,15 @@ public:
                 room->setPlayerFlag(handang, "-jiefanUsed");
                 room->setCardFlag(use.card, "jiefan-slash");
             }
-        }else if(triggerEvent == AskForPeaches  && handang->getPhase() == Player::NotActive && handang->askForSkillInvoke(objectName(), data)){
+        }else if(triggerEvent == AskForPeaches  && handang->getPhase() == Player::NotActive && handang->canSlash(current, NULL, false)
+                && handang->askForSkillInvoke(objectName(), data)){
             DyingStruct dying = data.value<DyingStruct>();
 
             forever{
+                if(handang->hasFlag("jiefan_success"))
+                    room->setPlayerFlag(handang, "-jiefan_success");
+                
+
                 if(handang->hasFlag("jiefan_failed")){
                     room->setPlayerFlag(handang, "-jiefan_failed");
                     break;
@@ -605,7 +625,7 @@ public:
                     use.from = handang;
                     use.to << target;
 
-                    room->setCardFlag(damage.card, "jiefan_success");
+                    room->setPlayerFlag(handang, "jiefan_success");
                     if ((target->getGeneralName().contains("sunquan")
                         || target->getGeneralName().contains("sunce")
                         || target->getGeneralName().contains("sunjian"))
@@ -620,8 +640,8 @@ public:
         }
         else if(triggerEvent == CardFinished && !room->getTag("JiefanTarget").isNull()){
             CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->hasFlag("jiefan-slash")){
-                if(!use.card->hasFlag("jiefan_success"))
+            if(use.card->isKindOf("Slash")){
+                if(!handang->hasFlag("jiefan_success"))
                     room->setPlayerFlag(handang, "jiefan_failed");
                 room->removeTag("JiefanTarget");
             }
@@ -924,7 +944,9 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *xunyou = new General(this, "xunyou", "wei", 3);
     xunyou->addSkill(new Qice);
+    xunyou->addSkill(new QiceRemove);
     xunyou->addSkill(new Zhiyu);
+    related_skills.insertMulti("qice", "#qice");
 
     addMetaObject<QiceCard>();
     addMetaObject<ChunlaoCard>();

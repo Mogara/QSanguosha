@@ -797,6 +797,10 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
         bool real;
         if(user_string == "peach+analeptic")
             real = card->objectName() == yuji->tag["GuhuoSaveSelf"].toString();
+        else if (user_string == "slash")
+            real = card->objectName().contains("slash");
+        else if (user_string == "natural_slash")
+            real = card->objectName() == "slash";
         else
             real = card->match(user_string);
 
@@ -827,6 +831,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
         }
     }
     yuji->tag.remove("GuhuoSaveSelf");
+    yuji->tag.remove("GuhuoSlash");
     room->setTag("Guhuoing", false);
     room->removeTag("GuhuoType");
     if(!success)
@@ -975,6 +980,17 @@ bool GuhuoCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
 const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
+
+	QString to_guhuo = user_string;
+    if (user_string == "slash"
+        && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        QStringList guhuo_list;
+        guhuo_list << "slash";
+        if (!Sanguosha->getBanPackages().contains("maneuvering"))
+            guhuo_list << "natural_slash" << "thunder_slash" << "fire_slash";
+        to_guhuo = room->askForChoice(card_use->from, "guhuo_slash", guhuo_list.join("+"));
+        card_use->from->tag["GuhuoSlash"] = QVariant(to_guhuo);
+    }
     room->broadcastSkillInvoke("guhuo");
 
     LogMessage log;
@@ -988,6 +1004,16 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
 
     if(guhuo(card_use->from, log.toString())){
         const Card *card = Sanguosha->getCard(subcards.first());
+		QString user_str;
+		if (to_guhuo == "slash") {
+            if (card->isKindOf("Slash"))
+                user_str = card->objectName();
+            else
+                user_str = "slash";
+        } else if (to_guhuo == "natural_slash")
+            user_str = "slash";
+        else
+            user_str = to_guhuo;
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
         use_card->addSubcard(this);
@@ -1017,6 +1043,14 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable
             to_guhuo = room->askForChoice(yuji, "guhuo_saveself", guhuo_list.join("+"));
         yuji->tag["GuhuoSaveSelf"] = QVariant(to_guhuo);
     }
+    else if (user_string == "slash") {
+        QStringList guhuo_list;
+        guhuo_list << "slash";
+        if (!Sanguosha->getBanPackages().contains("maneuvering"))
+            guhuo_list << "natural_slash" << "thunder_slash" << "fire_slash";
+        to_guhuo = room->askForChoice(yuji, "guhuo_slash", guhuo_list.join("+"));
+        yuji->tag["GuhuoSlash"] = QVariant(to_guhuo);
+    }
     else
         to_guhuo = user_string;
 
@@ -1029,7 +1063,17 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable
 
     if (guhuo(yuji,log.toString())){
         const Card *card = Sanguosha->getCard(subcards.first());
-        Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
+        QString user_str;
+        if (to_guhuo == "slash") {
+            if (card->isKindOf("Slash"))
+                user_str = card->objectName();
+            else
+                user_str = "slash";
+        } else if (to_guhuo == "natural_slash")
+            user_str = "slash";
+        else
+            user_str = to_guhuo;
+        Card *use_card = Sanguosha->cloneCard(user_str, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
         use_card->deleteLater();
         return use_card;
