@@ -56,7 +56,12 @@ public:
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void setPlayerCardLock(ServerPlayer *player, const QString &name);
+    void clearPlayerCardLock(ServerPlayer *player);
     void setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value);
+    void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = NULL);
+    void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);
+    void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
+    void clearCardFlag(int card_id, ServerPlayer *who = NULL);
     void useCard(const CardUseStruct &card_use, bool add_history = true);
     void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
@@ -139,7 +144,7 @@ public:
     Card::Suit askForSuit(ServerPlayer *player, const QString &reason);
     QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
-    QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
+    QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data = QVariant());
     bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, bool optional = false, bool include_equip = false);
     const Card *askForExchange(ServerPlayer *player, const QString &reason, int discard_num);
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);

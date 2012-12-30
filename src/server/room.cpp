@@ -354,8 +354,7 @@ void Room::sendJudgeResult(const JudgeStar judge){
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
     QList<int> card_ids;
-    int i;
-    for(i=0; i<n; i++){
+    for(int i = 0; i < n; i++){
         card_ids << drawCard();
     }
 
@@ -566,11 +565,11 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     return invoked;
 }
 
-QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices){
+QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data){
     AI *ai = player->getAI();
     QString answer;
     if(ai)
-        answer= ai->askForChoice(skill_name, choices);
+        answer = ai->askForChoice(skill_name, choices, data);
     else{
         QString ask_str = QString("%1:%2").arg(skill_name).arg(choices);
         player->invoke("askForChoice", ask_str);
@@ -984,6 +983,11 @@ void Room::setPlayerCardLock(ServerPlayer *player, const QString &name){
     player->invoke("cardLock", name);
 }
 
+void Room::clearPlayerCardLock(ServerPlayer *player){
+    player->setCardLocked(".");
+    player->invoke("cardLock", ".");
+}
+
 void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_name, const QVariant &value){
     StatisticsStruct *statistics = player->getStatistics();
     if(!statistics->setStatistics(property_name, value))
@@ -1000,6 +1004,44 @@ void Room::setPlayerStatistics(ServerPlayer *player, const QString &property_nam
         prompt += value.toString();
 
     player->invoke("setStatistics", prompt);
+}
+
+void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who){
+    if(flag.isEmpty()) return;
+
+    card->setFlags(flag);
+
+    if(!card->isVirtualCard())
+        setCardFlag(card->getEffectiveId(), flag, who);
+}
+
+void Room::setCardFlag(int card_id, const QString &flag, ServerPlayer *who){
+    if(flag.isEmpty()) return;
+
+    Sanguosha->getCard(card_id)->setFlags(flag);
+
+    QString pattern = QString::number(card_id) + ":" + flag;
+    if(who)
+        who->invoke("setCardFlag", pattern);
+    else
+        broadcastInvoke("setCardFlag", pattern);
+}
+
+void Room::clearCardFlag(const Card *card, ServerPlayer *who){
+    card->clearFlags();
+
+    if(!card->isVirtualCard())
+        clearCardFlag(card->getEffectiveId(), who);
+}
+
+void Room::clearCardFlag(int card_id, ServerPlayer *who){
+    Sanguosha->getCard(card_id)->clearFlags();
+
+    QString pattern = QString::number(card_id) + ":.";
+    if(who)
+        who->invoke("setCardFlag", pattern);
+    else
+        broadcastInvoke("setCardFlag", pattern);
 }
 
 ServerPlayer *Room::addSocket(ClientSocket *socket){
@@ -1698,7 +1740,8 @@ void Room::chooseGenerals(){
             lord_list = Sanguosha->getRandomLords();
         QString general = askForGeneral(the_lord, lord_list);
         the_lord->setGeneralName(general);
-        if(!Config.EnableBasara)broadcastProperty(the_lord, "general", general);
+        if (!Config.EnableBasara)
+            broadcastProperty(the_lord, "general", general);
 
         if(Config.EnableSame){
             foreach(ServerPlayer *p, players){

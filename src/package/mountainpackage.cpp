@@ -1043,7 +1043,7 @@ public:
                     }
                 }
             }
-            skill_name = ai->askForChoice("huashen", skill_names.join("+"));
+            skill_name = ai->askForChoice("huashen", skill_names.join("+"), QVariant());
             const General* general = hash[skill_name];
             QString kingdom = general->getKingdom();
             if(zuoci->getKingdom() != kingdom){

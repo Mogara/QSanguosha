@@ -32,7 +32,7 @@ public:
     void playCardEffect(const QString &card_name) const;
     int getRandomHandCardId() const;
     const Card *getRandomHandCard() const;
-    void obtainCard(const Card *card);
+    void obtainCard(const Card *card, bool unhide = true);
     void throwAllEquips();
     void throwAllHandCards();
     void throwAllCards();
@@ -64,6 +64,8 @@ public:
     AI *getAI() const;
     AI *getSmartAI() const;
 
+    bool isOnline() const;
+
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
@@ -94,6 +96,7 @@ public:
     void introduceTo(ServerPlayer *player);
     void marshal(ServerPlayer *player) const;
 
+    void addToPile(const QString &pile_name, const Card *card, bool open = true);
     void addToPile(const QString &pile_name, int card_id, bool open = true);
     void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
 
@@ -101,6 +104,9 @@ public:
 
     void startNetworkDelayTest();
     qint64 endNetworkDelayTest();
+
+    // static function
+    static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
 private:
     ClientSocket *socket;

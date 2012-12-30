@@ -58,8 +58,8 @@ const Card *ServerPlayer::getRandomHandCard() const{
     return handcards.at(index);
 }
 
-void ServerPlayer::obtainCard(const Card *card){
-    room->obtainCard(this, card);
+void ServerPlayer::obtainCard(const Card *card, bool unhide){
+    room->obtainCard(this, card, unhide);
 }
 
 void ServerPlayer::throwAllEquips(){
@@ -121,9 +121,13 @@ void ServerPlayer::clearPrivatePiles(){
 }
 
 void ServerPlayer::bury(){
+    clearFlags();
+    clearHistory();
     throwAllCards();
     throwAllMarks();
     clearPrivatePiles();
+
+    room->clearPlayerCardLock(this);
 }
 
 void ServerPlayer::throwAllCards(){
@@ -651,6 +655,10 @@ void ServerPlayer::loseAllMarks(const QString &mark_name){
     }
 }
 
+bool ServerPlayer::isOnline() const {
+    return getState() == "online";
+}
+
 void ServerPlayer::setAI(AI *ai) {
     this->ai = ai;
 }
@@ -837,6 +845,18 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     }
 }
 
+void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open){
+    if(card->isVirtualCard()){
+        QList<int> cards_id = card->getSubcards();
+        foreach(int card_id, cards_id)
+            piles[pile_name] << card_id;
+    }
+    else
+        piles[pile_name] << card->getEffectiveId();
+
+    room->moveCardTo(card, this, Player::Special, open);
+}
+
 void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     piles[pile_name] << card_id;
 
@@ -867,4 +887,9 @@ void ServerPlayer::copyFrom(ServerPlayer* sp)
 
     Player* c = b;
     c->copyFrom(a);
+}
+
+bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
+    Room *room = a->getRoom();
+    return room->getFront(a, b) == a;
 }
