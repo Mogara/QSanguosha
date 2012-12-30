@@ -100,6 +100,13 @@ return {
 	["#ZhichiDamaged"] = "%from 受到【智迟】的影响，本回合内【杀】和非延时锦囊都将对其无效",
 	["#ZhichiAvoid"] = "%from 受到【智迟】的影响，【杀】和非延时锦囊对其无效",
 
+	["#zhangchunhua"] = "冷血皇后",
+	["zhangchunhua"]="张春华",
+	["jueqing"]="绝情",
+	[":jueqing"]="<b>锁定技</b>，你即将造成的伤害均视为失去体力。",
+	["shangshi"]="伤逝",
+	[":shangshi"]="<b>锁定技</b>，弃牌阶段外，当你的手牌数小于X时，你将手牌补至X张（X为你已损失的体力值且最多为2）",
+		
 	["#zhonghui"] = "桀骜的野心家",
 	["zhonghui"] = "钟会",
 	["quanji"] = "权计",

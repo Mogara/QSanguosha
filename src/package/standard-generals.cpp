@@ -1329,9 +1329,9 @@ void StandardPackage::addGenerals(){
     luxun->addSkill(new Lianying);
 
     sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false);
-    sunshangxiang->addSkill(new SPConvertSkill("chujia", "sunshangxiang", "sp_sunshangxiang"));
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
+    sunshangxiang->addSkill(new SPConvertSkill("chujia", "sunshangxiang", "sp_sunshangxiang"));
 
     General *lvbu, *huatuo, *diaochan;
 

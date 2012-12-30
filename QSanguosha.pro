@@ -65,7 +65,7 @@ SOURCES += \
 	src/package/yjcm2012-package.cpp \
 	src/package/bgm-package.cpp \
 	src/package/lingpackage.cpp \
-	#src/package/assassinspackage.cpp \
+	src/package/assassins.cpp \
 	src/package/special3v3-package.cpp \
 	src/scenario/scenario.cpp \
 	src/scenario/boss-mode-scenario.cpp \
@@ -186,7 +186,7 @@ HEADERS += \
 	src/package/yjcm2012-package.h \
 	src/package/bgm-package.h \
 	src/package/lingpackage.h \
-	#src/package/assassinspackage.h \
+	src/package/assassins.h \
 	src/package/special3v3-package.h \
 	src/scenario/boss-mode-scenario.h \
 	src/scenario/couple-scenario.h \
