@@ -258,6 +258,13 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
         killer->addVictim(victim);
     }
 
+    if(Config.EnableHegemony && victim->getGeneralName() != "anjiang"){
+        QVariant victims;
+        QStringList victim_list;
+        victim_list << victim->objectName();
+        victims.setValue(victim_list);
+        setTag("RecordVictimsOfHegemony", victims);
+    }
     victim->setAlive(false);
 
     int index = alive_players.indexOf(victim);
@@ -1674,8 +1681,8 @@ void Room::chooseGenerals(){
     {
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
-        if(mode == "08same")
-            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+        if(Config.EnableSame)
+            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 7).toInt());
         else if(the_lord->getState() == "robot")
             if(qrand()%100 < nonlord_prob)
                 lord_list = Sanguosha->getRandomGenerals(1);
@@ -1687,7 +1694,7 @@ void Room::chooseGenerals(){
         the_lord->setGeneralName(general);
         if(!Config.EnableBasara)broadcastProperty(the_lord, "general", general);
 
-        if(mode == "08same"){
+        if(Config.EnableSame){
             foreach(ServerPlayer *p, players){
                 if(!p->isLord())
                     p->setGeneralName(general);

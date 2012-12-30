@@ -106,7 +106,7 @@ void Photo::setOrder(int order){
         order_item->setPixmap(pixmap);
     else{
         order_item = new QGraphicsPixmapItem(pixmap, this);
-        order_item->setVisible(ServerInfo.GameMode == "08same");
+        order_item->setVisible(ServerInfo.EnableSame);
         order_item->moveBy(15, 0);
     }
 }
@@ -688,7 +688,7 @@ void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
 
 QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
     if(change == ItemFlagsHaveChanged){
-        if(ServerInfo.GameMode != "08same")
+        if(!ServerInfo.EnableSame)
             order_item->setVisible(flags() & ItemIsSelectable);
     }
 

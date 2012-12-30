@@ -133,6 +133,7 @@ void GameRule::setGameProcess(Room *room) const{
         case Player::Lord:
         case Player::Loyalist: good ++; break;
         case Player::Rebel: bad++; break;
+        case Player::Careerist:
         case Player::Renegade: break;
         }
     }
@@ -606,12 +607,15 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             break;
         }
     }else if(Config.EnableHegemony){
-        bool has_anjiang = false, has_diff_kingdoms = false;
+        bool has_anjiang = false, has_diff_kingdoms = false, has_careerist = false;
         QString init_kingdom;
         foreach(ServerPlayer *p, room->getAlivePlayers()){
             if(room->getTag(p->objectName()).toStringList().size()){
                 has_anjiang = true;
             }
+
+            if(p->getKingdom() == "careerist" && room->getAlivePlayers().length() > 1)
+                has_careerist = true;
 
             if(init_kingdom.isEmpty()){
                 init_kingdom = p->getKingdom();
@@ -621,24 +625,23 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             }
         }
 
-        if(!has_anjiang && !has_diff_kingdoms){
-            QStringList winners;
-            QString aliveKingdom = room->getAlivePlayers().first()->getKingdom();
-            foreach(ServerPlayer *p, room->getPlayers()){
-                if(p->isAlive())winners << p->objectName();
-                if(p->getKingdom() == aliveKingdom)
-                {
-                    QStringList generals = room->getTag(p->objectName()).toStringList();
-                    if(generals.size()&&!Config.Enable2ndGeneral)continue;
-                    if(generals.size()>1)continue;
-
-                    //if someone showed his kingdom before death,
-                    //he should be considered victorious as well if his kingdom survives
-                    winners << p->objectName();
-                }
+        if(!has_anjiang && !has_diff_kingdoms && !has_careerist){
+            if(room->getAlivePlayers().length() == 1 && room->getAlivePlayers().first()->getKingdom() == "careerist"){
+                winner = room->getAlivePlayers().first()->objectName();
             }
-
-            winner = winners.join("+");
+            else{
+                QStringList winners;
+                QString aliveKingdom = room->getAlivePlayers().first()->getKingdom();
+                foreach(ServerPlayer *p, room->getPlayers()){
+                    if(p->isAlive()) winners << p->objectName();
+                    if(p->getKingdom() == aliveKingdom)
+                    {
+                        if(room->getTag("RecordVictimsOfHegemony").toStringList().contains(p->objectName()))
+                            winners << p->objectName();
+                    }
+                }
+                winner = winners.join("+");
+            }
         }
     }else{
         QStringList alive_roles = room->aliveRoles(victim);
@@ -823,6 +826,7 @@ QString BasaraMode::getMappedRole(const QString &role){
         roles["shu"] = "loyalist";
         roles["wu"] = "rebel";
         roles["qun"] = "renegade";
+        roles["careerist"] = "careerist";
     }
     return roles[role];
 }
@@ -865,6 +869,18 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     QStringList names = room->getTag(player->objectName()).toStringList();
     if(names.isEmpty())return;
 
+    bool is_careerist = false;
+    if(Config.EnableHegemony){
+        QMap<QString, int> kingdom_roles;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            kingdom_roles[p->getKingdom()]++;
+        }
+
+        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= room->getAlivePlayers().length()/2
+                && player->getGeneralName() == "anjiang")
+            is_careerist = true;
+    }
+
     if(player->getGeneralName() == "anjiang")
     {
         QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
@@ -882,8 +898,10 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         room->setPlayerProperty(player,"general2",general_name);
     }
 
-    room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
-    if(Config.EnableHegemony)room->setPlayerProperty(player, "role", getMappedRole(player->getGeneral()->getKingdom()));
+    QString kingdom = is_careerist ? "careerist" : player->getGeneral()->getKingdom();
+    room->setPlayerProperty(player, "kingdom", kingdom);
+    if(Config.EnableHegemony)
+        room->setPlayerProperty(player, "role", getMappedRole(kingdom));
 
     names.removeOne(general_name);
     room->setTag(player->objectName(),QVariant::fromValue(names));

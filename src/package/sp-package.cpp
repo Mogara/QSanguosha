@@ -386,12 +386,25 @@ public:
 
 class Shenwei: public DrawCardsSkill{
 public:
-    Shenwei():DrawCardsSkill("shenwei"){
+    Shenwei():DrawCardsSkill("#shenwei-draw"){
         frequency = Compulsory;
     }
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         return n + 2;
+    }
+};
+
+class ShenweiKeep: public MaxCardsSkill{
+public:
+    ShenweiKeep():MaxCardsSkill("shenwei"){
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if(target->hasSkill(objectName()))
+            return 2;
+        else
+            return 0;
     }
 };
 
@@ -446,8 +459,11 @@ SPPackage::SPPackage()
     yangxiu->addSkill(new Jilei);
     yangxiu->addSkill(new JileiClear);
     yangxiu->addSkill(new Danlao);
-
     related_skills.insertMulti("jilei", "#jilei-clear");
+
+    General *sp_diaochan = new General(this, "sp_diaochan", "qun", 3, false, true);
+    sp_diaochan->addSkill("lijian");
+    sp_diaochan->addSkill("biyue");
 
     General *gongsunzan = new General(this, "gongsunzan", "qun");
     gongsunzan->addSkill(new Yicong);
@@ -456,13 +472,17 @@ SPPackage::SPPackage()
     yuanshu->addSkill(new Yongsi);
     yuanshu->addSkill(new Weidi);
 
-    General *sp_diaochan = new General(this, "sp_diaochan", "qun", 3, false, true);
-    sp_diaochan->addSkill("lijian");
-    sp_diaochan->addSkill("biyue");
-
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
     sp_sunshangxiang->addSkill("jieyin");
     sp_sunshangxiang->addSkill("xiaoji");
+
+    General *sp_pangde = new General(this, "sp_pangde", "wei", 4, true, true);
+    sp_pangde->addSkill("mengjin");
+    sp_pangde->addSkill("mashu");
+
+    General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4);
+    sp_guanyu->addSkill("wusheng");
+    sp_guanyu->addSkill(new Danji);
 
     General *shenlvbu1 = new General(this, "shenlvbu1", "god", 8, true, true);
     shenlvbu1->addSkill("mashu");
@@ -472,12 +492,10 @@ SPPackage::SPPackage()
     shenlvbu2->addSkill("mashu");
     shenlvbu2->addSkill("wushuang");
     shenlvbu2->addSkill(new Xiuluo);
+    shenlvbu2->addSkill(new ShenweiKeep);
     shenlvbu2->addSkill(new Shenwei);
     shenlvbu2->addSkill(new Skill("shenji"));
-
-    General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4);
-    sp_guanyu->addSkill("wusheng");
-    sp_guanyu->addSkill(new Danji);
+    related_skills.insertMulti("shenwei", "#shenwei-draw");
 
     General *sp_caiwenji = new General(this, "sp_caiwenji", "wei", 3, false, true);
     sp_caiwenji->addSkill("beige");
@@ -492,10 +510,6 @@ SPPackage::SPPackage()
     sp_jiaxu->addSkill("luanwu");
     sp_jiaxu->addSkill("weimu");
     sp_jiaxu->addSkill("#@chaos-1");
-
-    General *sp_pangde = new General(this, "sp_pangde", "wei", 4, true, true);
-    sp_pangde->addSkill("mengjin");
-    sp_pangde->addSkill("mashu");
 
     addMetaObject<WeidiCard>();
 }

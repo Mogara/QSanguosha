@@ -455,6 +455,28 @@ public:
     }
 };
 
+class Zongshi: public MaxCardsSkill{
+public:
+    Zongshi():MaxCardsSkill("zongshi"){
+    }
+    virtual int getExtra(const Player *target) const{
+        int extra = 0;
+        QSet<QString> kingdom_set;
+        if(target->parent()){
+            foreach(const Player *player, target->parent()->findChildren<const Player *>()){
+                if(player->isAlive()){
+                    kingdom_set << player->getKingdom();
+                }
+            }
+        }
+        extra = kingdom_set.size();
+        if(target->hasSkill(objectName()))
+            return extra;
+        else
+            return 0;
+    }
+};
+
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
@@ -831,7 +853,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *liubiao = new General(this, "liubiao", "qun", 4);
     liubiao->addSkill(new Zishou);
-    liubiao->addSkill(new Skill("zongshi", Skill::Compulsory));
+    liubiao->addSkill(new Zongshi);
 	
     General *huaxiong = new General(this, "huaxiong", "qun", 6);
     huaxiong->addSkill(new Shiyong);

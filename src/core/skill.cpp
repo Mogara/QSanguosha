@@ -208,7 +208,7 @@ int TriggerSkill::getPriority() const{
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
-    return target->isAlive() && target->hasSkill(objectName());
+    return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
 ScenarioRule::ScenarioRule(Scenario *scenario)
@@ -221,7 +221,7 @@ int ScenarioRule::getPriority() const{
     return 3;
 }
 
-bool ScenarioRule::triggerable(const ServerPlayer *target) const{
+bool ScenarioRule::triggerable(const ServerPlayer *) const{
     return true;
 }
 
@@ -305,6 +305,7 @@ SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const Q
 }
 
 bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
+    if (target == NULL) return false;
     QString package = Sanguosha->getGeneral(to)->getPackage();
     if(Sanguosha->getBanPackages().contains(package)) return false;
     return GameStartSkill::triggerable(target) && target->getGeneralName() == from;
@@ -331,7 +332,11 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 DistanceSkill::DistanceSkill(const QString &name)
     :Skill(name, Skill::Compulsory)
 {
+}
 
+MaxCardsSkill::MaxCardsSkill(const QString &name)
+    :Skill(name, Skill::Compulsory)
+{
 }
 
 WeaponSkill::WeaponSkill(const QString &name)
@@ -340,6 +345,7 @@ WeaponSkill::WeaponSkill(const QString &name)
 }
 
 bool WeaponSkill::triggerable(const ServerPlayer *target) const{
+    if (target == NULL) return false;
     return target->hasWeapon(objectName());
 }
 
@@ -350,6 +356,7 @@ ArmorSkill::ArmorSkill(const QString &name)
 }
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
+    if (target == NULL) return false;
     return target->hasArmorEffect(objectName()) && target->getArmor()->getSkill() == this;
 }
 

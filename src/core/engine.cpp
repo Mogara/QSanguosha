@@ -17,10 +17,6 @@
 
 Engine *Sanguosha = NULL;
 
-extern "C" {
-    int luaopen_sgs(lua_State *);
-}
-
 void Engine::addPackage(const QString &name){
     Package *pack = PackageAdder::packages()[name];
     if(pack)
@@ -41,54 +37,18 @@ Engine::Engine()
 {
     Sanguosha = this;
 
-    QStringList package_names;
-    package_names << "StandardCard"
-            << "StandardExCard"
-            << "Maneuvering"
-            << "SPCard"
-            << "YitianCard"
-            << "Nostalgia"
-            << "Joy"
-            << "Disaster"
-            << "JoyEquip"
+    lua = CreateLuaState();
+    DoLuaScript(lua, "lua/config.lua");
 
-            << "Standard"
-            << "Wind"
-            << "Fire"
-            << "Thicket"
-            << "Mountain"
-            << "God"
-            << "SP"
-            << "YJCM"
-            << "YJCM2012"
-            << "Special3v3"
-            << "BGM"
-            << "Yitian"
-            << "Wisdom"
-            << "Test";
-
+    QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
     foreach(QString name, package_names)
         addPackage(name);
 
-    QStringList scene_names;
-    scene_names << "Guandu"
-                << "Fancheng"
-                << "Couple"
-                << "Zombie"
-                << "Impasse"
-                << "Custom";
-
-    for(int i=1; i<=21; i++){
-        scene_names << QString("MiniScene_%1").arg(i, 2, 10, QChar('0'));
-    }
-
+    QStringList scene_names = GetConfigFromLuaState(lua, "scene_names").toStringList();
     foreach(QString name, scene_names)
         addScenario(name);
 
-    foreach(const Skill *skill, skills.values()){
-        Skill *mutable_skill = const_cast<Skill *>(skill);
-        mutable_skill->initMediaSource();
-    }
+    DoLuaScript(lua, "lua/sanguosha.lua");
 
     // available game modes
     modes["02p"] = tr("2 players");
@@ -105,7 +65,6 @@ Engine::Engine()
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
     modes["08pz"] = tr("8 players (0 renegade)");
-    modes["08same"] = tr("8 players (same mode)");
     modes["09p"] = tr("9 players");
     modes["10pd"] = tr("10 players");
     modes["10p"] = tr("10 players (1 renegade)");
@@ -113,39 +72,16 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-    QString error_msg;
-    lua = createLuaState(false, error_msg);
-    if(lua == NULL){
-        QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
-        exit(1);
-    }
+
 
     foreach(QString ban, getBanPackages()){
         addBanPackage(ban);
     }
-}
 
-lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-
-    luaopen_sgs(L);
-
-    int error = luaL_dofile(L, "sanguosha.lua");
-    if(error){
-        error_msg = lua_tostring(L, -1);
-        return NULL;
+    foreach(const Skill *skill, skills.values()){
+        Skill *mutable_skill = const_cast<Skill *>(skill);
+        mutable_skill->initMediaSource();
     }
-
-    if(load_ai){
-        error = luaL_dofile(L, "lua/ai/smart-ai.lua");
-        if(error){
-            error_msg = lua_tostring(L, -1);
-            return NULL;
-        }
-    }
-
-    return L;
 }
 
 lua_State *Engine::getLuaState() const{
@@ -194,11 +130,17 @@ void Engine::addSkills(const QList<const Skill *> &all_skills){
             prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
         else if(skill->inherits("DistanceSkill"))
             distance_skills << qobject_cast<const DistanceSkill *>(skill);
+        else if(skill->inherits("MaxCardsSkill"))
+            maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
     }
 }
 
 QList<const DistanceSkill *> Engine::getDistanceSkills() const{
     return distance_skills;
+}
+
+QList<const MaxCardsSkill *> Engine::getMaxCardsSkills() const{
+    return maxcards_skills;
 }
 
 void Engine::addPackage(Package *package){
@@ -349,7 +291,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20120405";
+    return GetConfigFromLuaState(lua, "version").toString();
 }
 
 QString Engine::getVersion() const{
@@ -362,11 +304,11 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return tr("Taqing");
+    return GetConfigFromLuaState(lua, "version_name").toString();
 }
 
 QString Engine::getMODName() const{
-    return "official";
+    return GetConfigFromLuaState(lua, "mod_name").toString();
 }
 
 QStringList Engine::getExtensions() const{
@@ -384,7 +326,7 @@ QStringList Engine::getExtensions() const{
 QStringList Engine::getKingdoms() const{
     static QStringList kingdoms;
     if(kingdoms.isEmpty())
-        kingdoms << "wei" << "shu" << "wu" << "qun" << "god";
+        kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();
 
     return kingdoms;
 }
@@ -392,11 +334,20 @@ QStringList Engine::getKingdoms() const{
 QColor Engine::getKingdomColor(const QString &kingdom) const{
     static QMap<QString, QColor> color_map;
     if(color_map.isEmpty()){
-        color_map["wei"] = QColor(0x54, 0x79, 0x98);
-        color_map["shu"] = QColor(0xD0, 0x79, 0x6C);
-        color_map["wu"] = QColor(0x4D, 0xB8, 0x73);
-        color_map["qun"] = QColor(0x8A, 0x80, 0x7A);
-        color_map["god"] = QColor(0x96, 0x94, 0x3D);
+        foreach(QString k, getKingdoms()){
+            QString color_str = GetConfigFromLuaState(lua,  ("color_" + k).toAscii()).toString();
+            QRegExp rx("#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})");
+            if(rx.exactMatch(color_str)){
+                QStringList results = rx.capturedTexts();
+                int red = results.at(1).toInt(NULL, 16);
+                int green = results.at(2).toInt(NULL, 16);
+                int blue = results.at(3).toInt(NULL, 16);
+
+                color_map.insert(k, QColor(red, green, blue));
+            }
+        }
+
+        Q_ASSERT(!color_map.isEmpty());
     }
 
     return color_map.value(kingdom);
@@ -411,6 +362,8 @@ QString Engine::getSetupString() const{
         flags.append("S");
     if(Config.EnableScene)
         flags.append("C");
+    if(Config.EnableSame)
+        flags.append("T");
     if(Config.EnableBasara)
         flags.append("B");
     if(Config.EnableHegemony)
@@ -445,8 +398,6 @@ QString Engine::getModeName(const QString &mode) const{
         return modes.value(mode);
     else
         return tr("%1 [Scenario mode]").arg(translate(mode));
-
-    return QString();
 }
 
 int Engine::getPlayerCount(const QString &mode) const{
@@ -668,10 +619,12 @@ QList<int> Engine::getRandomCards() const{
 
     QList<int> list;
     foreach(Card *card, cards){
+        card->clearFlags();
+
         if(exclude_disaters && card->inherits("Disaster"))
             continue;
 
-        if(card->getPackage() == "Special3v3" && using_new_3v3){
+        if(card->getPackage() == "New3v3Card" && using_new_3v3){
             list << card->getId();
             list.removeOne(98);
         }
@@ -773,4 +726,14 @@ int Engine::correctDistance(const Player *from, const Player *to) const{
     }
 
     return correct;
+}
+
+int Engine::correctMaxCards(const Player *target) const{
+    int extra = 0;
+
+    foreach(const MaxCardsSkill *skill, maxcards_skills){
+        extra += skill->getExtra(target);
+    }
+
+    return extra;
 }

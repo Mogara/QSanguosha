@@ -14,7 +14,8 @@ CONFIG += warn_on audio
 # CONFIG += chatvoice
 # Also, this function can only enabled under Windows system as it make use of Microsoft TTS
 
-SOURCES += src/main.cpp \
+SOURCES += \
+	src/main.cpp \
 	src/client/aux-skills.cpp \
 	src/client/client.cpp \
 	src/client/clientplayer.cpp \
@@ -28,6 +29,7 @@ SOURCES += src/main.cpp \
 	src/core/settings.cpp \
 	src/core/skill.cpp \
 	src/core/statistics.cpp \
+	src/core/util.cpp \
 	src/dialog/cardeditor.cpp \
 	src/dialog/cardoverview.cpp \
 	src/dialog/choosegeneraldialog.cpp \
@@ -47,6 +49,7 @@ SOURCES += src/main.cpp \
 	src/package/firepackage.cpp \
 	src/package/god.cpp \
 	src/package/joypackage.cpp \
+	src/package/lingpackage.cpp \
 	src/package/maneuvering.cpp \
 	src/package/mountainpackage.cpp \
 	src/package/nostalgia.cpp \
@@ -74,7 +77,7 @@ SOURCES += src/main.cpp \
 	src/server/ai.cpp \
 	src/server/contestdb.cpp \
 	src/server/gamerule.cpp \
-        src/server/generalselector.cpp \
+	src/server/generalselector.cpp \
 	src/server/room.cpp \
 	src/server/roomthread.cpp \
 	src/server/roomthread1v1.cpp \
@@ -132,7 +135,8 @@ SOURCES += src/main.cpp \
 	src/lua/lapi.c \
 	swig/sanguosha_wrap.cxx
 
-HEADERS += src/client/aux-skills.h \
+HEADERS += \
+	src/client/aux-skills.h \
 	src/client/client.h \
 	src/client/clientplayer.h \
 	src/client/clientstruct.h \
@@ -146,6 +150,7 @@ HEADERS += src/client/aux-skills.h \
 	src/core/settings.h \
 	src/core/skill.h \
 	src/core/statistics.h \
+	src/core/util.h \
 	src/dialog/cardeditor.h \
 	src/dialog/cardoverview.h \
 	src/dialog/choosegeneraldialog.h \
@@ -164,6 +169,7 @@ HEADERS += src/client/aux-skills.h \
 	src/package/firepackage.h \
 	src/package/god.h \
 	src/package/joypackage.h \
+	src/package/lingpackage.h \
 	src/package/maneuvering.h \
 	src/package/mountainpackage.h \
 	src/package/nostalgia.h \
@@ -244,7 +250,8 @@ HEADERS += src/client/aux-skills.h \
 	src/lua/lauxlib.h \
 	src/lua/lapi.h
 	
-FORMS += src/dialog/cardoverview.ui \
+FORMS += \
+	src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
 	src/dialog/connectiondialog.ui \
 	src/dialog/generaloverview.ui \
@@ -266,7 +273,7 @@ win32{
 }
 
 macx{
-    ICON = resource/icon/sgs.icns
+	ICON = resource/icon/sgs.icns
 }
 
 
@@ -288,10 +295,10 @@ CONFIG(joystick){
 }
 
 CONFIG(chatvoice){
-    win32{
-        CONFIG += qaxcontainer
-        DEFINES += CHAT_VOICE
-    }
+	win32{
+		CONFIG += qaxcontainer
+		DEFINES += CHAT_VOICE
+	}
 }
 
 TRANSLATIONS += sanguosha.ts

@@ -35,6 +35,7 @@ public:
     bool FreeAssignSelf;
     bool Enable2ndGeneral;
     bool EnableScene;	//changjing
+    bool EnableSame;
     bool EnableBasara;
     bool EnableHegemony;
     int MaxHpScheme;

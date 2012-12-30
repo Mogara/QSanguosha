@@ -185,17 +185,17 @@ QWidget *ServerDialog::createAdvancedTab(){
     scene_checkbox  = new QCheckBox(tr("Enable Scene"));
 
     scene_checkbox->setChecked(Config.EnableScene);	//changjing
-    //changjing
+
+    same_checkbox  = new QCheckBox(tr("Enable Same"));
+    same_checkbox->setChecked(Config.EnableSame);
 
     max_hp_label = new QLabel(tr("Max HP scheme"));
-
     max_hp_scheme_combobox = new QComboBox;
     max_hp_scheme_combobox->addItem(tr("Sum - 3"));
     max_hp_scheme_combobox->addItem(tr("Minimum"));
     max_hp_scheme_combobox->addItem(tr("Average"));
     max_hp_scheme_combobox->setCurrentIndex(Config.MaxHpScheme);
     second_general_checkbox->setChecked(Config.Enable2ndGeneral);
-
 
     basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
@@ -206,6 +206,8 @@ QWidget *ServerDialog::createAdvancedTab(){
     hegemony_checkbox->setChecked(Config.EnableHegemony);
     hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
     connect(basara_checkbox,SIGNAL(toggled(bool)),hegemony_checkbox, SLOT(setEnabled(bool)));
+    connect(hegemony_checkbox,SIGNAL(toggled(bool)),second_general_checkbox, SLOT(setChecked(bool)));
+    connect(second_general_checkbox,SIGNAL(toggled(bool)), this, SLOT(updateCheckBoxState(bool)));
 
     announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
     announce_ip_checkbox->setChecked(Config.AnnounceIP);
@@ -237,7 +239,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addWidget(second_general_checkbox);
     layout->addLayout(HLay(max_hp_label, max_hp_scheme_combobox));
     layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
-    layout->addWidget(scene_checkbox);		//changjing
+    layout->addLayout(HLay(scene_checkbox, same_checkbox));
     layout->addWidget(announce_ip_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
@@ -262,7 +264,7 @@ QWidget *ServerDialog::createAITab(){
     ai_enable_checkbox->setChecked(Config.EnableAI);
 
     role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
-    role_predictable_checkbox->setChecked(Config.value("RolePredictable", true).toBool());
+    role_predictable_checkbox->setChecked(Config.value("RolePredictable", false).toBool());
 
     ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
     ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
@@ -314,6 +316,13 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button)
         second_general_checkbox->setEnabled(true);
         mini_scene_button->setEnabled(false);
     }
+}
+
+void ServerDialog::updateCheckBoxState(bool toggled){
+    if(!toggled)
+        hegemony_checkbox->setChecked(false);
+
+    hegemony_checkbox->setEnabled(toggled);
 }
 
 void BanlistDialog::switchTo(int item)
@@ -672,7 +681,6 @@ QGroupBox *ServerDialog::createGameModeBox(){
     return mode_box;
 }
 
-
 QLayout *ServerDialog::createButtonLayout(){
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
@@ -870,6 +878,7 @@ bool ServerDialog::config(){
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.EnableScene = scene_checkbox->isChecked();		//changjing
+    Config.EnableSame = same_checkbox->isChecked();
     Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
     Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
@@ -905,6 +914,7 @@ bool ServerDialog::config(){
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("EnableScene", Config.EnableScene);	//changjing
+    Config.setValue("EnableSame", Config.EnableSame);
     Config.setValue("EnableBasara",Config.EnableBasara);
     Config.setValue("EnableHegemony",Config.EnableHegemony);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
@@ -978,13 +988,6 @@ void Server::daemonize(){
 
 Room *Server::createNewRoom(){
     Room *new_room = new Room(this, Config.GameMode);
-    QString error_msg = new_room->createLuaState();
-
-    if(!error_msg.isEmpty()){
-        QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);
-        return NULL;
-    }
-
     current = new_room;
     rooms.insert(current);
 

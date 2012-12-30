@@ -206,7 +206,7 @@ QString Player::getGeneralName() const{
     if(general)
         return general->objectName();
     else
-        return "";
+        return QString();
 }
 
 void Player::setGeneral2Name(const QString &general_name){
@@ -222,7 +222,7 @@ QString Player::getGeneral2Name() const{
     if(general2)
         return general2->objectName();
     else
-        return "";
+        return QString();
 }
 
 const General *Player::getGeneral2() const{
@@ -258,6 +258,7 @@ Player::Role Player::getRoleEnum() const{
         role_map.insert("loyalist", Loyalist);
         role_map.insert("rebel", Rebel);
         role_map.insert("renegade", Renegade);
+        role_map.insert("careerist", Careerist);
     }
 
     return role_map.value(role);
@@ -434,7 +435,7 @@ bool Player::hasWeapon(const QString &weapon_name) const{
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
-    return armor && getMark("qinggang") == 0 && armor->objectName() == armor_name;
+    return armor && !hasFlag("wuqian") && getMark("qinggang") == 0 && armor->objectName() == armor_name;
 }
 
 QList<const Card *> Player::getJudgingArea() const{
@@ -464,45 +465,15 @@ void Player::setFaceUp(bool face_up){
 }
 
 int Player::getMaxCards() const{
-    int extra = 0, total = 0;
+    int rule = 0, total = 0, extra = 0;
     if(Config.MaxHpScheme == 2 && general2){
         total = general->getMaxHp() + general2->getMaxHp();
         if(total % 2 != 0)
-            extra = 1;
+            rule = 1;
     }
+    extra += Sanguosha->correctMaxCards(this);
 
-    int juejing = hasSkill("juejing") ? 2 : 0;
-
-    int xueyi = 0;
-    if(hasLordSkill("xueyi")){
-        QList<const Player *> players = getSiblings();
-        foreach(const Player *player, players){
-            if(player->isAlive() && player->getKingdom() == "qun")
-                xueyi += 2;
-        }
-    }
-
-    int shenwei = 0;
-    if(hasSkill("shenwei"))
-        shenwei = 2;
-
-    int zongshi = 0;
-    if(hasSkill("zongshi")){
-        QSet<QString> kingdom_set;
-        if(parent()){
-            foreach(const Player *player, parent()->findChildren<const Player *>()){
-                if(player->isAlive()){
-                    kingdom_set << player->getKingdom();
-                }
-            }
-        }
-
-        zongshi = kingdom_set.size();
-    }
-
-    total = qMax(hp,0) + extra + juejing + xueyi + shenwei + zongshi;
-
-    return total;
+    return (qMax(hp,0) + rule + extra);
 }
 
 QString Player::getKingdom() const{
@@ -735,10 +706,12 @@ bool Player::canSlashWithoutCrossbow() const{
         return true;
 
     int slash_count = getSlashCount();
-    if(hasFlag("tianyi_success") || hasFlag("jiangchi_invoke"))
-        return slash_count < 2;
-    else
-        return slash_count < 1;
+    int valid_slash_count = 1;
+    if(hasFlag("tianyi_success"))
+        valid_slash_count++;
+    if(hasFlag("jiangchi_invoke"))
+        valid_slash_count++;
+    return slash_count < valid_slash_count;
 }
 
 void Player::jilei(const QString &type){

@@ -21,7 +21,7 @@ Settings::Settings()
 #ifdef Q_OS_WIN32
     :QSettings("config.ini", QSettings::IniFormat)
 #else
-    :QSettings("QSanguosha.com", "QSanguosha")
+    :QSettings("QSanguosha.org", "QSanguosha")
 #endif
 
      ,Rect(-ViewWidth/2, -ViewHeight/2, ViewWidth, ViewHeight)
@@ -58,10 +58,11 @@ void Settings::init(){
 
     if(!contains("BanPackages")){
         QStringList banlist;
-        banlist << "nostalgia" << "yitian" << "wisdom" << "test"
-                << "disaster" << "god" << "YJCM" << "yitian_cards"
+        banlist << "nostalgia" << "nostal_general" << "yitian" << "wisdom"
+                << "disaster" << "god" << "YJCM" << "yitian_cards" << "test"
                 << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                << "joy" << "joy_equip" ;
+                << "New3v3Card" << "joy" << "joy_equip" << "hegemony_card" 
+                << "hegemony" << "ling";
 
         setValue("BanPackages", banlist);
     }
@@ -74,8 +75,9 @@ void Settings::init(){
     FreeAssignSelf = value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     EnableScene = value("EnableScene", false).toBool();	//changjing
-    EnableBasara= value("EnableBasara",false).toBool();
-    EnableHegemony = value("EnableHegemony",false).toBool();
+    EnableSame = value("EnableSame", false).toBool();
+    EnableBasara = value("EnableBasara", false).toBool();
+    EnableHegemony = value("EnableHegemony", false).toBool();
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
@@ -117,11 +119,7 @@ void Settings::init(){
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
-    roles_ban << "zhugejin";
-
-    kof_ban << "sunquan" << "huatuo" << "zhangliao" << "liubei" << "zhugejin";
-
-    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "zhugejin";
+    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "huaxiong" << "bgm_lvmeng";
 
     hegemony_ban.append(basara_ban);
     hegemony_ban << "xiahoujuan" << "zhugejin";
@@ -130,7 +128,7 @@ void Settings::init(){
             hegemony_ban << general;
     }
 
-    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua"
+    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua" << "bgm_pangtong"
               << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
                 << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
                 << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlvbu" << "dengshizai+bgm_diaochan"
@@ -142,7 +140,7 @@ void Settings::init(){
                 << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao"
                 << "jiangboyue+yanliangwenchou" << "jiangboyue+ganning" << "jiangboyue+luxun" << "jiangboyue+zhanggongqi"
                 << "weiyan+huanggai" << "caoren+shenlvbu" << "bgm_pangtong+huanggai"
-                << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
+                << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+noslingtong"
                 << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
                 << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlvbu"
                 << "yuanshu+lvmeng" << "yuanshu+caochong" << "huatuo+guojia"
@@ -153,44 +151,51 @@ void Settings::init(){
                 << "guanxingzhangbao+luxun" << "guanxingzhangbao+sunce" << "bgm_caoren+caoren"
                 << "bgm_caoren+caozhi" << "bgm_caoren+shenlvbu" << "bgm_caoren+bgm_diaochan"
                 << "bgm_caoren+dengshizai" << "bgm_caoren+caizhaoji" << "bgm_pangtong+huanggai"
-                << "huanggai+guanxingzhangbao";
+                << "huanggai+guanxingzhangbao" << "xushu+zhugeliang" << "nosxushu+zhugeliang"
+                << "zhugejin+caizhaoji" << "zhugejin+zhenji" << "zhugejin+huatuo" << "zhugejin+dengai"
+                << "fazheng+xiahoudun" << "nosfazheng+xiahoudun" << "bgm_zhangfei+guanyu"
+                << "bgm_zhangfei+sp_guanyu" << "bgm_liugei+zhugeliang";
 
     QStringList banlist = value("Banlist/Roles").toStringList();
-    foreach(QString ban_general, roles_ban){
-        if(!banlist.contains(ban_general))
-            banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, roles_ban)
+                banlist << ban_general;
+
+        setValue("Banlist/Roles", banlist);
     }
-    setValue("Banlist/Roles", banlist);
 
     banlist = value("Banlist/1v1").toStringList();
-    foreach(QString ban_general, kof_ban){
-        if(!banlist.contains(ban_general))
-            banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, kof_ban)
+                banlist << ban_general;
+
+        setValue("Banlist/1v1", banlist);
     }
-    setValue("Banlist/1v1", banlist);
 
     banlist = value("Banlist/Basara").toStringList();
-    foreach(QString ban_general, basara_ban){
-        if(!banlist.contains(ban_general))
-                banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, basara_ban)
+                    banlist << ban_general;
+
+        setValue("Banlist/Basara", banlist);
     }
-    setValue("Banlist/Basara", banlist);
 
     banlist = value("Banlist/Hegemony").toStringList();
-    foreach(QString ban_general, hegemony_ban){
-        if(!banlist.contains(ban_general))
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, hegemony_ban)
                 banlist << ban_general;
+        setValue("Banlist/Hegemony", banlist);
     }
-    setValue("Banlist/Hegemony", banlist);
 
     banlist = value("Banlist/Pairs").toStringList();
-    foreach(QString ban_general, pairs_ban){
-        if(!banlist.contains(ban_general))
-                banlist << ban_general;
+    if(banlist.isEmpty()){
+        foreach(QString ban_general, pairs_ban)
+                    banlist << ban_general;
+
+        setValue("Banlist/Pairs", banlist);
     }
-    setValue("Banlist/Pairs", banlist);
 
     QStringList forbid_packages;
-    forbid_packages << "Special3v3";
+    forbid_packages << "New3v3Card";
     setValue("ForbidPackages", forbid_packages.join("+"));
 }

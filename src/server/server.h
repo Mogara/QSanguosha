@@ -97,6 +97,7 @@ private:
     QCheckBox *disable_chat_checkbox;
     QCheckBox *second_general_checkbox;
     QCheckBox *scene_checkbox;	//changjing
+    QCheckBox *same_checkbox;
     QCheckBox *basara_checkbox;
     QCheckBox *hegemony_checkbox;
     QLabel *max_hp_label;
@@ -126,6 +127,7 @@ private slots:
     void select3v3Generals();
     void edit1v1Banlist();
     void updateButtonEnablility(QAbstractButton* button);
+    void updateCheckBoxState(bool toggled);
 
     void doCustomAssign();
     void setMiniCheckBox();

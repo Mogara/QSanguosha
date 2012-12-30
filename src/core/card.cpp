@@ -237,6 +237,7 @@ void Card::setSkillName(const QString &name){
 
 QString Card::getDescription() const{
     QString desc = Sanguosha->translate(":" + objectName());
+    desc.replace("\n", "<br/>");
     return tr("<b>[%1]</b> %2").arg(getName()).arg(desc);
 }
 
@@ -394,7 +395,7 @@ bool Card::targetFixed() const{
     return target_fixed;
 }
 
-bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     if(target_fixed)
         return true;
     else
@@ -423,16 +424,16 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
+ 
+    if(will_throw)
+        room->throwCard(this);
+
     thread->trigger(CardUsed, player, data);
 
     thread->trigger(CardFinished, player, data);
 }
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(will_throw){
-        room->throwCard(this);
-    }
-
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
     }else{
@@ -456,15 +457,15 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
     }
 }
 
-void Card::onEffect(const CardEffectStruct &effect) const{
+void Card::onEffect(const CardEffectStruct &) const{
 
 }
 
-bool Card::isCancelable(const CardEffectStruct &effect) const{
+bool Card::isCancelable(const CardEffectStruct &) const{
     return false;
 }
 
-void Card::onMove(const CardMoveStruct &move) const{
+void Card::onMove(const CardMoveStruct &) const{
     // usually dummy
 }
 
@@ -532,6 +533,10 @@ void Card::setFlags(const QString &flag) const{
 
 bool Card::hasFlag(const QString &flag) const{
     return flags.contains(flag);
+}
+
+void Card::clearFlags() const{
+    flags.clear();
 }
 
 // ---------   Skill card     ------------------

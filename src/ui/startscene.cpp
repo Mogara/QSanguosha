@@ -18,7 +18,7 @@ StartScene::StartScene()
     //the website URL
     QFont website_font(Config.SmallFont);
     website_font.setStyle(QFont::StyleItalic);
-    QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.com", website_font);
+    QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.org", website_font);
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width()/2 - website_text->boundingRect().width(),
                        Config.Rect.height()/2 - website_text->boundingRect().height());
@@ -144,6 +144,10 @@ void StartScene::printServerInfo(){
     server_log->append( Config.EnableScene ?
                         tr("Scene Mode is enabled") :
                         tr("Scene Mode is disabled"));
+
+    server_log->append( Config.EnableSame ?
+                        tr("Same Mode is enabled") :
+                        tr("Same Mode is disabled"));
 
     server_log->append( Config.EnableBasara ?
                         tr("Basara Mode is enabled") :
