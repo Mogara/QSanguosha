@@ -442,6 +442,8 @@ struct PindianStruct{
 typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{
+    NonTrigger,
+
     GameStart,
     TurnStart,
     PhaseChange,
@@ -761,7 +763,6 @@ public:
 class Room : public QThread{
 public:
 	explicit Room(QObject *parent, const char *mode);
-	QString createLuaState();
 	ServerPlayer *addSocket(ClientSocket *socket);
 	bool isFull() const;
 	bool isFinished() const;
@@ -858,8 +859,8 @@ public:
 	void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
 	void drawCards(ServerPlayer *player, int n, const char *reason = NULL);
-	void obtainCard(ServerPlayer *target, const Card *card);
-	void obtainCard(ServerPlayer *target, int card_id);
+	void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
+	void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
 
 	void throwCard(const Card *card);
 	void throwCard(int card_id);
@@ -877,7 +878,7 @@ public:
 	bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
 	bool isCanceled(const CardEffectStruct &effect);
 	int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
-	const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant());
+	const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
 	bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt);
 	int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
 	const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);

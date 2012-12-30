@@ -73,12 +73,6 @@ void Room::initCallbacks(){
     callbacks["networkDelayTestCommand"] = &Room::networkDelayTestCommand;
 }
 
-QString Room::createLuaState(){
-    QString error_msg;
-    L = Sanguosha->createLuaState(true, error_msg);
-    return error_msg;
-}
-
 ServerPlayer *Room::getCurrent() const{
     return current;
 }
@@ -444,7 +438,7 @@ void Room::gameOver(const QString &winner){
             id.replace("_mini_","");
             int stage = Config.value("MiniSceneStage",1).toInt();
             int current = id.toInt();
-            if((stage == current) && stage<21)
+            if((stage == current) && stage<33)
             {
                 Config.setValue("MiniSceneStage",current+1);
                 id = QString::number(stage+1).rightJustified(2,'0');
@@ -598,20 +592,19 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     return answer;
 }
 
-void Room::obtainCard(ServerPlayer *target, const Card *card){
+void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide){
     if(card == NULL)
         return;
 
     if(card->isVirtualCard()){
-        QList<int> subcards = card->getSubcards();
-        foreach(int card_id, subcards)
-            obtainCard(target, card_id);
+        moveCardTo(card, target, Player::Hand, unhide);
+
     }else
-        obtainCard(target, card->getId());
+        obtainCard(target, card->getId(), unhide);
 }
 
-void Room::obtainCard(ServerPlayer *target, int card_id){
-    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, true);
+void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
+    moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, unhide);
 }
 
 bool Room::isCanceled(const CardEffectStruct &effect){
@@ -738,7 +731,9 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data){
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
+    const QVariant &data, TriggerEvent trigger_event)
+{
     const Card *card = NULL;
 
     QVariant asked = pattern;
@@ -792,7 +787,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         CardStar card_ptr = card;
         QVariant card_star = QVariant::fromValue(card_ptr);
 
-        if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
+        if(trigger_event == CardResponsed || trigger_event == CardUsed){
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
@@ -800,12 +795,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             sendLog(log);
 
             player->playCardEffect(card);
-
-
+            /* the first is the right one,but for convenient, we use the second one
+            thread->trigger(trigger_event, this, player, card_star);   */
             thread->trigger(CardResponsed, player, card_star);
-        }else{
-            thread->trigger(CardDiscarded, player, card_star);
         }
+        else if(trigger_event == CardDiscarded)
+            thread->trigger(CardDiscarded, player, card_star);
 
     }else if(continuable)
         return askForCard(player, pattern, prompt);
@@ -1508,10 +1503,14 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
     if(isFull())
         return;
 
-    int n = 0;
-    foreach(ServerPlayer *player, players){
-        if(player->getState() == "robot")
-            n ++;
+    QString robot_name;
+    if(!Config.value("AINames", true).toBool()){
+        int n = 0;
+        foreach(ServerPlayer *player, players){
+            if(player->getState() == "robot")
+                n++;
+        }
+        robot_name = tr("Computer %1").arg(QChar('A' + n));
     }
 
     ServerPlayer *robot = new ServerPlayer(this);
@@ -1519,7 +1518,14 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
 
     players << robot;
 
-    const QString robot_name = tr("Computer %1").arg(QChar('A' + n));
+    if(Config.value("AINames", true).toBool()){
+        QStringList robot_names = GetConfigFromLuaState(Sanguosha->getLuaState(), "ai_names").toStringList();
+        foreach(ServerPlayer *p, players){
+            if(robot_names.contains(p->screenName()))
+                robot_names.removeOne(p->screenName());
+        }
+        robot_name = robot_names.at(qrand() % robot_names.length());
+    }
     const QString robot_avatar = Sanguosha->getRandomGeneralName();
     signup(robot, robot_name, robot_avatar, true);
 

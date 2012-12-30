@@ -25,7 +25,6 @@ public:
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
     explicit Room(QObject *parent, const QString &mode);
-    QString createLuaState();
     ServerPlayer *addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;
@@ -127,8 +126,8 @@ public:
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
     void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
-    void obtainCard(ServerPlayer *target, const Card *card);
-    void obtainCard(ServerPlayer *target, int card_id);
+    void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
+    void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
 
     void throwCard(const Card *card);
     void throwCard(int card_id);
@@ -146,7 +145,8 @@ public:
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
-    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant());
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
+                           const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason);

@@ -43,6 +43,13 @@ public:
 	virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
 
+class MaxCardsSkill: public Skill{
+public:
+	MaxCardsSkill(const QString &name);
+
+	virtual int getExtra(const Player *target) const = 0;
+};
+
 class LuaProhibitSkill: public ProhibitSkill{
 public:
 	LuaProhibitSkill(const char *name);

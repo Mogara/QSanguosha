@@ -3488,7 +3488,12 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>身份预知</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="265"/>
+        <location filename="src/server/server.cpp" line="348"/>
+        <source>AI Nick Names</source>
+        <translation>显示AI个性昵称</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="351"/>
         <source>AI Chat</source>
         <translation>开启 AI 聊天</translation>
     </message>

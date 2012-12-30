@@ -36,24 +36,6 @@ AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b){
         return Enemy;
 }
 
-AI::Relation AI::GetRelationBoss(const ServerPlayer *a, const ServerPlayer *b){
-    static const int Justice = 1;
-    static const int Evil = -1;
-
-    static QMap<Player::Role, int> map;
-    if(map.isEmpty()){
-        map[Player::Loyalist] = Justice;
-        map[Player::Rebel] = Justice;
-        map[Player::Lord] = Evil;
-        map[Player::Renegade] = Evil;
-    }
-
-    if(map.value(a->getRoleEnum()) + map.value(b->getRoleEnum()) == 0)
-        return Enemy;
-    else
-        return Friend;
-}
-
 AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b){
     const bool aShown = a->getRoom()->getTag(a->objectName()).toStringList().isEmpty();
     const bool bShown = b->getRoom()->getTag(b->objectName()).toStringList().isEmpty();
@@ -130,8 +112,6 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
 
     if(room->getMode() == "06_3v3")
         return GetRelation3v3(self, other);
-    else if(room->getMode() == "08_boss")
-        return GetRelationBoss(self, other);
     else if(Config.EnableHegemony)
         return GetRelationHegemony(self, other);
 
@@ -168,7 +148,7 @@ QList<ServerPlayer *> AI::getFriends() const{
     return friends;
 }
 
-void AI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data){
+void AI::filterEvent(TriggerEvent , ServerPlayer *, const QVariant &){
     // dummy
 }
 
@@ -232,12 +212,13 @@ QString TrustAI::askForKingdom(){
     case Player::Loyalist:
     case Player::Renegade:
         role = room->getLord()->getKingdom(); break;
+    default: break;
     }
 
     return role;
 }
 
-bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data){
+bool TrustAI::askForSkillInvoke(const QString &, const QVariant &){
     return false;
 }
 

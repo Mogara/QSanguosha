@@ -70,9 +70,9 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
-
+        Room* room = player->getRoom();
         if(effect.to == effect.from)
             return false;
 
@@ -114,7 +114,6 @@ public:
 
 NosJujianCard::NosJujianCard(){
     once = true;
-    owner_discarded = true;
     mute = true;
 }
 
@@ -191,7 +190,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room* room = player->getRoom();
         if(event == HpRecover){
             RecoverStruct recover = data.value<RecoverStruct>();
             if(recover.who && recover.who != player){
@@ -280,7 +280,8 @@ public:
         return "nothing";
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *lingtong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *lingtong, QVariant &data) const{
+        Room* room = lingtong->getRoom();
         if(event == CardLost){
             CardMoveStar move = data.value<CardMoveStar>();
             if(move->from_place == Player::Equip)
@@ -356,6 +357,6 @@ NostalGeneralPackage::NostalGeneralPackage()
     addMetaObject<NosJujianCard>();
 }
 
-ADD_PACKAGE(Nostalgia);
-ADD_PACKAGE(NostalGeneral);
+ADD_PACKAGE(Nostalgia)
+ADD_PACKAGE(NostalGeneral)
 

@@ -266,6 +266,9 @@ QWidget *ServerDialog::createAITab(){
     role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
     role_predictable_checkbox->setChecked(Config.value("RolePredictable", false).toBool());
 
+    ai_nickname_checkbox = new QCheckBox(tr("AI Nick Names"));
+    ai_nickname_checkbox->setChecked(Config.value("AINames", true).toBool());
+
     ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
     ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
 
@@ -920,6 +923,7 @@ bool ServerDialog::config(){
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());
+    Config.setValue("AINames", ai_nickname_checkbox->isChecked());
     Config.setValue("AIChat", ai_chat_checkbox->isChecked());
     Config.setValue("AIDelay", Config.AIDelay);
     Config.setValue("ServerPort", Config.ServerPort);

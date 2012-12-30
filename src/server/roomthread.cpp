@@ -181,6 +181,7 @@ void RoomThread::run3v3(){
         case Player::Loyalist: warm.append(player); break;
         case Player::Renegade: cool.prepend(player); break;
         case Player::Rebel: cool.append(player); break;
+        default : break;
         }
     }
 

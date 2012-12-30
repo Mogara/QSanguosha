@@ -126,6 +126,8 @@ struct JudgeStruct{
 };
 
 enum TriggerEvent{
+    NonTrigger,
+
     GameStart,
     TurnStart,
     PhaseChange,
