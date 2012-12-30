@@ -1,4 +1,4 @@
--- translation for Assassins Package
+-- translation for Assassins Package & Olympics Package
 
 return {
 	["assassins"] = "铜雀台",
@@ -106,4 +106,26 @@ return {
 	["$jieyuan2"] = "虽有谋，亦有情。",
 	["$fenxin"] = "天下与我何干？",
 	["~lingju"] = "魏王……",
+
+-- olympics
+	["olympics"] = "奥运", 
+	
+	["#ayyeshiwen"] = "出水青莲",
+	["ayyeshiwen"] = "叶诗文",
+	["ayjisu"] = "急速",
+	[":ayjisu"] = "你可以跳过你此回合的判定阶段和摸牌阶段。若如此做，视为对一名其他角色使用一张【杀】。",
+	["ayshuiyong"] = "水泳",
+	[":ayshuiyong"] = "锁定技，防止你受到的火焰伤害。",
+	["cv:ayyeshiwen"] = "腾讯英雄杀",
+	["$ayjisu"] = "不错哟~",
+	["$ayshuiyong"] = "还不赖嘛~",
+	["~ayyeshiwen"] = "香消玉散……",
+	
+	["#aysunyang"] = "逐浪追风",
+	["aysunyang"] = "孙杨",
+	["ayshuijian"] = "水箭",
+	[":ayshuijian"] = "摸牌阶段摸牌时，你可以额外摸X+1张牌，X为你装备区的牌数量的一半（向下取整）。",
+	["cv:aysunyang"] = "陈茂蓬",
+	["$ayshuijian"] = "轻松自如~如鱼得水~",
+	["~aysunyang"] = "不知所措！被水淹没！",
 }
