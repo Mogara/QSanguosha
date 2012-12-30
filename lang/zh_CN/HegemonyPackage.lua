@@ -1,7 +1,6 @@
 -- translations for Hegemony Package
 
-return
-{
+return {
 	["hegemony"] = "国战",
 
 	["#gzyuejin"] = "奋强突固",

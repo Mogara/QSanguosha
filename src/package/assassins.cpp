@@ -791,4 +791,113 @@ AssassinsPackage::AssassinsPackage():Package("assassins"){
     addMetaObject<FengyinCard>();
 }
 
+//Olympics
+JisuCard::JisuCard(){
+}
+
+bool JisuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select == Self;
+}
+
+void JisuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    Slash *slash = new Slash(Card::NoSuit, 0);
+    slash->setSkillName(skill_name);
+    CardUseStruct use;
+    use.card = slash;
+    use.from = source;
+    use.to = targets;
+    room->useCard(use);
+}
+
+class JisuViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    JisuViewAsSkill():ZeroCardViewAsSkill("jisu"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@jisu";
+    }
+
+    virtual const Card *viewAs() const{
+        return new JisuCard;
+    }
+};
+
+class Jisu: public PhaseChangeSkill{
+public:
+    Jisu():PhaseChangeSkill("jisu"){
+        view_as_skill = new JisuViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *poem) const{
+        Room *room = poem->getRoom();
+        if(poem->getPhase() == Player::Judge){
+            if(room->askForUseCard(poem, "@@jisu", "@jisu")){
+                poem->skip(Player::Draw);
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+class Shuiyong: public TriggerSkill{
+public:
+    Shuiyong():TriggerSkill("shuiyong"){
+        events << Predamaged;
+    }
+
+    virtual int getPriority() const{
+        return 2;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.nature == DamageStruct::Fire){
+            Room *room = player->getRoom();
+            room->playSkillEffect(objectName());
+            LogMessage log;
+            log.type = "#ShuiyongProtect";
+            log.from = player;
+            log.arg2 = QString::number(damage.damage);
+            log.arg = objectName();
+            room->sendLog(log);
+
+            return true;
+        }else
+            return false;
+    }
+};
+
+class Shuijian:public DrawCardsSkill{
+public:
+    Shuijian():DrawCardsSkill("shuijian"){
+        frequency = Frequent;
+    }
+
+    virtual int getDrawNum(ServerPlayer *sunyang, int n) const{
+        Room *room = sunyang->getRoom();
+        if(room->askForSkillInvoke(sunyang, objectName())){
+            room->playSkillEffect(objectName());
+            int x = sunyang->getEquips().count();
+            return n + x/2 + 1;
+        }else
+            return n;
+    }
+};
+
+OlympicsPackage::OlympicsPackage():Package("olympics"){
+    General *yeshiwen = new General(this, "yeshiwen", "wu", 3, false);
+    yeshiwen->addSkill(new Jisu);
+    yeshiwen->addSkill(new Shuiyong);
+
+    General *sunyang = new General(this, "sunyang", "wu");
+    sunyang->addSkill(new Shuijian);
+}
+
 ADD_PACKAGE(Assassins)
+ADD_PACKAGE(Olympics)
