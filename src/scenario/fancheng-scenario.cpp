@@ -46,7 +46,7 @@ void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     log.arg = "dujiang";
     room->sendLog(log);
 
-    room->transfigure(source, "shenlumeng", false);
+    room->transfigure(source, "shenlvmeng", false);
 
     room->setTag("Dujiang", true);
 }
@@ -90,7 +90,7 @@ public:
         if(!PhaseChangeSkill::triggerable(target))
             return false;
 
-        return target->getGeneralName() != "shenlumeng";
+        return target->getGeneralName() != "shenlvmeng";
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -306,8 +306,8 @@ public:
                     room->installEquip(huatuo, "hualiu");
                     room->acquireSkill(huatuo, "guagu");
 
-                    ServerPlayer *lumeng = room->findPlayer("lumeng");
-                    room->acquireSkill(lumeng, "dujiang");
+                    ServerPlayer *lvmeng = room->findPlayer("lvmeng");
+                    room->acquireSkill(lvmeng, "dujiang");
 
                     ServerPlayer *caoren = room->findPlayer("caoren");
                     room->installEquip(caoren, "renwang_shield");
@@ -343,7 +343,7 @@ FanchengScenario::FanchengScenario()
     lord = "guanyu";
     loyalists << "huatuo";
     rebels << "caoren" << "panglingming" << "xuhuang";
-    renegades << "lumeng";
+    renegades << "lvmeng";
 
     rule = new FanchengRule(this);
 

@@ -121,7 +121,7 @@ void Settings::init(){
 
     kof_ban << "sunquan" << "huatuo" << "zhangliao" << "liubei" << "zhugejin";
 
-    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu" << "zhanggongqi" << "zhugejin";
+    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "zhugejin";
 
     hegemony_ban.append(basara_ban);
     hegemony_ban << "xiahoujuan" << "zhugejin";
@@ -133,25 +133,25 @@ void Settings::init(){
     pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua"
               << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
                 << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
-                << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu" << "dengshizai+bgm_diaochan"
+                << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlvbu" << "dengshizai+bgm_diaochan"
                 << "luxun+liubei" << "luxun+wolong" << "luxun+yuji" << "luxun+daqiao"
                 << "huangyueying+wolong" << "huangyueying+yuanshao" << "huangyueying+ganning"
-                << "shuangxiong+sunce" << "shuangxiong+huanggai" << "shuangxiong+huangyueying"
+                << "yanliangwenchou+sunce" << "yanliangwenchou+huanggai" << "yanliangwenchou+huangyueying"
                 << "dengai+guojia" << "dengai+simayi" << "dengai+zhangjiao"
                 << "dengai+shenzhugeliang" << "dengai+shensimayi"
                 << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao"
-                << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun" << "jiangboyue+zhanggongqi"
-                << "weiyan+huanggai" << "caoren+shenlubu" << "bgm_pangtong+huanggai"
+                << "jiangboyue+yanliangwenchou" << "jiangboyue+ganning" << "jiangboyue+luxun" << "jiangboyue+zhanggongqi"
+                << "weiyan+huanggai" << "caoren+shenlvbu" << "bgm_pangtong+huanggai"
                 << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
                 << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
-                << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlubu"
-                << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia"
+                << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlvbu"
+                << "yuanshu+lvmeng" << "yuanshu+caochong" << "huatuo+guojia"
                 << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi"
                 << "lukang+liubei" << "lukang+wolong" << "lukang+yuji" << "jiangboyue+lukang"
-                << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlubu"
-                << "bgm_diaochan+caizhaoji" << "caozhi+shenlubu" << "caoren+caozhi"
+                << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlvbu"
+                << "bgm_diaochan+caizhaoji" << "caozhi+shenlvbu" << "caoren+caozhi"
                 << "guanxingzhangbao+luxun" << "guanxingzhangbao+sunce" << "bgm_caoren+caoren"
-                << "bgm_caoren+caozhi" << "bgm_caoren+shenlubu" << "bgm_caoren+bgm_diaochan"
+                << "bgm_caoren+caozhi" << "bgm_caoren+shenlvbu" << "bgm_caoren+bgm_diaochan"
                 << "bgm_caoren+dengshizai" << "bgm_caoren+caizhaoji" << "bgm_pangtong+huanggai"
                 << "huanggai+guanxingzhangbao";
 

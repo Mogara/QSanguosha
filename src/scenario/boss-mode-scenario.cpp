@@ -258,9 +258,9 @@ public:
         events << GameStart << TurnStart << PhaseChange
                << Death << GameOverJudge << Damaged << HpLost;
 
-        boss_banlist << "yuanshao" << "shuangxiong" << "zhaoyun" << "guanyu" << "shencaocao";
+        boss_banlist << "yuanshao" << "yanliangwenchou" << "zhaoyun" << "guanyu" << "shencaocao";
 
-        boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
+        boss_skillbanned << "luanji" << "yanliangwenchou" << "longdan" << "wusheng" << "guixin";
 
         dummy_skills << "chujia" << "xuwei" << "tuoqiao" << "shenli" << "midao"
                      << "kuangfeng" << "dawu" << "kuangbao" << "shenfen" << "wuqian"

@@ -628,9 +628,9 @@ public:
     }
 };
 
-class Jiejiu: public FilterSkill{
+class Jinjiu: public FilterSkill{
 public:
-    Jiejiu():FilterSkill("jiejiu"){
+    Jinjiu():FilterSkill("jinjiu"){
 
     }
 
@@ -976,7 +976,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *gaoshun = new General(this, "gaoshun", "qun");
     gaoshun->addSkill(new Xianzhen);
-    gaoshun->addSkill(new Jiejiu);
+    gaoshun->addSkill(new Jinjiu);
 
     addMetaObject<JujianCard>();
     addMetaObject<MingceCard>();

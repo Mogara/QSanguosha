@@ -232,18 +232,18 @@ public:
 
 class ShuangxiongViewAsSkill: public OneCardViewAsSkill{
 public:
-    ShuangxiongViewAsSkill():OneCardViewAsSkill("shuangxiong"){
+    ShuangxiongViewAsSkill():OneCardViewAsSkill("yanliangwenchou"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("shuangxiong") != 0;
+        return player->getMark("yanliangwenchou") != 0;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
         if(to_select->isEquipped())
             return false;
 
-        int value = Self->getMark("shuangxiong");
+        int value = Self->getMark("yanliangwenchou");
         if(value == 1)
             return to_select->getFilteredCard()->isBlack();
         else if(value == 2)
@@ -263,40 +263,40 @@ public:
 
 class Shuangxiong: public TriggerSkill{
 public:
-    Shuangxiong():TriggerSkill("shuangxiong"){
+    Shuangxiong():TriggerSkill("yanliangwenchou"){
         view_as_skill = new ShuangxiongViewAsSkill;
 
         events << PhaseChange << FinishJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *shuangxiong, QVariant &data) const{
-        Room *room = shuangxiong->getRoom();
+    virtual bool trigger(TriggerEvent event, ServerPlayer *yanliangwenchou, QVariant &data) const{
+        Room *room = yanliangwenchou->getRoom();
 
         if(event == PhaseChange){
-            if(shuangxiong->getPhase() == Player::Start){
-                room->setPlayerMark(shuangxiong, "shuangxiong", 0);
-            }else if(shuangxiong->getPhase() == Player::Draw){
-                if(shuangxiong->askForSkillInvoke(objectName())){
-                    shuangxiong->setFlags("shuangxiong");
+            if(yanliangwenchou->getPhase() == Player::Start){
+                room->setPlayerMark(yanliangwenchou, "yanliangwenchou", 0);
+            }else if(yanliangwenchou->getPhase() == Player::Draw){
+                if(yanliangwenchou->askForSkillInvoke(objectName())){
+                    yanliangwenchou->setFlags("yanliangwenchou");
 
                     JudgeStruct judge;
                     judge.pattern = QRegExp("(.*)");
                     judge.good = true;
                     judge.reason = objectName();
-                    judge.who = shuangxiong;
+                    judge.who = yanliangwenchou;
 
                     room->judge(judge);
 
-                    room->setPlayerMark(shuangxiong, "shuangxiong", judge.card->isRed() ? 1 : 2);
-                    shuangxiong->setFlags("-shuangxiong");
+                    room->setPlayerMark(yanliangwenchou, "yanliangwenchou", judge.card->isRed() ? 1 : 2);
+                    yanliangwenchou->setFlags("-yanliangwenchou");
 
                     return true;
                 }
             }
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
-            if(judge->reason == "shuangxiong"){
-                shuangxiong->obtainCard(judge->card);
+            if(judge->reason == "yanliangwenchou"){
+                yanliangwenchou->obtainCard(judge->card);
                 return true;
             }
         }
@@ -536,7 +536,7 @@ public:
 FirePackage::FirePackage()
     :Package("fire")
 {
-    General *xunyu, *dianwei, *wolong, *pangtong, *taishici, *yuanshao, *shuangxiong, *pangde;
+    General *xunyu, *dianwei, *wolong, *pangtong, *taishici, *yuanshao, *yanliangwenchou, *pangde;
 
     xunyu = new General(this, "xunyu", "wei", 3);
     xunyu->addSkill(new Quhu);
@@ -564,8 +564,8 @@ FirePackage::FirePackage()
     yuanshao->addSkill(new Luanji);
     yuanshao->addSkill(new Skill("xueyi$", Skill::Compulsory));
 
-    shuangxiong = new General(this, "shuangxiong", "qun");
-    shuangxiong->addSkill(new Shuangxiong);
+    yanliangwenchou = new General(this, "yanliangwenchou", "qun");
+    yanliangwenchou->addSkill(new Shuangxiong);
 
     pangde = new General(this, "pangde", "qun");
     pangde->addSkill(new Mengjin);

@@ -217,7 +217,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         addCopyAction(death_button);
     }
 
-    if(general_name == "caocao" || general_name == "shencc" || general_name == "shencaocao"){
+    if(general_name == "caocao" || general_name == "weiwudi" || general_name == "shencaocao"){
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"), tr(
                 "Six dragons lead my chariot, "
                 "I will ride the wind with the greatest speed."

@@ -10,17 +10,17 @@ ZhanShuangxiongCard::ZhanShuangxiongCard(){
 }
 
 bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->getGeneralName() == "shuangxiong" && !to_select->isKongcheng();
+    return targets.isEmpty() && to_select->getGeneralName() == "yanliangwenchou" && !to_select->isKongcheng();
 }
 
 void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *shuangxiong = targets.first();
+    ServerPlayer *yanliangwenchou = targets.first();
 
     DamageStruct damage;
     damage.from = source;
-    damage.to = shuangxiong;
+    damage.to = yanliangwenchou;
 
-    bool success = source->pindian(shuangxiong, "zhanshuangxiong");
+    bool success = source->pindian(yanliangwenchou, "zhanyanliangwenchou");
     if(!success)
         qSwap(damage.from, damage.to);
 
@@ -67,7 +67,7 @@ public:
 
 class ZhanShuangxiong: public ZeroCardViewAsSkill{
 public:
-    ZhanShuangxiong():ZeroCardViewAsSkill("zhanshuangxiong"){
+    ZhanShuangxiong():ZeroCardViewAsSkill("zhanyanliangwenchou"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -181,7 +181,7 @@ public:
                     ServerPlayer *guanyu = room->findPlayer("guanyu");
                     room->installEquip(guanyu, "blade");
                     room->installEquip(guanyu, "chitu");
-                    room->acquireSkill(guanyu, "zhanshuangxiong");
+                    room->acquireSkill(guanyu, "zhanyanliangwenchou");
 
 
                     ServerPlayer *zhangliao = room->findPlayer("zhangliao");
@@ -218,7 +218,7 @@ public:
                     room->setTag("BurnWuchao", true);
 
                     QStringList tos;
-                    tos << "yuanshao" << "shuangxiong" << "zhenji" << "liubei";
+                    tos << "yuanshao" << "yanliangwenchou" << "zhenji" << "liubei";
 
                     foreach(QString name, tos){
                         ServerPlayer *to = room->findPlayer(name);
@@ -266,7 +266,7 @@ GuanduScenario::GuanduScenario()
     :Scenario("guandu")
 {
     lord = "yuanshao";
-    loyalists << "shuangxiong" << "zhenji";
+    loyalists << "yanliangwenchou" << "zhenji";
     rebels << "caocao" << "zhangliao" << "guojia";
     renegades << "liubei" << "guanyu";
 
@@ -289,7 +289,7 @@ AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlaye
 }
 
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{
-    bool zhanshuangxiong = room->getTag("ZhanShuangxiong").toBool();
+    bool zhanyanliangwenchou = room->getTag("ZhanShuangxiong").toBool();
     bool burnwuchao = room->getTag("BurnWuchao").toBool();
 
     if(burnwuchao){
@@ -299,7 +299,7 @@ void GuanduScenario::onTagSet(Room *room, const QString &key) const{
             room->detachSkillFromPlayer(zhangliao, "smalltuxi");
         }
     }
-    if(zhanshuangxiong && burnwuchao){
+    if(zhanyanliangwenchou && burnwuchao){
         ServerPlayer *guojia = room->findPlayer("guojia");
         if(guojia && !guojia->hasSkill("greatyiji")){
             room->acquireSkill(guojia, "greatyiji");

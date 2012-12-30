@@ -11,8 +11,8 @@ return {
 	["@yitian-sword"] = "您在回合外获得了一张【杀】，您可以此时将此【杀】打出",
 
 	-- 神曹操内测第三版
-	["#shencc"] = "超世之英杰",
-	["shencc"] = "魏武帝",
+	["#weiwudi"] = "超世之英杰",
+	["weiwudi"] = "魏武帝",
 	["guixin2"] = "归心",
 	[":guixin2"] = "回合结束阶段，你可以做以下二选一：\
       1. 永久改变一名其他角色的势力\
@@ -214,13 +214,18 @@ return {
 	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
 
 -- CV&Designer
-	["designer:shencc"] = "官方内测第三版",
-	["illustrator:shencc"] = "三国志大战",
-	["cv:shencc"] = "",
+	["designer:weiwudi"] = "官方内测第三版",
+	["illustrator:weiwudi"] = "三国志大战",
+	["cv:weiwudi"] = "",
 
 	["designer:caochong"] = "太阳神上",
 	["illustrator:caochong"] = "三国志大战",
 	["cv:caochong"] = "",
+	["$chengxiang1"] = "置象舟上，刻其水痕所至。", --发动技能
+	["$chengxiang2"] = "称物载之，则校可知矣。", --恢复体力
+	["$conghui"] = "吾虽年幼，智意所及，有若成人。",
+	["$zaoyao"] = "仓舒，仓舒……（女声）",
+	["~caochong"] = "天下无道，凤凰远引，凤凰，凤凰！凤——凰——！",
 
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["illustrator:zhangjunyi"] = "火凤燎原",
@@ -286,7 +291,10 @@ return {
 
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["illustrator:guzhielai"] = "火凤燎原",
-	["cv:guzhielai"] = "",
+	["cv:guzhielai"] = "Jr. Wakaran",
+	["$shenli"] = "死!",
+	["$sizhan1"] = "曹公为安，死战不休",
+	["$sizhan2"] = "哼，不痛不痒！",
 
 	["designer:dengshizai"] = "Bu懂",
 	["illustrator:dengshizai"] = "三国豪杰传",
