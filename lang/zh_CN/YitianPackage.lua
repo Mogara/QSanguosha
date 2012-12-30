@@ -262,7 +262,7 @@ return {
 
 	["designer:luboyan"] = "太阳神上、冢冢的青藤",
 	["illustrator:luboyan"] = "真三国无双5",
-	["cv:luboyan"] = "水浒杀神火将魏定国",
+	["cv:luboyan"] = "烨子风暴",
 	["designer:luboyanf"] = "太阳神上、冢冢的青藤",
 	["illustrator:luboyanf"] = "阿摸",
 	["cv:luboyanf"] = "",

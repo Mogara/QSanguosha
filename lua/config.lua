@@ -30,11 +30,15 @@ config = {
 		"YJCM2012",
 		"Special3v3",
 		"BGM",
-		"NostalGeneral",
+		"Hegemony",
+		"Paster",
 		"Yitian",
 		"Wisdom",
 		"Ling",
-		"Test";
+		"Assassins",
+		"Olympics",
+		"NostalGeneral",
+		"Test",
 	},
 
 	scene_names = {

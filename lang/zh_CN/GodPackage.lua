@@ -165,7 +165,7 @@ return {
 	["$longhun4"] = "千里一怒,红莲灿世", -- diamond
 	["~shenzhaoyun"] = "血染鳞甲,龙坠九天",
 
-	["cv:shensimayi"] = "",
+	["cv:shensimayi"] = "泥马",
 	["$renjie"] = "韬光养晦，静待时机。",
 	["$baiyin"] = "是可忍，孰不可忍！",
 	["$jilve1"] = "天意如何，我命由我。", -- guicai

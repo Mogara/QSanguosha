@@ -40,6 +40,11 @@ return {
 	["nosxuanfeng:nothing"] = "不发动",
 	["nosxuanfeng:damage"] = "对距离1以内的其他角色造成伤害",
 	["nosxuanfeng:slash"] = "对任意一名其他角色使用一张【杀】",
+	
+	["#noszhangchunhua"] = "冷血皇后",
+	["noszhangchunhua"]="张春华",
+	["nosshangshi"]="伤逝",
+	[":nosshangshi"]="弃牌阶段外，当你的手牌数小于X时，你可以将手牌补至X张（X为你已损失的体力值）",
 
 }
 

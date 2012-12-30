@@ -248,12 +248,12 @@ return {
 	["$liuli2"] = "你来嘛～",
 	["$longdan1"] = "能进能退乃真正法器",
 	["$longdan2"] = "喝~",
-	["$luoshen1"] = "仿佛兮若轻云之蔽月，飘飘兮若流风之回雪",
-	["$luoshen2"] = "体迅飞凫，飘忽若神",
+	["$luoshen"] = "仿佛兮若轻云之蔽月，飘飘兮若流风之回雪",
 	["$luoyi1"] = "谁来与我大战三百回合",
 	["$luoyi2"] = "破！",
 	["$paoxiao1"] = "啊～",
-	["$qingguo"] = "凌波微步，罗袜生尘",
+	["$qingguo1"] = "凌波微步，罗袜生尘",
+	["$qingguo2"] = "体迅飞凫，飘忽若神",
 	["$qingnang1"] = "早睡早起,方能养生",
 	["$qingnang2"] = "越老越要补啊",
 	["$qixi1"] = "接招吧",
@@ -305,6 +305,8 @@ return {
 	["cv:lvmeng"] = "腾讯英雄杀勾践",
 	["cv:sunquan"] = "官方，宇文天启",
 	["cv:sunshangxiang"] = "官方，背碗卤粉",
+	["cv:zhenji"] = "神马芯",
+	["cv:machao"] = "烈の流星",
 
 -- test
 	["test"] = "测试",
@@ -318,6 +320,18 @@ return {
 	["wuxingzhuge"] = "五星诸葛",
 	["super_guanxing"] = "超级观星",
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底",
+		
+	["#sp_shenzhaoyun"] = "神威如龙",
+	["sp_shenzhaoyun"] = "高达一号",
+	["&sp_shenzhaoyun"] = "神赵云",
+	["illustrator:sp_shenzhaoyun"] = "巴萨小马",
+	["nosjuejing"] = "绝境",
+	[":nosjuejing"] = "<b>锁定技。</b>摸牌阶段，你不摸牌。每当你的手牌数变化后，若你的手牌数不为4，你须将手牌补至或弃置至四张。",
+	["noslonghun"] = "龙魂",
+	[":noslonghun"] = "你可以将一张牌按以下规则使用或打出：<font color=\"red\">♥</font>当【桃】；<font color=\"red\">♦</font>当火【杀】；♠当【无懈可击】；♣当【闪】。回合开始阶段开始时，若其他角色的装备区内有【青釭剑】，你可以获得之。",
+	["#noslonghun_duojian"] = "龙魂",
+	[":#noslonghun_duojian"] = "回合开始阶段开始时，若其他角色的装备区内有【青釭剑】，你可以获得之。",
+
 
 	["#sujiang"] = "金童",
 	["sujiang"] = "素将",

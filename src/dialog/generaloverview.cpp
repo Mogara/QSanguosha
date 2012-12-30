@@ -127,8 +127,7 @@ void GeneralOverview::addLines(const Skill *skill){
         button_layout->addWidget(button);
     }else{
         QRegExp rx(".+/(\\w+\\d?).ogg");
-        int i;
-        for(i=0; i<sources.length(); i++){
+        for(int i = 0; i < sources.length(); i++){
             QString source = sources.at(i);
             if(!rx.exactMatch(source))
                 continue;
@@ -267,9 +266,7 @@ void GeneralOverview::playEffect()
 #include "client.h"
 void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
 {
-    if(!ServerInfo.FreeChoose)
-        return;
-    if(Self){
+    if(ServerInfo.FreeChoose && Self){
         int row = ui->tableWidget->currentRow();
         if(row >= 0){
             QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();

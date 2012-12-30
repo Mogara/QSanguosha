@@ -6,7 +6,6 @@
 #include "carditem.h"
 #include "engine.h"
 
-
 LuoyiCard::LuoyiCard(){
     once = true;
     target_fixed = true;
@@ -82,14 +81,15 @@ public:
 class Yishi: public TriggerSkill{
 public:
     Yishi():TriggerSkill("yishi"){
-        events << DamageCaused;
+        events << Damage;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
+        Room* room = player->getRoom();
         if(damage.card && damage.card->inherits("Slash") && damage.card->getSuit() == Card::Heart &&
-           !damage.chain && !damage.transfer && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
+           !damage.chain && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
 
             room->playSkillEffect("yishi", 1);
             LogMessage log;
@@ -220,7 +220,6 @@ LingPackage::LingPackage()
     General * neo_zhouyu = new General(this, "neo_zhouyu", "wu", 3);
     neo_zhouyu->addSkill("yingzi");
     neo_zhouyu->addSkill(new NeoFanjian);
-
 
     General * neo_guanyu = new General(this, "neo_guanyu", "shu");
     neo_guanyu->addSkill("wusheng");
