@@ -63,7 +63,7 @@ SOURCES += \
 	src/package/yitianpackage.cpp \
 	src/package/yjcm-package.cpp \
 	src/package/yjcm2012-package.cpp \
-        #src/package/bgm-package.cpp \
+	src/package/bgm-package.cpp \
         #src/package/lingpackage.cpp \
 	#src/package/assassinspackage.cpp \
 	src/package/special3v3-package.cpp \
@@ -184,7 +184,7 @@ HEADERS += \
 	src/package/yitianpackage.h \
 	src/package/yjcm-package.h \
 	src/package/yjcm2012-package.h \
-        #src/package/bgm-package.h \
+	src/package/bgm-package.h \
         #src/package/lingpackage.h \
 	#src/package/assassinspackage.h \
 	src/package/special3v3-package.h \
