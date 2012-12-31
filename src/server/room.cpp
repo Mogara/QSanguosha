@@ -33,6 +33,11 @@ Room::Room(QObject *parent, const QString &mode)
     scenario = Sanguosha->getScenario(mode);
 
     initCallbacks();
+
+    L = CreateLuaState();
+    QStringList scripts;
+    scripts << "lua/sanguosha.lua" << "lua/ai/smart-ai.lua";
+    DoLuaScripts(L, scripts);
 }
 
 void Room::initCallbacks(){
@@ -2851,6 +2856,10 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     dummy_card->deleteLater();
 
     return true;
+}
+
+bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool optional, bool include_equip){
+    return askForDiscard(player, reason, (discard_num + min_num) / 2, optional, include_equip);
 }
 
 const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num){

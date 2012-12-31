@@ -608,12 +608,12 @@ public:
         frequency = Compulsory;
     }
     
-    virtual bool trigger(TriggerEvent triggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room* room = player->getRoom();
-        if (triggerEvent == SlashMissed) {
+        if (event == SlashMissed) {
             if (player->getPhase() == Player::Play)
                 room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
-        } else if (triggerEvent == PhaseChange) {
+        } else if (event == PhaseChange) {
             if(player->getPhase() == Player::Play)
                 if (player->getMark(objectName()) > 0)
                     room->setPlayerMark(player, objectName(), 0);

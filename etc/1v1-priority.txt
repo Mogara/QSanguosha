@@ -1,5 +1,5 @@
 sunquan 9
-shenlumeng 9
+shenlvmeng 9
 zhenji 8
 zhouyu 8
 diaochan 8
@@ -28,7 +28,7 @@ jiaxu 6
 dongzhuo 6
 caocao 6
 xiahoudun 6
-lumeng 6
+lvmeng 6
 simayi 6
 luboyan 6
 ganning 6
@@ -37,12 +37,12 @@ weiyan 5
 huatuo 5
 machao 5
 shenzhouyu 5
-lubu 5
+lvbu 5
 wolong 5
 zhangjunyi 5
 lukang 5
 shencaocao 5
-shencc 5
+weiwudi 5
 shenguanyu 5 *
 huangzhong 5
 jiangboyue 4
@@ -57,7 +57,7 @@ shenlubo 4
 caozhi 4
 xusheng 3
 wuguotai 3
-shuangxiong 3
+yanliangwenchou 3
 huanggai 3 *
 lingtong 3
 taishici 3

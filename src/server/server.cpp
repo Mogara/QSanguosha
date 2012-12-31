@@ -280,8 +280,9 @@ QWidget *ServerDialog::createAITab(){
 
     layout->addWidget(ai_enable_checkbox);
     layout->addWidget(role_predictable_checkbox);
-    layout->addWidget(ai_chat_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
+    layout->addWidget(ai_nickname_checkbox);
+    layout->addWidget(ai_chat_checkbox);
     layout->addStretch();
 
     QWidget *widget = new QWidget;
