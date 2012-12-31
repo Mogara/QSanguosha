@@ -929,7 +929,6 @@ public:
     }
 };
 
-
 class Anxian: public TriggerSkill{
 public:
     Anxian():TriggerSkill("anxian"){
