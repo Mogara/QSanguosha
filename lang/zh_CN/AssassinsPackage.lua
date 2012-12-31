@@ -119,7 +119,7 @@ return {
 	["shuiyong"] = "水泳",
 	[":shuiyong"] = "锁定技，防止你受到的火焰伤害。",
 	["#ShuiyongProtect"] = "%from 的锁定技【%arg】被触发，防止了 %ar2 点火焰伤害",
-	["$ayjisu"] = "不错哟~",
+	["$jisu"] = "不错哟~",
 	["$shuiyong"] = "还不赖嘛~",
 	["~yeshiwen"] = "香消玉散……",
 	

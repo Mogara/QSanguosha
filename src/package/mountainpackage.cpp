@@ -18,9 +18,9 @@ QiaobianCard::QiaobianCard(){
 
 bool QiaobianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if(Self->getPhase() == Player::Draw)
-        return targets.length() <= 2 && !targets.isEmpty();
+        return targets.length() <= 2;
     else if(Self->getPhase() == Player::Play)
-        return targets.length() == 1;
+        return targets.length() <= 1;
     else
         return targets.isEmpty();
 }
