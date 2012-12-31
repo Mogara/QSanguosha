@@ -1264,7 +1264,7 @@ function SmartAI:objectiveLevel(player)
 			else
 				if self.player:isLord() then return 0
 				elseif #players == loyal_num+1 and loyal_num == 1 and not player:isLord() then return 5 
-				elseif sgs.evaluatePlayerRole(player) == "loyalist" then return -2 end
+				elseif not player:isLord() then return 0.5 end
 			end
 		end
 		if loyal_num == 0 then
@@ -1689,6 +1689,7 @@ end
 
 function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local callback = sgs.ai_skill_discard[reason]
+	self:assignKeep(self.player:getHp(),true)
 	if type(callback) == "function" then
 		if callback(self, discard_num, optional, include_equip) then return callback(self, discard_num, optional, include_equip) end
 	elseif optional then return {} end
@@ -1777,7 +1778,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			if trick:inherits("AOE") then
 				local lord = self.room:getLord()
 				local currentplayer = self.room:getCurrent()
-				if self:isFriend(lord) and self:isWeak(lord) and 
+				if self:isFriend(lord) and self:isWeak(lord) and self:aoeIsEffective(trick, lord)and 
 					((lord:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
 					((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount()))	and not
 					(self.player:objectName() == to:objectName() and self.player:getHp() == 1 and not self:canAvoidAOE(trick)) then
@@ -1791,7 +1792,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 						return null_card
 					end
 				end
-				if self:isWeak(to) then
+				if self:isWeak(to) and self:aoeIsEffective(trick, to) then
 					if ((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
 					((self.player:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) or null_num > 1 then
 						return null_card
@@ -1912,7 +1913,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 	else
 		if flags:match("e") then
-			if self:isEquip("Crossbow",who) then
+			if self:isEquip("Crossbow",who) and who:getWeapon() then
 				for _, friend in ipairs(self.friends) do
 					if who:distanceTo(friend) <= 1 then return who:getWeapon():getId() end
 				end
@@ -2567,6 +2568,8 @@ end
 
 function SmartAI:askForSinglePeach(dying)
 	local card_str
+	local forbid = sgs.Sanguosha:cloneCard("peach", sgs.Card_NoSuit, 0)
+	if self.player:isLocked(forbid) or dying:isLocked(forbid) then return "." end
 	if self:isFriend(dying) then
 		if self:needDeath(dying) then return "." end
 		local buqu = dying:getPile("buqu")
@@ -3243,6 +3246,11 @@ function SmartAI:aoeIsEffective(card, to)
 	if to:hasSkill("danlao") and #players > 2 then
 		return false
 	end
+
+	if to:getMark("@fog") > 0 then
+		return false
+	end
+
 	return true
 end
 
@@ -3440,7 +3448,7 @@ function SmartAI:useTrickCard(card, use)
 	end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
-		if not self.role == "rebel" and sgs.turncount < 2 and card:inherits("ArcheryAttack") then return end
+		if self.role == "loyalist" and sgs.turncount < 2 and card:inherits("ArcheryAttack") then return end
 		if self.role == "rebel" and sgs.turncount < 2 and card:inherits("SavageAssault") then return end
 		local good = self:getAoeValue(card,self.player)
 		if good > 0 then
@@ -3570,7 +3578,7 @@ function SmartAI:useEquipCard(card, use)
 				if not friend:getWeapon() then return end
 			end
 		end
-		if self:hasSkill("paoxiao|fuhun",self.player) and card:inherits("Crossbow") then return end
+		if self:hasSkills("paoxiao|fuhun",self.player) and card:inherits("Crossbow") then return end
 		if self.player:getWeapon() and self.player:getWeapon():inherits("YitianSword") then use.card = card return end
 		if self:evaluateWeapon(card) > self:evaluateWeapon(self.player:getWeapon()) then
 			if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end

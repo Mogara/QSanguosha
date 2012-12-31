@@ -588,6 +588,7 @@ public:
 	virtual void onEffect(const CardEffectStruct &effect) const;
 	virtual bool isCancelable(const CardEffectStruct &effect) const;
 
+	virtual bool isKindOf(const char* cardType) const;
 	virtual void onMove(const CardMoveStruct &move) const;
 
 	// static functions
@@ -669,6 +670,7 @@ public:
 	const TriggerSkill *getTriggerSkill(const char *skill_name) const;
 	const ViewAsSkill *getViewAsSkill(const char *skill_name) const;
 	QList<const DistanceSkill *> getDistanceSkills() const;
+	QList<const MaxCardsSkill *> getMaxCardsSkills() const;
 	void addSkills(const QList<const Skill *> &skills);
 
 	int getCardCount() const;
@@ -906,6 +908,10 @@ public:
 };
 
 %extend Room {
+	bool broadcastSkillInvoke(const char *skillName, int type){
+		$self->playSkillEffect(skillName, type);
+		return true;
+	}
 	ServerPlayer *nextPlayer() const{
 		return $self->getCurrent()->getNextAlive();
 	}

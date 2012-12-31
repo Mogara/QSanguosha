@@ -288,7 +288,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
 		if self.player:isChained() and self:isGoodChainTarget(self.player) then return "." end
 	else
-		if not target:hasFlag("drank") then
+		if not effect.slash:hasFlag("drank") then
 			if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
 		end
 		if not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) and not target:hasSkill("qianxi") then
@@ -399,9 +399,9 @@ function sgs.ai_weapon_value.qinggang_sword(self, enemy)
 end
 
 sgs.ai_skill_invoke.ice_sword=function(self, data)
-	if self.player:hasFlag("drank") then return false end
 	local effect = data:toSlashEffect() 
 	local target = effect.to
+	if effect.slash:hasFlag("drank") then return false end	
 	if self:isFriend(target) then
 		if self:isWeak(target) then return true
 		elseif target:getLostHp()<1 then return false end
@@ -432,10 +432,10 @@ end
 
 sgs.ai_skill_cardask["@axe"] = function(self, data, pattern, target)
 	if target and self:isFriend(target) then return "." end
-
+	local effect = data:toSlashEffect()
 	local allcards = self.player:getCards("he")
 	allcards = sgs.QList2Table(allcards)
-	if self.player:hasFlag("drank") or #allcards-2 >= self.player:getHp() or (self.player:hasSkill("kuanggu") and self.player:isWounded()) then
+	if effect.slash:hasFlag("drank") or #allcards-2 >= self.player:getHp() or (self.player:hasSkill("kuanggu") and self.player:isWounded()) then
 		local cards = self.player:getCards("h")
 		cards = sgs.QList2Table(cards)
 		local index
@@ -479,6 +479,7 @@ function sgs.ai_slash_weaponfilter.axe(to, self)
 end
 
 function sgs.ai_weapon_value.axe(self, enemy)
+	if self:hasSkills("jiushi|jiuchi|luoyi|pojun",self.player) then return 6 end
 	if enemy and enemy:getHp() < 3 then return 3 - enemy:getHp() end
 end
 

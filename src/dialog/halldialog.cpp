@@ -11,7 +11,7 @@
 
 static HallDialog *HallDialogInstance;
 
-HallDialog *HallDialog::getInstance(MainWindow *main_window){
+HallDialog *HallDialog::GetInstance(MainWindow *main_window){
     if(HallDialogInstance == NULL)
         HallDialogInstance = new HallDialog(main_window);
 

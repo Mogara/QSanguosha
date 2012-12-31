@@ -128,6 +128,7 @@ sgs.ai_use_value.XinzhanCard = 4.4
 sgs.ai_use_priority.XinzhanCard = 9.2
 
 function sgs.ai_slash_prohibit.huilei(self, to)
+	if self.player:hasSkill("qianxi") then return false end
 	if self:isFriend(to) and self:isWeak(to) then return true end
 	return #self.enemies>1 and self:isWeak(to) and (self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0)
 end

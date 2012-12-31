@@ -6,11 +6,9 @@ sgs.ai_skill_invoke.qianxi = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
 	if self:isFriend(target) then return false end
-	if self.player:hasFlag("drank") then return false end
-	if self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill,target) then return true
-	else
-		return not ((target:getHp() < 2 and target:getMaxHp() > 2) and not (target:hasSkill("longhun") or target:hasSkill("buqu")))
-	end
+	if self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill,target) or self:hasSkills("longhun|buqu",target) then return true end
+	if damage.card:hasFlag("drank") then return false end
+	return (target:getMaxHp() - target:getHp()) < 2 
 end
 
 sgs.ai_skill_invoke.fuli = true
@@ -207,8 +205,6 @@ sgs.ai_card_intention.AnxuCard = function(card, from, to)
 end
 
 sgs.ai_skill_invoke.zhuiyi = function(self, data)
-	local players = self.room:getOtherPlayers(self.player)
-	players = sgs.QList2Table(players)
 	local damage = data:toDamageStar()
 	local exclude = self.player
 	if damage and damage.from then exclude = damage.from end
@@ -218,9 +214,7 @@ sgs.ai_skill_invoke.zhuiyi = function(self, data)
 	return #friends > 0
 end
 
-sgs.ai_skill_playerchosen.zhuiyi = function(self, targets)
-	if self:isFriend(self.room:getLord()) and sgs.isLordInDanger() then return self.room:getLord() end
-	
+sgs.ai_skill_playerchosen.zhuiyi = function(self, targets)	
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
 	for _, friend in ipairs(self.friends_noself) do

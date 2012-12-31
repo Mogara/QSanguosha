@@ -258,7 +258,7 @@ end
 
 sgs.ai_skill_playerchosen.fangquan = function(self, targets)
 	for _, target in sgs.qlist(targets) do
-		if self:isFriend(target) then
+		if self:isFriend(target) and not target:hasSkill("dawu") then
 			return target
 		end
 	end
@@ -519,6 +519,7 @@ end
 
 function sgs.ai_slash_prohibit.duanchang(self, to)
 	if self:isFriend(to) and self:isWeak(to) then return true end
+	if self.player:hasSkill("qianxi") then return false end
 	return #self.enemies>1 and self:isWeak(to) and (self.player:isLord() or not self:isWeak())
 end
 
@@ -583,7 +584,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 		end
 	end
 	for index = #choices, 1, -1 do
-		if ("qixing|kuangfeng|dawu|kuangbao|wuqian|wumou|shenfen|renjie|tuntian|benghuai|wuling|liqian|lianli|tongxin|shenjun|xunzhi|dongcha|shiyong" ..
+		if ("renjie|benghuai|wuling|liqian|lianli|tongxin|shenjun|xunzhi|dongcha" ..
 		"juao")
 		:match(choices[index]) then
 			table.remove(choices,index)
