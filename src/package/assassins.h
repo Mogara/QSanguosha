@@ -51,4 +51,23 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
 };
 
+//Olympics
+
+class OlympicsPackage : public Package{
+    Q_OBJECT
+
+public:
+    OlympicsPackage();
+};
+
+class JisuCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JisuCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 #endif // ASSASSINSPACKAGE_H

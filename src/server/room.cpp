@@ -2056,6 +2056,8 @@ void Room::loseHp(ServerPlayer *victim, int lose){
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){
     int hp = victim->getHp();
+    if(lose > 0)
+        Sanguosha->playAudio("maxhplost");
     victim->setMaxHP(qMax(victim->getMaxHP() - lose, 0));
 
     broadcastProperty(victim, "maxhp");

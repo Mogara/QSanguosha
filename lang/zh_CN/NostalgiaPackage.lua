@@ -18,6 +18,13 @@ return {
 	[":nosxuanhuo"] = "出牌阶段，你可以将一张红桃手牌交给一名其他角色，然后你获得该角色的一张牌并交给除该角色外的其他角色。每阶段限一次。",
 	["#EnyuanRecover"] = "%from 触发【%arg2】，令其恢复1点体力的角色 %to 摸 %arg 张牌",
 	["@enyuanheart"] = "请展示一张红桃手牌并交给对方",
+	["$nosenyuan1"] = "得人恩果千年记。",
+	["$nosenyuan2"] = "滴水之恩，涌泉以报。",
+	["$nosenyuan3"] = "谁敢得罪我！",
+	["$nosenyuan4"] = "睚眦之怨，无不报复。",
+	["$nosxuanhuo1"] = "重用许靖，以眩远近。",
+	["$nosxuanhuo2"] = "给你的，十倍奉还给我！",
+	["~nosfazheng"] = "蜀翼既折…蜀汉哀矣……",
 
 	["#nosxushu"] = "忠孝的侠士",
 	["nosxushu"] = "旧版徐庶",
@@ -30,6 +37,11 @@ return {
 	["#WuyanBaD"] = "%from 触发【%arg2】，对 %to 使用的锦囊【%arg】无效",
 	["#WuyanGooD"] = "%from 触发【%arg2】， %to 使用的锦囊【%arg】对其无效",
 	["#JujianRecover"] = "%from 弃置了三张 %arg ，恢复1点体力",
+	["$noswuyan1"] = "唉，一切尽在不言中。",
+	["$noswuyan2"] = "嘘，言多必失啊。",
+	["$nosjujian1"] = "我看好你。",
+	["$nosjujian2"] = "将军岂愿抓牌呼？",
+	["~nosxushu"] = "娘…孩儿不孝…向您…请罪…",
 
 	["#noslingtong"] = "豪情烈胆",
 	["noslingtong"] = "旧版凌统",
@@ -40,11 +52,17 @@ return {
 	["nosxuanfeng:nothing"] = "不发动",
 	["nosxuanfeng:damage"] = "对距离1以内的其他角色造成伤害",
 	["nosxuanfeng:slash"] = "对任意一名其他角色使用一张【杀】",
+	["$nosxuanfeng1"] = "伤敌于千里之外！",
+	["$nosxuanfeng2"] = "索命于须臾之间！",
+	["~noslingtong"] = "大丈夫……不惧死亡……",
 	
 	["#noszhangchunhua"] = "冷血皇后",
 	["noszhangchunhua"]="张春华",
 	["nosshangshi"]="伤逝",
-	[":nosshangshi"]="弃牌阶段外，当你的手牌数小于X时，你可以将手牌补至X张（X为你已损失的体力值）",
+	[":nosshangshi"]="弃牌阶段外，当你的手牌数小于X时，你可以将手牌补至X张（X为你已损失的体力值）。",
+	["$nosshangshi1"] = "无情者伤人，有情者自伤。",
+	["$nosshangshi2"] = "自损八百，可伤敌一千！",
+	["~noszhangchunhua"] = "怎能如此对我……",
 
 }
 
