@@ -62,7 +62,7 @@ void Settings::init(){
                 << "disaster" << "god" << "YJCM" << "yitian_cards" << "test"
                 << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
                 << "New3v3Card" << "joy" << "joy_equip" << "hegemony_card" 
-                << "hegemony" << "ling";
+                << "hegemony" << "ling" << "assassins" << "olympics" << "paster";
 
         setValue("BanPackages", banlist);
     }

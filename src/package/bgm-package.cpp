@@ -1355,4 +1355,29 @@ BGMPackage::BGMPackage():Package("BGM"){
     addMetaObject<YinlingCard>();
 }
 
+PasterPackage::PasterPackage():Package("paster"){
+    /*
+    General *wangyuanji = sgs.General(extension, "wangyuanji", "wei", 3, false);
+    wangyuanji->addSkill(fuluan);
+    wangyuanji->addSkill(shude);
+
+    General *simazhao = sgs.General(extension, "simazhao", "wei", 3);
+    simazhao->addSkill(zhaoxin);
+    simazhao->addSkill(langgu);
+
+    General *lualiuxie = sgs.General(extension, "lualiuxie", "qun");
+    lualiuxie->addSkill(huangen);
+    lualiuxie->addSkill(hantong);
+    lualiuxie->addSkill(hantongmax);
+    lualiuxie->addSkill(hantongclear);
+
+    General *luagongsunzan = sgs.General(extension, "luagongsunzan", "qun");
+    luagongsunzan->addSkill(diyyicong);
+    luagongsunzan->addSkill(diyyicongdis);
+    luagongsunzan->addSkill(diytuqi);
+    luagongsunzan->addSkill(diytuqidis);
+    */
+}
+
 ADD_PACKAGE(BGM)
+ADD_PACKAGE(Paster)
