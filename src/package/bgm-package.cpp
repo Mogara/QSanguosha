@@ -1486,6 +1486,34 @@ public:
     }
 };
 
+class Huangen: public TriggerSkill{
+public:
+    Huangen(): TriggerSkill("huangen"){
+        events << CardUsed;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room* room = player->getRoom();
+        ServerPlayer *liuxie = room->findPlayerBySkillName(objectName());
+        if(!liuxie)
+            return false;
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(!use.card->isKindOf("TrickCard") || use.to.length() < 2)
+            return false;
+        if(liuxie->askForSkillInvoke(objectName())){
+            ServerPlayer *target = room->askForPlayerChosen(liuxie, use.to, objectName());
+            use.to.removeOne(target);
+            target->drawCards(1);
+            data = QVariant::fromValue(use);
+        }
+        return false;
+    }
+};
+
 PasterPackage::PasterPackage()
     :Package("paster")
 {
@@ -1496,19 +1524,19 @@ PasterPackage::PasterPackage()
     General *simazhao = new General(this, "simazhao", "wei", 3);
     simazhao->addSkill(new Zhaoxin);
     simazhao->addSkill(new Langgu);
-    /*
-    General *lualiuxie = new General(this, "lualiuxie", "qun");
-    lualiuxie->addSkill(huangen);
-    lualiuxie->addSkill(hantong);
-    lualiuxie->addSkill(hantongmax);
-    lualiuxie->addSkill(hantongclear);
 
+    General *liuxie = new General(this, "liuxie", "qun");
+    liuxie->addSkill(new Huangen);
+    //lualiuxie->addSkill(hantong);
+    //lualiuxie->addSkill(hantongmax);
+    //lualiuxie->addSkill(hantongclear);
+/*
     General *luagongsunzan = new General(this, "luagongsunzan", "qun");
     luagongsunzan->addSkill(diyyicong);
     luagongsunzan->addSkill(diyyicongdis);
     luagongsunzan->addSkill(diytuqi);
     luagongsunzan->addSkill(diytuqidis);
-    */
+*/
     addMetaObject<FuluanCard>();
 }
 
