@@ -81,7 +81,7 @@ public:
 class Yishi: public TriggerSkill{
 public:
     Yishi():TriggerSkill("yishi"){
-        events << Damage;
+        events << Predamage;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
@@ -228,7 +228,6 @@ LingPackage::LingPackage()
     General * neo_gongsunzan = new General(this, "neo_gongsunzan", "qun");
     neo_gongsunzan->addSkill("yicong");
     neo_gongsunzan->addSkill(new Zhulou);
-
 
     General * neo_zhangfei = new General(this, "neo_zhangfei", "shu");
     neo_zhangfei->addSkill("paoxiao");

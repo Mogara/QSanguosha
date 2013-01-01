@@ -1361,10 +1361,10 @@ void StandardPackage::addGenerals(){
     addMetaObject<JijiangCard>();
 }
 
-class Zhiba: public Zhiheng{
+class SuperZhiheng: public Zhiheng{
 public:
-    Zhiba(){
-        setObjectName("zhiba");
+    SuperZhiheng(){
+        setObjectName("super_zhiheng");
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1397,7 +1397,7 @@ TestPackage::TestPackage()
 {
     // for test only
     General *zhiba_sunquan = new General(this, "zhibasunquan$", "wu", 4, true, true);
-    zhiba_sunquan->addSkill(new Zhiba);
+    zhiba_sunquan->addSkill(new SuperZhiheng);
     zhiba_sunquan->addSkill("jiuyuan");
 
     General *wuxing_zhuge = new General(this, "wuxingzhuge", "shu", 3, true, true);

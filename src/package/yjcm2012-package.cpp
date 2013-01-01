@@ -677,6 +677,7 @@ public:
         if(targets.isEmpty() || !player->askForSkillInvoke(objectName(), data))
             return false;
 
+        room->playSkillEffect(objectName());
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
 
         target->drawCards(3);

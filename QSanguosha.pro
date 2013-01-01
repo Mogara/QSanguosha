@@ -277,7 +277,7 @@ win32{
 }
 
 macx{
-	ICON = resource/icon/sgs.icns
+        ICON = resource/icon/sgs.icns
 }
 
 

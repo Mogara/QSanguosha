@@ -350,7 +350,7 @@ end
 sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 	local lords = {}
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:hasLordSkill("sunce_zhiba") and not player:isKongcheng() then table.insert(lords, player) end
+		if player:hasLordSkill("zhiba") and not player:isKongcheng() then table.insert(lords, player) end
 	end
 	if #lords == 0 then return end
 	if self:needBear() then return end

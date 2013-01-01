@@ -311,10 +311,10 @@ return {
 
 	["#zhibasunquan"] = "年轻的贤君",
 	["zhibasunquan"] = "制霸孙权",
-	["zhiba"] = "制霸",
-	[":zhiba"] = "出牌阶段，你可以弃置任意数量的牌，然后摸取等量的牌。每阶段可用X+1次，X为你已损失的体力值。",
-	["$zhiba1"] = "容我三思。",
-	["$zhiba2"] = "且慢！",
+	["super_zhiheng"] = "制霸",
+	[":super_zhiheng"] = "出牌阶段，你可以弃置任意数量的牌，然后摸取等量的牌。每阶段可用X+1次，X为你已损失的体力值。",
+	["$super_zhiheng1"] = "容我三思。",
+	["$super_zhiheng2"] = "且慢！",
 	["~zhibasunquan"] = "父亲…大哥…仲谋溃矣……",
 
 	["#wuxingzhuge"] = "迟暮的丞相",

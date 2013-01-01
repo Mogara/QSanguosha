@@ -2449,11 +2449,11 @@ RoomThread *Room::getThread() const{
 void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){
     QSet<ServerPlayer *> scope;
 
-    if(!open){
-        int eid = card->getEffectiveId();
-        ServerPlayer *from = getCardOwner(eid);
-        Player::Place from_place= getCardPlace(eid);
+    int eid = card->getEffectiveId();
+    Player::Place from_place= getCardPlace(eid);
 
+    if(!open){
+        ServerPlayer *from = getCardOwner(eid);
         scope.insert(from);
         scope.insert(to);
 
@@ -2519,6 +2519,12 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
 
         if(move.from)
             from = move.from;
+    }
+
+    if(from_place == Player::Judging && from->property("yanxiao").toInt() == card->getEffectiveId()){
+        setPlayerProperty(from, "yanxiao", QVariant::fromValue(-1));
+        if(place == Player::Judging)
+            setPlayerProperty(to, "yanxiao", from->property("yanxiao"));
     }
 
     if(from)

@@ -21,7 +21,8 @@ void Slash::setNature(DamageStruct::Nature nature){
 }
 
 bool Slash::IsAvailable(const Player *player){
-    if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed"))
+    if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed")
+        || player->hasFlag("fuluan"))
         return false;
 
     return player->hasWeapon("crossbow") || player->canSlashWithoutCrossbow();
