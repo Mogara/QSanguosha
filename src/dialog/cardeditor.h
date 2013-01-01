@@ -99,6 +99,7 @@ public:
     void toCenter(QGraphicsScene *scene);
     void setKingdom(const QString &kingdom);
     void setName(const QString &name);
+    void setFont(QFont font);
 
 private:
     QGraphicsRectItem *name_box;

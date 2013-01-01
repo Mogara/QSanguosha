@@ -186,9 +186,9 @@ public:
     }
 };
 
-class Guixin2: public PhaseChangeSkill{
+class Guishin: public PhaseChangeSkill{
 public:
-    Guixin2():PhaseChangeSkill("guixin2"){
+    Guishin():PhaseChangeSkill("guishin"){
 
     }
 
@@ -204,9 +204,9 @@ public:
 
         if(choice == "modify"){
             PlayerStar to_modify = room->askForPlayerChosen(weiwudi, room->getOtherPlayers(weiwudi), objectName());
-            room->setTag("Guixin2Modify", QVariant::fromValue(to_modify));
-            QString kingdom = room->askForChoice(weiwudi, "guixin2", "wei+shu+wu+qun");
-            room->removeTag("Guixin2Modify");
+            room->setTag("GuishinModify", QVariant::fromValue(to_modify));
+            QString kingdom = room->askForChoice(weiwudi, "guishin", "wei+shu+wu+qun");
+            room->removeTag("GuishinModify");
             QString old_kingdom = to_modify->getKingdom();
             room->setPlayerProperty(to_modify, "kingdom", kingdom);
 
@@ -1852,7 +1852,7 @@ YitianPackage::YitianPackage()
 {
     // generals
     General *weiwudi = new General(this, "weiwudi", "god", 3);
-    weiwudi->addSkill(new Guixin2);
+    weiwudi->addSkill(new Guishin);
     weiwudi->addSkill("feiying");
 
     General *caochong = new General(this, "caochong", "wei", 3);
