@@ -80,27 +80,27 @@ return {
 	["kuangfuget"] = "拿来",
 	["kuangfudis"] = "丢掉",
 
+	["cv:yuejin"] = "小鱼儿",
 	["$xiaoguo1"] = "天明之前定要攻下此城。",
 	["$xiaoguo2"] = "敌阵已经动摇，继续冲啊！",
 	["$xiaoguo3"] = "兄弟们随我直捣黄龙！",
 	["~yuejin"] = "魏王拔我于行伍，今当以死相报。",
-	["cv:yuejin"] = "小鱼儿",
 
 	["$shushen"] = "想要牌吗？",
 	["$shenzhi"] = "补充一下吧！",
 	["~ganfuren"] = "陛下，妾身去矣~",
 
+	["cv:lushun"] = "白水",
 	["$duoshi1"] = "诸公稍安勿躁，请先看清局势。",
 	["$duoshi2"] = "审时度势，方能出奇制胜。",
 	["~lushun"] = "等到花儿都谢了~",
-	["cv:lushun"] = "白水",
 
+	["cv:dingfeng"] = "小鱼儿",
 	["$duanbing1"] = "一寸短一寸险。",
 	["$duanbing2"] = "来一个杀一个，来一对杀一双！",
 	["$fenxun1"] = "杀你个措手不及！",
 	["$fenxun2"] = "不入虎穴，焉得虎子。",
 	["~dingfeng"] = "贴身肉搏竟能赢我，呃~",
-	["cv:dingfeng"] = "小鱼儿",
 
 	["$mingshi1"] = "在下是孔子后人，不知先生有何贵干？",
 	["$mingshi2"] = "来者何人，报上名来。",
@@ -108,28 +108,29 @@ return {
 	["$lirang2"] = "你吃大的，我吃小的。",
 	["~kongrong"] = "生存多所虑，长寝万事毕。",
 
+	["cv:tianfeng"] = "HeLi",
 	["$sijian1"] = "忠言逆耳利于行。",
 	["$sijian2"] = "主公万万不可。",
 	["$suishi1"] = "我军大胜，吾性命无忧矣。",
 	["$suishi2"] = "我军大败，吾必死矣。",
 	["~tianfeng"] = "主公为何不听吾言啊！",
-	["cv:tianfeng"] = "HeLi",
 
+	["cv:jiling"] = "火树",
 	["$shuangren1"] = "你可识得我手中兵器？",
 	["$shuangren2"] = "今日这兵器颇不顺手。",
 	["~jiling"] = "我的三尖两刃刀怎么会输给丈八蛇矛呢？",
-	["cv:jiling"] = "火树",
 
+	["cv:zoushi"] = "英雄杀",
 	["$qingcheng1"] = "将军要替奴家做主。",
 	["$qingcheng2"] = "谁更勇猛呢？",
 	["$huoshui"] = "呵！不怕你。",
 	["~zoushi"] = "自古红颜多薄命啊！",
-	["cv:zoushi"] = "英雄杀",
 
 	["$xiongyi"] = "西凉铁骑，锐不可当！",
 	["~mateng"] = "你们快走，让孟起为我报仇！",
 	["cv:mateng"] = "HeLi",
 
+	["cv:panfeng"] = "水浒杀",
 	["$kuangfu"] = "吃俺一斧。",
 	["~panfeng"] = "哈哈……哦！",
 

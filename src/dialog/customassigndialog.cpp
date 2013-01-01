@@ -1718,7 +1718,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     #endif
     input_skill->setToolTip(tr("Internal skill name is a phonetic form, "
                                "the rest of the special circumstances, "
-                               "please see the translation of documents in the lang directory."));
+                               "please see the documents in the lang directory."));
 
     QCompleter *completer = new QCompleter(Sanguosha->getSkillNames(), input_skill);
     input_skill->setCompleter(completer);

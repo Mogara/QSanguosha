@@ -67,6 +67,7 @@ public:
     bool EnableBgMusic;
     float BGMVolume;
     float EffectVolume;
+    bool DisableLua;
 
     QString BackgroundBrush;
 };

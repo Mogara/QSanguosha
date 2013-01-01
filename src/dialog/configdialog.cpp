@@ -34,6 +34,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     // tab 2
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
+    ui->disableLua->setChecked(Config.DisableLua);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -132,6 +133,9 @@ void ConfigDialog::saveConfig()
 
     Config.EnableMinimizeDialog = ui->minimizecCheckBox->isChecked();
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
+
+    Config.DisableLua = ui->disableLua->isChecked();
+    Config.setValue("DisableLua", Config.DisableLua);
 
     Config.setValue("Contest/SMTPServer", ui->smtpServerLineEdit->text());
     Config.setValue("Contest/Sender", ui->senderLineEdit->text());

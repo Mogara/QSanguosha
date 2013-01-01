@@ -484,8 +484,9 @@ void YuanhuCard::onEffect(const CardEffectStruct &effect) const{
     const Card *card = Sanguosha->getCard(subcards.first());
 
     LogMessage log;
-    log.type = "$ZhijianEquip";
-    log.from = effect.to;
+    log.type = "$YuanhuEquip";
+    log.from = effect.from;
+    log.to << effect.to;
     log.card_str = card->getEffectIdString();
     room->sendLog(log);
 
