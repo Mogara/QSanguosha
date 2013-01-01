@@ -1235,7 +1235,7 @@ MountainPackage::MountainPackage()
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
-    caiwenji->addSkill(new SPConvertSkill("guixiang", "caiwenji", "sp_caiwenji"));
+    caiwenji->addSkill(new SPConvertSkill("#ducaip", "caiwenji", "sp_caiwenji"));
 
     General *zuoci = new General(this, "zuoci", "qun", 3);
     zuoci->addSkill(new Huashen);

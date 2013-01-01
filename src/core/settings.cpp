@@ -120,6 +120,8 @@ void Settings::init(){
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
+    roles_ban << "bgm_pangtong" << "chenlin";
+
     basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "huaxiong" << "bgm_lvmeng";
 
     hegemony_ban.append(basara_ban);
@@ -129,9 +131,10 @@ void Settings::init(){
             hegemony_ban << general;
     }
 
-    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "liaohua" << "bgm_pangtong"
-              << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
-                << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
+    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "liaohua" << "bgm_pangtong"
+            << "+luboyan"
+            << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
+            << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
                 << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlvbu" << "dengshizai+bgm_diaochan"
                 << "luxun+liubei" << "luxun+wolong" << "luxun+yuji" << "luxun+daqiao"
                 << "huangyueying+wolong" << "huangyueying+yuanshao" << "huangyueying+ganning"
@@ -160,7 +163,7 @@ void Settings::init(){
     QStringList banlist = value("Banlist/Roles").toStringList();
     if(banlist.isEmpty()){
         foreach(QString ban_general, roles_ban)
-                banlist << ban_general;
+            banlist << ban_general;
 
         setValue("Banlist/Roles", banlist);
     }
@@ -176,7 +179,7 @@ void Settings::init(){
     banlist = value("Banlist/Basara").toStringList();
     if(banlist.isEmpty()){
         foreach(QString ban_general, basara_ban)
-                    banlist << ban_general;
+            banlist << ban_general;
 
         setValue("Banlist/Basara", banlist);
     }

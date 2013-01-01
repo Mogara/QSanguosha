@@ -262,7 +262,7 @@ public:
 
         boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
 
-        dummy_skills << "chujia" << "xuwei" << "tuoqiao" << "shenli" << "midao"
+        dummy_skills << "shenli" << "midao" << "shiyong"
                      << "kuangfeng" << "dawu" << "kuangbao" << "shenfen" << "wuqian"
                      << "wumou" << "wuhun" << "tongxin" << "xinsheng" << "zaoxian"
                      << "renjie" << "baiyin";

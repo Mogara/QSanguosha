@@ -325,6 +325,11 @@ return {
 	["$super_guanxing2"] = "知天易，逆天难。",
 	["~wuxingzhuge"] = "将星陨落……天命难违……",
 
+	["#dunkengcaoren"] = "大司马",
+	["dunkengcaoren"] = "蹲坑曹仁",
+	["super_jushou"] = "坚守",
+	[":super_jushou"] = "回合结束阶段开始时，你可以摸五张牌，然后将你的武将牌翻面",
+
 	["#sp_shenzhaoyun"] = "神威如龙",
 	["sp_shenzhaoyun"] = "高达一号",
 	["&sp_shenzhaoyun"] = "神赵云",

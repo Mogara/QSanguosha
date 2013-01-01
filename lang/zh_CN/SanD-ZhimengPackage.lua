@@ -4,7 +4,7 @@ return {
 	["sand_zhimeng"] = "3D·织梦",
 
 	["#diyliru"] = "魔王的智囊", -- qun,3HP
-	["diyliru"] = "李儒",
+	["diyliru"] = "3D李儒",
 	["designer:diyliru"] = "catcat44",
 	["illustrator:diyliru"] = "一骑当千",
 	["duji"] = "毒计",
@@ -16,7 +16,7 @@ return {
 	[":shiPo"] = "锁定技，你不能成为黑桃【杀】或黑桃锦囊的目标。",
 
 	["#diypanfeng"] = "无双上将", -- qun,4HP
-	["diypanfeng"] = "潘凤",
+	["diypanfeng"] = "3D潘凤",
 	["designer:diypanfeng"] = "Why.",
 	["illustrator:diypanfeng"] = "凌秋宏",
 	["liefu"] = "烈斧",
@@ -26,7 +26,7 @@ return {
 	["liefu:feng"] = "对方摸牌",
 	
 	["#diychengyu"] = "世之奇士", -- wei,3HP
-	["diychengyu"] = "程昱",
+	["diychengyu"] = "3D程昱",
 	["designer:diychengyu"] = "流云潇雪",
 	["illustrator:diychengyu"] = "樱花闪乱",
 	["pengri"] = "捧日",
@@ -35,7 +35,7 @@ return {
 	[":gangli"] = "每当你受到其他角色造成的1点伤害后，你可以：选择除伤害来源外的另一名角色，视为伤害来源对该角色使用一张【杀】（此【杀】无距离限制且不计入出牌阶段使用次数限制）。",
 
 	["#diyjiangwan"] = "安阳亭侯", -- shu,3HP
-	["diyjiangwan"] = "蒋琬",
+	["diyjiangwan"] = "3D蒋琬",
 	["designer:diyjiangwan"] = "CoffeeNO加糖",
 	["illustrator:diyjiangwan"] = "小仓",
 	["yaliang"] = "雅量",
@@ -48,7 +48,7 @@ return {
 	["gui"] = "规",
 	
 	["#diyyuejin"] = "胆识英烈", -- wei,4HP
-	["diyyuejin"] = "乐进",
+	["diyyuejin"] = "3D乐进",
 	["designer:diyyuejin"] = "R_Shanks",
 	["illustrator:diyyuejin"] = "火神网",
 	["xiandeng"] = "先登",
@@ -57,14 +57,14 @@ return {
 	[":xia0guo"] = "出牌阶段，每当你使用非红桃【杀】被目标角色的【闪】抵消时，你可令该【闪】返回该角色手牌中，然后将此【杀】当一张延时类锦囊对该角色使用（黑色当【兵粮寸断】，方块当【乐不思蜀】）。",
 	
 	["#diychendao"] = "猛将之烈", -- shu,4HP
-	["diychendao"] = "陈到",
+	["diychendao"] = "3D陈到",
 	["designer:diychendao"] = "游神ViVA",
 	["illustrator:diychendao"] = "楚汉风云",
 	["jingrui"] = "精锐",
 	[":jingrui"] = "若你的手牌数不小于你的体力值，你可以将一张手牌当做【杀】或【闪】使用或打出。",
 
 	["#diysimazhao"] = "权倾谋朝", -- wei,3HP
-	["diysimazhao"] = "司马昭",
+	["diysimazhao"] = "3D司马昭",
 	["designer:diysimazhao"] = "殇の腥",
 	["illustrator:diysimazhao"] = "火神网",
 	["zha0xin"] = "昭心",
@@ -73,7 +73,7 @@ return {
 	[":huaiyi"] = "每当你体力值发生一次变化后，你可以摸一张牌。",
 
 	["#diysunluban"] = "矫矜的毒刺", -- wu,3HP
-	["diysunluban"] = "孙鲁班",
+	["diysunluban"] = "3D孙鲁班",
 	["designer:diysunluban"] = "小掉线仙",
 	["illustrator:diysunluban"] = "阎魔爱",
 	["yinsi"] = "淫肆",
@@ -87,7 +87,7 @@ return {
 	["@chanxian"] = "受到【谗陷】影响，你可以对 %src 使用一张【杀】",
 
 	["#diyzhugejin"] = "温厚的盟使", -- wu,4HP
-	["diyzhugejin"] = "诸葛瑾",
+	["diyzhugejin"] = "3D诸葛瑾",
 	["designer:diyzhugejin"] = "catcat44",
 	["illustrator:diyzhugejin"] = "战国风云",
 	["yanhe"] = "言和",
@@ -97,7 +97,7 @@ return {
 	["#YouqiWake"] = "%from 的觉醒技【%arg】被触发",
 
 	["#diyjushou"] = "忠贞义烈", -- qun,3HP
-	["diyjushou"] = "沮授",
+	["diyjushou"] = "3D沮授",
 	["designer:diyjushou"] = "神·冥狐",
 	["illustrator:diyjushou"] = "一骑当千",
 	["quanjian"] = "劝谏",

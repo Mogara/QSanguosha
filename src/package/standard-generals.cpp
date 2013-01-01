@@ -320,7 +320,7 @@ public:
         if(reason == NULL)
             return false;
 
-        if(reason->inherits("Slash") || reason->inherits("Duel")){
+        if(reason->isKindOf("Slash") || reason->isKindOf("Duel")){
             LogMessage log;
             log.type = "#LuoyiBuff";
             log.from = xuchu;
@@ -574,15 +574,15 @@ public:
         switch(ClientInstance->getStatus()){
         case Client::Playing:{
                 // jink as slash
-                return card->inherits("Jink");
+                return card->isKindOf("Jink");
             }
 
         case Client::Responsing:{
                 QString pattern = ClientInstance->getPattern();
                 if(pattern == "slash")
-                    return card->inherits("Jink");
+                    return card->isKindOf("Jink");
                 else if(pattern == "jink")
-                    return card->inherits("Slash");
+                    return card->isKindOf("Slash");
             }
 
         default:
@@ -600,12 +600,12 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         const Card *card = card_item->getFilteredCard();
-        if(card->inherits("Slash")){
+        if(card->isKindOf("Slash")){
             Jink *jink = new Jink(card->getSuit(), card->getNumber());
             jink->addSubcard(card);
             jink->setSkillName(objectName());
             return jink;
-        }else if(card->inherits("Jink")){
+        }else if(card->isKindOf("Jink")){
             Slash *slash = new Slash(card->getSuit(), card->getNumber());
             slash->addSubcard(card);
             slash->setSkillName(objectName());
@@ -674,7 +674,7 @@ public:
     }
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        if(card->inherits("Slash") || card->inherits("Duel"))
+        if(card->isKindOf("Slash") || card->isKindOf("Duel"))
             return to->isKongcheng();
         else
             return false;
@@ -778,7 +778,7 @@ public:
 
         case CardEffected: {
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                if(effect.card->inherits("Peach") && effect.from->getKingdom() == "wu"
+                if(effect.card->isKindOf("Peach") && effect.from->getKingdom() == "wu"
                    && sunquan != effect.from && sunquan->hasFlag("dying"))
                 {
                     int index = effect.from->getGeneral()->isMale() ? 2 : 3;
@@ -861,7 +861,7 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *lvmeng, QVariant &data) const{
         CardStar card_star = data.value<CardStar>();
-        if(card_star->inherits("Slash"))
+        if(card_star->isKindOf("Slash"))
             lvmeng->setFlags("keji_use_slash");
 
         return false;
@@ -1009,7 +1009,7 @@ public:
         Room *room = daqiao->getRoom();
 
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(effect.card->inherits("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
+        if(effect.card->isKindOf("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(effect.from);
 
@@ -1227,7 +1227,7 @@ public:
     }
 
     virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
-        return card->inherits("Snatch") || card->inherits("Indulgence");
+        return card->isKindOf("Snatch") || card->isKindOf("Indulgence");
     }
 };
 
@@ -1282,6 +1282,7 @@ void StandardPackage::addGenerals(){
 
     guanyu = new General(this, "guanyu", "shu");
     guanyu->addSkill(new Wusheng);
+    guanyu->addSkill(new SPConvertSkill("#guanyup", "guanyu", "sp_guanyu"));
 
     zhangfei = new General(this, "zhangfei", "shu");
     zhangfei->addSkill(new Skill("paoxiao"));
@@ -1298,7 +1299,7 @@ void StandardPackage::addGenerals(){
     machao = new General(this, "machao", "shu");
     machao->addSkill(new Tieji);
     machao->addSkill(new Mashu);
-    machao->addSkill(new SPConvertSkill("fanqun", "machao", "sp_machao"));
+    machao->addSkill(new SPConvertSkill("#machaop", "machao", "sp_machao"));
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
@@ -1335,7 +1336,7 @@ void StandardPackage::addGenerals(){
     sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false);
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
-    sunshangxiang->addSkill(new SPConvertSkill("chujia", "sunshangxiang", "sp_sunshangxiang"));
+    sunshangxiang->addSkill(new SPConvertSkill("#xiangxiangp", "sunshangxiang", "sp_sunshangxiang"));
 
     General *lvbu, *huatuo, *diaochan;
 
@@ -1349,7 +1350,7 @@ void StandardPackage::addGenerals(){
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
-    diaochan->addSkill(new SPConvertSkill("tuoqiao", "diaochan", "sp_diaochan"));
+    diaochan->addSkill(new SPConvertSkill("#diaochanp", "diaochan", "sp_diaochan"));
 
     // for skill cards
     addMetaObject<ZhihengCard>();
@@ -1396,6 +1397,27 @@ public:
     }
 };
 
+class SuperJushou: public PhaseChangeSkill{
+public:
+    SuperJushou():PhaseChangeSkill("super_jushou"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Finish){
+            Room *room = target->getRoom();
+            if(room->askForSkillInvoke(target, objectName())){
+                target->drawCards(5);
+                target->turnOver();
+
+                room->playSkillEffect(objectName());
+            }
+        }
+
+        return false;
+    }
+};
+
 TestPackage::TestPackage()
     :Package("test")
 {
@@ -1408,6 +1430,9 @@ TestPackage::TestPackage()
     wuxing_zhuge->addSkill(new SuperGuanxing);
     wuxing_zhuge->addSkill("kongcheng");
     wuxing_zhuge->addSkill("#kongcheng-effect");
+
+    General *dunkeng_caoren = new General(this, "dunkengcaoren", "wei", 4, true, true);
+    dunkeng_caoren->addSkill(new SuperJushou);
 
     new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);

@@ -594,7 +594,7 @@ FirePackage::FirePackage()
     pangde = new General(this, "pangde", "qun");
     pangde->addSkill(new Mengjin);
     pangde->addSkill("mashu");
-    pangde->addSkill(new SPConvertSkill("pangde_guiwei", "pangde", "sp_pangde"));
+    pangde->addSkill(new SPConvertSkill("#pangdep", "pangde", "sp_pangde"));
 
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();

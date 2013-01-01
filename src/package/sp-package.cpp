@@ -903,7 +903,7 @@ SPPackage::SPPackage()
     sp_pangde->addSkill("mengjin");
     sp_pangde->addSkill("mashu");
 
-    General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4);
+    General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4, true, true);
     sp_guanyu->addSkill("wusheng");
     sp_guanyu->addSkill(new Danji);
 
