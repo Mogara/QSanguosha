@@ -68,6 +68,7 @@ SOURCES += \
 	src/package/assassins.cpp \
         src/package/hegemony.cpp \
 	src/package/special3v3-package.cpp \
+        src/package/3d_zhimeng-package.cpp \
 	src/scenario/scenario.cpp \
 	src/scenario/boss-mode-scenario.cpp \
 	src/scenario/couple-scenario.cpp \
@@ -190,6 +191,7 @@ HEADERS += \
 	src/package/assassins.h \
         src/package/hegemony.h \
 	src/package/special3v3-package.h \
+        src/package/3d_zhimeng-package.h \
 	src/scenario/boss-mode-scenario.h \
 	src/scenario/couple-scenario.h \
 	src/scenario/fancheng-scenario.h \

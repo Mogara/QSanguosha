@@ -438,11 +438,13 @@ void BanlistDialog::addGeneral(const QString &name){
     }
     else{
         const General *general = Sanguosha->getGeneral(name);
-        QIcon icon(general->getPixmapPath("tiny"));
-        QString text = Sanguosha->translate(name);
-        QListWidgetItem *item = new QListWidgetItem(icon, text, list);
-        item->setSizeHint(QSize(60,60));
-        item->setData(Qt::UserRole, name);
+        if(general){
+            QIcon icon(general->getPixmapPath("tiny"));
+            QString text = Sanguosha->translate(name);
+            QListWidgetItem *item = new QListWidgetItem(icon, text, list);
+            item->setSizeHint(QSize(60,60));
+            item->setData(Qt::UserRole, name);
+        }
     }
 }
 

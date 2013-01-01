@@ -37,6 +37,7 @@ config = {
 		"Ling",
 		"Assassins",
 		"Olympics",
+		"SanDZhimeng",
 		"NostalGeneral",
 		"Test",
 	},

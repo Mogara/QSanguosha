@@ -58,7 +58,7 @@ void Settings::init(){
 
     if(!contains("BanPackages")){
         QStringList banlist;
-        banlist << "nostalgia" << "nostal_general" << "yitian" << "wisdom"
+        banlist << "nostalgia" << "nostal_general" << "yitian" << "wisdom" << "sand_zhimeng"
                 << "disaster" << "god" << "YJCM" << "yitian_cards" << "test"
                 << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
                 << "New3v3Card" << "joy" << "joy_equip" << "hegemony_card" 
@@ -154,7 +154,7 @@ void Settings::init(){
                 << "huanggai+guanxingzhangbao" << "xushu+zhugeliang" << "nosxushu+zhugeliang"
                 << "zhugejin+caizhaoji" << "zhugejin+zhenji" << "zhugejin+huatuo" << "zhugejin+dengai"
                 << "fazheng+xiahoudun" << "nosfazheng+xiahoudun" << "bgm_zhangfei+guanyu"
-                << "bgm_zhangfei+sp_guanyu" << "bgm_liugei+zhugeliang";
+                << "bgm_zhangfei+sp_guanyu" << "bgm_liubei+zhugeliang";
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     if(banlist.isEmpty()){
