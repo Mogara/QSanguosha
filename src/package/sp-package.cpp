@@ -575,7 +575,7 @@ void XuejiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         room->damage(damage);
     }
     foreach (ServerPlayer *p, targets) {
-        if (p->isAlive())
+        if(p->isAlive())
             p->drawCards(1);
     }
 }
@@ -605,17 +605,16 @@ class Huxiao: public TriggerSkill {
 public:
     Huxiao(): TriggerSkill("huxiao") {
         events << SlashMissed << PhaseChange;
-        frequency = Compulsory;
     }
     
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room* room = player->getRoom();
-        if (event == SlashMissed) {
-            if (player->getPhase() == Player::Play)
+        if(event == SlashMissed) {
+            if(player->getPhase() == Player::Play && player->getMark("wuji") == 0)
                 room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
-        } else if (event == PhaseChange) {
+        }else if(event == PhaseChange) {
             if(player->getPhase() == Player::Play)
-                if (player->getMark(objectName()) > 0)
+                if(player->getMark(objectName()) > 0)
                     room->setPlayerMark(player, objectName(), 0);
         }
 
@@ -652,13 +651,13 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room* room = player->getRoom();
-        if (event == DamageDone) {
+        if(event == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->isAlive() && damage.from == room->getCurrent() && damage.from->getMark("wuji") == 0)
+            if(damage.from && damage.from->isAlive() && damage.from == room->getCurrent() && damage.from->getMark("wuji") == 0)
                 room->setPlayerMark(damage.from, "wuji_damage", damage.from->getMark("wuji_damage") + damage.damage);
-        } else if (event == PhaseChange) {
-            if (player->getPhase() == Player::NotActive)
-                if (player->getMark("wuji_damage") > 0)
+        }else if(event == PhaseChange) {
+            if(player->getPhase() == Player::NotActive)
+                if(player->getMark("wuji_damage") > 0)
                     room->setPlayerMark(player, "wuji_damage", 0);
         }
 
@@ -694,7 +693,6 @@ public:
         //room->getThread()->delay(4000);
 
         player->addMark("wuji");
-        player->gainMark("@waked");
 
         room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
 
@@ -710,20 +708,19 @@ public:
 
 BifaCard::BifaCard(){
     will_throw = false;
-	mute = true;
+    mute = true;
 }
 
 bool BifaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-	return targets.isEmpty() && to_select->getPile("bifa").isEmpty() && to_select != Self;
+    return targets.isEmpty() && to_select->getPile("bifa").isEmpty() && to_select != Self;
 }
 
 void BifaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     target->tag["BifaSource" + QString::number(getEffectiveId())] = QVariant::fromValue((PlayerStar)source);
         room->playSkillEffect("bifa", 1);
-    foreach(int id, this->subcards){
+    foreach(int id, getSubcards())
         target->addToPile("bifa", id, false);
-    }
 }
 
 class BifaViewAsSkill: public OneCardViewAsSkill {
@@ -735,17 +732,17 @@ public:
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@bifa";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@bifa";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *originalcard) const{
+    virtual const Card *viewAs(CardItem *card_item) const{
         Card *card = new BifaCard;
-        card->addSubcard(originalcard->getFilteredCard());
+        card->addSubcard(card_item->getFilteredCard());
         return card;
     }
 };
@@ -757,15 +754,15 @@ public:
         view_as_skill = new BifaViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Finish && !player->isKongcheng()) {
+        if(player->hasSkill(objectName()) && player->getPhase() == Player::Finish && !player->isKongcheng()) {
             room->askForUseCard(player, "@@bifa", "@bifa-remove");
-        } else if (player->getPhase() == Player::RoundStart && player->getPile("bifa").length() > 0) {
+        }else if(player->getPhase() == Player::RoundStart && player->getPile("bifa").length() > 0) {
             QList<int> bifa_list = player->getPile("bifa");
 
             while (!bifa_list.isEmpty()) {
@@ -793,7 +790,6 @@ public:
                     player->obtainCard(cd, false);
                 } else {
                     room->playSkillEffect("bifa", 3);
-                    //CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
                     room->throwCard(cd);
                     room->loseHp(player);
                 }
@@ -802,7 +798,7 @@ public:
                 player->tag.remove("BifaSource" + QString::number(card_id));
             }
         }
-		return false;
+        return false;
     }
 };
 

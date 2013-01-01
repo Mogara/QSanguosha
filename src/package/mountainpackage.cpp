@@ -458,7 +458,8 @@ public:
 
         if(card->inherits("Duel") || (card->inherits("Slash") && card->isRed())){
             if(sunce->askForSkillInvoke(objectName(), data)){
-                sunce->getRoom()->playSkillEffect(objectName());
+                int n = sunce->getMark("@wu") > 0 ? qrand() % 2 + 3 : qrand() % 2 + 1;
+                sunce->getRoom()->playSkillEffect(objectName(), n);
                 sunce->drawCards(1);
             }
         }

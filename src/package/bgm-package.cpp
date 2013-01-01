@@ -1514,6 +1514,44 @@ public:
     }
 };
 
+class Hantong: public TriggerSkill{
+public:
+    Hantong():TriggerSkill("hantong"){
+        events << CardDiscarded << PhaseChange;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+
+        if(event == PhaseChange){
+            if(player->getPhase() == Player::Start){
+                if(!player->getPile("zhao").isEmpty() && player->askForSkillInvoke(objectName())){
+                    room->playSkillEffect(objectName());
+                    room->throwCard(player->getPile("zhao").first());
+                    QString skill = room->askForChoice(player, objectName(), "hujia+jijiang+jiuyuan+xueyi");
+                    player->tag["Zhao"] = skill;
+                    room->acquireSkill(player, skill);
+                }
+            }
+            else if(player->getPhase() == Player::NotActive){
+                QString skill = player->tag.value("Zhao").toString();
+                room->detachSkillFromPlayer(player, skill);
+            }
+            return false;
+        }
+        if(player->getPhase() == Player::Discard){
+            CardStar card = data.value<CardStar>();
+            if(card->getSubcards().isEmpty() || !player->askForSkillInvoke(objectName()))
+                return false;
+            room->playSkillEffect(objectName());
+            foreach(int card_id, card->getSubcards())
+                player->addToPile("zhao", card_id);
+        }
+
+        return false;
+    }
+};
+
 PasterPackage::PasterPackage()
     :Package("paster")
 {
@@ -1527,7 +1565,7 @@ PasterPackage::PasterPackage()
 
     General *liuxie = new General(this, "liuxie", "qun");
     liuxie->addSkill(new Huangen);
-    //lualiuxie->addSkill(hantong);
+    liuxie->addSkill(new Hantong);
     //lualiuxie->addSkill(hantongmax);
     //lualiuxie->addSkill(hantongclear);
 /*

@@ -656,9 +656,10 @@ public:
            zhuge->askForSkillInvoke(objectName()))
         {
             Room *room = zhuge->getRoom();
-            room->playSkillEffect(objectName());
+            int n = zhuge->getMark("zhiji") > 0 ? qrand() % 2 + 3 : qrand() % 2 + 1;
+            room->playSkillEffect(objectName(), n);
 
-            int n = qMin(5, room->alivePlayerCount());
+            n = qMin(5, room->alivePlayerCount());
             room->doGuanxing(zhuge, room->getNCards(n, false), false);
         }
 
@@ -826,7 +827,9 @@ public:
     virtual int getDrawNum(ServerPlayer *zhouyu, int n) const{
         Room *room = zhouyu->getRoom();
         if(room->askForSkillInvoke(zhouyu, objectName())){
-            room->playSkillEffect(objectName());
+            int n = zhouyu->getMark("hunzi") > 0 ? 5 :
+                    zhouyu->getMark("@wen") > 0 ? qrand() % 2 + 3 : qrand() % 2 + 1;
+            room->playSkillEffect(objectName(), n);
             return n + 1;
         }else
             return n;
@@ -882,7 +885,8 @@ public:
                lvmeng->getSlashCount() == 0 &&
                lvmeng->askForSkillInvoke("keji"))
             {
-                lvmeng->getRoom()->playSkillEffect("keji");
+                int n = lvmeng->getMark("@wen") > 0 ? qrand() % 2 + 3 : qrand() % 2 + 1;
+                lvmeng->getRoom()->playSkillEffect("keji", n);
 
                 return true;
             }

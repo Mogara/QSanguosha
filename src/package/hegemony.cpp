@@ -527,6 +527,7 @@ public:
             if(player->getHp() >= tianfeng->getHandcardNum())
                 tianfeng->drawCards(1);
         }
+        return false;
     }
 };
 

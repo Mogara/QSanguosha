@@ -352,7 +352,8 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
 
     bool good = false;
     if(x == 1){
-        room->playSkillEffect("yinghun", 1);
+        int n = effect.from->getMark("hunzi") > 0 ? 3 : 1;
+        room->playSkillEffect(skill_name, n);
 
         effect.to->drawCards(1);
         room->askForDiscard(effect.to, "yinghun", 1, false, true);
@@ -360,7 +361,8 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
     }else{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
-            room->playSkillEffect("yinghun", 2);
+            int n = effect.from->getMark("hunzi") > 0 ? 4 : 2;
+            room->playSkillEffect(skill_name, n);
 
             effect.to->drawCards(1);
             x = qMin(x, effect.to->getCardCount(true));

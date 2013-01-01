@@ -258,7 +258,7 @@ void LiuliCard::onEffect(const CardEffectStruct &effect) const{
 }
 
 JijiangCard::JijiangCard(){
-
+    mute = true;
 }
 
 bool JijiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -266,6 +266,8 @@ bool JijiangCard::targetFilter(const QList<const Player *> &targets, const Playe
 }
 
 void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer *> &targets) const{
+    int n = liubei->getMark("ruoyu") > 0 ? qrand() % 2 + 3 : qrand() % 2 + 1;
+    room->playSkillEffect(skill_name, n);
     QList<ServerPlayer *> lieges = room->getLieges("shu", liubei);
     const Card *slash = NULL;
 

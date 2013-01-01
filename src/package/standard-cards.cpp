@@ -36,6 +36,64 @@ QString Slash::getSubtype() const{
     return "attack_card";
 }
 
+void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *player = card_use.from;
+
+    if(player->getPhase() == Player::Play
+            && player->getMark("SlashCount") >= 1
+            && player->hasSkill("paoxiao"))
+        room->playSkillEffect("paoxiao");
+    else if (player->getPhase() == Player::Play
+            && player->hasSkill("huxiao")) {
+        int n = 1;
+        if (player->hasFlag("tianyi_success"))
+            n ++;
+        if (player->hasFlag("jiangchi_invoke"))
+            n ++;
+        if (player->getMark("SlashCount") >= n) {
+            bool toSunquan = false;
+            foreach(ServerPlayer *p, card_use.to)
+                if(p->getGeneralName().contains("sunquan")) {
+                toSunquan = true;
+                break;
+            }
+
+            if(toSunquan)
+                room->playSkillEffect("huxiao", 3);
+            else
+                room->playSkillEffect("huxiao", qrand() % 2 + 1);
+        }
+    }
+    if (card_use.to.size() > 1 && player->hasSkill("shenji"))
+        room->playSkillEffect("shenji");
+    else if (card_use.to.size() > 1 && player->hasSkill("lihuo") && getSkillName() != "lihuo")
+        room->playSkillEffect("lihuo", 1);
+
+    if (isVirtualCard() && getSkillName() == "spear")
+        room->setEmotion(player,"weapon/spear");
+    else if (card_use.to.size() > 1 && player->hasWeapon("halberd") && player->isLastHandCard(this))
+        room->setEmotion(player,"weapon/halberd");
+    else if (isVirtualCard() && getSkillName() == "fan")
+        room->setEmotion(player,"weapon/fan");
+    if (player->getPhase() == Player::Play
+        && player->getMark("SlashCount") >= 1
+        && player->hasWeapon("crossbow")
+        && !player->hasSkill("paoxiao"))
+        room->setEmotion(player,"weapon/crossbow");
+    if (isKindOf("ThunderSlash"))
+        room->setEmotion(player, "thunder_slash");
+    else if (isKindOf("FireSlash"))
+        room->setEmotion(player, "fire_slash");
+    else if (isRed())
+        room->setEmotion(player, "slash_red");
+    else if (isBlack())
+        room->setEmotion(player, "slash_black");
+    else
+        room->setEmotion(player, "killer");
+
+    BasicCard::onUse(room, card_use);
+}
+
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     BasicCard::use(room, source, targets);
 
