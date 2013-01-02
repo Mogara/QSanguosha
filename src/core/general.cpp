@@ -50,6 +50,15 @@ General::Gender General::getGender() const{
     return gender;
 }
 
+QString General::getGenderString() const{
+    switch(gender){
+    case Male: return "male";
+    case Female: return "female";
+    default:
+        return "neuter";
+    }
+}
+
 bool General::isLord() const{
     return lord;
 }

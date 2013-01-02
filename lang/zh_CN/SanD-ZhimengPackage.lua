@@ -24,7 +24,7 @@ return {
 	["#Liefu"] = "%from 发动了【%arg】技能，对 %to 强制命中",
 	["liefu:pan"] = "自己弃牌",
 	["liefu:feng"] = "对方摸牌",
-	
+
 	["#diychengyu"] = "世之奇士", -- wei,3HP
 	["diychengyu"] = "3D程昱",
 	["designer:diychengyu"] = "流云潇雪",
@@ -46,7 +46,7 @@ return {
 	["daoju"] = "蹈矩",
 	[":daoju"] = "出牌阶段，你可以将两张相同颜色手牌当“规”所示锦囊使用。每阶段限用一次。",
 	["gui"] = "规",
-	
+
 	["#diyyuejin"] = "胆识英烈", -- wei,4HP
 	["diyyuejin"] = "3D乐进",
 	["designer:diyyuejin"] = "R_Shanks",
@@ -55,7 +55,7 @@ return {
 	[":xiandeng"] = "摸牌阶段，你可少摸一张牌，然后你无视一名其他角色的距离直到回合结束。",
 	["xia0guo"] = "骁果",
 	[":xia0guo"] = "出牌阶段，每当你使用非红桃【杀】被目标角色的【闪】抵消时，你可令该【闪】返回该角色手牌中，然后将此【杀】当一张延时类锦囊对该角色使用（黑色当【兵粮寸断】，方块当【乐不思蜀】）。",
-	
+
 	["#diychendao"] = "猛将之烈", -- shu,4HP
 	["diychendao"] = "3D陈到",
 	["designer:diychendao"] = "游神ViVA",

@@ -1295,6 +1295,7 @@ void StandardPackage::addGenerals(){
 
     zhaoyun = new General(this, "zhaoyun", "shu");
     zhaoyun->addSkill(new Longdan);
+    zhaoyun->addSkill(new SPConvertSkill("#zhaoyunt", "zhaoyun", "tai_zhaoyun"));
 
     machao = new General(this, "machao", "shu");
     machao->addSkill(new Tieji);
@@ -1328,6 +1329,7 @@ void StandardPackage::addGenerals(){
     daqiao = new General(this, "daqiao", "wu", 3, false);
     daqiao->addSkill(new Guose);
     daqiao->addSkill(new Liuli);
+    daqiao->addSkill(new SPConvertSkill("#daqiaot", "daqiao", "tai_daqiao"));
 
     luxun = new General(this, "luxun", "wu", 3);
     luxun->addSkill(new Qianxun);
@@ -1351,6 +1353,7 @@ void StandardPackage::addGenerals(){
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
     diaochan->addSkill(new SPConvertSkill("#diaochanp", "diaochan", "sp_diaochan"));
+    diaochan->addSkill(new SPConvertSkill("#diaochant", "diaochan", "tai_diaochan"));
 
     // for skill cards
     addMetaObject<ZhihengCard>();

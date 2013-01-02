@@ -40,7 +40,6 @@ return {
 	["mingshicancel"] = "不展示",
 	["lirang"] = "礼让",
 	[":lirang"] = "当你的牌因弃置而置入弃牌堆时，你可以将之交给一名其他角色。",
-	["cv:kongrong"] = "逍遥小鱼儿",
 
 	["#tianfeng"] = "河北瑰杰",
 	["tianfeng"] = "田丰",
@@ -80,12 +79,16 @@ return {
 	["kuangfuget"] = "拿来",
 	["kuangfudis"] = "丢掉",
 
+-- cv
+	["illustrator:yuejin"] = "巴萨小马",
 	["cv:yuejin"] = "小鱼儿",
 	["$xiaoguo1"] = "天明之前定要攻下此城。",
 	["$xiaoguo2"] = "敌阵已经动摇，继续冲啊！",
 	["$xiaoguo3"] = "兄弟们随我直捣黄龙！",
 	["~yuejin"] = "魏王拔我于行伍，今当以死相报。",
 
+	["illustrator:ganfuren"] = "",
+	["cv:ganfuren"] = "",
 	["$shushen"] = "想要牌吗？",
 	["$shenzhi"] = "补充一下吧！",
 	["~ganfuren"] = "陛下，妾身去矣~",
@@ -95,6 +98,7 @@ return {
 	["$duoshi2"] = "审时度势，方能出奇制胜。",
 	["~lushun"] = "等到花儿都谢了~",
 
+	["illustrator:dingfeng"] = "魔鬼鱼",
 	["cv:dingfeng"] = "小鱼儿",
 	["$duanbing1"] = "一寸短一寸险。",
 	["$duanbing2"] = "来一个杀一个，来一对杀一双！",
@@ -102,12 +106,15 @@ return {
 	["$fenxun2"] = "不入虎穴，焉得虎子。",
 	["~dingfeng"] = "贴身肉搏竟能赢我，呃~",
 
+	["illustrator:kongrong"] = "",
+	["cv:kongrong"] = "逍遥小鱼儿",
 	["$mingshi1"] = "在下是孔子后人，不知先生有何贵干？",
 	["$mingshi2"] = "来者何人，报上名来。",
 	["$lirang1"] = "退一步，海阔天空。",
 	["$lirang2"] = "你吃大的，我吃小的。",
 	["~kongrong"] = "生存多所虑，长寝万事毕。",
 
+	["illustrator:tianfeng"] = "地狱许",
 	["cv:tianfeng"] = "HeLi",
 	["$sijian1"] = "忠言逆耳利于行。",
 	["$sijian2"] = "主公万万不可。",
@@ -115,21 +122,25 @@ return {
 	["$suishi2"] = "我军大败，吾必死矣。",
 	["~tianfeng"] = "主公为何不听吾言啊！",
 
+	["illustrator:jiling"] = "樱花闪乱",
 	["cv:jiling"] = "火树",
 	["$shuangren1"] = "你可识得我手中兵器？",
 	["$shuangren2"] = "今日这兵器颇不顺手。",
 	["~jiling"] = "我的三尖两刃刀怎么会输给丈八蛇矛呢？",
 
+	["illustrator:zoushi"] = "",
 	["cv:zoushi"] = "英雄杀",
 	["$qingcheng1"] = "将军要替奴家做主。",
 	["$qingcheng2"] = "谁更勇猛呢？",
 	["$huoshui"] = "呵！不怕你。",
 	["~zoushi"] = "自古红颜多薄命啊！",
 
+	["illustrator:mateng"] = "DH",
+	["cv:mateng"] = "HeLi",
 	["$xiongyi"] = "西凉铁骑，锐不可当！",
 	["~mateng"] = "你们快走，让孟起为我报仇！",
-	["cv:mateng"] = "HeLi",
 
+	["illustrator:panfeng"] = "Yi 章",
 	["cv:panfeng"] = "水浒杀",
 	["$kuangfu"] = "吃俺一斧。",
 	["~panfeng"] = "哈哈……哦！",

@@ -2,10 +2,11 @@
 
 return {
 	["assassins"] = "铜雀台",
-	
+
 	["#jiben"] = "誓死除奸恶",
 	["jiben"] = "吉本",
 	["designer:jiben"] = "凌天翼",
+	["illustrator:jiben"] = "姚撸",
 	["duyi"] = "毒医",
 	[":duyi"] = "出牌阶段，你可以亮出牌堆顶的一张牌并交给一名角色，若此牌为黑色，该角色不能使用或打出其手牌，直到回合结束。每阶段限一次。",
 	["#duyi_eff"] = "由于 %from 的技能【%arg】的效果, %to 不能使用或打出其手牌",
@@ -22,10 +23,11 @@ return {
 	["$duanzhi2"] = "臣不能为国家除贼,当以死谢陛下!",
 	["$duanzhi3"] = "砍断手指的声音~~",
 	["~jiben"] = "为汉室除奸,虽灭九族,亦无悔也!",
-	
+
 	["#fuwan"] = "沉毅的国丈",
 	["fuwan"] = "伏完",
 	["designer:fuwan"] = "凌天翼",
+	["illustrator:fuwan"] = "倪大红",
 	["fengyin"] = "奉印",
 	[":fengyin"] = "其他角色的回合开始时，若其当前的体力值不比你少，你可以交给其一张【杀】，令其跳过其出牌阶段和弃牌阶段。",
 	["@fengyin"] = "是否发动技能【奉印】",
@@ -37,10 +39,12 @@ return {
 	["$chizhong1"] = "曹操势大,且容为父从长计议.", --keep
 	["$chizhong2"] = "为了女儿,我要活下去.", --addmaxhp
 	["~fuwan"] = "悔不该坐视曹贼成了气候!",
-	
+
 	["#fuhuanghou"] = "与世不侵",
 	["fuhuanghou"] = "伏皇后",
 	["designer:fuhuanghou"] = "凌天翼",
+	["illustrator:fuhuanghou"] = "伊能静",
+	["cv:fuhuanghou"] = "蒲小猫",
 	["cangni"] = "藏匿",
 	[":cangni"] = "弃牌阶段开始时，你可以回复1点体力或摸两张牌，然后将你的武将牌翻面；其他角色的回合内，当你获得（每回合限一次）/失去一次牌时，若你的武将牌背面朝上，你可以令该角色摸/弃置一张牌。",
 	["cangni:recover"] = "回复1点体力",
@@ -59,8 +63,8 @@ return {
 	["#mushun"] = "屈身为国",
 	["mushun"] = "穆顺",
 	["cv:mushun"] = "王乾龙",
-	--["illustrator:mushun"] = "",
 	["designer:mushun"] = "嘉言懿行",
+	["illustrator:mushun"] = "玉木宏",
 	["moukui"] = "谋溃",
 	[":moukui"] = "当你使用【杀】指定一名角色为目标后，你可以选择一项：摸一张牌，或弃置其一张牌。若如此做，此【杀】被【闪】抵消时，该角色弃置你的一张牌。",
 	["moukui:draw"] = "摸一张牌",
@@ -72,8 +76,8 @@ return {
 
 	["#hanxiandi"] = "受困天子",
 	["hanxiandi"] = "汉献帝",
-	--["illustrator:hanxiandi"] = "",
 	["designer:hanxiandi"] = "韩旭",
+	["illustrator:hanxiandi"] = "苏有朋",
 	["tianming"] = "天命",
 	[":tianming"] = "当你成为【杀】的目标时，你可以弃置两张牌（不足则全弃，无牌则不弃），然后摸两张牌；若此时全场体力值最多的角色仅有一名（且不是你），该角色也可如此做",
 	["$tianming1"] = "朕乃天命所在!",
@@ -90,9 +94,9 @@ return {
 
 	["#lingju"] = "情随梦逝",
 	["lingju"] = "灵雎",
-	--["illustrator:lingju"] = "",
 	["designer:lingju"] = "韩旭",
 	["cv:lingju"] = "蒲小猫",
+	["illustrator:lingju"] = "刘亦菲",
 	["jieyuan"] = "竭缘",
 	[":jieyuan"] = "当你对一名其他角色造成伤害时，若其体力值大于或等于你的体力值，你可弃置一张黑色手牌令此伤害+1；当你受到一名其他角色造成的伤害时，若其体力值大于或等于你的体力值，你可弃置一张红色手牌令此伤害-1",
 	["@JieyuanIncrease"] = "你可以弃一张黑色手牌令此伤害+1",
@@ -110,11 +114,12 @@ return {
 	["~lingju"] = "魏王……",
 
 -- olympics
-	["olympics"] = "奥运", 
-	
+	["olympics"] = "奥运",
+
 	["#yeshiwen"] = "出水青莲",
 	["yeshiwen"] = "叶诗文",
 	["cv:yeshiwen"] = "腾讯英雄杀",
+	["illustrator:yeshiwen"] = "叶诗文同人",
 	["jisu"] = "急速",
 	[":jisu"] = "你可以跳过你此回合的判定阶段和摸牌阶段。若如此做，视为对一名其他角色使用一张【杀】。",
 	["@jisu"] = "你可以发动【急速】，跳过判定和摸牌阶段对一名角色出杀",
@@ -124,10 +129,11 @@ return {
 	["$jisu"] = "不错哟~",
 	["$shuiyong"] = "还不赖嘛~",
 	["~yeshiwen"] = "香消玉散……",
-	
+
 	["#sunyang"] = "逐浪追风",
 	["sunyang"] = "孙杨",
 	["cv:sunyang"] = "陈茂蓬",
+	["illustrator:sunyang"] = "孙杨同人",
 	["shuijian"] = "水箭",
 	[":shuijian"] = "摸牌阶段摸牌时，你可以额外摸X+1张牌，X为你装备区的牌数量的一半（向下取整）。",
 	["$shuijian"] = "轻松自如~如鱼得水~",

@@ -96,6 +96,13 @@ General::Gender Player::getGender() const{
         return General::Neuter;
 }
 
+QString Player::getGenderString() const{
+    if(general)
+        return general->getGenderString();
+    else
+        return "neuter";
+}
+
 int Player::getSeat() const{
     return seat;
 }
@@ -577,6 +584,10 @@ int Player::getMark(const QString &mark) const{
     return marks.value(mark, 0);
 }
 
+bool Player::hasMark(const QString &mark) const{
+    return marks.value(mark, 0) > 0;
+}
+
 bool Player::canSlash(const Player *other, bool distance_limit) const{
     if(other->hasSkill("kongcheng") && other->isKongcheng())
         return false;
@@ -691,6 +702,14 @@ QList<const Skill *> Player::getVisibleSkillList() const{
     }
 
     return skills;
+}
+
+int Player::getKingdoms() const{
+    QSet<QString> kingdom_set;
+    kingdom_set << getKingdom();
+    foreach(const Player *tmp, getSiblings())
+        kingdom_set << tmp->getKingdom();
+    return kingdom_set.size();
 }
 
 QSet<QString> Player::getAcquiredSkills() const{

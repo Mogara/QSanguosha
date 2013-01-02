@@ -894,6 +894,7 @@ SPPackage::SPPackage()
     General *yuanshu = new General(this, "yuanshu", "qun");
     yuanshu->addSkill(new Yongsi);
     yuanshu->addSkill(new Weidi);
+    yuanshu->addSkill(new SPConvertSkill("#yuanshut", "yuanshu", "tai_yuanshu"));
 
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
     sp_sunshangxiang->addSkill("jieyin");
@@ -955,6 +956,21 @@ SPPackage::SPPackage()
     addMetaObject<XuejiCard>();
     addMetaObject<BifaCard>();
     addMetaObject<SongciCard>();
+
+    General *tai_diaochan = new General(this, "tai_diaochan", "qun", 3, false, true);
+    tai_diaochan->addSkill("lijian");
+    tai_diaochan->addSkill("biyue");
+
+    General *tai_yuanshu= new General(this, "tai_yuanshu", "qun", 4, true, true);
+    tai_yuanshu->addSkill("yongsi");
+    tai_yuanshu->addSkill("weidi");
+
+    General *tai_daqiao= new General(this, "tai_daqiao", "wu", 3, false, true);
+    tai_daqiao->addSkill("guose");
+    tai_daqiao->addSkill("liuli");
+
+    General *tai_zhaoyun= new General(this, "tai_zhaoyun", "shu", 4, true, true);
+    tai_zhaoyun->addSkill("longdan");
 }
 
 ADD_PACKAGE(SP)
