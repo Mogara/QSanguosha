@@ -52,7 +52,7 @@ return {
 	["tianxiang"] = "天香",
 	[":tianxiang"] = "每当你受到伤害时，你可以弃置一张红桃手牌来转移此伤害给任意一名角色，然后该角色摸X张牌；X为该角色当前已损失的体力值",
 	["@tianxiang-card"] = "请弃置一张红桃牌来转移伤害",
-	["#HongyanJudge"] = "%from 的锁定技【红颜】触发， 判定牌由黑牌变成了红桃",
+	["#HongyanJudge"] = "%from 的锁定技【%arg】被触发，判定牌由黑牌变成了红桃",
 
 	["#zhoutai"] = "历战之驱",
 	["zhoutai"] = "周泰",

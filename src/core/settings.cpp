@@ -120,7 +120,7 @@ void Settings::init(){
 
     QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
-    roles_ban << "bgm_pangtong" << "chenlin";
+    roles_ban << "bgm_pangtong";
 
     basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlvbu" << "zhanggongqi" << "huaxiong" << "bgm_lvmeng";
 

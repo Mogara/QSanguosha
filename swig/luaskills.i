@@ -114,23 +114,31 @@ public:
 
 class LuaDistanceSkill: public DistanceSkill{
 public:
-	LuaDistanceSkill(const char *name);
-	virtual int getCorrect(const Player *from, const Player *to) const;
+    LuaDistanceSkill(const char *name);
+    virtual int getCorrect(const Player *from, const Player *to) const;
 
-	LuaFunction correct_func;
+    LuaFunction correct_func;
+};
+
+class LuaMaxCardsSkill: public MaxCardsSkill{
+public:
+    LuaMaxCardsSkill(const char *name);
+    virtual int getExtra(const Player *target) const;
+
+    LuaFunction extra_func;
 };
 
 class LuaSkillCard: public SkillCard{
 public:
-	LuaSkillCard(const char *name);
-	void setTargetFixed(bool target_fixed);
-	void setWillThrow(bool will_throw);
-	LuaSkillCard *clone() const;
+    LuaSkillCard(const char *name);
+    void setTargetFixed(bool target_fixed);
+    void setWillThrow(bool will_throw);
+    LuaSkillCard *clone() const;
 
-	LuaFunction filter;    
-	LuaFunction feasible;
-	LuaFunction on_use;
-	LuaFunction on_effect;
+    LuaFunction filter;    
+    LuaFunction feasible;
+    LuaFunction on_use;
+    LuaFunction on_effect;
 };
 
 %{
@@ -255,6 +263,29 @@ int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{
 	lua_pop(L, 1);
 
 	return correct;
+}
+
+int LuaMaxCardsSkill::getExtra(const Player *target) const{
+    if(extra_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, extra_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaMaxCardsSkill, 0);
+    SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return 0;
+    }
+
+    int extra = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return extra;
 }
 
 bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{
@@ -430,28 +461,28 @@ bool LuaViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pa
 	}
 }
 
-bool LuaViewAsSkill::isEnabledAtNullification(const Player *player) const{
-	if(enabled_at_nullification == 0)
-		return false;
+bool LuaViewAsSkill::isEnabledAtNullification(const ServerPlayer *player) const{
+    if(enabled_at_nullification == 0)
+        return ViewAsSkill::isEnabledAtNullification(player);
 
-	lua_State *L = Sanguosha->getLuaState();
+    lua_State *L = Sanguosha->getLuaState();
 
-	// the callback
-	lua_rawgeti(L, LUA_REGISTRYINDEX, enabled_at_nullification);
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, enabled_at_nullification);
 
-	pushSelf(L);
+    pushSelf(L);
 
-	SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
 
-	int error = lua_pcall(L, 2, 1, 0);
-	if(error){
-		Error(L);
-		return false;
-	}else{
-		bool result = lua_toboolean(L, -1);
-		lua_pop(L, 1);
-		return result;
-	}
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return false;
+    }else{
+        bool result = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        return result;
+    }
 }
 // ---------------------
 

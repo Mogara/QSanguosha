@@ -586,6 +586,7 @@ public:
         if(judge->card->getSuit() == Card::Spade){
             LogMessage log;
             log.type = "#HongyanJudge";
+            log.arg = "hongyan";
             log.from = player;
 
             Card *new_card = Card::Clone(judge->card);

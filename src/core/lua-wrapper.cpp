@@ -43,6 +43,12 @@ LuaDistanceSkill::LuaDistanceSkill(const char *name)
 
 }
 
+LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
+    :MaxCardsSkill(name), extra_func(0)
+{
+
+}
+
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 
 LuaSkillCard::LuaSkillCard(const char *name)

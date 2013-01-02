@@ -201,7 +201,7 @@ return {
 
 	["#tai_diaochan"] = "绝世的舞姬",
 	["tai_diaochan"] = "台版SP貂蝉",
-	["illustrator:tai_diaochan"] = "",
+	["illustrator:tai_diaochan"] = "陈俊佐",
 	["#diaochant"] = "避难",
 	[":#diaochant"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP貂蝉",
 

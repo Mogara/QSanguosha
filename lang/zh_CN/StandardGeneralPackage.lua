@@ -335,12 +335,19 @@ return {
 	["&sp_shenzhaoyun"] = "神赵云",
 	["illustrator:sp_shenzhaoyun"] = "巴萨小马",
 	["nosjuejing"] = "绝境",
-	[":nosjuejing"] = "<b>锁定技。</b>摸牌阶段，你不摸牌。每当你的手牌数变化后，若你的手牌数不为4，你须将手牌补至或弃置至四张。",
+	[":nosjuejing"] = "<b>锁定技</b>，摸牌阶段，你不摸牌。每当你的手牌数变化后，若你的手牌数不为4，你须将手牌补至或弃置至四张。",
 	["noslonghun"] = "龙魂",
 	[":noslonghun"] = "你可以将一张牌按以下规则使用或打出：<font color=\"red\">♥</font>当【桃】；<font color=\"red\">♦</font>当火【杀】；♠当【无懈可击】；♣当【闪】。回合开始阶段开始时，若其他角色的装备区内有【青釭剑】，你可以获得之。",
 	["#noslonghun_duojian"] = "龙魂",
 	[":#noslonghun_duojian"] = "回合开始阶段开始时，若其他角色的装备区内有【青釭剑】，你可以获得之。",
 
+	["cv:sp_shenzhaoyun"] = "猎狐",
+	["$nosjuejing"] = "龙战于野,其血玄黄",
+	["$noslonghun1"] = "金甲映日,驱邪祛秽", -- spade
+	["$noslonghun2"] = "腾龙行云,首尾不见", -- club
+	["$noslonghun3"] = "潜龙于渊,涉灵愈伤", -- heart
+	["$noslonghun4"] = "千里一怒,红莲灿世", -- diamond
+	["~sp_shenzhaoyun"] = "血染鳞甲,龙坠九天",
 
 	["#sujiang"] = "金童",
 	["sujiang"] = "素将",
