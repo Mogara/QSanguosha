@@ -35,26 +35,25 @@ neoluoyi_skill.getTurnUseCard=function(self)
 	end
 	if (slashtarget+dueltarget) > 0 and equipnum > 0 then
 		self:speak("luoyi")
-		return sgs.Card_Parse("@LuoyiCard=.")
+		local luoyicard
+		for _, card in sgs.qlist(self.player:getCards("he")) do
+			if card:isKindOf("EquipCard") and not self.player:hasEquip(card) then 
+				luoyicard = card
+				break
+			end
+		end
+		for _, card in sgs.qlist(self.player:getCards("he")) do
+			if card:isKindOf("EquipCard") and not card:isKindOf("Weapon") then 
+				luoyicard = card
+				break
+			end
+		end
+		return sgs.Card_Parse("@LuoyiCard=" .. luoyicard:getEffectiveId())
 	end
 end
 
 sgs.ai_skill_use_func.LuoyiCard=function(card,use,self)
 	use.card = card
-end
-
-sgs.ai_skill_cardask["@luoyi-discard"] = function(self, data)
-	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not self.player:hasEquip(card) then
-			return "$" .. card:getEffectiveId()
-		end
-	end
-	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:inherits("EquipCard") and not card:inherits("Weapon") then
-			return "$" .. card:getEffectiveId()
-		end
-	end
-	return "."
 end
 
 sgs.ai_use_priority.LuoyiCard = 9.2
@@ -66,13 +65,15 @@ neofanjian_skill.getTurnUseCard=function(self)
 	if self.player:isKongcheng() then return nil end
 	if self.player:usedTimes("NeoFanjianCard")>0 then return nil end
 
-	local cards = self.player:getHandcards()
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	local card_id = cards[1]:getEffectiveId()
 
-	local card_str = "@NeoFanjianCard=."
+	local card_str = "@NeoFanjianCard=" .. card_id
 	local fanjianCard = sgs.Card_Parse(card_str)
 	assert(fanjianCard)
 
-	return fanjianCard
+	return fanjianCard		
 end
 
 sgs.ai_skill_use_func.NeoFanjianCard=function(card,use,self)
@@ -154,7 +155,7 @@ end
 sgs.ai_skill_choice.neoganglie = function(self, choices)
 	local target
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:hasFlag("xuanhuo_target") then
+		if player:hasFlag("ganglie_target") then
 			target = player
 			self.room:setPlayerFlag(target, "-ganglie_target")
 		end

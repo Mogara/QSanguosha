@@ -433,60 +433,11 @@ DummyCard *ServerPlayer::wholeHandCards() const{
 }
 
 bool ServerPlayer::hasNullification() const{
-    if(hasSkill("kanpo")){
-        foreach(const Card *card, handcards){
-            if(card->isBlack() || card->objectName() == "nullification")
-                return true;
-        }
-    }
     if(hasSkill("wushen")){
         foreach(const Card *card, handcards){
             if(card->objectName() == "nullification" && card->getSuit() != Card::Heart)
                 return true;
         }
-    }
-    if(hasSkill("guhuo")){
-        return !isKongcheng();
-    }
-    if(hasFlag("lexue")){
-        int card_id = getMark("lexue");
-        const Card *card = Sanguosha->getCard(card_id);
-        if(card->objectName() == "nullification"){
-            foreach(const Card *c, handcards + getEquips()){
-                if(c->objectName() == "nullification" || c->getSuit() == card->getSuit())
-                    return true;
-            }
-        }
-    }
-    if(hasSkill("longhun")){
-        int n = qMax(1, getHp());
-        int count = 0;
-        foreach(const Card *card, handcards + getEquips()){
-            if(card->objectName() == "nullification")
-                return true;
-
-            if(card->getSuit() == Card::Spade)
-                count ++;
-        }
-
-        return count >= n;
-    }
-    if(hasSkill("yanzheng")){
-        foreach(const Card *card, handcards){
-            if(card->objectName() == "nullification")
-                return true;
-        }
-
-        return getHandcardNum() > getHp() && !getEquips().isEmpty();
-    }
-
-    if(hasSkill("qice")){
-        foreach(const Card *card, handcards){
-            if(card->objectName() == "nullification")
-                return true;
-        }
-
-        return !hasFlag("QiceUsed") && !isKongcheng() && getPhase() == Player::Play ;
     }
 
     foreach(const Card *card, handcards){

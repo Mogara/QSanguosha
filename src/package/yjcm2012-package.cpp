@@ -179,13 +179,6 @@ public:
         if(cards.length() < Self->getHandcardNum())
             return NULL;
 
-        if(ClientInstance->getStatus() == Client::Responsing){
-            QiceCard *card = new QiceCard;
-            card->setUserString("nullification");
-            card->addSubcards(cards);
-            return card;
-        }
-
         CardStar c = Self->tag.value("qice").value<CardStar>();
         if(c){
             QiceCard *card = new QiceCard;
@@ -196,6 +189,13 @@ public:
             return NULL;
     }
 
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        foreach(const Card *card, player->getHandcards()){
+            if(card->objectName() == "nullification")
+                return true;
+        }
+        return !player->hasFlag("QiceUsed") && !player->isKongcheng() && player->getPhase() == Player::Play;
+    }
 protected:
     virtual bool isEnabledAtPlay(const Player *player) const{
         if(player->isKongcheng())

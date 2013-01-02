@@ -351,8 +351,10 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *gaodayihao, QVariant &data) const{
         Room* room = gaodayihao->getRoom();
         if(event == PhaseChange){
-            if(gaodayihao->getPhase() == Player::Draw)
+            if(gaodayihao->getPhase() == Player::Draw){
+                room->playSkillEffect(objectName());
                 return true;
+            }
             return false;
         }
         if(gaodayihao->getHandcardNum() == 4)
@@ -462,6 +464,10 @@ public:
         }
 
         return new_card;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        return static_cast<int>(card->getSuit()) + 1;
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{

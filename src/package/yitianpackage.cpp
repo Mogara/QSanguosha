@@ -1243,6 +1243,20 @@ public:
             return false;
     }
 
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        if(player->hasFlag("lexue")){
+            int card_id = player->getMark("lexue");
+            const Card *card = Sanguosha->getCard(card_id);
+            if(card->objectName() == "nullification"){
+                foreach(const Card *c, player->getHandcards() + player->getEquips()){
+                    if(c->objectName() == "nullification" || c->getSuit() == card->getSuit())
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         if(Self->hasUsed("LexueCard") && selected.isEmpty() && Self->hasFlag("lexue")){
             int card_id = Self->getMark("lexue");

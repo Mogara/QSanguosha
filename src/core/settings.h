@@ -70,6 +70,9 @@ public:
     bool DisableLua;
 
     QString BackgroundBrush;
+
+    // consts
+    static const int S_MINI_MAX_COUNT;
 };
 
 extern Settings Config;

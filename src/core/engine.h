@@ -115,8 +115,8 @@ private:
 
 extern Engine *Sanguosha;
 
-static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
-    return GetValueFromLuaState(L, "config", key);
+static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key, const char *parent = "config"){
+    return GetValueFromLuaState(L, parent, key);
 }
 
 #endif // ENGINE_H

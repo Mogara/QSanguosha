@@ -251,18 +251,6 @@ const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *,
             if(card->objectName() == "nullification")
                 return card;
         }
-
-        if(self->hasSkill("kanpo")){
-            foreach(const Card *card, cards){
-                if(card->isBlack()){
-                    Nullification *ncard = new Nullification(card->getSuit(), card->getNumber());
-                    ncard->addSubcard(card);
-                    ncard->setSkillName("kanpo");
-
-                    return ncard;
-                }
-            }
-        }
     }
 
     return NULL;

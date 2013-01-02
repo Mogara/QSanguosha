@@ -977,8 +977,15 @@ public:
         return GuhuoDialog::GetInstance("guhuo");
     }
 
-    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-        return 0;
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        if (!card->isKindOf("GuhuoCard"))
+            return -2;
+        else
+            return -1;
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        return !player->isKongcheng();
     }
 };
 

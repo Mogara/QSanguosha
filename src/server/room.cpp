@@ -442,8 +442,7 @@ void Room::gameOver(const QString &winner){
             id.replace("_mini_","");
             int stage = Config.value("MiniSceneStage",1).toInt();
             int current = id.toInt();
-            if((stage == current) && stage<33)
-            {
+            if(stage == current && stage < Config.S_MINI_MAX_COUNT){
                 Config.setValue("MiniSceneStage",current+1);
                 id = QString::number(stage+1).rightJustified(2,'0');
                 id.prepend("_mini_");
