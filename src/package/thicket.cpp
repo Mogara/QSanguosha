@@ -890,6 +890,7 @@ ThicketPackage::ThicketPackage()
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     caopi->addSkill(new Songwei);
+    caopi->addSkill(new SPConvertSkill("#caopit", "caopi", "ass_caopi"));
 
     xuhuang = new General(this, "xuhuang", "wei");
     xuhuang->addSkill(new Duanliang);

@@ -87,8 +87,8 @@ return {
 	["$xiaoguo3"] = "兄弟们随我直捣黄龙！",
 	["~yuejin"] = "魏王拔我于行伍，今当以死相报。",
 
-	["illustrator:ganfuren"] = "",
-	["cv:ganfuren"] = "",
+	["illustrator:ganfuren"] = "琛·美弟奇",
+	["cv:ganfuren"] = "鄢知",
 	["$shushen"] = "想要牌吗？",
 	["$shenzhi"] = "补充一下吧！",
 	["~ganfuren"] = "陛下，妾身去矣~",
@@ -106,7 +106,7 @@ return {
 	["$fenxun2"] = "不入虎穴，焉得虎子。",
 	["~dingfeng"] = "贴身肉搏竟能赢我，呃~",
 
-	["illustrator:kongrong"] = "",
+	["illustrator:kongrong"] = "苍月白龙",
 	["cv:kongrong"] = "逍遥小鱼儿",
 	["$mingshi1"] = "在下是孔子后人，不知先生有何贵干？",
 	["$mingshi2"] = "来者何人，报上名来。",
@@ -128,7 +128,7 @@ return {
 	["$shuangren2"] = "今日这兵器颇不顺手。",
 	["~jiling"] = "我的三尖两刃刀怎么会输给丈八蛇矛呢？",
 
-	["illustrator:zoushi"] = "",
+	["illustrator:zoushi"] = "Tuu.",
 	["cv:zoushi"] = "英雄杀",
 	["$qingcheng1"] = "将军要替奴家做主。",
 	["$qingcheng2"] = "谁更勇猛呢？",

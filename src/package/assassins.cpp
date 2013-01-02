@@ -733,7 +733,36 @@ public:
     }
 };
 
-AssassinsPackage::AssassinsPackage():Package("assassins"){
+AssassinsPackage::AssassinsPackage()
+    :Package("assassins")
+{
+    General *ass_caocao = new General(this, "ass_caocao$", "wei", 4, true, true);
+    ass_caocao->addSkill("jianxiong");
+    ass_caocao->addSkill("hujia");
+
+    General *ass_caopi = new General(this, "ass_caopi$", "wei", 3, true, true);
+    ass_caopi->addSkill("xingshang");
+    ass_caopi->addSkill("fangzhu");
+    ass_caopi->addSkill("songwei");
+
+    General *hanxiandi = new General(this, "hanxiandi", "qun", 3);
+    hanxiandi->addSkill(new Tianming);
+    hanxiandi->addSkill(new Mizhao);
+
+    General *lingju = new General(this, "lingju", "qun", 3, false);
+    lingju->addSkill(new Jieyuan);
+    lingju->addSkill(new Fenxin);
+    lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
+
+    General *mushun = new General(this, "mushun", "qun");
+    mushun->addSkill(new Moukui);
+
+    General *fuwan = new General(this, "fuwan", "qun", 3);
+    fuwan->addSkill(new Fengyin);
+    fuwan->addSkill(new ChizhongKeep);
+    fuwan->addSkill(new Chizhong);
+    related_skills.insertMulti("chizhong", "#chizhong");
+
     General *fuhuanghou = new General(this, "fuhuanghou", "qun", 3, false);
     fuhuanghou->addSkill(new Mixin);
     fuhuanghou->addSkill(new Cangni);
@@ -744,24 +773,6 @@ AssassinsPackage::AssassinsPackage():Package("assassins"){
     jiben->addSkill(new DuanzhiAvoidTriggeringCardsMove);
     related_skills.insertMulti("duanzhi", "#duanzhi");
 
-    General *fuwan = new General(this, "fuwan", "qun", 3);
-    fuwan->addSkill(new Fengyin);
-    fuwan->addSkill(new ChizhongKeep);
-    fuwan->addSkill(new Chizhong);
-    related_skills.insertMulti("chizhong", "#chizhong");
-
-    General *mushun = new General(this, "mushun", "qun");
-    mushun->addSkill(new Moukui);
-
-    General *hanxiandi = new General(this, "hanxiandi", "qun", 3);
-    hanxiandi->addSkill(new Tianming);
-    hanxiandi->addSkill(new Mizhao);
-
-    General *lingju = new General(this, "lingju", "qun", 3, false);
-    lingju->addSkill(new Jieyuan);
-    lingju->addSkill(new Fenxin);
-    lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
-    
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();
     addMetaObject<DuyiCard>();

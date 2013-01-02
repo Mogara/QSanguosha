@@ -1251,6 +1251,7 @@ void StandardPackage::addGenerals(){
     caocao = new General(this, "caocao$", "wei");
     caocao->addSkill(new Jianxiong);
     caocao->addSkill(new Hujia);
+    caocao->addSkill(new SPConvertSkill("#caocaot", "caocao", "ass_caocao"));
 
     simayi = new General(this, "simayi", "wei", 3);
     simayi->addSkill(new Fankui);
