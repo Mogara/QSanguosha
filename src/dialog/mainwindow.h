@@ -124,6 +124,7 @@ private slots:
     void on_actionAbout_Lua_triggered();
     void on_actionAbout_fmod_triggered();
     void on_actionReplay_file_convert_triggered();
+    void on_actionCrypto_audio_triggered();
     void on_actionAI_Melee_triggered();
     void on_actionPackaging_triggered();
     void on_actionScript_editor_triggered();

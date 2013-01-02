@@ -1092,3 +1092,29 @@ void MainWindow::on_actionAbout_Lua_triggered()
 
     window->appear();
 }
+
+#include "crypto.h"
+void MainWindow::on_actionCrypto_audio_triggered(){
+    QStringList filenames = QFileDialog::getOpenFileNames(
+            this, tr("Please select audio files"),
+            QString(),
+            tr("OGG Audio files (*.ogg)"));
+
+    if(filenames.isEmpty())
+        return;
+    Crypto cry;
+    int count = 0;
+    foreach(QString filename, filenames){
+        if(!cry.encryptMusicFile(filename))
+            QMessageBox::warning(this, tr("Notice"), tr("Encrypt music file %1 failed!").arg(filename));
+        else
+            count++;
+    }
+    QMessageBox::information(this, tr("Notice"), tr("Encrypt %1 music files done!").arg(QString::number(count)));
+    if(QMessageBox::question(this, tr("Warning"), tr("Delete all old files?"),
+                             QMessageBox::StandardButtons(QMessageBox::Yes | QMessageBox::No), QMessageBox::No)
+        == QMessageBox::Yes){
+        foreach(QString filename, filenames)
+            QFile::remove(filename);
+    }
+}
