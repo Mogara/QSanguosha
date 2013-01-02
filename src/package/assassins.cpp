@@ -457,7 +457,7 @@ DuyiCard::DuyiCard(){
     mute = true;
 }
 
-void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+void DuyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     QList<int> card_ids = room->getNCards(1);
     int id = card_ids.first();
     room->fillAG(card_ids, NULL);
@@ -617,14 +617,11 @@ public:
 FengyinCard::FengyinCard(){
     target_fixed = true;
     will_throw = false;
-    mute = true;
 }
 
-void FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    ServerPlayer *target = room->getCurrent();
-    target->obtainCard(this);
-    room->playSkillEffect("fengyin");
-    room->setPlayerFlag(target, "fengyin_target");
+void FengyinCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &) const{
+    PlayerStar target = room->getCurrent();
+    target->obtainCard(this, false);
 }
 
 class FengyinViewAsSkill:public OneCardViewAsSkill{
@@ -632,7 +629,7 @@ public:
     FengyinViewAsSkill():OneCardViewAsSkill("fengyin"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -640,13 +637,13 @@ public:
         return pattern == "@@fengyin";
     }
 
-    virtual bool viewFilter(const CardItem *card) const{
-        return card->getCard()->isKindOf("Slash");
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->isKindOf("Slash");
     }
 
-    virtual const Card *viewAs(CardItem *originalCard) const{
+    virtual const Card *viewAs(CardItem *card_item) const{
         FengyinCard *card = new FengyinCard;
-        card->addSubcard(originalCard->getFilteredCard());
+        card->addSubcard(card_item->getFilteredCard());
         return card;
     }
 };
@@ -654,12 +651,12 @@ public:
 class Fengyin:public TriggerSkill{
 public:
     Fengyin():TriggerSkill("fengyin"){
-        view_as_skill = new FengyinViewAsSkill;
         events << PhaseChange;
+        view_as_skill = new FengyinViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+        return true;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -668,12 +665,12 @@ public:
         if(!splayer)
             return false;
 
-        if(player->getPhase() == Player::Start){
-            if(player->getHp() > splayer->getHp())
-                room->askForUseCard(splayer, "@@fengyin", "@fengyin");
-            if(player->hasFlag("fengyin_target")){
-                player->skip(Player::Play);
-                player->skip(Player::Discard);
+        if(player != splayer && player->getPhase() == Player::Start){
+            if(player->getHp() >= splayer->getHp()){
+                if(room->askForUseCard(splayer, "@@fengyin", "@fengyin:" + player->objectName())){
+                    player->skip(Player::Play);
+                    player->skip(Player::Discard);
+                }
             }
         }
         return false;
@@ -877,6 +874,8 @@ OlympicsPackage::OlympicsPackage():Package("olympics"){
 
     General *sunyang = new General(this, "sunyang", "wu");
     sunyang->addSkill(new Shuijian);
+
+    addMetaObject<JisuCard>();
 }
 
 ADD_PACKAGE(Assassins)

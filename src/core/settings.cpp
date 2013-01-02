@@ -53,7 +53,7 @@ void Settings::init(){
     }
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
-    GameMode = value("GameMode", "02p").toString();
+    GameMode = value("GameMode", "08p").toString();
 
 
     if(!contains("BanPackages")){
@@ -96,7 +96,7 @@ void Settings::init(){
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
     HostAddress = value("HostAddress", "127.0.0.1").toString();
-    UserAvatar = value("UserAvatar", "zhangliao").toString();
+    UserAvatar = value("UserAvatar", "caiwenji").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
     DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 15).toInt();
@@ -200,6 +200,6 @@ void Settings::init(){
     }
 
     QStringList forbid_packages;
-    forbid_packages << "New3v3Card";
+    forbid_packages << "New3v3Card" << "test";
     setValue("ForbidPackages", forbid_packages.join("+"));
 }

@@ -567,7 +567,7 @@ bool XuejiCard::targetFilter(const QList<const Player *> &targets, const Player 
         return Self->distanceTo(to_select) <= Self->getAttackRange();
 }
 
-void XuejiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void XuejiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     DamageStruct damage;
     damage.from = source;
 
@@ -716,10 +716,10 @@ bool BifaCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && to_select->getPile("bifa").isEmpty() && to_select != Self;
 }
 
-void BifaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void BifaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
-    target->tag["BifaSource" + QString::number(getEffectiveId())] = QVariant::fromValue((PlayerStar)source);
-        room->playSkillEffect("bifa", 1);
+    target->tag["BifaSource"] = QVariant::fromValue((PlayerStar)source);
+    room->playSkillEffect("bifa", 1);
     foreach(int id, getSubcards())
         target->addToPile("bifa", id, false);
 }
@@ -750,7 +750,7 @@ public:
 
 class Bifa: public TriggerSkill {
 public:
-    Bifa() : TriggerSkill("bifa") {
+    Bifa(): TriggerSkill("bifa") {
         events << PhaseChange;
         view_as_skill = new BifaViewAsSkill;
     }
@@ -759,45 +759,37 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
         Room *room = player->getRoom();
-        if(player->hasSkill(objectName()) && player->getPhase() == Player::Finish && !player->isKongcheng()) {
-            room->askForUseCard(player, "@@bifa", "@bifa-remove");
-        }else if(player->getPhase() == Player::RoundStart && player->getPile("bifa").length() > 0) {
+        if(player->hasSkill(objectName())){
+            if(player->getPhase() == Player::Finish && !player->isKongcheng())
+                room->askForUseCard(player, "@@bifa", "@bifa-remove");
+            return false;
+        }
+        if(player->getPhase() == Player::RoundStart && player->getPile("bifa").length() > 0) {
             QList<int> bifa_list = player->getPile("bifa");
-
-            while (!bifa_list.isEmpty()) {
-                int card_id = bifa_list.first();
-                ServerPlayer *chenlin = player->tag["BifaSource" + QString::number(card_id)].value<PlayerStar>();
-                QList<int> ids;
-                ids << card_id;
-                room->fillAG(ids, player);
-                const Card *cd = Sanguosha->getCard(card_id);
-                QString pattern;
-                if (cd->isKindOf("BasicCard"))
-                    pattern = "BasicCard";
-                else if (cd->isKindOf("TrickCard"))
-                    pattern = "TrickCard";
-                else if (cd->isKindOf("EquipCard"))
-                    pattern = "EquipCard";
-                QVariant data_for_ai = QVariant::fromValue(pattern);
-                pattern.append("|.|.|hand");
-                const Card *to_give = NULL;
-                if (!player->isKongcheng() && chenlin && chenlin->isAlive())
-                    to_give = room->askForCard(player, pattern, "@bifa-give", data_for_ai, NonTrigger);
-                if (to_give) {
-                    room->playSkillEffect("bifa", 2);
-                    chenlin->obtainCard(to_give, false);
-                    player->obtainCard(cd, false);
-                } else {
-                    room->playSkillEffect("bifa", 3);
-                    room->throwCard(cd);
-                    room->loseHp(player);
-                }
-                bifa_list.removeOne(card_id);
-                player->invoke("clearAG");
-                player->tag.remove("BifaSource" + QString::number(card_id));
+            const Card *pen = Sanguosha->getCard(bifa_list.first());
+            room->obtainCard(player, pen, false);
+            ServerPlayer *chenlin = player->tag["BifaSource"].value<PlayerStar>();
+            QString pattern;
+            if(pen->isKindOf("BasicCard"))
+                pattern = "BasicCard";
+            else if(pen->isKindOf("TrickCard"))
+                pattern = "TrickCard";
+            else if(pen->isKindOf("EquipCard"))
+                pattern = "EquipCard";
+            QVariant data_for_ai = QVariant::fromValue(pattern);
+            pattern.append("|.|.|hand");
+            const Card *card = room->askForCard(player, pattern, "@bifa-give:" + pen->getType(), data_for_ai, NonTrigger);
+            if(card && card != pen){
+                room->playSkillEffect("bifa", 2);
+                chenlin->obtainCard(card, false);
+            }else{
+                room->playSkillEffect("bifa", 3);
+                room->throwCard(pen);
+                room->loseHp(player);
             }
+            player->tag.remove("BifaSource");
         }
         return false;
     }

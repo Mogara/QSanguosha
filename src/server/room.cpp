@@ -2046,10 +2046,13 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
 
 void Room::loseHp(ServerPlayer *victim, int lose){
     QVariant data = lose;
-    thread->trigger(HpLost, victim, data);
+    if(victim)
+        thread->trigger(HpLost, victim, data);
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){
+    if(!victim)
+        return;
     int hp = victim->getHp();
     if(lose > 0)
         Sanguosha->playAudio("maxhplost");
@@ -3143,7 +3146,7 @@ void Room::kickCommand(ServerPlayer *player, const QString &arg){
 }
 
 void Room::makeCheat(const QString &cheat_str){
-    QRegExp damage_rx(":(.+)->(\\w+):([NTFRL])(\\d+)");
+    QRegExp damage_rx(":(.+)->(\\w+):([NTFRLME])(\\d+)");
     QRegExp killing_rx(":KILL:(.+)->(\\w+)");
     QRegExp revive_rx(":REVIVE:(.+)");
     QRegExp doscript_rx(":SCRIPT:(.+)");
@@ -3181,6 +3184,8 @@ void Room::makeDamage(const QStringList &texts){
     case 'T': damage.nature = DamageStruct::Thunder; break;
     case 'F': damage.nature = DamageStruct::Fire; break;
     case 'L': loseHp(damage.to, point); return;
+    case 'M': loseMaxHp(damage.to, point); return;
+    case 'E': setPlayerProperty(damage.to, "maxhp", point); return;
     case 'R':{
         RecoverStruct recover;
         if(texts.at(1) != ".")

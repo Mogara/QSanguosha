@@ -23,6 +23,7 @@ SOURCES += \
 	src/core/banpair.cpp \
 	src/core/card.cpp \
 	src/core/engine.cpp \
+	src/core/exppattern.cpp \
 	src/core/general.cpp \
 	src/core/lua-wrapper.cpp \
 	src/core/player.cpp \
@@ -45,7 +46,6 @@ SOURCES += \
 	src/dialog/scenario-overview.cpp \
 	src/dialog/halldialog.cpp \
 	src/package/package.cpp \
-	src/package/exppattern.cpp \
 	src/package/firepackage.cpp \
 	src/package/god.cpp \
 	src/package/joypackage.cpp \
@@ -147,12 +147,14 @@ HEADERS += \
 	src/core/banpair.h \
 	src/core/card.h \
 	src/core/engine.h \
+	src/core/exppattern.h \
 	src/core/general.h \
 	src/core/lua-wrapper.h \
 	src/core/player.h \
 	src/core/settings.h \
 	src/core/skill.h \
 	src/core/statistics.h \
+	src/core/structs.h \
 	src/core/util.h \
 	src/dialog/cardeditor.h \
 	src/dialog/cardoverview.h \
@@ -168,7 +170,6 @@ HEADERS += \
 	src/dialog/playercarddialog.h \
 	src/dialog/roleassigndialog.h \ 
 	src/dialog/scenario-overview.h \
-	src/package/exppattern.h \
 	src/package/firepackage.h \
 	src/package/god.h \
 	src/package/joypackage.h \
@@ -210,7 +211,6 @@ HEADERS += \
 	src/server/roomthread3v3.h \
 	src/server/server.h \
 	src/server/serverplayer.h \
-	src/server/structs.h \
 	src/ui/button.h \
 	src/ui/cardcontainer.h \
 	src/ui/carditem.h \

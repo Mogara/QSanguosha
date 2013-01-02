@@ -2658,8 +2658,10 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_nature->addItem(tr("Normal"), "N");
     damage_nature->addItem(tr("Thunder"), "T");
     damage_nature->addItem(tr("Fire"), "F");
-    damage_nature->addItem(tr("HP recover"), "R");
+    damage_nature->addItem(tr("Recover HP"), "R");
     damage_nature->addItem(tr("Lose HP"), "L");
+    damage_nature->addItem(tr("Lose Max HP"), "M");
+    damage_nature->addItem(tr("Reset Max HP"), "E");
 
     damage_point = new QSpinBox;
     damage_point->setRange(1, 1000);
@@ -2686,7 +2688,7 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
 
 void DamageMakerDialog::disableSource(){
     QString nature = damage_nature->itemData(damage_nature->currentIndex()).toString();
-    damage_source->setEnabled(nature != "L");
+    damage_source->setEnabled(nature != "L" && nature != "M" && nature != "E");
 }
 
 void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
