@@ -293,6 +293,7 @@ void XiongyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
 class Xiongyi: public ZeroCardViewAsSkill{
 public:
     Xiongyi():ZeroCardViewAsSkill("xiongyi"){
+        frequency = Limited;
     }
 
     virtual const Card *viewAs() const{
@@ -300,7 +301,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->getMark("@xiongyi") > 0;
+        return player->getMark("@xiongyi") > 0;
     }
 };
 

@@ -1409,18 +1409,21 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
-        if(player->getPhase() != Player::Play || !player->askForSkillInvoke(objectName()))
+        if(player->getPhase() != Player::Play)
             return false;
-        Room *room = player->getRoom();
-        room->showAllCards(player);
 
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName(objectName());
+        Room *room = player->getRoom();
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *tmp, room->getOtherPlayers(player)){
             if(player->canSlash(tmp))
                 targets << tmp;
         }
+        if(targets.isEmpty() || !player->askForSkillInvoke(objectName()))
+            return false;
+        room->showAllCards(player);
+
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->setSkillName(objectName());
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
         CardUseStruct card_use;
         card_use.from = player;
@@ -1462,8 +1465,8 @@ public:
                             break;
                         const Card *cc = Sanguosha->getCard(card_id);
                         if(mark == cc->getSuitString()){
-                            room->takeAG(NULL, card_id);
                             room->throwCard(card_id);
+                            room->takeAG(NULL, card_id);
                         }
                     }
                     room->broadcastInvoke("clearAG");

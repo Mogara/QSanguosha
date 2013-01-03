@@ -217,7 +217,7 @@ public:
         ServerPlayer *loser = pindian->isSuccess() ? pindian->to : pindian->from;
         if (winner->canSlash(loser, false)) {
             Slash *slash = new Slash(Card::NoSuit, 0);
-            slash->setSkillName("mizhao");
+            slash->setSkillName(objectName());
             CardUseStruct card_use;
             card_use.from = winner;
             card_use.to << loser;
@@ -244,7 +244,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if(event == Predamage){
             if(damage.to && damage.to->isAlive()
-               && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng())
+                && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng()){
                 if(room->askForCard(player, ".black", "@JieyuanIncrease", data, CardDiscarded)){
                     room->playSkillEffect(objectName(), 1);
 
@@ -257,6 +257,7 @@ public:
 
                     data = QVariant::fromValue(damage);
                 }
+            }
         }else if(event == Predamaged){
             if(damage.from && damage.from->isAlive()
                && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
@@ -553,7 +554,7 @@ public:
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const {
         Room* room = player->getRoom();
         ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
-        if(!splayer || splayer == player)
+        if(!splayer || splayer == player || player->isNude())
             return false;
 
         CardUseStruct use = data.value<CardUseStruct>();
@@ -725,9 +726,9 @@ AssassinsPackage::AssassinsPackage()
     fuwan->addSkill(new Chizhong);
     related_skills.insertMulti("chizhong", "#chizhong");
 
-    General *fuhuanghou = new General(this, "fuhuanghou", "qun", 3, false);
-    fuhuanghou->addSkill(new Mixin);
-    fuhuanghou->addSkill(new Cangni);
+    General *fushi = new General(this, "fushi", "qun", 3, false);
+    fushi->addSkill(new Mixin);
+    fushi->addSkill(new Cangni);
 
     General *jiben = new General(this, "jiben", "qun", 3);
     jiben->addSkill(new Duyi);
