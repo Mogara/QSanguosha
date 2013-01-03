@@ -82,9 +82,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         connect(button, SIGNAL(double_clicked()), this, SLOT(accept()));
 
         // special case
-        if(Self->getRoleEnum() == Player::Lord && general->objectName() == "shencaocao"){
-            button->setEnabled(false);
-        }
+        //if(Self->getRoleEnum() == Player::Lord && general->objectName() == "shencaocao")
+        //    button->setEnabled(false);
     }
 
     if(ServerInfo.EnableHegemony && ServerInfo.Enable2ndGeneral

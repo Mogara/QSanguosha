@@ -26,6 +26,9 @@ public:
                 }else if(player->getGeneralName() == "zhugeliang"){
                     if(player->askForSkillInvoke("reselect"))
                         room->transfigure(player, "wolong", true);
+                }else if(player->getGeneralName() == "xiaoqiao"){
+                    if(player->askForSkillInvoke("reselect"))
+                        room->transfigure(player, "huanggai", true);
                 }else if(player->getGeneralName() == "caopi"){
                     if(player->askForSkillInvoke("reselect"))
                         room->transfigure(player, "caozhi", true);
@@ -133,6 +136,7 @@ CoupleScenario::CoupleScenario()
     full_map["dongzhuo"] = "diaochan";
     full_map["wolong"] = "huangyueying";
     full_map["caozhi"] = "zhenji";
+    full_map["zhouyu"] = "huanggai";
 }
 
 void CoupleScenario::marryAll(Room *room) const{
@@ -237,10 +241,6 @@ int CoupleScenario::getPlayerCount() const{
 
 void CoupleScenario::getRoles(char *roles) const{
     strcpy(roles, "ZNNNNNNNN");
-}
-
-void CoupleScenario::onTagSet(Room *room, const QString &key) const{
-
 }
 
 AI::Relation CoupleScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{

@@ -21,6 +21,7 @@ bool ServerInfoStruct::parse(const QString &str){
     }
 
     QStringList texts = rx.capturedTexts();
+    isPlay = !texts.isEmpty();
 
     QString server_name = texts.at(1);
     Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toAscii()));

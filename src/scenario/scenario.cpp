@@ -1,5 +1,4 @@
 #include "scenario.h"
-#include "engine.h"
 
 Scenario::Scenario(const QString &name)
     :Package(name), rule(NULL)

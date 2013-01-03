@@ -11,15 +11,6 @@ public:
     YJCMPackage();
 };
 
-class JujianCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE JujianCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
 class MingceCard: public SkillCard{
     Q_OBJECT
 
@@ -60,12 +51,32 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class XuanfengCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XuanfengCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class JujianCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JujianCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class XuanhuoCard: public SkillCard{
     Q_OBJECT
 
 public:
     Q_INVOKABLE XuanhuoCard();
 
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

@@ -141,7 +141,7 @@ return {
 	["@jisu"] = "你可以发动【急速】，跳过判定和摸牌阶段对一名角色出杀",
 	["shuiyong"] = "水泳",
 	[":shuiyong"] = "<b>锁定技</b>，防止你受到的火焰伤害。",
-	["#ShuiyongProtect"] = "%from 的锁定技【%arg】被触发，防止了 %ar2 点火焰伤害",
+	["#ShuiyongProtect"] = "%from 的锁定技【%arg】被触发，防止了 %arg2 点火焰伤害",
 	["$jisu"] = "不错哟~",
 	["$shuiyong"] = "还不赖嘛~",
 	["~yeshiwen"] = "香消玉散……",

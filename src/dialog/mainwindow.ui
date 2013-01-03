@@ -84,6 +84,7 @@
      <string>Cheat</string>
     </property>
     <addaction name="actionGet_card"/>
+    <addaction name="actionChange_general"/>
     <addaction name="actionDamage_maker"/>
     <addaction name="actionDeath_note"/>
     <addaction name="actionRevive_wand"/>
@@ -267,10 +268,13 @@
   </action>
   <action name="actionScript_editor">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Script editor</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionBroadcast">

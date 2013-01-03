@@ -138,7 +138,7 @@ sgs.ai_skill_use["@@yuanhu"] = function(self, prompt)
 	end
 	if self.player:getArmor() and self.player:getLostHp() <= 1 and self.player:getHandcardNum() >= 3
 		and yuanhu_validate(self, "Armor", false) then
-		local player = yuanhu_validate(self, "Weapon", false)
+		local player = yuanhu_validate(self, "Armor", false)
 		local card_id = self.player:getWeapon():getEffectiveId()
 		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
 	end

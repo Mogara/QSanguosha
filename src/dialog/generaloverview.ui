@@ -88,6 +88,16 @@
           <property name="pixmap">
            <pixmap>../image/generals/card/caocao.jpg</pixmap>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="changeGeneralButton">
+          <property name="text">
+           <string>Change this general</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -168,7 +178,7 @@
              </property>
             </widget>
            </item>
-	   <item row="2" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="illustratorLabel">
              <property name="text">
               <string>Illustrator</string>
@@ -211,7 +221,7 @@
              <x>0</x>
              <y>0</y>
              <width>241</width>
-             <height>506</height>
+             <height>477</height>
             </rect>
            </property>
           </widget>

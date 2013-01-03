@@ -547,7 +547,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+        return true;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const {
@@ -560,56 +560,18 @@ public:
         if(use.card->getTypeId() == Card::Skill || !use.to.contains(splayer))
             return false;
         
-        if(player->askForSkillInvoke(objectName())) {
-            room->setPlayerFlag(player, "DuanzhiTarget_InTempMoving");
-            ServerPlayer *target = use.from;
-            DummyCard *dummy = new DummyCard;
-            QList<int> card_ids;
-            QList<Player::Place> original_places;
+        if(splayer->askForSkillInvoke(objectName(), data)) {
             for(int i = 0; i < 2; i++) {
                 if(player->isNude())
                     break;
-                if(room->askForChoice(player, objectName(), "discard+cancel") == "cancel")
+                if(room->askForChoice(splayer, objectName(), "discard+cancel") == "cancel")
                     break;
-                card_ids << room->askForCardChosen(player, target, "he", objectName());
-                original_places << room->getCardPlace(card_ids[i]);
-                dummy->addSubcard(card_ids[i]);
-                target->addToPile("#duanzhi", card_ids[i], false);
+                int card_id = room->askForCardChosen(splayer, player, "he", objectName());
+                room->throwCard(card_id);
             }
 
-            if(dummy->subcardsLength() > 0)
-                for (int i = 0; i < dummy->subcardsLength(); i++) {
-                    room->moveCardTo(Sanguosha->getCard(card_ids[i]), target, original_places[i], false);
-                    room->throwCard(dummy);
-                    dummy->deleteLater();
-                }
-            
-            room->setPlayerFlag(player, "-DuanzhiTarget_InTempMoving");
-            room->loseHp(player);
+            room->loseHp(splayer);
         }
-        return false;
-    }
-};
-
-class DuanzhiAvoidTriggeringCardsMove: public TriggerSkill{
-public:
-    DuanzhiAvoidTriggeringCardsMove():TriggerSkill("#duanzhi"){
-        events << CardFinished;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 10;
-    }
-
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
-        Room* room = player->getRoom();
-        foreach(ServerPlayer *p, room->getAllPlayers())
-            if(p->hasFlag("DuanzhiTarget_InTempMoving"))
-                return true;
         return false;
     }
 };
@@ -770,8 +732,6 @@ AssassinsPackage::AssassinsPackage()
     General *jiben = new General(this, "jiben", "qun", 3);
     jiben->addSkill(new Duyi);
     jiben->addSkill(new Duanzhi);
-    jiben->addSkill(new DuanzhiAvoidTriggeringCardsMove);
-    related_skills.insertMulti("duanzhi", "#duanzhi");
 
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();
@@ -784,7 +744,7 @@ JisuCard::JisuCard(){
 }
 
 bool JisuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select == Self;
+    return targets.isEmpty() && to_select != Self;
 }
 
 void JisuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{

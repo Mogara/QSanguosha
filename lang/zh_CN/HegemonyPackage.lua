@@ -130,9 +130,10 @@ return {
 
 	["illustrator:zoushi"] = "Tuu.",
 	["cv:zoushi"] = "英雄杀",
+	["$huoshui1"] = "呵！不怕你。",
+	["$huoshui2"] = "奴家不是祸水~",
 	["$qingcheng1"] = "将军要替奴家做主。",
 	["$qingcheng2"] = "谁更勇猛呢？",
-	["$huoshui"] = "呵！不怕你。",
 	["~zoushi"] = "自古红颜多薄命啊！",
 
 	["illustrator:mateng"] = "DH",
