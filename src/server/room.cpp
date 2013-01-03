@@ -330,8 +330,6 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
             }
         }
     }
-
-
 }
 
 void Room::judge(JudgeStruct &judge_struct){
@@ -355,6 +353,7 @@ void Room::sendJudgeResult(const JudgeStar judge){
     QString who = judge->who->objectName();
     QString result = judge->isGood() ? "good" : "bad";
     broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
+    setEmotion(judge->who, "judge" + result);
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){

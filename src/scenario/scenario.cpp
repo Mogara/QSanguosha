@@ -52,6 +52,10 @@ bool Scenario::generalSelection() const{
     return false;
 }
 
+void Scenario::onTagSet(Room *, const QString &) const{
+    // dummy
+}
+
 AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
     return AI::GetRelation(a, b);
 }

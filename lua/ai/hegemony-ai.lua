@@ -263,3 +263,14 @@ if sgs.GetConfig("EnableHegemony", false) then
 		self.room:writeToConsole(self:getHegGeneralName().." list end")
 	end
 end
+
+sgs.ai_skill_cardask["@xiaoguo"] = function(self, data, pattern, target)
+	local target = data:toPlayer()
+	if self:isFriend(target) then return "." end
+	local basic = self:getCard("BasicCard")
+	if basic then
+		return basic:getId()
+	end
+	return "."
+end
+

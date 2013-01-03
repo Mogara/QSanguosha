@@ -20,7 +20,7 @@ public:
         ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
         if(!splayer || player == splayer || splayer->isKongcheng())
             return false;
-        if(room->askForCard(splayer, "BasicCard", "@xiaoguo:" + player->objectName(), QVariant(), CardDiscarded)){
+        if(room->askForCard(splayer, "BasicCard", "@xiaoguo:" + player->objectName(), QVariant::fromValue((PlayerStar)player), CardDiscarded)){
             room->playSkillEffect(objectName());
             if(!room->askForCard(player, "EquipCard,TrickCard", "@xiaoguoresponse:" + splayer->objectName(), QVariant(), CardDiscarded)){
                 DamageStruct damage;

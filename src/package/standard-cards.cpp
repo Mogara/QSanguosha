@@ -845,8 +845,8 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *second = effect.from;
     Room *room = first->getRoom();
 
-    room->setEmotion(first, "duel-a");
-    room->setEmotion(second, "duel-b");
+    room->setEmotion(first, "duel");
+    room->setEmotion(second, "duel");
 
     forever{
         if(second->hasSkill("wushuang")){
