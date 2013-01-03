@@ -543,7 +543,8 @@ QList<const DelayedTrick *> Player::delayedTricks() const{
 
 bool Player::containsTrick(const QString &trick_name) const{
     foreach(const DelayedTrick *trick, delayed_tricks){
-        if(trick->objectName() == trick_name)
+        if(trick->objectName() == trick_name &&
+           trick->getEffectiveId() != property("yanxiao").toInt())
             return true;
     }
 

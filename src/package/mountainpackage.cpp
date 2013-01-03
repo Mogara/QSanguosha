@@ -827,7 +827,7 @@ public:
             log.arg = objectName();
             room->sendLog(log);
 
-            if(!room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data))
+            if(!room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data, CardDiscarded))
                 room->setPlayerFlag(liushan, "xiangle_invoke");
         }
         else if(event == CardFinished)

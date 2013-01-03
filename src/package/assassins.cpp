@@ -147,10 +147,8 @@ void MizhaoCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(effect.card, false);
     Room *room = effect.from->getRoom();
 
-    int index = 1;
-    if (effect.to->getGeneralName().contains("liubei"))
-        index = 2;
-    room->playSkillEffect("mizhao", index);
+    if(effect.to->getGeneralName().contains("liubei"))
+        room->playSkillEffect("mizhao", 2);
 
     QList<ServerPlayer *> targets;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.to))
@@ -211,7 +209,7 @@ public:
 
         ServerPlayer *winner = pindian->isSuccess() ? pindian->from : pindian->to;
         ServerPlayer *loser = pindian->isSuccess() ? pindian->to : pindian->from;
-        if (winner->canSlash(loser, false)) {
+        if(winner->canSlash(loser, false)) {
             Slash *slash = new Slash(Card::NoSuit, 0);
             slash->setSkillName(objectName());
             CardUseStruct card_use;
@@ -827,8 +825,9 @@ public:
     virtual int getDrawNum(ServerPlayer *sunyang, int n) const{
         Room *room = sunyang->getRoom();
         if(room->askForSkillInvoke(sunyang, objectName())){
-            room->playSkillEffect(objectName());
             int x = sunyang->getEquips().count();
+            if(x > 0)
+                room->playSkillEffect(objectName());
             return n + x/2 + 1;
         }else
             return n;

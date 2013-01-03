@@ -125,9 +125,8 @@ public:
             if(player->distanceTo(p) == 1 && !use.to.contains(p) && player->canSlash(p, false))
                 targets << p;
         }
-        if(targets.isEmpty())
-            return false;
-        if(player->askForSkillInvoke(objectName())){
+        if(!targets.isEmpty() && player->askForSkillInvoke(objectName(), data)){
+            room->playSkillEffect(objectName());
             ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
             use.to.append(target);
             data = QVariant::fromValue(use);
@@ -201,22 +200,19 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(!damage.from->isKongcheng()){
+        if(!damage.from->isKongcheng() && damage.damage > 0){
             Room *room = player->getRoom();
+            room->playSkillEffect(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
             QString choice = room->askForChoice(damage.from, objectName(), "mingshishow+mingshicancel");
-            if(choice == "mingshishow"){
-                room->playSkillEffect(objectName(), 1);
+            if(choice == "mingshishow")
                 room->showAllCards(damage.from);
-            }
             else{
-                room->playSkillEffect(objectName(), 2);
                 damage.damage --;
-                damage.damage = qMax(damage.damage, 0);
                 data = QVariant::fromValue(damage);
             }
         }
@@ -393,6 +389,7 @@ public:
 
 ShuangrenCard::ShuangrenCard(){
     will_throw = false;
+    mute = true;
 }
 
 bool ShuangrenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -413,8 +410,10 @@ void ShuangrenCard::use(Room *room, ServerPlayer *aoko, const QList<ServerPlayer
         card_use.to << victim;
         card_use.card = slash;
         room->useCard(card_use, false);
-    }else
+    }else{
+        room->playSkillEffect(skill_name, 2);
         aoko->setFlags("shuangren");
+    }
 }
 
 class ShuangrenViewAsSkill: public OneCardViewAsSkill{
@@ -454,6 +453,10 @@ public:
                     return true;
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return 1;
     }
 };
 
@@ -508,6 +511,8 @@ public:
             }
             return false;
         }
+        if(player == tianfeng)
+            return false;
         int x = 0;
         if(event == DamageComplete){
             DamageStruct damage = data.value<DamageStruct>();

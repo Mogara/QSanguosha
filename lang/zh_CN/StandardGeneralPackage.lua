@@ -309,7 +309,7 @@ return {
 -- test
 	["test"] = "测试",
 
-	["#zhibasunquan"] = "年轻的贤君",
+	["#zhibasunquan"] = "牛逼的贤君",
 	["zhibasunquan"] = "制霸孙权",
 	["super_zhiheng"] = "制霸",
 	[":super_zhiheng"] = "出牌阶段，你可以弃置任意数量的牌，然后摸取等量的牌。每阶段可用X+1次，X为你已损失的体力值。",
@@ -317,7 +317,7 @@ return {
 	["$super_zhiheng2"] = "且慢！",
 	["~zhibasunquan"] = "父亲…大哥…仲谋溃矣……",
 
-	["#wuxingzhuge"] = "迟暮的丞相",
+	["#wuxingzhuge"] = "牛逼的丞相",
 	["wuxingzhuge"] = "五星诸葛",
 	["super_guanxing"] = "超级观星",
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底。",

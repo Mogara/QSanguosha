@@ -95,7 +95,9 @@ public:
             room->playSkillEffect("wuhun", 2);
         }else
             room->playSkillEffect("wuhun", 3);
-
+        QList<ServerPlayer *> killers = room->getAllPlayers();
+        foreach(ServerPlayer *player, killers)
+            player->loseAllMarks("@nightmare");
         return false;
     }
 };
@@ -183,7 +185,6 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 }
 
 GreatYeyanCard::GreatYeyanCard(){
-
 }
 
 bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -372,8 +373,16 @@ public:
     virtual void onDamaged(ServerPlayer *weiwudi, const DamageStruct &damage) const{
         Room *room = weiwudi->getRoom();
         int i, x = damage.damage;
+        bool can_invoke = false;
+        QList<ServerPlayer *> players = room->getOtherPlayers(weiwudi);
         for(i=0; i<x; i++){
-            if(weiwudi->askForSkillInvoke(objectName())){
+            foreach(ServerPlayer *player, players){
+                if(!player->isAllNude()){
+                    can_invoke = true;
+                    break;
+                }
+            }
+            if(can_invoke && weiwudi->askForSkillInvoke(objectName())){
                 room->playSkillEffect(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(weiwudi);
@@ -383,13 +392,10 @@ public:
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){
                         int card_id = room->askForCardChosen(weiwudi, player, "hej", objectName());
-                        if(room->getCardPlace(card_id) == Player::Hand)
-                            room->moveCardTo(Sanguosha->getCard(card_id), weiwudi, Player::Hand, false);
-                        else
-                            room->obtainCard(weiwudi, card_id);
+                        room->obtainCard(weiwudi, card_id, room->getCardPlace(card_id) != Player::Hand);
                     }
                 }
-
+                can_invoke = false;
                 weiwudi->turnOver();
             }else
                 break;
@@ -646,7 +652,7 @@ public:
             stars.removeOne(card_id);
             ++ n;
 
-            room->moveCardTo(Sanguosha->getCard(card_id), shenzhuge, Player::Hand, false);
+            room->obtainCard(shenzhuge, card_id, false);
         }
 
         Config.AIDelay = ai_delay;

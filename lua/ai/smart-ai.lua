@@ -521,6 +521,10 @@ sgs.ai_compare_funcs = {
 		return a:getHandcardNum() < b:getHandcardNum()
 	end,
 
+	handcard2 = function(a, b)
+		return a:getHandcardNum() > b:getHandcardNum()
+	end,
+
 	value = function(a, b)
 		return sgs.getValue(a) < sgs.getValue(b)
 	end,
@@ -3680,7 +3684,6 @@ dofile "lua/ai/maneuvering-ai.lua"
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/basara-ai.lua"
-dofile "lua/ai/hegemony-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
 
 local loaded = "standard|standard_cards|maneuvering|sp"

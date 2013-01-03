@@ -238,7 +238,7 @@ public:
                     draw_card = true;
                 else{
                     QString prompt = "double-sword-card:" + effect.from->getGeneralName();
-                    const Card *card = room->askForCard(effect.to, ".", prompt);
+                    const Card *card = room->askForCard(effect.to, ".", prompt, data, CardDiscarded);
                     if(card){
                         room->throwCard(card);
                     }else
@@ -301,7 +301,7 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName());
+        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), data, CardUsed);
         if(card){
             // if player is drank, unset his flag
             if(player->hasFlag("drank"))
@@ -418,7 +418,7 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         Room *room = player->getRoom();
-        CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName());
+        CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
         if(card){
             room->setEmotion(player,"weapon/axe");
 
@@ -908,10 +908,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
 
-    if(room->getCardPlace(card_id) == Player::Hand)
-        room->moveCardTo(Sanguosha->getCard(card_id), effect.from, Player::Hand, false);
-    else
-        room->obtainCard(effect.from, card_id);
+    room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)
