@@ -1,4 +1,4 @@
-#include "yitianpackage.h"
+#include "yitian.h"
 #include "skill.h"
 #include "engine.h"
 #include "client.h"

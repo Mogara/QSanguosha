@@ -255,7 +255,7 @@ public:
         }else if(event == Predamaged){
             if(damage.from && damage.from->isAlive()
                && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
-                if(room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
+                if(damage.damage < 1 && room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
                     room->playSkillEffect(objectName(), 2);
 
                     LogMessage log;
@@ -265,14 +265,6 @@ public:
                     log.arg2 = QString::number(--damage.damage);
                     room->sendLog(log);
 
-                    if (damage.damage < 1){
-                        LogMessage log;
-                        log.type = "#ZeroDamage";
-                        log.from = damage.from;
-                        log.to << player;
-                        room->sendLog(log);
-                        return true;
-                    }
                     data = QVariant::fromValue(damage);
                 }
         }

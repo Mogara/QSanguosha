@@ -1,4 +1,4 @@
-#include "3d_zhimeng-package.h"
+#include "3d_zhimeng.h"
 #include "general.h"
 #include "skill.h"
 #include "room.h"

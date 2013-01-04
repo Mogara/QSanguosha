@@ -47,29 +47,29 @@ SOURCES += \
 	src/dialog/scenario-overview.cpp \
 	src/dialog/halldialog.cpp \
 	src/package/package.cpp \
-	src/package/firepackage.cpp \
+	src/package/fire.cpp \
 	src/package/god.cpp \
-	src/package/joypackage.cpp \
+	src/package/joy.cpp \
 	src/package/maneuvering.cpp \
-	src/package/mountainpackage.cpp \
+	src/package/mountain.cpp \
 	src/package/nostalgia.cpp \
-	src/package/sp-package.cpp \
+	src/package/sp.cpp \
 	src/package/standard-cards.cpp \
 	src/package/standard-generals.cpp \
 	src/package/standard-skillcards.cpp \
 	src/package/standard.cpp \
 	src/package/thicket.cpp \
 	src/package/wind.cpp \
-	src/package/wisdompackage.cpp \
-	src/package/yitianpackage.cpp \
-	src/package/yjcm-package.cpp \
-	src/package/yjcm2012-package.cpp \
-	src/package/bgm-package.cpp \
-	src/package/lingpackage.cpp \
+	src/package/wisdom.cpp \
+	src/package/yitian.cpp \
+	src/package/yjcm.cpp \
+	src/package/yjcm2012.cpp \
+	src/package/bgm.cpp \
+	src/package/ling.cpp \
 	src/package/assassins.cpp \
-        src/package/hegemony.cpp \
-	src/package/special3v3-package.cpp \
-        src/package/3d_zhimeng-package.cpp \
+	src/package/hegemony.cpp \
+	src/package/special3v3.cpp \
+	src/package/3d_zhimeng.cpp \
 	src/scenario/scenario.cpp \
 	src/scenario/boss-mode-scenario.cpp \
 	src/scenario/couple-scenario.cpp \
@@ -172,29 +172,29 @@ HEADERS += \
 	src/dialog/playercarddialog.h \
 	src/dialog/roleassigndialog.h \ 
 	src/dialog/scenario-overview.h \
-	src/package/firepackage.h \
+	src/package/fire.h \
 	src/package/god.h \
-	src/package/joypackage.h \
+	src/package/joy.h \
 	src/package/maneuvering.h \
-	src/package/mountainpackage.h \
+	src/package/mountain.h \
 	src/package/nostalgia.h \
 	src/package/package.h \
-	src/package/sp-package.h \
+	src/package/sp.h \
 	src/package/standard-equips.h \
 	src/package/standard-skillcards.h \
 	src/package/standard.h \
 	src/package/thicket.h \
 	src/package/wind.h \
-	src/package/wisdompackage.h \
-	src/package/yitianpackage.h \
-	src/package/yjcm-package.h \
-	src/package/yjcm2012-package.h \
-	src/package/bgm-package.h \
-	src/package/lingpackage.h \
+	src/package/wisdom.h \
+	src/package/yitian.h \
+	src/package/yjcm.h \
+	src/package/yjcm2012.h \
+	src/package/bgm.h \
+	src/package/ling.h \
 	src/package/assassins.h \
-        src/package/hegemony.h \
-	src/package/special3v3-package.h \
-        src/package/3d_zhimeng-package.h \
+	src/package/hegemony.h \
+	src/package/special3v3.h \
+	src/package/3d_zhimeng.h \
 	src/scenario/boss-mode-scenario.h \
 	src/scenario/couple-scenario.h \
 	src/scenario/fancheng-scenario.h \

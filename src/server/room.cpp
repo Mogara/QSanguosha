@@ -964,6 +964,10 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     if(strcmp(property_name, "hp") == 0){
         thread->trigger(HpChanged, player);
     }
+
+    if(strcmp(property_name, "maxhp") == 0){
+        thread->trigger(MaxHpChanged, player);
+    }
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
@@ -2094,6 +2098,7 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     if(set_emotion){
         setEmotion(player, "recover");
     }
+    thread->trigger(HpRecovered, player, data);
 }
 
 bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
@@ -2441,10 +2446,10 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     QSet<ServerPlayer *> scope;
 
     int eid = card->getEffectiveId();
+    ServerPlayer *from = getCardOwner(eid);
     Player::Place from_place= getCardPlace(eid);
 
     if(!open){
-        ServerPlayer *from = getCardOwner(eid);
         scope.insert(from);
         scope.insert(to);
 
@@ -2474,9 +2479,9 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
 
         int n = card->isVirtualCard() ? card->subcardsLength() : 1;
         QString private_move = QString("%1:%2->%3")
-                .arg(n)
-                .arg(from_str)
-                .arg(to_str);
+            .arg(n)
+            .arg(from_str)
+            .arg(to_str);
 
         foreach(ServerPlayer *player, players){
             if(!scope.contains(player))
@@ -2489,7 +2494,8 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     move.to_place = place;
     move.open = open;
 
-    ServerPlayer *from = NULL;
+    from = NULL;
+    QVariant data;
 
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
@@ -2497,6 +2503,11 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             move.card_id = subcard;
             move.from = getCardOwner(subcard);
             move.from_place = getCardPlace(subcard);
+
+            if(to){
+                data = QVariant::fromValue(move);
+                thread->trigger(CardMoving, move.to, data);
+            }
             doMove(move, scope);
 
             if(move.from)
@@ -2506,6 +2517,11 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
         move.card_id = card->getId();
         move.from = getCardOwner(move.card_id);
         move.from_place = getCardPlace(move.card_id);
+
+        if(to){
+            data = QVariant::fromValue(move);
+            thread->trigger(CardMoving, move.to, data);
+        }
         doMove(move, scope);
 
         if(move.from)
@@ -3111,6 +3127,8 @@ void Room::askForGeneralAsync(ServerPlayer *player){
 }
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice){
+    if(generals.isEmpty())
+        return "sujiang";
     if(default_choice.isEmpty())
         default_choice = generals.at(qrand() % generals.length());
 

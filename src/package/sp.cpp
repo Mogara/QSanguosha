@@ -1,4 +1,4 @@
-#include "sp-package.h"
+#include "sp.h"
 #include "general.h"
 #include "skill.h"
 #include "standard-skillcards.h"
@@ -6,7 +6,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "maneuvering.h"
-#include "wisdompackage.h"
+#include "wisdom.h"
 
 class SPMoonSpearSkill: public WeaponSkill{
 public:

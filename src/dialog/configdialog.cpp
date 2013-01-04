@@ -24,7 +24,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
     ui->fitInViewCheckBox->setChecked(Config.FitInView);
-    ui->circularViewCheckBox->setChecked(Config.value("CircularView", false).toBool());
+    ui->circularViewCheckBox->setChecked(Config.CircularView);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
     ui->minimizecCheckBox->setChecked(Config.value("EnableMinimizeDialog", false).toBool());
 
@@ -124,7 +124,8 @@ void ConfigDialog::saveConfig()
     Config.FitInView = ui->fitInViewCheckBox->isChecked();
     Config.setValue("FitInView", Config.FitInView);
 
-    Config.setValue("CircularView", ui->circularViewCheckBox->isChecked());
+    Config.CircularView = ui->circularViewCheckBox->isChecked();
+    Config.setValue("CircularView", Config.CircularView);
 
     Config.setValue("NoIndicator", ui->noIndicatorCheckBox->isChecked());
 

@@ -1,4 +1,4 @@
-#include "yjcm2012-package.h"
+#include "yjcm2012.h"
 #include "skill.h"
 #include "standard.h"
 #include "client.h"

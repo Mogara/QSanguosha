@@ -1,4 +1,4 @@
-#include "firepackage.h"
+#include "fire.h"
 #include "general.h"
 #include "skill.h"
 #include "standard.h"

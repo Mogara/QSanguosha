@@ -454,58 +454,62 @@ struct PindianStruct{
 typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{
-    NonTrigger,
+	NonTrigger,
 
-    GameStart,
-    TurnStart,
-    PhaseChange,
-    DrawNCards,
-    HpRecover,
-    HpLost,
-    HpChanged,
+	GameStart,
+	GameStarted,
+	TurnStart,
+	PhaseChange,
+	DrawNCards,
+	HpRecover,
+	HpRecovered,
+	HpLost,
+	HpChanged,
+	MaxHpChanged,
 
-    StartJudge,
-    AskForRetrial,
-    FinishJudge,
+	StartJudge,
+	AskForRetrial,
+	FinishJudge,
 
-    Pindian,
-    TurnedOver,
+	Pindian,
+	TurnedOver,
 
-    Predamage,
-    Predamaged,
-    DamageDone,
-    Damage,
-    Damaged,
-    DamageComplete,
+	Predamage,
+	Predamaged,
+	DamageDone,
+	Damage,
+	Damaged,
+	DamageComplete,
 
-    Dying,
-    AskForPeaches,
-    AskForPeachesDone,
-    Death,
-    GameOverJudge,
+	Dying,
+	AskForPeaches,
+	AskForPeachesDone,
+	Death,
+	GameOverJudge,
 
-    SlashEffect,
-    SlashEffected,
-    SlashProceed,
-    SlashHit,
-    SlashMissed,
+	SlashEffect,
+	SlashEffected,
+	SlashProceed,
+	SlashHit,
+	SlashMissed,
 
-    CardAsked,
-    CardResponsed,
-    CardDiscarded,
-    CardLost,
-    CardLostDone,
-    CardGot,
-    CardGotDone,
-    CardDrawing,
-    CardDrawnDone,
+	CardAsked,
+	CardResponsed,
+	CardDiscarded,
+	CardMoving,
+	CardLost,
+	CardLostDone,
+	CardGot,
+	CardGotDone,
+	CardDrawing,
+	CardDrawnDone,
 
-    CardUsed,
-    CardEffect,
-    CardEffected,
-    CardFinished,
+	CardUsed,
+	CardEffect,
+	CardEffected,
+	CardFinished,
 
-    ChoiceMade,
+	ChoiceMade,
 };
 
 class Card: public QObject
@@ -929,10 +933,10 @@ public:
 	}
 
 	void throwCard(const Card *card, ServerPlayer *who = NULL){
-		$self->throwCard(const Card *card);
+		$self->throwCard(card);
 	}
 	void throwCard(int card_id, ServerPlayer *who = NULL){
-		$self->throwCard(int card_id);
+		$self->throwCard(card_id);
 	}
 
 	ServerPlayer *nextPlayer() const{

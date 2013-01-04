@@ -122,7 +122,7 @@ public:
             return false;
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-            if(player->distanceTo(p) == 1 && !use.to.contains(p) && player->canSlash(p, false))
+            if(player->distanceTo(p) == 1 && !use.to.contains(p) && player->canSlash(p, use.card, false))
                 targets << p;
         }
         if(!targets.isEmpty() && player->askForSkillInvoke(objectName(), data)){
@@ -322,7 +322,6 @@ public:
 
 QingchengCard::QingchengCard(){
     once = true;
-    will_throw = false;
 }
 
 bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

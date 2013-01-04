@@ -17,7 +17,6 @@ void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         room->drawCards(source, subcards.length());
 }
 
-
 RendeCard::RendeCard(){
     will_throw = false;
 }
@@ -232,7 +231,6 @@ void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 LiuliCard::LiuliCard()
 {
 }
-
 
 bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())

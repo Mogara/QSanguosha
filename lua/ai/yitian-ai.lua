@@ -19,7 +19,7 @@ end
 
 sgs.weapon_range.YitianSword = 2
 
-sgs.ai_skill_invoke.guixin2 = true
+sgs.ai_skill_invoke.guishin = true
 
 local function findPlayerForModifyKingdom(self, players)
 	local lord = self.room:getLord()
@@ -28,7 +28,7 @@ local function findPlayerForModifyKingdom(self, players)
 	for _, player in sgs.qlist(players) do
 		if not player:isLord() or player:hasLordSkill("weidai") then
 			if  sgs.evaluateRoleTrends(player) == "loyalist" then
-				local sameKingdom = player:getKingdom() == lord:getKingdom() 
+				local sameKingdom = player:getKingdom() == lord:getKingdom()
 				if isGood ~= sameKingdom then
 					return player
 				end
@@ -66,9 +66,9 @@ local function chooseKingdomForPlayer(self, to_modify)
 	return "wei"
 end
 
-sgs.ai_skill_choice.guixin2 = function(self, choices)
+sgs.ai_skill_choice.guishin = function(self, choices)
 	if choices == "wei+shu+wu+qun" then
-		local to_modify = self.room:getTag("Guixin2Modify"):toPlayer()
+		local to_modify = self.room:getTag("GuishinModify"):toPlayer()
 		return chooseKingdomForPlayer(self, to_modify)
 	end
 
@@ -84,7 +84,7 @@ sgs.ai_skill_choice.guixin2 = function(self, choices)
 	if self.player:getRole() == "renegade" or self.player:getRole() == "lord" then
 		return "obtain"
 	end
-	
+
 	local lord = self.room:getLord()
 	local skills = lord:getVisibleSkillList()
 	local hasLordSkill = false
@@ -108,7 +108,7 @@ sgs.ai_skill_choice.guixin2 = function(self, choices)
 	end
 end
 
-sgs.ai_skill_playerchosen.guixin2 = function(self, players)
+sgs.ai_skill_playerchosen.guishin = function(self, players)
 	local player = findPlayerForModifyKingdom(self, players)
 	return player or players:first()
 end
@@ -261,14 +261,14 @@ end
 
 sgs.ai_skill_use["@@lianli"] = function(self, prompt)
 	self:sort(self.friends)
-	
+
 	for _, friend in ipairs(self.friends) do
 		if friend:getGeneral():isMale() then
 			return "@LianliCard=.->" .. friend:objectName()
 		end
 	end
-	
-	return "."	
+
+	return "."
 end
 
 sgs.ai_card_intention.LianliCard = -80
@@ -429,7 +429,7 @@ function sgs.ai_skill_choice.shenjun(self, choices)
 		end
 		gender = (male < #self.enemies - male)
 	else
-		gender = (sgs.Sanguosha:getSkill("shenjun"):getDefaultChoice(self.player) == "male")	
+		gender = (sgs.Sanguosha:getSkill("shenjun"):getDefaultChoice(self.player) == "male")
 	end
 	if self.player:getSeat() < self.room:alivePlayerCount()/2 then gender = not gender end
 	if gender then return "male" else return "female" end
@@ -458,8 +458,8 @@ sgs.ai_skill_playerchosen.shaoying = function(self, targets)
 	local tos = {}
 	for _, target in sgs.qlist(targets) do
 		if self:isEnemy(target) then table.insert(tos, target) end
-	end 
-	
+	end
+
 	if #tos > 0 then
 		self:sort(tos, "hp")
 		return tos[1]
@@ -485,7 +485,7 @@ sgs.ai_skill_discard.gongmou = function(self, discard_num, optional, include_equ
 		if #to_discard >= discard_num then break end
 		table.insert(to_discard, card:getId())
 	end
-	
+
 	return to_discard
 end
 
@@ -512,7 +512,7 @@ sgs.ai_cardshow.lexue = function(self, requestor)
 			end
 		end
 	end
-	return self.player:getRandomHandCard() 
+	return self.player:getRandomHandCard()
 end
 
 local lexue_skill={name="lexue"}

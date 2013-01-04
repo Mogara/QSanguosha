@@ -1,4 +1,4 @@
-#include "bgm-package.h"
+#include "bgm.h"
 #include "skill.h"
 #include "standard.h"
 #include "clientplayer.h"
@@ -1564,6 +1564,105 @@ public:
     }
 };
 
+Yic0ngCard::Yic0ngCard(){
+    target_fixed = true;
+    will_throw = false;
+}
+
+void Yic0ngCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    foreach(int x, getSubcards())
+        source->addToPile("hoo", x);
+    source->acquireSkill("#yic0ng-distance");
+}
+
+class Yic0ngViewAsSkill:public ViewAsSkill{
+public:
+    Yic0ngViewAsSkill():ViewAsSkill("yic0ng"){
+
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@@yic0ng";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *) const{
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.isEmpty())
+            return NULL;
+        Yic0ngCard *card = new Yic0ngCard;
+        card->addSubcards(cards);
+        return card;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+};
+
+class Yic0ng:public PhaseChangeSkill{
+public:
+    Yic0ng():PhaseChangeSkill("yic0ng"){
+        view_as_skill = new Yic0ngViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        if(player->getPhase() == Player::Finish)
+            player->getRoom()->askForUseCard(player, "@@yic0ng", "@yic0ng");
+        return false;
+    }
+};
+
+class Yic0ngDistance: public DistanceSkill{
+public:
+    Yic0ngDistance():DistanceSkill("#yic0ng-distance"){
+    }
+
+    virtual int getCorrect(const Player *, const Player *to) const{
+        if(to->hasSkill(objectName()))
+            return to->getPile("hoo").length();
+        else
+            return 0;
+    }
+};
+
+class TuqiEffect:public PhaseChangeSkill{
+public:
+    TuqiEffect():PhaseChangeSkill("#tuqi-effect"){
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        if(player->getPhase() == Player::Start){
+            int x = player->getPile("hoo").length();
+            if(x > 0)
+                room->playSkillEffect("tuqi");
+            room->setPlayerMark(player, "@tuqi", x);
+            player->clearPile("hoo");
+            if(x <= 2)
+                player->drawCards(1);
+        }
+        else if(player->getPhase() == Player::NotActive)
+            room->setPlayerMark(player, "@tuqi", 0);
+        return false;
+    }
+};
+
+class Tuqi: public DistanceSkill{
+public:
+    Tuqi():DistanceSkill("tuqi"){
+    }
+
+    virtual int getCorrect(const Player *from, const Player *) const{
+        if(from->hasSkill(objectName()))
+            return - from->getMark("@tuqi");
+        else
+            return 0;
+    }
+};
+
 PasterPackage::PasterPackage()
     :Package("paster")
 {
@@ -1578,16 +1677,16 @@ PasterPackage::PasterPackage()
     General *liuxie = new General(this, "liuxie", "qun");
     liuxie->addSkill(new Huangen);
     liuxie->addSkill(new Hantong);
-    //lualiuxie->addSkill(hantongmax);
-    //lualiuxie->addSkill(hantongclear);
-/*
-    General *luagongsunzan = new General(this, "luagongsunzan", "qun");
-    luagongsunzan->addSkill(diyyicong);
-    luagongsunzan->addSkill(diyyicongdis);
-    luagongsunzan->addSkill(diytuqi);
-    luagongsunzan->addSkill(diytuqidis);
-*/
+
+    General *gongshunzan = new General(this, "gongshunzan", "qun");
+    gongshunzan->addSkill(new Yic0ng);
+    gongshunzan->addSkill(new Tuqi);
+    gongshunzan->addSkill(new TuqiEffect);
+    related_skills.insertMulti("tuqi", "#tuqi-effect");
+
+    skills << new Yic0ngDistance;
     addMetaObject<FuluanCard>();
+    addMetaObject<Yic0ngCard>();
 }
 
 ADD_PACKAGE(BGM)
