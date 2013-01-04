@@ -129,12 +129,15 @@ enum TriggerEvent{
     NonTrigger,
 
     GameStart,
+    GameStarted,
     TurnStart,
     PhaseChange,
     DrawNCards,
     HpRecover,
+    HpRecovered,
     HpLost,
     HpChanged,
+    MaxHpChanged,
 
     StartJudge,
     AskForRetrial,

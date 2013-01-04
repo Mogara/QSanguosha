@@ -256,6 +256,7 @@ void RoomThread::run(){
     // start game, draw initial 4 cards
     foreach(ServerPlayer *player, room->players){
         trigger(GameStart, player);
+        trigger(GameStarted, player);
     }
 
     if(room->mode == "06_3v3"){

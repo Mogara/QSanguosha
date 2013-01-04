@@ -964,6 +964,10 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     if(strcmp(property_name, "hp") == 0){
         thread->trigger(HpChanged, player);
     }
+
+    if(strcmp(property_name, "maxhp") == 0){
+        thread->trigger(MaxHpChanged, player);
+    }
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
@@ -2094,6 +2098,7 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     if(set_emotion){
         setEmotion(player, "recover");
     }
+    thread->trigger(HpRecovered, player, data);
 }
 
 bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
