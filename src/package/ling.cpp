@@ -1,4 +1,4 @@
-#include "lingpackage.h"
+#include "ling.h"
 #include "general.h"
 #include "skill.h"
 #include "standard.h"

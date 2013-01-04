@@ -1835,7 +1835,7 @@
         <location filename="src/dialog/mainwindow.ui" line="14"/>
         <location filename="src/dialog/mainwindow.cpp" line="168"/>
         <source>Sanguosha</source>
-        <translation>太阳神三国杀</translation>
+        <translation>太阳神三国杀 - 雪霁★爱你一生一世</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="28"/>

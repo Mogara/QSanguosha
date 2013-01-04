@@ -1,4 +1,4 @@
-#include "yjcm-package.h"
+#include "yjcm.h"
 #include "skill.h"
 #include "standard.h"
 #include "maneuvering.h"

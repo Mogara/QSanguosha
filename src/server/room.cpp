@@ -3116,6 +3116,8 @@ void Room::askForGeneralAsync(ServerPlayer *player){
 }
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice){
+    if(generals.isEmpty())
+        return "sujiang";
     if(default_choice.isEmpty())
         default_choice = generals.at(qrand() % generals.length());
 

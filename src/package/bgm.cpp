@@ -1,4 +1,4 @@
-#include "bgm-package.h"
+#include "bgm.h"
 #include "skill.h"
 #include "standard.h"
 #include "clientplayer.h"
