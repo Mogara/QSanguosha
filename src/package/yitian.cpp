@@ -50,7 +50,6 @@ void YitianSword::onMove(const CardMoveStruct &move) const{
 
 ChengxiangCard::ChengxiangCard()
 {
-
 }
 
 bool ChengxiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -165,7 +164,8 @@ public:
         return 3;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *) const{
+    virtual bool onPhaseChange(ServerPlayer *n) const{
+        n->getRoom()->playSkillEffect(objectName());
         return true;
     }
 };
@@ -178,6 +178,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *caochong) const{
         if(caochong->getPhase() == Player::Finish && caochong->getHandcardNum() > 13){
+            caochong->getRoom()->playSkillEffect(objectName());
             caochong->throwAllHandCards();
             caochong->getRoom()->loseHp(caochong);
         }

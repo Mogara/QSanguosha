@@ -654,7 +654,7 @@ public:
         return 2;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *xiaoqiao, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *xiaoqiao, QVariant &data) const{
         if(!xiaoqiao->isKongcheng()){
             DamageStruct damage = data.value<DamageStruct>();
             Room *room = xiaoqiao->getRoom();
@@ -733,10 +733,14 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
             room->setEmotion(player, ".");
 
             if(questioned.contains(player)){
-                if(real)
+                if(real){
+                    room->playSkillEffect("guhuo", 4);
                     room->loseHp(player);
-                else
+                }
+                else{
+                    room->playSkillEffect("guhuo", 2);
                     player->drawCards(1);
+                }
             }
         }
     }
@@ -913,7 +917,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
     *continuable = true;
 
     Room *room = yuji->getRoom();
-    room->playSkillEffect("guhuo");
+    room->playSkillEffect("guhuo", 1);
 
     QString to_guhuo;
     if(user_string == "peach+analeptic")
@@ -981,7 +985,7 @@ public:
         if (!card->isKindOf("GuhuoCard"))
             return -2;
         else
-            return -1;
+            return 3;
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{

@@ -154,7 +154,8 @@ public:
         if(!room->askForSkillInvoke(guojia, objectName()))
             return;
 
-        room->playSkillEffect(objectName());
+        int index = guojia->getHp() == 1 ? 3 : qrand() % 2 + 1;
+        room->playSkillEffect(objectName(), index);
 
         int x = damage.damage, i;
         for(i=0; i<x; i++){
@@ -283,6 +284,7 @@ public:
         const Card *card = room->askForCard(player, "@guicai", prompt, data);
 
         if(card){
+            room->playSkillEffect(objectName(), judge->who == player ? 2 : 1);
             // the only difference for Guicai & Guidao
             room->throwCard(judge->card);
 
@@ -911,7 +913,7 @@ public:
             if(move->from_place == Player::Hand){
                 Room *room = luxun->getRoom();
                 if(room->askForSkillInvoke(luxun, objectName())){
-                    room->playSkillEffect(objectName());
+                    room->playSkillEffect(objectName(), luxun->getPhase() == Player::NotActive ? 1 : 2);
 
                     luxun->drawCards(1);
                 }

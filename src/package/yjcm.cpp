@@ -197,7 +197,7 @@ public:
                 log.arg = damage.card->objectName();
                 log.arg2 = objectName();
                 room->sendLog(log);
-                room->playSkillEffect(objectName());
+                room->playSkillEffect(objectName(), damage.from->isCaoCao()? 3: 2);
 
                 return true;
             }
@@ -209,7 +209,7 @@ public:
                 log.arg = damage.card->objectName();
                 log.arg2 = objectName();
                 room->sendLog(log);
-                room->playSkillEffect(objectName());
+                room->playSkillEffect(objectName(), 1);
 
                 return true;
             }
@@ -219,6 +219,7 @@ public:
 };
 
 JujianCard::JujianCard(){
+    mute = true;
 }
 
 bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -233,7 +234,12 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    room->throwCard(this);
+    if(effect.to->getGeneralName().contains("zhugeliang") ||
+       effect.to->getGeneralName() == "wolong")
+        room->playSkillEffect(skill_name, 3);
+    else
+        room->playSkillEffect(skill_name, qrand() % 2 + 1);
+    //room->throwCard(this);
     QStringList choicelist;
     choicelist << "draw";
     if (effect.to->getLostHp() != 0)
@@ -794,12 +800,17 @@ public:
 MingceCard::MingceCard(){
     once = true;
     will_throw = false;
+    mute = true;
 }
 
 void MingceCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    if(effect.to->getGeneralName().contains("lvbu"))
+        room->playSkillEffect(skill_name, 3);
+    else
+        room->playSkillEffect(skill_name, qrand() % 2 + 1);
     effect.to->obtainCard(this);
 
-    Room *room = effect.to->getRoom();
     QString choice = room->askForChoice(effect.to, "mingce", "use+draw");
     if(choice == "use"){
         QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), targets;
@@ -875,7 +886,9 @@ public:
         if(event == Damaged){
             room->setTag("Zhichi", player->objectName());
 
-            room->playSkillEffect(objectName());
+            DamageStruct damage = data.value<DamageStruct>();
+            int dex = damage.from->isCaoCao() ? 3 : qrand() %2 + 1;
+            room->playSkillEffect(objectName(), dex);
 
             LogMessage log;
             log.type = "#ZhichiDamaged";
@@ -888,6 +901,7 @@ public:
 
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card->inherits("Slash") || effect.card->getTypeId() == Card::Trick){
+                room->playSkillEffect(objectName(), 4);
                 LogMessage log;
                 log.type = "#ZhichiAvoid";
                 log.from = player;

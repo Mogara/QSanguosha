@@ -70,16 +70,17 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     room->recover(effect.to, recover, true);
 
     int index = -1;
-    if(effect.from->getGeneral()->isMale()){
+    if(effect.from->getGeneralName().contains("shangxiang") && effect.to->getGeneralName().contains("liubei"))
+        index = 2;
+    else if(effect.from->getGeneral()->isMale()){
         if(effect.from == effect.to)
             index = 5;
         else if(effect.from->getHp() >= effect.to->getHp())
             index = 3;
         else
             index = 4;
-    }else{
-        index = 1 + qrand() % 2;
-    }
+    }else
+        index = 1;
 
     room->playSkillEffect("jieyin", index);
 }
@@ -222,6 +223,7 @@ GuicaiCard::GuicaiCard(){
     target_fixed = true;
     will_throw = false;
     can_jilei = true;
+    mute = true;
 }
 
 void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{

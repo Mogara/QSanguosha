@@ -224,8 +224,8 @@ return {
 	["$chengxiang1"] = "置象舟上，刻其水痕所至。", --发动技能
 	["$chengxiang2"] = "称物载之，则校可知矣。", --恢复体力
 	["$conghui"] = "吾虽年幼，智意所及，有若成人。",
-	["$zaoyao"] = "仓舒，仓舒……（女声）",
-	["~caochong"] = "天下无道，凤凰远引，凤凰，凤凰！凤——凰——！",
+	["$zaoyao"] = "咳咳咳……",
+	["~caochong"] = "仓舒，仓舒……（曹操的声音）",
 
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["illustrator:zhangjunyi"] = "火凤燎原",
