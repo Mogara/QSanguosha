@@ -136,12 +136,14 @@ return {
 
 	["illustrator:yujin"] = "Yi章",
 	["designer:yujin"] = "城管无畏",
+	["cv:yujin"] = "裤衩",
 	["$yizhong1"] = "不先为备，何以待敌",
 	["$yizhong2"] = "稳重行军，百战不殆！",
 	["~yujin"] = "我……无颜面对丞相了……",
 
 	["illustrator:fazheng"] = "雷没才",
 	["designer:fazheng"] = "michael_lee",
+	["cv:fazheng"] = "",
 	["$enyuan1"] = "得人恩果千年记",
 	["$enyuan2"] = "滴水之恩，涌泉以报！",
 	["$enyuan3"] = "谁敢得罪我？",
@@ -152,12 +154,14 @@ return {
 
 	["illustrator:masu"] = "张帅",
 	["designer:masu"] = "神点点",
+	["cv:masu"] = "鬼叔",
 	["$xinzhan"] = "吾通晓兵法，世人皆知",
 	["$huilei1"] = "丞相视某如子，某以丞相为父。",
 	["$huilei2"] = "谡愿以死安大局",
 
 	["illustrator:xushu"] = "XINA",
 	["designer:xushu"] = "双叶松",
+	["cv:xushu"] = "苏遥冬",
 	["$jujian1"] = "将军岂愿抓牌乎？",
 	["$jujian2"] = "我看好你！",
 	["$wuyan1"] = "嘘，言多必失啊！",
@@ -166,18 +170,21 @@ return {
 
 	["illustrator:xusheng"] = "刘周（天空之城）",
 	["designer:xusheng"] = "阿江",
+	["cv:xusheng"] = "裤衩",
 	["$pojun1"] = "大军在此！汝等休想前进一步！",
 	["$pojun2"] = "敬请养精蓄锐！",
 	["~xusheng"] = "盛不能奋身出命，不亦辱乎…",
 
 	["illustrator:lingtong"] = "绵 Myan",
 	["designer:lingtong"] = "奇迹之瞳",
+	["cv:lingtong"] = "猎狐",
 	["$xuanfeng1"] = "伤敌于千里之外。",
 	["$xuanfeng2"] = "索命于须臾之间。",
 	["~lingtong"] = "大丈夫不惧死亡",
 
 	["illustrator:wuguotai"] = "zoo",
 	["designer:wuguotai"] = "章鱼咬你哦",
+	["cv:wuguotai"] = "眠眠",
 	["$buyi1"] = "吾乃吴国之母，何人敢造次？",
 	["$buyi2"] = "有老身在，汝等尽可放心。",
 	["$ganlu1"] = "此真乃吾之佳婿。",
@@ -186,6 +193,7 @@ return {
 
 	["illustrator:gaoshun"] = "鄧Sir",
 	["designer:gaoshun"] = "羽柴文理",
+	["cv:gaoshun"] = "裤衩",
 	["$jinjiu1"] = "避嫌远疑，所以无误。",
 	["$jinjiu2"] = "贬酒阙色，所以无污。",
 	["$xianzhen1"] = "攻无不克战无不胜！",
@@ -194,12 +202,14 @@ return {
 
 	["illustrator:chengong"] = "黑月乱",
 	["designer:chengong"] = "Kaycent",
-	["cv:chengong"] = "官方,V7",
+	["cv:chengong"] = "苏遥冬",
 	["$mingce1"] = "如此，霸业可图也~",
 	["$mingce2"] = "如此，一击可擒也！",
 	["$zhichi1"] = "如今之计，唯有退守，再做决断！",
 	["$zhichi2"] = "若吾早知如此~",
 	["~chengong"] = "请出就戮！",
+
+	["cv:zhangchunhua"] = "白衣筱雅",
 
 	["illustrator:zhonghui"] = "雪君S",
 	["designer:zhonghui"] = "韩旭",
