@@ -202,7 +202,7 @@ return {
 	[":biyue"] = "回合结束阶段开始时，你可以摸一张牌",
 	["biyue:yes"] = "您可以摸一张牌",
 
--- effect
+-- effect=
 	["$fanjian1"] = "挣扎吧，在血和暗的深渊里",
 	["$fanjian2"] = "痛苦吧，在仇与恨的地狱中",
 	["$fankui"] = "下次注意点",
@@ -300,11 +300,31 @@ return {
 	["~huatuo"] = "医者不能自医啊",
 	["~diaochan"] = "父亲大人，对不起",
 
-	["cv:lvmeng"] = "腾讯英雄杀勾践",
-	["cv:sunquan"] = "官方，宇文天启",
-	["cv:sunshangxiang"] = "官方，背碗卤粉",
+	["cv:caocao"] = "鬼叔",
+	["cv:zhangliao"] = "裤衩",
+	["cv:guojia"] = "鬼叔",
+	["cv:xiahoudun"] = "裤衩",
+	["cv:simayi"] = "裤衩",
+	["cv:xuchu"] = "鬼叔",
 	["cv:zhenji"] = "神马芯",
+	["cv:liubei"] = "鬼叔",
+	["cv:guanyu"] = "鬼叔",
+	["cv:zhangfei"] = "鬼叔",
+	["cv:zhaoyun"] = "鸢飞",
 	["cv:machao"] = "烈の流星",
+	["cv:zhugeliang"] = "鬼叔",
+	["cv:huangyueying"] = "眠眠",
+	["cv:sunquan"] = "鬼叔",
+	["cv:zhouyu"] = "猎狐",
+	["cv:lvmeng"] = "鬼叔",
+	["cv:luxun"] = "猎狐",
+	["cv:ganning"] = "鬼叔",
+	["cv:huanggai"] = "鬼叔",
+	["cv:daqiao"] = "眠眠",
+	["cv:sunshangxiang"] = "眠眠，背碗卤粉",
+	["cv:lvbu"] = "鬼叔",
+	["cv:huatuo"] = "东方胤弘",
+	["cv:diaochan"] = "眠眠",
 
 -- test
 	["test"] = "测试",

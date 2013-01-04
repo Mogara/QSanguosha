@@ -113,6 +113,15 @@ return {
 	["~xiaoqiao"] = "公瑾，我先走一步",
 	["~yuji"] = "竟然被猜到了",
 
+	["cv:caoren"] = "鬼叔",
+	["cv:xiahouyuan"] = "鬼叔",
+	["cv:huangzhong"] = "苏遥冬",
+	["cv:weiyan"] = "鬼叔",
+	["cv:xiaoqiao"] = "白衣筱雅",
+	["cv:zhoutai"] = "裤衩",
+	["cv:zhangjiao"] = "",
+	["cv:yuji"] = "东方胤弘",
+
 -- guhuo dialog
 	["single_target"] = "单目标锦囊",
 	["multiple_targets"] = "多目标锦囊",
