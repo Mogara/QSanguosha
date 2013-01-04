@@ -55,7 +55,7 @@ return {
 	["$nosxuanfeng1"] = "伤敌于千里之外！",
 	["$nosxuanfeng2"] = "索命于须臾之间！",
 	["~noslingtong"] = "大丈夫……不惧死亡……",
-	
+
 	["#noszhangchunhua"] = "冷血皇后",
 	["noszhangchunhua"]="张春华",
 	["nosshangshi"]="伤逝",

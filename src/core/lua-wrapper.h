@@ -53,7 +53,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
-    virtual bool isEnabledAtNullification(const Player *player) const;
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
 };
 
 class LuaFilterSkill: public FilterSkill{
@@ -78,6 +78,17 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const;
 
     LuaFunction correct_func;
+};
+
+class LuaMaxCardsSkill: public MaxCardsSkill{
+    Q_OBJECT
+
+public:
+    LuaMaxCardsSkill(const char *name);
+
+    virtual int getExtra(const Player *target) const;
+
+    LuaFunction extra_func;
 };
 
 class LuaSkillCard: public SkillCard{

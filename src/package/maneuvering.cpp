@@ -127,12 +127,13 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
             damage.to->isKongcheng())
         {
             Room *room = damage.to->getRoom();
+            room->setEmotion(player, "weapon/guding_blade");
 
             LogMessage log;
             log.type = "#GudingBladeEffect";
@@ -165,6 +166,7 @@ public:
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.nature == DamageStruct::Normal){
+                player->getRoom()->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -177,6 +179,7 @@ public:
         }else if(event == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card->inherits("AOE")){
+                player->getRoom()->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -189,6 +192,7 @@ public:
         }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
+                player->getRoom()->setEmotion(player, "armor/vineburn");
                 LogMessage log;
                 log.type = "#VineDamage";
                 log.from = player;
@@ -216,9 +220,10 @@ public:
         events << Predamaged;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.damage > 1){
+            player->getRoom()->setEmotion(player, "armor/silver_lion");
             LogMessage log;
             log.type = "#SilverLion";
             log.from = player;
@@ -240,7 +245,9 @@ SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
 }
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
-    if(player->isAlive() && player->getMark("qinggang") == 0){
+    if(player->isAlive() && !player->hasFlag("wuqian") && player->getMark("qinggang") == 0){
+        if(player->isWounded())
+            player->getRoom()->setEmotion(player, "armor/silver_lion");
         RecoverStruct recover;
         recover.card = this;
         player->getRoom()->recover(player, recover);
@@ -277,7 +284,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     QString suit_str = card->getSuitString();
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
     QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->getGeneralName()).arg(suit_str);
-    if(room->askForCard(effect.from, pattern, prompt)){
+    if(room->askForCard(effect.from, pattern, prompt, QVariant(), CardDiscarded)){
         DamageStruct damage;
         damage.card = this;
         damage.from = effect.from;

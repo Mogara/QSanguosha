@@ -22,6 +22,16 @@ sgs.weapon_range.Fan = 4
 sgs.ai_use_priority.Fan = 2.655
 sgs.ai_use_priority.Vine = 0.6
 
+
+sgs.ai_skill_invoke.fan = function(self, data)
+    local target = data:toSlashEffect().to
+    if self:isFriend(target) then
+      return target:isChained() and self:isGoodChainTarget(target)
+    else
+      return not (target:isChained() and not self:isGoodChainTarget(target))
+	end
+end
+
 sgs.ai_view_as.fan = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
@@ -268,7 +278,7 @@ function SmartAI:useCardIronChain(card, use)
 			table.insert(enemytargets, enemy)
 		end
 	end
-	if not self.player:hasSkill("wuyan") then
+	if not self.player:hasSkill("noswuyan") then
 		if #friendtargets > 1 then
 			if use.to then use.to:append(friendtargets[1]) end
 			if use.to then use.to:append(friendtargets[2]) end
@@ -310,6 +320,7 @@ sgs.dynamic_value.benefit.IronChain = true
 
 function SmartAI:useCardFireAttack(fire_attack, use)  
 	if self.player:hasSkill("wuyan") then return end
+	if self.player:hasSkill("noswuyan") then return end
 	local lack = {
 		spade = true,
 		club = true,
@@ -335,7 +346,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		if (self:objectiveLevel(enemy) > 3) and not enemy:isKongcheng() and not self.room:isProhibited(self.player, enemy, fire_attack)  
 			and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and self:hasTrickEffective(fire_attack, enemy)
 			and not self:cantbeHurt(enemy)
-			and not (enemy:isChained() and not self:isGoodChainTarget(enemy)) then
+			and not (enemy:isChained() and not self:isGoodChainTarget(enemy) and not self.player:hasSkill("jueqing")) then
 
 			local cards = enemy:getHandcards()
 			local success = true
@@ -362,7 +373,8 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	if #targets_succ > 0 then
 		use.card = fire_attack
 		if use.to then use.to:append(targets_succ[1]) end
-	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and self:isGoodChainPartner(self.player) and self.player:getHandcardNum() > 1 then
+	elseif self.player:isChained() and self:isGoodChainTarget(self.player) and (self:isGoodChainPartner(self.player)
+	or (self:isEquip("SilverLion") and self:hasSkill("fankui"))) and self.player:getHandcardNum() > 1 then
 		use.card = fire_attack
 		if use.to then use.to:append(self.player) end
 	elseif #targets_fail > 0 and self:getOverflow(self.player) > 0 then

@@ -33,6 +33,7 @@ public:
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
+    Card *cloneCard(const QString &name, const QString &suit_string, int number) const;
     SkillCard *cloneSkillCard(const QString &name) const;
     QString getVersionNumber() const;
     QString getVersion() const;
@@ -114,8 +115,8 @@ private:
 
 extern Engine *Sanguosha;
 
-static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
-    return GetValueFromLuaState(L, "config", key);
+static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key, const char *parent = "config"){
+    return GetValueFromLuaState(L, parent, key);
 }
 
 #endif // ENGINE_H

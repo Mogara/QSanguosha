@@ -6,6 +6,7 @@
 #include <QRectF>
 #include <QPixmap>
 #include <QBrush>
+#include <QDesktopWidget>
 
 class Settings : public QSettings{
     Q_OBJECT
@@ -54,6 +55,7 @@ public:
     ushort DetectorPort;
     int MaxCards;
 
+    bool CircularView;
     bool FitInView;
     bool EnableHotKey;
     bool EnableMinimizeDialog;
@@ -67,8 +69,12 @@ public:
     bool EnableBgMusic;
     float BGMVolume;
     float EffectVolume;
+    bool DisableLua;
 
     QString BackgroundBrush;
+
+    // consts
+    static const int S_MINI_MAX_COUNT;
 };
 
 extern Settings Config;

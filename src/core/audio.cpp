@@ -1,6 +1,7 @@
 #include "audio.h"
 #include "fmod.h"
 #include "settings.h"
+#include "crypto.h"
 
 #include <QCache>
 #include <QtDebug>
@@ -17,7 +18,12 @@ public:
     Sound(const QString &filename)
         :sound(NULL), channel(NULL)
     {
-        FMOD_System_CreateSound(System, filename.toAscii(), FMOD_DEFAULT, NULL, &sound);
+        if(!filename.endsWith("dat"))
+            FMOD_System_CreateSound(System, filename.toAscii(), FMOD_DEFAULT, NULL, &sound);
+        else{
+            Crypto cry;
+            sound = cry.initEncryptedFile(System, filename);
+        }
     }
 
     ~Sound(){

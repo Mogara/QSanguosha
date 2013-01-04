@@ -13,13 +13,13 @@ return {
 	-- 神曹操内测第三版
 	["#weiwudi"] = "超世之英杰",
 	["weiwudi"] = "魏武帝",
-	["guixin2"] = "归心",
-	[":guixin2"] = "回合结束阶段，你可以做以下二选一：\
+	["guishin"] = "归心",
+	[":guishin"] = "回合结束阶段，你可以做以下二选一：\
       1. 永久改变一名其他角色的势力\
       2. 永久获得一项未上场或已死亡角色的主公技。(获得后即使你不是主公仍然有效)",
-	["guixin2:yes"] = "永久改变一名其他角色的势力或永久获得一项未上场或已死亡角色的主公技",
-	["guixin2:modify"] = "永久改变一名其他角色的势力",
-	["guixin2:obtain"] = "永久获得一项未上场或已死亡角色的主公技",
+	["guishin:yes"] = "永久改变一名其他角色的势力或永久获得一项未上场或已死亡角色的主公技",
+	["guishin:modify"] = "永久改变一名其他角色的势力",
+	["guishin:obtain"] = "永久获得一项未上场或已死亡角色的主公技",
 
 	["fanji"] = "反计",
 	[":fanji"] = "若其他角色使用的一张以你为唯一目标的非延时锦囊牌在结算完之后进入弃牌堆，你可以立即获得它",
@@ -127,8 +127,8 @@ return {
 	["zonghuo"] = "纵火",
 	[":zonghuo"] = "<b>锁定技</b>，你的杀始终带有火焰属性",
 	["#ShenjunChoose"] = "%from 选择了 %arg 作为初始性别",
-	["#ShenjunProtect"] = "%to 的【%arg】锁定技被触发，异性(%from)的非雷电属性伤害无效",
-	["#ShenjunFlip"] = "%from 的【%arg】锁定技被触发，性别倒置",
+	["#ShenjunProtect"] = "%to 的【%arg】<b>锁定技</b>被触发，异性(%from)的非雷电属性伤害无效",
+	["#ShenjunFlip"] = "%from 的【%arg】<b>锁定技</b>被触发，性别倒置",
 	["#Zonghuo"] = "%from 的锁定技【%arg】技能被触发，【杀】变为火焰属性",
 
 	-- 钟会
@@ -211,7 +211,7 @@ return {
 	["#yanghu"] = "陆抗的天敌",
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
-	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
+	[":jinshen"] = "<b>锁定技</b>，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
 
 -- CV&Designer
 	["designer:weiwudi"] = "官方内测第三版",
@@ -295,6 +295,7 @@ return {
 	["$shenli"] = "死!",
 	["$sizhan1"] = "曹公为安，死战不休",
 	["$sizhan2"] = "哼，不痛不痒！",
+	["~guzhielai"] = "呃，别高兴的太早了！",
 
 	["designer:dengshizai"] = "Bu懂",
 	["illustrator:dengshizai"] = "三国豪杰传",

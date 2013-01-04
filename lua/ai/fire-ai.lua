@@ -14,7 +14,7 @@ sgs.ai_skill_use_func.QuhuCard = function(card, use, self)
 	self:sort(self.enemies, "handcard")
 
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:getHp() > self.player:getHp() then
+		if enemy:getHp() > self.player:getHp() and not enemy:isKongcheng() then
 			local enemy_max_card = self:getMaxCard(enemy)
 			if enemy_max_card and max_point > enemy_max_card:getNumber() then
 				for _, enemy2 in ipairs(self.enemies) do
@@ -280,7 +280,7 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 	end
 	
 	self:sort(self.enemies, "handcard")
-	local max_card = self:getMaxCard(self.player)
+	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
 	local slashcount = self:getCardsNum("Slash")
 	if max_card:inherits("Slash") then slashcount = slashcount - 1 end
@@ -327,7 +327,7 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 	end
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)
-	if self:getUseValue(cards[1]) >= 6 then return end
+	if self:getUseValue(cards[1]) >= 6 or self:getKeepValue(cards[1]) >= 6 then return end
 	local shouldUse = (slashcount == 0)
 	if slashcount > 0 then
 		local slash = self:getCard("Slash")
@@ -459,7 +459,7 @@ shuangxiong_skill.getTurnUseCard=function(self)
 
 end
 
-sgs.ai_chaofeng.shuangxiong = 1
+sgs.ai_chaofeng.yanliangwenchou = 1
 
 sgs.ai_skill_invoke.mengjin = function(self, data)
 	local effect = data:toSlashEffect()

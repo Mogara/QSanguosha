@@ -24,7 +24,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
     ui->fitInViewCheckBox->setChecked(Config.FitInView);
-    ui->circularViewCheckBox->setChecked(Config.value("CircularView", false).toBool());
+    ui->circularViewCheckBox->setChecked(Config.CircularView);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
     ui->minimizecCheckBox->setChecked(Config.value("EnableMinimizeDialog", false).toBool());
 
@@ -34,6 +34,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     // tab 2
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
+    ui->disableLua->setChecked(Config.DisableLua);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -123,7 +124,8 @@ void ConfigDialog::saveConfig()
     Config.FitInView = ui->fitInViewCheckBox->isChecked();
     Config.setValue("FitInView", Config.FitInView);
 
-    Config.setValue("CircularView", ui->circularViewCheckBox->isChecked());
+    Config.CircularView = ui->circularViewCheckBox->isChecked();
+    Config.setValue("CircularView", Config.CircularView);
 
     Config.setValue("NoIndicator", ui->noIndicatorCheckBox->isChecked());
 
@@ -132,6 +134,9 @@ void ConfigDialog::saveConfig()
 
     Config.EnableMinimizeDialog = ui->minimizecCheckBox->isChecked();
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
+
+    Config.DisableLua = ui->disableLua->isChecked();
+    Config.setValue("DisableLua", Config.DisableLua);
 
     Config.setValue("Contest/SMTPServer", ui->smtpServerLineEdit->text());
     Config.setValue("Contest/Sender", ui->senderLineEdit->text());

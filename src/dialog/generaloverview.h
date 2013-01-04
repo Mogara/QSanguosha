@@ -32,6 +32,7 @@ private:
 private slots:
     void playEffect();
     void copyLines();
+    void askChange();
     void on_tableWidget_itemSelectionChanged();
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem* item);
 };

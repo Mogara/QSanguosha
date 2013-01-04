@@ -338,6 +338,171 @@ public:
     }
 };
 
+//gd1h
+#include "maneuvering.h"
+
+class NosJuejing: public TriggerSkill{
+public:
+    NosJuejing():TriggerSkill("nosjuejing"){
+        events << CardLostDone << CardGotDone << PhaseChange;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *gaodayihao, QVariant &data) const{
+        Room* room = gaodayihao->getRoom();
+        if(event == PhaseChange){
+            if(gaodayihao->getPhase() == Player::Draw){
+                room->playSkillEffect(objectName());
+                return true;
+            }
+            return false;
+        }
+        if(gaodayihao->getHandcardNum() == 4)
+            return false;
+        int delta = gaodayihao->getHandcardNum() - 4;
+        if(delta < 0){
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = gaodayihao;
+            log.arg = objectName();
+            room->sendLog(log);
+            gaodayihao->drawCards(qAbs(delta));
+        }
+        else{
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = gaodayihao;
+            log.arg = objectName();
+            room->sendLog(log);
+            room->askForDiscard(gaodayihao, objectName(), delta);
+        }
+        return false;
+    }
+};
+
+class NosLonghun: public OneCardViewAsSkill{
+public:
+    NosLonghun():OneCardViewAsSkill("noslonghun"){
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "slash"
+                || pattern == "jink"
+                || pattern.contains("peach")
+                || pattern == "nullification";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->isWounded() || Slash::IsAvailable(player);
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        const Card *card = to_select->getFilteredCard();
+
+        switch(ClientInstance->getStatus()){
+        case Client::Playing:{
+                if(Self->isWounded() && card->getSuit() == Card::Heart)
+                    return true;
+                else if(Slash::IsAvailable(Self) && card->getSuit() == Card::Diamond)
+                    return true;
+                else
+                    return false;
+            }
+
+        case Client::Responsing:{
+                QString pattern = ClientInstance->getPattern();
+                if(pattern == "jink")
+                    return card->getSuit() == Card::Club;
+                else if(pattern == "nullification")
+                    return card->getSuit() == Card::Spade;
+                else if(pattern == "peach" || pattern == "peach+analeptic")
+                    return card->getSuit() == Card::Heart;
+                else if(pattern == "slash")
+                    return card->getSuit() == Card::Diamond;
+            }
+
+        default:
+            break;
+        }
+
+        return false;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getFilteredCard();
+        Card *new_card = NULL;
+
+        Card::Suit suit = card->getSuit();
+        int number = card->getNumber();
+        switch(card->getSuit()){
+        case Card::Spade:{
+                new_card = new Nullification(suit, number);
+                break;
+            }
+
+        case Card::Heart:{
+                new_card = new Peach(suit, number);
+                break;
+            }
+
+        case Card::Club:{
+                new_card = new Jink(suit, number);
+                break;
+            }
+
+        case Card::Diamond:{
+                new_card = new FireSlash(suit, number);
+                break;
+            }
+        default:
+            break;
+        }
+
+        if(new_card){
+            new_card->setSkillName(objectName());
+            new_card->addSubcard(card);
+        }
+
+        return new_card;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        return static_cast<int>(card->getSuit()) + 1;
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        foreach(const Card *card, player->getHandcards() + player->getEquips()){
+            if(card->objectName() == "nullification")
+                return true;
+
+            if(card->getSuit() == Card::Spade)
+                return true;
+        }
+
+        return false;
+    }
+};
+
+class NosDuojian: public TriggerSkill{
+public:
+    NosDuojian():TriggerSkill("#noslonghun_duojian"){
+        events << PhaseChange;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *gaodayihao, QVariant &data) const{
+        if(gaodayihao->getPhase() == Player::Start){
+            Room* room = gaodayihao->getRoom();
+            foreach(ServerPlayer *p, room->getOtherPlayers(gaodayihao)){
+                if(p->hasWeapon("qinggang_sword") && room->askForSkillInvoke(gaodayihao, objectName())){
+                    gaodayihao->obtainCard(p->getWeapon());
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+};
+
 NostalGeneralPackage::NostalGeneralPackage()
     :Package("nostal_general")
 {
@@ -355,6 +520,12 @@ NostalGeneralPackage::NostalGeneralPackage()
 
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();
+
+    General *sp_shenzhaoyun = new General(this, "sp_shenzhaoyun", "god", 1, true, true);
+    sp_shenzhaoyun->addSkill(new NosJuejing);
+    sp_shenzhaoyun->addSkill(new NosLonghun);
+    sp_shenzhaoyun->addSkill(new NosDuojian);
+    related_skills.insertMulti("noslonghun", "#noslonghun_duojian");
 }
 
 ADD_PACKAGE(Nostalgia)

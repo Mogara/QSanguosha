@@ -37,6 +37,19 @@ QString Card::Suit2String(Suit suit){
     }
 }
 
+Card::Suit Card::String2Suit(QString string){
+    if(string == "spade")
+        return Spade;
+    else if(string == "heart")
+        return Heart;
+    else if(string == "club")
+        return Club;
+    else if(string == "diamond")
+        return Diamond;
+    else
+        return NoSuit;
+}
+
 QStringList Card::IdsToStrings(const QList<int> &ids){
     QStringList strings;
     foreach(int card_id, ids)
@@ -537,6 +550,14 @@ bool Card::hasFlag(const QString &flag) const{
 
 void Card::clearFlags() const{
     flags.clear();
+}
+
+bool Card::hasSameSuit() const{
+    if(subcards.length() != 2)
+        return false;
+    const Card *card1 = Sanguosha->getCard(subcards.first());
+    const Card *card2 = Sanguosha->getCard(subcards.last());
+    return card1->suit == card2->suit;
 }
 
 // ---------   Skill card     ------------------

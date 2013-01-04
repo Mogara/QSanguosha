@@ -21,6 +21,7 @@ public:
     void setOptions(QStringList option);
     void setPile(QString cardList);
     void loadSetting(QString path);
+    QString id;
 
 private:
     QList< QMap<QString, QString> > players;
@@ -35,7 +36,6 @@ class MiniScene : public Scenario
 public:
     MiniScene(const QString &name);
     void setupCustom(QString name) const;
-    virtual void onTagSet(Room *room, const QString &key) const;
     virtual void assign(QStringList &generals, QStringList &roles) const
     {
         MiniSceneRule *rule = qobject_cast<MiniSceneRule*>(getRule());

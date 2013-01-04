@@ -586,6 +586,7 @@ public:
         if(judge->card->getSuit() == Card::Spade){
             LogMessage log;
             log.type = "#HongyanJudge";
+            log.arg = "hongyan";
             log.from = player;
 
             Card *new_card = Card::Clone(judge->card);
@@ -976,8 +977,15 @@ public:
         return GuhuoDialog::GetInstance("guhuo");
     }
 
-    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-        return 0;
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        if (!card->isKindOf("GuhuoCard"))
+            return -2;
+        else
+            return -1;
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        return !player->isKongcheng();
     }
 };
 

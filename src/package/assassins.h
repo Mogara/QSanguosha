@@ -39,7 +39,7 @@ class DuyiCard: public SkillCard{
 public:
     Q_INVOKABLE DuyiCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class FengyinCard: public SkillCard{
@@ -48,7 +48,7 @@ class FengyinCard: public SkillCard{
 public:
     Q_INVOKABLE FengyinCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 //Olympics

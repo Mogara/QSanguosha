@@ -953,7 +953,7 @@ bool Client::save(const QString &filename) const{
 }
 
 void Client::setLines(const QString &filename){
-    QRegExp rx(".+/(\\w+\\d?).ogg");
+    QRegExp rx(".+/(\\w+\\d?).(\\w+)");
     if(rx.exactMatch(filename)){
         QString skill_name = rx.capturedTexts().at(1);
         skill_line = Sanguosha->translate("$" + skill_name);

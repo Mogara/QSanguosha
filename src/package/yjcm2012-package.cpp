@@ -8,7 +8,6 @@
 #include "god.h"
 #include "maneuvering.h"
 
-
 class Zhenlie: public TriggerSkill{
 public:
     Zhenlie():TriggerSkill("zhenlie"){
@@ -21,8 +20,8 @@ public:
         if(!judge->who->hasSkill(objectName()))
             return false;
 
-
         if(player->askForSkillInvoke(objectName(), data)){
+            room->playSkillEffect(objectName(), room->getCurrent() == player ? 2 : 1);
             int card_id = room->drawCard();
             room->getThread()->delay();
             room->throwCard(judge->card);
@@ -52,10 +51,11 @@ public:
     virtual bool onPhaseChange(ServerPlayer *wangyi) const{
         if(!wangyi->isWounded())
             return false;
-        if(wangyi->getPhase() == Player::Start || wangyi->getPhase() == Player::Finish){
-            if(!wangyi->askForSkillInvoke(objectName()))
-                return false;
+        if(wangyi->getPhase() != Player::Start && wangyi->getPhase() != Player::Finish)
+            return false;
+        if(wangyi->askForSkillInvoke(objectName())){
             Room *room = wangyi->getRoom();
+            room->playSkillEffect(objectName(), 1);
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(club|spade):(.*)");
             judge.good = true;
@@ -65,14 +65,20 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
-                room->playSkillEffect(objectName());
                 int x = wangyi->getLostHp();
                 wangyi->drawCards(x);
                 ServerPlayer *target = room->askForPlayerChosen(wangyi, room->getAllPlayers(), objectName());
 
+                int n = 3;
+                if(target == wangyi)
+                    n = 2;
+                else if(target->hasSkill("tieji"))
+                    n = 4;
+                room->playSkillEffect(objectName(), n);
+
                 QList<const Card *> miji_cards = wangyi->getHandcards().mid(wangyi->getHandcardNum() - x);
                 foreach(const Card *card, miji_cards)
-                    room->moveCardTo(card, target, Player::Hand, false);
+                    room->obtainCard(target, card, false);
             }
         }
         return false;
@@ -80,7 +86,7 @@ public:
 };
 
 QiceCard::QiceCard(){
-    will_throw = true;
+    will_throw = false;
 }
 
 bool QiceCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -173,13 +179,6 @@ public:
         if(cards.length() < Self->getHandcardNum())
             return NULL;
 
-        if(ClientInstance->getStatus() == Client::Responsing){
-            QiceCard *card = new QiceCard;
-            card->setUserString("nullification");
-            card->addSubcards(cards);
-            return card;
-        }
-
         CardStar c = Self->tag.value("qice").value<CardStar>();
         if(c){
             QiceCard *card = new QiceCard;
@@ -190,6 +189,13 @@ public:
             return NULL;
     }
 
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        foreach(const Card *card, player->getHandcards()){
+            if(card->objectName() == "nullification")
+                return true;
+        }
+        return !player->hasFlag("QiceUsed") && !player->isKongcheng() && player->getPhase() == Player::Play;
+    }
 protected:
     virtual bool isEnabledAtPlay(const Player *player) const{
         if(player->isKongcheng())
@@ -213,10 +219,13 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        if(target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+        ServerPlayer *from = damage.from;
+        QVariant source = QVariant::fromValue(from);
+        if(target->askForSkillInvoke(objectName(), source)){
             target->drawCards(1);
 
             Room *room = target->getRoom();
+            room->playSkillEffect(objectName());
             room->showAllCards(target);
 
             QList<const Card *> cards = target->getHandcards();
@@ -229,8 +238,8 @@ public:
                 }
             }
 
-            if(same_color && damage.from && !damage.from->isKongcheng())
-                room->askForDiscard(damage.from, objectName(), 1);
+            if(from && from->isAlive() && same_color && !from->isKongcheng())
+                room->askForDiscard(from, objectName(), 1);
         }
     }
 };
@@ -291,8 +300,8 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
-           player->askForSkillInvoke(objectName(), data)){
-            room->playSkillEffect(objectName());
+           !damage.chain && player->askForSkillInvoke(objectName(), data)){
+            room->playSkillEffect(objectName(), 1);
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
             judge.good = false;
@@ -301,6 +310,7 @@ public:
 
             room->judge(judge);
             if(judge.isGood()){
+                room->playSkillEffect(objectName(), 2);
                 LogMessage log;
                 log.type = "#Qianxi";
                 log.from = player;
@@ -310,6 +320,8 @@ public:
                 room->loseMaxHp(damage.to);
                 return true;
             }
+            else
+                room->playSkillEffect(objectName(), 3);
         }
         return false;
     }
@@ -324,6 +336,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *liaohua) const{
         Room *room = liaohua->getRoom();
         if(liaohua->getPhase() == Player::RoundStart){
+            room->playSkillEffect(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = liaohua;
@@ -364,7 +377,7 @@ public:
 
         Room *room = liaohua->getRoom();
         if(liaohua->askForSkillInvoke(objectName(), data)){
-            //room->broadcastInvoke("animate", "lightbox:$fuli");
+            room->broadcastInvoke("animate", "lightbox:$fuli");
             room->playSkillEffect(objectName());
 
             liaohua->loseMark("@laoji");
@@ -404,14 +417,18 @@ public:
                 const Card *second = getCard(shuangying);
 
                 Room *room = shuangying->getRoom();
+                room->playSkillEffect(objectName(), 1);
                 if(first->getColor() != second->getColor()){
                     room->setEmotion(shuangying, "good");
                     room->acquireSkill(shuangying, "wusheng");
                     room->acquireSkill(shuangying, "paoxiao");
 
+                    room->playSkillEffect(objectName(), 2);
                     shuangying->setFlags(objectName());
-                }else
+                }else{
                     room->setEmotion(shuangying, "bad");
+                    room->playSkillEffect(objectName(), 3);
+                }
 
                 return true;
             }
@@ -425,9 +442,7 @@ public:
                 room->detachSkillFromPlayer(shuangying, "wusheng");
                 room->detachSkillFromPlayer(shuangying, "paoxiao");
             }
-
             break;
-
         }
 
         default:
@@ -445,7 +460,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
         Room *room = liubiao->getRoom();
-        if(room->askForSkillInvoke(liubiao, objectName())){
+        if(liubiao->getLostHp() > 0 && room->askForSkillInvoke(liubiao, objectName())){
             room->playSkillEffect(objectName());
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
@@ -480,33 +495,27 @@ public:
 class Shiyong: public TriggerSkill{
 public:
     Shiyong():TriggerSkill("shiyong"){
-        events << SlashEffected << Damaged;
+        events << Damaged;
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+        if(!player->isAlive())
+            return false;
+
         Room *room = player->getRoom();
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card && damage.card->inherits("Slash") &&
+                (damage.card->isRed() || damage.card->hasFlag("drank"))){
+            room->playSkillEffect(objectName());
 
-        if(event == SlashEffected){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.drank)
-                effect.to->setFlags("Dranked");
-        }
-        else{
-            DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->inherits("Slash") &&
-                    (damage.card->isRed() || damage.to->hasFlag("Dranked"))){
-                if(damage.to->hasFlag("Dranked"))
-                    damage.to->setFlags("-Dranked");
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = objectName();
+            room->sendLog(log);
 
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = player;
-                log.arg = objectName();
-                room->sendLog(log);
-
-                room->loseMaxHp(player);
-            }
+            room->loseMaxHp(player);
         }
         return false;
     }
@@ -515,7 +524,6 @@ public:
 class Gongqi : public OneCardViewAsSkill{
 public:
     Gongqi():OneCardViewAsSkill("gongqi"){
-
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -624,7 +632,7 @@ void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     ServerPlayer *to = selecteds.takeFirst();
     int id = room->askForCardChosen(from, to, "h", "anxu");
     const Card *cd = Sanguosha->getCard(id);
-    room->moveCardTo(cd, from, Player::Hand, true);
+    room->obtainCard(from, cd);
     room->showCard(from, id);
     if(cd->getSuit() != Card::Spade){
         source->drawCards(1);
@@ -669,6 +677,7 @@ public:
         if(targets.isEmpty() || !player->askForSkillInvoke(objectName(), data))
             return false;
 
+        room->playSkillEffect(objectName());
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
 
         target->drawCards(3);
@@ -709,15 +718,15 @@ public:
 class Lihuo: public TriggerSkill{
 public:
     Lihuo():TriggerSkill("lihuo"){
-        events << SlashHit << CardFinished;
+        events << Damage << CardFinished;
         view_as_skill = new LihuoViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        if(event == SlashHit){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.slash->getSkillName() == objectName())
+        if(event == Damage){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName())
                 player->tag["Invokelihuo"] = true;
         }
         else if(player->tag.value("Invokelihuo", false).toBool()){
@@ -748,11 +757,11 @@ public:
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@chunlao";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
         return to_select->getFilteredCard()->inherits("Slash");
     }
 

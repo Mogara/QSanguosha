@@ -309,15 +309,15 @@ return {
 -- test
 	["test"] = "测试",
 
-	["#zhibasunquan"] = "年轻的贤君",
+	["#zhibasunquan"] = "牛逼的贤君",
 	["zhibasunquan"] = "制霸孙权",
-	["zhiba"] = "制霸",
-	[":zhiba"] = "出牌阶段，你可以弃置任意数量的牌，然后摸取等量的牌。每阶段可用X+1次，X为你已损失的体力值。",
-	["$zhiba1"] = "容我三思。",
-	["$zhiba2"] = "且慢！",
+	["super_zhiheng"] = "制霸",
+	[":super_zhiheng"] = "出牌阶段，你可以弃置任意数量的牌，然后摸取等量的牌。每阶段可用X+1次，X为你已损失的体力值。",
+	["$super_zhiheng1"] = "容我三思。",
+	["$super_zhiheng2"] = "且慢！",
 	["~zhibasunquan"] = "父亲…大哥…仲谋溃矣……",
 
-	["#wuxingzhuge"] = "迟暮的丞相",
+	["#wuxingzhuge"] = "牛逼的丞相",
 	["wuxingzhuge"] = "五星诸葛",
 	["super_guanxing"] = "超级观星",
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底。",
@@ -325,17 +325,29 @@ return {
 	["$super_guanxing2"] = "知天易，逆天难。",
 	["~wuxingzhuge"] = "将星陨落……天命难违……",
 
+	["#dunkengcaoren"] = "大司马",
+	["dunkengcaoren"] = "蹲坑曹仁",
+	["super_jushou"] = "坚守",
+	[":super_jushou"] = "回合结束阶段开始时，你可以摸五张牌，然后将你的武将牌翻面",
+
 	["#sp_shenzhaoyun"] = "神威如龙",
 	["sp_shenzhaoyun"] = "高达一号",
 	["&sp_shenzhaoyun"] = "神赵云",
 	["illustrator:sp_shenzhaoyun"] = "巴萨小马",
 	["nosjuejing"] = "绝境",
-	[":nosjuejing"] = "<b>锁定技。</b>摸牌阶段，你不摸牌。每当你的手牌数变化后，若你的手牌数不为4，你须将手牌补至或弃置至四张。",
+	[":nosjuejing"] = "<b>锁定技</b>，摸牌阶段，你不摸牌。每当你的手牌数变化后，若你的手牌数不为4，你须将手牌补至或弃置至四张。",
 	["noslonghun"] = "龙魂",
 	[":noslonghun"] = "你可以将一张牌按以下规则使用或打出：<font color=\"red\">♥</font>当【桃】；<font color=\"red\">♦</font>当火【杀】；♠当【无懈可击】；♣当【闪】。回合开始阶段开始时，若其他角色的装备区内有【青釭剑】，你可以获得之。",
 	["#noslonghun_duojian"] = "龙魂",
 	[":#noslonghun_duojian"] = "回合开始阶段开始时，若其他角色的装备区内有【青釭剑】，你可以获得之。",
 
+	["cv:sp_shenzhaoyun"] = "猎狐",
+	["$nosjuejing"] = "龙战于野,其血玄黄",
+	["$noslonghun1"] = "金甲映日,驱邪祛秽", -- spade
+	["$noslonghun2"] = "腾龙行云,首尾不见", -- club
+	["$noslonghun3"] = "潜龙于渊,涉灵愈伤", -- heart
+	["$noslonghun4"] = "千里一怒,红莲灿世", -- diamond
+	["~sp_shenzhaoyun"] = "血染鳞甲,龙坠九天",
 
 	["#sujiang"] = "金童",
 	["sujiang"] = "素将",

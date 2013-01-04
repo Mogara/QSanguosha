@@ -63,7 +63,9 @@ void Skill::initMediaSource(){
 
     int i;
     for(i=1; ;i++){
-        QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
+        QString effect_file = QString("audio/skill/%1%2.dat").arg(objectName()).arg(i);
+        if(!QFile::exists(effect_file))
+            effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
         if(QFile::exists(effect_file))
             sources << effect_file;
         else
@@ -71,7 +73,9 @@ void Skill::initMediaSource(){
     }
 
     if(sources.isEmpty()){
-        QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
+        QString effect_file = QString("audio/skill/%1.dat").arg(objectName());
+        if(!QFile::exists(effect_file))
+            effect_file = QString("audio/skill/%1.ogg").arg(objectName());
         if(QFile::exists(effect_file))
             sources << effect_file;
     }
@@ -141,6 +145,10 @@ bool ViewAsSkill::isEnabledAtPlay(const Player *) const{
 }
 
 bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &) const{
+    return false;
+}
+
+bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer *) const{
     return false;
 }
 

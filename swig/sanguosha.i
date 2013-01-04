@@ -21,8 +21,8 @@ public:
 	QString objectName();
 	void setObjectName(const char *name);
 	bool inherits(const char *class_name);
-	bool setProperty ( const char * name, const QVariant & value);
-	QVariant property ( const char * name ) const;
+	bool setProperty(const char * name, const QVariant & value);
+	QVariant property(const char * name ) const;
 	void setParent(QObject *parent);
 };
 
@@ -61,7 +61,7 @@ public:
 	QString getPixmapPath(const char *category) const;
 	QString getPackage() const;
 	QString getSkillDescription() const;
-	
+
 	void lastWord() const;
 };
 
@@ -76,6 +76,7 @@ public:
 
 	void setScreenName(const char *screen_name);
 	QString screenName() const;
+	QString getGenderString() const;
 	General::Gender getGender() const;
 
 	// property setters/getters
@@ -96,12 +97,12 @@ public:
 	QString getKingdomFrame() const;
 
 	void setRole(const char *role);
-	QString getRole() const;    
+	QString getRole() const;
 	Role getRoleEnum() const;
 
 	void setGeneral(const General *general);
 	void setGeneralName(const char *general_name);
-	QString getGeneralName() const;    
+	QString getGeneralName() const;
 
 	void setGeneral2Name(const char *general_name);
 	QString getGeneral2Name() const;
@@ -111,7 +112,7 @@ public:
 	QString getState() const;
 
 	int getSeat() const;
-	void setSeat(int seat);  
+	void setSeat(int seat);
 	QString getPhaseString() const;
 	void setPhaseString(const char *phase_str);
 	Phase getPhase() const;
@@ -128,7 +129,6 @@ public:
 	void setFlags(const char *flag);
 	bool hasFlag(const char *flag) const;
 	void clearFlags();
-
 
 	bool faceUp() const;
 	void setFaceUp(bool face_up);
@@ -181,6 +181,7 @@ public:
 	void removeMark(const char *mark);
 	virtual void setMark(const char *mark, int value);
 	int getMark(const char *mark) const;
+	bool hasMark(const char *mark) const;
 
 	void setChained(bool chained);
 	bool isChained() const;
@@ -201,6 +202,7 @@ public:
 	QSet<const Skill *> getVisibleSkills() const;
 	QList<const Skill *> getVisibleSkillList() const;
 	QSet<QString> getAcquiredSkills() const;
+	int getKingdoms() const;
 
 	virtual bool isProhibited(const Player *to, const Card *card) const;
 	bool canSlashWithoutCrossbow() const;
@@ -504,7 +506,8 @@ public:
 	// enumeration type
 	enum Suit {Spade, Club, Heart, Diamond, NoSuit};
 	static const Suit AllSuits[4];
-	
+	enum Color {Red, Black, Colorless};
+
 	// card types
 	enum CardType{
 		Skill,
@@ -532,6 +535,7 @@ public:
 	Suit getSuit() const;
 	void setSuit(Suit suit);
 
+	Color getColor() const;
 	bool sameColorWith(const Card *other) const;
 	bool isEquipped() const;
 
@@ -843,7 +847,7 @@ public:
 	int getCardFromPile(const char *card_name);
 	ServerPlayer *findPlayer(const char *general_name, bool include_dead = false) const;
 	ServerPlayer *findPlayerBySkillName(const char *skill_name, bool include_dead = false) const;
-	QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_dead = false) const;
+	QList<ServerPlayer *> findPlayersBySkillName(const char *skill_name, bool include_dead = false) const;
 	void installEquip(ServerPlayer *player, const char *equip_name);
 	void resetAI(ServerPlayer *player);
 	void transfigure(ServerPlayer *player, const char *new_general, bool full_state, bool invoke_start = true);
@@ -892,11 +896,12 @@ public:
 	bool askForSkillInvoke(ServerPlayer *player, const char *skill_name, const QVariant &data = QVariant());
 	QString askForChoice(ServerPlayer *player, const char *skill_name, const char *choices, const QVariant &data = QVariant());
 	bool askForDiscard(ServerPlayer *target, const char *reason, int discard_num, bool optional = false, bool include_equip = false);
+	bool askForDiscard(ServerPlayer *target, const char *reason, int discard_num, int min_num, bool optional = false, bool include_equip = false);
 	const Card *askForExchange(ServerPlayer *player, const char *reason, int discard_num);
 	bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
 	bool isCanceled(const CardEffectStruct &effect);
 	int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
-	const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant(), TriggerEvent trigger_event = CardResponsed);
+	const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant());
 	bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt);
 	int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
 	const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
@@ -928,7 +933,7 @@ public:
 
 	void writeToConsole(const char *msg){
 		$self->output(msg);
-		qWarning(msg);
+		qWarning("%s", msg);
 	}
 };
 

@@ -38,7 +38,9 @@ function load_extensions(just_require)
 	end
 end
 
-load_extensions()
+if not sgs.GetConfig("DisableLua", false) then
+	load_extensions()
+end
 
 local done_loading = sgs.Sanguosha:property("DoneLoading"):toBool()
 if not done_loading then

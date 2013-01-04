@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -45,6 +45,7 @@
     <addaction name="actionBroadcast"/>
     <addaction name="actionAI_Melee"/>
     <addaction name="actionReplay_file_convert"/>
+    <addaction name="actionCrypto_audio"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionExpand_dashboard"/>
@@ -83,6 +84,7 @@
      <string>Cheat</string>
     </property>
     <addaction name="actionGet_card"/>
+    <addaction name="actionChange_general"/>
     <addaction name="actionDamage_maker"/>
     <addaction name="actionDeath_note"/>
     <addaction name="actionRevive_wand"/>
@@ -266,10 +268,13 @@
   </action>
   <action name="actionScript_editor">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Script editor</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionBroadcast">
@@ -373,6 +378,16 @@
   <action name="actionExecute_script_at_server_side">
    <property name="text">
     <string>Execute script at server side ...</string>
+   </property>
+  </action>
+  <action name="actionChange_general">
+   <property name="text">
+    <string>Change general ...</string>
+   </property>
+  </action>
+  <action name="actionCrypto_audio">
+   <property name="text">
+    <string>Crypto audio ...</string>
    </property>
   </action>
  </widget>

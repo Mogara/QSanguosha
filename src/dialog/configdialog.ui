@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -149,7 +149,7 @@
         <x>10</x>
         <y>130</y>
         <width>411</width>
-        <height>21</height>
+        <height>23</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -184,7 +184,7 @@
         <x>10</x>
         <y>160</y>
         <width>411</width>
-        <height>21</height>
+        <height>23</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -519,6 +519,22 @@
      </property>
      <property name="text">
       <string>Minimize the dialog when server runs</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="disableLua">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>239</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Disable Lua Generals</string>
      </property>
      <property name="checked">
       <bool>true</bool>

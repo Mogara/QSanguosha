@@ -433,60 +433,11 @@ DummyCard *ServerPlayer::wholeHandCards() const{
 }
 
 bool ServerPlayer::hasNullification() const{
-    if(hasSkill("kanpo")){
-        foreach(const Card *card, handcards){
-            if(card->isBlack() || card->objectName() == "nullification")
-                return true;
-        }
-    }
     if(hasSkill("wushen")){
         foreach(const Card *card, handcards){
             if(card->objectName() == "nullification" && card->getSuit() != Card::Heart)
                 return true;
         }
-    }
-    if(hasSkill("guhuo")){
-        return !isKongcheng();
-    }
-    if(hasFlag("lexue")){
-        int card_id = getMark("lexue");
-        const Card *card = Sanguosha->getCard(card_id);
-        if(card->objectName() == "nullification"){
-            foreach(const Card *c, handcards + getEquips()){
-                if(c->objectName() == "nullification" || c->getSuit() == card->getSuit())
-                    return true;
-            }
-        }
-    }
-    if(hasSkill("longhun")){
-        int n = qMax(1, getHp());
-        int count = 0;
-        foreach(const Card *card, handcards + getEquips()){
-            if(card->objectName() == "nullification")
-                return true;
-
-            if(card->getSuit() == Card::Spade)
-                count ++;
-        }
-
-        return count >= n;
-    }
-    if(hasSkill("yanzheng")){
-        foreach(const Card *card, handcards){
-            if(card->objectName() == "nullification")
-                return true;
-        }
-
-        return getHandcardNum() > getHp() && !getEquips().isEmpty();
-    }
-
-    if(hasSkill("qice")){
-        foreach(const Card *card, handcards){
-            if(card->objectName() == "nullification")
-                return true;
-        }
-
-        return !hasFlag("QiceUsed") && !isKongcheng() && getPhase() == Player::Play ;
     }
 
     foreach(const Card *card, handcards){
@@ -495,9 +446,15 @@ bool ServerPlayer::hasNullification() const{
     }
 
     foreach(const Skill* skill, getVisibleSkillList()){
-        if(skill->inherits("LuaViewAsSkill")){
-            const LuaViewAsSkill* luaskill = qobject_cast<const LuaViewAsSkill*>(skill);
-            if(luaskill->isEnabledAtNullification(this)) return true;
+        if(skill->inherits("ViewAsSkill")){
+            const ViewAsSkill* vsskill = qobject_cast<const ViewAsSkill*>(skill);
+            if(vsskill->isEnabledAtNullification(this)) return true;
+        }else if(skill->inherits("TriggerSkill")){
+            const TriggerSkill* trigger_skill = qobject_cast<const TriggerSkill*>(skill);
+            if(trigger_skill && trigger_skill->getViewAsSkill()){
+                const ViewAsSkill* vsskill = qobject_cast<const ViewAsSkill*>(trigger_skill->getViewAsSkill());
+                if(vsskill && vsskill->isEnabledAtNullification(this)) return true;
+            }
         }
     }
 
@@ -861,6 +818,12 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     piles[pile_name] << card_id;
 
     room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
+}
+
+void ServerPlayer::clearPile(const QString &pile_name){
+    foreach(int a, getPile(pile_name))
+        room->throwCard(a);
+    piles[pile_name].clear();
 }
 
 void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){

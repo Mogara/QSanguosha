@@ -33,6 +33,11 @@ Room::Room(QObject *parent, const QString &mode)
     scenario = Sanguosha->getScenario(mode);
 
     initCallbacks();
+
+    L = CreateLuaState();
+    QStringList scripts;
+    scripts << "lua/sanguosha.lua" << "lua/ai/smart-ai.lua";
+    DoLuaScripts(L, scripts);
 }
 
 void Room::initCallbacks(){
@@ -325,8 +330,6 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
             }
         }
     }
-
-
 }
 
 void Room::judge(JudgeStruct &judge_struct){
@@ -350,6 +353,7 @@ void Room::sendJudgeResult(const JudgeStar judge){
     QString who = judge->who->objectName();
     QString result = judge->isGood() ? "good" : "bad";
     broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
+    setEmotion(judge->who, "judge" + result);
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
@@ -437,8 +441,7 @@ void Room::gameOver(const QString &winner){
             id.replace("_mini_","");
             int stage = Config.value("MiniSceneStage",1).toInt();
             int current = id.toInt();
-            if((stage == current) && stage<33)
-            {
+            if(stage == current && stage < Config.S_MINI_MAX_COUNT){
                 Config.setValue("MiniSceneStage",current+1);
                 id = QString::number(stage+1).rightJustified(2,'0');
                 id.prepend("_mini_");
@@ -458,17 +461,7 @@ void Room::gameOver(const QString &winner){
 void Room::slashEffect(const SlashEffectStruct &effect){
     effect.from->addMark("SlashCount");
 
-    if(effect.from->getMark("SlashCount") > 1 && effect.from->hasSkill("paoxiao"))
-        playSkillEffect("paoxiao");
-
     QVariant data = QVariant::fromValue(effect);
-
-    if(effect.nature ==DamageStruct::Thunder)setEmotion(effect.from, "thunder_slash");
-    else if(effect.nature == DamageStruct::Fire)setEmotion(effect.from, "fire_slash");
-    else if(effect.slash->isBlack())setEmotion(effect.from, "slash_black");
-    else if(effect.slash->isRed())setEmotion(effect.from, "slash_red");
-    else setEmotion(effect.from, "killer");
-    setEmotion(effect.to, "victim");
 
     setTag("LastSlashEffect", data);
     bool broken = thread->trigger(SlashEffect, effect.from, data);
@@ -2051,10 +2044,13 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
 
 void Room::loseHp(ServerPlayer *victim, int lose){
     QVariant data = lose;
-    thread->trigger(HpLost, victim, data);
+    if(victim)
+        thread->trigger(HpLost, victim, data);
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){
+    if(!victim)
+        return;
     int hp = victim->getHp();
     if(lose > 0)
         Sanguosha->playAudio("maxhplost");
@@ -2444,11 +2440,11 @@ RoomThread *Room::getThread() const{
 void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){
     QSet<ServerPlayer *> scope;
 
-    if(!open){
-        int eid = card->getEffectiveId();
-        ServerPlayer *from = getCardOwner(eid);
-        Player::Place from_place= getCardPlace(eid);
+    int eid = card->getEffectiveId();
+    Player::Place from_place= getCardPlace(eid);
 
+    if(!open){
+        ServerPlayer *from = getCardOwner(eid);
         scope.insert(from);
         scope.insert(to);
 
@@ -2514,6 +2510,12 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
 
         if(move.from)
             from = move.from;
+    }
+
+    if(from_place == Player::Judging && from->property("yanxiao").toInt() == card->getEffectiveId()){
+        setPlayerProperty(from, "yanxiao", QVariant::fromValue(-1));
+        if(place == Player::Judging)
+            setPlayerProperty(to, "yanxiao", from->property("yanxiao"));
     }
 
     if(from)
@@ -2853,6 +2855,10 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     return true;
 }
 
+bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool optional, bool include_equip){
+    return askForDiscard(player, reason, (discard_num + min_num) / 2, optional, include_equip);
+}
+
 const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num){
     AI *ai = player->getAI();
     QList<int> to_exchange;
@@ -3105,6 +3111,8 @@ void Room::askForGeneralAsync(ServerPlayer *player){
 }
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice){
+    if(generals.isEmpty())
+        return "sujiang";
     if(default_choice.isEmpty())
         default_choice = generals.at(qrand() % generals.length());
 
@@ -3138,7 +3146,7 @@ void Room::kickCommand(ServerPlayer *player, const QString &arg){
 }
 
 void Room::makeCheat(const QString &cheat_str){
-    QRegExp damage_rx(":(.+)->(\\w+):([NTFRL])(\\d+)");
+    QRegExp damage_rx(":(.+)->(\\w+):([NTFRLME])(\\d+)");
     QRegExp killing_rx(":KILL:(.+)->(\\w+)");
     QRegExp revive_rx(":REVIVE:(.+)");
     QRegExp doscript_rx(":SCRIPT:(.+)");
@@ -3176,6 +3184,8 @@ void Room::makeDamage(const QStringList &texts){
     case 'T': damage.nature = DamageStruct::Thunder; break;
     case 'F': damage.nature = DamageStruct::Fire; break;
     case 'L': loseHp(damage.to, point); return;
+    case 'M': loseMaxHp(damage.to, point); return;
+    case 'E': setPlayerProperty(damage.to, "maxhp", point); return;
     case 'R':{
         RecoverStruct recover;
         if(texts.at(1) != ".")

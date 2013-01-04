@@ -48,15 +48,15 @@ return {
 	["#sp_diaochan"] = "绝世的舞姬",
 	["sp_diaochan"] = "SP貂蝉",
 	["illustrator:sp_diaochan"] = "巴萨小马",
-	["tuoqiao"] = "脱壳",
-	[":tuoqiao"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP貂蝉",
+	["#diaochanp"] = "脱壳",
+	[":#diaochanp"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP貂蝉",
 	["SP-Diaochan"] = "SP貂蝉",
 
 	["#sp_sunshangxiang"] = "梦醉良缘",
 	["sp_sunshangxiang"] = "SP孙尚香",
 	["illustrator:sp_sunshangxiang"] = "木美人",
-	["chujia"] = "出嫁",
-	[":chujia"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
+	["#xiangxiangp"] = "出嫁",
+	[":#xiangxiangp"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
 	["cv:sp_sunshangxiang"] = "官方，背碗卤粉",
 
 	["#sp_guanyu"] = "汉寿亭侯",
@@ -66,34 +66,36 @@ return {
 	["danji"] = "单骑",
 	[":danji"] = "<b>觉醒技</b>，回合开始阶段，若你的手牌数大于你当前的体力值，且本局主公为曹操时，你须减1点体力上限并永久获得技能“马术”。",
 	["#DanjiWake"] = "%from 的手牌数(%arg)多于体力值(%arg2)，且本局主公为曹操，达到【单骑】的觉醒条件",
+	["#guanyup"] = "从魏",
+	[":#guanyup"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP关羽，势力为魏",
 	["$danji"] = "吾兄待我甚厚，誓以共死，今往投之，望曹公见谅。",
 
 	["#sp_caiwenji"] = "金璧之才",
 	["sp_caiwenji"] = "SP蔡文姬",
 	["illustrator:sp_caiwenji"] = "木美人",
-	["guixiang"] = "归乡",
-	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
+	["#ducaip"] = "归乡",
+	[":#ducaip"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
 	["cv:sp_caiwenji"] = "呼呼",
-	
+
 	["#sp_jiaxu"] = "算无遗策",
 	["sp_jiaxu"] = "SP贾诩",
 	["illustrator:sp_jiaxu"] = "雪君S",
-	["guiwei"] = "归魏",
-	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
+	["#jiaxup"] = "归魏",
+	[":#jiaxup"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
 	["cv:sp_jiaxu"] = "落凤一箭",
-	
+
 	["#sp_pangde"] = "枱榇之悟",
 	["sp_pangde"] = "SP庞德",
 	["illustrator:sp_pangde"] = "天空之城",
-	["pangde_guiwei"] = "归魏",
-	[":pangde_guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP庞德，势力为魏",
+	["#pangdep"] = "降魏",
+	[":#pangdep"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP庞德，势力为魏",
 	["cv:sp_pangde"] = "Glory",
 
 	["#sp_machao"] = "西凉的猛狮",
 	["sp_machao"] = "SP马超",
 	["illustrator:sp_machao"] = "天空之城",
-	["fanqun"] = "返群",
-	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
+	["#machaop"] = "返群",
+	[":#machaop"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
 
 	["#caohong"] = "福将",
 	["caohong"] = "曹洪",
@@ -106,14 +108,15 @@ return {
 防具牌：该角色摸一张牌；\
 坐骑牌：该角色回复一点体力。",
 	["@yuanhu-equip"] = "请使用技能【援护】",
+	["$YuanhuEquip"] = "%from 将 %card 置于在 %to 的装备区内",
 	["~yuanhu"] = "选择一张装备牌→选择一名角色→点击确定",
 	["$yuanhu1"] = "持吾兵戈，随我杀敌！", --武器
 	["$yuanhu2"] = "汝今势微，吾当助汝。", --防具
 	["$yuanhu3"] = "公急上马，洪敌贼军！", --坐骑
 	["$yuanhu4"] = "天下可无洪，不可无公。", --对曹操
 	["$yuanhu5"] = "持戈整兵，列阵御敌！", --对自己
-	["~caohong"] = "主公已安，洪纵死亦何惜……", 
-	
+	["~caohong"] = "主公已安，洪纵死亦何惜……",
+
 	["#guanyinping"] = "武姬",
 	["guanyinping"] = "关银屏",
 	["illustrator:guanyinping"] = "木美人",
@@ -131,19 +134,20 @@ return {
 	["$huxiao2"] = "刀行如流水，杀你个措手不及！",
 	["$huxiao3"] = "紫髯老贼！还吾父命来！",              -- for sunquan
 	["$wuji"] = "武圣虽死，血脉尚存。先父佑我，再现武魂！",
-	--["~guanyinping"] = "父亲……",
-	
+	["~guanyinping"] = "父亲……",
+
 	["#chenlin"] = "破竹之咒",
 	["chenlin"] = "陈琳",
 	["illustrator:chenlin"] = "木美人",
 	["designer:chenlin"] = "韩旭",
+	["cv:chenlin"] = "",
 	["bifa"] = "笔伐",
 	[":bifa"] = "回合结束阶段开始时，你可以将一张手牌背面朝下移出游戏并选择一名其他角色。该角色的回合开始时，其观看此牌并选择一项：1、交给你一张与此牌同类别的手牌，然后获得此牌。2、将此牌置入弃牌堆，然后失去1点体力。\
 ◆在目标角色执行【笔伐】的效果前，你不可以再次对其发动【笔伐】。\
 ◆目标角色在执行【笔伐】的效果前死亡，在弃置其区域里所有的牌的同时将此牌置入弃牌堆。",
-	["@bifa-remove"] = "你可以发动【笔伐】",
+	["@bifa-remove"] = "你可以对一名其他角色发动【笔伐】",
 	["~bifa"] = "选择一张手牌→选择一名其他角色→点击确定",
-	["@bifa-give"] = "请交给目标角色一张类型相同的手牌",
+	["@bifa-give"] = "受到【笔伐】影响，你须交给目标角色一张 %src，否则失去1点体力",
 	["songci"] = "颂词",
 	[":songci"] = "出牌阶段，你可以选择一项：1、令一名手牌数小于其当前的体力值的角色摸两张牌。2、令一名手牌数大于其当前的体力值的角色弃置两张牌。每名角色每局游戏限一次。",
 	["@songci"] = "颂词",
@@ -152,7 +156,7 @@ return {
 	["$bifa3"] = "行文如刀，笔墨诛心，",                 --throw
 	["$songci1"] = "广宜恩信，班扬符赏。",               --drawCards
 	["$songci2"] = "汝众违旅叛，当有此报！",             --discardCards
-	--["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
+	["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
 
 --hulao mode
 	["Hulaopass"] = "虎牢关模式",
@@ -179,17 +183,44 @@ return {
 	["weapon_recast"] = "武器重铸",
 	["Hulaopass:recover"] = "恢复1点体力",
 	["Hulaopass:draw"] = "摸1张牌",
-	
+
 	["cv:shenlvbu2"] = "风叹息",
 	["$shenwei"] = "飞将之威，上天亦知！",
 	["$shenji"] = "神戟在手，何人能及！",
 	["$xiuluo"] = "哼！鬼蜮伎俩，休想阻我！",
 	["~shenlvbu2"] = "什么？我败了？！",
 	["$StageChange"] = "杂鱼们，好戏才刚刚开始！",
-	
+
 --sp_card
 	["sp_cards"] = "SP卡牌包",
 	["sp_moonspear"] = "SP银月枪",
 	[":sp_moonspear"] = "你的回合外，每当你使用或打出一张黑色手牌时，你可以令你攻击范围内的一名其他角色打出一张【闪】，否则受到你对其造成的1点伤害",
 	["@moon-spear-jink"] = "受到SP银月枪技能的影响，你必须打出一张【闪】",
+
+-- tai sp
+
+	["#tai_diaochan"] = "绝世的舞姬",
+	["tai_diaochan"] = "台版SP貂蝉",
+	["illustrator:tai_diaochan"] = "陈俊佐",
+	["#diaochant"] = "避难",
+	[":#diaochant"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP貂蝉",
+
+	["#tai_yuanshu"] = "仲家帝",
+	["tai_yuanshu"] = "台版SP袁术",
+	["illustrator:tai_yuanshu"] = "汤翔麟",
+	["cv:tai_yuanshu"] = "名将三国",
+	["#yuanshut"] = "战略转移",
+	[":#yuanshut"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP袁术",
+
+	["#tai_daqiao"] = "矜持之花",
+	["tai_daqiao"] = "台版SP大乔",
+	["illustrator:tai_daqiao"] = "玄兔",
+	["#daqiaot"] = "被包养",
+	[":#daqiaot"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP大乔",
+
+	["#tai_zhaoyun"] = "少年将军",
+	["tai_zhaoyun"] = "台版SP赵云",
+	["illustrator:tai_zhaoyun"] = "汤翔麟",
+	["#zhaoyunt"] = "去旅游",
+	[":#zhaoyunt"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP赵云",
 }

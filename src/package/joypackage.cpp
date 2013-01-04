@@ -12,7 +12,7 @@ QString Shit::getSubtype() const{
 }
 
 void Shit::onMove(const CardMoveStruct &move) const{
-    ServerPlayer *from = move.from;
+    PlayerStar from = move.from;
     if(from && move.from_place == Player::Hand &&
        from->getRoom()->getCurrent() == move.from
        && (move.to_place == Player::DiscardedPile || move.to_place == Player::Special)

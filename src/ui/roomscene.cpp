@@ -65,7 +65,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
-    bool circular = Config.value("CircularView", false).toBool();
+    bool circular = Config.CircularView;
     if(circular){
         DiscardedPos = QPointF(-140, 30);
         DrawPilePos = QPointF(-260, 30);
@@ -432,7 +432,7 @@ void RoomScene::createControlButtons(){
 
 void RoomScene::createExtraButtons(){
     reverse_button = dashboard->createButton("reverse-select");
-    reverse_button->setEnabled(true);
+    reverse_button->setVisible(false);
 
     dashboard->addWidget(reverse_button, 100, true);
     connect(reverse_button, SIGNAL(clicked()), dashboard, SLOT(reverseSelection()));
@@ -565,7 +565,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         nine = 1;
     }
 
-    if(Config.value("CircularView").toBool()){
+    if(Config.CircularView){
         cxw=1;
         cxw2=0;
     }
@@ -621,7 +621,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
                              - dashboard->boundingRect().height()*(1-stretch_y)/2);
 
 
-    if(!Config.value("CircularView",false).toBool())
+    if(!Config.CircularView)
     {
         stretch_x = 1;
         stretch_y = 1;
@@ -1027,7 +1027,7 @@ void RoomScene::viewDiscards(){
 
         int start = (mid - width)/2;
         int y     = DiscardedPos.y() - 140;
-        if(!Config.value("CircularView", false).toBool())
+        if(!Config.CircularView)
         {
             width = 0;
             start = DiscardedPos.x();
@@ -2530,7 +2530,7 @@ void RoomScene::addRestartButton(QDialog *dialog){
         id.replace("_mini_","");
         int stage = Config.value("MiniSceneStage",1).toInt();
         int current = id.toInt();
-        if((stage == current) && stage<33)
+        if(stage == current && stage < Config.S_MINI_MAX_COUNT)
             goto_next = true;
     }
 
@@ -2658,8 +2658,10 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_nature->addItem(tr("Normal"), "N");
     damage_nature->addItem(tr("Thunder"), "T");
     damage_nature->addItem(tr("Fire"), "F");
-    damage_nature->addItem(tr("HP recover"), "R");
+    damage_nature->addItem(tr("Recover HP"), "R");
     damage_nature->addItem(tr("Lose HP"), "L");
+    damage_nature->addItem(tr("Lose Max HP"), "M");
+    damage_nature->addItem(tr("Reset Max HP"), "E");
 
     damage_point = new QSpinBox;
     damage_point->setRange(1, 1000);
@@ -2686,7 +2688,7 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
 
 void DamageMakerDialog::disableSource(){
     QString nature = damage_nature->itemData(damage_nature->currentIndex()).toString();
-    damage_source->setEnabled(nature != "L");
+    damage_source->setEnabled(nature != "L" && nature != "M" && nature != "E");
 }
 
 void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
@@ -2997,7 +2999,7 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 }
 
 void RoomScene::createStateItem(){
-    bool circular = Config.value("CircularView", false).toBool();
+    bool circular = Config.CircularView;
 
     QPixmap state("image/system/state.png");
 
@@ -4037,7 +4039,7 @@ void RoomScene::reLayout(QMatrix matrix)
 {
     if(matrix.m11()>1)matrix.setMatrix(1,0,0,1,matrix.dx(),matrix.dy());
     view_transform = matrix;
-    //if(!Config.value("circularView",false).toBool())
+    //if(!Config.CircularView)
     //    if(!game_started)return;
 
     QPoint pos = QPoint(dashboard->getMidPosition(),0);
@@ -4085,7 +4087,7 @@ void RoomScene::reLayout(QMatrix matrix)
     //ok_button->move(-10,-10);
 
 
-    if(!Config.value("circularView",false).toBool())
+    if(!Config.CircularView)
     {
         pos.ry() = state_item->y();
         pos.rx() = state_item->x()-padding_left;

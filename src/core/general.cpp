@@ -50,6 +50,15 @@ General::Gender General::getGender() const{
     return gender;
 }
 
+QString General::getGenderString() const{
+    switch(gender){
+    case Male: return "male";
+    case Female: return "female";
+    default:
+        return "neuter";
+    }
+}
+
 bool General::isLord() const{
     return lord;
 }
@@ -157,18 +166,26 @@ QString General::getSkillDescription() const{
 }
 
 void General::lastWord() const{
-    QString filename = QString("audio/death/%1.ogg").arg(objectName());
+    QString filename = QString("audio/death/%1.dat").arg(objectName());
+    if(!QFile::exists(filename))
+        filename = QString("audio/death/%1.ogg").arg(objectName());
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly)){
         QStringList origin_generals = objectName().split("_");
-        if(origin_generals.length()>1)
-            filename = QString("audio/death/%1.ogg").arg(origin_generals.at(1));
+        if(origin_generals.length()>1){
+            filename = QString("audio/death/%1.dat").arg(origin_generals.at(1));
+            if(!QFile::exists(filename))
+                filename = QString("audio/death/%1.ogg").arg(origin_generals.at(1));
+        }
     }
     if(!file.open(QIODevice::ReadOnly) && objectName().endsWith("f")){
         QString origin_general = objectName();
         origin_general.chop(1);
-        if(Sanguosha->getGeneral(origin_general))
-            filename = QString("audio/death/%1.ogg").arg(origin_general);
+        if(Sanguosha->getGeneral(origin_general)){
+            filename = QString("audio/death/%1.dat").arg(origin_general);
+            if(!QFile::exists(filename))
+                filename = QString("audio/death/%1.ogg").arg(origin_general);
+        }
     }
     Sanguosha->playEffect(filename);
 }

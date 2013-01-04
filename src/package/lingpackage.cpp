@@ -81,7 +81,7 @@ public:
 class Yishi: public TriggerSkill{
 public:
     Yishi():TriggerSkill("yishi"){
-        events << Damage;
+        events << Predamage;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
@@ -133,8 +133,7 @@ public:
 
 class Tannang: public DistanceSkill{
 public:
-    Tannang():DistanceSkill("tannang")
-    {
+    Tannang():DistanceSkill("tannang"){
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
@@ -161,7 +160,6 @@ public:
                 room->playSkillEffect("jushou");
             }
         }
-
         return false;
     }
 };
@@ -212,7 +210,6 @@ public:
 LingPackage::LingPackage()
     :Package("ling")
 {
-
     General * neo_xuchu = new General(this, "neo_xuchu", "wei");
     neo_xuchu->addSkill(new NeoLuoyi);
     neo_xuchu->addSkill("#luoyi");
@@ -228,7 +225,6 @@ LingPackage::LingPackage()
     General * neo_gongsunzan = new General(this, "neo_gongsunzan", "qun");
     neo_gongsunzan->addSkill("yicong");
     neo_gongsunzan->addSkill(new Zhulou);
-
 
     General * neo_zhangfei = new General(this, "neo_zhangfei", "shu");
     neo_zhangfei->addSkill("paoxiao");

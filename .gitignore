@@ -17,4 +17,5 @@ font/font.ttf
 QSanguosha.pro.user*
 etc/customScenes/custom_scenario.txt
 *.dylib
+include/crypto++/*
 QSanguosha.exe

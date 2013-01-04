@@ -360,6 +360,7 @@ void MainWindow::enterRoom(){
         ui->menuCheat->setEnabled(true);
 
         connect(ui->actionGet_card, SIGNAL(triggered()), ui->actionCard_Overview, SLOT(trigger()));
+        connect(ui->actionChange_general, SIGNAL(triggered()), ui->actionGeneral_Overview, SLOT(trigger()));
         connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
         connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
         connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
@@ -486,7 +487,7 @@ void MainWindow::on_actionAbout_triggered()
     QString project_url = "http://github.com/Moligaloo/QSanguosha";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
-    QString forum_url = "http://qsanguosha.com";
+    QString forum_url = "http://qsanguosha.org";
     content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
     Window *window = new Window(tr("About QSanguosha"), QSize(420, 450));
@@ -1091,4 +1092,30 @@ void MainWindow::on_actionAbout_Lua_triggered()
     window->shift();
 
     window->appear();
+}
+
+#include "crypto.h"
+void MainWindow::on_actionCrypto_audio_triggered(){
+    QStringList filenames = QFileDialog::getOpenFileNames(
+            this, tr("Please select audio files"),
+            QString(),
+            tr("OGG Audio files (*.ogg)"));
+
+    if(filenames.isEmpty())
+        return;
+    Crypto cry;
+    int count = 0;
+    foreach(QString filename, filenames){
+        if(!cry.encryptMusicFile(filename))
+            QMessageBox::warning(this, tr("Notice"), tr("Encrypt music file %1 failed!").arg(filename));
+        else
+            count++;
+    }
+    QMessageBox::information(this, tr("Notice"), tr("Encrypt %1 music files done!").arg(QString::number(count)));
+    if(QMessageBox::question(this, tr("Warning"), tr("Delete all old files?"),
+                             QMessageBox::StandardButtons(QMessageBox::Yes | QMessageBox::No), QMessageBox::No)
+        == QMessageBox::Yes){
+        foreach(QString filename, filenames)
+            QFile::remove(filename);
+    }
 }

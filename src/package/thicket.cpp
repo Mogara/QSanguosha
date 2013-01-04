@@ -352,7 +352,8 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
 
     bool good = false;
     if(x == 1){
-        room->playSkillEffect("yinghun", 1);
+        int n = effect.from->getMark("hunzi") > 0 ? 3 : 1;
+        room->playSkillEffect(skill_name, n);
 
         effect.to->drawCards(1);
         room->askForDiscard(effect.to, "yinghun", 1, false, true);
@@ -360,7 +361,8 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
     }else{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
-            room->playSkillEffect("yinghun", 2);
+            int n = effect.from->getMark("hunzi") > 0 ? 4 : 2;
+            room->playSkillEffect(skill_name, n);
 
             effect.to->drawCards(1);
             x = qMin(x, effect.to->getCardCount(true));
@@ -736,9 +738,9 @@ public:
         Room *room = player->getRoom();
 
         const Card *first_jink = NULL, *second_jink = NULL;
-        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason));
+        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), CardUsed);
         if(first_jink)
-            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason));
+            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), CardUsed);
 
         Card *jink = NULL;
         if(first_jink && second_jink){
@@ -888,6 +890,7 @@ ThicketPackage::ThicketPackage()
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     caopi->addSkill(new Songwei);
+    caopi->addSkill(new SPConvertSkill("#caopit", "caopi", "ass_caopi"));
 
     xuhuang = new General(this, "xuhuang", "wei");
     xuhuang->addSkill(new Duanliang);
@@ -923,7 +926,7 @@ ThicketPackage::ThicketPackage()
     jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);
-    jiaxu->addSkill(new SPConvertSkill("guiwei", "jiaxu", "sp_jiaxu"));
+    jiaxu->addSkill(new SPConvertSkill("#jiaxup", "jiaxu", "sp_jiaxu"));
 
     related_skills.insertMulti("luanwu", "#@chaos-1");
 

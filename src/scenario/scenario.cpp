@@ -1,5 +1,4 @@
 #include "scenario.h"
-#include "engine.h"
 
 Scenario::Scenario(const QString &name)
     :Package(name), rule(NULL)
@@ -51,6 +50,10 @@ void Scenario::assign(QStringList &generals, QStringList &roles) const{
 
 bool Scenario::generalSelection() const{
     return false;
+}
+
+void Scenario::onTagSet(Room *, const QString &) const{
+    // dummy
 }
 
 AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{

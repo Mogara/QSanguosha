@@ -72,8 +72,6 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-
-
     foreach(QString ban, getBanPackages()){
         addBanPackage(ban);
     }
@@ -278,6 +276,11 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
         return qobject_cast<Card *>(card_obj);
     }else
         return NULL;
+}
+
+Card *Engine::cloneCard(const QString &name, const QString &suit_string, int number) const{
+    Card::Suit suit = Card::String2Suit(suit_string);
+    return cloneCard(name, suit, number);
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name) const{
@@ -534,8 +537,7 @@ QStringList Engine::getRandomLords() const{
 
     QStringList lords;
 
-    foreach(QString alord,getLords())
-    {
+    foreach(QString alord, getLords()){
         if(banlist_ban.contains(alord))continue;
 
         lords << alord;
@@ -585,14 +587,13 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     Q_ASSERT(all_generals.count() >= count);
 
-    if(Config.EnableBasara) general_set =
-            general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
-    if(Config.EnableHegemony) general_set =
-            general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
+    if(Config.EnableBasara)
+        general_set = general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
+    if(Config.EnableHegemony)
+        general_set = general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
 
-    if(ServerInfo.GameMode.endsWith("p") ||
-                      ServerInfo.GameMode.endsWith("pd"))
-        general_set.subtract(Config.value("Banlist/Roles","").toStringList().toSet());
+    if(ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd"))
+        general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
 
     all_generals = general_set.subtract(ban_set).toList();
 

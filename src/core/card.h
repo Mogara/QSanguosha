@@ -120,6 +120,7 @@ public:
     void setFlags(const QString &flag) const;
     bool hasFlag(const QString &flag) const;
     void clearFlags() const;
+    bool hasSameSuit() const;
 
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
@@ -136,6 +137,7 @@ public:
     static const Card *Parse(const QString &str);
     static Card * Clone(const Card *card);
     static QString Suit2String(Suit suit);
+    static Suit String2Suit(QString string);
     static QString Number2String(int number);
     static QStringList IdsToStrings(const QList<int> &ids);
     static QList<int> StringsToIds(const QStringList &strings);

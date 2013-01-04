@@ -26,10 +26,7 @@ public:
                 if(target->getCards("he").length() == 0)
                     continue;
                 int card_id = room->askForCardChosen(player, target, "he", objectName());
-                if(room->getCardPlace(card_id) == Player::Hand)
-                    room->moveCardTo(Sanguosha->getCard(card_id), player, Player::Hand, false);
-                else
-                    room->obtainCard(player, card_id);
+                room->obtainCard(player, card_id, room->getCardPlace(card_id) != Player::Hand);
             }
             return true;
         }
@@ -109,7 +106,7 @@ public:
                 }
                 else{
                     int card_id = room->askForCardChosen(target, player, "h", objectName());
-                    room->moveCardTo(Sanguosha->getCard(card_id), target, Player::Hand, false);
+                    room->obtainCard(target, card_id, false);
                 }
             }
         }
@@ -203,7 +200,7 @@ public:
 
             QList<ServerPlayer *> players = room->getAllPlayers();
             foreach(ServerPlayer *player, players){
-                player->removeMark("qinggang");
+                player->setMark("qinggang", 0);
             }
         }
         else{
@@ -260,9 +257,9 @@ public:
 
         boss_banlist << "yuanshao" << "yanliangwenchou" << "zhaoyun" << "guanyu" << "shencaocao";
 
-        boss_skillbanned << "luanji" << "yanliangwenchou" << "longdan" << "wusheng" << "guixin";
+        boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
 
-        dummy_skills << "chujia" << "xuwei" << "tuoqiao" << "shenli" << "midao"
+        dummy_skills << "shenli" << "midao" << "shiyong"
                      << "kuangfeng" << "dawu" << "kuangbao" << "shenfen" << "wuqian"
                      << "wumou" << "wuhun" << "tongxin" << "xinsheng" << "zaoxian"
                      << "renjie" << "baiyin";
@@ -516,10 +513,6 @@ int ImpasseScenario::getPlayerCount() const{
 
 void ImpasseScenario::getRoles(char *roles) const{
     strcpy(roles, "ZFFFFFFF");
-}
-
-void ImpasseScenario::onTagSet(Room *room, const QString &key) const{
-    // dummy
 }
 
 bool ImpasseScenario::generalSelection() const{

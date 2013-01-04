@@ -197,7 +197,7 @@ public:
                         if(damage.from && damage.from->isAlive()){
                             int to_discard = qMin(2, damage.from->getCardCount(true));
                             if(to_discard != 0)
-                                room->askForDiscard(damage.from, "beige", to_discard, false, true);
+                                room->askForDiscard(damage.from, "beige", to_discard, to_discard, false, true);
                         }
 
                         break;
@@ -458,7 +458,8 @@ public:
 
         if(card->inherits("Duel") || (card->inherits("Slash") && card->isRed())){
             if(sunce->askForSkillInvoke(objectName(), data)){
-                sunce->getRoom()->playSkillEffect(objectName());
+                int n = sunce->getMark("@wu") > 0 ? qrand() % 2 + 3 : qrand() % 2 + 1;
+                sunce->getRoom()->playSkillEffect(objectName(), n);
                 sunce->drawCards(1);
             }
         }
@@ -510,7 +511,7 @@ ZhibaCard::ZhibaCard(){
 }
 
 bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->hasLordSkill("sunce_zhiba") && to_select != Self && !to_select->isKongcheng();
+    return targets.isEmpty() && to_select->hasLordSkill("zhiba") && to_select != Self && !to_select->isKongcheng();
 }
 
 void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -518,11 +519,11 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     if(sunce->getMark("hunzi") > 0 &&
        room->askForChoice(sunce, "zhiba_pindian", "accept+reject") == "reject")
     {
-        room->playSkillEffect("sunce_zhiba", 4);
+        room->playSkillEffect("zhiba", 4);
         return;
     }
 
-    room->playSkillEffect("sunce_zhiba", 1);
+    room->playSkillEffect("zhiba", 1);
     source->pindian(sunce, "zhiba", this);
 }
 
@@ -548,9 +549,9 @@ public:
     }
 };
 
-class SunceZhiba: public TriggerSkill{
+class Zhiba: public TriggerSkill{
 public:
-    SunceZhiba():TriggerSkill("sunce_zhiba$"){
+    Zhiba():TriggerSkill("zhiba$"){
         events << GameStart << Pindian;
     }
 
@@ -826,7 +827,7 @@ public:
             log.arg = objectName();
             room->sendLog(log);
 
-            if(!room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data))
+            if(!room->askForCard(effect.from, "BasicCard", "@xiangle-discard", data, CardDiscarded))
                 room->setPlayerFlag(liushan, "xiangle_invoke");
         }
         else if(event == CardFinished)
@@ -1201,9 +1202,7 @@ MountainPackage::MountainPackage()
     dengai->addSkill(new Tuntian);
     dengai->addSkill(new TuntianGet);
     dengai->addSkill(new Zaoxian);
-
     dengai->addRelateSkill("jixi");
-
     related_skills.insertMulti("tuntian", "#tuntian-get");
 
     General *liushan = new General(this, "liushan$", "shu", 3);
@@ -1214,14 +1213,12 @@ MountainPackage::MountainPackage()
     General *jiangwei = new General(this, "jiangwei", "shu");
     jiangwei->addSkill(new Tiaoxin);
     jiangwei->addSkill(new Zhiji);
-
     related_skills.insertMulti("zhiji", "guanxing");
 
     General *sunce = new General(this, "sunce$", "wu");
     sunce->addSkill(new Jiang);
     sunce->addSkill(new Hunzi);
-    sunce->addSkill(new SunceZhiba);
-
+    sunce->addSkill(new Zhiba);
     related_skills.insertMulti("hunzi", "yinghun");
 
     General *erzhang = new General(this, "erzhang", "wu", 3);
@@ -1234,7 +1231,7 @@ MountainPackage::MountainPackage()
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
-    caiwenji->addSkill(new SPConvertSkill("guixiang", "caiwenji", "sp_caiwenji"));
+    caiwenji->addSkill(new SPConvertSkill("#ducaip", "caiwenji", "sp_caiwenji"));
 
     General *zuoci = new General(this, "zuoci", "qun", 3);
     zuoci->addSkill(new Huashen);
@@ -1247,7 +1244,6 @@ MountainPackage::MountainPackage()
     zuocif->addSkill("#huashen-begin");
     zuocif->addSkill("#huashen-end");
     zuocif->addSkill("xinsheng");
-
     related_skills.insertMulti("huashen", "#huashen-begin");
     related_skills.insertMulti("huashen", "#huashen-end");
 

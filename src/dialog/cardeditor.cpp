@@ -463,6 +463,10 @@ void AvatarRectItem::setName(const QString &name){
     this->name->toCenter(name_box->rect());
 }
 
+void AvatarRectItem::setFont(QFont font){
+    this->name->setFont(font);
+}
+
 CardScene::CardScene()
     :QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL)
 {
@@ -651,6 +655,7 @@ void CardScene::makeAvatar(AvatarRectItem *item){
     hideAvatarRects();
 
     item->setName(Config.value("CardEditor/NameText").toString());
+    //item->setFont(Config.value("CardEditor/NameFont", QFont("Times", 36)).value<QFont>());
     item->show();
 }
 

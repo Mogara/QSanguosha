@@ -20,7 +20,7 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     damage.from = source;
     damage.to = yanliangwenchou;
 
-    bool success = source->pindian(yanliangwenchou, "zhanyanliangwenchou");
+    bool success = source->pindian(yanliangwenchou, "zhanshuangxiong");
     if(!success)
         qSwap(damage.from, damage.to);
 
@@ -67,7 +67,7 @@ public:
 
 class ZhanShuangxiong: public ZeroCardViewAsSkill{
 public:
-    ZhanShuangxiong():ZeroCardViewAsSkill("zhanyanliangwenchou"){
+    ZhanShuangxiong():ZeroCardViewAsSkill("zhanshuangxiong"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -181,7 +181,7 @@ public:
                     ServerPlayer *guanyu = room->findPlayer("guanyu");
                     room->installEquip(guanyu, "blade");
                     room->installEquip(guanyu, "chitu");
-                    room->acquireSkill(guanyu, "zhanyanliangwenchou");
+                    room->acquireSkill(guanyu, "zhanshuangxiong");
 
 
                     ServerPlayer *zhangliao = room->findPlayer("zhangliao");
@@ -289,7 +289,7 @@ AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlaye
 }
 
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{
-    bool zhanyanliangwenchou = room->getTag("ZhanShuangxiong").toBool();
+    bool zhanshuangxiong = room->getTag("ZhanShuangxiong").toBool();
     bool burnwuchao = room->getTag("BurnWuchao").toBool();
 
     if(burnwuchao){
@@ -299,7 +299,7 @@ void GuanduScenario::onTagSet(Room *room, const QString &key) const{
             room->detachSkillFromPlayer(zhangliao, "smalltuxi");
         }
     }
-    if(zhanyanliangwenchou && burnwuchao){
+    if(zhanshuangxiong && burnwuchao){
         ServerPlayer *guojia = room->findPlayer("guojia");
         if(guojia && !guojia->hasSkill("greatyiji")){
             room->acquireSkill(guojia, "greatyiji");

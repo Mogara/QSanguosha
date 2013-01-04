@@ -62,9 +62,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             }
         }
 
-        if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL
-                )
-        {
+        if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL){
             if(player->tag["playerHasPlayed"].toBool())
                 room->gameOver(this->players.first()["beforeNext"]);
             else player->tag["playerHasPlayed"] = true;
@@ -75,8 +73,19 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             return false;
         room->gameOver(this->players.first()["singleTurn"]);
     }
-    if(player->getRoom()->getTag("WaitForPlayer").toBool())
+
+    if(room->getTag("WaitForPlayer").toBool())
         return true;
+
+    room->broadcastInvoke("animate", "lightbox:" + objectName() + ":2000");
+    room->getThread()->delay(2000);
+    LogMessage log;
+    log.type = "#MiniSceneChanged";
+    log.arg = id;
+    log.arg2 = objectName();
+    room->sendLog(log);
+    log.type = QString("#mini_%1").arg(id);
+    room->sendLog(log);
 
     QList<ServerPlayer*> players = room->getAllPlayers();
     while(players.first()->getState() == "robot")
@@ -159,13 +168,13 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());
 
         QString str = this->players.at(i)["maxhp"];
-        if(str==NULL)str=QString::number(sp->getGeneralMaxHP());
+        if (str == NULL) str = QString::number(sp->getGeneralMaxHp());
         room->setPlayerProperty(sp,"maxhp",str.toInt());
 
         str = this->players.at(i)["hpadj"];
-        if(str!=NULL)
-            room->setPlayerProperty(sp,"maxhp",sp->getMaxHP()+str.toInt());
-        str=QString::number(sp->getMaxHP());
+        if(str != NULL)
+            room->setPlayerProperty(sp,"maxhp",sp->getMaxHp()+str.toInt());
+        str=QString::number(sp->getMaxHp());
 
         QString str2 = this->players.at(i)["hp"];
         if(str2 != NULL)str = str2;
@@ -319,18 +328,14 @@ MiniScene::MiniScene(const QString &name)
 
 void MiniScene::setupCustom(QString name) const
 {
-    if(name == NULL)name = "custom_scenario";
-    name.prepend("etc/customScenes/");
-    name.append(".txt");
+    if(name == NULL)
+        name = "custom_scenario";
 
     MiniSceneRule* arule = qobject_cast<MiniSceneRule*>(this->getRule());
+    arule->id = name;
+    name.prepend("etc/customScenes/");
+    name.append(".txt");
     arule->loadSetting(name);
-
-}
-
-void MiniScene::onTagSet(Room *room, const QString &key) const
-{
-
 }
 
 #define ADD_CUSTOM_SCENARIO(name) static ScenarioAdder MiniScene##name##ScenarioAdder(QString("MiniScene_") + #name, new LoadedScenario(#name));

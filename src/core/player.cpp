@@ -96,6 +96,13 @@ General::Gender Player::getGender() const{
         return General::Neuter;
 }
 
+QString Player::getGenderString() const{
+    if(general)
+        return general->getGenderString();
+    else
+        return "neuter";
+}
+
 int Player::getSeat() const{
     return seat;
 }
@@ -536,7 +543,8 @@ QList<const DelayedTrick *> Player::delayedTricks() const{
 
 bool Player::containsTrick(const QString &trick_name) const{
     foreach(const DelayedTrick *trick, delayed_tricks){
-        if(trick->objectName() == trick_name)
+        if(trick->objectName() == trick_name &&
+           trick->getEffectiveId() != property("yanxiao").toInt())
             return true;
     }
 
@@ -575,6 +583,10 @@ void Player::setMark(const QString &mark, int value){
 
 int Player::getMark(const QString &mark) const{
     return marks.value(mark, 0);
+}
+
+bool Player::hasMark(const QString &mark) const{
+    return marks.value(mark, 0) > 0;
 }
 
 bool Player::canSlash(const Player *other, bool distance_limit) const{
@@ -693,6 +705,14 @@ QList<const Skill *> Player::getVisibleSkillList() const{
     return skills;
 }
 
+int Player::getKingdoms() const{
+    QSet<QString> kingdom_set;
+    kingdom_set << getKingdom();
+    foreach(const Player *tmp, getSiblings())
+        kingdom_set << tmp->getKingdom();
+    return kingdom_set.size();
+}
+
 QSet<QString> Player::getAcquiredSkills() const{
     return acquired_skills;
 }
@@ -711,6 +731,8 @@ bool Player::canSlashWithoutCrossbow() const{
         valid_slash_count++;
     if(hasFlag("jiangchi_invoke"))
         valid_slash_count++;
+    if(getMark("huxiao") > 0)
+        valid_slash_count += getMark("huxiao");
     return slash_count < valid_slash_count;
 }
 
