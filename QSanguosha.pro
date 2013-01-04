@@ -66,6 +66,7 @@ SOURCES += \
 	src/package/bgm-package.cpp \
 	src/package/lingpackage.cpp \
 	src/package/assassins.cpp \
+        src/package/hegemony.cpp \
 	src/package/special3v3-package.cpp \
 	src/scenario/scenario.cpp \
 	src/scenario/boss-mode-scenario.cpp \
@@ -187,6 +188,7 @@ HEADERS += \
 	src/package/bgm-package.h \
 	src/package/lingpackage.h \
 	src/package/assassins.h \
+        src/package/hegemony.h \
 	src/package/special3v3-package.h \
 	src/scenario/boss-mode-scenario.h \
 	src/scenario/couple-scenario.h \

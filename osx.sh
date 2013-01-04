@@ -31,8 +31,7 @@ gpl-3.0.txt
 image 
 lang 
 lua 
-qt_zh_CN.qm 
-sanguosha.lua 
+qt_zh_CN.qm
 sanguosha.qm 
 sanguosha.qss 
 scenarios

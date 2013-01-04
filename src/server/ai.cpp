@@ -234,7 +234,7 @@ QString TrustAI::askForChoice(const QString &skill_name, const QString &choice, 
     return choices.at(qrand() % choices.length());
 }
 
-QList<int> TrustAI::askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip){
+QList<int> TrustAI::askForDiscard(const QString &, int discard_num, bool optional, bool include_equip){
     QList<int> to_discard;
 
     if(optional)
@@ -456,7 +456,6 @@ bool LuaAI::getTable(lua_State *L, QList<int> &table){
 
     return true;
 }
-
 
 int LuaAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &reason){
     lua_State *L = room->getLuaState();
