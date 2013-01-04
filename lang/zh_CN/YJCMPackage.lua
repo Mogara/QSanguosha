@@ -162,10 +162,12 @@ return {
 	["illustrator:xushu"] = "XINA",
 	["designer:xushu"] = "双叶松",
 	["cv:xushu"] = "苏遥冬",
-	["$jujian1"] = "将军岂愿抓牌乎？",
-	["$jujian2"] = "我看好你！",
-	["$wuyan1"] = "嘘，言多必失啊！",
-	["$wuyan2"] = "唉，一切尽在不言中",
+	["$jujian1"] = "天下之任，愿君莫辞。",
+	["$jujian2"] = "此乃贤达之士！",
+	["$jujian3"] = "卧龙之才，远胜于吾。", -- 对诸葛
+	["$wuyan1"] = "吾誓不为汝设谋。", -- 自己使用锦囊
+	["$wuyan2"] = "汝有良策，何必问我？", -- 他人使用锦囊
+	["$wuyan3"] = "丞相之才远胜于吾，庶何敢妄言。", -- 曹操使用锦囊
 	["~xushu"] = "娘……孩儿不孝……向您……请罪……",
 
 	["illustrator:xusheng"] = "刘周（天空之城）",
@@ -178,9 +180,9 @@ return {
 	["illustrator:lingtong"] = "绵 Myan",
 	["designer:lingtong"] = "奇迹之瞳",
 	["cv:lingtong"] = "猎狐",
-	["$xuanfeng1"] = "伤敌于千里之外。",
-	["$xuanfeng2"] = "索命于须臾之间。",
-	["~lingtong"] = "大丈夫不惧死亡",
+	["$xuanfeng1"] = "轻财重义，国士之风。", -- 失去装备
+	["$xuanfeng2"] = "奋身护主，效以死命。", -- 弃牌发动
+	["~lingtong"] = "大丈夫不惧死亡。",
 
 	["illustrator:wuguotai"] = "zoo",
 	["designer:wuguotai"] = "章鱼咬你哦",
@@ -198,18 +200,27 @@ return {
 	["$jinjiu2"] = "贬酒阙色，所以无污。",
 	["$xianzhen1"] = "攻无不克战无不胜！",
 	["$xianzhen2"] = "破阵斩将，易如反掌！",
-	["~gaoshun"] = "生死有命…",
+	["$xianzhen3"] = "陷阵却敌，斩将搴旗。",
+	["~gaoshun"] = "生死有命……",
 
 	["illustrator:chengong"] = "黑月乱",
 	["designer:chengong"] = "Kaycent",
 	["cv:chengong"] = "苏遥冬",
-	["$mingce1"] = "如此，霸业可图也~",
+	["$mingce1"] = "如此，霸业可图也！",
 	["$mingce2"] = "如此，一击可擒也！",
-	["$zhichi1"] = "如今之计，唯有退守，再做决断！",
+	["$mingce3"] = "君以千里之众，何必受制于人！", -- 对吕布
+	["$zhichi1"] = "如今之计，唯有退守，再做决断！", -- 受到伤害，触发技能
 	["$zhichi2"] = "若吾早知如此~",
+	["$zhichi3"] = "操多诡计，不可轻敌。", -- 对曹操
+	["$zhichi4"] = "智计有余，早有防备。", -- 发动后受到杀或非延时类锦囊
 	["~chengong"] = "请出就戮！",
 
 	["cv:zhangchunhua"] = "白衣筱雅",
+	["$jueqing1"] = "你的死活与我何干？",
+	["$jueqing2"] = "无来无去，不悔不怨。",
+	["$shangshi1"] = "无情者伤人，有情者自伤。",
+	["$shangshi2"] = "自损八百，可伤敌一千。",
+	["~zhangchunhua"] = "怎能如此对我……",
 
 	["illustrator:zhonghui"] = "雪君S",
 	["designer:zhonghui"] = "韩旭",
