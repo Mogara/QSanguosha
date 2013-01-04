@@ -322,7 +322,6 @@ public:
 
 QingchengCard::QingchengCard(){
     once = true;
-    will_throw = false;
 }
 
 bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
