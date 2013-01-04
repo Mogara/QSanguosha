@@ -201,7 +201,7 @@ return {
 	["$xianzhen1"] = "攻无不克战无不胜！",
 	["$xianzhen2"] = "破阵斩将，易如反掌！",
 	["$xianzhen3"] = "陷阵却敌，斩将搴旗。",
-	["~gaoshun"] = "生死有命……",
+	["~gaoshun"] = "陷阵之志，有死无退……",
 
 	["illustrator:chengong"] = "黑月乱",
 	["designer:chengong"] = "Kaycent",
