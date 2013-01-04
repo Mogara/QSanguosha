@@ -589,7 +589,13 @@ bool Player::hasMark(const QString &mark) const{
     return marks.value(mark, 0) > 0;
 }
 
-bool Player::canSlash(const Player *other, bool distance_limit) const{
+bool Player::canSlash(const Player *other, const Card *slash, bool distance_limit) const{
+    if(slash == NULL)
+        slash = Sanguosha->cloneCard("slash", Card::NoSuit, 0);
+
+    if(isProhibited(other, slash))
+        return false;
+
     if(other->hasSkill("kongcheng") && other->isKongcheng())
         return false;
 
@@ -600,6 +606,11 @@ bool Player::canSlash(const Player *other, bool distance_limit) const{
         return distanceTo(other) <= getAttackRange();
     else
         return true;
+}
+
+bool Player::canSlash(const Player *other, bool distance_limit) const{
+    const Card *slash = Sanguosha->cloneCard("slash", Card::NoSuit, 0);
+    return canSlash(other, slash, distance_limit);
 }
 
 int Player::getCardCount(bool include_equip) const{

@@ -179,13 +179,14 @@ public:
 
 	void addMark(const char *mark);
 	void removeMark(const char *mark);
-	virtual void setMark(const char *mark, int value);
+	virtual void setMark(const char *mark, int value = 1);
 	int getMark(const char *mark) const;
 	bool hasMark(const char *mark) const;
 
 	void setChained(bool chained);
 	bool isChained() const;
 
+	bool canSlash(const Player *other, const Card *slash, bool distance_limit = true) const;
 	bool canSlash(const Player *other, bool distance_limit = true) const;
 	int getCardCount(bool include_equip) const;
 
@@ -232,6 +233,14 @@ public:
 
 	void removeTag(const char *tag_name){
 		$self->tag.remove(tag_name);
+	}
+
+	bool isFemale(){
+		return $self->getGeneral()->isFemale();
+	}
+
+	bool isMale(){
+		return $self->getGeneral()->isMale();
 	}
 };
 
@@ -646,6 +655,7 @@ public:
 	void addBanPackage(const char *package_name);
 	QStringList getBanPackages() const;
 	Card *cloneCard(const char *name, Card::Suit suit, int number) const;
+	Card *cloneCard(const char *name, const char *suit_string, int number) const;
 	SkillCard *cloneSkillCard(const char *name) const;
 	QString getVersion() const;
 	QString getVersionName() const;
@@ -917,6 +927,14 @@ public:
 		$self->playSkillEffect(skillName, type);
 		return true;
 	}
+
+	void throwCard(const Card *card, ServerPlayer *who = NULL){
+		$self->throwCard(const Card *card);
+	}
+	void throwCard(int card_id, ServerPlayer *who = NULL){
+		$self->throwCard(int card_id);
+	}
+
 	ServerPlayer *nextPlayer() const{
 		return $self->getCurrent()->getNextAlive();
 	}
