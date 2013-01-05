@@ -115,7 +115,7 @@ return {
 	["$xiangle2"] = "如此甚好，甚好",
 	["~liushan"] = "吾降，吾降矣",
 
-	["cv:jiangwei"] = "Jr. Wakaran，LeleK",
+	["cv:jiangwei"] = "Jr. Wakaran",
 	["$tiaoxin1"] = "贼将早降，可免一死！",
 	["$tiaoxin2"] = "哼，贼将莫不是怕了？",
 	["$tiaoxin3"] = "敌将可破得我八阵？", -- 装备了八卦或有八阵技能时发动
