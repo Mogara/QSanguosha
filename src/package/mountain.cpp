@@ -1220,12 +1220,12 @@ MountainPackage::MountainPackage()
     sunce->addSkill(new Hunzi);
     sunce->addSkill(new Zhiba);
     related_skills.insertMulti("hunzi", "yinghun");
+    related_skills.insertMulti("hunzi", "yingzi");
 
     General *erzhang = new General(this, "erzhang", "wu", 3);
     erzhang->addSkill(new Zhijian);
     erzhang->addSkill(new Guzheng);
     erzhang->addSkill(new GuzhengGet);
-
     related_skills.insertMulti("guzheng", "#guzheng-get");
 
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);

@@ -10,6 +10,7 @@
 
 JuaoCard::JuaoCard(){
     once = true;
+    mute = true;
     will_throw = false;
 }
 
@@ -20,10 +21,9 @@ bool JuaoCard::targetFilter(const QList<const Player *> &targets, const Player *
 }
 
 void JuaoCard::onEffect(const CardEffectStruct &effect) const{
-    foreach(int cardid, this->getSubcards()){
-        //source->getRoom()->moveCardTo(Sanguosha->getCard(cardid), targets.first(), Player::Special);
+    effect.from->playSkillEffect(skill_name, effect.to->isCaoCao() ? 2 : 1);
+    foreach(int cardid, this->getSubcards())
         effect.to->addToPile("hautain", cardid, false);
-    }
     effect.to->addMark("juao");
 }
 
@@ -106,15 +106,20 @@ public:
             ServerPlayer *from = damage.from;
             Room *room = xuyou->getRoom();
             if(from && !from->isKongcheng() && !xuyou->isKongcheng() && room->askForSkillInvoke(xuyou, objectName(), data)){
+                room->playSkillEffect(objectName(), 1);
                 xuyou->pindian(from, "tanlan");
             }
             return false;
         }
         else {
             PindianStar pindian = data.value<PindianStar>();
-            if(pindian->reason == "tanlan" && pindian->isSuccess()){
-                xuyou->obtainCard(pindian->to_card);
-                xuyou->obtainCard(pindian->from_card);
+            if(pindian->reason == "tanlan"){
+                if(pindian->isSuccess()){
+                    xuyou->obtainCard(pindian->to_card);
+                    xuyou->obtainCard(pindian->from_card);
+                }
+                else
+                    xuyou->playSkillEffect(objectName(), 2);
             }
         }
         return false;
@@ -150,6 +155,7 @@ public:
             log.from = xuyou;
             log.arg = objectName();
             room->sendLog(log);
+            room->playSkillEffect(objectName(), pindian->reason == "tanlan" ? 2 : 1);
 
             xuyou->drawCards(1);
         }
@@ -207,8 +213,6 @@ public:
             ServerPlayer *target = jiangwei;
             if(!players.isEmpty())
                 target = room->askForPlayerChosen(jiangwei, players, objectName());
-            //if(!target)
-            //    target = jiangwei;
 
             Slash *slash = new Slash(Card::NoSuit, 0);
             slash->setSkillName(objectName());
@@ -265,6 +269,7 @@ public:
         int handcardnum = player->getHandcardNum();
         if(player->getPhase() == Player::Finish && handcardnum < 3
            && room->askForSkillInvoke(player, objectName())){
+            room->playSkillEffect(objectName());
             for(int i = 0; i < 4 - handcardnum; i++){
                 int card_id = room->drawCard();
                 room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
@@ -292,6 +297,7 @@ public:
 };
 
 BawangCard::BawangCard(){
+    mute = true;
 }
 
 bool BawangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -306,6 +312,7 @@ bool BawangCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void BawangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
+    room->playSkillEffect(skill_name, 2);
 
     CardEffectStruct effect2;
     Slash *slash = new Slash(Card::NoSuit, 0);
@@ -322,7 +329,7 @@ void BawangCard::onEffect(const CardEffectStruct &effect) const{
 
 class BawangViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    BawangViewAsSkill():ZeroCardViewAsSkill("tuxi"){
+    BawangViewAsSkill():ZeroCardViewAsSkill("bawang"){
     }
 
     virtual const Card *viewAs() const{
@@ -355,15 +362,22 @@ public:
         if(!effect.to->isNude() && !sunce->isKongcheng() && !effect.to->isKongcheng()){
             Room *room = sunce->getRoom();
             if(room->askForSkillInvoke(sunce, objectName(), data)){
+                room->playSkillEffect(objectName(), 1);
                 bool success = sunce->pindian(effect.to, objectName(), NULL);
                 if(success){
                     if(sunce->hasFlag("drank"))
                         room->setPlayerFlag(sunce, "-drank");
                     room->askForUseCard(sunce, "@@bawang", "@bawang");
                 }
+                else
+                    room->playSkillEffect(objectName(), 3);
             }
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        return 0;
     }
 };
 
@@ -444,6 +458,10 @@ public:
 
         return false;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *s, const Card *) const{
+        return s->getHp() > 0 ? 1 : 2;
+    }
 };
 
 class Longluo: public TriggerSkill{
@@ -460,6 +478,7 @@ public:
                 int drawnum = player->getMark("longluo");
                 if(drawnum > 0 && player->askForSkillInvoke(objectName(), data)){
                     ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
+                    room->playSkillEffect(objectName(), target->getGeneralName().contains("sunquan") || target->getGeneralName().contains("sunce") ? 2: 1);
                     target->drawCards(drawnum);
                 }
             }
@@ -528,6 +547,7 @@ public:
             log.to << target;
             log.card_str = intervention->getEffectIdString();
             room->sendLog(log);
+            room->playSkillEffect(objectName(), target->getGeneralName().contains("sunquan") || target->getGeneralName().contains("sunce") ? 2: 1);
 
             const Card *pindian_card = target == pindian->from ? pindian->from_card : pindian->to_card;
             int num = pindian_card->getNumber() + intervention->getNumber() / 2;
@@ -559,10 +579,14 @@ public:
         Room *room = player->getRoom();
         if(room->askForSkillInvoke(player, objectName(), data)){
             ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), objectName());
-            if (room->askForChoice(player, objectName(), "draw+throw") == "draw")
+            if (room->askForChoice(player, objectName(), "draw+throw") == "draw"){
+                room->playSkillEffect(objectName(), 1);
                 target->drawCards(3);
-            else
+            }
+            else{
+                room->playSkillEffect(objectName(), 2);
                 room->askForDiscard(target, objectName(), qMin(3,target->getCardCount(true)), false, true);
+            }
         }
         return false;
     }
@@ -609,6 +633,7 @@ public:
                 log.from = effect.from;
                 log.to << effect.to;
                 room->sendLog(log);
+                room->playSkillEffect(objectName(), 2);
 
                 room->slashResult(effect, NULL);
                 return true;
@@ -628,6 +653,7 @@ public:
                 log.arg = QString::number(damage.damage);
                 log.arg2 = QString::number(damage.damage + 1);
                 hua->getRoom()->sendLog(log);
+                hua->playSkillEffect(objectName(), 1);
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
             }
@@ -647,7 +673,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
         if(player->getPhase() != Player::Judge || player->getJudgingArea().length() == 0)
             return false;
         Room *room = player->getRoom();
@@ -657,6 +683,7 @@ public:
                && room->askForSkillInvoke(tianfeng, objectName(), QVariant::fromValue(player))
                 && room->askForDiscard(tianfeng, objectName(), 2, false, true)){
 
+                room->playSkillEffect(objectName(), player->getGeneralName() == "yuanshao" && player->isLord() ? 2 : 1);
                 foreach(const Card *jcd, player->getJudgingArea())
                     tianfeng->obtainCard(jcd);
                 break;
@@ -686,7 +713,8 @@ public:
 
         if(card->inherits("BasicCard") && !card->isVirtualCard()){
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
-                room->playSkillEffect(objectName());
+                int inx = card->inherits("Slash") ? 2 : 1;
+                room->playSkillEffect(objectName(), inx);
                 tianfeng->drawCards(1);
             }
         }
@@ -729,13 +757,14 @@ public:
         log.from = tianfeng;
         log.arg = objectName();
         tianfeng->getRoom()->sendLog(log);
+        tianfeng->playSkillEffect(objectName());
 
         return false;
     }
 };
 
 ShouyeCard::ShouyeCard(){
-    once = true;
+    mute = true;
 }
 
 bool ShouyeCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -748,6 +777,7 @@ bool ShouyeCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void ShouyeCard::onEffect(const CardEffectStruct &effect) const{
+    effect.from->playSkillEffect(skill_name, getSuit() == Card::Heart ? 1 : 2);
     effect.to->drawCards(1);
     if(effect.from->getMark("jiehuo") == 0)
         effect.from->gainMark("@shouye");
@@ -804,6 +834,7 @@ public:
         player->loseAllMarks("@shouye");
         room->setPlayerMark(player, "shouyeonce", 1);
         room->acquireSkill(player, "shien");
+        room->playSkillEffect(objectName());
 
         room->loseMaxHp(player);
         return false;
@@ -820,6 +851,15 @@ public:
         return !target->hasSkill(objectName());
     }
 
+    static bool isLongfeng(ServerPlayer *me){
+        QString gen = me->getGeneralName();
+        if(gen.contains("zhugeliang"))
+            return true;
+        if(gen.contains("pangtong"))
+            return true;
+        return gen == "wolong";
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(player->getMark("forbid_shien") > 0)
             return false;
@@ -834,9 +874,10 @@ public:
             Room *room = player->getRoom();
             ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());
             if(shuijing->isAlive()){
-                if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue(shuijing)))
+                if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue(shuijing))){
+                    room->playSkillEffect(objectName(), isLongfeng(player) ? 2 : 1);
                     shuijing->drawCards(1);
-                else{
+                }else{
                     QString dontaskmeneither = room->askForChoice(player, "forbid_shien", "yes+no");
                     if(dontaskmeneither == "yes"){
                         player->setMark("forbid_shien", 1);
@@ -892,7 +933,7 @@ WisdomPackage::WisdomPackage()
         wisshuijing = new General(this, "wisshuijing", "qun",4,true);
         wisshuijing->addSkill(new Shouye);
         wisshuijing->addSkill(new Jiehuo);
-
+        wisshuijing->addRelateSkill("shien");
         skills << new Shien;
 
         addMetaObject<JuaoCard>();

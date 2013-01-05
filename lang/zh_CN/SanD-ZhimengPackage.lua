@@ -85,6 +85,7 @@ return {
 	["chanxian:get"] = "获得其一张牌",
 	["chanxian:hit"] = "对其造成一点伤害",
 	["@chanxian"] = "受到【谗陷】影响，你可以对 %src 使用一张【杀】",
+	["~diysunluban"] = "!#@$%^&*……",
 
 	["#diyzhugejin"] = "温厚的盟使", -- wu,4HP
 	["diyzhugejin"] = "3D诸葛瑾",

@@ -829,9 +829,9 @@ public:
     virtual int getDrawNum(ServerPlayer *zhouyu, int n) const{
         Room *room = zhouyu->getRoom();
         if(room->askForSkillInvoke(zhouyu, objectName())){
-            int n = zhouyu->getMark("hunzi") > 0 ? 5 :
+            int x = zhouyu->getMark("hunzi") > 0 ? 5 :
                     zhouyu->getMark("@wen") > 0 ? qrand() % 2 + 3 : qrand() % 2 + 1;
-            room->playSkillEffect(objectName(), n);
+            room->playSkillEffect(objectName(), x);
             return n + 1;
         }else
             return n;

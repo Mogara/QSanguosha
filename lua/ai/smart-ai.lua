@@ -1532,6 +1532,7 @@ function SmartAI:filterEvent(event, player, data)
 	end
 	sgs.lastevent = event
 	sgs.lasteventdata = eventdata
+	local target
 	if event == sgs.ChoiceMade and self == sgs.recorder then
 		local carduse = data:toCardUse()
 		if carduse and carduse:isValid() then
@@ -1573,6 +1574,7 @@ function SmartAI:filterEvent(event, player, data)
 		local card = struct.card
 		local from = struct.from
 		local to = struct.to
+		if not card then return end
 		if card:inherits("Collateral") then sgs.ai_collateral = true end
 		if card:inherits("Dismantlement") or card:inherits("Snatch") or card:getSkillName() == "qixi" or card:getSkillName() == "jixi" then
 			sgs.ai_snat_disma_effect = true
@@ -1582,8 +1584,8 @@ function SmartAI:filterEvent(event, player, data)
 				sgs.updateIntention(from, to, 80)
 			end
 		end
-		if card:inherits("Slash") and to:hasSkill("leiji") and 
-			(getCardsNum("Jink", to)>0 or (to:getArmor() and to:getArmor():objectName() == "eight_diagram"))
+		if card:inherits("Slash") and to:hasSkill("leiji") and
+			(self:getCardsNum("Jink", to)>0 or (to:getArmor() and to:getArmor():objectName() == "eight_diagram"))
 			and (to:getHandcardNum()>2 or from:getState() == "robot") then
 			sgs.ai_leiji_effect = true
 		end

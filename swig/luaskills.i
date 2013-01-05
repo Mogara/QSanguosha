@@ -114,10 +114,10 @@ public:
 
 class LuaDistanceSkill: public DistanceSkill{
 public:
-    LuaDistanceSkill(const char *name);
-    virtual int getCorrect(const Player *from, const Player *to) const;
+	LuaDistanceSkill(const char *name);
+	virtual int getCorrect(const Player *from, const Player *to) const;
 
-    LuaFunction correct_func;
+	LuaFunction correct_func;
 };
 
 class LuaMaxCardsSkill: public MaxCardsSkill{
@@ -130,15 +130,15 @@ public:
 
 class LuaSkillCard: public SkillCard{
 public:
-    LuaSkillCard(const char *name);
-    void setTargetFixed(bool target_fixed);
-    void setWillThrow(bool will_throw);
-    LuaSkillCard *clone() const;
+	LuaSkillCard(const char *name);
+	void setTargetFixed(bool target_fixed);
+	void setWillThrow(bool will_throw);
+	LuaSkillCard *clone() const;
 
-    LuaFunction filter;    
-    LuaFunction feasible;
-    LuaFunction on_use;
-    LuaFunction on_effect;
+	LuaFunction filter;    
+	LuaFunction feasible;
+	LuaFunction on_use;
+	LuaFunction on_effect;
 };
 
 %{
