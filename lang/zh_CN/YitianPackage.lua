@@ -225,15 +225,22 @@ return {
 	["$chengxiang2"] = "称物载之，则校可知矣。", --恢复体力
 	["$conghui"] = "吾虽年幼，智意所及，有若成人。",
 	["$zaoyao"] = "咳咳咳……",
-	["~caochong"] = "仓舒，仓舒……（曹操的声音）",
+	["~caochong"] = "仓舒，仓舒……", --（曹操的声音）
 
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["illustrator:zhangjunyi"] = "火凤燎原",
-	["cv:zhangjunyi"] = "",
+	["cv:zhangjunyi"] = "喵小林",
+	["$jueji1"] = "围敌绝汲，敌必自乱", -- 发动拼点
+	["$jueji2"] = "敌竟料我于先，不妙……", -- 拼点失败
+	["~zhangjunyi"] = "袁公不信我，不如早降曹。",
 
 	["designer:lukang"] = "太阳神上",
 	["illustrator:lukang"] = "火神原画",
-	["cv:lukang"] = "",
+	["cv:lukang"] = "喵小林",
+	["$lukang_weiyan1"] = "敌欲破堰，引兵击之", -- 摸牌当出牌
+	["$lukang_weiyan2"] = "作堰遏水，以绝寇患", -- 出牌当摸牌
+	["$kegou"] = "吾父遗风，具体而微，谓克构者哉！",
+	["~lukang"] = "望陛下思览臣言，臣纵死亦无悔……",
 
 	["designer:jinxuandi"] = "title2009,塞克洛",
 	["illustrator:jinxuandi"] = "梦三国",
@@ -273,7 +280,10 @@ return {
 
 	["designer:zhongshiji"] = "Jr. Wakaran",
 	["illustrator:zhongshiji"] = "战国无双3",
-	["cv:zhongshiji"] = "",
+	["cv:zhongshiji"] = "喵小林",
+	["$gongmou1"] = "吾今有一计，愿与公谋之",
+	["$gongmou1"] = "吾意自立蜀中，还望公能助我！", --（对姜维）
+	["~zhongshiji"] = "空有野心，却无天命……",
 
 	["designer:jiangboyue"] = "Jr. Wakaran, 太阳神上",
 	["illustrator:jiangboyue"] = "不详",
@@ -287,14 +297,16 @@ return {
 
 	["designer:jiawenhe"] = "氢弹",
 	["illustrator:jiawenhe"] = "三国豪杰传",
-	["cv:jiawenhe"] = "",
+	["cv:jiawenhe"] = "喵小林",
+	["$dushi"] = "毒龙有逆鳞，毒士有遗兵。",
+	["~jiawenhe"] = "时机未到，我当蛰伏！",
 
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["illustrator:guzhielai"] = "火凤燎原",
-	["cv:guzhielai"] = "Jr. Wakaran",
-	["$shenli"] = "死!",
+	["cv:guzhielai"] = "喵小林",
 	["$sizhan1"] = "曹公为安，死战不休",
 	["$sizhan2"] = "哼，不痛不痒！",
+	["$shenli"] = "死!",
 	["~guzhielai"] = "呃，别高兴的太早了！",
 
 	["designer:dengshizai"] = "Bu懂",
@@ -306,11 +318,21 @@ return {
 
 	["designer:zhanggongqi"] = "背碗卤粉",
 	["illustrator:zhanggongqi"] = "真三国友盟",
-	["cv:zhanggongqi"] = "",
+	["cv:zhanggongqi"] = "喵小林",
+	["$yishe1"] = "吾当作义舍，米肉置其中。", --放米
+	["$yishe2"] = "信吾教义者，当量腹取足。", --给米
+	["$yishe3"] = "汝今有异志，吾不欲助汝。", --拒绝给米
+	["$xiliang1"] = "如此粮肉，弃之可惜啊。", --收牌入手
+	["$xiliang2"] = "义舍缺粮，我当收之。", --收牌为米
+	["~zhanggongqi"] = "粮为国之物……不可焚……不可……",
 
 	["designer:yitianjian"] = "太阳神上",
 	["illustrator:yitianjian"] = "轩辕剑",
-	["cv:yitianjian"] = "",
+	["cv:yitianjian"] = "喵小林",
+	["$zhengfeng"] = "奇锋磨砺出。",
+	["$zhenwei"] = "跨海斩鲸，镇威海内。",
+	["$yitian"] = "拔长剑兮依长天。",
+	["~yitianjian"] = "长剑耿耿，忠魂依依。",
 
 	["designer:panglingming"] = "太阳神上",
 	["illustrator:panglingming"] = "三国志大战",
