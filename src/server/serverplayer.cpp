@@ -49,6 +49,10 @@ void ServerPlayer::playCardEffect(const Card *card) const{
         room->playSkillEffect(skill_name, index);
 }
 
+void ServerPlayer::playSkillEffect(const QString &skill_name, int index){
+    room->playSkillEffect(skill_name, index);
+}
+
 int ServerPlayer::getRandomHandCardId() const{
     return getRandomHandCard()->getEffectiveId();
 }
