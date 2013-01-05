@@ -1110,9 +1110,8 @@ public:
                     QList<ServerPlayer *> players = room->getOtherPlayers(zhongshiji);
                     ServerPlayer *target = room->askForPlayerChosen(zhongshiji, players, "gongmou");
                     target->gainMark("@conspiracy");
-                    room->playSkillEffect(objectName(),
-                                          target->getGeneralName().contains("jiangwei") ||
-                                           target->getGeneralName() == "jiangboyue") ? 2: 1;
+                    bool jw = target->getGeneralName().contains("jiangwei") || target->getGeneralName() == "jiangboyue";
+                    room->playSkillEffect(objectName(), jw ? 2: 1);
                 }
                 break;
             }
