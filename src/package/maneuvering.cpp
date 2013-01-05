@@ -88,9 +88,9 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class FanSkill: public OneCardViewAsSkill{
+class FanViewAsSkill: public OneCardViewAsSkill{
 public:
-    FanSkill():OneCardViewAsSkill("fan"){
+    FanViewAsSkill():OneCardViewAsSkill("fan"){
 
     }
 
@@ -99,7 +99,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "slash";
+        return pattern == "slash";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -115,10 +115,30 @@ public:
     }
 };
 
+class FanSkill: public WeaponSkill{
+public:
+    FanSkill():WeaponSkill("fan"){
+        events << SlashEffect;
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(effect.nature == DamageStruct::Normal){
+            if(room->askForSkillInvoke(player, objectName(), data)){
+                effect.nature = DamageStruct::Fire;
+                room->setEmotion(player, "weapon/fan");
+                data = QVariant::fromValue(effect);
+            }
+        }
+
+        return false;
+    }
+};
 
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("fan");
     attach_skill = true;
+    skill = new FanSkill;
 }
 
 class GudingBladeSkill: public WeaponSkill{
@@ -389,7 +409,8 @@ ManeuveringPackage::ManeuveringPackage()
     QList<Card *> cards;
 
     // spade
-    cards << new GudingBlade(Card::Spade, 1)
+    cards
+            << new GudingBlade(Card::Spade, 1)
             << new Vine(Card::Spade, 2)
             << new Analeptic(Card::Spade, 3)
             << new ThunderSlash(Card::Spade, 4)
@@ -404,7 +425,8 @@ ManeuveringPackage::ManeuveringPackage()
             << new Nullification(Card::Spade, 13);
 
     // club
-    cards << new SilverLion(Card::Club, 1)
+    cards
+            << new SilverLion(Card::Club, 1)
             << new Vine(Card::Club, 2)
             << new Analeptic(Card::Club, 3)
             << new SupplyShortage(Card::Club, 4)
@@ -419,7 +441,8 @@ ManeuveringPackage::ManeuveringPackage()
             << new IronChain(Card::Club, 13);
 
     // heart
-    cards << new Nullification(Card::Heart, 1)
+    cards
+            << new Nullification(Card::Heart, 1)
             << new FireAttack(Card::Heart, 2)
             << new FireAttack(Card::Heart, 3)
             << new FireSlash(Card::Heart, 4)
@@ -434,7 +457,8 @@ ManeuveringPackage::ManeuveringPackage()
             << new Nullification(Card::Heart, 13);
 
     // diamond
-    cards << new Fan(Card::Diamond, 1)
+    cards
+            << new Fan(Card::Diamond, 1)
             << new Peach(Card::Diamond, 2)
             << new Peach(Card::Diamond, 3)
             << new FireSlash(Card::Diamond, 4)
@@ -456,7 +480,7 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 
     type = CardPack;
-    skills << new FanSkill;
+    skills << new FanViewAsSkill;
 }
 
 ADD_PACKAGE(Maneuvering)

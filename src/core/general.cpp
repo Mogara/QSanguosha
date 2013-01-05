@@ -85,11 +85,7 @@ void General::addSkill(Skill *skill){
 }
 
 void General::addSkill(const QString &skill_name){
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(skill)
-        extra_set << skill_name;
-    else
-        addSkill(new Skill(skill_name));
+    extra_set << skill_name;
 }
 
 bool General::hasSkill(const QString &skill_name) const{
@@ -105,7 +101,9 @@ QList<const Skill *> General::getVisibleSkillList() const{
 
     foreach(QString skill_name, extra_set){
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if(skill->isVisible())
+        if(!skill)
+            skill = new Skill(skill_name);
+        if(skill && skill->isVisible())
             skills << skill;
     }
 
