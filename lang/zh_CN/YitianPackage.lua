@@ -225,7 +225,7 @@ return {
 	["$chengxiang2"] = "称物载之，则校可知矣。", --恢复体力
 	["$conghui"] = "吾虽年幼，智意所及，有若成人。",
 	["$zaoyao"] = "咳咳咳……",
-	["~caochong"] = "仓舒，仓舒……", --（曹操的声音）
+	["~caochong"] = "仓舒，仓舒……", -- 曹操的声音
 
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["illustrator:zhangjunyi"] = "火凤燎原",
@@ -282,7 +282,7 @@ return {
 	["illustrator:zhongshiji"] = "战国无双3",
 	["cv:zhongshiji"] = "喵小林",
 	["$gongmou1"] = "吾今有一计，愿与公谋之",
-	["$gongmou1"] = "吾意自立蜀中，还望公能助我！", --（对姜维）
+	["$gongmou2"] = "吾意自立蜀中，还望公能助我！", --（对姜维）
 	["~zhongshiji"] = "空有野心，却无天命……",
 
 	["designer:jiangboyue"] = "Jr. Wakaran, 太阳神上",
@@ -304,7 +304,7 @@ return {
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["illustrator:guzhielai"] = "火凤燎原",
 	["cv:guzhielai"] = "喵小林",
-	["$sizhan1"] = "曹公为安，死战不休",
+	["$sizhan1"] = "曹公为安，死战不休！",
 	["$sizhan2"] = "哼，不痛不痒！",
 	["$shenli"] = "死!",
 	["~guzhielai"] = "呃，别高兴的太早了！",

@@ -257,6 +257,7 @@ public:
 
 JuejiCard::JuejiCard(){
     once = true;
+    mute = true;
 }
 
 bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -264,11 +265,14 @@ bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void JuejiCard::onEffect(const CardEffectStruct &effect) const{
+    effect.from->playSkillEffect(skill_name, 1);
     bool success = effect.from->pindian(effect.to, "jueji", this);
 
     PlayerStar to = effect.to;
     QVariant data = QVariant::fromValue(to);
 
+    if(!success)
+        effect.from->playSkillEffect(skill_name, 2);
     while(success && !effect.to->isKongcheng()){
         if(effect.from->isKongcheng() || !effect.from->askForSkillInvoke("jueji", data))
             break;
@@ -331,6 +335,7 @@ public:
         switch(target->getPhase()){
         case Player::Draw: {
                 if(target->askForSkillInvoke("lukang_weiyan", "draw2play")){
+                    target->playSkillEffect(objectName(), 1);
                     target->getRoom()->setPlayerProperty(target, "phase", "play");
                 }
 
@@ -339,6 +344,7 @@ public:
 
         case Player::Play:{
                 if(target->askForSkillInvoke("lukang_weiyan", "play2draw")){
+                    target->playSkillEffect(objectName(), 2);
                     target->clearHistory();
                     target->getRoom()->setPlayerProperty(target, "phase", "draw");
                 }
@@ -378,7 +384,7 @@ public:
 
         lukang->setMark("kegou", 1);
 
-
+        lukang->playSkillEffect(objectName());
         Room *room = lukang->getRoom();
 
         LogMessage log;
@@ -1104,6 +1110,8 @@ public:
                     QList<ServerPlayer *> players = room->getOtherPlayers(zhongshiji);
                     ServerPlayer *target = room->askForPlayerChosen(zhongshiji, players, "gongmou");
                     target->gainMark("@conspiracy");
+                    bool jw = target->getGeneralName().contains("jiangwei") || target->getGeneralName() == "jiangboyue";
+                    room->playSkillEffect(objectName(), jw ? 2: 1);
                 }
                 break;
             }
@@ -1413,6 +1421,7 @@ public:
             Room *room = player->getRoom();
             if(killer != player && !killer->hasSkill("benghuai")){
                 killer->gainMark("@collapse");
+                killer->playSkillEffect(objectName());
                 room->acquireSkill(killer, "benghuai");
             }
         }
@@ -1438,6 +1447,7 @@ public:
             log.arg2 = objectName();
             elai->getRoom()->sendLog(log);
 
+            elai->playSkillEffect(objectName());
             elai->gainMark("@struggle", damage.damage);
 
             return true;
@@ -1482,6 +1492,7 @@ public:
                 x = qMin(3, x);
                 damage.damage += x;
                 data = QVariant::fromValue(damage);
+                elai->playSkillEffect(objectName());
 
                 LogMessage log;
                 log.type = "#ShenliBuff";
@@ -1588,6 +1599,7 @@ public:
 YisheCard::YisheCard(){
     target_fixed = true;
     will_throw = false;
+    mute = true;
 }
 
 void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -1602,6 +1614,7 @@ void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
             source->addToPile("rice", card_id);
         }
     }
+    room->playSkillEffect(skill_name , 1);
 }
 
 class YisheViewAsSkill: public ViewAsSkill{
@@ -1665,7 +1678,10 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
 
     if(room->askForChoice(zhanglu, "yisheask", "allow+disallow") == "disallow"){
         zhanglu->addToPile("rice", card_id);
+        zhanglu->playSkillEffect("yishe", 3);
     }
+    else
+        zhanglu->playSkillEffect("yishe", 2);
 }
 
 class YisheAsk: public ZeroCardViewAsSkill{
@@ -1714,9 +1730,7 @@ class Xiliang: public TriggerSkill{
 public:
     Xiliang():TriggerSkill("xiliang"){
         events << CardDiscarded;
-
         default_choice = "obtain";
-
         frequency = Frequent;
     }
 
@@ -1751,10 +1765,12 @@ public:
 
         bool can_put = 5 - zhanglu->getPile("rice").length() >= red_cards.length();
         if(can_put && room->askForChoice(zhanglu, objectName(), "put+obtain") == "put"){
+            room->playSkillEffect(objectName(), 2);
             foreach(const Card *card, red_cards){
                 zhanglu->addToPile("rice", card->getEffectiveId());
             }
         }else{
+            room->playSkillEffect(objectName(), 1);
             foreach(const Card *card, red_cards){
                 zhanglu->obtainCard(card);
             }
@@ -1772,8 +1788,10 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(player->getRoom()->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data))
+        if(player->getRoom()->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data)){
+            player->playSkillEffect(objectName());
             player->obtainCard(effect.jink);
+        }
 
         return false;
     }
@@ -1797,6 +1815,7 @@ public:
             player->getRoom()->sendLog(log);
 
             damage.damage --;
+            player->playSkillEffect(objectName());
             data.setValue(damage);
         }
 

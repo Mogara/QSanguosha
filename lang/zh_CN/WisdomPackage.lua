@@ -6,6 +6,8 @@ local t = {
 
 	["#wisxuyou"] = "恃才傲物",
 	["wisxuyou"] = "智许攸",
+	["cv:wisxuyou"] = "",
+	["illustrator:wisxuyou"] = "三国志大战",
 	["juao"] = "倨傲",
 	[":juao"] = "出牌阶段，你可以选择两张手牌背面向上移出游戏，指定一名角色，被指定的角色到下个回合开始阶段时，跳过摸牌阶段，得到你所移出游戏的两张牌。每阶段限一次",
 	["hautain"] = "倨傲牌",
@@ -20,10 +22,11 @@ local t = {
 	["$tanlan2"] = "匹夫尔敢如此", -- 拼点失败;拼点成功触发恃才
 	["$shicai1"] = "真是不自量力！",
 	["$shicai2"] = "莽夫，无可救药啊。", -- 贪婪触发
-	["wisxuyou"] = "汝等果然是无可救药~啊~",
+	["~wisxuyou"] = "汝等果然是无可救药~啊~",
 
 	["#wisjiangwei"] = "天水麒麟",
 	["wisjiangwei"] = "智姜维",
+	["illustrator:wisjiangwei"] = "巴萨小马",
 	["cv:wisjiangwei"] = "Jr. Wakaran",
 	["yicai"] = "异才",
 	[":yicai"] = "每当你使用一张非延时类锦囊时(在它结算之前)，可立即对攻击范围内的角色使用一张【杀】",
@@ -38,13 +41,20 @@ local t = {
 
 	["#wisjiangwan"] = "武侯后继",
 	["wisjiangwan"] = "智蒋琬",
+	["cv:wisjiangwan"] = "墨轩砚韵",
+	["illustrator:wisjiangwan"] = "Zero",
 	["houyuan"] = "后援",
 	[":houyuan"] = "出牌阶段，你可以弃置两张手牌，指定一名其他角色摸两张牌，每阶段限一次",
 	["chouliang"] = "筹粮",
 	[":chouliang"] = "回合结束阶段开始时，若你手牌少于三张，你可以从牌堆顶亮出X张牌（X为4减当前手牌数），拿走其中的基本牌，把其余的牌置入弃牌堆",
+	["$houyuan"] = "汝等力战，吾定当稳固后方。",
+	["$chouliang"] = "息民筹粮，伺机反攻。",
+	["~wisjiangwan"] = "蜀中疲敝，无力辅政矣",
 
 	["#wissunce"] = "江东小霸王",
 	["wissunce"] = "智孙策",
+	["cv:wissunce"] = "",
+	["illustrator:wissunce"] = "永恒之轮",
 	["bawang"] = "霸王",
 	[":bawang"] = "当你使用的【杀】被【闪】响应时，你可以和对方拼点：若你赢，可以选择最多两个目标角色，视为对其分别使用了一张【杀】",
 	["@bawang"] = "你可以指定1~2个看上去不爽的家伙为目标",
@@ -57,6 +67,8 @@ local t = {
 
 	["#wiszhangzhao"] = "东吴重臣",
 	["wiszhangzhao"] = "智张昭",
+	["cv:wiszhangzhao"] = "",
+	["illustrator:wiszhangzhao"] = "三国志大战",
 	["longluo"] = "笼络",
 	[":longluo"] = "回合结束阶段开始时，你可以选择一名其他角色摸取与你弃牌阶段弃牌数量相同的牌",
 	["fuzuo"] = "辅佐",
@@ -73,6 +85,8 @@ local t = {
 
 	["#wishuaxiong"] = "心高命薄",
 	["wishuaxiong"] = "智华雄",
+	["cv:wishuaxiong"] = "",
+	["illustrator:wishuaxiong"] = "三国志大战",
 	["badao"] = "霸刀",
 	[":badao"] = "当你成为黑色的【杀】目标时，你可以对你攻击范围内的一名其他角色使用一张【杀】",
 	["wenjiu"] = "温酒",
@@ -82,6 +96,8 @@ local t = {
 
 	["#wistianfeng"] = "甘冒虎口",
 	["wistianfeng"] = "智田丰",
+	["cv:wistianfeng"] = "",
+	["illustrator:wistianfeng"] = "小矮米",
 	["shipo"] = "识破",
 	[":shipo"] = "任意角色判定阶段判定前，你可以弃置两张牌，获得该角色判定区里的所有牌",
 	["gushou"] = "固守",
@@ -92,6 +108,8 @@ local t = {
 
 	["#wisshuijing"] = "水镜先生",
 	["wisshuijing"] = "智司马徽",
+	["cv:wisshuijing"] = "",
+	["illustrator:wisshuijing"] = "小仓",
 	["shouye"] = "授业",
 	[":shouye"] = "出牌阶段，你可以弃置一张红色手牌，指定最多两名其他角色各摸一张牌",
 	["@shouye"] = "授业",
@@ -104,31 +122,13 @@ local t = {
 	["forbid_shien:yes"] = "永久关闭【师恩】发动提示（不可逆操作）",
 	["forbid_shien:no"] = "不关闭【师恩】发动提示",
 
-	["cv:wisxuyou"] = "",
-	["cv:wisjiangwei"] = "",
-	["cv:wisjiangwan"] = "",
-	["cv:wissunce"] = "",
-	["cv:wiszhangzhao"] = "",
-	["cv:wishuaxiong"] = "",
-	["cv:wistianfeng"] = "",
-	["cv:wisshuijing"] = "",
-
 	["~wisxuyou"] = "智之许攸，不幸阵亡",
-	["~wisjiangwan"] = "智之蒋琬，不幸阵亡",
 	["~wissunce"] = "智之孙策，不幸阵亡",
 	["~wiszhangzhao"] = "智之张昭，不幸阵亡",
 	["~wishuaxiong"] = "智之华雄，不幸阵亡",
 	["~wistianfeng"] = "智之田丰，不幸阵亡",
 	["~wisshuijing"] = "智之水镜先生，不幸阵亡",
 
-	["illustrator:wisxuyou"] = "三国志大战",
-	["illustrator:wisjiangwei"] = "巴萨小马",
-	["illustrator:wisjiangwan"] = "Zero",
-	["illustrator:wissunce"] = "永恒之轮",
-	["illustrator:wiszhangzhao"] = "三国志大战",
-	["illustrator:wishuaxiong"] = "三国志大战",
-	["illustrator:wistianfeng"] = "小矮米",
-	["illustrator:wisshuijing"] = "小仓",
 }
 
 local generals = {"wisxuyou", "wisjiangwei", "wisjiangwan", "wissunce", "wiszhangzhao", "wishuaxiong", "wistianfeng", "wisshuijing"}

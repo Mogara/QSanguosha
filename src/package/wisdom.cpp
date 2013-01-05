@@ -175,6 +175,7 @@ public:
             Room *room = jiangwei->getRoom();
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
+            room->playSkillEffect(objectName());
             room->throwCard(card);
             room->askForUseCard(jiangwei, "slash", "@askforslash");
         }
