@@ -81,7 +81,7 @@ public:
 
 	// property setters/getters
 	int getHp() const;
-	void setHp(int hp);    
+	void setHp(int hp);
 	int getMaxHP() const;
 	int getMaxHp() const;
 	void setMaxHP(int max_hp);
@@ -383,7 +383,7 @@ struct SlashEffectStruct{
 	SlashEffectStruct();
 
 	const Slash *slash;
-	const Jink *jink;
+	const Card *jink;
 
 	ServerPlayer *from;
 	ServerPlayer *to;
@@ -494,6 +494,7 @@ enum TriggerEvent{
 	SlashMissed,
 
 	CardAsked,
+	CardUsed,
 	CardResponsed,
 	CardDiscarded,
 	CardMoving,
@@ -504,12 +505,11 @@ enum TriggerEvent{
 	CardDrawing,
 	CardDrawnDone,
 
-	CardUsed,
 	CardEffect,
 	CardEffected,
 	CardFinished,
 
-	ChoiceMade,
+	ChoiceMade
 };
 
 class Card: public QObject
@@ -755,7 +755,13 @@ public:
 
 	virtual int getPriority() const;
 	virtual bool triggerable(const ServerPlayer *target) const;
-	virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const = 0;
+	virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const = 0;
+};
+
+%extend TriggerSkill{
+	virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+		return $self->trigger(event, player->getRoom(), player, data);
+	}
 };
 
 class QThread: public QObject{
@@ -815,7 +821,7 @@ public:
 	void slashEffect(const SlashEffectStruct &effect);
 	void slashResult(const SlashEffectStruct &effect, const Card *jink);
 	void attachSkillToPlayer(ServerPlayer *player, const char *skill_name);
-	void detachSkillFromPlayer(ServerPlayer *player, const char *skill_name);
+	void detachSkillFromPlayer(ServerPlayer *player, const char *skill_name, bool showlog = true);
 	bool obtainable(const Card *card, ServerPlayer *player);
 	void setPlayerFlag(ServerPlayer *player, const char *flag);
 	void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);

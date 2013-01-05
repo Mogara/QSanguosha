@@ -85,7 +85,11 @@ void General::addSkill(Skill *skill){
 }
 
 void General::addSkill(const QString &skill_name){
-    extra_set << skill_name;
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(skill)
+        extra_set << skill_name;
+    else
+        addSkill(new Skill(skill_name));
 }
 
 bool General::hasSkill(const QString &skill_name) const{

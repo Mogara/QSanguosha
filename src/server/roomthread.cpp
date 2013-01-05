@@ -159,7 +159,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
         addTriggerSkill(skill);
 
         if(invoke_game_start && skill->getTriggerEvents().contains(GameStart))
-            skill->trigger(GameStart, player, void_data);
+            skill->trigger(GameStart, room, player, void_data);
     }
 }
 
@@ -342,7 +342,7 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
     bool broken = false;
     foreach(const TriggerSkill *skill, skill_table[event]){
         if(skill->triggerable(target)){
-            broken = skill->trigger(event, target, data);
+            broken = skill->trigger(event, room, target, data);
             if(broken)
                 break;
         }

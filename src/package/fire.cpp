@@ -292,9 +292,7 @@ public:
         events << PhaseChange << FinishJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *shuangxiong, QVariant &data) const{
-        Room *room = shuangxiong->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *shuangxiong, QVariant &data) const{
         if(event == PhaseChange){
             if(shuangxiong->getPhase() == Player::Start){
                 room->setPlayerMark(shuangxiong, "shuangxiong", 0);
@@ -339,10 +337,9 @@ public:
         return 2;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *pangde, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *pangde, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(!effect.to->isNude()){
-            Room *room = pangde->getRoom();
             if(pangde->askForSkillInvoke(objectName(), data)){
                 room->playSkillEffect(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
@@ -383,12 +380,11 @@ public:
         return TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *pangtong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *pangtong, QVariant &data) const{
         DyingStruct dying_data = data.value<DyingStruct>();
         if(dying_data.who != pangtong)
             return false;
 
-        Room *room = pangtong->getRoom();
         if(pangtong->askForSkillInvoke(objectName(), data)){
             room->broadcastInvoke("animate", "lightbox:$niepan");
             room->playSkillEffect(objectName());
@@ -440,13 +436,12 @@ public:
         return TriggerSkill::triggerable(target) && !target->getArmor() && target->getMark("qinggang") == 0;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *wolong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *wolong, QVariant &data) const{
         QString pattern = data.toString();
 
         if(pattern != "jink")
             return false;
 
-        Room *room = wolong->getRoom();
         if(wolong->askForSkillInvoke(objectName())){
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");

@@ -42,7 +42,7 @@ public:
     QString getGenderString() const;
 
     void addSkill(Skill* skill);
-    void addSkill(const QString &skill_name);    
+    void addSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
     QList<const Skill *> getVisibleSkillList() const;
     QSet<const Skill *> getVisibleSkills() const;

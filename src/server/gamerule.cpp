@@ -149,9 +149,7 @@ void GameRule::setGameProcess(Room *room) const{
     room->setTag("GameProcess", process);
 }
 
-bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room = player->getRoom();
-
+bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVariant &data) const{
     if(room->getTag("SkipGameRule").toBool()){
         room->removeTag("SkipGameRule");
         return false;
@@ -682,9 +680,7 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
 
 static int Transfiguration = 1;
 
-bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room = player->getRoom();
-
+bool HulaoPassMode::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVariant &data) const{
     switch(event){
     case GameStart:{
             if(player->isLord()){
@@ -795,7 +791,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         break;
     }
 
-    return GameRule::trigger(event, player, data);
+    return GameRule::trigger(event, room, player, data);
 }
 
 BasaraMode::BasaraMode(QObject *parent)
@@ -847,11 +843,11 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
 
     QString answer = room->askForChoice(player, "RevealGeneral", "yes+no");
     if(answer == "yes"){
-
         QString general_name = room->askForGeneral(player,names);
 
         generalShowed(player,general_name);
-        if(Config.EnableHegemony)room->getThread()->trigger(GameOverJudge, player);
+        if(Config.EnableHegemony)
+            room->getThread()->trigger(GameOverJudge, player);
         playerShowed(player);
     }
 }
@@ -909,8 +905,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     room->broadcastInvoke("playAudio","choose-item");
 }
 
-bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room = player->getRoom();
+bool BasaraMode::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVariant &data) const{
     player->tag["event"] = event;
     player->tag["event_data"] = data;
 

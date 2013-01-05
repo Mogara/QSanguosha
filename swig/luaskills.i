@@ -6,7 +6,7 @@ public:
 	void setViewAsSkill(ViewAsSkill *view_as_skill);
 	
 	virtual bool triggerable(const ServerPlayer *target) const;
-	virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+	virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
 
 	LuaFunction on_trigger;
 	LuaFunction can_trigger;
@@ -17,7 +17,7 @@ class GameStartSkill: public TriggerSkill{
 public:
 	GameStartSkill(const QString &name);
 
-	virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+	virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
 	virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
@@ -172,11 +172,10 @@ bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const{
 	}
 }
 
-bool LuaTriggerSkill::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+bool LuaTriggerSkill::trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const{
 	if(on_trigger == 0)
 		return false;
-		
-	Room *room = player->getRoom();
+
 	lua_State *L = room->getLuaState();
 	
 	int e = static_cast<int>(event);

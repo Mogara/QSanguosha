@@ -84,10 +84,9 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        Room* room = player->getRoom();
         if(damage.card && damage.card->inherits("Slash") && damage.card->getSuit() == Card::Heart &&
            !damage.chain && !damage.to->isAllNude() && player->askForSkillInvoke(objectName(), data)){
 
