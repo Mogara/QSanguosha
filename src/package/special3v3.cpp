@@ -64,9 +64,8 @@ public:
         events << CardDrawnDone;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *zhugejin, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhugejin, QVariant &data) const{
         if(zhugejin->getPhase() == Player::Draw && zhugejin->hasFlag("Invoked")){
-            Room* room = zhugejin->getRoom();
             room->setPlayerFlag(zhugejin, "-Invoked");
             if(ServerInfo.GameMode == "06_3v3"){
                 foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
@@ -142,11 +141,10 @@ public:
         return TriggerSkill::triggerable(target) && !target->isNude();
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
 
         bool can_invoke = false;
-        Room* room = player->getRoom();
         if(ServerInfo.GameMode == "06_3v3"){
             foreach(ServerPlayer *teammate, getTeammates(player)){
                 if(teammate->objectName() == judge->who->objectName()){
@@ -202,7 +200,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
@@ -214,7 +212,6 @@ public:
         else
             card = data.value<CardStar>();
 
-        Room* room = player->getRoom();
         int n = 0;
         if(event == CardDiscarded){
             if(card->isVirtualCard()){

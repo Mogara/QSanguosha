@@ -39,9 +39,7 @@ public:
         player->tag.remove("zombie");
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
                 room->acquireSkill(player, "peaching");
@@ -222,20 +220,18 @@ public:
             return x;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zombie, QVariant &data) const{
         if(event == PhaseChange && zombie->getPhase() == Player::Play){
-        int x = getNumDiff(zombie);
-        if(x > 0){
-            Room *room = zombie->getRoom();
-            LogMessage log;
-            log.type = "#ZaibianGood";
-            log.from = zombie;
-            log.arg = QString::number(x);
-            log.arg2 = objectName();
-            room->sendLog(log);
-            zombie->drawCards(x);
-        }
-
+            int x = getNumDiff(zombie);
+            if(x > 0){
+                LogMessage log;
+                log.type = "#ZaibianGood";
+                log.from = zombie;
+                log.arg = QString::number(x);
+                log.arg2 = objectName();
+                room->sendLog(log);
+                zombie->drawCards(x);
+            }
         }
         return false;
     }
@@ -249,7 +245,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zombie, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         const Card *reason = damage.card;
@@ -263,9 +259,10 @@ public:
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(damage.damage + 1);
-            zombie->getRoom()->sendLog(log);
+            room->sendLog(log);
 
-            if(zombie->getHp()>1)zombie->getRoom()->loseHp(zombie);
+            if(zombie->getHp()>1)
+                room->loseHp(zombie);
 
             damage.damage ++;
             data = QVariant::fromValue(damage);

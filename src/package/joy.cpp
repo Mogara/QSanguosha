@@ -261,10 +261,9 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("Peach")){
-            Room *room = player->getRoom();
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
 
             foreach(ServerPlayer *p, players){
@@ -311,7 +310,7 @@ public:
         events << Predamaged;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.nature == DamageStruct::Fire){
             LogMessage log;
@@ -319,7 +318,7 @@ public:
             log.from = player;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(damage.damage + 1);
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             damage.damage ++;
             data = QVariant::fromValue(damage);
@@ -382,9 +381,8 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        Room *room = player->getRoom();
         if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(player, objectName(), data)){
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
             QMutableListIterator<ServerPlayer *> itor(players);

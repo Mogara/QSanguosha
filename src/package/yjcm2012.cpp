@@ -14,8 +14,7 @@ public:
         events << AskForRetrial;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         if(!judge->who->hasSkill(objectName()))
             return false;
@@ -295,8 +294,7 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         if(player->distanceTo(damage.to) == 1 && damage.card && damage.card->inherits("Slash") &&
@@ -370,12 +368,11 @@ public:
         return kingdom_set.size();
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *liaohua, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *liaohua, QVariant &data) const{
         DyingStruct dying_data = data.value<DyingStruct>();
         if(dying_data.who != liaohua)
             return false;
 
-        Room *room = liaohua->getRoom();
         if(liaohua->askForSkillInvoke(objectName(), data)){
             room->broadcastInvoke("animate", "lightbox:$fuli");
             room->playSkillEffect(objectName());
@@ -499,11 +496,10 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(!player->isAlive())
             return false;
 
-        Room *room = player->getRoom();
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
                 (damage.card->isRed() || damage.card->hasFlag("drank"))){
@@ -557,9 +553,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *handang = room->findPlayerBySkillName(objectName());
 
         if(event == Dying){
@@ -668,8 +662,7 @@ public:
         return target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
         QList<ServerPlayer *> targets = (damage && damage->from) ?
                             room->getOtherPlayers(damage->from) : room->getAlivePlayers();
@@ -722,8 +715,7 @@ public:
         view_as_skill = new LihuoViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == Damage){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName())
@@ -787,8 +779,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *chengpu = room->findPlayerBySkillName(objectName());
         if(!chengpu)
             return false;

@@ -88,9 +88,9 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class FanSkill: public OneCardViewAsSkill{
+class FanViewAsSkill: public OneCardViewAsSkill{
 public:
-    FanSkill():OneCardViewAsSkill("fan"){
+    FanViewAsSkill():OneCardViewAsSkill("fan"){
 
     }
 
@@ -99,7 +99,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "slash";
+        return pattern == "slash";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -115,10 +115,30 @@ public:
     }
 };
 
+class FanSkill: public WeaponSkill{
+public:
+    FanSkill():WeaponSkill("fan"){
+        events << SlashEffect;
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(effect.nature == DamageStruct::Normal){
+            if(room->askForSkillInvoke(player, objectName(), data)){
+                effect.nature = DamageStruct::Fire;
+                room->setEmotion(player, "weapon/fan");
+                data = QVariant::fromValue(effect);
+            }
+        }
+
+        return false;
+    }
+};
 
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("fan");
     attach_skill = true;
+    skill = new FanSkill;
 }
 
 class GudingBladeSkill: public WeaponSkill{
@@ -127,12 +147,11 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
             damage.to->isKongcheng())
         {
-            Room *room = damage.to->getRoom();
             room->setEmotion(player, "weapon/guding_blade");
 
             LogMessage log;
@@ -162,43 +181,43 @@ public:
         events << Predamaged << SlashEffected << CardEffected;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.nature == DamageStruct::Normal){
-                player->getRoom()->setEmotion(player, "armor/vine");
+                room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
                 log.arg = objectName();
                 log.arg2 = effect.slash->objectName();
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 return true;
             }
         }else if(event == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card->inherits("AOE")){
-                player->getRoom()->setEmotion(player, "armor/vine");
+                room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
                 log.arg = objectName();
                 log.arg2 = effect.card->objectName();
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 return true;
             }
         }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
-                player->getRoom()->setEmotion(player, "armor/vineburn");
+                room->setEmotion(player, "armor/vineburn");
                 LogMessage log;
                 log.type = "#VineDamage";
                 log.from = player;
                 log.arg = QString::number(damage.damage);
                 log.arg2 = QString::number(damage.damage + 1);
-                player->getRoom()->sendLog(log);
+                room->sendLog(log);
 
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
@@ -220,16 +239,16 @@ public:
         events << Predamaged;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.damage > 1){
-            player->getRoom()->setEmotion(player, "armor/silver_lion");
+            room->setEmotion(player, "armor/silver_lion");
             LogMessage log;
             log.type = "#SilverLion";
             log.from = player;
             log.arg = QString::number(damage.damage);
             log.arg2 = objectName();
-            player->getRoom()->sendLog(log);
+            room->sendLog(log);
 
             damage.damage = 1;
             data = QVariant::fromValue(damage);
@@ -390,7 +409,8 @@ ManeuveringPackage::ManeuveringPackage()
     QList<Card *> cards;
 
     // spade
-    cards << new GudingBlade(Card::Spade, 1)
+    cards
+            << new GudingBlade(Card::Spade, 1)
             << new Vine(Card::Spade, 2)
             << new Analeptic(Card::Spade, 3)
             << new ThunderSlash(Card::Spade, 4)
@@ -405,7 +425,8 @@ ManeuveringPackage::ManeuveringPackage()
             << new Nullification(Card::Spade, 13);
 
     // club
-    cards << new SilverLion(Card::Club, 1)
+    cards
+            << new SilverLion(Card::Club, 1)
             << new Vine(Card::Club, 2)
             << new Analeptic(Card::Club, 3)
             << new SupplyShortage(Card::Club, 4)
@@ -420,7 +441,8 @@ ManeuveringPackage::ManeuveringPackage()
             << new IronChain(Card::Club, 13);
 
     // heart
-    cards << new Nullification(Card::Heart, 1)
+    cards
+            << new Nullification(Card::Heart, 1)
             << new FireAttack(Card::Heart, 2)
             << new FireAttack(Card::Heart, 3)
             << new FireSlash(Card::Heart, 4)
@@ -435,7 +457,8 @@ ManeuveringPackage::ManeuveringPackage()
             << new Nullification(Card::Heart, 13);
 
     // diamond
-    cards << new Fan(Card::Diamond, 1)
+    cards
+            << new Fan(Card::Diamond, 1)
             << new Peach(Card::Diamond, 2)
             << new Peach(Card::Diamond, 3)
             << new FireSlash(Card::Diamond, 4)
@@ -457,7 +480,7 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 
     type = CardPack;
-    skills << new FanSkill;
+    skills << new FanViewAsSkill;
 }
 
 ADD_PACKAGE(Maneuvering)

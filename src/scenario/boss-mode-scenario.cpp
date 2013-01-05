@@ -130,8 +130,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         room->playSkillEffect(objectName());
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
@@ -186,8 +185,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == CardLost){
             if(player->getWeapon() == NULL){
                 if(!player->hasSkill("paoxiao"))
@@ -218,10 +216,9 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(player->getPhase() != Player::Play) return false;
-
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(player->getPhase() != Player::Play)
+            return false;
         if(player->getHp() != player->getMaxHP() && event == Damage){
             RecoverStruct recover;
             recover.who = player;
@@ -355,9 +352,7 @@ public:
         }
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(event){
         case GameStart:{
                 if(player->isLord()){

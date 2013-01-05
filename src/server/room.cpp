@@ -488,7 +488,7 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name){
     player->invoke("attachSkill", skill_name);
 }
 
-void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name){
+void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool showlog){
     if(!player->hasSkill(skill_name))
         return;
 
@@ -501,11 +501,13 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
             detachSkillFromPlayer(player, skill->objectName());
 
-        LogMessage log;
-        log.type = "#LoseSkill";
-        log.from = player;
-        log.arg = skill_name;
-        sendLog(log);
+        if(showlog){
+            LogMessage log;
+            log.type = "#LoseSkill";
+            log.from = player;
+            log.arg = skill_name;
+            sendLog(log);
+        }
     }
 }
 

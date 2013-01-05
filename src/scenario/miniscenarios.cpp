@@ -37,10 +37,8 @@ QStringList MiniSceneRule::existedGenerals() const
     return names;
 }
 
-bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const
+bool MiniSceneRule::trigger(TriggerEvent event,Room*room, ServerPlayer *player, QVariant &data) const
 {
-    Room* room = player->getRoom();
-
     if(event == PhaseChange)
     {
         if(player == room->getTag("Starter").value<PlayerStar>()){
@@ -222,7 +220,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             else continue;
 
             if(skill->getTriggerEvents().contains(GameStart))
-                skill->trigger(GameStart, sp, v);
+                skill->trigger(GameStart, room, sp, v);
         }
 
         QString skills = this->players.at(i)["acquireSkills"];
