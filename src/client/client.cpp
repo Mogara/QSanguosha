@@ -84,6 +84,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["clearPile"] = &Client::clearPile;
     callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["setStatistics"] = &Client::setStatistics;
+    callbacks["setCardFlag"] = &Client::setCardFlag;
 
     // interactive methods
     callbacks["activate"] = &Client::activate;
@@ -1008,6 +1009,18 @@ void Client::setStatistics(const QString &property_str){
         statistics->setStatistics(property_name, value_str);
 
     Self->setStatistics(statistics);
+}
+
+void Client::setCardFlag(const QString &pattern_str){
+    QRegExp rx("(\\w+):(.+)");
+    if(!rx.exactMatch(pattern_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    QString card_str = texts.at(1);
+    QString object = texts.at(2);
+
+    Sanguosha->getCard(card_str.toInt())->setFlags(object);
 }
 
 void Client::updatePileNum(){

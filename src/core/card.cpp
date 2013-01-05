@@ -538,8 +538,11 @@ void Card::setFlags(const QString &flag) const{
         return;
     else if(flag == ".")
         flags.clear();
-    else if(flag.startsWith(symbol_c))
-        flags.removeOne(flag);
+    else if(flag.startsWith(symbol_c)){
+        QString copy = flag;
+        copy.remove(symbol_c);
+        flags.removeOne(copy);
+    }
     else
         flags << flag;
 }

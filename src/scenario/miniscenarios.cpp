@@ -77,16 +77,20 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
     if(room->getTag("WaitForPlayer").toBool())
         return true;
 
-    room->broadcastInvoke("animate", "lightbox:" + objectName() + ":2000");
-    room->getThread()->delay(2000);
-    LogMessage log;
-    log.type = "#MiniSceneChanged";
-    log.arg = id;
-    log.arg2 = objectName();
-    room->sendLog(log);
-    log.type = QString("#mini_%1").arg(id);
-    room->sendLog(log);
+    if(event == GameStart){
+        if (objectName().startsWith("_mini_")) {
+            room->broadcastInvoke("animate", "lightbox:" + objectName() + ":2000");
+            room->getThread()->delay(2000);
 
+            LogMessage log;
+            log.type = "#MiniSceneChanged";
+            log.arg = id;
+            log.arg2 = objectName();
+            room->sendLog(log);
+            log.type = QString("#mini_%1").arg(id);
+            room->sendLog(log);
+        }
+    }
     QList<ServerPlayer*> players = room->getAllPlayers();
     while(players.first()->getState() == "robot")
         players.append(players.takeFirst());

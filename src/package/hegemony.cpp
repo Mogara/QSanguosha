@@ -86,11 +86,12 @@ bool DuoshiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && to_select != Self;
 }
 
-void DuoshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    source->drawCards(2);
-    targets[1]->drawCards(2);
-    room->askForDiscard(source, skill_name, 2,2, false, true);
-    room->askForDiscard(targets[1], skill_name, 2,2, false, true);
+void DuoshiCard::onEffect(const CardEffectStruct &effect) const{
+    effect.from->drawCards(2);
+    effect.to->drawCards(2);
+    Room *room = effect.from->getRoom();
+    room->askForDiscard(effect.from, skill_name, 2,2, false, true);
+    room->askForDiscard(effect.to, skill_name, 2,2, false, true);
 }
 
 class Duoshi: public OneCardViewAsSkill{
@@ -137,16 +138,16 @@ public:
 
 FenxunCard::FenxunCard(){
     once = true;
-    will_throw = false;
 }
 
 bool FenxunCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select != Self;
 }
 
-void FenxunCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->setPlayerMark(targets[1], "fenxuntarget", 1);
-    room->setFixedDistance(source, targets[1], 1);
+void FenxunCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    room->setPlayerMark(effect.to, "fenxuntarget", 1);
+    room->setFixedDistance(effect.from, effect.to, 1);
 }
 
 class FenxunViewAsSkill: public OneCardViewAsSkill{
