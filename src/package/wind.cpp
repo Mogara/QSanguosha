@@ -403,7 +403,7 @@ public:
             if(invoke){
                 Room *room = player->getRoom();
 
-                room->playSkillEffect(objectName());
+                room->playSkillEffect(objectName(), damage.to == player ? 3: qrand() % 2 + 1);
 
                 LogMessage log;
                 log.type = "#TriggerSkill";
