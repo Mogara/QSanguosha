@@ -1644,6 +1644,10 @@ public:
 PasterPackage::PasterPackage()
     :Package("paster")
 {
+    General *xinxianying = new General(this, "xinxianying", "wei", 3, false);
+    xinxianying->addSkill(new Mingjian);
+    xinxianying->addSkill(new Yinzhi);
+
     General *wangyuanji = new General(this, "wangyuanji", "wei", 3, false);
     wangyuanji->addSkill(new Fuluan);
     wangyuanji->addSkill(new Shude);

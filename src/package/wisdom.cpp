@@ -663,11 +663,7 @@ public:
         return true;
     }
 
-<<<<<<< HEAD
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
-=======
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
->>>>>>> b9d4cda8ab9daf0554067670173c0c74ee33cf72
         if(player->getPhase() != Player::Judge || player->getJudgingArea().length() == 0)
             return false;
         QList<ServerPlayer *> tians = room->findPlayersBySkillName(objectName());
@@ -748,12 +744,8 @@ public:
         log.type = "#YuwenEffect";
         log.from = tianfeng;
         log.arg = objectName();
-<<<<<<< HEAD
-        tianfeng->getRoom()->sendLog(log);
         tianfeng->playSkillEffect(objectName());
-=======
         room->sendLog(log);
->>>>>>> b9d4cda8ab9daf0554067670173c0c74ee33cf72
 
         return false;
     }
@@ -845,7 +837,6 @@ public:
         return !target->hasSkill(objectName());
     }
 
-<<<<<<< HEAD
     static bool isLongfeng(ServerPlayer *me){
         QString gen = me->getGeneralName();
         if(gen.contains("zhugeliang"))
@@ -855,10 +846,7 @@ public:
         return gen == "wolong";
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-=======
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
->>>>>>> b9d4cda8ab9daf0554067670173c0c74ee33cf72
         if(player->getMark("forbid_shien") > 0)
             return false;
         CardStar card = NULL;
