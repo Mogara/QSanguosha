@@ -184,7 +184,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
-    if(Self && general->objectName() == Self->getGeneralName())
+    if(Self && general_name == Self->getGeneralName())
         ui->changeGeneralButton->setEnabled(false);
     else
         ui->changeGeneralButton->setEnabled(true);
@@ -201,19 +201,18 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     resetButtons();
 
-    foreach(const Skill *skill, skills){
+    foreach(const Skill *skill, skills)
         addLines(skill);
-    }
 
-    QString last_word = Sanguosha->translate("~" + general->objectName());
+    QString last_word = Sanguosha->translate("~" + general_name);
     if(last_word.startsWith("~")){
-        QStringList origin_generals = general->objectName().split("_");
+        QStringList origin_generals = general_name.split("_");
         if(origin_generals.length()>1)
             last_word = Sanguosha->translate(("~") +  origin_generals.at(1));
     }
 
-    if(last_word.startsWith("~") && general->objectName().endsWith("f")){
-        QString origin_general = general->objectName();
+    if(last_word.startsWith("~") && general_name.endsWith("f")){
+        QString origin_general = general_name;
         origin_general.chop(1);
         if(Sanguosha->getGeneral(origin_general))
             last_word = Sanguosha->translate(("~") + origin_general);
@@ -243,19 +242,19 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         connect(win_button, SIGNAL(clicked()), this, SLOT(playEffect()));
     }
 
-    QString designer_text = Sanguosha->translate("designer:" + general->objectName());
+    QString designer_text = Sanguosha->translate("designer:" + general_name);
     if(!designer_text.startsWith("designer:"))
         ui->designerLineEdit->setText(designer_text);
     else
         ui->designerLineEdit->setText(tr("Official"));
 
-    QString cv_text = Sanguosha->translate("cv:" + general->objectName());
+    QString cv_text = Sanguosha->translate("cv:" + general_name);
     if(!cv_text.startsWith("cv:"))
         ui->cvLineEdit->setText(cv_text);
     else
         ui->cvLineEdit->setText(tr("Official"));
 
-    QString illustrator_text = Sanguosha->translate("illustrator:" + general->objectName());
+    QString illustrator_text = Sanguosha->translate("illustrator:" + general_name);
     if(!illustrator_text.startsWith("illustrator:"))
         ui->illustratorLineEdit->setText(illustrator_text);
     else

@@ -436,7 +436,7 @@ sgs.ai_skill_use_func.YanxiaoCard=function(card,use,self)
 	local target
 	for _, friend in ipairs(self.friends_noself) do
 		local judges = friend:getJudgingArea()
-		if not judges:isEmpty() and friend:getPile("smile"):isEmpty() then
+		if not judges:isEmpty() and friend:property("yanxiao"):toInt() < 1 then
 			for _, card in ipairs(cards) do
 				if card:getSuit() == sgs.Card_Diamond and self.player:getHandcardNum() > 1 then
 					use.card = sgs.Card_Parse("@YanxiaoCard=" .. card:getEffectiveId())
@@ -447,7 +447,7 @@ sgs.ai_skill_use_func.YanxiaoCard=function(card,use,self)
 		end
 		if target then break end
 	end
-	if not target and self.player:getPile("smile"):isEmpty() then
+	if not target and self.player:property("yanxiao"):toInt() < 1 then
 		for _, card in ipairs(cards) do
 			if card:getSuit() == sgs.Card_Diamond  then
 				use.card = sgs.Card_Parse("@YanxiaoCard=" .. card:getEffectiveId())

@@ -89,4 +89,12 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class MingjianCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MingjianCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 #endif // BGMPACKAGE_H

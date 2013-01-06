@@ -343,7 +343,8 @@ void Room::judge(JudgeStruct &judge_struct){
 
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
-        thread->trigger(AskForRetrial, player, data);
+        if(thread->trigger(AskForRetrial, player, data))
+            break;
     }
 
     thread->trigger(FinishJudge, judge_star->who, data);
@@ -2058,15 +2059,19 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
     if(!victim)
         return;
     int hp = victim->getHp();
-    if(lose > 0)
-        Sanguosha->playAudio("maxhplost");
-    victim->setMaxHP(qMax(victim->getMaxHP() - lose, 0));
+    int maxhp = qMax(victim->getMaxHp() - lose, 0);
+    victim->setMaxHp(maxhp);
 
-    broadcastProperty(victim, "maxhp");
-    broadcastProperty(victim, "hp");
+    bool hp_changed = hp - victim->getHp() != 0;
 
+    setPlayerProperty(victim, "maxhp", maxhp);
+
+    if(hp_changed)
+        setPlayerProperty(victim, "hp", victim->getHp());
+
+    broadcastInvoke("maxhpChange", QString("%1:%2").arg(victim->objectName()).arg(-lose));
     LogMessage log;
-    log.type = hp - victim->getHp() == 0 ? "#LoseMaxHp" : "#LostMaxHpPlus";
+    log.type = !hp_changed ? "#LoseMaxHp" : "#LostMaxHpPlus";
     log.from = victim;
     log.arg = QString::number(lose);
     log.arg2 = QString::number(hp - victim->getHp());

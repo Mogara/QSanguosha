@@ -12,21 +12,26 @@ LuoyiCard::LuoyiCard(){
 }
 
 void LuoyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    if(room->askForCard(source, ".Equip", "@luoyi-discard", QVariant(), CardDiscarded))
-        source->setFlags("luoyi");
+    room->setPlayerFlag(source, "luoyi");
 }
 
-class NeoLuoyi: public ZeroCardViewAsSkill{
+class NeoLuoyi: public OneCardViewAsSkill{
 public:
-    NeoLuoyi():ZeroCardViewAsSkill("neoluoyi"){
+    NeoLuoyi():OneCardViewAsSkill("neoluoyi"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("LuoyiCard") && !player->isNude();
     }
 
-    virtual const Card *viewAs() const{
-        return new LuoyiCard;
+    virtual bool viewFilter(const CardItem *card) const{
+        return card->getCard()->isKindOf("EquipCard");
+    }
+
+    virtual const Card *viewAs(CardItem *ori) const{
+        LuoyiCard *card = new LuoyiCard;
+        card->addSubcard(ori->getFilteredCard());
+        return card;
     }
 };
 

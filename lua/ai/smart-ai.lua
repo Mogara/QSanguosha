@@ -19,12 +19,6 @@ function CloneAI(player)
 	return SmartAI(player).lua_ai
 end
 
-sgs.DamagedProceed = sgs.DamagedProceed or sgs.Predamaged
-sgs.DamageProceed = sgs.DamageProceed or Predamage
-sgs.DamageForseen = sgs.DamageForseen or sgs.Predamage
-sgs.DamageCaused = sgs.DamageCaused or sgs.Predamage
-sgs.DamageInflicted = sgs.DamageInflicted or sgs.Predamage
-
 sgs.ais = {}
 sgs.ai_card_intention = 	{}
 sgs.ai_playerchosen_intention = {}

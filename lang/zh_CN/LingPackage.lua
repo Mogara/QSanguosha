@@ -12,12 +12,10 @@ return {
 	["neoganglie:throw"] = "令伤害来源弃置两张手牌",
 	["neoganglie:damage"] = "对伤害来源造成1点伤害",
 
-
 	["#neo_xuchu"] = "虎痴",
 	["neo_xuchu"] = "翼许褚",
 	["neoluoyi"] = "裸衣",
 	[":neoluoyi"] = "出牌阶段，你可以弃置一张装备牌，若如此做，你使用的【杀】或【决斗】（你为伤害来源时）造成的伤害+1，直到回合结束。每阶段限一次。",
-	["@luoyi-discard"] = "请弃置一张装备牌",
 	["luoyi:yes"] = "本回合你的【杀】和【决斗】所造成的伤害都+1",
 	["#LuoyiBuff"] = "%from 赤膊上阵，伤害从 %arg 点上升至 %arg2 点。",
 
@@ -25,7 +23,6 @@ return {
 	["neo_caoren"] = "翼曹仁",
 	["neojushou"] = "据守",
 	[":neojushou"] = "回合结束阶段开始时，你可以摸2+X张牌（X为你已损失的体力值），然后将你的武将牌翻面。",
-
 
 	["#neo_guanyu"] = "美髯公",
 	["neo_guanyu"] = "翼关羽",
@@ -48,7 +45,6 @@ return {
 	["#neo_zhaoyun"] = "少年将军",
 	["neo_zhaoyun"] = "翼赵云",
 	["designer:neo_zhaoyun"] = "凌天翼",
-
 
 	["#neo_zhouyu"] = "大都督",
 	["neo_zhouyu"] = "翼周瑜",
