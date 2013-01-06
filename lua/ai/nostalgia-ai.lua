@@ -197,3 +197,67 @@ sgs.ai_skill_playerchosen.nosxuanfeng_slash = sgs.ai_skill_playerchosen.zero_car
 
 sgs.ai_playerchosen_intention.nosxuanfeng_damage = 80
 sgs.ai_playerchosen_intention.nosxuanfeng_slash = 80
+
+sgs.ai_view_as.nosgongqi = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:getTypeId() == sgs.Card_Equip then
+		return ("slash:nosgongqi[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
+
+local nosgongqi_skill={}
+nosgongqi_skill.name="nosgongqi"
+table.insert(sgs.ai_skills,wusheng_skill)
+nosgongqi_skill.getTurnUseCard=function(self,inclusive)
+	local cards = self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+	
+	local equip_card
+	
+	self:sortByUseValue(cards,true)
+	
+	for _,card in ipairs(cards) do
+		if card:getTypeId() == sgs.Card_Equip and ((self:getUseValue(card)<sgs.ai_use_value.Slash) or inclusive) then
+			equip_card = card
+			break
+		end
+	end
+
+	if equip_card then		
+		local suit = equip_card:getSuitString()
+		local number = equip_card:getNumberString()
+		local card_id = equip_card:getEffectiveId()
+		local card_str = ("slash:nosgongqi[%s:%s]=%d"):format(suit, number, card_id)
+		local slash = sgs.Card_Parse(card_str)
+		
+		assert(slash)
+		
+		return slash
+	end
+end
+
+sgs.ai_skill_invoke.nosjiefan = function(self, data)
+	local dying = data:toDying()
+	local slashnum = 0
+	local friend = dying.who
+	local currentplayer = self.room:getCurrent()
+	for _, slash in ipairs(self:getCards("Slash")) do
+		if self:slashIsEffective(slash, currentplayer) then 
+			slashnum = slashnum + 1  
+		end 
+	end
+	return self:isFriend(friend) and not (self:isEnemy(currentplayer) and currentplayer:hasSkill("leiji") 
+		and (currentplayer:getHandcardNum() > 2 or self:isEquip("EightDiagram", currentplayer))) and slashnum > 0
+end
+
+sgs.ai_skill_cardask["nosjiefan-slash"] = function(self, data, pattern, target)
+	target = target or global_room:getCurrent()
+	for _, slash in ipairs(self:getCards("Slash")) do
+		if self:slashIsEffective(slash, target) then 
+			return slash:toString()
+		end 
+	end
+	return "."
+end

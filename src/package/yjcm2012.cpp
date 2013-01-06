@@ -5,7 +5,6 @@
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
-#include "god.h"
 #include "maneuvering.h"
 
 class Zhenlie: public TriggerSkill{
@@ -517,87 +516,81 @@ public:
     }
 };
 
-class Gongqi : public OneCardViewAsSkill{
+GongqiCard::GongqiCard(){
+}
+
+bool GongqiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+    return true;
+}
+
+bool GongqiCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
+    if(Sanguosha->getCard(getSubcards().first())->isKindOf("EquipCard"))
+        return targets.length() <= 1;
+    else
+        return targets.isEmpty();
+}
+
+void GongqiCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    if(effect.card->isKindOf("EquipCard")){
+        int card_id = room->askForCardChosen(effect.from, effect.to, "he", skill_name);
+        room->throwCard(card_id);
+    }
+    room->setPlayerFlag(effect.from, "gongqi_range");
+}
+
+class Gongqi: public OneCardViewAsSkill{
 public:
     Gongqi():OneCardViewAsSkill("gongqi"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return Slash::IsAvailable(player);
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "slash";
-    }
-
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getFilteredCard()->getTypeId() == Card::Equip;
-    }
-
-    const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getFilteredCard();
-        WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
-        slash->addSubcard(card);
-        slash->setSkillName(objectName());
-        return slash;
-    }
-};
-
-class Jiefan : public TriggerSkill{
-public:
-    Jiefan():TriggerSkill("jiefan"){
-        events << Dying << SlashHit << SlashMissed << CardFinished;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *handang = room->findPlayerBySkillName(objectName());
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("GongqiCard");
+    }
 
-        if(event == Dying){
-            DyingStruct dying = data.value<DyingStruct>();
-            if(!handang || !dying.savers.contains(handang) || dying.who->getHp() > 0 || handang->isNude() || !room->askForSkillInvoke(handang, objectName(), data))
-                return false;
+    virtual const Card *viewAs(CardItem *card_item) const{
+        Card *card = new GongqiCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
+};
 
-            const Card *slash = room->askForCard(handang, "slash", "jiefan-slash:" + dying.who->objectName(), data);
-            slash->setFlags("jiefan-slash");
-            room->setTag("JiefanTarget", data);
-            if(slash){
-                CardUseStruct use;
-                use.card = slash;
-                use.from = handang;
-                use.to << room->getCurrent();
-                room->useCard(use);
-            }
+JiefanCard::JiefanCard(){
+}
+
+bool JiefanCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
+    return targets.isEmpty();
+}
+
+void JiefanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &tar) const{
+    source->loseMark("@bother");
+    PlayerStar target = tar.first();
+    foreach(ServerPlayer *p, room->getAllPlayers()){
+        if(p->inMyAttackRange(target)){
+            if(!room->askForCard(p, "Weapon", "@jiefan:" + source->objectName() + ":" + target->objectName(), QVariant(), CardDiscarded))
+                target->drawCards(1);
         }
-        else if(event == SlashHit){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(!player->hasSkill(objectName())
-               || room->getTag("JiefanTarget").isNull())
-                return false;
+    }
+}
 
-            DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
-            ServerPlayer *target = dying.who;
-            room->removeTag("JiefanTarget");
-            Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
-            peach->setSkillName(objectName());
-            CardUseStruct use;
-            use.card = peach;
-            use.from = handang;
-            use.to << target;
-            room->useCard(use);
+class Jiefan:public ZeroCardViewAsSkill{
+public:
+    Jiefan():ZeroCardViewAsSkill("jiefan"){
+        frequency = Limited;
+    }
 
-            return true;
-        }
-        else if(event == SlashMissed)
-            room->removeTag("JiefanTarget");
-        else
-            if(!room->getTag("JiefanTarget").isNull())
-                room->removeTag("JiefanTarget");
+    virtual const Card *viewAs() const{
+        return new JiefanCard;
+    }
 
-        return false;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@bother") >= 1;
     }
 };
 
@@ -850,6 +843,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *handang = new General(this, "handang", "wu");
     handang->addSkill(new Gongqi);
     handang->addSkill(new Jiefan);
+    handang->addSkill(new MarkAssignSkill("@bother", 1));
 
     General *liubiao = new General(this, "liubiao", "qun", 4);
     liubiao->addSkill(new Zishou);
@@ -861,6 +855,8 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     addMetaObject<QiceCard>();
     addMetaObject<ChunlaoCard>();
     addMetaObject<AnxuCard>();
+    addMetaObject<GongqiCard>();
+    addMetaObject<JiefanCard>();
 }
 
 ADD_PACKAGE(YJCM2012)
