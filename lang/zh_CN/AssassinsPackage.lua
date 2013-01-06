@@ -119,7 +119,7 @@ return {
 	["#ass_caocao"] = "魏武帝",
 	["ass_caocao"] = "铜雀台曹操",
 	["illustrator:ass_caocao"] = "周润发",
-	["cv:ass_caocao"] = "",
+	["cv:ass_caocao"] = "太阳神配音组",
 	["#caocaot"] = "入戏",
 	[":#caocaot"] = "<b>限定技</b>，游戏开始时，你可以选择变身为铜雀台曹操",
 

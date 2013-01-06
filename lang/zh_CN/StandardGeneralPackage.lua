@@ -330,7 +330,7 @@ return {
 	["~huatuo"] = "医者难自医啊……",
 	["~diaochan"] = "父亲大人，对不起",
 
-	["cv:caocao"] = "鬼叔",
+	["cv:caocao"] = "鬼叔，倚天の剑",
 	["cv:zhangliao"] = "裤衩",
 	["cv:guojia"] = "鬼叔",
 	["cv:xiahoudun"] = "裤衩",

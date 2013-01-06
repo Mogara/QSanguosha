@@ -50,8 +50,52 @@
 
 #endif
 
-static QPointF DiscardedPos(-6, 8);
-static QPointF DrawPilePos(-108, 8);
+struct RoomLayout {
+    QPointF discard, drawpile;
+    QPointF enemy_box, self_box;
+    QSize chat_box_size;
+    QPointF chat_box_pos;
+    QPointF button1_pos, button2_pos;
+    QPointF state_item_pos;
+};
+
+struct NormalRoomLayout : public RoomLayout{
+    NormalRoomLayout(){
+        discard = QPointF(-6, 8);
+        drawpile = QPointF(-108, 8);
+        enemy_box = QPointF(-246, -307);
+        self_box = QPointF(360, -90);
+        chat_box_size = QSize(230, 175);
+        chat_box_pos = QPointF(-343, -83);
+        button1_pos = QPointF(15, 5);
+        button2_pos = QPointF(15, 60);
+        state_item_pos = QPointF(-110, -80);
+    }
+};
+
+struct CircularRoomLayout : public RoomLayout{
+    CircularRoomLayout(){
+        discard = QPointF(-140, 30);
+        drawpile = QPointF(-260, 30);
+        enemy_box = QPointF(-391, -323);
+        self_box = QPointF(201, -90);
+        chat_box_size = QSize(268, 165);
+        chat_box_pos = QPointF(367, -38);
+        button1_pos = QPointF(-565,205);
+        button2_pos = QPointF(-565, 260);
+        state_item_pos = QPointF(367, -325); // -320
+    }
+};
+
+static RoomLayout *GetRoomLayout(){
+    static NormalRoomLayout normal;
+    static CircularRoomLayout circular;
+    //return Config.CircularView ? &circular : &normal;
+    if(Config.CircularView){
+        return &circular;
+    }else
+        return &normal;
+}
 
 RoomScene *RoomSceneInstance;
 
@@ -65,11 +109,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
+    room_layout = GetRoomLayout();
+
     bool circular = Config.CircularView;
-    if(circular){
-        DiscardedPos = QPointF(-140, 30);
-        DrawPilePos = QPointF(-260, 30);
-    }
 
     // create photos
     int i;
@@ -238,14 +280,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
             enemy_box->hide();
             self_box->hide();
-
-            if(circular){
-                enemy_box->setPos(-361, -343);
-                self_box->setPos(201, -90);
-            }else{
-                enemy_box->setPos(-216, -327);
-                self_box->setPos(360, -90);
-            }
+            enemy_box->setPos(room_layout->enemy_box);
+            self_box->setPos(room_layout->self_box);
 
             connect(ClientInstance, SIGNAL(general_revealed(bool,QString)), this, SLOT(revealGeneral(bool,QString)));
         }
@@ -261,11 +297,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // chat box
         chat_box = new QTextEdit;
-        chat_box->resize(230 + widen_width, 175);
+        QSize chat_box_size = room_layout->chat_box_size;
+        chat_box_size.rwidth() += widen_width;
+        chat_box->resize(chat_box_size);
         chat_box->setObjectName("chat_box");
 
         chat_box_widget = addWidget(chat_box);
-        chat_box_widget->setPos(-343 - widen_width, -83);
+        QPointF chat_box_pos = room_layout->chat_box_pos;
+        chat_box_pos.rx() -= widen_width;
+        chat_box_widget->setPos(chat_box_pos);
         chat_box_widget->setZValue(-2.0);
         chat_box_widget->setObjectName("chat_box_widget");
 
@@ -727,7 +767,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 void RoomScene::drawCards(const QList<const Card *> &cards){
     foreach(const Card * card, cards){
         CardItem *item = new CardItem(card);
-        item->setPos(DrawPilePos);
+        item->setPos(room_layout->drawpile);
         item->setEnabled(false);
         dashboard->addCardItem(item);
     }
@@ -747,7 +787,7 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
         addItem(pixmap);
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
-        ugoku->setStartValue(DrawPilePos);
+        ugoku->setStartValue(room_layout->drawpile);
         ugoku->setDuration(800);
         ugoku->setEasingCurve(QEasingCurve::OutQuad);
         ugoku->setEndValue(photo->pos() + QPointF(20 *i, 0));
@@ -1027,12 +1067,12 @@ void RoomScene::viewDiscards(){
         width = qMax(width, 200);
 
         int start = (mid - width)/2;
-        int y     = DiscardedPos.y() - 140;
+        int y     = room_layout->discard.y() - 140;
         if(!Config.CircularView)
         {
             width = 0;
-            start = DiscardedPos.x();
-            y     = DiscardedPos.y();
+            start = room_layout->discard.x();
+            y     = room_layout->discard.y();
         }
 
         int i;
@@ -1074,7 +1114,7 @@ void RoomScene::hideDiscards(){
     int i = 1;
     foreach(CardItem *card_item, discarded_queue){
         card_item->setZValue(0.0001 * i++ - 0.8);
-        card_item->setHomePos(DiscardedPos);
+        card_item->setHomePos(room_layout->discard);
         card_item->goBack();
         card_item->setEnabled(true);
         card_item->setOpacity(1.0);
@@ -1126,7 +1166,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     // from draw pile
     if(src_place == Player::DrawPile){
         card_item = new CardItem(Sanguosha->getCard(card_id));
-        card_item->setPos(DrawPilePos);
+        card_item->setPos(room_layout->drawpile);
         return card_item;
     }
 
@@ -1148,7 +1188,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
 
     if(card_item == NULL){
         card_item = new CardItem(Sanguosha->getCard(card_id));
-        card_item->setPos(DiscardedPos);
+        card_item->setPos(room_layout->discard);
     }
 
     card_item->disconnect(this);
@@ -1289,11 +1329,11 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
 
         }else if(dest_place == Player::DrawPile){
-            card_item->setHomePos(DrawPilePos);
+            card_item->setHomePos(room_layout->drawpile);
             card_item->goBack(true);
         }else if(dest_place == Player::Special){
             special_card = card_item;
-            card_item->setHomePos(DrawPilePos);
+            card_item->setHomePos(room_layout->drawpile);
             card_item->goBack();
         }
 
@@ -3010,7 +3050,7 @@ void RoomScene::createStateItem(){
     QPixmap state("image/system/state.png");
 
     state_item = addPixmap(state);//QPixmap("image/system/state.png"));
-    state_item->setPos(-110, -80);
+    state_item->setPos(room_layout->state_item_pos);
     state_item->setZValue(-1.0);
     char roles[100] = {0};
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
@@ -3037,11 +3077,11 @@ void RoomScene::createStateItem(){
 
         add_robot = new Button(tr("Add a robot"));
         add_robot->setParentItem(control_panel);
-        add_robot->setPos(15, 5);
+        add_robot->setPos(room_layout->button1_pos);
 
         fill_robots = new Button(tr("Fill robots"));
         fill_robots->setParentItem(control_panel);
-        fill_robots->setPos(15, 60);
+        fill_robots->setPos(room_layout->button2_pos);
 
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));
@@ -3273,7 +3313,7 @@ void RoomScene::onGameStart(){
     drawPile = new Pixmap("image/system/card-back.png");
     addItem(drawPile);
     drawPile->setZValue(-2.0);
-    drawPile->setPos(DrawPilePos);
+    drawPile->setPos(room_layout->drawpile);
     QGraphicsDropShadowEffect *drp = new QGraphicsDropShadowEffect;
     drp->setOffset(6);
     drp->setColor(QColor(0,0,0));
