@@ -534,7 +534,7 @@ bool GongqiCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 void GongqiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    if(effect.card->isKindOf("EquipCard")){
+    if(Sanguosha->getCard(getSubcards().first())->isKindOf("EquipCard")){
         int card_id = room->askForCardChosen(effect.from, effect.to, "he", skill_name);
         room->throwCard(card_id);
     }
@@ -570,6 +570,7 @@ bool JiefanCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JiefanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &tar) const{
     source->loseMark("@bother");
+    room->broadcastInvoke("animate", "lightbox:$jiefan");
     PlayerStar target = tar.first();
     foreach(ServerPlayer *p, room->getAllPlayers()){
         if(p->inMyAttackRange(target)){
@@ -805,8 +806,9 @@ public:
 };
 
 
-YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
-
+YJCM2012Package::YJCM2012Package()
+    :Package("YJCM2012")
+{
     General *wangyi = new General(this, "wangyi", "wei", 3, false);
     wangyi->addSkill(new Zhenlie);
     wangyi->addSkill(new Miji);

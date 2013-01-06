@@ -58,7 +58,7 @@ return {
 	["~noslingtong"] = "大丈夫……不惧死亡……",
 
 	["#noshandang"] = "石城侯",
-	["noshandang"] = "韩当",
+	["noshandang"] = "旧版韩当",
 	["designer:noshandang"] = "ByArt",
 	["illustrator:noshandang"] = "DH",
 	["cv:noshandang"] = "风叹息",

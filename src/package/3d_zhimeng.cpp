@@ -208,6 +208,7 @@ public:
 
 XunguiCard::XunguiCard(){
     target_fixed = true;
+    will_throw = false;
 }
 
 void XunguiCard::use(Room *room, ServerPlayer *player, const QList<ServerPlayer *> &) const{
