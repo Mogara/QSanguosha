@@ -90,7 +90,7 @@ void Skill::playEffect(int index) const{
         if(index == -1)
             index = qrand() % sources.length();
         else
-            index--;
+            index --;
 
         // check length
         QString filename;
@@ -243,7 +243,7 @@ int MasochismSkill::getPriority() const{
     return -1;
 }
 
-bool MasochismSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+bool MasochismSkill::trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &data) const{
     DamageStruct damage = data.value<DamageStruct>();
 
     if(player->isAlive())
@@ -258,7 +258,7 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
     events << PhaseChange;
 }
 
-bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
+bool PhaseChangeSkill::trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &) const{
     bool skipped = onPhaseChange(player);
     if(skipped)
         player->skip(player->getPhase());
@@ -272,7 +272,7 @@ DrawCardsSkill::DrawCardsSkill(const QString &name)
     events << DrawNCards;
 }
 
-bool DrawCardsSkill::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+bool DrawCardsSkill::trigger(TriggerEvent event, Room*, ServerPlayer *player, QVariant &data) const{
     int n = data.toInt();
     data = getDrawNum(player, n);
     return false;
@@ -284,7 +284,7 @@ SlashBuffSkill::SlashBuffSkill(const QString &name)
     events << SlashProceed;
 }
 
-bool SlashBuffSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+bool SlashBuffSkill::trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &data) const{
     if(data.canConvert<SlashEffectStruct>()){
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
@@ -301,7 +301,7 @@ GameStartSkill::GameStartSkill(const QString &name)
     events << GameStart;
 }
 
-bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
+bool GameStartSkill::trigger(TriggerEvent , Room*, ServerPlayer *player, QVariant &) const{
     onGameStart(player);
     return false;
 }

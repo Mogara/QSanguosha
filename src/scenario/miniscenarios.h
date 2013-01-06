@@ -15,7 +15,7 @@ public:
 
     QStringList existedGenerals() const;
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 
     void addNPC(QString feature);
     void setOptions(QStringList option);
