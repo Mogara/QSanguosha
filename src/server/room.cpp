@@ -343,7 +343,8 @@ void Room::judge(JudgeStruct &judge_struct){
 
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
-        thread->trigger(AskForRetrial, player, data);
+        if(thread->trigger(AskForRetrial, player, data))
+            break;
     }
 
     thread->trigger(FinishJudge, judge_star->who, data);

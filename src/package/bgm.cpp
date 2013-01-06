@@ -1641,12 +1641,137 @@ public:
     }
 };
 
+MingjianCard::MingjianCard(){
+    will_throw = false;
+    target_fixed = true;
+}
+
+void MingjianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &) const{
+    ServerPlayer *target = room->getCurrent();
+    foreach(int id, getSubcards())
+        target->addToPile("jian", id);
+}
+
+class MingjianViewAsSkill: public OneCardViewAsSkill{
+public:
+    MingjianViewAsSkill():OneCardViewAsSkill("mingjian"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@@mingjian";
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        Card *card = new MingjianCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
+};
+
+class Mingjian:public PhaseChangeSkill{
+public:
+    Mingjian():PhaseChangeSkill("mingjian"){
+        view_as_skill = new MingjianViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        if(player->getPhase() == Player::NotActive){
+            player->clearPile("jian");
+            return false;
+        }
+        ServerPlayer *xin = room->findPlayerBySkillName(objectName());
+        if(!xin || player->getPhase() != Player::Start || xin->isNude())
+            return false;
+        QString choice = room->askForChoice(xin, objectName(), !player->getJudgingArea().isEmpty() ? "ming+jian+cancel" : "jian+cancel");
+        if(choice == "cancel")
+            return false;
+        if(choice == "ming"){
+            if(room->askForCard(xin, "..", "@mingjian1:" + player->objectName(), QVariant::fromValue((PlayerStar)player), CardDiscarded))
+                player->skip(Player::Judge);
+        }
+        else
+            room->askForUseCard(xin, "@@mingjian", "@mingjian2:" + player->objectName());
+
+        return false;
+    }
+};
+
+class MingjianStop: public TriggerSkill{
+public:
+    MingjianStop():TriggerSkill("#mingjian-stop"){
+        events << AskForRetrial;
+    }
+
+    virtual int getPriority() const{
+        return 5;
+    }
+
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &data) const{
+        JudgeStar judge = data.value<JudgeStar>();
+        return !judge->who->getPile("jian").isEmpty();
+    }
+};
+
+class Yinzhi:public MasochismSkill{
+public:
+    Yinzhi():MasochismSkill("yinzhi"){
+        frequency = Frequent;
+    }
+
+    virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
+        Room *room = guojia->getRoom();
+
+        if(!damage.from || !room->askForSkillInvoke(guojia, objectName()))
+            return;
+
+        room->playSkillEffect(objectName());
+
+        for(int i=0; i< damage.damage; i++){
+            QList<int> card_ids = room->getNCards(2);
+            room->fillAG(card_ids);
+            foreach(int id, card_ids){
+                CardStar card = Sanguosha->getCard(id);
+                if(card->getSuit() == Card::Spade){
+                    if(!damage.from->isKongcheng()){
+                        ServerPlayer *target = room->askForPlayerChosen(guojia, room->getOtherPlayers(damage.from), objectName());
+                        room->obtainCard(target, room->askForCardChosen(target, damage.from, "h", objectName()), false);
+                    }
+                    room->throwCard(id);
+                }
+                else
+                    room->obtainCard(guojia, id);
+            }
+            room->broadcastInvoke("clearAG");
+        }
+
+    }
+};
+
 PasterPackage::PasterPackage()
     :Package("paster")
 {
     General *xinxianying = new General(this, "xinxianying", "wei", 3, false);
     xinxianying->addSkill(new Mingjian);
+    xinxianying->addSkill(new MingjianStop);
     xinxianying->addSkill(new Yinzhi);
+    related_skills.insertMulti("mingjian", "#mingjian-stop");
 
     General *wangyuanji = new General(this, "wangyuanji", "wei", 3, false);
     wangyuanji->addSkill(new Fuluan);
@@ -1669,6 +1794,7 @@ PasterPackage::PasterPackage()
     skills << new Yic0ngDistance;
     addMetaObject<FuluanCard>();
     addMetaObject<Yic0ngCard>();
+    addMetaObject<MingjianCard>();
 }
 
 ADD_PACKAGE(BGM)
