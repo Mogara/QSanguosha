@@ -671,10 +671,8 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
         room->setPlayerFlag(effect.from, "xianzhen_success");
         room->setFixedDistance(effect.from, effect.to, 1);
-    }else{
+    }else
         room->setPlayerFlag(effect.from, "xianzhen_failed");
-        room->acquireSkill(effect.from, "#xianzhen_slash");
-    }
 }
 
 XianzhenSlashCard::XianzhenSlashCard(){
@@ -1276,7 +1274,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     chengong->addSkill(new Zhichi);
     chengong->addSkill(new ZhichiClear);
     chengong->addSkill(new Mingce);
-
     related_skills.insertMulti("zhichi", "#zhichi-clear");
 
     General *gaoshun = new General(this, "gaoshun", "qun");

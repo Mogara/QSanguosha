@@ -619,11 +619,9 @@ public:
     }
     
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == SlashMissed) {
-            if(player->getPhase() == Player::Play && player->getMark("wuji") == 0){
+        if(event == SlashMissed){
+            if(player->getPhase() == Player::Play && player->getMark("wuji") == 0)
                 room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
-                room->acquireSkill(player, "#huxiao_slash");
-            }
         }else if(event == PhaseChange) {
             if(player->getPhase() == Player::Play)
                 if(player->getMark(objectName()) > 0)

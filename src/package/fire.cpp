@@ -480,7 +480,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "nullification";
+        return pattern == "nullification";
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -512,12 +512,10 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void TianyiCard::use(Room *room, ServerPlayer *taishici, const QList<ServerPlayer *> &targets) const{
     bool success = taishici->pindian(targets.first(), "tianyi", this);
-    room->acquireSkill(taishici, "#tianyi_slash");
-    if(success){
+    if(success)
         room->setPlayerFlag(taishici, "tianyi_success");
-    }else{
+    else
         room->setPlayerFlag(taishici, "tianyi_failed");
-    }
 }
 
 class TianyiViewAsSkill: public OneCardViewAsSkill{

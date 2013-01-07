@@ -1794,6 +1794,7 @@ public:
         else
             return 0;
     }
+};
 
 class Zhenwei: public TriggerSkill{
 public:

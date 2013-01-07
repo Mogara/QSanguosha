@@ -514,7 +514,7 @@ public:
         else
             x = data.toInt();
 
-        if(x > 0){
+        if(x > 0 && player->getHp() >= tianfeng->getHandcardNum()){
             room->playSkillEffect(objectName(), 1);
             LogMessage log;
             log.type = "#TriggerSkill";

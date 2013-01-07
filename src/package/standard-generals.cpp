@@ -754,7 +754,7 @@ public:
 class Jiuyuan: public TriggerSkill{
 public:
     Jiuyuan():TriggerSkill("jiuyuan$"){
-        events << Dying << AskForPeachesDone << CardEffected;
+        events << AskForPeachesDone << CardEffected;
         frequency = Compulsory;
     }
 
@@ -764,23 +764,11 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *sunquan, QVariant &data) const{
         switch(event){
-        case Dying: {
-                foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
-                    if(wu->getKingdom() == "wu"){
-                        room->playSkillEffect("jiuyuan", 1);
-                        break;
-                    }
-                }
-                break;
-            }
-
         case CardEffected: {
                 CardEffectStruct effect = data.value<CardEffectStruct>();
                 if(effect.card->isKindOf("Peach") && effect.from->getKingdom() == "wu"
                    && sunquan != effect.from && sunquan->hasFlag("dying"))
                 {
-                    int index = effect.from->getGeneral()->isMale() ? 2 : 3;
-                    room->playSkillEffect("jiuyuan", index);
                     sunquan->setFlags("jiuyuan");
 
                     LogMessage log;
@@ -802,7 +790,7 @@ public:
 
         case AskForPeachesDone:{
                 if(sunquan->getHp() > 0 && sunquan->hasFlag("jiuyuan"))
-                    room->playSkillEffect("jiuyuan", 4);
+                    room->playSkillEffect(objectName());
                 sunquan->setFlags("-jiuyuan");
 
                 break;

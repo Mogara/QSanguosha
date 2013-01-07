@@ -1354,7 +1354,6 @@ bool FuluanCard::targetFilter(const QList<const Player *> &targets, const Player
 void FuluanCard::use(Room *room, ServerPlayer *shen, const QList<ServerPlayer *> &targets) const{
     targets.first()->turnOver();
     room->setPlayerFlag(shen, "fuluan");
-    room->acquireSkill(shen, "#fuluan_slash");
 }
 
 class Fuluan: public ViewAsSkill{
@@ -1363,7 +1362,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("FuluanCard");
+        return !player->hasUsed("FuluanCard") && Slash::IsAvailable(player);
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{

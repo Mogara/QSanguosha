@@ -61,12 +61,12 @@ public:
 class Tianming: public TriggerSkill{
 public:
     Tianming(): TriggerSkill("tianming"){
-        events << CardUsed;
+        events << CardEffected;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card && use.card->isKindOf("Slash") && player->askForSkillInvoke(objectName())){
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if(effect.card->inherits("Slash") && player->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName(), 1);
             if(!player->isNude()){
                 int total = 0;

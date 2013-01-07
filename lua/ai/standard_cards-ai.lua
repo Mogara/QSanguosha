@@ -642,7 +642,7 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 	if not self:damageIsEffective(nil, nil, target) then return "." end
 	local aoe = sgs.Sanguosha:cloneCard(name, sgs.Card_NoSuit, 0)
 	local menghuo = self.room:findPlayerBySkillName("huoshou")
-	if self.player:hasSkill("wuyan") then return "." end
+	if self:hasSkill("wuyan|noswuyan") then return "." end
 	if target:hasSkill("wuyan") and not (menghuo and aoe:inherits("SavageAssault")) then return "." end
 	if self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10 and
 		(self.player:getHp()>1 or self:getAllPeachNum()>0) and not self.player:containsTrick("indulgence") then return "." end

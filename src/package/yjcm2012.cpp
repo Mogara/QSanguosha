@@ -267,7 +267,6 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName(), 2);
             room->setPlayerFlag(caozhang, "jiangchi_invoke");
-            room->acquireSkill(caozhang, "#jiangchi_slash");
             return n - 1;
         }
     }
@@ -872,6 +871,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *chengpu = new General(this, "chengpu", "wu");
     chengpu->addSkill(new Lihuo);
     chengpu->addSkill(new Chunlao);
+    skills << new LihuoSlash;
 
     General *bulianshi = new General(this, "bulianshi", "wu", 3, false);
     bulianshi->addSkill(new Anxu);

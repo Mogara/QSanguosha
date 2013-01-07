@@ -309,6 +309,23 @@ public:
         }else
             return NULL;
     }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return player->getPhase() == Player::Play &&
+                !player->getPile("gui").isEmpty() &&
+                Sanguosha->getCard(player->getPile("gui").first())->objectName() == "nullification" &&
+                pattern == "nullification";
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        if(player->getPhase() != Player::Play || player->getPile("gui").isEmpty())
+            return false;
+        const Card *null = Sanguosha->getCard(player->getPile("gui").first());
+        if(null->objectName() == "nullification" && !player->hasUsed("DaojuCard"))
+            return true;
+        else
+            return false;
+    }
 };
 
 class Xiandeng: public DrawCardsSkill{
@@ -455,14 +472,15 @@ void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     }
 }
 
-class Zha0xin:public ZeroCardViewAsSkill{
+class Zha0xin: public ZeroCardViewAsSkill{
 public:
     Zha0xin():ZeroCardViewAsSkill("zha0xin"){
-
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("Zha0xinCard") && player->getHandcardNum() >= player->getHp();
+        if(player->getHandcardNum() < player->getHp())
+            return false;
+        return !player->hasUsed("Zha0xinCard");
     }
 
     virtual const Card *viewAs() const{

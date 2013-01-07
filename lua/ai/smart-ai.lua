@@ -3248,7 +3248,7 @@ function SmartAI:aoeIsEffective(card, to)
 		return false
 	end
 
-	if self.player:hasSkill("wuyan") then
+	if self:hasSkills("wuyan|noswuyan") then
 		return false
 	end
 	if card:inherits("SavageAssault") then
@@ -3449,7 +3449,7 @@ function SmartAI:hasTrickEffective(card, player)
 			sgs.dynamic_value.damage_card[card:className()] then return false end
 		if player:hasSkill("zuixiang") and player:isLocked(card) then return false end
 	else
-		if self.player:hasSkill("wuyan") then
+		if self.player:hasSkill("noswuyan") then
 			if card:inherits("TrickCard") and not
 				(card:inherits("DelayedTrick") or card:inherits("GodSalvation") or card:inherits("AmazingGrace")) then
 			return false end

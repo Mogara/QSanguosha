@@ -553,7 +553,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 				if str:matchOne(askill) and not self.player:getArmor() then return askill end
 		end
 		 
-		for _, askill in ipairs(("wuyan|weimu|kanpo|liuli|qingguo|longdan|xiangle|jiang|" ..
+		for _, askill in ipairs(("noswuyan|weimu|kanpo|liuli|qingguo|longdan|xiangle|jiang|" ..
 		"danlao|qianxun|juxiang|huoshou|zhichi|jilei|feiying|yicong|wusheng|wushuang|tianxiang|leiji|" ..
 		"xuanfeng|luoying|xiliang|guhuo|guidao|guicai|lianying|xiaoji|zhiyu|hongyan|tiandu|guzheng|xingshang|weidi|badao|gushou"):split("|")) do
 			if str:matchOne(askill) then return askill end

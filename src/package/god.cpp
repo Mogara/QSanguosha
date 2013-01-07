@@ -194,14 +194,12 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
     room->broadcastInvoke("animate", "lightbox:$greatyeyan");
 
     shenzhouyu->loseMark("@flame");
-    room->throwCard(this);
     room->loseHp(shenzhouyu, 3);
 
     damage(shenzhouyu, targets.first(), 3);
 }
 
 MediumYeyanCard::MediumYeyanCard(){
-
 }
 
 bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -212,7 +210,6 @@ void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serv
     room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
 
     shenzhouyu->loseMark("@flame");
-    room->throwCard(this);
     room->loseHp(shenzhouyu, 3);
 
     ServerPlayer *first = targets.first();
@@ -587,7 +584,6 @@ public:
     }
 };
 
-
 WushenSlash::WushenSlash(Card::Suit suit, int number)
     :Slash(suit, number)
 {
@@ -607,21 +603,20 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         const Card *card = card_item->getCard();
         WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
-        slash->addSubcard(card_item->getCard()->getId());
+        slash->addSubcard(card_item->getFilteredCard());
         slash->setSkillName(objectName());
 
         return slash;
     }
 };
 
-class Wushen2Slash: public SlashSkill{
+class WushenS1ash: public SlashSkill{
 public:
-    Wushen2Slash():SlashSkill("#wushen_slash"){
-        frequency = NotFrequent;
+    WushenS1ash():SlashSkill("#wushen_slash"){
     }
 
     virtual int getSlashRange(const Player *from, const Player *to, const Card *card) const{
-        if(card->inherits("WushenSlash"))
+        if(from->hasSkill("wushen") && card->inherits("WushenSlash"))
             return 998;
         else
             return 0;
@@ -1356,11 +1351,10 @@ GodPackage::GodPackage()
 {
     General *shenguanyu = new General(this, "shenguanyu", "god", 5);
     shenguanyu->addSkill(new Wushen);
-    shenguanyu->addSkill(new Wushen2Slash);
-    related_skills.insertMulti("wuhun", "#wushen_slash");
     shenguanyu->addSkill(new Wuhun);
     shenguanyu->addSkill(new WuhunRevenge);
     related_skills.insertMulti("wuhun", "#wuhun");
+    skills << new WushenS1ash;
 
     General *shenlvmeng = new General(this, "shenlvmeng", "god", 3);
     shenlvmeng->addSkill(new Shelie);
@@ -1380,7 +1374,6 @@ GodPackage::GodPackage()
     shenzhugeliang->addSkill(new QixingClear);
     shenzhugeliang->addSkill(new Kuangfeng);
     shenzhugeliang->addSkill(new Dawu);
-
     related_skills.insertMulti("qixing", "#qixing");
     related_skills.insertMulti("qixing", "#qixing-ask");
     related_skills.insertMulti("qixing", "#qixing-clear");
@@ -1395,7 +1388,6 @@ GodPackage::GodPackage()
     shenlvbu->addSkill(new Wumou);
     shenlvbu->addSkill(new Wuqian);
     shenlvbu->addSkill(new Shenfen);
-
     related_skills.insertMulti("kuangbao", "#@wrath-2");
 
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);

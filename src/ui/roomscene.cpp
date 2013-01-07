@@ -869,13 +869,24 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_F1: break;
     case Qt::Key_F2: chooseSkillButton(); break;
     case Qt::Key_F3: sort_combobox->showPopup(); break;
+    case Qt::Key_F4: dashboard->reverseSelection(); break;
+    case Qt::Key_F5: {
+            if (control_is_down) {
+                if (add_robot && add_robot->isVisible())
+                    ClientInstance->addRobot();
+            } else if (fill_robots && fill_robots->isVisible())
+                ClientInstance->fillRobots();
+            break;
+        }
 
     case Qt::Key_S: dashboard->selectCard("slash");  break;
     case Qt::Key_J: dashboard->selectCard("jink"); break;
     case Qt::Key_P: dashboard->selectCard("peach"); break;
+    case Qt::Key_O: dashboard->selectCard("analeptic"); break;
 
     case Qt::Key_E: dashboard->selectCard("equip"); break;
     case Qt::Key_W: dashboard->selectCard("weapon"); break;
+    case Qt::Key_F: dashboard->selectCard("armor"); break;
     case Qt::Key_H: dashboard->selectCard("horse"); break;
 
     case Qt::Key_T: dashboard->selectCard("trick"); break;
@@ -887,12 +898,13 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_L: dashboard->selectCard("lightning"); break;
     case Qt::Key_I: dashboard->selectCard("indulgence"); break;
     case Qt::Key_R: dashboard->selectCard("collateral"); break;
+    case Qt::Key_B: dashboard->selectCard("supply_shortage"); break;
     case Qt::Key_Y: dashboard->selectCard("god_salvation"); break;
 
     case Qt::Key_Left: dashboard->selectCard(".", false); break;
     case Qt::Key_Right:
     case Qt::Key_Space:  dashboard->selectCard("."); break; // iterate all cards
-    case Qt::Key_F:  break; // fix the selected
+    //case Qt::Key_F:  break; // fix the selected
 
     case Qt::Key_G: selectNextTarget(control_is_down); break; // iterate generals
 
@@ -982,8 +994,13 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         QList<const Skill *> skills;
         foreach(QString skill_name, skill_names){
             const Skill *skill = Sanguosha->getSkill(skill_name);
-            if(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"))
-                skills << skill;
+            if(skill){
+                if(player->getGeneral()->hasSkill(skill_name) ||
+                   (player->getGeneral2() && player->getGeneral2()->hasSkill(skill_name)))
+                    continue;
+                if(skill->getLocation() == Skill::Right)
+                    skills << skill;
+            }
         }
 
         if(!skills.isEmpty()){
@@ -1046,7 +1063,7 @@ void RoomScene::putToDiscard(CardItem *item)
     item->setEnabled(true);
     item->setFlag(QGraphicsItem::ItemIsFocusable, false);
     item->setOpacity(1.0);
-    item->setZValue(0.0001*ClientInstance->discarded_list.length());
+    item->setZValue(0.0001 * ClientInstance->discarded_list.length());
 
     viewDiscards();
 }
@@ -1426,11 +1443,12 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
 
         case Skill::Wake:
         case Skill::Compulsory: button = new QPushButton(); break;
+        default: button = new QPushButton(); button->setVisible(false); break;
         }
     }else if(skill->inherits("FilterSkill")){
         const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
         if(filter && dashboard->getFilter() == NULL)
-            dashboard->setFilter(filter);        
+            dashboard->setFilter(filter);
         button = new QPushButton();
 
     }else if(skill->inherits("ViewAsSkill")){
@@ -2420,10 +2438,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
         case -1: {
                 ClientPlayer *player = ClientInstance->getPlayer(who);
                 int r = qrand() % 3 + 1;
-                if(player->getGeneral()->isMale())
-                    damage_effect = QString("injure1-male%1").arg(r);
-                else
-                    damage_effect = QString("injure1-female%1").arg(r);
+                damage_effect = QString("injure1-%1%2").arg(player->getGenderString()).arg(r);
                 break;
             }
 
@@ -3274,38 +3289,37 @@ void RoomScene::onGameStart(){
 
 #ifdef AUDIO_SUPPORT
 
-    if(!Config.EnableBgMusic)
-        return;
+    if(Config.EnableBgMusic){
+        bool play_music = false;
+        if(memory->isAttached() || memory->attach()){
+            memory->lock();
 
-    bool play_music = false;
-    if(memory->isAttached() || memory->attach()){
-        memory->lock();
+            char *username = static_cast<char *>(memory->data());
+            const char *my_username = Config.UserName.toAscii();
+            play_music = qstrcmp(username, my_username) == 0;
 
-        char *username = static_cast<char *>(memory->data());
-        const char *my_username = Config.UserName.toAscii();
-        play_music = qstrcmp(username, my_username) == 0;
+            memory->unlock();
+        }else if(memory->create(255)){
+            memory->lock();
 
-        memory->unlock();
-    }else if(memory->create(255)){
-        memory->lock();
+            void *data = memory->data();
+            const char *username = Config.UserName.toAscii();
+            memcpy(data, username, qstrlen(username));
 
-        void *data = memory->data();
-        const char *username = Config.UserName.toAscii();
-        memcpy(data, username, qstrlen(username));
+            play_music = true;
 
-        play_music = true;
+            memory->unlock();
+        }
 
-        memory->unlock();
+        if(!play_music)
+            return;
+
+        // start playing background music
+        QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
+
+        Audio::playBGM(bgmusic_path);
+        Audio::setBGMVolume(Config.BGMVolume);
     }
-
-    if(!play_music)
-        return;
-
-    // start playing background music
-    QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
-
-    Audio::playBGM(bgmusic_path);
-    Audio::setBGMVolume(Config.BGMVolume);
 
 #endif
 
