@@ -52,4 +52,25 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class GongqiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GongqiCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class JiefanCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JiefanCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+};
+
 #endif // YJCM2012PACKAGE_H

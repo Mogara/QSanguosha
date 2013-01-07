@@ -83,57 +83,55 @@ return {
 	["guhuo-saveself:peach"] = "桃子",
 	["guhuo-saveself:analeptic"] = "酒",
 
+-- effects
+	["cv:caoren"] = "鬼叔",
 	["$jushou1"] = "深沟高垒，屯兵固守。",
 	["$jushou2"] = "坚守勿出，严阵以待！",
+	["~caoren"] = "实在是守不住了！~",
 
+	["cv:zhangjiao"] = "",
 	["$leiji1"] = "以我之真气，合天地之造化！",
 	["$leiji2"] = "雷公助我！",
 	["$guidao1"] = "天下大势，为我所控！",
 	["$guidao2"] = "太平道法，代天宣化！",
 	["$huangtian1"] = "苍天已死，黄天当立。",
 	["$huangtian2"] = "岁在甲子，天下大吉。",
+	["~zhangjiao"] = "黄天覆灭，苍生悲矣……",
 
+	["cv:huangzhong"] = "苏遥冬",
 	["$liegong1"] = "百步穿杨！",
 	["$liegong2"] = "中！",
+	["~huangzhong"] = "不得不服老啊……",
 
+	["cv:xiahouyuan"] = "鬼叔",
 	["$shensu1"] = "吾善于千里袭人！",
 	["$shensu2"] = "取汝首级犹如探囊取物！",
 	["$shensu3"] = "兵贵神速，随我出战！",
+	["~xiahouyuan"] = "悔不听丞相之言……",
 
+	["cv:zhoutai"] = "裤衩",
 	["$buqu1"] = "哼~不过是多道疤罢了。",
 	["$buqu2"] = "我绝不会倒下！",
+	["~zhoutai"] = "已经……尽力了！",
 
+	["cv:weiyan"] = "鬼叔",
 	["$kuanggu1"] = "我会怕你吗？！",
 	["$kuanggu2"] = "以汝之血，与我正名。",
+	["$kuanggu3"] = "哈哈！",
+	["~weiyan"] = "谁敢杀我！啊……",
 
+	["cv:xiaoqiao"] = "白衣筱雅",
 	["$hongyan"] = "(红颜)",
 	["$tianxiang1"] = "接住哦！~",
 	["$tianxiang2"] = "替我挡着！",
+	["~xiaoqiao"] = "公瑾，我先走一步了~",
 
+	["cv:yuji"] = "东方胤弘",
 	["$guhuo1"] = "真真假假，假假真真。", -- 发动
 	["$guhuo2"] = "道法玄机，竟被参破！", -- 失败，别人摸牌
 	["$guhuo3"] = "通晓天机，呼风唤雨！", -- 成功
 	["$guhuo4"] = "汝疑天机，难逃此祸。", -- 失败，别人掉血
-
--- last words
-	["~caoren"] = "实在是守不住了！~",
-	["~xiahouyuan"] = "悔不听丞相之言……",
-	["~huangzhong"] = "不得不服老啊……",
-	["~weiyan"] = "谁敢杀我！啊……",
-	["~xiaoqiao"] = "公瑾，我先走一步了~",
-	["~zhoutai"] = "已经……尽力了！",
-	["~zhangjiao"] = "黄天覆灭，苍生悲矣……",
-	["~xiaoqiao"] = "公瑾，我先走一步了。",
 	["~yuji"] = "气数至此，恐不能逃……",
-
-	["cv:caoren"] = "鬼叔",
-	["cv:xiahouyuan"] = "鬼叔",
-	["cv:huangzhong"] = "苏遥冬",
-	["cv:weiyan"] = "鬼叔",
-	["cv:xiaoqiao"] = "白衣筱雅",
-	["cv:zhoutai"] = "裤衩",
-	["cv:zhangjiao"] = "",
-	["cv:yuji"] = "东方胤弘",
 
 -- guhuo dialog
 	["single_target"] = "单目标锦囊",

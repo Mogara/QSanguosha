@@ -89,68 +89,42 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 	return "cancel"
 end
 
-sgs.ai_view_as.gongqi = function(card, player, card_place)
-	local suit = card:getSuitString()
-	local number = card:getNumberString()
-	local card_id = card:getEffectiveId()
-	if card:getTypeId() == sgs.Card_Equip then
-		return ("slash:gongqi[%s:%s]=%d"):format(suit, number, card_id)
-	end
-end
-
-local gongqi_skill={}
+gongqi_skill={}
 gongqi_skill.name="gongqi"
-table.insert(sgs.ai_skills,wusheng_skill)
-gongqi_skill.getTurnUseCard=function(self,inclusive)
-	local cards = self.player:getCards("he")
+table.insert(sgs.ai_skills,gongqi_skill)
+gongqi_skill.getTurnUseCard=function(self)
+	if self.player:hasUsed("GongqiCard") or self.player:isNude() then return nil end
+	local cards = self.player:getCards("he")	
 	cards=sgs.QList2Table(cards)
-	
-	local equip_card
-	
 	self:sortByUseValue(cards,true)
-	
-	for _,card in ipairs(cards) do
-		if card:getTypeId() == sgs.Card_Equip and ((self:getUseValue(card)<sgs.ai_use_value.Slash) or inclusive) then
-			equip_card = card
+	local card
+	for _, acard in ipairs(cards) do
+		if acard:isKindOf("EquipCard") then
+			card = acard
 			break
 		end
 	end
-
-	if equip_card then		
-		local suit = equip_card:getSuitString()
-		local number = equip_card:getNumberString()
-		local card_id = equip_card:getEffectiveId()
-		local card_str = ("slash:gongqi[%s:%s]=%d"):format(suit, number, card_id)
-		local slash = sgs.Card_Parse(card_str)
+	if not card then
+		card = cards[1]
+	end
+	
+	local card_id = card:getEffectiveId()
+	local card_str = "@GongqiCard="..card_id
+	local skillcard = sgs.Card_Parse(card_str)
 		
-		assert(slash)
-		
-		return slash
-	end
+	assert(skillcard)
+	return skillcard
 end
-
-sgs.ai_skill_invoke.jiefan = function(self, data)
-	local dying = data:toDying()
-	local slashnum = 0
-	local friend = dying.who
-	local currentplayer = self.room:getCurrent()
-	for _, slash in ipairs(self:getCards("Slash")) do
-		if self:slashIsEffective(slash, currentplayer) then 
-			slashnum = slashnum + 1  
-		end 
+sgs.ai_skill_use_func.GongqiCard=function(card,use,self)
+	if not card:isKindOf("EquipCard") or #self.enemies ==0 then
+		use.card=card
+		return
 	end
-	return self:isFriend(friend) and not (self:isEnemy(currentplayer) and currentplayer:hasSkill("leiji") 
-		and (currentplayer:getHandcardNum() > 2 or self:isEquip("EightDiagram", currentplayer))) and slashnum > 0
-end
-
-sgs.ai_skill_cardask["jiefan-slash"] = function(self, data, pattern, target)
-	target = target or global_room:getCurrent()
-	for _, slash in ipairs(self:getCards("Slash")) do
-		if self:slashIsEffective(slash, target) then 
-			return slash:toString()
-		end 
+	self:sort(self.enemies,"defense")
+	use.card=card
+	if use.to then
+		use.to:append(self.enemies[1])
 	end
-	return "."
 end
 
 anxu_skill={}

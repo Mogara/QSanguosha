@@ -116,7 +116,7 @@ local t = {
 	["$beifa2"]= "哀侯悲愤填心胸，九伐中原亦无悔。",
 	["~wisjiangwei"] = "终究还是回天乏术吗？",
 
-	["cv:wisjiangwan"] = "墨轩砚韵",
+	["cv:wisjiangwan"] = "喵小林",
 	["$houyuan"] = "汝等力战，吾定当稳固后方。",
 	["$chouliang"] = "息民筹粮，伺机反攻。",
 	["~wisjiangwan"] = "蜀中疲敝，无力辅政矣",

@@ -405,7 +405,7 @@ public:
         }else if(event == Damage && player->hasSkill("kuanggu") && player->isAlive()){
             bool invoke = player->tag.value("InvokeKuanggu", false).toBool();
             if(invoke){
-                room->playSkillEffect(objectName());
+                room->playSkillEffect(objectName(), damage.to == player ? 3: qrand() % 2 + 1);
 
                 LogMessage log;
                 log.type = "#TriggerSkill";

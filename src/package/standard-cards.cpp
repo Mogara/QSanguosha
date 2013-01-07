@@ -125,8 +125,8 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    int slash_targets = 1 + Sanguosha->correctSlash("extragoals", Self);
-    bool distance_limit = Sanguosha->correctSlash("attackrange", Self) < 50;
+    int slash_targets = 1 + Sanguosha->correctSlash("extragoals", Self, to_select, this);
+    bool distance_limit = Sanguosha->correctSlash("attackrange", Self, to_select, this) < 50;
 
     if(targets.length() >= slash_targets)
         return false;

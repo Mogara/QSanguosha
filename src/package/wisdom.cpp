@@ -663,7 +663,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
         if(player->getPhase() != Player::Judge || player->getJudgingArea().length() == 0)
             return false;
         QList<ServerPlayer *> tians = room->findPlayersBySkillName(objectName());

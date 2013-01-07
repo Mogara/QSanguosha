@@ -1561,7 +1561,6 @@ Yic0ngCard::Yic0ngCard(){
 void Yic0ngCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     foreach(int x, getSubcards())
         source->addToPile("hoo", x);
-    source->acquireSkill("#yic0ng-distance");
 }
 
 class Yic0ngViewAsSkill:public ViewAsSkill{
@@ -1610,16 +1609,16 @@ public:
     }
 
     virtual int getCorrect(const Player *, const Player *to) const{
-        if(to->hasSkill(objectName()))
+        if(to->hasSkill("yic0ng"))
             return to->getPile("hoo").length();
         else
             return 0;
     }
 };
 
-class TuqiEffect:public PhaseChangeSkill{
+class Tuqi:public PhaseChangeSkill{
 public:
-    TuqiEffect():PhaseChangeSkill("#tuqi-effect"){
+    Tuqi():PhaseChangeSkill("tuqi"){
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
@@ -1639,13 +1638,13 @@ public:
     }
 };
 
-class Tuqi: public DistanceSkill{
+class TuqiDistance: public DistanceSkill{
 public:
-    Tuqi():DistanceSkill("tuqi"){
+    TuqiDistance():DistanceSkill("#tuqi-distance"){
     }
 
     virtual int getCorrect(const Player *from, const Player *) const{
-        if(from->hasSkill(objectName()))
+        if(from->hasSkill("tuqi"))
             return - from->getMark("@tuqi");
         else
             return 0;
@@ -1799,10 +1798,8 @@ PasterPackage::PasterPackage()
     General *gongshunzan = new General(this, "gongshunzan", "qun");
     gongshunzan->addSkill(new Yic0ng);
     gongshunzan->addSkill(new Tuqi);
-    gongshunzan->addSkill(new TuqiEffect);
-    related_skills.insertMulti("tuqi", "#tuqi-effect");
+    skills << new Yic0ngDistance << new TuqiDistance;
 
-    skills << new Yic0ngDistance;
     addMetaObject<FuluanCard>();
     addMetaObject<Yic0ngCard>();
     addMetaObject<MingjianCard>();

@@ -497,6 +497,92 @@ public:
     }
 };
 
+//yjcm2012
+#include "god.h"
+class NosGongqi : public OneCardViewAsSkill{
+public:
+    NosGongqi():OneCardViewAsSkill("nosgongqi"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "slash";
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->getTypeId() == Card::Equip;
+    }
+
+    const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getFilteredCard();
+        WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
+        slash->addSubcard(card);
+        slash->setSkillName(objectName());
+        return slash;
+    }
+};
+
+class NosJiefan : public TriggerSkill{
+public:
+    NosJiefan():TriggerSkill("nosjiefan"){
+        events << Dying << SlashHit << SlashMissed << CardFinished;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *noshandang = room->findPlayerBySkillName(objectName());
+
+        if(event == Dying){
+            DyingStruct dying = data.value<DyingStruct>();
+            if(!noshandang || !dying.savers.contains(noshandang) || dying.who->getHp() > 0 || noshandang->isNude() || !room->askForSkillInvoke(noshandang, objectName(), data))
+                return false;
+
+            const Card *slash = room->askForCard(noshandang, "slash", "nosjiefan-slash:" + dying.who->objectName(), data);
+            slash->setFlags("nosjiefan-slash");
+            room->setTag("NosJiefanTarget", data);
+            if(slash){
+                CardUseStruct use;
+                use.card = slash;
+                use.from = noshandang;
+                use.to << room->getCurrent();
+                room->useCard(use);
+            }
+        }
+        else if(event == SlashHit){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(!player->hasSkill(objectName())
+               || room->getTag("NosJiefanTarget").isNull())
+                return false;
+
+            DyingStruct dying = room->getTag("NosJiefanTarget").value<DyingStruct>();
+            ServerPlayer *target = dying.who;
+            room->removeTag("NosJiefanTarget");
+            Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
+            peach->setSkillName(objectName());
+            CardUseStruct use;
+            use.card = peach;
+            use.from = noshandang;
+            use.to << target;
+            room->useCard(use);
+
+            return true;
+        }
+        else if(event == SlashMissed)
+            room->removeTag("NosJiefanTarget");
+        else
+            if(!room->getTag("NosJiefanTarget").isNull())
+                room->removeTag("NosJiefanTarget");
+
+        return false;
+    }
+};
+
 NostalGeneralPackage::NostalGeneralPackage()
     :Package("nostal_general")
 {
@@ -514,6 +600,10 @@ NostalGeneralPackage::NostalGeneralPackage()
 
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();
+
+    General *noshandang = new General(this, "noshandang", "wu");
+    noshandang->addSkill(new NosGongqi);
+    noshandang->addSkill(new NosJiefan);
 
     General *sp_shenzhaoyun = new General(this, "sp_shenzhaoyun", "god", 1, true, true);
     sp_shenzhaoyun->addSkill(new NosJuejing);
