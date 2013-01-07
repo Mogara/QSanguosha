@@ -252,6 +252,9 @@ void Room::updateStateItem(){
 }
 
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
+    QVariant data = QVariant::fromValue(reason);
+    if(thread->trigger(PreDeath, victim, data))
+        return;
     ServerPlayer *killer = reason ? reason->from : NULL;
     if(Config.ContestMode && killer){
         killer->addVictim(victim);
@@ -288,17 +291,14 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
             log.type = "#Suicide";
         else
             log.type = "#Murder";
-    }else{
+    else
         log.type = "#Contingency";
-    }
 
     sendLog(log);
 
     broadcastProperty(victim, "alive");
 
-    QVariant data = QVariant::fromValue(reason);
     thread->trigger(GameOverJudge, victim, data);
-
 
     broadcastProperty(victim, "role");
     thread->delay(300);

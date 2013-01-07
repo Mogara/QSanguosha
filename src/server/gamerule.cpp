@@ -14,7 +14,7 @@ GameRule::GameRule(QObject *parent)
 
     events << GameStart << TurnStart << PhaseChange << CardUsed << CardFinished
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
-            << AskForPeaches << Death << Dying << GameOverJudge
+            << AskForPeaches << Death << Dying << GameOverJudge << RewardAndPunish
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << DamageDone << DamageComplete
             << StartJudge << FinishJudge << Pindian;
@@ -61,6 +61,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             int n = num.toInt();
             if(n > 0)
                 player->drawCards(n, false);
+            room->getThread()->trigger(DrawNCardsDone, player, num);
             break;
         }
 
@@ -454,9 +455,8 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
 
             DamageStar damage = data.value<DamageStar>();
             ServerPlayer *killer = damage ? damage->from : NULL;
-            if(killer){
-                rewardAndPunish(killer, player);
-            }
+            if(killer)
+            	room->getThread()->trigger(RewardAndPunish, player, data);
 
             setGameProcess(room);
 
@@ -469,16 +469,36 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
 
                     DamageStar damage = data.value<DamageStar>();
 
-                    if(damage == NULL){
-                        changeGeneral1v1(player);
-                        return false;
-                    }
+                if(damage == NULL){
+                    changeGeneral1v1(player);
+                    return false;
                 }
             }
-
-            break;
         }
+        break;
+    }
+    case RewardAndPunish:{
+        DamageStar damage = data.value<DamageStar>();
+        PlayerStar killer = damage->from;
+        PlayerStar victim = player;
 
+        if(killer->isDead())
+            return true;
+
+        if(room->getMode() == "06_3v3")
+            killer->drawCards(3);
+        else{
+            if(room->getMode() == "contract")
+                return true;
+            if(victim->getRole() == "rebel" && killer != victim){
+                killer->drawCards(3);
+            }else if(victim->getRole() == "loyalist" && killer->getRole() == "lord"){
+                killer->throwAllEquips();
+                killer->throwAllHandCards();
+            }
+        }
+        break;
+    }
     case StartJudge:{
             int card_id = room->drawCard();
 
@@ -569,26 +589,6 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
         room->setPlayerProperty(player, "chained", false);
 
     player->drawCards(4);
-}
-
-void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{
-    if(killer->isDead())
-        return;
-
-    if(killer->getRoom()->getMode() == "06_3v3"){
-        if(Config.value("3v3/UsingNewMode", false).toBool())
-            killer->drawCards(2);
-        else
-            killer->drawCards(3);
-    }
-    else{
-        if(victim->getRole() == "rebel" && killer != victim){
-            killer->drawCards(3);
-        }else if(victim->getRole() == "loyalist" && killer->getRole() == "lord"){
-            killer->throwAllEquips();
-            killer->throwAllHandCards();
-        }
-    }
 }
 
 QString GameRule::getWinner(ServerPlayer *victim) const{

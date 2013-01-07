@@ -187,9 +187,17 @@ public:
     virtual void onGameStart(ServerPlayer *zhangjiao) const{
         Room *room = zhangjiao->getRoom();
         QList<ServerPlayer *> players = room->getAlivePlayers();
-        foreach(ServerPlayer *player, players){
+        foreach(ServerPlayer *player, players)
             room->attachSkillToPlayer(player, "huangtianv");
-        }
+    }
+
+    virtual void onIdied(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        if(room->findPlayerBySkillName("huangtian"))
+            return;
+        QList<ServerPlayer *> players = room->getAlivePlayers();
+        foreach(ServerPlayer *tmp, players)
+            room->detachSkillFromPlayer(tmp, "huangtianv", false);
     }
 };
 
@@ -258,8 +266,6 @@ bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void ShensuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
-
     Slash *slash = new Slash(Card::NoSuit, 0);
     slash->setSkillName("shensu");
     CardUseStruct use;

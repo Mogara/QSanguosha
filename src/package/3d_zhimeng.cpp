@@ -261,7 +261,6 @@ bool DaojuCard::targetsFeasible(const QList<const Player *> &targets, const Play
 }
 
 void DaojuCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    //room->throwCard(this);
     CardStar ju = Sanguosha->getCard(card_use.from->getPile("gui").first());
 
     const Card *first = Sanguosha->getCard(getSubcards().first());

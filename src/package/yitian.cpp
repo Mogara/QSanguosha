@@ -442,12 +442,20 @@ public:
 
     virtual void onGameStart(ServerPlayer *player) const{
         Room *room = player->getRoom();
-
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         foreach(ServerPlayer *player, players){
             if(player->getGeneral()->isMale())
                 room->attachSkillToPlayer(player, "lianli-slash");
         }
+    }
+
+    virtual void onIdied(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        if(room->findPlayerBySkillName("lianli"))
+            return;
+        QList<ServerPlayer *> players = room->getAlivePlayers();
+        foreach(ServerPlayer *tmp, players)
+            room->detachSkillFromPlayer(tmp, "lianli-slash", false);
     }
 };
 
@@ -1712,6 +1720,15 @@ public:
         foreach(ServerPlayer *p, room->getOtherPlayers(player))
             room->attachSkillToPlayer(p, "yisheask");
     }
+
+    virtual void onIdied(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        if(room->findPlayerBySkillName("yishe"))
+            return;
+        QList<ServerPlayer *> players = room->getAlivePlayers();
+        foreach(ServerPlayer *tmp, players)
+            room->detachSkillFromPlayer(tmp, "yisheask", false);
+    }
 };
 
 class Xiliang: public TriggerSkill{
@@ -1839,8 +1856,6 @@ void TaichenCard::onEffect(const CardEffectStruct &effect) const{
 
     if(subcards.isEmpty())
         room->loseHp(effect.from);
-    else
-        room->throwCard(this);
 
     int i;
     for(i=0; i<2; i++){

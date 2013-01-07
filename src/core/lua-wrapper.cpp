@@ -49,6 +49,12 @@ LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
 
 }
 
+LuaSlashSkill::LuaSlashSkill(const char *name)
+    :SlashSkill(name), s_range_func(0), s_extra_func(0), s_residue_func(0)
+{
+
+}
+
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 
 LuaSkillCard::LuaSkillCard(const char *name)

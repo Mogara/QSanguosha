@@ -53,11 +53,16 @@ return {
 	["defensive_horse"] = "防御马",
 	["offensive_horse"] = "进攻马",
 	["disgusting_card"] = "恶心牌",
+	["::"] = "<font color=red>此技能不存在！</font>",
 
 	["wei"] = "魏",
 	["shu"] = "蜀",
 	["wu"] = "吴",
 	["qun"] = "群",
+
+	["[Limited]"] = " [限]",
+	["[Compulsory]"] = " [锁]",
+	["[Wake]"] = " [醒]",
 
 	["#Murder"] = "%to【%arg】 挂了，凶手是 %from",
 	["#Suicide"] = "%to【%arg】 自杀身亡",

@@ -133,6 +133,7 @@ enum TriggerEvent{
     TurnStart,
     PhaseChange,
     DrawNCards,
+    DrawNCardsDone,
     HpRecover,
     HpRecovered,
     HpLost,
@@ -156,8 +157,10 @@ enum TriggerEvent{
     Dying,
     AskForPeaches,
     AskForPeachesDone,
+    PreDeath,
     Death,
     GameOverJudge,
+    RewardAndPunish,
 
     SlashEffect,
     SlashEffected,

@@ -29,6 +29,8 @@ bool Skill::isLordSkill() const{
 }
 
 QString Skill::getDescription() const{
+    if(!Sanguosha->isDuplicated(objectName()))
+        return Sanguosha->translate("::");
     return Sanguosha->translate(":" + objectName());
 }
 
@@ -38,9 +40,10 @@ QString Skill::getText() const{
     switch(frequency){
     case Skill::NotFrequent:
     case Skill::Frequent: break;
-    case Skill::Limited: skill_name.append(tr(" [Limited]")); break;
-    case Skill::Compulsory: skill_name.append(tr(" [Compulsory]")); break;
-    case Skill::Wake: skill_name.append(tr(" [Wake]")); break;
+    case Skill::Limited: skill_name.append(Sanguosha->translate("[Limited]")); break;
+    case Skill::Compulsory: skill_name.append(Sanguosha->translate("[Compulsory]")); break;
+    case Skill::Wake: skill_name.append(Sanguosha->translate("[Wake]")); break;
+    default: break;
     }
 
     return skill_name;
@@ -269,12 +272,19 @@ bool PhaseChangeSkill::trigger(TriggerEvent, Room*, ServerPlayer *player, QVaria
 DrawCardsSkill::DrawCardsSkill(const QString &name)
     :TriggerSkill(name)
 {
-    events << DrawNCards;
+    events << DrawNCards << DrawNCardsDone;
+}
+
+void DrawCardsSkill::drawDone(ServerPlayer *, int) const{
+    return;
 }
 
 bool DrawCardsSkill::trigger(TriggerEvent event, Room*, ServerPlayer *player, QVariant &data) const{
     int n = data.toInt();
-    data = getDrawNum(player, n);
+    if(event == DrawNCards)
+        data = getDrawNum(player, n);
+    else
+        drawDone(player, n);
     return false;
 }
 
@@ -298,12 +308,24 @@ bool SlashBuffSkill::trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant
 GameStartSkill::GameStartSkill(const QString &name)
     :TriggerSkill(name)
 {
-    events << GameStart;
+    events << GameStart << Death;
 }
 
-bool GameStartSkill::trigger(TriggerEvent , Room*, ServerPlayer *player, QVariant &) const{
-    onGameStart(player);
+bool GameStartSkill::triggerable(const ServerPlayer *target) const{
+    return target->hasSkill(objectName());
+}
+
+bool GameStartSkill::trigger(TriggerEvent event, Room*, ServerPlayer *player, QVariant &) const{
+    if (event == GameStart)
+        onGameStart(player);
+    else
+        onIdied(player);
+
     return false;
+}
+
+void GameStartSkill::onIdied(ServerPlayer *) const{
+    return;
 }
 
 SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const QString &to)
@@ -352,12 +374,12 @@ SlashSkill::SlashSkill(const QString &name)
 {
 }
 
-int SlashSkill::getSlashRange(const Player *, const Player *, const Card *) const{
-    return 0;
-}
-
 int SlashSkill::getSlashResidue(const Player *target) const{
     return qMax(1 - target->getSlashCount(), 0);
+}
+
+int SlashSkill::getSlashRange(const Player *, const Player *, const Card *) const{
+    return 0;
 }
 
 int SlashSkill::getSlashExtraGoals(const Player *, const Player *, const Card *) const{
@@ -388,6 +410,10 @@ bool ArmorSkill::triggerable(const ServerPlayer *target) const{
 MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)
     :GameStartSkill(QString("#%1-%2").arg(mark).arg(n)), mark_name(mark), n(n)
 {
+}
+
+int MarkAssignSkill::getPriority() const{
+    return -1;
 }
 
 void MarkAssignSkill::onGameStart(ServerPlayer *player) const{

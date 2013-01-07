@@ -6,7 +6,7 @@ public:
 	void setViewAsSkill(ViewAsSkill *view_as_skill);
 	
 	virtual bool triggerable(const ServerPlayer *target) const;
-	virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+	virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 
 	LuaFunction on_trigger;
 	LuaFunction can_trigger;
@@ -17,7 +17,7 @@ class GameStartSkill: public TriggerSkill{
 public:
 	GameStartSkill(const QString &name);
 
-	virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+	virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 	virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
@@ -48,6 +48,15 @@ public:
 	MaxCardsSkill(const QString &name);
 
 	virtual int getExtra(const Player *target) const = 0;
+};
+
+class SlashSkill: public Skill{
+public:
+	SlashSkill(const QString &name);
+
+	virtual int getSlashRange(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+	virtual int getSlashExtraGoals(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+	virtual int getSlashResidue(const Player *target) const;
 };
 
 class LuaProhibitSkill: public ProhibitSkill{
@@ -126,6 +135,17 @@ public:
     virtual int getExtra(const Player *target) const;
 
     LuaFunction extra_func;
+};
+
+class LuaSlashSkill: public SlashSkill{
+public:
+    LuaSlashSkill(const char *name);
+
+    virtual int getSlashRange(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    virtual int getSlashExtraGoals(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    virtual int getSlashResidue(const Player *target) const;
+
+    LuaFunction s_range_func, s_extra_func, s_residue_func;
 };
 
 class LuaSkillCard: public SkillCard{
@@ -285,6 +305,79 @@ int LuaMaxCardsSkill::getExtra(const Player *target) const{
     lua_pop(L, 1);
 
     return extra;
+}
+
+int LuaSlashSkill::getSlashRange(const Player *from, const Player *to, const Card *slash) const{
+    if(s_range_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, s_range_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaSlashSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, slash, SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return 0;
+    }
+
+    int range = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return range;
+}
+
+int LuaSlashSkill::getSlashExtraGoals(const Player *from, const Player *to, const Card *slash) const{
+    if(s_extra_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, s_extra_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaSlashSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, slash, SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return 0;
+    }
+
+    int extra = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return extra;
+}
+
+int LuaSlashSkill::getSlashResidue(const Player *target) const{
+    if(s_residue_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, s_residue_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaSlashSkill, 0);
+    SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return 0;
+    }
+
+    int res = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return res;
 }
 
 bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{

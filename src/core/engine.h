@@ -72,6 +72,8 @@ public:
     QList<const SlashSkill *> getSlashSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
+    bool isDuplicated(const QString &name, bool is_skill = true);
+
     int getCardCount() const;
     const Card *getCard(int index) const;
 

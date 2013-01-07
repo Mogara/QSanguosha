@@ -461,6 +461,7 @@ enum TriggerEvent{
 	TurnStart,
 	PhaseChange,
 	DrawNCards,
+	DrawNCardsDone,
 	HpRecover,
 	HpRecovered,
 	HpLost,
@@ -484,8 +485,10 @@ enum TriggerEvent{
 	Dying,
 	AskForPeaches,
 	AskForPeachesDone,
+	PreDeath,
 	Death,
 	GameOverJudge,
+	RewardAndPunish,
 
 	SlashEffect,
 	SlashEffected,
@@ -689,6 +692,7 @@ public:
 	const ViewAsSkill *getViewAsSkill(const char *skill_name) const;
 	QList<const DistanceSkill *> getDistanceSkills() const;
 	QList<const MaxCardsSkill *> getMaxCardsSkills() const;
+	QList<const SlashSkill *> getSlashSkills() const;
 	void addSkills(const QList<const Skill *> &skills);
 
 	int getCardCount() const;

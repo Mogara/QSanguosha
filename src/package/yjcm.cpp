@@ -237,7 +237,6 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
         room->playSkillEffect(skill_name, 3);
     else
         room->playSkillEffect(skill_name, qrand() % 2 + 1);
-    //room->throwCard(this);
     QStringList choicelist;
     choicelist << "draw";
     if (effect.to->getLostHp() != 0)

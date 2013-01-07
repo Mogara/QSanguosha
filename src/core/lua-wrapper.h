@@ -91,6 +91,19 @@ public:
     LuaFunction extra_func;
 };
 
+class LuaSlashSkill: public SlashSkill{
+    Q_OBJECT
+
+public:
+    LuaSlashSkill(const char *name);
+
+    virtual int getSlashRange(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    virtual int getSlashExtraGoals(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    virtual int getSlashResidue(const Player *target) const;
+
+    LuaFunction s_range_func, s_extra_func, s_residue_func;
+};
+
 class LuaSkillCard: public SkillCard{
     Q_OBJECT
 

@@ -12,7 +12,6 @@ ZhihengCard::ZhihengCard(){
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
     if(source->isAlive())
         room->drawCards(source, subcards.length());
 }
@@ -171,7 +170,6 @@ bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 }
 
 void LijianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
     room->playSkillEffect("lijian");
 
     ServerPlayer *to = targets.at(0);
@@ -200,8 +198,6 @@ bool QingnangCard::targetsFeasible(const QList<const Player *> &targets, const P
 }
 
 void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
-
     ServerPlayer *target = targets.value(0, source);
 
     CardEffectStruct effect;

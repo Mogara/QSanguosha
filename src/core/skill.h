@@ -164,6 +164,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
     virtual int getDrawNum(ServerPlayer *player, int n) const = 0;
+    virtual void drawDone(ServerPlayer *player, int n) const;
 };
 
 class SlashBuffSkill: public TriggerSkill{
@@ -182,8 +183,10 @@ class GameStartSkill: public TriggerSkill{
 public:
     GameStartSkill(const QString &name);
 
+    virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
+    virtual void onIdied(ServerPlayer *player) const;
 };
 
 class SPConvertSkill: public GameStartSkill{
@@ -233,8 +236,8 @@ public:
     SlashSkill(const QString &name);
 
     virtual int getSlashRange(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
-    virtual int getSlashResidue(const Player *target) const;
     virtual int getSlashExtraGoals(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    virtual int getSlashResidue(const Player *target) const;
 };
 
 class WeaponSkill: public TriggerSkill{
@@ -261,6 +264,7 @@ class MarkAssignSkill: public GameStartSkill{
 public:
     MarkAssignSkill(const QString &mark, int n);
 
+    virtual int getPriority() const;
     virtual void onGameStart(ServerPlayer *player) const;
 
 private:

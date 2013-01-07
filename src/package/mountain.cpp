@@ -36,8 +36,6 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 }
 
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
-
     if(zhanghe->getPhase() == Player::Draw){
         room->playSkillEffect("qiaobian", 2);
         foreach(ServerPlayer *target, targets){
@@ -548,7 +546,7 @@ public:
 class Zhiba: public TriggerSkill{
 public:
     Zhiba():TriggerSkill("zhiba$"){
-        events << GameStart << Pindian;
+        events << GameStart << Pindian << Death;
     }
 
     virtual int getPriority() const{
@@ -579,6 +577,12 @@ public:
             }
             else
                 room->playSkillEffect(objectName(), 3);
+        }
+        else if(event == Death){
+            if(room->findPlayerBySkillName("zhiba"))
+                return false;
+            foreach(ServerPlayer *tmp, room->getAlivePlayers())
+                room->detachSkillFromPlayer(tmp, "zhiba_pindian", false);
         }
 
         return false;
@@ -777,15 +781,12 @@ public:
             return false;
 
         if(erzhang->askForSkillInvoke("guzheng", cards.length())){
+            room->playSkillEffect("guzheng");
             room->fillAG(cards, erzhang);
-
             int to_back = room->askForAG(erzhang, cards, false, objectName());
             player->obtainCard(Sanguosha->getCard(to_back));
-
             cards.removeOne(to_back);
-
             erzhang->invoke("clearAG");
-
             foreach(int card_id, cards)
                 erzhang->obtainCard(Sanguosha->getCard(card_id));
         }

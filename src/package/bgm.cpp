@@ -1400,16 +1400,13 @@ public:
     }
 };
 
-class Zhaoxin:public PhaseChangeSkill{
+class Zhaoxin: public TriggerSkill{
 public:
-    Zhaoxin():PhaseChangeSkill("zhaoxin"){
+    Zhaoxin():TriggerSkill("zhaoxin"){
+        events << DrawNCardsDone;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const{
-        if(player->getPhase() != Player::Play)
-            return false;
-
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *tmp, room->getOtherPlayers(player)){
             if(player->canSlash(tmp))
