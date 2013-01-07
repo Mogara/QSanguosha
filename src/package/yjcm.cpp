@@ -674,6 +674,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
         room->setFixedDistance(effect.from, effect.to, 1);
     }else{
         room->setPlayerFlag(effect.from, "xianzhen_failed");
+        room->acquireSkill(effect.from, "#xianzhen_slash");
     }
 }
 
@@ -742,7 +743,6 @@ class Xianzhen: public TriggerSkill{
 public:
     Xianzhen():TriggerSkill("xianzhen"){
         view_as_skill = new XianzhenViewAsSkill;
-
         events << PhaseChange << CardUsed << CardFinished;
     }
 
@@ -765,8 +765,21 @@ public:
                     target->removeMark("qinggang");
             }
         }
-
         return false;
+    }
+};
+
+class XianzhenSlash: public SlashSkill{
+public:
+    XianzhenSlash():SlashSkill("#xianzhen_slash"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashResidue(const Player *t) const{
+        if(t->hasSkill("xianzhen") && t->hasFlag("xianzhen_failed"))
+            return -998;
+        else
+            return 0;
     }
 };
 
@@ -1270,6 +1283,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *gaoshun = new General(this, "gaoshun", "qun");
     gaoshun->addSkill(new Xianzhen);
     gaoshun->addSkill(new Jinjiu);
+    skills << new XianzhenSlash;
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);

@@ -1354,6 +1354,7 @@ bool FuluanCard::targetFilter(const QList<const Player *> &targets, const Player
 void FuluanCard::use(Room *room, ServerPlayer *shen, const QList<ServerPlayer *> &targets) const{
     targets.first()->turnOver();
     room->setPlayerFlag(shen, "fuluan");
+    room->acquireSkill(shen, "#fuluan_slash");
 }
 
 class Fuluan: public ViewAsSkill{
@@ -1382,6 +1383,20 @@ public:
         FuluanCard *card = new FuluanCard;
         card->addSubcards(cards);
         return card;
+    }
+};
+
+class FuluanSlash: public SlashSkill{
+public:
+    FuluanSlash():SlashSkill("#fuluan_slash"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashResidue(const Player *t) const{
+        if(t->hasSkill("fuluan") && t->hasFlag("fuluan"))
+            return -998;
+        else
+            return 0;
     }
 };
 
@@ -1775,6 +1790,7 @@ PasterPackage::PasterPackage()
     General *wangyuanji = new General(this, "wangyuanji", "wei", 3, false);
     wangyuanji->addSkill(new Fuluan);
     wangyuanji->addSkill(new Shude);
+    skills << new FuluanSlash;
 
     General *simazhao = new General(this, "simazhao", "wei", 3);
     simazhao->addSkill(new Zhaoxin);

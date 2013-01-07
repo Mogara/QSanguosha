@@ -1766,6 +1766,18 @@ public:
     }
 };
 
+class Zhengfeng: public SlashSkill{
+public:
+    Zhengfeng():SlashSkill("zhengfeng"){
+    }
+
+    virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
+        if(from->hasSkill("zhengfeng"))
+            return - from->getHp();
+        else
+            return 0;
+    }
+
 class Zhenwei: public TriggerSkill{
 public:
     Zhenwei():TriggerSkill("zhenwei"){
@@ -1953,7 +1965,7 @@ YitianPackage::YitianPackage()
     zhanggongqi->addSkill(new Xiliang);
 
     General *yitianjian = new General(this, "yitianjian", "wei");
-    yitianjian->addSkill(new Skill("zhengfeng", Skill::Compulsory));
+    yitianjian->addSkill(new Zhengfeng);
     yitianjian->addSkill(new Zhenwei);
     yitianjian->addSkill(new Yitian);
 

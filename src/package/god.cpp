@@ -614,6 +614,20 @@ public:
     }
 };
 
+class Wushen2Slash: public SlashSkill{
+public:
+    Wushen2Slash():SlashSkill("#wushen_slash"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashRange(const Player *from, const Player *to, const Card *card) const{
+        if(card->inherits("WushenSlash"))
+            return 998;
+        else
+            return 0;
+    }
+};
+
 class Qixing: public PhaseChangeSkill{
 public:
     Qixing():PhaseChangeSkill("qixing"){
@@ -1342,9 +1356,10 @@ GodPackage::GodPackage()
 {
     General *shenguanyu = new General(this, "shenguanyu", "god", 5);
     shenguanyu->addSkill(new Wushen);
+    shenguanyu->addSkill(new Wushen2Slash);
+    related_skills.insertMulti("wuhun", "#wushen_slash");
     shenguanyu->addSkill(new Wuhun);
     shenguanyu->addSkill(new WuhunRevenge);
-
     related_skills.insertMulti("wuhun", "#wuhun");
 
     General *shenlvmeng = new General(this, "shenlvmeng", "god", 3);

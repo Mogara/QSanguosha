@@ -267,6 +267,7 @@ public:
             room->sendLog(log);
             room->playSkillEffect(objectName(), 2);
             room->setPlayerFlag(caozhang, "jiangchi_invoke");
+            room->acquireSkill(caozhang, "#jiangchi_slash");
             return n - 1;
         }
     }
@@ -285,6 +286,20 @@ public:
         if(caozhang->getPhase() == Player::NotActive && caozhang->hasCardLock("Slash"))
             caozhang->getRoom()->setPlayerCardLock(caozhang, "-Slash");
         return false;
+    }
+};
+
+class JiangchiSlash: public SlashSkill{
+public:
+    JiangchiSlash():SlashSkill("#jiangchi_slash"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashResidue(const Player *t) const{
+        if(t->hasSkill("jiangchi") && t->hasFlag("jiangchi_invoke"))
+            return qMax(1 - t->getSlashCount() + 1, 0);
+        else
+            return SlashSkill::getSlashResidue(t);
     }
 };
 
@@ -729,6 +744,20 @@ public:
     }
 };
 
+class LihuoSlash: public SlashSkill{
+public:
+    LihuoSlash():SlashSkill("#lihuo_slash"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
+        if(from->hasSkill("lihuo") && slash->inherits("FireSlash"))
+            return 1;
+        else
+            return 0;
+    }
+};
+
 ChunlaoCard::ChunlaoCard(){
     will_throw = false;
     target_fixed = true;
@@ -826,6 +855,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     caozhang->addSkill(new Jiangchi);
     caozhang->addSkill(new JiangchiClear);
     related_skills.insertMulti("jiangchi", "#jiangchi-clear");
+    skills << new JiangchiSlash;
 
     General *madai = new General(this, "madai", "shu");
     madai->addSkill(new Qianxi);

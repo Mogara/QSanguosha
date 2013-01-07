@@ -151,15 +151,9 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange() const{
-    if(hasFlag("tianyi_success") || hasFlag("jiangchi_invoke"))
-        return 1000;
-
-    if(weapon)
-        return weapon->getRange();
-    else if(hasSkill("zhengfeng"))
-        return hp;
-    else
-        return 1;
+    int atkrg = getWeapon() ? getWeapon()->getRange() : 1;
+    int extra = Sanguosha->correctSlash("attackrange", this);
+    return extra >= 0 ? qMax(atkrg, extra): qAbs(extra);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
@@ -732,19 +726,8 @@ bool Player::isProhibited(const Player *to, const Card *card) const{
     return Sanguosha->isProhibited(this, to, card);
 }
 
-bool Player::canSlashWithoutCrossbow() const{
-    if(hasSkill("paoxiao"))
-        return true;
-
-    int slash_count = getSlashCount();
-    int valid_slash_count = 1;
-    if(hasFlag("tianyi_success"))
-        valid_slash_count++;
-    if(hasFlag("jiangchi_invoke"))
-        valid_slash_count++;
-    if(getMark("huxiao") > 0)
-        valid_slash_count += getMark("huxiao");
-    return slash_count < valid_slash_count;
+bool Player::canSlashWithoutCrossbow() const{ //back-out
+    return true;
 }
 
 void Player::jilei(const QString &type){

@@ -226,6 +226,17 @@ public:
     virtual int getExtra(const Player *target) const = 0;
 };
 
+class SlashSkill: public Skill{
+    Q_OBJECT
+
+public:
+    SlashSkill(const QString &name);
+
+    virtual int getSlashRange(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    virtual int getSlashResidue(const Player *target) const;
+    virtual int getSlashExtraGoals(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+};
+
 class WeaponSkill: public TriggerSkill{
     Q_OBJECT
 

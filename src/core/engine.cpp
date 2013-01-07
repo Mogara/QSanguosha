@@ -130,6 +130,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills){
             distance_skills << qobject_cast<const DistanceSkill *>(skill);
         else if(skill->inherits("MaxCardsSkill"))
             maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
+        else if(skill->inherits("SlashSkill"))
+            slash_skills << qobject_cast<const SlashSkill *>(skill);
     }
 }
 
@@ -139,6 +141,10 @@ QList<const DistanceSkill *> Engine::getDistanceSkills() const{
 
 QList<const MaxCardsSkill *> Engine::getMaxCardsSkills() const{
     return maxcards_skills;
+}
+
+QList<const SlashSkill *> Engine::getSlashSkills() const{
+    return slash_skills;
 }
 
 void Engine::addPackage(Package *package){
@@ -737,4 +743,28 @@ int Engine::correctMaxCards(const Player *target) const{
     }
 
     return extra;
+}
+
+int Engine::correctSlash(const QString &type, const Player *from, const Player *to, const Card *slash) const{
+    int x = 0;
+
+    foreach(const SlashSkill *skill, slash_skills){
+        if(type == "residue"){
+            int y = skill->getSlashResidue(from);
+            if(y < -200 || y > 200) // use slash never or endless
+                return y;
+            x += y;
+        }
+        else if(type == "attackrange"){
+            int y = skill->getSlashRange(from, to, slash);
+            if(y < 0) // fixed attack range
+                return y;
+            if(y > x) // use longest range
+                x = y;
+        }
+        else if(type == "extragoals")
+            x += skill->getSlashExtraGoals(from, to, slash);
+    }
+
+    return x;
 }

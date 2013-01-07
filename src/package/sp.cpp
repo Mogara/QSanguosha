@@ -404,6 +404,20 @@ public:
     }
 };
 
+class Shenji: public SlashSkill{
+public:
+    Shenji():SlashSkill("shenji"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
+        if(from->hasSkill("shenji") && !from->getWeapon())
+            return 2;
+        else
+            return 0;
+    }
+};
+
 class Danji: public PhaseChangeSkill{
 public:
     Danji():PhaseChangeSkill("danji"){
@@ -606,8 +620,10 @@ public:
     
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == SlashMissed) {
-            if(player->getPhase() == Player::Play && player->getMark("wuji") == 0)
+            if(player->getPhase() == Player::Play && player->getMark("wuji") == 0){
                 room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
+                room->acquireSkill(player, "#huxiao_slash");
+            }
         }else if(event == PhaseChange) {
             if(player->getPhase() == Player::Play)
                 if(player->getMark(objectName()) > 0)
@@ -632,6 +648,21 @@ public:
         if(data.toString() == "huxiao")
             room->setPlayerMark(player, "huxiao", 0);
         return false;
+    }
+};
+
+class HuxiaoSlash: public SlashSkill{
+public:
+    HuxiaoSlash():SlashSkill("#huxiao_slash"){
+    }
+
+    virtual int getSlashResidue(const Player *likui) const{
+        if(likui->hasSkill("huxiao")){
+            int init = 1 - likui->getSlashCount();
+            return init + likui->getMark("huxiao");
+        }
+        else
+            return SlashSkill::getSlashResidue(likui);
     }
 };
 
@@ -910,7 +941,7 @@ SPPackage::SPPackage()
     shenlvbu2->addSkill(new Xiuluo);
     shenlvbu2->addSkill(new ShenweiKeep);
     shenlvbu2->addSkill(new Shenwei);
-    shenlvbu2->addSkill(new Skill("shenji"));
+    shenlvbu2->addSkill(new Shenji);
     related_skills.insertMulti("shenwei", "#shenwei-draw");
 
     General *sp_caiwenji = new General(this, "sp_caiwenji", "wei", 3, false, true);
@@ -938,6 +969,7 @@ SPPackage::SPPackage()
     guanyinping->addSkill(new WujiCount);
     related_skills.insertMulti("wuji", "#wuji-count");
     related_skills.insertMulti("huxiao", "#huxiao");
+    skills << new HuxiaoSlash;
 
     General *chenlin = new General(this, "chenlin", "wei", 3);
     chenlin->addSkill(new Bifa);

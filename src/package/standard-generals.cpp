@@ -548,6 +548,20 @@ public:
     }
 };
 
+class Paoxiao: public SlashSkill{
+public:
+    Paoxiao():SlashSkill("paoxiao"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashResidue(const Player *zom) const{
+        if(zom->hasSkill(objectName()))
+            return 998;
+        else
+            return SlashSkill::getSlashResidue(zom);
+    }
+};
+
 class Longdan:public OneCardViewAsSkill{
 public:
     Longdan():OneCardViewAsSkill("longdan"){
@@ -1265,7 +1279,7 @@ void StandardPackage::addGenerals(){
     guanyu->addSkill(new SPConvertSkill("#guanyup", "guanyu", "sp_guanyu"));
 
     zhangfei = new General(this, "zhangfei", "shu");
-    zhangfei->addSkill(new Skill("paoxiao"));
+    zhangfei->addSkill(new Paoxiao);
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);

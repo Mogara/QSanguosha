@@ -347,6 +347,23 @@ MaxCardsSkill::MaxCardsSkill(const QString &name)
 {
 }
 
+SlashSkill::SlashSkill(const QString &name)
+    :Skill(name, Skill::Compulsory)
+{
+}
+
+int SlashSkill::getSlashRange(const Player *, const Player *, const Card *) const{
+    return 0;
+}
+
+int SlashSkill::getSlashResidue(const Player *target) const{
+    return qMax(1 - target->getSlashCount(), 0);
+}
+
+int SlashSkill::getSlashExtraGoals(const Player *, const Player *, const Card *) const{
+    return 0;
+}
+
 WeaponSkill::WeaponSkill(const QString &name)
     :TriggerSkill(name)
 {

@@ -512,6 +512,7 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void TianyiCard::use(Room *room, ServerPlayer *taishici, const QList<ServerPlayer *> &targets) const{
     bool success = taishici->pindian(targets.first(), "tianyi", this);
+    room->acquireSkill(taishici, "#tianyi_slash");
     if(success){
         room->setPlayerFlag(taishici, "tianyi_success");
     }else{
@@ -555,8 +556,38 @@ public:
                 room->setPlayerFlag(target, "-tianyi_success");
             }
         }
-
         return false;
+    }
+};
+
+class TianyiSlash: public SlashSkill{
+public:
+    TianyiSlash():SlashSkill("#tianyi_slash"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
+        if(from->hasSkill("tianyi") && from->hasFlag("tianyi_success"))
+            return 998;
+        else
+            return 0;
+    }
+
+    virtual int getSlashResidue(const Player *t) const{
+        if(t->hasSkill("tianyi")){
+            if(t->hasFlag("tianyi_success"))
+                return qMax(1 - t->getSlashCount() + 1, 0);
+            if(t->hasFlag("tianyi_failed"))
+                return -998;
+        }
+        return 0;
+    }
+
+    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
+        if(from->hasSkill("tianyi") && from->hasFlag("tianyi_success"))
+            return 1;
+        else
+            return 0;
     }
 };
 
@@ -581,11 +612,11 @@ FirePackage::FirePackage()
     pangtong->addSkill(new Lianhuan);
     pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
     pangtong->addSkill(new Niepan);
-
     related_skills.insertMulti("niepan", "#@nirvana-1");
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);
+    skills << new TianyiSlash;
 
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);
@@ -605,4 +636,4 @@ FirePackage::FirePackage()
     addMetaObject<TianyiCard>();
 }
 
-ADD_PACKAGE(Fire);
+ADD_PACKAGE(Fire)

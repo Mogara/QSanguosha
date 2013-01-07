@@ -69,6 +69,7 @@ public:
     const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
     QList<const DistanceSkill *> getDistanceSkills() const;
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
+    QList<const SlashSkill *> getSlashSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
@@ -89,6 +90,7 @@ public:
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target) const;
+    int correctSlash(const QString &type, const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
 
 private:
     QHash<QString, QString> translations;
@@ -103,6 +105,7 @@ private:
     QList<const ProhibitSkill *> prohibit_skills;
     QList<const DistanceSkill *> distance_skills;
     QList<const MaxCardsSkill *> maxcards_skills;
+	QList<const SlashSkill *> slash_skills;
 
     QHash<QString, const Scenario *> scenarios;
 
