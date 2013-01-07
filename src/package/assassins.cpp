@@ -251,7 +251,7 @@ public:
         }else if(event == Predamaged){
             if(damage.from && damage.from->isAlive()
                && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
-                if(damage.damage < 1 && room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
+                if(damage.damage > 0 && room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
                     room->playSkillEffect(objectName(), 2);
 
                     LogMessage log;
