@@ -135,7 +135,7 @@ public:
         case Player::Finish:
         case Player::NotActive: return false;
 
-        case Player::Judge: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge");
+        case Player::Judge: return !zhanghe->getJudgingArea().isEmpty() && room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge");
         case Player::Draw: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw");
         case Player::Play: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play");
         case Player::Discard: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard");

@@ -192,6 +192,49 @@ void General::lastWord() const{
     Sanguosha->playEffect(filename);
 }
 
+void General::winWord() const{
+    QString filename = QString("audio/win/%1.dat").arg(objectName());
+    if(isCaoCao())
+        filename = "audio/win/caocao.dat";
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly)){
+        QStringList origin_generals = objectName().split("_");
+        if(origin_generals.length()>1)
+            filename = QString("audio/win/%1.dat").arg(origin_generals.at(1));
+    }
+    if(!file.open(QIODevice::ReadOnly) && objectName().endsWith("f")){
+        QString origin_general = objectName();
+        origin_general.chop(1);
+        if(Sanguosha->getGeneral(origin_general))
+            filename = QString("audio/win/%1.dat").arg(origin_general);
+    }
+    Sanguosha->playEffect(filename);
+}
+
+QString General::getWinword() const{
+    QString general_name = objectName();
+    QString win_word = Sanguosha->translate("`" + general_name);
+    if(isCaoCao())
+        win_word = Sanguosha->translate("`caocao");
+    if(win_word.startsWith("`")){
+        QStringList origin_generals = general_name.split("_");
+        if(origin_generals.length()>1)
+            win_word = Sanguosha->translate(("`") +  origin_generals.at(1));
+    }
+
+    if(win_word.startsWith("`") && general_name.endsWith("f")){
+        QString origin_general = general_name;
+        origin_general.chop(1);
+        if(Sanguosha->getGeneral(origin_general))
+            win_word = Sanguosha->translate(("`") + origin_general);
+    }
+    return win_word;
+}
+
+bool General::isCaoCao() const{
+    return objectName().contains("caocao") || objectName() == "weiwudi";
+}
+
 QSize General::BigIconSize(94, 96);
 QSize General::SmallIconSize(122, 50);
 QSize General::TinyIconSize(42, 36);

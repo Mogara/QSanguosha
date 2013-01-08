@@ -70,10 +70,9 @@ public:
     }
 };
 
-class ShiPo: public ProhibitSkill{
+class Sipo: public ProhibitSkill{
 public:
-    ShiPo():ProhibitSkill("shiPo"){
-
+    Sipo():ProhibitSkill("sipo"){
     }
 
     virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
@@ -769,7 +768,7 @@ SanDZhimengPackage::SanDZhimengPackage()
 {
     General *diyliru = new General(this, "diyliru", "qun", 3);
     diyliru->addSkill(new Duji);
-    diyliru->addSkill(new ShiPo);
+    diyliru->addSkill(new Sipo);
 
     General *diypanfeng = new General(this, "diypanfeng", "qun");
     diypanfeng->addSkill(new Liefu);

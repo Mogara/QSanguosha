@@ -551,7 +551,6 @@ public:
 class Paoxiao: public SlashSkill{
 public:
     Paoxiao():SlashSkill("paoxiao"){
-        frequency = NotFrequent;
     }
 
     virtual int getSlashResidue(const Player *zom) const{

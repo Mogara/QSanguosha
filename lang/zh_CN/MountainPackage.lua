@@ -113,6 +113,8 @@ return {
 	["$ruoyu"] = "大智若愚，大巧若拙",
 	["$xiangle1"] = "此间乐，不思蜀",
 	["$xiangle2"] = "如此甚好，甚好",
+	["$jijiang3"] = "蜀、蜀将何在？(傻)",
+	["$jijiang4"] = "尔等敢应战否？(傻)",
 	["~liushan"] = "吾降，吾降矣",
 
 	["cv:jiangwei"] = "Jr. Wakaran",

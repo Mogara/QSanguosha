@@ -2536,10 +2536,15 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             from = move.from;
     }
 
-    if(from_place == Player::Judging && from->property("yanxiao").toInt() == card->getEffectiveId()){
-        setPlayerProperty(from, "yanxiao", QVariant::fromValue(-1));
+    if(from_place == Player::Judging){
+        QStringList yanxiaos = from->property("yanxiao").toString().split("|");
+        QString idstr = card->getEffectIdString();
+        if(yanxiaos.contains(idstr))
+            yanxiaos.removeOne(idstr);
+        if(yanxiaos.isEmpty())
+            setPlayerProperty(from, "yanxiao", QVariant::fromValue(QString()));
         if(place == Player::Judging)
-            setPlayerProperty(to, "yanxiao", from->property("yanxiao"));
+            setPlayerProperty(to, "yanxiao", QVariant::fromValue(yanxiaos.join("|")));
     }
 
     if(from)

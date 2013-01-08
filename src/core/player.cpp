@@ -536,12 +536,12 @@ QList<const DelayedTrick *> Player::delayedTricks() const{
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
+    QStringList yanxiaos = property("yanxiao").toString().split("|");
     foreach(const DelayedTrick *trick, delayed_tricks){
         if(trick->objectName() == trick_name &&
-           trick->getEffectiveId() != property("yanxiao").toInt())
+           !yanxiaos.contains(trick->getEffectIdString()))
             return true;
     }
-
     return false;
 }
 
@@ -814,8 +814,7 @@ void Player::setStatistics(StatisticsStruct *statistics){
 }
 
 bool Player::isCaoCao() const{
-    QString general_name = getGeneralName();
-    return general_name == "caocao" || general_name == "shencaocao" || general_name == "weiwudi";
+    return getGeneral()->isCaoCao();
 }
 
 void Player::copyFrom(Player* p)
