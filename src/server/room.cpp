@@ -2441,9 +2441,7 @@ void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower)
 
     LogMessage log;
     if(who){
-        if(who->hasFlag("mute_throw"))
-            who->hasFlag("-mute_throw");
-        else if(thrower){
+        if(thrower){
             log.type = "$DiscardCardByOther"; //thrower throw who's card
             log.from = thrower;
             log.to << who;
@@ -2469,7 +2467,9 @@ void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower)
         else
             log.card_str += "+" + QString::number(card_id);
     }
-    if(who)
+    if(who && who->hasFlag("mute_throw"))
+        who->hasFlag("-mute_throw");
+    else
         sendLog(log);
 
     moveCardTo(card, NULL, Player::DiscardedPile);

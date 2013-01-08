@@ -11,54 +11,48 @@ QString Shit::getSubtype() const{
     return "disgusting_card";
 }
 
-void Shit::onMove(const CardMoveStruct &move) const{
-    PlayerStar from = move.from;
-    if(from && move.from_place == Player::Hand &&
-       from->getRoom()->getCurrent() == move.from
-       && (move.to_place == Player::DiscardedPile || move.to_place == Player::Special)
-       && move.to == NULL
-       && from->isAlive()){
+void Shit::eatShit(Room *room, PlayerStar source) const{
+    if(!source->isAlive())
+        return;
+    LogMessage log;
+    log.card_str = getEffectIdString();
+    log.from = source;
 
-        LogMessage log;
-        log.card_str = getEffectIdString();
-        log.from = from;
-
-        Room *room = from->getRoom();
-
-        if(getSuit() == Spade){            
-            log.type = "$ShitLostHp";
-            room->sendLog(log);
-
-            room->loseHp(from);
-
-            return;
-        }
-
-        DamageStruct damage;
-        damage.from = damage.to = from;
-        damage.card = this;
-
-        switch(getSuit()){
-        case Club: damage.nature = DamageStruct::Thunder; break;
-        case Heart: damage.nature = DamageStruct::Fire; break;
-        default:
-            damage.nature = DamageStruct::Normal;
-        }
-
-        log.type = "$ShitDamage";
+    if(getSuit() == Spade){
+        log.type = "$ShitLostHp";
         room->sendLog(log);
+        room->loseHp(source);
+        return;
+    }
 
-        room->damage(damage);
+    DamageStruct damage;
+    damage.from = damage.to = source;
+    damage.card = this;
+
+    switch(getSuit()){
+    case Club: damage.nature = DamageStruct::Thunder; break;
+    case Heart: damage.nature = DamageStruct::Fire; break;
+    default:
+        damage.nature = DamageStruct::Normal;
+    }
+
+    log.type = "$ShitDamage";
+    room->sendLog(log);
+    room->damage(damage);
+}
+
+void Shit::onMove(const CardMoveStruct &move) const{
+    if(move.from && move.from_place == Player::Hand &&
+       move.from->getRoom()->getCurrent() == move.from
+       && (move.to_place == Player::DiscardedPile || move.to_place == Player::Special)
+       && move.to == NULL){
+        eatShit(move.from->getRoom(), move.from);
     }
 }
 
-void Shit::onUse(Room *, const CardUseStruct &card_use) const{
-    CardMoveStruct move;
-    move.from = card_use.from;
-    move.from_place = Player::Hand;
-    move.to_place == Player::DiscardedPile;
-    move.card_id = getEffectiveId();
-    Shit::onMove(move);
+void Shit::onUse(Room *room, const CardUseStruct &card_use) const{
+    card_use.from->setFlags("mute_throw");
+    room->throwCard(this, card_use.from);
 }
 
 bool Shit::HasShit(const Card *card){
