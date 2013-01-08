@@ -2521,20 +2521,23 @@ void RoomScene::onGameOver(){
 
 #ifdef AUDIO_SUPPORT
     QString win_effect;
+    bool mute = false;
     if(victory){
         win_effect = "win";
         foreach(const Player *player, ClientInstance->getPlayers()){
             if(player->property("win").toBool() && player->isCaoCao()){
                 Audio::stop();
-
-                win_effect = "win-cc";
+                if(!player->getGeneral()->getWinword().startsWith("`")){
+                    player->getGeneral()->winWord();
+                    mute = true;
+                }
                 break;
             }
         }
     }else
         win_effect = "lose";
-
-    Sanguosha->playAudio(win_effect);
+    if(!mute)
+        Sanguosha->playAudio(win_effect);
 #endif
 
     QDialog *dialog = new QDialog(main_window);

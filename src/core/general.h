@@ -54,6 +54,7 @@ public:
     QString getPixmapPath(const QString &category) const;
     QString getPackage() const;
     QString getSkillDescription() const;
+    QString getWinword() const;
 
     static QSize BigIconSize;
     static QSize SmallIconSize;
@@ -61,6 +62,7 @@ public:
 
 public slots:
     void lastWord() const;
+    void winWord() const;
 
 private:
     QString kingdom;

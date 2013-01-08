@@ -126,9 +126,8 @@ public:
         Room *room = gongsun->getRoom();
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
-			room->playSkillEffect("zhulou", qrand() % 2 + 1);
-            QString choice = room->askForChoice(gongsun, "zhulou", "throw+losehp");
-            if(choice == "losehp" || !room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
+            room->playSkillEffect("zhulou", qrand() % 2 + 1);
+            if(gongsun->isNude() || !room->askForCard(gongsun, "Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
                 room->loseHp(gongsun);
         }
         return false;
