@@ -471,7 +471,6 @@ public:
     Jijiang():TriggerSkill("jijiang$"){
         events << CardAsked;
         default_choice = "ignore";
-
         view_as_skill = new JijiangViewAsSkill;
     }
 

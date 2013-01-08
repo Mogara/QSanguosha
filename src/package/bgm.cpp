@@ -1498,10 +1498,44 @@ public:
     }
 };
 
+HuangenCard::HuangenCard(){
+}
+
+bool HuangenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(targets.length() >= Self->getHp())
+        return false;
+    return to_select->hasFlag("huangen");
+}
+
+void HuangenCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    room->setPlayerFlag(effect.to, "-huangen");
+    effect.to->drawCards(1);
+}
+
+class HuangenViewAsSkill:public ZeroCardViewAsSkill{
+public:
+    HuangenViewAsSkill():ZeroCardViewAsSkill("huangen"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@@huangen";
+    }
+
+    virtual const Card *viewAs() const{
+        return new HuangenCard;
+    }
+};
+
 class Huangen: public TriggerSkill{
 public:
     Huangen(): TriggerSkill("huangen"){
         events << CardUsed;
+        view_as_skill = new HuangenViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1515,13 +1549,34 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if(!use.card->isKindOf("TrickCard") || use.to.length() < 2)
             return false;
-        if(liuxie->askForSkillInvoke(objectName())){
-            ServerPlayer *target = room->askForPlayerChosen(liuxie, use.to, objectName());
-            use.to.removeOne(target);
-            target->drawCards(1);
+        QList<ServerPlayer *> useto = use.to;
+        foreach(ServerPlayer *t, useto)
+            room->setPlayerFlag(t, "huangen");
+        if(room->askForUseCard(liuxie, "@@huangen", "@huangen:" + player->objectName() + ":" + use.card->objectName())){
+            foreach(ServerPlayer *t, useto){
+                if(!t->hasFlag("huangen"))
+                    use.to.removeOne(t);
+            }
             data = QVariant::fromValue(use);
         }
+        foreach(ServerPlayer *t, useto)
+            room->setPlayerFlag(t, "-huangen");
         return false;
+    }
+};
+
+#include "standard-skillcards.h"
+class ZhaoJijiang: public ZeroCardViewAsSkill{
+public:
+    ZhaoJijiang():ZeroCardViewAsSkill("zhao_jijiang"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
+    }
+
+    virtual const Card *viewAs() const{
+        return new JijiangCard;
     }
 };
 
@@ -1529,35 +1584,141 @@ class Hantong: public TriggerSkill{
 public:
     Hantong():TriggerSkill("hantong"){
         events << CardDiscarded << PhaseChange;
+        events << CardAsked << CardEffected;
+        view_as_skill = new ZhaoJijiang;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == PhaseChange){
-            if(player->getPhase() == Player::Start){
-                if(!player->getPile("zhao").isEmpty() && player->askForSkillInvoke(objectName())){
-                    room->playSkillEffect(objectName());
+            if(player->getPhase() == Player::Discard){
+                if(!player->getPile("zhao").isEmpty() && player->askForSkillInvoke("xueyi")){
                     room->throwCard(player->getPile("zhao").first());
-                    QString skill = room->askForChoice(player, objectName(), "hujia+jijiang+jiuyuan+xueyi");
-                    player->tag["Zhao"] = skill;
-                    room->acquireSkill(player, skill);
+                    room->setPlayerFlag(player, "zhao_xueyi");
                 }
             }
-            else if(player->getPhase() == Player::NotActive){
-                QString skill = player->tag.value("Zhao").toString();
-                room->detachSkillFromPlayer(player, skill);
+        }
+        else if(event == CardDiscarded){
+            if(player->getPhase() == Player::Discard){
+                CardStar card = data.value<CardStar>();
+                if(card->getSubcards().isEmpty() || !player->askForSkillInvoke(objectName()))
+                    return false;
+                room->playSkillEffect(objectName());
+                foreach(int card_id, card->getSubcards())
+                    player->addToPile("zhao", card_id);
             }
-            return false;
         }
-        if(player->getPhase() == Player::Discard){
-            CardStar card = data.value<CardStar>();
-            if(card->getSubcards().isEmpty() || !player->askForSkillInvoke(objectName()))
-                return false;
-            room->playSkillEffect(objectName());
-            foreach(int card_id, card->getSubcards())
-                player->addToPile("zhao", card_id);
+        else if(event == CardAsked){
+            QString pattern = data.toString();
+            if(pattern == "slash"){
+                QList<ServerPlayer *> lieges = room->getLieges("shu", player);
+                if(lieges.isEmpty())
+                    return false;
+                if(player->hasFlag("zhao_jijiang") ||
+                   (!player->getPile("zhao").isEmpty() && player->askForSkillInvoke("jijiang"))){
+                    if(!player->hasFlag("zhao_jijiang")){
+                        room->throwCard(player->getPile("zhao").first());
+                        room->setPlayerFlag(player, "zhao_jijiang");
+                    }
+                    room->playSkillEffect("jijiang", qrand() % 2 + 3);
+                    QVariant tohelp = QVariant::fromValue((PlayerStar)player);
+                    foreach(ServerPlayer *liege, lieges){
+                        const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + player->objectName(), tohelp);
+                        if(slash){
+                            room->provide(slash);
+                            return true;
+                        }
+                    }
+                }
+            }
+            else if(pattern == "jink"){
+                QList<ServerPlayer *> lieges = room->getLieges("wei", player);
+                if(lieges.isEmpty())
+                    return false;
+                if(player->hasFlag("zhao_hujia") ||
+                   (!player->getPile("zhao").isEmpty() && player->askForSkillInvoke("hujia"))){
+                    if(!player->hasFlag("zhao_hujia")){
+                        room->throwCard(player->getPile("zhao").first());
+                        room->setPlayerFlag(player, "zhao_hujia");
+                    }
+                    room->playSkillEffect("hujia");
+                    QVariant tohelp = QVariant::fromValue((PlayerStar)player);
+                    foreach(ServerPlayer *liege, lieges){
+                        const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + player->objectName(), tohelp);
+                        if(jink){
+                            room->provide(jink);
+                            return true;
+                        }
+                    }
+                }
+            }
         }
+        else if(event == CardEffected){
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if(effect.card->isKindOf("Peach") &&
+               effect.from->getKingdom() == "wu" &&
+               player->hasFlag("dying")){
+                if(player->hasFlag("zhao_jiuyuan") ||
+                   (!player->getPile("zhao").isEmpty() && player->askForSkillInvoke("jiuyuan"))){
+                    if(!player->hasFlag("zhao_jiuyuan")){
+                        room->throwCard(player->getPile("zhao").first());
+                        room->setPlayerFlag(player, "zhao_jiuyuan");
+                    }
+                    LogMessage log;
+                    log.type = "#JiuyuanExtraRecover";
+                    log.from = player;
+                    log.to << effect.from;
+                    log.arg = "jiuyuan";
+                    room->sendLog(log);
 
+                    RecoverStruct recover;
+                    recover.who = effect.from;
+                    room->recover(player, recover);
+                    room->playSkillEffect("jiuyuan");
+                }
+            }
+        }
         return false;
+    }
+};
+
+class HantongClear: public TriggerSkill{
+public:
+    HantongClear():TriggerSkill("#hantong_clear"){
+        events << PhaseChange;
+    }
+
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(player->getPhase() == Player::NotActive){
+            foreach(ServerPlayer *tmp, room->getAlivePlayers()){
+                room->setPlayerFlag(tmp, "-zhao_jijiang");
+                room->setPlayerFlag(tmp, "-zhao_jiuyuan");
+                room->setPlayerFlag(tmp, "-zhao_xueyi");
+                room->setPlayerFlag(tmp, "-zhao_hujia");
+            }
+        }
+        return false;
+    }
+};
+
+class ZhaoXueyi: public MaxCardsSkill{
+public:
+    ZhaoXueyi():MaxCardsSkill("#zhao_xueyi"){
+    }
+    virtual int getExtra(const Player *target) const{
+        int extra = 0;
+        QList<const Player *> players = target->getSiblings();
+        foreach(const Player *player, players){
+            if(player->isAlive() && player->getKingdom() == "qun")
+                extra += 2;
+        }
+        if(target->hasFlag("zhao_xueyi"))
+            return extra;
+        else
+            return 0;
     }
 };
 
@@ -1802,6 +1963,9 @@ PasterPackage::PasterPackage()
     General *liuxie = new General(this, "liuxie", "qun");
     liuxie->addSkill(new Huangen);
     liuxie->addSkill(new Hantong);
+    liuxie->addSkill(new HantongClear);
+    related_skills.insertMulti("hantong", "#hantong_clear");
+    skills << new ZhaoXueyi;
 
     General *gongshunzan = new General(this, "gongshunzan", "qun");
     gongshunzan->addSkill(new Yic0ng);
@@ -1809,6 +1973,7 @@ PasterPackage::PasterPackage()
     skills << new Yic0ngDistance << new TuqiDistance;
 
     addMetaObject<FuluanCard>();
+    addMetaObject<HuangenCard>();
     addMetaObject<Yic0ngCard>();
     addMetaObject<MingjianCard>();
 }

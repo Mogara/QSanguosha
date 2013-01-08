@@ -81,6 +81,16 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class HuangenCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HuangenCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+};
+
 class Yic0ngCard:public SkillCard{
     Q_OBJECT
 
