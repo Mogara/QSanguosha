@@ -615,7 +615,7 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
         use.from = effect.to;
         room->useCard(use);
     }else if(!effect.to->isNude()){
-        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"));
+        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to, effect.from);
     }
 }
 

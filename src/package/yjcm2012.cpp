@@ -22,7 +22,7 @@ public:
             room->playSkillEffect(objectName(), room->getCurrent() == player ? 2 : 1);
             int card_id = room->drawCard();
             room->getThread()->delay();
-            room->throwCard(judge->card);
+            room->throwCard(judge->card, judge->who);
 
             judge->card = Sanguosha->getCard(card_id);
             room->moveCardTo(judge->card, NULL, Player::Special);
@@ -550,7 +550,7 @@ void GongqiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     if(Sanguosha->getCard(getSubcards().first())->isKindOf("EquipCard")){
         int card_id = room->askForCardChosen(effect.from, effect.to, "he", skill_name);
-        room->throwCard(card_id);
+        room->throwCard(card_id, effect.to, effect.from);
     }
     room->setPlayerFlag(effect.from, "gongqi_range");
 }

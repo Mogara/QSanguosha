@@ -52,6 +52,15 @@ void Shit::onMove(const CardMoveStruct &move) const{
     }
 }
 
+void Shit::onUse(Room *, const CardUseStruct &card_use) const{
+    CardMoveStruct move;
+    move.from = card_use.from;
+    move.from_place = Player::Hand;
+    move.to_place == Player::DiscardedPile;
+    move.card_id = getEffectiveId();
+    Shit::onMove(move);
+}
+
 bool Shit::HasShit(const Card *card){
     if(card->isVirtualCard()){
         QList<int> card_ids = card->getSubcards();

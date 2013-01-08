@@ -29,7 +29,7 @@ public:
                     }else {
                         room->playSkillEffect(objectName(), 2);
                         int disc = room->askForCardChosen(player, p, "he", objectName());
-                        room->throwCard(disc);
+                        room->throwCard(disc, p, player);
                     }
                     room->setPlayerMark(p, objectName() + use.card->getEffectIdString(),
                                         p->getMark(objectName() + use.card->getEffectIdString()) + 1);
@@ -43,7 +43,7 @@ public:
                 return false;
             int disc = room->askForCardChosen(effect.to, effect.from, "he", objectName());
             room->playSkillEffect(objectName(), 3);
-            room->throwCard(disc);
+            room->throwCard(disc, effect.from, effect.to);
             room->setPlayerMark(effect.to, objectName() + effect.slash->getEffectIdString(),
                                 effect.to->getMark(objectName() + effect.slash->getEffectIdString()) - 1);
         }else if(event == CardFinished) {
@@ -546,7 +546,7 @@ public:
                 if(room->askForChoice(splayer, objectName(), "discard+cancel") == "cancel")
                     break;
                 int card_id = room->askForCardChosen(splayer, player, "he", objectName());
-                room->throwCard(card_id);
+                room->throwCard(card_id, player, splayer);
             }
 
             room->loseHp(splayer);

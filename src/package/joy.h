@@ -32,11 +32,10 @@ public:
     Q_INVOKABLE Shit(Card::Suit suit, int number);
     virtual QString getSubtype() const;
     virtual void onMove(const CardMoveStruct &move) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 
     static bool HasShit(const Card *card);
 };
-
-
 
 // five disasters:
 

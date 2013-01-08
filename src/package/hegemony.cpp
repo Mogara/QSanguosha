@@ -252,7 +252,7 @@ public:
             if(room->askForChoice(player, objectName(), "kuangfuget+kuangfudis") == "kuangfuget")
                 player->obtainCard(card);
             else
-                room->throwCard(card);
+                room->throwCard(card, damage.to, player);
         }
         return false;
     }

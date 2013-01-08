@@ -1227,15 +1227,14 @@ public:
                     if (player->isNude())
                         break;
                     card_ids << room->askForCardChosen(xiahou, player, "he", objectName());
-                    original_places << room->getCardPlace(card_ids[i]);
-                    dummy->addSubcard(card_ids[i]);
-                    player->addToPile("#xuehen", card_ids[i], false);
+                    original_places << room->getCardPlace(card_ids.at(i));
+                    dummy->addSubcard(card_ids.at(i));
+                    player->addToPile("#xuehen", card_ids.at(i), false);
                 }
                 for (int i = 0; i < dummy->subcardsLength(); i++)
-                    room->moveCardTo(Sanguosha->getCard(card_ids[i]), player, original_places[i], false);
+                    room->moveCardTo(Sanguosha->getCard(card_ids.at(i)), player, original_places.at(i), false);
                 room->setPlayerFlag(player, "-XuehenTarget_InTempMoving");
-                //if (dummy->subcardsLength() > 0)
-                    room->throwCard(dummy);
+                room->throwCard(dummy, player, xiahou);
                 dummy->deleteLater();
             }
         }

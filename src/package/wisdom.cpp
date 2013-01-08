@@ -179,7 +179,8 @@ public:
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
             room->playSkillEffect(objectName());
-            room->throwCard(card);
+            jiangwei->setFlags("mute_throw");
+            room->throwCard(card, jiangwei);
             room->askForUseCard(jiangwei, "slash", "@askforslash");
         }
         return false;

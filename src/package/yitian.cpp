@@ -1861,7 +1861,7 @@ void TaichenCard::onEffect(const CardEffectStruct &effect) const{
     int i;
     for(i=0; i<2; i++){
         if(!effect.to->isAllNude())
-            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"));
+            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"), effect.to, effect.from);
     }
 }
 

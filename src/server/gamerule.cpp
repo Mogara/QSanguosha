@@ -80,29 +80,35 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
 
     case Player::Discard:{
-            int discard_num = player->getHandcardNum() - player->getMaxCards();
-            if(player->hasFlag("jilei")){
-                QSet<const Card *> jilei_cards;
-                QList<const Card *> handcards = player->getHandcards();
-                foreach(const Card *card, handcards){
-                    if(player->isJilei(card))
-                        jilei_cards << card;
-                }
-
-                if(jilei_cards.size() > player->getMaxCards()){
-                    // show all his cards
-                    room->showAllCards(player);
-
-                    foreach(const Card *card, handcards.toSet() - jilei_cards){
-                        room->throwCard(card);
+            while (player->getHandcardNum() > player->getMaxCards())
+            {
+                int discard_num = player->getHandcardNum() - player->getMaxCards();
+                if(player->hasFlag("jilei")){
+                    QSet<const Card *> jilei_cards;
+                    QList<const Card *> handcards = player->getHandcards();
+                    foreach(const Card *card, handcards){
+                        if(player->isJilei(card))
+                            jilei_cards << card;
                     }
 
-                    return;
+                    if(jilei_cards.size() > player->getMaxCards()){
+                        // show all his cards
+                        room->showAllCards(player);
+
+                        DummyCard *dummy_card = new DummyCard;
+                        foreach(const Card *card, handcards.toSet() - jilei_cards){
+                            dummy_card->addSubcard(card);
+                        }
+                        room->throwCard(dummy_card, player);
+
+                        return;
+                    }
+                }
+                if(discard_num > 0)
+                {
+                    room->askForDiscard(player, "gamerule", discard_num, 1);
                 }
             }
-
-            if(discard_num > 0)
-                room->askForDiscard(player, "gamerule", discard_num);
             break;
         }
     case Player::Finish: {

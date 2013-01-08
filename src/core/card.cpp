@@ -438,8 +438,10 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  
-    if(will_throw)
-        room->throwCard(this);
+    if(will_throw){
+        card_use.from->setFlags("mute_throw");
+        room->throwCard(this, card_use.from);
+    }
 
     thread->trigger(CardUsed, player, data);
 
@@ -454,8 +456,8 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
         qSort(players.begin(), players.end(), CompareByActionOrder);
 
         if(room->getMode() == "06_3v3"){
-           if(inherits("AOE") || inherits("GlobalEffect"))
-               room->reverseFor3v3(this, source, players);
+            if(inherits("AOE") || inherits("GlobalEffect"))
+                room->reverseFor3v3(this, source, players);
         }
 
         foreach(ServerPlayer *target, players){

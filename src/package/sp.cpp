@@ -242,9 +242,11 @@ public:
                     log.arg2 = objectName();
                     room->sendLog(log);
                     yuanshu->throwAllEquips();
+                    DummyCard *dummy_card = new DummyCard;
                     foreach(const Card *card, handcards.toSet() - jilei_cards){
-                        room->throwCard(card);
+                        dummy_card->addSubcard(card);
                     }
+                    room->throwCard(dummy_card, yuanshu);
                 }
             }else{
                 room->askForDiscard(yuanshu, "yongsi", x, false, true);
@@ -345,7 +347,6 @@ public:
 class Xiuluo: public PhaseChangeSkill{
 public:
     Xiuluo():PhaseChangeSkill("xiuluo"){
-
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -362,7 +363,6 @@ public:
 
             if(!target->askForSkillInvoke(objectName()))
                 return false;
-
             Room *room = target->getRoom();
             int card_id = room->askForCardChosen(target, target, "j", objectName());
             const Card *card = Sanguosha->getCard(card_id);
@@ -371,7 +371,7 @@ public:
             QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
             QString prompt = QString("@xiuluo:::%1").arg(suit_str);
             if(room->askForCard(target, pattern, prompt, QVariant(), CardDiscarded)){
-                room->throwCard(card);
+                room->throwCard(card, target);
                 once_success = true;
             }
         }while(!target->getCards("j").isEmpty() && once_success);
@@ -509,7 +509,7 @@ void YuanhuCard::onEffect(const CardEffectStruct &effect) const{
       if (!targets.isEmpty()) {
           ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "yuanhu");
           int card_id = room->askForCardChosen(caohong, to_dismantle, "hej", "yuanhu");
-          room->throwCard(card_id);
+          room->throwCard(card_id, to_dismantle, caohong);
       }
     } else if (card->isKindOf("Armor")) {
         effect.to->drawCards(1);

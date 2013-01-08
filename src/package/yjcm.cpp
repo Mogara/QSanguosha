@@ -545,11 +545,11 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, const QList<ServerPla
             if(!sp->isNude()){
                 if(sp->hasFlag("changinge") && !sp->isKongcheng()){
                     int card_id = room->askForCardChosen(lingtong, sp, "h", "xuanfeng");
-                    room->throwCard(card_id);
+                    room->throwCard(card_id, sp, lingtong);
                 }
                 else{
                     int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng");
-                    room->throwCard(card_id);
+                    room->throwCard(card_id, sp, lingtong);
                 }
             }
             map[sp]--;
@@ -1019,7 +1019,7 @@ public:
                 room->showCard(player, card->getEffectiveId());
 
                 if(card->getTypeId() != Card::Basic){
-                    room->throwCard(card);
+                    room->throwCard(card, player, wuguotai);
 
                     room->playSkillEffect(objectName());
 

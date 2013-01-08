@@ -83,7 +83,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     }
 
     if(equipped)
-        room->throwCard(equipped);
+        room->throwCard(equipped, source);
 
     LogMessage log;
     log.from = target;

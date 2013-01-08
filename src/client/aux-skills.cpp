@@ -90,10 +90,8 @@ bool FreeDiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardI
 
 const Card *FreeDiscardSkill::viewAs(const QList<CardItem *> &cards) const{
     if(!cards.isEmpty()){
-
         card->clearSubcards();
         card->addSubcards(cards);
-
         return card;
     }else
         return NULL;
