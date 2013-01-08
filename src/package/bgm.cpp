@@ -868,13 +868,15 @@ YanxiaoCard::YanxiaoCard(){
 }
 
 bool YanxiaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->property("yanxiao").toInt() < 1;
+    return targets.isEmpty();
 }
 
 void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
     room->moveCardTo(this, target, Player::Judging);
-    room->setPlayerProperty(target, "yanxiao", QVariant::fromValue(getEffectiveId()));
+    QStringList yanxiaos = target->property("yanxiao").toString().split("|");
+    yanxiaos << getEffectIdString();
+    room->setPlayerProperty(target, "yanxiao", QVariant::fromValue(yanxiaos.join("|")));
 }
 
 class YanxiaoViewAsSkill: public OneCardViewAsSkill{
@@ -912,18 +914,25 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::Judge)
             return false;
-        int yanxiao_id = player->property("yanxiao").toInt();
-        if(yanxiao_id < 1)
+        QStringList yanxiaos = player->property("yanxiao").toString().split("|");
+        if(yanxiaos.isEmpty())
             return false;
-        const Card *yanxiao = Sanguosha->getCard(yanxiao_id);
+        bool yx = false;
         QList<const Card *> judgis = player->getJudgingArea();
-        if(judgis.contains(yanxiao)){
+        foreach(const Card *c, judgis){
+            QString idstr = c->getEffectIdString();
+            if(yanxiaos.contains(idstr)){
+                yx = true;
+                break;
+            }
+        }
+        if(yx){
             while(!judgis.isEmpty() && player->isAlive()){
                 const Card *trick = judgis.takeLast();
                 player->obtainCard(trick);
             }
         }
-        room->setPlayerProperty(player, "yanxiao", QVariant::fromValue(-1));
+        room->setPlayerProperty(player, "yanxiao", QVariant::fromValue(QString()));
         return false;
     }
 };
