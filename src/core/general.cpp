@@ -194,6 +194,8 @@ void General::lastWord() const{
 
 void General::winWord() const{
     QString filename = QString("audio/win/%1.dat").arg(objectName());
+    if(isCaoCao())
+        filename = "audio/win/`caocao.dat";
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly)){
         QStringList origin_generals = objectName().split("_");
@@ -212,7 +214,7 @@ void General::winWord() const{
 QString General::getWinword() const{
     QString general_name = objectName();
     QString win_word = Sanguosha->translate("`" + general_name);
-    if(general_name.contains("caocao") || general_name == "weiwudi")
+    if(isCaoCao())
         win_word = Sanguosha->translate("`caocao");
     if(win_word.startsWith("`")){
         QStringList origin_generals = general_name.split("_");
@@ -227,6 +229,10 @@ QString General::getWinword() const{
             win_word = Sanguosha->translate(("`") + origin_general);
     }
     return win_word;
+}
+
+bool General::isCaoCao() const{
+    return objectName().contains("caocao") || objectName() == "weiwudi";
 }
 
 QSize General::BigIconSize(94, 96);

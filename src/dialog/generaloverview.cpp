@@ -225,7 +225,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         addCopyAction(death_button);
     }
 
-    if(general->isLord()){
+    if(general->isLord() || general->isCaoCao()){
         QString win_word = general->getWinword();
         if(!win_word.startsWith("`")){
             QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"), win_word);
