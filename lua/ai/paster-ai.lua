@@ -105,6 +105,22 @@ sgs.ai_skill_cardask["@langgu"]=function(self, data)
 end
 
 --huangen
+sgs.ai_skill_use["@@huangen"] = function(self, prompt)
+    local use = self.player:getTag("Huangen"):toCardUse()
+	local targets = sgs.QList2Table(use.to)
+	local tgs
+	for _, p in ipairs(targets) do
+		if sgs.dynamic_value.benefit[use.card:className()] and self:isEnemy(p) then
+			table.insert(tgs, p:objectName())
+		elseif sgs.dynamic_value.damage_card[use.card:className()] and self:isFriend(p) then
+			table.insert(tgs, p:objectName())
+		end
+	end
+	if #tgs > 0 then
+		return "@HuangenCard=.->" .. table.concat(tgs, "+")
+	end
+	return "."
+end
 
 --hantong
 sgs.ai_skill_invoke.hantong = function(self, data)

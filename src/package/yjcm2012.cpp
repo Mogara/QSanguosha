@@ -423,11 +423,11 @@ public:
         switch(shuangying->getPhase()){
         case Player::Draw:{
             if(shuangying->askForSkillInvoke(objectName())){
+                Room *room = shuangying->getRoom();
+                room->playSkillEffect(objectName(), 1);
                 const Card *first = getCard(shuangying);
                 const Card *second = getCard(shuangying);
 
-                Room *room = shuangying->getRoom();
-                room->playSkillEffect(objectName(), 1);
                 if(first->getColor() != second->getColor()){
                     room->setEmotion(shuangying, "good");
                     room->acquireSkill(shuangying, "wusheng");
