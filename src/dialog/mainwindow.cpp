@@ -282,7 +282,8 @@ BackLoader::BackLoader(QObject * parent)
 void BackLoader::run()
 {
     QStringList emotions;
-    emotions << "peach"
+    emotions
+            << "peach"
             << "analeptic"
             << "chain"
             << "damage"
@@ -293,7 +294,27 @@ void BackLoader::run()
             << "no-success"
             << "slash_black"
             << "slash_red"
-            << "success";
+            << "success"
+            << "duel"
+            << "judgebad"
+            << "judgegood"
+            << "weapon/axe"
+            << "weapon/blade"
+            << "weapon/crossbow"
+            << "weapon/double_sword"
+            << "weapon/fan"
+            << "weapon/guding_blade"
+            << "weapon/halberd"
+            << "weapon/ice_sword"
+            << "weapon/kylin_bow"
+            << "weapon/qinggang_sword"
+            << "weapon/spear"
+            << "weapon/sp_moonspear"
+            << "armor/eight_diagram"
+            << "armor/renwang_shield"
+            << "armor/silver_lion"
+            << "armor/vine"
+            << "armor/vineburn";
 
     double total = 0;
     foreach(QString emotion, emotions){

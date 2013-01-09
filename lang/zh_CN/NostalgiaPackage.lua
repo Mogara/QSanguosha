@@ -12,6 +12,7 @@ return {
 	["nosfazheng"] = "旧版法正",
 	["illustrator:nosfazheng"] = "雷没才",
 	["designer:nosfazheng"] = "michael_lee",
+	["cv:nosfazheng"] = "苏遥东",
 	["nosenyuan"] = "恩怨",
 	[":nosenyuan"] = "<b>锁定技</b>，其他角色每令你回复1点体力，该角色摸一张牌；其他角色每对你造成一次伤害后，需交给你一张红桃手牌，否则该角色失去1点体力。",
 	["nosxuanhuo"] = "眩惑",
@@ -22,7 +23,7 @@ return {
 	["$nosenyuan2"] = "滴水之恩，涌泉以报。",
 	["$nosenyuan3"] = "谁敢得罪我！",
 	["$nosenyuan4"] = "睚眦之怨，无不报复。",
-	["$nosxuanhuo1"] = "重用许靖，以眩远近。",
+	["$nosxuanhuo1"] = "重用许靖，以惑远近。",
 	["$nosxuanhuo2"] = "给你的，十倍奉还给我！",
 	["~nosfazheng"] = "蜀翼既折…蜀汉哀矣……",
 
@@ -30,6 +31,7 @@ return {
 	["nosxushu"] = "旧版徐庶",
 	["illustrator:nosxushu"] = "XINA",
 	["designer:nosxushu"] = "双叶松",
+	["cv:nosxushu"] = "苏遥冬",
 	["noswuyan"] = "无言",
 	[":noswuyan"] = "<b>锁定技</b>，你使用的非延时类锦囊牌对其他角色无效；其他角色使用的非延时类锦囊牌对你无效。",
 	["nosjujian"] = "举荐",
@@ -37,11 +39,13 @@ return {
 	["#WuyanBaD"] = "%from 触发【%arg2】，对 %to 使用的锦囊【%arg】无效",
 	["#WuyanGooD"] = "%from 触发【%arg2】， %to 使用的锦囊【%arg】对其无效",
 	["#JujianRecover"] = "%from 弃置了三张 %arg ，恢复1点体力",
-	["$noswuyan1"] = "唉，一切尽在不言中。",
-	["$noswuyan2"] = "嘘，言多必失啊。",
-	["$nosjujian1"] = "我看好你。",
-	["$nosjujian2"] = "将军岂愿抓牌呼？",
-	["~nosxushu"] = "娘…孩儿不孝…向您…请罪…",
+	["$nosjujian1"] = "天下之任，愿君莫辞。",
+	["$nosjujian2"] = "此乃贤达之士！",
+	["$nosjujian3"] = "卧龙之才，远胜于吾。", -- 对诸葛
+	["$noswuyan1"] = "吾誓不为汝设谋。", -- 自己使用锦囊
+	["$noswuyan2"] = "汝有良策，何必问我？", -- 他人使用锦囊
+	["$noswuyan3"] = "丞相之才远胜于吾，庶何敢妄言。", -- 曹操使用锦囊
+	["~nosxushu"] = "娘……孩儿不孝……向您……请罪……",
 
 	["#noslingtong"] = "豪情烈胆",
 	["noslingtong"] = "旧版凌统",

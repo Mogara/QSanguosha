@@ -276,7 +276,6 @@ void JuejiCard::onEffect(const CardEffectStruct &effect) const{
     while(success && !effect.to->isKongcheng()){
         if(effect.from->isKongcheng() || !effect.from->askForSkillInvoke("jueji", data))
             break;
-
         success = effect.from->pindian(effect.to, "jueji");
     }
 }
@@ -1944,12 +1943,12 @@ YitianPackage::YitianPackage()
     caizhaoji->addSkill(new Guihan);
     caizhaoji->addSkill(new CaizhaojiHujia);
 
-    General *luboyan = new General(this, "luboyan", "wu", 3);
+    General *luboyan = new General(this, "luboyan", "god", 3);
     luboyan->addSkill(new Shenjun);
     luboyan->addSkill(new Shaoying);
     luboyan->addSkill(new Zonghuo);
 
-    General *luboyanf = new General(this, "luboyanf", "wu", 3, false, true);
+    General *luboyanf = new General(this, "luboyanf", "god", 3, false, true);
     luboyanf->addSkill("shenjun");
     luboyanf->addSkill("shaoying");
     luboyanf->addSkill("zonghuo");
@@ -1968,7 +1967,7 @@ YitianPackage::YitianPackage()
     jiawenhe->addSkill(new Dongcha);
     jiawenhe->addSkill(new Dushi);
 
-    General *elai = new General(this, "guzhielai", "wei");
+    General *elai = new General(this, "guzhielai", "god");
     elai->addSkill(new Sizhan);
     elai->addSkill(new Shenli);
 

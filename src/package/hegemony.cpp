@@ -33,23 +33,52 @@ public:
     }
 };
 
+ShushenCard::ShushenCard(){
+}
+
+bool ShushenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty();
+}
+
+bool ShushenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return targets.length() == 2;
+}
+
+void ShushenCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(1);
+}
+
+class ShushenViewAsSkill:public ZeroCardViewAsSkill{
+public:
+    ShushenViewAsSkill():ZeroCardViewAsSkill("Shushen"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@shushen";
+    }
+
+    virtual const Card *viewAs() const{
+        return new ShushenCard;
+    }
+};
+
 class Shushen: public TriggerSkill{
 public:
     Shushen():TriggerSkill("shushen"){
         events << HpRecover;
+        view_as_skill = new ShushenViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         RecoverStruct recover = data.value<RecoverStruct>();
         int x = recover.recover, i;
         for(i=0; i<x; i++){
-            if(player->askForSkillInvoke(objectName())){
-                room->playSkillEffect(objectName());
-                ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), "shushen1");
-                target->drawCards(1);
-                target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "shushen2");
-                target->drawCards(1);
-            }
+            if(!room->askForUseCard(player, "@@shushen", "@shushen"))
+                break;
         }
         return false;
     }
@@ -571,6 +600,7 @@ HegemonyPackage::HegemonyPackage()
     General *panfeng = new General(this, "panfeng", "qun");
     panfeng->addSkill(new Kuangfu);
 
+    addMetaObject<ShushenCard>();
     addMetaObject<DuoshiCard>();
     addMetaObject<FenxunCard>();
     addMetaObject<XiongyiCard>();

@@ -192,7 +192,7 @@ public:
                 log.arg = QString::number(n);
                 log.arg2 = objectName();
                 room->sendLog(log);
-				room->playSkillEffect("kuiwei", 2);
+                room->playSkillEffect("kuiwei", 2);
                 if(caoren->getCards("he").length() <= n){
                     caoren->throwAllEquips();
                     caoren->throwAllHandCards();
@@ -1547,11 +1547,12 @@ public:
         if(!liuxie)
             return false;
         CardUseStruct use = data.value<CardUseStruct>();
-        if(!use.card->isKindOf("TrickCard") || use.to.length() < 2)
+        if(!use.card->isKindOf("TrickCard") || use.to.length() < 2 || use.card->isKindOf("Collateral"))
             return false;
         QList<ServerPlayer *> useto = use.to;
         foreach(ServerPlayer *t, useto)
             room->setPlayerFlag(t, "huangen");
+        liuxie->tag["Huangen"] = data;
         if(room->askForUseCard(liuxie, "@@huangen", "@huangen:" + player->objectName() + ":" + use.card->objectName())){
             foreach(ServerPlayer *t, useto){
                 if(!t->hasFlag("huangen"))
@@ -1561,6 +1562,7 @@ public:
         }
         foreach(ServerPlayer *t, useto)
             room->setPlayerFlag(t, "-huangen");
+        liuxie->tag.remove("Huangen");
         return false;
     }
 };
@@ -1572,7 +1574,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return Slash::IsAvailable(player);
+        return !player->getPile("zhao").isEmpty() && Slash::IsAvailable(player);
     }
 
     virtual const Card *viewAs() const{
@@ -1591,6 +1593,12 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == PhaseChange){
             if(player->getPhase() == Player::Discard){
+                int discard_num = player->getHandcardNum() - player->getMaxCards();
+                if(discard_num > 0 && player->askForSkillInvoke(objectName())){
+                    player->setFlags("hfty");
+                    room->askForDiscard(player, "gamerule", discard_num, 1);
+                    return true;
+                }
                 if(!player->getPile("zhao").isEmpty() && player->askForSkillInvoke("xueyi")){
                     room->throwCard(player->getPile("zhao").first());
                     room->setPlayerFlag(player, "zhao_xueyi");
@@ -1598,13 +1606,12 @@ public:
             }
         }
         else if(event == CardDiscarded){
-            if(player->getPhase() == Player::Discard && !player->hasFlag("mute_throw")){
+            if(player->getPhase() == Player::Discard && player->hasFlag("hfty")){
                 CardStar card = data.value<CardStar>();
-                if(card->getSubcards().isEmpty() || !player->askForSkillInvoke(objectName()))
-                    return false;
                 room->playSkillEffect(objectName());
                 foreach(int card_id, card->getSubcards())
                     player->addToPile("zhao", card_id);
+                player->setFlags("-hfty");
             }
         }
         else if(event == CardAsked){
@@ -1708,15 +1715,17 @@ class ZhaoXueyi: public MaxCardsSkill{
 public:
     ZhaoXueyi():MaxCardsSkill("#zhao_xueyi"){
     }
+
     virtual int getExtra(const Player *target) const{
-        int extra = 0;
-        QList<const Player *> players = target->getSiblings();
-        foreach(const Player *player, players){
-            if(player->isAlive() && player->getKingdom() == "qun")
-                extra += 2;
-        }
-        if(target->hasFlag("zhao_xueyi"))
+        if(target->hasSkill("hantong") && target->hasFlag("zhao_xueyi")){
+            int extra = 0;
+            QList<const Player *> players = target->getSiblings();
+            foreach(const Player *player, players){
+                if(player->isAlive() && player->getKingdom() == "qun")
+                    extra += 2;
+            }
             return extra;
+        }
         else
             return 0;
     }

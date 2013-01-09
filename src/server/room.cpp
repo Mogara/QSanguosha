@@ -769,13 +769,23 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card_use.from = player;
     card = card->validateInResposing(player, &continuable);
 
-    if(card){
+    if(trigger_event == CardUsed)
+        trigger_event = CardResponsed;
+    if(card && trigger_event != NonTrigger){
         if(card->getTypeId() != Card::Skill){
             const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
-            if(card_pattern == NULL || card_pattern->willThrow())
-                throwCard(card, trigger_event == CardDiscarded ? player: NULL);
-        }else if(card->willThrow())
-            throwCard(card, trigger_event == CardDiscarded ? player: NULL);
+            if(card_pattern == NULL || card_pattern->willThrow()){
+                if(trigger_event == CardResponsed)
+                    player->setFlags("mute_throw");
+                ServerPlayer *t = trigger_event == CardResponsed || trigger_event == CardDiscarded ? player: NULL;
+                throwCard(card, t);
+            }
+        }else if(card->willThrow()){
+            if(trigger_event == CardResponsed)
+                player->setFlags("mute_throw");
+            ServerPlayer *t = trigger_event == CardResponsed || trigger_event == CardDiscarded ? player: NULL;
+            throwCard(card, t);
+        }
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, player, decisionData);
@@ -783,7 +793,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         CardStar card_ptr = card;
         QVariant card_star = QVariant::fromValue(card_ptr);
 
-        if(trigger_event == CardResponsed || trigger_event == CardUsed){
+        if(trigger_event == CardResponsed){
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
@@ -791,12 +801,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             sendLog(log);
 
             player->playCardEffect(card);
-            /* the first is the right one,but for convenient, we use the second one
-            thread->trigger(trigger_event, this, player, card_star);   */
-            thread->trigger(CardResponsed, player, card_star);
         }
-        else if(trigger_event == CardDiscarded)
-            thread->trigger(CardDiscarded, player, card_star);
+        thread->trigger(trigger_event, player, card_star);
 
     }else if(continuable)
         return askForCard(player, pattern, prompt);
@@ -2477,7 +2483,7 @@ void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower)
     if(who){
         CardStar card_ptr = card;
         QVariant data = QVariant::fromValue(card_ptr);
-        thread->trigger(CardDiscarded, who, data); //@todo?
+        thread->trigger(CardDiscarded, who, data);
     }
 }
 
@@ -2899,22 +2905,7 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
 
     throwCard(dummy_card, target);
 
-    LogMessage log;
-    log.type = "$DiscardCard";
-    log.from = target;
-    foreach(int card_id, to_discard){
-
-        if(log.card_str.isEmpty())
-            log.card_str = QString::number(card_id);
-        else
-            log.card_str += "+" + QString::number(card_id);
-    }
-    sendLog(log);
-
-    CardStar card_star = dummy_card;
-    QVariant data = QVariant::fromValue(card_star);
-    thread->trigger(CardDiscarded, target, data);
-
+    QVariant data = QVariant::fromValue((CardStar)dummy_card);
     data=QString("%1:%2").arg("cardDiscard").arg(dummy_card->toString());
     thread->trigger(ChoiceMade, target, data);
 

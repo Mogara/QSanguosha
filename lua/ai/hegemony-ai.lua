@@ -36,33 +36,25 @@ sgs.ai_skill_cardask["@xiaoguoresponse"]=function(self, data)
 	return "."
 end
 
-sgs.ai_skill_invoke.shushen = function(self, data)
-    for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-	    if self:isFriend(player) then
-	        return true
-		end
-	end
-	return false
-end
-
-sgs.ai_skill_playerchosen.shushen1 = function(self, targets)
+sgs.ai_skill_use["@@shushen"]=function(self,prompt)
 	local target
+	local target2
 	self:sort(self.friends, "defense")
 	for _, player in ipairs(self.friends) do
 		target = player
 		break
 	end
-	return target
-end
-
-sgs.ai_skill_playerchosen.shushen2 = function(self, targets)
-	local target
 	self:sort(self.friends_noself, "defense")
 	for _, player in ipairs(self.friends_noself) do
-		target = player
-		break
+		if target ~= player then
+			target2 = player
+			break
+		end
 	end
-	return target
+	if target and target2 then
+		return "@ShushenCard=.->" .. target:objectName() + target:objectName()
+	end
+	return "."
 end
 
 sgs.ai_skill_invoke.shenzhi = function(self, data)
