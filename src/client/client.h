@@ -247,7 +247,7 @@ signals:
     void animated(const QString &name, const QStringList &args);
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);
-    void judge_result(const QString &who, const QString &result);
+    void judge_result(const QString &who, const QString &result, const QString &reason);
     void card_used();
 
     void game_started();

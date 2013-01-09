@@ -314,7 +314,7 @@ private slots:
     void doAnimation(const QString &name, const QStringList &args);
     void adjustDashboard();
     void showOwnerButtons(bool owner);
-    void showJudgeResult(const QString &who, const QString &result);
+    void showJudgeResult(const QString &who, const QString &result, const QString &reason);
     void showPlayerCards();
     void updateStateItem(const QString &roles);
     void adjustPrompt();

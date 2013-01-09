@@ -354,7 +354,7 @@ void Room::judge(JudgeStruct &judge_struct){
 void Room::sendJudgeResult(const JudgeStar judge){
     QString who = judge->who->objectName();
     QString result = judge->isGood() ? "good" : "bad";
-    broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
+    broadcastInvoke("judgeResult", QString("%1:%2:%3").arg(who).arg(result).arg(judge->reason));
     setEmotion(judge->who, "judge" + result);
 }
 

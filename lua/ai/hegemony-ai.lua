@@ -40,10 +40,7 @@ sgs.ai_skill_use["@@shushen"]=function(self,prompt)
 	local target
 	local target2
 	self:sort(self.friends, "defense")
-	for _, player in ipairs(self.friends) do
-		target = player
-		break
-	end
+	target = self.friends[1]
 	self:sort(self.friends_noself, "defense")
 	for _, player in ipairs(self.friends_noself) do
 		if target ~= player then
@@ -52,7 +49,7 @@ sgs.ai_skill_use["@@shushen"]=function(self,prompt)
 		end
 	end
 	if target and target2 then
-		return "@ShushenCard=.->" .. target:objectName() + target:objectName()
+		return "@ShushenCard=.->" .. target:objectName() .. "+" .. target2:objectName()
 	end
 	return "."
 end

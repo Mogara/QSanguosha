@@ -37,7 +37,7 @@ ShushenCard::ShushenCard(){
 }
 
 bool ShushenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty();
+    return true;
 }
 
 bool ShushenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
@@ -50,7 +50,7 @@ void ShushenCard::onEffect(const CardEffectStruct &effect) const{
 
 class ShushenViewAsSkill:public ZeroCardViewAsSkill{
 public:
-    ShushenViewAsSkill():ZeroCardViewAsSkill("Shushen"){
+    ShushenViewAsSkill():ZeroCardViewAsSkill("shushen"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

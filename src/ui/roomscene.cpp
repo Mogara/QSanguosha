@@ -209,7 +209,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
     connect(ClientInstance, SIGNAL(animated(QString,QStringList)), this, SLOT(doAnimation(QString,QStringList)));
-    connect(ClientInstance, SIGNAL(judge_result(QString,QString)), this, SLOT(showJudgeResult(QString,QString)));
+    connect(ClientInstance, SIGNAL(judge_result(QString,QString,QString)), this, SLOT(showJudgeResult(QString,QString,QString)));
     connect(ClientInstance, SIGNAL(role_state_changed(QString)),this, SLOT(updateStateItem(QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
@@ -3116,12 +3116,12 @@ void RoomScene::showOwnerButtons(bool owner){
         control_panel->setVisible(owner);
 }
 
-void RoomScene::showJudgeResult(const QString &who, const QString &result){
+void RoomScene::showJudgeResult(const QString &who, const QString &result, const QString &reason){
     if(special_card){
         const ClientPlayer *player = ClientInstance->getPlayer(who);
 
         special_card->showAvatar(player->getGeneral());
-        QString desc = QString(tr("%1's judge")).arg(Sanguosha->translate(player->getGeneralName()));
+        QString desc = tr("%1's %2 judge").arg(Sanguosha->translate(player->getGeneralName())).arg(Sanguosha->translate(reason));
         special_card->writeCardDesc(desc);
 
         special_card->setFrame(result);

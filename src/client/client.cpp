@@ -583,8 +583,9 @@ void Client::judgeResult(const QString &result_str){
     QStringList texts = result_str.split(":");
     QString who = texts.at(0);
     QString result = texts.at(1);
+    QString reason = texts.at(2);
 
-    emit judge_result(who, result);
+    emit judge_result(who, result, reason);
 }
 
 QString Client::getSkillLine() const{
