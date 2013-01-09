@@ -143,7 +143,7 @@ return {
 
 	["illustrator:fazheng"] = "雷没才",
 	["designer:fazheng"] = "michael_lee",
-	["cv:fazheng"] = "",
+	["cv:fazheng"] = "苏遥东",
 	["$enyuan1"] = "得人恩果千年记",
 	["$enyuan2"] = "滴水之恩，涌泉以报！",
 	["$enyuan3"] = "谁敢得罪我？",

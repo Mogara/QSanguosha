@@ -320,7 +320,7 @@ int LuaSlashSkill::getSlashRange(const Player *from, const Player *to, const Car
     SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
     SWIG_NewPointerObj(L, slash, SWIGTYPE_p_Card, 0);
 
-    int error = lua_pcall(L, 2, 1, 0);
+    int error = lua_pcall(L, 4, 1, 0);
     if(error){
         Error(L);
         return 0;
@@ -345,7 +345,7 @@ int LuaSlashSkill::getSlashExtraGoals(const Player *from, const Player *to, cons
     SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
     SWIG_NewPointerObj(L, slash, SWIGTYPE_p_Card, 0);
 
-    int error = lua_pcall(L, 2, 1, 0);
+    int error = lua_pcall(L, 4, 1, 0);
     if(error){
         Error(L);
         return 0;
@@ -635,7 +635,7 @@ bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const P
 
 	SWIG_NewPointerObj(L, self, SWIGTYPE_p_Player, 0);
 
-	int error = lua_pcall(L, 2, 1, 0);
+	int error = lua_pcall(L, 3, 1, 0);
 	if(error){
 		Error(L);
 		return false;

@@ -1598,7 +1598,7 @@ public:
             }
         }
         else if(event == CardDiscarded){
-            if(player->getPhase() == Player::Discard){
+            if(player->getPhase() == Player::Discard && !player->hasFlag("mute_throw")){
                 CardStar card = data.value<CardStar>();
                 if(card->getSubcards().isEmpty() || !player->askForSkillInvoke(objectName()))
                     return false;

@@ -231,7 +231,7 @@ return {
 
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["illustrator:zhangjunyi"] = "火凤燎原",
-	["cv:zhangjunyi"] = "喵小林",
+	["cv:zhangjunyi"] = "裤衩",
 	["$jueji1"] = "围敌绝汲，敌必自乱", -- 发动拼点
 	["$jueji2"] = "敌竟料我于先，不妙……", -- 拼点失败
 	["~zhangjunyi"] = "袁公不信我，不如早降曹。",

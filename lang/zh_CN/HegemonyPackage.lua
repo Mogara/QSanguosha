@@ -88,11 +88,13 @@ return {
 	["~yuejin"] = "魏王拔我于行伍，今当以死相报。",
 
 	["illustrator:ganfuren"] = "琛·美弟奇",
-	["cv:ganfuren"] = "鄢知",
-	["$shushen"] = "想要牌吗？",
-	["$shenzhi"] = "补充一下吧！",
-	["~ganfuren"] = "陛下，妾身去矣~",
+	["cv:ganfuren"] = "神马芯",
+	["$shushen1"] = "履行脩仁，淑慎其身。",
+	["$shushen2"] = "夫君，大志不可忘！", -- 特化对刘备
+	["$shenzhi"] = "玩物易丧志，弃之可修身。",
+	["~ganfuren"] = "生同室，死同穴~",
 
+	["illustrator:lushun"] = "",
 	["cv:lushun"] = "白水",
 	["$duoshi1"] = "诸公稍安勿躁，请先看清局势。",
 	["$duoshi2"] = "审时度势，方能出奇制胜。",
@@ -129,12 +131,11 @@ return {
 	["~jiling"] = "我的三尖两刃刀怎么会输给丈八蛇矛呢？",
 
 	["illustrator:zoushi"] = "Tuu.",
-	["cv:zoushi"] = "英雄杀",
-	["$huoshui1"] = "呵！不怕你。",
-	["$huoshui2"] = "奴家不是祸水~",
-	["$qingcheng1"] = "将军要替奴家做主。",
-	["$qingcheng2"] = "谁更勇猛呢？",
-	["~zoushi"] = "自古红颜多薄命啊！",
+	["cv:zoushi"] = "神马芯",
+	["$huoshui1"] = "将军，可否陪奴家饮上一杯？",
+	["$huoshui2"] = "久闻丞相威名，今夕幸得瞻拜。", -- 对曹操
+	["$qingcheng1"] = "名花倾城两相欢，长得将军带笑看。",
+	["~zoushi"] = "红颜祸水？哈哈……",
 
 	["illustrator:mateng"] = "DH",
 	["cv:mateng"] = "HeLi",
