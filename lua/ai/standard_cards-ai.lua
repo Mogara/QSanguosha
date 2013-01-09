@@ -952,8 +952,6 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                 end
                 use.to:append(player)
             end
-			
-			sgs.actionIsGoodwill = self:isFriend(player)
             return
         end
     end
@@ -973,8 +971,6 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                     use.to:append(enemy)
                     self:speak("hostile", self.player:isFemale())
                 end
-				
-				sgs.actionIsGoodwill = false
                 return
             end
         end
@@ -1019,8 +1015,6 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                     use.to:append(enemy)
                     self:speak("hostile", self.player:isFemale())
                 end
-				
-				sgs.actionIsGoodwill = false
                 return
             end
         end
@@ -1065,8 +1059,6 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                         use.to:append(enemy)
                         self:speak("hostile", self.player:isFemale())
                     end
-					
-					sgs.actionIsGoodwill = false
                     return
                 else
                     use.card = card
@@ -1078,8 +1070,6 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
                         use.to:append(enemy)
                         self:speak("hostile", self.player:isFemale())
                     end
-					
-					sgs.actionIsGoodwill = false
                     return
                 end
             end
@@ -1123,9 +1113,6 @@ function SmartAI:useCardCollateral(card, use)
                 end
                 if use.to then use.to:append(friend) end
                 if use.to then use.to:append(enemy) end
-				
-				sgs.actionIsGoodwill = false
-				table.insert(sgs.actionTargets, enemy)
                 return
             end
         end
@@ -1146,8 +1133,6 @@ function SmartAI:useCardCollateral(card, use)
                         use.card = card
                         if use.to then use.to:append(enemy) end
                         if use.to then use.to:append(enemy2) end
-						
-						sgs.actionIsGoodwill = false
                         return
                     else
                         n = 1;
@@ -1158,8 +1143,6 @@ function SmartAI:useCardCollateral(card, use)
             if n then use.card = card end
             if use.to then use.to:append(enemy) end
             if use.to then use.to:append(final_enemy) end
-			
-			sgs.actionIsGoodwill = false
             return
 
         end
@@ -1220,8 +1203,6 @@ function SmartAI:useCardIndulgence(card, use)
         if self:hasSkills("lijian|fanjian",enemy) and not enemy:containsTrick("indulgence") and not enemy:isKongcheng() and enemy:faceUp() and self:objectiveLevel(enemy) > 3 then
             use.card = card
             if use.to then use.to:append(enemy) end
-			
-			sgs.actionIsGoodwill = false
             return
         end
     end
@@ -1230,8 +1211,6 @@ function SmartAI:useCardIndulgence(card, use)
         if not enemy:containsTrick("indulgence") and not enemy:hasSkill("keji") and enemy:faceUp() and self:objectiveLevel(enemy) > 3 then
             use.card = card
             if use.to then use.to:append(enemy) end
-			
-			sgs.actionIsGoodwill = false
             return
         end
     end
