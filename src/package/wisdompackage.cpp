@@ -173,13 +173,10 @@ public:
         }else if(triggerEvent == CardResponsed)
             card = data.value<ResponsedStruct>().m_card;
 
-        if(card->isNDTrick()){
-            if(!room->askForSkillInvoke(jiangwei, objectName(), data))
-                return false;
-            // @todo: fix this!
-            room->throwCard(card, NULL);
-            room->askForUseCard(jiangwei, "slash", "@askforslash");
-        }
+        if(card->isNDTrick())
+            if(room->askForSkillInvoke(jiangwei, objectName(), data))
+				room->askForUseSlashTo(jiangwei, room->getOtherPlayers(jiangwei), "@askforslash");
+
         return false;
     }
 };
