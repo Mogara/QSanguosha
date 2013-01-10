@@ -431,7 +431,7 @@ public:
         room->sendLog(log);
 
         player->gainMark("@wrath", damage.damage);
-        player->getRoom()->playSkillEffect(objectName());
+        room->playSkillEffect(objectName());
 
         return false;
     }
@@ -514,11 +514,10 @@ void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, const QList<ServerPlay
 }
 
 WuqianCard::WuqianCard(){
-    once = true;
 }
 
 bool WuqianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty();
+    return targets.isEmpty() && to_select != Self ; 
 }
 
 void WuqianCard::onEffect(const CardEffectStruct &effect) const{
@@ -526,9 +525,7 @@ void WuqianCard::onEffect(const CardEffectStruct &effect) const{
 
     effect.from->loseMark("@wrath", 2);
     room->acquireSkill(effect.from, "wushuang", false);
-    effect.from->setFlags("wuqian_used");
-
-    room->setTag("WuqianTarget", QVariant::fromValue(effect.to));
+    room->setPlayerFlag(effect.to,"wuqian");
 }
 
 class WuqianViewAsSkill: public ZeroCardViewAsSkill{
@@ -538,7 +535,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("@wrath") >= 2 && !player->hasUsed("WuqianCard");
+        return player->getMark("@wrath") >= 2;
     }
 
     virtual const Card *viewAs() const{
@@ -549,34 +546,23 @@ public:
 class Wuqian: public TriggerSkill{
 public:
     Wuqian():TriggerSkill("wuqian"){
-        events << CardUsed << CardFinished << PhaseChange << Death;
+        events << PhaseChange << Death;
         view_as_skill = new WuqianViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL && target->hasSkill("wuqian");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *target = room->getTag("WuqianTarget").value<PlayerStar>();
-        if(!target)
-            return false;
 
         if(event == PhaseChange || event == Death){
             if(player->hasSkill(objectName()) && (event == Death || player->getPhase() == Player::NotActive)){
-                room->removeTag("WuqianTarget");
-
+                foreach(ServerPlayer *p , room->getAllPlayers())
+                    if(p->hasFlag("wuqian"))
+                        room->setPlayerFlag(p, "-wuqian");
                 if(!player->hasInnateSkill("wushuang"))
-                    player->loseSkill("wushuang");
-            }
-        }
-        else{
-            CardUseStruct use = data.value<CardUseStruct>();
-            if(use.to.contains(target)){
-                if(event == CardUsed)
-                    target->addMark("qinggang");
-                else
-                    target->removeMark("qinggang");
+                    room->detachSkillFromPlayer(player, "wushuang");
             }
         }
 

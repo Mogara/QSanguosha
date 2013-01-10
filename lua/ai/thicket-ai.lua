@@ -99,7 +99,7 @@ duanliang_skill.getTurnUseCard=function(self)
 
 end
 
-sgs.xuhuang_suit_value = 
+sgs.xuhuang_suit_value =
 {
 	spade = 3.9,
 	club = 3.9
@@ -120,6 +120,15 @@ sgs.ai_skill_invoke.lieren = function(self, data)
 	end
 
 	return false
+end
+
+function sgs.ai_skill_pindian.lieren(minusecard, self, requestor)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	if requestor:objectName() == self.player:objectName() then
+		return cards[1]:getId()
+	end
+	return self:getMaxCard(self.player):getId()
 end
 
 sgs.ai_skill_choice.yinghun = function(self, choices)
@@ -149,7 +158,8 @@ sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 		self:sort(self.enemies, "handcard")
 		for index = #self.enemies, 1, -1 do
 			local enemy = self.enemies[index]
-			if not self:hasSkills(sgs.lose_equip_skill, enemy) or not enemy:isNude() then
+			if not enemy:isNude() and not (self:hasSkills(sgs.lose_equip_skill, enemy) and
+			   not (enemy:getCards("he"):length() < x or sgs.getDefense(enemy) < 3)) then
 				self.yinghun = enemy
 				self.yinghunchoice = "d1tx"
 				break
@@ -305,7 +315,7 @@ luanwu_skill.getTurnUseCard=function(self)
 		local can_slash = false
 		if not can_slash then
 			for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
-				if player:inMyAttackRange(p) then can_slash = true break end
+				if player:distanceTo(p) <= player:getAttackRange() then can_slash = true break end
 			end
 		end
 		if not has_slash or not can_slash then

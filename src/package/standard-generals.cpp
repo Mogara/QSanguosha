@@ -623,7 +623,7 @@ public:
         ServerPlayer *machao = effect.from;
 
         Room *room = machao->getRoom();
-        if(effect.from->askForSkillInvoke("tieji", QVariant::fromValue(effect))){
+        if(effect.from->askForSkillInvoke("tieji", QVariant::fromValue((PlayerStar)effect.to))){
             room->playSkillEffect(objectName());
 
             JudgeStruct judge;

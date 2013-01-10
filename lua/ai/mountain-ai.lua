@@ -1,3 +1,5 @@
+sgs.ai_skill_invoke.qiaobian = true
+
 local function card_for_qiaobian(self, who, return_prompt)
 	local card, target
 	if self:isFriend(who) then
@@ -48,7 +50,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 				end
 			end
 		end
-		
+
 		if #targets > 0 then
 			if card:inherits("Weapon") or card:inherits("OffensiveHorse") then
 				self:sort(targets, "threat")
@@ -140,7 +142,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 				table.insert(targets, enemy)
 			end
 		end
-		
+
 		if #targets > 0 then
 			self:sort(targets, "defense")
 			return "@QiaobianCard=" .. card:getEffectiveId() .."->".. targets[#targets]:objectName()
@@ -256,7 +258,42 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	return self.player:getHandcardNum() <= limit and not self.player:isKongcheng()
 end
 
+sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, include_equip)
+	local to_discard = {}
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local index = 0
+	local all_peaches = 0
+	for _, card in ipairs(cards) do
+		if card:inherits("Peach") then
+			all_peaches = all_peaches + 1
+		end
+	end
+	if all_peaches >= 2 and self:getOverflow() <= 0 then return {} end
+	self:sortByKeepValue(cards)
+	cards = sgs.reverse(cards)
+
+	for i = #cards, 1, -1 do
+		local card = cards[i]
+		if not card:inherits("Peach") and not self.player:isJilei(card) then
+			table.insert(to_discard, card:getEffectiveId())
+			table.remove(cards, i)
+			index = index + 1
+			if index == 1 then break end
+		end
+	end
+	if #to_discard < 1 then return {}
+	else
+		return to_discard
+	end
+end
+
 sgs.ai_skill_playerchosen.fangquan = function(self, targets)
+	for _, target in sgs.qlist(targets) do
+		if self:isFriend(target) and not target:hasSkill("dawu") and
+			self:hasSkills(sgs.priority_skill,target) and not target:containsTrick("indulgence") then
+			return target
+		end
+	end
 	for _, target in sgs.qlist(targets) do
 		if self:isFriend(target) and not target:hasSkill("dawu") then
 			return target
@@ -315,7 +352,7 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 			end
 		end
 
-		if enemy:inMyAttackRange(self.player) and
+		if enemy:distanceTo(self.player) <= enemy:getAttackRange() and
 			(self:getCardsNum("Slash", enemy) == 0 or slash_useless or self:getCardsNum("Jink") > 0) and
 			not enemy:isNude() then
 			table.insert(targets, enemy)
@@ -331,10 +368,13 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 	use.card = sgs.Card_Parse("@TiaoxinCard=.")
 end
 
+sgs.ai_skill_choice.tiaoxin = sgs.ai_skill_choice.collateral
+
 sgs.ai_card_intention.TiaoxinCard = 80
+sgs.ai_use_priority.TiaoxinCard = 8
 
 sgs.ai_skill_choice.zhiji = function(self, choice)
-	if self.player:getHp() < self.player:getMaxHP()-1 then return "recover" end
+	if self.player:getHp() < self.player:getMaxHp()-1 then return "recover" end
 	return "draw"
 end
 
@@ -394,10 +434,10 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 			end
 		end
 
-		if self:isEnemy(lord) and max_num > lord_max_num then
+		if self:isEnemy(lord) and max_num > 9 and max_num > lord_max_num then
 			zhiba_str = "@ZhibaCard=" .. max_card:getEffectiveId()
 		end
-		if self:isFriend(lord) and min_num < lord_min_num then
+		if self:isFriend(lord) and ((lord_max_num > 0 and min_num <= lord_max_num) or min_num < 8) then
 			zhiba_str = "@ZhibaCard=" .. min_card:getEffectiveId()
 		end
 
@@ -502,9 +542,9 @@ sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 	end
 
 	if self:isFriend(who) then
-		self:sortByUseValue(cards)
+		self:sortByKeepValue(cards,true)
 	else
-		self:sortByUseValue(cards, true)
+		self:sortByKeepValue(cards)
 	end
 
 	return cards[1]:getEffectiveId()
@@ -519,7 +559,7 @@ end
 
 function sgs.ai_slash_prohibit.duanchang(self, to)
 	if self:isFriend(to) and self:isWeak(to) then return true end
-	if self.player:hasSkill("qianxi") then return false end
+	if self:hasSkills("jueqing|qianxi") then return false end
 	return #self.enemies>1 and self:isWeak(to) and (self.player:isLord() or not self:isWeak())
 end
 
@@ -577,7 +617,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 		for _, askill in ipairs(("tuxi|dimeng|haoshi|guanxing|manjuan|zhiheng|rende|qiaobian|fangquan|qice|" ..
 		"lijian|quhu|fanjian|tieji|liegong|wushuang|shelie|luoshen|yongsi|yingzi|juejing|fuhun|qianxi|" ..
 		"gongxin|duanliang|guose|mingce|ganlu|anxu|tiaoxin|xuanhuo|guhuo|roulin|qiangxi|mengjin|lieren|pojun|longluo" ..
-		"jiushi|qixi|luoyi|wenjiu|jiuchi|longhun|wusheng|wushen|longdan|nosnosgongqi|lihuo|shensu|jiangchi|lianhuan|yinghun|houyuan|jujian|huoji|luanji|gongmou|" ..
+		"jiushi|qixi|luoyi|wenjiu|jiuchi|longhun|wusheng|wushen|longdan|nosgongqi|lihuo|shensu|jiangchi|lianhuan|yinghun|houyuan|jujian|huoji|luanji|gongmou|" ..
 		"jueji|zhijian|shuangxiong|xinzhan|chouliang|zhenwei|guidao|guicai|zhenlie|lianpo|mashu|zhengfeng|yicong|jizhi|lianying|xuanfeng|xiaoji|tianyi" ..
 		"dangxian|qicai|xianzhen|wansha|zongshi|biyue|hongyan|lukang_weiyan|shipo|kurou|yicai|beifa|qinyin|zonghuo|shaoying|guihan|yishe|fuzuo|shouye"):split("|")) do
 			if str:matchOne(askill) then return askill end

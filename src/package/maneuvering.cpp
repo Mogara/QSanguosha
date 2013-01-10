@@ -264,11 +264,12 @@ SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
     if(player->isAlive() && !player->hasFlag("wuqian") && player->getMark("qinggang") == 0){
+        Room *room = player->getRoom();
         if(player->isWounded())
-            player->getRoom()->setEmotion(player, "armor/silver_lion");
+            room->setEmotion(player, "armor/silver_lion");
         RecoverStruct recover;
         recover.card = this;
-        player->getRoom()->recover(player, recover);
+        room->recover(player, recover);
     }
 }
 

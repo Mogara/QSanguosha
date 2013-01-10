@@ -188,7 +188,7 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
 	self:sort(self.enemies,"hp")
 	for _,enemy in ipairs(self.enemies) do
 		if not self:isEquip("SilverLion", enemy) and not enemy:hasSkill("hongyan") and
-			self:objectiveLevel(enemy) > 3 and not (enemy:isChained() and not self:isGoodChainTarget(enemy)) then
+			self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and not (enemy:isChained() and not self:isGoodChainTarget(enemy)) then
 			return "@LeijiCard=.->"..enemy:objectName()
 		end
 	end
@@ -202,7 +202,7 @@ function sgs.ai_slash_prohibit.leiji(self, to, card)
 	local hcard = to:getHandcardNum()
 	if self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange()) then return false end
 
-	if to:getHandcardNum() >= 2 then return true end
+	if self:getCardsNum("Jink", to) > 0 then return true end
 	if self:isEquip("EightDiagram", to) then
 		local equips = to:getEquips()
 		for _, equip in sgs.qlist(equips) do
@@ -291,6 +291,14 @@ sgs.ai_skill_askforag.buqu = function(self, card_ids)
 	return card_ids[1]
 end
 
+function sgs.ai_skill_invoke.buqu(self, data)
+	if #self.enemies == 1 and self.enemies[1]:hasSkill("guhuo") then
+		return false
+	else
+		return true
+	end
+end
+
 sgs.ai_chaofeng.zhoutai = -4
 
 function sgs.ai_filterskill_filter.hongyan(card, card_place)
@@ -365,7 +373,12 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data)
 	return "."
 end
 
-sgs.xiaoqiao_suit_value = 
+function sgs.ai_slash_prohibit.tianxiang(self, to)
+	if self:isFriend(to) then return false end
+	return self:cantbeHurt(to)
+end
+
+sgs.xiaoqiao_suit_value =
 {
 	spade = 6,
 	heart = 6

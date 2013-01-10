@@ -120,9 +120,9 @@ public:
     }
 };
 
-class Jiushi: public ZeroCardViewAsSkill{
+class JiushiViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    Jiushi():ZeroCardViewAsSkill("jiushi"){
+    JiushiViewAsSkill():ZeroCardViewAsSkill("jiushi"){
         Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
         analeptic->setSkillName("jiushi");
 
@@ -134,7 +134,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern.contains("analeptic") && player->faceUp();
+        return pattern.contains("analeptic") && player->faceUp();
     }
 
     virtual const Card *viewAs() const{
@@ -149,9 +149,10 @@ private:
     const Analeptic *analeptic;
 };
 
-class JiushiFlip: public TriggerSkill{
+class Jiushi: public TriggerSkill{
 public:
-    JiushiFlip():TriggerSkill("#jiushi-flip"){
+    Jiushi():TriggerSkill("jiushi"){
+        view_as_skill = new JiushiViewAsSkill;
         events << CardUsed << Predamaged << Damaged;
     }
 
@@ -671,6 +672,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
         room->setPlayerFlag(effect.from, "xianzhen_success");
         room->setFixedDistance(effect.from, effect.to, 1);
+        room->setPlayerFlag(effect.to, "wuqian");
     }else
         room->setPlayerFlag(effect.from, "xianzhen_failed");
 }
@@ -740,26 +742,22 @@ class Xianzhen: public TriggerSkill{
 public:
     Xianzhen():TriggerSkill("xianzhen"){
         view_as_skill = new XianzhenViewAsSkill;
-        events << PhaseChange << CardUsed << CardFinished;
+
+        events << PhaseChange << Death;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->hasSkill("xianzhen");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
         ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
 
-        if(event == PhaseChange){
-            if(gaoshun->getPhase() == Player::Finish && target){
+        if(event == Death || event == PhaseChange){
+            if((event == Death || gaoshun->getPhase() == Player::Finish) && target){
                 room->setFixedDistance(gaoshun, target, -1);
                 gaoshun->tag.remove("XianzhenTarget");
-                target->removeMark("qinggang");
-            }
-        }else{
-            CardUseStruct use = data.value<CardUseStruct>();
-
-            if(target && use.to.contains(target)){
-                if(event == CardUsed)
-                    target->addMark("qinggang");
-                else
-                    target->removeMark("qinggang");
+                room->setPlayerFlag(target, "-wuqian");
             }
         }
         return false;
@@ -1241,9 +1239,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
     caozhi->addSkill(new Luoying);
     caozhi->addSkill(new Jiushi);
-    caozhi->addSkill(new JiushiFlip);
-
-    related_skills.insertMulti("jiushi", "#jiushi-flip");
 
     General *yujin = new General(this, "yujin", "wei");
     yujin->addSkill(new Yizhong);
