@@ -24,6 +24,8 @@ config = {
         "Ling",
         "BGM",
         "NostalGeneral",
+        "YiTian",
+        "Wisdom",
         "Test",
     },
     color_wei = "#547998",

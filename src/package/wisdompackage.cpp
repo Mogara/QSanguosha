@@ -191,27 +191,22 @@ public:
         frequency = Compulsory;
     }
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
-        if(jiangwei->isKongcheng()){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from != jiangwei || !move->from_places.contains(Player::PlaceHand))
-                return false;
-
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if(move->from == jiangwei && move->from_places.contains(Player::PlaceHand) && jiangwei->isKongcheng())
+		{
             QList<ServerPlayer *> players;
-            foreach(ServerPlayer *player, room->getOtherPlayers(jiangwei)){
-                if(player->hasSkill("kongcheng") && player->isKongcheng())
-                    continue;
-                if(jiangwei->inMyAttackRange(player))
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            slash->setSkillName(objectName());
+            foreach(ServerPlayer *player, room->getOtherPlayers(jiangwei))
+			{
+                if (jiangwei->canSlash(player, slash))
                     players << player;
             }
 
             ServerPlayer *target = jiangwei;
             if(!players.isEmpty())
                 target = room->askForPlayerChosen(jiangwei, players, objectName());
-            //if(!target)
-            //    target = jiangwei;
 
-            Slash *slash = new Slash(Card::NoSuit, 0);
-            slash->setSkillName(objectName());
             CardUseStruct use;
             use.card = slash;
             use.from = jiangwei;
@@ -822,7 +817,10 @@ public:
             card = data.value<ResponsedStruct>().m_card;
 
         if(card->isNDTrick()){
-            ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());
+            ServerPlayer *shuijing = room->findPlayerBySkillName(objectName(), true);
+			if (!shuijing)
+				return false;
+
             if(shuijing->isAlive()){
                 if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue(shuijing)))
                     shuijing->drawCards(1);

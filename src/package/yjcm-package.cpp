@@ -691,20 +691,24 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasSkill("xianzhen");
+        return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
-        ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *triggerPlayer, QVariant &data) const{
+		ServerPlayer *gaoshun = room->findPlayerBySkillName(objectName());
+		if (!gaoshun)
+			return false;
 
-        if(triggerEvent == Death || triggerEvent == EventPhaseStart){
-            if((triggerEvent == Death || gaoshun->getPhase() == Player::Finish) && target){
-                    Room *room = gaoshun->getRoom();
-                    room->setFixedDistance(gaoshun, target, -1);
-                    gaoshun->tag.remove("XianzhenTarget");
-                    room->setPlayerFlag(target, "-wuqian");
-            }
-        }
+		ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
+
+        if(target &&
+			(triggerEvent == Death && (triggerPlayer == target || triggerPlayer == gaoshun)
+			|| (triggerEvent == EventPhaseStart && triggerPlayer == gaoshun && gaoshun->getPhase() == Player::NotActive)))
+		{
+            room->setFixedDistance(gaoshun, target, -1);
+			gaoshun->tag.remove("XianzhenTarget");
+            room->setPlayerFlag(target, "-wuqian");
+		}
         return false;
     }
 };
