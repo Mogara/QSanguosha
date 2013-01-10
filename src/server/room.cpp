@@ -768,23 +768,18 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card_use.card = card;
     card_use.from = player;
     card = card->validateInResposing(player, &continuable);
-
-    if(trigger_event == CardUsed)
-        trigger_event = CardResponsed;
     if(card && trigger_event != NonTrigger){
         if(card->getTypeId() != Card::Skill){
             const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
             if(card_pattern == NULL || card_pattern->willThrow()){
-                if(trigger_event == CardResponsed)
+                if(trigger_event == CardResponsed || trigger_event == JinkUsed)
                     player->setFlags("mute_throw");
-                ServerPlayer *t = trigger_event == CardResponsed || trigger_event == CardDiscarded ? player: NULL;
-                throwCard(card, t);
+                throwCard(card, player);
             }
         }else if(card->willThrow()){
-            if(trigger_event == CardResponsed)
+            if(trigger_event == CardResponsed || trigger_event == JinkUsed)
                 player->setFlags("mute_throw");
-            ServerPlayer *t = trigger_event == CardResponsed || trigger_event == CardDiscarded ? player: NULL;
-            throwCard(card, t);
+            throwCard(card, player);
         }
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
@@ -793,7 +788,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         CardStar card_ptr = card;
         QVariant card_star = QVariant::fromValue(card_ptr);
 
-        if(trigger_event == CardResponsed){
+        if(trigger_event == CardResponsed || trigger_event == JinkUsed){
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
@@ -801,6 +796,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             sendLog(log);
 
             player->playCardEffect(card);
+
+            if(trigger_event == JinkUsed)
+                thread->trigger(CardResponsed, player, card_star);
         }
         thread->trigger(trigger_event, player, card_star);
 

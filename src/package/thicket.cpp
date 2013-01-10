@@ -733,9 +733,9 @@ public:
         Room *room = player->getRoom();
 
         const Card *first_jink = NULL, *second_jink = NULL;
-        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), CardUsed);
+        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason), QVariant(), JinkUsed);
         if(first_jink)
-            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), CardUsed);
+            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason), QVariant(), JinkUsed);
 
         Card *jink = NULL;
         if(first_jink && second_jink){

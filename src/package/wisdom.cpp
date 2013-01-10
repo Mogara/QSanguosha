@@ -839,12 +839,9 @@ public:
     }
 
     static bool isLongfeng(ServerPlayer *me){
-        QString gen = me->getGeneralName();
-        if(gen.contains("zhugeliang"))
+        if(me->getGeneral()->isCaoCao("zhugeliang"))
             return true;
-        if(gen.contains("pangtong"))
-            return true;
-        return gen == "wolong";
+        return me->getGeneralName().contains("pangtong");
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

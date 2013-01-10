@@ -196,7 +196,7 @@ public:
 class Mingzhe: public TriggerSkill{
 public:
     Mingzhe():TriggerSkill("mingzhe"){
-        events << CardUsed << CardResponsed << CardDiscarded;
+        events << CardDiscarded;
         frequency = Frequent;
     }
 
@@ -204,14 +204,7 @@ public:
         if(player->getPhase() != Player::NotActive)
             return false;
 
-        const Card *card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }
-        else
-            card = data.value<CardStar>();
-
+        const Card *card = data.value<CardStar>();
         int n = 0;
         if(event == CardDiscarded){
             if(card->isVirtualCard()){

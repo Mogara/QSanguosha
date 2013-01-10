@@ -863,8 +863,7 @@ public:
 
                     ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
 
-                    QString name = player->getGeneralName();
-                    if(name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
+                    if(player->getGeneral()->isCaoCao("zhugeliang"))
                         room->playSkillEffect("fangquan", 1);
                     else
                         room->playSkillEffect("fangquan", 2);

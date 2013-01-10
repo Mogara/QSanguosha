@@ -274,7 +274,7 @@ public:
         if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
             return false;
 
-        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), data, CardUsed);
+        const Card *card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), data, NonTrigger);
         if(card){
             // if player is drank, unset his flag
             if(player->hasFlag("drank"))

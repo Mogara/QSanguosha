@@ -233,8 +233,7 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    if(effect.to->getGeneralName().contains("zhugeliang") ||
-       effect.to->getGeneralName() == "wolong")
+    if(effect.to->getGeneral()->isCaoCao("zhugeliang"))
         room->playSkillEffect(skill_name, 3);
     else
         room->playSkillEffect(skill_name, qrand() % 2 + 1);
@@ -806,7 +805,7 @@ MingceCard::MingceCard(){
 
 void MingceCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    if(effect.to->getGeneralName().contains("lvbu"))
+    if(effect.to->getGeneral()->isCaoCao("lvbu"))
         room->playSkillEffect(skill_name, 3);
     else
         room->playSkillEffect(skill_name, qrand() % 2 + 1);

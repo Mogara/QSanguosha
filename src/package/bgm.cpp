@@ -483,7 +483,7 @@ public:
                                                 .arg(effect.from->objectName())
                                                 .arg(bgm_zhangfei->objectName())
                                                 .arg(objectName()),
-                                                data, CardUsed);
+                                                data, JinkUsed);
             if(jink && jink->getSuit() != Card::Heart){
                 LogMessage log;
                 log.type = "#DaheEffect";

@@ -406,6 +406,10 @@ void MainWindow::enterRoom(){
 }
 
 void MainWindow::gotoStartScene(){
+    QList<Server *> servers = findChildren<Server *>();
+    if(!servers.isEmpty())
+        servers.first()->deleteLater();
+
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
@@ -424,7 +428,7 @@ void MainWindow::gotoStartScene(){
         start_scene->addButton(action);
 
     setCentralWidget(view);
-    restoreFromConfig();
+    //restoreFromConfig();
 
     ui->menuCheat->setEnabled(false);
     ui->actionGet_card->disconnect();

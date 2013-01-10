@@ -55,7 +55,7 @@ public:
     QString getPackage() const;
     QString getSkillDescription() const;
     QString getWinword() const;
-    bool isCaoCao() const;
+    bool isCaoCao(const QString &other_name = QString()) const;
 
     static QSize BigIconSize;
     static QSize SmallIconSize;

@@ -342,7 +342,7 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
 }
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
-    if(player->askForSkillInvoke(objectName())){
+    if(player->getGeneral()->hasSkill(objectName()) && player->askForSkillInvoke(objectName())){
         Room *room = player->getRoom();
         room->setPlayerProperty(player, "general", to);
 
