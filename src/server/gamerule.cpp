@@ -36,6 +36,12 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
     case Player::Start: {
             player->setMark("SlashCount", 0);
+
+            if(room->getMode() == "05_2v3")
+                if(player->isLord() || player->getRole() == "loyalist")
+                    if(player->getPile("Angers").length() < 5)
+                        player->addToPile("Angers", room->drawCard(), true);
+
             break;
         }
     case Player::Judge: {
@@ -1014,4 +1020,173 @@ bool BasaraMode::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QV
     }
 
     return false;
+}
+
+ChangbanSlopeMode::ChangbanSlopeMode(QObject *parent)
+    :GameRule(parent)
+{
+    setObjectName("changbanslope_mode");
+
+    events << HpChanged ;
+}
+
+static int TransfigurationCB = 1;
+
+bool ChangbanSlopeMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    Room *room = player->getRoom();
+
+    switch(event){
+    case GameStart:{
+            room->setTag("SkipNormalDeathProcess", true);
+            if(player->isLord()){
+                if(setjmp(env) == TransfigurationCB){
+                    player = room->getLord();
+                    room->transfigure(player, "cbzhaoyun2", true, true);
+                    ServerPlayer *cbzhangfei = player;
+                    foreach(ServerPlayer *p, room->getAlivePlayers()){
+                        if(p->getRole() == "loyalist")
+                            cbzhangfei = p;
+                    }
+                    if(cbzhangfei == player){
+                        cbzhangfei = room->findPlayer("cbzhangfei2", true);
+                        if(cbzhangfei == NULL)
+                            cbzhangfei = room->findPlayer("cbzhangfei1", true);
+                        room->revivePlayer(cbzhangfei);
+                    }
+                    room->transfigure(cbzhangfei, "cbzhangfei2", true, true);
+                    QList<ServerPlayer *> cbgod;
+                    cbgod << player << cbzhangfei;
+                    foreach(ServerPlayer *p, cbgod){
+                        QList<const Card *> tricks = p->getJudgingArea();
+                        foreach(const Card *trick, tricks)
+                            room->throwCard(trick);
+
+                        if(!p->faceUp())
+                            p->turnOver();
+
+                        if(p->isChained())
+                            room->setPlayerProperty(p, "chained", false);
+                    }
+                }else{
+                    player->drawCards(4, false);
+                }
+            }else
+                player->drawCards(4, false);
+
+
+            return false;
+        }
+
+    case HpChanged:{
+            if(player->getGeneralName() == "cbzhaoyun1" && player->getHp() <= 4){
+                longjmp(env, TransfigurationCB);
+            }
+
+            if(player->getGeneralName() == "cbzhangfei1" && player->getHp() <= 5){
+                room->transfigure(player, "cbzhangfei2", true, true);
+            }
+            return false;
+        }
+
+    case TurnStart:{
+            if(player->isLord()){
+                if(!player->faceUp())
+                    player->turnOver();
+                else
+                    player->play();
+            }else{
+                if(player->isDead()){
+                    QStringList generals = room->getTag(player->objectName()).toStringList();
+                    if(!generals.isEmpty()){
+                        changeGeneral(player);
+                        player->play();
+                    }
+                }
+                else if(!player->faceUp())
+                    player->turnOver();
+                else
+                    player->play();
+            }
+
+            return false;
+        }
+
+    case Death:{
+            player->bury();
+
+            if(player->getRoleEnum() == Player::Rebel){
+                QStringList generals = room->getTag(player->objectName()).toStringList();
+                if(generals.isEmpty()){
+                    QStringList alive_roles = room->aliveRoles(player);
+                    if(!alive_roles.contains("rebel"))
+                        room->gameOver("lord+loyalist");
+                }
+            }
+
+            if(player->isDead()){
+                DamageStar damage = data.value<DamageStar>();
+                ServerPlayer *killer = damage ? damage->from : NULL;
+                if(killer && killer->isAlive()){
+                    if(player->getRole() == "rebel" && killer != player){
+                        killer->drawCards(2);
+                    }else if(player->getRole() == "loyalist" && killer->getRole() == "lord"){
+                        killer->throwAllEquips();
+                        killer->throwAllHandCards();
+                    }
+                }
+            }
+
+            if(player->isLord()){
+                room->gameOver("rebel");
+            }
+
+            if(player->getGeneralName() == "cbzhangfei2"){
+                ServerPlayer *cbzhaoyun = room->getLord();
+                if(cbzhaoyun->getHp() < 4)
+                    room->setPlayerProperty(cbzhaoyun, "hp", 4);
+            }
+
+            return false;
+        }
+
+    case GameOverJudge:{
+            if(player->getRole() == "rebel"){
+                QStringList list = room->getTag(player->objectName()).toStringList();
+
+                if(!list.isEmpty())
+                    return false;
+            }
+
+            break;
+        }
+
+    default:
+        break;
+    }
+
+    return GameRule::trigger(event, room, player, data);
+}
+
+void ChangbanSlopeMode::changeGeneral(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    QStringList generals = room->getTag(player->objectName()).toStringList();
+    QString new_general = generals.takeFirst();
+    room->setTag(player->objectName(), QVariant(generals));
+    room->transfigure(player, new_general, true, true);
+    room->revivePlayer(player);
+
+    if(player->getKingdom() != player->getGeneral()->getKingdom())
+        room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+
+    room->broadcastInvoke("revealGeneral",
+                          QString("%1:%2").arg(player->objectName()).arg(new_general),
+                          player);
+
+    if(!player->faceUp())
+        player->turnOver();
+
+    if(player->isChained())
+        room->setPlayerProperty(player, "chained", false);
+
+    player->drawCards(4);
 }

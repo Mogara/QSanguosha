@@ -48,4 +48,17 @@ private:
     QMap<QString, QString> skill_mark;
 };
 
+class ChangbanSlopeMode: public GameRule{
+    Q_OBJECT
+
+public:
+    ChangbanSlopeMode(QObject *parent);
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+
+private:
+    void changeGeneral(ServerPlayer *player) const;
+    mutable jmp_buf env;
+};
+
 #endif // GAMERULE_H

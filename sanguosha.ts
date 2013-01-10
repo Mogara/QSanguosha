@@ -1581,7 +1581,12 @@
         <translation>5 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="61"/>
+        <location filename="src/core/engine.cpp" line="73"/>
+        <source>5 players (Changban Slope)</source>
+        <translation>5 人局 [长坂坡2v3]</translation>
+    </message>
+    <message>
+        <location filename="src/core/engine.cpp" line="74"/>
         <source>6 players</source>
         <translation>6 人局</translation>
     </message>
@@ -3471,7 +3476,17 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用国战模式</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="518"/>
+        <location filename="src/server/server.cpp" line="502"/>
+        <source>ChangbanSlope options</source>
+        <translation>长坂坡选项</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="507"/>
+        <source>Random_Kingdoms</source>
+        <translation>扩展模式</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="522"/>
         <source>Standard mode</source>
         <translation>经典3v3</translation>
     </message>

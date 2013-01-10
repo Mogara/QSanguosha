@@ -48,6 +48,7 @@ ServerDialog::ServerDialog(QWidget *parent)
     setLayout(layout);
 
     setMinimumWidth(300);
+    ok_button->setFocus();
 }
 
 QWidget *ServerDialog::createBasicTab(){
@@ -509,6 +510,21 @@ void ServerDialog::edit1v1Banlist(){
     dialog->exec();
 }
 
+QGroupBox *ServerDialog::createChangbanSlopeBox(){
+    QGroupBox *box = new QGroupBox(tr("ChangbanSlope options"));
+    box->setEnabled(Config.GameMode == "05_2v3");
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+
+    RandomKingdoms_checkbox = new QCheckBox(tr("Random_Kingdoms"));
+    RandomKingdoms_checkbox->setChecked(Config.value("ChangbanSlope/Random_Kingdoms", false).toBool());
+
+    vlayout->addWidget(RandomKingdoms_checkbox);
+    box->setLayout(vlayout);
+
+    return box;
+}
+
 QGroupBox *ServerDialog::create3v3Box(){
     QGroupBox *box = new QGroupBox(tr("3v3 options"));
     box->setEnabled(Config.GameMode == "06_3v3");
@@ -577,7 +593,13 @@ QGroupBox *ServerDialog::createGameModeBox(){
             button->setObjectName(itor.key());
             mode_group->addButton(button);
 
-            if(itor.key() == "06_3v3"){
+            if(itor.key() == "05_2v3"){
+                // add ChangbanSlope options
+                QGroupBox *box = createChangbanSlopeBox();
+                connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
+
+                item_list << button << box;
+            }else if(itor.key() == "06_3v3"){
                 // add 3v3 options
                 QGroupBox *box = create3v3Box();
                 connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
@@ -691,7 +713,7 @@ QLayout *ServerDialog::createButtonLayout(){
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
 
-    QPushButton *ok_button = new QPushButton(tr("OK"));
+    ok_button = new QPushButton(tr("OK"));
     QPushButton *cancel_button = new QPushButton(tr("Cancel"));
 
     button_layout->addWidget(ok_button);
@@ -932,6 +954,10 @@ bool ServerDialog::config(){
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);
     Config.setValue("Address", Config.Address);
+
+    Config.beginGroup("ChangbanSlope");
+    Config.setValue("Random_Kingdoms", RandomKingdoms_checkbox->isChecked());
+    Config.endGroup();
 
     Config.beginGroup("3v3");
     Config.setValue("UsingExtension", !standard_3v3_radiobutton->isChecked() && !new_3v3_radiobutton->isChecked());

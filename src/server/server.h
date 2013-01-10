@@ -83,7 +83,9 @@ private:
     QLayout *createButtonLayout();
 
     QGroupBox *createGameModeBox();
+    QGroupBox *createChangbanSlopeBox();
     QGroupBox *create3v3Box();
+    QPushButton *ok_button;
 
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
@@ -112,6 +114,8 @@ private:
     QCheckBox *role_predictable_checkbox;
     QCheckBox *ai_nickname_checkbox, *ai_chat_checkbox;
     QSpinBox *ai_delay_spinbox;
+
+    QCheckBox *RandomKingdoms_checkbox;
     QRadioButton *standard_3v3_radiobutton;
     QRadioButton *new_3v3_radiobutton;
     QComboBox *role_choose_combobox;

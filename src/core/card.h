@@ -72,6 +72,7 @@ public:
 
     bool sameColorWith(const Card *other) const;
     Color getColor() const;
+    QString getColorString() const;
     bool isEquipped() const;
 
     QString getPixmapPath() const;

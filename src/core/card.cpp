@@ -144,6 +144,17 @@ Card::Color Card::getColor() const{
     }
 }
 
+QString Card::getColorString() const{
+    switch(suit){
+    case Spade:
+    case Club: return "black";
+    case Heart:
+    case Diamond: return "red";
+    default:
+        return "colorless";
+    }
+}
+
 bool Card::isEquipped() const{
     return Self->hasEquip(this);
 }
@@ -288,6 +299,15 @@ bool Card::isVirtualCard() const{
 }
 
 const Card *Card::Parse(const QString &str){
+    static QMap<QString, Card::Suit> suit_map;
+    if(suit_map.isEmpty()){
+        suit_map.insert("spade", Card::Spade);
+        suit_map.insert("club", Card::Club);
+        suit_map.insert("heart", Card::Heart);
+        suit_map.insert("diamond", Card::Diamond);
+        suit_map.insert("no_suit", Card::NoSuit);
+    }
+
     if(str.startsWith(QChar('@'))){
         // skill card
         QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
@@ -346,15 +366,6 @@ const Card *Card::Parse(const QString &str){
         QStringList subcard_ids;
         if(subcard_str != ".")
             subcard_ids = subcard_str.split("+");
-
-        static QMap<QString, Card::Suit> suit_map;
-        if(suit_map.isEmpty()){
-            suit_map.insert("spade", Card::Spade);
-            suit_map.insert("club", Card::Club);
-            suit_map.insert("heart", Card::Heart);
-            suit_map.insert("diamond", Card::Diamond);
-            suit_map.insert("no_suit", Card::NoSuit);
-        }
 
         Suit suit = suit_map.value(suit_string, Card::NoSuit);
 

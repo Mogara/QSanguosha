@@ -39,6 +39,7 @@ config = {
 		"Paster",
 		"SanDZhimeng",
 		"NostalGeneral",
+		"ChangbanSlope",
 		"Test",
 	},
 
@@ -216,6 +217,7 @@ ban_list = { -- 初始禁表设置
 	},
 	forbid_packages = {
 		"New3v3Card",
+		"changban-slope",
 		"test"
 	},
 }

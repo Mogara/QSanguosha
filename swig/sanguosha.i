@@ -451,6 +451,12 @@ struct PindianStruct{
 	QString reason;
 };
 
+struct PhaseChangeStruct{
+    PhaseChangeStruct();
+    Player::Phase from;
+    Player::Phase to;
+};
+
 typedef PindianStruct *PindianStar;
 
 enum TriggerEvent{
@@ -521,8 +527,9 @@ class Card: public QObject
 public:
 	// enumeration type
 	enum Suit {Spade, Club, Heart, Diamond, NoSuit};
-	static const Suit AllSuits[4];
 	enum Color {Red, Black, Colorless};
+
+	static const Suit AllSuits[4];
 
 	// card types
 	enum CardType{
@@ -552,6 +559,7 @@ public:
 	void setSuit(Suit suit);
 
 	Color getColor() const;
+	QString getColorString() const;
 	bool sameColorWith(const Card *other) const;
 	bool isEquipped() const;
 

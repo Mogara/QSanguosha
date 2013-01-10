@@ -73,7 +73,7 @@ public:
 	virtual const Card *askForSinglePeach(ServerPlayer *dying);
 	virtual const Card *askForPindian(ServerPlayer *requestor, const char *reanson);
 	virtual Card::Suit askForSuit(const QString&);
-	
+
 	LuaFunction callback;
 };
 

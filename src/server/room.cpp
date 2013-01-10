@@ -910,13 +910,12 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
                     break;
                 }
             }
-
             if(!has_red)
                 return NULL;
         }else if(player->hasSkill("jiushi")){
             if(!player->faceUp())
                 return NULL;
-        }else if(player->hasSkill("longhun")){
+        }else if(player->hasSkill("longhun") || player->hasSkill("noslonghun")){
             bool has_heart = false;
             foreach(const Card *equip, player->getEquips()){
                 if(equip->getSuit() == Card::Heart){
@@ -924,10 +923,11 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
                     break;
                 }
             }
-
             if(!has_heart)
                 return NULL;
-        }else
+        }else if(player->hasSkill("cbyuxue") && player->getPile("Angers").isEmpty())
+            return NULL;
+        else
             return NULL;
     }
 
@@ -1342,6 +1342,21 @@ void Room::prepareForStart(){
             ServerPlayer *player = players.at(i);
             if(player == lord)
                 player->setRole("lord");
+            else
+                player->setRole("rebel");
+            broadcastProperty(player, "role");
+        }
+    }else if(mode == "05_2v3"){
+        int x = qrand() % 5;
+        ServerPlayer *lord = players.at(x);
+        ServerPlayer *loyalist = players.at((x + qrand() % 4 + 1) % 5);
+        int i = 0;
+        for(i=0; i<5; i++){
+            ServerPlayer *player = players.at(i);
+            if(player == lord)
+                player->setRole("lord");
+            else if(player == loyalist)
+                player->setRole("loyalist");
             else
                 player->setRole("rebel");
             broadcastProperty(player, "role");
@@ -1854,6 +1869,78 @@ void Room::run(){
         }
 
         startGame();
+    }else if(mode == "05_2v3"){
+        QList<const General *> generals;
+        QStringList packages;
+        packages << "standard" << "wind" << "fire" << "thicket" << "mountain" ;
+        if(Config.value("ChangbanSlope/Random_Kingdoms", false).toBool())
+            packages << "sp" << "BMG" ;
+
+        foreach(const Package *package, Sanguosha->findChildren<const Package *>()){
+            if(packages.contains(package->objectName()))
+                generals << package->findChildren<const General *>();
+            else
+                continue;
+        }
+
+        // remove hidden generals
+        QMutableListIterator<const General *> itor(generals);
+        while(itor.hasNext()){
+            itor.next();
+
+            if(itor.value()->isHidden())
+                itor.remove();
+        }
+
+        QStringList ban_list;
+        ban_list << "zuoci" << "zuocif" << "yuji" ;
+        if(Config.value("ChangbanSlope/Random_Kingdoms", false).toBool())
+            ban_list << "caiwenji" << "sp_caiwenji" ;
+        foreach(QString name, ban_list)
+            generals.removeOne(Sanguosha->getGeneral(name));
+
+        QString kingdom = "wei";
+        if(Config.value("ChangbanSlope/Random_Kingdoms", false).toBool()){
+            QStringList kingdoms;
+            kingdoms << "wei" << "shu" << "wu" << "qun";
+            kingdom = kingdoms.at(qrand() % 4);
+        }
+
+        QStringList names;
+        foreach(const General *general, generals){
+            if(general->getKingdom() == kingdom)
+                names << general->objectName();
+        }
+
+        QList<ServerPlayer *> rebels;
+        foreach(ServerPlayer *player, players){
+            if(player->getRole() == "lord"){
+                setPlayerProperty(player, "general", "cbzhaoyun1");
+                continue;
+            }else if(player->getRole() == "loyalist"){
+                setPlayerProperty(player, "general", "cbzhangfei1");
+                continue;
+            }else{
+                rebels << player;
+                qShuffle(names);
+                QStringList choices = names.mid(0, 6), generals;
+                int i;
+                for(i=0; i<3; i++){
+                    QString name = askForGeneral(player, choices);
+                    generals << name;
+                    names.removeOne(name);
+                    choices.removeOne(name);
+                }
+                this->setTag(player->objectName(), QVariant(generals));
+            }
+        }
+        foreach(ServerPlayer *rebel, rebels){
+            QStringList generals = this->getTag(rebel->objectName()).toStringList();
+            setPlayerProperty(rebel, "general", generals.takeFirst());
+            this->setTag(rebel->objectName(), QVariant(generals));
+        }
+
+        startGame();
     }else{
         chooseGenerals();
         startGame();
@@ -1912,6 +1999,15 @@ void Room::adjustSeats(){
         if(players.at(i)->getRoleEnum() == Player::Lord){
             players.swap(0, i);
             break;
+        }
+    }
+
+    if(mode == "05_2v3"){
+        for(i = 0; i < players.length(); i++){
+            if(players.at(i)->getRoleEnum() == Player::Loyalist){
+                players.swap(1, i);
+                break;
+            }
         }
     }
 
@@ -2205,6 +2301,8 @@ bool Room::hasWelfare(const ServerPlayer *player) const{
         return player->isLord() || player->getRole() == "renegade";
     else if(mode == "04_1v3")
         return false;
+    else if(mode == "05_2v3")
+        return false;
     else if(Config.EnableHegemony)
         return false;
     else
@@ -2307,7 +2405,7 @@ void Room::startGame(){
         }
     }
 
-    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && !Config.EnableBasara){
+    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && mode != "05_2v3" && !Config.EnableBasara){
         foreach(ServerPlayer *player, players)
             broadcastProperty(player, "general2");
     }
@@ -2357,6 +2455,8 @@ void Room::startGame(){
     GameRule *game_rule;
     if(mode == "04_1v3")
         game_rule = new HulaoPassMode(this);
+    else if(mode == "05_2v3")
+        game_rule = new ChangbanSlopeMode(this);
     else if(Config.EnableScene)	//changjing
         game_rule = new SceneRule(this);	//changjing
     else
