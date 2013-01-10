@@ -575,6 +575,20 @@ public:
     }
 };
 
+class GongqiSlash: public SlashSkill{
+public:
+    GongqiSlash():SlashSkill("#gongqi_slash"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
+        if(from->hasSkill("gongqi") && from->hasFlag("gongqi_range"))
+            return 998;
+        else
+            return 0;
+    }
+};
+
 JiefanCard::JiefanCard(){
 }
 
@@ -805,11 +819,10 @@ public:
         ServerPlayer *chengpu = room->findPlayerBySkillName(objectName());
         if(!chengpu)
             return false;
-        if(event == PhaseChange &&
-                chengpu->getPhase() == Player::Finish &&
-                !chengpu->isKongcheng() &&
-                chengpu->getPile("wine").isEmpty()){
-            room->askForUseCard(chengpu, "@@chunlao", "@chunlao");
+        if(event == PhaseChange){
+            if(chengpu->getPhase() == Player::Finish && !chengpu->isKongcheng() &&
+                chengpu->getPile("wine").isEmpty())
+                room->askForUseCard(chengpu, "@@chunlao", "@chunlao");
         }else if(event == Dying && !chengpu->getPile("wine").isEmpty()){
             DyingStruct dying = data.value<DyingStruct>();
             while(dying.who->getHp() < 1 && chengpu->askForSkillInvoke(objectName(), data)){
@@ -876,6 +889,7 @@ YJCM2012Package::YJCM2012Package()
     handang->addSkill(new Gongqi);
     handang->addSkill(new Jiefan);
     handang->addSkill(new MarkAssignSkill("@bother", 1));
+    skills << new GongqiSlash;
 
     General *liubiao = new General(this, "liubiao", "qun", 4);
     liubiao->addSkill(new Zishou);
