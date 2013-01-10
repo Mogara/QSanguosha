@@ -1,21 +1,9 @@
 #include "changban-slope.h"
-#include "skill.h"
-#include "standard.h"
 #include "maneuvering.h"
-#include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
-#include "ai.h"
-#include "general.h"
-#include "standard.h"
 #include "client.h"
-#include "serverplayer.h"
-#include "room.h"
-#include "settings.h"
-#include "god.h"
-#include "generaloverview.h"
-#include "standard-equips.h"
-/*
+
 class CBAngerCollect: public TriggerSkill{
 public:
     CBAngerCollect():TriggerSkill("#cbangercollect"){
@@ -27,8 +15,7 @@ public:
         return target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(ServerInfo.GameMode != "05_2v3")
             return false;
 
@@ -40,7 +27,7 @@ public:
         return false;
     }
 };
-*/
+
 class CBQingGang: public TriggerSkill{
 public:
     CBQingGang():TriggerSkill("cbqinggang"){
@@ -527,7 +514,7 @@ protected:
 };
 
 ChangbanSlopePackage::ChangbanSlopePackage()
-    :Package("changban-slope")
+    :Package("changban_slope")
 {
     General *cbzhaoyun1 = new General(this, "cbzhaoyun1", "god", 8, true, true);
     cbzhaoyun1->addSkill("longdan");

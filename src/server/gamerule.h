@@ -54,7 +54,7 @@ class ChangbanSlopeMode: public GameRule{
 public:
     ChangbanSlopeMode(QObject *parent);
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 
 private:
     void changeGeneral(ServerPlayer *player) const;

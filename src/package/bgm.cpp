@@ -1156,26 +1156,25 @@ public:
     }
 };
 
-class FenyongClear: public TriggerSkill{
+class FenyongClear: public PhaseChangeSkill{
 public:
-    FenyongClear():TriggerSkill("#fenyong-clear"){
-        events << PhaseChange;
+    FenyongClear():PhaseChangeSkill("#fenyong-clear"){
+        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return target && !target->hasSkill("fenyong") && target->getMark("@fenyong") > 0;
     }
 
-    virtual bool trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &) const{
+    virtual bool onPhaseChange(ServerPlayer *player) const{
         player->loseAllMarks("@fenyong");
         return false;
     }
 };
 
-class Xuehen: public TriggerSkill{
+class Xuehen: public PhaseChangeSkill{
 public:
-    Xuehen(): TriggerSkill("xuehen") {
-        events << PhaseChange;
+    Xuehen():PhaseChangeSkill("xuehen"){
         frequency = Compulsory;
     }
 
@@ -1183,7 +1182,8 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const {
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
         ServerPlayer *xiahou = room->findPlayerBySkillName(objectName());
         if(!xiahou)
             return false;

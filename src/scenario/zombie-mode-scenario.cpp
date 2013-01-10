@@ -12,7 +12,7 @@ public:
     ZombieRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << Death << GameOverJudge << TurnStart;
+        events << GameStart << Death << GameOverJudge << TurnStart << CardUsed;
     }
 
     void zombify(ServerPlayer *player, ServerPlayer *killer = NULL) const{
@@ -50,7 +50,15 @@ public:
                 return true;
                 break;
             }
-
+        case CardUsed: {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->getTypeId() == Card::Equip && use.from->hasSkill("ganran") && use.to.isEmpty()){
+                room->throwCard(use.card, use.from);
+                use.from->drawCards(1);
+                return true;
+                break;
+            }
+        }
         case Death:{
             bool hasHuman=false;
             if(player->isLord()){
@@ -241,7 +249,6 @@ class Xunmeng: public TriggerSkill{
 public:
     Xunmeng():TriggerSkill("xunmeng"){
         events << Predamage;
-
         frequency = Compulsory;
     }
 
@@ -275,7 +282,6 @@ public:
 PeachingCard::PeachingCard()
     :QingnangCard()
 {
-
 }
 
 bool PeachingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -308,14 +314,11 @@ public:
 GanranEquip::GanranEquip(Card::Suit suit, int number)
     :IronChain(suit, number)
 {
-
 }
-
 
 class Ganran: public FilterSkill{
 public:
     Ganran():FilterSkill("ganran"){
-
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -325,7 +328,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         const Card *card = card_item->getCard();
         GanranEquip *ironchain = new GanranEquip(card->getSuit(), card->getNumber());
-        ironchain->addSubcard(card_item->getCard()->getId());
+        ironchain->addSubcard(card_item->getFilteredCard());
         ironchain->setSkillName(objectName());
 
         return ironchain;

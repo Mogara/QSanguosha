@@ -4,9 +4,6 @@
 #include "standard.h"
 #include "package.h"
 #include "card.h"
-#include "skill.h"
-#include "player.h"
-#include "socket.h"
 
 class ChangbanSlopePackage: public Package{
     Q_OBJECT

@@ -1874,7 +1874,7 @@ void Room::run(){
         QStringList packages;
         packages << "standard" << "wind" << "fire" << "thicket" << "mountain" ;
         if(Config.value("ChangbanSlope/Random_Kingdoms", false).toBool())
-            packages << "sp" << "BMG" ;
+            packages << "YJCM" << "YJCM2012" << "hegemony" << "sand_zhimeng";
 
         foreach(const Package *package, Sanguosha->findChildren<const Package *>()){
             if(packages.contains(package->objectName()))

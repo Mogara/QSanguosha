@@ -725,8 +725,13 @@ bool SijieCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void SijieCard::onEffect(const CardEffectStruct &effect) const{
     int discard = qMax(1, effect.to->getLostHp());
-    int all = effect.to->getCardCount(true);
-    effect.from->getRoom()->askForDiscard(effect.to, "sijie", qMin(discard, all), false, true);
+    Room *room = effect.from->getRoom();
+    for(int x = 0;x < discard;x ++){
+        if(effect.to->isNude())
+            break;
+        int card_id = room->askForCardChosen(effect.from, effect.to, "he", skill_name);
+        room->throwCard(card_id, effect.to, effect.from);
+    }
 }
 
 class SijieViewAsSkill: public ZeroCardViewAsSkill{

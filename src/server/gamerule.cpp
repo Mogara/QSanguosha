@@ -1032,9 +1032,7 @@ ChangbanSlopeMode::ChangbanSlopeMode(QObject *parent)
 
 static int TransfigurationCB = 1;
 
-bool ChangbanSlopeMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-    Room *room = player->getRoom();
-
+bool ChangbanSlopeMode::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
     switch(event){
     case GameStart:{
             room->setTag("SkipNormalDeathProcess", true);

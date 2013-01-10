@@ -66,7 +66,7 @@ void Settings::init(){
                 << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
                 << "New3v3Card" << "joy" << "joy_equip" << "hegemony_card" 
                 << "hegemony" << "ling" << "assassins" << "olympics" << "paster"
-                << "changban-slope";
+                << "changban_slope";
 
         setValue("BanPackages", banlist);
     }

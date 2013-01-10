@@ -1,9 +1,10 @@
 -- translation for ChangbanSlope Package
 
 return {
-	["changban-slope"] = "长坂坡",
+	["changban_slope"] = "长坂坡",
+	["Changban"] = "长坂坡模式",
 	
-	["cbzhaoyun1"] = "神赵云（1）",
+	["cbzhaoyun1"] = "神赵云(1)",
 	["designer:cbzhaoyun1"] = "洛神工作室",
 	["cv:cbzhaoyun1"] = "",
 	["#cbzhaoyun1"] = "长坂坡圣骑",
@@ -12,7 +13,7 @@ return {
 	["cbqinggang"] = "青釭",
 	[":cbqinggang"] = "你每造成1点伤害，你可以让目标选择弃掉一张手牌或者让你从其装备区获得一张牌。",
 	
-	["cbzhaoyun2"] = "神赵云（2）",
+	["cbzhaoyun2"] = "神赵云(2)",
 	["designer:cbzhaoyun2"] = "洛神工作室",
 	["cv:cbzhaoyun2"] = "",
 	["#cbzhaoyun2"] = "不败神话",
@@ -30,7 +31,7 @@ return {
 	[":cblongyin"] = "<b>特定技，</b>聚气阶段，你可以从牌堆顶亮出三张牌，选择其中一张做为“怒”，其余收为手牌。\
 <font color='red'>★此技能在除长坂坡模式外均无效。</font>",
 	
-	["cbzhangfei1"] = "神张飞（1）",
+	["cbzhangfei1"] = "神张飞(1)",
 	["designer:cbzhangfei1"] = "洛神工作室",
 	["cv:cbzhangfei1"] = "",
 	["#cbzhangfei1"] = "待战的猛虎",
@@ -41,7 +42,7 @@ return {
 	["cbzhangba"] = "仗八",
 	[":cbzhangba"] = "<b>锁定技，</b>当你没有装备武器时，你的攻击范围始终为3。",
 	
-	["cbzhangfei2"] = "神张飞（2）",
+	["cbzhangfei2"] = "神张飞(2)",
 	["designer:cbzhangfei2"] = "洛神工作室",
 	["cv:cbzhangfei2"] = "",
 	["#cbzhangfei2"] = "虎啸盘蛇",
