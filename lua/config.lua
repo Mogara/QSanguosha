@@ -24,7 +24,7 @@ config = {
         "Ling",
         "BGM",
         "NostalGeneral",
-        "YiTian",
+        "Yitian",
         "Wisdom",
         "Test",
     },
