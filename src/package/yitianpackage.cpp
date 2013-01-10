@@ -1001,7 +1001,7 @@ public:
 				if (targets.isEmpty())
 					return false;
 
-				if (damage.from->askForSkillInvoke(objectName()), data)
+				if (damage.from->askForSkillInvoke(objectName(), data))
 				{
 					ServerPlayer *target = room->askForPlayerChosen(damage.from, targets, objectName());
 					damage.from->tag["ShaoyingTarget"] = QVariant::fromValue(target);
