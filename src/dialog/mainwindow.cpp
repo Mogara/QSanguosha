@@ -283,21 +283,22 @@ void BackLoader::run()
 {
     QStringList emotions;
     emotions
-            << "peach"
-            << "analeptic"
-            << "chain"
-            << "damage"
-            << "fire_slash"
-            << "thunder_slash"
             << "killer"
             << "jink"
-            << "no-success"
+            << "peach"
+            << "analeptic"
             << "slash_black"
             << "slash_red"
+            << "fire_slash"
+            << "thunder_slash"
+            << "chain"
+            << "damage"
             << "success"
-            << "duel"
+            << "no-success"
             << "judgebad"
             << "judgegood"
+            << "duel"
+/*
             << "weapon/axe"
             << "weapon/blade"
             << "weapon/crossbow"
@@ -314,8 +315,9 @@ void BackLoader::run()
             << "armor/renwang_shield"
             << "armor/silver_lion"
             << "armor/vine"
-            << "armor/vineburn";
-
+            << "armor/vineburn"
+*/
+               ;
     double total = 0;
     foreach(QString emotion, emotions){
         int n = PixmapAnimation::GetFrameCount(emotion);

@@ -933,7 +933,7 @@ public:
 class Shenjun: public TriggerSkill{
 public:
     Shenjun():TriggerSkill("shenjun"){
-        events << GameStart << PhaseChange << Predamaged;
+        events << PhaseChange << Predamaged;
         frequency = Compulsory;
     }
 
@@ -951,30 +951,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart){
-            if(player->getGeneral2Name().startsWith("luboyan")){
-                room->setPlayerProperty(player, "general2", player->getGeneralName());
-                room->setPlayerProperty(player, "general", "luboyan");
-            }
-
-            QString gender = room->askForChoice(player, objectName(), "male+female");
-            bool is_male = player->getGeneral()->isMale();
-            if(gender == "female"){
-                if(is_male)
-                    room->transfigure(player, "luboyanf", false, false, "luboyan");
-            }else if(gender == "male"){
-                if(!is_male)
-                    room->transfigure(player, "luboyan", false, false, "luboyanf");
-            }
-
-            LogMessage log;
-            log.type = "#ShenjunChoose";
-            log.from = player;
-            log.arg = gender;
-            room->sendLog(log);
-
-        }else if(event == PhaseChange){
-            if(player->getPhase() == Player::Start){
+        if(event == PhaseChange){
+            if(player->getPhase() == Player::Finish){
                 LogMessage log;
                 log.from = player;
                 log.type = "#ShenjunFlip";
