@@ -1596,7 +1596,7 @@ public:
                 int discard_num = player->getHandcardNum() - player->getMaxCards();
                 if(discard_num > 0 && player->askForSkillInvoke(objectName())){
                     player->setFlags("hfty");
-                    room->askForDiscard(player, "gamerule", discard_num, 1);
+                    room->askForDiscard(player, "gamerule", discard_num);
                     return true;
                 }
                 if(!player->getPile("zhao").isEmpty() && player->askForSkillInvoke("xueyi")){
