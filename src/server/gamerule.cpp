@@ -303,6 +303,8 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
             DyingStruct dying = data.value<DyingStruct>();
 
             while(dying.who->getHp() <= 0){
+                if(dying.who->isDead())
+                    break;
                 const Card *peach = room->askForSinglePeach(player, dying.who);
                 if(peach == NULL)
                     break;

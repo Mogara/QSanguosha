@@ -839,13 +839,13 @@ void CustomAssignDialog::removeJudgeCard(){
 void CustomAssignDialog::removePileCard(){
     int card_id = pile_list->currentItem()->data(Qt::UserRole).toInt();
     if(set_pile.contains(card_id)){
-        set_pile.removeOne(card_id);
         int row = pile_list->currentRow();
         pile_list->takeItem(row);
         if(pile_list->count() > 0)
             pile_list->setCurrentRow(row >= pile_list->count() ? row-1 : row);
         else
             removePileButton->setEnabled(false);
+        set_pile.removeOne(card_id);
     }
 }
 
@@ -1519,9 +1519,8 @@ GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool can_ban)
 
     QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
     QMap<QString, QList<const General*> > map;
-    foreach(const General *general, all_generals){
+    foreach(const General *general, all_generals)
         map[general->getKingdom()] << general;
-    }
 
     QStringList kingdoms = Sanguosha->getKingdoms();
 
