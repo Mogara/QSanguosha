@@ -39,8 +39,17 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
             if(room->getMode() == "05_2v3")
                 if(player->isLord() || player->getRole() == "loyalist")
-                    if(player->getPile("Angers").length() < 5)
-                        player->addToPile("Angers", room->drawCard(), true);
+                    if(player->getPile("Angers").length() < 5){
+                        int card_id = room->drawCard();
+                        room->showCard(player, card_id);
+                        room->getThread()->delay();
+                        player->addToPile("Angers", card_id);
+                        LogMessage log;
+                        log.type = "$Juqi";
+                        log.from = player;
+                        log.card_str = QString::number(card_id);
+                        room->sendLog(log);
+                    }
 
             break;
         }

@@ -141,14 +141,14 @@ CBYuXueCard::CBYuXueCard(){
     target_fixed = true;
 }
 
-void CBYuXueCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    QList<int> angers = source->getPile("Angers"), redAngers;
+void CBYuXueCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    QList<int> angers = card_use.from->getPile("Angers"), redAngers;
     foreach(int anger, angers){
         if(Sanguosha->getCard(anger)->isRed())
             redAngers << anger;
     }
 
-    ServerPlayer *target = source;
+    PlayerStar target = card_use.from;
     foreach(ServerPlayer *p, room->getAllPlayers()){
         if(p->hasFlag("dying")){
             target = p;
@@ -156,24 +156,24 @@ void CBYuXueCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         }
     }
 
-    room->fillAG(redAngers, source);
-    int card_id = room->askForAG(source, redAngers, true, "cbyuxue");
-    source->invoke("clearAG");
+    room->fillAG(redAngers, card_use.from);
+    int card_id = room->askForAG(card_use.from, redAngers, true, "cbyuxue");
+    card_use.from->invoke("clearAG");
     if(card_id != -1){
         const Card *redAnger = Sanguosha->getCard(card_id);
 
         room->throwCard(redAnger);
         Peach *peach = new Peach(Card::NoSuit, 0);
-        peach->setSkillName("cbyuxue");
+        peach->setSkillName(skill_name);
         CardUseStruct usepeach;
         usepeach.card = peach;
-        usepeach.from = source;
+        usepeach.from = card_use.from;
         usepeach.to << target;
         room->useCard(usepeach);
     }else{
         LogMessage log;
         log.type = "#CBYuXueLog";
-        log.from = source;
+        log.from = card_use.from;
         room->sendLog(log);
     }
 }
@@ -386,24 +386,32 @@ bool CBChanSheCard::targetFilter(const QList<const Player *> &targets, const Pla
     return canuse;
 }
 
-void CBChanSheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
+void CBChanSheCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    PlayerStar target = card_use.to.first();
     QList<int> redangers;
-    foreach(int id, source->getPile("Angers")){
-        if(Sanguosha->getCard(id)->isRed())
+    foreach(int id, card_use.from->getPile("Angers")){
+        if(Sanguosha->getCard(id)->getSuit() == Card::Diamond)
             redangers << id;
     }
 
-    room->fillAG(redangers, source);
-    int card_id = room->askForAG(source, redangers, true, "cbchanshe");
-    source->invoke("clearAG");
+    room->fillAG(redangers, card_use.from);
+    int card_id = room->askForAG(card_use.from, redangers, true, "cbchanshe");
+    card_use.from->invoke("clearAG");
     if(card_id != -1){
         const Card *redAnger = Sanguosha->getCard(card_id);
-        room->moveCardTo(redAnger, target, Player::Judging, true);
+        Indulgence *indulgence = new Indulgence(redAnger->getSuit(), redAnger->getNumber());
+        indulgence->addSubcard(card_id);
+        indulgence->setSkillName(skill_name);
+
+        CardUseStruct use;
+        use.card = redAnger;
+        use.from = card_use.from;
+        use.to << target;
+        room->useCard(use);
     }else{
         LogMessage log;
         log.type = "#CBChanSheLog";
-        log.from = source;
+        log.from = card_use.from;
         room->sendLog(log);
     }
 }

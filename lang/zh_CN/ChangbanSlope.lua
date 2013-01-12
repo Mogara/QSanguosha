@@ -53,7 +53,7 @@ return {
 	["cbjuwu"] = "聚武",
 	[":cbjuwu"] = "出牌阶段，你可以将至多X张手牌任意分配给神赵云，X为你的当前体力值。",
 	["cbchanshe"] = "缠蛇",
-	[":cbchanshe"] = "<b>聚气技，</b>出牌阶段，你可以将你的任意红桃或方片花色的“怒”当【乐不思蜀】使用。\
+	[":cbchanshe"] = "<b>聚气技，</b>出牌阶段，你可以将你的任意方片花色的“怒”当【乐不思蜀】使用。\
 <font color='red'>★此技能在除长坂坡模式外均无效。</font>",
 	["#CBChanSheLog"] = "%from 取消了技能【<font color='yellow'><b>缠蛇</b></font>】",
 	["cbshishen"] = "弑神",
@@ -63,5 +63,6 @@ return {
 	
 	["cbangercollect"] = "聚气",
 	[":cbangercollect"] = "<b>锁定技，</b>聚气阶段，展示牌堆顶的一张牌置于你的武将牌之上，称为“怒”。",
+	["$Juqi"] = "%from 在聚气阶段亮出了牌堆顶的 %card 收之为“怒”",
 	["Angers"] = "怒",
 }
