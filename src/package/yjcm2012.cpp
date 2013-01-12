@@ -299,6 +299,13 @@ public:
         else
             return SlashSkill::getSlashResidue(t);
     }
+
+    virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
+        if(from->hasSkill("jiangchi") && from->hasFlag("jiangchi_invoke"))
+            return 998;
+        else
+            return 0;
+    }
 };
 
 class Qianxi: public TriggerSkill{
