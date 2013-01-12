@@ -1722,8 +1722,8 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	if type(callback) == "function" then
 		if callback(self, discard_num, optional, include_equip) then
 			return callback(self, discard_num, optional, include_equip)
-		elseif callback(self, discard_num, min_num, optional, include_equip) then
-			return callback(self, discard_num, min_num, optional, include_equip)
+		elseif callback(self, discard_num, discard_num, optional, include_equip) then
+			return callback(self, discard_num, discard_num, optional, include_equip)
 		end
 	elseif optional then
 		return {}
@@ -1753,19 +1753,12 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	end
 
 	table.sort(cards, compare_func)
-	local least = min_num
-	if discard_num - min_num > 1 then
-		least = discard_num -1
-	end
 	for _, card in ipairs(cards) do
-		if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num then break end
+		if #to_discard >= discard_num then break end
 		if not self.player:isJilei(card) then table.insert(to_discard, card:getId()) end
 	end
+	
 	return to_discard
-end
-
-function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_equip)
-	return askForDiscard(reason, discard_num, optional, include_equip)
 end
 
 function SmartAI:askForNullification(trick, from, to, positive)

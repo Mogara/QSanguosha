@@ -90,6 +90,7 @@ public:
 	bool isWounded() const;
 
 	int getMaxCards() const;
+	int getSlashTarget(const Player *other = NULL, const Card *slash = NULL) const;
 
 	QString getKingdom() const;
 	void setKingdom(const char *kingdom);
@@ -118,7 +119,7 @@ public:
 	Phase getPhase() const;
 	void setPhase(Phase phase);
 
-	int getAttackRange() const;
+	int getAttackRange(const Player *other = NULL, const Card *slash = NULL) const;
 	bool inMyAttackRange(const Player *other) const;
 
 	bool isAlive() const;

@@ -108,7 +108,7 @@ end
 sgs.ai_skill_use["@@huangen"] = function(self, prompt)
     local use = self.player:getTag("Huangen"):toCardUse()
 	local targets = sgs.QList2Table(use.to)
-	local tgs
+	local tgs = {}
 	for _, p in ipairs(targets) do
 		if sgs.dynamic_value.benefit[use.card:className()] and self:isEnemy(p) then
 			table.insert(tgs, p:objectName())

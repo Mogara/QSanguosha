@@ -372,7 +372,7 @@ public:
             return false;
 
         int num = effect.to->getHandcardNum();
-        if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
+        if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange(effect.to, effect.slash)){
             if(huangzhong->askForSkillInvoke(objectName(), QVariant::fromValue(effect))){
                 room->playSkillEffect(objectName());
                 room->slashResult(effect, NULL);

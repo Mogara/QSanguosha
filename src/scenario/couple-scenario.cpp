@@ -252,4 +252,4 @@ AI::Relation CoupleScenario::relationTo(const ServerPlayer *a, const ServerPlaye
     return AI::Enemy;
 }
 
-ADD_SCENARIO(Couple);
+ADD_SCENARIO(Couple)

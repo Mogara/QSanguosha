@@ -36,19 +36,16 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.to->getCards("he").length() <= 0)
+        if(damage.to->isNude() || !player->askForSkillInvoke(objectName(), data))
             return false;
-        if(!player->askForSkillInvoke(objectName(), data))
-            return false;
-        int i;
-        for(i=0; i<damage.damage; i++){
+        for(int i=0; i<damage.damage; i++){
             if(damage.to->isNude())
                 break;
             if(!damage.to->hasEquip())
                 room->askForDiscard(damage.to, objectName(), 1);
             else
                 if(!room->askForDiscard(damage.to, objectName(), 1, true, false))
-                    room->obtainCard(damage.to, room->askForCardChosen(player, damage.to, "e", objectName()));
+                    room->obtainCard(player, room->askForCardChosen(player, damage.to, "e", objectName()));
         }
         return false;
     }

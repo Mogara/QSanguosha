@@ -329,7 +329,8 @@ void BackLoader::run()
         int n = PixmapAnimation::GetFrameCount(emotion);
         for(int i=0; i<n; i++){
             QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(i);
-            PixmapAnimation::GetFrameFromCache(filename);
+            if(QFile::exists(filename))
+                PixmapAnimation::GetFrameFromCache(filename);
 
             loaded ++;
 

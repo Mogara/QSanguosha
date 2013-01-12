@@ -94,18 +94,8 @@ function SmartAI:useCardSlash(card, use)
 		if acard:getTypeId() == sgs.Card_Basic and not acard:inherits("Peach") then basicnum = basicnum + 1 end
 	end
 	local no_distance = self.slash_distance_limit
-	self.slash_targets = 1
-	if card:getSkillName() == "wushen" then no_distance = true end
-	if card:getSkillName() == "nosgongqi" then no_distance = true end
-	if self.player:hasFlag("tianyi_success") then self.slash_targets = self.slash_targets + 1 end
-	if self.player:hasSkill("lihuo") and card:inherits("FireSlash") then self.slash_targets = self.slash_targets + 1 end
-	if (self.player:getHandcardNum() == 1
-	and self.player:getHandcards():first():inherits("Slash")
-	and self.player:getWeapon()
-	and self.player:getWeapon():inherits("Halberd"))
-	or (self.player:hasSkill("shenji") and not self.player:getWeapon()) then
-		self.slash_targets = self.slash_targets + 2
-	end
+	if self.player:getAttackRange(nil, card) > 200 then no_distance = true end
+	self.slash_targets = self.player:getSlashTarget(nil, card)
 
 	self.predictedRange = self.player:getAttackRange()
 	if self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end

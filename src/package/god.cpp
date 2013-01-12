@@ -602,7 +602,7 @@ public:
     }
 
     virtual int getSlashRange(const Player *from, const Player *to, const Card *card) const{
-        if(from->hasSkill("wushen") && card->inherits("WushenSlash"))
+        if(from->hasSkill("wushen") && card && card->isKindOf("WushenSlash"))
             return 998;
         else
             return 0;

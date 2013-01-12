@@ -1,11 +1,7 @@
 --행멀
 sgs.ai_skill_invoke.cbqinggang = function(self, data)
 	local damage = data:toDamage()
-	if self:isFriend(damage.to) then
-		return false
-	else
-		return true
-	end
+	return not self:isFriend(damage.to)
 end
 
 --질큼

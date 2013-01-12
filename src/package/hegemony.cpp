@@ -228,7 +228,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(!damage.from->isKongcheng() && damage.damage > 0){
+        if(damage.from && !damage.from->isKongcheng() && damage.damage > 0){
             room->playSkillEffect(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";

@@ -765,7 +765,7 @@ public:
     }
 
     virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
-        if(from->hasSkill("lihuo") && slash->inherits("FireSlash"))
+        if(from->hasSkill("lihuo") && slash && slash->inherits("FireSlash"))
             return 1;
         else
             return 0;

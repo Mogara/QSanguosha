@@ -150,14 +150,14 @@ void Player::clearFlags(){
     flags.clear();
 }
 
-int Player::getAttackRange() const{
+int Player::getAttackRange(const Player *other, const Card *slash) const{
     int atkrg = getWeapon() ? getWeapon()->getRange() : 1;
-    int extra = Sanguosha->correctSlash("attackrange", this);
+    int extra = Sanguosha->correctSlash("attackrange", this, other, slash);
     return extra >= 0 ? qMax(atkrg, extra): qAbs(extra);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
-    return distanceTo(other) <= getAttackRange();
+    return distanceTo(other) <= getAttackRange(other);
 }
 
 void Player::setFixedDistance(const Player *player, int distance){
@@ -477,6 +477,12 @@ int Player::getMaxCards() const{
     return (qMax(hp,0) + rule + extra);
 }
 
+int Player::getSlashTarget(const Player *other, const Card *slash) const{
+    int rule = 1, extra = 0;
+    extra = Sanguosha->correctSlash("extragoals", Self, other, slash);
+    return rule + extra;
+}
+
 QString Player::getKingdom() const{
     if(kingdom.isEmpty() && general)
         return general->getKingdom();
@@ -597,7 +603,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
         return false;
 
     if(distance_limit)
-        return distanceTo(other) <= getAttackRange();
+        return distanceTo(other) <= getAttackRange(other, slash);
     else
         return true;
 }
