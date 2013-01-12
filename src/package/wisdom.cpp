@@ -819,6 +819,8 @@ public:
 
         room->setPlayerMark(player, "jiehuo", 1);
         player->loseAllMarks("@shouye");
+        room->broadcastInvoke("animate", "lightbox:$jiehuo");
+        room->getThread()->delay(1500);
         room->setPlayerMark(player, "shouyeonce", 1);
         room->acquireSkill(player, "shien");
         room->playSkillEffect(objectName());

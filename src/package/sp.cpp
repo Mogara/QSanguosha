@@ -445,6 +445,8 @@ public:
             guanyu->setMark("danji", 1);
 
             room->loseMaxHp(guanyu);
+            room->broadcastInvoke("animate", "lightbox:$danji");
+            room->getThread()->delay(2500);
             room->acquireSkill(guanyu, "mashu");
         }
 
@@ -620,8 +622,10 @@ public:
     
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == SlashMissed){
-            if(player->getPhase() == Player::Play && player->getMark("wuji") == 0)
+            if(player->getPhase() == Player::Play && player->getMark("wuji") == 0){
+                room->playSkillEffect(objectName(), 1);
                 room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
+            }
         }else if(event == PhaseChange) {
             if(player->getPhase() == Player::Play)
                 if(player->getMark(objectName()) > 0)
@@ -713,8 +717,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect(objectName());
-        //room->broadcastInvoke("animate", "lightbox:$wuji:3000");
-        //room->getThread()->delay(4000);
+        room->broadcastInvoke("animate", "lightbox:$wuji:1500");
+        room->getThread()->delay(1500);
 
         player->addMark("wuji");
 

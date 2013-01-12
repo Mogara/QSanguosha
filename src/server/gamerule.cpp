@@ -38,18 +38,26 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             player->setMark("SlashCount", 0);
 
             if(room->getMode() == "05_2v3")
-                if(player->isLord() || player->getRole() == "loyalist")
-                    if(player->getPile("Angers").length() < 5){
-                        int card_id = room->drawCard();
-                        room->showCard(player, card_id);
-                        room->getThread()->delay();
-                        player->addToPile("Angers", card_id);
-                        LogMessage log;
-                        log.type = "$Juqi";
-                        log.from = player;
-                        log.card_str = QString::number(card_id);
-                        room->sendLog(log);
+                if(player->isLord() || player->getRole() == "loyalist"){
+                    int card_id = room->drawCard();
+                    room->showCard(player, card_id);
+                    room->getThread()->delay();
+                    player->addToPile("Angers", card_id);
+                    LogMessage log;
+                    log.type = "$Juqi";
+                    log.from = player;
+                    log.card_str = QString::number(card_id);
+                    room->sendLog(log);
+                    if(player->getPile("Angers").length() > 4){
+                        const QList<int> angs = player->getPile("Angers");
+                        room->fillAG(angs, player);
+                        int card_id = room->askForAG(player, angs, false, "cbangercollect");
+                        if(card_id < 0)
+                            card_id = player->getPile("Angers").first();
+                        room->throwCard(card_id);
+                        player->invoke("clearAG");
                     }
+                }
 
             break;
         }

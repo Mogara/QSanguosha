@@ -41,25 +41,17 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             && player->hasSkill("paoxiao"))
         room->playSkillEffect("paoxiao");
     else if(player->getPhase() == Player::Play
-            && player->hasSkill("huxiao")) {
-        int n = 1;
-        if (player->hasFlag("tianyi_success"))
-            n ++;
-        if (player->hasFlag("jiangchi_invoke"))
-            n ++;
-        if (player->getMark("SlashCount") >= n) {
-            bool toSunquan = false;
-            foreach(ServerPlayer *p, card_use.to)
-                if(p->getGeneralName().contains("sunquan")) {
-                toSunquan = true;
-                break;
-            }
-
-            if(toSunquan)
-                room->playSkillEffect("huxiao", 3);
-            else
-                room->playSkillEffect("huxiao", qrand() % 2 + 1);
+            && player->hasSkill("huxiao") && player->getMark("huxiao") > 0) {
+        bool toSunquan = false;
+        foreach(ServerPlayer *p, card_use.to)
+            if(p->getGeneralName().contains("sunquan")) {
+            toSunquan = true;
+            break;
         }
+        if(toSunquan)
+            room->playSkillEffect("huxiao", 3);
+        else
+            room->playSkillEffect("huxiao", 2);
     }
     if (card_use.to.size() > 1 && player->hasSkill("shenji"))
         room->playSkillEffect("shenji");

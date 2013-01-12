@@ -242,7 +242,7 @@ cbchanshe_skill.getTurnUseCard = function(self)
 	local redangers = sgs.IntList()
 	for _,id in sgs.qlist(angers) do
 		local cd = sgs.Sanguosha:getCard(id)
-		if cd:isRed() then
+		if cd:getSuit() == sgs.Card_Diamond then
 			redangers:append(id)
 		end
 	end
