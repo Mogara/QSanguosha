@@ -245,102 +245,6 @@ New3v3CardPackage::New3v3CardPackage()
 
 ADD_PACKAGE(New3v3Card)
 
-WS1Card::WS1Card(){
-    target_fixed = true;
-}
-
-void WS1Card::use(Room *room, ServerPlayer *player, const QList<ServerPlayer *> &tar) const{
-    player->turnOver();
-    room->setPlayerFlag(player, "ws");
-}
-
-class WS1:public ZeroCardViewAsSkill{
-public:
-    WS1():ZeroCardViewAsSkill("ws1"){
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("WS1Card");
-    }
-
-    virtual const Card *viewAs() const{
-        return new WS1Card;
-    }
-};
-
-class WS12: public OneCardViewAsSkill{
-public:
-    WS12():OneCardViewAsSkill("ws12"){
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->hasFlag("ws");
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "slash";
-    }
-
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getCard()->objectName() != "duel";
-    }
-
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
-        Card *slash = new Slash(card->getSuit(), card->getNumber());
-        slash->addSubcard(card->getId());
-        slash->setSkillName(objectName());
-        return slash;
-    }
-};
-
-class WS123: public SlashSkill{
-public:
-    WS123():SlashSkill("#ws123"){
-    }
-
-    virtual int getSlashResidue(const Player *zom) const{
-        if(zom->hasFlag("ws"))
-            return 998;
-        else
-            return SlashSkill::getSlashResidue(zom);
-    }
-};
-
-WS2Card::WS2Card(){
-    target_fixed = true;
-}
-
-void WS2Card::use(Room *room, ServerPlayer *player, const QList<ServerPlayer *> &tar) const{
-    room->setPlayerFlag(player, "ws");
-}
-
-class WS2:public ViewAsSkill{
-public:
-    WS2():ViewAsSkill("ws2"){
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("WS2Card");
-    }
-
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(selected.length() > 2)
-            return false;
-        return !to_select->isEquipped();
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 2)
-            return NULL;
-
-        WS2Card *jieyin_card = new WS2Card();
-        jieyin_card->addSubcards(cards);
-
-        return jieyin_card;
-    }
-};
-
 Special3v3Package::Special3v3Package():Package("Special3v3")
 {
     General *zhugejin = new General(this, "zhugejin", "wu", 3, true);
@@ -352,19 +256,6 @@ Special3v3Package::Special3v3Package():Package("Special3v3")
 
     addMetaObject<HuanshiCard>();
     addMetaObject<HongyuanCard>();
-
-    General *diylvbu1 = new General(this, "diylvbu1", "qun");
-    diylvbu1->addSkill(new WS1);
-    diylvbu1->addSkill(new WS12);
-    diylvbu1->addSkill("wushuang");
-    skills << new WS123;
-    addMetaObject<WS1Card>();
-
-    General *diylvbu2 = new General(this, "diylvbu2", "qun");
-    diylvbu2->addSkill(new WS2);
-    diylvbu2->addSkill("ws12");
-    diylvbu2->addSkill("wushuang");
-    addMetaObject<WS2Card>();
 }
 
 ADD_PACKAGE(Special3v3)
