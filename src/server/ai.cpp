@@ -263,6 +263,9 @@ int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QSt
 }
 
 const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, const QVariant &data){
+    Q_UNUSED(prompt);
+    Q_UNUSED(data);
+
     response_skill->setPattern(pattern);
     QList<const Card *> cards = self->getHandcards();
     foreach(const Card *card, cards){
@@ -308,6 +311,8 @@ const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &reaso
 }
 
 ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason){
+    Q_UNUSED(reason);
+
     int r = qrand() % targets.length();
     return targets.at(r);
 }
