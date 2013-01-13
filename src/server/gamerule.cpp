@@ -145,6 +145,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
 
             player->clearFlags();
+            room->detachSkillFromPlayer(player, "#ws12");
 
             return;
         }
