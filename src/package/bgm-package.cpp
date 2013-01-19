@@ -339,9 +339,9 @@ public:
         events << EventPhaseStart << CardEffected ;
         frequency = Limited;
 
-        type[Card::Basic] = "BasicCard";
-        type[Card::Trick] = "TrickCard";
-        type[Card::Equip] = "EquipCard";
+        type[Card::TypeBasic] = "BasicCard";
+        type[Card::TypeTrick] = "TrickCard";
+        type[Card::TypeEquip] = "EquipCard";
     }
 
     void doZuixiang(ServerPlayer *player) const{

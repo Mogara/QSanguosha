@@ -533,7 +533,7 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 class ZhibaPindian: public OneCardViewAsSkill{
 public:
     ZhibaPindian():OneCardViewAsSkill("zhiba_pindian"){
-
+        attached_lord_skill = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -730,7 +730,7 @@ public:
     }
 
     virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->isEquipped() && to_select->getTypeId() == Card::Equip;
+        return !to_select->isEquipped() && to_select->getTypeId() == Card::TypeEquip;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1301,7 +1301,7 @@ MountainPackage::MountainPackage()
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
-    caiwenji->addSkill(new SPConvertSkill("guixiang", "caiwenji", "sp_caiwenji"));
+    caiwenji->addSkill(new SPConvertSkill("cv_caiwenji", "caiwenji", "sp_caiwenji"));
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();

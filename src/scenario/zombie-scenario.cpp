@@ -322,7 +322,7 @@ public:
     virtual bool viewFilter(const Card* to_select) const{
         Room *room = Sanguosha->currentRoom();
         Player::Place place = room->getCardPlace(to_select->getEffectiveId());
-        return place == Player::PlaceHand && to_select->getTypeId() == Card::Equip;
+        return place == Player::PlaceHand && to_select->getTypeId() == Card::TypeEquip;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

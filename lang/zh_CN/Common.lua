@@ -81,6 +81,7 @@ return {
 	["#Murder"] = "%to【%arg】 挂了，凶手是 %from",
 	["#Suicide"] = "%to【%arg】 自杀身亡",
 	["#InvokeSkill"] = "%from 发动技能【%arg】",
+	["#InvokeOthersSkill"] = "%from 发动了 %to 的技能【%arg】",
 	["#TriggerSkill"] = "%from 触发【%arg】",
 	["#Pindian"] = "%from 向 %to 发起了拼点",
 	["#PindianSuccess"] = "%from (对 %to) 拼点成功！\\(^o^)/",

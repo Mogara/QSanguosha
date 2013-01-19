@@ -528,7 +528,7 @@ public:
     }
 
     virtual bool viewFilter(const Card *to_select) const{
-        return to_select->getTypeId() == Card::Equip;
+        return to_select->getTypeId() == Card::TypeEquip;
     }
 
     const Card *viewAs(const Card *originalCard) const{

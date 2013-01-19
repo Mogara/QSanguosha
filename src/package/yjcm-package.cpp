@@ -169,7 +169,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->getTypeId() == Card::Trick){
+        if(damage.card && damage.card->getTypeId() == Card::TypeTrick){
             if(triggerEvent == DamageInflicted && player->hasSkill(objectName())){
                 LogMessage log;
                 log.type = "#WuyanGood";
@@ -797,7 +797,7 @@ public:
 
     virtual bool viewFilter(const Card* to_select) const{
         const Card *c = to_select;
-        return c->getTypeId() == Card::Equip || c->isKindOf("Slash");
+        return c->getTypeId() == Card::TypeEquip || c->isKindOf("Slash");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -863,7 +863,7 @@ public:
                 return false;
 
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card->isKindOf("Slash") || effect.card->getTypeId() == Card::Trick){
+            if(effect.card->isKindOf("Slash") || effect.card->getTypeId() == Card::TypeTrick){
                 LogMessage log;
                 log.type = "#ZhichiAvoid";
                 log.from = player;
@@ -976,7 +976,7 @@ public:
 
                 room->showCard(player, card->getEffectiveId());
 
-                if(card->getTypeId() != Card::Basic){
+                if(card->getTypeId() != Card::TypeBasic){
                     room->throwCard(card, player);
 
                     room->broadcastSkillInvoke(objectName());

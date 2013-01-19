@@ -171,9 +171,12 @@ QWidget *ServerDialog::createAdvancedTab(){
     free_assign_self_checkbox->setChecked(Config.FreeAssignSelf);
     free_assign_self_checkbox->setEnabled(free_assign_checkbox->isChecked());
     connect(free_assign_checkbox,SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
-
+	
     without_lordskill_checkbox = new QCheckBox(tr("Without Lordskill"));
     without_lordskill_checkbox->setChecked(Config.value("WithoutLordskill", false).toBool());
+
+    sp_convert_checkbox = new QCheckBox(tr("Enable SP Convert"));
+    sp_convert_checkbox->setChecked(Config.value("EnableSPConvert", true).toBool());
 
     maxchoice_spinbox = new QSpinBox;
     maxchoice_spinbox->setRange(3, 10);
@@ -252,7 +255,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addWidget(disable_chat_checkbox);
     layout->addLayout(HLay(free_choose_checkbox, free_assign_checkbox));
     layout->addWidget(free_assign_self_checkbox);
-    layout->addWidget(without_lordskill_checkbox);
+    layout->addLayout(HLay(without_lordskill_checkbox, sp_convert_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for lord")), lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
@@ -918,6 +921,7 @@ bool ServerDialog::config(){
     Config.setValue("FreeAssign", free_assign_checkbox->isChecked());
     Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
     Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
+    Config.setValue("EnableSPConvert", sp_convert_checkbox->isChecked());
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
     Config.setValue("LordMaxChoice", lord_maxchoice_spinbox->value());
     Config.setValue("NonLordMaxChoice", nonlord_maxchoice_spinbox->value());

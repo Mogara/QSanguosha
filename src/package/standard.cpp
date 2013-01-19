@@ -13,7 +13,7 @@ QString BasicCard::getType() const{
 }
 
 Card::CardType BasicCard::getTypeId() const{
-    return Basic;
+    return TypeBasic;
 }
 
 TrickCard::TrickCard(Suit suit, int number, bool aggressive)
@@ -35,7 +35,7 @@ QString TrickCard::getType() const{
 }
 
 Card::CardType TrickCard::getTypeId() const{
-    return Trick;
+    return TypeTrick;
 }
 
 bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
@@ -51,7 +51,7 @@ QString EquipCard::getType() const{
 }
 
 Card::CardType EquipCard::getTypeId() const{
-    return Equip;
+    return TypeEquip;
 }
 
 void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{

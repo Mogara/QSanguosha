@@ -763,7 +763,7 @@ void Player::jilei(const QString &type)
 
 bool Player::isJilei(const Card *card) const
 {
-    if(card->getTypeId() == Card::Skill) {
+    if(card->getTypeId() == Card::TypeSkill) {
         if(!card->canJilei())
             return false;
 

@@ -432,6 +432,15 @@
     <ClCompile Include="..\..\src\core\record-analysis.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\package\hegemony.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_hegemony.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_hegemony.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -700,6 +709,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\core\record-analysis.h">
       <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\hegemony.h">
+      <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

@@ -176,7 +176,7 @@ bool Card::CompareByType(const Card *a, const Card *b){
 }
 
 bool Card::isNDTrick() const{
-    return getTypeId() == Trick && !isKindOf("DelayedTrick");
+    return getTypeId() == TypeTrick && !isKindOf("DelayedTrick");
 }
 
 QString Card::getPackage() const{
@@ -487,7 +487,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
  
-    if(getTypeId() != Card::Skill){
+    if(getTypeId() != Card::TypeSkill){
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), this->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
@@ -642,7 +642,7 @@ QString SkillCard::getSubtype() const{
 }
 
 Card::CardType SkillCard::getTypeId() const{
-    return Card::Skill;
+    return Card::TypeSkill;
 }
 
 QString SkillCard::toString() const{

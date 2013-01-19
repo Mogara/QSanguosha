@@ -1,4 +1,5 @@
 #include "skill.h"
+#include "settings.h"
 #include "engine.h"
 #include "player.h"
 #include "room.h"
@@ -9,7 +10,7 @@
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-    :frequency(frequency), default_choice("no")
+    :frequency(frequency), default_choice("no"), sp_convert_skill(false), attached_lord_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -26,6 +27,14 @@ Skill::Skill(const QString &name, Frequency frequency)
 
 bool Skill::isLordSkill() const{
     return lord_skill;
+}
+
+bool Skill::isAttachedLordSkill() const{
+    return attached_lord_skill;
+}
+
+bool Skill::isSPConvertSkill() const{
+    return sp_convert_skill;
 }
 
 QString Skill::getDescription() const{
@@ -315,42 +324,42 @@ bool GameStartSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVa
     return false;
 }
 
+bool GameStartSkill::triggerable(const ServerPlayer *target) const{
+    return TriggerSkill::triggerable(target)
+           && (!sp_convert_skill || (sp_convert_skill && Config.value("EnableSPConvert", true).toBool()));
+}
+
 SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const QString &to)
-    :GameStartSkill(name), from(from), to(to)
+    : GameStartSkill(name), from(from), to(to)
 {
-    frequency = Limited;
+    sp_convert_skill = true;
 }
 
 bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL) return false;
     QString package = Sanguosha->getGeneral(to)->getPackage();
-    if(Sanguosha->getBanPackages().contains(package)) return false;
-    return GameStartSkill::triggerable(target) && target->getGeneralName() == from;
+    if (Sanguosha->getBanPackages().contains(package)) return false;
+    bool canInvoke = ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd")
+                     || ServerInfo.GameMode.endsWith("pz");
+    return GameStartSkill::triggerable(target) && target->getGeneralName() == from && canInvoke;
 }
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
-    if(player->askForSkillInvoke(objectName())){
+    QVariant data = "convert";
+    if (player->getGeneral()->hasSkill(objectName()) && player->askForSkillInvoke(objectName(), data)) {
         Room *room = player->getRoom();
 
-        // @todo: this is a dirty hack for now. If both generals have the same
-        // SP convert skill, then we are in trouble.
-        // If the skill belongs to the second general, then don't bother.
-        if (!player->getGeneral()->hasSkill(objectName()) &&
-            player->getGeneral2() != NULL &&
-            player->getGeneral2()->hasSkill(objectName()))
-        {
-            room->setPlayerProperty(player, "general2", to);
-        }
-        else
-        {
-            room->setPlayerProperty(player, "general", to);
-        }
+        LogMessage log;
+        log.type = "#Transfigure";
+        log.from = player;
+        log.arg = to;
+        room->sendLog(log);
+        room->setPlayerProperty(player, "general", to);
 
         const General *general = Sanguosha->getGeneral(to);
         const QString kingdom = general->getKingdom();
-        if(kingdom != player->getKingdom())
+        if (kingdom != player->getKingdom())
             room->setPlayerProperty(player, "kingdom", kingdom);
-
     }
 }
 
@@ -367,6 +376,31 @@ DistanceSkill::DistanceSkill(const QString &name)
 MaxCardsSkill::MaxCardsSkill(const QString &name)
     :Skill(name, Skill::Compulsory)
 {
+}
+
+FakeMoveSkill::FakeMoveSkill(const QString &name, FakeCondition condition)
+    : TriggerSkill(QString("#%1-fake-move").arg(name)), name(name), condition(condition)
+{
+    events << CardsMoveOneTime;
+}
+
+int FakeMoveSkill::getPriority() const{
+    return 10;
+}
+
+bool FakeMoveSkill::triggerable(const ServerPlayer *target) const{
+    return target != NULL;
+}
+
+bool FakeMoveSkill::trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+    QString flag = QString("%1_InTempMoving").arg(name);
+    if (condition == Global) {
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            if (p->hasFlag(flag)) return true;
+    } else if (condition == SourceOnly) {
+        if (player->hasFlag(flag)) return true;
+    }
+    return false;
 }
 
 WeaponSkill::WeaponSkill(const QString &name)

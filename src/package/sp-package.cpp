@@ -942,6 +942,7 @@ SPPackage::SPPackage()
     General *yuanshu = new General(this, "yuanshu", "qun");
     yuanshu->addSkill(new Yongsi);
     yuanshu->addSkill(new Weidi);
+    yuanshu->addSkill(new SPConvertSkill("cv_yuanshu", "yuanshu", "tw_yuanshu"));
 
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
     sp_sunshangxiang->addSkill("jieyin");
@@ -997,6 +998,30 @@ SPPackage::SPPackage()
     General *chenlin = new General(this, "chenlin", "wei", 3);
     chenlin->addSkill(new Bifa);
     chenlin->addSkill(new Songci);
+
+    General *tw_diaochan = new General(this, "tw_diaochan", "qun", 3, false, true);
+    tw_diaochan->addSkill("lijian");
+    tw_diaochan->addSkill("biyue");
+
+    General *tw_yuanshu = new General(this, "tw_yuanshu", "qun", 4, true, true);
+    tw_yuanshu->addSkill("yongsi");
+    tw_yuanshu->addSkill("weidi");
+
+    General *tw_zhaoyun = new General(this, "tw_zhaoyun", "shu", 4, true, true);
+    tw_zhaoyun->addSkill("longdan");
+
+    General *tw_daqiao = new General(this, "tw_daqiao", "wu", 3, false, true);
+    tw_daqiao->addSkill("guose");
+    tw_daqiao->addSkill("liuli");
+
+    General *wz_daqiao = new General(this, "wz_daqiao", "wu", 3, false, true);
+    wz_daqiao->addSkill("guose");
+    wz_daqiao->addSkill("liuli");
+
+    General *wz_xiaoqiao = new General(this, "wz_xiaoqiao", "wu", 3, false, true);
+    wz_xiaoqiao->addSkill("tianxiang");
+    wz_xiaoqiao->addSkill("#tianxiang");
+    wz_xiaoqiao->addSkill("hongyan");
     
     addMetaObject<WeidiCard>();
     addMetaObject<YuanhuCard>();

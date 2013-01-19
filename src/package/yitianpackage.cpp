@@ -1171,7 +1171,7 @@ void LexueCard::onEffect(const CardEffectStruct &effect) const{
     int card_id = card->getEffectiveId();
     room->showCard(effect.to, card_id);
 
-    if(card->getTypeId() == Card::Basic || card->isNDTrick()){
+    if(card->getTypeId() == Card::TypeBasic || card->isNDTrick()){
         room->setPlayerMark(effect.from, "lexue", card_id);
         room->setPlayerFlag(effect.from, "lexue");
     }else{
@@ -1187,7 +1187,7 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
-        if(card->getTypeId() == Card::Basic)
+        if(card->getTypeId() == Card::TypeBasic)
             return 2;
         else
             return 3;

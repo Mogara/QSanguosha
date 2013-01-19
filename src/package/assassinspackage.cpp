@@ -563,7 +563,7 @@ public:
             return false;
 
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->getTypeId() == Card::Skill || use.from == splayer || !use.to.contains(splayer))
+        if(use.card->getTypeId() == Card::TypeSkill || use.from == splayer || !use.to.contains(splayer))
             return false;
         
         if(player == splayer && player->askForSkillInvoke(objectName())) {
@@ -741,6 +741,15 @@ public:
 };
 
 AssassinsPackage::AssassinsPackage():Package("assassins"){
+	General *ass_caocao = new General(this, "ass_caocao$", "wei", 4, true, true);
+	ass_caocao->addSkill("jianxiong");
+	ass_caocao->addSkill("hujia");
+
+	General *ass_caopi = new General(this, "ass_caopi$", "wei", 3, true, true);
+	ass_caopi->addSkill("xingshang");
+	ass_caopi->addSkill("fangzhu");
+	ass_caopi->addSkill("songwei");
+
     General *fuhuanghou = new General(this, "fuhuanghou", "qun", 3, false);
     fuhuanghou->addSkill(new Mixin);
     fuhuanghou->addSkill(new Cangni);

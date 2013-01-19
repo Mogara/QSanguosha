@@ -93,6 +93,7 @@ private:
     QCheckBox *free_assign_checkbox;
     QCheckBox *free_assign_self_checkbox;
     QCheckBox *without_lordskill_checkbox;
+    QCheckBox *sp_convert_checkbox;
     QSpinBox *maxchoice_spinbox;
     QSpinBox *lord_maxchoice_spinbox;
     QSpinBox *nonlord_maxchoice_spinbox;

@@ -76,7 +76,7 @@ public:
         if(effect.to == effect.from)
             return false;
 
-        if(effect.card->getTypeId() == Card::Trick){
+        if(effect.card->getTypeId() == Card::TypeTrick){
 
             if((effect.from && effect.from->hasSkill(objectName()))){
                 LogMessage log;
