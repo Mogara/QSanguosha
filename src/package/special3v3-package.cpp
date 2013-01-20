@@ -167,12 +167,8 @@ public:
         QString prompt = prompt_list.join(":");
 
         player->tag["Judge"] = data;
-        bool force = !(ServerInfo.GameMode == "06_3v3" || player == judge->who);
-        QString pattern = force ? "@huanshi!" : "@huanshi";
+        QString pattern = "@huanshi";
         const Card *card = room->askForCard(player, pattern, prompt, data, AskForRetrial);
-
-        if(force && card == NULL)
-            card = player->getCards("he").at(qrand() % player->getCardCount(true));
 
         if (card != NULL){
             room->broadcastSkillInvoke(objectName());
