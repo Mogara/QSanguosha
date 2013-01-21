@@ -53,9 +53,9 @@ public:
         int recover = recover_struct.recover;
         for (int i = 0; i < recover; i++) {
             if (room->askForSkillInvoke(player, objectName())) {
-                room->broadcastSkillInvoke(objectName());
                 QList<ServerPlayer *> targets = room->getOtherPlayers(player);
                 ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
+                room->broadcastSkillInvoke(objectName(), target->getGeneralName().contains("liubei") ? 2 : 1);
                 target->drawCards(1);
             } else
                 break;
@@ -81,7 +81,7 @@ public:
         //==================================
         if (room->askForSkillInvoke(ganfuren,objectName())) {
             int handcard_num = ganfuren->getHandcardNum();
-            room->broadcastSkillInvoke(objectName(), handcard_num >= ganfuren->getHp() ? 1 : 2);
+            room->broadcastSkillInvoke(objectName());
             ganfuren->throwAllHandCards();
             if (handcard_num >= ganfuren->getHp()) {
                 RecoverStruct recover;
