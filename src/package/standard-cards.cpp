@@ -76,6 +76,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->broadcastSkillInvoke("shenji");
     else if (card_use.to.size() > 1 && player->hasSkill("lihuo") && getSkillName() != "lihuo")
         room->broadcastSkillInvoke("lihuo", 1);
+    else if (card_use.to.size() > 1 && player->hasSkill("duanbing"))
+        room->broadcastSkillInvoke("duanbing");
 
     if (isVirtualCard() && getSkillName() == "Spear")
         room->setEmotion(player,"weapon/spear");
@@ -197,6 +199,22 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
             }
             if(!canSelect) return false;
         }
+    }
+
+    if (targets.length() >= slash_targets) {
+        if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {
+            bool hasExtraTarget = false;
+            foreach (const Player *p, targets)
+                if (Self->distanceTo(p) == 1) {
+                    hasExtraTarget = true;
+                    break;
+                }
+            if (hasExtraTarget)
+                return Self->canSlash(to_select, this, distance_limit, rangefix);
+            else
+                return Self->canSlash(to_select, this, false) && Self->distanceTo(to_select) == 1;
+        } else
+            return false;
     }
 
     return Self->canSlash(to_select, this, distance_limit, rangefix);

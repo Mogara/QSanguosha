@@ -30,7 +30,7 @@ public:
 
 class SPConvertSkill: public GameStartSkill{
 public:
-    SPConvertSkill(const QString &name, const QString &from, const QString &to);
+    SPConvertSkill(const QString &from, const QString &to);
 
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual void onGameStart(ServerPlayer *player) const;

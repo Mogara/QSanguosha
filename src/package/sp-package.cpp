@@ -942,7 +942,7 @@ SPPackage::SPPackage()
     General *yuanshu = new General(this, "yuanshu", "qun");
     yuanshu->addSkill(new Yongsi);
     yuanshu->addSkill(new Weidi);
-    yuanshu->addSkill(new SPConvertSkill("cv_yuanshu", "yuanshu", "tw_yuanshu"));
+    yuanshu->addSkill(new SPConvertSkill("yuanshu", "tw_yuanshu"));
 
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
     sp_sunshangxiang->addSkill("jieyin");
@@ -1031,3 +1031,13 @@ SPPackage::SPPackage()
 }
 
 ADD_PACKAGE(SP)
+
+HegemonySPPackage::HegemonySPPackage()
+    : Package("hegemony_sp")
+{
+    General *sp_heg_zhouyu = new General(this, "sp_heg_zhouyu", "wu", 3, true, true);
+    sp_heg_zhouyu->addSkill("yingzi");
+    sp_heg_zhouyu->addSkill("fanjian");
+}
+
+ADD_PACKAGE(HegemonySP)

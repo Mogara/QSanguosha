@@ -254,8 +254,8 @@ public:
             room->broadcastSkillInvoke(objectName());
 
             QList<const Skill *> skills = damage->from->getVisibleSkillList();
-            foreach(const Skill *skill, skills){
-                if(skill->getLocation() == Skill::Right)
+            foreach (const Skill *skill, skills ){
+                if (skill->getLocation() == Skill::Right && !skill->inherits("SPConvertSkill") && !skill->isAttachedLordSkill())
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
             damage->from->gainMark("@duanchang");
@@ -1101,8 +1101,9 @@ public:
             foreach(QString general_name, huashen_generals){
                 const General* general = Sanguosha->getGeneral(general_name);
                 foreach(const Skill *skill, general->getVisibleSkillList()){
-                    if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
-                            || skill->getFrequency() == Skill::Wake)
+                    if (skill->isLordSkill() || skill->inherits("SPConvertSkill")
+                        || skill->getFrequency() == Skill::Limited
+                        || skill->getFrequency() == Skill::Wake)
                         continue;
 
                     if(!skill_names.contains(skill->objectName())){
@@ -1122,8 +1123,9 @@ public:
             general = Sanguosha->getGeneral(general_name);
 
             foreach(const Skill *skill, general->getVisibleSkillList()){
-                if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
-                   || skill->getFrequency() == Skill::Wake)
+                if (skill->isLordSkill() || skill->inherits("SPConvertSkill")
+                    || skill->getFrequency() == Skill::Limited
+                    || skill->getFrequency() == Skill::Wake)
                     continue;
 
                 skill_names << skill->objectName();
@@ -1301,7 +1303,7 @@ MountainPackage::MountainPackage()
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
-    caiwenji->addSkill(new SPConvertSkill("cv_caiwenji", "caiwenji", "sp_caiwenji"));
+    caiwenji->addSkill(new SPConvertSkill("caiwenji", "sp_caiwenji"));
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();

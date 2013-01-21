@@ -296,13 +296,26 @@ QWidget *ServerDialog::createAITab(){
     ai_delay_spinbox = new QSpinBox;
     ai_delay_spinbox->setMinimum(0);
     ai_delay_spinbox->setMaximum(5000);
-    ai_delay_spinbox->setValue(Config.AIDelay);
+    ai_delay_spinbox->setValue(Config.OriginAIDelay);
     ai_delay_spinbox->setSuffix(tr(" millisecond"));
+
+    ai_delay_altered_checkbox = new QCheckBox(tr("Alter AI Delay After Death"));
+    ai_delay_altered_checkbox->setChecked(Config.AlterAIDelayAD);
+
+    ai_delay_ad_spinbox = new QSpinBox;
+    ai_delay_ad_spinbox->setMinimum(0);
+    ai_delay_ad_spinbox->setMaximum(5000);
+    ai_delay_ad_spinbox->setValue(Config.AIDelayAD);
+    ai_delay_ad_spinbox->setSuffix(tr(" millisecond"));
+    ai_delay_ad_spinbox->setEnabled(ai_delay_altered_checkbox->isChecked());
+    connect(ai_delay_altered_checkbox,SIGNAL(toggled(bool)),ai_delay_ad_spinbox, SLOT(setEnabled(bool)));
 
     layout->addWidget(ai_enable_checkbox);
     layout->addWidget(role_predictable_checkbox);
     layout->addWidget(ai_chat_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
+    layout->addWidget(ai_delay_altered_checkbox);
+    layout->addLayout(HLay(new QLabel(tr("AI delay After Death")), ai_delay_ad_spinbox));
     layout->addStretch();
 
     QWidget *widget = new QWidget;
@@ -896,7 +909,10 @@ bool ServerDialog::config(){
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
     Config.EnableAI = ai_enable_checkbox->isChecked();
-    Config.AIDelay = ai_delay_spinbox->value();
+    Config.OriginAIDelay = ai_delay_spinbox->value();
+    Config.AIDelay = Config.OriginAIDelay;
+    Config.AIDelayAD = ai_delay_ad_spinbox->value();
+    Config.AlterAIDelayAD = ai_delay_altered_checkbox->isChecked();
     Config.ServerPort = port_edit->text().toInt();
 
     // game mode
@@ -937,7 +953,9 @@ bool ServerDialog::config(){
     Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());
     Config.setValue("AIChat", ai_chat_checkbox->isChecked());
-    Config.setValue("AIDelay", Config.AIDelay);
+    Config.setValue("OriginAIDelay", Config.OriginAIDelay);
+    Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
+    Config.setValue("AIDelayAD", Config.AIDelayAD);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);
     Config.setValue("Address", Config.Address);

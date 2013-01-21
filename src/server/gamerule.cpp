@@ -597,6 +597,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 }
 
 void GameRule::changeGeneral1v1(ServerPlayer *player) const{
+    Config.AIDelay = Config.OriginAIDelay;
+
     Room *room = player->getRoom();
     QString new_general = player->tag["1v1ChangeGeneral"].toString();
     player->tag.remove("1v1ChangeGeneral");
@@ -918,12 +920,18 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     {
         room->changeHero(player, general_name, false, false, false, false);
         foreach(QString skill_name, skill_mark.keys()){
-            if(player->hasSkill(skill_name))
+            if (player->hasSkill(skill_name, true))
                 room->setPlayerMark(player, skill_mark[skill_name], 1);
         }
     }
     else
+	{
         room->changeHero(player, general_name, false, false, true, false);
+        foreach (QString skill_name, skill_mark.keys()) {
+            if (player->hasSkill(skill_name, true))
+                room->setPlayerMark(player, skill_mark[skill_name], 1);
+        }
+	}
 
     room->getThread()->addPlayerSkills(player);
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());

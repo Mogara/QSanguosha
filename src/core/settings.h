@@ -44,6 +44,9 @@ public:
     QString Address;
     bool EnableAI;
     int AIDelay;
+    int OriginAIDelay;
+    bool AlterAIDelayAD;
+    int AIDelayAD;
     ushort ServerPort;
 
     // client side

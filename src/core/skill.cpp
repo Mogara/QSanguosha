@@ -10,7 +10,7 @@
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-    :frequency(frequency), default_choice("no"), sp_convert_skill(false), attached_lord_skill(false)
+    :frequency(frequency), default_choice("no"), attached_lord_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -31,10 +31,6 @@ bool Skill::isLordSkill() const{
 
 bool Skill::isAttachedLordSkill() const{
     return attached_lord_skill;
-}
-
-bool Skill::isSPConvertSkill() const{
-    return sp_convert_skill;
 }
 
 QString Skill::getDescription() const{
@@ -66,7 +62,7 @@ QString Skill::getText() const{
 }
 
 bool Skill::isVisible() const{
-    return ! objectName().startsWith("#");
+    return !objectName().startsWith("#");
 }
 
 QString Skill::getDefaultChoice(ServerPlayer *) const{
@@ -325,38 +321,54 @@ bool GameStartSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVa
 }
 
 bool GameStartSkill::triggerable(const ServerPlayer *target) const{
-    return TriggerSkill::triggerable(target)
-           && (!sp_convert_skill || (sp_convert_skill && Config.value("EnableSPConvert", true).toBool()));
+    return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
-SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const QString &to)
-    : GameStartSkill(name), from(from), to(to)
+SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)
+    : GameStartSkill(QString("cv_%1").arg(from)), from(from), to(to)
 {
-    sp_convert_skill = true;
+    to_list = to.split("+");
 }
 
 bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL) return false;
-    QString package = Sanguosha->getGeneral(to)->getPackage();
-    if (Sanguosha->getBanPackages().contains(package)) return false;
+    if (!Config.value("EnableSPConvert", true).toBool()) return false;
     bool canInvoke = ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd")
                      || ServerInfo.GameMode.endsWith("pz");
-    return GameStartSkill::triggerable(target) && target->getGeneralName() == from && canInvoke;
+    if (!canInvoke) return false;
+    bool available = false;
+    foreach (QString to_gen, to_list) {
+        const General *gen = Sanguosha->getGeneral(to_gen);
+        if (gen && !Config.value("Ban/Roles", "").toStringList().contains(to_gen)
+            && !Sanguosha->getBanPackages().contains(gen->getPackage())) {
+            available = true;
+            break;
+        }
+    }
+    return GameStartSkill::triggerable(target) && target->getGeneralName() == from && available && canInvoke;
 }
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
     QVariant data = "convert";
-    if (player->getGeneral()->hasSkill(objectName()) && player->askForSkillInvoke(objectName(), data)) {
+    if (player->askForSkillInvoke(objectName(), data)) {
         Room *room = player->getRoom();
+        QStringList choicelist;
+        foreach (QString to_gen, to_list) {
+            const General *gen = Sanguosha->getGeneral(to_gen);
+            if (gen && !Config.value("Ban/Roles", "").toStringList().contains(to_gen)
+                    && !Sanguosha->getBanPackages().contains(gen->getPackage()))
+                choicelist << to_gen;
+        }
+        QString to_cv = room->askForChoice(player, objectName(), choicelist.join("+"));
 
         LogMessage log;
         log.type = "#Transfigure";
         log.from = player;
-        log.arg = to;
+        log.arg = to_cv;
         room->sendLog(log);
-        room->setPlayerProperty(player, "general", to);
+        room->setPlayerProperty(player, "general", to_cv);
 
-        const General *general = Sanguosha->getGeneral(to);
+        const General *general = Sanguosha->getGeneral(to_cv);
         const QString kingdom = general->getKingdom();
         if (kingdom != player->getKingdom())
             room->setPlayerProperty(player, "kingdom", kingdom);

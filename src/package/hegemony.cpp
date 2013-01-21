@@ -678,7 +678,7 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     QStringList skill_list;
     foreach (const Skill *skill, effect.to->getVisibleSkillList()) {
-        if (!skill_list.contains(skill->objectName()) && !skill->isSPConvertSkill() && !skill->isAttachedLordSkill()) {
+        if (!skill_list.contains(skill->objectName()) && !skill->inherits("SPConvertSkill") && !skill->isAttachedLordSkill()) {
             skill_list << skill->objectName();
         }
     }

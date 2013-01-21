@@ -290,9 +290,14 @@ bool Player::isLord() const{
     return getRole() == "lord";
 }
 
-bool Player::hasSkill(const QString &skill_name) const{
+bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
+    if (!include_lose) {
+        if ((!Sanguosha->getSkill(skill_name)->inherits("WeaponSkill") && !Sanguosha->getSkill(skill_name)->inherits("ArmorSkill"))
+			&& ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2) || getMark("Qingcheng" + skill_name) > 0))
+            return false;
+    }
     return skills.contains(skill_name)
-            || acquired_skills.contains(skill_name);
+           || acquired_skills.contains(skill_name);
 }
 
 bool Player::hasInnateSkill(const QString &skill_name) const{
@@ -306,6 +311,11 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
 }
 
 bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
+    if (!include_lose) {
+        if ((!Sanguosha->getSkill(skill_name)->inherits("WeaponSkill") && !Sanguosha->getSkill(skill_name)->inherits("ArmorSkill"))
+			&& ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2) || getMark("Qingcheng" + skill_name) > 0))
+            return false;
+    }
     if(acquired_skills.contains(skill_name))
         return true;
 

@@ -1062,35 +1062,6 @@ public:
     }
 };
 
-class CVDaqiao: public GameStartSkill {
-public:
-    CVDaqiao(): GameStartSkill("cv_daqiao") {
-        default_choice = "wz_daqiao";
-        sp_convert_skill = true;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        if (Sanguosha->getBanPackages().contains("sp")) return false;
-        bool canInvoke = ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd")
-                         || ServerInfo.GameMode.endsWith("pz");
-        return GameStartSkill::triggerable(target) && target->getGeneralName() == "daqiao" && canInvoke;
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        if (player->getGeneral()->hasSkill(objectName()) && player->askForSkillInvoke(objectName(), "convert")) {
-            Room *room = player->getRoom();
-            QString choice = room->askForChoice(player, objectName(), "wz_daqiao+tw_daqiao");
-
-            LogMessage log;
-            log.type = "#Transfigure";
-            log.from = player;
-            log.arg = choice;
-            room->sendLog(log);
-            room->setPlayerProperty(player, "general", choice);
-        }
-    }
-};
-
 class Jieyin: public ViewAsSkill{
 public:
     Jieyin():ViewAsSkill("jieyin"){
@@ -1237,76 +1208,6 @@ public:
     }
 };
 
-class CVDiaochan: public GameStartSkill {
-public:
-    CVDiaochan(): GameStartSkill("cv_diaochan") {
-        default_choice = "sp_diaochan";
-        sp_convert_skill = true;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        if (Sanguosha->getBanPackages().contains("sp") && Sanguosha->getBanPackages().contains("hegemony"))
-            return false;
-        bool canInvoke = ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd")
-                         || ServerInfo.GameMode.endsWith("pz");
-        return GameStartSkill::triggerable(target) && target->getGeneralName() == "diaochan" && canInvoke;
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        if (player->getGeneral()->hasSkill(objectName()) && player->askForSkillInvoke(objectName(), "convert")) {
-            Room *room = player->getRoom();
-            QStringList choicelist;
-            if (!Sanguosha->getBanPackages().contains("sp"))
-                choicelist << "sp_diaochan" << "tw_diaochan";
-            if (!Sanguosha->getBanPackages().contains("hegemony"))
-                choicelist << "heg_diaochan";
-            QString choice = room->askForChoice(player, objectName(), choicelist.join("+"));
-
-            LogMessage log;
-            log.type = "#Transfigure";
-            log.from = player;
-            log.arg = choice;
-            room->sendLog(log);
-            room->setPlayerProperty(player, "general", choice);
-        }
-    }
-};
-
-class CVZhouyu: public GameStartSkill {
-public:
-    CVZhouyu(): GameStartSkill("cv_zhouyu") {
-        default_choice = "heg_zhouyu";
-        sp_convert_skill = true;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        if (Sanguosha->getBanPackages().contains("hegemony") && Sanguosha->getBanPackages().contains("hegemony_sp"))
-            return false;
-        bool canInvoke = ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd")
-                         || ServerInfo.GameMode.endsWith("pz");
-        return GameStartSkill::triggerable(target) && target->getGeneralName() == "zhouyu" && canInvoke;
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        if (player->getGeneral()->hasSkill(objectName()) && player->askForSkillInvoke(objectName(), "convert")) {
-            Room *room = player->getRoom();
-            QStringList choicelist;
-            if (!Sanguosha->getBanPackages().contains("hegemony"))
-                choicelist << "heg_zhouyu";
-            if (!Sanguosha->getBanPackages().contains("hegemony_sp"))
-                choicelist << "sp_heg_zhouyu";
-            QString choice = room->askForChoice(player, objectName(), choicelist.join("+"));
-
-            LogMessage log;
-            log.type = "#Transfigure";
-            log.from = player;
-            log.arg = choice;
-            room->sendLog(log);
-            room->setPlayerProperty(player, "general", choice);
-        }
-    }
-};
-
 class Qingnang: public OneCardViewAsSkill{
 public:
     Qingnang():OneCardViewAsSkill("qingnang"){
@@ -1386,7 +1287,7 @@ void StandardPackage::addGenerals(){
     caocao = new General(this, "caocao$", "wei");
     caocao->addSkill(new Jianxiong);
     caocao->addSkill(new Hujia);
-    caocao->addSkill(new SPConvertSkill("cv_caocao", "caocao", "ass_caocao"));
+    caocao->addSkill(new SPConvertSkill("caocao", "ass_caocao"));
 
     simayi = new General(this, "simayi", "wei", 3);
     simayi->addSkill(new Fankui);
@@ -1410,7 +1311,7 @@ void StandardPackage::addGenerals(){
     zhenji = new General(this, "zhenji", "wei", 3, false);
     zhenji->addSkill(new Luoshen);
     zhenji->addSkill(new Qingguo);
-    zhenji->addSkill(new SPConvertSkill("cv_zhenji", "zhenji", "heg_zhenji"));
+    zhenji->addSkill(new SPConvertSkill("zhenji", "heg_zhenji"));
 
     General *liubei, *guanyu, *zhangfei, *zhaoyun, *machao, *zhugeliang, *huangyueying;
     liubei = new General(this, "liubei$", "shu");
@@ -1428,21 +1329,21 @@ void StandardPackage::addGenerals(){
     zhugeliang->addSkill(new Kongcheng);
     zhugeliang->addSkill(new KongchengEffect);
     related_skills.insertMulti("kongcheng", "#kongcheng-effect");
-	zhugeliang->addSkill(new SPConvertSkill("cv_zhugeliang", "zhugeliang", "heg_zhugeliang"));
+	zhugeliang->addSkill(new SPConvertSkill("zhugeliang", "heg_zhugeliang"));
 
     zhaoyun = new General(this, "zhaoyun", "shu");
     zhaoyun->addSkill(new Longdan);
-    zhaoyun->addSkill(new SPConvertSkill("cv_zhaoyun", "zhaoyun", "tw_zhaoyun"));
+    zhaoyun->addSkill(new SPConvertSkill("zhaoyun", "tw_zhaoyun"));
 
     machao = new General(this, "machao", "shu");
     machao->addSkill(new Tieji);
     machao->addSkill(new Mashu);
-    machao->addSkill(new SPConvertSkill("cv_machao", "machao", "sp_machao"));
+    machao->addSkill(new SPConvertSkill("machao", "sp_machao"));
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
     huangyueying->addSkill(new Skill("qicai", Skill::Compulsory));
-    huangyueying->addSkill(new SPConvertSkill("cv_huangyueying", "huangyueying", "heg_huangyueying"));
+    huangyueying->addSkill(new SPConvertSkill("huangyueying", "heg_huangyueying"));
 
     General *sunquan, *zhouyu, *lvmeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
@@ -1461,19 +1362,19 @@ void StandardPackage::addGenerals(){
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);
     zhouyu->addSkill(new Fanjian);
-    zhouyu->addSkill(new CVZhouyu);
+    zhouyu->addSkill(new SPConvertSkill("zhouyu", "heg_zhouyu+sp_heg_zhouyu"));
 
     daqiao = new General(this, "daqiao", "wu", 3, false);
     daqiao->addSkill(new Guose);
     daqiao->addSkill(new Liuli);
-    daqiao->addSkill(new CVDaqiao);
+    daqiao->addSkill(new SPConvertSkill("daqiao", "wz_daqiao+tw_daqiao"));
 
     luxun = new General(this, "luxun", "wu", 3);
     luxun->addSkill(new Qianxun);
     luxun->addSkill(new Lianying);
 
     sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false);
-    sunshangxiang->addSkill(new SPConvertSkill("cv_sunshangxiang", "sunshangxiang", "sp_sunshangxiang"));
+    sunshangxiang->addSkill(new SPConvertSkill("sunshangxiang", "sp_sunshangxiang"));
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
 
@@ -1485,12 +1386,12 @@ void StandardPackage::addGenerals(){
 
     lvbu = new General(this, "lvbu", "qun");
     lvbu->addSkill(new Wushuang);
-    lvbu->addSkill(new SPConvertSkill("cv_lvbu", "lvbu", "heg_lvbu"));
+    lvbu->addSkill(new SPConvertSkill("lvbu", "heg_lvbu"));
 
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
-    diaochan->addSkill(new CVDiaochan);
+    diaochan->addSkill(new SPConvertSkill("diaochan", "sp_diaochan+tw_diaochan+heg_diaochan"));
 
     new General(this, "anjiang", "god", 4,true, true, true);
 

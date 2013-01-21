@@ -49,17 +49,17 @@ return {
 	["sp_diaochan"] = "SP貂蝉",
 	["&sp_diaochan"] = "貂蝉",
 	["illustrator:sp_diaochan"] = "巴萨小马",
-	["tuoqiao"] = "脱壳",
-	[":tuoqiao"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP貂蝉",
-	["SP-Diaochan"] = "SP貂蝉",
+	["cv_diaochan:convert"] = "你可以替换为SP貂蝉或台版貂蝉或国战貂蝉",
+	["cv_diaochan"] = "SP替换",
+	["cv_diaochan:sp_diaochan"] = "SP",
+	["cv_diaochan:tw_diaochan"] = "台湾版SP",
+	["cv_diaochan:heg_diaochan"] = "国战版",
 
 	["#sp_sunshangxiang"] = "梦醉良缘",
 	["sp_sunshangxiang"] = "SP孙尚香",
 	["&sp_sunshangxiang"] = "孙尚香",
 	["illustrator:sp_sunshangxiang"] = "木美人",
-	["chujia"] = "出嫁",
-	[":chujia"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
-	["cv:sp_sunshangxiang"] = "官方，背碗卤粉",
+	["cv_sunshangxiang:convert"] = "你可以替换为蜀势力SP孙尚香",
 
 	["#sp_guanyu"] = "汉寿亭侯",
 	["sp_guanyu"] = "SP关羽",
@@ -75,32 +75,28 @@ return {
 	["sp_caiwenji"] = "SP蔡文姬",
 	["&sp_caiwenji"] = "蔡文姬",
 	["illustrator:sp_caiwenji"] = "木美人",
-	["guixiang"] = "归乡",
-	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
+	["cv_caiwenji:convert"] = "你可以替换为魏势力SP蔡文姬",
 	["cv:sp_caiwenji"] = "呼呼",
 	
 	["#sp_jiaxu"] = "算无遗策",
 	["sp_jiaxu"] = "SP贾诩",
 	["&sp_jiaxu"] = "贾诩",
 	["illustrator:sp_jiaxu"] = "雪君S",
-	["guiwei"] = "归魏",
-	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
+	["cv_jiaxu:convert"] = "你可以替换为魏势力SP贾诩",
 	["cv:sp_jiaxu"] = "落凤一箭",
 	
 	["#sp_pangde"] = "枱榇之悟",
 	["sp_pangde"] = "SP庞德",
 	["&sp_pangde"] = "庞德",
 	["illustrator:sp_pangde"] = "天空之城",
-	["pangde_guiwei"] = "归魏",
-	[":pangde_guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP庞德，势力为魏",
+	["cv_pangde:convert"] = "你可以替换为魏势力SP庞德",
 	["cv:sp_pangde"] = "Glory",
 
 	["#sp_machao"] = "西凉的猛狮",
 	["sp_machao"] = "SP马超",
 	["&sp_machao"] = "马超",
 	["illustrator:sp_machao"] = "天空之城",
-	["fanqun"] = "返群",
-	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
+	["cv_machao:convert"] = "你可以替换为群雄势力SP马超",
 
 	["#caohong"] = "福将",
 	["caohong"] = "曹洪",
@@ -112,7 +108,7 @@ return {
 武器牌：弃置与该角色距离为1的一名角色区域中的一张牌；\
 防具牌：该角色摸一张牌；\
 坐骑牌：该角色回复一点体力。",
-	["@yuanhu-equip"] = "请使用技能【援护】",
+	["@yuanhu-equip"] = "你可以发动“援护”",
 	["~yuanhu"] = "选择一张装备牌→选择一名角色→点击确定",
 	["$yuanhu1"] = "持吾兵戈，随我杀敌！", --武器
 	["$yuanhu2"] = "汝今势微，吾当助汝。", --防具
@@ -148,7 +144,7 @@ return {
 	[":bifa"] = "回合结束阶段开始时，你可以将一张手牌背面朝下移出游戏并选择一名其他角色。该角色的回合开始时，其观看此牌并选择一项：1、交给你一张与此牌同类别的手牌，然后获得此牌。2、将此牌置入弃牌堆，然后失去1点体力。\
 ◆在目标角色执行【笔伐】的效果前，你不可以再次对其发动【笔伐】。\
 ◆目标角色在执行【笔伐】的效果前死亡，在弃置其区域里所有的牌的同时将此牌置入弃牌堆。",
-	["@bifa-remove"] = "你可以发动【笔伐】",
+	["@bifa-remove"] = "你可以发动“笔伐”",
 	["~bifa"] = "选择一张手牌→选择一名其他角色→点击确定",
 	["@bifa-give"] = "请交给目标角色一张类型相同的手牌",
 	["songci"] = "颂词",
@@ -161,6 +157,44 @@ return {
 	["$songci2"] = "汝众违旅叛，当有此报！",             --discardCards
 	--["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
 	
+	["#tw_diaochan"] = "绝世的舞姬",
+	["tw_diaochan"] = "台版貂蝉",
+	["&tw_diaochan"] = "貂蝉",
+	["illustrator:tw_diaochan"] = "陳俊佐",
+	
+	["#tw_yuanshu"] = "仲家帝",
+	["tw_yuanshu"] = "台版袁术",
+	["&tw_yuanshu"] = "袁术", 
+	["illustrator:tw_yuanshu"] = "湯翔麟",
+	
+	["#tw_zhaoyun"] = "少年将军",
+	["tw_zhaoyun"] = "台版赵云",
+	["&tw_zhaoyun"] = "赵云", 
+	["illustrator:tw_zhaoyun"] = "湯翔麟",
+	["cv_zhaoyun:convert"] = "你可以替换为台版赵云",
+	
+	["#tw_daqiao"] = "矜持之花",
+	["tw_daqiao"] = "台版大乔",
+	["&tw_daqiao"] = "大乔", 
+	["illustrator:tw_daqiao"] = "玄兔",
+	["cv_daqiao:convert"] = "你可以替换为王战大乔或台版大乔",
+	["cv_daqiao"] = "SP替换",
+	["cv_daqiao:wz_daqiao"] = "王战版",
+	["cv_daqiao:tw_daqiao"] = "台湾版",
+	
+	["#wz_daqiao"] = "矜持之花",
+	["wz_daqiao"] = "王战大乔",
+	["&wz_daqiao"] = "大乔", 
+	["illustrator:wz_daqiao"] = "Natsu",
+	
+	["#wz_xiaoqiao"] = "矫情之花",
+	["wz_xiaoqiao"] = "王战小乔",
+	["&wz_xiaoqiao"] = "小乔", 
+	["illustrator:wz_xiaoqiao"] = "Natsu",
+	["cv_xiaoqiao:convert"] = "你可以替换为王战小乔或国战小乔",
+	["cv_xiaoqiao"] = "SP替换",
+	["cv_xiaoqiao:wz_xiaoqiao"] = "王战版",
+	["cv_xiaoqiao:heg_xiaoqiao"] = "国战版",
 --hulao mode
 	["Hulaopass"] = "虎牢关模式",
 
@@ -199,8 +233,15 @@ return {
 --sp_card
 	["sp_cards"] = "SP卡牌包",
 	["SPMoonSpear"] = "SP银月枪",
-	[":SPMoonSpear"] = "装备牌·武器\
-攻击范围：３\
-武器特效：你的回合外，每当你使用或打出一张黑色手牌时，你可以令你攻击范围内的一名其他角色打出一张【闪】，否则受到你对其造成的1点伤害",
-	["@moon-spear-jink"] = "受到SP银月枪技能的影响，你必须打出一张【闪】",
+--hegemony_sp
+	["hegemony_sp"] = "国战SP",
+	
+	["#sp_heg_zhouyu"] = "大都督",
+	["sp_heg_zhouyu"] = "国战SP周瑜",
+	["&sp_heg_zhouyu"] = "周瑜",
+	["illustrator:sp_heg_zhouyu"] = "牧童的短笛",
+	["cv_zhouyu:convert"] = "你可以替换为国战周瑜或台国战SP周瑜",
+	["cv_zhouyu"] = "SP替换",
+	["cv_zhouyu:heg_zhouyu"] = "国战版",
+	["cv_zhouyu:sp_heg_zhouyu"] = "国战SP版",
 }

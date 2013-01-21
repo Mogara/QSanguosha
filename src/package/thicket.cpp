@@ -972,41 +972,6 @@ public:
     }
 };
 
-class CVCaopi: public GameStartSkill {
-public:
-    CVCaopi(): GameStartSkill("cv_caopi") {
-        default_choice = "heg_caopi";
-        sp_convert_skill = true;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        if (Sanguosha->getBanPackages().contains("hegemony") && Sanguosha->getBanPackages().contains("assassins"))
-            return false;
-        bool canInvoke = ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd")
-                         || ServerInfo.GameMode.endsWith("pz");
-        return GameStartSkill::triggerable(target) && target->getGeneralName() == "caopi" && canInvoke;
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        if (player->getGeneral()->hasSkill(objectName()) && player->askForSkillInvoke(objectName(), "convert")) {
-            Room *room = player->getRoom();
-            QStringList choicelist;
-            if (!Sanguosha->getBanPackages().contains("hegemony"))
-                choicelist << "heg_caopi";
-            if (!Sanguosha->getBanPackages().contains("assassins"))
-                choicelist << "ass_caopi";
-            QString choice = room->askForChoice(player, objectName(), choicelist.join("+"));
-
-            LogMessage log;
-            log.type = "#Transfigure";
-            log.from = player;
-            log.arg = choice;
-            room->sendLog(log);
-            room->setPlayerProperty(player, "general", choice);
-        }
-    }
-};
-
 ThicketPackage::ThicketPackage()
     :Package("thicket")
 {
@@ -1019,7 +984,7 @@ ThicketPackage::ThicketPackage()
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     caopi->addSkill(new Songwei);
-    caopi->addSkill(new CVCaopi);
+    caopi->addSkill(new SPConvertSkill("caopi", "heg_caopi+ass_caopi"));
 
     menghuo = new General(this, "menghuo", "shu");
     menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
@@ -1055,7 +1020,7 @@ ThicketPackage::ThicketPackage()
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new Luanwu);
-    jiaxu->addSkill(new SPConvertSkill("cv_jiaxu", "jiaxu", "sp_jiaxu"));
+    jiaxu->addSkill(new SPConvertSkill("jiaxu", "sp_jiaxu"));
     related_skills.insertMulti("luanwu", "#@chaos-1");
 
     addMetaObject<DimengCard>();

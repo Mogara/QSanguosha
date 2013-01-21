@@ -318,6 +318,12 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
             }
         }
     }
+
+    foreach (ServerPlayer *p, getOtherPlayers(victim))
+        if (p->getState() != "robot")
+            return;
+    if (Config.AlterAIDelayAD)
+        Config.AIDelay = Config.AIDelayAD;
 }
 
 void Room::judge(JudgeStruct &judge_struct){
@@ -443,6 +449,7 @@ void Room::gameOver(const QString &winner){
             }
         }
     }
+    Config.AIDelay = Config.OriginAIDelay;
 
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(winner);
@@ -481,7 +488,7 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name){
 }
 
 void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip){
-    if(!player->hasSkill(skill_name))
+    if(!player->hasSkill(skill_name, true))
         return;
 
     if(player->getAcquiredSkills().contains(skill_name))
@@ -2242,6 +2249,7 @@ void Room::chooseGenerals(){
 void Room::run(){
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+    Config.AIDelay = Config.OriginAIDelay;
 
     foreach (ServerPlayer *player, m_players){
         //Ensure that the game starts with all player's mutex locked

@@ -18,6 +18,8 @@ config = {
         "Mountain",
         "God",
         "SP",
+        "Hegemony",
+        "HegemonySP",
         "YJCM",
         "YJCM2012",
         "Special3v3",

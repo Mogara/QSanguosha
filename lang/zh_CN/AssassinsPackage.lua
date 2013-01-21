@@ -3,6 +3,17 @@
 return {
 	["assassins"] = "铜雀台",
 	
+	["cv_caocao:convert"] = "你可以替换为铜雀台曹操",
+	
+	["ass_caocao"] = "曹操",
+    ["#ass_caocao"] = "魏武帝",
+	["cv:ass_caocao"] = "官方",
+	["illustrator:ass_caocao"] = "电影铜雀台",
+    ["ass_caopi"] = "曹丕",
+    ["#ass_caopi"] = "霸业的继承者",
+    ["cv:ass_caopi"] = "官方",
+    ["illustrator:ass_caopi"] = "电影铜雀台",
+	
 	["#jiben"] = "誓死除奸恶",
 	["jiben"] = "吉本",
 	["designer:jiben"] = "凌天翼",
