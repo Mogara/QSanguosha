@@ -5,6 +5,7 @@ package.cpath = package.cpath .. ";./lua/clib/?.dll"
 
 dofile "lua/sgs_ex.lua"
 dofile "lua/sgs_ex2.lua"
+dofile "lua/compatibility.lua"
 
 function load_translation(file)
 	local t = dofile(file)
