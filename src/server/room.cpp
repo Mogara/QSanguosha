@@ -768,19 +768,16 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card_use.card = card;
     card_use.from = player;
     card = card->validateInResposing(player, &continuable);
-    if(card && trigger_event != NonTrigger){
+
+    if(card){
         if(card->getTypeId() != Card::Skill){
             const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
-            if(card_pattern == NULL || card_pattern->willThrow()){
-                if(trigger_event == CardResponsed || trigger_event == JinkUsed)
-                    player->setFlags("mute_throw");
-                throwCard(card, player);
-            }
-        }else if(card->willThrow()){
-            if(trigger_event == CardResponsed || trigger_event == JinkUsed)
-                player->setFlags("mute_throw");
-            throwCard(card, player);
-        }
+            if(card_pattern == NULL || card_pattern->willThrow())
+                moveCardTo(card, NULL, Player::DiscardedPile, true);
+                //throwCard(card, trigger_event == CardDiscarded ? player: NULL);
+        }else if(card->willThrow())
+            moveCardTo(card, NULL, Player::DiscardedPile, true);
+            //throwCard(card, trigger_event == CardDiscarded ? player: NULL);
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, player, decisionData);
