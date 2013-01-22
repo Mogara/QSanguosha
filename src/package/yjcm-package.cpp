@@ -41,13 +41,9 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime; // @todo_P: consider a new event which is triggered before CardsMoveOneTime
         frequency = Frequent;
         default_choice = "no";
-    }
-
-    virtual int getPriority() const{
-        return 4;
     }
 
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *caozhi, QVariant &data) const{

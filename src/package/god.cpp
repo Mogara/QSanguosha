@@ -729,10 +729,6 @@ public:
 
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
     virtual void onGameStart(ServerPlayer *shenzhuge) const{
         shenzhuge->getRoom()->setPlayerMark(shenzhuge, "qixingOwner", 1);
         QList<int> stars;
@@ -830,10 +826,6 @@ class QixingClear: public TriggerSkill{
 public:
     QixingClear():TriggerSkill("#qixing-clear"){
         events << Death << EventPhaseStart;
-    }
-
-    virtual int getPriority() const{
-        return 3;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1167,7 +1159,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return -1;
+        return 1;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1209,7 +1201,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return -3;
+        return 1;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

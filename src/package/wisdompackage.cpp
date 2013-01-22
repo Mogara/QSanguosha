@@ -98,10 +98,6 @@ public:
         events << Pindian << Damaged;
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *xuyou, QVariant &data) const{
         if(triggerEvent == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
@@ -128,10 +124,6 @@ public:
     Shicai():TriggerSkill("shicai"){
         events << Pindian;
         frequency = Compulsory;
-    }
-
-    virtual int getPriority() const{
-        return -1;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -339,10 +331,6 @@ public:
     Bawang():TriggerSkill("bawang"){
         view_as_skill = new BawangViewAsSkill;
         events << SlashMissed;
-    }
-
-    virtual int getPriority() const{
-        return 2;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *sunce, QVariant &data) const{
@@ -688,7 +676,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 3;
+        return 4;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

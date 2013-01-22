@@ -244,9 +244,9 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
 
 int TriggerSkill::getPriority() const{
     switch(frequency){
-    case Wake: return 2;
+    case Wake: return 3;
     default:
-        return 1;
+        return 2;
     }
 }
 
@@ -261,7 +261,7 @@ ScenarioRule::ScenarioRule(Scenario *scenario)
 }
 
 int ScenarioRule::getPriority() const{
-    return 3;
+    return 0;
 }
 
 bool ScenarioRule::triggerable(const ServerPlayer *) const{
@@ -272,10 +272,6 @@ MasochismSkill::MasochismSkill(const QString &name)
     :TriggerSkill(name)
 {
     events << Damaged;
-}
-
-int MasochismSkill::getPriority() const{
-    return 1;
 }
 
 bool MasochismSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

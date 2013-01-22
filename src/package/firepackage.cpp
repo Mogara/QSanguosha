@@ -324,10 +324,6 @@ public:
         events << SlashMissed;
     }
 
-    virtual int getPriority() const{
-        return 2;
-    }
-
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *pangde, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.to->isAlive() && !effect.to->isNude()){

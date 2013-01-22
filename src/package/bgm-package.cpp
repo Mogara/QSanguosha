@@ -158,10 +158,6 @@ public:
         return target && target->isAlive() && (target->hasSkill(objectName()) || target->getMark("@kuiwei")>0);
     }
 
-    virtual int getPriority() const{
-        return 3;
-    }
-
     int getWeaponCount(ServerPlayer *caoren) const{
         int n = 0;
         foreach(ServerPlayer *p, caoren->getRoom()->getAlivePlayers()){
@@ -251,10 +247,6 @@ public:
     Manjuan(): TriggerSkill("manjuan"){
         events << CardsMoveOneTime << CardDrawing;
         frequency = Frequent;
-    }
-
-    virtual int getPriority() const{
-        return 2;
     }
 
     void doManjuan(ServerPlayer *sp_pangtong, int card_id) const{
@@ -543,10 +535,6 @@ class DahePindian: public TriggerSkill{
 public:
     DahePindian():TriggerSkill("#dahe"){
         events << Pindian;
-    }
-
-    virtual int getPriority() const{
-        return -1;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1373,7 +1361,7 @@ public:
                 room->useCard(card_use, false);
             } else {
                 room->broadcastSkillInvoke(objectName(), 1);
-                room->setPlayerFlag(player, "XuehenTarget_InTempMoving");
+                room->setPlayerFlag(player, "xuehen_InTempMoving");
                 DummyCard *dummy = new DummyCard;
                 QList<int> card_ids;
                 QList<Player::Place> original_places;
@@ -1387,7 +1375,7 @@ public:
                 }
                 for (int i = 0; i < dummy->subcardsLength(); i++)
                     room->moveCardTo(Sanguosha->getCard(card_ids[i]), player, original_places[i], false);
-                room->setPlayerFlag(player, "-XuehenTarget_InTempMoving");
+                room->setPlayerFlag(player, "-xuehen_InTempMoving");
                 if (dummy->subcardsLength() > 0)
                     room->throwCard(dummy, player, xiahou);
                 dummy->deleteLater();
@@ -1398,28 +1386,6 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
         return -2;
-    }
-};
-
-class XuehenAvoidTriggeringCardsMove: public TriggerSkill{
-public:
-    XuehenAvoidTriggeringCardsMove():TriggerSkill("#xuehen-avoid-triggering-cards-move"){
-        events << CardsMoveOneTime;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 10;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
-        foreach(ServerPlayer *p, room->getAllPlayers())
-            if (p->hasFlag("XuehenTarget_InTempMoving"))
-                return true;
-        return false;
     }
 };
 
@@ -1478,9 +1444,9 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_xiahoudun->addSkill(new Fenyong);
     bgm_xiahoudun->addSkill(new FenyongClear);
     bgm_xiahoudun->addSkill(new Xuehen);
-    bgm_xiahoudun->addSkill(new XuehenAvoidTriggeringCardsMove);
+    bgm_xiahoudun->addSkill(new FakeMoveSkill("xuehen"));
     related_skills.insertMulti("fenyong", "#fenyong-clear");
-    related_skills.insertMulti("xuehen", "#xuehen-avoid-triggering-cards-move");
+    related_skills.insertMulti("xuehen", "#xuehen-fake-move");
 
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();

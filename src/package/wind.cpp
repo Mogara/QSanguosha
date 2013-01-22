@@ -245,10 +245,6 @@ public:
         view_as_skill = new LeijiViewAsSkill;
     }
 
-    virtual int getPriority() const{
-        return 3;
-    }
-
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhangjiao, QVariant &data) const{
         if (zhangjiao == NULL) return false;
         CardStar card_star = data.value<ResponsedStruct>().m_card;
@@ -462,11 +458,7 @@ public:
 class BuquRemove: public TriggerSkill{
 public:
     BuquRemove():TriggerSkill("#buqu-remove"){
-        events << HpRecover << EventLoseSkill;
-    }
-
-    virtual int getPriority() const{
-        return -1;
+        events << HpRecover << EventLoseSkill; // @todo_P: trigger HpRecover after the recover
     }
 
     static void Remove(ServerPlayer *zhoutai){
@@ -528,10 +520,6 @@ class Buqu: public TriggerSkill{
 public:
     Buqu():TriggerSkill("buqu"){
         events << PostHpReduced << AskForPeachesDone;
-    }
-    
-    virtual int getPriority() const{
-        return 2;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhoutai, QVariant &) const{
@@ -697,10 +685,6 @@ public:
         events << DamageInflicted << DamageComplete;
 
         view_as_skill = new TianxiangViewAsSkill;
-    }
-
-    virtual int getPriority() const{
-        return 2;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

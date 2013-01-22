@@ -1342,7 +1342,7 @@ void StandardPackage::addGenerals(){
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
-    huangyueying->addSkill(new Skill("qicai", Skill::Compulsory));
+    huangyueying->addSkill(new Skill("qicai", Skill::Compulsory)); // @todo_P: use TargetModSkill to remove the coupling
     huangyueying->addSkill(new SPConvertSkill("huangyueying", "heg_huangyueying"));
 
     General *sunquan, *zhouyu, *lvmeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;

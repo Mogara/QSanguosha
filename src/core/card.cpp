@@ -113,7 +113,7 @@ QString Card::getNumberString() const{
     return Number2String(m_number);
 }
 
-Card::Suit Card::getSuit() const{
+Card::Suit Card::getSuit() const{ // @todo_P: refactor these functions with new enums
     return m_suit;
 }
 

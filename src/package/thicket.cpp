@@ -535,11 +535,7 @@ public:
 class HaoshiGive: public PhaseChangeSkill{
 public:
     HaoshiGive():PhaseChangeSkill("#haoshi-give"){
-
-    }
-
-    virtual int getPriority() const{
-        return -1;
+        // @todo_P: new event AfterDrawNCards later
     }
 
     virtual bool onPhaseChange(ServerPlayer *lusu) const{

@@ -771,6 +771,8 @@ void Player::jilei(const QString &type)
         jilei_set << type;
 }
 
+// @todo_P: we need a global way to handle those skills like 'You csn't ...'
+// but this function should be reserved for compatibility
 bool Player::isJilei(const Card *card) const
 {
     if(card->getTypeId() == Card::TypeSkill) {

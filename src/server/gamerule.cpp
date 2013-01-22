@@ -858,13 +858,14 @@ BasaraMode::BasaraMode(QObject *parent)
 {
     setObjectName("basara_mode");
 
-    events << CardsMoveOneTime << DamageInflicted;
+    events << /* CardsMoveOneTime <<*/ DamageInflicted;
 
     skill_mark["niepan"] = "@nirvana";
-    skill_mark["smallyeyan"] = "@flame";
+    skill_mark["yeyan"] = "@flame";
     skill_mark["luanwu"] = "@chaos";
     skill_mark["fuli"] = "@laoji";
     skill_mark["zuixiang"] = "@sleep";
+    skill_mark["xiongyi"] = "@arise";
 }
 
 QString BasaraMode::getMappedRole(const QString &role){

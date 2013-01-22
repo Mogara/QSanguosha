@@ -183,7 +183,7 @@ protected:
 
 };
 
-class QiceRemove: public TriggerSkill {
+class QiceRemove: public TriggerSkill { // @todo_P: add history after validation to remove this skill
 public:
     QiceRemove(): TriggerSkill("#qice") {
         events << EventPhaseChanging;
@@ -513,6 +513,7 @@ public:
     }
 };
 
+// @todo_P: move the following codes to nostalgia.cpp and complete new Han Dang
 class Gongqi : public OneCardViewAsSkill{
 public:
     Gongqi():OneCardViewAsSkill("gongqi"){

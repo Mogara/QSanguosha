@@ -558,10 +558,6 @@ public:
         events << GameStart << Pindian << EventPhaseChanging;
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
@@ -943,7 +939,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return -4;
+        return 1;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1204,7 +1200,7 @@ public:
     }
 
     int getPriority() const{
-        return 3;
+        return 4;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1226,7 +1222,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return -2;
+        return 1;
     }
 
     virtual bool trigger(TriggerEvent , Room* , ServerPlayer *zuoci, QVariant &data) const{

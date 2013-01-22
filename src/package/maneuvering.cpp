@@ -228,10 +228,6 @@ public:
         events << DamageInflicted << CardsMoveOneTime;
     }
 
-    virtual int getPriority() const {
-        return -2;
-    }
-
     virtual bool triggerable(const ServerPlayer *target) const{
         return target && target->isAlive() && target->getMark("qinggang") == 0 && !target->hasFlag("wuqian");
     }

@@ -1,7 +1,7 @@
 #include "lua-wrapper.h"
 
 LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency)
-    :TriggerSkill(name), on_trigger(0), can_trigger(0), priority(1)
+    :TriggerSkill(name), on_trigger(0), can_trigger(0), priority(2)
 {
     this->frequency = frequency;
 }

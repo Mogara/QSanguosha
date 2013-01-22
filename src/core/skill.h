@@ -144,7 +144,6 @@ class MasochismSkill: public TriggerSkill{
 public:
     MasochismSkill(const QString &name);
 
-    virtual int getPriority() const;
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };

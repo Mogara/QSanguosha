@@ -288,10 +288,6 @@ public:
 		view_as_skill = new JuejiViewAsSkill;
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         PindianStar pindian = data.value<PindianStar>();
         if(pindian->reason == "jueji" && pindian->isSuccess()){
@@ -668,10 +664,6 @@ public:
         events << CardEffected << DamageInflicted;
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
@@ -684,7 +676,7 @@ public:
         QString wuling = xuandi->tag.value("wuling").toString();
         if(triggerEvent == CardEffected && wuling == "water"){
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card && effect.card->isKindOf("Peach")){
+            if(effect.card && effect.card->isKindOf("Peach")){ // @todo_P: refactor this like JiuYuan
                 RecoverStruct recover;
                 recover.card = effect.card;
                 recover.who = effect.from;
@@ -716,10 +708,6 @@ class WulingEffect: public TriggerSkill{
 public:
     WulingEffect():TriggerSkill("#wuling-effect"){
         events << DamageInflicted;
-    }
-
-    virtual int getPriority() const{
-        return 2;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
