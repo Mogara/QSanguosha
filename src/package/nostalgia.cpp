@@ -239,12 +239,12 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.from->getRoom();
     room->broadcastSkillInvoke("xuanhuo");
-    int card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName());
+    int card_id = room->askForCardChosen(effect.from, effect.to, "he", "nosxuanhuo");
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
 
     QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
-    ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, objectName());
+    ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "nosxuanhuo");
     if(target != effect.from)
         CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName());
         reason.m_playerId = target->objectName();
