@@ -947,15 +947,15 @@ void Client::addHistory(const QString &add_str){
         return;
     }
 
-    QRegExp rx("(.+)(#\\d+)?");
-    if(rx.exactMatch(add_str)){
+    QRegExp rx("(.+):(-?\\d+)?");
+    if (rx.exactMatch(add_str)) {
         QStringList texts = rx.capturedTexts();
         QString card_name = texts.at(1);
         QString times_str = texts.at(2);
 
         int times = 1;
-        if(!times_str.isEmpty()){
-            times_str.remove(QChar('#'));
+        if (!times_str.isEmpty()) {
+            //times_str.remove(QChar('@'));
             times = times_str.toInt();
         }
 

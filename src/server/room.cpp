@@ -2537,6 +2537,9 @@ void Room::processResponse(ServerPlayer *player, const QSanGeneralPacket *packet
 void Room::useCard(const CardUseStruct &use, bool add_history){
     CardUseStruct card_use = use;
     const Card *card = card_use.card;
+    card = card_use.card->validate(&card_use);
+    if (!card) return;
+    int slash_count = card_use.from->getSlashCount();
 
     if(card_use.from->getPhase() == Player::Play && add_history){
         QString key;
@@ -2552,13 +2555,11 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
 
         if (!slash_not_record) {
             card_use.from->addHistory(key);
-            card_use.from->invoke("addHistory", key);
+            card_use.from->invoke("addHistory", key + ":");
         }
 
         broadcastInvoke("addHistory","pushPile");
     }
-
-    card = card_use.card->validate(&card_use);
 
     if(card_use.card->getRealCard() == card){
         if(card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1){

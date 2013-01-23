@@ -15,7 +15,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
-        if(judge->who->objectName() != player->objectName())
+        if (judge->who != player)
             return false;
 
         if(player->askForSkillInvoke(objectName(), data)){
@@ -139,10 +139,7 @@ const Card *QiceCard::validate(const CardUseStruct *card_use) const{
         }
     available = available && use_card->isAvailable(card_use->from);
     use_card->deleteLater();
-    if (!available) {
-        room->setPlayerFlag(card_use->from, "-QiceUsed");
-        return NULL;
-    }
+    if (!available) return NULL;
     return use_card;
 }
 
@@ -178,27 +175,11 @@ protected:
         if(player->isKongcheng())
             return false;
         else
-            return !player->hasFlag("QiceUsed");
-    }
-
-};
-
-class QiceRemove: public TriggerSkill { // @todo_P: add history after validation to remove this skill
-public:
-    QiceRemove(): TriggerSkill("#qice") {
-        events << EventPhaseChanging;
-    }
-
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if(player->hasFlag("QiceUsed") && change.from == Player::Play)
-            room->setPlayerFlag(player, "-QiceUsed");
-
-        return false;
+            return !player->hasUsed("QiceCard");
     }
 };
 
-class Zhiyu: public MasochismSkill{
+class Zhiyu: public MasochismSkill {
 public:
     Zhiyu():MasochismSkill("zhiyu"){
 
@@ -986,9 +967,7 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
 
     General *xunyou = new General(this, "xunyou", "wei", 3);
     xunyou->addSkill(new Qice);
-    xunyou->addSkill(new QiceRemove);
     xunyou->addSkill(new Zhiyu);
-    related_skills.insertMulti("qice", "#qice");
 
     addMetaObject<QiceCard>();
     addMetaObject<ChunlaoCard>();
