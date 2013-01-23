@@ -25,24 +25,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
-class WS1Card: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE WS1Card();
-
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-};
-
-class WS2Card: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE WS2Card();
-
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-};
-
 class Special3v3Package : public Package{
     Q_OBJECT
 
