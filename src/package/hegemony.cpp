@@ -255,7 +255,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardStar card = data.value<CardStar>();
-        if(!player->hasFlag("mute_throw") && player->askForSkillInvoke(objectName())){
+        if(player->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName());
             ServerPlayer *t = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
             t->obtainCard(card);
