@@ -173,6 +173,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills){
             distance_skills << qobject_cast<const DistanceSkill *>(skill);
         else if(skill->inherits("MaxCardsSkill"))
             maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
+        else if (skill->inherits("TargetModSkill"))
+            targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
     }
 }
 
@@ -182,6 +184,10 @@ QList<const DistanceSkill *> Engine::getDistanceSkills() const{
 
 QList<const MaxCardsSkill *> Engine::getMaxCardsSkills() const{
     return maxcards_skills;
+}
+
+QList<const TargetModSkill *> Engine::getTargetModSkills() const{
+    return targetmod_skills;
 }
 
 void Engine::addPackage(Package *package){
@@ -671,7 +677,7 @@ QStringList Engine::getLords() const{
 QStringList Engine::getRandomLords() const{
     QStringList banlist_ban;
     if(Config.EnableBasara)
-        banlist_ban = Config.value("Banlist/basara").toStringList();
+        banlist_ban = Config.value("Banlist/Basara").toStringList();
 
     if(Config.GameMode == "zombie_mode")
         banlist_ban.append(Config.value("Banlist/zombie").toStringList());
@@ -886,9 +892,42 @@ int Engine::correctDistance(const Player *from, const Player *to) const{
 int Engine::correctMaxCards(const Player *target) const{
     int extra = 0;
 
-    foreach(const MaxCardsSkill *skill, maxcards_skills){
+    foreach (const MaxCardsSkill *skill, maxcards_skills)
         extra += skill->getExtra(target);
-    }
 
     return extra;
 }
+
+int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const{
+    int x = 0;
+
+    if (type == TargetModSkill::Residue) {
+        foreach (const TargetModSkill *skill, targetmod_skills) {
+            ExpPattern p(skill->getPattern());
+            if (p.match(from, card)) {
+                int residue = skill->getResidueNum(from, card);
+                if (residue >= 998) return residue;
+                x += residue;
+            }
+        }
+    } else if (type == TargetModSkill::DistanceLimit) {
+        foreach (const TargetModSkill *skill, targetmod_skills) {
+            ExpPattern p(skill->getPattern());
+            if (p.match(from, card)) {
+                int distance_limit = skill->getDistanceLimit(from, card);
+                if (distance_limit >= 998) return distance_limit;
+                x += distance_limit;
+            }
+        }
+    } else if (type == TargetModSkill::ExtraTarget) {
+        foreach (const TargetModSkill *skill, targetmod_skills) {
+            ExpPattern p(skill->getPattern());
+            if (p.match(from, card)) {
+                x += skill->getExtraTargetNum(from, card);
+            }
+        }
+    }
+
+    return x;
+}
+

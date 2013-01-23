@@ -610,13 +610,6 @@ public:
     }
 };
 
-
-WushenSlash::WushenSlash(Card::Suit suit, int number)
-    :Slash(suit, number)
-{
-    setObjectName("slash");
-}
-
 class Wushen: public FilterSkill{
 public:
     Wushen():FilterSkill("wushen"){
@@ -630,11 +623,24 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->setSkillName(objectName());
         WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
         card->takeOver(slash);
         return card;
+    }
+};
+
+class WushenTargetMod: public TargetModSkill {
+public:
+    WushenTargetMod(): TargetModSkill("#wushen-target") {
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *card) const{
+        if (from->hasSkill("wushen") && card->getSuit() == Card::Heart)
+            return 1000;
+        else
+            return 0;
     }
 };
 
@@ -1373,9 +1379,10 @@ GodPackage::GodPackage()
 {
     General *shenguanyu = new General(this, "shenguanyu", "god", 5);
     shenguanyu->addSkill(new Wushen);
+    shenguanyu->addSkill(new WushenTargetMod);
     shenguanyu->addSkill(new Wuhun);
     shenguanyu->addSkill(new WuhunRevenge);
-
+    related_skills.insertMulti("wushen", "#wushen-target");
     related_skills.insertMulti("wuhun", "#wuhun");
 
     General *shenlvmeng = new General(this, "shenlvmeng", "god", 3);

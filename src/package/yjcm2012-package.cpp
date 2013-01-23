@@ -276,6 +276,27 @@ public:
     }
 };
 
+class JiangchiTargetMod: public TargetModSkill {
+public:
+    JiangchiTargetMod(): TargetModSkill("#jiangchi-target") {
+        frequency = NotFrequent;
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *) const{
+        if (from->hasSkill("jiangchi") && from->hasFlag("jiangchi_invoke"))
+            return 1;
+        else
+            return 0;
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *) const{
+        if (from->hasSkill("jiangchi") && from->hasFlag("jiangchi_invoke"))
+            return 1000;
+        else
+            return 0;
+    }
+};
+
 class Qianxi: public TriggerSkill{
 public:
     Qianxi():TriggerSkill("qianxi"){
@@ -533,12 +554,14 @@ public:
     }
 
     const Card *viewAs(const Card *originalCard) const{
-        WushenSlash *slash = new WushenSlash(originalCard->getSuit(), originalCard->getNumber());
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard);
         slash->setSkillName(objectName());
         return slash;
     }
 };
+
+//@todo_P: class NosGongqiTargetMod (to be implemented)
 
 class Jiefan : public TriggerSkill{
 public:
@@ -812,7 +835,21 @@ public:
     }
 };
 
-ChunlaoCard::ChunlaoCard(){
+class LihuoTargetMod: public TargetModSkill {
+public:
+    LihuoTargetMod(): TargetModSkill("#lihuo-target") {
+        frequency = NotFrequent;
+    }
+
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const{
+        if (from->hasSkill("lihuo") && (card->isKindOf("FireSlash") || card->hasFlag("isFireSlash")))
+            return 1;
+        else
+            return 0;
+    }
+};
+
+ChunlaoCard::ChunlaoCard() {
     will_throw = false;
     target_fixed = true;
 }
@@ -911,10 +948,14 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     caozhang->addSkill(new Jiangchi);
     caozhang->addSkill(new JiangchiClear);
     related_skills.insertMulti("jiangchi", "#jiangchi-clear");
+	caozhang->addSkill(new JiangchiTargetMod);
+    related_skills.insertMulti("jiangchi", "#jiangchi-target");
 
     General *chengpu = new General(this, "chengpu", "wu");
     chengpu->addSkill(new Lihuo);
+    chengpu->addSkill(new LihuoTargetMod);
     chengpu->addSkill(new Chunlao);
+    related_skills.insertMulti("lihuo", "#lihuo-target");
 
     General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu");
     guanxingzhangbao->addSkill(new Fuhun);

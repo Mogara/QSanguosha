@@ -149,10 +149,13 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty())
         return false;
 
-    if(!subcards.isEmpty() && Self->getWeapon() && Self->getWeapon()->getId() == subcards.first())
-        return Self->distanceTo(to_select) <= 1;
+    int rangefix = 0;
+    if (!subcards.isEmpty() && Self->getWeapon() && Self->getWeapon()->getId() == subcards.first()) {
+        const Weapon *card = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
+        rangefix += card->getRange() - 1;
+    }
 
-    return Self->inMyAttackRange(to_select);
+    return Self->distanceTo(to_select, rangefix) <= Self->getAttackRange();
 }
 
 void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
@@ -546,6 +549,34 @@ public:
     }
 };
 
+class TianyiTargetMod: public TargetModSkill {
+public:
+    TianyiTargetMod(): TargetModSkill("#tianyi-target") {
+        frequency = NotFrequent;
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *) const{
+        if (from->hasSkill("tianyi") && from->hasFlag("tianyi_success"))
+            return 1;
+        else
+            return 0;
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *) const{
+        if (from->hasSkill("tianyi") && from->hasFlag("tianyi_success"))
+            return 1000;
+        else
+            return 0;
+    }
+
+    virtual int getExtraTargetNum(const Player *from, const Card *) const{
+        if (from->hasSkill("tianyi") && from->hasFlag("tianyi_success"))
+            return 1;
+        else
+            return 0;
+    }
+};
+
 FirePackage::FirePackage()
     :Package("fire")
 {
@@ -571,6 +602,8 @@ FirePackage::FirePackage()
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);
+    taishici->addSkill(new TianyiTargetMod);
+    related_skills.insertMulti("tianyi", "#tianyi-target");
 
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);

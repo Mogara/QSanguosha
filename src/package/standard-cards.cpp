@@ -143,38 +143,10 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    int slash_targets = 1;
-    if(Self->hasWeapon("Halberd") && Self->isLastHandCard(this))
-        slash_targets += 2;
-
-    if(Self->hasSkill("lihuo") && isKindOf("FireSlash"))
-        slash_targets++;
-
-    if(Self->hasSkill("shenji") && Self->getWeapon() == NULL)
-        slash_targets += 2;
-
-    bool distance_limit = true;
-    if(Self->hasFlag("tianyi_success")){
+    int slash_targets = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    bool distance_limit = ((1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this)) < 500);
+    if (Self->hasFlag("slashNoDistanceLimit"))
         distance_limit = false;
-        slash_targets++;
-    }
-
-    if(targets.length() >= slash_targets) {
-        return false;
-    }
-
-    if(Self->hasFlag("jiangchi_invoke")){
-        distance_limit = false;
-    }
-
-    if(Self->hasFlag("jiefanUsed")){
-        distance_limit = false;
-    }
-
-    if (isKindOf("WushenSlash")
-        || (getSuit() == Card::Heart && Self->hasSkill("wushen"))) { // Be care!!!!
-        distance_limit = false;
-    }
 
     int rangefix = 0;
     if(Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
@@ -265,7 +237,7 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
 }
 
 bool Peach::isAvailable(const Player *player) const{
-    return player->isWounded() && BasicCard::isAvailable(player);
+    return player->isWounded() && !player->isProhibited(player, this) && BasicCard::isAvailable(player);
 }
 
 Crossbow::Crossbow(Suit suit, int number)
@@ -525,10 +497,24 @@ Axe::Axe(Suit suit, int number)
     skill = new AxeSkill;
 }
 
+class HalberdSkill: public TargetModSkill {
+public:
+    HalberdSkill(): TargetModSkill("halberd") {
+    }
+
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const{
+        if (from->hasWeapon("halberd") && from->isLastHandCard(card))
+            return 2;
+        else
+            return 0;
+    }
+};
+
 Halberd::Halberd(Suit suit, int number)
     :Weapon(suit, number, 4)
 {
     setObjectName("Halberd");
+	skill = new HalberdSkill
 }
 
 class KylinBowSkill: public WeaponSkill{
@@ -1001,7 +987,8 @@ Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number, true) {
 }
 
 bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
         return false;
 
     if(to_select->isAllNude())
@@ -1010,7 +997,20 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     if(to_select == Self)
         return false;
 
-    if(Self->distanceTo(to_select, getSkillName() == "jixi" ? 1 : 0) > 1 && !Self->hasSkill("qicai")) // Be care!!!
+    int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
+    int rangefix = 0;
+    if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
+        const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
+        rangefix += weapon->getRange() - 1;
+    }
+
+    if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
+        rangefix += 1;
+
+    if (getSkillName() == "jixi")
+        rangefix += 1;
+
+    if (Self->distanceTo(to_select, rangefix) > distance_limit)
         return false;
 
     return true;
@@ -1034,7 +1034,8 @@ Dismantlement::Dismantlement(Suit suit, int number)
 }
 
 bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
         return false;
 
     if(to_select->isAllNude())
@@ -1107,7 +1108,7 @@ bool Disaster::isAvailable(const Player *player) const{
     if(player->containsTrick(objectName()))
         return false;
 
-    return ! player->isProhibited(player, this);
+    return !player->isProhibited(player, this) && DelayedTrick::isAvailable(player);
 }
 
 Lightning::Lightning(Suit suit, int number):Disaster(suit, number){

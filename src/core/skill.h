@@ -32,8 +32,7 @@ public:
 
     explicit Skill(const QString &name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
-	bool isAttachedLordSkill() const;
-    bool isSPConvertSkill() const;
+    bool isAttachedLordSkill() const;
     QString getDescription() const;
     QString getNotice(int index) const;
     QString getText() const;
@@ -174,8 +173,7 @@ class GameStartSkill: public TriggerSkill{
 public:
     GameStartSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
-    virtual bool triggerable(const ServerPlayer *target) const;
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
@@ -220,6 +218,29 @@ public:
     virtual int getExtra(const Player *target) const = 0;
 };
 
+class TargetModSkill: public Skill {
+    Q_OBJECT
+    Q_ENUMS(ModType)
+
+public:
+    enum ModType {
+        Residue,
+        DistanceLimit,
+        ExtraTarget
+    };
+
+    TargetModSkill(const QString &name);
+    QString getPattern() const;
+
+    virtual int getResidueNum(const Player *from, const Card *card) const;
+    virtual int getDistanceLimit(const Player *from, const Card *card) const;
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const;
+
+protected:
+    QString pattern;
+};
+
+// a nasty way for 'fake moves'
 class FakeMoveSkill: public TriggerSkill {
     Q_OBJECT
     Q_ENUMS(FakeCondition)

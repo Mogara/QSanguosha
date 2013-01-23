@@ -88,6 +88,24 @@ function sgs.CreateMaxCardsSkill(spec)
 	return skill
 end
 
+function sgs.CreateTargetModSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.residue_func) == "function")
+	assert(type(spec.distance_limit_func) == "function")
+	assert(type(spec.extra_target_func) == "function")
+
+	local skill = sgs.LuaTargetModSkill(spec.name)
+	skill.residue_func = spec.residue_func
+	skill.distance_limit_func = spec.distance_limit_func
+	skill.extra_target_func = spec.extra_target_func
+	
+	if type(spec.pattern) == "string" then
+		skill:setPattern(pattern)
+	end
+
+	return skill
+end
+
 function sgs.CreateMasochismSkill(spec)
 	assert(type(spec.on_damaged) == "function")
 	

@@ -49,6 +49,16 @@ LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
 
 }
 
+LuaTargetModSkill::LuaTargetModSkill(const char *name)
+    : TargetModSkill(name)
+{
+	pattern = "Slash";
+}
+
+void LuaTargetModSkill::setPattern(const char *pattern) {
+    this->pattern = pattern;
+}
+
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 
 LuaSkillCard::LuaSkillCard(const char *name)

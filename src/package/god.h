@@ -75,14 +75,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class WushenSlash: public Slash{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE WushenSlash(Card::Suit suit, int number);
-};
-
-class KuangfengCard: public SkillCard{
+class KuangfengCard: public SkillCard {
     Q_OBJECT
 
 public:

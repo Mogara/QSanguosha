@@ -151,15 +151,16 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange() const{
+    int original_range = 1;
+    if (hasSkill("zhengfeng") && hp > 1) original_range = hp; // @todo_P: new way to remove coupling or just put it into TargetModSkill
+    if (hasFlag("InfinityAttackRange") || getMark("InfinityAttackRange") > 0) original_range = 10000; // Actually infinity
+    int weapon_range = 0;
     if (weapon != NULL) {
-        const Weapon *card = qobject_cast<const Weapon*>(weapon->getRealCard());
+        const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
         Q_ASSERT(card);
-        return card->getRange();
+        weapon_range = card->getRange();
     }
-    else if(hasSkill("zhengfeng"))
-        return hp;
-    else
-        return 1;
+    return qMax(original_range, weapon_range);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
@@ -323,7 +324,10 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
     if(mode == "06_3v3" || mode == "02_1v1" || Config.value("WithoutLordskill", false).toBool())
         return false;
 
-    if(isLord() || ServerInfo.EnableHegemony)
+    if (ServerInfo.EnableHegemony)
+        return false;
+
+    if (isLord())
         return skills.contains(skill_name) || (include_lose && hasInnateSkill(skill_name));
 
     if(hasSkill("weidi")){
@@ -741,19 +745,12 @@ bool Player::isProhibited(const Player *to, const Card *card) const
     return Sanguosha->isProhibited(this, to, card);
 }
 
-bool Player::canSlashWithoutCrossbow() const
-{
-    if(hasSkill("paoxiao"))
-        return true;
-
+bool Player::canSlashWithoutCrossbow() const{
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
-    if(hasFlag("tianyi_success"))
-        valid_slash_count++;
-    if(hasFlag("jiangchi_invoke"))
-        valid_slash_count++;
-    if(getMark("huxiao") > 0)
-        valid_slash_count += getMark("huxiao");
+    Slash *slash = new Slash(Card::NoSuit, 0);
+    slash->deleteLater();
+    valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, slash);
     return slash_count < valid_slash_count;
 }
 

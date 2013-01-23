@@ -47,7 +47,7 @@ QString Skill::getNotice(int index) const{
     return Sanguosha->translate(QString("~%1%2").arg(objectName()).arg(index));
 }
 
-QString Skill::getText() const{
+QString Skill::getText() const{ // @todo_P: It seems that this function can be removed
     QString skill_name = Sanguosha->translate(objectName());
 
     switch(frequency){
@@ -148,10 +148,10 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 bool ViewAsSkill::isAvailable(const Player* invoker,
                               CardUseStruct::CardUseReason reason, 
-                              const QString &pattern) const
-{
-    switch(reason) 
-    {
+                              const QString &pattern) const{
+    if (!invoker->hasSkill(objectName()))
+        return false;
+    switch (reason) {
     case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
     case CardUseStruct::CARD_USE_REASON_RESPONSE: return isEnabledAtResponse(invoker, pattern);
     default:
@@ -316,10 +316,6 @@ bool GameStartSkill::trigger(TriggerEvent, Room* room, ServerPlayer *player, QVa
     return false;
 }
 
-bool GameStartSkill::triggerable(const ServerPlayer *target) const{
-    return target != NULL && target->isAlive() && target->hasSkill(objectName());
-}
-
 SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)
     : GameStartSkill(QString("cv_%1").arg(from)), from(from), to(to)
 {
@@ -384,6 +380,27 @@ DistanceSkill::DistanceSkill(const QString &name)
 MaxCardsSkill::MaxCardsSkill(const QString &name)
     :Skill(name, Skill::Compulsory)
 {
+}
+
+TargetModSkill::TargetModSkill(const QString &name)
+    : Skill(name, Skill::Compulsory), pattern("Slash")
+{
+}
+
+QString TargetModSkill::getPattern() const{
+    return pattern;
+}
+
+int TargetModSkill::getResidueNum(const Player *, const Card *) const{
+    return 0;
+}
+
+int TargetModSkill::getDistanceLimit(const Player *, const Card *) const{
+    return 0;
+}
+
+int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const{
+    return 0;
 }
 
 FakeMoveSkill::FakeMoveSkill(const QString &name, FakeCondition condition)

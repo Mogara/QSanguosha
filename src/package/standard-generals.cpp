@@ -549,7 +549,20 @@ public:
     }
 };
 
-class Longdan:public OneCardViewAsSkill{
+class Paoxiao: public TargetModSkill {
+public:
+    Paoxiao(): TargetModSkill("paoxiao") {
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()))
+            return 1000;
+        else
+            return 0;
+    }
+};
+
+class Longdan: public OneCardViewAsSkill {
 public:
     Longdan():OneCardViewAsSkill("longdan"){
 
@@ -723,7 +736,6 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *yueying, QVariant &data) const{
-        if (yueying == NULL) return false;
         CardStar card = NULL;
         if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
@@ -731,14 +743,26 @@ public:
         }else if(triggerEvent == CardResponsed)
             card = data.value<ResponsedStruct>().m_card;
 
-        if(card->isNDTrick()){            
-            if(room->askForSkillInvoke(yueying, objectName())){
-                room->broadcastSkillInvoke(objectName());
-                yueying->drawCards(1);
-            }
+        if (card->isNDTrick() && room->askForSkillInvoke(yueying, objectName())) {
+            room->broadcastSkillInvoke(objectName());
+            yueying->drawCards(1);
         }
 
         return false;
+    }
+};
+
+class Qicai: public TargetModSkill {
+public:
+    Qicai(): TargetModSkill("qicai") {
+        pattern = "TrickCard";
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()))
+            return 1000;
+        else
+            return 0;
     }
 };
 
@@ -1322,7 +1346,7 @@ void StandardPackage::addGenerals(){
     guanyu->addSkill(new Wusheng);
 
     zhangfei = new General(this, "zhangfei", "shu");
-    zhangfei->addSkill(new Skill("paoxiao", Skill::Compulsory));
+    zhangfei->addSkill(new Paoxiao);
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);
@@ -1342,7 +1366,7 @@ void StandardPackage::addGenerals(){
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
-    huangyueying->addSkill(new Skill("qicai", Skill::Compulsory)); // @todo_P: use TargetModSkill to remove the coupling
+    huangyueying->addSkill(new Qicai);
     huangyueying->addSkill(new SPConvertSkill("huangyueying", "heg_huangyueying"));
 
     General *sunquan, *zhouyu, *lvmeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;

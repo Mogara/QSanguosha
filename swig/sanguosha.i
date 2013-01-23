@@ -309,6 +309,8 @@ public:
 
     void addToPile(const char *pile_name, const Card *card, bool open = true);
     void addToPile(const char *pile_name, int card_id, bool open = true);
+    void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true);
+    //void exchangeFreelyFromPrivatePile(const char *skill_name, const char *pile_name, int upperlimit = 1000, bool include_equip = false);
     void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
 };
 
@@ -805,10 +807,13 @@ public:
     const TriggerSkill *getTriggerSkill(const char *skill_name) const;
     const ViewAsSkill *getViewAsSkill(const char *skill_name) const;
     QList<const DistanceSkill *> getDistanceSkills() const;
+    QList<const MaxCardsSkill *> getMaxCardsSkills() const;
+    QList<const TargetModSkill *> getTargetModSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
-    const Card *getCard(int index);
+    const Card *getEngineCard(int cardId) const;
+    Card *getCard(int cardId);
     WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords() const;
@@ -821,8 +826,10 @@ public:
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
-    
-    Room* currentRoom();
+    int correctMaxCards(const Player *target) const;
+    int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
+
+    Room *currentRoom();
 };
 
 extern Engine *Sanguosha;
@@ -845,6 +852,7 @@ public:
 
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
+    bool isAttachedLordSkill() const;
     QString getDescription() const;
     QString getText() const;
     bool isVisible() const;

@@ -291,7 +291,8 @@ FireAttack::FireAttack(Card::Suit suit, int number)
 }
 
 bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
         return false;
 
     if(to_select->isKongcheng())
@@ -339,7 +340,8 @@ QString IronChain::getSubtype() const{
 }
 
 bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(targets.length() >= 2)
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
         return false;
 
     return true;
@@ -403,15 +405,20 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
     if (to_select->containsTrick(objectName()))
         return false;
 
-    if (Self->hasSkill("qicai"))
-        return true;
+    int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
+    int rangefix = 0;
+    if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
+        const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
+        rangefix += weapon->getRange() - 1;
+    }
 
-    int distance_fix = (Self->getOffensiveHorse() && Self->getOffensiveHorse()->getId() == this->getEffectiveId()) ? 1 : 0;
-    int distance = Self->distanceTo(to_select, distance_fix);
-    if (Self->hasSkill("duanliang"))
-        return distance <= 2;
-    else
-        return distance <= 1;
+    if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
+        rangefix += 1;
+
+    if (Self->distanceTo(to_select, rangefix) > distance_limit)
+        return false;
+
+    return true;
 }
 
 void SupplyShortage::takeEffect(ServerPlayer *target) const{

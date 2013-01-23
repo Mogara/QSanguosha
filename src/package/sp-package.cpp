@@ -603,12 +603,14 @@ bool XuejiCard::targetFilter(const QList<const Player *> &targets, const Player 
     if (to_select == Self)
         return false;
 
-    if (Self->getWeapon() && Self->getWeapon()->getEffectiveId() == getEffectiveId())
-        return Self->distanceTo(to_select) == 1;
-    else if (Self->getOffensiveHorse() && Self->getOffensiveHorse()->getEffectiveId() == getEffectiveId())
-        return Self->distanceTo(to_select, 1) <= Self->getAttackRange();
-    else
-        return Self->distanceTo(to_select) <= Self->getAttackRange();
+    int range_fix = 0;
+    if (Self->getWeapon() && Self->getWeapon()->getEffectiveId() == getEffectiveId()) {
+        const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
+        range_fix += weapon->getRange() - 1;
+    } else if (Self->getOffensiveHorse() && Self->getOffensiveHorse()->getEffectiveId() == getEffectiveId())
+        range_fix += 1;
+
+    return Self->distanceTo(to_select, range_fix) <= Self->getAttackRange();
 }
 
 void XuejiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
@@ -646,22 +648,34 @@ public:
     }
 };
 
-class Huxiao: public TriggerSkill {
+class Huxiao: public TargetModSkill {
 public:
-    Huxiao(): TriggerSkill("huxiao") {
+    Huxiao(): TargetModSkill("huxiao") {
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()))
+            return from->getMark(objectName());
+        else
+            return 0;
+    }
+};
+
+class HuxiaoCount: public TriggerSkill {
+public:
+    HuxiaoCount(): TriggerSkill("#huxiao-count") {
         events << SlashMissed << EventPhaseChanging;
-        frequency = Compulsory;
     }
     
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == SlashMissed) {
             if (player->getPhase() == Player::Play)
-                room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
+                room->setPlayerMark(player, "huxiao", player->getMark("huxiao") + 1);
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play)
-                if (player->getMark(objectName()) > 0)
-                    room->setPlayerMark(player, objectName(), 0);
+                if (player->getMark("huxiao") > 0)
+                    room->setPlayerMark(player, "huxiao", 0);
         }
 
         return false;
@@ -911,6 +925,20 @@ public:
     }
 };
 
+
+class Shenji: public TargetModSkill {
+public:
+    Shenji(): TargetModSkill("shenji") {
+    }
+
+    virtual int getExtraTargetNum(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()) && from->getWeapon() == NULL)
+            return 2;
+        else
+            return 0;
+    }
+};
+
 SPCardPackage::SPCardPackage()
     :Package("sp_cards")
 {
@@ -966,7 +994,7 @@ SPPackage::SPPackage()
     shenlvbu2->addSkill(new Xiuluo);
     shenlvbu2->addSkill(new ShenweiKeep);
     shenlvbu2->addSkill(new Shenwei);
-    shenlvbu2->addSkill(new Skill("shenji"));
+    shenlvbu2->addSkill(new Shenji);
     related_skills.insertMulti("shenwei", "#shenwei-draw");
 
     General *sp_caiwenji = new General(this, "sp_caiwenji", "wei", 3, false, true);
@@ -990,10 +1018,12 @@ SPPackage::SPPackage()
     guanyinping->addSkill(new Xueji);
     guanyinping->addSkill(new Huxiao);
     guanyinping->addSkill(new HuxiaoRemove);
+    guanyinping->addSkill(new HuxiaoCount);
     guanyinping->addSkill(new Wuji);
     guanyinping->addSkill(new WujiCount);
     related_skills.insertMulti("wuji", "#wuji-count");
     related_skills.insertMulti("huxiao", "#huxiao");
+	related_skills.insertMulti("huxiao", "#huxiao-count");
 
     General *chenlin = new General(this, "chenlin", "wei", 3);
     chenlin->addSkill(new Bifa);
