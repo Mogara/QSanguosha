@@ -448,10 +448,9 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
- 
+
     if(will_throw){
-        card_use.from->setFlags("mute_throw");
-        room->throwCard(this, card_use.from);
+        room->moveCardTo(this, NULL, Player::DiscardedPile, true);
     }
 
     thread->trigger(CardUsed, player, data);
