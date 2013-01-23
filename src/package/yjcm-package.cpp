@@ -698,7 +698,7 @@ public:
 		ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
 
         if(target &&
-			(triggerEvent == Death && (triggerPlayer == target || triggerPlayer == gaoshun)
+			((triggerEvent == Death && (triggerPlayer == target || triggerPlayer == gaoshun))
 			|| (triggerEvent == EventPhaseStart && triggerPlayer == gaoshun && gaoshun->getPhase() == Player::NotActive)))
 		{
             room->setFixedDistance(gaoshun, target, -1);
