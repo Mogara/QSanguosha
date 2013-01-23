@@ -1002,7 +1002,7 @@ public:
 		{
 			if (!damage.from || damage.from->isDead())
 				return false;
-			PlayerStar target = damage.from->tag.value("ShaoyingTarget", NULL).value<PlayerStar>();
+			PlayerStar target = damage.from->tag.value("ShaoyingTarget", QVariant()).value<PlayerStar>();
 			damage.from->tag.remove("ShaoyingTarget");
 			JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
