@@ -1,134 +1,141 @@
 sgs.ai_skill_invoke.moukui = function(self, data)
 	local target = data:toPlayer()
-    return not self:isFriend(target) 
+	return not self:isFriend(target) 
 end
 
-sgs.ai_skill_choice.moukui = function(self, choices)
+sgs.ai_skill_choice.moukui = function(self, choices, data)
+	local target = data:toPlayer()
+	local equip_num = target:getEquips():length()
+	if target:isKongcheng() and equip_num > 0 then
+		if self:hasSkills(sgs.lose_equip_skill, target) or (self:isEquip("SilverLion", target) and target:isWounded() and equip_num == 1) then
+			return "draw"
+		end
+	end
 	return "discard"
 end
 
 sgs.ai_skill_invoke.tianming = function(self, data)
 	if self:hasSkill("manjuan") and self.room:getCurrent() ~= self.player then return false end
 	if self:getCardsNum("Jink") == 0 then return true end
-    local unpreferedCards={}
-    local cards=sgs.QList2Table(self.player:getHandcards())
-    
-    local zcards = self.player:getCards("he")
-    for _, zcard in sgs.qlist(zcards) do
-        if not zcard:isKindOf("Peach") and not zcard:isKindOf("ExNihilo") then
-            table.insert(unpreferedCards,zcard:getId())
-        end	
-    end
-    
-    if #unpreferedCards == 0 then 
-        if self:getCardsNum("Slash")>1 then 
-            self:sortByKeepValue(cards)
-            for _,card in ipairs(cards) do
-                if card:isKindOf("Slash") then table.insert(unpreferedCards,card:getId()) end
-            end
-            table.remove(unpreferedCards, 1)
-        end
-        
-        local num=self:getCardsNum("Jink") - 1	
-        if self.player:getArmor() then num=num+1 end
-        if num>0 then
-            for _,card in ipairs(cards) do
-                if card:isKindOf("Jink") and num>0 then 
-                    table.insert(unpreferedCards,card:getId())
-                    num=num-1
-                end
-            end
-        end
-        for _,card in ipairs(cards) do
-            if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse") or
-                self:getSameEquip(card, self.player) or	card:isKindOf("AmazingGrace") or card:isKindOf("Lightning") then
-                table.insert(unpreferedCards,card:getId())
-            end
-        end
-    
-        if self.player:getWeapon() and self.player:getHandcardNum()<3 then
-            table.insert(unpreferedCards, self.player:getWeapon():getId())
-        end
-                
-	    if (self:isEquip("SilverLion") and self.player:isWounded()) then
-            table.insert(unpreferedCards, self.player:getArmor():getId())
-        end	
+	local unpreferedCards={}
+	local cards=sgs.QList2Table(self.player:getHandcards())
+	
+	local zcards = self.player:getCards("he")
+	for _, zcard in sgs.qlist(zcards) do
+		if not zcard:isKindOf("Peach") and not zcard:isKindOf("ExNihilo") then
+			table.insert(unpreferedCards,zcard:getId())
+		end	
+	end
+	
+	if #unpreferedCards == 0 then 
+		if self:getCardsNum("Slash")>1 then 
+			self:sortByKeepValue(cards)
+			for _,card in ipairs(cards) do
+				if card:isKindOf("Slash") then table.insert(unpreferedCards,card:getId()) end
+			end
+			table.remove(unpreferedCards, 1)
+		end
+		
+		local num=self:getCardsNum("Jink") - 1	
+		if self.player:getArmor() then num=num+1 end
+		if num>0 then
+			for _,card in ipairs(cards) do
+				if card:isKindOf("Jink") and num>0 then 
+					table.insert(unpreferedCards,card:getId())
+					num=num-1
+				end
+			end
+		end
+		for _,card in ipairs(cards) do
+			if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse") or
+				self:getSameEquip(card, self.player) or	card:isKindOf("AmazingGrace") or card:isKindOf("Lightning") then
+				table.insert(unpreferedCards,card:getId())
+			end
+		end
+	
+		if self.player:getWeapon() and self.player:getHandcardNum()<3 then
+			table.insert(unpreferedCards, self.player:getWeapon():getId())
+		end
+				
+		if (self:isEquip("SilverLion") and self.player:isWounded()) then
+			table.insert(unpreferedCards, self.player:getArmor():getId())
+		end	
 
-        if self.player:getOffensiveHorse() and self.player:getWeapon() then
-            table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
-        end
-    end	
-    
-    for index = #unpreferedCards, 1, -1 do
-        if self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then table.remove(unpreferedCards, index) end
-    end
-    
-    if #unpreferedCards >= 2 or #unpreferedCards == #cards then 
-        return true
-    end
+		if self.player:getOffensiveHorse() and self.player:getWeapon() then
+			table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
+		end
+	end	
+	
+	for index = #unpreferedCards, 1, -1 do
+		if self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then table.remove(unpreferedCards, index) end
+	end
+	
+	if #unpreferedCards >= 2 or #unpreferedCards == #cards then 
+		return true
+	end
 end
 
 sgs.ai_skill_discard.tianming = function(self, discard_num, min_num, optional, include_equip)
-    local unpreferedCards={}
-    local cards=sgs.QList2Table(self.player:getHandcards())
-    
-    local zcards = self.player:getCards("he")
-    for _, zcard in sgs.qlist(zcards) do
-        if not zcard:isKindOf("Peach") and not zcard:isKindOf("ExNihilo") then
-            table.insert(unpreferedCards,zcard:getId())
-        end	
-    end
-    
-    if #unpreferedCards == 0 then 
-        if self:getCardsNum("Slash")>1 then 
-            self:sortByKeepValue(cards)
-            for _,card in ipairs(cards) do
-                if card:isKindOf("Slash") then table.insert(unpreferedCards,card:getId()) end
-            end
-            table.remove(unpreferedCards, 1)
-        end
-        
-        local num=self:getCardsNum("Jink") - 1	
-        if self.player:getArmor() then num=num+1 end
-        if num>0 then
-            for _,card in ipairs(cards) do
-                if card:isKindOf("Jink") and num>0 then 
-                    table.insert(unpreferedCards,card:getId())
-                    num=num-1
-                end
-            end
-        end
-        for _,card in ipairs(cards) do
-            if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse") or
-                self:getSameEquip(card, self.player) or	card:isKindOf("AmazingGrace") or card:isKindOf("Lightning") then
-                table.insert(unpreferedCards,card:getId())
-            end
-        end
-    
-        if self.player:getWeapon() and self.player:getHandcardNum()<3 then
-            table.insert(unpreferedCards, self.player:getWeapon():getId())
-        end
-                
-	    if (self:isEquip("SilverLion") and self.player:isWounded()) then
-            table.insert(unpreferedCards, self.player:getArmor():getId())
-        end	
+	local unpreferedCards={}
+	local cards=sgs.QList2Table(self.player:getHandcards())
+	
+	local zcards = self.player:getCards("he")
+	for _, zcard in sgs.qlist(zcards) do
+		if not zcard:isKindOf("Peach") and not zcard:isKindOf("ExNihilo") then
+			table.insert(unpreferedCards,zcard:getId())
+		end	
+	end
+	
+	if #unpreferedCards == 0 then 
+		if self:getCardsNum("Slash")>1 then 
+			self:sortByKeepValue(cards)
+			for _,card in ipairs(cards) do
+				if card:isKindOf("Slash") then table.insert(unpreferedCards,card:getId()) end
+			end
+			table.remove(unpreferedCards, 1)
+		end
+		
+		local num=self:getCardsNum("Jink") - 1	
+		if self.player:getArmor() then num=num+1 end
+		if num>0 then
+			for _,card in ipairs(cards) do
+				if card:isKindOf("Jink") and num>0 then 
+					table.insert(unpreferedCards,card:getId())
+					num=num-1
+				end
+			end
+		end
+		for _,card in ipairs(cards) do
+			if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse") or
+				self:getSameEquip(card, self.player) or	card:isKindOf("AmazingGrace") or card:isKindOf("Lightning") then
+				table.insert(unpreferedCards,card:getId())
+			end
+		end
+	
+		if self.player:getWeapon() and self.player:getHandcardNum()<3 then
+			table.insert(unpreferedCards, self.player:getWeapon():getId())
+		end
+				
+		if (self:isEquip("SilverLion") and self.player:isWounded()) then
+			table.insert(unpreferedCards, self.player:getArmor():getId())
+		end	
 
-        if self.player:getOffensiveHorse() and self.player:getWeapon() then
-            table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
-        end
-    end	
-    
-    for index = #unpreferedCards, 1, -1 do
-        if self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then table.remove(unpreferedCards, index) end
-    end
-    
-    local to_discard = {}
+		if self.player:getOffensiveHorse() and self.player:getWeapon() then
+			table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
+		end
+	end	
+	
+	for index = #unpreferedCards, 1, -1 do
+		if self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then table.remove(unpreferedCards, index) end
+	end
+	
+	local to_discard = {}
 	local count = 0
 	for index = #unpreferedCards, 1, -1 do
-	    table.insert(to_discard, unpreferedCards[index])
+		table.insert(to_discard, unpreferedCards[index])
 		count = count + 1
 		if count == 2 then return to_discard end
-    end
+	end
 	return to_discard
 end
 
@@ -157,25 +164,25 @@ sgs.ai_skill_use_func.MizhaoCard=function(card,use,self)
 	if handcardnum == 1 and trash and #self.enemies - count >= 2 and #self.friends_noself == 0 then
 		self:sort(self.enemies, "hp")
 		use.card = card
-        if use.to then use.to:append(self.enemies[1]) end
+		if use.to then use.to:append(self.enemies[1]) end
 		return
 	end
-    self:sort(self.friends_noself, "hp")
-    for _, friend in ipairs(self.friends_noself) do
-        if not friend:hasSkill("manjuan") then
+	self:sort(self.friends_noself, "hp")
+	for _, friend in ipairs(self.friends_noself) do
+		if not friend:hasSkill("manjuan") then
 			use.card = card
 			if use.to then use.to:append(friend) end
 			return
 		end
-    end
+	end
 end
 
 sgs.ai_use_priority.MizhaoCard = 1.5
-sgs.ai_card_intention.MizhaoCard = 20
+sgs.ai_card_intention.MizhaoCard = -20
 
 sgs.ai_skill_playerchosen.mizhao = function(self, targets)
 	self:sort(self.enemies, "hp")
-    for _, enemy in ipairs(self.enemies) do
+	for _, enemy in ipairs(self.enemies) do
 		if targets:contains(enemy) then return enemy end
 	end
 end
@@ -194,7 +201,7 @@ function sgs.ai_skill_pindian.mizhao(minusecard, self, requestor, maxcard)
 		table.sort(cards, compare_func1)
 	end
 	for _, card in ipairs(cards) do
-		if self:getUseValue(card) < 6 then maxcard = card break end
+		if self:getKeepValue(card) < 8 or card:isKindOf("EquipCard") then maxcard = card break end
 	end
 	return maxcard or cards[1]
 end
@@ -225,13 +232,13 @@ end
 
 sgs.ai_skill_invoke.fenxin = function(self, data)
 	local target = data:toPlayer()
-    local target_role = sgs.evaluatePlayerRole(target)
+	local target_role = sgs.evaluatePlayerRole(target)
 	local self_role = self.player:getRole()
 	if target_role == "renegade" or target_role == "unknown" then return false end
 	local count1, count2 = 1, 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-	    if target_role == "loyalist" then count1 = count1 + 1 end
-	    if target_role == "rebel" then count2 = count2 + 1 end
+		if target_role == "loyalist" then count1 = count1 + 1 end
+		if target_role == "rebel" then count2 = count2 + 1 end
 	end
 	if self_role ~= "loyalist" and target_role == "loyalist" and count1 >= count2 then return true end
 	if self_role ~= "rebel" and target_role == "rebel" and count1 < count2 then return true end
@@ -266,13 +273,13 @@ mixin_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func.MixinCard=function(card,use,self)
-    for _, friend in ipairs(self.friends_noself) do
-        if not friend:hasSkill("manjuan") then
+	for _, friend in ipairs(self.friends_noself) do
+		if not friend:hasSkill("manjuan") then
 			use.card = card
 			if use.to then use.to:append(friend) end
 			return
 		end
-    end
+	end
 end
 
 sgs.ai_skill_playerchosen.mixin = sgs.ai_skill_playerchosen.zero_card_as_slash
@@ -320,13 +327,14 @@ sgs.ai_skill_playerchosen.duyi=function(self, targets)
 	return targetlist[#targetlist]
 end
 
-sgs.ai_skill_invoke.duanzhi = function(self, data)
-	local use = data:toCardUse()
-	if self:isEnemy(use.from) and use.card:getSubtype() == "attack_card" and self.player:getHp() == 1 and not self:getCard("Peach") and not self:getCard("Analeptic") then
-		return true
-	end
-	return self:isEnemy(use.from) and self.player:getHp() > 2
-end
+-- 需要data
+-- sgs.ai_skill_invoke.duanzhi = function(self, data)
+	-- local use = data:toCardUse()
+	-- if self:isEnemy(use.from) and use.card:getSubtype() == "attack_card" and self.player:getHp() == 1 and not self:getCard("Peach") and not self:getCard("Analeptic") then
+		-- return true
+	-- end
+	-- return self:isEnemy(use.from) and self.player:getHp() > 2
+-- end
 
 sgs.ai_skill_choice.duanzhi = function(self, choices)
 	return "discard"
@@ -350,7 +358,7 @@ sgs.ai_skill_use["@@fengyin"] = function(self, data)
 	
 	local card_id = card:getEffectiveId()
 	
-	local target = room:getCurrent()
+	local target = self.room:getCurrent()
 	if self:isFriend(target) and target:containsTrick("indulgence") and target:getHandcardNum() + 2 > target:getHp() then
 		return "@FengyinCard="..card_id
 	end

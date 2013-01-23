@@ -30,6 +30,95 @@ function speakTrigger(card,from,to,event)
 	end
 end
 
+sgs.ai_chat_func[sgs.SlashEffected].blindness=function(self, player, data)
+	local effect= data:toSlashEffect()
+	local chat ={"队长，是我，别开枪，自己人.",
+				"尼玛你杀我，你真是夏侯惇啊",
+				"盲狙一时爽啊, 我泪奔啊",
+				"我次奥，哥们，盲狙能不能轻点？",
+				"再杀我一下，老子和你拼命了"}
+	if not effect.from then return end
+
+	if self:isEquip("Crossbow",effect.from) then
+		table.insert(chat, "快闪，药家鑫来了。")
+		table.insert(chat, "果然是连弩降智商呀。")
+		table.insert(chat, "杀死我也没牌拿，真2")
+	end
+
+	if effect.from:hasFlag("drank") then
+		table.insert(chat, "喝醉了吧，乱砍人？")		
+	end
+
+	if effect.from:isLord() then
+		table.insert(chat, "尼玛眼瞎了，老子是忠啊")
+		table.insert(chat, "主公别打我，我是忠")
+		table.insert(chat, "主公，再杀我，你会裸")
+	end
+
+	local index =1+ (os.time() % #chat)
+
+	if os.time() % 10 <= 3 and not effect.to:isLord() then
+		effect.to:speak(chat[index])
+	end
+end
+
+sgs.ai_chat_func[sgs.Death].stupid_lord=function(self, player, data)
+	local damage=data:toDamageStar()
+	local chat ={"2B了吧，老子这么忠还杀我",
+				"主要臣死，臣不得不死",
+				"房主下盘T了这个主，拉黑不解释",
+				"还有更2的吗",
+				"对这个主，真的很无语",
+				}
+	if damage and damage.from and damage.from:isLord() and self.role=="loyalist" then
+		local index =1+ (os.time() % #chat)
+		damage.to:speak(chat[index])
+	end
+end
+
+sgs.ai_chat_func[sgs.Dying].fuck_renegade=function(self, player, data)
+	local damage=data:toDamageStar()
+	local chat ={"小内，你还不跳啊，要崩盘吧",
+				"9啊，不9就输了",
+				"999...999...",
+				"小内，我死了，你也赢不了",
+				"没戏了，小内不帮忙的话，我们全部托管吧",
+				}
+	if (self.role=="rebel" or self.role=="loyalist") and sgs.current_mode_players["renegade"]>0 then
+		local index =1+ (os.time() % #chat)
+		player:speak(chat[index])
+	end
+end
+
+sgs.ai_chat_func[sgs.EventPhaseStart].comeon=function(self, player, data)
+	local chat ={"有货，可以来搞一下",
+				"我有X张【闪】",
+				"没闪, 忠内不要乱来",
+				"不爽，来啊！砍我啊",
+				"求杀求砍求蹂躏",
+				}
+	if player:getPhase()== sgs.Player_Finish and not player:isKongcheng() and player:hasSkill("leiji") and os.time() % 10 < 4 then
+		local index =1+ (os.time() % #chat)
+		player:speak(chat[index])
+	end	
+end
+
+sgs.ai_chat_func[sgs.EventPhaseStart].beset=function(self, player, data)	
+	local chat ={
+		"大家一起围观一下主公",
+		"不要一下弄死了，慢慢来",
+		"速度，一人一下，弄死",
+		"主公，你投降吧，免受皮肉之苦啊，投降给全尸",
+	}
+	if player:getPhase()== sgs.Player_Start and self.role=="rebel" and sgs.current_mode_players["renegade"]==0 
+			and sgs.current_mode_players["loyalist"]==0  and sgs.current_mode_players["rebel"]>=2 and os.time() % 10 < 4 then
+		local index =1+ (os.time() % #chat)
+		player:speak(chat[index])
+	end
+end
+
+
+
 
 function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", true) then return end

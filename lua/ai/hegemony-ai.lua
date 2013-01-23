@@ -244,12 +244,12 @@ if sgs.GetConfig("EnableHegemony", false) then
 	
 	SmartAI.printAll = function(self, player, intention)
 		local name = player:objectName()
-		self.room:writeToConsole(self:getHegGeneralName(player) .. math.floor(intention*10)/10 ..
-		" R" .. math.floor((sgs.ai_loyalty["shu"][name] or 0)*10)/10 ..
-		" G" .. math.floor((sgs.ai_loyalty["wu"][name] or 0)*10)/10 ..
-		" B" .. math.floor((sgs.ai_loyalty["wei"][name] or 0)*10)/10 ..
-		" Q" .. math.floor((sgs.ai_loyalty["qun"][name] or 0)*10)/10 ..
-		" E" .. (sgs.ai_explicit[name] or "nil"))
+		self.room:writeToConsole(self:getHegGeneralName(player) .. math.floor(intention * 10) / 10
+								.. " R" .. math.floor((sgs.ai_loyalty["shu"][name] or 0) * 10) / 10
+								.. " G" .. math.floor((sgs.ai_loyalty["wu"][name] or 0) * 10) / 10
+								.. " B" .. math.floor((sgs.ai_loyalty["wei"][name] or 0) * 10) / 10
+								.. " Q" .. math.floor((sgs.ai_loyalty["qun"][name] or 0) * 10) / 10
+								.. " E" .. (sgs.ai_explicit[name] or "nil"))
 	end
 	
 	SmartAI.printFEList = function(self)
@@ -263,3 +263,4 @@ if sgs.GetConfig("EnableHegemony", false) then
 		self.room:writeToConsole(self:getHegGeneralName().." list end")
 	end
 end
+

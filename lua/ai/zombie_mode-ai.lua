@@ -1,20 +1,27 @@
 if sgs.GetConfig("GameMode", ""):match("zombie") then
 	function sgs.ai_filterskill_filter.ganran(card, card_place)
 		if card:getTypeId() == sgs.Card_Equip then
-			return ("iron_chain:ganran[%s:%s]=%d"):format(
+			local str = string.format("iron_chain:ganran[%s:%s]=%d", 
 				card:getSuitString(),
 				card:getNumberString(),
 				card:getEffectiveId()
 			)
+			sgs.Self:getRoom():writeToConsole(str)
+			return str
 		end
 	end
 	
 	local ganran_skill = {}
-	table.insert(sgs.ai_skills, ganran_skill)
 	ganran_skill.name = "ganran"
+	table.insert(sgs.ai_skills, ganran_skill)
 	function ganran_skill.getTurnUseCard(self)
 		local card = self:getCard("EquipCard")
-		if card then return sgs.Card_Parse(sgs.ai_filterskill_filter.ganran(card)) end
+		if card then 
+			local acard = sgs.ai_filterskill_filter.ganran(card, sgs.Player_PlaceHand)
+			local card_str = sgs.Card_Parse(acard)
+			assert(card_str)
+			return card_str 
+		end
 	end
 	
 	local useTrickCard = SmartAI.useTrickCard

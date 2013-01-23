@@ -6,7 +6,6 @@ zhiyuan_skill.getTurnUseCard=function(self)
 	cards=sgs.QList2Table(cards)
 
 	local basic_card
-
 	self:sortByUseValue(cards,true)
 
 	for _,card in ipairs(cards)  do
@@ -61,7 +60,7 @@ sgs.ai_skill_use_func["TaichenFightCard"]=function(card,use,self)
 	if self.player:usedTimes("TaichenFightCard")>0 then return end
 	local lord=self.room:getLord()
 	if self.player:getHp()>=lord:getHp() then
-		if (self:getCardsNum("Slash")+1)*2>self:getCardsNum("Slash", lord) then
+		if (self:getCardsNum("Slash")+1)*2>getCardsNum("Slash", lord) then
 			use.card=card
 		end
 	end
@@ -137,23 +136,21 @@ sgs.ai_skill_invoke.xiansheng=function(self)
 	return false
 end
 
-local ganran_skill={}
-ganran_skill.name="ganran"
-table.insert(sgs.ai_skills,ganran_skill)
-ganran_skill.getTurnUseCard=function(self)
-	local cards=self.player:getCards("h")
-		cards=sgs.QList2Table(cards)
+sgs.ai_skill_use["@@smalltuxi"] = function(self, prompt)
+	self:sort(self.enemies, "handcard")
 
-	for _,card in ipairs(cards) do
-		if card:isKindOf("EquipCard") then
-			local suit = card:getSuitString()
-			local number = card:getNumberString()
-			local card_id = card:getEffectiveId()
-			local card_str = ("iron_chain:ganran[%s:%s]=%d"):format(suit, number, card_id)
-			local thecard=sgs.Card_Parse(card_str)
-			return thecard
+	local first_index
+	for i = 1, #self.enemies - 1 do
+		if self:hasSkills(sgs.need_kongcheng, self.enemies[i]) and self.enemies[i]:getHandcardNum() == 1 then
+		elseif not self.enemies[i]:isKongcheng() then
+			first_index = i
+			break
 		end
 	end
 
-	return nil
+	self:log(self.enemies[first_index]:getGeneralName())
+	local first = self.enemies[first_index]:objectName()
+	return ("@SmallTuxiCard=.->%s+%s"):format(first)
 end
+
+sgs.ai_card_intention.SmallTuxiCard = 80
