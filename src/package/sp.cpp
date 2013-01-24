@@ -897,9 +897,12 @@ public:
         events << HpChanged;
     }
 
-    const void loseskill(ServerPlayer *target, const QString &skill) const{
-        if(!target->getGeneral()->hasSkill(skill) && !target->getGeneral2()->hasSkill(skill))
-            target->getRoom()->detachSkillFromPlayer(target, skill);
+    void loseskill(ServerPlayer *target, const QString &skill) const{
+        if(target->getGeneral()->hasSkill(skill))
+            return;
+        if(target->getGeneral2() && target->getGeneral2()->hasSkill(skill))
+            return;
+        target->getRoom()->detachSkillFromPlayer(target, skill);
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *target, QVariant &data) const{

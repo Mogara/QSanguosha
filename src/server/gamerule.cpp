@@ -571,14 +571,14 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
 
             LogMessage log;
 
-            room->throwCard(pindian->from_card);
+            room->moveCardTo(pindian->from_card, NULL, Player::DiscardedPile);
             log.type = "$PindianResult";
             log.from = pindian->from;
             log.card_str = pindian->from_card->getEffectIdString();
             room->sendLog(log);
             room->getThread()->delay();
 
-            room->throwCard(pindian->to_card);
+            room->moveCardTo(pindian->to_card, NULL, Player::DiscardedPile);
             log.type = "$PindianResult";
             log.from = pindian->to;
             log.card_str = pindian->to_card->getEffectIdString();
