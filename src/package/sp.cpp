@@ -890,6 +890,55 @@ public:
     }
 };
 
+class Baobian: public TriggerSkill{
+public:
+    Baobian(): TriggerSkill("baobian"){
+        frequency = Compulsory;
+        events << HpChanged;
+    }
+
+    const void loseskill(ServerPlayer *target, const QString &skill) const{
+        if(!target->getGeneral()->hasSkill(skill) && !target->getGeneral2()->hasSkill(skill))
+            target->getRoom()->detachSkillFromPlayer(target, skill);
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *target, QVariant &data) const{
+        if(target->isDead())
+            return false;
+        int hp = target->getHp();
+        switch(hp){
+        case 0:
+        case 1:{
+            room->playSkillEffect(objectName(), 3);
+            room->acquireSkill(target, "shensu");
+        }
+        case 2:{
+            if(hp == 2){
+                room->playSkillEffect(objectName(), 2);
+                loseskill(target, "shensu");
+            }
+            room->acquireSkill(target, "paoxiao");
+        }
+        case 3:{
+            if(hp == 3){
+                room->playSkillEffect(objectName(), 1);
+                loseskill(target, "shensu");
+                loseskill(target, "paoxiao");
+            }
+            room->acquireSkill(target, "tiaoxin");
+            break;
+        }
+        default:
+            QStringList skills;
+            skills << "shensu" << "paoxiao" << "tiaoxin";
+            foreach(QString skill, skills)
+                loseskill(target, skill);
+            break;
+        }
+        return false;
+    }
+};
+
 SPCardPackage::SPCardPackage()
     :Package("sp_cards")
 {
@@ -976,7 +1025,10 @@ SPPackage::SPPackage()
     General *chenlin = new General(this, "chenlin", "wei", 3);
     chenlin->addSkill(new Bifa);
     chenlin->addSkill(new Songci);
-    
+
+    General *xiahouba = new General(this, "xiahouba", "shu");
+    xiahouba->addSkill(new Baobian);
+
     addMetaObject<WeidiCard>();
     addMetaObject<YuanhuCard>();
     addMetaObject<XuejiCard>();
