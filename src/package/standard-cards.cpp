@@ -514,7 +514,6 @@ Halberd::Halberd(Suit suit, int number)
     :Weapon(suit, number, 4)
 {
     setObjectName("Halberd");
-	skill = new HalberdSkill
 }
 
 class KylinBowSkill: public WeaponSkill{
@@ -1362,7 +1361,7 @@ StandardCardPackage::StandardCardPackage()
     foreach(Card *card, cards)
         card->setParent(this);
 
-    skills << new SpearSkill << new AxeViewAsSkill;
+    skills << new SpearSkill << new AxeViewAsSkill << new HalberdSkill;
 }
 
 StandardExCardPackage::StandardExCardPackage()

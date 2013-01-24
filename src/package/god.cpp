@@ -1442,7 +1442,6 @@ GodPackage::GodPackage()
     addMetaObject<ShenfenCard>();
     addMetaObject<GreatYeyanCard>();
     addMetaObject<SmallYeyanCard>();
-    addMetaObject<WushenSlash>();
     addMetaObject<KuangfengCard>();
     addMetaObject<DawuCard>();
     addMetaObject<WuqianCard>();
