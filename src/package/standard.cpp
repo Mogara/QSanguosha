@@ -168,6 +168,7 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
     :TrickCard(suit, number, true), movable(movable)
 {
+    will_throw = false;
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{

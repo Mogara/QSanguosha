@@ -259,7 +259,7 @@ public:
             log.type = "#Jiangchi1";
             room->sendLog(log);
             room->playSkillEffect(objectName(), 1);
-            room->setPlayerCardLock(caozhang, "Slash");
+            room->setPlayerFlag(caozhang, "jiangchi_forbid");
             return n + 1;
         }else{
             log.type = "#Jiangchi2";
@@ -271,18 +271,31 @@ public:
     }
 };
 
-class JiangchiClear: public PhaseChangeSkill{
+class JiangchiForbid: public TriggerSkill{
 public:
-    JiangchiClear():PhaseChangeSkill("#jiangchi-clear"){
+    JiangchiForbid():TriggerSkill("#jiangchi_forbid"){
+        events << CardAsk << CardUseAsk << PhaseChange;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target);
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *caozhang) const{
-        if(caozhang->getPhase() == Player::NotActive && caozhang->hasCardLock("Slash"))
-            caozhang->getRoom()->setPlayerCardLock(caozhang, "-Slash");
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *caozhang, QVariant &data) const{
+        if(event == PhaseChange){
+            if(caozhang->getPhase() == Player::NotActive)
+                room->setPlayerFlag(caozhang, "-jiangchi_forbid");
+            return false;
+        }
+        else{
+            QString asked = data.toString();
+            if(asked == "slash"){
+                /*room->playSkillEffect(objectName(), qrand() % 2 + 3);
+                LogMessage log;
+                log.type = "#Jiangchi";
+                log.from = caozhang;
+                log.arg = asked;
+                log.arg2 = objectName();
+                room->sendLog(log);*/
+                return true;
+            }
+        }
         return false;
     }
 };
@@ -294,10 +307,13 @@ public:
     }
 
     virtual int getSlashResidue(const Player *t) const{
-        if(t->hasSkill("jiangchi") && t->hasFlag("jiangchi_invoke"))
-            return qMax(1 - t->getSlashCount() + 1, 0);
-        else
-            return SlashSkill::getSlashResidue(t);
+        if(t->hasSkill("jiangchi")){
+            if(t->hasFlag("jiangchi_invoke"))
+                return qMax(1 - t->getSlashCount() + 1, 0);
+            else if(t->hasFlag("jiangchi_forbid"))
+                return -998;
+        }
+        return SlashSkill::getSlashResidue(t);
     }
 
     virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
@@ -887,8 +903,8 @@ YJCM2012Package::YJCM2012Package()
 
     General *caozhang = new General(this, "caozhang", "wei");
     caozhang->addSkill(new Jiangchi);
-    caozhang->addSkill(new JiangchiClear);
-    related_skills.insertMulti("jiangchi", "#jiangchi-clear");
+    caozhang->addSkill(new JiangchiForbid);
+    related_skills.insertMulti("jiangchi", "#jiangchi_forbid");
     skills << new JiangchiSlash;
 
     General *madai = new General(this, "madai", "shu");

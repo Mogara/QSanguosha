@@ -38,12 +38,19 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
     if(zhanghe->getPhase() == Player::Draw){
         room->playSkillEffect("qiaobian", 2);
-        foreach(ServerPlayer *target, targets){
-            int card_id = room->askForCardChosen(zhanghe, target, "h", "qiaobian");
-            room->moveCardTo(Sanguosha->getCard(card_id), zhanghe, Player::Hand, false);
+        if(targets.isEmpty())
+            return;
+
+        QList<ServerPlayer *> players = targets;
+        qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
+        foreach(ServerPlayer *target, players){
+            room->cardEffect(this, zhanghe, target);
         }
     }else if(zhanghe->getPhase() == Player::Play){
         room->playSkillEffect("qiaobian", 3);
+        if(targets.isEmpty())
+            return;
+
         PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
             return;
@@ -87,6 +94,19 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         room->playSkillEffect("qiaobian", 4);
 }
 
+void QiaobianCard::onEffect(const CardEffectStruct &effect) const{
+    if(effect.from->getPhase() == Player::Draw){
+        Room *room = effect.from->getRoom();
+        if(!effect.to->isKongcheng()){
+            int card_id = room->askForCardChosen(effect.from, effect.to, "h", "qiaobian");
+            room->obtainCard(effect.from, card_id, false);
+
+            room->setEmotion(effect.to, "bad");
+            room->setEmotion(effect.from, "good");
+        }
+    }
+}
+
 class QiaobianViewAsSkill: public OneCardViewAsSkill{
 public:
     QiaobianViewAsSkill():OneCardViewAsSkill(""){
@@ -123,7 +143,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && !target->isKongcheng();
+        return target != NULL && PhaseChangeSkill::triggerable(target) && !target->isKongcheng();
     }
 
     virtual bool onPhaseChange(ServerPlayer *zhanghe) const{
@@ -152,7 +172,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -233,6 +253,8 @@ public:
         DamageStar damage = data.value<DamageStar>();
 
         if(damage && damage->from && damage->from->getGeneralName() != "anjiang"){
+            if (player == NULL) return false;
+
             LogMessage log;
             log.type = "#DuanchangLoseSkills";
             log.from = player;
@@ -391,7 +413,8 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     foreach(ServerPlayer *p, room->getAlivePlayers()){
         if(!snatch->targetFilter(empty_list, p, dengai))
             continue;
-
+        if(dengai->distanceTo(p) > 1)
+            continue;
         if(dengai->isProhibited(p, snatch))
             continue;
 

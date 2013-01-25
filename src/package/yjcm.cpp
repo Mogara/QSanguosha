@@ -196,7 +196,7 @@ public:
                 log.arg = damage.card->objectName();
                 log.arg2 = objectName();
                 room->sendLog(log);
-                room->playSkillEffect(objectName(), damage.from->isCaoCao()? 3: 2);
+                room->playSkillEffect(objectName(), damage.from && damage.from->isCaoCao()? 3: 2);
 
                 return true;
             }

@@ -855,9 +855,9 @@ public:
         }else if(event == CardResponsed)
             card = data.value<CardStar>();
 
-        if(card->isNDTrick()){
-            ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());
-            if(shuijing->isAlive()){
+        if(card && card->isNDTrick()){
+            PlayerStar shuijing = room->findPlayerBySkillName(objectName());
+            if(shuijing && shuijing->isAlive()){
                 if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue(shuijing))){
                     room->playSkillEffect(objectName(), isLongfeng(player) ? 2 : 1);
                     shuijing->drawCards(1);
