@@ -410,8 +410,8 @@ public:
         frequency = NotFrequent;
     }
 
-    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
-        if(from->hasSkill("shenji") && !from->getWeapon())
+    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *) const{
+        if(from->hasSkill(objectName()) && !from->getWeapon())
             return 2;
         else
             return 0;
