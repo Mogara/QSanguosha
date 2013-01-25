@@ -732,8 +732,8 @@ bool Player::isProhibited(const Player *to, const Card *card) const{
     return Sanguosha->isProhibited(this, to, card);
 }
 
-bool Player::canSlashWithoutCrossbow() const{ //back-out
-    return true;
+bool Player::canSlashWithoutCrossbow() const{
+    return Slash::IsAvailable(this);
 }
 
 void Player::jilei(const QString &type){

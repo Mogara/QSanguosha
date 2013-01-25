@@ -183,9 +183,6 @@ QString DelayedTrick::getSubtype() const{
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
-    if(!movable)
-        room->throwCard(this);
-
     LogMessage log;
     log.from = effect.to;
     log.type = "#DelayedTrick";
@@ -196,12 +193,13 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     judge_struct.who = effect.to;
     room->judge(judge_struct);
 
-    if(judge_struct.isBad()){
-        room->throwCard(this);
+    if(judge_struct.isBad())
         takeEffect(effect.to);
-    }else if(movable){
+    else if(movable)
         onNullified(effect.to);
-    }
+
+    if(!movable)
+        room->throwCard(this);
 }
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
