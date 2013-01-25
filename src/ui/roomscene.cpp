@@ -2358,7 +2358,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             dashboard->highlightEquip(skill_name, true);
             // @todo: refactor this
             foreach (QSanSkillButton *button, m_skillButtons){
-                if (button->getSkill()->objectName() == skill_name) {
+                const Skill *skill = button->getSkill();
+                if (skill && (skill->objectName() == skill_name)) {
                     if (button->getStyle() == QSanSkillButton::S_STYLE_TOGGLE
                         && button->isEnabled() && button->isDown()) {
                         ClientInstance->onPlayerInvokeSkill(true);
@@ -3187,10 +3188,14 @@ void RoomScene::chooseSkillButton(){
     QVBoxLayout *layout = new QVBoxLayout;
 
     foreach (QSanSkillButton* btn, enabled_buttons) {
-        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(btn->getSkill()->objectName()));
-        connect(button, SIGNAL(clicked()), btn, SLOT(click()));
-        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
-        layout->addWidget(button);
+        const Skill *skill = btn->getSkill();
+        /* pansz: is it okay to skip? */
+        if (skill) {
+            QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(skill->objectName()));
+            connect(button, SIGNAL(clicked()), btn, SLOT(click()));
+            connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+            layout->addWidget(button);
+        }
     }
 
     dialog->setLayout(layout);

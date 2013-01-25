@@ -293,8 +293,12 @@ bool Player::isLord() const{
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
     if (!include_lose) {
-        if ((!Sanguosha->getSkill(skill_name)->inherits("WeaponSkill") && !Sanguosha->getSkill(skill_name)->inherits("ArmorSkill"))
-			&& ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2) || getMark("Qingcheng" + skill_name) > 0))
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (!skill) {
+            return false;
+        }
+        if ((!skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"))
+                && ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2) || getMark("Qingcheng" + skill_name) > 0))
             return false;
     }
     return skills.contains(skill_name)
@@ -313,8 +317,12 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
 
 bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
     if (!include_lose) {
-        if ((!Sanguosha->getSkill(skill_name)->inherits("WeaponSkill") && !Sanguosha->getSkill(skill_name)->inherits("ArmorSkill"))
-			&& ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2) || getMark("Qingcheng" + skill_name) > 0))
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (!skill) {
+            return false;
+        }
+        if ((!skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"))
+                && ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2) || getMark("Qingcheng" + skill_name) > 0))
             return false;
     }
     if(acquired_skills.contains(skill_name))

@@ -396,7 +396,10 @@ QSanInvokeSkillDock::getSkillButtonByName(const QString &skillName) const
 {
     foreach (QSanInvokeSkillButton* button, _m_buttons)
     {
-        if (button->getSkill()->objectName() == skillName)
+        const Skill *skill = button->getSkill();
+        if (!skill)
+            return NULL;
+        else if (skill->objectName() == skillName)
             return button;
     }
     return NULL;
