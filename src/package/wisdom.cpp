@@ -179,8 +179,7 @@ public:
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
             room->playSkillEffect(objectName());
-            jiangwei->setFlags("mute_throw");
-            room->throwCard(card, jiangwei);
+            room->moveCardTo(card, NULL, Player::DiscardedPile);
             room->askForUseCard(jiangwei, "slash", "@askforslash");
         }
         return false;
@@ -819,6 +818,8 @@ public:
 
         room->setPlayerMark(player, "jiehuo", 1);
         player->loseAllMarks("@shouye");
+        room->broadcastInvoke("animate", "lightbox:$jiehuo");
+        room->getThread()->delay(1500);
         room->setPlayerMark(player, "shouyeonce", 1);
         room->acquireSkill(player, "shien");
         room->playSkillEffect(objectName());

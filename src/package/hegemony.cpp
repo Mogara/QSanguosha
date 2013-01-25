@@ -255,7 +255,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardStar card = data.value<CardStar>();
-        if(!player->hasFlag("mute_throw") && player->askForSkillInvoke(objectName())){
+        if(player->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName());
             ServerPlayer *t = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
             t->obtainCard(card);
@@ -300,6 +300,8 @@ bool XiongyiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void XiongyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     source->loseMark("@xiongyi");
+    room->broadcastInvoke("animate", "lightbox:$xiongyi");
+    room->getThread()->delay(1500);
     bool onlyme = false;
     if(targets.contains(source) && targets.length() == 1)
         onlyme = true;

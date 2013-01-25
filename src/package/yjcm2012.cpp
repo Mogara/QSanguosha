@@ -70,7 +70,7 @@ public:
                 int n = 3;
                 if(target == wangyi)
                     n = 2;
-                else if(target->hasSkill("tieji"))
+                else if(target->getGeneral()->isCaoCao("machao"))
                     n = 4;
                 room->playSkillEffect(objectName(), n);
 
@@ -478,7 +478,7 @@ public:
     virtual int getDrawNum(ServerPlayer *liubiao, int n) const{
         Room *room = liubiao->getRoom();
         if(liubiao->getLostHp() > 0 && room->askForSkillInvoke(liubiao, objectName())){
-            room->playSkillEffect(objectName());
+            room->playSkillEffect(objectName(), liubiao->getLostHp());
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
             return n + liubiao->getLostHp();
@@ -523,7 +523,8 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
                 (damage.card->isRed() || damage.card->hasFlag("drank"))){
-            room->playSkillEffect(objectName());
+            int index = damage.card->hasFlag("drank") ? 2 : damage.from->getGeneral()->isCaoCao("guanyu") ? 3 : 1;
+            room->playSkillEffect(objectName(), index);
 
             LogMessage log;
             log.type = "#TriggerSkill";
@@ -606,6 +607,7 @@ bool JiefanCard::targetFilter(const QList<const Player *> &targets, const Player
 void JiefanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &tar) const{
     source->loseMark("@bother");
     room->broadcastInvoke("animate", "lightbox:$jiefan");
+    room->getThread()->delay(1500);
     PlayerStar target = tar.first();
     foreach(ServerPlayer *p, room->getAllPlayers()){
         if(p->inMyAttackRange(target)){
@@ -632,6 +634,7 @@ public:
 
 AnxuCard::AnxuCard(){
     once = true;
+    mute = true;
 }
 
 bool AnxuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -653,6 +656,10 @@ void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHandcardNum() < selecteds.last()->getHandcardNum() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
+    int index = 1;
+    if(from->getGeneral()->isCaoCao("sunquan") || to->getGeneral()->isCaoCao("sunquan"))
+        index = 2;
+    room->playSkillEffect(skill_name, index);
     int id = room->askForCardChosen(from, to, "h", "anxu");
     const Card *cd = Sanguosha->getCard(id);
     room->obtainCard(from, cd);
@@ -699,8 +706,8 @@ public:
         if(targets.isEmpty() || !player->askForSkillInvoke(objectName(), data))
             return false;
 
-        room->playSkillEffect(objectName());
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
+        room->playSkillEffect(objectName(), target->getGeneral()->isCaoCao("sunquan") ? 2 : 1);
 
         target->drawCards(3);
         RecoverStruct recover;
@@ -747,14 +754,20 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == Damage){
             DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName())
+            if(damage.card && damage.card->inherits("Slash") && damage.card->getSkillName() == objectName()){
                 player->tag["Invokelihuo"] = true;
+                room->playSkillEffect(objectName(), 2);
+            }
         }
         else if(player->tag.value("Invokelihuo", false).toBool()){
             player->tag["Invokelihuo"] = false;
             room->loseHp(player, 1);
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return 1;
     }
 };
 
@@ -775,12 +788,13 @@ public:
 ChunlaoCard::ChunlaoCard(){
     will_throw = false;
     target_fixed = true;
+    mute = true;
 }
 
 void ChunlaoCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    foreach(int id, this->subcards){
+    foreach(int id, this->subcards)
         source->addToPile("wine", id, true);
-    }
+    source->playSkillEffect(skill_name, 1);
 }
 
 class ChunlaoViewAsSkill:public ViewAsSkill{
@@ -851,8 +865,14 @@ public:
         }
         return false;
     }
-};
 
+    virtual int getEffectIndex(const ServerPlayer *who, const Card *) const{
+        if(who->getGeneral()->isCaoCao("zhouyu"))
+            return 3;
+        else
+            return 2;
+    }
+};
 
 YJCM2012Package::YJCM2012Package()
     :Package("YJCM2012")

@@ -50,9 +50,8 @@ void Shit::onMove(const CardMoveStruct &move) const{
     }
 }
 
-void Shit::onUse(Room *room, const CardUseStruct &card_use) const{
-    card_use.from->setFlags("mute_throw");
-    room->throwCard(this, card_use.from);
+void Shit::onUse(Room *room, const CardUseStruct &) const{
+    room->moveCardTo(this, NULL, Player::DiscardedPile);
 }
 
 bool Shit::HasShit(const Card *card){

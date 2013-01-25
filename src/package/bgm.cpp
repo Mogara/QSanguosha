@@ -58,6 +58,7 @@ public:
 };
 
 LihunCard::LihunCard(){
+    mute = true;
 }
 
 bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -72,12 +73,13 @@ bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void LihunCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
+    int index = effect.to->getGeneral()->isCaoCao("lvbu") ? 3 : effect.to->getGeneral()->isCaoCao("dongzhuo") ? 4 : 1;
+    room->playSkillEffect(skill_name, index);
     effect.from->turnOver();
 
     DummyCard *dummy_card = new DummyCard;
-    foreach(const Card *cd, effect.to->getHandcards()){
+    foreach(const Card *cd, effect.to->getHandcards())
         dummy_card->addSubcard(cd);
-    }
     if (!effect.to->isKongcheng())
         room->moveCardTo(dummy_card, effect.from, Player::Hand, false);
     room->setTag("LihunTarget", QVariant::fromValue(effect.to));
@@ -127,20 +129,18 @@ public:
 
             int hp = target->isAlive() ? target->getHp() : 0;
             if(diaochan->getCards("he").length() <= hp){
-                foreach(const Card *card, diaochan->getCards("he")){
+                foreach(const Card *card, diaochan->getCards("he"))
                     room->obtainCard(target, card, room->getCardPlace(card->getEffectiveId()) != Player::Hand);
-                }
             }
             else{
-                int i;
-                for(i = 0; i < hp; i++){
+                for(int i = 0; i < hp; i++){
                     if(diaochan->isNude())
                         return false;
-
                     int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
                     room->obtainCard(target, card_id, room->getCardPlace(card_id) != Player::Hand);
                 }
             }
+            room->playSkillEffect(objectName(), 2);
             room->removeTag("LihunTarget");
         }
 
@@ -361,10 +361,11 @@ public:
         if(event == PhaseChange && sp_pangtong->getMark("zuixiangHasTrigger") == 0){
             if(sp_pangtong->getPhase() == Player::Start){
                 if(sp_pangtong->getMark("@sleep") == 1){
-                    if(!sp_pangtong->askForSkillInvoke(objectName()))
-                        return false;
-                    sp_pangtong->loseMark("@sleep", 1);
-                    doZuixiang(sp_pangtong);
+                    if(sp_pangtong->askForSkillInvoke(objectName())){
+                        sp_pangtong->loseMark("@sleep", 1);
+                        room->broadcastInvoke("animate", "lightbox:$zuixiang");
+                        doZuixiang(sp_pangtong);
+                    }
                 }else
                     doZuixiang(sp_pangtong);
             }
@@ -554,6 +555,7 @@ public:
 TanhuCard::TanhuCard(){
     once = true;
     will_throw = false;
+    mute = true;
 }
 
 bool TanhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -561,11 +563,15 @@ bool TanhuCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void TanhuCard::use(Room *room, ServerPlayer *lvmeng, const QList<ServerPlayer *> &targets) const{
+    room->playSkillEffect(skill_name, 1);
     bool success = lvmeng->pindian(targets.first(), "tanhu", this);
     if(success){
+        room->playSkillEffect(skill_name, 2);
         room->setPlayerFlag(targets.first(), "TanhuTarget");
         room->setFixedDistance(lvmeng, targets.first(), 1);
     }
+    else
+        room->playSkillEffect(skill_name, 3);
 }
 
 class TanhuViewAsSkill: public OneCardViewAsSkill{
@@ -710,9 +716,8 @@ public:
         QList<ServerPlayer *> targets = room->getOtherPlayers(liubei);
         QList<ServerPlayer *> victims;
         foreach(ServerPlayer *p, targets){
-            if(liubei->inMyAttackRange(p)){
+            if(liubei->inMyAttackRange(p))
                 victims << p;
-            }
         }
         if(liubei->getPhase() == Player::Draw && liubei->hasFlag("Invoked")){
             room->setPlayerFlag(liubei, "-Invoked");
@@ -740,7 +745,7 @@ public:
             QString choice;
             if (choicelist.length() >=2){
                 QVariant data = QVariant::fromValue(no_basic);
-                choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"));
+                choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"), data);
             }
             else{
                 choice = "damage";
@@ -865,6 +870,7 @@ public:
 
 YanxiaoCard::YanxiaoCard(){
     will_throw = false;
+    mute = true;
 }
 
 bool YanxiaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -873,6 +879,7 @@ bool YanxiaoCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
+    room->playSkillEffect(skill_name, target->getGeneral()->isCaoCao("sunce") ? 2 : 1);
     room->moveCardTo(this, target, Player::Judging);
     QStringList yanxiaos = target->property("yanxiao").toString().split("|");
     yanxiaos << getEffectIdString();

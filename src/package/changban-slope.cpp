@@ -399,15 +399,16 @@ void CBChanSheCard::onUse(Room *room, const CardUseStruct &card_use) const{
     card_use.from->invoke("clearAG");
     if(card_id != -1){
         const Card *redAnger = Sanguosha->getCard(card_id);
-        Indulgence *indulgence = new Indulgence(redAnger->getSuit(), redAnger->getNumber());
-        indulgence->addSubcard(card_id);
-        indulgence->setSkillName(skill_name);
 
-        CardUseStruct use;
-        use.card = redAnger;
-        use.from = card_use.from;
-        use.to << target;
-        room->useCard(use);
+        Card *new_card = Sanguosha->cloneCard("indulgence", redAnger->getSuit(), redAnger->getNumber());
+        new_card->setSkillName(skill_name);
+        new_card->addSubcard(card_id);
+
+        if(!card_use.from->isProhibited(target, redAnger)){
+            CardUseStruct use = card_use;
+            use.card = new_card;
+            room->useCard(use);
+        }
     }else{
         LogMessage log;
         log.type = "#CBChanSheLog";

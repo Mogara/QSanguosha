@@ -162,6 +162,13 @@ return {
 	["$songci2"] = "汝众违旅叛，当有此报！",             --discardCards
 	["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
 
+	["#xiahouba"] = "棘途壮志",
+	["xiahouba"] = "夏侯霸",
+	["illustrator:xiahouba"] = "",
+	["designer:xiahouba"] = "韩旭",
+	["baobian"] = "豹变",
+	[":baobian"] = "锁定技，若你的体力值为3或更少，你视为拥有技能“挑衅”；若你的体力值为2或更少；你视为拥有技能“咆哮”；若你的体力值为1，你视为拥有技能“神速”。",
+
 --hulao mode
 	["Hulaopass"] = "虎牢关模式",
 
