@@ -547,14 +547,14 @@ public:
     }
 };
 
-class HaoshiGive: public PhaseChangeSkill{
+class HaoshiGive: public TriggerSkill{
 public:
-    HaoshiGive():PhaseChangeSkill("#haoshi-give"){
-        // @todo_P: new event AfterDrawNCards later
+    HaoshiGive(): TriggerSkill("#haoshi-give") {
+        events << AfterDrawNCards;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *lusu) const{
-        if(lusu->getPhase() == Player::Draw && lusu->hasFlag("haoshi")){
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &) const{
+        if(lusu->hasFlag("haoshi")){
             lusu->setFlags("-haoshi");
 
             Room *room = lusu->getRoom();

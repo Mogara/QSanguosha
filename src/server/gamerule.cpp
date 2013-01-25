@@ -62,13 +62,14 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             if(room->getTag("FirstRound").toBool()){
                 room->setTag("FirstRound", false);
                 if(room->getMode() == "02_1v1")
-                    num = 1;
+                    num--;
             }
 
             room->getThread()->trigger(DrawNCards, room, player, num);
             int n = num.toInt();
             if(n > 0)
                 player->drawCards(n, false);
+            room->getThread()->trigger(AfterDrawNCards, room, player, QVariant::fromValue(n));
             break;
         }
 

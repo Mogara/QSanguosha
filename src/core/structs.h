@@ -384,6 +384,7 @@ enum TriggerEvent{
     EventPhaseChanging,
 
     DrawNCards,
+    AfterDrawNCards,
 
     HpRecover,
     HpLost,

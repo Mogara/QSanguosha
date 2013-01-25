@@ -756,7 +756,7 @@ public:
 class ZhaolieAct: public TriggerSkill{
 public:
     ZhaolieAct():TriggerSkill("#zhaolie"){
-        events << CardDrawnDone;
+        events << AfterDrawNCards;
     }
 
 

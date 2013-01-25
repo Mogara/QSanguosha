@@ -50,7 +50,7 @@ public:
         Room *room = zhugejin->getRoom();
         if(room->askForSkillInvoke(zhugejin, objectName())){
             room->broadcastSkillInvoke(objectName());
-            room->setPlayerFlag(zhugejin, "Invoked");
+            room->setPlayerFlag(zhugejin, objectName());
             return n - 1;
         }else
             return n;
@@ -60,11 +60,11 @@ public:
 class HongyuanAct: public TriggerSkill{
 public:
     HongyuanAct():TriggerSkill("#hongyuan"){
-        events << CardDrawnDone;
+        events << AfterDrawNCards;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhugejin, QVariant &data) const{
-        if(zhugejin->getPhase() == Player::Draw && zhugejin->hasFlag("Invoked")){
+        if(zhugejin->getPhase() == Player::Draw && zhugejin->hasFlag("hongyuan")){
             room->setPlayerFlag(zhugejin, "-Invoked");
             if(ServerInfo.GameMode == "06_3v3"){
                 foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
