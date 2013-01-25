@@ -32,6 +32,25 @@ public:
     //virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
 };
 
+class GongqiCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GongqiCard();
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class JiefanCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JiefanCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class AnxuCard: public SkillCard{
     Q_OBJECT
 

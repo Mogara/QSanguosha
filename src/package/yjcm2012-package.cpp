@@ -515,6 +515,98 @@ public:
     }
 };
 
+GongqiCard::GongqiCard() {
+    target_fixed = true;
+}
+
+void GongqiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    room->setPlayerFlag(source, "InfinityAttackRange");
+    const Card *cd = Sanguosha->getCard(subcards.first());
+    if (cd->isKindOf("EquipCard")) {
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getOtherPlayers(source))
+            if (!p->isNude()) targets << p;
+        if (!targets.isEmpty() && source->askForSkillInvoke("gongqi", QVariant::fromValue(QString("discard")))) {
+            ServerPlayer *to_discard = room->askForPlayerChosen(source, targets, "gongqi");
+            room->throwCard(room->askForCardChosen(source, to_discard, "he", "gongqi"), to_discard, source);
+        }
+    }
+}
+
+class Gongqi: public OneCardViewAsSkill {
+public:
+    Gongqi(): OneCardViewAsSkill("gongqi") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("GongqiCard");
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return !Self->isJilei(to_select);
+    }
+
+    virtual const Card *viewAs(const Card *originalcard) const{
+        GongqiCard *card = new GongqiCard;
+        card->addSubcard(originalcard->getId());
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+JiefanCard::JiefanCard() {
+    mute = true;
+}
+
+bool JiefanCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
+    return targets.isEmpty();
+}
+
+void JiefanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    source->loseMark("@rescue");
+    ServerPlayer *target = targets.first();
+    source->tag["JiefanTarget"] = QVariant::fromValue((PlayerStar)target);
+    int index = 1;
+    if (target->isLord()
+        && (target->getGeneralName().contains("sunquan")
+            || target->getGeneralName().contains("sunjian")
+            || target->getGeneralName().contains("sunce")))
+        index = 2;
+    room->broadcastSkillInvoke("jiefan", index);
+    room->broadcastInvoke("animate", "lightbox:$JiefanAnimate:2500");
+    room->getThread()->delay(2000);
+
+    foreach (ServerPlayer *player, room->getAllPlayers()) {
+        if (player->isAlive() && player->inMyAttackRange(target))
+            room->cardEffect(this, source, player);
+    }
+    source->tag.remove("JiefanTarget");
+}
+
+void JiefanCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+
+    PlayerStar target = effect.from->tag["JiefanTarget"].value<PlayerStar>();
+    QVariant data = effect.from->tag["JiefanTarget"];
+    if (target && !room->askForCard(effect.to, ".Weapon", "@jiefan-discard", data))
+        target->drawCards(1);
+}
+
+class Jiefan: public ZeroCardViewAsSkill {
+public:
+    Jiefan(): ZeroCardViewAsSkill("jiefan") {
+        frequency = Limited;
+    }
+
+    virtual const Card *viewAs() const{
+        return new JiefanCard;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@rescue") >= 1;
+    }
+};
+
 AnxuCard::AnxuCard(){
     once = true;
     mute = true;
@@ -793,9 +885,9 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu");
     guanxingzhangbao->addSkill(new Fuhun);
 
-    /*General *handang = new General(this, "handang", "wu");
+    General *handang = new General(this, "handang", "wu");
     handang->addSkill(new Gongqi);
-    handang->addSkill(new Jiefan);*/
+    handang->addSkill(new Jiefan);
 
     General *huaxiong = new General(this, "huaxiong", "qun", 6);
     huaxiong->addSkill(new Shiyong);

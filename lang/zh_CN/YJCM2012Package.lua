@@ -126,6 +126,18 @@ return {
 	["$zhuiyi2"] = "吾若有灵，常待君侧…", --孙权
 	["~bulianshi"] = "陛下，今生情未了，来世再侍君…",
 
+	["#handang"] = "石城侯",
+	["handang"] = "韩当",
+	["designer:handang"] = "ByArt",
+	["illustrator:handang"] = "DH",
+	["cv:handang"] = "风叹息",
+	["gongqi"] = "弓骑",
+	[":gongqi"] = "",
+	["jiefan"] = "解烦",
+	[":jiefan"] = "",
+	["gongqi:discard"] = "你可以弃置一名其他角色的一张牌",
+	["@jiefan-discard"] = "请弃置一张武器牌",
+	["@rescue"] = "解烦",
 	["$gongqi"] = "弓马齐备，远射近突！",
 	["$jiefan1"] = "解烦军至，此危自解！",
 	["$jiefan2"] = "吾主莫慌，韩义公在此！",
