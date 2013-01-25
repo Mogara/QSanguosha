@@ -1171,13 +1171,15 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt){
+bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit){
     Q_ASSERT(!victims.isEmpty());
 
     //The realization of this function in the Slash::onUse and Slash::targetFilter.
     setPlayerFlag(slasher, "slashTargetFix");
     if (victims.length() == 1)
         setPlayerFlag(slasher, "slashTargetFixToOne");
+    if (!distance_limit)
+        setPlayerFlag(slash, "slashNoDistanceLimit");
     foreach(ServerPlayer *victim, victims)
     {
         setPlayerFlag(victim, "SlashAssignee");
@@ -1204,6 +1206,7 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
     if(!use){
         setPlayerFlag(slasher, "-slashTargetFix");
         setPlayerFlag(slasher, "-slashTargetFixToOne");
+        setPlayerFlag(slasher, "-slashNoDistanceLimit");
         foreach(ServerPlayer *victim, victims)
         {
             setPlayerFlag(victim, "-SlashAssignee");
@@ -1213,11 +1216,11 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
     return use;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt){
+bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt, bool distance_limit){
     Q_ASSERT(victim != NULL);
     QList<ServerPlayer *> victims;
     victims << victim;
-    return askForUseSlashTo(slasher, victims, prompt);
+    return askForUseSlashTo(slasher, victims, prompt, distance_limit);
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){

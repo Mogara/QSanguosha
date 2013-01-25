@@ -515,154 +515,6 @@ public:
     }
 };
 
-// @todo_P: move the following codes to nostalgia.cpp and complete new Han Dang
-class Gongqi : public OneCardViewAsSkill{
-public:
-    Gongqi():OneCardViewAsSkill("gongqi"){
-
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return Slash::IsAvailable(player);
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "slash";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->getTypeId() == Card::TypeEquip;
-    }
-
-    const Card *viewAs(const Card *originalCard) const{
-        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
-        slash->addSubcard(originalCard);
-        slash->setSkillName(objectName());
-        return slash;
-    }
-};
-
-//@todo_P: class NosGongqiTargetMod (to be implemented)
-
-class Jiefan : public TriggerSkill{
-public:
-    Jiefan():TriggerSkill("jiefan"){
-        events << AskForPeaches << DamageCaused << CardFinished << CardUsed;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *handang, QVariant &data) const{
-        if (handang == NULL) return false;
-
-        ServerPlayer *current = room->getCurrent();
-        if(!current || current->isDead())
-            return false;
-        if(triggerEvent == CardUsed)
-        {
-            if(!handang->hasFlag("jiefanUsed"))
-                return false;
-
-            CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->isKindOf("Slash"))
-            {
-                room->broadcastSkillInvoke(objectName());
-                room->setPlayerFlag(handang, "-jiefanUsed");
-                room->setCardFlag(use.card, "jiefan-slash");
-            }
-        }else if(triggerEvent == AskForPeaches  && handang->getPhase() == Player::NotActive && handang->canSlash(current, NULL, false)
-                && handang->askForSkillInvoke(objectName(), data)){
-            DyingStruct dying = data.value<DyingStruct>();
-
-            forever{
-                if(handang->hasFlag("jiefan_success"))
-                    room->setPlayerFlag(handang, "-jiefan_success");
-                
-
-                if(handang->hasFlag("jiefan_failed")){
-                    room->setPlayerFlag(handang, "-jiefan_failed");
-                    break;
-                }
-
-                if(dying.who->getHp() > 0 || handang->isNude() || current->isDead() || !handang->canSlash(current, NULL, false))
-                    break;
-
-                room->setPlayerFlag(handang, "jiefanUsed");
-                room->setTag("JiefanTarget", data);
-                if(!room->askForUseSlashTo(handang, current, "jiefan-slash:" + dying.who->objectName()))
-                {
-                    room->setPlayerFlag(handang, "-jiefanUsed");
-                    room->removeTag("JiefanTarget");
-                    break;
-                }
-            }
-        }
-        else if(triggerEvent == DamageCaused){
-            DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->isKindOf("Slash") && damage.card->hasFlag("jiefan-slash")){
-
-                DyingStruct dying = room->getTag("JiefanTarget").value<DyingStruct>();
-
-                ServerPlayer *target = dying.who;
-                if(target && target->getHp() > 0){
-                    LogMessage log;
-                    log.type = "#JiefanNull1";
-                    log.from = dying.who;
-                    room->sendLog(log);
-                }
-                else if(target && target->isDead()){
-                    LogMessage log;
-                    log.type = "#JiefanNull2";
-                    log.from = dying.who;
-                    log.to << handang;
-                    room->sendLog(log);
-                }
-                else if(current->hasSkill("wansha") && current->isAlive()  && target->objectName() != handang->objectName()){
-                    LogMessage log;
-                    log.type = "#JiefanNull3";
-                    log.from = current;
-                    room->sendLog(log);
-                }
-                else
-                {
-                    Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
-                    peach->setSkillName(objectName());
-                    CardUseStruct use;
-                    use.card = peach;
-                    use.from = handang;
-                    use.to << target;
-
-                    room->setPlayerFlag(handang, "jiefan_success");
-                    if ((target->getGeneralName().contains("sunquan")
-                        || target->getGeneralName().contains("sunce")
-                        || target->getGeneralName().contains("sunjian"))
-                        && target->isLord())
-                        room->setPlayerFlag(handang, "JiefanToLord");
-                    room->useCard(use);
-                    room->setPlayerFlag(handang, "-JiefanToLord");
-                }
-                return true;
-            }
-            return false;
-        }
-        else if(triggerEvent == CardFinished && !room->getTag("JiefanTarget").isNull()){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->isKindOf("Slash")){
-                if(!handang->hasFlag("jiefan_success"))
-                    room->setPlayerFlag(handang, "jiefan_failed");
-                room->removeTag("JiefanTarget");
-            }
-        }
-
-        return false;
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const {
-        if (player->hasFlag("JiefanToLord"))
-            return 2;
-        else
-            return 1;
-    }
-};
-
 AnxuCard::AnxuCard(){
     once = true;
     mute = true;
@@ -941,9 +793,9 @@ YJCM2012Package::YJCM2012Package():Package("YJCM2012"){
     General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu");
     guanxingzhangbao->addSkill(new Fuhun);
 
-    General *handang = new General(this, "handang", "wu");
+    /*General *handang = new General(this, "handang", "wu");
     handang->addSkill(new Gongqi);
-    handang->addSkill(new Jiefan);
+    handang->addSkill(new Jiefan);*/
 
     General *huaxiong = new General(this, "huaxiong", "qun", 6);
     huaxiong->addSkill(new Shiyong);

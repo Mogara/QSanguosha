@@ -1066,8 +1066,8 @@ public:
                             const char *prompt, const QVariant &data = QVariant(),
                             TriggerEvent trigger_event = CardResponsed, ServerPlayer *to = NULL);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1);
-    bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt);
-    bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt);
+    bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt, bool distance_limit = true);
+    bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt, bool distance_limit = true);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);

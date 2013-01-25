@@ -367,26 +367,191 @@ public:
     }
 };
 
+class NosGongqi : public OneCardViewAsSkill{
+public:
+    NosGongqi():OneCardViewAsSkill("nosgongqi"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "slash";
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return to_select->getTypeId() == Card::TypeEquip;
+    }
+
+    const Card *viewAs(const Card *originalCard) const{
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        slash->addSubcard(originalCard);
+        slash->setSkillName(objectName());
+        return slash;
+    }
+};
+
+class NosGongqiTargetMod: public TargetModSkill {
+public:
+    NosGongqiTargetMod(): TargetModSkill("#nosgongqi-target") {
+        frequency = NotFrequent;
+    }
+
+    virtual int getDistanceLimit(const Player *, const Card *card) const{
+        if (card->getSkillName() == "nosgongqi")
+            return 1000;
+        else
+            return 0;
+    }
+};
+
+class NosJiefan : public TriggerSkill{
+public:
+    NosJiefan():TriggerSkill("nosjiefan"){
+        events << AskForPeaches << DamageCaused << CardFinished << CardUsed;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *handang, QVariant &data) const{
+        if (handang == NULL) return false;
+
+        ServerPlayer *current = room->getCurrent();
+        if(!current || current->isDead())
+            return false;
+        if(triggerEvent == CardUsed)
+        {
+            if(!handang->hasFlag("nosjiefanUsed"))
+                return false;
+
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->isKindOf("Slash"))
+            {
+                room->broadcastSkillInvoke(objectName());
+                room->setPlayerFlag(handang, "-nosjiefanUsed");
+                room->setCardFlag(use.card, "nosjiefan-slash");
+            }
+        }else if(triggerEvent == AskForPeaches  && handang->getPhase() == Player::NotActive && handang->canSlash(current, NULL, false)
+                && handang->askForSkillInvoke(objectName(), data)){
+            DyingStruct dying = data.value<DyingStruct>();
+
+            forever{
+                if(handang->hasFlag("nosjiefan_success"))
+                    room->setPlayerFlag(handang, "-nosjiefan_success");
+
+
+                if(handang->hasFlag("nosjiefan_failed")){
+                    room->setPlayerFlag(handang, "-nosjiefan_failed");
+                    break;
+                }
+
+                if(dying.who->getHp() > 0 || handang->isNude() || current->isDead() || !handang->canSlash(current, NULL, false))
+                    break;
+
+                room->setPlayerFlag(handang, "nosjiefanUsed");
+                room->setTag("JiefanTarget", data);
+                if(!room->askForUseSlashTo(handang, current, "jiefan-slash:" + dying.who->objectName()))
+                {
+                    room->setPlayerFlag(handang, "-nosjiefanUsed");
+                    room->removeTag("JiefanTarget");
+                    break;
+                }
+            }
+        }
+        else if(triggerEvent == DamageCaused){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.card && damage.card->isKindOf("Slash") && damage.card->hasFlag("nosjiefan-slash")){
+
+                DyingStruct dying = room->getTag("NosJiefanTarget").value<DyingStruct>();
+
+                ServerPlayer *target = dying.who;
+                if(target && target->getHp() > 0){
+                    LogMessage log;
+                    log.type = "#NosJiefanNull1";
+                    log.from = dying.who;
+                    room->sendLog(log);
+                }
+                else if(target && target->isDead()){
+                    LogMessage log;
+                    log.type = "#NosJiefanNull2";
+                    log.from = dying.who;
+                    log.to << handang;
+                    room->sendLog(log);
+                }
+                else if(current->hasSkill("wansha") && current->isAlive()  && target->objectName() != handang->objectName()){
+                    LogMessage log;
+                    log.type = "#NosJiefanNull3";
+                    log.from = current;
+                    room->sendLog(log);
+                }
+                else
+                {
+                    Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
+                    peach->setSkillName(objectName());
+                    CardUseStruct use;
+                    use.card = peach;
+                    use.from = handang;
+                    use.to << target;
+
+                    room->setPlayerFlag(handang, "nosjiefan_success");
+                    if ((target->getGeneralName().contains("sunquan")
+                        || target->getGeneralName().contains("sunce")
+                        || target->getGeneralName().contains("sunjian"))
+                        && target->isLord())
+                        room->setPlayerFlag(handang, "NosJiefanToLord");
+                    room->useCard(use);
+                    room->setPlayerFlag(handang, "-NosJiefanToLord");
+                }
+                return true;
+            }
+            return false;
+        }
+        else if(triggerEvent == CardFinished && !room->getTag("NosJiefanTarget").isNull()){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->isKindOf("Slash")){
+                if(!handang->hasFlag("nosjiefan_success"))
+                    room->setPlayerFlag(handang, "nosjiefan_failed");
+                room->removeTag("NosJiefanTarget");
+            }
+        }
+
+        return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const {
+        if (player->hasFlag("NosJiefanToLord"))
+            return 2;
+        else
+            return 1;
+    }
+};
+
 NostalGeneralPackage::NostalGeneralPackage()
     :Package("nostal_general")
 {
-    General *nosfazheng = new General(this, "nosfazheng", "shu", 3);
-    nosfazheng->addSkill(new NosEnyuan);
+    General *nos_fazheng = new General(this, "nos_fazheng", "shu", 3);
+    nos_fazheng->addSkill(new NosEnyuan);
     patterns.insert(".enyuan", new EnyuanPattern);
-    nosfazheng->addSkill(new NosXuanhuo);
+    nos_fazheng->addSkill(new NosXuanhuo);
 
-    General *noslingtong = new General(this, "noslingtong", "wu");
-    noslingtong->addSkill(new NosXuanfeng);
+    General *nos_lingtong = new General(this, "nos_lingtong", "wu");
+    nos_lingtong->addSkill(new NosXuanfeng);
 
-    General *nosxushu = new General(this, "nosxushu", "shu", 3);
-    nosxushu->addSkill(new NosWuyan);
-    nosxushu->addSkill(new NosJujian);
+    General *nos_xushu = new General(this, "nos_xushu", "shu", 3);
+    nos_xushu->addSkill(new NosWuyan);
+    nos_xushu->addSkill(new NosJujian);
 
-    General *noszhangchunhua = new General(this, "noszhangchunhua", "wei", 3, false);
-    noszhangchunhua->addSkill("jueqing");
-    noszhangchunhua->addSkill(new NosShangshi);
-    noszhangchunhua->addSkill(new NosShangshiCardMove);
+    General *nos_zhangchunhua = new General(this, "nos_zhangchunhua", "wei", 3, false);
+    nos_zhangchunhua->addSkill("jueqing");
+    nos_zhangchunhua->addSkill(new NosShangshi);
+    nos_zhangchunhua->addSkill(new NosShangshiCardMove);
     related_skills.insertMulti("nosshangshi", "#nosshangshi");
+
+    General *nos_handang = new General(this, "nos_handang", "wu");
+    nos_handang->addSkill(new NosGongqi);
+    nos_handang->addSkill(new NosGongqiTargetMod);
+    related_skills.insertMulti("nosgongqi", "#nosgongqi-target");
+    nos_handang->addSkill(new NosJiefan);
 
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();
