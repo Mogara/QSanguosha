@@ -746,7 +746,7 @@ public:
             return n;
         if(room->askForSkillInvoke(liubei, objectName())){
             room->broadcastSkillInvoke(objectName());
-            room->setPlayerFlag(liubei, "Invoked");
+            room->setPlayerFlag(liubei, "zhaolie");
             return n-1;
         }else
             return n;
@@ -770,8 +770,8 @@ public:
                 victims << p;
             }
         }
-        if(liubei->getPhase() == Player::Draw && liubei->hasFlag("Invoked")){
-            room->setPlayerFlag(liubei, "-Invoked");
+        if(!victims.isEmpty() && liubei->getPhase() == Player::Draw && liubei->hasFlag("zhaolie")){
+            room->setPlayerFlag(liubei, "-zhaolie");
             ServerPlayer *victim = room->askForPlayerChosen(liubei, victims, "zhaolie");
             QList<int> cardIds = room->drawCards(3);
             Q_ASSERT(cardIds.size() == 3);

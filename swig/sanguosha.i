@@ -854,7 +854,6 @@ public:
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
     QString getDescription() const;
-    QString getText() const;
     bool isVisible() const;
 
     virtual QString getDefaultChoice(ServerPlayer *player) const;
