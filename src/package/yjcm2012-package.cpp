@@ -573,7 +573,7 @@ void JiefanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
             || target->getGeneralName().contains("sunce")))
         index = 2;
     room->broadcastSkillInvoke("jiefan", index);
-    room->broadcastInvoke("animate", "lightbox:$JiefanAnimate:2500");
+    room->broadcastInvoke("animate", "lightbox:$jiefan" + QString::number(index));
     room->getThread()->delay(2000);
 
     foreach (ServerPlayer *player, room->getAllPlayers()) {

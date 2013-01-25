@@ -1071,9 +1071,12 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return !player->isKongcheng()
-                && ! pattern.startsWith("@")
-                && ! pattern.startsWith(".");
+        if (player->isKongcheng() || pattern.startsWith(".") || pattern.startsWith("@")) return false;
+        for (int i = 0; i < pattern.length(); i++) {
+            QChar ch = pattern[i];
+            if (ch.isUpper() || ch.isDigit()) return false; // This is an extremely nasty trick!! For we need to prevent patterns like 'BasicCard'
+        }
+        return true;
     }
 
     virtual bool viewFilter(const Card* to_select) const{

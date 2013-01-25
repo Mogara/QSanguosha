@@ -173,17 +173,6 @@ public:
     }
 };
 
-class EnyuanPattern: public CardPattern{
-public:
-    virtual bool match(const Player *player, const Card *card) const{
-        return !player->hasEquip(card) && card->getSuit() == Card::Heart;
-    }
-
-    virtual bool willThrow() const{
-        return false;
-    }
-};
-
 class NosEnyuan: public TriggerSkill{
 public:
     NosEnyuan():TriggerSkill("nosenyuan"){
@@ -215,7 +204,7 @@ public:
             if(source && source != player){
                 room->broadcastSkillInvoke("enyuan", qrand() % 2 + 3);
 
-                const Card *card = room->askForCard(source, ".enyuan", "@enyuanheart", QVariant(), NonTrigger);
+                const Card *card = room->askForCard(source, ".heart|.|hand", "@enyuanheart", QVariant(), NonTrigger);
                 if(card){
                     player->obtainCard(card);
                 }else{
@@ -531,7 +520,6 @@ NostalGeneralPackage::NostalGeneralPackage()
 {
     General *nos_fazheng = new General(this, "nos_fazheng", "shu", 3);
     nos_fazheng->addSkill(new NosEnyuan);
-    patterns.insert(".enyuan", new EnyuanPattern);
     nos_fazheng->addSkill(new NosXuanhuo);
 
     General *nos_lingtong = new General(this, "nos_lingtong", "wu");

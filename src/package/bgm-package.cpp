@@ -1159,17 +1159,6 @@ public:
     }
 };
 
-class JunweiPattern: public CardPattern{
-public:
-    virtual bool match(const Player *player, const Card *card) const{
-        return card->isKindOf("Jink");
-    }
-
-    virtual bool willThrow() const{
-        return false;
-    }
-};
-
 class Junwei:public TriggerSkill{
 public:
     Junwei():TriggerSkill("junwei") {
@@ -1203,7 +1192,7 @@ public:
 
             ServerPlayer *target = room->askForPlayerChosen(ganning, room->getAllPlayers(), objectName());
             QVariant ai_data = QVariant::fromValue((PlayerStar)ganning);
-            const Card *card = room->askForCard(target, ".junwei", "@junwei-show", ai_data, NonTrigger);
+            const Card *card = room->askForCard(target, "Jink", "@junwei-show", ai_data, NonTrigger);
             if (card) {
                 room->showCard(target, card->getEffectiveId());
                 ServerPlayer *receiver = room->askForPlayerChosen(ganning, room->getAllPlayers(), "junweigive");
@@ -1436,7 +1425,6 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_ganning->addSkill(new YinlingClear);
     bgm_ganning->addSkill(new Junwei);
     bgm_ganning->addSkill(new JunweiGot);
-    patterns.insert(".junwei", new JunweiPattern);
     related_skills.insertMulti("yinling", "#yinling-clear");
     related_skills.insertMulti("junwei", "#junwei-got");
 
