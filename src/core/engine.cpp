@@ -765,7 +765,7 @@ int Engine::correctSlash(const QString &type, const Player *from, const Player *
     foreach(const SlashSkill *skill, slash_skills){
         if(type == "residue"){
             int y = skill->getSlashResidue(from);
-            if(y < -200 || y > 200) // use slash never or endless
+            if(y < -200) // use slash never
                 return y;
             x += y;
         }

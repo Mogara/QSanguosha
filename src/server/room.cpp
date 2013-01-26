@@ -733,6 +733,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     const Card *card = NULL;
 
     QVariant asked = pattern;
+    if(thread->trigger(CardAsk, player, asked))
+        return NULL;
     thread->trigger(CardAsked, player, asked);
     if(has_provided){
         card = provided;
@@ -806,6 +808,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 }
 
 bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
+    QVariant asked = pattern;
+    if(thread->trigger(CardUseAsk, player, asked))
+        return NULL;
+
     QString answer;
 
     AI *ai = player->getAI();

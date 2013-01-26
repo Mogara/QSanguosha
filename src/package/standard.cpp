@@ -168,6 +168,7 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
     :TrickCard(suit, number, true), movable(movable)
 {
+    will_throw = false;
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -182,9 +183,6 @@ QString DelayedTrick::getSubtype() const{
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
-    if(!movable)
-        room->throwCard(this);
-
     LogMessage log;
     log.from = effect.to;
     log.type = "#DelayedTrick";
@@ -195,32 +193,32 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     judge_struct.who = effect.to;
     room->judge(judge_struct);
 
-    if(judge_struct.isBad()){
-        room->throwCard(this);
+    bool willthrow = true;
+    if(judge_struct.isBad())
         takeEffect(effect.to);
-    }else if(movable){
+    else if(movable){
+        willthrow = false;
         onNullified(effect.to);
     }
+    if(willthrow)
+        room->throwCard(this);
 }
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
     Room *room = target->getRoom();
-    if(movable){
-        QList<ServerPlayer *> players = room->getOtherPlayers(target);
-        players << target;
+    QList<ServerPlayer *> players = room->getOtherPlayers(target);
+    players << target;
 
-        foreach(ServerPlayer *player, players){
-            if(player->containsTrick(objectName()))
-                continue;
+    foreach(ServerPlayer *player, players){
+        if(player->containsTrick(objectName()))
+            continue;
 
-            if(room->isProhibited(target, player, this))
-                continue;
+        if(room->isProhibited(target, player, this))
+            continue;
 
-            room->moveCardTo(this, player, Player::Judging, true);
-            break;
-        }
-    }else
-        room->throwCard(this);
+        room->moveCardTo(this, player, Player::Judging, true);
+        break;
+    }
 }
 
 const DelayedTrick *DelayedTrick::CastFrom(const Card *card){

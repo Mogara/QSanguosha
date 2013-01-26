@@ -479,7 +479,7 @@ int Player::getMaxCards() const{
 
 int Player::getSlashTarget(const Player *other, const Card *slash) const{
     int rule = 1, extra = 0;
-    extra = Sanguosha->correctSlash("extragoals", Self, other, slash);
+    extra = Sanguosha->correctSlash("extragoals", this, other, slash);
     return rule + extra;
 }
 
@@ -732,8 +732,8 @@ bool Player::isProhibited(const Player *to, const Card *card) const{
     return Sanguosha->isProhibited(this, to, card);
 }
 
-bool Player::canSlashWithoutCrossbow() const{ //back-out
-    return true;
+bool Player::canSlashWithoutCrossbow() const{
+    return Slash::IsAvailable(this);
 }
 
 void Player::jilei(const QString &type){

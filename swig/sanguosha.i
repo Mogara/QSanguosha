@@ -505,7 +505,9 @@ enum TriggerEvent{
 
 	JinkUsed,
 
+	CardAsk,
 	CardAsked,
+	CardUseAsk,
 	CardUsed,
 	CardResponsed,
 	CardDiscarded,

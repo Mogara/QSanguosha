@@ -347,7 +347,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
 
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
     if(card_use.to.isEmpty()){
-        room->throwCard(this, card_use.from);
+        room->moveCardTo(this, NULL, Player::DiscardedPile);
         card_use.from->playCardEffect("@recast");
         card_use.from->drawCards(1);
     }else

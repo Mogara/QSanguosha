@@ -175,7 +175,9 @@ enum TriggerEvent{
     SlashMissed,
 
     JinkUsed,
+    CardAsk,
     CardAsked,
+    CardUseAsk,
     CardUsed,
     CardResponsed,
     CardDiscarded,
