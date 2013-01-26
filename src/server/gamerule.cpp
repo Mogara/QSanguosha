@@ -497,6 +497,9 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
                     DamageStar damage = data.value<DamageStar>();
 
                 if(damage == NULL){
+                    PlayerStar target = room->getTag("LihunTarget").value<PlayerStar>();
+                    if(target && target == player)
+                        room->removeTag("LihunTarget");
                     changeGeneral1v1(player);
                     return false;
                 }

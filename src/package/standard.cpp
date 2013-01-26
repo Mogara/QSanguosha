@@ -193,33 +193,32 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     judge_struct.who = effect.to;
     room->judge(judge_struct);
 
+    bool willthrow = true;
     if(judge_struct.isBad())
         takeEffect(effect.to);
-    else if(movable)
+    else if(movable){
+        willthrow = false;
         onNullified(effect.to);
-
-    if(!movable)
+    }
+    if(willthrow)
         room->throwCard(this);
 }
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
     Room *room = target->getRoom();
-    if(movable){
-        QList<ServerPlayer *> players = room->getOtherPlayers(target);
-        players << target;
+    QList<ServerPlayer *> players = room->getOtherPlayers(target);
+    players << target;
 
-        foreach(ServerPlayer *player, players){
-            if(player->containsTrick(objectName()))
-                continue;
+    foreach(ServerPlayer *player, players){
+        if(player->containsTrick(objectName()))
+            continue;
 
-            if(room->isProhibited(target, player, this))
-                continue;
+        if(room->isProhibited(target, player, this))
+            continue;
 
-            room->moveCardTo(this, player, Player::Judging, true);
-            break;
-        }
-    }else
-        room->throwCard(this);
+        room->moveCardTo(this, player, Player::Judging, true);
+        break;
+    }
 }
 
 const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
