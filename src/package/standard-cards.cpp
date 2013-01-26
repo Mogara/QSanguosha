@@ -499,11 +499,11 @@ Axe::Axe(Suit suit, int number)
 
 class HalberdSkill: public TargetModSkill {
 public:
-    HalberdSkill(): TargetModSkill("halberd") {
+    HalberdSkill(): TargetModSkill("Halberd") {
     }
 
     virtual int getExtraTargetNum(const Player *from, const Card *card) const{
-        if (from->hasWeapon("halberd") && from->isLastHandCard(card))
+        if (from->hasWeapon("Halberd") && from->isLastHandCard(card))
             return 2;
         else
             return 0;
