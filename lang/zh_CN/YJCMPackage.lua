@@ -103,9 +103,10 @@ return {
 	["#zhangchunhua"] = "冷血皇后",
 	["zhangchunhua"]="张春华",
 	["jueqing"]="绝情",
-	[":jueqing"]="<b>锁定技</b>，你即将造成的伤害均视为失去体力。",
+	[":jueqing"]="<b>锁定技</b>，你即将造成的伤害均视为体力流失。",
 	["shangshi"]="伤逝",
 	[":shangshi"]="<b>锁定技</b>，弃牌阶段外，当你的手牌数小于X时，你将手牌补至X张（X为你已损失的体力值且最多为2）",
+	["#Jueqing"] = "%from 的锁定技【%arg】被触发，对 %to 造成的伤害视为体力流失。",
 
 	["#zhonghui"] = "桀骜的野心家",
 	["zhonghui"] = "钟会",
