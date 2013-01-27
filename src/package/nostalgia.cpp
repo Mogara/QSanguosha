@@ -204,7 +204,7 @@ public:
             if(source && source != player){
                 room->broadcastSkillInvoke("enyuan", qrand() % 2 + 3);
 
-                const Card *card = room->askForCard(source, ".heart|.|hand", "@enyuanheart", QVariant(), NonTrigger);
+                const Card *card = room->askForCard(source, ".|heart|.|hand", "@enyuanheart", QVariant(), NonTrigger);
                 if(card){
                     player->obtainCard(card);
                 }else{
