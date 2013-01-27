@@ -554,8 +554,10 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
         invoked =  result == "yes";
     }
 
-    if(invoked)
+    if(invoked){
+        setEmotion(player, "skill/" + skill_name);
         broadcastInvoke("skillInvoked", QString("%1:%2").arg(player->objectName()).arg(skill_name));
+    }
 
     QVariant decisionData = QVariant::fromValue("skillInvoke:"+skill_name+":"+(invoked ? "yes" : "no"));
     thread->trigger(ChoiceMade, player, decisionData);

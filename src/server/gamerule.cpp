@@ -77,7 +77,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             if(room->getTag("FirstRound").toBool()){
                 room->setTag("FirstRound", false);
                 if(room->getMode() == "02_1v1")
-                    num = 1;
+                    num --;
             }
 
             room->getThread()->trigger(DrawNCards, player, num);
@@ -222,6 +222,8 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
             if(data.canConvert<CardUseStruct>()){
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
+                if(!card->getSkillName().isEmpty())
+                    room->setEmotion(player, "skill/" + card->getSkillName());
 
                 card_use.from->playCardEffect(card);
                 card->use(room, card_use.from, card_use.to);
