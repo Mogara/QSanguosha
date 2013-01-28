@@ -245,4 +245,32 @@ return {
 	["cv:tai_zhaoyun"] = "鸢飞",
 	["#zhaoyunt"] = "去旅游",
 	[":#zhaoyunt"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP赵云",
+
+	["#tai_ganning"] = "锦帆游侠",
+	["tai_ganning"] = "台版SP甘宁",
+	["illustrator:tai_ganning"] = "",
+	["cv:tai_ganning"] = "鬼叔",
+	["#ganningt"] = "去卖艺",
+	[":#ganningt"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP甘宁",
+
+	["#tai_lvbu"] = "武的化身",
+	["tai_lvbu"] = "台版SP吕布",
+	["illustrator:tai_lvbu"] = "焚烧的大葱",
+	["cv:tai_lvbu"] = "鬼叔",
+	["#lvbut"] = "去杂耍",
+	[":#lvbut"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP吕布",
+
+	["#tai_machao"] = "一骑当千",
+	["tai_machao"] = "台版SP马超",
+	["illustrator:tai_machao"] = "",
+	["cv:tai_machao"] = "烈の流星",
+	["#machaot"] = "去偷鸡",
+	[":#machaot"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP马超",
+
+	["#tai_zhenji"] = "大波的美女",
+	["tai_zhenji"] = "台版SP甄姬",
+	["illustrator:tai_zhenji"] = "",
+	["cv:tai_zhenji"] = "神马芯",
+	["#zhenjit"] = "被包养",
+	[":#zhenjit"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP甄姬",
 }
