@@ -6,6 +6,10 @@ QT += network sql declarative
 TEMPLATE = app
 CONFIG += warn_on audio
 
+# choose luajit if you like it, the default is to use lua.
+CONFIG += lua
+# CONFIG += luajit
+
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
 # However, joystick is not supported under Mac OS X temporarily
@@ -110,36 +114,6 @@ SOURCES += \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
-    src/lua/print.c \
-    src/lua/lzio.c \
-    src/lua/lvm.c \
-    src/lua/lundump.c \
-    src/lua/ltm.c \
-    src/lua/ltablib.c \
-    src/lua/ltable.c \
-    src/lua/lstrlib.c \
-    src/lua/lstring.c \
-    src/lua/lstate.c \
-    src/lua/lparser.c \
-    src/lua/loslib.c \
-    src/lua/lopcodes.c \
-    src/lua/lobject.c \
-    src/lua/loadlib.c \
-    src/lua/lmem.c \
-    src/lua/lmathlib.c \
-    src/lua/llex.c \
-    src/lua/liolib.c \
-    src/lua/linit.c \
-    src/lua/lgc.c \
-    src/lua/lfunc.c \
-    src/lua/ldump.c \
-    src/lua/ldo.c \
-    src/lua/ldebug.c \
-    src/lua/ldblib.c \
-    src/lua/lcode.c \
-    src/lua/lbaselib.c \
-    src/lua/lauxlib.c \
-    src/lua/lapi.c \
     src/jsoncpp/src/json_writer.cpp \
     src/jsoncpp/src/json_valueiterator.inl \
     src/jsoncpp/src/json_value.cpp \
@@ -248,30 +222,6 @@ HEADERS += \
     src/util/nativesocket.h \
     src/util/recorder.h \	
     src/util/socket.h \
-    src/lua/lzio.h \
-    src/lua/lvm.h \
-    src/lua/lundump.h \
-    src/lua/lualib.h \
-    src/lua/luaconf.h \
-    src/lua/lua.hpp \
-    src/lua/lua.h \
-    src/lua/ltm.h \
-    src/lua/ltable.h \
-    src/lua/lstring.h \
-    src/lua/lstate.h \
-    src/lua/lparser.h \
-    src/lua/lopcodes.h \
-    src/lua/lobject.h \
-    src/lua/lmem.h \
-    src/lua/llimits.h \
-    src/lua/llex.h \
-    src/lua/lgc.h \
-    src/lua/lfunc.h \
-    src/lua/ldo.h \
-    src/lua/ldebug.h \
-    src/lua/lcode.h \
-    src/lua/lauxlib.h \
-    src/lua/lapi.h \
     src/jsoncpp/src/json_tool.h \
     src/jsoncpp/src/json_batchallocator.h \
     src/jsoncpp/include/json/writer.h \
@@ -303,7 +253,6 @@ INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
-INCLUDEPATH += src/lua
 INCLUDEPATH += src/jsoncpp/include
 
 win32{
@@ -337,6 +286,79 @@ CONFIG(chatvoice){
         CONFIG += qaxcontainer
         DEFINES += CHAT_VOICE
     }
+}
+
+CONFIG(lua){
+    SOURCES += \
+        src/lua/print.c \
+        src/lua/lzio.c \
+        src/lua/lvm.c \
+        src/lua/lundump.c \
+        src/lua/ltm.c \
+        src/lua/ltablib.c \
+        src/lua/ltable.c \
+        src/lua/lstrlib.c \
+        src/lua/lstring.c \
+        src/lua/lstate.c \
+        src/lua/lparser.c \
+        src/lua/loslib.c \
+        src/lua/lopcodes.c \
+        src/lua/lobject.c \
+        src/lua/loadlib.c \
+        src/lua/lmem.c \
+        src/lua/lmathlib.c \
+        src/lua/llex.c \
+        src/lua/liolib.c \
+        src/lua/linit.c \
+        src/lua/lgc.c \
+        src/lua/lfunc.c \
+        src/lua/ldump.c \
+        src/lua/ldo.c \
+        src/lua/ldebug.c \
+        src/lua/ldblib.c \
+        src/lua/lcode.c \
+        src/lua/lbaselib.c \
+        src/lua/lauxlib.c \
+        src/lua/lapi.c
+    HEADERS += \
+        src/lua/lzio.h \
+        src/lua/lvm.h \
+        src/lua/lundump.h \
+        src/lua/lualib.h \
+        src/lua/luaconf.h \
+        src/lua/lua.hpp \
+        src/lua/lua.h \
+        src/lua/ltm.h \
+        src/lua/ltable.h \
+        src/lua/lstring.h \
+        src/lua/lstate.h \
+        src/lua/lparser.h \
+        src/lua/lopcodes.h \
+        src/lua/lobject.h \
+        src/lua/lmem.h \
+        src/lua/llimits.h \
+        src/lua/llex.h \
+        src/lua/lgc.h \
+        src/lua/lfunc.h \
+        src/lua/ldo.h \
+        src/lua/ldebug.h \
+        src/lua/lcode.h \
+        src/lua/lauxlib.h \
+        src/lua/lapi.h
+    INCLUDEPATH += src/lua
+}
+
+CONFIG(luajit){
+    HEADERS += \
+        src/luajit/lauxlib.h \
+        src/luajit/luaconf.h \
+        src/luajit/lua.h \
+        src/luajit/lua.hpp \
+        src/luajit/luajit.h \
+        src/luajit/lualib.h \
+        src/luajit/luatools.h
+    INCLUDEPATH += src/luajit
+    unix: LIBS += -L/usr/local/lib -lluajit-5.1
 }
 
 TRANSLATIONS += sanguosha.ts
