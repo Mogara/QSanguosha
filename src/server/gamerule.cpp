@@ -716,6 +716,10 @@ bool HulaoPassMode::trigger(TriggerEvent event,Room *room, ServerPlayer *player,
             if(player->isLord()){
                 if(setjmp(env) == Transfiguration){
                     player = room->getLord();
+
+                    room->broadcastInvoke("animate", "lightbox:$Tshenlvbu:3000");
+                    room->playSkillEffect("Tshenlvbu");
+                    room->getThread()->delay(1500);
                     room->transfigure(player, "shenlvbu2", true, true);
 
                     QList<const Card *> tricks = player->getJudgingArea();

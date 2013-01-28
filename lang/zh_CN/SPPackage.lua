@@ -182,6 +182,8 @@ return {
 	["#shenlvbu1"] = "最强神话",
 	["shenlvbu1"] = "神吕布(1)",
 	["illustrator:shenlvbu1"] = "LiuHeng",
+	["Tshenlvbu"] = "阶段转换",
+	[":Tshenlvbu"] = "虎牢布的菊花被爆了。",
 	["#shenlvbu2"] = "暴怒的战神",
 	["shenlvbu2"] = "神吕布(2)",
 	["illustrator:shenlvbu2"] = "LiuHeng",
@@ -208,7 +210,7 @@ return {
 	["$shenji"] = "神戟在手，何人能及！",
 	["$xiuluo"] = "哼！鬼蜮伎俩，休想阻我！",
 	["~shenlvbu2"] = "什么？我败了？！",
-	["$StageChange"] = "杂鱼们，好戏才刚刚开始！",
+	["$Tshenlvbu"] = "杂鱼们，好戏才刚刚开始！",
 
 --sp_card
 	["sp_cards"] = "SP卡牌包",

@@ -792,7 +792,6 @@ public:
     Shichou(): TriggerSkill("shichou$"){
         events << PhaseChange << Predamaged << Dying;
         frequency = Limited;
-
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
@@ -802,16 +801,10 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == PhaseChange && player->getMark("hate") < 1 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
-            QList<ServerPlayer *> targets = room->getOtherPlayers(player);
-            QList<ServerPlayer *> victims;
-
-            foreach(ServerPlayer *p, targets){
-                if(p->getKingdom() == "shu" && !p->hasLordSkill(objectName())){
-                    victims << p;
-                }
-            }
-            if(victims.empty())
+            QList<ServerPlayer *> victims = room->getLieges("shu", player);
+            if(victims.isEmpty())
                 return false;
+
             if(player->askForSkillInvoke(objectName())){
                 room->playSkillEffect(objectName());
                 player->addMark("hate");
@@ -1487,7 +1480,7 @@ public:
                 return false;
             const Card *card = room->askForCard(player, ".", "@langgu", data, AskForRetrial);
             if(card){
-                room->throwCard(judge->card);
+                room->throwCard(judge->card, judge->who);
                 judge->card = Sanguosha->getCard(card->getEffectiveId());
                 room->moveCardTo(judge->card, NULL, Player::Special);
 

@@ -252,7 +252,6 @@ class Guicai: public TriggerSkill{
 public:
     Guicai():TriggerSkill("guicai"){
         view_as_skill = new GuicaiViewAsSkill;
-
         events << AskForRetrial;
     }
 

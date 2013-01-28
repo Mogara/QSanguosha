@@ -988,6 +988,8 @@ SPPackage::SPPackage()
     General *shenlvbu1 = new General(this, "shenlvbu1", "god", 8, true, true);
     shenlvbu1->addSkill("mashu");
     shenlvbu1->addSkill("wushuang");
+    shenlvbu1->addRelateSkill("Tshenlvbu");
+    skills << new Skill("Tshenlvbu");
 
     General *shenlvbu2 = new General(this, "shenlvbu2", "god", 4, true, true);
     shenlvbu2->addSkill("mashu");
