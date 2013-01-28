@@ -47,22 +47,20 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
     if(skill == NULL){
         if(!card->isVirtualCard() && card->getCommonEffectName().isNull())
             broadcastSkillInvoke(card->objectName());
-        else room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+        else
+            room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
         return;
-    }
-    else {
+    } else {
         int index = skill->getEffectIndex(this, card);
-        if(index == 0)
-            return;
+        if (index == 0) return;
 
-        if((index == -1 && (skill->getSources().isEmpty()
-                           || skill->objectName() == "hongyan"))
-           || index == -2){
-            if(card->getCommonEffectName().isNull())
+        if ((index == -1 && skill->getSources().isEmpty()) || index == -2){
+            if (card->getCommonEffectName().isNull())
                 broadcastSkillInvoke(card->objectName());
-            else room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
-        }
-        else room->broadcastSkillInvoke(skill_name, index);
+            else
+                room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+        } else
+            room->broadcastSkillInvoke(skill_name, index);
     }
 }
 
@@ -94,22 +92,13 @@ void ServerPlayer::throwAllEquips(){
 }
 
 void ServerPlayer::throwAllHandCards(){
-    DummyCard *card = wholeHandCards();
-    if(card == NULL)
-        return;
-
-    room->throwCard(card, this);
-    card->deleteLater();
+    int card_length = getCardCount(false);
+    room->askForDiscard(this, QString(), card_length, card_length);
 }
 
 void ServerPlayer::throwAllHandCardsAndEquips(){
-    DummyCard *card = isKongcheng() ? new DummyCard : wholeHandCards();
-    foreach(const Card *equip, getEquips())
-        card->addSubcard(equip);
-    if(card->subcardsLength() == 0)
-        return;
-    room->throwCard(card, this);
-    card->deleteLater();
+    int card_length = getCardCount(true);
+    room->askForDiscard(this, QString(), card_length, card_length, false, true);
 }
 
 void ServerPlayer::throwAllMarks(){
@@ -162,11 +151,16 @@ void ServerPlayer::bury(){
     throwAllMarks();
     clearPrivatePiles();
 
-    room->clearPlayerCardLock(this);
+    room->clearPlayerCardLimitation(this, false);
 }
 
-void ServerPlayer::throwAllCards(){
-    throwAllHandCardsAndEquips();
+void ServerPlayer::throwAllCards() {
+    DummyCard *card = isKongcheng() ? new DummyCard : wholeHandCards();
+    foreach (const Card *equip, getEquips())
+        card->addSubcard(equip);
+    if (card->subcardsLength() != 0)
+        room->throwCard(card, this);
+    card->deleteLater();
 
     QList<const Card *> tricks = getJudgingArea();
     foreach(const Card *trick, tricks)
@@ -370,11 +364,19 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             Q_ASSERT(equip != NULL);
 
             equip->onUninstall(this);
-            LogMessage log;
-            log.type = "$Uninstall";
-            log.card_str = wrapped->toString();
-            log.from = this;
-            room->sendLog(log);
+            bool show_log = true;
+            foreach (QString flag, flags)
+                if (flag.endsWith("_InTempMoving")) {
+                    show_log = false;
+                    break;
+                }
+            if (show_log) {
+                LogMessage log;
+                log.type = "$Uninstall";
+                log.card_str = wrapped->toString();
+                log.from = this;
+                room->sendLog(log);
+            }
             break;
         }
 
@@ -532,23 +534,54 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     pindian_struct.reason = reason;
 
     PindianStar pindian_star = &pindian_struct;
-    bool success = pindian_star->from_card->getNumber() > pindian_star->to_card->getNumber();
-    log.type = success ? "#PindianSuccess" : "#PindianFailure";
+    QVariant data = QVariant::fromValue(pindian_star);
+    room->getThread()->trigger(PindianVerifying, room, this, data);
+
+    PindianStar new_star = data.value<PindianStar>();
+    pindian_struct.success = new_star->success;
+
+    CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(),
+                           pindian_struct.reason, QString());
+    room->moveCardTo(pindian_struct.from_card, pindian_struct.from, NULL, Player::PlaceTable, reason1, true);
+
+    CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
+    room->moveCardTo(pindian_struct.to_card, pindian_struct.to, NULL, Player::PlaceTable, reason2, true);
+
+    LogMessage log2;
+    log2.type = "$PindianResult";
+    log2.from = pindian_struct.from;
+    log2.card_str = QString::number(pindian_struct.from_card->getEffectiveId());
+    room->sendLog(log2);
+
+    log2.type = "$PindianResult";
+    log2.from = pindian_struct.to;
+    log2.card_str = QString::number(pindian_struct.to_card->getEffectiveId());
+    room->sendLog(log2);
+
+    log.type = pindian_struct.success ? "#PindianSuccess" : "#PindianFailure";
     log.from = this;
     log.to.clear();
     log.to << target;
     log.card_str.clear();
     room->sendLog(log);
 
-    if(success)
-        room->setEmotion(this, "success");
-    else
-        room->setEmotion(this, "no-success");
+    room->setEmotion(this, pindian_struct.success ? "success" : "no-success");
 
-    QVariant data = QVariant::fromValue(pindian_star);
+    data = QVariant::fromValue(pindian_star);
     room->getThread()->trigger(Pindian, room, this, data);
 
-    return success;
+    if (room->getCardPlace(pindian_struct.from_card->getEffectiveId()) == Player::PlaceTable) {
+        CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(),
+                               pindian_struct.reason, QString());
+        room->moveCardTo(pindian_struct.from_card, pindian_struct.from, NULL, Player::DiscardPile, reason1, true);
+    }
+
+    if (room->getCardPlace(pindian_struct.to_card->getEffectiveId()) == Player::PlaceTable) {
+        CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
+        room->moveCardTo(pindian_struct.to_card, pindian_struct.to, NULL, Player::DiscardPile, reason2, true);
+    }
+
+    return pindian_struct.success;
 }
 
 void ServerPlayer::turnOver(){
@@ -586,8 +619,11 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to){
     if(!phases.isEmpty())
         phases.removeFirst();
 
-    thread->trigger(EventPhaseStart, room, this);
-    if(getPhase() != NotActive)
+    if (!thread->trigger(EventPhaseStart, room, this)) {
+        if(getPhase() != NotActive)
+            thread->trigger(EventPhaseProceeding, room, this);
+    }
+    if (getPhase() != NotActive)
         thread->trigger(EventPhaseEnd, room, this);
 
     return false;
@@ -637,8 +673,11 @@ void ServerPlayer::play(QList<Player::Phase> set_phases){
         if((skip || _m_phases_state[i].finished) && phases[i] != NotActive)
             continue;
 
-        thread->trigger(EventPhaseStart, room, this);
-        if(getPhase() != NotActive)
+        if (!thread->trigger(EventPhaseStart, room, this)) {
+            if (getPhase() != NotActive)
+                thread->trigger(EventPhaseProceeding, room, this);
+        }
+        if (getPhase() != NotActive)
             thread->trigger(EventPhaseEnd, room, this);
     }
 }
@@ -955,26 +994,24 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     }
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open){
-    if(card->isVirtualCard()){
-        QList<int> cards_id = card->getSubcards();
-        foreach(int card_id, cards_id)
-            piles[pile_name] << card_id;
-    }
+void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open) {
+    QList<int> card_ids;
+    if (card->isVirtualCard())
+        card_ids = card->getSubcards();
     else
-        piles[pile_name] << card->getEffectiveId();
-
-    room->moveCardTo(card, this, Player::PlaceSpecial, open);
+        card_ids << card->getEffectiveId();
+    return addToPile(pile_name, card_ids, open);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
-    piles[pile_name] << card_id;
-
-    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::PlaceSpecial, open);
+void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open) {
+    QList<int> card_ids;
+    card_ids << card_id;
+    return addToPile(pile_name, card_ids, open);
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open){
     piles[pile_name].append(card_ids);
+
     CardsMoveStruct move;
     move.card_ids = card_ids;
     move.to = this;
@@ -982,7 +1019,79 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     room->moveCardsAtomic(move, open);
 }
 
-void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){
+void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit, bool include_equip) {
+    QList<int> pile = getPile(pile_name);
+    if (pile.isEmpty()) return;
+
+    QString tempMovingFlag = QString("%1_InTempMoving").arg(skill_name);
+    room->setPlayerFlag(this, tempMovingFlag);
+
+    int ai_delay = Config.AIDelay;
+    Config.AIDelay = 0;
+
+    QList<int> will_to_pile, will_to_handcard;
+    while (!pile.isEmpty()) {
+        room->fillAG(pile, this);
+        int card_id = room->askForAG(this, pile, true, skill_name);
+        invoke("clearAG");
+        if (card_id == -1) break;
+
+        pile.removeOne(card_id);
+        will_to_handcard << card_id;
+        if (pile.length() >= upperlimit) break;
+
+        CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, this->objectName());
+        room->obtainCard(this, Sanguosha->getCard(card_id), reason, false);
+    }
+
+    Config.AIDelay = ai_delay;
+
+    int n = will_to_handcard.length();
+    if (n == 0) return;
+    const Card *exchange_card = room->askForExchange(this, skill_name, n, include_equip);
+    will_to_pile = exchange_card->getSubcards();
+    delete exchange_card;
+
+    QList<int> will_to_handcard_x = will_to_handcard, will_to_pile_x = will_to_pile;
+    QList<int> duplicate;
+    foreach (int id, will_to_pile) {
+        if (will_to_handcard_x.contains(id)) {
+            duplicate << id;
+            will_to_pile_x.removeOne(id);
+            will_to_handcard_x.removeOne(id);
+            n--;
+        }
+    }
+
+    if (n == 0) {
+        addToPile(pile_name, will_to_pile, false);
+        room->setPlayerFlag(this, "-" + tempMovingFlag);
+        return;
+    }
+
+    LogMessage log;
+    log.type = "#QixingExchange";
+    log.from = this;
+    log.arg = QString::number(n);
+    log.arg2 = skill_name;
+    room->sendLog(log);
+
+    addToPile(pile_name, duplicate, false);
+    room->setPlayerFlag(this, "-" + tempMovingFlag);
+    addToPile(pile_name, will_to_pile_x, false);
+
+    room->setPlayerFlag(this, tempMovingFlag);
+    addToPile(pile_name, will_to_handcard_x, false);
+    room->setPlayerFlag(this, "-" + tempMovingFlag);
+
+    DummyCard *dummy = new DummyCard;
+    foreach (int id, will_to_handcard_x) dummy->addSubcard(id);
+    CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, this->objectName());
+    room->obtainCard(this, dummy, reason, false);
+    delete dummy;
+}
+
+void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag) {
     ServerPlayer *current = room->getCurrent();
 
     room->setCurrent(this);

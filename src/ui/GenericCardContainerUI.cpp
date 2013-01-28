@@ -317,7 +317,8 @@ void PlayerCardContainer::updateHp()
     _m_hpBox->setHp(m_player->getHp());
     _m_hpBox->setMaxHp(m_player->getMaxHp());
     _m_hpBox->update();
-    _m_saveMeIcon->setVisible(m_player->getHp() <= 0 && m_player->getMaxHp() > 0);
+    if (m_player->getHp() > 0 || m_player->getMaxHp() == 0)
+        _m_saveMeIcon->setVisible(false);
 }
 
 static bool CompareByNumber(const Card *card1, const Card *card2){
@@ -1000,11 +1001,10 @@ void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // we need to override QGraphicsItem's selecting behaviours.
 }
 
-void PlayerCardContainer::updateVotes(){
-    if (!isSelected() || _m_votesGot <= 1)
+void PlayerCardContainer::updateVotes(bool need_select, bool display_1) {
+    if ((need_select && !isSelected()) || _m_votesGot < 1 || (!display_1 && _m_votesGot == 1))
         _clearPixmap(_m_votesItem);
-    else 
-    {
+    else {
         _paintPixmap(_m_votesItem, _m_layout->m_votesIconRegion,
                      _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(_m_votesGot)),
                      _getAvatarParent());

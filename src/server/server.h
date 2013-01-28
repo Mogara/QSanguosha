@@ -91,6 +91,7 @@ private:
     QCheckBox *free_choose_checkbox;
     QCheckBox *free_assign_checkbox;
     QCheckBox *free_assign_self_checkbox;
+    QSpinBox *pile_swapping_spinbox;
     QCheckBox *without_lordskill_checkbox;
     QCheckBox *sp_convert_checkbox;
     QSpinBox *maxchoice_spinbox;
@@ -103,6 +104,7 @@ private:
     QCheckBox *same_checkbox;
     QCheckBox *basara_checkbox;
     QCheckBox *hegemony_checkbox;
+    QLabel *hegemony_maxchoice_label;
     QSpinBox *hegemony_maxchoice_spinbox;
     QLabel *max_hp_label;
     QComboBox *max_hp_scheme_ComboBox;

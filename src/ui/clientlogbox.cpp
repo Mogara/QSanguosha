@@ -32,9 +32,7 @@ void ClientLogBox::appendLog(
         QStringList to_list;
         foreach(QString to, tos)
             to_list << ClientInstance->getPlayerName(to);
-        to = to_list.join(",");
-        arg = Sanguosha->translate(arg);
-
+        to = to_list.join(", ");
         to = bold(to, Qt::red);
     }
 
@@ -44,7 +42,7 @@ void ClientLogBox::appendLog(
         QString log_name;
         foreach(QString one_card, card_str.split("+")){
             const Card *card;
-            if(type == "$JudgeResult")
+            if (type == "$JudgeResult" || type == "$PasteCard")
                 card = Sanguosha->getCard(one_card.toInt());
             else
                 card = Sanguosha->getEngineCard(one_card.toInt());
@@ -78,21 +76,19 @@ void ClientLogBox::appendLog(
 
     if(!card_str.isEmpty() && !from_general.isEmpty()){
         // do Indicator animation
-        foreach(QString to, tos){
+        foreach (QString to, tos)
             RoomSceneInstance->showIndicator(from_general, to);
         }
 
         const Card *card = Card::Parse(card_str);
-        if(card == NULL)
-            return;
+        if (card == NULL) return;
+
         QString card_name = card->getLogName();
         card_name = bold(card_name, Qt::yellow);
 
         QString reason = tr("using");
-        if (type.endsWith("_Resp"))
-            reason = tr("playing");
-        if (type.endsWith("_Recast"))
-            reason = tr("recasting");
+        if (type.endsWith("_Resp")) reason = tr("playing");
+        if (type.endsWith("_Recast")) reason = tr("recasting");
 
         if(card->isVirtualCard()){
             QString skill_name = Sanguosha->translate(card->getSkillName());

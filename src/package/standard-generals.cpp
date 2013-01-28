@@ -53,7 +53,7 @@ public:
         room->broadcastSkillInvoke(objectName());
         QVariant tohelp = QVariant::fromValue((PlayerStar)caocao);
         foreach(ServerPlayer *liege, lieges){
-            const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + caocao->objectName(), tohelp, CardResponsed, caocao);
+            const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + caocao->objectName(), tohelp, Card::MethodResponse, caocao);
             if(jink){
                 room->provide(jink);
                 return true;
@@ -274,7 +274,7 @@ public:
         prompt_list << "@guicai-card" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
-        const Card *card = room->askForCard(player, "@guicai", prompt, data, AskForRetrial);
+        const Card *card = room->askForCard(player, "@guicai", prompt, data, Card::MethodResponse, judge->who, true);
         if (card != NULL){
             if (player->hasInnateSkill("guicai") || !player->hasSkill("jilve"))
                 room->broadcastSkillInvoke(objectName());
@@ -498,7 +498,7 @@ public:
 
         QVariant tohelp = QVariant::fromValue((PlayerStar)liubei);
         foreach(ServerPlayer *liege, lieges){
-            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), tohelp, CardResponsed, liubei);
+            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), tohelp, Card::MethodResponse, liubei);
             if(slash){
                 room->provide(slash);
                 return true;
@@ -732,7 +732,7 @@ class Jizhi:public TriggerSkill{
 public:
     Jizhi():TriggerSkill("jizhi"){
         frequency = Frequent;
-        events << CardUsed << CardResponsed;
+        events << CardUsed << CardResponded;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *yueying, QVariant &data) const{
@@ -740,7 +740,7 @@ public:
         if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(triggerEvent == CardResponsed)
+        }else if(triggerEvent == CardResponded)
             card = data.value<ResponsedStruct>().m_card;
 
         if (card->isNDTrick() && room->askForSkillInvoke(yueying, objectName())) {
@@ -910,12 +910,12 @@ public:
 class Keji: public TriggerSkill{
 public:
     Keji():TriggerSkill("keji"){
-        events << EventPhaseChanging << CardResponsed;
+        events << EventPhaseChanging << CardResponded;
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
-        if(triggerEvent == CardResponsed && lvmeng->getPhase() == Player::Play){
+        if(triggerEvent == CardResponded && lvmeng->getPhase() == Player::Play){
             CardStar card_star = data.value<ResponsedStruct>().m_card;
             if(card_star->isKindOf("Slash"))
                 lvmeng->setFlags("keji_use_slash");
@@ -1168,9 +1168,9 @@ public:
             QString slasher = player->objectName();
 
             const Card *first_jink = NULL, *second_jink = NULL;
-            first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), CardUsed, player);
+            first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), Card::MethodUse, player);
             if(first_jink)
-                second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), CardUsed, player);
+                second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), Card::MethodUse, player);
 
             Card *jink = NULL;
             if(first_jink && second_jink){

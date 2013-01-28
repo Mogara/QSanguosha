@@ -151,7 +151,7 @@ public:
         prompt_list << "@guidao-card" << judge->who->objectName()
                 << objectName() << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
-        const Card *card = room->askForCard(player, "@guidao", prompt, data, AskForRetrial);
+        const Card *card = room->askForCard(player, "@guidao", prompt, data, Card::MethodResponse, judge->who, true);
 
         if (card != NULL){
             room->broadcastSkillInvoke(objectName());
@@ -241,7 +241,7 @@ public:
 class Leiji: public TriggerSkill{
 public:
     Leiji():TriggerSkill("leiji"){
-        events << CardResponsed;
+        events << CardResponded;
         view_as_skill = new LeijiViewAsSkill;
     }
 

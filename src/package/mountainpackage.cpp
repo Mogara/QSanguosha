@@ -605,7 +605,6 @@ public:
 };
 
 TiaoxinCard::TiaoxinCard(){
-    once = true;
     mute = true;
 }
 
@@ -865,7 +864,7 @@ public:
                 log.arg = objectName();
                 room->sendLog(log);
                 QVariant dataforai = QVariant::fromValue(liushan);
-                if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai, CardDiscarded))
+                if(!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai))
                     liushan->addMark("xiangle");
             }
         }

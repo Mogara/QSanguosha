@@ -80,6 +80,7 @@ public:
         bool m_useFixedSize;
     };
     static const char* S_SKIN_KEY_DEFAULT;
+    static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
               const QString &audioConfigFileName, const QString &animationConfigFileName);
     QPixmap getPixmap(const QString &key, const QString &arg = QString()) const;
@@ -279,7 +280,8 @@ public:
         S_GENERAL_ICON_SIZE_PHOTO_SECONDARY,
         S_GENERAL_ICON_SIZE_DASHBOARD_SECONDARY,
         S_GENERAL_ICON_SIZE_PHOTO_PRIMARY,
-        S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY
+        S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY,
+        S_GENERAL_ICON_SIZE_KOF
     };
 
     const RoomLayout& getRoomLayout() const;

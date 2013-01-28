@@ -12,7 +12,7 @@ public:
     explicit Window(const QString &title, const QSizeF &size);
     void addContent(const QString &content);
     void addCloseButton(const QString &label);
-    void shift();
+    void shift(int pos_x = 0, int pos_y = 0);
     void keepWhenDisappear();
 
     virtual QRectF boundingRect() const;

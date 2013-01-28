@@ -8,11 +8,11 @@
 class ChongZhen: public TriggerSkill{
 public:
     ChongZhen(): TriggerSkill("chongzhen"){
-        events << CardResponsed  << TargetConfirmed;
+        events << CardResponded  << TargetConfirmed;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == CardResponsed){
+        if(triggerEvent == CardResponded){
             ResponsedStruct resp = data.value<ResponsedStruct>();
             QVariant toChongzhen = QVariant::fromValue((PlayerStar)resp.m_who);
             if(resp.m_card->getSkillName() == "longdan"
@@ -447,7 +447,6 @@ public:
 };
 
 DaheCard::DaheCard(){
-    once = true;
     will_throw = false;
 }
 
@@ -505,7 +504,7 @@ public:
                                                 .arg(bgm_zhangfei->objectName())
                                                 .arg(objectName()),
                                                 data,
-                                                CardUsed,
+                                                Card::MethodUse,
                                                 bgm_zhangfei);
             if(jink && jink->getSuit() != Card::Heart){
                 LogMessage log;
@@ -571,7 +570,6 @@ public:
 };
 
 TanhuCard::TanhuCard(){
-    once = true;
     will_throw = false;
 }
 
@@ -1081,7 +1079,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
 
             if(use.card && use.card->isKindOf("Slash")){
-                if(room->askForCard(daqiao, ".", "@anxian-discard", QVariant(), CardDiscarded)){
+                if(room->askForCard(daqiao, ".", "@anxian-discard")){
                     room->broadcastSkillInvoke(objectName(), 2);
                     daqiao->addMark("anxian");
                     use.from->drawCards(1);
@@ -1192,7 +1190,7 @@ public:
 
             ServerPlayer *target = room->askForPlayerChosen(ganning, room->getAllPlayers(), objectName());
             QVariant ai_data = QVariant::fromValue((PlayerStar)ganning);
-            const Card *card = room->askForCard(target, "Jink", "@junwei-show", ai_data, NonTrigger);
+            const Card *card = room->askForCard(target, "Jink", "@junwei-show", ai_data, Card::MethodNone);
             if (card) {
                 room->showCard(target, card->getEffectiveId());
                 ServerPlayer *receiver = room->askForPlayerChosen(ganning, room->getAllPlayers(), "junweigive");

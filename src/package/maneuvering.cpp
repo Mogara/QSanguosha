@@ -35,7 +35,6 @@ Analeptic::Analeptic(Card::Suit suit, int number)
 {
     setObjectName("analeptic");
     target_fixed = true;
-    once = true;
 }
 
 QString Analeptic::getSubtype() const{
@@ -315,7 +314,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     QString suit_str = card->getSuitString();
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
     QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->getGeneralName()).arg(suit_str);
-    if(effect.from->isAlive() && room->askForCard(effect.from, pattern, prompt, QVariant(), CardDiscarded)){
+    if(effect.from->isAlive() && room->askForCard(effect.from, pattern, prompt)){
         DamageStruct damage;
         damage.card = this;
         damage.from = effect.from;

@@ -107,9 +107,9 @@ void Window::addCloseButton(const QString &label)
     connect(ok_button, SIGNAL(clicked()), this, SLOT(disappear()));
 }
 
-void Window::shift(){
+void Window::shift(int pos_x, int pos_y) {
     resetTransform();
-    translate(-size.width()/2, -size.height()/2);
+    translate((pos_x - size.width()) / 2, (pos_y - size.height()) / 2);
 }
 
 void Window::keepWhenDisappear(){

@@ -9,7 +9,7 @@
 class SPMoonSpearSkill: public WeaponSkill{
 public:
     SPMoonSpearSkill():WeaponSkill("SPMoonSpear"){
-        events << CardFinished << CardResponsed;
+        events << CardFinished << CardResponded;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -24,7 +24,7 @@ public:
             if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
                 card = NULL;
             }
-        }else if(triggerEvent == CardResponsed){
+        }else if(triggerEvent == CardResponded){
             card = data.value<ResponsedStruct>().m_card;
             player->tag["MoonSpearSlash"] = data;
         }
@@ -41,7 +41,7 @@ public:
         }
         if(targets.isEmpty()) return false;
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
-        if(!room->askForCard(target, "jink", "@moon-spear-jink", QVariant(), CardResponsed, player)){
+        if(!room->askForCard(target, "jink", "@moon-spear-jink", QVariant(), Card::MethodResponse, player)){
             DamageStruct damage;
             damage.from = player;
             damage.to = target;
@@ -520,7 +520,7 @@ public:
             QString suit_str = card->getSuitString();
             QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
             QString prompt = QString("@xiuluo:::%1").arg(suit_str);
-            if(room->askForCard(target, pattern, prompt, QVariant(), CardDiscarded)){
+            if(room->askForCard(target, pattern, prompt)){
                 room->broadcastSkillInvoke(objectName());
                 room->throwCard(card, NULL);
                 once_success = true;
@@ -844,7 +844,7 @@ public:
                 pattern.append("|.|.|hand");
                 const Card *to_give = NULL;
                 if (!player->isKongcheng() && chenlin && chenlin->isAlive())
-                    to_give = room->askForCard(player, pattern, "@bifa-give", data_for_ai, NonTrigger, chenlin);
+                    to_give = room->askForCard(player, pattern, "@bifa-give", data_for_ai, Card::MethodNone, chenlin);
                 if (to_give) {
 					room->broadcastSkillInvoke("bifa", 2);
                     chenlin->obtainCard(to_give, false);

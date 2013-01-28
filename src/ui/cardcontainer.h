@@ -35,7 +35,7 @@ public:
     int getFirstEnabled() const;
     void startChoose();
     void startGongxin();
-    void addCloseButton(bool dispose = false);
+    void addCloseButton();
     void view(const ClientPlayer *player);
     virtual QRectF boundingRect() const;
     ClientPlayer* m_currentPlayer;

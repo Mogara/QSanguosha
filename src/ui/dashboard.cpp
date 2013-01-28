@@ -165,8 +165,33 @@ void Dashboard::setTrust(bool trust){
     trusting_text->setVisible(trust);
 }
 
-bool Dashboard::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &moveInfo)
-{
+void Dashboard::killPlayer() {
+    trusting_item->hide();
+    trusting_text->hide();
+    _m_roleComboBox->fix(m_player->getRole());
+    _m_roleComboBox->setEnabled(false);
+    _updateDeathIcon();
+    _m_saveMeIcon->hide();
+    if (_m_votesItem) _m_votesItem->hide();
+    if (_m_distanceItem) _m_distanceItem->hide();
+
+    QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect();
+    effect->setColor(_m_layout->m_deathEffectColor);
+    effect->setStrength(1.0);
+    this->setGraphicsEffect(effect);
+    refresh();
+    _m_deathIcon->show();
+}
+
+void Dashboard::revivePlayer() {
+    _m_votesGot = 0;
+    this->setGraphicsEffect(NULL);
+    Q_ASSERT(_m_deathIcon);
+    _m_deathIcon->hide();
+    refresh();
+}
+
+bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) {
     Player::Place place = moveInfo.to_place;
     if (place == Player::PlaceSpecial)
     {
@@ -239,12 +264,8 @@ void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple){
         }
     }
 
-    int index = matches.indexOf(selected);
-    int n = matches.length();
-    if(forward)
-        index = (index + 1) % n;
-    else
-        index = (index - 1 + n) % n;
+    int index = matches.indexOf(selected), n = matches.length();
+    index = (index + (forward ? 1 : n - 1)) % n;
 
     CardItem *to_select = matches[index];
     if (!to_select->isSelected())
@@ -258,11 +279,47 @@ void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple){
 
 void Dashboard::selectEquip(int position) {
     int i = position - 1;
-    if(_m_equipCards[i] != NULL){
-        if(_m_equipCards[i]->isMarkable()) {
-            _m_equipCards[i]->mark(!_m_equipCards[i]->isMarked());
-            update();
+    if (_m_equipCards[i] && _m_equipCards[i]->isMarkable()) {
+        _m_equipCards[i]->mark(!_m_equipCards[i]->isMarked());
+        update();
+    }
+}
+
+void Dashboard::selectOnlyCard() {
+    if (selected && selected->isSelected())
+        selected->clickItem();
+
+    int count = 0, equip_pos = -1;
+    bool is_equip = false;
+    CardItem *item = NULL;
+
+    foreach (CardItem *card_item, m_handCards) {
+        if (card_item->isEnabled()) {
+            item = card_item;
+            count++;
+            if (count > 1) {
+                unselectAll();
+                return;
+            }
         }
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (_m_equipCards[i] && _m_equipCards[i]->isMarkable()) {
+            is_equip = true;
+            equip_pos = i;
+            count++;
+            if (count > 1) return;
+        }
+    }
+    if (count == 0) return;
+    if (is_equip) {
+        _m_equipCards[equip_pos]->mark(!_m_equipCards[equip_pos]->isMarked());
+        update();
+    } else if (item) {
+        item->clickItem();
+        selected = item;
+        adjustCards();
     }
 }
 
@@ -393,25 +450,15 @@ QSanSkillButton* Dashboard::removeSkillButton(const QString &skillName)
     return btn;
 }
 
-void Dashboard::highlightEquip(QString skillName, bool highlight)
-{
-    QSanSkillButton* btn = NULL;
+void Dashboard::highlightEquip(QString skillName, bool highlight) {
     int i = 0;
-    for (i = 0; i < 4; i++)
-    {
-        if (!_m_equipSkillBtns[i]) continue;
-        const Skill* skill = _m_equipSkillBtns[i]->getSkill();
-        Q_ASSERT(skill != NULL);
-        if (skill->objectName() == skillName)
-        {
-            btn = _m_equipSkillBtns[i];
+    for (i = 0; i < 4; i++) {
+        if (!_m_equipCards[i]) continue;
+        if (_m_equipCards[i]->getCard()->objectName() == skillName)
             break;
-        }
     }
-    if (btn != NULL)
-    {
+    if (i != 4)
         _setEquipBorderAnimation(i, highlight);
-    }
 }
 
 void Dashboard::_createExtraButtons(){

@@ -238,7 +238,6 @@ public:
 };
 
 JuejiCard::JuejiCard(){
-    once = true;
 	will_throw = false;
 }
 
@@ -435,7 +434,7 @@ void LianliSlashCard::onEffect(const CardEffectStruct &effect) const{
 
     ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
     if(xiahoujuan){
-        const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash");
+        const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash", QVariant(), Card::MethodResponse);
 		CardUseStruct use;
 		use.card = slash;
 		use.from = effect.from;
@@ -798,7 +797,6 @@ public:
 };
 
 GuihanCard::GuihanCard(){
-    once = true;
 }
 
 void GuihanCard::onEffect(const CardEffectStruct &effect) const{
@@ -1143,7 +1141,6 @@ public:
 };
 
 LexueCard::LexueCard(){
-    once = true;
     mute = true;
 }
 

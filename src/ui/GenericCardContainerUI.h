@@ -59,6 +59,7 @@ public:
     inline void setMaxVotes(int maxVotes) { _m_maxVotes = maxVotes; }
     // See _m_floatingArea for more information
     inline QRect getFloatingArea() const { return _m_floatingAreaRect; }
+    inline void setSaveMeIcon(bool visible) { _m_saveMeIcon->setVisible(visible); }
     void setFloatingArea(QRect rect);
     
     // repaintAll is different from refresh in that it recreates all controls and is
@@ -86,7 +87,7 @@ public slots:
     void updatePile(const QString &pile_name);
     void updateRole(const QString &role);
     void updateMarks();
-    void updateVotes();
+    void updateVotes(bool need_select = true, bool display_1 = false);
     void showDistance();
     virtual void refresh();
 

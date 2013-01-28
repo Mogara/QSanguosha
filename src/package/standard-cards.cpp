@@ -273,7 +273,7 @@ public:
                         draw_card = true;
                     else{
                         QString prompt = "double-sword-card:" + use.from->getGeneralName();
-                        const Card *card = room->askForCard(to, ".", prompt, QVariant(), CardDiscarded);
+                        const Card *card = room->askForCard(to, ".", prompt);
                         if(!card)
                             draw_card = true;
                     }
@@ -346,7 +346,7 @@ public:
 
 		const Card *card = NULL;
         room->setCardFlag(player->getWeapon()->getId(), "using");
-        card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), QVariant(), CardUsed, effect.to);
+        card = room->askForCard(player, "slash", "blade-slash:" + effect.to->objectName(), QVariant(), Card::MethodUse, effect.to);
         if (player->getWeapon())
             room->setCardFlag(player->getWeapon()->getId(), "-using");
         if(card){
@@ -472,7 +472,7 @@ public:
         if (!effect.to->isAlive())
             return false;
 
-        CardStar card = room->askForCard(player, "@Axe", "@axe:" + effect.to->objectName(),data, CardDiscarded);
+        CardStar card = room->askForCard(player, "@Axe", "@axe:" + effect.to->objectName(), data);
         if(card){
             room->setEmotion(effect.to, "weapon/axe");
 
@@ -699,7 +699,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
                                          "slash",
                                          "savage-assault-slash:"+ effect.from->objectName(),
                                          QVariant(),
-                                         CardResponsed,
+                                         Card::MethodResponse,
                                          effect.from->isAlive() ? effect.from : NULL);
     if(slash){
         if (slash->getSkillName() == "spear") room->setEmotion(effect.to, "weapon/spear");
@@ -733,7 +733,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
                                         "jink",
                                         "archery-attack-jink:" + effect.from->objectName(),
                                         QVariant(),
-                                        CardResponsed,
+                                        Card::MethodResponse,
                                         effect.from->isAlive() ? effect.from : NULL);
     if(jink){
         room->setEmotion(effect.to, "jink");
@@ -943,7 +943,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
                                                  "slash",
                                                  "@wushuang-slash-1:" + second->objectName(),
                                                  QVariant(),
-                                                 CardResponsed,
+                                                 Card::MethodResponse,
                                                  second);
             if(slash == NULL)
                 break;
@@ -951,7 +951,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
             slash = room->askForCard(first, "slash",
                                      "@wushuang-slash-2:" + second->objectName(),
                                      QVariant(),
-                                     CardResponsed,
+                                     Card::MethodResponse,
                                      second);
             if(slash == NULL)
                 break;
@@ -961,7 +961,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
                                                  "slash",
                                                  "duel-slash:" + second->objectName(),
                                                  QVariant(),
-                                                 CardResponsed,
+                                                 Card::MethodResponse,
                                                  second);
             if(slash == NULL)
                 break;

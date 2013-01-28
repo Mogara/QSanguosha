@@ -198,13 +198,13 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     //this method causes crashes
-    //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QMutex m_roomMutex;
     QMutex m_zValueMutex;    
 
 private:
-    void _getSceneSizes(QSize& minSize, QSize& maxSize);
-    bool _shouldIgnoreDisplayMove(Player::Place from, Player::Place to);
+    void _getSceneSizes(QSize &minSize, QSize &maxSize);
+    bool _shouldIgnoreDisplayMove(CardsMoveStruct &movement);
     bool _processCardsMove(CardsMoveStruct &move, bool isLost);
     bool _m_isMouseButtonDown;
     bool _m_isInDragAndUseMode;

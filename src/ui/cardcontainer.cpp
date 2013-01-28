@@ -177,13 +177,9 @@ void CardContainer::startGongxin(){
     }
 }
 
-void CardContainer::addCloseButton(bool dispose){
+void CardContainer::addCloseButton() {
     close_button->show();
-
-    if(dispose)
-        connect(close_button, SIGNAL(clicked()), this, SLOT(deleteLater()));
-    else
-        connect(close_button, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(close_button, SIGNAL(clicked()), this, SLOT(clear()));
 }
 
 void CardContainer::grabItem(){
