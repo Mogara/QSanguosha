@@ -3,7 +3,7 @@
 
 Shit::Shit(Suit suit, int number):BasicCard(suit, number){
     setObjectName("shit");
-
+    will_throw = false;
     target_fixed = true;
 }
 
