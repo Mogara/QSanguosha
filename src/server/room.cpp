@@ -1179,7 +1179,7 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
     if (victims.length() == 1)
         setPlayerFlag(slasher, "slashTargetFixToOne");
     if (!distance_limit)
-        setPlayerFlag(slash, "slashNoDistanceLimit");
+        setPlayerFlag(slasher, "slashNoDistanceLimit");
     foreach(ServerPlayer *victim, victims)
     {
         setPlayerFlag(victim, "SlashAssignee");
