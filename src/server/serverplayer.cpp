@@ -332,11 +332,11 @@ void ServerPlayer::clearSelected(){
 void ServerPlayer::sendMessage(const QString &message)
 {
     if(socket){
+#ifndef QT_NO_DEBUG
+        printf("%s", qPrintable(objectName()));
+#endif
         socket->send(message);
 
-#ifndef QT_NO_DEBUG
-        qDebug("%s: %s", qPrintable(objectName()), qPrintable(message));
-#endif
     }
 }
 
