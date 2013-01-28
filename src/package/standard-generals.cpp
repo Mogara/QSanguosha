@@ -1254,6 +1254,7 @@ void StandardPackage::addGenerals(){
     zhenji = new General(this, "zhenji", "wei", 3, false);
     zhenji->addSkill(new Luoshen);
     zhenji->addSkill(new Qingguo);
+    zhenji->addSkill(new SPConvertSkill("#zhenjip", "zhenji", "sp_zhenji"));
 
     General *liubei, *guanyu, *zhangfei, *zhaoyun, *machao, *zhugeliang, *huangyueying;
     liubei = new General(this, "liubei$", "shu");

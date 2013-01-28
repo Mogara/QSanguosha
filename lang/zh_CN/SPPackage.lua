@@ -140,6 +140,13 @@ return {
 	["$wuji"] = "武圣虽死，血脉尚存。先父佑我，再现武魂！",
 	["~guanyinping"] = "父亲……",
 
+	["#sp_zhenji"] = "波形的美人",
+	["sp_zhenji"] = "SP甄姬",
+	["illustrator:sp_zhenji"] = "白姥姥",
+	["#zhenjip"] = "换姿",
+	[":#zhenjip"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP甄姬",
+	["cv:sp_zhenji"] = "神马芯",
+
 	["#chenlin"] = "破竹之咒",
 	["chenlin"] = "陈琳",
 	["illustrator:chenlin"] = "木美人",

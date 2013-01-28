@@ -182,27 +182,12 @@ sgs.ai_skill_use["@@xuanhuo"] = function(self, prompt)
 		end
 	end
 	self:sort(self.friends_noself,"defense")
-	self.xhtarget = self.friends_noself[1]
-	return "@XuanhuoCard=.->"..self.friends_noself[1]:objectName()
-end
-
-sgs.ai_skill_choice.xuanhuo = function(self, choices)
-	local fazheng = self.room:findPlayerBySkillName("xuanhuo")
-	if fazheng and not self:isFriend(fazheng) then
-		for _, friend in ipairs(self.friends_noself) do
-			if self.player:canSlash(friend) and self:isWeak(friend) then
-				return "give"
-			end
-		end
-		return "slash"
+	if #self.friends_noself > 0 then
+		self.xhtarget = self.friends_noself[1]
+		return "@XuanhuoCard=.->" .. self.friends_noself[1]:objectName()
+	else
+		return "."
 	end
-	for _, enemy in ipairs(self.enemies) do
-		if self.player:canSlash(enemy) and (enemy:getHp() < 2 and not enemy:hasSkill("buqu"))
-		and sgs.getDefense(enemy) < 2 then
-			return "slash"
-		end
-	end
-	return "give"
 end
 
 sgs.ai_skill_playerchosen.xuanhuo = function(self, targets)
@@ -215,8 +200,8 @@ sgs.ai_skill_playerchosen.xuanhuo = function(self, targets)
 	end
 end
 
-sgs.ai_skill_cardask["xuanhuo-slash"] = function(self, data, pattern, target, target2)
-	if target and target2  and self:isEnemy(target2) then
+sgs.ai_skill_cardask["@xuanhuo-slash"] = function(self, data, pattern, target, target2)
+	if target and target2 and self:isEnemy(target2) then
 		for _, slash in ipairs(self:getCards("Slash")) do
 			if self:slashIsEffective(slash, target2) then
 				return slash:toString()
