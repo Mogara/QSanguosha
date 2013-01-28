@@ -58,18 +58,20 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Draw: {
-            QVariant num = 2;
+            QVariant qnum;
+            int num = 2;
             if(room->getTag("FirstRound").toBool()){
                 room->setTag("FirstRound", false);
                 if(room->getMode() == "02_1v1")
                     num--;
             }
 
-            room->getThread()->trigger(DrawNCards, room, player, num);
-            int n = num.toInt();
-            if(n > 0)
-                player->drawCards(n, false);
-            room->getThread()->trigger(AfterDrawNCards, room, player, QVariant::fromValue(n));
+            qnum.setValue(num);
+            room->getThread()->trigger(DrawNCards, room, player, qnum);
+            if(num > 0)
+                player->drawCards(num, false);
+            qnum.setValue(num);
+            room->getThread()->trigger(AfterDrawNCards, room, player, qnum);
             break;
         }
 
