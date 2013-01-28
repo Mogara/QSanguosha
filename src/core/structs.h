@@ -142,6 +142,7 @@ public:
     static const int S_REASON_GOTBACK = 0x37;           // from placetable to hand
     static const int S_REASON_RECYCLE = 0x47;           // from discardpile to hand
     static const int S_REASON_ROB = 0x57;               // got a definite card from other's hand
+    static const int S_REASON_PREVIEWGIVE = 0x67;       // give cards after previewing, i.e. Yiji & Miji
 
     //subcategory of show
     static const int S_REASON_TURNOVER = 0x18;          // show n cards from drawpile
@@ -159,7 +160,6 @@ public:
                                                         //  e.g. delayed trick enters discardpile
     static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
     static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
-
 
     static const int S_MASK_BASIC_REASON = 0x0F;
 };
@@ -279,6 +279,13 @@ struct DyingStruct{
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
 };
 
+struct DeathStruct {
+    DeathStruct();
+
+    ServerPlayer *who; // who is dead
+    DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
+};
+
 struct RecoverStruct{
     RecoverStruct();
 
@@ -296,6 +303,7 @@ struct PindianStruct{
     const Card *from_card;
     const Card *to_card;
     QString reason;
+    bool success;
 };
 
 class JudgeStructPattern{
@@ -356,22 +364,37 @@ struct ResponsedStruct{
     {
         m_card = NULL;
         m_who = NULL;
+        m_isUse = false;
     }
 
     inline ResponsedStruct(const Card* card)
     {
         m_card = card;
         m_who = NULL;
+        m_isUse = false;
     }
 
-    inline ResponsedStruct(const Card* card, ServerPlayer *who)
-    {
+    inline ResponsedStruct(const Card *card, ServerPlayer *who) {
         m_card = card;
         m_who = who;
+        m_isUse = false;
+    }
+
+    inline ResponsedStruct(const Card *card, bool isUse) {
+        m_card = card;
+        m_who = NULL;
+        m_isUse = isUse;
+    }
+
+    inline ResponsedStruct(const Card *card, ServerPlayer *who, bool isUse) {
+        m_card = card;
+        m_who = who;
+        m_isUse = isUse;
     }
 
     const Card *m_card;
     ServerPlayer *m_who;
+    bool m_isUse;
 };
 
 enum TriggerEvent{
@@ -380,14 +403,16 @@ enum TriggerEvent{
     GameStart,
     TurnStart,
     EventPhaseStart,
+    EventPhaseProceeding,
     EventPhaseEnd,
     EventPhaseChanging,
 
     DrawNCards,
     AfterDrawNCards,
 
+    PreHpRecover,
     HpRecover,
-    HpLost,
+    PreHpLost,
     HpChanged,
     MaxHpChanged,
     PostHpReduced,
@@ -400,8 +425,11 @@ enum TriggerEvent{
     FinishRetrial,
     FinishJudge,
 
+    PindianVerifying,
     Pindian,
+
     TurnedOver,
+    ChainStateChanged,
 
     ConfirmDamage,    // confirm the damage's count and damage's nature
     Predamage,        // trigger the certain skill -- jueqing
@@ -418,6 +446,8 @@ enum TriggerEvent{
     AskForPeaches,
     AskForPeachesDone,
     Death,
+    BuryVictim,
+    BeforeGameOverJudge,
     GameOverJudge,
     GameFinished,
 
@@ -428,18 +458,16 @@ enum TriggerEvent{
     SlashMissed,
 
     CardAsked,
-    CardResponsed,
-    CardDiscarded,
+    CardResponded,
+    CardsMoving,
     CardsMoveOneTime,
     CardDrawing,
-    CardDrawnDone,
 
     CardUsed,
     TargetConfirming,
     TargetConfirmed,
     CardEffect,
     CardEffected,
-    PostCardEffected,  // For juxiang only now
     CardFinished,
 
     ChoiceMade,
@@ -449,6 +477,8 @@ enum TriggerEvent{
 
     // For miniscenarios only
     FetchDrawPileCard,
+	
+	CardDiscarded, // obsolete event. Do not use it to trigger skills!
 
     NumOfEvents
 };
@@ -474,6 +504,7 @@ Q_DECLARE_METATYPE(CardMoveStar)
 Q_DECLARE_METATYPE(CardStar)
 Q_DECLARE_METATYPE(PlayerStar)
 Q_DECLARE_METATYPE(DyingStruct)
+Q_DECLARE_METATYPE(DeathStruct)
 Q_DECLARE_METATYPE(RecoverStruct)
 Q_DECLARE_METATYPE(JudgeStar)
 Q_DECLARE_METATYPE(DamageStar)

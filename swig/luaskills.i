@@ -166,6 +166,8 @@ public:
     LuaSkillCard(const char *name);
     void setTargetFixed(bool target_fixed);
     void setWillThrow(bool will_throw);
+    void setCanRecast(bool can_recast);
+    void setHandlingMethod(Card::HandlingMethod handling_method);
     LuaSkillCard *clone() const;
 
     LuaFunction filter;    

@@ -205,16 +205,13 @@ void CardItem::setFrozen(bool is_frozen){
     frozen = is_frozen;
 }
 
-bool CardItem::isFrozen() const{
-    return frozen;
-}
-
-CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
-    foreach(CardItem *item, items){
-        if (item->getCard() == NULL)
-        {
-            if (card_id == Card::S_UNKNOWN_CARD_ID) return item;
-            else continue;
+CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
+    foreach(CardItem *item, items) {
+        if (item->getCard() == NULL) {
+            if (card_id == Card::S_UNKNOWN_CARD_ID)
+                return item;
+            else
+                continue;
         }
         if(item->getCard()->getId() == card_id)
             return item;
@@ -227,12 +224,12 @@ const int CardItem::_S_CLICK_JITTER_TOLERANCE = 1600;
 const int CardItem::_S_MOVE_JITTER_TOLERANCE = 200;
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent){
-    if(isFrozen()) return;
+    if (frozen) return;
     _m_lastMousePressScenePos = mapToParent(mouseEvent->pos());
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent){
-    if (isFrozen()) return;
+    if (frozen) return;
     
     QPointF totalMove = mapToParent(mouseEvent->pos()) - _m_lastMousePressScenePos;
     if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() 
@@ -263,8 +260,7 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent){
 }
 
 void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
-    if(isFrozen())
-        return;
+    if (frozen) return;
 
     if(hasFocus()){
         event->accept();

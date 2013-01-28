@@ -142,7 +142,8 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
         aniMaga->setParentItem(this);
         aniMaga->setOffset(QPoint(-m_iconSize.width()/2,-m_iconSize.height()/2));
 
-        aniMaga->setPos(QPoint(xStep * i - aniMaga->offset().x(), yStep * i - aniMaga->offset().y()));
+        int pos = m_maxHp > 5 ? 0 : i;
+        aniMaga->setPos(QPoint(xStep * pos - aniMaga->offset().x(), yStep * pos - aniMaga->offset().y()));
 
         QPropertyAnimation *fade = new QPropertyAnimation(aniMaga,"opacity");
         fade->setEndValue(0);
@@ -215,13 +216,12 @@ void MagatamasBoxItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* 
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
         rect.translate(m_imageArea.topLeft());
-        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, rect, Qt::AlignCenter, QString::number(m_hp));
+        if (this->m_orientation == Qt::Horizontal)
+            rect.translate(xStep * 0.5, yStep * 0.5);
+        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QString::number(m_hp));
         rect.translate(xStep, yStep);
-        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, rect, Qt::AlignCenter, "/");
+        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, "/");
         rect.translate(xStep, yStep);
-        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(
-            painter, rect, Qt::AlignCenter, QString::number(m_maxHp));
+        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QString::number(m_maxHp));
     }
 }

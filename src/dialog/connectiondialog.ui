@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>826</width>
-    <height>325</height>
+    <width>800</width>
+    <height>268</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
+      <y>82</y>
       <width>42</width>
       <height>16</height>
      </rect>
@@ -45,7 +45,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>140</y>
+      <y>108</y>
       <width>100</width>
       <height>100</height>
      </rect>
@@ -66,9 +66,9 @@
    <widget class="QPushButton" name="changeAvatarButton">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>230</y>
-      <width>111</width>
+      <x>140</x>
+      <y>188</y>
+      <width>121</width>
       <height>23</height>
      </rect>
     </property>
@@ -80,7 +80,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>100</y>
+      <y>80</y>
       <width>121</width>
       <height>23</height>
      </rect>
@@ -93,7 +93,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>130</y>
+      <y>109</y>
       <width>121</width>
       <height>23</height>
      </rect>
@@ -108,7 +108,7 @@
       <x>10</x>
       <y>17</y>
       <width>251</width>
-      <height>74</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -139,23 +139,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="passwordLabel">
-       <property name="text">
-        <string>Password:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="passwordLineEdit">
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-       <property name="placeholderText">
-        <string>Only used in contest</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
@@ -164,8 +147,8 @@
     <rect>
      <x>290</x>
      <y>10</y>
-     <width>531</width>
-     <height>301</height>
+     <width>501</width>
+     <height>251</height>
     </rect>
    </property>
    <property name="iconSize">
@@ -185,7 +168,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>290</y>
+     <y>238</y>
      <width>71</width>
      <height>23</height>
     </rect>
@@ -198,7 +181,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>290</y>
+     <y>238</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -211,7 +194,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>290</y>
+     <y>241</y>
      <width>95</width>
      <height>16</height>
     </rect>

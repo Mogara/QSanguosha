@@ -6,7 +6,6 @@
 #include "general.h"
 
 GongxinCard::GongxinCard(){
-    once = true;
 }
 
 bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -481,7 +480,7 @@ class Wumou:public TriggerSkill{
 public:
     Wumou():TriggerSkill("wumou"){
         frequency = Compulsory;
-        events << CardUsed << CardResponsed;
+        events << CardUsed << CardResponded;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -489,7 +488,7 @@ public:
         if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(triggerEvent == CardResponsed)
+        }else if(triggerEvent == CardResponded)
             card = data.value<ResponsedStruct>().m_card;
 
         if(card->isNDTrick()){
@@ -523,7 +522,6 @@ public:
 
 ShenfenCard::ShenfenCard(){
     target_fixed = true;
-    once = true;
 }
 
 void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, QList<ServerPlayer *> &) const{
@@ -1060,7 +1058,7 @@ public:
 class Jilve: public TriggerSkill{
 public:
     Jilve():TriggerSkill("jilve"){
-        events << CardUsed << CardResponsed // jizhi
+        events << CardUsed << CardResponded // jizhi
                 << AskForRetrial // guicai
                 << Damaged; // fangzhu
 
@@ -1074,7 +1072,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         player->setMark("JilveEvent",(int)triggerEvent);
-        if(triggerEvent == CardUsed || triggerEvent == CardResponsed){
+        if(triggerEvent == CardUsed || triggerEvent == CardResponded){
             CardStar card = NULL;
             if(triggerEvent == CardUsed)
                 card = data.value<CardUseStruct>().card;

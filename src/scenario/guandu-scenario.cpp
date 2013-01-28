@@ -7,7 +7,6 @@
 #include "engine.h"
 
 ZhanShuangxiongCard::ZhanShuangxiongCard(){
-    once = true;
 }
 
 bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

@@ -6,7 +6,7 @@
 
 class BasicCard:public Card{
 public:
-    BasicCard(Suit suit, int number):Card(suit, number){}
+    BasicCard(Suit suit, int number): Card(suit, number), will_throw(false) {}
     virtual QString getType() const;
     virtual CardType getTypeId() const;
 };
@@ -44,7 +44,7 @@ public:
         OffensiveHorseLocation,
     };
 
-    EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){}
+    EquipCard(Suit suit, int number): Card(suit, number, true) { handling_method = MethodUse; }
     TriggerSkill *getSkill() const;    
 
     virtual QString getType() const;

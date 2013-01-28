@@ -437,16 +437,17 @@ void MainWindow::on_actionAbout_triggered()
     QString project_url = "http://github.com/gaodayihao/QSanguosha";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
-    //QString forum_url = "";
-    //content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
+    QString forum_url = "http://qsanguosha.org";
+    content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
     Window *window = new Window(tr("About QSanguosha"), QSize(420, 450));
     scene->addItem(window);
-    window->setZValue(9.0);
+    window->setZValue(32766);
 
     window->addContent(content);
     window->addCloseButton(tr("OK"));
-    window->shift();
+    window->shift(scene->inherits("RoomScene") ? scene->width() : 0,
+                  scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -532,7 +533,8 @@ void MainWindow::on_actionRole_assign_table_triggered()
     rows << "2 1 0 1 0" << "3 1 0 1 1" << "4 1 0 2 1"
             << "5 1 1 2 1" << "6 1 1 3 1" << "6d 1 1 2 2"
             << "7 1 2 3 1" << "8 1 2 4 1" << "8d 1 2 3 2"
-            << "9 1 3 4 1" << "10 1 3 4 2";
+            << "8z 1 3 4 0" << "9 1 3 4 1" << "10 1 3 4 2"
+            << "10z 1 4 5 0" << "10o 1 3 5 1";
 
     foreach(QString row, rows){
         QStringList cells = row.split(" ");
@@ -540,6 +542,14 @@ void MainWindow::on_actionRole_assign_table_triggered()
         if(header.endsWith("d")){
             header.chop(1);
             header += tr(" (double renegade)");
+        }
+        if (header.endsWith("z")) {
+            header.chop(1);
+            header += tr(" (no renegade)");
+        }
+        if (header.endsWith("o")) {
+            header.chop(1);
+            header += tr(" (single renegade)");
         }
 
         QString row_content;
@@ -553,12 +563,14 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    Window *window = new Window(tr("Role assign table"), QSize(280, 380));
+    Window *window = new Window(tr("Role assign table"), QSize(240, 450));
     scene->addItem(window);
 
     window->addContent(content);
     window->addCloseButton(tr("OK"));
-    window->shift();
+    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
+                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->setZValue(32766);
 
     window->appear();
 }
@@ -615,7 +627,7 @@ void MainWindow::on_actionAcknowledgement_triggered()
 {
     AcknowledgementScene* ack = new AcknowledgementScene;
     connect(ack,SIGNAL(go_back()),this,SLOT(gotoStartScene()));
-    gotoScene(ack);
+    if (scene && !scene->inherits("RoomScene")) gotoScene(ack);
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered()
@@ -836,7 +848,9 @@ void MainWindow::on_actionAbout_fmod_triggered()
 
     window->addContent(content);
     window->addCloseButton(tr("OK"));
-    window->shift();
+    window->setZValue(32766);
+    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
+                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -859,7 +873,9 @@ void MainWindow::on_actionAbout_Lua_triggered()
 
     window->addContent(content);
     window->addCloseButton(tr("OK"));
-    window->shift();
+    window->setZValue(32766);
+    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
+                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }

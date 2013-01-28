@@ -71,6 +71,14 @@ public:
     void setValue(DyingStruct *dying){
         $self->setValue(QVariant::fromValue(*dying));
     }
+    
+    DeathStruct toDeath() const{
+        return $self->value<DeathStruct>();
+    }
+    
+    void setValue(DeathStruct *death) {
+        $self->setValue(QVariant::fromValue(*death));
+    }
 
     DamageStar toDamageStar() const{
         return $self->value<DamageStar>();

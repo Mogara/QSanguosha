@@ -40,7 +40,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->setupUi(this);
 
     ui->nameLineEdit->setText(Config.UserName);
-    ui->nameLineEdit->setMaxLength(32);
+    ui->nameLineEdit->setMaxLength(64);
 
     ui->hostComboBox->addItems(Config.HistoryIPs);
     ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
@@ -74,7 +74,6 @@ void ConnectionDialog::on_connectButton_clicked()
 
     Config.UserName = username;
     Config.HostAddress = ui->hostComboBox->lineEdit()->text();
-    Config.Password = ui->passwordLineEdit->text();
 
     Config.setValue("UserName", Config.UserName);
     Config.setValue("HostAddress", Config.HostAddress);

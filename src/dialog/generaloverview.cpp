@@ -51,6 +51,8 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
         package = Sanguosha->translate(general->getPackage());
 
         QString nickname = Sanguosha->translate("#" + general->objectName());
+        if (nickname.startsWith("#"))
+            nickname = Sanguosha->translate("#" + general->objectName().split("_").last());
         QTableWidgetItem *nickname_item;
         if(!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
@@ -200,18 +202,11 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     if(last_word.startsWith("~")){
         QStringList origin_generals = general->objectName().split("_");
         if(origin_generals.length()>1)
-            last_word = Sanguosha->translate(("~") +  origin_generals.at(1));
+            last_word = Sanguosha->translate(("~") + origin_generals.last());
     }
 
-    if(last_word.startsWith("~") && general->objectName().endsWith("f")){
-        QString origin_general = general->objectName();
-        origin_general.chop(1);
-        if(Sanguosha->getGeneral(origin_general))
-            last_word = Sanguosha->translate(("~") + origin_general);
-    }
 
     if(!last_word.startsWith("~")){
-
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
         button_layout->addWidget(death_button);
 
@@ -252,6 +247,8 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         ui->designerLineEdit->setText(tr("Official"));
 
     QString cv_text = Sanguosha->translate("cv:" + general->objectName());
+    if (cv_text.startsWith("cv:"))
+        cv_text = Sanguosha->translate("cv:" + general->objectName().split("_").last());
     if(!cv_text.startsWith("cv:"))
         ui->cvLineEdit->setText(cv_text);
     else

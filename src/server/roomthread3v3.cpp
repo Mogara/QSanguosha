@@ -12,7 +12,9 @@
 // setParent(NULL). Find another way to do it if we really need a parent.
 RoomThread3v3::RoomThread3v3(Room *room)
     :room(room)
-{}
+{
+    room->getRoomState()->reset();
+}
 
 QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     QList<const General *> generals;
@@ -69,9 +71,11 @@ void RoomThread3v3::run()
         }
     }
 
-    if(Config.value("3v3/UsingExtension", false).toBool())
+    if (Config.value("3v3/UsingExtension", false).toBool()) {
         general_names = Config.value("3v3/ExtensionGenerals").toStringList();
-    else
+        if (general_names.isEmpty())
+            general_names = getGeneralsWithoutExtension();
+    } else
         general_names = getGeneralsWithoutExtension();
 
     qShuffle(general_names);
@@ -113,8 +117,8 @@ void RoomThread3v3::askForTakeGeneral(ServerPlayer *player){
 
     if(name.isNull()){
         player->invoke("askForGeneral3v3");
-    }else{
-        msleep(1000);
+    } else {
+        msleep(Config.AIDelay);
         takeGeneral(player, name);
     }
 

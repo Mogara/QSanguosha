@@ -150,14 +150,8 @@ void General::lastWord() const{
     bool fileExists = QFile::exists(filename);
     if(!fileExists){
         QStringList origin_generals = objectName().split("_");
-        if(origin_generals.length()>1)
-            filename = QString("audio/death/%1.ogg").arg(origin_generals.at(1));
-    }
-    if(!fileExists && objectName().endsWith("f")){
-        QString origin_general = objectName();
-        origin_general.chop(1);
-        if(Sanguosha->getGeneral(origin_general))
-            filename = QString("audio/death/%1.ogg").arg(origin_general);
+        if (origin_generals.length() > 1)
+            filename = QString("audio/death/%1.ogg").arg(origin_generals.last());
     }
     Sanguosha->playAudioEffect(filename);
 }

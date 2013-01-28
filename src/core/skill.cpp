@@ -392,7 +392,7 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const{
 FakeMoveSkill::FakeMoveSkill(const QString &name, FakeCondition condition)
     : TriggerSkill(QString("#%1-fake-move").arg(name)), name(name), condition(condition)
 {
-    events << CardsMoveOneTime;
+    events << CardsMoving << CardsMoveOneTime;
 }
 
 int FakeMoveSkill::getPriority() const{
@@ -441,5 +441,5 @@ MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)
 }
 
 void MarkAssignSkill::onGameStart(ServerPlayer *player) const{
-    player->gainMark(mark_name, n);
+    player->getRoom()->setPlayerMark(player, mark_name, player->getMark(mark_name) + n);
 }

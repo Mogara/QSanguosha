@@ -8,7 +8,6 @@
 #include "general.h"
 
 JuaoCard::JuaoCard(){
-    once = true;
     will_throw = false;
 }
 
@@ -154,7 +153,7 @@ public:
 class Yicai:public TriggerSkill{
 public:
     Yicai():TriggerSkill("yicai"){
-        events << CardUsed << CardResponsed;
+        events << CardUsed << CardResponded;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
@@ -162,7 +161,7 @@ public:
         if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(triggerEvent == CardResponsed)
+        }else if(triggerEvent == CardResponded)
             card = data.value<ResponsedStruct>().m_card;
 
         if(card->isNDTrick())
@@ -208,7 +207,6 @@ public:
 };
 
 HouyuanCard::HouyuanCard(){
-    once = true;
 }
 
 void HouyuanCard::onEffect(const CardEffectStruct &effect) const{
@@ -364,7 +362,7 @@ void WeidaiCard::use(Room *room, ServerPlayer *sunce, QList<ServerPlayer *> &) c
             return;
         QVariant tohelp = QVariant::fromValue((PlayerStar)sunce);
         QString prompt = QString("@weidai-analeptic:%1").arg(sunce->objectName());
-        const Card *analeptic = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp, CardResponsed, sunce);
+        const Card *analeptic = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp, Card::MethodDiscard, sunce);
         if(analeptic){
             LogMessage log;
             log.type = "$DiscardCard";
@@ -644,7 +642,7 @@ class Gushou:public TriggerSkill{
 public:
     Gushou():TriggerSkill("gushou"){
         frequency = Frequent;
-        events << CardUsed << CardResponsed;
+        events << CardUsed << CardResponded;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *tianfeng, QVariant &data) const{
@@ -654,7 +652,7 @@ public:
         if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(triggerEvent == CardResponsed)
+        }else if(triggerEvent == CardResponded)
             card = data.value<ResponsedStruct>().m_card;
 
         if(card->isKindOf("BasicCard") && !card->isVirtualCard()){
@@ -708,7 +706,6 @@ public:
 };
 
 ShouyeCard::ShouyeCard(){
-    once = true;
 }
 
 bool ShouyeCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -786,7 +783,7 @@ public:
 class Shien:public TriggerSkill{
 public:
     Shien():TriggerSkill("shien"){
-        events << CardUsed << CardResponsed;
+        events << CardUsed << CardResponded;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -801,7 +798,7 @@ public:
         if(triggerEvent == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-        }else if(triggerEvent == CardResponsed)
+        }else if(triggerEvent == CardResponded)
             card = data.value<ResponsedStruct>().m_card;
 
         if(card->isNDTrick()){

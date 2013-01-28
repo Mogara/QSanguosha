@@ -6,8 +6,8 @@
 #include "engine.h"
 
 DiscardSkill::DiscardSkill()
-    :ViewAsSkill("discard"), card(new DummyCard),
-    num(0), include_equip(false)
+    : ViewAsSkill("discard"), card(new DummyCard),
+      num(0), include_equip(false), is_discard(true)
 {
     card->setParent(this);
 }
@@ -24,14 +24,18 @@ void DiscardSkill::setIncludeEquip(bool include_equip){
     this->include_equip = include_equip;
 }
 
-bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card* card) const{
-    if(selected.length() >= num)
+void DiscardSkill::setIsDiscard(bool is_discard) {
+    this->is_discard = is_discard;
+}
+
+bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *card) const{
+    if (selected.length() >= num)
         return false;
 
-    if(!include_equip && card->isEquipped())
+    if (!include_equip && card->isEquipped())
         return false;
 
-    if(Self->isJilei(card))
+    if (is_discard && Self->isCardLimited(card, Card::MethodDiscard))
         return false;
 
     return true;
@@ -51,15 +55,19 @@ const Card* DiscardSkill::viewAs(const QList<const Card*> &cards) const{
 ResponseSkill::ResponseSkill()
     :OneCardViewAsSkill("response-skill")
 {
-
+    request = Card::MethodResponse;
 }
 
 void ResponseSkill::setPattern(const QString &pattern){
     this->pattern = Sanguosha->getPattern(pattern);
 }
 
+void ResponseSkill::setRequest(const Card::HandlingMethod request) {
+    this->request = request;
+}
+
 bool ResponseSkill::matchPattern(const Player *player, const Card *card) const{
-    if(player->isJilei(card) || player->isLocked(card))
+    if (request != Card::MethodNone && player->isCardLimited(card, request))
         return false;
 
     return pattern && pattern->match(player, card);

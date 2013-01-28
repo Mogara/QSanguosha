@@ -9,7 +9,7 @@
 class MoonSpearSkill: public WeaponSkill{
 public:
     MoonSpearSkill():WeaponSkill("MoonSpear"){
-        events << CardFinished << CardResponsed;
+        events << CardFinished << CardResponded;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -24,7 +24,7 @@ public:
             if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
                 card = NULL;
             }
-        }else if(triggerEvent == CardResponsed){
+        }else if(triggerEvent == CardResponded){
             card = data.value<ResponsedStruct>().m_card;
             player->tag["MoonSpearSlash"] = data;
         }
@@ -114,7 +114,6 @@ public:
 };
 
 NosJujianCard::NosJujianCard(){
-    once = true;
     mute = true;
 }
 
@@ -204,7 +203,7 @@ public:
             if(source && source != player){
                 room->broadcastSkillInvoke("enyuan", qrand() % 2 + 3);
 
-                const Card *card = room->askForCard(source, ".|heart|.|hand", "@enyuanheart", QVariant(), NonTrigger);
+                const Card *card = room->askForCard(source, ".|heart|.|hand", "@enyuanheart", QVariant(), Card::MethodNone);
                 if(card){
                     player->obtainCard(card);
                 }else{
@@ -218,7 +217,6 @@ public:
 };
 
 NosXuanhuoCard::NosXuanhuoCard(){
-    once = true;
     will_throw = false;
     mute = true;
 }

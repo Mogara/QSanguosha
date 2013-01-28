@@ -34,7 +34,11 @@ bool BanPair::isBanned(const QString &first, const QString &second){
     return BanPairSet.contains(pair);    
 }
 
-void BanPair::loadBanPairs(){
+void BanPair::loadBanPairs() {
+    AllBanSet.clear();
+    SecondBanSet.clear();
+    BanPairSet.clear();
+
     // special cases
     QStringList banlist = Config.value("Banlist/Pairs","").toStringList();
 

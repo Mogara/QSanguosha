@@ -77,6 +77,8 @@ LuaSkillCard *LuaSkillCard::clone() const{
 
     new_card->target_fixed = target_fixed;
     new_card->will_throw = will_throw;
+    new_card->can_recast = can_recast;
+    new_card->handling_method = handling_method;
 
     new_card->filter = filter;
     new_card->feasible = feasible;
@@ -86,12 +88,20 @@ LuaSkillCard *LuaSkillCard::clone() const{
     return new_card;
 }
 
-void LuaSkillCard::setTargetFixed(bool target_fixed){
+void LuaSkillCard::setTargetFixed(bool target_fixed) {
     this->target_fixed = target_fixed;
 }
 
-void LuaSkillCard::setWillThrow(bool will_throw){
-    this->will_throw = will_throw;;
+void LuaSkillCard::setWillThrow(bool will_throw) {
+    this->will_throw = will_throw;
+}
+
+void LuaSkillCard::setCanRecast(bool can_recast) {
+    this->can_recast = can_recast;
+}
+
+void LuaSkillCard::setHandlingMethod(Card::HandlingMethod handling_method) {
+    this->handling_method = handling_method;
 }
 
 LuaSkillCard *LuaSkillCard::Parse(const QString &str){
@@ -104,6 +114,8 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str){
         suit_map.insert("club", Card::Club);
         suit_map.insert("heart", Card::Heart);
         suit_map.insert("diamond", Card::Diamond);
+        suit_map.insert("no_suit_red", Card::NoSuitRed);
+        suit_map.insert("no_suit_black", Card::NoSuitBlack);
         suit_map.insert("no_suit", Card::NoSuit);
     }
 

@@ -608,7 +608,6 @@ public:
 };
 
 AnxuCard::AnxuCard(){
-    once = true;
     mute = true;
 }
 

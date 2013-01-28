@@ -264,6 +264,23 @@ const CardPattern *Engine::getPattern(const QString &name) const{
     return new ExpPattern(name);
 }
 
+const Card::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const{
+    if (method_name == "use")
+        return Card::MethodUse;
+    else if (method_name == "response")
+        return Card::MethodResponse;
+    else if (method_name == "discard")
+        return Card::MethodDiscard;
+    else if (method_name == "recast")
+        return Card::MethodRecast;
+    else if (method_name == "pindian")
+        return Card::MethodPindian;
+    else {
+        Q_ASSERT(false);
+        return Card::MethodNone;
+    }
+}
+
 QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
     QList<const Skill *> skills;
     foreach(QString name, related_skills.values(skill_name))
@@ -505,6 +522,14 @@ QColor Engine::getKingdomColor(const QString &kingdom) const{
     return color_map.value(kingdom);
 }
 
+QStringList Engine::getChattingEasyTexts() const{
+    static QStringList easy_texts;
+    if (easy_texts.isEmpty())
+        easy_texts = GetConfigFromLuaState(lua, "easy_text").toStringList();
+
+    return easy_texts;
+}
+
 QString Engine::getSetupString() const{
     int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
     QString flags;
@@ -658,16 +683,23 @@ int Engine::getCardCount() const{
     return cards.length();
 }
 
-QStringList Engine::getLords() const{
+QStringList Engine::getLords(bool contain_banned) const{
     QStringList lords;
 
     // add intrinsic lord
-    foreach(QString lord, lord_list){
+    foreach (QString lord, lord_list) {
         const General *general = generals.value(lord);
-        if(ban_package.contains(general->getPackage()))
+        if (ban_package.contains(general->getPackage()))
             continue;
-        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-            continue;
+        if (!contain_banned) {
+            if (ServerInfo.GameMode.endsWith("p")
+               || ServerInfo.GameMode.endsWith("pd")
+               || ServerInfo.GameMode.endsWith("pz"))
+                if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
+                    continue;
+            if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+                continue;
+        }
         lords << lord;
     }
 

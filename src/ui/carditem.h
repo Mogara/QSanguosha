@@ -54,7 +54,6 @@ public:
     bool isEquipped() const;
 
     void setFrozen(bool is_frozen);
-    bool isFrozen() const;
 
     inline void showFootnote() { _m_showFootnote = true; }
     inline void hideFootnote() { _m_showFootnote = false; }

@@ -168,7 +168,7 @@ public:
 
         player->tag["Judge"] = data;
         QString pattern = "@huanshi";
-        const Card *card = room->askForCard(player, pattern, prompt, data, AskForRetrial);
+        const Card *card = room->askForCard(player, pattern, prompt, data, Card::MethodResponse, judge->who, true);
 
         if (card != NULL){
             room->broadcastSkillInvoke(objectName());

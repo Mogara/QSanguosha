@@ -6,7 +6,6 @@
 #include "engine.h"
 
 LuoyiCard::LuoyiCard(){
-    once = true;
     target_fixed = true;
 }
 
@@ -36,7 +35,6 @@ public:
 };
 
 NeoFanjianCard::NeoFanjianCard(){
-    once = true;
     mute = true;
     will_throw = false;
 }
@@ -137,7 +135,7 @@ public:
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
             room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
-            if(!room->askForCard(gongsun, ".Weapon", "@zhulou-discard", QVariant(), CardDiscarded))
+            if(!room->askForCard(gongsun, ".Weapon", "@zhulou-discard"))
                 room->loseHp(gongsun);
         }
         return false;

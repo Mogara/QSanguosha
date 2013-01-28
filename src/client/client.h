@@ -21,19 +21,26 @@ class Client : public QObject
     Q_ENUMS(Status)
 
 public:
-    enum Status{
-        NotActive,
-        Responsing,
-        Playing,
-        Discarding,
-        ExecDialog,
-        AskForSkillInvoke,
-        AskForAG,
-        AskForPlayerChoose,
-        AskForYiji,
-        AskForGuanxing,
-        AskForGongxin,
-        AskForShowOrPindian
+    enum Status {
+        NotActive = 0x00,
+        Responding = 0x01,
+        Playing = 0x02,
+        Discarding = 0x03,
+        Exchanging = 0x04,
+        ExecDialog = 0x05,
+        AskForSkillInvoke = 0x06,
+        AskForAG = 0x07,
+        AskForPlayerChoose = 0x08,
+        AskForYiji = 0x09,
+        AskForGuanxing = 0x0A,
+        AskForGongxin = 0x0B,
+        AskForShowOrPindian = 0x0c,
+
+        RespondingUse = 0x11,
+        RespondingForDiscard = 0x21,
+        RespondingNonTrigger = 0x31,
+
+        ClientStatusBasicMask = 0x0F
     };
 
     explicit Client(QObject *parent, const QString &filename = QString());
@@ -121,6 +128,7 @@ public:
     void setEmotion(const QString &set_str);
     void skillInvoked(const Json::Value &invoke_str);
     void animate(const QString &animate_str);
+    void cardLimitation(const QString &limit_str);
     void jilei(const QString &jilei_str);
     void cardLock(const QString &card_str);
     void setScreenName(const QString &set_str);

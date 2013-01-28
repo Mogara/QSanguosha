@@ -601,7 +601,6 @@ public:
 };
 
 XianzhenCard::XianzhenCard(){
-    once = true;
     will_throw = false;
 }
 
@@ -731,7 +730,6 @@ public:
 };
 
 MingceCard::MingceCard(){
-    once = true;
     will_throw = false;
 }
 
@@ -875,7 +873,6 @@ public:
 };
 
 GanluCard::GanluCard(){
-    once = true;
 }
 
 void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
@@ -989,7 +986,6 @@ public:
 
 XinzhanCard::XinzhanCard(){
     target_fixed = true;
-    once = true;
 }
 
 void XinzhanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
@@ -1158,7 +1154,6 @@ public:
 
 PaiyiCard::PaiyiCard(){
     mute = true;
-    once = true;
 }
 
 bool PaiyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

@@ -13,7 +13,7 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 
 private:
-    void onPhaseChange(ServerPlayer *player) const;
+    void onPhaseProceed(ServerPlayer *player) const;
     void rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const;
     void changeGeneral1v1(ServerPlayer *player) const;
     QString getWinner(ServerPlayer *victim) const;

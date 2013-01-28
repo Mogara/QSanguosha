@@ -176,7 +176,8 @@ public:
     void setChained(bool chained);
     bool isChained() const;
 
-    bool canSlash(const Player *other, const Card *slash = NULL, bool distance_limit = true, int rangefix = 0) const;
+    bool canSlash(const Player *other, const Card *slash, bool distance_limit = true, int rangefix = 0) const;
+    bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0) const;
     int getCardCount(bool include_equip) const;
 
     QList<int> getPile(const QString &pile_name) const;
@@ -203,7 +204,11 @@ public:
 
     void setCardLocked(const QString &name);
     bool isLocked(const Card *card) const;
-    bool hasCardLock(const QString &card_str) const;
+
+    void setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn = false);
+    void removeCardLimitation(const QString &limit_list, const QString &pattern);
+    void clearCardLimitation(bool single_turn = false);
+    bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
 
     bool isCaoCao() const;
     void copyFrom(Player* p);
@@ -240,8 +245,7 @@ private:
     QList<int> judging_area;
     QHash<const Player *, int> fixed_distance;
 
-    QSet<QString> jilei_set;
-    QSet<QString> lock_card;
+    QMap<Card::HandlingMethod, QStringList> card_limitation;
 
 signals:
     void general_changed();

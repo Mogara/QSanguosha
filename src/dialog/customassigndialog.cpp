@@ -1,6 +1,7 @@
 #include "customassigndialog.h"
 #include "miniscenarios.h"
 #include "SkinBank.h"
+#include "settings.h"
 
 #include <QPushButton>
 #include <QMessageBox>
@@ -601,18 +602,9 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
     hand_list->clear();
     judge_list->clear();
 
-    if(player_equips[name].isEmpty())
-        removeEquipButton->setEnabled(false);
-    else
-        removeEquipButton->setEnabled(true);
-    if(player_handcards[name].isEmpty())
-        removeHandButton->setEnabled(false);
-    else
-        removeHandButton->setEnabled(true);
-    if(player_judges[name].isEmpty())
-        removeJudgeButton->setEnabled(false);
-    else
-        removeJudgeButton->setEnabled(true);
+    removeEquipButton->setEnabled(!player_equips[name].isEmpty());
+    removeHandButton->setEnabled(!player_handcards[name].isEmpty());
+    removeJudgeButton->setEnabled(!player_judges[name].isEmpty());
 
     foreach(int equip_id, player_equips[name]){
         const Card* card = Sanguosha->getEngineCard(equip_id);
@@ -723,9 +715,7 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name){
 }
 
 void CustomAssignDialog::updateAllRoles(bool toggled){
-
-    int i = 0;
-    for(i = 0; i < list->count(); i++){
+    for (int i = 0; i < list->count(); i++) {
         QString name = player_mapping[i];
         QString role = role_mapping[name];
         item_map[i]->setText(setListText(name, role, i));
@@ -796,11 +786,8 @@ void CustomAssignDialog::setPlayerMarks(int value){
 void CustomAssignDialog::getPlayerMarks(int index){
     QString mark_name = marks_ComboBox->itemData(index).toString();
     QString player_name = list->item(list->currentRow())->data(Qt::UserRole).toString();
-    if(mark_name.isEmpty())
-        marks_count->setEnabled(false);
-    else
-        marks_count->setEnabled(true);
 
+    marks_count->setEnabled(!mark_name.isEmpty());
     marks_count->setValue(player_marks[player_name][mark_name]);
 }
 
@@ -856,7 +843,6 @@ void CustomAssignDialog::removeJudgeCard(){
 void CustomAssignDialog::removePileCard(){
     int card_id = pile_list->currentItem()->data(Qt::UserRole).toInt();
     if(set_pile.contains(card_id)){
-        set_pile.removeOne(card_id);
         int row = pile_list->currentRow();
         pile_list->takeItem(row);
         if(pile_list->count() > 0)
@@ -866,6 +852,7 @@ void CustomAssignDialog::removePileCard(){
             ended_by_pile->setEnabled(false);
             ended_by_pile->setChecked(false);
         }
+        set_pile.removeOne(card_id);
     }
 }
 
@@ -951,18 +938,12 @@ void CustomAssignDialog::getChosenGeneral(QString name){
 
 void CustomAssignDialog::freeChoose(bool toggled){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
-    if(toggled)
-        free_choose_general[name] = true;
-    else
-        free_choose_general[name] = false;
+    free_choose_general[name] = toggled;
 }
 
 void CustomAssignDialog::freeChoose2(bool toggled){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
-    if(toggled)
-        free_choose_general2[name] = true;
-    else
-        free_choose_general2[name] = false;
+    free_choose_general2[name] = toggled;
 }
 
 void CustomAssignDialog::doPlayerChains(bool toggled){
@@ -1064,10 +1045,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     if(player_start_draw.keys().contains(player_name)) val = player_start_draw[player_name];
     player_draw->setValue(val);
 
-    if(!starter.isEmpty() && starter != player_name)
-        starter_box->setEnabled(false);
-    else
-        starter_box->setEnabled(true);
+    starter_box->setEnabled(starter.isEmpty() || starter == player_name);
 
     QString kingdom = assign_nationality.value(player_name, "");
     if(!kingdom.isEmpty())
@@ -1719,32 +1697,35 @@ void CardAssignDialog::updateExcluded(int card_id){
 void CardAssignDialog::updateCardList(){
     card_list->clear();
 
-    int i, n = Sanguosha->getCardCount();
+    int n = Sanguosha->getCardCount();
     QList<const Card *> reasonable_cards;
     if(!card_type.isEmpty() || !class_name.isEmpty()){
-        for(i=0; i<n ;i++){
+        for (int i = 0; i < n; i++) {
             if(excluded_card.contains(i))
                 continue;
 
             const Card *card = Sanguosha->getEngineCard(i);
+            if (Config.BanPackages.contains(card->getPackage()))
+                continue;
             if(card->getType() == card_type || card->isKindOf(class_name.toStdString().c_str()))
                 reasonable_cards << card;
         }
-    }
-    else{
-        for(i=0; i<n ;i++){
+    } else {
+        for(int i = 0; i < n; i++) {
             if(excluded_card.contains(i))
                 continue;
 
             const Card *card = Sanguosha->getEngineCard(i);
+            if (Config.BanPackages.contains(card->getPackage()))
+                continue;
             reasonable_cards << card;
         }
     }
 
-    for(i = 0; i < reasonable_cards.length(); i++)
+    for (int i = 0; i < reasonable_cards.length(); i++)
         addCard(reasonable_cards.at(i));
 
-    if(n > 0)
+    if (reasonable_cards.length() > 0)
         card_list->setCurrentRow(0);
 }
 

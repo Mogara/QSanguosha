@@ -8,7 +8,6 @@
 
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
-    once = true;
     mute = true;
     will_throw = false;
 }
@@ -55,7 +54,6 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 }
 
 JieyinCard::JieyinCard(){
-    once = true;
     mute = true;
 }
 
@@ -122,7 +120,6 @@ void TuxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
 }
 
 FanjianCard::FanjianCard(){
-    once = true;
 }
 
 void FanjianCard::onEffect(const CardEffectStruct &effect) const{
@@ -165,7 +162,6 @@ void KurouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
 }
 
 LijianCard::LijianCard(){
-    once = true;
 }
 
 bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -222,7 +218,6 @@ void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 }
 
 QingnangCard::QingnangCard(){
-    once = true;
 }
 
 bool QingnangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -312,7 +307,7 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, QList<ServerPlayer *> &t
 
     QVariant tohelp = QVariant::fromValue((PlayerStar)liubei);
     foreach(ServerPlayer *liege, lieges){
-        slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), tohelp, CardResponsed, liubei);
+        slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), tohelp, Card::MethodResponse, liubei);
         if(slash){
             CardUseStruct card_use;
             card_use.card = slash;

@@ -115,6 +115,8 @@ public:
     LuaSkillCard *clone() const;
     void setTargetFixed(bool target_fixed);
     void setWillThrow(bool will_throw);
+    void setCanRecast(bool can_recast);
+    void setHandlingMethod(Card::HandlingMethod handling_method);
 
     // member functions that do not expose to Lua interpreter
     static LuaSkillCard *Parse(const QString &str);

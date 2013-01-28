@@ -28,27 +28,24 @@ class Card : public QObject
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(bool target_fixed READ targetFixed)
-    Q_PROPERTY(bool once READ isOnce CONSTANT)
     Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
+    Q_ENUMS(HandlingMethod)
+
 public:
     // enumeration type
-    enum Suit {Spade, Club, Heart, Diamond, NoSuit};
-    enum Color{Red, Black, Colorless};
+    enum Suit { Spade, Club, Heart, Diamond, NoSuitBlack, NoSuitRed, NoSuit, SuitToBeDecided = -1 };
+    enum Color { Red, Black, Colorless };
+    enum HandlingMethod { MethodNone, MethodUse, MethodResponse, MethodDiscard, MethodRecast, MethodPindian };
 
     static const Suit AllSuits[4];
 
     // card types
-    enum CardType{
-        TypeSkill,
-        TypeBasic,
-        TypeTrick,
-        TypeEquip
-    };
+    enum CardType { TypeSkill, TypeBasic, TypeTrick, TypeEquip };
 
     // constructor
     Card(Suit suit, int number, bool target_fixed = false);
@@ -78,16 +75,16 @@ public:
     virtual void setSkillName(const QString &skill_name);
     QString getDescription() const;
     
-    virtual bool isOnce() const;
     virtual bool isMute() const;
     virtual bool willThrow() const;
-    virtual bool canJilei() const;
+    virtual bool canRecast() const;
     virtual bool hasPreAction() const;
+    virtual Card::HandlingMethod getHandlingMethod() const;
 
     virtual void setFlags(const QString &flag) const;
-    inline void setFlags(const QStringList &fs) { flags = fs; }
+    inline virtual void setFlags(const QStringList &fs) { flags = fs; }
     bool hasFlag(const QString &flag) const;
-    void clearFlags() const;
+    virtual void clearFlags() const;
 
     virtual QString getPackage() const;
     inline virtual QString getClassName() const {return metaObject()->className();}
@@ -120,8 +117,7 @@ public:
     
     inline virtual const Card *getRealCard() const {return this;}
     virtual const Card *validate(const CardUseStruct *cardUse) const;
-    virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
-
+    virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const;
 
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
@@ -156,15 +152,15 @@ public:
 protected:
     QList<int> subcards;
     bool target_fixed;
-    bool once;
     bool mute;
     bool will_throw;
-    bool can_jilei;
     bool has_preact;
+    bool can_recast;
     Suit m_suit;
     int m_number;
     int m_id;
     QString m_skillName;
+    Card::HandlingMethod handling_method;
 
     mutable QStringList flags;
 };

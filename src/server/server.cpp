@@ -5,7 +5,6 @@
 #include "nativesocket.h"
 #include "banpair.h"
 #include "scenario.h"
-#include "contestdb.h"
 #include "choosegeneraldialog.h"
 #include "customassigndialog.h"
 #include "miniscenarios.h"
@@ -58,7 +57,7 @@ QWidget *ServerDialog::createBasicTab(){
 
     timeout_spinbox = new QSpinBox;
     timeout_spinbox->setMinimum(5);
-    timeout_spinbox->setMaximum(30);
+    timeout_spinbox->setMaximum(60);
     timeout_spinbox->setValue(Config.OperationTimeout);
     timeout_spinbox->setSuffix(tr(" seconds"));
     nolimit_checkbox = new QCheckBox(tr("No limit"));
@@ -111,7 +110,7 @@ QWidget *ServerDialog::createPackageTab(){
         if(package == NULL)
             continue;
 
-        bool forbid_package = Config.value("ForbidPackages").toString().contains(extension);
+        bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
         checkbox->setText(Sanguosha->translate(extension));
@@ -156,10 +155,6 @@ QWidget *ServerDialog::createPackageTab(){
 QWidget *ServerDialog::createAdvancedTab(){
     QVBoxLayout *layout = new QVBoxLayout;
 
-    contest_mode_checkbox = new QCheckBox(tr("Contest mode"));
-    contest_mode_checkbox->setChecked(Config.ContestMode);
-    contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
-
     free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
     free_choose_checkbox->setToolTip(tr("This option enables the cheat menu"));
     free_choose_checkbox->setChecked(Config.FreeChoose);
@@ -171,7 +166,11 @@ QWidget *ServerDialog::createAdvancedTab(){
     free_assign_self_checkbox->setChecked(Config.FreeAssignSelf);
     free_assign_self_checkbox->setEnabled(free_assign_checkbox->isChecked());
     connect(free_assign_checkbox,SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
-	
+
+    pile_swapping_spinbox = new QSpinBox;
+    pile_swapping_spinbox->setRange(0, 15);
+    pile_swapping_spinbox->setValue(Config.value("PileSwappingLimitation", 5).toInt());
+
     without_lordskill_checkbox = new QCheckBox(tr("Without Lordskill"));
     without_lordskill_checkbox->setChecked(Config.value("WithoutLordskill", false).toBool());
 
@@ -225,13 +224,10 @@ QWidget *ServerDialog::createAdvancedTab(){
     hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
     connect(basara_checkbox,SIGNAL(toggled(bool)),hegemony_checkbox, SLOT(setEnabled(bool)));
 
+    hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
     hegemony_maxchoice_spinbox = new QSpinBox;
     hegemony_maxchoice_spinbox->setRange(5, 10);
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
-
-    announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
-    announce_ip_checkbox->setChecked(Config.AnnounceIP);
-    announce_ip_checkbox->setEnabled(false); // not support now
 
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
@@ -243,18 +239,15 @@ QWidget *ServerDialog::createAdvancedTab(){
     QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
     connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
 
-    //address_edit->setEnabled(announce_ip_checkbox->isChecked());
-    // connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
-
     port_edit = new QLineEdit;
     port_edit->setText(QString::number(Config.ServerPort));
     port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
 
-    layout->addWidget(contest_mode_checkbox);
     layout->addWidget(forbid_same_ip_checkbox);
     layout->addWidget(disable_chat_checkbox);
     layout->addLayout(HLay(free_choose_checkbox, free_assign_checkbox));
     layout->addWidget(free_assign_self_checkbox);
+    layout->addLayout(HLay(new QLabel(tr("Pile-swapping limitation")), pile_swapping_spinbox));
     layout->addLayout(HLay(without_lordskill_checkbox, sp_convert_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for lord")), lord_maxchoice_spinbox));
@@ -262,9 +255,8 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addWidget(second_general_checkbox);
     layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
     layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
-    layout->addLayout(HLay(new QLabel(tr("Upperlimit for hegemony")), hegemony_maxchoice_spinbox));
+    layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
     layout->addLayout(HLay(scene_checkbox, same_checkbox));
-    layout->addWidget(announce_ip_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
     layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
@@ -278,6 +270,12 @@ QWidget *ServerDialog::createAdvancedTab(){
     max_hp_scheme_ComboBox->setVisible(Config.Enable2ndGeneral);
     connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_ComboBox, SLOT(setVisible(bool)));
 
+
+    hegemony_maxchoice_label->setVisible(Config.EnableHegemony);
+    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_label, SLOT(setVisible(bool)));
+    hegemony_maxchoice_spinbox->setVisible(Config.EnableHegemony);
+    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_spinbox, SLOT(setVisible(bool)));
+
     return widget;
 }
 
@@ -286,6 +284,7 @@ QWidget *ServerDialog::createAITab(){
 
     ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
     ai_enable_checkbox->setChecked(Config.EnableAI);
+    ai_enable_checkbox->setEnabled(false); // To disable it causes crashes!!
 
     role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
     role_predictable_checkbox->setChecked(Config.value("RolePredictable", false).toBool());
@@ -548,20 +547,18 @@ QGroupBox *ServerDialog::create3v3Box(){
     exclude_disaster_checkbox = new QCheckBox(tr("Exclude disasters"));
     exclude_disaster_checkbox->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
 
-    {
-        QComboBox *ComboBox = new QComboBox;
-        ComboBox->addItem(tr("Normal"), "Normal");
-        ComboBox->addItem(tr("Random"), "Random");
-        ComboBox->addItem(tr("All roles"), "AllRoles");
+    QComboBox *roleChooseComboBox = new QComboBox;
+    roleChooseComboBox->addItem(tr("Normal"), "Normal");
+    roleChooseComboBox->addItem(tr("Random"), "Random");
+    roleChooseComboBox->addItem(tr("All roles"), "AllRoles");
 
-        role_choose_ComboBox = ComboBox;
+    role_choose_ComboBox = roleChooseComboBox;
 
-        QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
-        if(scheme == "Random")
-            ComboBox->setCurrentIndex(1);
-        else if(scheme == "AllRoles")
-            ComboBox->setCurrentIndex(2);
-    }
+    QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
+    if (scheme == "Random")
+        roleChooseComboBox->setCurrentIndex(1);
+    else if(scheme == "AllRoles")
+        roleChooseComboBox->setCurrentIndex(2);
 
     vlayout->addWidget(standard_3v3_radiobutton);
     vlayout->addWidget(new_3v3_radiobutton);
@@ -749,11 +746,8 @@ void ServerDialog::onHttpDone(bool error){
     }
 }
 
-void ServerDialog::onOkButtonClicked(){
-    if(announce_ip_checkbox->isChecked() && address_edit->text().isEmpty()){
-        QMessageBox::warning(this, tr("Warning"), tr("Please fill address when you want to annouce your server's IP"));
-    }else
-        accept();
+void ServerDialog::onOkButtonClicked() {
+    accept();
 }
 
 Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
@@ -895,7 +889,6 @@ bool ServerDialog::config(){
     Config.ServerName = server_name_edit->text();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
-    Config.ContestMode = contest_mode_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.FreeAssignSelf = free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
@@ -906,7 +899,6 @@ bool ServerDialog::config(){
     Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
     Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
-    Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
     Config.EnableAI = ai_enable_checkbox->isChecked();
     Config.OriginAIDelay = ai_delay_spinbox->value();
@@ -932,10 +924,10 @@ bool ServerDialog::config(){
     Config.setValue("GameMode", Config.GameMode);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
-    Config.setValue("ContestMode", Config.ContestMode);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("FreeAssign", free_assign_checkbox->isChecked());
     Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
+    Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
     Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
     Config.setValue("EnableSPConvert", sp_convert_checkbox->isChecked());
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
@@ -957,7 +949,6 @@ bool ServerDialog::config(){
     Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
     Config.setValue("AIDelayAD", Config.AIDelayAD);
     Config.setValue("ServerPort", Config.ServerPort);
-    Config.setValue("AnnounceIP", Config.AnnounceIP);
     Config.setValue("Address", Config.Address);
 
     Config.beginGroup("3v3");
@@ -979,11 +970,6 @@ bool ServerDialog::config(){
 
     Config.BanPackages = ban_packages.toList();
     Config.setValue("BanPackages", Config.BanPackages);
-
-    if(Config.ContestMode){
-        ContestDB *db = ContestDB::getInstance();
-        return db->loadMembers();
-    }
 
     return true;
 }
@@ -1071,23 +1057,6 @@ void Server::processRequest(const char *request){
     QString command = texts.at(1);
     QString screen_name = ConvertFromBase64(texts.at(2));
     QString avatar = texts.at(3);
-
-    if(Config.ContestMode){
-        QString password = texts.value(4);
-        if(password.isEmpty()){
-            socket->send("warn REQUIRE_PASSWORD");
-            socket->disconnectFromHost();
-            return;
-        }
-
-        password.remove(QChar(':'));
-        ContestDB *db = ContestDB::getInstance();
-        if(!db->checkPassword(screen_name, password)){
-            socket->send("warn WRONG_PASSWORD");
-            socket->disconnectFromHost();
-            return;
-        }
-    }
 
     if(command == "signupr"){
         foreach(QString objname, name2objname.values(screen_name)){

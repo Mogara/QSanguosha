@@ -51,7 +51,12 @@ SlashEffectStruct::SlashEffectStruct()
 }
 
 DyingStruct::DyingStruct()
-    :who(NULL), damage(NULL)
+    : who(NULL), damage(NULL)
+{
+}
+
+DeathStruct::DeathStruct()
+    : who(NULL), damage(NULL)
 {
 }
 
@@ -62,13 +67,12 @@ RecoverStruct::RecoverStruct()
 }
 
 PindianStruct::PindianStruct()
-    :from(NULL), to(NULL), from_card(NULL), to_card(NULL)
+    : from(NULL), to(NULL), from_card(NULL), to_card(NULL), success(false)
 {
-
 }
 
 bool PindianStruct::isSuccess() const{
-    return from_card->getNumber() > to_card->getNumber();
+    return success;
 }
 
 JudgeStructPattern::JudgeStructPattern(){
@@ -114,11 +118,8 @@ JudgeStruct::JudgeStruct()
 
 }
 
-bool JudgeStruct::isEffected(){
-    if(!negative)
-        return isGood();
-    else
-        return isBad();
+bool JudgeStruct::isEffected() {
+    return negative ? isBad() : isGood();
 }
 
 void JudgeStruct::updateResult()
@@ -155,6 +156,7 @@ CardUseStruct::CardUseStruct()
 }
 
 bool CardUseStruct::isValid(const QString &pattern) const{
+    Q_UNUSED(pattern)
     return card != NULL;
     /*if (card == NULL) return false;
     if (!card->getSkillName().isEmpty())
@@ -257,6 +259,9 @@ QString EventTriplet::toString() const{
 RoomThread::RoomThread(Room *room)
     :room(room)
 {
+}
+
+void RoomThread::resetRoomState() {
     room->getRoomState()->reset();
 }
 
@@ -382,52 +387,77 @@ void RoomThread::run(){
             run3v3();
         }else if(room->getMode() == "04_1v3"){
             ServerPlayer *shenlvbu = room->getLord();
-            try {            
-                QList<ServerPlayer *> league = room->getPlayers();
-                league.removeOne(shenlvbu);
+            QList<ServerPlayer *> league = room->getPlayers();
+            league.removeOne(shenlvbu);
+            QList<ServerPlayer *> alive;
 
-                forever{
-                    foreach(ServerPlayer *player, league){
-                        if(player->hasFlag("actioned"))
-                            room->setPlayerFlag(player, "-actioned");
+            try {            
+                forever {
+                    foreach (ServerPlayer *player, league)
+                        if (player->hasFlag("actioned")) room->setPlayerFlag(player, "-actioned");
+
+                    alive.clear();
+                    foreach (ServerPlayer *player, league) {
+                        if (player->isDead())
+                            trigger(TurnStart, room, player);
+                        else
+                            alive << player;
                     }
 
-                    foreach(ServerPlayer *player, league){
-                        room->setCurrent(player);
-                        trigger(TurnStart, room, room->getCurrent());
+                    foreach (ServerPlayer *player, league) {
+                        if (!alive.contains(player)) continue;
+                        bool shenlvbu_turn = false;
+                        if (player->isAlive()) {
+                            shenlvbu_turn = true;
+                            room->setCurrent(player);
+                            trigger(TurnStart, room, room->getCurrent());
 
-                        if(!player->hasFlag("actioned"))
-                            room->setPlayerFlag(player, "actioned");                                       
+                            if (player->isAlive() && !player->hasFlag("actioned"))
+                                room->setPlayerFlag(player, "actioned");
+                        }
 
-                        if(player->isAlive()){
+                        if (shenlvbu_turn) {
                             room->setCurrent(shenlvbu);
                             trigger(TurnStart, room, room->getCurrent());
                         }
                     }
                 }
             }
-            catch (TriggerEvent triggerEvent)
-            {
-                trigger(triggerEvent, (Room*)room, NULL);
-                foreach(ServerPlayer *player, room->getPlayers()){
-                    if(player != shenlvbu){
-                        if(player->hasFlag("actioned"))
-                            room->setPlayerFlag(player, "-actioned");
+            catch (TriggerEvent triggerEvent) {
+                if (triggerEvent == StageChange) {
+                    trigger(triggerEvent, (Room *)room, NULL);
+                    foreach (ServerPlayer *player, room->getPlayers()) {
+                        if (player != shenlvbu) {
+                            if (player->hasFlag("actioned"))
+                                room->setPlayerFlag(player, "-actioned");
 
-                        if(player->getPhase() != Player::NotActive){
-
-                            trigger(EventPhaseEnd, room, player);
-
-                            player->changePhase(player->getPhase(), Player::NotActive);
+                            if (player->getPhase() != Player::NotActive) {
+                                trigger(EventPhaseEnd, room, player);
+                                player->changePhase(player->getPhase(), Player::NotActive);
+                            }
                         }
                     }
-                }
 
-                room->setCurrent(shenlvbu);
+                    forever {
+                        room->setCurrent(shenlvbu);
+                        trigger(TurnStart, room, room->getCurrent());
 
-                forever{
-                    trigger(TurnStart, room, room->getCurrent());
-                    room->setCurrent(room->getCurrent()->getNext());
+                        alive.clear();
+                        foreach (ServerPlayer *player, league) {
+                            if (player->isDead())
+                                trigger(TurnStart, room, player);
+                            else
+                                alive << player;
+                        }
+
+                        foreach (ServerPlayer *player, league) {
+                            if (!alive.contains(player)) continue;
+                            if (player->isAlive()) {
+                                room->setCurrent(player);
+                                trigger(TurnStart, room, room->getCurrent());
+                            }
+                        }
+                    }
                 }
             }
         }else{
@@ -520,7 +550,9 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
     }
 }
 
-void RoomThread::delay(unsigned long secs){
-    if(room->property("to_test").toString().isEmpty()&& Config.AIDelay>0)
+void RoomThread::delay(long secs) {
+    if (secs == -1) secs = Config.AIDelay;
+    Q_ASSERT(secs >= 0);
+    if (room->property("to_test").toString().isEmpty()&& Config.AIDelay > 0)
         msleep(secs);
 }

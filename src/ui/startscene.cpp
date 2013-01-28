@@ -123,9 +123,6 @@ void StartScene::printServerInfo(){
                         tr("There is no time limit") :
                         tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
 
-    if(Config.ContestMode)
-        server_log->append(tr("The contest mode is enabled"));
-
     server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
 
     if(Config.Enable2ndGeneral){

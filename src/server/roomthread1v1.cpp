@@ -9,8 +9,10 @@
 //@todo: setParent here is illegitimate in QT and is equivalent to calling
 // setParent(NULL). Find another way to do it if we really need a parent.
 RoomThread1v1::RoomThread1v1(Room *room)
-    :room(room)
-{}
+    : room(room)
+{
+    room->getRoomState()->reset();
+}
 
 void RoomThread1v1::run(){
 
@@ -60,8 +62,8 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player){
 
     if(name.isNull()){
         player->invoke("askForGeneral1v1");
-    }else{
-        msleep(1000);
+    } else {
+        msleep(Config.AIDelay);
         takeGeneral(player, name);
     }
 

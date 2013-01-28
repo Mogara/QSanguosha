@@ -7,7 +7,6 @@
 #include "maneuvering.h"
 
 QuhuCard::QuhuCard(){
-    once = true;
     mute = true;
     will_throw = false;
 }
@@ -142,7 +141,6 @@ public:
 };
 
 QiangxiCard::QiangxiCard(){
-    once = true;
 }
 
 bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -492,7 +490,6 @@ public:
 };
 
 TianyiCard::TianyiCard(){
-    once = true;
     will_throw = false;
 }
 
