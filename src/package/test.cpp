@@ -94,7 +94,7 @@ public:
 };
 
 DanchuangPackage::DanchuangPackage()
-    :Package("test")
+    :Package("danchuang")
 {
     General *v5zhonghui = new General(this, "v5zhonghui", "wei", 3);
     v5zhonghui->addSkill(new V5Zhenggong);
@@ -107,83 +107,4 @@ DanchuangPackage::DanchuangPackage()
     v5zhonghui->addRelateSkill("v5paiyi");
 }
 
-#include "standard-generals.cpp"
-class SuperZhiheng: public Zhiheng{
-public:
-    SuperZhiheng(){
-        setObjectName("super_zhiheng");
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->usedTimes("ZhihengCard") < (player->getLostHp() + 1);
-    }
-};
-
-class SuperGuanxing: public Guanxing{
-public:
-    SuperGuanxing():Guanxing(){
-        setObjectName("super_guanxing");
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *zhuge) const{
-        if(zhuge->getPhase() == Player::Start &&
-           zhuge->askForSkillInvoke(objectName()))
-        {
-            Room *room = zhuge->getRoom();
-            room->playSkillEffect("guanxing");
-
-            room->doGuanxing(zhuge, room->getNCards(5, false), false);
-        }
-
-        return false;
-    }
-};
-
-class SuperJushou: public PhaseChangeSkill{
-public:
-    SuperJushou():PhaseChangeSkill("super_jushou"){
-
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
-            Room *room = target->getRoom();
-            if(room->askForSkillInvoke(target, objectName())){
-                target->drawCards(5);
-                target->turnOver();
-
-                room->playSkillEffect(objectName());
-            }
-        }
-
-        return false;
-    }
-};
-
-TestPackage::TestPackage()
-    :Package("test")
-{
-    // for test only
-    General *zhiba_sunquan = new General(this, "zhibasunquan$", "wu", 4, true, true);
-    zhiba_sunquan->addSkill(new SuperZhiheng);
-    zhiba_sunquan->addSkill("jiuyuan");
-
-    General *wuxing_zhuge = new General(this, "wuxingzhuge", "shu", 3, true, true);
-    wuxing_zhuge->addSkill(new SuperGuanxing);
-    wuxing_zhuge->addSkill("kongcheng");
-    wuxing_zhuge->addSkill("#kongcheng-effect");
-
-    General *dunkeng_caoren = new General(this, "dunkengcaoren", "wei", 4, true, true);
-    dunkeng_caoren->addSkill(new SuperJushou);
-
-    new General(this, "sujiang", "god", 5, true, true);
-    new General(this, "sujiangf", "god", 5, false, true);
-
-    new General(this, "anjiang", "god", 4,true, true, true);
-
-    addMetaObject<CheatCard>();
-    addMetaObject<ChangeCard>();
-}
-
 ADD_PACKAGE(Danchuang)
-ADD_PACKAGE(Test)

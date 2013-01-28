@@ -11,11 +11,4 @@ public:
     DanchuangPackage();
 };
 
-class TestPackage: public Package{
-    Q_OBJECT
-
-public:
-    TestPackage();
-};
-
 #endif // TEST_H
