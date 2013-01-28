@@ -5,7 +5,6 @@
 #include "nativesocket.h"
 #include "banpair.h"
 #include "scenario.h"
-#include "contestdb.h"
 #include "choosegeneraldialog.h"
 #include "customassigndialog.h"
 #include "miniscenarios.h"
@@ -156,10 +155,6 @@ QWidget *ServerDialog::createPackageTab(){
 QWidget *ServerDialog::createAdvancedTab(){
     QVBoxLayout *layout = new QVBoxLayout;
 
-    contest_mode_checkbox = new QCheckBox(tr("Contest mode"));
-    contest_mode_checkbox->setChecked(Config.ContestMode);
-    contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
-
     free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
     free_choose_checkbox->setToolTip(tr("This option enables the cheat menu"));
     free_choose_checkbox->setChecked(Config.FreeChoose);
@@ -250,7 +245,6 @@ QWidget *ServerDialog::createAdvancedTab(){
     port_edit->setText(QString::number(Config.ServerPort));
     port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
 
-    layout->addWidget(contest_mode_checkbox);
     layout->addWidget(forbid_same_ip_checkbox);
     layout->addWidget(disable_chat_checkbox);
     layout->addLayout(HLay(free_choose_checkbox, free_assign_checkbox));
@@ -895,7 +889,6 @@ bool ServerDialog::config(){
     Config.ServerName = server_name_edit->text();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
-    Config.ContestMode = contest_mode_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.FreeAssignSelf = free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
@@ -932,7 +925,6 @@ bool ServerDialog::config(){
     Config.setValue("GameMode", Config.GameMode);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
-    Config.setValue("ContestMode", Config.ContestMode);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("FreeAssign", free_assign_checkbox->isChecked());
     Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
@@ -979,11 +971,6 @@ bool ServerDialog::config(){
 
     Config.BanPackages = ban_packages.toList();
     Config.setValue("BanPackages", Config.BanPackages);
-
-    if(Config.ContestMode){
-        ContestDB *db = ContestDB::getInstance();
-        return db->loadMembers();
-    }
 
     return true;
 }
@@ -1071,23 +1058,6 @@ void Server::processRequest(const char *request){
     QString command = texts.at(1);
     QString screen_name = ConvertFromBase64(texts.at(2));
     QString avatar = texts.at(3);
-
-    if(Config.ContestMode){
-        QString password = texts.value(4);
-        if(password.isEmpty()){
-            socket->send("warn REQUIRE_PASSWORD");
-            socket->disconnectFromHost();
-            return;
-        }
-
-        password.remove(QChar(':'));
-        ContestDB *db = ContestDB::getInstance();
-        if(!db->checkPassword(screen_name, password)){
-            socket->send("warn WRONG_PASSWORD");
-            socket->disconnectFromHost();
-            return;
-        }
-    }
 
     if(command == "signupr"){
         foreach(QString objname, name2objname.values(screen_name)){

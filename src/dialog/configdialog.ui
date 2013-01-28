@@ -13,6 +13,12 @@
     <height>534</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Config dialog</string>
   </property>
@@ -26,7 +32,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -149,7 +155,7 @@
         <x>10</x>
         <y>130</y>
         <width>411</width>
-        <height>24</height>
+        <height>23</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -184,7 +190,7 @@
         <x>10</x>
         <y>160</y>
         <width>411</width>
-        <height>24</height>
+        <height>23</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -303,6 +309,19 @@
        <string>No indicator</string>
       </property>
      </widget>
+     <widget class="QCheckBox" name="noEquipAnimCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>100</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>No equip anim</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="fontSetupGroupBox">
      <property name="geometry">
@@ -333,7 +352,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>20</y>
+        <y>24</y>
         <width>96</width>
         <height>16</height>
        </rect>
@@ -351,7 +370,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>124</x>
+        <x>120</x>
         <y>23</y>
         <width>131</width>
         <height>20</height>
@@ -374,7 +393,7 @@
        </rect>
       </property>
       <property name="readOnly">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QPushButton" name="setTextEditFontButton">
@@ -394,7 +413,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>50</y>
+        <y>52</y>
         <width>91</width>
         <height>16</height>
        </rect>
@@ -440,6 +459,15 @@
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="nullificationLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
         <property name="text">
          <string>Nullification count down</string>
         </property>
@@ -450,6 +478,15 @@
       </item>
       <item row="0" column="1">
        <widget class="QSpinBox" name="nullificationSpinBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
         <property name="suffix">
          <string> seconds</string>
         </property>
@@ -470,8 +507,8 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>60</y>
-       <width>239</width>
+       <y>80</y>
+       <width>331</width>
        <height>16</height>
       </rect>
      </property>
@@ -479,14 +516,14 @@
       <string>Never nullify my single target trick</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="minimizecCheckBox">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>90</y>
+       <y>140</y>
        <width>241</width>
        <height>16</height>
       </rect>
@@ -495,10 +532,94 @@
       <string>Minimize the dialog when server runs</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="enableAutoTargetCheckBox">
+    <widget class="QWidget" name="layoutWidget5_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>236</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="gameStartLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Game start count down</string>
+        </property>
+        <property name="buddy">
+         <cstring>gameStartSpinBox</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="gameStartSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::UpDownArrows</enum>
+        </property>
+        <property name="suffix">
+         <string> seconds</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>10</number>
+        </property>
+        <property name="value">
+         <number>3</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QCheckBox" name="autoTargetCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable auto target</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="intellectualSelectionCheckBox">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -506,101 +627,31 @@
       <rect>
        <x>10</x>
        <y>120</y>
-       <width>251</width>
+       <width>241</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Help me to choose targets of one card</string>
+      <string>Enable intellectual selection</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
-   </widget>
-   <widget class="QWidget" name="tab">
-    <attribute name="title">
-     <string>Contest mode</string>
-    </attribute>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QCheckBox" name="disableLuaCheckBox">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>30</y>
-       <width>421</width>
-       <height>100</height>
-      </rect>
-     </property>
-     <layout class="QFormLayout" name="formLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="smtpServerLabel">
-        <property name="text">
-         <string>SMTP Server</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="smtpServerLineEdit">
-        <property name="placeholderText">
-         <string>SMTP server's address</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="senderLabel">
-        <property name="text">
-         <string>Sender</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="senderLineEdit">
-        <property name="placeholderText">
-         <string>The sender's email address</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="passwordLabel">
-        <property name="text">
-         <string>Password</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="passwordLineEdit">
-        <property name="placeholderText">
-         <string>The password</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="receiverLabel">
-        <property name="text">
-         <string>Receiver</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="receiverLineEdit">
-        <property name="placeholderText">
-         <string>The receiver's email address</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QCheckBox" name="onlySaveLordCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>140</y>
-       <width>191</width>
+       <x>10</x>
+       <y>160</y>
+       <width>241</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Only save the record of lord</string>
+      <string>Disable Lua extensions</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>

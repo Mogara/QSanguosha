@@ -1,6 +1,7 @@
 #ifndef _WRAPPED_CARD_H
 #define _WRAPPED_CARD_H
-#include <card.h>
+
+#include "card.h"
 
 // This is a wrapper class around a card. Each card id should have one and only one WrappedCard
 // copy in each room after game initialization is done. Each room's WrappedCards are isolated,
@@ -77,12 +78,7 @@ public:
         return m_card;
     }
 
-    inline virtual bool isOnce() const {
-        Q_ASSERT(m_card != NULL);
-        return m_card->isOnce();
-    }
-
-    inline virtual bool isMute() const {
+    inline virtual bool isMute() const{
         Q_ASSERT(m_card != NULL);
         return m_card->isMute();
     }
@@ -92,9 +88,14 @@ public:
         return m_card->willThrow();
     }
 
-    inline virtual bool canJilei() const {
+    inline virtual bool canRecast() const{
         Q_ASSERT(m_card != NULL);
-        return m_card->canJilei();
+        return m_card->canRecast();
+    }
+
+    inline virtual Card::HandlingMethod getHandlingMethod() const{
+        Q_ASSERT(m_card != NULL);
+        return m_card->getHandlingMethod();
     }
 
     inline virtual bool hasPreAction() const {
@@ -132,8 +133,7 @@ public:
     inline virtual QString getSubtype() const { return m_card->getSubtype(); }
     inline virtual CardType getTypeId() const { return m_card->getTypeId(); }
     inline virtual QString toString() const { return QString::number(m_id); }
-    inline virtual bool isNDTrick() const
-    { return m_card->isNDTrick(); }
+    inline virtual bool isNDTrick() const{ return m_card->isNDTrick(); }
 
     // card target selection
     inline virtual bool targetFixed() const { return m_card->targetFixed(); }
@@ -161,10 +161,9 @@ public:
         return m_card->validate(cardUse); 
     }
 
-    inline virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const
-    {
+    inline virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const{
         Q_ASSERT(m_card != NULL);
-        return m_card->validateInResposing(user, continuable);
+        return m_card->validateInResponse(user, continuable);
     }
 
     inline virtual void doPreAction(Room *room, const CardUseStruct &cardUse) const 

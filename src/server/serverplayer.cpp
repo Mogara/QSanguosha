@@ -855,7 +855,7 @@ QString ServerPlayer::getIp() const{
 }
 
 void ServerPlayer::introduceTo(ServerPlayer *player){
-    QString screen_name = Config.ContestMode ? tr("Contestant") : screenName();
+    QString screen_name = screenName();
     QString avatar = property("avatar").toString();
 
     QString introduce_str = QString("%1:%2:%3")

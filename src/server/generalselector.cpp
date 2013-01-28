@@ -149,7 +149,24 @@ int GeneralSelector::get1v1ArrangeValue(const QString &name){
 QStringList GeneralSelector::arrange1v1(ServerPlayer *player){
     QStringList arranged = player->getSelected();
     qSort(arranged.begin(), arranged.end(), CompareFunction);
-    return arranged.mid(0, 3);
+
+    QStringList result;
+    int i;
+    for (i = 0; i < 3; i++) {
+        if (get1v1ArrangeValue(arranged[i]) > 100) {
+            result << arranged[i];
+            break;
+        }
+    }
+    if (!result.isEmpty()) {
+        int strong = (i == 0) ? 1 : 0;
+        int weak = (i == 2) ? 1 : 2;
+        result << arranged[weak] << arranged[strong];
+    } else {
+        result << arranged[1] << arranged[2] << arranged[0];
+    }
+
+    return result;
 }
 
 void GeneralSelector::loadFirstGeneralTable(){

@@ -50,6 +50,7 @@ public:
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QColor getKingdomColor(const QString &kingdom) const;
+    QStringList getChattingEasyTexts() const;
     QString getSetupString() const;
 
     QMap<QString, QString> getAvailableModes() const;
@@ -60,6 +61,7 @@ public:
     int getRoleIndex() const;
 
     const CardPattern *getPattern(const QString &name) const;
+    const Card::HandlingMethod getCardHandlingMethod(const QString &method_name) const;
     QList<const Skill *> getRelatedSkills(const QString &skill_name) const;
 
     QStringList getModScenarioNames() const;
@@ -85,7 +87,7 @@ public:
     Card *getCard(int cardId);
     WrappedCard *getWrappedCard(int cardId);
 
-    QStringList getLords() const;
+    QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;

@@ -1,9 +1,12 @@
 #include "cardoverview.h"
 #include "ui_cardoverview.h"
 #include "engine.h"
+#include "settings.h"
 #include "clientstruct.h"
 #include "client.h"
 #include "SkinBank.h"
+
+#include <QMessageBox>
 
 static CardOverview *Overview;
 
@@ -99,6 +102,10 @@ void CardOverview::askCard(){
     int row = ui->tableWidget->currentRow();
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
+        if (Config.BanPackages.contains(Sanguosha->getEngineCard(card_id)->getPackage())) {
+            QMessageBox::warning(this, tr("Warning"), tr("These packages don't contain this card"));
+            return;
+        }
         ClientInstance->requestCheatGetOneCard(card_id);
     }
 }

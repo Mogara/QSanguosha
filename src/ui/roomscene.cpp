@@ -3721,11 +3721,6 @@ void RoomScene::kick(){
         return;
     }
 
-    if(!Config.Password.isEmpty()){
-        QMessageBox::warning(main_window, tr("Warning"), tr("This function is disabled in contest mode"));
-        return;
-    }
-
     QStringList items;
     QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     if(players.isEmpty())

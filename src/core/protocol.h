@@ -117,7 +117,9 @@ namespace QSanProtocol
         S_GAME_EVENT_UPDATE_SKILL,
         S_GAME_EVENT_HUASHEN,
         S_GAME_EVENT_CHANGE_GENDER,
-        S_GAME_EVENT_CHANGE_HERO
+        S_GAME_EVENT_CHANGE_HERO,
+        S_GAME_EVENT_PLAYER_QUITDYING,
+        S_GAME_EVENT_PLAYER_REFORM
     };
 
     enum Game3v3ChooseOrderCommand

@@ -78,8 +78,6 @@ void Settings::init(){
         setValue("BanPackages", banlist);
     }
     BanPackages = value("BanPackages").toStringList();
-
-    ContestMode = value("ContestMode", false).toBool();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
@@ -118,6 +116,7 @@ void Settings::init(){
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
     EnableAutoTarget = value("EnableAutoTarget", false).toBool();
+    EnableIntellectualSelection = value("EnableIntellectualSelection", false).toBool();
     NullificationCountDown = value("NullificationCountDown", 8).toInt();
     OperationTimeout = value("OperationTimeout", 15).toInt();
     OperationNoLimit = value("OperationNoLimit", false).toBool();
@@ -126,6 +125,7 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
+    DisableLua = value("DisableLua", false).toBool();
 
     BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
 
@@ -204,10 +204,10 @@ void Settings::init(){
         setValue("Banlist/Pairs", banlist);
     }
 
-    QStringList forbid_packages;
-    forbid_packages << "New3v3Card";
-    setValue("ForbidPackages", forbid_packages.join("+"));
+    QStringList forbid_packages = value("ForbidPackages").toStringList();
+    if (forbid_packages.isEmpty()) {
+        forbid_packages << "New3v3Card" << "test";
 
-//ui
-    setValue("UI/ExpandDashboard", value("UI/ExpandDashboard", true).toBool());
+        setValue("ForbidPackages", forbid_packages);
+    }
 }

@@ -149,8 +149,7 @@ QPixmap PlayerCardContainer::_getPixmap(const QString &key, const QString &sArg)
         if (G_ROOM_SKIN.isImageKeyDefined(rKey))
             return G_ROOM_SKIN.getPixmap(rKey); // first try "%1key%2 = ...", %1 = "photo", %2 = sArg
     
-        rKey = key.arg(getResourceKeyName()).arg(QSanRoomSkin::S_SKIN_KEY_DEFAULT);
-        Q_ASSERT(G_ROOM_SKIN.isImageKeyDefined(rKey));
+        rKey = key.arg(getResourceKeyName());
         return G_ROOM_SKIN.getPixmap(rKey, sArg); // then try "%1key = ..."
     }
     else 
@@ -227,11 +226,10 @@ void PlayerCardContainer::updateAvatar()
         if (m_player->getGeneral() != NULL) {
             QString kingdom = m_player->getKingdom();
             _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea,
-                         G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON).arg(kingdom)),
+                         G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom),
                          this->_getAvatarParent());
             _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea,
-                         G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK)
-                                               .arg(kingdom)),
+                         G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom),
                          this->_getAvatarParent());
             QString name = Sanguosha->translate("&" + general->objectName());
             if (name.startsWith("&"))
@@ -326,36 +324,30 @@ static bool CompareByNumber(const Card *card1, const Card *card2){
     return card1->getNumber() < card2->getNumber();
 }
 
-void PlayerCardContainer::updatePile(const QString &pile_name)
-{
-    // retrieve menu and create a new pile if necessary
-    QMenu* menu;
-    QPushButton* button;
-    if (!_m_privatePiles.contains(pile_name))
-    {
-        button = new QPushButton;
-        button->setObjectName(pile_name);
-        button->setProperty("private_pile", "true");
-        QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
-        button_widget->setWidget(button);
-        _m_privatePiles[pile_name] = button_widget;        
-    }
-    else
-    {        
-        button = (QPushButton*)(_m_privatePiles[pile_name]->widget());
-        menu = button->menu();
-    }
-    
-        
-    ClientPlayer* player = (ClientPlayer*)sender();
+void PlayerCardContainer::updatePile(const QString &pile_name) {
+    ClientPlayer *player = (ClientPlayer *)sender();
     const QList<int> &pile = player->getPile(pile_name);
-    if (pile.size() == 0)
-    {
-        delete _m_privatePiles[pile_name];
-        _m_privatePiles.remove(pile_name);
-    }
-    else
-    {
+    if (pile.size() == 0) {
+        if (_m_privatePiles.contains(pile_name)) {
+            delete _m_privatePiles[pile_name];
+            _m_privatePiles.remove(pile_name);
+        }
+    } else {
+        // retrieve menu and create a new pile if necessary
+        QMenu* menu;
+        QPushButton *button;
+        if (!_m_privatePiles.contains(pile_name)) {
+            button = new QPushButton;
+            button->setObjectName(pile_name);
+            button->setProperty("private_pile", "true");
+            QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
+            button_widget->setWidget(button);
+            _m_privatePiles[pile_name] = button_widget;
+        } else {
+            button = (QPushButton *)(_m_privatePiles[pile_name]->widget());
+            menu = button->menu();
+        }
+
         button->setText(QString("%1(%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
         menu = new QMenu(button);
         menu->setProperty("private_pile", "true");
@@ -372,9 +364,10 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         foreach (const Card *card, cards)
             menu->addAction(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()), card->getFullName());
 
-        if (cards.count() > 0) button->setMenu(menu);
-        else
-        {
+        int length = cards.count();
+        if (length > 0)
+            button->setMenu(menu);
+        else {
             delete menu;
             button->setMenu(NULL);
         }
@@ -383,10 +376,9 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     QPoint start = _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
-    QList<QGraphicsProxyWidget*> widgets = _m_privatePiles.values();
-    for (int i = 0; i < widgets.length(); i++)
-    {
-        QGraphicsProxyWidget* widget = widgets[i];
+    QList<QGraphicsProxyWidget *> widgets = _m_privatePiles.values();
+    for (int i = 0; i < widgets.length(); i++) {
+        QGraphicsProxyWidget *widget = widgets[i];
         widget->setPos(start + i * step);
         widget->resize(size);
     }

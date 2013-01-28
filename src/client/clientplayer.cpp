@@ -119,7 +119,8 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
             if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
                 piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
             else piles[name].removeOne(card_id);
-            if (length == piles[name].length() && name == "bifa") piles[name].takeFirst();
+            // Dirty hack for BiFa
+            if (length == piles[name].length() && name == "bifa") piles[name].takeLast();
         }
 
     if (!name.startsWith("#"))

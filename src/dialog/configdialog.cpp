@@ -24,15 +24,19 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
+    ui->noEquipAnimCheckBox->setChecked(Config.value("NoEquipAnim", false).toBool());
     ui->minimizecCheckBox->setChecked(Config.value("EnableMinimizeDialog", false).toBool());
 
     ui->bgmVolumeSlider->setValue(100 * Config.BGMVolume);
     ui->effectVolumeSlider->setValue(100 * Config.EffectVolume);
 
     // tab 2
+    ui->disableLuaCheckBox->setChecked(Config.DisableLua);
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
+    ui->gameStartSpinBox->setValue(Config.CountDownSeconds);
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
-    ui->enableAutoTargetCheckBox->setChecked(Config.EnableAutoTarget);
+    ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
+    ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -44,15 +48,10 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     QPalette palette;
     palette.setColor(QPalette::Text, Config.TextEditColor);
+    QColor color = Config.TextEditColor;
+    int aver = (color.red() + color.green() + color.blue()) / 3;
+    palette.setColor(QPalette::Base, aver >= 208 ? Qt::black : Qt::white);
     ui->textEditFontLineEdit->setPalette(palette);
-
-    // tab 3
-    ui->smtpServerLineEdit->setText(Config.value("Contest/SMTPServer").toString());
-    ui->senderLineEdit->setText(Config.value("Contest/Sender").toString());
-    ui->passwordLineEdit->setText(Config.value("Contest/Password").toString());
-    ui->receiverLineEdit->setText(Config.value("Contest/Receiver").toString());
-
-    ui->onlySaveLordCheckBox->setChecked(Config.value("Contest/OnlySaveLordRecord", true).toBool());
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font){
@@ -65,15 +64,13 @@ ConfigDialog::~ConfigDialog()
     delete ui;
 }
 
-void ConfigDialog::on_browseBgButton_clicked()
-{
-    QString location = QDesktopServices::storageLocation(QDesktopServices::PicturesLocation);
+void ConfigDialog::on_browseBgButton_clicked() {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a background image"),
-                                                    location,
+                                                    "backdrop/",
                                                     tr("Images (*.png *.bmp *.jpg)"));
 
-    if(!filename.isEmpty()){
+    if (!filename.isEmpty()) {
         ui->bgPathLineEdit->setText(filename);
 
         Config.BackgroundImage = filename;
@@ -100,6 +97,10 @@ void ConfigDialog::saveConfig()
     Config.NullificationCountDown = count_down;
     Config.setValue("NullificationCountDown", count_down);
 
+    int gs_count_down = ui->gameStartSpinBox->value();
+    Config.CountDownSeconds = gs_count_down;
+    Config.setValue("CountDownSeconds", gs_count_down);
+
     float volume = ui->bgmVolumeSlider->value() / 100.0;
     Config.BGMVolume = volume;
     Config.setValue("BGMVolume", volume);
@@ -120,31 +121,30 @@ void ConfigDialog::saveConfig()
     Config.setValue("EnableBgMusic", enabled);
 
     Config.setValue("NoIndicator", ui->noIndicatorCheckBox->isChecked());
+    Config.setValue("NoEquipAnim", ui->noEquipAnimCheckBox->isChecked());
 
     Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
     Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
 
+    Config.EnableAutoTarget = ui->autoTargetCheckBox->isChecked();
+    Config.setValue("EnableAutoTarget", Config.EnableAutoTarget);
+
+    Config.EnableIntellectualSelection = ui->intellectualSelectionCheckBox->isChecked();
+    Config.setValue("EnableIntellectualSelection", Config.EnableIntellectualSelection);
+
     Config.EnableMinimizeDialog = ui->minimizecCheckBox->isChecked();
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
 
-    Config.EnableAutoTarget = ui->enableAutoTargetCheckBox->isChecked();
-    Config.setValue("EnableAutoTarget", Config.EnableAutoTarget);
-
-    Config.setValue("Contest/SMTPServer", ui->smtpServerLineEdit->text());
-    Config.setValue("Contest/Sender", ui->senderLineEdit->text());
-    Config.setValue("Contest/Password", ui->passwordLineEdit->text());
-    Config.setValue("Contest/Receiver", ui->receiverLineEdit->text());
-    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());
+    Config.DisableLua = ui->disableLuaCheckBox->isChecked();
+    Config.setValue("DisableLua", Config.DisableLua);
 }
 
-void ConfigDialog::on_browseBgMusicButton_clicked()
-{
-    QString location = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
+void ConfigDialog::on_browseBgMusicButton_clicked() {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a background music"),
-                                                    location,
+                                                    "audio/system",
                                                     tr("Audio files (*.wav *.mp3 *.ogg)"));
-    if(!filename.isEmpty()){
+    if (!filename.isEmpty()) {
         ui->bgMusicPathLineEdit->setText(filename);
         Config.setValue("BackgroundMusic", filename);
     }
@@ -192,6 +192,8 @@ void ConfigDialog::on_setTextEditColorButton_clicked()
         Config.setValue("TextEditColor", color);
         QPalette palette;
         palette.setColor(QPalette::Text, color);
+        int aver = (color.red() + color.green() + color.blue()) / 3;
+        palette.setColor(QPalette::Base, aver >= 208 ? Qt::black : Qt::white);
         ui->textEditFontLineEdit->setPalette(palette);
     }
 }

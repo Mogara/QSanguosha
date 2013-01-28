@@ -230,19 +230,29 @@ Card::Suit TrustAI::askForSuit(const QString &){
 
 QString TrustAI::askForKingdom(){
     QString role;
+    ServerPlayer *lord = room->getLord();
+    QStringList kingdoms = Sanguosha->getKingdoms();
     switch(self->getRoleEnum()){
-    case Player::Lord: role = "wei"; break;
+    case Player::Lord: role = kingdoms.at(qrand() % kingdoms.length()); break;
+    case Player::Renegade:
     case Player::Rebel: {
-        ServerPlayer *lord = room->getLord();
-        if (lord->hasLordSkill("xueyi") || lord->hasLordSkill("shichou"))
+            if ((lord->hasLordSkill("xueyi") && self->getRoleEnum() == Player::Rebel) || lord->hasLordSkill("shichou"))
             role = "wei";
         else
             role = lord->getKingdom();
         break;
     }
-    case Player::Loyalist:
-    case Player::Renegade:
-        role = room->getLord()->getKingdom(); break;
+    case Player::Loyalist: {
+            if (lord->getGeneral()->isLord() || (lord->getGeneral2() && lord->getGeneral2()->isLord()))
+                role = room->getLord()->getKingdom();
+            else {
+                if (lord->hasSkill("yongsi")) kingdoms.removeOne(lord->getKingdom());
+                role = kingdoms.at(qrand() % kingdoms.length());
+            }
+            break;
+        }
+    default:
+            break;
     }
 
     return role;
@@ -356,37 +366,6 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
 
             if(card->isKindOf("Analeptic") && dying == self)
                 return card;
-        }
-
-        if(dying == self){
-            if(self->hasSkill("jiuchi")){
-                foreach(const Card *card, cards){
-                    if(card->getSuit() == Card::Spade){
-                        Analeptic *analeptic = new Analeptic(Card::Spade, card->getNumber());
-                        analeptic->addSubcard(card);
-                        analeptic->setSkillName("jiuchi");
-                        return analeptic;
-                    }
-                }
-            }
-
-            if(self->hasSkill("jiushi") && self->faceUp()){
-                Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
-                analeptic->setSkillName("jiushi");
-                return analeptic;
-            }
-        }
-
-        if(self->hasSkill("jijiu") && self->getPhase() == Player::NotActive){
-            cards = self->getCards("he");
-            foreach(const Card *card, cards){
-                if(card->isRed()){
-                    Peach *peach = new Peach(card->getSuit(), card->getNumber());
-                    peach->addSubcard(card);
-                    peach->setSkillName("jijiu");
-                    return peach;
-                }
-            }
         }
     }
 
