@@ -89,7 +89,7 @@ void NativeClientSocket::getMessage(){
         buffer_t msg;
         socket->readLine(msg, sizeof(msg));
 #ifndef QT_NO_DEBUG
-        printf("RX: %s", msg);
+        printf("recv: %s", msg);
 #endif
         emit message_got(msg);
     }
@@ -103,7 +103,7 @@ void NativeClientSocket::send(const QString &message){
     socket->write(message.toAscii());
     socket->write("\n");
 #ifndef QT_NO_DEBUG
-    printf("TX: %s\n", message.toAscii().constData());
+    printf(": %s\n", message.toAscii().constData());
 #endif
     socket->flush();
 }
