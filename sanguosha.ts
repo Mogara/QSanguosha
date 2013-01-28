@@ -3248,6 +3248,26 @@
         <translation>角色</translation>
     </message>
     <message>
+        <location filename="src/ui/roomscene.cpp" line="2863"/>
+        <source>Kill</source>
+        <translation>杀人</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2864"/>
+        <source>Damage</source>
+        <translation>伤害</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2864"/>
+        <source>Save</source>
+        <translation>救人</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="2864"/>
+        <source>Recover</source>
+        <translation>回复</translation>
+    </message>
+    <message>
         <location filename="src/ui/roomscene.cpp" line="3002"/>
         <source>Select skill</source>
         <translation>选择技能</translation>

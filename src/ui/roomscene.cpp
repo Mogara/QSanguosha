@@ -2834,8 +2834,7 @@ void RoomScene::doScript(){
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
-   // table->setColumnCount(9);
-    table->setColumnCount(4);
+    table->setColumnCount(8);
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -2847,18 +2846,20 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         else
             labels << tr("Role");
 
-    //    labels << tr("Designation") << tr("Kill") << tr("Damage") << tr("Save") << tr("Recover");
+        labels << /*tr("Designation") <<*/ tr("Kill") << tr("Save") << tr("Damage") << tr("Recover");
     }
     table->setHorizontalHeaderLabels(labels);
 
     table->setSelectionBehavior(QTableWidget::SelectRows);
 
-    int i;
-    for(i=0; i<players.length(); i++){
+    for(int i = 0; i < players.length(); i++){
         const ClientPlayer *player = players.at(i);
 
         QTableWidgetItem *item = new QTableWidgetItem;
-        item->setText(Sanguosha->translate(player->getGeneralName()));
+        QString name = !player->getGeneral2() ?
+                       Sanguosha->translate(player->getGeneralName()) :
+                       Sanguosha->translate(player->getGeneralName()) + "+" + Sanguosha->translate(player->getGeneral2Name());
+        item->setText(name);
         table->setItem(i, 0, item);
 
         item = new QTableWidgetItem;
@@ -2874,20 +2875,18 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
 
         item = new QTableWidgetItem;
 
-        if(ServerInfo.EnableHegemony){
-            QIcon icon(QString("image/kingdom/icon/%1.png").arg(player->getKingdom()));
-            item->setIcon(icon);
-            item->setText(Sanguosha->translate(player->getKingdom()));
-        }else{
-            QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
-            item->setIcon(icon);
-            item->setText(Sanguosha->translate(player->getRole()));
-        }
+        QString iconurl = ServerInfo.EnableHegemony ?
+                    QString("image/kingdom/icon/%1.png").arg(player->getKingdom()) :
+                    QString("image/system/roles/%1.png").arg(player->getRole());
+        QIcon icon(iconurl);
+        item->setIcon(icon);
+        item->setText(Sanguosha->translate(player->getRole()));
         if(!player->isAlive())
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         table->setItem(i, 3, item);
-/*
+
         StatisticsStruct *statistics = player->getStatistics();
+        /*
         item = new QTableWidgetItem;
         QString designations;
         foreach(QString designation, statistics->designation){
@@ -2895,9 +2894,14 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         }
         designations.remove(designations.length()-3, 2);
         table->setItem(i, 4, item);
+        */
 
         item = new QTableWidgetItem;
         item->setText(QString::number(statistics->kill));
+        table->setItem(i, 4, item);
+
+        item = new QTableWidgetItem;
+        item->setText(QString::number(statistics->save));
         table->setItem(i, 5, item);
 
         item = new QTableWidgetItem;
@@ -2905,13 +2909,13 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         table->setItem(i, 6, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(statistics->save));
+        item->setText(QString::number(statistics->recover));
         table->setItem(i, 7, item);
 
-        item = new QTableWidgetItem;
-        item->setText(QString::number(statistics->recover));
-        table->setItem(i, 8, item);
-*/
+        table->setColumnWidth(4, 37);
+        table->setColumnWidth(5, 37);
+        table->setColumnWidth(6, 37);
+        table->setColumnWidth(7, 37);
     }
 }
 

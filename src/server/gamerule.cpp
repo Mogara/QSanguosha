@@ -73,13 +73,14 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Draw: {
-            QVariant num = 2;
+            int nUm = 2;
             if(room->getTag("FirstRound").toBool()){
                 room->setTag("FirstRound", false);
                 if(room->getMode() == "02_1v1")
-                    num --;
+                    nUm --;
             }
 
+            QVariant num = nUm;
             room->getThread()->trigger(DrawNCards, player, num);
             int n = num.toInt();
             if(n > 0)
@@ -330,9 +331,6 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
             if(player->getHp() <= 0 && player->isAlive()){
                 DyingStruct dying = data.value<DyingStruct>();
                 room->killPlayer(player, dying.damage);
-
-                if(dying.damage && dying.damage->from)
-                    room->setPlayerStatistics(dying.damage->from, "kill", 1);
             }
 
             break;

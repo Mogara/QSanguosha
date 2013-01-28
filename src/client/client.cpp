@@ -1004,15 +1004,17 @@ void Client::setPileNumber(const QString &pile_str){
 }
 
 void Client::setStatistics(const QString &property_str){
-    QRegExp rx("(\\w+):(\\w+)");
+    QRegExp rx("(\\w+).(\\w+):(\\w+)");
     if(!rx.exactMatch(property_str))
         return;
 
     QStringList texts = rx.capturedTexts();
-    QString property_name = texts.at(1);
-    QString value_str = texts.at(2);
+    QString who = texts.at(1);
+    QString property_name = texts.at(2);
+    QString value_str = texts.at(3);
 
-    StatisticsStruct *statistics = Self->getStatistics();
+    ClientPlayer *player = getPlayer(who);
+    StatisticsStruct *statistics = player->getStatistics();
     bool ok;
     value_str.toInt(&ok);
     if(ok)
@@ -1020,7 +1022,7 @@ void Client::setStatistics(const QString &property_str){
     else
         statistics->setStatistics(property_name, value_str);
 
-    Self->setStatistics(statistics);
+    player->setStatistics(statistics);
 }
 
 void Client::setCardFlag(const QString &pattern_str){
