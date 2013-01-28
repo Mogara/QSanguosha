@@ -324,34 +324,30 @@ public:
         }
         else if(event == CardGotDone){
             if(player->getMark("enyuan") >= 2 && room->askForSkillInvoke(player,objectName(),data)){
-                ServerPlayer *target = NULL;
                 foreach(ServerPlayer *other, room->getOtherPlayers(player)){
                     if(other->hasFlag("EnyuanTarget")){
                         other->setFlags("-EnyuanTarget");
-                        target = other;
+                        room->drawCards(other, 1);
+                        room->playSkillEffect(objectName(), qrand() % 2 + 1);
                         break;
                     }
                 }
-                room->drawCards(target,1);
-                room->playSkillEffect(objectName(), qrand() % 2 + 1);
-
             }
             room->setPlayerMark(player, "enyuan", 0);
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
-            ServerPlayer *source = damage.from;
+            PlayerStar source = damage.from;
             if(source && source != player){
                 int x = damage.damage, i;
                 for(i=0; i<x; i++){
-                    if (room->askForSkillInvoke(player,objectName(),data)){
+                    if(room->askForSkillInvoke(player, objectName(), data)){
                         room->playSkillEffect(objectName(), qrand() % 2 + 3);
 					//fix this!
                         const Card *card = room->askForCard(source, ".", "@enyuan:" + player->objectName(), QVariant(), NonTrigger);
-                        if(card){
+                        if(card)
                             player->obtainCard(card);
-                        }else{
+                        else
                             room->loseHp(source);
-                        }
                     }
                 }
             }
