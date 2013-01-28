@@ -11,7 +11,6 @@
 RoomThread3v3::RoomThread3v3(Room *room)
     :QThread(room), room(room)
 {
-
 }
 
 QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
@@ -27,28 +26,27 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     QMutableListIterator<const General *> itor(generals);
     while(itor.hasNext()){
         itor.next();
-
         if(itor.value()->isHidden())
             itor.remove();
     }
 
-    generals.removeOne(Sanguosha->getGeneral("yuji"));
+    QStringList general_names;
+    foreach(const General *general, generals)
+        general_names << general->objectName();
+
+    general_names.removeOne("yuji");
 
     if(Config.value("3v3/UsingNewMode", false).toBool()){
           QStringList list_remove, list_add;
           list_remove << "zhangjiao" << "caoren" << "lvmeng" << "xiahoudun" << "weiyan";
           list_add << "sunjian" << "menghuo" << "xuhuang" << "pangde" << "zhugejin";
           foreach(QString general_name, list_remove)
-              generals.removeOne(Sanguosha->getGeneral(general_name));
+              general_names.removeOne(general_name);
           foreach(QString general_name, list_add)
-              generals << Sanguosha->getGeneral(general_name);
+              general_names << general_name;
     }
 
-    Q_ASSERT(generals.length() == 33);
-
-    QStringList general_names;
-    foreach(const General *general, generals)
-        general_names << general->objectName();
+    Q_ASSERT(general_names.length() >= 16);
 
     return general_names;
 }
@@ -167,8 +165,7 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
 void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme){
     QStringList all_roles = roles;
     QList<ServerPlayer *> new_players, abstained;
-    int i;
-    for(i=0; i<6; i++)
+    for(int i = 0; i < 6; i++)
         new_players << NULL;
 
     foreach(ServerPlayer *player, room->players){
@@ -178,7 +175,7 @@ void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme)
                 player->setRole(role);
                 all_roles.removeOne(role);
 
-                for(i=0; i<6; i++){
+                for(int i = 0; i < 6; i++){
                     if(roles.at(i) == role && new_players.at(i) == NULL){
                         new_players[i] = player;
                         break;
@@ -195,7 +192,7 @@ void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme)
     if(!abstained.isEmpty()){
         qShuffle(abstained);
 
-        for(i=0; i<6; i++){
+        for(int i = 0; i < 6; i++){
             if(new_players.at(i) == NULL){
                 new_players[i] = abstained.takeFirst();
                 new_players.at(i)->setRole(roles.at(i));

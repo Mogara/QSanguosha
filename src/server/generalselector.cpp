@@ -98,7 +98,7 @@ QString GeneralSelector::select1v1(const QStringList &candidates){
 
 QString GeneralSelector::selectHighest(const QHash<QString, int> &table, const QStringList &candidates, int default_value){
     int max = -1;
-    QString max_general;
+    QString max_general = "sujiang";
 
     foreach(QString candidate, candidates){
         int value = table.value(candidate, default_value);
