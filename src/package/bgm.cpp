@@ -1920,7 +1920,7 @@ public:
             return false;
         }
         ServerPlayer *xin = room->findPlayerBySkillName(objectName());
-        if(!xin || player->getPhase() != Player::Start || xin->isNude())
+        if(!xin || player->getPhase() != Player::RoundStart || xin->isNude())
             return false;
         QString choice = room->askForChoice(xin, objectName(), !player->getJudgingArea().isEmpty() ? "ming+jian+cancel" : "jian+cancel");
         if(choice == "cancel")
