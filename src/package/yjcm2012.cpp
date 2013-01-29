@@ -427,7 +427,6 @@ public:
 class Fuhun: public PhaseChangeSkill{
 public:
     Fuhun():PhaseChangeSkill("fuhun"){
-
     }
 
     const Card *getCard(ServerPlayer *player) const{
@@ -438,7 +437,6 @@ public:
         room->getThread()->delay();
 
         player->obtainCard(card);
-
         return card;
     }
 
@@ -448,6 +446,7 @@ public:
             if(shuangying->askForSkillInvoke(objectName())){
                 Room *room = shuangying->getRoom();
                 room->playSkillEffect(objectName(), 1);
+                room->getThread()->delay();
                 const Card *first = getCard(shuangying);
                 const Card *second = getCard(shuangying);
 

@@ -206,19 +206,22 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
     Room *room = target->getRoom();
-    QList<ServerPlayer *> players = room->getOtherPlayers(target);
-    players << target;
+    if(movable){
+        QList<ServerPlayer *> players = room->getOtherPlayers(target);
+        players << target;
 
-    foreach(ServerPlayer *player, players){
-        if(player->containsTrick(objectName()))
-            continue;
+        foreach(ServerPlayer *player, players){
+            if(player->containsTrick(objectName()))
+                continue;
 
-        if(room->isProhibited(target, player, this))
-            continue;
+            if(room->isProhibited(target, player, this))
+                continue;
 
-        room->moveCardTo(this, player, Player::Judging, true);
-        break;
-    }
+            room->moveCardTo(this, player, Player::Judging, true);
+            break;
+        }
+    }else
+        room->throwCard(this);
 }
 
 const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
