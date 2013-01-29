@@ -40,6 +40,7 @@ config = {
 		"SanDZhimeng",
 		"NostalGeneral",
 		"ChangbanSlope",
+		"Danchuang",
 		"Test",
 	},
 

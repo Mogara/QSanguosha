@@ -140,6 +140,13 @@ return {
 	["$wuji"] = "武圣虽死，血脉尚存。先父佑我，再现武魂！",
 	["~guanyinping"] = "父亲……",
 
+	["#sp_zhenji"] = "波形的美人",
+	["sp_zhenji"] = "SP甄姬",
+	["illustrator:sp_zhenji"] = "白姥姥",
+	["#zhenjip"] = "换姿",
+	[":#zhenjip"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP甄姬",
+	["cv:sp_zhenji"] = "神马芯",
+
 	["#chenlin"] = "破竹之咒",
 	["chenlin"] = "陈琳",
 	["illustrator:chenlin"] = "木美人",
@@ -175,6 +182,8 @@ return {
 	["#shenlvbu1"] = "最强神话",
 	["shenlvbu1"] = "神吕布(1)",
 	["illustrator:shenlvbu1"] = "LiuHeng",
+	["Tshenlvbu"] = "阶段转换",
+	[":Tshenlvbu"] = "虎牢布的菊花被爆了。",
 	["#shenlvbu2"] = "暴怒的战神",
 	["shenlvbu2"] = "神吕布(2)",
 	["illustrator:shenlvbu2"] = "LiuHeng",
@@ -201,7 +210,7 @@ return {
 	["$shenji"] = "神戟在手，何人能及！",
 	["$xiuluo"] = "哼！鬼蜮伎俩，休想阻我！",
 	["~shenlvbu2"] = "什么？我败了？！",
-	["$StageChange"] = "杂鱼们，好戏才刚刚开始！",
+	["$Tshenlvbu"] = "杂鱼们，好戏才刚刚开始！",
 
 --sp_card
 	["sp_cards"] = "SP卡牌包",
@@ -238,4 +247,32 @@ return {
 	["cv:tai_zhaoyun"] = "鸢飞",
 	["#zhaoyunt"] = "去旅游",
 	[":#zhaoyunt"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP赵云",
+
+	["#tai_ganning"] = "锦帆游侠",
+	["tai_ganning"] = "台版SP甘宁",
+	["illustrator:tai_ganning"] = "",
+	["cv:tai_ganning"] = "鬼叔",
+	["#ganningt"] = "去卖艺",
+	[":#ganningt"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP甘宁",
+
+	["#tai_lvbu"] = "武的化身",
+	["tai_lvbu"] = "台版SP吕布",
+	["illustrator:tai_lvbu"] = "焚烧的大葱",
+	["cv:tai_lvbu"] = "鬼叔",
+	["#lvbut"] = "去杂耍",
+	[":#lvbut"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP吕布",
+
+	["#tai_machao"] = "一骑当千",
+	["tai_machao"] = "台版SP马超",
+	["illustrator:tai_machao"] = "",
+	["cv:tai_machao"] = "烈の流星",
+	["#machaot"] = "去偷鸡",
+	[":#machaot"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP马超",
+
+	["#tai_zhenji"] = "大波的美女",
+	["tai_zhenji"] = "台版SP甄姬",
+	["illustrator:tai_zhenji"] = "",
+	["cv:tai_zhenji"] = "神马芯",
+	["#zhenjit"] = "被包养",
+	[":#zhenjit"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP甄姬",
 }

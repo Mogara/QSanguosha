@@ -3418,6 +3418,7 @@ void Room::surrenderCommand(ServerPlayer *player, const QString &){
 }
 
 void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who){
+    broadcastInvoke("clearAG");
     QStringList card_str;
     foreach(int card_id, card_ids)
         card_str << QString::number(card_id);
@@ -3487,6 +3488,7 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){
+    broadcastInvoke("clearAG");
     QStringList handcards_str;
     foreach(const Card *card, player->getHandcards())
         handcards_str << QString::number(card->getId());

@@ -37,8 +37,8 @@ return {
 	["nosjujian"] = "举荐",
 	[":nosjujian"] = "出牌阶段，你可以弃置至多三张牌，然后令一名其他角色摸等量的牌。若你以此法弃置三张同一类别的牌，你回复1点体力。每阶段限一次。",
 	["#WuyanBaD"] = "%from 触发【%arg2】，对 %to 使用的锦囊【%arg】无效",
-	["#WuyanGooD"] = "%from 触发【%arg2】， %to 使用的锦囊【%arg】对其无效",
-	["#JujianRecover"] = "%from 弃置了三张 %arg ，恢复1点体力",
+	["#WuyanGooD"] = "%from 触发【%arg2】，%to 使用的锦囊【%arg】对其无效",
+	["#JujianRecover"] = "%from 弃置了三张 %arg，恢复1点体力",
 	["$nosjujian1"] = "天下之任，愿君莫辞。",
 	["$nosjujian2"] = "此乃贤达之士！",
 	["$nosjujian3"] = "卧龙之才，远胜于吾。", -- 对诸葛

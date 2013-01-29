@@ -13,7 +13,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 3;
+        return 2;
     }
 
     void doChongZhen(ServerPlayer *player, const Card *card) const{
@@ -21,36 +21,35 @@ public:
             return;
 
         Room *room = player->getRoom();
-
-        ServerPlayer *target = player->tag["ChongZhenTarget"].value<PlayerStar>();
+        PlayerStar target = player->tag["ChongZhenTarget"].value<PlayerStar>();
         if(!target || target->isKongcheng() || !room->askForSkillInvoke(player, objectName()))
             return;
 
-        int card_id = room->askForCardChosen(player, target, "h", objectName());
-        room->obtainCard(player, card_id, false);
-        room->playSkillEffect("chongzhen", card->inherits("Jink") ? 1: 2);
+        room->obtainCard(player, target->getRandomHandCardId(), false);
+        room->playSkillEffect("chongzhen", card->isKindOf("Jink") ? 1: 2);
     }
 
     virtual bool trigger(TriggerEvent event, Room*, ServerPlayer *player, QVariant &data) const{
-        if(event == CardFinished){
-            player->tag["ChongZhenTarget"] = QVariant::fromValue(NULL);
-        }
+        if(event == CardFinished)
+            player->tag["ChongZhenTarget"] = QVariant();
         else if(event == CardResponsed){
             CardStar card = data.value<CardStar>();
             doChongZhen(player, card);
         }
         else if(event == SlashEffect){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.to);
+            PlayerStar target = effect.to;
+            player->tag["ChongZhenTarget"] = QVariant::fromValue(target);
             doChongZhen(player, effect.slash);
         }
         else{
             CardEffectStruct effect = data.value<CardEffectStruct>();
+            PlayerStar target = event == CardEffect ? effect.to : effect.from;
             if(effect.card->inherits("Duel")
                     || effect.card->inherits("ArcheryAttack")
                     || effect.card->inherits("SavageAssault")
                     || effect.card->inherits("Slash"))
-                player->tag["ChongZhenTarget"] = QVariant::fromValue(event == CardEffect ? effect.to : effect.from);
+                player->tag["ChongZhenTarget"] = QVariant::fromValue(target);
         }
 
         return false;
@@ -792,7 +791,6 @@ public:
     Shichou(): TriggerSkill("shichou$"){
         events << PhaseChange << Predamaged << Dying;
         frequency = Limited;
-
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
@@ -802,16 +800,10 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == PhaseChange && player->getMark("hate") < 1 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
-            QList<ServerPlayer *> targets = room->getOtherPlayers(player);
-            QList<ServerPlayer *> victims;
-
-            foreach(ServerPlayer *p, targets){
-                if(p->getKingdom() == "shu" && !p->hasLordSkill(objectName())){
-                    victims << p;
-                }
-            }
-            if(victims.empty())
+            QList<ServerPlayer *> victims = room->getLieges("shu", player);
+            if(victims.isEmpty())
                 return false;
+
             if(player->askForSkillInvoke(objectName())){
                 room->playSkillEffect(objectName());
                 player->addMark("hate");
@@ -1527,7 +1519,7 @@ public:
             QString prompt = prompt_list.join(":");
             const Card *card = room->askForCard(player, "@langgu", prompt, data);
             if(card){
-                room->throwCard(judge->card);
+                room->throwCard(judge->card, judge->who);
                 judge->card = Sanguosha->getCard(card->getEffectiveId());
                 room->moveCardTo(judge->card, NULL, Player::Special);
 

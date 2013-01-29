@@ -988,6 +988,8 @@ SPPackage::SPPackage()
     General *shenlvbu1 = new General(this, "shenlvbu1", "god", 8, true, true);
     shenlvbu1->addSkill("mashu");
     shenlvbu1->addSkill("wushuang");
+    shenlvbu1->addRelateSkill("Tshenlvbu");
+    skills << new Skill("Tshenlvbu");
 
     General *shenlvbu2 = new General(this, "shenlvbu2", "god", 4, true, true);
     shenlvbu2->addSkill("mashu");
@@ -1025,6 +1027,10 @@ SPPackage::SPPackage()
     related_skills.insertMulti("huxiao", "#huxiao");
     skills << new HuxiaoSlash;
 
+    General *sp_zhenji = new General(this, "sp_zhenji", "wei", 3, false, true);
+    sp_zhenji->addSkill("qingguo");
+    sp_zhenji->addSkill("luoshen");
+
     General *chenlin = new General(this, "chenlin", "wei", 3);
     chenlin->addSkill(new Bifa);
     chenlin->addSkill(new Songci);
@@ -1052,6 +1058,20 @@ SPPackage::SPPackage()
 
     General *tai_zhaoyun= new General(this, "tai_zhaoyun", "shu", 4, true, true);
     tai_zhaoyun->addSkill("longdan");
+
+    General *tai_ganning= new General(this, "tai_ganning", "wu", 4, true, true);
+    tai_ganning->addSkill("qixi");
+
+    General *tai_lvbu= new General(this, "tai_lvbu", "qun", 4, true, true);
+    tai_lvbu->addSkill("wushuang");
+
+    General *tai_machao= new General(this, "tai_machao", "shu", 4, true, true);
+    tai_machao->addSkill("tieji");
+    tai_machao->addSkill("mashu");
+
+    General *tai_zhenji= new General(this, "tai_zhenji", "wei", 3, false, true);
+    tai_zhenji->addSkill("qingguo");
+    tai_zhenji->addSkill("luoshen");
 }
 
 ADD_PACKAGE(SP)
