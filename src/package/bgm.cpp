@@ -2007,6 +2007,8 @@ PasterPackage::PasterPackage()
     General *simazhao = new General(this, "simazhao", "wei", 3);
     simazhao->addSkill(new Zhaoxin);
     simazhao->addSkill(new Langgu);
+    simazhao->addSkill("v5yexin");
+    simazhao->addSkill("v5paiyi");
 
     General *liuxie = new General(this, "liuxie", "qun");
     liuxie->addSkill(new Huangen);

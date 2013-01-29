@@ -538,6 +538,7 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
         room->takeAG(NULL, card_id.toInt());
     }
 
+    room->removeTag("AmazingGrace");
     room->broadcastInvoke("clearAG");
 }
 
