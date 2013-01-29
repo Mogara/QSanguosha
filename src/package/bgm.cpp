@@ -1442,10 +1442,44 @@ public:
     }
 };
 
+LangguCard::LangguCard(){
+    target_fixed = true;
+    will_throw = false;
+    can_jilei = true;
+}
+
+void LangguCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
+}
+
+class LangguViewAsSkill:public OneCardViewAsSkill{
+public:
+    LangguViewAsSkill():OneCardViewAsSkill(""){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@langgu";
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        LangguCard *card = new LangguCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
+};
+
 class Langgu: public TriggerSkill{
 public:
     Langgu():TriggerSkill("langgu"){
         events << Damaged << AskForRetrial;
+        view_as_skill = new LangguViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1483,9 +1517,15 @@ public:
         }
         else{
             JudgeStar judge = data.value<JudgeStar>();
+
             if(judge->reason != objectName())
                 return false;
-            const Card *card = room->askForCard(player, ".", "@langgu", data, AskForRetrial);
+
+            QStringList prompt_list;
+            prompt_list << "@langgu-card" << judge->who->objectName()
+                    << objectName() << judge->reason << judge->card->getEffectIdString();
+            QString prompt = prompt_list.join(":");
+            const Card *card = room->askForCard(player, "@langgu", prompt, data);
             if(card){
                 room->throwCard(judge->card);
                 judge->card = Sanguosha->getCard(card->getEffectiveId());
@@ -1989,6 +2029,7 @@ PasterPackage::PasterPackage()
     skills << new Yic0ngDistance << new TuqiDistance;
 
     addMetaObject<FuluanCard>();
+    addMetaObject<LangguCard>();
     addMetaObject<HuangenCard>();
     addMetaObject<Yic0ngCard>();
     addMetaObject<MingjianCard>();

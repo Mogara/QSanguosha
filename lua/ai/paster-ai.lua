@@ -100,7 +100,7 @@ sgs.ai_skill_askforag.langgu = function(self, card_ids)
 	return -1
 end
 
-sgs.ai_skill_cardask["@langgu"]=function(self, data)
+sgs.ai_skill_cardask["@langgu-card"]=function(self, data)
     return "."
 end
 

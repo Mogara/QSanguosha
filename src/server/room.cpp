@@ -2686,13 +2686,15 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     }
 
     if(from_place == Player::Judging){
-        QStringList yanxiaos = from->property("yanxiao").toString().split("|");
+        QStringList yanxiaos;
+        if(from)
+            yanxiaos = from->property("yanxiao").toString().split("|");
         QString idstr = card->getEffectIdString();
         if(yanxiaos.contains(idstr))
             yanxiaos.removeOne(idstr);
-        if(yanxiaos.isEmpty())
+        if(yanxiaos.isEmpty() && from)
             setPlayerProperty(from, "yanxiao", QVariant::fromValue(QString()));
-        if(place == Player::Judging)
+        if(place == Player::Judging && to)
             setPlayerProperty(to, "yanxiao", QVariant::fromValue(yanxiaos.join("|")));
     }
 
@@ -3179,9 +3181,8 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
     QString result = askForChoice(shenlvmeng, "gongxin", "discard+put");
     if(result == "discard")
         throwCard(card_id, target, shenlvmeng);
-    else{
+    else
         moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DrawPile, true);
-    }
 }
 
 const Card *Room::askForPindian(ServerPlayer *player,

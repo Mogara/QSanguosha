@@ -101,7 +101,6 @@ class Guidao: public TriggerSkill{
 public:
     Guidao():TriggerSkill("guidao"){
         view_as_skill = new GuidaoViewAsSkill;
-
         events << AskForRetrial;
     }
 
