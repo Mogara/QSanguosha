@@ -1,8 +1,7 @@
 #include "skill.h"
-#include "client.h"
 #include "carditem.h"
 #include "engine.h"
-#include "test.h"
+#include "danchuang.h"
 
 class V5Zhenggong:public MasochismSkill{
 public:

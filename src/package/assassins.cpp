@@ -382,11 +382,13 @@ public:
 class Cangni: public TriggerSkill{
 public:
     Cangni():TriggerSkill("cangni"){
-        events << PhaseChange << CardLostDone << CardGotDone;
+        events << PhaseChange << CardLost << CardLostDone << CardGot << CardGotDone;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == PhaseChange && player->getPhase() == Player::Discard && player->askForSkillInvoke(objectName())) {
+        if(event == PhaseChange){
+            if(player->getPhase() != Player::Discard || !player->askForSkillInvoke(objectName()))
+                return false;
             QStringList choices;
             choices << "draw";
             if(player->isWounded())
@@ -410,20 +412,26 @@ public:
             player->turnOver();
             return false;
         }
-        else if(event == CardLostDone || event == CardGotDone) {
+        else if(event == CardGot)
+            player->tag["GotCangni"] = true;
+        else if(event == CardLost)
+            player->tag["LostCangni"] = true;
+        else{
             if(player->getPhase() != Player::NotActive || player->faceUp())
                 return false;
 
             ServerPlayer *target = room->getCurrent();
             if(target->isDead())
                 return false;
-            if(event == CardLostDone && !target->isNude() && player->askForSkillInvoke(objectName())) {
+            if(event == CardLostDone && !target->isNude() && player->tag.value("LostCangni", false).toBool() && player->askForSkillInvoke(objectName())){
+                player->tag.remove("LostCangni");
                 room->playSkillEffect("cangni", 3);
                 room->askForDiscard(target, objectName(), 1, 1, false, true);
                 return false;
             }
 
-            if(event == CardGotDone && !target->hasFlag("cangni_used") && player->askForSkillInvoke(objectName())) {
+            if(event == CardGotDone && !target->hasFlag("cangni_used") && player->tag.value("GotCangni", false).toBool() && player->askForSkillInvoke(objectName())){
+                player->tag.remove("GotCangni");
                 room->setPlayerFlag(target, "cangni_used");
                 room->playSkillEffect("cangni", 2);
                 target->drawCards(1);

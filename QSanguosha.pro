@@ -70,8 +70,8 @@ SOURCES += \
 	src/package/hegemony.cpp \
 	src/package/special3v3.cpp \
 	src/package/3d_zhimeng.cpp \
-        src/package/changban-slope.cpp \
-        src/package/test.cpp \
+	src/package/changban-slope.cpp \
+	src/package/danchuang.cpp \
 	src/scenario/scenario.cpp \
 	src/scenario/boss-mode-scenario.cpp \
 	src/scenario/couple-scenario.cpp \
@@ -198,7 +198,7 @@ HEADERS += \
 	src/package/special3v3.h \
 	src/package/3d_zhimeng.h \
 	src/package/changban-slope.h \
-	src/package/test.h \
+	src/package/danchuang.h \
 	src/scenario/boss-mode-scenario.h \
 	src/scenario/couple-scenario.h \
 	src/scenario/fancheng-scenario.h \
