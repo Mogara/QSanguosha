@@ -118,13 +118,10 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *shenlvmeng) const{
-        if(shenlvmeng->getPhase() != Player::Draw)
+        if(shenlvmeng->getPhase() != Player::Draw || !shenlvmeng->askForSkillInvoke(objectName()))
             return false;
 
         Room *room = shenlvmeng->getRoom();
-        if(!shenlvmeng->askForSkillInvoke(objectName()))
-            return false;
-
         room->playSkillEffect(objectName());
 
         QList<int> card_ids = room->getNCards(5);

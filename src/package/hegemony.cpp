@@ -219,11 +219,37 @@ public:
     }
 };
 
+MingshiCard::MingshiCard(){
+    target_fixed = true;
+}
+
+void MingshiCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
+}
+
+class MingshiViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    MingshiViewAsSkill():ZeroCardViewAsSkill("mingshi"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@@mingshi";
+    }
+
+    virtual const Card *viewAs() const{
+        return new MingshiCard;
+    }
+};
+
 class Mingshi: public TriggerSkill{
 public:
     Mingshi():TriggerSkill("mingshi"){
         events << Predamaged;
         frequency = Compulsory;
+        view_as_skill = new MingshiViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -235,15 +261,46 @@ public:
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
-            QString choice = room->askForChoice(damage.from, objectName(), "mingshishow+mingshicancel");
-            if(choice == "mingshishow")
+            damage.from->tag["Mingshi"] = data;
+            if(room->askForUseCard(damage.from, "@@mingshi", "@mingshi:" + damage.to->objectName()))
                 room->showAllCards(damage.from);
             else{
                 damage.damage --;
                 data = QVariant::fromValue(damage);
             }
+            damage.from->tag.remove("Mingshi");
         }
         return false;
+    }
+};
+
+LirangCard::LirangCard(){
+}
+
+bool LirangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select != Self;
+}
+
+void LirangCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &t) const{
+    PlayerStar data = t.first();
+    source->tag["LirangTarget"] = QVariant::fromValue(data);
+}
+
+class LirangViewAsSkill:public ZeroCardViewAsSkill{
+public:
+    LirangViewAsSkill():ZeroCardViewAsSkill("lirang"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@lirang";
+    }
+
+    virtual const Card *viewAs() const{
+        return new LirangCard;
     }
 };
 
@@ -251,6 +308,7 @@ class Lirang: public TriggerSkill{
 public:
     Lirang():TriggerSkill("lirang"){
         events << CardDiscarded;
+        view_as_skill = new LirangViewAsSkill;
     }
 
     virtual int getPriority() const{
@@ -259,10 +317,9 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardStar card = data.value<CardStar>();
-        if(card && player->askForSkillInvoke(objectName())){
-            room->playSkillEffect(objectName());
-            ServerPlayer *t = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
-            t->obtainCard(card);
+        if(card && room->askForUseCard(player, "@@lirang", "@lirang")){
+            PlayerStar target = player->tag["LirangTarget"].value<PlayerStar>();
+            target->obtainCard(card);
         }
         return false;
     }
@@ -609,6 +666,8 @@ HegemonyPackage::HegemonyPackage()
     addMetaObject<ShushenCard>();
     addMetaObject<DuoshiCard>();
     addMetaObject<FenxunCard>();
+    addMetaObject<LirangCard>();
+    addMetaObject<MingshiCard>();
     addMetaObject<XiongyiCard>();
     addMetaObject<QingchengCard>();
     addMetaObject<ShuangrenCard>();

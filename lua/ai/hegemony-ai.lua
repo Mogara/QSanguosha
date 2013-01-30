@@ -162,17 +162,16 @@ end
 
 sgs.ai_chaofeng.dingfeng = 2
 
-sgs.ai_skill_invoke.lirang = function(self, data)
-	return #self.friends_noself > 0
-end
-
-sgs.ai_skill_playerchosen.lirang = function(self, targets)
+sgs.ai_skill_use["@@lirang"] = function(self, prompt)
+	if #self.friends_noself < 1 then return "." end
 	self:sort(self.friends_noself, "defense")
-	return self.friends_noself[1]
+	return "@LirangCard=.->" .. self.friends_noself[1]:objectName()
 end
 
-sgs.ai_skill_choice.mingshi = function(self, choices)
-	return "mingshishow"
+sgs.ai_skill_use["@@mingshi"] = function(self, prompt)
+	local damage = self.player:getTag("Mingshi"):toDamage()
+	if self:isFriend(damage.to) then return "." end
+	return "@MingshiCard=.->."
 end
 
 sgs.ai_chaofeng.kongrong = 4
