@@ -467,6 +467,8 @@ enum TriggerEvent{
 	GameStarted,
 	TurnStart,
 	PhaseChange,
+	InPhase,
+	PhaseEnd,
 	DrawNCards,
 	DrawNCardsDone,
 	HpRecover,
@@ -474,6 +476,9 @@ enum TriggerEvent{
 	HpLost,
 	HpChanged,
 	MaxHpChanged,
+
+	SkillLose,
+	SkillAcquire,
 
 	StartJudge,
 	AskForRetrial,

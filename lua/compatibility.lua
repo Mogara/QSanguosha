@@ -19,7 +19,7 @@ sgs.Place_PlaceTable = sgs.Place_PlaceTable or sgs.Place_DiscardedPile
 sgs.Place_PlaceUnknown = sgs.Place_PlaceUnknown or sgs.Place_Special
 
 sgs.EventPhaseStart = sgs.EventPhaseStart or sgs.PhaseChange
-sgs.EventPhaseEnd = sgs.EventPhaseEnd or sgs.PhaseChange
+sgs.EventPhaseEnd = sgs.EventPhaseEnd or sgs.PhaseEnd
 sgs.EventPhaseChanging = sgs.EventPhaseChanging or sgs.PhaseChange
 sgs.MaxHpChanged = sgs.MaxHpChanged or sgs.MaxHpLost
 sgs.FinishRetrial = sgs.FinishRetrial or sgs.RetrialDone
@@ -29,3 +29,5 @@ sgs.PostCardEffected = sgs.PostCardEffected or sgs.CardEffected
 sgs.ConfirmDamage = sgs.ConfirmDamage or sgs.Predamage
 sgs.PreHpReduced = sgs.PreHpReduced or sgs.HpLost
 sgs.PostHpReduced = sgs.PostHpReduced or sgs.HpLost
+sgs.EventLoseSkill = sgs.EventLoseSkill or sgs.SkillLose
+sgs.EventAcquireSkill = sgs.EventAcquireSkill or sgs.SkillAcquire

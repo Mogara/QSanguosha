@@ -137,6 +137,7 @@ public:
 
 V5YexinCard::V5YexinCard(){
     target_fixed = true;
+    will_throw = false;
 }
 
 void V5YexinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -245,71 +246,70 @@ public:
     }
 };
 
-class V5Paiyi: public PhaseChangeSkill{
+class V5Paiyi: public TriggerSkill{
 public:
-    V5Paiyi():PhaseChangeSkill("v5paiyi"){
+    V5Paiyi():TriggerSkill("v5paiyi"){
+        events << InPhase;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
         if(player->getPhase() != Player::Finish)
             return false;
-        Room *room = player->getRoom();
-        while(player){
-            const QList<int> &quan = player->getPile("werpo");
-            if(quan.isEmpty() || !player->askForSkillInvoke(objectName()))
-                break;
-            room->fillAG(quan, player);
-            int card_id = room->askForAG(player, quan, false, objectName());
-            if(card_id < 0)
-                card_id = quan.first();
-            const Card *card = Sanguosha->getCard(card_id);
 
-            Player::Place place = Player::Hand;
-            int equip_index = -1;
-            const DelayedTrick *trick = NULL;
-            if(card->isKindOf("EquipCard")){
-                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-                equip_index = static_cast<int>(equip->location());
-                place = Player::Equip;
-            }else if(card->isKindOf("TrickCard")){
-                trick = DelayedTrick::CastFrom(card);
-                place = Player::Judging;
-            }
-            else
-                trick = DelayedTrick::CastFrom(card);
+        const QList<int> &quan = player->getPile("werpo");
+        if(quan.isEmpty() || !player->askForSkillInvoke(objectName()))
+            return false;
+        room->fillAG(quan, player);
+        int card_id = room->askForAG(player, quan, false, objectName());
+        if(card_id < 0)
+            card_id = quan.first();
+        const Card *card = Sanguosha->getCard(card_id);
 
-            QList<ServerPlayer *> tos;
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
-                switch(place){
-                case Player::Judging:{
-                    if(!player->isProhibited(p, trick) && !p->containsTrick(trick->objectName()))
-                        tos << p;
-                    break;
-                }
-                case Player::Equip:{
-                    if(p->getEquip(equip_index) == NULL)
-                        tos << p;
-                    break;
-                }
-                default: tos << p; break;
-                }
-            }
-            if(trick && trick->isVirtualCard())
-                delete trick;
-
-            ServerPlayer *to = room->askForPlayerChosen(player, tos, objectName());
-            if(trick && place == Player::Hand){
-                QString ch = room->askForChoice(player, objectName(), "judge+hand+werpo");
-                if(ch == "judge")
-                    place = Player::Judging;
-                else if(ch == "werpo")
-                    place = Player::Special;
-            }
-            room->moveCardTo(card, to, place);
-
-            player->invoke("clearAG");
+        Player::Place place = Player::Hand;
+        int equip_index = -1;
+        const DelayedTrick *trick = NULL;
+        if(card->isKindOf("EquipCard")){
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+            equip_index = static_cast<int>(equip->location());
+            place = Player::Equip;
+        }else if(card->isKindOf("TrickCard")){
+            trick = DelayedTrick::CastFrom(card);
+            place = Player::Judging;
         }
-        return false;
+        else
+            trick = DelayedTrick::CastFrom(card);
+
+        QList<ServerPlayer *> tos;
+        foreach(ServerPlayer *p, room->getAlivePlayers()){
+            switch(place){
+            case Player::Judging:{
+                if(!player->isProhibited(p, trick) && !p->containsTrick(trick->objectName()))
+                    tos << p;
+                break;
+            }
+            case Player::Equip:{
+                if(p->getEquip(equip_index) == NULL)
+                    tos << p;
+                break;
+            }
+            default: tos << p; break;
+            }
+        }
+        if(trick && trick->isVirtualCard())
+            delete trick;
+
+        ServerPlayer *to = room->askForPlayerChosen(player, tos, objectName());
+        if(trick && place == Player::Hand){
+            QString ch = room->askForChoice(player, objectName(), "judge+hand+werpo");
+            if(ch == "judge")
+                place = Player::Judging;
+            else if(ch == "werpo")
+                place = Player::Special;
+        }
+        room->moveCardTo(card, to, place);
+
+        player->invoke("clearAG");
+        return true;
     }
 };
 
