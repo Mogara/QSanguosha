@@ -49,11 +49,10 @@ public:
     virtual bool onPhaseChange(ServerPlayer *wangyi) const{
         if(!wangyi->isWounded())
             return false;
-        if(wangyi->getPhase() != Player::Start && wangyi->getPhase() != Player::Finish)
-            return false;
-        if(wangyi->askForSkillInvoke(objectName())){
+        if(wangyi->getPhase() == Player::Start || wangyi->getPhase() == Player::Finish){
+            if(!wangyi->askForSkillInvoke(objectName()))
+                return false;
             Room *room = wangyi->getRoom();
-            room->playSkillEffect(objectName(), 1);
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(club|spade):(.*)");
             judge.good = true;
@@ -166,7 +165,7 @@ public:
     }
 
     virtual QDialog *getDialog() const{
-        return GuhuoDialog::GetInstance("qice", false);
+        return GuhuoDialog::getInstance("qice", false);
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -176,6 +175,13 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.length() < Self->getHandcardNum())
             return NULL;
+
+        if(ClientInstance->getStatus() == Client::Responsing){
+            QiceCard *card = new QiceCard;
+            card->setUserString("nullification");
+            card->addSubcards(cards);
+            return card;
+        }
 
         CardStar c = Self->tag.value("qice").value<CardStar>();
         if(c){
@@ -219,7 +225,7 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         QVariant source = QVariant::fromValue(from);
-        if(target->askForSkillInvoke(objectName(), source)){
+        if(from && from->isAlive() && target->askForSkillInvoke(objectName(), source)){
             target->drawCards(1);
 
             Room *room = target->getRoom();
@@ -236,8 +242,8 @@ public:
                 }
             }
 
-            if(from && from->isAlive() && same_color && !from->isKongcheng())
-                room->askForDiscard(from, objectName(), 1);
+            if(same_color && damage.from && !damage.from->isKongcheng())
+                room->askForDiscard(damage.from, objectName(), 1);
         }
     }
 };
@@ -412,7 +418,6 @@ public:
         DyingStruct dying_data = data.value<DyingStruct>();
         if(dying_data.who != liaohua)
             return false;
-
         if(liaohua->askForSkillInvoke(objectName(), data)){
             room->broadcastInvoke("animate", "lightbox:$fuli");
             room->playSkillEffect(objectName());

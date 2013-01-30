@@ -594,25 +594,26 @@ public:
     }
 };
 
-class Tanhu: public PhaseChangeSkill{
+class Tanhu: public TriggerSkill{
 public:
-    Tanhu():PhaseChangeSkill("tanhu"){
+    Tanhu():TriggerSkill("tanhu"){
+        events << PhaseChange << Death;
         view_as_skill = new TanhuViewAsSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
-            Room *room = target->getRoom();
-            QList<ServerPlayer *> players = room->getAlivePlayers();
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill(objectName());
+    }
 
-            foreach(ServerPlayer *player, players){
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *target, QVariant &) const{
+        if(event == Death || (event == PhaseChange && target && target->getPhase() == Player::Finish)){
+            foreach(ServerPlayer *player, room->getAlivePlayers()){
                 if(player->hasFlag("TanhuTarget")){
                     room->setPlayerFlag(player, "-TanhuTarget");
                     room->setFixedDistance(target, player, -1);
                 }
             }
         }
-
         return false;
     }
 };

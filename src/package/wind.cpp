@@ -673,9 +673,9 @@ GuhuoCard::GuhuoCard(){
 bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
-
-    yuji->addToPile("guhuo_pile", this->getEffectiveId(), false);
-    room->moveCardTo(this, yuji, Player::Special, false);
+    room->setTag("GuhuoType", this->user_string);
+    if(yuji->hasFlag("guhuo_failed"))
+        room->setPlayerFlag(yuji, "-guhuo_failed");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
     QSet<ServerPlayer *> questioned;
@@ -750,6 +750,7 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     room->sendLog(log);
 
     room->setTag("Guhuoing", false);
+    room->removeTag("GuhuoType");
 
     if(!success)
         room->throwCard(this, yuji);
@@ -757,9 +758,9 @@ bool GuhuoCard::guhuo(ServerPlayer* yuji, const QString& message) const{
     return success;
 }
 
-GuhuoDialog *GuhuoDialog::GetInstance(const QString &object, bool left, bool right){
+GuhuoDialog *GuhuoDialog::getInstance(const QString &object, bool left, bool right){
     static GuhuoDialog *instance;
-    if(instance == NULL)
+    if(instance == NULL || instance->objectName() != object)
         instance = new GuhuoDialog(object, left, right);
 
     return instance;
@@ -767,6 +768,7 @@ GuhuoDialog *GuhuoDialog::GetInstance(const QString &object, bool left, bool rig
 
 GuhuoDialog::GuhuoDialog(const QString &object, bool left, bool right):object_name(object)
 {
+    setObjectName(object);
     setWindowTitle(Sanguosha->translate(object));
     group = new QButtonGroup(this);
 
@@ -797,6 +799,7 @@ void GuhuoDialog::popup(){
 void GuhuoDialog::selectCard(QAbstractButton *button){
     CardStar card = map.value(button->objectName());
     Self->tag[object_name] = QVariant::fromValue(card);
+    emit onButtonClick();
     accept();
 }
 
@@ -976,7 +979,7 @@ public:
     }
 
     virtual QDialog *getDialog() const{
-        return GuhuoDialog::GetInstance("guhuo");
+        return GuhuoDialog::getInstance("guhuo");
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
