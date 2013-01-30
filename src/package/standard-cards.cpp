@@ -418,36 +418,39 @@ Halberd::Halberd(Suit suit, int number)
 class KylinBowSkill: public WeaponSkill{
 public:
     KylinBowSkill():WeaponSkill("kylin_bow"){
-        events << SlashHit;
+        events << Damage;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        DamageStruct damage = data.value<DamageStruct>();
 
         QStringList horses;
-        if(effect.to->getDefensiveHorse())
-            horses << "dhorse";
-        if(effect.to->getOffensiveHorse())
-            horses << "ohorse";
+        if(damage.card && damage.card->inherits("Slash") && !damage.chain){
+            if(damage.to->getDefensiveHorse())
+                horses << "dhorse";
+            if(damage.to->getOffensiveHorse())
+                horses << "ohorse";
 
-        if(horses.isEmpty())
-            return false;
+            if(horses.isEmpty())
+                return false;
 
-        if(!player->askForSkillInvoke(objectName(), data))
-            return false;
+            if (player == NULL) return false;
+            if(!player->askForSkillInvoke(objectName(), data))
+                return false;
 
-        room->setEmotion(player,"weapon/kylin_bow");
+            room->setEmotion(player,"weapon/kylin_bow");
 
-        QString horse_type;
-        if(horses.length() == 2)
-            horse_type = room->askForChoice(player, objectName(), horses.join("+"));
-        else
-            horse_type = horses.first();
+            QString horse_type;
+            if(horses.length() == 2)
+                horse_type = room->askForChoice(player, objectName(), horses.join("+"));
+            else
+                horse_type = horses.first();
 
-        if(horse_type == "dhorse")
-            room->throwCard(effect.to->getDefensiveHorse(), effect.to, effect.from);
-        else if(horse_type == "ohorse")
-            room->throwCard(effect.to->getOffensiveHorse(), effect.to, effect.from);
+            if(horse_type == "dhorse")
+                room->throwCard(damage.to->getDefensiveHorse(), damage.to, damage.from);
+            else if(horse_type == "ohorse")
+                room->throwCard(damage.to->getOffensiveHorse(), damage.to, damage.from);
+        }
 
         return false;
     }

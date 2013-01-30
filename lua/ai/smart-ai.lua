@@ -47,7 +47,6 @@ sgs.ai_slash_weaponfilter = {}
 sgs.ai_slash_prohibit = 	{}
 sgs.ai_trick_prohibit =		{} -- obsolete
 sgs.ai_view_as = {}
-sgs.ai_zerocardview = {}
 sgs.ai_cardsview = {}
 sgs.dynamic_value = 		{
 	damage_card = 			{},
@@ -2933,16 +2932,6 @@ local function prohibitUseDirectly(card, player)
 		if type(callback) == "function" and callback(card, card_place, player) then return true end
 	end
 	return false
-end
-
-local function zeroCardView(class_name, player)
-	local vlist = sgs.getSkillLists(player)
-	for _, askill in ipairs(vlist) do
-		local callback = sgs.ai_zerocardview[askill]
-		if type(callback) == "function" and callback(class_name, player) then
-			return callback(class_name, player)
-		end
-	end
 end
 
 local function cardsView(class_name, player)
