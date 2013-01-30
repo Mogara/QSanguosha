@@ -472,21 +472,17 @@ public:
     }
 };
 
-class HaoshiGive: public PhaseChangeSkill{
+class Haoshi: public TriggerSkill{
 public:
-    HaoshiGive():PhaseChangeSkill("#haoshi-give"){
-
+    Haoshi():TriggerSkill("haoshi"){
+        events << DrawNCardsDone;
+        view_as_skill = new HaoshiViewAsSkill;
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *lusu) const{
-        if(lusu->getPhase() == Player::Draw && lusu->hasFlag("haoshi")){
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *lusu, QVariant &data) const{
+        if(lusu->hasFlag("haoshi")){
             lusu->setFlags("-haoshi");
 
-            Room *room = lusu->getRoom();
             if(lusu->getHandcardNum() <= 5)
                 return false;            
 
@@ -523,9 +519,9 @@ public:
     }
 };
 
-class Haoshi: public DrawCardsSkill{
+class HaoshiDraw: public DrawCardsSkill{
 public:
-    Haoshi():DrawCardsSkill("#haoshi"){
+    HaoshiDraw():DrawCardsSkill("#haoshi-draw"){
 
     }
 
@@ -907,12 +903,9 @@ ThicketPackage::ThicketPackage()
 
     lusu = new General(this, "lusu", "wu", 3);
     lusu->addSkill(new Haoshi);
-    lusu->addSkill(new HaoshiViewAsSkill);
-    lusu->addSkill(new HaoshiGive);
+    lusu->addSkill(new HaoshiDraw);
     lusu->addSkill(new Dimeng);
-
-    related_skills.insertMulti("haoshi", "#haoshi");
-    related_skills.insertMulti("haoshi", "#haoshi-give");
+    related_skills.insertMulti("haoshi", "#haoshi-draw");
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));

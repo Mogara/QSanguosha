@@ -1409,10 +1409,12 @@ public:
 class Zhaoxin: public TriggerSkill{
 public:
     Zhaoxin():TriggerSkill("zhaoxin"){
-        events << DrawNCardsDone;
+        events << PhaseEnd;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+        if(player->getPhase() != Player::Draw)
+            return false;
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *tmp, room->getOtherPlayers(player)){
             if(player->canSlash(tmp))
@@ -2007,8 +2009,6 @@ PasterPackage::PasterPackage()
     General *simazhao = new General(this, "simazhao", "wei", 3);
     simazhao->addSkill(new Zhaoxin);
     simazhao->addSkill(new Langgu);
-    simazhao->addSkill("v5yexin");
-    simazhao->addSkill("v5paiyi");
 
     General *liuxie = new General(this, "liuxie", "qun");
     liuxie->addSkill(new Huangen);
