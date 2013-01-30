@@ -15,7 +15,8 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), owner_discarded(false)
+    , suit(suit), number(number), id(-1)
 {
     can_jilei = will_throw;
 
@@ -450,7 +451,11 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
     RoomThread *thread = room->getThread();
 
     if(will_throw){
-        room->moveCardTo(this, NULL, Player::DiscardedPile, true);
+        if(owner_discarded){
+            if(getEffectiveId() > -1 || !getSubcards().isEmpty())
+                room->throwCard(this, card_use.from);
+        }else
+            room->moveCardTo(this, NULL, Player::DiscardedPile, true);
     }
 
     thread->trigger(CardUsed, player, data);
@@ -543,6 +548,10 @@ bool Card::canJilei() const{
     return can_jilei;
 }
 
+bool Card::isOwnerDiscarded() const{
+    return owner_discarded;
+}
+
 void Card::setFlags(const QString &flag) const{
     static char symbol_c = '-';
 
@@ -580,6 +589,7 @@ bool Card::hasSameSuit() const{
 SkillCard::SkillCard()
     :Card(NoSuit, 0)
 {
+    owner_discarded = true;
 }
 
 void SkillCard::setUserString(const QString &user_string){

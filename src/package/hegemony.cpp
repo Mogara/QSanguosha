@@ -253,9 +253,13 @@ public:
         events << CardDiscarded;
     }
 
+    virtual int getPriority() const{
+        return 2;
+    }
+
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardStar card = data.value<CardStar>();
-        if(player->askForSkillInvoke(objectName())){
+        if(card && player->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName());
             ServerPlayer *t = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
             t->obtainCard(card);

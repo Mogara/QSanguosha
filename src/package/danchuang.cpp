@@ -279,17 +279,13 @@ public:
 
         Player::Place place = Player::Hand;
         int equip_index = -1;
-        const DelayedTrick *trick = NULL;
+        const DelayedTrick *trick = DelayedTrick::CastFrom(card);
         if(card->isKindOf("EquipCard")){
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             equip_index = static_cast<int>(equip->location());
             place = Player::Equip;
-        }else if(card->isKindOf("TrickCard")){
-            trick = DelayedTrick::CastFrom(card);
+        }else if(card->isKindOf("TrickCard"))
             place = Player::Judging;
-        }
-        else
-            trick = DelayedTrick::CastFrom(card);
 
         QList<ServerPlayer *> tos;
         foreach(ServerPlayer *p, room->getAlivePlayers()){
@@ -307,75 +303,27 @@ public:
             default: tos << p; break;
             }
         }
-        if(trick && trick->isVirtualCard())
-            delete trick;
 
         ServerPlayer *to = room->askForPlayerChosen(player, tos, objectName());
-        if(trick && place == Player::Hand){
-            QString ch = room->askForChoice(player, objectName(), "judge+hand+werpo");
-            if(ch == "judge")
-                place = Player::Judging;
-            else if(ch == "werpo")
-                place = Player::Special;
-=======
-            room->fillAG(quan, player);
-            int card_id = room->askForAG(player, quan, false, objectName());
-            if(card_id < 0)
-                card_id = quan.first();
-            const Card *card = Sanguosha->getCard(card_id);
-
-            Player::Place place = Player::Hand;
-            int equip_index = -1;
-            const DelayedTrick *trick = DelayedTrick::CastFrom(card);
-            if(card->isKindOf("EquipCard")){
-                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-                equip_index = static_cast<int>(equip->location());
-                place = Player::Equip;
-            }else if(card->isKindOf("TrickCard"))
-                place = Player::Judging;
-
-            QList<ServerPlayer *> tos;
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
-                switch(place){
-                case Player::Judging:{
-                    if(!player->isProhibited(p, trick) && !p->containsTrick(trick->objectName()))
-                        tos << p;
-                    break;
-                }
-                case Player::Equip:{
-                    if(p->getEquip(equip_index) == NULL)
-                        tos << p;
-                    break;
-                }
-                default: tos << p; break;
-                }
+        if(trick && place != Player::Judging){
+            if(!player->isProhibited(to, trick) && !to->containsTrick(trick->objectName())){
+                QString ch = room->askForChoice(player, objectName(), "judge+hand+werpo");
+                if(ch == "judge")
+                    place = Player::Judging;
+                else if(ch == "werpo")
+                    place = Player::Special;
             }
-
-            ServerPlayer *to = room->askForPlayerChosen(player, tos, objectName());
-            if(trick && place != Player::Judging){
-                if(!player->isProhibited(to, trick) && !to->containsTrick(trick->objectName())){
-                    QString ch = room->askForChoice(player, objectName(), "judge+hand+werpo");
-                    if(ch == "judge")
-                        place = Player::Judging;
-                    else if(ch == "werpo")
-                        place = Player::Special;
-                }
-            }
-            if(trick && trick->isVirtualCard())
-                delete trick;
-            room->moveCardTo(card, to, place);
-
-            if(to != player){
-                room->playSkillEffect(objectName(), 2);
-                player->drawCards(1);
-            }
-            else
-                room->playSkillEffect(objectName(), 1);
-            player->invoke("clearAG");
->>>>>>> 9e6c60fcb01c908b4486316ec07e22d16c095af1
         }
+        if(trick && trick->isVirtualCard())
+            delete trick;
         room->moveCardTo(card, to, place);
 
+        if(to != player){
+            room->playSkillEffect(objectName(), 2);
+            player->drawCards(1);
+        }
+        else
+            room->playSkillEffect(objectName(), 1);
         player->invoke("clearAG");
         return true;
     }
