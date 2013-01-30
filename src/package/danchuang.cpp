@@ -305,15 +305,21 @@ public:
         }
 
         ServerPlayer *to = room->askForPlayerChosen(player, tos, objectName());
-        if(trick && place != Player::Judging){
-            if(!player->isProhibited(to, trick) && !to->containsTrick(trick->objectName())){
-                QString ch = room->askForChoice(player, objectName(), "judge+hand+werpo");
-                if(ch == "judge")
-                    place = Player::Judging;
-                else if(ch == "werpo")
-                    place = Player::Special;
-            }
-        }
+
+        QStringList str;
+        if(trick && !player->isProhibited(to, trick) && !to->containsTrick(trick->objectName()))
+            str << "judge";
+        if(card->isKindOf("EquipCard"))
+            str << "equip";
+        str << "hand" << "werpo";
+        QString ch = room->askForChoice(player, objectName(), str.join("+"));
+        if(ch == "judge")
+            place = Player::Judging;
+        else if(ch == "equip")
+            place = Player::Equip;
+        else if(ch == "werpo")
+            place = Player::Special;
+
         if(trick && trick->isVirtualCard())
             delete trick;
         room->moveCardTo(card, to, place);

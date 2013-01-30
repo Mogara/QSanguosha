@@ -88,7 +88,9 @@ void Card::setId(int id){
 }
 
 int Card::getEffectiveId() const{
-    if(isVirtualCard()){
+    if(this == NULL)
+        return -2;
+    else if(isVirtualCard()){
         if(subcards.isEmpty())
             return -1;
         else

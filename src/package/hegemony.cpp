@@ -13,6 +13,10 @@ public:
         return true;
     }
 
+    virtual int getPriority() const{
+        return -1;
+    }
+
     virtual bool onPhaseChange(ServerPlayer *player) const{
         if(player->getPhase() != Player::Finish)
             return false;

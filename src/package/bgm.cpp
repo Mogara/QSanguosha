@@ -9,7 +9,7 @@
 class ChongZhen: public TriggerSkill{
 public:
     ChongZhen(): TriggerSkill("chongzhen"){
-        events << CardResponsed << SlashEffect << CardEffect << CardEffected << CardFinished;
+        events << CardResponsed << SlashEffect << CardEffect << CardEffected;
     }
 
     virtual int getPriority() const{
@@ -27,12 +27,11 @@ public:
 
         room->obtainCard(player, target->getRandomHandCardId(), false);
         room->playSkillEffect("chongzhen", card->isKindOf("Jink") ? 1: 2);
+        player->tag["ChongZhenTarget"] = QVariant();
     }
 
     virtual bool trigger(TriggerEvent event, Room*, ServerPlayer *player, QVariant &data) const{
-        if(event == CardFinished)
-            player->tag["ChongZhenTarget"] = QVariant();
-        else if(event == CardResponsed){
+        if(event == CardResponsed){
             CardStar card = data.value<CardStar>();
             doChongZhen(player, card);
         }
