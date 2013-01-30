@@ -234,14 +234,13 @@ NosXuanhuoCard::NosXuanhuoCard(){
 
 void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(this);
-
     Room *room = effect.from->getRoom();
     room->playSkillEffect("xuanhuo");
-    int card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName());
+    int card_id = room->askForCardChosen(effect.from, effect.to, "he", skill_name);
     room->obtainCard(effect.from, card_id, room->getCardPlace(card_id) != Player::Hand);
 
     QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
-    ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, objectName());
+    ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, skill_name);
     if(target != effect.from)
         room->obtainCard(target, card_id, false);
 }

@@ -38,7 +38,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 
     if(player->getPhase() == Player::Play
             && player->getMark("SlashCount") >= 1
-            && player->hasSkill("paoxiao"))
+            && player->hasSkill("paoxiao")
+            && getSkillName().isEmpty())
         room->playSkillEffect("paoxiao");
     else if(player->getPhase() == Player::Play
             && player->hasSkill("huxiao") && player->getMark("huxiao") > 0) {
@@ -538,6 +539,7 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
         room->takeAG(NULL, card_id.toInt());
     }
 
+    room->removeTag("AmazingGrace");
     room->broadcastInvoke("clearAG");
 }
 
