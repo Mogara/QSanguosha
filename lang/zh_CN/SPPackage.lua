@@ -250,7 +250,7 @@ return {
 
 	["#tai_ganning"] = "锦帆游侠",
 	["tai_ganning"] = "台版SP甘宁",
-	["illustrator:tai_ganning"] = "",
+	["illustrator:tai_ganning"] = "greey",
 	["cv:tai_ganning"] = "鬼叔",
 	["#ganningt"] = "去卖艺",
 	[":#ganningt"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP甘宁",
@@ -264,14 +264,14 @@ return {
 
 	["#tai_machao"] = "一骑当千",
 	["tai_machao"] = "台版SP马超",
-	["illustrator:tai_machao"] = "",
+	["illustrator:tai_machao"] = "greey",
 	["cv:tai_machao"] = "烈の流星",
 	["#machaot"] = "去偷鸡",
 	[":#machaot"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP马超",
 
 	["#tai_zhenji"] = "大波的美女",
 	["tai_zhenji"] = "台版SP甄姬",
-	["illustrator:tai_zhenji"] = "",
+	["illustrator:tai_zhenji"] = "DM 添",
 	["cv:tai_zhenji"] = "神马芯",
 	["#zhenjit"] = "被包养",
 	[":#zhenjit"] = "<b>限定技</b>，游戏开始时，你可以选择变身为台版SP甄姬",

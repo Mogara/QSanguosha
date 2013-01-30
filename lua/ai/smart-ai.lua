@@ -3034,7 +3034,7 @@ function SmartAI:getCardId(class_name, player)
 	local cards = player:getCards("he")
 	cards = sgs.QList2Table(cards)
 	self:sortByUsePriority(cards)
-	local card_str = self:getGuhuoCard(class_name, player) or zeroCardView(class_name, player) or cardsView(class_name, player)
+	local card_str = self:getGuhuoCard(class_name, player) or cardsView(class_name, player)
 	if card_str then return card_str end
 
 	for _, card in ipairs(cards) do

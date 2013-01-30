@@ -47,6 +47,10 @@ protected:
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
             room_scene->adjustItems(matrix());
         }
+
+        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
+        if(main_window)
+            main_window->setBackgroundBrush();
     }
 };
 
@@ -133,32 +137,6 @@ void MainWindow::gotoScene(QGraphicsScene *scene){
     this->scene = scene;
 
     changeBackground();
-}
-
-void MainWindow::updateLoadingProgress(int progress)
-{
-    QGraphicsScene *scene = view->scene();
-
-    static QGraphicsTextItem *text;
-    if(text==NULL)
-    {
-        text = scene->addText(tr("Loaded %1/100").arg(progress),Config.BigFont);
-        QGraphicsDropShadowEffect *drop = new QGraphicsDropShadowEffect;
-        drop->setBlurRadius(5);
-        drop->setOffset(0);
-        drop->setColor(Qt::yellow);
-        text->setGraphicsEffect(drop);
-        text->moveBy(-text->boundingRect().width()/2,
-                     -text->boundingRect().height()/2);
-    }else text->setPlainText(tr("Loaded %1/100").arg(progress));
-
-    if(progress == 100)
-    {
-        view->setScene(this->scene);
-        RoomScene * scene = qobject_cast<RoomScene*>(this->scene);
-        scene->adjustItems();
-        changeBackground();
-    }
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -273,76 +251,6 @@ void MainWindow::networkError(const QString &error_msg){
         QMessageBox::warning(this, tr("Network error"), error_msg);
 }
 
-
-BackLoader::BackLoader(QObject * parent)
-    :QThread(parent)
-{
-}
-
-void BackLoader::run()
-{
-    QStringList emotions;
-    emotions
-            << "killer"
-            << "jink"
-            << "peach"
-            << "analeptic"
-            << "slash_black"
-            << "slash_red"
-            << "fire_slash"
-            << "thunder_slash"
-            << "chain"
-            << "damage"
-            << "success"
-            << "no-success"
-            << "judgebad"
-            << "judgegood"
-            << "duel"
-/*
-            << "weapon/axe"
-            << "weapon/blade"
-            << "weapon/crossbow"
-            << "weapon/double_sword"
-            << "weapon/fan"
-            << "weapon/guding_blade"
-            << "weapon/halberd"
-            << "weapon/ice_sword"
-            << "weapon/kylin_bow"
-            << "weapon/qinggang_sword"
-            << "weapon/spear"
-            << "weapon/sp_moonspear"
-            << "armor/eight_diagram"
-            << "armor/renwang_shield"
-            << "armor/silver_lion"
-            << "armor/vine"
-            << "armor/vineburn"
-*/
-               ;
-    double total = 0;
-    foreach(QString emotion, emotions){
-        int n = PixmapAnimation::GetFrameCount(emotion);
-        total += n;
-    }
-
-    int loaded = 0;
-    foreach(QString emotion, emotions){
-        int n = PixmapAnimation::GetFrameCount(emotion);
-        for(int i=0; i<n; i++){
-            QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(i);
-            if(QFile::exists(filename))
-                PixmapAnimation::GetFrameFromCache(filename);
-
-            loaded ++;
-
-            double process = (loaded / total) * 100;
-            emit completed(static_cast<int>(process));
-        }
-    }
-
-    emit finished();
-}
-
-
 void MainWindow::enterRoom(){
     // add current ip to history
     if(!Config.HistoryIPs.contains(Config.HostAddress)){
@@ -350,14 +258,6 @@ void MainWindow::enterRoom(){
         Config.HistoryIPs.sort();
         Config.setValue("HistoryIPs", Config.HistoryIPs);
     }
-
-    QGraphicsScene *loading_scene = new QGraphicsScene;
-    gotoScene(loading_scene);
-
-    BackLoader *loader = new BackLoader(this);
-    loader->start();
-
-    connect(loader,SIGNAL(completed(int)),this,SLOT(updateLoadingProgress(int)));
 
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
@@ -403,7 +303,9 @@ void MainWindow::enterRoom(){
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
-    this->scene = room_scene;
+
+    room_scene->adjustItems();
+    gotoScene(room_scene);
 }
 
 void MainWindow::gotoStartScene(){
@@ -529,7 +431,7 @@ void MainWindow::on_actionAbout_triggered()
     window->appear();
 }
 
-void MainWindow::changeBackground(){
+void MainWindow::setBackgroundBrush(){
     if(scene){
         QPixmap pixmap(Config.BackgroundBrush);
         QBrush brush(pixmap);
@@ -552,6 +454,10 @@ void MainWindow::changeBackground(){
 
         scene->setBackgroundBrush(brush);
     }
+}
+
+void MainWindow::changeBackground(){
+    setBackgroundBrush();
 
     if(scene->inherits("RoomScene")){
         RoomScene *room_scene = qobject_cast<RoomScene *>(scene);
@@ -839,7 +745,7 @@ public:
         setFlag(ItemIsMovable);
     }
 
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *){
         foreach(QGraphicsItem *item, childItems()){
             item->setVisible(! item->isVisible());
         }
