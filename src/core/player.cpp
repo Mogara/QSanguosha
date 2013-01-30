@@ -151,7 +151,13 @@ void Player::clearFlags(){
 }
 
 int Player::getAttackRange(const Player *other, const Card *slash) const{
-    int atkrg = getWeapon() ? getWeapon()->getRange() : 1;
+    int atkrg = 1;
+    if(getWeapon()){
+        if(!slash)
+            slash = Sanguosha->cloneCard("slash", Card::NoSuit, 0);
+        if(getWeapon()->getEffectiveId() != slash->getEffectiveId())
+            atkrg = getWeapon()->getRange();
+    }
     int extra = Sanguosha->correctSlash("attackrange", this, other, slash);
     return extra >= 0 ? qMax(atkrg, extra): qAbs(extra);
 }
@@ -602,8 +608,12 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     if(other == this)
         return false;
 
-    if(distance_limit)
-        return distanceTo(other) <= getAttackRange(other, slash);
+    if(distance_limit){
+        int baserange = distanceTo(other);
+        if(getOffensiveHorse() && getOffensiveHorse()->getEffectiveId() == slash->getEffectiveId())
+            baserange ++;
+        return baserange <= getAttackRange(other, slash);
+    }
     else
         return true;
 }
