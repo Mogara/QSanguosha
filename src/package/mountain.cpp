@@ -1029,7 +1029,7 @@ public:
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
         if(!huashen_skill.isEmpty()){
             room->detachSkillFromPlayer(zuoci, huashen_skill);
-            zuoci->clearPrivatePiles();
+            //zuoci->clearPrivatePiles();
             if(zuoci->getHp() <= 0 )
                 room->loseHp(zuoci,0);
         }

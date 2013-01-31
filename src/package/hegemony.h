@@ -6,21 +6,21 @@
 #include "skill.h"
 #include "standard.h"
 
-class Drivolt:public SingleTargetTrick{
+class AllyFarAttackNear:public SingleTargetTrick{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Drivolt(Card::Suit suit, int number);
+    Q_INVOKABLE AllyFarAttackNear(Card::Suit suit, int number);
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class WaitatPlaza: public GlobalEffect{
+class EaseVSFatigue: public GlobalEffect{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE WaitatPlaza(Card::Suit suit, int number);
+    Q_INVOKABLE EaseVSFatigue(Card::Suit suit, int number);
 
     virtual bool isCancelable(const CardEffectStruct &effect) const;
     virtual void onEffect(const CardEffectStruct &effect) const;

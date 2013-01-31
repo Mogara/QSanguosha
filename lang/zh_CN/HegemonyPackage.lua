@@ -5,13 +5,13 @@ return {
 	["hegemony_card"] = "国战新卡",
 
 -- card
-	["drivolt"] = "远交近攻",
-	[":drivolt"] = "出牌时机：出牌阶段。\
+	["allyfar_attacknear"] = "远交近攻",
+	[":allyfar_attacknear"] = "出牌时机：出牌阶段。\
 使用目标：与你势力不同的一名角色。\
 作用效果：该角色摸一张牌，然后你摸三张牌。",
 
-	["waitat_plaza"] = "以逸待劳",
-	[":waitat_plaza"] = "出牌时机：出牌阶段。\
+	["ease_fatigue"] = "以逸待劳",
+	[":ease_fatigue"] = "出牌时机：出牌阶段。\
 使用目标：你和与你势力相同的所有角色。\
 作用效果：每名目标角色摸两张牌，然后弃置两张牌。",
 

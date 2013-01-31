@@ -677,12 +677,12 @@ HegemonyPackage::HegemonyPackage()
     addMetaObject<ShuangrenCard>();
 }
 
-Drivolt::Drivolt(Suit suit, int number)
+AllyFarAttackNear::AllyFarAttackNear(Suit suit, int number)
     :SingleTargetTrick(suit, number, true) {
-    setObjectName("drivolt");
+    setObjectName("allyfar_attacknear");
 }
 
-bool Drivolt::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool AllyFarAttackNear::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -692,24 +692,26 @@ bool Drivolt::targetFilter(const QList<const Player *> &targets, const Player *t
     return to_select->getKingdom() != Self->getKingdom();
 }
 
-void Drivolt::onEffect(const CardEffectStruct &effect) const{
+void AllyFarAttackNear::onEffect(const CardEffectStruct &effect) const{
     effect.to->drawCards(1);
     effect.from->drawCards(3);
 }
 
-WaitatPlaza::WaitatPlaza(Suit suit, int number)
+EaseVSFatigue::EaseVSFatigue(Suit suit, int number)
     :GlobalEffect(suit, number)
 {
-    setObjectName("waitat_plaza");
+    setObjectName("ease_fatigue");
 }
 
-bool WaitatPlaza::isCancelable(const CardEffectStruct &effect) const{
-    return effect.to->getKingdom() != effect.to->getKingdom();
+bool EaseVSFatigue::isCancelable(const CardEffectStruct &effect) const{
+    return effect.to->getKingdom() == effect.from->getKingdom();
 }
 
-void WaitatPlaza::onEffect(const CardEffectStruct &effect) const{
-    effect.to->drawCards(2);
-    effect.to->getRoom()->askForDiscard(effect.to, objectName(), 2, false, true);
+void EaseVSFatigue::onEffect(const CardEffectStruct &effect) const{
+    if(effect.to->getKingdom() == effect.from->getKingdom()){
+        effect.to->drawCards(2);
+        effect.to->getRoom()->askForDiscard(effect.to, objectName(), 2, false, true);
+    }
 }
 
 KnowThyself::KnowThyself(Suit suit, int number)
@@ -747,8 +749,8 @@ HegemonyCardPackage::HegemonyCardPackage()
     :Package("hegemony_card")
 {
     QList<Card *> cards;
-    cards << new Drivolt(Card::Club, 1)
-          << new WaitatPlaza(Card::Diamond, 1)
+    cards << new AllyFarAttackNear(Card::Club, 1)
+          << new EaseVSFatigue(Card::Diamond, 1)
           << new KnowThyself(Card::Heart, 1);
 
     foreach(Card *card, cards)

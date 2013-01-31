@@ -875,7 +875,7 @@ void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     room->moveCardTo(this, target, Player::Judging);
     QStringList yanxiaos = target->property("yanxiao").toString().split("|");
     yanxiaos << getEffectIdString();
-    room->setPlayerProperty(target, "yanxiao", QVariant::fromValue(yanxiaos.join("|")));
+    room->setPlayerProperty(target, "yanxiao", yanxiaos.join("|"));
 }
 
 class YanxiaoViewAsSkill: public OneCardViewAsSkill{
@@ -910,12 +910,17 @@ public:
         return true;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::Judge)
             return false;
-        QStringList yanxiaos = player->property("yanxiao").toString().split("|");
-        if(yanxiaos.isEmpty())
+        QString yanx = player->property("yanxiao").toString();
+        if(yanx.isEmpty())
             return false;
+        QStringList yanxiaos = yanx.split("|");
         bool yx = false;
         QList<const Card *> judgis = player->getJudgingArea();
         foreach(const Card *c, judgis){
@@ -931,8 +936,8 @@ public:
                 player->obtainCard(trick);
             }
         }
-        room->setPlayerProperty(player, "yanxiao", QVariant::fromValue(QString()));
-        return false;
+        room->setPlayerProperty(player, "yanxiao", QString());
+        return true;
     }
 };
 
