@@ -1158,7 +1158,6 @@ public:
 class FenyongClear: public PhaseChangeSkill{
 public:
     FenyongClear():PhaseChangeSkill("#fenyong-clear"){
-        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1174,7 +1173,6 @@ public:
 class Xuehen: public PhaseChangeSkill{
 public:
     Xuehen():PhaseChangeSkill("xuehen"){
-        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1205,8 +1203,6 @@ public:
             else
                 choice = room->askForChoice(xiahou, objectName(), "discard+slash");
             if (choice == "slash") {
-                room->playSkillEffect(objectName(), 2);
-
                 ServerPlayer *victim = room->askForPlayerChosen(xiahou, targets, objectName());
 
                 Slash *slash = new Slash(Card::NoSuit, 0);
@@ -1215,7 +1211,7 @@ public:
                 card_use.from = xiahou;
                 card_use.to << victim;
                 card_use.card = slash;
-                room->useCard(card_use, false);
+                room->useCard(card_use);
             } else {
                 room->playSkillEffect(objectName(), 1);
                 room->setPlayerFlag(player, "XuehenTarget_InTempMoving");
@@ -1225,10 +1221,10 @@ public:
                 for (int i = 0; i < xiahou->getLostHp(); i++) {
                     if (player->isNude())
                         break;
-                    card_ids << room->askForCardChosen(xiahou, player, "he", objectName());
-                    original_places << room->getCardPlace(card_ids.at(i));
-                    dummy->addSubcard(card_ids.at(i));
-                    player->addToPile("#xuehen", card_ids.at(i), false);
+                    int card_id = room->askForCardChosen(xiahou, player, "he", objectName());
+                    card_ids << card_id;
+                    original_places << room->getCardPlace(card_id);
+                    dummy->addSubcard(card_id);
                 }
                 for (int i = 0; i < dummy->subcardsLength(); i++)
                     room->moveCardTo(Sanguosha->getCard(card_ids.at(i)), player, original_places.at(i), false);
@@ -1241,7 +1237,7 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
-        return -2;
+        return 2;
     }
 };
 

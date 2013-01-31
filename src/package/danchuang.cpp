@@ -178,6 +178,7 @@ void V5YexinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     foreach(int x, getSubcards())
         source->addToPile("werpo", x);
     room->moveCardTo(dummy, source, Player::Hand, false);
+    dummy->deleteLater();
 }
 
 class V5YexinViewAsSkill: public ViewAsSkill{
@@ -352,9 +353,9 @@ DanchuangPackage::DanchuangPackage()
     v5zhonghui->addSkill(new V5Zili);
     v5zhonghui->addRelateSkill("v5paiyi");
 
-    General *v5zhonghui2 = new General(this, "v5zhonghui2", "wei", 3);
-    v5zhonghui2->addSkill("v5yexin");
-    v5zhonghui2->addSkill("v5paiyi");
+    //General *v5zhonghui2 = new General(this, "v5zhonghui2", "wei", 3);
+    //v5zhonghui2->addSkill("v5yexin");
+    //v5zhonghui2->addSkill("v5paiyi");
     addMetaObject<V5QuanjiCard>();
     addMetaObject<V5YexinCard>();
 }

@@ -2608,6 +2608,8 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     int eid = card->getEffectiveId();
     ServerPlayer *from = getCardOwner(eid);
     Player::Place from_place= getCardPlace(eid);
+    if(!from || !to)
+        open = true;
 
     if(!open){
         scope.insert(from);

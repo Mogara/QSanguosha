@@ -125,6 +125,7 @@ void ServerPlayer::bury(){
     clearPrivatePiles();
 
     room->clearPlayerCardLock(this);
+    room->setEmotion(this, "death");
 }
 
 void ServerPlayer::throwAllCards(){
