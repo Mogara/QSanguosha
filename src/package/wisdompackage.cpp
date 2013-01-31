@@ -242,7 +242,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const{
+    virtual bool onPhaseChange(ServerPlayer *player) const{ // @todo_P: show and get the cards altogether
         Room *room = player->getRoom();
         int handcardnum = player->getHandcardNum();
         if(player->getPhase() == Player::Finish && handcardnum < 3
@@ -546,7 +546,7 @@ public:
 class Badao: public TriggerSkill{
 public:
     Badao():TriggerSkill("badao"){
-        events << CardEffected;
+        events << CardEffected; // use TargetComfirmed instead
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *hua, QVariant &data) const{
@@ -563,7 +563,7 @@ public:
 class Wenjiu: public TriggerSkill{
 public:
     Wenjiu():TriggerSkill("wenjiu"){
-        events << DamageCaused << SlashProceed;
+        events << DamageCaused << SlashProceed; // @todo_P: use ConfirmDamage instead
         frequency = Compulsory;
     }
     virtual bool triggerable(const ServerPlayer *target) const{

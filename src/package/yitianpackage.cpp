@@ -875,7 +875,6 @@ public:
                 JudgeStar judge = data.value<JudgeStar>();
                 if(judge->card->isRed()){
                     caizhaoji->obtainCard(judge->card);
-                    return true;
                 }
             }
         }
@@ -891,7 +890,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QString getDefaultChoice(ServerPlayer *player) const{
+    virtual QString getDefaultChoice(ServerPlayer *player) const{ // @todo_P: move it to the AI files!!
         int males = 0;
         foreach(ServerPlayer *player, player->getRoom()->getAlivePlayers()){
             if(player->isMale())
@@ -910,7 +909,7 @@ public:
             bool is_male = player->isMale();
             if(gender == "female"){
                 if (is_male) {
-                    player->setGender(General::Female);
+                    player->setGender(General::Female); // @todo_P: UI needed to indicate the gender
                 }
             } else if (gender == "male") {
                 if(!is_male) {
@@ -959,7 +958,7 @@ public:
 class Shaoying: public TriggerSkill{
 public:
     Shaoying():TriggerSkill("shaoying"){
-        events << PreHpReduced << DamageComplete;
+        events << PreHpReduced << DamageComplete; // @todo_P: everyone can invoke the skill?
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1769,7 +1768,6 @@ TaichenCard::TaichenCard(){
 bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty() || to_select->isAllNude())
         return false;
-
     if(!subcards.isEmpty() && Self->getWeapon() &&subcards.first() == Self->getWeapon()->getId() && !Self->hasSkill("zhengfeng"))
         return Self->distanceTo(to_select) == 1;
     else
@@ -1784,7 +1782,7 @@ void TaichenCard::onEffect(const CardEffectStruct &effect) const{
     else
         room->throwCard(this, effect.from);
         
-    for(int i = 0; i < 2; i++){
+    for(int i = 0; i < 2; i++){ // @todo_P: are the cards throwed altogether?
         if(!effect.to->isAllNude())
             room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"), effect.to);
     }
