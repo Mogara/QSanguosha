@@ -677,4 +677,85 @@ HegemonyPackage::HegemonyPackage()
     addMetaObject<ShuangrenCard>();
 }
 
+Drivolt::Drivolt(Suit suit, int number)
+    :SingleTargetTrick(suit, number, true) {
+    setObjectName("drivolt");
+}
+
+bool Drivolt::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    return to_select->getKingdom() != Self->getKingdom();
+}
+
+void Drivolt::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(1);
+    effect.from->drawCards(3);
+}
+
+WaitatPlaza::WaitatPlaza(Suit suit, int number)
+    :GlobalEffect(suit, number)
+{
+    setObjectName("waitat_plaza");
+}
+
+bool WaitatPlaza::isCancelable(const CardEffectStruct &effect) const{
+    return effect.to->getKingdom() != effect.to->getKingdom();
+}
+
+void WaitatPlaza::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(2);
+    effect.to->getRoom()->askForDiscard(effect.to, objectName(), 2, false, true);
+}
+
+KnowThyself::KnowThyself(Suit suit, int number)
+    :SingleTargetTrick(suit, number, false) {
+    setObjectName("know_thyself");
+}
+
+bool KnowThyself::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return targets.length() <= 1;
+}
+
+void KnowThyself::onUse(Room *room, const CardUseStruct &card_use) const{
+    if(card_use.to.isEmpty()){
+        room->moveCardTo(this, NULL, Player::DiscardedPile);
+        card_use.from->playCardEffect("@recast");
+        card_use.from->drawCards(1);
+    }else
+        TrickCard::onUse(room, card_use);
+}
+
+void KnowThyself::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    source->playCardEffect(objectName());
+    TrickCard::use(room, source, targets);
+}
+
+void KnowThyself::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    QList<int> all = effect.to->handCards();
+    room->fillAG(all, effect.from);
+    room->askForAG(effect.from, all, true, objectName());
+    effect.from->invoke("clearAG");
+}
+
+HegemonyCardPackage::HegemonyCardPackage()
+    :Package("hegemony_card")
+{
+    QList<Card *> cards;
+    cards << new Drivolt(Card::Club, 1)
+          << new WaitatPlaza(Card::Diamond, 1)
+          << new KnowThyself(Card::Heart, 1);
+
+    foreach(Card *card, cards)
+        card->setParent(this);
+
+    type = CardPack;
+}
+
 ADD_PACKAGE(Hegemony)
+ADD_PACKAGE(HegemonyCard)
