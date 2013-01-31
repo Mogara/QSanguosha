@@ -624,7 +624,6 @@ enum TriggerEvent{
     CardsMoving,
     CardsMoveOneTime,
     CardDrawing,
-    CardDrawnDone,
 
     CardUsed,
     TargetConfirming,
@@ -632,7 +631,6 @@ enum TriggerEvent{
     CardEffect,
     CardEffected,
     CardFinished,
-    PostCardEffected, 
 
     ChoiceMade,
 
