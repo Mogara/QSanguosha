@@ -749,15 +749,18 @@ public:
     static QList<int> StringsToIds(const QStringList &strings);
 };
 
-%extend Card{
-    Weapon* toWeapon(){
-        return qobject_cast<Weapon*>($self);
+%extend Card {
+    EquipCard *toEquipCard() {
+        return qobject_cast<EquipCard *>($self);
     }
-    WrappedCard* toWrapped(){
-        return qobject_cast<WrappedCard*>($self);
+    Weapon *toWeapon() {
+        return qobject_cast<Weapon *>($self);
     }
-    TrickCard* toTrick(){
-        return qobject_cast<TrickCard*>($self);
+    WrappedCard *toWrapped() {
+        return qobject_cast<WrappedCard *>($self);
+    }
+    TrickCard *toTrick() {
+        return qobject_cast<TrickCard *>($self);
     }
 };
 
@@ -1089,8 +1092,8 @@ public:
                            const char *prompt, const QVariant &data = QVariant(),
                            Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false, const char *skill_name = NULL);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1, Card::HandlingMethod method = Card::MethodUse);
-    bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt, bool distance_limit = true);
-    bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt, bool distance_limit = true);
+    bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt, bool distance_limit = true, bool disable_extra = false);
+    bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt, bool distance_limit = true, bool disable_extra = false);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards, bool is_preview = true, bool visible = false);

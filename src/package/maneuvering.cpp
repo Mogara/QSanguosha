@@ -41,12 +41,18 @@ QString Analeptic::getSubtype() const{
     return "buff_card";
 }
 
-bool Analeptic::IsAvailable(const Player *player){
-    return !player->hasUsed("Analeptic");
+bool Analeptic::IsAvailable(const Player *player, const Card *analeptic){
+    Analeptic *newanal = new Analeptic(Card::NoSuit, 0);
+    newanal->deleteLater();
+    if (player->isCardLimited(analeptic == NULL ? newanal : analeptic, Card::MethodUse)
+        || player->isProhibited(player, analeptic == NULL ? newanal : analeptic))
+            return false;
+
+    return player->usedTimes("Analeptic") <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, analeptic == NULL ? newanal : analeptic);
 }
 
 bool Analeptic::isAvailable(const Player *player) const{
-    return IsAvailable(player) && BasicCard::isAvailable(player);
+    return IsAvailable(player, this) && BasicCard::isAvailable(player);
 }
 
 void Analeptic::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
@@ -332,6 +338,7 @@ IronChain::IronChain(Card::Suit suit, int number)
     :TrickCard(suit, number, false)
 {
     setObjectName("iron_chain");
+    can_recast = true;
 }
 
 QString IronChain::getSubtype() const{
@@ -342,12 +349,16 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num)
         return false;
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return false;
 
     return true;
 }
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    if(getSkillName() == "guhuo" || getSkillName() == "qice")
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return targets.length() == 0;
+    if (getSkillName() == "guhuo" || getSkillName() == "qice")
         return targets.length() == 1 || targets.length() == 2;
     else
         return targets.length() <= 2;
@@ -377,11 +388,13 @@ void IronChain::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 }
 
 void IronChain::onEffect(const CardEffectStruct &effect) const{
-    bool chained = ! effect.to->isChained();
-    effect.to->setChained(chained);
+    effect.to->setChained(!effect.to->isChained());
 
-    effect.to->getRoom()->broadcastProperty(effect.to, "chained");
-    effect.to->getRoom()->setEmotion(effect.to, "chain");
+    Room *room = effect.to->getRoom();
+
+    room->broadcastProperty(effect.to, "chained");
+    room->setEmotion(effect.to, "chain");
+    room->getThread()->trigger(ChainStateChanged, room, effect.to);
 }
 
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)

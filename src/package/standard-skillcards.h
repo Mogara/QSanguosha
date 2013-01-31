@@ -109,4 +109,13 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-#endif // STANDARDSKILLCARDS_H
+class Yiji: public MasochismSkill {
+public:
+    Yiji();
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const;
+
+protected:
+    int n;
+};
+
+#endif

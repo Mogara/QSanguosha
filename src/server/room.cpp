@@ -1168,13 +1168,15 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit){
+bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit, bool disable_extra) {
     Q_ASSERT(!victims.isEmpty());
 
     //The realization of this function in the Slash::onUse and Slash::targetFilter.
     setPlayerFlag(slasher, "slashTargetFix");
     if (!distance_limit)
         setPlayerFlag(slasher, "slashNoDistanceLimit");
+    if (disable_extra)
+        setPlayerFlag(slasher, "slashDisableExtraTarget");
     if (victims.length() == 1)
         setPlayerFlag(slasher, "slashTargetFixToOne");
     foreach(ServerPlayer *victim, victims)
@@ -1203,18 +1205,20 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
         setPlayerFlag(slasher, "-slashTargetFixToOne");
         foreach(ServerPlayer *victim, victims)
             setPlayerFlag(victim, "-SlashAssignee");
+        if (slasher->hasFlag("slashNoDistanceLimit"))
+            setPlayerFlag(slasher, "-slashNoDistanceLimit");
+        if (slasher->hasFlag("slashDisableExtraTarget"))
+            setPlayerFlag(slasher, "-slashDisableExtraTarget");
     }
-    if (slasher->hasFlag("slashNoDistanceLimit"))
-        setPlayerFlag(slasher, "-slashNoDistanceLimit");
 
     return use;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt, bool distance_limit){
+bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt, bool distance_limit, bool disable_extra) {
     Q_ASSERT(victim != NULL);
     QList<ServerPlayer *> victims;
     victims << victim;
-    return askForUseSlashTo(slasher, victims, prompt, distance_limit);
+    return askForUseSlashTo(slasher, victims, prompt, distance_limit, disable_extra);
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){

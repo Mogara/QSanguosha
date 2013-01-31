@@ -61,8 +61,8 @@ NostalgiaPackage::NostalgiaPackage()
 
 class NosWuyan: public TriggerSkill{
 public:
-    NosWuyan():TriggerSkill("noswuyan"){
-        events << CardEffect << CardEffected;
+    NosWuyan(): TriggerSkill("noswuyan") {
+        events << CardEffected;
         frequency = Compulsory;
     }
 
@@ -70,45 +70,34 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
-
-        if(effect.to == effect.from)
+        if (effect.to == effect.from)
             return false;
-
-        if(effect.card->getTypeId() == Card::TypeTrick){
-
-            if((effect.from && effect.from->hasSkill(objectName()))){
+        if (effect.card->isNDTrick()) {
+            if (effect.from && effect.from->hasSkill(objectName())) {
                 LogMessage log;
                 log.type = "#WuyanBaD";
                 log.from = effect.from;
                 log.to << effect.to;
                 log.arg = effect.card->objectName();
                 log.arg2 = objectName();
-
                 room->sendLog(log);
-
                 room->broadcastSkillInvoke("wuyan");
-
                 return true;
             }
-
-            if(effect.to->hasSkill(objectName()) && effect.from){
+            if (effect.to->hasSkill(objectName()) && effect.from) {
                 LogMessage log;
                 log.type = "#WuyanGooD";
                 log.from = effect.to;
                 log.to << effect.from;
                 log.arg = effect.card->objectName();
                 log.arg2 = objectName();
-
                 room->sendLog(log);
-
                 room->broadcastSkillInvoke("wuyan");
-
                 return true;
             }
         }
-
         return false;
     }
 };
@@ -155,7 +144,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        return selected.length() < 3;
+        return selected.length() < 3 && !Self->isJilei(to_select);
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -218,6 +207,7 @@ public:
 
 NosXuanhuoCard::NosXuanhuoCard(){
     will_throw = false;
+    handling_method = Card::MethodNone;
     mute = true;
 }
 
@@ -232,10 +222,11 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
 
     QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
     ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "nosxuanhuo");
-    if(target != effect.from)
-        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName());
-        reason.m_playerId = target->objectName();
-        room->obtainCard(target, Sanguosha->getCard(card_id), reason, false);
+    if (target != effect.from) {
+        CardMoveReason reason2(CardMoveReason::S_REASON_GIVE, effect.from->objectName());
+        reason2.m_playerId = target->objectName();
+        room->obtainCard(target, Sanguosha->getCard(card_id), reason2, false);
+    }
 }
 
 class NosXuanhuo: public OneCardViewAsSkill{
@@ -263,10 +254,7 @@ class NosXuanfeng: public TriggerSkill{
 public:
     NosXuanfeng():TriggerSkill("nosxuanfeng"){
         events << CardsMoveOneTime;
-    }
-
-    virtual QString getDefaultChoice(ServerPlayer *) const{
-        return "nothing";
+        default_choice = "nothing";
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *lingtong, QVariant &data) const{
@@ -282,7 +270,10 @@ public:
                     if(lingtong->canSlash(target, NULL, false))
                         targets1 << target;
                 }
-                if (!targets1.isEmpty()) choicelist << "slash";
+                Slash *slashx = new Slash(Card::NoSuit, 0);
+                if (!targets1.isEmpty() && !lingtong->isCardLimited(slashx, Card::MethodUse))
+                    choicelist << "slash";
+                slashx->deleteLater();
                 QList<ServerPlayer *> targets2;
                 foreach(ServerPlayer *p, room->getOtherPlayers(lingtong)){
                     if(lingtong->distanceTo(p) <= 1)
@@ -290,16 +281,10 @@ public:
                 }
                 if (!targets2.isEmpty()) choicelist << "damage";
 
-                QString choice;
-                if (choicelist.length() == 1)
-                    return false;
-                else
-                    choice = room->askForChoice(lingtong, objectName(), choicelist.join("+"));
-
-
-                if(choice == "slash"){
-                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets1, "xuanfeng-slash");
-
+                QString choice = room->askForChoice(lingtong, objectName(), choicelist.join("+"));
+                if (choice == "slash") {
+                    ServerPlayer *target = room->askForPlayerChosen(lingtong, targets1, "nosxuanfeng_slash");
+                    room->broadcastSkillInvoke("xuanfeng", 1);
                     Slash *slash = new Slash(Card::NoSuit, 0);
                     slash->setSkillName("nosxuanfeng");
 
@@ -369,7 +354,13 @@ public:
     }
 
     virtual bool viewFilter(const Card *to_select) const{
-        return to_select->getTypeId() == Card::TypeEquip;
+        if (to_select->getTypeId() != Card::TypeEquip)
+            return false;
+
+        if (Self->getWeapon() && to_select->getEffectiveId() == Self->getWeapon()->getId() && to_select->objectName() == "crossbow")
+            return Self->canSlashWithoutCrossbow();
+        else
+            return true;
     }
 
     const Card *viewAs(const Card *originalCard) const{
@@ -414,7 +405,6 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->isKindOf("Slash"))
             {
-                room->broadcastSkillInvoke(objectName());
                 room->setPlayerFlag(handang, "-nosjiefanUsed");
                 room->setCardFlag(use.card, "nosjiefan-slash");
             }
@@ -436,11 +426,11 @@ public:
                     break;
 
                 room->setPlayerFlag(handang, "nosjiefanUsed");
-                room->setTag("JiefanTarget", data);
-                if(!room->askForUseSlashTo(handang, current, "jiefan-slash:" + dying.who->objectName()))
-                {
+                room->setTag("NosJiefanTarget", data);
+                bool use_slash = room->askForUseSlashTo(handang, current, "jiefan-slash:" + current->objectName(), false);
+                if (!use_slash) {
                     room->setPlayerFlag(handang, "-nosjiefanUsed");
-                    room->removeTag("JiefanTarget");
+                    room->removeTag("NosJiefanTarget");
                     break;
                 }
             }
@@ -457,22 +447,18 @@ public:
                     log.type = "#NosJiefanNull1";
                     log.from = dying.who;
                     room->sendLog(log);
-                }
-                else if(target && target->isDead()){
+                } else if (target && target->isDead()) {
                     LogMessage log;
                     log.type = "#NosJiefanNull2";
                     log.from = dying.who;
                     log.to << handang;
                     room->sendLog(log);
-                }
-                else if(current->hasSkill("wansha") && current->isAlive()  && target->objectName() != handang->objectName()){
+                } else if(current && current->hasSkill("wansha") && current->isAlive() && target != handang) {
                     LogMessage log;
                     log.type = "#NosJiefanNull3";
                     log.from = current;
                     room->sendLog(log);
-                }
-                else
-                {
+                } else {
                     Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
                     peach->setSkillName(objectName());
                     CardUseStruct use;

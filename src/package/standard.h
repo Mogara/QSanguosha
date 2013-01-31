@@ -25,7 +25,7 @@ class BasicCard:public Card{
     Q_OBJECT
 
 public:
-    BasicCard(Suit suit, int number):Card(suit, number){}
+    BasicCard(Suit suit, int number):Card(suit, number) { handling_method = Card::MethodUse;}
     virtual QString getType() const;
     virtual CardType getTypeId() const;
 };
@@ -54,18 +54,19 @@ class EquipCard:public Card{
 
 public:
     enum Location {
-        WeaponLocation = 0,
-        ArmorLocation = 1,
-        DefensiveHorseLocation = 2,
-        OffensiveHorseLocation = 3
+        WeaponLocation,
+        ArmorLocation,
+        DefensiveHorseLocation,
+        OffensiveHorseLocation
     };
 
-    EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){}
+    EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){ handling_method = MethodUse; }
     TriggerSkill *getSkill() const;
 
     virtual QString getType() const;
     virtual CardType getTypeId() const;
 
+    virtual bool isAvailable(const Player *player) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 
@@ -166,6 +167,7 @@ class ExNihilo: public SingleTargetTrick{
 public:
     Q_INVOKABLE ExNihilo(Card::Suit suit, int number);
     virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool isAvailable(const Player *player) const;
 };
 
 class Duel:public SingleTargetTrick{
@@ -245,6 +247,7 @@ public:
     virtual Location location() const;
     virtual QString label() const;
     virtual QString getCommonEffectName() const;
+    virtual bool isAvailable(const Player *player) const;
 
 protected:
     int range;
@@ -315,7 +318,7 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool isAvailable(const Player *player) const;
 
-    static bool IsAvailable(const Player *player);
+    static bool IsAvailable(const Player *player, const Card *slash = NULL);
 
 protected:
     DamageStruct::Nature nature;

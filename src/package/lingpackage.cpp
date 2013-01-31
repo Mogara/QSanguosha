@@ -10,13 +10,12 @@ LuoyiCard::LuoyiCard(){
 }
 
 void LuoyiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    source->setFlags("luoyi");
+    source->setFlags("neoluoyi");
 }
 
 class NeoLuoyi: public OneCardViewAsSkill{
 public:
-    NeoLuoyi():OneCardViewAsSkill("neoluoyi"){
-
+    NeoLuoyi(): OneCardViewAsSkill("neoluoyi") {
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -24,7 +23,7 @@ public:
     }
 
     virtual bool viewFilter(const Card *card) const{
-        return card->isKindOf("EquipCard");
+        return card->isKindOf("EquipCard") && !Self->isJilei(card);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -34,9 +33,41 @@ public:
     }
 };
 
-NeoFanjianCard::NeoFanjianCard(){
+class NeoLuoyiBuff: public TriggerSkill {
+public:
+    NeoLuoyiBuff(): TriggerSkill("#neoluoyi") {
+        events << ConfirmDamage;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->hasFlag("neoluoyi") && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *xuchu, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        const Card *reason = damage.card;
+
+        if (reason && (reason->isKindOf("Slash") || reason->isKindOf("Duel"))) {
+            LogMessage log;
+            log.type = "#LuoyiBuff";
+            log.from = xuchu;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(++damage.damage);
+            room->sendLog(log);
+
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
+
+NeoFanjianCard::NeoFanjianCard() {
     mute = true;
     will_throw = false;
+    handling_method = Card::MethodNone;
 }
 
 void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
@@ -134,7 +165,7 @@ public:
         Room *room = gongsun->getRoom();
         if(gongsun->getPhase() == Player::Finish && gongsun->askForSkillInvoke(objectName())){
             gongsun->drawCards(2);
-            room->broadcastSkillInvoke("zhulou", qrand() % 2 + 1);
+            room->broadcastSkillInvoke("zhulou");
             if(!room->askForCard(gongsun, ".Weapon", "@zhulou-discard"))
                 room->loseHp(gongsun);
         }
@@ -203,12 +234,8 @@ public:
                 choicelist << "damage";
                 if (from->getHandcardNum() > 1)
                     choicelist << "throw";
-                QString choice;
-                if (choicelist.length() == 1)
-                    choice = choicelist.first();
-                else
-                    choice = room->askForChoice(xiahou, "neoganglie", choicelist.join("+"));
-                if(choice == "damage"){
+                QString choice = room->askForChoice(xiahou, "neoganglie", choicelist.join("+"));
+                if (choice == "damage") {
                     DamageStruct damage;
                     damage.from = xiahou;
                     damage.to = from;
@@ -230,7 +257,8 @@ LingPackage::LingPackage()
 
     General * neo_xuchu = new General(this, "neo_xuchu", "wei");
     neo_xuchu->addSkill(new NeoLuoyi);
-    neo_xuchu->addSkill("#luoyi");
+    neo_xuchu->addSkill(new NeoLuoyiBuff);
+    related_skills.insertMulti("neoluoyi", "#neoluoyi");
 
     General * neo_zhouyu = new General(this, "neo_zhouyu", "wu", 3);
     neo_zhouyu->addSkill("yingzi");
