@@ -203,7 +203,7 @@ public:
         if(triggerEvent == DamageCaused){
             if(damage.to && damage.to->isAlive()
                && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng())
-                if(room->askForCard(player, ".black", "@JieyuanIncrease", data, CardDiscarded)){
+                if(room->askForCard(player, ".black", "@JieyuanIncrease", data, objectName())){
                     room->broadcastSkillInvoke(objectName(), 1);
 
                     LogMessage log;
@@ -218,7 +218,7 @@ public:
         }else if(triggerEvent == DamageInflicted){
             if(damage.from && damage.from->isAlive()
                && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
-                if(room->askForCard(player, ".red", "@JieyuanDecrease", data, CardDiscarded)){
+                if(room->askForCard(player, ".red", "@JieyuanDecrease", data, objectName())){
                     room->broadcastSkillInvoke(objectName(), 2);
 
                     LogMessage log;
@@ -286,6 +286,7 @@ public:
 MixinCard::MixinCard(){
     will_throw = false;
     mute = true;
+    handling_method = Card::MethodNone;
 }
 
 bool MixinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -312,13 +313,10 @@ void MixinCard::onEffect(const CardEffectStruct &effect) const{
     log.from = source;
     log.to << target2;
     room->sendLog(log);
-	room->setPlayerFlag(target, "jiefanUsed");
-    if(room->askForUseSlashTo(target, target2, "#mixin")) {
-		room->setPlayerFlag(target, "-jiefanUsed");
+    if(room->askForUseSlashTo(target, target2, "#mixin", false)) {
         room->broadcastSkillInvoke("mixin", 2);
 	}
     else {
-		room->setPlayerFlag(target, "-jiefanUsed");
         room->broadcastSkillInvoke("mixin", 3);
         QList<int> card_ids = target->handCards();
         room->fillAG(card_ids, target2);
@@ -490,7 +488,7 @@ public:
         if(!splayer)
             return false;
 
-        if(splayer->getPhase() == Player::Discard)
+        if(splayer->getPhase() == Player::Discard) // @todo_P: rewrite it with setPlayerCardLimitation
             if(splayer->hasFlag("duyi_target")) {
                 splayer->jilei(".");
                 splayer->invoke("jilei", ".");
@@ -534,7 +532,7 @@ public:
             return false;
         
         if(player == splayer && player->askForSkillInvoke(objectName())) {
-            room->setPlayerFlag(player, "DuanzhiTarget_InTempMoving");
+            room->setPlayerFlag(player, "duanzhi_InTempMoving");
             ServerPlayer *target = use.from;
             DummyCard *dummy = new DummyCard;
             QList<int> card_ids;
@@ -557,31 +555,9 @@ public:
                     dummy->deleteLater();
                 }
             
-            room->setPlayerFlag(player, "-DuanzhiTarget_InTempMoving");
+            room->setPlayerFlag(player, "-duanzhi_InTempMoving");
             room->loseHp(player);
         }
-        return false;
-    }
-};
-
-class DuanzhiAvoidTriggeringCardsMove: public TriggerSkill{
-public:
-    DuanzhiAvoidTriggeringCardsMove():TriggerSkill("#duanzhi"){
-        events << CardsMoveOneTime;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 10;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
-        foreach(ServerPlayer *p, room->getAllPlayers())
-            if (p->hasFlag("DuanzhiTarget_InTempMoving"))
-                return true;
         return false;
     }
 };
@@ -590,6 +566,7 @@ FengyinCard::FengyinCard(){
     target_fixed = true;
     will_throw = false;
     mute = true;
+    handling_method = Card::MethodNone;
 }
 
 void FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
@@ -641,7 +618,7 @@ public:
 
         if(triggerEvent == EventPhaseChanging && data.value<PhaseChangeStruct>().to == Player::Start)
             if(player->getHp() > splayer->getHp())
-                room->askForUseCard(splayer, "@@fengyin", "@fengyin");
+                room->askForUseCard(splayer, "@@fengyin", "@fengyin", -1, Card::MethodNone);
         
         if(triggerEvent == EventPhaseStart && player->hasFlag("fengyin_target")){
             player->skip(Player::Play);
@@ -724,8 +701,8 @@ AssassinsPackage::AssassinsPackage():Package("assassins"){
     General *jiben = new General(this, "jiben", "qun", 3);
     jiben->addSkill(new Duyi);
     jiben->addSkill(new Duanzhi);
-    jiben->addSkill(new DuanzhiAvoidTriggeringCardsMove);
-    related_skills.insertMulti("duanzhi", "#duanzhi");
+    jiben->addSkill(new FakeMoveSkill("duanzhi"));
+    related_skills.insertMulti("duanzhi", "#duanzhi-fake-move");
 
     General *fuwan = new General(this, "fuwan", "qun", 3);
     fuwan->addSkill(new Fengyin);

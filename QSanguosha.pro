@@ -80,7 +80,6 @@ SOURCES += \
     src/scenario/scenerule.cpp \
     src/scenario/zombie-scenario.cpp \
     src/server/ai.cpp \
-    src/server/contestdb.cpp \
     src/server/gamerule.cpp \
     src/server/generalselector.cpp \
     src/server/room.cpp \
@@ -123,7 +122,8 @@ SOURCES += \
     swig/sanguosha_wrap.cxx \
     src/core/RoomState.cpp \
     src/core/WrappedCard.cpp \
-    src/core/record-analysis.cpp
+    src/core/record-analysis.cpp \
+    src/package/assassinspackage.cpp
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -187,7 +187,6 @@ HEADERS += \
     src/scenario/scenerule.h \
     src/scenario/zombie-scenario.h \
     src/server/ai.h \
-    src/server/contestdb.h \
     src/server/gamerule.h \
     src/server/generalselector.h \
     src/server/room.h \
@@ -235,7 +234,8 @@ HEADERS += \
     src/jsoncpp/include/json/assertions.h \
     src/core/RoomState.h \
     src/core/WrappedCard.h \
-    src/core/record-analysis.h
+    src/core/record-analysis.h \
+    src/package/assassinspackage.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

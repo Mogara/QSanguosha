@@ -284,7 +284,7 @@ class Jueji: public TriggerSkill{
 public:
     Jueji():TriggerSkill("jueji"){
         events << Pindian;
-		view_as_skill = new JuejiViewAsSkill;
+        view_as_skill = new JuejiViewAsSkill;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -528,7 +528,7 @@ public:
 
 class LianliViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    LianliViewAsSkill():ZeroCardViewAsSkill(""){
+    LianliViewAsSkill():ZeroCardViewAsSkill("lianli"){
 
     }
 
@@ -1274,7 +1274,7 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 
 class XunzhiViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    XunzhiViewAsSkill():ZeroCardViewAsSkill("#xunzhi"){
+    XunzhiViewAsSkill():ZeroCardViewAsSkill("xunzhi"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1562,7 +1562,7 @@ void YisheCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
 
 class YisheViewAsSkill: public ViewAsSkill{
 public:
-    YisheViewAsSkill():ViewAsSkill(""){
+    YisheViewAsSkill():ViewAsSkill("yishe"){
         card = new YisheCard;
     }
 
