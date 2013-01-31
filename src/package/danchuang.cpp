@@ -157,8 +157,10 @@ void V5YexinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     int leng = getSubcards().length();
     DummyCard *dummy = new DummyCard;
     int card_id = -1;
-    if(quan.length() == 1)
+    if(quan.length() == 1){
         card_id = quan.first();
+        dummy->addSubcard(card_id);
+    }
     else{
         room->fillAG(quan, source);
         while(dummy->getSubcards().length() <= leng){
@@ -172,10 +174,10 @@ void V5YexinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
             room->fillAG(quan, source);
         }
         source->invoke("clearAG");
-        foreach(int x, getSubcards())
-            source->addToPile("werpo", x);
-        room->moveCardTo(dummy, source, Player::Hand, false);
     }
+    foreach(int x, getSubcards())
+        source->addToPile("werpo", x);
+    room->moveCardTo(dummy, source, Player::Hand, false);
 }
 
 class V5YexinViewAsSkill: public ViewAsSkill{
@@ -184,9 +186,9 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        if(player->hasUsed("V5YexinCard"))
-            return false;
-        return !player->isKongcheng() && !player->getPile("werpo").isEmpty();
+        return !player->hasUsed("V5YexinCard") &&
+                !player->isKongcheng() &&
+                !player->getPile("werpo").isEmpty();
     }
 
     virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to) const{
@@ -284,7 +286,7 @@ public:
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             equip_index = static_cast<int>(equip->location());
             place = Player::Equip;
-        }else if(card->isKindOf("TrickCard"))
+        }else if(trick)
             place = Player::Judging;
 
         QList<ServerPlayer *> tos;
@@ -319,6 +321,8 @@ public:
             place = Player::Equip;
         else if(ch == "werpo")
             place = Player::Special;
+        else
+            place = Player::Hand;
 
         if(trick && trick->isVirtualCard())
             delete trick;
@@ -348,6 +352,9 @@ DanchuangPackage::DanchuangPackage()
     v5zhonghui->addSkill(new V5Zili);
     v5zhonghui->addRelateSkill("v5paiyi");
 
+    General *v5zhonghui2 = new General(this, "v5zhonghui2", "wei", 3);
+    v5zhonghui2->addSkill("v5yexin");
+    v5zhonghui2->addSkill("v5paiyi");
     addMetaObject<V5QuanjiCard>();
     addMetaObject<V5YexinCard>();
 }
