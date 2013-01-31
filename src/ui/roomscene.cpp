@@ -16,7 +16,7 @@
 #include "SkinBank.h"
 #include "wind.h"
 #include "record-analysis.h"
-#include "mountain.h"
+#include "mountainpackage.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>

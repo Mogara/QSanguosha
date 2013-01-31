@@ -310,32 +310,14 @@ public:
     }
 };
 
-class NosShangshi: public Shangshi{
+class NosShangshi: public Shangshi {
 public:
-    NosShangshi():Shangshi("nosshangshi", 998)
-    {
-        frequency = Frequent;
-        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseChanging << EventAcquireSkill;
+    NosShangshi(): Shangshi() {
+        setObjectName("nosshangshi");
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-};
-
-class NosShangshiCardMove: public Shangshi{
-public:
-    NosShangshiCardMove():Shangshi("#nosshangshi", 998)
-    {
-        events << CardsMoveOneTime << CardDrawnDone;
-    }
-
-    virtual int getPriority() const{
-        return 2;
-    }
-
-    virtual QString getEffectName() const{
-        return "nosshangshi";
+    virtual int getMaxLostHp(ServerPlayer *zhangchunhua) const{
+        return qMin(zhangchunhua->getLostHp(), zhangchunhua->getMaxHp());
     }
 };
 
@@ -516,8 +498,6 @@ NostalGeneralPackage::NostalGeneralPackage()
     General *nos_zhangchunhua = new General(this, "nos_zhangchunhua", "wei", 3, false);
     nos_zhangchunhua->addSkill("jueqing");
     nos_zhangchunhua->addSkill(new NosShangshi);
-    nos_zhangchunhua->addSkill(new NosShangshiCardMove);
-    related_skills.insertMulti("nosshangshi", "#nosshangshi");
 
     General *nos_handang = new General(this, "nos_handang", "wu");
     nos_handang->addSkill(new NosGongqi);

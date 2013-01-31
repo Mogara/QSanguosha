@@ -308,7 +308,7 @@ public:
             }
         }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
-            if(judge->reason == "shuangxiong"){
+            if(judge->reason == "shuangxiong")
                 shuangxiong->obtainCard(judge->card);
         }
 

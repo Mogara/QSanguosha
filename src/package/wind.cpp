@@ -145,7 +145,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
         if (zhangjiao == NULL) return false;
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        CardStar card_star = data.value<ResponsedStruct>().m_card;
         if (card_star->isKindOf("Jink"))
             room->askForUseCard(zhangjiao, "@@leiji", "@leiji");
         return false;
@@ -993,6 +993,8 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     }else
         return NULL;
 }
+
+#include "settings.h"
 
 const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable) const{
     continuable = true;

@@ -834,7 +834,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &) const{
-        player->clearOnePrivatePile("wine");
+        player->removePileByName("wine");
         return false;
     }
 };

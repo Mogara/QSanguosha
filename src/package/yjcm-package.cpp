@@ -1235,100 +1235,64 @@ public:
 };
 
 
-Shangshi::Shangshi(const QString &name, int n)
-    :TriggerSkill(name), n(n)
-{
+Shangshi::Shangshi(): TriggerSkill("shangshi") {
+    events << HpChanged << MaxHpChanged << CardsMoveOneTime << EventPhaseChanging;
+    frequency = Frequent;
 }
 
-QString Shangshi::getEffectName()const{
-    return objectName();
+int Shangshi::getMaxLostHp(ServerPlayer *zhangchunhua) const{
+    int losthp = zhangchunhua->getLostHp();
+    if (losthp > 2)
+        losthp = 2;
+    return qMin(losthp, zhangchunhua->getMaxHp());
 }
 
-bool Shangshi::trigger(TriggerEvent triggerEvent,  Room* room, ServerPlayer *player, QVariant &data) const
-{
-    if(triggerEvent == EventPhaseChanging && data.value<PhaseChangeStruct>().to != Player::Finish)
-        return false;
-
-    if(triggerEvent == EventAcquireSkill && data.toString() != getEffectName())
-        return false;
-
-    if(triggerEvent == HpRecover && player->getHp() <= 0)
-        return false;
-
-    if(triggerEvent == PostHpReduced || triggerEvent == HpLost){
-        int delta = 0;
-        if (triggerEvent == PostHpReduced)
-            delta = data.value<DamageStruct>().damage;
-        else
-            delta = data.toInt();
-
-        if (delta + player->getHp() <= 0)
-            return false;
-    }
-
-    if(triggerEvent == CardsMoveOneTime)
-    {
-        if(player->getPhase() == Player::Discard)
-            return false;
-        CardsMoveOneTimeStar cards_move = data.value<CardsMoveOneTimeStar>();
-        bool canInvoke = false;
-        if(cards_move->from == player)
-            canInvoke = cards_move->from_places.contains(Player::PlaceHand);
-        else if(cards_move->to == player)
-            canInvoke = cards_move->to_place == Player::PlaceHand;
-        if(!canInvoke)
-            return false;
-    }
-
-    const int count = qMin(qMin(player->getLostHp(), player->getMaxHp()), n) - player->getHandcardNum();
-
-    if(count <= 0)
-        return false;
-
-    if(frequency == Compulsory || player->askForSkillInvoke(getEffectName())){
-        if(frequency == Compulsory){
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = player;
-            log.arg = "shangshi";
-            room->sendLog(log);
+bool Shangshi::trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
+    int losthp = getMaxLostHp(zhangchunhua);
+    if (event == CardsMoveOneTime) {
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if (zhangchunhua->getPhase() == Player::Discard) {
+            bool changed = false;
+            if (move->from == zhangchunhua && move->from_places.contains(Player::PlaceHand))
+                changed = true;
+            if (move->to == zhangchunhua && move->to_place == Player::PlaceHand)
+                changed = true;
+            if (changed)
+                zhangchunhua->addMark("shangshi");
         }
+    }
+    if (event == HpChanged || event == MaxHpChanged) {
+        /* something strange */
+        if (zhangchunhua->getLostHp() <= 0) return false;
+        if (zhangchunhua->getPhase() == Player::Discard)
+            zhangchunhua->addMark("shangshi");
+    } else if (event == CardsMoveOneTime) {
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        bool can_invoke = false;
+        if (move->from == zhangchunhua && move->from_places.contains(Player::PlaceHand))
+            can_invoke = true;
+        if (move->to == zhangchunhua && move->to_place == Player::PlaceHand)
+            can_invoke = true;
+        if (!can_invoke)
+            return false;
+    } else if (event == EventPhaseChanging) {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to != Player::Finish)
+            return false;
+        if (zhangchunhua->getMark("shangshi") <= 0)
+            return false;
+        else
+            zhangchunhua->setMark("shangshi", 0);
+    }
+
+    if (zhangchunhua->getHandcardNum()<losthp && zhangchunhua->getPhase() != Player::Discard
+        && zhangchunhua->askForSkillInvoke(objectName())){
+        zhangchunhua->drawCards(losthp - zhangchunhua->getHandcardNum());
         room->broadcastSkillInvoke("shangshi");
-        player->drawCards(count);
     }
 
     return false;
 }
-
-class ShangshiStateChanged: public Shangshi{
-public:
-    ShangshiStateChanged():Shangshi("shangshi", 2)
-    {
-        frequency = Compulsory;
-        events << PostHpReduced << HpLost << HpRecover << MaxHpChanged << EventPhaseChanging << EventAcquireSkill;
-    }
-
-    virtual int getPriority() const{
-        return -1;
-    }
-};
-
-class ShangshiCardMove: public Shangshi{
-public:
-    ShangshiCardMove():Shangshi("#shangshi", 2)
-    {
-        frequency = Compulsory;
-        events << CardsMoveOneTime << CardDrawnDone;
-    }
-
-    virtual int getPriority() const{
-        return 2;
-    }
-
-    virtual QString getEffectName() const{
-        return "shangshi";
-    }
-};
 
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
@@ -1376,9 +1340,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *zhangchunhua = new General(this, "zhangchunhua", "wei", 3, false);
     zhangchunhua->addSkill(new Jueqing);
-    zhangchunhua->addSkill(new ShangshiStateChanged);
-    zhangchunhua->addSkill(new ShangshiCardMove);
-    related_skills.insertMulti("shangshi", "#shangshi");
+    zhangchunhua->addSkill(new Shangshi);
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);

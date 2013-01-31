@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "ai.h"
 #include "maneuvering.h"
+#include "clientplayer.h"
 
 HongyuanCard::HongyuanCard(){
 

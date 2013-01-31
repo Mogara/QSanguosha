@@ -6,7 +6,6 @@
 #include "serverplayer.h"
 #include "room.h"
 #include "standard-skillcards.h"
-#include "maneuvering.h"
 #include "ai.h"
 
 class Jianxiong:public MasochismSkill{
@@ -467,7 +466,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         return hasShuGenerals(player)
-               && pattern == "slash" && !ClientInstance->hasNoTargetResponding()
+               && pattern == "slash" && !ClientInstance->hasNoTargetResponsing()
                && !player->hasFlag("jijiang_failed");
     }
 
@@ -1476,50 +1475,51 @@ public:
     }
 };
 
-class NosJuejing: public TriggerSkill{
+#include "god.h"
+#include "maneuvering.h"
+class NosJuejing: public TriggerSkill {
 public:
-    NosJuejing():TriggerSkill("nosjuejing"){
-        events << CardsMoveOneTime << CardDrawnDone << EventPhaseChanging;
+    NosJuejing(): TriggerSkill("nosjuejing") {
+        events << CardsMoveOneTime << EventPhaseChanging;
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaodayihao, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *gaodayihao, QVariant &data) const{
         if (event == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->from != gaodayihao && move->to != gaodayihao)
                 return false;
-            if ((move->to_place != Player::PlaceHand && !move->from_places.contains(Player::PlaceHand)) || gaodayihao->getPhase() == Player::Discard){
+            if ((move->to_place != Player::PlaceHand && !move->from_places.contains(Player::PlaceHand))
+                || gaodayihao->getPhase() == Player::Discard) {
                 return false;
             }
         }
-        if (event == EventPhaseChanging){
+        if (event == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::Draw){
+            if (change.to == Player::Draw) {
                 gaodayihao->skip(change.to);
                 return false;
-            }
-            else if (change.to != Player::Finish)
+            } else if (change.to != Player::Finish)
                 return false;
         }
         if (gaodayihao->getHandcardNum() == 4)
             return false;
-        else if (gaodayihao->getHandcardNum() < 4){
+        int diff = abs(gaodayihao->getHandcardNum() - 4);
+        if (gaodayihao->getHandcardNum() < 4) {
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = gaodayihao;
-            log.arg = "nosjuejing";
+            log.arg = objectName();
             room->sendLog(log);
-            gaodayihao->drawCards(4-gaodayihao->getHandcardNum());
-        }
-        else if (gaodayihao->getHandcardNum() > 4){
+            gaodayihao->drawCards(diff);
+        } else if (gaodayihao->getHandcardNum() > 4){
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = gaodayihao;
-            log.arg = "nosjuejing";
+            log.arg = objectName();
             room->sendLog(log);
-            room->askForDiscard(gaodayihao, "nosjuejing", gaodayihao->getHandcardNum() - 4, gaodayihao->getHandcardNum() - 4);
+            room->askForDiscard(gaodayihao, objectName(), diff, diff);
         }
-
 
         return false;
     }

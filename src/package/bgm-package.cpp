@@ -264,7 +264,7 @@ public:
 
         int card_id = -1;
         CardMoveReason reason(CardMoveReason::S_REASON_PUT, sp_pangtong->objectName(), "manjuan", QString());
-        if (event == CardsMoving) {
+        if (triggerEvent == CardsMoving) {
             if (sp_pangtong->hasFlag("NoManjuan"))
                 return false;
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
@@ -277,7 +277,7 @@ public:
             }
         }
         else if(triggerEvent == CardDrawing){
-            if(room->getTag("FirstRound").toBool())
+            if (room->getTag("FirstRound").toBool())
                 return false;
             if (sp_pangtong->hasFlag("NoManjuan"))
                 return false;
@@ -290,7 +290,7 @@ public:
         LogMessage log;
         log.type = "$ManjuanGot";
         log.from = sp_pangtong;
-        if (event == CardsMoving) {
+        if (triggerEvent == CardsMoving) {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             log.card_str = Card::IdsToStrings(move->card_ids).join("+");
         }
@@ -301,7 +301,7 @@ public:
         if (sp_pangtong->getPhase() == Player::NotActive || !sp_pangtong->askForSkillInvoke(objectName(), data))
             return triggerEvent != CardsMoving;
 
-        if (event == CardsMoving) {
+        if (triggerEvent == CardsMoving) {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             foreach (int _card_id, move->card_ids)
                 doManjuan(sp_pangtong, _card_id);

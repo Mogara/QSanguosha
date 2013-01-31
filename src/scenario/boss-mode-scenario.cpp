@@ -257,7 +257,7 @@ public:
         :ScenarioRule(scenario)
     {
         events << GameStart << TurnStart << EventPhaseStart
-               << Death << GameOverJudge << Damaged << HpLost;
+               << Death << GameOverJudge << Damaged << PreHpLost;
 
         boss_banlist << "yuanshao" << "yanliangwenchou" << "zhaoyun" << "guanyu" << "shencaocao";
 
@@ -467,7 +467,7 @@ public:
             break;
         }
 
-        case HpLost:
+        case PreHpLost:
         case Damaged:{
             if(player->isLord()){
                 if(player->getHp() <= 3 && player->getMark("@frantic")<=0){

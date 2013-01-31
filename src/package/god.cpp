@@ -824,7 +824,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseStart || triggerEvent == Death) {
             if (triggerEvent == Death) {
                 DeathStruct death = data.value<DeathStruct>();

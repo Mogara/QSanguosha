@@ -78,7 +78,6 @@ void ClientLogBox::appendLog(
         // do Indicator animation
         foreach (QString to, tos)
             RoomSceneInstance->showIndicator(from_general, to);
-        }
 
         const Card *card = Card::Parse(card_str);
         if (card == NULL) return;
