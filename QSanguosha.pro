@@ -123,7 +123,8 @@ SOURCES += \
     src/core/RoomState.cpp \
     src/core/WrappedCard.cpp \
     src/core/record-analysis.cpp \
-    src/package/assassinspackage.cpp
+    src/package/assassinspackage.cpp \
+    src/package/hegemony.cpp
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -235,7 +236,8 @@ HEADERS += \
     src/core/RoomState.h \
     src/core/WrappedCard.h \
     src/core/record-analysis.h \
-    src/package/assassinspackage.h
+    src/package/assassinspackage.h \
+    src/package/hegemony.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
