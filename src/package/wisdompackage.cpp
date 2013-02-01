@@ -242,35 +242,48 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const{ // @todo_P: show and get the cards altogether
+    virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
         int handcardnum = player->getHandcardNum();
         if(player->getPhase() == Player::Finish && handcardnum < 3
            && room->askForSkillInvoke(player, objectName())){
-            for(int i = 0; i < 4 - handcardnum; i++){
-                int card_id = room->drawCard();
+            int x = 4 - handcardnum;
+            QList<int> ids = room->getNCards(x, false);
+            CardsMoveStruct move;
+            move.card_ids = ids;
+            move.to = player;
+            move.to_place = Player::PlaceTable;
+            move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), objectName(), QString());
+            room->moveCardsAtomic(move, true);
+            room->getThread()->delay(2 * Config.AIDelay);
 
-                room->moveCardTo(Sanguosha->getCard(card_id), player, Player::PlaceTable,
-                                 CardMoveReason(CardMoveReason::S_REASON_SHOW, player->objectName(), QString(), "chouliang", QString()), true);
-                room->getThread()->delay();
-
-                const Card *card = Sanguosha->getCard(card_id);
-                if(!card->isKindOf("BasicCard")){
-                    // @todo: fix this!
-                    room->throwCard(card_id, NULL);
-                    room->setEmotion(player, "bad");
-                }
-                else{
-                    LogMessage log;
-                    log.type = "$TakeAG";
-                    log.from = player;
-                    log.card_str = QString::number(card_id);
-                    room->sendLog(log);
-
-                    room->obtainCard(player, card_id);
-                    room->setEmotion(player, "good");
-                }
+            QList<int> card_to_throw;
+            QList<int> card_to_gotback;
+            for (int i = 0; i < x; i++) {
+                if (!Sanguosha->getCard(ids[i])->isKindOf("BasicCard"))
+                    card_to_throw << ids[i];
+                else
+                    card_to_gotback << ids[i];
             }
+            if (!card_to_throw.isEmpty()) {
+                DummyCard *dummy = new DummyCard;
+                foreach (int id, card_to_throw)
+                    dummy->addSubcard(id);
+
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), QString());
+                room->throwCard(dummy, reason, NULL);
+                dummy->deleteLater();
+            }
+            if (!card_to_gotback.isEmpty()) {
+                DummyCard *dummy2 = new DummyCard;
+                foreach (int id, card_to_gotback)
+                    dummy2->addSubcard(id);
+
+                CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, player->objectName());
+                room->obtainCard(player, dummy2, reason);
+                dummy2->deleteLater();
+            }
+
         }
         return false;
     }
@@ -491,7 +504,7 @@ public:
 
 class Fuzuo: public TriggerSkill {
 public:
-    Fuzuo(): TriggerSkill("fuzuo") {
+    Fuzuo(): TriggerSkill("fuzuo") { // @todo_P: adjust AI
         events << PindianVerifying;
         view_as_skill = new FuzuoViewAsSkill;
     }
