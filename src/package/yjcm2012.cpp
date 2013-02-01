@@ -762,7 +762,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         const Card *card = card_item->getCard();
         Card *acard = new FireSlash(card->getSuit(), card->getNumber());
-        acard->addSubcard(card->getId());
+        acard->addSubcard(card_item->getFilteredCard());
         acard->setSkillName(objectName());
         return acard;
     }
@@ -802,7 +802,8 @@ public:
     }
 
     virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
-        if(from->hasSkill("lihuo") && slash && slash->inherits("FireSlash"))
+        if(from->hasSkill("lihuo") && slash &&
+                (slash->inherits("FireSlash") || slash->getSkillName() == "lihuo"))
             return 1;
         else
             return 0;

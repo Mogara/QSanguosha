@@ -895,7 +895,11 @@ void MeleeDialog::setGeneral(const QString &general_name){
     const General *general = Sanguosha->getGeneral(general_name);
 
     if(general){
+#ifdef USE_RCC
+        avatar_button->setIcon(QIcon(general->getPixmapPath("card2")));
+#else
         avatar_button->setIcon(QIcon(general->getPixmapPath("card")));
+#endif
         Config.setValue("MeleeGeneral", general_name);
         avatar_button->setProperty("to_test", general_name);
     }

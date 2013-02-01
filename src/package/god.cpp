@@ -598,8 +598,9 @@ public:
     WushenS1ash():SlashSkill("#wushen_slash"){
     }
 
-    virtual int getSlashRange(const Player *from, const Player *to, const Card *card) const{
-        if(from->hasSkill("wushen") && card && card->isKindOf("WushenSlash"))
+    virtual int getSlashRange(const Player *from, const Player *, const Card *card) const{
+        if(from->hasSkill("wushen") && card &&
+                (card->isKindOf("WushenSlash") || card->getSuit() == Card::Heart))
             return 998;
         else
             return 0;

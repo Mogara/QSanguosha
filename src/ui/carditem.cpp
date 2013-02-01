@@ -48,7 +48,11 @@ void CardItem::changeGeneral(const QString &general_name){
 
     const General *general = Sanguosha->getGeneral(general_name);
     if(general){
+#ifdef USE_RCC
+        changePixmap(general->getPixmapPath("card2"));
+#else
         changePixmap(general->getPixmapPath("card"));
+#endif
         setToolTip(general->getSkillDescription());
     }else{
         changePixmap("image/system/unknown.png");

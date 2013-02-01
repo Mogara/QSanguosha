@@ -62,7 +62,11 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     QSignalMapper *mapper = new QSignalMapper(this);
     QList<OptionButton *> buttons;
+#ifdef USE_RCC
+    QString category("card2");
+#else
     QString category("card");
+#endif
     QSize icon_size(200*0.8, 290*0.8);
     if(generals.length() > 10){
         category = "big";

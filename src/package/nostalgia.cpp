@@ -212,7 +212,7 @@ public:
             if(source && source != player){
                 room->playSkillEffect("enyuan", qrand() % 2 + 3);
 
-                const Card *card = room->askForCard(source, ".enyuan", "@enyuanheart", QVariant(), NonTrigger);
+                const Card *card = room->askForCard(source, ".enyuan", "@enyuanheart:" + player->objectName(), QVariant(), NonTrigger);
                 if(card){
                     room->showCard(source, card->getEffectiveId());
                     player->obtainCard(card);

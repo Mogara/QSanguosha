@@ -73,7 +73,7 @@ bool General::isTotallyHidden() const{
 
 QString General::getPixmapPath(const QString &category) const{
     QString suffix = "png";
-    if(category == "card")
+    if(category.startsWith("card"))
         suffix = "jpg";
 
     return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
