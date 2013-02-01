@@ -507,8 +507,8 @@ public:
 
             const Card *pindian_card = target == pindian->from ? pindian->from_card : pindian->to_card;
             int num = pindian_card->getNumber() + intervention->getNumber() / 2;
-    	    if (num > 13)
-    	    	num = 13;
+            if (num > 13)
+                num = 13;
             WrappedCard *new_card = Sanguosha->getWrappedCard(pindian_card->getId());
             new_card->setNumber(num);
             new_card->setSkillName(objectName());
@@ -546,15 +546,13 @@ public:
 class Badao: public TriggerSkill{
 public:
     Badao():TriggerSkill("badao"){
-        events << CardEffected; // use TargetComfirmed instead
+        events << TargetConfirmed;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *hua, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(effect.card->isKindOf("Slash") && effect.card->isBlack()){
-            if(room->askForSkillInvoke(hua, objectName(), data)){
-                room->askForUseCard(hua, "slash", "@askforslash");
-            }
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->isKindOf("Slash") && use.card->isBlack() && use.to.contains(hua)){
+            room->askForUseCard(hua, "slash", "@askforslash"); // @todo_P: adjust AI
         }
         return false;
     }
@@ -563,16 +561,20 @@ public:
 class Wenjiu: public TriggerSkill{
 public:
     Wenjiu():TriggerSkill("wenjiu"){
-        events << DamageCaused << SlashProceed; // @todo_P: use ConfirmDamage instead
+        events << ConfirmDamage << SlashProceed;
         frequency = Compulsory;
     }
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *hua = room->findPlayerBySkillName(objectName());
-        if(!hua)
+        if (!hua)
             return false;
         if(triggerEvent == SlashProceed){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -588,7 +590,7 @@ public:
                 return true;
             }
         }
-        else if(triggerEvent == DamageCaused){
+        else if(triggerEvent == ConfirmDamage){
             DamageStruct damage = data.value<DamageStruct>();
             const Card *reason = damage.card;
             if(!reason || damage.from != hua)
