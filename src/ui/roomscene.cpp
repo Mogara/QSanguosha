@@ -471,6 +471,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
 
         player->setGender(gender);
 
+        PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
+        container->updateAvatar();
         break;
     }
 

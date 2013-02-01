@@ -69,6 +69,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
 
             qnum.setValue(num);
             room->getThread()->trigger(DrawNCards, room, player, qnum);
+            num = qnum.toInt();
             if(num > 0)
                 player->drawCards(num, false);
             qnum.setValue(num);

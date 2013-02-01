@@ -909,7 +909,7 @@ public:
             bool is_male = player->isMale();
             if(gender == "female"){
                 if (is_male) {
-                    player->setGender(General::Female); // @todo_P: UI needed to indicate the gender
+                    player->setGender(General::Female);
                 }
             } else if (gender == "male") {
                 if(!is_male) {
@@ -921,7 +921,6 @@ public:
             log.from = player;
             log.arg = gender;
             room->sendLog(log);
-
         }else if(triggerEvent == EventPhaseStart){
             if(player->getPhase() == Player::Start){
                 LogMessage log;
@@ -958,7 +957,7 @@ public:
 class Shaoying: public TriggerSkill{
 public:
     Shaoying():TriggerSkill("shaoying"){
-        events << PreHpReduced << DamageComplete; // @todo_P: everyone can invoke the skill?
+        events << PreHpReduced << DamageComplete;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -967,18 +966,10 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-		if (triggerEvent == PreHpReduced)
-		{
-			if (player == NULL || damage.from == NULL || !damage.from->hasSkill(objectName()) || player->isChained()
-				|| damage.nature != DamageStruct::Fire)
-			{
-				damage.from->tag.remove("ShaoyingTarget");
-			}
-			else
-			{
-				QList<ServerPlayer *> targets;
-				foreach(ServerPlayer *p, room->getAlivePlayers())
-				{
+        if (triggerEvent == PreHpReduced) {
+            if (!player->isChained() && damage.from && TriggerSkill::triggerable(damage.from)) {
+                QList<ServerPlayer *> targets;
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
 					if (player->distanceTo(p) == 1)
 						targets << p;
 				}
@@ -986,21 +977,19 @@ public:
 				if (targets.isEmpty())
 					return false;
 
-				if (damage.from->askForSkillInvoke(objectName(), data))
-				{
+                if (damage.from->askForSkillInvoke(objectName(), data))	{
 					ServerPlayer *target = room->askForPlayerChosen(damage.from, targets, objectName());
 					damage.from->tag["ShaoyingTarget"] = QVariant::fromValue(target);
 				}
 			}
 
 			return false;
-		}
-		else if (triggerEvent == DamageComplete)
-		{
-			if (!damage.from || damage.from->isDead())
+        } else if (triggerEvent == DamageComplete) {
+            PlayerStar target = damage.from->tag.value("ShaoyingTarget", QVariant()).value<PlayerStar>();
+            damage.from->tag.remove("ShaoyingTarget");
+            if (!target || !damage.from || damage.from->isDead())
 				return false;
-			PlayerStar target = damage.from->tag.value("ShaoyingTarget", QVariant()).value<PlayerStar>();
-			damage.from->tag.remove("ShaoyingTarget");
+
 			JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
             judge.good = true;
@@ -1026,19 +1015,25 @@ public:
     }
 };
 
+#include "maneuvering.h"
 class Zonghuo: public TriggerSkill{
 public:
     Zonghuo():TriggerSkill("zonghuo"){
         frequency = Compulsory;
-        events << SlashEffect;
+        events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(effect.nature != DamageStruct::Fire){
-            effect.nature = DamageStruct::Fire;
-            Room *room = player->getRoom();
-            data = QVariant::fromValue(effect);
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash") && !use.card->isKindOf("FireSlash")) {
+            FireSlash *fire_slash = new FireSlash(Card::SuitToBeDecided, 0);
+            if (!use.card->isVirtualCard())
+                fire_slash->addSubcard(use.card);
+            else if (use.card->subcardsLength() > 0) {
+                foreach (int id, use.card->getSubcards())
+                    fire_slash->addSubcard(id);
+            }
+            fire_slash->setSkillName(objectName());
 
             room->broadcastSkillInvoke(objectName());
             LogMessage log;
@@ -1046,9 +1041,16 @@ public:
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
+
+            use.card = fire_slash;
+            data = QVariant::fromValue(use);
         }
 
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return -2;
     }
 };
 
