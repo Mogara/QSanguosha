@@ -1,11 +1,13 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
-TARGET = QSanguosha
+TARGET = QSanguoshaO
 QT += network sql declarative
 TEMPLATE = app
+win32 : RC_FILE = resource/icono.rc
+macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio
-CONFIG += rcc
+#CONFIG += rcc
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
@@ -281,14 +283,6 @@ INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
 INCLUDEPATH += src/lua
 
-win32{
-        RC_FILE += resource/icono.rc
-}
-
-macx{
-        ICON = resource/icon/sgs.icns
-}
-
 LIBS += -Llib -lcryptopp
 LIBS += -L.
 
@@ -316,7 +310,8 @@ CONFIG(chatvoice){
 
 CONFIG(rcc){
         DEFINES += USE_RCC
-        win32: RC_FILE += resource/icon.rc
+        TARGET = QSanguosha
+        win32: RC_FILE = resource/icon.rc
 }
 
 TRANSLATIONS += sanguosha.ts

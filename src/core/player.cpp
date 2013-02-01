@@ -193,6 +193,22 @@ int Player::distanceTo(const Player *other) const{
     return distance;
 }
 
+int Player::distanceTo(const Player *other, bool plural) const{
+    if(!plural)
+        return distanceTo(other);
+    if(this == other)
+        return 0;
+    if(fixed_distance.contains(other))
+        return fixed_distance.value(other);
+
+    int right = qAbs(seat - other->seat);
+    int left = aliveCount() - right;
+    int distance = qMin(left, right);
+
+    distance += Sanguosha->correctDistance(this, other);
+    return distance;
+}
+
 void Player::setGeneral(const General *new_general){
     if(this->general != new_general){
         this->general = new_general;

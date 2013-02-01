@@ -126,6 +126,7 @@ public:
     virtual int aliveCount() const = 0;
     void setFixedDistance(const Player *player, int distance);
     int distanceTo(const Player *other) const;
+    int distanceTo(const Player *other, bool plural) const; // true
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
 
