@@ -302,6 +302,8 @@ struct PindianStruct{
     ServerPlayer *to;
     const Card *from_card;
     const Card *to_card;
+    int from_number;
+    int to_number;
     QString reason;
     bool success;
 };

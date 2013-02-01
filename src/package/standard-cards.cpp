@@ -467,7 +467,7 @@ public:
 
         const Card *card = NULL;
         if (player->getCardCount(true) >= 3) // Need 2 more cards except from the weapon itself
-            card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName(), data, objectName());
+            card = room->askForCard(player, "@Axe", "@Axe:" + effect.to->objectName(), data, objectName());
         if (card) {
             room->setEmotion(effect.to, "weapon/axe");
             room->slashResult(effect, NULL);

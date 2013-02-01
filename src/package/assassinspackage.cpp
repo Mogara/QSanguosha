@@ -167,9 +167,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         PindianStar pindian = data.value<PindianStar>();
-        if (pindian->reason != objectName())
-            return false;
-        if (pindian->from_card->getNumber() == pindian->to_card->getNumber())
+        if (pindian->reason != objectName() || pindian->from_number == pindian->to_number)
             return false;
 
         ServerPlayer *winner = pindian->isSuccess() ? pindian->from : pindian->to;
