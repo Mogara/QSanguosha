@@ -774,6 +774,11 @@ public:
                 DamageStruct damage2;
                 damage2.from = damage.from;
                 damage2.to = target;
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = player;
+                log.arg = objectName();
+                room->sendLog(log);
                 room->damage(damage2);
             }
         }
@@ -787,27 +792,6 @@ TriDouble::TriDouble(Suit suit, int number)
     setObjectName("tri_double");
     skill = new TriDoubleSkill;;
 }
-
-class WuliuJianSkill: public SlashSkill{
-public:
-    WuliuJianSkill():SlashSkill("wuliujian"){
-    }
-
-    virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
-        QList<const Player *> players = from->getSiblings();
-        players << from;
-        QString wu = "no_kingdom";
-        foreach(const Player *p, players){
-            if(p->hasWeapon("wuliujian")){
-                wu = p->getKingdom();
-                break;
-            }
-        }
-        if(wu == from->getKingdom())
-            return from->getAttackRange() + 1;
-        return 0;
-    }
-};
 
 WuLiuJian::WuLiuJian(Suit suit, int number)
     :Weapon(suit, number, 2)
@@ -824,7 +808,6 @@ HegemonyCardPackage::HegemonyCardPackage()
           << new KnowThyself(Card::Club, 3)
           << new TriDouble(Card::Diamond, 12)
           << new WuLiuJian(Card::Diamond, 6);
-    skills << new WuliuJianSkill;
 
     foreach(Card *card, cards)
         card->setParent(this);

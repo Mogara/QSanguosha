@@ -152,6 +152,17 @@ void Player::clearFlags(){
 
 int Player::getAttackRange(const Player *other, const Card *slash) const{
     int atkrg = 1;
+
+    int wu6jian = 0;
+    QList<const Player *> players = getSiblings();
+    players << this;
+    foreach(const Player *p, players){
+        if(p->hasWeapon("wuliujian") && p->getKingdom() == getKingdom()){
+            wu6jian = 1;
+            break;
+        }
+    }
+
     if(getWeapon()){
         if(!slash)
             slash = Sanguosha->cloneCard("slash", Card::NoSuit, 0);
@@ -159,7 +170,7 @@ int Player::getAttackRange(const Player *other, const Card *slash) const{
             atkrg = getWeapon()->getRange();
     }
     int extra = Sanguosha->correctSlash("attackrange", this, other, slash);
-    return extra >= 0 ? qMax(atkrg, extra): qAbs(extra);
+    return extra >= 0 ? qMax(atkrg + wu6jian, extra + wu6jian): qAbs(extra);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{

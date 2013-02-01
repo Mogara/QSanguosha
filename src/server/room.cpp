@@ -2692,7 +2692,7 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             from = move.from;
     }
 
-    if(from_place == Player::Judging){
+    if(from_place == Player::Judging && card->getSuit() == Card::Diamond){
         QStringList yanxiaos;
         if(from)
             yanxiaos = from->property("yanxiao").toString().split("|");
