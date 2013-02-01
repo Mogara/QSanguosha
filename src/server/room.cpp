@@ -856,6 +856,28 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
+bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit){
+    Q_ASSERT(!victims.isEmpty());
+
+    const Card *slash = askForCard(slasher, "slash", prompt, QVariant(), NonTrigger);
+    if(slash){
+        CardUseStruct use;
+        use.card = slash;
+        use.from = slasher;
+        use.to = victims;
+        useCard(use);
+        return true;
+    }
+    return false;
+}
+
+bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt, bool distance_limit){
+    Q_ASSERT(victim != NULL);
+    QList<ServerPlayer *> victims;
+    victims << victim;
+    return askForUseSlashTo(slasher, victims, prompt, distance_limit);
+}
+
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){
     if(card_ids.length() == 1 && !refusable)
         return card_ids.first();

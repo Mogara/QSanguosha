@@ -209,7 +209,7 @@ end
 
 local nosgongqi_skill={}
 nosgongqi_skill.name="nosgongqi"
-table.insert(sgs.ai_skills,wusheng_skill)
+table.insert(sgs.ai_skills,nosgongqi_skill)
 nosgongqi_skill.getTurnUseCard=function(self,inclusive)
 	local cards = self.player:getCards("he")
 	cards=sgs.QList2Table(cards)

@@ -517,10 +517,24 @@ public:
 
     const Card *viewAs(CardItem *card_item) const{
         const Card *card = card_item->getFilteredCard();
-        WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
+        Slash *slash = new Slash(card->getSuit(), card->getNumber());
         slash->addSubcard(card);
         slash->setSkillName(objectName());
         return slash;
+    }
+};
+
+class NosGongqiSlash: public SlashSkill{
+public:
+    NosGongqiSlash():SlashSkill("#nosgongqi-slash"){
+    }
+
+    virtual int getSlashRange(const Player *from, const Player *, const Card *card) const{
+        if(from->hasSkill("nosgongqi") && card && card->getSkillName() == "nosgongqi"){
+            return 998;
+        }
+        else
+            return 0;
     }
 };
 
@@ -603,6 +617,7 @@ NostalGeneralPackage::NostalGeneralPackage()
     General *noshandang = new General(this, "noshandang", "wu");
     noshandang->addSkill(new NosGongqi);
     noshandang->addSkill(new NosJiefan);
+    skills << new NosGongqiSlash;
 
     General *sp_shenzhaoyun = new General(this, "sp_shenzhaoyun", "god", 1, true, true);
     sp_shenzhaoyun->addSkill(new NosJuejing);

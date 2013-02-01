@@ -155,7 +155,7 @@ return {
 	["illustrator:jiling"] = "樱花闪乱",
 	["cv:jiling"] = "火树",
 	["$shuangren1"] = "你可识得我手中兵器？",
-	["$shuangren2"] = "今日这兵器颇不顺手。",
+	["$shuangren2"] = "今日这兵器颇不顺手啊。。。",
 	["~jiling"] = "我的三尖两刃刀怎么会输给丈八蛇矛呢？",
 
 	["illustrator:zoushi"] = "Tuu.",
