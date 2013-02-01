@@ -677,6 +677,7 @@ HegemonyPackage::HegemonyPackage()
     addMetaObject<ShuangrenCard>();
 }
 
+// cards
 AllyFarAttackNear::AllyFarAttackNear(Suit suit, int number)
     :SingleTargetTrick(suit, number, true) {
     setObjectName("allyfar_attacknear");
@@ -749,9 +750,9 @@ HegemonyCardPackage::HegemonyCardPackage()
     :Package("hegemony_card")
 {
     QList<Card *> cards;
-    cards << new AllyFarAttackNear(Card::Club, 1)
-          << new EaseVSFatigue(Card::Diamond, 1)
-          << new KnowThyself(Card::Heart, 1);
+    cards << new AllyFarAttackNear(Card::Heart, 9)
+          << new EaseVSFatigue(Card::Diamond, 4)
+          << new KnowThyself(Card::Club, 3);
 
     foreach(Card *card, cards)
         card->setParent(this);

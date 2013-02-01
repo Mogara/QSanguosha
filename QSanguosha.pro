@@ -5,6 +5,7 @@ TARGET = QSanguosha
 QT += network sql declarative
 TEMPLATE = app
 CONFIG += warn_on audio
+CONFIG += rcc
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
@@ -281,7 +282,7 @@ INCLUDEPATH += src/util
 INCLUDEPATH += src/lua
 
 win32{
-	RC_FILE += resource/icon.rc
+        RC_FILE += resource/icono.rc
 }
 
 macx{
@@ -311,6 +312,11 @@ CONFIG(chatvoice){
 		CONFIG += qaxcontainer
 		DEFINES += CHAT_VOICE
 	}
+}
+
+CONFIG(rcc){
+        DEFINES += USE_RCC
+        win32: RC_FILE += resource/icon.rc
 }
 
 TRANSLATIONS += sanguosha.ts

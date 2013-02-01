@@ -4,12 +4,18 @@
 #include "clientstruct.h"
 #include "client.h"
 
+#ifdef USE_RCC
+#include <QResource>
+#endif
 static CardOverview *Overview;
 
 CardOverview *CardOverview::GetInstance(QWidget *main_window){
     if(Overview == NULL)
         Overview = new CardOverview(main_window);
 
+#ifdef USE_RCC
+    QResource::registerResource("image/big-card.rcc");
+#endif
     return Overview;
 }
 
@@ -77,6 +83,9 @@ void CardOverview::addCard(int i, const Card *card){
 
 CardOverview::~CardOverview()
 {
+#ifdef USE_RCC
+    QResource::unregisterResource("image/big-card.rcc");
+#endif
     delete ui;
 }
 
@@ -85,7 +94,12 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
     const Card *card = Sanguosha->getCard(card_id);
+#ifdef USE_RCC
+    QString pixmap_path = QString(":big-card/%1.png").arg(card->objectName());
+#else
     QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
+#endif
+
     ui->cardLabel->setPixmap(pixmap_path);
 
     ui->cardDescriptionBox->setText(card->getDescription());
