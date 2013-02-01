@@ -944,7 +944,7 @@ public:
 class Anxian: public TriggerSkill{
 public:
     Anxian():TriggerSkill("anxian"){
-        events << Predamage << CardEffected;
+        events << Predamage << SlashEffected;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *daqiao, QVariant &data) const{
@@ -966,10 +966,8 @@ public:
                 return true;
             }
         }
-        else if(event == CardEffected){
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(!effect.card->inherits("Slash"))
-                return false;
+        else if(event == SlashEffected){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(daqiao->isKongcheng())
                 return false;
             if(room->askForCard(daqiao, ".", "@anxian-discard", QVariant(), CardDiscarded)){

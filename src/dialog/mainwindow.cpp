@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     QResource::registerResource("image/card.rcc");
 #endif
 
+    setWindowTitle(Sanguosha->translate("QSanguosha"));
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
@@ -154,7 +155,7 @@ void MainWindow::on_actionExit_triggered()
 {
     QMessageBox::StandardButton result;
     result = QMessageBox::question(this,
-                                   tr("Sanguosha"),
+                                   Sanguosha->translate("QSanguosha"),
                                    tr("Are you sure to exit?"),
                                    QMessageBox::Ok | QMessageBox::Cancel);
     if(result == QMessageBox::Ok){

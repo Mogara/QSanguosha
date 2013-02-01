@@ -1832,12 +1832,6 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="src/dialog/mainwindow.ui" line="14"/>
-        <location filename="src/dialog/mainwindow.cpp" line="168"/>
-        <source>Sanguosha</source>
-        <translation>太阳神三国杀 - 雪霁</translation>
-    </message>
-    <message>
         <location filename="src/dialog/mainwindow.ui" line="28"/>
         <source>Game</source>
         <translation>游戏</translation>
