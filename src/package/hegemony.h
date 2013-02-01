@@ -38,6 +38,20 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class WuLiuJian:public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WuLiuJian(Card::Suit suit, int number);
+};
+
+class TriDouble:public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TriDouble(Card::Suit suit, int number);
+};
+
 class HegemonyCardPackage: public Package{
     Q_OBJECT
 

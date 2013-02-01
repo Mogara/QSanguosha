@@ -16,6 +16,7 @@ font/font.ttf
 *sha.pro.user*
 etc/customScenes/custom_scenario.txt
 *.dylib
+image/*.bat
 image/*.rcc
 image/generals/card2/*.*
 lib/libcryptopp.a
