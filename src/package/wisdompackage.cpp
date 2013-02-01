@@ -514,12 +514,14 @@ public:
 
             if (isFrom) {
                 int to_add = pindian->from->getMark(objectName()) / 2;
+                room->setPlayerMark(pindian->from, objectName(), 0);
                 pindian->from_number += to_add;
 
                 log.from = pindian->from;
                 log.arg = QString::number(pindian->from_number);
             } else {
                 int to_add = pindian->to->getMark(objectName()) / 2;
+                room->setPlayerMark(pindian->to, objectName(), 0);
                 pindian->to_number += to_add;
 
                 log.from = pindian->to;
