@@ -477,8 +477,8 @@ enum TriggerEvent{
 
     // For miniscenarios only
     FetchDrawPileCard,
-	
-	CardDiscarded, // obsolete event. Do not use it to trigger skills!
+
+    CardDiscarded, // obsolete event. Do not use it to trigger skills!
 
     NumOfEvents
 };

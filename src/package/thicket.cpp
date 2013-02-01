@@ -127,7 +127,7 @@ public:
                     else
                         room->broadcastSkillInvoke(objectName(), 2);
 
-					LogMessage log;
+                    LogMessage log;
                     log.type = "#InvokeOthersSkill";
                     log.from = player;
                     log.to << caopi;
@@ -931,8 +931,8 @@ public:
                     ServerPlayer *dongzhuo = room->askForPlayerChosen(player, dongzhuos, objectName());
                     dongzhuo->setFlags("baonueused");           //for AI
                     dongzhuos.removeOne(dongzhuo);
-					
-					LogMessage log;
+
+                    LogMessage log;
                     log.type = "#InvokeOthersSkill";
                     log.from = player;
                     log.to << dongzhuo;

@@ -65,23 +65,23 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             && player->hasSkill("huxiao")) {
         int n = 1;
         if (player->hasFlag("tianyi_success"))
-			n ++;
-		if (player->hasFlag("jiangchi_invoke"))
-			n ++;
-		if (player->getMark("SlashCount") >= n) {
-			bool toSunquan = false;
-			foreach(ServerPlayer *p, card_use.to)
-				if(p->getGeneralName().contains("sunquan")) {
-					toSunquan = true;
-					break;
-				}
+            n ++;
+        if (player->hasFlag("jiangchi_invoke"))
+            n ++;
+        if (player->getMark("SlashCount") >= n) {
+            bool toSunquan = false;
+            foreach(ServerPlayer *p, card_use.to)
+                if(p->getGeneralName().contains("sunquan")) {
+                    toSunquan = true;
+                    break;
+                }
 
-			if(toSunquan)
-				room->broadcastSkillInvoke("huxiao", 3);
-			else
-				room->broadcastSkillInvoke("huxiao", qrand() % 2 + 1);
-		}
-	}
+            if(toSunquan)
+                room->broadcastSkillInvoke("huxiao", 3);
+            else
+                room->broadcastSkillInvoke("huxiao", qrand() % 2 + 1);
+        }
+    }
     if (card_use.to.size() > 1 && player->hasSkill("shenji"))
         room->broadcastSkillInvoke("shenji");
     else if (card_use.to.size() > 1 && player->hasSkill("lihuo") && getSkillName() != "lihuo")

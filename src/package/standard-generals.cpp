@@ -626,7 +626,7 @@ public:
     Tieji():TriggerSkill("tieji"){
         events << TargetConfirmed << SlashProceed << CardFinished;
     }
-	
+    
     virtual int getPriority() const{
         return 3;
     }
@@ -1361,7 +1361,7 @@ void StandardPackage::addGenerals(){
     zhugeliang->addSkill(new Kongcheng);
     zhugeliang->addSkill(new KongchengEffect);
     related_skills.insertMulti("kongcheng", "#kongcheng-effect");
-	zhugeliang->addSkill(new SPConvertSkill("zhugeliang", "heg_zhugeliang"));
+    zhugeliang->addSkill(new SPConvertSkill("zhugeliang", "heg_zhugeliang"));
 
     zhaoyun = new General(this, "zhaoyun", "shu");
     zhaoyun->addSkill(new Longdan);
@@ -1410,7 +1410,7 @@ void StandardPackage::addGenerals(){
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
     sunshangxiang->addSkill(new SPConvertSkill("sunshangxiang", "sp_sunshangxiang"));
-	
+    
     General *lvbu, *huatuo, *diaochan;
 
     huatuo = new General(this, "huatuo", "qun", 3);

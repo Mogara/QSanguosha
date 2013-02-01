@@ -783,7 +783,7 @@ BifaCard::BifaCard() {
 }
 
 bool BifaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-	return targets.isEmpty() && to_select->getPile("bifa").isEmpty() && to_select != Self;
+    return targets.isEmpty() && to_select->getPile("bifa").isEmpty() && to_select != Self;
 }
 
 void BifaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
@@ -868,7 +868,7 @@ public:
                 player->tag.remove("BifaSource" + QString::number(card_id));
             }
         }
-		return false;
+    	return false;
     }
 };
 
@@ -926,7 +926,7 @@ public:
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("@songci") > 0)
                 room->setPlayerMark(p, "@songci", 0);
-		return false;
+    	return false;
     }
 };
 
@@ -1028,7 +1028,7 @@ SPPackage::SPPackage()
     guanyinping->addSkill(new WujiCount);
     related_skills.insertMulti("wuji", "#wuji-count");
     related_skills.insertMulti("huxiao", "#huxiao");
-	related_skills.insertMulti("huxiao", "#huxiao-count");
+    related_skills.insertMulti("huxiao", "#huxiao-count");
 
     General *xiahouba = new General(this, "xiahouba", "shu");
     xiahouba->addSkill(new Baobian);

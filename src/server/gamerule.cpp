@@ -894,13 +894,13 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         }
     }
     else
-	{
+    {
         room->changeHero(player, general_name, false, false, true, false);
         foreach (QString skill_name, skill_mark.keys()) {
             if (player->hasSkill(skill_name, true))
                 room->setPlayerMark(player, skill_mark[skill_name], 1);
         }
-	}
+    }
 
     room->getThread()->addPlayerSkills(player);
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());

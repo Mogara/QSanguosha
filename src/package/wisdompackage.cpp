@@ -166,7 +166,7 @@ public:
 
         if(card->isNDTrick())
             if(room->askForSkillInvoke(jiangwei, objectName(), data))
-				room->askForUseSlashTo(jiangwei, room->getOtherPlayers(jiangwei), "@askforslash");
+    	    	room->askForUseSlashTo(jiangwei, room->getOtherPlayers(jiangwei), "@askforslash");
 
         return false;
     }
@@ -181,12 +181,12 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         if(move->from == jiangwei && move->from_places.contains(Player::PlaceHand) && jiangwei->isKongcheng())
-		{
+    	{
             QList<ServerPlayer *> players;
             Slash *slash = new Slash(Card::NoSuit, 0);
             slash->setSkillName(objectName());
             foreach(ServerPlayer *player, room->getOtherPlayers(jiangwei))
-			{
+    	    {
                 if (jiangwei->canSlash(player, slash))
                     players << player;
             }
@@ -451,8 +451,8 @@ public:
         else if(player->getPhase() == Player::Discard){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if(move->from == player && move->to_place == Player::DiscardPile){
-				for (int i = 0; i < move->card_ids.size(); i++)
-					player->addMark("longluo");
+    	    	for (int i = 0; i < move->card_ids.size(); i++)
+    	    	    player->addMark("longluo");
             }
         }
         return false;
@@ -507,8 +507,8 @@ public:
 
             const Card *pindian_card = target == pindian->from ? pindian->from_card : pindian->to_card;
             int num = pindian_card->getNumber() + intervention->getNumber() / 2;
-			if (num > 13)
-				num = 13;
+    	    if (num > 13)
+    	    	num = 13;
             WrappedCard *new_card = Sanguosha->getWrappedCard(pindian_card->getId());
             new_card->setNumber(num);
             new_card->setSkillName(objectName());
@@ -803,8 +803,8 @@ public:
 
         if(card->isNDTrick()){
             ServerPlayer *shuijing = room->findPlayerBySkillName(objectName(), true);
-			if (!shuijing)
-				return false;
+    	    if (!shuijing)
+    	    	return false;
 
             if(shuijing->isAlive()){
                 if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue(shuijing)))

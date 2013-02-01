@@ -108,7 +108,7 @@ SOURCES += \
     src/ui/startscene.cpp \
     src/ui/TablePile.cpp \
     src/ui/TimedProgressBar.cpp \
-    src/ui/uiUtils.cpp \	
+    src/ui/uiUtils.cpp \
     src/ui/window.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
@@ -118,7 +118,7 @@ SOURCES += \
     src/jsoncpp/src/json_value.cpp \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \	
+    src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx \
     src/core/RoomState.cpp \
     src/core/WrappedCard.cpp \
@@ -216,11 +216,11 @@ HEADERS += \
     src/ui/startscene.h \
     src/ui/TablePile.h \
     src/ui/TimedProgressBar.h \
-    src/ui/uiUtils.h \	
+    src/ui/uiUtils.h \
     src/ui/window.h \
     src/util/detector.h \
     src/util/nativesocket.h \
-    src/util/recorder.h \	
+    src/util/recorder.h \
     src/util/socket.h \
     src/jsoncpp/src/json_tool.h \
     src/jsoncpp/src/json_batchallocator.h \

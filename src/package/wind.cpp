@@ -352,7 +352,7 @@ public:
     Liegong():TriggerSkill("liegong"){
         events << TargetConfirmed << SlashProceed << CardFinished;
     }
-	
+    
     virtual int getPriority() const{
         return 3;
     }
@@ -949,7 +949,7 @@ bool GuhuoCard::targetsFeasible(const QList<const Player *> &targets, const Play
 const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
 
-	QString to_guhuo = user_string;
+    QString to_guhuo = user_string;
     if (user_string == "slash"
         && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
         QStringList guhuo_list;
@@ -972,8 +972,8 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
 
     if(guhuo(card_use->from, log.toString())){
         const Card *card = Sanguosha->getCard(subcards.first());
-		QString user_str;
-		if (to_guhuo == "slash") {
+    	QString user_str;
+    	if (to_guhuo == "slash") {
             if (card->isKindOf("Slash"))
                 user_str = card->objectName();
             else
@@ -1064,7 +1064,7 @@ public:
         }
         return true;
     }
-	
+    
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->isKongcheng();
     }

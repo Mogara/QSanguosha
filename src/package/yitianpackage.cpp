@@ -238,7 +238,7 @@ public:
 };
 
 JuejiCard::JuejiCard(){
-	will_throw = false;
+    will_throw = false;
 }
 
 bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -435,11 +435,11 @@ void LianliSlashCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
     if(xiahoujuan){
         const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash", QVariant(), Card::MethodResponse);
-		CardUseStruct use;
-		use.card = slash;
-		use.from = effect.from;
-		use.to << effect.to;
-		room->useCard(use);
+        CardUseStruct use;
+        use.card = slash;
+        use.from = effect.from;
+        use.to << effect.to;
+        room->useCard(use);
     }
 }
 
@@ -970,27 +970,27 @@ public:
             if (!player->isChained() && damage.from && TriggerSkill::triggerable(damage.from)) {
                 QList<ServerPlayer *> targets;
                 foreach(ServerPlayer *p, room->getAlivePlayers()) {
-					if (player->distanceTo(p) == 1)
-						targets << p;
-				}
+                    if (player->distanceTo(p) == 1)
+                        targets << p;
+                }
 
-				if (targets.isEmpty())
-					return false;
+                if (targets.isEmpty())
+                    return false;
 
-                if (damage.from->askForSkillInvoke(objectName(), data))	{
-					ServerPlayer *target = room->askForPlayerChosen(damage.from, targets, objectName());
-					damage.from->tag["ShaoyingTarget"] = QVariant::fromValue(target);
-				}
-			}
+                if (damage.from->askForSkillInvoke(objectName(), data))    {
+                    ServerPlayer *target = room->askForPlayerChosen(damage.from, targets, objectName());
+                    damage.from->tag["ShaoyingTarget"] = QVariant::fromValue(target);
+                }
+            }
 
-			return false;
+            return false;
         } else if (triggerEvent == DamageComplete) {
             PlayerStar target = damage.from->tag.value("ShaoyingTarget", QVariant()).value<PlayerStar>();
             damage.from->tag.remove("ShaoyingTarget");
             if (!target || !damage.from || damage.from->isDead())
-				return false;
+                return false;
 
-			JudgeStruct judge;
+            JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
             judge.good = true;
             judge.reason = objectName();
@@ -1008,8 +1008,8 @@ public:
                 room->damage(shaoying_damage);
             }
 
-			return false;
-		}
+            return false;
+        }
 
         return false;
     }
@@ -1093,7 +1093,7 @@ public:
 class GongmouExchange:public TriggerSkill{
 public:
     GongmouExchange():TriggerSkill("#gongmou-exchange"){
-		events << EventPhaseEnd;
+        events << EventPhaseEnd;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
