@@ -360,6 +360,18 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
                 }
             }
         }
+        if(self->hasSkill("cbyuxue") && !self->getPile("Angers").isEmpty()){
+            QList<int> angers = self->getPile("Angers");
+            foreach(int id, angers){
+                const Card *card = Sanguosha->getCard(id);
+                if(card->isRed()){
+                    Peach *peach = new Peach(card->getSuit(), card->getNumber());
+                    peach->addSubcard(card);
+                    peach->setSkillName("cbyuxue");
+                    return peach;
+                }
+            }
+        }
     }
 
     return NULL;

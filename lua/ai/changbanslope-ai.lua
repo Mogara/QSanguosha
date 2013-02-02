@@ -76,6 +76,14 @@ cbyuxue_skill.getTurnUseCard = function(self)
 	return skillcard
 end
 
+function sgs.ai_cardsview.cbyuxue(class_name, player)
+	if class_name == "Peach" then
+		if player:hasSkill("cbyuxue") and not player:getPile("Angers"):isEmpty() then
+			return cbyuxue_skill.getTurnUseCard
+		end
+	end
+end
+
 sgs.ai_view_as.cbyuxue = function(card, player, card_place)
 	local angers = player:getPile("Angers")
 	local redangers = sgs.IntList()
