@@ -37,6 +37,8 @@ AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b){
 }
 
 AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b){
+    if(a->getRole() == "careerist" || b->getRole() == "careerist")
+        return Enemy;
     const bool aShown = a->getRoom()->getTag(a->objectName()).toStringList().isEmpty();
     const bool bShown = b->getRoom()->getTag(b->objectName()).toStringList().isEmpty();
 

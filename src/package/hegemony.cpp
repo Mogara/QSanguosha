@@ -41,11 +41,7 @@ ShushenCard::ShushenCard(){
 }
 
 bool ShushenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return true;
-}
-
-bool ShushenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    return targets.length() == 2;
+    return targets.isEmpty() && to_select->getKingdom() == Self->getKingdom() && to_select != Self;
 }
 
 void ShushenCard::onEffect(const CardEffectStruct &effect) const{

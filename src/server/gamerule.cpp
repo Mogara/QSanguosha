@@ -869,10 +869,10 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
             kingdom_roles[p->getKingdom()]++;
         }
-
+/*
         if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= 2
                 && player->getGeneralName() == "anjiang")
-            return;
+            return;*/
     }
 
     QString answer = room->askForChoice(player, "RevealGeneral", "yes+no");
@@ -921,7 +921,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         room->setPlayerProperty(player,"general2",general_name);
     }
 
-    QString kingdom = is_careerist ? "careerist" : player->getGeneral()->getKingdom();
+    QString kingdom = is_careerist || player->getRole() == "careerist" ? "careerist" : player->getGeneral()->getKingdom();
     room->setPlayerProperty(player, "kingdom", kingdom);
     if(Config.EnableHegemony)
         room->setPlayerProperty(player, "role", getMappedRole(kingdom));
