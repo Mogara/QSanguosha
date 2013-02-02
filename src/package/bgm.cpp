@@ -112,7 +112,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 4;
+        return 2;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -150,10 +150,6 @@ class Kuiwei: public TriggerSkill{
 public:
     Kuiwei(): TriggerSkill("kuiwei"){
         events << PhaseChange;
-    }
-
-    virtual int getPriority() const{
-        return 3;
     }
 
     int getWeaponCount(ServerPlayer *caoren) const{
@@ -620,11 +616,6 @@ public:
 class MouduanStart: public GameStartSkill{
 public:
     MouduanStart():GameStartSkill("#mouduan"){
-
-    }
-
-    virtual int getPriority() const{
-        return -1;
     }
 
     virtual void onGameStart(ServerPlayer *lvmeng) const{
@@ -806,6 +797,8 @@ public:
 
             if(player->askForSkillInvoke(objectName())){
                 room->playSkillEffect(objectName());
+                room->broadcastInvoke("animate", "lightbox:$shichou");
+
                 player->addMark("hate");
                 ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
                 victim->addMark("hate"+player->objectName());
@@ -911,7 +904,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 3;
+        return 2;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1906,7 +1899,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 5;
+        return 3;
     }
 
     virtual bool triggerable(const ServerPlayer *) const{
