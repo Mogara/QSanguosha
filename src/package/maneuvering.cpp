@@ -144,6 +144,7 @@ class GudingBladeSkill: public WeaponSkill{
 public:
     GudingBladeSkill():WeaponSkill("guding_blade"){
         events << Predamage;
+        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -178,6 +179,7 @@ class VineSkill: public ArmorSkill{
 public:
     VineSkill():ArmorSkill("vine"){
         events << Predamaged << SlashEffected << CardEffected;
+        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -236,6 +238,7 @@ class SilverLionSkill: public ArmorSkill{
 public:
     SilverLionSkill():ArmorSkill("silver_lion"){
         events << Predamaged;
+        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

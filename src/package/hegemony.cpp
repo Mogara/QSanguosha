@@ -636,6 +636,12 @@ HegemonyPackage::HegemonyPackage()
     lushun->addSkill("qianxun");
     lushun->addSkill(new Duoshi);
 
+#ifdef USE_RCC
+    General *gz_zhouyu = new General(this, "gz_zhouyu", "wu", 3, true, true);
+    gz_zhouyu->addSkill("yingzi");
+    gz_zhouyu->addSkill("fanjian");
+#endif
+
     General *dingfeng = new General(this, "dingfeng", "wu");
     dingfeng->addSkill(new Duanbing);
     dingfeng->addSkill(new Fenxun);
@@ -750,10 +756,6 @@ public:
 
     virtual int getPriority() const{
         return -1;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasWeapon(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

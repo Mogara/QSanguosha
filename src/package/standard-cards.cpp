@@ -953,14 +953,10 @@ void Lightning::takeEffect(ServerPlayer *target) const{
 
 // EX cards
 
-class IceSwordSkill: public TriggerSkill{
+class IceSwordSkill: public WeaponSkill{
 public:
-    IceSwordSkill():TriggerSkill("ice_sword"){
+    IceSwordSkill():WeaponSkill("ice_sword"){
         events << SlashHit;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasWeapon(objectName());
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -994,6 +990,7 @@ class RenwangShieldSkill: public ArmorSkill{
 public:
     RenwangShieldSkill():ArmorSkill("renwang_shield"){
         events << SlashEffected;
+        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

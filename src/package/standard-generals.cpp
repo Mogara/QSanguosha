@@ -1307,6 +1307,9 @@ void StandardPackage::addGenerals(){
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);
     zhouyu->addSkill(new Fanjian);
+#ifdef USE_RCC
+    zhouyu->addSkill(new SPConvertSkill("#zhouyug", "zhouyu", "gz_zhouyu"));
+#endif
 
     daqiao = new General(this, "daqiao", "wu", 3, false);
     daqiao->addSkill(new Guose);
