@@ -164,18 +164,14 @@ public:
 class Yicai:public TriggerSkill{
 public:
     Yicai():TriggerSkill("yicai"){
-        events << CardUsed << CardResponsed;
+        events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
-        CardStar card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }else if(event == CardResponsed)
-            card = data.value<CardStar>();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        CardStar card = use.card;
 
-        if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
+        if(card->isNDTrick()){
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
             room->playSkillEffect(objectName());
@@ -829,7 +825,11 @@ public:
 class Shien:public TriggerSkill{
 public:
     Shien():TriggerSkill("shien"){
-        events << CardUsed << CardResponsed;
+        events << CardUsed;
+    }
+
+    virtual int getPriority() const{
+        return 2;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -842,17 +842,12 @@ public:
         return me->getGeneralName().contains("pangtong");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getMark("forbid_shien") > 0)
             return false;
-        CardStar card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }else if(event == CardResponsed)
-            card = data.value<CardStar>();
-
-        if(card && card->isNDTrick()){
+        CardUseStruct use = data.value<CardUseStruct>();
+        CardStar card = use.card;
+        if(card->isNDTrick()){
             PlayerStar shuijing = room->findPlayerBySkillName(objectName());
             if(shuijing && shuijing->isAlive()){
                 if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue(shuijing))){

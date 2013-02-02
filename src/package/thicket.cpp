@@ -227,6 +227,10 @@ public:
         events << Damage;
     }
 
+    virtual int getPriority() const{
+        return -1;
+    }
+
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
@@ -830,6 +834,10 @@ class Baonue: public TriggerSkill{
 public:
     Baonue():TriggerSkill("baonue$"){
         events << Damage;
+    }
+
+    virtual int getPriority() const{
+        return -1;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

@@ -956,20 +956,20 @@ void Lightning::takeEffect(ServerPlayer *target) const{
 class IceSwordSkill: public WeaponSkill{
 public:
     IceSwordSkill():WeaponSkill("ice_sword"){
-        events << SlashHit;
+        events << Damage;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        DamageStruct damage = data.value<DamageStruct>();
 
-        if(!effect.to->isNude() && player->askForSkillInvoke("ice_sword", data)){
+        if(damage.card && damage.card->inherits("Slash") && !damage.to->isNude() && !damage.chain && player->askForSkillInvoke("ice_sword", data)){
             room->setEmotion(player,"weapon/ice_sword");
-            int card_id = room->askForCardChosen(player, effect.to, "he", "ice_sword");
-            room->throwCard(card_id, effect.to, effect.from);
+            int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+            room->throwCard(card_id, damage.to, damage.from);
 
-            if(!effect.to->isNude()){
-                card_id = room->askForCardChosen(player, effect.to, "he", "ice_sword");
-                room->throwCard(card_id, effect.to, effect.from);
+            if(!damage.to->isNude()){
+                card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+                room->throwCard(card_id, damage.to, damage.from);
             }
 
             return true;
@@ -990,7 +990,6 @@ class RenwangShieldSkill: public ArmorSkill{
 public:
     RenwangShieldSkill():ArmorSkill("renwang_shield"){
         events << SlashEffected;
-        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{

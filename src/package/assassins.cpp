@@ -8,32 +8,29 @@
 class Moukui: public TriggerSkill{
 public:
     Moukui(): TriggerSkill("moukui"){
-        events << CardUsed << SlashMissed << CardFinished;
+        events << SlashEffect << SlashMissed << CardFinished;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if(player != use.from || !use.card->isKindOf("Slash"))
-                return false;
-            foreach(ServerPlayer *p, use.to) {
-                if(player->askForSkillInvoke(objectName(), QVariant::fromValue(p))) {
-                    QString choice;
-                    if(p->isNude())
-                        choice = "draw";
-                    else
-                        choice = room->askForChoice(player, objectName(), "draw+discard");
-                    if(choice == "draw") {
-                        room->playSkillEffect(objectName(), 1);
-                        player->drawCards(1);
-                    }else {
-                        room->playSkillEffect(objectName(), 2);
-                        int disc = room->askForCardChosen(player, p, "he", objectName());
-                        room->throwCard(disc, p, player);
-                    }
-                    room->setPlayerMark(p, objectName() + use.card->getEffectIdString(),
-                                        p->getMark(objectName() + use.card->getEffectIdString()) + 1);
+        if(event == SlashEffect){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            PlayerStar p = effect.to;
+            if(player->askForSkillInvoke(objectName(), QVariant::fromValue(p))) {
+                QString choice;
+                if(p->isNude())
+                    choice = "draw";
+                else
+                    choice = room->askForChoice(player, objectName(), "draw+discard");
+                if(choice == "draw") {
+                    room->playSkillEffect(objectName(), 1);
+                    player->drawCards(1);
+                }else {
+                    room->playSkillEffect(objectName(), 2);
+                    int disc = room->askForCardChosen(player, p, "he", objectName());
+                    room->throwCard(disc, p, player);
                 }
+                room->setPlayerMark(p, objectName() + effect.slash->getEffectIdString(),
+                                    p->getMark(objectName() + effect.slash->getEffectIdString()) + 1);
             }
         }else if(event == SlashMissed) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -61,12 +58,12 @@ public:
 class Tianming: public TriggerSkill{
 public:
     Tianming(): TriggerSkill("tianming"){
-        events << CardEffected;
+        events << SlashEffected;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(effect.card->inherits("Slash") && player->askForSkillInvoke(objectName())){
+        //SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(player->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName(), 1);
             if(!player->isNude()){
                 int total = 0;
@@ -531,33 +528,26 @@ public:
 class Duanzhi: public TriggerSkill{
 public:
     Duanzhi(): TriggerSkill("duanzhi") {
-        events << CardUsed;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        events << CardEffected;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const {
-        ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
-        if(!splayer || splayer == player || player->isNude())
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if(effect.from == effect.to)
             return false;
-
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->getTypeId() == Card::Skill || !use.to.contains(splayer))
+        if(effect.card->getTypeId() == Card::Skill)
             return false;
         
-        if(splayer->askForSkillInvoke(objectName(), data)) {
+        if(player->askForSkillInvoke(objectName(), data)) {
             for(int i = 0; i < 2; i++) {
-                if(player->isNude())
+                if(!effect.from || effect.from->isNude())
                     break;
-                if(room->askForChoice(splayer, objectName(), "discard+cancel") == "cancel")
+                if(room->askForChoice(player, objectName(), "discard+cancel") == "cancel")
                     break;
-                int card_id = room->askForCardChosen(splayer, player, "he", objectName());
-                room->throwCard(card_id, player, splayer);
+                int card_id = room->askForCardChosen(player, effect.from, "he", objectName());
+                room->throwCard(card_id, effect.from, player);
             }
-
-            room->loseHp(splayer);
+            room->loseHp(player);
         }
         return false;
     }

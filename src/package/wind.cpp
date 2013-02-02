@@ -645,12 +645,11 @@ class Tianxiang: public TriggerSkill{
 public:
     Tianxiang():TriggerSkill("tianxiang"){
         events << Predamaged;
-
         view_as_skill = new TianxiangViewAsSkill;
     }
 
     virtual int getPriority() const{
-        return 2;
+        return 3;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *xiaoqiao, QVariant &data) const{

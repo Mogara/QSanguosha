@@ -619,7 +619,11 @@ public:
     Huxiao(): TriggerSkill("huxiao") {
         events << SlashMissed << PhaseChange;
     }
-    
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == SlashMissed){
             if(player->getPhase() == Player::Play && player->getMark("wuji") == 0){

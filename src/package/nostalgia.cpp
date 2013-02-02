@@ -61,7 +61,7 @@ NostalgiaPackage::NostalgiaPackage()
 class NosWuyan: public TriggerSkill{
 public:
     NosWuyan():TriggerSkill("noswuyan"){
-        events << CardEffect << CardEffected;
+        events << CardEffect << CardEffected << CardUsed;
         frequency = Compulsory;
     }
 
@@ -69,7 +69,13 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->isNDTrick() && !use.to.contains(player))
+                room->playSkillEffect("wuyan");
+            return false;
+        }
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.to == effect.from)
             return false;
@@ -84,9 +90,6 @@ public:
                 log.arg2 = objectName();
 
                 room->sendLog(log);
-
-                room->playSkillEffect("wuyan");
-
                 return true;
             }
 
@@ -119,7 +122,10 @@ void NosJujianCard::onEffect(const CardEffectStruct &effect) const{
     int n = subcardsLength();
     effect.to->drawCards(n);
     Room *room = effect.from->getRoom();
-    room->playSkillEffect("jujian");
+    if(effect.to->getGeneral()->isCaoCao("zhugeliang"))
+        room->playSkillEffect("jujian", 3);
+    else
+        room->playSkillEffect("jujian", qrand() % 2 + 1);
 
     if(n == 3){
         QSet<Card::CardType> types;

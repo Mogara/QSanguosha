@@ -226,8 +226,7 @@ void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
 }
 
-LiuliCard::LiuliCard()
-{
+LiuliCard::LiuliCard(){
 }
 
 bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -243,8 +242,12 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
     int card_id = subcards.first();
     if(Self->getWeapon() && Self->getWeapon()->getId() == card_id)
         return Self->distanceTo(to_select) <= 1;
-    else if(Self->getOffensiveHorse() && Self->getOffensiveHorse()->getId() == card_id)
-        return Self->distanceTo(to_select) <= (Self->getWeapon()?Self->getWeapon()->getRange():1);
+    else if(Self->getOffensiveHorse() && Self->getOffensiveHorse()->getId() == card_id){
+        int distance = 1;
+        if(Self->getWeapon())
+            distance = Self->getWeapon()->getRange();
+        return Self->distanceTo(to_select) <= distance;
+    }
     else
         return true;
 }

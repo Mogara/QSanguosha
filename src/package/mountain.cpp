@@ -168,7 +168,7 @@ public:
 class Beige: public TriggerSkill{
 public:
     Beige():TriggerSkill("beige"){
-        events << Damaged;
+        events << DamageComplete;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -832,9 +832,8 @@ public:
 
         if(event == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(!effect.card->inherits("Slash"))
+            if(!effect.card->inherits("Slash") || effect.from == effect.to)
                 return false;
-
             room->playSkillEffect(objectName());
 
             LogMessage log;

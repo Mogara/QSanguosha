@@ -1139,12 +1139,12 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const {
         if(event == Damaged) {
-            if (player->getMark("@fenyong") == 0 && room->askForSkillInvoke(player, objectName())) {
+            if(player->getMark("@fenyong") == 0 && room->askForSkillInvoke(player, objectName())) {
                 player->gainMark("@fenyong");
                 room->playSkillEffect(objectName(), 1);
             }
-        } else if (event == Predamaged) {
-            if (player->getMark("@fenyong") > 0) {
+        }else if(event == Predamaged) {
+            if(player->getMark("@fenyong") > 0){
                 room->playSkillEffect(objectName(), 2);
                 LogMessage log;
                 log.type = "#FenyongAvoid";

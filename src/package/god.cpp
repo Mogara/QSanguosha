@@ -413,7 +413,7 @@ public:
 class Kuangbao: public TriggerSkill{
 public:
     Kuangbao():TriggerSkill("kuangbao"){
-        events << Damage << Damaged;
+        events << Damage << DamageDone;
         frequency = Compulsory;
     }
 
@@ -438,20 +438,15 @@ class Wumou:public TriggerSkill{
 public:
     Wumou():TriggerSkill("wumou"){
         frequency = Compulsory;
-        events << CardUsed << CardResponsed;
+        events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        CardStar card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }else if(event == CardResponsed)
-            card = data.value<CardStar>();
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        CardStar card = use.card;
 
-        if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
+        if(card->isNDTrick()){
             room->playSkillEffect(objectName());
-
             int num = player->getMark("@wrath");
             if(num >= 1 && room->askForChoice(player, objectName(), "discard+losehp") == "discard"){
                 player->loseMark("@wrath");
@@ -1018,7 +1013,7 @@ public:
 class Jilve: public TriggerSkill{
 public:
     Jilve():TriggerSkill("jilve"){
-        events << CardUsed << CardResponsed // jizhi
+        events << CardUsed // jizhi
                 << AskForRetrial // guicai
                 << Damaged; // fangzhu
 
@@ -1032,13 +1027,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         player->setMark("JilveEvent",(int)event);
-        if(event == CardUsed || event == CardResponsed){
-            CardStar card = NULL;
-            if(event == CardUsed)
-                card = data.value<CardUseStruct>().card;
-            else
-                card = data.value<CardStar>();
-
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            CardStar card = use.card;
             if(card->isNDTrick() && player->askForSkillInvoke("jilve", data)){
                 room->playSkillEffect(objectName(), 5);
                 player->loseMark("@bear");

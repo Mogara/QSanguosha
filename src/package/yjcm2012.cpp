@@ -540,6 +540,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual int getPriority() const{
+        return 1;
+    }
+
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(!player->isAlive())
             return false;

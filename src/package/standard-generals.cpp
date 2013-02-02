@@ -700,17 +700,16 @@ class Jizhi:public TriggerSkill{
 public:
     Jizhi():TriggerSkill("jizhi"){
         frequency = Frequent;
-        events << CardUsed << CardResponsed;
+        events << CardUsed;
+    }
+
+    virtual int getPriority() const{
+        return 2;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *yueying, QVariant &data) const{
-        CardStar card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }else if(event == CardResponsed)
-            card = data.value<CardStar>();
-
+        CardUseStruct use = data.value<CardUseStruct>();
+        CardStar card = use.card;
         if(card->isNDTrick()){
             if(room->askForSkillInvoke(yueying, objectName())){
                 room->playSkillEffect(objectName());
@@ -982,13 +981,12 @@ class Liuli: public TriggerSkill{
 public:
     Liuli():TriggerSkill("liuli"){
         view_as_skill = new LiuliViewAsSkill;
-
-        events << CardEffected;
+        events << SlashEffected;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *daqiao, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(effect.card->isKindOf("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(!daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(effect.from);
 
@@ -1007,7 +1005,7 @@ public:
                     foreach(ServerPlayer *player, players){
                         if(player->hasFlag("liuli_target")){
                             effect.to = player;
-                            room->cardEffect(effect);
+                            room->slashEffect(effect);
 
                             room->setPlayerFlag(effect.from, "-slash_source");
                             room->setPlayerFlag(player, "-liuli_target");
