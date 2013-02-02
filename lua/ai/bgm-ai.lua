@@ -77,7 +77,7 @@ sgs.ai_skill_use_func.LihunCard = function(card,use,self)
 		if target then
 			use.card = card
 			if use.to then
-				self.room:setPlayerFlag(target, "lihun_target")
+--				self.room:setPlayerFlag(target, "lihun_target")
 				use.to:append(target)
 			end
 		end
@@ -694,7 +694,7 @@ sgs.ai_skill_choice.xuehen = function(self, choices)
 			((amr:isKindOf("Vine") and not self.player:hasWeapon("fan")))
 
 		if self.player:canSlash(enemy, false) and not self:slashProhibit(nil, enemy) and eff and def < 8 then
-			self.room:setPlayerFlag(enemy, "XuehenToChoose")
+			self.xuehentarget = enemy
 			return "slash"
 		end
 	end
@@ -704,7 +704,7 @@ sgs.ai_skill_choice.xuehen = function(self, choices)
 				((amr:isKindOf("Vine") and not self.player:hasWeapon("fan")))
 
 			if self.player:canSlash(enemy, false) and not self:slashProhibit(nil, enemy) then
-				self.room:setPlayerFlag(enemy, "XuehenToChoose")
+				self.xuehentarget = enemy
 				return "slash"
 			end
 		end
@@ -713,16 +713,5 @@ sgs.ai_skill_choice.xuehen = function(self, choices)
 end
 
 sgs.ai_skill_playerchosen.xuehen = function(self, targets)
-	targets = sgs.QList2Table(targets)
-	for _, enemy in ipairs(targets) do
-		if enemy:hasFlag("XuehenToChoose") then
-			self.room:setPlayerFlag(enemy, "-XuehenToChoose")
-			return enemy
-		end
-	end
-	for _, p in sgs.qlist(self.room:getAllPlayers()) do
-		if p:hasFlag("XuehenToChoose") then
-			self.room:setPlayerFlag(p, "-XuehenToChoose")
-		end
-	end
+	return self.xuehentarget
 end

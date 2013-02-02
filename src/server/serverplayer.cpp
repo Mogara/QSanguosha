@@ -62,6 +62,20 @@ const Card *ServerPlayer::getRandomHandCard() const{
     return handcards.at(index);
 }
 
+int ServerPlayer::getRandomCardId(const QString &flags) const{
+    QList<const Card *> cards;
+    if(flags.contains("h"))
+        cards << handcards;
+    if(flags.contains("e"))
+        cards << getEquips();
+    if(flags.contains("j"))
+        cards << getJudgingArea();
+    if(cards.isEmpty())
+        return -4;
+    int index = qrand() % cards.length();
+    return cards.at(index)->getEffectiveId();
+}
+
 void ServerPlayer::obtainCard(const Card *card, bool unhide){
     room->obtainCard(this, card, unhide);
 }

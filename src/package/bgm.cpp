@@ -1217,21 +1217,7 @@ public:
                 room->useCard(card_use);
             } else {
                 room->playSkillEffect(objectName(), 1);
-                room->setPlayerFlag(player, "XuehenTarget_InTempMoving");
-                DummyCard *dummy = new DummyCard;
-                QList<int> card_ids;
-                QList<Player::Place> original_places;
-                for (int i = 0; i < xiahou->getLostHp(); i++) {
-                    if (player->isNude())
-                        break;
-                    int card_id = room->askForCardChosen(xiahou, player, "he", objectName());
-                    card_ids << card_id;
-                    original_places << room->getCardPlace(card_id);
-                    dummy->addSubcard(card_id);
-                }
-                for (int i = 0; i < dummy->subcardsLength(); i++)
-                    room->moveCardTo(Sanguosha->getCard(card_ids.at(i)), player, original_places.at(i), false);
-                room->setPlayerFlag(player, "-XuehenTarget_InTempMoving");
+                DummyCard *dummy = room->getCardsOnetime(xiahou, player, xiahou->getLostHp(), objectName());
                 room->throwCard(dummy, player, xiahou);
                 dummy->deleteLater();
             }
@@ -1241,28 +1227,6 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
         return 2;
-    }
-};
-
-class XuehenAvoidTriggeringCardsMove: public TriggerSkill{
-public:
-    XuehenAvoidTriggeringCardsMove():TriggerSkill("#xuehen-avoid-triggering-cards-move"){
-        events << CardGot;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 10;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
-        foreach(ServerPlayer *p, room->getAllPlayers())
-            if(p->hasFlag("XuehenTarget_InTempMoving"))
-                return true;
-        return false;
     }
 };
 
@@ -1319,9 +1283,7 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_xiahoudun->addSkill(new Fenyong);
     bgm_xiahoudun->addSkill(new FenyongClear);
     bgm_xiahoudun->addSkill(new Xuehen);
-    bgm_xiahoudun->addSkill(new XuehenAvoidTriggeringCardsMove);
     related_skills.insertMulti("fenyong", "#fenyong-clear");
-    related_skills.insertMulti("xuehen", "#xuehen-avoid-triggering-cards-move");
 
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();

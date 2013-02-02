@@ -136,6 +136,7 @@ public:
 
     void throwCard(const Card *card, ServerPlayer *who = NULL, ServerPlayer *thrower = NULL);
     void throwCard(int card_id, ServerPlayer *who = NULL, ServerPlayer *thrower = NULL);
+    DummyCard *getCardsOnetime(ServerPlayer *thrower, ServerPlayer *target, int num, const QString &skill_name, const QString &flags = "he");
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope);
 

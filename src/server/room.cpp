@@ -2622,6 +2622,21 @@ void Room::throwCard(int card_id, ServerPlayer *who, ServerPlayer *thrower){
     throwCard(Sanguosha->getCard(card_id), who, thrower);
 }
 
+DummyCard *Room::getCardsOnetime(ServerPlayer *thrower, ServerPlayer *target, int num, const QString &skill_name, const QString &flags){
+    DummyCard *dummy = new DummyCard;
+    QList<int> card_ids;
+    for (int i = 0; i < num; i++) {
+        if(target->getRandomCardId(flags) == -4)
+            break;
+        int card_id = askForCardChosen(thrower, target, flags, skill_name);
+        while(card_ids.contains(card_id))
+            card_id = target->getRandomCardId(flags);
+        card_ids << card_id;
+        dummy->addSubcard(card_id);
+    }
+    return dummy;
+}
+
 RoomThread *Room::getThread() const{
     return thread;
 }

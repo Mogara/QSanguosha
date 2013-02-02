@@ -33,6 +33,7 @@ public:
     void playSkillEffect(const QString &skill_name, int index = -1);
     int getRandomHandCardId() const;
     const Card *getRandomHandCard() const;
+    int getRandomCardId(const QString &flags = "he") const;
     void obtainCard(const Card *card, bool unhide = true);
     void throwAllEquips();
     void throwAllHandCards();

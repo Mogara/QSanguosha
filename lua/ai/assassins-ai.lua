@@ -282,8 +282,8 @@ sgs.ai_card_intention.MixinCard = 20
 
 sgs.ai_skill_invoke.cangni = function(self, data)
 	local target = self.room:getCurrent()
-	if self.player:hasFlag("cangnilose") then return self:isEnemy(target) end
-	if self.player:hasFlag("cangniget") then return self:isFriend(target) end
+--	if self.player:hasFlag("cangnilose") then return self:isEnemy(target) end
+--	if self.player:hasFlag("cangniget") then return self:isFriend(target) end
 	local hand = self.player:getHandcardNum()
 	local hp = self.player:getHp()
 	return (hand + 2) <= hp or self.player:isWounded();

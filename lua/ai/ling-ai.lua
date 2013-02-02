@@ -146,21 +146,15 @@ end
 sgs.ai_skill_invoke.neoganglie = function(self, data)
 	local target = data:toPlayer()
 	if not self:isFriend(target) then
-		self.room:setPlayerFlag(target, "ganglie_target")
+		self.ganglietarget = target
 		return true
 	end
 	return false
 end
 
 sgs.ai_skill_choice.neoganglie = function(self, choices)
-	local target
-	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:hasFlag("ganglie_target") then
-			target = player
-			self.room:setPlayerFlag(target, "-ganglie_target")
-		end
-	end
-	if self:hasSkills(sgs.masochism_skill,target) and target:getHp() >= target:getHandcardNum()
+	local target = self.ganglietarget
+	if target and self:hasSkills(sgs.masochism_skill,target) and target:getHp() >= target:getHandcardNum()
 		and target:getHandcardNum() > 1 then
 			return "throw"
 	end
