@@ -14,7 +14,7 @@ GameRule::GameRule(QObject *parent)
 
     events << GameStart << TurnStart << PhaseChange << CardUsed << CardFinished
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
-            << AskForPeaches << Death << Dying << GameOverJudge << RewardAndPunish
+            << AskForPeaches << PreDeath << Death << Dying << GameOverJudge << RewardAndPunish
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << DamageDone << DamageComplete
             << StartJudge << FinishJudge << Pindian;
@@ -470,9 +470,38 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
                 room->gameOver(winner);
                 return true;
             }
-
             break;
         }
+
+    case PreDeath:{
+        //DamageStar damage = data.value<DamageStar>();
+        //ServerPlayer *killer = damage ? damage->from : NULL;
+
+        if(player->getState() == "online" && Config.FreeChoose && player->askForSkillInvoke("undead")){
+            if(player->getMaxHp() <= 0)
+                room->setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
+            if(player->getHp() <= 0)
+                room->setPlayerProperty(player, "hp", 1);
+            return true;
+        }
+
+        if(player->getState() == "online"){
+            bool allrobot = true;
+            QStringList winners;
+            foreach(ServerPlayer *robot, room->getOtherPlayers(player)){
+                if(robot->getState() != "robot" && allrobot)
+                    allrobot = false;
+                if(robot->isAlive())
+                    winners << robot->objectName();
+            }
+            if(allrobot && player->askForSkillInvoke("goaway")){
+                room->gameOver(winners.join("+"));
+                return true;
+            }
+        }
+
+        break;
+    }
 
     case Death:{
             player->bury();

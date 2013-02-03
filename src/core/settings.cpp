@@ -78,6 +78,7 @@ void Settings::init(){
     DisableChat = value("DisableChat", false).toBool();
     FreeAssignSelf = value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
+    NoLordSkill = value("NoLordSkill", false).toBool();
     EnableScene = value("EnableScene", false).toBool();	//changjing
     EnableSame = value("EnableSame", false).toBool();
     EnableBasara = value("EnableBasara", false).toBool();

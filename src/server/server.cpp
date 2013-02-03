@@ -183,6 +183,9 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     second_general_checkbox = new QCheckBox(tr("Enable second general"));
 
+    nolordskill_checkbox = new QCheckBox(tr("No lord skill"));
+    nolordskill_checkbox->setChecked(Config.NoLordSkill);
+
     scene_checkbox  = new QCheckBox(tr("Enable Scene"));
 
     scene_checkbox->setChecked(Config.EnableScene);	//changjing
@@ -237,7 +240,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addLayout(HLay(free_choose_checkbox, free_assign_checkbox));
     layout->addWidget(free_assign_self_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
-    layout->addWidget(second_general_checkbox);
+    layout->addLayout(HLay(second_general_checkbox, nolordskill_checkbox));
     layout->addLayout(HLay(max_hp_label, max_hp_scheme_combobox));
     layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
     layout->addLayout(HLay(scene_checkbox, same_checkbox));
@@ -905,6 +908,7 @@ bool ServerDialog::config(){
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
+    Config.NoLordSkill = nolordskill_checkbox->isChecked();
     Config.EnableScene = scene_checkbox->isChecked();		//changjing
     Config.EnableSame = same_checkbox->isChecked();
     Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
@@ -941,6 +945,7 @@ bool ServerDialog::config(){
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
+    Config.setValue("NoLordSkill", Config.NoLordSkill);
     Config.setValue("EnableScene", Config.EnableScene);	//changjing
     Config.setValue("EnableSame", Config.EnableSame);
     Config.setValue("EnableBasara",Config.EnableBasara);
