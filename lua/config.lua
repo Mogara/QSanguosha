@@ -114,7 +114,7 @@ config = {
 	color_qun = "#8A807A",
 	color_god = "#96943D",
 
-	mini_max = 33 -- 此处以Config.S_MINI_MAX_COUNT为准
+	mini_max = 44 -- 此处以Config.S_MINI_MAX_COUNT为准
 }
 
 ban_list = { -- 初始禁表设置
