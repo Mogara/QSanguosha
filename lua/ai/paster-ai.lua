@@ -127,6 +127,7 @@ sgs.ai_skill_invoke.hantong = function(self, data)
 	return true
 end
 
+--paster-yicong
 sgs.ai_skill_use["@@yic0ng"] = function(self, prompt)
     local t,j,zero,one,two = 0,0,0,0,0
 	local cards = self.player:getHandcards()
@@ -170,4 +171,30 @@ sgs.ai_skill_use["@@yic0ng"] = function(self, prompt)
 		return "@Yic0ngCard:".. cards[1]:getId()..":->."
 	end
 	return "."
+end
+
+-- mingjian
+sgs.ai_skill_use["@@mingjian"] = function(self, prompt)
+    local target = self.room:getCurrent()
+	if not target or self:isEnemy(target) then return "." end
+	if target:containsTrick("indulgence") or target:containsTrick("supply_shortage") then
+		local cards = self.player:getCards("he")
+		cards = sgs.QList2Table(cards)
+		self:sortByUseValue(cards, true)
+		return "@MingjianCard:".. cards[1]:getId()..":->."
+	end
+	return "."
+end
+sgs.ai_skill_choice.mingjian = function(self, choices)
+	return "ming"
+end
+
+-- yinzhi
+sgs.ai_skill_invoke.yinzhi = function(self, data)
+	local damage = data:toDamage()
+	return self:isEnemy(damage.from)
+end
+sgs.ai_skill_playerchosen.yinzhi = function(self, targets)
+	self:sort(self.friends, "handcard")
+	return self.friends[1]
 end

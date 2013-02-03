@@ -53,7 +53,7 @@ sgs.ai_skill_cardask["@tri_double"] = function(self, data)
 		end
 	end
 	if not target then return "." end
-	local cards = sgs.QList2Table(self.player:getHandcards())	
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)
 	self.tritarget = target
 	return cards[1]:getEffectiveId()
