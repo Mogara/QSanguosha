@@ -225,10 +225,7 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
     if(!targets.isEmpty())
         return false;
 
-    if(to_select == Self)
-        return false;
-
-    return !Self->isKongcheng();
+    return to_select != Self;
 }
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
@@ -239,12 +236,12 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
         room->playSkillEffect(skill_name, qrand() % 2 + 1);
     QStringList choicelist;
     choicelist << "draw";
-    if (effect.to->getLostHp() != 0)
-            choicelist << "recover";
-    if (!effect.to->faceUp() || effect.to->isChained())
+    if(effect.to->getLostHp() != 0)
+        choicelist << "recover";
+    if(!effect.to->faceUp() || effect.to->isChained())
         choicelist << "reset";
     QString choice;
-    if (choicelist.length() >=2)
+    if(choicelist.length() >=2)
         choice = room->askForChoice(effect.to, "jujian", choicelist.join("+"));
     else
         choice = "draw";

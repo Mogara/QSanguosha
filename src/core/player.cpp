@@ -157,7 +157,7 @@ int Player::getAttackRange(const Player *other, const Card *slash) const{
     QList<const Player *> players = getSiblings();
     players << this;
     foreach(const Player *p, players){
-        if(p->hasWeapon("wuliujian") && p->getKingdom() == getKingdom()){
+        if(p->hasWeapon("wuliujian") && p->getKingdom() == getKingdom() && getKingdom() != "god"){
             wu6jian = 1;
             break;
         }

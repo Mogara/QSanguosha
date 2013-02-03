@@ -75,6 +75,8 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         RecoverStruct recover = data.value<RecoverStruct>();
+        if(player->getKingdom() == "god" && player->getGeneralName() == "anjiang")
+            return false;
         int x = recover.recover, i;
         for(i=0; i<x; i++){
             if(!room->askForUseCard(player, "@@shushen", "@shushen"))
@@ -692,7 +694,7 @@ bool AllyFarAttackNear::targetFilter(const QList<const Player *> &targets, const
     if(to_select == Self)
         return false;
 
-    return to_select->getKingdom() != Self->getKingdom();
+    return to_select->getKingdom() != "god" && to_select->getKingdom() != Self->getKingdom();
 }
 
 void AllyFarAttackNear::onEffect(const CardEffectStruct &effect) const{
@@ -709,7 +711,7 @@ EaseVSFatigue::EaseVSFatigue(Suit suit, int number)
 void EaseVSFatigue::onUse(Room *room, const CardUseStruct &card_use) const{
     CardUseStruct use = card_use;
     foreach(ServerPlayer *p, room->getAllPlayers()){
-        if(p->getKingdom() == card_use.from->getKingdom())
+        if(p->getKingdom() == card_use.from->getKingdom() && p->getKingdom() != "god")
             use.to << p;
     }
     TrickCard::onUse(room, use);

@@ -629,16 +629,25 @@ public:
         Config.AIDelay = 0;
 
         int n = 0;
+        DummyCard *dummy = new DummyCard;
+        QList<int> card_ids;
+
         while(!stars.isEmpty()){
             int card_id = room->askForAG(shenzhuge, stars, true, "qixing");
+            while(card_ids.contains(card_id))
+                card_id = room->askForAG(shenzhuge, stars, true, "qixing");
             if(card_id == -1)
                 break;
 
             stars.removeOne(card_id);
             ++ n;
 
-            room->obtainCard(shenzhuge, card_id, false);
+            dummy->addSubcard(card_id);
+            card_ids << card_id;
+            room->fillAG(stars, shenzhuge);
         }
+        room->obtainCard(shenzhuge, dummy, false);
+        dummy->deleteLater();
 
         Config.AIDelay = ai_delay;
 
