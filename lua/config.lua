@@ -3,7 +3,7 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130201",
+	version = "20130204",
 	version_name = "法海版",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
@@ -114,7 +114,7 @@ config = {
 	color_qun = "#8A807A",
 	color_god = "#96943D",
 
-	mini_max = 33 -- 此处以Config.S_MINI_MAX_COUNT为准
+	mini_max = 44 -- 此处以Config.S_MINI_MAX_COUNT为准
 }
 
 ban_list = { -- 初始禁表设置

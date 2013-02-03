@@ -706,8 +706,13 @@ EaseVSFatigue::EaseVSFatigue(Suit suit, int number)
     setObjectName("ease_fatigue");
 }
 
-bool EaseVSFatigue::isCancelable(const CardEffectStruct &effect) const{
-    return effect.to->getKingdom() == effect.from->getKingdom();
+void EaseVSFatigue::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct use = card_use;
+    foreach(ServerPlayer *p, room->getAllPlayers()){
+        if(p->getKingdom() == card_use.from->getKingdom())
+            use.to << p;
+    }
+    TrickCard::onUse(room, use);
 }
 
 void EaseVSFatigue::onEffect(const CardEffectStruct &effect) const{

@@ -1405,6 +1405,59 @@ public:
     }
 };
 
+class Heidian: public TriggerSkill{
+public:
+    Heidian():TriggerSkill("heidian"){
+        events << Damaged << CardLost;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent v, Room* room, ServerPlayer *player, QVariant &data) const{
+        QList<ServerPlayer *> sunny = room->findPlayersBySkillName(objectName());
+        if(sunny.isEmpty())
+            return false;
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.arg = objectName();
+        foreach(ServerPlayer *sun, sunny){
+            log.from = sun;
+            if(v == Damaged){
+                DamageStruct damage = data.value<DamageStruct>();
+                if(damage.to == sun && damage.from && damage.from != damage.to &&
+                   !damage.from->isKongcheng()){
+                    room->playSkillEffect(objectName(), qrand() % 2 + 3);
+                    room->sendLog(log);
+                    if(!room->askForCard(damage.from, ".", "@heidian1:" + sun->objectName(), data, CardDiscarded))
+                        room->throwCard(damage.from->getRandomHandCard(), damage.from);
+                }
+            }
+            else if(v == CardLost){
+                if(player == sun)
+                    continue;
+                if(player->isKongcheng()){
+                    CardMoveStar move = data.value<CardMoveStar>();
+                    if(move->from_place == Player::Hand && player->isAlive()){
+                        room->playSkillEffect(objectName(), qrand() % 2 + 1);
+                        room->sendLog(log);
+
+                        const Card *card = !player->hasEquip() ? NULL :
+                                           room->askForCard(player, ".Equi", "@heidian2:" + sun->objectName(), data, NonTrigger);
+                        if(card)
+                            sun->obtainCard(card);
+                        else
+                            room->loseHp(player);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};
+
 TestPackage::TestPackage()
     :Package("test")
 {
@@ -1420,6 +1473,7 @@ TestPackage::TestPackage()
 
     General *dunkeng_caoren = new General(this, "dunkengcaoren", "wei", 4, true, true);
     dunkeng_caoren->addSkill(new SuperJushou);
+    dunkeng_caoren->addSkill(new Heidian);
 
     new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);
