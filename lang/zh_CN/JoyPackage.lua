@@ -42,4 +42,7 @@ return {
 
 	["yx_sword"] = "杨修剑",
 	[":yx_sword"] = "攻击范围：３<br/>当你的【杀】造成伤害时，可以指定攻击范围内的一名其他角色为伤害来源，杨修剑归该角色所有",
+
+	["fiveline"] = "五道杠",
+	[":fiveline"] = "<br><font color=blue>德杠</font>·体力为1时可以发动【仁德】<br><font color=green>智杠</font>·体力为2时可以发动【集智】<br><font color=gold>体杠</font>·体力为3时可以发动【结姻】<br><font color=red>美杠</font>·体力为4时可以发动【国色】<br><font color=brown>劳杠</font>·体力为5时可以发动【苦肉】",
 }

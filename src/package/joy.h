@@ -111,4 +111,14 @@ public:
     Q_INVOKABLE YxSword(Card::Suit suit = Club, int number = 9);
 };
 
+class Fiveline: public Armor{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Fiveline(Card::Suit suit, int number);
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+};
+
 #endif // JOYPACKAGE_H

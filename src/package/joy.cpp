@@ -417,12 +417,80 @@ YxSword::YxSword(Suit suit, int number)
     skill = new YxSwordSkill;
 }
 
+class FivelineSkill: public ArmorSkill{
+public:
+    FivelineSkill():ArmorSkill("fiveline"){
+        events << HpChanged;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
+        int hp = player->getHp();
+        if(player->isDead() || hp < 1)
+            return false;
+        Room *room = player->getRoom();
+        QStringList skills;
+        skills << "rende" << "jizhi" << "jieyin" << "guose" << "kurou" << "keji";
+        QVariantList has_skills = player->tag["fiveline"].toList();
+        foreach(QString str, skills){
+            if(has_skills.contains(str))
+                continue;
+            else{
+                room->detachSkillFromPlayer(player, str);
+                player->loseSkill(str);
+            }
+        }
+        if(hp <= 6)
+            room->acquireSkill(player, skills.at(hp - 1));
+
+        return false;
+    }
+};
+
+Fiveline::Fiveline(Suit suit, int number) :Armor(suit, number){
+    setObjectName("fiveline");
+    skill = new FivelineSkill;
+}
+
+void Fiveline::onInstall(ServerPlayer *player) const{
+    EquipCard::onInstall(player);
+    QVariantList skills;
+    QStringList fiveskill;
+    fiveskill << "rende" << "jizhi" << "jieyin" << "guose" << "kurou" << "keji";
+    foreach(QString str, fiveskill){
+        if(player->hasSkill(str))
+            skills << str;
+    }
+    player->tag["fiveline"] = skills;
+    player->getRoom()->setPlayerProperty(player, "hp", player->getHp());
+}
+
+void Fiveline::onUninstall(ServerPlayer *player) const{
+    if(player->isDead())
+        return;
+    QStringList skills;
+    skills << "rende" << "jizhi" << "jieyin" << "guose" << "kurou" << "keji";
+    QVariantList has_skills = player->tag["fiveline"].toList();
+    foreach(QString str, skills){
+        if(has_skills.contains(str))
+            continue;
+        else{
+            player->getRoom()->detachSkillFromPlayer(player, str);
+            player->loseSkill(str);
+        }
+    }
+}
+
 JoyEquipPackage::JoyEquipPackage()
     :Package("joy_equip")
 {
     (new Monkey(Card::Diamond, 5))->setParent(this);
     (new GaleShell(Card::Heart, 1))->setParent(this);
     (new YxSword)->setParent(this);
+    (new Fiveline(Card::Heart, 5))->setParent(this);
 
     type = CardPack;
 }
