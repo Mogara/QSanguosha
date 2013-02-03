@@ -30,7 +30,7 @@ if sgs.GetConfig("GameMode", ""):match("zombie") then
 	local peaching_skill = {name = "peaching"}
 	table.insert(sgs.ai_skills, peaching_skill)
 	function peaching_skill.getTurnUseCard(self)
-		local peach = self:getCardId("Peach")
+		local peach = self:getCardId("Analeptic") or self:getCardId("Peach") or self:getCardId("Shit")
 		if peach and type(peach) == "number" then return sgs.Card_Parse("@PeachingCard=" .. peach) end
 	end
 

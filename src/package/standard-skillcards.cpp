@@ -212,7 +212,7 @@ void QingnangCard::onEffect(const CardEffectStruct &effect) const{
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
-    effect.to->getRoom()->recover(effect.to, recover);
+    effect.to->getRoom()->recover(effect.to, recover, true);
 }
 
 GuicaiCard::GuicaiCard(){

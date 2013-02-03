@@ -1519,9 +1519,8 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 
     log_box->appendLog(type, from_general, QStringList(), QString(), arg);
 
-    if(player == Self){
+    if(player == Self)
         addSkillButton(Sanguosha->getSkill(skill_name));
-    }
 }
 
 void RoomScene::updateSkillButtons(){

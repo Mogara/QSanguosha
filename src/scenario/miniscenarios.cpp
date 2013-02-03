@@ -80,13 +80,16 @@ bool MiniSceneRule::trigger(TriggerEvent event,Room*room, ServerPlayer *player, 
             room->broadcastInvoke("animate", "lightbox:" + objectName() + ":2000");
             room->getThread()->delay(2000);
 
-            LogMessage log;
-            log.type = "#MiniSceneChanged";
-            log.arg = id;
-            log.arg2 = objectName();
-            room->sendLog(log);
-            log.type = QString("#mini_%1").arg(id);
-            room->sendLog(log);
+            QString yp = QString("#mini_%1").arg(id);
+            if(!Sanguosha->translate(yp).startsWith("#mini")){
+                LogMessage log;
+                log.type = "#MiniSceneChanged";
+                log.arg = id;
+                log.arg2 = objectName();
+                room->sendLog(log);
+                log.type = yp;
+                room->sendLog(log);
+            }
         }
     }
     QList<ServerPlayer*> players = room->getAllPlayers();
@@ -375,5 +378,16 @@ ADD_CUSTOM_SCENARIO(30)
 ADD_CUSTOM_SCENARIO(31)
 ADD_CUSTOM_SCENARIO(32)
 ADD_CUSTOM_SCENARIO(33)
+ADD_CUSTOM_SCENARIO(34)
+ADD_CUSTOM_SCENARIO(35)
+ADD_CUSTOM_SCENARIO(36)
+ADD_CUSTOM_SCENARIO(37)
+ADD_CUSTOM_SCENARIO(38)
+ADD_CUSTOM_SCENARIO(39)
+ADD_CUSTOM_SCENARIO(40)
+ADD_CUSTOM_SCENARIO(41)
+ADD_CUSTOM_SCENARIO(42)
+ADD_CUSTOM_SCENARIO(43)
+ADD_CUSTOM_SCENARIO(44)
 
 ADD_SCENARIO(Custom)

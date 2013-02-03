@@ -55,8 +55,8 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(triggerEvent){
         case GameStart:{
-                room->acquireSkill(player, "peaching", false);
-                room->acquireSkill(player, "harbourage", false);
+                room->acquireSkill(player, "peaching");
+                room->acquireSkill(player, "harbourage");
                 break;
             }
 
@@ -304,7 +304,8 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->inherits("Peach");
+        const Card *card = to_select->getCard();
+        return card->isKindOf("Peach") || card->isKindOf("Analeptic") || card->isKindOf("Shit");
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
