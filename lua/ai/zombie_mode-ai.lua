@@ -30,7 +30,7 @@ if sgs.GetConfig("GameMode", ""):match("zombie") then
 	local peaching_skill = {name = "peaching"}
 	table.insert(sgs.ai_skills, peaching_skill)
 	function peaching_skill.getTurnUseCard(self)
-		local peach = self:getCardId("Peach")
+		local peach = self:getCardId("Analeptic") or self:getCardId("Peach") or self:getCardId("Shit")
 		if peach and type(peach) == "number" then return sgs.Card_Parse("@PeachingCard=" .. peach) end
 	end
 
@@ -43,5 +43,18 @@ if sgs.GetConfig("GameMode", ""):match("zombie") then
 				return
 			end
 		end
+	end
+
+	sgs.ai_skill_invoke.harbourage = true
+	sgs.ai_skill_playerchosen.harbourage = function(self, targets)
+		self:sort(self.friends_noself, "defense")
+		local target = self.friends_noself[1] or self.player
+		for _, friend in ipairs(self.friends) do
+			if self:isWeak(friend) and not friend:hasMark("@harb") and friend:getGeneral2Name() ~= "zombie" then
+				target = friend
+				break
+			end
+		end
+		return target
 	end
 end

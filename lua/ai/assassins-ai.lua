@@ -321,8 +321,9 @@ sgs.ai_skill_playerchosen.duyi=function(self, targets)
 end
 
 sgs.ai_skill_invoke.duanzhi = function(self, data)
-	local use = data:toCardUse()
-	if self:isEnemy(use.from) and use.card:getSubtype() == "attack_card" and self.player:getHp() == 1 and not self:getCard("Peach") and not self:getCard("Analeptic") then
+	local use = data:toCardEffect()
+	if self:isEnemy(use.from) and use.card:getSubtype() == "attack_card" and
+		self.player:getHp() == 1 and not self:getCard("Peach") and not self:getCard("Analeptic") then
 		return true
 	end
 	return self:isEnemy(use.from) and self.player:getHp() > 2

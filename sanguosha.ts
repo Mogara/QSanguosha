@@ -3580,6 +3580,11 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用双将</translation>
     </message>
     <message>
+        <location filename="src/server/server.cpp" line="176"/>
+        <source>No lord skill</source>
+        <translation>无主公技</translation>
+    </message>
+    <message>
         <location filename="src/server/server.cpp" line="185"/>
         <source>Enable Scene</source>
         <translation>启用场景模式</translation>

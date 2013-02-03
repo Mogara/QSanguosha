@@ -43,6 +43,8 @@ return {
 
 -- test
 	["test"] = "测试",
+	["undead"] = "不死之身",
+	["goaway"] = "投降离开",
 
 	["#zhibasunquan"] = "牛逼的贤君",
 	["zhibasunquan"] = "制霸孙权",

@@ -78,7 +78,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 3;
+        return 2;
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{

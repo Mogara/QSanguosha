@@ -1781,6 +1781,10 @@ public:
         events << SlashMissed;
     }
 
+    virtual int getPriority() const{
+        return 2;
+    }
+
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(room->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data)){

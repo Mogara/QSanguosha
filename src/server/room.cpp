@@ -3595,6 +3595,10 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
     }
 }
 
+bool Room::isNoLordSkill(){
+    return Config.NoLordSkill;
+}
+
 QString Room::generatePlayerName(){
     static int id = 0;
     id ++;

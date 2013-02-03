@@ -17,7 +17,7 @@ static const qreal ViewWidth = 1280 * 0.8;
 static const qreal ViewHeight = 800 * 0.8;
 
 //consts
-const int Settings::S_MINI_MAX_COUNT = 33;
+const int Settings::S_MINI_MAX_COUNT = 44;
 
 Settings::Settings()
 
@@ -78,6 +78,7 @@ void Settings::init(){
     DisableChat = value("DisableChat", false).toBool();
     FreeAssignSelf = value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
+    NoLordSkill = value("NoLordSkill", false).toBool();
     EnableScene = value("EnableScene", false).toBool();	//changjing
     EnableSame = value("EnableSame", false).toBool();
     EnableBasara = value("EnableBasara", false).toBool();

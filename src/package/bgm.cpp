@@ -112,7 +112,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 4;
+        return 2;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -150,10 +150,6 @@ class Kuiwei: public TriggerSkill{
 public:
     Kuiwei(): TriggerSkill("kuiwei"){
         events << PhaseChange;
-    }
-
-    virtual int getPriority() const{
-        return 3;
     }
 
     int getWeaponCount(ServerPlayer *caoren) const{
@@ -620,11 +616,6 @@ public:
 class MouduanStart: public GameStartSkill{
 public:
     MouduanStart():GameStartSkill("#mouduan"){
-
-    }
-
-    virtual int getPriority() const{
-        return -1;
     }
 
     virtual void onGameStart(ServerPlayer *lvmeng) const{
@@ -786,11 +777,61 @@ public:
     }
 };
 
+ShichouCard::ShichouCard(){
+    will_throw = false;
+    once = true;
+}
+
+bool ShichouCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select->getKingdom() == "shu";
+}
+
+void ShichouCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    PlayerStar player = effect.from;
+    PlayerStar victim = effect.to;
+
+    room->broadcastInvoke("animate", "lightbox:$shichou");
+
+    player->addMark("hate");
+    victim->addMark("hate"+player->objectName());
+    player->loseAllMarks("@hate");
+    victim->gainMark("@bird");
+    effect.to->obtainCard(effect.card, false);
+}
+
+class ShichouViewAsSkill: public ViewAsSkill{
+public:
+    ShichouViewAsSkill():ViewAsSkill("shichou"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@shichou";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.length() <= 2;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 2)
+            return NULL;
+        ShichouCard *card = new ShichouCard;
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
 class Shichou: public TriggerSkill{
 public:
     Shichou(): TriggerSkill("shichou$"){
         events << PhaseChange << Predamaged << Dying;
         frequency = Limited;
+        view_as_skill = new ShichouViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
@@ -798,27 +839,12 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(event == PhaseChange && player->getMark("hate") < 1 && player->hasLordSkill(objectName())
+        if(event == PhaseChange && player->getMark("@hate") > 0 && player->hasLordSkill(objectName())
             && player->getPhase() == Player::Start && player->getCards("he").length() > 1){
             QList<ServerPlayer *> victims = room->getLieges("shu", player);
             if(victims.isEmpty())
                 return false;
-
-            if(player->askForSkillInvoke(objectName())){
-                room->playSkillEffect(objectName());
-                player->addMark("hate");
-                ServerPlayer *victim = room->askForPlayerChosen(player, victims, objectName());
-                victim->addMark("hate"+player->objectName());
-                victim->gainMark("@hate");
-                int first_id = room->askForCardChosen(player, player, "he", objectName());
-                DummyCard *dummy = new DummyCard;
-                dummy->addSubcard(first_id);
-                player->addToPile("#shichou", dummy, room->getCardPlace(first_id) == Player::Equip);
-                int second_id = room->askForCardChosen(player, player, "he", objectName());
-                dummy->addSubcard(second_id);
-                room->moveCardTo(dummy, victim, Player::Hand, false);
-                delete dummy;
-            }
+            room->askForUseCard(player, "@@shichou", "@shichou");
         }
         else if(event == Predamaged && player->hasLordSkill(objectName())){
             ServerPlayer *target = NULL;
@@ -852,7 +878,7 @@ public:
             foreach(ServerPlayer *p, room->getAllPlayers()){
                 if(p->hasLordSkill(objectName()) && player->getMark("hate"+p->objectName()) > 0){
                     player->setMark("hate"+p->objectName(), 0);
-                    player->loseMark("@hate");
+                    player->loseAllMarks("@bird");
                 }
             }
         }
@@ -911,7 +937,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 3;
+        return 2;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -1265,6 +1291,8 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_liubei->addSkill(new ZhaolieAct);
     bgm_liubei->addSkill(new Shichou);
     related_skills.insertMulti("zhaolie", "#zhaolie");
+    bgm_liubei->addSkill(new MarkAssignSkill("@hate", 1));
+    related_skills.insertMulti("shichou", "#@hate-1");
 
     General *bgm_daqiao = new General(this, "bgm_daqiao", "wu", 3, false);
     bgm_daqiao->addSkill(new Yanxiao);
@@ -1288,6 +1316,7 @@ BGMPackage::BGMPackage():Package("BGM"){
     addMetaObject<LihunCard>();
     addMetaObject<DaheCard>();
     addMetaObject<TanhuCard>();
+    addMetaObject<ShichouCard>();
     addMetaObject<YanxiaoCard>();
     addMetaObject<YinlingCard>();
 }
@@ -1911,7 +1940,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 5;
+        return 3;
     }
 
     virtual bool triggerable(const ServerPlayer *) const{

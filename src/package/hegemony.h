@@ -22,7 +22,7 @@ class EaseVSFatigue: public GlobalEffect{
 public:
     Q_INVOKABLE EaseVSFatigue(Card::Suit suit, int number);
 
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

@@ -370,53 +370,43 @@ sgs.ai_skill_discard.zhaolie = function(self, discard_num, min_num, optional, in
 			if index == discard_num then break end
 		end
 	end
-	if #to_discard < min_num then return {}
+	if #to_discard ~= discard_num then return {}
 	else
 		return to_discard
 	end
 end
 
-
-sgs.ai_skill_invoke.shichou = function(self, data)
-	local enemynum = 0
-	local shu = 0
+sgs.ai_skill_use["@@shichou"] = function(self, prompt)
 	local first = self.room:getTag("FirstRound"):toBool()
-	local players = self.room:getOtherPlayers(self.player)
-	local shenguanyu = self.room:findPlayerBySkillName("wuhun");
-	if shenguanyu ~= nil then
-		if shenguanyu:getKingdom() == "shu" then
-			return true
+	if not first then return "." end
+	
+	local cards = self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+	local first, second
+	self:sortByUseValue(cards,true)
+	for _, card in ipairs(cards) do
+		if not first then
+			first = card:getEffectiveId()
+		else second = card:getEffectiveId()
 		end
+		if second then break end
+	end
+	if not second or not first then return "." end
+	
+    local target = self.room:findPlayerBySkillName("wuhun")
+	local players = self.room:getOtherPlayers(self.player)
+	if target and target:getKingdom() == "shu" then
+		return "@ShichouCard:".. first .. "+".. second .. ":->" .. target:objectName()
 	end
 	for _, player in sgs.qlist(players) do
 		if player:getKingdom() == "shu" then
-			shu = shu + 1
 			if self:isEnemy(player) then
-				enemynum = enemynum + 1
+				return "@ShichouCard:".. first .. "+".. second .. ":->" .. player:objectName()
 			end
 		end
 	end
-	if first and shu > 1 then return false end
-	return true
+	return "."
 end
-
-sgs.ai_skill_playerchosen.shichou = function(self, targets)
-	targets = sgs.QList2Table(targets)
-	self:sort(targets, "hp", true)
-	for _, target in ipairs(targets) do
-		if target:hasSkill("wuhun") then
-			return target
-		end
-	end
-	for _, target in ipairs(targets) do
-		if self:isEnemy(target) then
-			return target
-		end
-	end
-	return targets[1]
-end
-
-sgs.ai_skill_cardchosen.shichou = sgs.ai_skill_cardchosen.lihun
 
 sgs.ai_use_priority.YanxiaoCard = 3.9
 sgs.ai_card_intention.YanxiaoCard = -80

@@ -1519,14 +1519,15 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 
     log_box->appendLog(type, from_general, QStringList(), QString(), arg);
 
-    if(player == Self){
+    if(player == Self)
         addSkillButton(Sanguosha->getSkill(skill_name));
-    }
 }
 
 void RoomScene::updateSkillButtons(){
     foreach(const Skill* skill, Self->getVisibleSkillList()){
         if(skill->isLordSkill()){
+            if(Config.NoLordSkill)
+                continue;
             if(Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3")
                 continue;
         }
@@ -2428,7 +2429,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
     QStringList list = QString("%1:%2").arg(who).arg(delta).split(":");
     doAnimation("hpChange",list);
 
-    if(delta < 0){
+    if(delta <= 0){
         if(losthp){
             Sanguosha->playAudio("hplost");
             return;

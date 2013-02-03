@@ -157,7 +157,7 @@ int Player::getAttackRange(const Player *other, const Card *slash) const{
     QList<const Player *> players = getSiblings();
     players << this;
     foreach(const Player *p, players){
-        if(p->hasWeapon("wuliujian") && p->getKingdom() == getKingdom()){
+        if(p->hasWeapon("wuliujian") && p->getKingdom() == getKingdom() && getKingdom() != "god"){
             wu6jian = 1;
             break;
         }
@@ -334,6 +334,8 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
 bool Player::hasLordSkill(const QString &skill_name) const{
     if(acquired_skills.contains(skill_name))
         return true;
+    if(Config.NoLordSkill)
+        return false;
 
     QString mode = getGameMode();
     if(mode == "06_3v3" || mode == "02_1v1")

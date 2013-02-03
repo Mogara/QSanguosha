@@ -25,24 +25,38 @@ public:
         room->setPlayerProperty(player, "maxhp", maxhp);
         room->setPlayerProperty(player, "hp", player->getMaxHP());
         room->setPlayerProperty(player, "role", "renegade");
-        player->loseSkill("peaching");
+        room->detachSkillFromPlayer(player, "peaching", false);
+        room->detachSkillFromPlayer(player, "harbourage", false);
 
         LogMessage log;
         log.type = "#Zombify";
         log.from = player;
         room->sendLog(log);
 
-        QString gender = player->getGeneral()->isMale() ? "male" : "female";
-        room->broadcastInvoke("playAudio", QString("zombify-%1").arg(gender));
+        room->broadcastInvoke("playAudio", QString("zombify-%1").arg(player->getGenderString()));
         room->updateStateItem();
 
         player->tag.remove("zombie");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-        switch(event){
+    void gameOverJudge(Room *room) const{
+        bool hasZombie=false;
+        foreach(ServerPlayer *p,room->getAlivePlayers()){
+             if (p->getGeneral2Name()=="zombie"){
+                 hasZombie=true;
+                 break;
+             }
+        }
+        int round = room->getTag("Round").toInt();
+        if(round>2&&!hasZombie)
+            room->gameOver("lord+loyalist");
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        switch(triggerEvent){
         case GameStart:{
                 room->acquireSkill(player, "peaching");
+                room->acquireSkill(player, "harbourage");
                 break;
             }
 
@@ -56,8 +70,8 @@ public:
                 room->throwCard(use.card, use.from);
                 use.from->drawCards(1);
                 return true;
-                break;
             }
+            break;
         }
         case Death:{
             bool hasHuman=false;
@@ -73,7 +87,8 @@ public:
                         recover.recover = 1;
                         room->recover(p, recover);
 
-                        p->gainMark("@round",player->getMark("@round")>1 ? player->getMark("@round")-1 : 1);
+                        int n = player->getMark("@round")>1 ? player->getMark("@round")-1 : 1;
+                        p->gainMark("@round", n);
                         hasHuman=true;
                         break;
                     }
@@ -92,10 +107,9 @@ public:
                     room->recover(killer, recover);
                     if(player->getRole()=="renegade")
                         killer->drawCards(3);
-
                 }
 
-                else if(killer->getGeneral2Name()=="zombie"){
+                else if(killer->getGeneral2Name()=="zombie" && !player->hasMark("@harb")){
                     zombify(player, killer);
                     room->setPlayerProperty(player, "role", "renegade");
                     room->revivePlayer(player);
@@ -105,6 +119,7 @@ public:
             if(!hasHuman)
                 room->gameOver("rebel");
 
+            gameOverJudge(room);
             break;
         }
 
@@ -113,20 +128,6 @@ public:
                 if(player->isLord()){
                     room->setTag("Round", ++round);
                     player->gainMark("@round");
-
-                    QList<ServerPlayer *> players = room->getOtherPlayers(player);
-                    qShuffle(players);
-
-                    bool hasZombie=false;
-                    foreach(ServerPlayer *p,players){
-                        if (p->getGeneral2Name()=="zombie"){
-                            hasZombie=true;
-                            break;
-                        }
-                    }
-
-                    if(round>2&&!hasZombie)
-                        room->gameOver("lord+loyalist");
 
                     if(player->getMark("@round") > 7){
                         LogMessage log;
@@ -137,13 +138,12 @@ public:
                         room->gameOver("lord+loyalist");
                     }
                     else if(round == 2){
+                        QList<ServerPlayer *> players = room->getOtherPlayers(room->getLord());
+                        qShuffle(players);
                         players.at(0)->tag["zombie"]=true;
                         players.at(1)->tag["zombie"]=true;
                     }
-
-                }else if(player->tag.contains("zombie"))
-                {
-
+                }else if(player->tag.contains("zombie") && !player->hasMark("@harb")){
                     player->bury();
                     room->killPlayer(player);
                     zombify(player);
@@ -152,6 +152,12 @@ public:
                     player->drawCards(5);
                     room->getThread()->delay();
                 }
+
+                if(round == 1){
+                    room->acquireSkill(player, "peaching");
+                    room->acquireSkill(player, "harbourage");
+                }
+                gameOverJudge(room);
             }
 
         default:
@@ -259,20 +265,18 @@ public:
         if(reason == NULL)
             return false;
 
-        if(reason->inherits("Slash")){
+        if(reason->isKindOf("Slash")){
             LogMessage log;
             log.type = "#Xunmeng";
             log.from = zombie;
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(damage.damage + 1);
+            log.arg2 = QString::number(++ damage.damage);
             room->sendLog(log);
 
+            data = QVariant::fromValue(damage);
             if(zombie->getHp()>1)
                 room->loseHp(zombie);
-
-            damage.damage ++;
-            data = QVariant::fromValue(damage);
         }
 
         return false;
@@ -300,14 +304,57 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->inherits("Peach");
+        const Card *card = to_select->getCard();
+        return card->isKindOf("Peach") || card->isKindOf("Analeptic") || card->isKindOf("Shit");
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
         PeachingCard *qingnang_card = new PeachingCard;
-        qingnang_card->addSubcard(card_item->getCard()->getId());
+        qingnang_card->addSubcard(card_item->getFilteredCard());
 
         return qingnang_card;
+    }
+};
+
+class Harbourage: public TriggerSkill{
+public:
+    Harbourage():TriggerSkill("harbourage$"){
+        events << PhaseEnd << PhaseChange;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(!player->isLord() || player->getGeneral2Name() == "zombie")
+            return false;
+
+        if(event == PhaseChange){
+            if(player->getPhase() == Player::RoundStart){
+                foreach(ServerPlayer *p, room->getAllPlayers()){
+                    if(p->hasMark("@harb"))
+                        p->loseAllMarks("@harb");
+                }
+            }
+            return false;
+        }
+        if(player->getPhase() != Player::Finish || player->getMark("@round") >= 4)
+            return false;
+        QList<ServerPlayer *> humens;
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            if(p->getGeneral2Name() != "zombie")
+                humens << p;
+        }
+
+        if(!humens.isEmpty() && player->askForSkillInvoke(objectName())){
+            ServerPlayer *target = room->askForPlayerChosen(player, humens, objectName());
+            LogMessage log;
+            log.type = "#Harbourage";
+            log.from = player;
+            log.to << target;
+            room->sendLog(log);
+
+            target->gainMark("@harb");
+        }
+
+        return false;
     }
 };
 
@@ -340,7 +387,7 @@ ZombieScenario::ZombieScenario()
 {
     rule = new ZombieRule(this);
 
-    skills<< new Peaching;
+    skills << new Peaching << new Harbourage;
 
     General *zombie = new General(this, "zombie", "die", 3, true, true);
     zombie->addSkill(new Xunmeng);

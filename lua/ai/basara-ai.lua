@@ -135,7 +135,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 	end
 	
 	SmartAI.objectiveLevel = function(self, player, recursive)
-		if self.player:objectName() == player:objectName() then return -5 end
+		if player and self.player:objectName() == player:objectName() then return -5 end
 		local lieges = {}
 		local liege_hp = 0
 		for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
