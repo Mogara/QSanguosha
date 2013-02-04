@@ -223,6 +223,15 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
             if(data.canConvert<CardUseStruct>()){
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
+
+                if(card_use.from->getArmor() && card_use.from->getArmor()->isKindOf("Fiveline")
+                    && card->isNDTrick()){ // fivelines
+                    if(card_use.from->getHp() == 2 && room->askForSkillInvoke(card_use.from, "jizhi")){
+                        room->playSkillEffect("jizhi");
+                        card_use.from->drawCards(1);
+                    }
+                }
+
                 if(!card->getSkillName().isEmpty())
                     room->setEmotion(player, "skill/" + card->getSkillName());
 

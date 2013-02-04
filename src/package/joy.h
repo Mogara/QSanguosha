@@ -108,7 +108,7 @@ class YxSword: public Weapon{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE YxSword(Card::Suit suit = Club, int number = 9);
+    Q_INVOKABLE YxSword(Card::Suit suit, int number);
 };
 
 class Fiveline: public Armor{

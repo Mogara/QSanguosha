@@ -329,7 +329,8 @@ public:
     }
 };
 
-GaleShell::GaleShell(Suit suit, int number) :Armor(suit, number){
+GaleShell::GaleShell(Suit suit, int number)
+    :Armor(suit, number){
     setObjectName("gale-shell");
     skill = new GaleShellSkill;
 
@@ -417,71 +418,110 @@ YxSword::YxSword(Suit suit, int number)
     skill = new YxSwordSkill;
 }
 
-class FivelineSkill: public ArmorSkill{
+#include "client.h"
+#include "standard-skillcards.h"
+#include "carditem.h"
+class FivelineViewAsSkill: public ViewAsSkill{
 public:
-    FivelineSkill():ArmorSkill("fiveline"){
-        events << HpChanged;
+    FivelineViewAsSkill():ViewAsSkill("fiveline"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        switch(player->getHp()){
+        case 3: return !player->hasUsed("JieyinCard"); break;
+        case 1:
+        case 4:
+        case 5: return true; break;
+        default:
+            return false;
+        }
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        switch(Self->getHp()){
+        case 1: return true; break;
+        case 3: return selected.length() < 2 && !to_select->isEquipped(); break;
+        case 4: return to_select->getCard()->getSuit() == Card::Diamond; break;
+        default:
+            return false;
+        }
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        switch(Self->getHp()){
+        case 1: {
+                if(cards.isEmpty())
+                    return NULL;
+                RendeCard *rende_card = new RendeCard;
+                rende_card->addSubcards(cards);
+                return rende_card;
+                break;
+            }
+        case 3: {
+                if(cards.length() != 2)
+                    return NULL;
+                JieyinCard *jieyin_card = new JieyinCard();
+                jieyin_card->addSubcards(cards);
+                return jieyin_card;
+                break;
+            }
+        case 4: {
+                if(cards.length() != 1)
+                    return NULL;
+                const Card *first = cards.first()->getFilteredCard();
+                Indulgence *indulgence = new Indulgence(first->getSuit(), first->getNumber());
+                indulgence->addSubcard(first);
+                indulgence->setSkillName("guose");
+                return indulgence;
+                break;
+            }
+        case 5 : return new KurouCard; break;
+        default:
+            return NULL;
+        }
+    }
+};
+/*
+class FivelineSkill: public TriggerSkill{
+public:
+    FivelineSkill():TriggerSkill("fiveline"){
+        frequency = Frequent;
+        events << CardUsed;
+        view_as_skill = new FivelineViewAsSkill;
     }
 
     virtual int getPriority() const{
-        return -1;
+        return 2;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
-        int hp = player->getHp();
-        if(player->isDead() || hp < 1)
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *yueying, QVariant &data) const{
+        if(yueying->getHp() != 2)
             return false;
-        Room *room = player->getRoom();
-        QStringList skills;
-        skills << "rende" << "jizhi" << "jieyin" << "guose" << "kurou" << "keji";
-        QVariantList has_skills = player->tag["fiveline"].toList();
-        foreach(QString str, skills){
-            if(has_skills.contains(str))
-                continue;
-            else{
-                room->detachSkillFromPlayer(player, str);
-                player->loseSkill(str);
+        CardUseStruct use = data.value<CardUseStruct>();
+        CardStar card = use.card;
+        if(card->isNDTrick()){
+            if(room->askForSkillInvoke(yueying, "jizhi")){
+                room->playSkillEffect("jizhi");
+                yueying->drawCards(1);
             }
         }
-        if(hp <= 6)
-            room->acquireSkill(player, skills.at(hp - 1));
-
         return false;
     }
 };
-
-Fiveline::Fiveline(Suit suit, int number) :Armor(suit, number){
+*/
+Fiveline::Fiveline(Suit suit, int number)
+    :Armor(suit, number)
+{
     setObjectName("fiveline");
-    skill = new FivelineSkill;
 }
 
 void Fiveline::onInstall(ServerPlayer *player) const{
-    EquipCard::onInstall(player);
-    QVariantList skills;
-    QStringList fiveskill;
-    fiveskill << "rende" << "jizhi" << "jieyin" << "guose" << "kurou" << "keji";
-    foreach(QString str, fiveskill){
-        if(player->hasSkill(str))
-            skills << str;
-    }
-    player->tag["fiveline"] = skills;
-    player->getRoom()->setPlayerProperty(player, "hp", player->getHp());
+    Room *room = player->getRoom();
+    room->attachSkillToPlayer(player, "fiveline");
 }
 
 void Fiveline::onUninstall(ServerPlayer *player) const{
-    if(player->isDead())
-        return;
-    QStringList skills;
-    skills << "rende" << "jizhi" << "jieyin" << "guose" << "kurou" << "keji";
-    QVariantList has_skills = player->tag["fiveline"].toList();
-    foreach(QString str, skills){
-        if(has_skills.contains(str))
-            continue;
-        else{
-            player->getRoom()->detachSkillFromPlayer(player, str);
-            player->loseSkill(str);
-        }
-    }
+    player->getRoom()->detachSkillFromPlayer(player, "fiveline", false);
 }
 
 JoyEquipPackage::JoyEquipPackage()
@@ -489,8 +529,11 @@ JoyEquipPackage::JoyEquipPackage()
 {
     (new Monkey(Card::Diamond, 5))->setParent(this);
     (new GaleShell(Card::Heart, 1))->setParent(this);
-    (new YxSword)->setParent(this);
+    (new YxSword(Card::Club, 9))->setParent(this);
+#ifndef USE_RCC
     (new Fiveline(Card::Heart, 5))->setParent(this);
+#endif
+    skills << new FivelineViewAsSkill;
 
     type = CardPack;
 }

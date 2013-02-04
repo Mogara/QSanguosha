@@ -2437,6 +2437,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 
         QString damage_effect;
         switch(delta){
+        case 0: break;
         case -1: {
                 ClientPlayer *player = ClientInstance->getPlayer(who);
                 int r = qrand() % 3 + 1;
