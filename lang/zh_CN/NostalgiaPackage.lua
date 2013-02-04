@@ -18,7 +18,7 @@ return {
 	["nosxuanhuo"] = "眩惑",
 	[":nosxuanhuo"] = "出牌阶段，你可以将一张红桃手牌交给一名其他角色，然后你获得该角色的一张牌并交给除该角色外的其他角色。每阶段限一次。",
 	["#EnyuanRecover"] = "%from 触发【%arg2】，令其恢复1点体力的角色 %to 摸 %arg 张牌",
-	["@enyuanheart"] = "请展示一张红桃手牌并交给对方",
+	["@enyuanheart"] = "请展示一张红桃手牌并交给 %src",
 	["$nosenyuan1"] = "得人恩果千年记。",
 	["$nosenyuan2"] = "滴水之恩，涌泉以报。",
 	["$nosenyuan3"] = "谁敢得罪我！",

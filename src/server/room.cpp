@@ -612,6 +612,8 @@ void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide){
 bool Room::isCanceled(const CardEffectStruct &effect){
     if(!effect.card->isCancelable(effect))
         return false;
+    if(effect.card->isNDTrick() && effect.from->hasSkill("tanhu") && effect.to->hasFlag("TanhuTarget"))
+        return false;
 
     const TrickCard *trick = qobject_cast<const TrickCard *>(effect.card);
     if(trick){
@@ -2608,6 +2610,8 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     int eid = card->getEffectiveId();
     ServerPlayer *from = getCardOwner(eid);
     Player::Place from_place= getCardPlace(eid);
+    if(!from || !to)
+        open = true;
 
     if(!open){
         scope.insert(from);
@@ -2688,7 +2692,7 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             from = move.from;
     }
 
-    if(from_place == Player::Judging){
+    if(from_place == Player::Judging && card->getSuit() == Card::Diamond){
         QStringList yanxiaos;
         if(from)
             yanxiaos = from->property("yanxiao").toString().split("|");
@@ -2696,9 +2700,9 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
         if(yanxiaos.contains(idstr))
             yanxiaos.removeOne(idstr);
         if(yanxiaos.isEmpty() && from)
-            setPlayerProperty(from, "yanxiao", QVariant::fromValue(QString()));
+            setPlayerProperty(from, "yanxiao", QString());
         if(place == Player::Judging && to)
-            setPlayerProperty(to, "yanxiao", QVariant::fromValue(yanxiaos.join("|")));
+            setPlayerProperty(to, "yanxiao", yanxiaos.join("|"));
     }
 
     if(from)

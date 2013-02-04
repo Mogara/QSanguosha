@@ -27,6 +27,10 @@
 #include <QInputDialog>
 #include <QLabel>
 
+#ifdef USE_RCC
+#include <QResource>
+#endif
+
 class FitView : public QGraphicsView
 {
 public:
@@ -60,6 +64,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = NULL;
 
+#ifdef USE_RCC
+    QResource::registerResource("image/card.rcc");
+#endif
+
+    setWindowTitle(Sanguosha->translate("QSanguosha"));
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
@@ -127,6 +136,9 @@ void MainWindow::closeEvent(QCloseEvent *event){
 
 MainWindow::~MainWindow()
 {
+#ifdef USE_RCC
+    QResource::unregisterResource("image/card.rcc");
+#endif
     delete ui;
 }
 
@@ -143,7 +155,7 @@ void MainWindow::on_actionExit_triggered()
 {
     QMessageBox::StandardButton result;
     result = QMessageBox::question(this,
-                                   tr("Sanguosha"),
+                                   Sanguosha->translate("QSanguosha"),
                                    tr("Are you sure to exit?"),
                                    QMessageBox::Ok | QMessageBox::Cancel);
     if(result == QMessageBox::Ok){
@@ -884,7 +896,11 @@ void MeleeDialog::setGeneral(const QString &general_name){
     const General *general = Sanguosha->getGeneral(general_name);
 
     if(general){
+#ifdef USE_RCC
+        avatar_button->setIcon(QIcon(general->getPixmapPath("card2")));
+#else
         avatar_button->setIcon(QIcon(general->getPixmapPath("card")));
+#endif
         Config.setValue("MeleeGeneral", general_name);
         avatar_button->setProperty("to_test", general_name);
     }

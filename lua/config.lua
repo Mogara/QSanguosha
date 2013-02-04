@@ -3,8 +3,8 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130130",
-	version_name = "雪霁版",
+	version = "20130201",
+	version_name = "法海版",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
@@ -14,6 +14,7 @@ config = {
 		"SPCard",
 		"Nostalgia",
 		"New3v3Card",
+		"HegemonyCard",
 		"YitianCard",
 		"Joy",
 		"Disaster",
@@ -76,6 +77,7 @@ config = {
 		"导线的电阻",
 		"QB的契约",
 		"吉祥物小萨",
+		"小二的肉饼",
 		"Slob的杀虫剂",
 		"克拉克的跑动投",
 		"天下孟德的霸气",
@@ -100,6 +102,7 @@ config = {
 		"琉星的轨迹",
 		"传说中的小雪",
 		"龙凤呈祥",
+		"总司令的拆迁队",
 		"肉酱茧",
 	-- 感谢一路走来，为太阳神三国杀付出和支持过的朋友们！
 	},

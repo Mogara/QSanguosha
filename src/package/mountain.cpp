@@ -413,7 +413,7 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     foreach(ServerPlayer *p, room->getAlivePlayers()){
         if(!snatch->targetFilter(empty_list, p, dengai))
             continue;
-        if(dengai->distanceTo(p) > 1)
+        if(dengai->distanceTo(p, true) > 0) // tian - 1
             continue;
         if(dengai->isProhibited(p, snatch))
             continue;
@@ -1029,7 +1029,7 @@ public:
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
         if(!huashen_skill.isEmpty()){
             room->detachSkillFromPlayer(zuoci, huashen_skill);
-            zuoci->clearPrivatePiles();
+            //zuoci->clearPrivatePiles();
             if(zuoci->getHp() <= 0 )
                 room->loseHp(zuoci,0);
         }

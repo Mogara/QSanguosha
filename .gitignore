@@ -4,7 +4,7 @@ ui_*
 Makefile*
 object_script*
 *.pro.user
-sanguosha.qm
+*sha.qm
 config.ini
 swig/sanguosha_wrap.cxx
 records/*
@@ -13,7 +13,11 @@ doc/*.html
 .DS_Store
 liblua5.1.dylib
 font/font.ttf
-QSanguosha.pro.user*
+*sha.pro.user*
 etc/customScenes/custom_scenario.txt
 *.dylib
+image/*.bat
+image/*.rcc
+image/generals/card2/*.*
+lib/libcryptopp.a
 QSanguosha.exe

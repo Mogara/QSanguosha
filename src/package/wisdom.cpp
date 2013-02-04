@@ -803,28 +803,25 @@ public:
         frequency = Wake;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("jiehuo") == 0
-                && target->getMark("@shouye") > 6;
-    }
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+        if(player->getMark("jiehuo") == 0 && player->getMark("@shouye") > 6){
+            LogMessage log;
+            log.type = "#JiehuoWake";
+            log.from = player;
+            log.arg = "jiehuo";
+            log.arg2 = "shouye";
+            room->sendLog(log);
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        LogMessage log;
-        log.type = "#JiehuoWake";
-        log.from = player;
-        log.arg = "jiehuo";
-        log.arg2 = "shouye";
-        room->sendLog(log);
+            room->setPlayerMark(player, "jiehuo", 1);
+            player->loseAllMarks("@shouye");
+            room->broadcastInvoke("animate", "lightbox:$jiehuo");
+            room->getThread()->delay(1500);
+            room->setPlayerMark(player, "shouyeonce", 1);
+            room->acquireSkill(player, "shien");
+            room->playSkillEffect(objectName());
 
-        room->setPlayerMark(player, "jiehuo", 1);
-        player->loseAllMarks("@shouye");
-        room->broadcastInvoke("animate", "lightbox:$jiehuo");
-        room->getThread()->delay(1500);
-        room->setPlayerMark(player, "shouyeonce", 1);
-        room->acquireSkill(player, "shien");
-        room->playSkillEffect(objectName());
-
-        room->loseMaxHp(player);
+            room->loseMaxHp(player);
+        }
         return false;
     }
 };

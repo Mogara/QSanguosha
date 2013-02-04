@@ -6,6 +6,59 @@
 #include "skill.h"
 #include "standard.h"
 
+class AllyFarAttackNear:public SingleTargetTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE AllyFarAttackNear(Card::Suit suit, int number);
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class EaseVSFatigue: public GlobalEffect{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE EaseVSFatigue(Card::Suit suit, int number);
+
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class KnowThyself: public SingleTargetTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE KnowThyself(Card::Suit suit, int number);
+
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class WuLiuJian:public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WuLiuJian(Card::Suit suit, int number);
+};
+
+class TriDouble:public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TriDouble(Card::Suit suit, int number);
+};
+
+class HegemonyCardPackage: public Package{
+    Q_OBJECT
+
+public:
+    HegemonyCardPackage();
+};
+
 class HegemonyPackage: public Package{
     Q_OBJECT
 

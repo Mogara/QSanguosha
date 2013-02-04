@@ -183,7 +183,11 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
+#ifdef USE_RCC
+    ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card2")));
+#else
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
+#endif
     if(Self && general_name == Self->getGeneralName())
         ui->changeGeneralButton->setEnabled(false);
     else

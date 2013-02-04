@@ -677,4 +677,143 @@ HegemonyPackage::HegemonyPackage()
     addMetaObject<ShuangrenCard>();
 }
 
+// cards
+AllyFarAttackNear::AllyFarAttackNear(Suit suit, int number)
+    :SingleTargetTrick(suit, number, true) {
+    setObjectName("allyfar_attacknear");
+}
+
+bool AllyFarAttackNear::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    return to_select->getKingdom() != Self->getKingdom();
+}
+
+void AllyFarAttackNear::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(1);
+    effect.from->drawCards(3);
+}
+
+EaseVSFatigue::EaseVSFatigue(Suit suit, int number)
+    :GlobalEffect(suit, number)
+{
+    setObjectName("ease_fatigue");
+}
+
+bool EaseVSFatigue::isCancelable(const CardEffectStruct &effect) const{
+    return effect.to->getKingdom() == effect.from->getKingdom();
+}
+
+void EaseVSFatigue::onEffect(const CardEffectStruct &effect) const{
+    if(effect.to->getKingdom() == effect.from->getKingdom()){
+        effect.to->drawCards(2);
+        effect.to->getRoom()->askForDiscard(effect.to, objectName(), 2, false, true);
+    }
+}
+
+KnowThyself::KnowThyself(Suit suit, int number)
+    :SingleTargetTrick(suit, number, false) {
+    setObjectName("know_thyself");
+}
+
+bool KnowThyself::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return targets.length() <= 1;
+}
+
+void KnowThyself::onUse(Room *room, const CardUseStruct &card_use) const{
+    if(card_use.to.isEmpty()){
+        room->moveCardTo(this, NULL, Player::DiscardedPile);
+        card_use.from->playCardEffect("@recast");
+        card_use.from->drawCards(1);
+    }else
+        TrickCard::onUse(room, card_use);
+}
+
+void KnowThyself::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    source->playCardEffect(objectName());
+    TrickCard::use(room, source, targets);
+}
+
+void KnowThyself::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    QList<int> all = effect.to->handCards();
+    room->fillAG(all, effect.from);
+    room->askForAG(effect.from, all, true, objectName());
+    effect.from->invoke("clearAG");
+}
+
+class TriDoubleSkill: public WeaponSkill{
+public:
+    TriDoubleSkill():WeaponSkill("tri_double"){
+        events << Damage;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasWeapon(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.from && damage.card && damage.card->isKindOf("Slash")){
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *tmp, room->getOtherPlayers(damage.to))
+                if(damage.to->distanceTo(tmp) == 1)
+                    targets << tmp;
+            if(targets.isEmpty())
+                return false;
+            if(room->askForCard(player, ".", "@tri_double:" + damage.to->objectName(), data, CardDiscarded)){
+                PlayerStar target = room->askForPlayerChosen(player, targets, objectName());
+                DamageStruct damage2;
+                damage2.from = damage.from;
+                damage2.to = target;
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = player;
+                log.arg = objectName();
+                room->sendLog(log);
+                room->damage(damage2);
+            }
+        }
+        return false;
+    }
+};
+
+TriDouble::TriDouble(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("tri_double");
+    skill = new TriDoubleSkill;;
+}
+
+WuLiuJian::WuLiuJian(Suit suit, int number)
+    :Weapon(suit, number, 2)
+{
+    setObjectName("wuliujian");
+}
+
+HegemonyCardPackage::HegemonyCardPackage()
+    :Package("hegemony_card")
+{
+    QList<Card *> cards;
+    cards << new AllyFarAttackNear(Card::Heart, 9)
+          << new EaseVSFatigue(Card::Diamond, 4)
+          << new KnowThyself(Card::Club, 3)
+          << new TriDouble(Card::Diamond, 12)
+          << new WuLiuJian(Card::Diamond, 6);
+
+    foreach(Card *card, cards)
+        card->setParent(this);
+
+    type = CardPack;
+}
+
 ADD_PACKAGE(Hegemony)
+ADD_PACKAGE(HegemonyCard)

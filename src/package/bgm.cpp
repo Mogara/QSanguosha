@@ -875,7 +875,7 @@ void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     room->moveCardTo(this, target, Player::Judging);
     QStringList yanxiaos = target->property("yanxiao").toString().split("|");
     yanxiaos << getEffectIdString();
-    room->setPlayerProperty(target, "yanxiao", QVariant::fromValue(yanxiaos.join("|")));
+    room->setPlayerProperty(target, "yanxiao", yanxiaos.join("|"));
 }
 
 class YanxiaoViewAsSkill: public OneCardViewAsSkill{
@@ -910,12 +910,17 @@ public:
         return true;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::Judge)
             return false;
-        QStringList yanxiaos = player->property("yanxiao").toString().split("|");
-        if(yanxiaos.isEmpty())
+        QString yanx = player->property("yanxiao").toString();
+        if(yanx.isEmpty())
             return false;
+        QStringList yanxiaos = yanx.split("|");
         bool yx = false;
         QList<const Card *> judgis = player->getJudgingArea();
         foreach(const Card *c, judgis){
@@ -931,15 +936,15 @@ public:
                 player->obtainCard(trick);
             }
         }
-        room->setPlayerProperty(player, "yanxiao", QVariant::fromValue(QString()));
-        return false;
+        room->setPlayerProperty(player, "yanxiao", QString());
+        return true;
     }
 };
 
 class Anxian: public TriggerSkill{
 public:
     Anxian():TriggerSkill("anxian"){
-        events << Predamage << CardEffected;
+        events << Predamage << SlashEffected;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *daqiao, QVariant &data) const{
@@ -961,10 +966,8 @@ public:
                 return true;
             }
         }
-        else if(event == CardEffected){
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(!effect.card->inherits("Slash"))
-                return false;
+        else if(event == SlashEffected){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(daqiao->isKongcheng())
                 return false;
             if(room->askForCard(daqiao, ".", "@anxian-discard", QVariant(), CardDiscarded)){
@@ -1158,7 +1161,6 @@ public:
 class FenyongClear: public PhaseChangeSkill{
 public:
     FenyongClear():PhaseChangeSkill("#fenyong-clear"){
-        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1174,7 +1176,6 @@ public:
 class Xuehen: public PhaseChangeSkill{
 public:
     Xuehen():PhaseChangeSkill("xuehen"){
-        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1205,8 +1206,6 @@ public:
             else
                 choice = room->askForChoice(xiahou, objectName(), "discard+slash");
             if (choice == "slash") {
-                room->playSkillEffect(objectName(), 2);
-
                 ServerPlayer *victim = room->askForPlayerChosen(xiahou, targets, objectName());
 
                 Slash *slash = new Slash(Card::NoSuit, 0);
@@ -1215,7 +1214,7 @@ public:
                 card_use.from = xiahou;
                 card_use.to << victim;
                 card_use.card = slash;
-                room->useCard(card_use, false);
+                room->useCard(card_use);
             } else {
                 room->playSkillEffect(objectName(), 1);
                 room->setPlayerFlag(player, "XuehenTarget_InTempMoving");
@@ -1225,10 +1224,10 @@ public:
                 for (int i = 0; i < xiahou->getLostHp(); i++) {
                     if (player->isNude())
                         break;
-                    card_ids << room->askForCardChosen(xiahou, player, "he", objectName());
-                    original_places << room->getCardPlace(card_ids.at(i));
-                    dummy->addSubcard(card_ids.at(i));
-                    player->addToPile("#xuehen", card_ids.at(i), false);
+                    int card_id = room->askForCardChosen(xiahou, player, "he", objectName());
+                    card_ids << card_id;
+                    original_places << room->getCardPlace(card_id);
+                    dummy->addSubcard(card_id);
                 }
                 for (int i = 0; i < dummy->subcardsLength(); i++)
                     room->moveCardTo(Sanguosha->getCard(card_ids.at(i)), player, original_places.at(i), false);
@@ -1241,7 +1240,7 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
-        return -2;
+        return 2;
     }
 };
 
