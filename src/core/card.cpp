@@ -354,7 +354,7 @@ const Card *Card::Parse(const QString &str){
         foreach(QString card_str, card_strs){
             dummy->addSubcard(card_str.toInt());
         }
-
+        dummy->deleteLater();
         return dummy;
     }else if(str.startsWith(QChar('#'))){
         LuaSkillCard *new_card =  LuaSkillCard::Parse(str);

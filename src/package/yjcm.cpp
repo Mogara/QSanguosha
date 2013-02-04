@@ -389,7 +389,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     if(!flag){
         DummyCard *dummy = room->getCardsOnetime(effect.from, effect.to, 2, skill_name);
         room->moveCardTo(dummy, effect.from, Player::Hand, false);
-        delete dummy;
+        dummy->deleteLater();
     }
 }
 

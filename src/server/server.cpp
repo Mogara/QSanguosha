@@ -211,6 +211,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
     connect(basara_checkbox,SIGNAL(toggled(bool)),hegemony_checkbox, SLOT(setEnabled(bool)));
     connect(hegemony_checkbox,SIGNAL(toggled(bool)),second_general_checkbox, SLOT(setChecked(bool)));
+    connect(hegemony_checkbox,SIGNAL(toggled(bool)),nolordskill_checkbox, SLOT(setChecked(bool)));
     connect(second_general_checkbox,SIGNAL(toggled(bool)), this, SLOT(updateCheckBoxState(bool)));
 
     announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
