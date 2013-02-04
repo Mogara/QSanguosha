@@ -4682,7 +4682,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, bool is_preview, bool visible) {
     if (cards.isEmpty())
         return false;
-    CardMoveReason reason(NULL, guojia->objectName());
+    CardMoveReason reason(0, guojia->objectName());
     reason.m_reason = is_preview ? CardMoveReason::S_REASON_PREVIEWGIVE : CardMoveReason::S_REASON_GIVE; // nasty hack only
     notifyMoveFocus(guojia, S_COMMAND_SKILL_YIJI);
     AI *ai = guojia->getAI();
