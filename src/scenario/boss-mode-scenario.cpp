@@ -257,7 +257,7 @@ public:
         :ScenarioRule(scenario)
     {
         events << GameStart << TurnStart << EventPhaseStart
-               << Death << GameOverJudge << Damaged << HpLost;
+               << BuryVictim << GameOverJudge << Damaged << PreHpLost;
 
         boss_banlist << "yuanshao" << "yanliangwenchou" << "zhaoyun" << "guanyu" << "shencaocao";
 
@@ -429,7 +429,7 @@ public:
                 break;
             }
 
-        case Death:{
+        case BuryVictim:{
             QList<ServerPlayer *> players = room->getAlivePlayers();
             ServerPlayer *lord = room->getLord();
 
@@ -448,7 +448,8 @@ public:
             if(alive_roles.contains("lord") && !alive_roles.contains("rebel"))
                 room->gameOver("lord");
 
-            DamageStar damage = data.value<DamageStar>();
+            DeathStruct death = data.value<DeathStruct>();
+            DamageStar damage = death.damage;
             if(damage && damage->from){
                 if(damage->from->getRole() == damage->to->getRole())
                     damage->from->throwAllHandCards();
@@ -467,7 +468,7 @@ public:
             break;
         }
 
-        case HpLost:
+        case PreHpLost:
         case Damaged:{
             if(player->isLord()){
                 if(player->getHp() <= 3 && player->getMark("@frantic")<=0){

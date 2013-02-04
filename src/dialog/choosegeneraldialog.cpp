@@ -80,7 +80,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     foreach (const General *general, generals){
         QPixmap icon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(), icon_type);
         QString caption = Sanguosha->translate(general->objectName());
-        OptionButton *button = new OptionButton(QString());
+        OptionButton *button = new OptionButton(QString(), caption);
         button->setIcon(QIcon(icon));
         button->setIconSize(icon_size);
         button->setToolTip(general->getSkillDescription());        

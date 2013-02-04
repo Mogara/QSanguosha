@@ -100,16 +100,15 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class Shangshi: public TriggerSkill{
+class Shangshi: public TriggerSkill {
     Q_OBJECT
 
 public:
-    Shangshi(const QString &name, int n);
-    virtual bool trigger(TriggerEvent event,  Room* room, ServerPlayer *player, QVariant &data) const;
-    virtual QString getEffectName() const;
+    Shangshi();
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const;
 
-private:
-    int n;
+protected:
+    virtual int getMaxLostHp(ServerPlayer *zhangchunhua) const;
 };
 
 #endif // YJCMPACKAGE_H

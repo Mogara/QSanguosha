@@ -212,8 +212,6 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
         log.arg = QString::number(1 - player->getHp());
         sendLog(log);
 
-        thread->trigger(PreAskForPeaches, this, player, dying_data);
-
         foreach (ServerPlayer *saver, getAllPlayers()) {
             if (player->getHp() > 0 || player->isDead())
                 break;
@@ -1092,7 +1090,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
             if (!(method == Card::MethodUse && pattern == "slash")) {
-                CardResponseStruct resp(card, to, method == Card::MethodUse);
+                ResponsedStruct resp(card, to, method == Card::MethodUse);
                 QVariant data = QVariant::fromValue(resp);
                 thread->trigger(CardResponded, this, player, data);
                 if (method == Card::MethodUse) {
@@ -1168,13 +1166,15 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit){
+bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit, bool disable_extra) {
     Q_ASSERT(!victims.isEmpty());
 
     //The realization of this function in the Slash::onUse and Slash::targetFilter.
     setPlayerFlag(slasher, "slashTargetFix");
     if (!distance_limit)
         setPlayerFlag(slasher, "slashNoDistanceLimit");
+    if (disable_extra)
+        setPlayerFlag(slasher, "slashDisableExtraTarget");
     if (victims.length() == 1)
         setPlayerFlag(slasher, "slashTargetFixToOne");
     foreach(ServerPlayer *victim, victims)
@@ -1203,18 +1203,20 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
         setPlayerFlag(slasher, "-slashTargetFixToOne");
         foreach(ServerPlayer *victim, victims)
             setPlayerFlag(victim, "-SlashAssignee");
+        if (slasher->hasFlag("slashNoDistanceLimit"))
+            setPlayerFlag(slasher, "-slashNoDistanceLimit");
+        if (slasher->hasFlag("slashDisableExtraTarget"))
+            setPlayerFlag(slasher, "-slashDisableExtraTarget");
     }
-    if (slasher->hasFlag("slashNoDistanceLimit"))
-        setPlayerFlag(slasher, "-slashNoDistanceLimit");
 
     return use;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt, bool distance_limit){
+bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt, bool distance_limit, bool disable_extra) {
     Q_ASSERT(victim != NULL);
     QList<ServerPlayer *> victims;
     victims << victim;
-    return askForUseSlashTo(slasher, victims, prompt, distance_limit);
+    return askForUseSlashTo(slasher, victims, prompt, distance_limit, disable_extra);
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){
@@ -1494,17 +1496,17 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     return NULL;
 }
 
-QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name) const{
+QList<ServerPlayer *>Room::findPlayersBySkillName(const QString &skill_name, bool include_dead) const{
     QList<ServerPlayer *> list;
-    foreach (ServerPlayer *player, getAllPlayers()) {
+    foreach (ServerPlayer *player, getAllPlayers(include_dead)) {
         if (player->hasSkill(skill_name))
             list << player;
     }
     return list;
 }
 
-ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name) const{
-    foreach (ServerPlayer *player, getAllPlayers()) {
+ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name, bool include_dead) const{
+    foreach (ServerPlayer *player, getAllPlayers(include_dead)) {
         if (player->hasSkill(skill_name))
             return player;
     }
@@ -2607,11 +2609,12 @@ void Room::loseHp(ServerPlayer *victim, int lose) {
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){
-    int hp = victim->getHp();
+    int hp_1 = victim->getHp();
     int maxhp = qMax(victim->getMaxHp() - lose, 0);
     victim->setMaxHp(maxhp);
+    int hp_2 = victim->getHp();
 
-    bool hp_changed = hp - victim->getHp() != 0;
+    bool hp_changed = (hp_1 != hp_2);
 
     setPlayerProperty(victim, "maxhp", maxhp);
 
@@ -2690,12 +2693,6 @@ bool Room::cardEffect(const CardEffectStruct &effect) {
     // No skills should be triggered here!
     thread->trigger(CardEffect, this, effect.to, data);
     // Make sure that effectiveness of Slash isn't judged here!
-    return !thread->trigger(CardEffected, this, effect.to, data);
-}
-
-    if(broken)
-        return false;
-
     return !thread->trigger(CardEffected, this, effect.to, data);
 }
 

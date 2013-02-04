@@ -80,7 +80,6 @@ SOURCES += \
     src/scenario/scenerule.cpp \
     src/scenario/zombie-scenario.cpp \
     src/server/ai.cpp \
-    src/server/contestdb.cpp \
     src/server/gamerule.cpp \
     src/server/generalselector.cpp \
     src/server/room.cpp \
@@ -109,7 +108,7 @@ SOURCES += \
     src/ui/startscene.cpp \
     src/ui/TablePile.cpp \
     src/ui/TimedProgressBar.cpp \
-    src/ui/uiUtils.cpp \	
+    src/ui/uiUtils.cpp \
     src/ui/window.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
@@ -119,11 +118,13 @@ SOURCES += \
     src/jsoncpp/src/json_value.cpp \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \	
+    src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx \
     src/core/RoomState.cpp \
     src/core/WrappedCard.cpp \
-    src/core/record-analysis.cpp
+    src/core/record-analysis.cpp \
+    src/package/assassinspackage.cpp \
+    src/package/hegemony.cpp
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -187,7 +188,6 @@ HEADERS += \
     src/scenario/scenerule.h \
     src/scenario/zombie-scenario.h \
     src/server/ai.h \
-    src/server/contestdb.h \
     src/server/gamerule.h \
     src/server/generalselector.h \
     src/server/room.h \
@@ -216,11 +216,11 @@ HEADERS += \
     src/ui/startscene.h \
     src/ui/TablePile.h \
     src/ui/TimedProgressBar.h \
-    src/ui/uiUtils.h \	
+    src/ui/uiUtils.h \
     src/ui/window.h \
     src/util/detector.h \
     src/util/nativesocket.h \
-    src/util/recorder.h \	
+    src/util/recorder.h \
     src/util/socket.h \
     src/jsoncpp/src/json_tool.h \
     src/jsoncpp/src/json_batchallocator.h \
@@ -235,7 +235,9 @@ HEADERS += \
     src/jsoncpp/include/json/assertions.h \
     src/core/RoomState.h \
     src/core/WrappedCard.h \
-    src/core/record-analysis.h
+    src/core/record-analysis.h \
+    src/package/assassinspackage.h \
+    src/package/hegemony.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

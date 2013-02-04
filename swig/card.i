@@ -1,6 +1,7 @@
 %{
 
 #include "standard.h"
+#include "maneuvering.h"
 
 %}
 
@@ -41,7 +42,7 @@ public:
         WeaponLocation,
         ArmorLocation,
         DefensiveHorseLocation,
-        OffensiveHorseLocation,
+        OffensiveHorseLocation
     };
 
     EquipCard(Suit suit, int number): Card(suit, number, true) { handling_method = MethodUse; }
@@ -120,8 +121,15 @@ public:
     DamageStruct::Nature getNature() const;
     void setNature(DamageStruct::Nature nature);
 
-    static bool IsAvailable(const Player *player);
+    static bool IsAvailable(const Player *player, const Card *slash = NULL);
     
 protected:
     DamageStruct::Nature nature;
+};
+
+class Analeptic: public BasicCard {
+public:
+    Analeptic(Card::Suit suit, int number);
+
+    static bool IsAvailable(const Player *player, const Card *analeptic = NULL);
 };

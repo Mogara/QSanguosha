@@ -9,6 +9,7 @@
 QuhuCard::QuhuCard(){
     mute = true;
     will_throw = false;
+    handling_method = Card::MethodPindian;
 }
 
 bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -181,7 +182,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        return selected.isEmpty() && to_select->isKindOf("Weapon");
+        return selected.isEmpty() && to_select->isKindOf("Weapon") && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
@@ -213,9 +214,8 @@ public:
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if(cards.length() == 2){
-            const Card *first = cards.first();
-            ArcheryAttack *aa = new ArcheryAttack(first->getSuit(), 0);
+        if (cards.length() == 2) {
+            ArcheryAttack *aa = new ArcheryAttack(Card::SuitToBeDecided, 0);
             aa->addSubcards(cards);
             aa->setSkillName(objectName());
             return aa;
@@ -274,10 +274,9 @@ public:
 
 class Shuangxiong: public TriggerSkill{
 public:
-    Shuangxiong():TriggerSkill("shuangxiong"){
-        view_as_skill = new ShuangxiongViewAsSkill;
-
+    Shuangxiong(): TriggerSkill("shuangxiong") {
         events << EventPhaseStart << FinishJudge;
+        view_as_skill = new ShuangxiongViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -309,10 +308,8 @@ public:
             }
         }else if(triggerEvent == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
-            if(judge->reason == "shuangxiong"){
+            if(judge->reason == "shuangxiong")
                 shuangxiong->obtainCard(judge->card);
-                return true;
-            }
         }
 
         return false;
@@ -364,7 +361,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0;
+        return TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *pangtong, QVariant &data) const{
@@ -378,15 +375,23 @@ public:
 
             pangtong->loseMark("@nirvana");
 
-            pangtong->throwAllCards();
-            room->setPlayerProperty(pangtong, "hp", qMin(3, pangtong->getMaxHp()));
+            pangtong->throwAllHandCardsAndEquips();
+            QList<const Card *> tricks = pangtong->getJudgingArea();
+            foreach (const Card *trick, tricks) {
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, pangtong->objectName());
+                room->throwCard(trick, reason, NULL);
+            }
+
+            RecoverStruct recover;
+            recover.recover = qMin(3, pangtong->getMaxHp()) - pangtong->getHp();
+            room->recover(pangtong, recover);
+
             pangtong->drawCards(3);
 
-            if(pangtong->isChained()){
-                if(dying_data.damage == NULL || dying_data.damage->nature == DamageStruct::Normal)
-                    room->setPlayerProperty(pangtong, "chained", false);
-            }
-            if(!pangtong->faceUp())
+            if (pangtong->isChained())
+                room->setPlayerProperty(pangtong, "chained", false);
+
+            if (!pangtong->faceUp())
                 pangtong->turnOver();
         }
 
@@ -491,6 +496,7 @@ public:
 
 TianyiCard::TianyiCard(){
     will_throw = false;
+    handling_method = Card::MethodPindian;
 }
 
 bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -499,11 +505,10 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void TianyiCard::use(Room *room, ServerPlayer *taishici, QList<ServerPlayer *> &targets) const{
     bool success = taishici->pindian(targets.first(), "tianyi", this);
-    if(success){
+    if (success)
         room->setPlayerFlag(taishici, "tianyi_success");
-    }else{
-        room->setPlayerFlag(taishici, "tianyi_failed");
-    }
+    else
+        room->setPlayerCardLimitation(taishici, "use", "Slash", true);
 }
 
 class TianyiViewAsSkill: public OneCardViewAsSkill{
@@ -529,17 +534,17 @@ public:
 
 class Tianyi: public TriggerSkill{
 public:
-    Tianyi():TriggerSkill("tianyi"){
-        view_as_skill = new TianyiViewAsSkill;
+    Tianyi(): TriggerSkill("tianyi") {
         events << EventLoseSkill;
+        view_as_skill = new TianyiViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return target && target->hasFlag("tianyi_success");
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *taishici, QVariant &data) const{
-        if(data.toString() == objectName())
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *taishici, QVariant &data) const{
+        if (data.toString() == objectName())
             room->setPlayerFlag(taishici, "-tianyi_success");
 
         return false;

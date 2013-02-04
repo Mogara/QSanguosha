@@ -52,7 +52,7 @@ LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
 LuaTargetModSkill::LuaTargetModSkill(const char *name)
     : TargetModSkill(name)
 {
-	pattern = "Slash";
+    pattern = "Slash";
 }
 
 void LuaTargetModSkill::setPattern(const char *pattern) {

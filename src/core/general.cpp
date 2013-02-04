@@ -80,8 +80,8 @@ QList<const Skill *> General::getSkillList() const{
 
     foreach(QString skill_name, extra_set){
         const Skill *skill = Sanguosha->getSkill(skill_name);
-		if (!skill)
-			continue;
+    	if (!skill)
+    	    continue;
         skills << skill;
     }
 

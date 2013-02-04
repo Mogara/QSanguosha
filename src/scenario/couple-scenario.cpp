@@ -8,7 +8,7 @@ public:
     CoupleScenarioRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << GameOverJudge << Death;
+        events << GameStart << GameOverJudge << BuryVictim;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -87,9 +87,10 @@ public:
                 return true;
             }
 
-        case Death:{
+        case BuryVictim:{
                 // reward and punishment
-                DamageStar damage = data.value<DamageStar>();
+                DeathStruct death = data.value<DeathStruct>();
+                DamageStar damage = death.damage;
                 if(damage && damage->from){
                     ServerPlayer *killer = damage->from;
 

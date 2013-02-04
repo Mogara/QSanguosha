@@ -220,7 +220,10 @@ void PlayerCardContainer::updateAvatar()
     }
     if (general != NULL) {
         _m_avatarArea->setToolTip(general->getSkillDescription());
-        QPixmap avatarIcon = _getAvatarIcon(general->objectName());
+        QString name = general->objectName();
+        if (name == "luboyan" && m_player->isFemale())
+            name = "luboyanf";
+        QPixmap avatarIcon = _getAvatarIcon(name);
         _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {

@@ -16,7 +16,7 @@
 #include "SkinBank.h"
 #include "wind.h"
 #include "record-analysis.h"
-#include "mountain.h"
+#include "mountainpackage.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -471,6 +471,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
 
         player->setGender(gender);
 
+        PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
+        container->updateAvatar();
         break;
     }
 

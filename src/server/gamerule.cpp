@@ -69,6 +69,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
 
             qnum.setValue(num);
             room->getThread()->trigger(DrawNCards, room, player, qnum);
+            num = qnum.toInt();
             if(num > 0)
                 player->drawCards(num, false);
             qnum.setValue(num);
@@ -400,7 +401,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
             QString slasher = effect.from->objectName();
-            const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, CardUsed, effect.from);
+            const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, Card::MethodUse, effect.from);
             room->slashResult(effect, jink);
 
             break;
@@ -893,13 +894,13 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         }
     }
     else
-	{
+    {
         room->changeHero(player, general_name, false, false, true, false);
         foreach (QString skill_name, skill_mark.keys()) {
             if (player->hasSkill(skill_name, true))
                 room->setPlayerMark(player, skill_mark[skill_name], 1);
         }
-	}
+    }
 
     room->getThread()->addPlayerSkills(player);
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());

@@ -43,12 +43,10 @@
     <addaction name="actionScenario_Overview"/>
     <addaction name="actionView_ban_list"/>
     <addaction name="actionBroadcast"/>
-    <addaction name="actionAI_Melee"/>
     <addaction name="actionReplay_file_convert"/>
     <addaction name="actionRecord_analysis"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
-    <addaction name="actionExpand_dashboard"/>
     <addaction name="actionView_Discarded"/>
     <addaction name="actionView_distance"/>
     <addaction name="actionServerInformation"/>
@@ -64,7 +62,6 @@
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_Lua"/>
     <addaction name="actionAbout_fmod"/>
-    <addaction name="actionAcknowledgement"/>
     <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
    </widget>

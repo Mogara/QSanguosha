@@ -22,8 +22,6 @@ class QiceCard: public SkillCard{
 public:
     Q_INVOKABLE QiceCard();
 
-    virtual Card::Suit getSuit(QList<int> cardid_list) const;
-    virtual int getNumber(QList<int> cardid_list) const;
     virtual bool targetFixed() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;

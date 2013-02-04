@@ -302,6 +302,8 @@ struct PindianStruct{
     ServerPlayer *to;
     const Card *from_card;
     const Card *to_card;
+    int from_number;
+    int to_number;
     QString reason;
     bool success;
 };
@@ -477,8 +479,8 @@ enum TriggerEvent{
 
     // For miniscenarios only
     FetchDrawPileCard,
-	
-	CardDiscarded, // obsolete event. Do not use it to trigger skills!
+
+    CardDiscarded, // obsolete event. Do not use it to trigger skills!
 
     NumOfEvents
 };

@@ -5,15 +5,14 @@
 #include "engine.h"
 #include "ai.h"
 #include "maneuvering.h"
+#include "clientplayer.h"
 
 HongyuanCard::HongyuanCard(){
 
 }
 
 bool HongyuanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(to_select == Self)
-        return false;
-    return targets.length() < 2;
+    return to_select != Self && targets.length() < 2;
 }
 
 void HongyuanCard::onEffect(const CardEffectStruct &effect) const{
@@ -84,11 +83,10 @@ public:
 HuanshiCard::HuanshiCard(){
     target_fixed = true;
     will_throw = false;
-    can_jilei = true;
+    handling_method = Card::MethodResponse;
 }
 
-void HuanshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-
+void HuanshiCard::use(Room *, ServerPlayer *, QList<ServerPlayer *> &) const{
 }
 
 class HuanshiViewAsSkill:public OneCardViewAsSkill{
@@ -104,8 +102,8 @@ public:
         return pattern == "@huanshi";
     }
 
-    virtual bool viewFilter(const Card *) const{
-        return true;
+    virtual bool viewFilter(const Card *card) const{
+        return !Self->isCardLimited(card, Card::MethodResponse);
     }
 
     virtual const Card *viewAs(const Card* to_select) const{
@@ -119,18 +117,18 @@ public:
 
 class Huanshi: public TriggerSkill{
 public:
-    Huanshi():TriggerSkill("huanshi"){
-        view_as_skill = new HuanshiViewAsSkill;
-
+    Huanshi(): TriggerSkill("huanshi") {
         events << AskForRetrial;
+        view_as_skill = new HuanshiViewAsSkill;
     }
 
     QList<ServerPlayer *> getTeammates(ServerPlayer *zhugejin) const{
         Room *room = zhugejin->getRoom();
 
         QList<ServerPlayer *> teammates;
-        foreach(ServerPlayer *other, room->getOtherPlayers(zhugejin)){
-            if(AI::GetRelation3v3(zhugejin, other) == AI::Friend)
+        teammates << zhugejin;
+        foreach (ServerPlayer *other, room->getOtherPlayers(zhugejin)) {
+            if (AI::GetRelation3v3(zhugejin, other) == AI::Friend)
                 teammates << other;
         }
         return teammates;
