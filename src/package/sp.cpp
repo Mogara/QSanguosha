@@ -631,28 +631,10 @@ public:
                 room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
             }
         }else if(event == PhaseChange) {
-            if(player->getPhase() == Player::Play)
-                if(player->getMark(objectName()) > 0)
-                    room->setPlayerMark(player, objectName(), 0);
+            if(player->getMark(objectName()) > 0)
+                room->setPlayerMark(player, objectName(), 0);
         }
 
-        return false;
-    }
-};
-
-class HuxiaoRemove: public TriggerSkill {
-public:
-    HuxiaoRemove(): TriggerSkill("#huxiao") {
-        events << PhaseChange;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(data.toString() == "huxiao")
-            room->setPlayerMark(player, "huxiao", 0);
         return false;
     }
 };
@@ -668,7 +650,7 @@ public:
             return init + likui->getMark("huxiao");
         }
         else
-            return SlashSkill::getSlashResidue(likui);
+            return 0;
     }
 };
 
@@ -1029,11 +1011,9 @@ SPPackage::SPPackage()
     General *guanyinping = new General(this, "guanyinping", "shu", 3, false);
     guanyinping->addSkill(new Xueji);
     guanyinping->addSkill(new Huxiao);
-    guanyinping->addSkill(new HuxiaoRemove);
     guanyinping->addSkill(new Wuji);
     guanyinping->addSkill(new WujiCount);
     related_skills.insertMulti("wuji", "#wuji-count");
-    related_skills.insertMulti("huxiao", "#huxiao");
     skills << new HuxiaoSlash;
 
     General *sp_zhenji = new General(this, "sp_zhenji", "wei", 3, false, true);

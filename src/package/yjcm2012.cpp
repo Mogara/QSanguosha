@@ -319,7 +319,7 @@ public:
             else if(t->hasFlag("jiangchi_forbid"))
                 return -998;
         }
-        return SlashSkill::getSlashResidue(t);
+        return 0;
     }
 
     virtual int getSlashRange(const Player *from, const Player *, const Card *) const{

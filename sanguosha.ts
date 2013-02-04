@@ -2356,6 +2356,16 @@
         <translation> (双内奸)</translation>
     </message>
     <message>
+        <location filename="src/dialog/mainwindow.cpp" line="620"/>
+        <source> (single renegade)</source>
+        <translation> (单内奸)</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="621"/>
+        <source> (no renegade)</source>
+        <translation> (无内奸)</translation>
+    </message>
+    <message>
         <location filename="src/dialog/mainwindow.cpp" line="118"/>
         <location filename="src/dialog/mainwindow.cpp" line="591"/>
         <source>Game is minimized</source>

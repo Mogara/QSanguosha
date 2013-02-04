@@ -283,6 +283,7 @@ void MainWindow::enterRoom(){
     ui->actionKick->setEnabled(true);
     ui->actionSurrender->setEnabled(true);
     ui->actionSaveRecord->setEnabled(true);
+    ui->actionAcknowledgement->setEnabled(false);
 
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(toggleDiscards()));
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
@@ -534,7 +535,8 @@ void MainWindow::on_actionRole_assign_table_triggered()
     rows << "2 1 0 1 0" << "3 1 0 1 1" << "4 1 0 2 1"
             << "5 1 1 2 1" << "6 1 1 3 1" << "6d 1 1 2 2"
             << "7 1 2 3 1" << "8 1 2 4 1" << "8d 1 2 3 2"
-            << "9 1 3 4 1" << "10 1 3 4 2";
+            << "8z 1 3 4 0" << "9 1 3 4 1" << "10d 1 3 4 2"
+            << "10s 1 4 4 1" << "10z 1 4 5 0";
 
     foreach(QString row, rows){
         QStringList cells = row.split(" ");
@@ -542,6 +544,14 @@ void MainWindow::on_actionRole_assign_table_triggered()
         if(header.endsWith("d")){
             header.chop(1);
             header += tr(" (double renegade)");
+        }
+        else if(header.endsWith("s")){
+            header.chop(1);
+            header += tr(" (single renegade)");
+        }
+        else if(header.endsWith("z")){
+            header.chop(1);
+            header += tr(" (no renegade)");
         }
 
         QString row_content;
@@ -555,7 +565,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    Window *window = new Window(tr("Role assign table"), QSize(280, 380));
+    Window *window = new Window(tr("Role assign table"), QSize(280, 400));
     scene->addItem(window);
 
     window->addContent(content);
@@ -919,7 +929,6 @@ AcknowledgementScene::AcknowledgementScene(QObject *parent) :
 
     connect(item,SIGNAL(go_back()),this,SIGNAL(go_back()));
 }
-
 
 void MainWindow::on_actionAI_Melee_triggered()
 {

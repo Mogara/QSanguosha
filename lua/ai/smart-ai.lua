@@ -2143,7 +2143,7 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 		if card:inherits("AOE") and not (self:isWeak() and self:getCardsNum("Jink", self.player) == 0) then return card:getEffectiveId() end
 	end
 	self:sortByCardNeed(cards)
-	return cards[#cards]:getEffectiveId()
+	if #cards == 0 then return -1 else return cards[#cards]:getEffectiveId() end
 end
 
 function SmartAI:askForCardShow(requestor, reason)

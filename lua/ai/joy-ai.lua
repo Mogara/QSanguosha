@@ -81,3 +81,44 @@ sgs.ai_skill_playerchosen.yx_sword = function(self, targets)
 	
 	return self.enemies[1]
 end
+
+--[[
+function sgs.ai_armor_value.fiveline(player, self)
+	local player = player or self.player
+	if not player then return 1 end
+	local base = player:getHp()
+	if base == 1 then return 3.5
+	elseif base == 2 then return 3
+	elseif base == 3 then return 5
+	elseif base == 4 then return 4.5
+	elseif base == 5 then return 5.5
+	end
+	return 1
+end
+
+local fiveline_skill={}
+fiveline_skill.name = "fiveline"
+table.insert(sgs.ai_skills, fiveline_skill)
+fiveline_skill.getTurnUseCard=function(self)
+	local base = self.player:getHp()
+	local card
+	local use = {}
+	if base == 1 then
+		return rende_skill.getTurnUseCard(self)
+	--	return sgs.ai_skill_use_func.RendeCard(card, use, self)
+	elseif base == 3 then
+		return jieyin_skill.getTurnUseCard(self)
+	--	return sgs.ai_skill_use_func.JieyinCard(card, use, self)
+	elseif base == 4 then
+		return guose_skill.getTurnUseCard(self, true)
+	elseif base == 5 then
+		return kurou_skill.getTurnUseCard(self)
+	--	return sgs.ai_skill_use_func.KurouCard(card, use, self)
+	end
+	return "."
+end
+]]
+
+sgs.ai_armor_value["fiveline"] = function()
+	return -2
+end

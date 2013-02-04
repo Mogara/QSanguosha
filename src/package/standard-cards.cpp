@@ -1026,7 +1026,7 @@ public:
         if(target->hasWeapon("crossbow"))
             return 998;
         else
-            return SlashSkill::getSlashResidue(target);
+            return 0;
     }
 };
 
@@ -1035,11 +1035,11 @@ public:
     HalberdSkill():SlashSkill("halberd"){
     }
 
-    virtual int getSlashExtraGoals(const Player *from, const Player *to, const Card *slash) const{
+    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
         if(from->hasWeapon("halberd") && from->isLastHandCard(slash))
             return 2;
         else
-            return SlashSkill::getSlashExtraGoals(from, to, slash);
+            return 0;
     }
 };
 

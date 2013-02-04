@@ -428,8 +428,8 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         switch(player->getHp()){
-        case 3: return !player->hasUsed("JieyinCard"); break;
         case 1:
+        case 3:
         case 4:
         case 5: return true; break;
         default:
@@ -450,35 +450,36 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         switch(Self->getHp()){
         case 1: {
-                if(cards.isEmpty())
-                    return NULL;
-                RendeCard *rende_card = new RendeCard;
-                rende_card->addSubcards(cards);
-                return rende_card;
+                if(!cards.isEmpty()){
+                    RendeCard *rende_card = new RendeCard;
+                    rende_card->addSubcards(cards);
+                    return rende_card;
+                }
                 break;
             }
         case 3: {
-                if(cards.length() != 2)
-                    return NULL;
-                JieyinCard *jieyin_card = new JieyinCard();
-                jieyin_card->addSubcards(cards);
-                return jieyin_card;
+                if(cards.length() == 2){
+                    JieyinCard *jieyin_card = new JieyinCard();
+                    jieyin_card->addSubcards(cards);
+                    return jieyin_card;
+                }
                 break;
             }
         case 4: {
-                if(cards.length() != 1)
-                    return NULL;
-                const Card *first = cards.first()->getFilteredCard();
-                Indulgence *indulgence = new Indulgence(first->getSuit(), first->getNumber());
-                indulgence->addSubcard(first);
-                indulgence->setSkillName("guose");
-                return indulgence;
+                if(cards.length() == 1){
+                    const Card *first = cards.first()->getFilteredCard();
+                    Indulgence *indulgence = new Indulgence(first->getSuit(), first->getNumber());
+                    indulgence->addSubcard(first);
+                    indulgence->setSkillName("guose");
+                    return indulgence;
+                }
                 break;
             }
         case 5 : return new KurouCard; break;
         default:
-            return NULL;
+            break;
         }
+        return NULL;
     }
 };
 /*

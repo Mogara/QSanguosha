@@ -238,7 +238,7 @@ sgs.zhenji_suit_value =
 	club = 4.2
 }
 
-local rende_skill={}
+rende_skill={}
 rende_skill.name="rende"
 table.insert(sgs.ai_skills, rende_skill)
 rende_skill.getTurnUseCard=function(self)
@@ -484,6 +484,7 @@ end
 
 sgs.ai_chaofeng.machao = 1
 
+sgs.ai_skill_invoke.jizhi = true
 function sgs.ai_cardneed.jizhi(to, card)
 	if not to:containsTrick("indulgence") or card:inherits("Nullification") then
 		return card:getTypeId() == sgs.Card_Trick
@@ -660,7 +661,7 @@ sgs.ganning_suit_value =
 
 sgs.ai_chaofeng.ganning = 2
 
-local kurou_skill={}
+kurou_skill={}
 kurou_skill.name="kurou"
 table.insert(sgs.ai_skills,kurou_skill)
 kurou_skill.getTurnUseCard=function(self,inclusive)
@@ -733,7 +734,7 @@ sgs.dynamic_value.damage_card.FanjianCard = true
 
 sgs.ai_chaofeng.zhouyu = 3
 
-local guose_skill={}
+guose_skill={}
 guose_skill.name="guose"
 table.insert(sgs.ai_skills,guose_skill)
 guose_skill.getTurnUseCard=function(self,inclusive)
@@ -853,7 +854,7 @@ sgs.ai_chaofeng.daqiao = 2
 
 sgs.ai_chaofeng.luxun = -1
 
-local jieyin_skill={}
+jieyin_skill={}
 jieyin_skill.name="jieyin"
 table.insert(sgs.ai_skills,jieyin_skill)
 jieyin_skill.getTurnUseCard=function(self)

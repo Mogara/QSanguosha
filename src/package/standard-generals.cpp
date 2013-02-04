@@ -554,7 +554,7 @@ public:
         if(zom->hasSkill(objectName()))
             return 998;
         else
-            return SlashSkill::getSlashResidue(zom);
+            return 0;
     }
 };
 

@@ -37,7 +37,7 @@ sgs.ai_skill_cardask["@xiaoguoresponse"]=function(self, data)
 end
 
 sgs.ai_skill_use["@@shushen"]=function(self,prompt)
-	local target
+	local target = self.player
 	self:sort(self.friends_noself, "defense")
 	for _, player in ipairs(self.friends_noself) do
 		if target ~= player and target:getKingdom() == player:getKingdom() then
@@ -45,7 +45,7 @@ sgs.ai_skill_use["@@shushen"]=function(self,prompt)
 			break
 		end
 	end
-	if target then
+	if target ~= self.player then
 		return "@ShushenCard=.->" .. target:objectName()
 	end
 	return "."
