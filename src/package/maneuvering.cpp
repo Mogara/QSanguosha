@@ -280,16 +280,20 @@ FireAttack::FireAttack(Card::Suit suit, int number)
 }
 
 bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
-        return false;
+    int trick_etargets = TrickCard::geteTargetsCount(Self, this);
+    int trick_distance = TrickCard::geteRange(Self, this);
 
+    trick_etargets ++;
+    if(targets.length() >= trick_etargets)
+        return false;
     if(to_select->isKongcheng())
         return false;
-
     if(to_select == Self)
         return Self->getHandcardNum() >= 2;
-    else
-        return true;
+    if(trick_distance != 0 && Self->distanceTo(to_select) > trick_distance)
+        return false;
+    // If the original is the infinite distance, it returns the new distance constraints
+    return true;
 }
 
 void FireAttack::onEffect(const CardEffectStruct &effect) const{
@@ -378,23 +382,19 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 }
 
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    int trick_distance = TrickCard::geteRange(Self, this);
+
+    if(trick_distance == 0)
+        trick_distance = 1; //Is not specified, set default
     if(!targets.isEmpty())
         return false;
-
     if(to_select == Self)
         return false;
-
     if(to_select->containsTrick(objectName()))
         return false;
-
-    if(Self->hasSkill("qicai"))
-        return true;
-
-    int distance = Self->distanceTo(to_select);
-    if(Self->hasSkill("duanliang"))
-        return distance <= 2;
-    else
-        return distance <= 1;
+    if(Self->distanceTo(to_select) > trick_distance)
+        return false;
+    return true;
 }
 
 void SupplyShortage::takeEffect(ServerPlayer *target) const{
