@@ -214,6 +214,13 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
     generals << lord;
 
     QStringList husbands = map.keys();
+
+    QSet<QString> husbands_set = husbands.toSet();
+
+    husbands_set = husbands_set.subtract(Config.value("Banlist/Couple", "").toStringList().toSet());
+
+    husbands = husbands_set.toList();
+
     qShuffle(husbands);
     husbands = husbands.mid(0, 4);
 
