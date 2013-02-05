@@ -90,6 +90,11 @@ void Settings::init(){
     AIDelay = value("AIDelay", 1000).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
 
+#ifdef CLO_SOU
+    setValue("Language", "zh_CN");
+#else
+    setValue("Language", "zh-CN");
+#endif
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
 #else

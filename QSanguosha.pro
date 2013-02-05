@@ -8,6 +8,7 @@ win32 : RC_FILE = resource/icono.rc
 macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio
 #CONFIG += rcc
+#DEFINES += CLO_SOU
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
