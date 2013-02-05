@@ -217,7 +217,7 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
 
     QSet<QString> husbands_set = husbands.toSet();
 
-    husbands_set = husbands_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
+    husbands_set = husbands_set.subtract(Config.value("Banlist/Couple", "").toStringList().toSet());
 
     husbands = husbands_set.toList();
 
