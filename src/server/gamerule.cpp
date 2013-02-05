@@ -1103,6 +1103,9 @@ bool ChangbanSlopeMode::trigger(TriggerEvent event, Room* room, ServerPlayer *pl
             if(player->isLord()){
                 if(setjmp(env) == TransfigurationCB){
                     player = room->getLord();
+
+                    room->broadcastInvoke("animate", "lightbox:$Tshenzhaoyun:3000");
+                    room->playSkillEffect("Tshenzhaoyun");
                     room->transfigure(player, "cbzhaoyun2", true, true);
                     ServerPlayer *cbzhangfei = player;
                     foreach(ServerPlayer *p, room->getAlivePlayers()){

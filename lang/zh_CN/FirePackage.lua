@@ -93,6 +93,7 @@ return {
 	["~taishici"] = "今所志未遂，奈何死乎",
 	["~pangde"] = "宁做国家鬼，不为贼将也",
 	["~yanliangwenchou"] = "生不逢时啊……",
+	["`yuanshao"] = "袁氏尽忠四世，天下广受吾恩。威信所向，笑尔等如螳臂当车。", 
 
 	-- CV
 	["cv:xunyu"] = "听雨",
@@ -100,7 +101,7 @@ return {
 	["cv:wolong"] = "彗星",
 	["cv:pangtong"] = "无花有酒",
 	["cv:taishici"] = "口渴口樂",
-	["cv:yuanshao"] = "耗子王",
+	["cv:yuanshao"] = "耗子王，裤衩",
 	["cv:pangde"] = "Glory",
 	["cv:yanliangwenchou"] = "墨染の飞猫，霸气爷们",
 

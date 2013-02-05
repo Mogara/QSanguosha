@@ -11,9 +11,11 @@
 
 DujiCard::DujiCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void DujiCard::use(Room *, ServerPlayer *player, const QList<ServerPlayer *> &) const{
+    player->playSkillEffect(skill_name, 1);
     player->addToPile("du", getSubcards().first());
 }
 
@@ -59,6 +61,7 @@ public:
             return false;
 
         if(use.card->inherits("Slash") && !player->hasFlag("drank") && liru->askForSkillInvoke(objectName())){
+            room->playSkillEffect(objectName(), 2);
             room->obtainCard(player, liru->getPile("du").first());
             room->setPlayerFlag(player, "drank");
             if(room->askForChoice(player, objectName(), "turn+lp") == "turn")
@@ -103,10 +106,13 @@ public:
             room->sendLog(log);
 
             room->slashResult(effect, NULL);
-            if(room->askForChoice(player, objectName(), "pan+feng") == "pan")
+            if(room->askForChoice(player, objectName(), "pan+feng") == "pan"){
+                room->playSkillEffect(objectName(), 1);
                 room->askForDiscard(player, objectName(), qMin(player->getCardCount(true), effect.to->getLostHp()), false, true);
-            else
+            }else{
+                room->playSkillEffect(objectName(), 2);
                 effect.to->drawCards(qMin(effect.to->getHp(), 5));
+            }
         }
 
         return false;
@@ -195,7 +201,6 @@ public:
 
                 room->playSkillEffect(objectName());
                 Slash *slash = new Slash(Card::NoSuit, 0);
-                slash->setSkillName(objectName());
                 CardUseStruct use;
                 use.card = slash;
                 use.from = effect.from;
@@ -212,16 +217,20 @@ public:
 XunguiCard::XunguiCard(){
     target_fixed = true;
     will_throw = false;
+    mute = true;
 }
 
 void XunguiCard::use(Room *room, ServerPlayer *player, const QList<ServerPlayer *> &) const{
     if(!player->getPile("gui").isEmpty()){
+        room->playSkillEffect(skill_name, 2);
         room->throwCard(player->getPile("gui").first());
         if(player->isWounded()){
             RecoverStruct rev;
             room->recover(player, rev);
         }
     }
+    else
+        room->playSkillEffect(skill_name, 1);
     player->addToPile("gui", getSubcards().first());
 }
 
@@ -247,6 +256,7 @@ public:
 };
 
 DaojuCard::DaojuCard(){
+    mute = true;
 }
 
 bool DaojuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -402,6 +412,10 @@ public:
         }
         return false;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return -1;
+    }
 };
 
 class Jingrui:public OneCardViewAsSkill{
@@ -440,10 +454,18 @@ public:
             return slash;
         }
     }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        if(card->isKindOf("Slash"))
+            return 1;
+        else
+            return 2;
+    }
 };
 
 Zha0xinCard::Zha0xinCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &tar) const{
@@ -460,6 +482,7 @@ void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         }
     }
     if(samecount == 0){
+        room->playSkillEffect(skill_name, 1);
         ServerPlayer *i = room->askForPlayerChosen(source, room->getAlivePlayers(), "zha0xin");
         room->loseHp(i);
     }
@@ -469,6 +492,7 @@ void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
             if(!i->isNude())
                 targets << i;
         if(!targets.isEmpty()){
+            room->playSkillEffect(skill_name, 2);
             ServerPlayer *t = room->askForPlayerChosen(source, targets, "zha0xin");
             int card_id = room->askForCardChosen(source, t, "he", "zha0xin");
             room->obtainCard(source, card_id, room->getCardPlace(card_id) != Player::Hand);
@@ -504,8 +528,10 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &data) const{
-        if(player->askForSkillInvoke(objectName()))
+        if(player->askForSkillInvoke(objectName())){
+            player->playSkillEffect(objectName());
             player->drawCards(1);
+        }
         return false;
     }
 };
@@ -540,6 +566,7 @@ public:
 ChanxianCard::ChanxianCard(){
     once = true;
     will_throw = false;
+    mute = true;
 }
 
 bool ChanxianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -558,6 +585,7 @@ void ChanxianCard::onEffect(const CardEffectStruct &effect) const{
                 targets << player;
         }
         if(!targets.isEmpty()){
+            room->playSkillEffect(skill_name, 1);
             ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "chanxian");
             const Card *slash = room->askForCard(effect.to, "slash", "@chanxian:" + target->objectName(), QVariant(), NonTrigger);
             if(slash){
@@ -571,6 +599,7 @@ void ChanxianCard::onEffect(const CardEffectStruct &effect) const{
             choice = "hsals";
     }
     if(choice == "hsals"){
+        room->playSkillEffect(skill_name, 2);
         choice = room->askForChoice(effect.from, "chanxian", "get+hit");
         if(choice == "get"){
             int card_id = room->askForCardChosen(effect.from, effect.to, "he", "chanxian");
@@ -660,8 +689,8 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect(objectName());
-        //room->broadcastInvoke("animate", "lightbox:$youqi:5000");
-        //room->getThread()->delay(5000);
+        room->broadcastInvoke("animate", "lightbox:$youqi:3000");
+        room->getThread()->delay(3000);
 
         room->loseMaxHp(sunce);
 
@@ -717,7 +746,6 @@ public:
 };
 
 SijieCard::SijieCard(){
-
 }
 
 bool SijieCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

@@ -40,7 +40,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             && player->getMark("SlashCount") >= 1
             && player->hasSkill("paoxiao")
             && getSkillName().isEmpty())
-        room->playSkillEffect("paoxiao");
+        room->playSkillEffect("paoxiao", player->getGeneral2Name() == "zombie" ? 3 : qrand() % 2 + 1);
     else if(player->getPhase() == Player::Play
             && player->hasSkill("huxiao") && player->getMark("huxiao") > 0) {
         bool toSunquan = false;

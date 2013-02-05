@@ -25,13 +25,15 @@ public:
         if(!splayer || player == splayer || splayer->isKongcheng())
             return false;
         if(room->askForCard(splayer, "BasicCard", "@xiaoguo:" + player->objectName(), QVariant::fromValue((PlayerStar)player), CardDiscarded)){
-            room->playSkillEffect(objectName());
             if(!room->askForCard(player, "EquipCard,TrickCard", "@xiaoguoresponse:" + splayer->objectName(), QVariant(), CardDiscarded)){
+                room->playSkillEffect(objectName(), qrand() % 2 + 1);
                 DamageStruct damage;
                 damage.from = splayer;
                 damage.to = player;
                 room->damage(damage);
             }
+            else
+                room->playSkillEffect(objectName(), 3);
         }
         return false;
     }
@@ -339,13 +341,16 @@ public:
         if(!damage.card || !damage.card->isKindOf("Slash"))
             return false;
         if(damage.to->hasEquip() && player->askForSkillInvoke(objectName(),data)){
-            room->playSkillEffect(objectName());
             int card_id = room->askForCardChosen(player, damage.to, "e", objectName());
             const Card *card = Sanguosha->getCard(card_id);
-            if(room->askForChoice(player, objectName(), "kuangfuget+kuangfudis") == "kuangfuget")
+            if(room->askForChoice(player, objectName(), "kuangfuget+kuangfudis") == "kuangfuget"){
+                room->playSkillEffect(objectName(), 1);
                 player->obtainCard(card);
-            else
+            }
+            else{
+                room->playSkillEffect(objectName(), 2);
                 room->throwCard(card, damage.to, player);
+            }
         }
         return false;
     }
@@ -501,7 +506,7 @@ void ShuangrenCard::use(Room *room, ServerPlayer *aoko, const QList<ServerPlayer
         card_use.card = slash;
         room->useCard(card_use, false);
     }else{
-        room->playSkillEffect(skill_name, 2);
+        room->playSkillEffect(skill_name, 3);
         aoko->setFlags("shuangren");
     }
 }
@@ -546,7 +551,7 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-        return 1;
+        return qrand() % 2 + 1;
     }
 };
 

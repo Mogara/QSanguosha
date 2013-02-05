@@ -71,7 +71,9 @@ return {
 	["cv:cbzhaoyun2"] = "黄昏",
 	["$cbqinggang1"] = "青釭利刃，无坚不摧！", -- 弃置手牌
 	["$cbqinggang2"] = "如此神器，汝留之有何用~", -- 获得装备牌
-	["Tshenzhaoyun"] = "独仗英雄气，舍命破贼军~", -- 变身
+	["Tshenzhaoyun"] = "阶段转换",
+	[":Tshenzhaoyun"] = "长坂云的菊花被爆了。",
+	["$Tshenzhaoyun"] = "独仗英雄气，舍命破贼军~", -- 变身
 	["$cblongnu"] = "枪搅垓心蛇动荡，马冲阵势虎飞腾~",
 	["$cbyuxue"] = "血染征袍透甲红，当阳谁敢与争锋！",
 	["$cblongyin"] = "匹马单枪出重围，英风锐气敌胆寒！",
@@ -82,7 +84,9 @@ return {
 	["$cbzhengjun1"] = "汝等速速召集残部来助阵！", -- 弃置牌
 	["$cbzhengjun2"] = "待吾摆个疑兵阵，唬住贼军！", -- 摸牌并翻面
 	["$cbzhangba"] = "蛇矛在手，吾还惧何人~",
-	["Tshenzhangfei"] = "杂碎，休想再前进一步！", -- 变身
+	["Tshenzhangfei"] = "阶段转换",
+	[":Tshenzhangfei"] = "长坂飞的菊花被爆了。",
+	["$Tshenzhangfei"] = "杂碎，休想再前进一步！", -- 变身
 	["$cbbeiliang"] = "吾粗中有细，自然留有后手！",
 	["$cbjuwu"] = "子龙莫慌，我来助你~",
 	["$cbchanshe"] = "欲战不战，匹夫如此不济乎？",

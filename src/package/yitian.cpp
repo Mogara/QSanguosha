@@ -1062,7 +1062,7 @@ public:
             room->judge(judge);
 
             if(judge.isGood()){
-                room->playSkillEffect(objectName());
+                room->playSkillEffect(objectName(), luboyan->getGender() == General::Male ? qrand() % 2 + 1: qrand() % 2 + 3);
                 DamageStruct shaoying_damage;
                 shaoying_damage.nature = DamageStruct::Fire;
                 shaoying_damage.from = luboyan;                

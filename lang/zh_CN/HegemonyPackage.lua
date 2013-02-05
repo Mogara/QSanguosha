@@ -117,8 +117,8 @@ return {
 	["illustrator:yuejin"] = "巴萨小马",
 	["cv:yuejin"] = "裤衩",
 	["$xiaoguo1"] = "骁勇果敢，每战必先！",
-	["$xiaoguo2"] = "贼有防备，只伤皮毛，来日再战！ ", -- 弃置牌
-	["$xiaoguo3"] = "奋强突固，无坚不陷！", -- 伤害
+	["$xiaoguo2"] = "奋强突固，无坚不陷！", -- 伤害
+	["$xiaoguo3"] = "贼有防备，只伤皮毛，来日再战！ ", -- 弃置牌
 	["~yuejin"] = "吾戎马一生，何惧死乎？！",
 
 	["illustrator:ganfuren"] = "琛·美弟奇",

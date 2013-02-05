@@ -542,6 +542,7 @@ public:
 
 DimengCard::DimengCard(){
     once = true;
+    mute = true;
 }
 
 bool DimengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -564,6 +565,8 @@ bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 }
 
 void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->playSkillEffect(skill_name, source->getMark("youqi") == 0 ? qrand() % 2 + 1: 3);
+
     ServerPlayer *a = targets.at(0);
     ServerPlayer *b = targets.at(1);
 

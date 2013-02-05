@@ -41,11 +41,16 @@ public:
         for(int i=0; i<damage.damage; i++){
             if(damage.to->isNude())
                 break;
-            if(!damage.to->hasEquip())
+            if(!damage.to->hasEquip()){
+                room->playSkillEffect(objectName(), 1);
                 room->askForDiscard(damage.to, objectName(), 1);
-            else
-                if(!room->askForDiscard(damage.to, objectName(), 1, true, false))
+            }
+            else{
+                if(!room->askForDiscard(damage.to, objectName(), 1, true, false)){
+                    room->playSkillEffect(objectName(), 2);
                     room->obtainCard(player, room->askForCardChosen(player, damage.to, "e", objectName()));
+                }
+            }
         }
         return false;
     }
@@ -139,6 +144,7 @@ public:
 
 CBYuXueCard::CBYuXueCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void CBYuXueCard::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -235,6 +241,7 @@ public:
             data = QVariant::fromValue(player);
             if(!player->askForSkillInvoke(objectName(), data))
                 return false;
+            room->playSkillEffect(objectName());
             QList<int> cards = room->getNCards(3);
             room->fillAG(cards, player);
             int card_id = room->askForAG(player, cards, false, objectName());
@@ -262,11 +269,13 @@ public:
         int x = player->getAttackRange();
         Room *room = player->getRoom();
         if(player->getPhase() == Player::Start){
+            room->playSkillEffect(objectName(), 1);
             if(player->getCards("he").length() <= x)
                 player->throwAllCards();
             else
                 room->askForDiscard(player, objectName(), x, false, true);
         }else if(player->getPhase() == Player::Finish){
+            room->playSkillEffect(objectName(), 2);
             player->drawCards(x + 1);
             player->turnOver();
         }
@@ -528,6 +537,8 @@ ChangbanSlopePackage::ChangbanSlopePackage()
     General *cbzhaoyun1 = new General(this, "cbzhaoyun1", "god", 8, true, true);
     cbzhaoyun1->addSkill("longdan");
     cbzhaoyun1->addSkill(new CBQingGang);
+    cbzhaoyun1->addRelateSkill("Tshenzhaoyun");
+    skills << new Skill("Tshenzhaoyun");
 
     General *cbzhaoyun2 = new General(this, "cbzhaoyun2", "god", 4, true, true);
     cbzhaoyun2->addSkill("longdan");
@@ -539,6 +550,8 @@ ChangbanSlopePackage::ChangbanSlopePackage()
     General *cbzhangfei1 = new General(this, "cbzhangfei1", "god", 10, true, true);
     cbzhangfei1->addSkill(new CBZhengJun);
     cbzhangfei1->addSkill(new CBZhangBa);
+    cbzhangfei1->addRelateSkill("Tshenzhangfei");
+    skills << new Skill("Tshenzhangfei");
 
     General *cbzhangfei2 = new General(this, "cbzhangfei2", "god", 5, true, true);
     cbzhangfei2->addSkill("cbzhangba");

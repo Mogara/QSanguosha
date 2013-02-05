@@ -245,6 +245,7 @@ public:
                 log.arg2 = objectName();
                 room->sendLog(log);
                 zombie->drawCards(x);
+                room->playSkillEffect(objectName());
             }
         }
         return false;
@@ -273,6 +274,7 @@ public:
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(++ damage.damage);
             room->sendLog(log);
+            room->playSkillEffect(objectName());
 
             data = QVariant::fromValue(damage);
             if(zombie->getHp()>1)
@@ -352,6 +354,7 @@ public:
             room->sendLog(log);
 
             target->gainMark("@harb");
+            room->playSkillEffect(objectName());
         }
 
         return false;

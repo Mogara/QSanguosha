@@ -22,8 +22,15 @@ return {
 	["@harb"] = "结界",
 	["#survive_victory"] = "%from 聚集起了足够的退治之力！僵尸被退治！",
 	["designer:zombie"] = "HyperCross",
-	["cv:zombie"] = "不详",
+	["cv:zombie"] = "CSOL+植物大战僵尸音效",
 	["illustrator:zombie"] = "鬼戲",
 	["#zombie"] = "行尸走肉",
+
+	["$xunmeng"] = "(音效)",
+	["$zaibian"] = "(音效)",
+	["$wansha2"] = "(音效)",
+	["$paoxiao3"] = "(音效)",
+	["$peaching"] = "(音效)",
+	["$harbourage"] = "(音效)",
 	["~zombie"] = "已死过一次，再死一次又有何妨？",
 }

@@ -1430,6 +1430,7 @@ LangguCard::LangguCard(){
     target_fixed = true;
     will_throw = false;
     can_jilei = true;
+    mute = true;
 }
 
 void LangguCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
@@ -1863,6 +1864,7 @@ public:
 MingjianCard::MingjianCard(){
     will_throw = false;
     target_fixed = true;
+    mute = true;
 }
 
 void MingjianCard::use(Room *room, ServerPlayer *xin, const QList<ServerPlayer *> &) const{
@@ -1876,10 +1878,12 @@ void MingjianCard::use(Room *room, ServerPlayer *xin, const QList<ServerPlayer *
     if(choice == "nil")
         return;
     if(choice == "ming"){
+        room->playSkillEffect(skill_name, 1);
         room->throwCard(this, xin);
         player->skip(Player::Judge);
     }
     else{
+        room->playSkillEffect(skill_name, 2);
         foreach(int id, getSubcards())
             player->addToPile("jian", id);
     }

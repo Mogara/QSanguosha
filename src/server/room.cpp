@@ -177,7 +177,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
     QList<ServerPlayer *> savers;
     ServerPlayer *current = getCurrent();
     if(current->hasSkill("wansha") && current->isAlive()){
-        playSkillEffect("wansha");
+        playSkillEffect("wansha", current->getGeneral2Name() == "zombie" ? 2 : 1);
 
         savers << current;
 
