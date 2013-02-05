@@ -691,7 +691,9 @@ void Engine::playCardEffect(const QString &card_name, bool is_male) const{
     QString path;
     if(card_name.startsWith("@")){
         QString gender = is_male ? "male" : "female";
-        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(card_name);
+        path = QString("audio/card/%1/%2.dat").arg(gender).arg(card_name);
+        if(!QFile::exists(path))
+            path = QString("audio/card/%1/%2.ogg").arg(gender).arg(card_name);
     }else{
         const Card *card = findChild<const Card *>(card_name);
         if(card)

@@ -19,9 +19,9 @@ public:
         Room *room = player->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         bool has_frantic = player->getMark("@frantic")>0;
-        room->playSkillEffect(objectName());
 
         if(has_frantic){
+            room->playSkillEffect(objectName(), player->getGender() == General::Male ? 2: 4);
             foreach(ServerPlayer *target, players){
                 if(target->getCards("he").length() == 0)
                     continue;
@@ -31,6 +31,7 @@ public:
             return true;
         }
         else{
+            room->playSkillEffect(objectName(), player->getGender() == General::Male ? 1: 3);
             player->drawCards(player->getHp());
             return true;
         }
@@ -52,7 +53,7 @@ public:
         if(!room->askForSkillInvoke(player, objectName()))
             return;
 
-        room->playSkillEffect(objectName());
+        room->playSkillEffect(objectName(), player->getGender() == General::Male ? 1: 2);
         int n = 0;
         if(has_frantic)
             n = players.length();
@@ -96,6 +97,7 @@ public:
             log.from = target;
             log.arg = objectName();
             room->sendLog(log);
+            room->playSkillEffect(objectName(), target->getGender() == General::Male ? 1: 2);
 
             foreach(ServerPlayer *player, others){
                 if(player->getHandcardNum() == 0){
@@ -136,10 +138,14 @@ public:
         bool has_frantic = player->getMark("@frantic")>0;
 
         if(event == PhaseChange && player->getPhase() == Player::Finish){
-            if(has_frantic)
+            if(has_frantic){
+                room->playSkillEffect(objectName(), player->getGender() == General::Male ? 2: 4);
                 player->drawCards(players.length());
-            else
+            }
+            else{
+                room->playSkillEffect(objectName(), player->getGender() == General::Male ? 1: 3);
                 player->drawCards(player->getMaxHP());
+            }
         }
 
         if(has_frantic && (event == CardEffected)){
@@ -216,10 +222,11 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         if(player->getPhase() != Player::Play)
             return false;
         if(player->getHp() != player->getMaxHP() && event == Damage){
+            room->playSkillEffect(objectName(), player->getGender() == General::Male ? 1: 3);
             RecoverStruct recover;
             recover.who = player;
             recover.recover = 1;
@@ -227,8 +234,10 @@ public:
         }
         else{
             QList<ServerPlayer *> players = room->getAlivePlayers();
-            if(player->getHandcardNum() < players.length())
+            if(player->getHandcardNum() < players.length()){
+                room->playSkillEffect(objectName(), player->getGender() == General::Male ? 2: 4);
                 player->drawCards(1);
+            }
         }
         return false;
     }

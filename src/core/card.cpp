@@ -215,7 +215,10 @@ QString Card::getPackage() const{
 
 QString Card::getEffectPath(bool is_male) const{
     QString gender = is_male ? "male" : "female";
-    return QString("audio/card/%1/%2.ogg").arg(gender).arg(objectName());
+    QString path = QString("audio/card/%1/%2.dat").arg(gender).arg(objectName());
+    if(!QFile::exists(path))
+        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(objectName());
+    return path;
 }
 
 bool Card::isNDTrick() const{

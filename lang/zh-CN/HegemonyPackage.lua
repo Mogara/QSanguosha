@@ -179,7 +179,7 @@ return {
 
 	["illustrator:panfeng"] = "Yi 章",
 	["cv:panfeng"] = "水浒杀",
-	["$kuangfu"] = "吃俺一斧。",
+	["$kuangfu1"] = "吃俺一斧。",
 	["~panfeng"] = "哈哈……哦！",
 
 }

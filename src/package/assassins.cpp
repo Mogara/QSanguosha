@@ -440,7 +440,6 @@ public:
 
 DuyiCard::DuyiCard(){
     target_fixed = true;
-    mute = true;
 }
 
 void DuyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -461,10 +460,7 @@ void DuyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
         log.to << target;
         log.arg = "duyi";
         room->sendLog(log);
-        room->playSkillEffect("duyi", 1);
     }
-    else
-        room->playSkillEffect("duyi", 2);
 
     room->getThread()->delay();
     foreach(ServerPlayer *p, room->getPlayers())
@@ -539,6 +535,7 @@ public:
             return false;
         
         if(player->askForSkillInvoke(objectName(), data)) {
+            room->playSkillEffect(objectName());
             for(int i = 0; i < 2; i++) {
                 if(!effect.from || effect.from->isNude())
                     break;

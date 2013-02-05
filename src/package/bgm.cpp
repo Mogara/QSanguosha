@@ -1640,7 +1640,7 @@ public:
         else if(event == CardDiscarded){
             if(player->getPhase() == Player::Discard && player->hasFlag("hfty")){
                 CardStar card = data.value<CardStar>();
-                room->playSkillEffect(objectName());
+                room->playSkillEffect(objectName(), 1);
                 foreach(int card_id, card->getSubcards())
                     player->addToPile("zhao", card_id);
                 player->setFlags("-hfty");
@@ -1658,7 +1658,7 @@ public:
                         room->throwCard(player->getPile("zhao").first());
                         room->setPlayerFlag(player, "zhao_jijiang");
                     }
-                    room->playSkillEffect("jijiang", qrand() % 2 + 3);
+                    room->playSkillEffect(objectName(), 2);
                     QVariant tohelp = QVariant::fromValue((PlayerStar)player);
                     foreach(ServerPlayer *liege, lieges){
                         const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + player->objectName(), tohelp);
@@ -1679,7 +1679,7 @@ public:
                         room->throwCard(player->getPile("zhao").first());
                         room->setPlayerFlag(player, "zhao_hujia");
                     }
-                    room->playSkillEffect("hujia");
+                    room->playSkillEffect(objectName(), 2);
                     QVariant tohelp = QVariant::fromValue((PlayerStar)player);
                     foreach(ServerPlayer *liege, lieges){
                         const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + player->objectName(), tohelp);
@@ -1712,7 +1712,7 @@ public:
                     RecoverStruct recover;
                     recover.who = effect.from;
                     room->recover(player, recover);
-                    room->playSkillEffect("jiuyuan");
+                    room->playSkillEffect(objectName(), 2);
                 }
             }
         }
