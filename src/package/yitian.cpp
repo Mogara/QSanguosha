@@ -204,6 +204,7 @@ public:
         QString choice = room->askForChoice(weiwudi, objectName(), "modify+obtain");
 
         if(choice == "modify"){
+            room->playSkillEffect(objectName(), qrand() % 2 + 1);
             PlayerStar to_modify = room->askForPlayerChosen(weiwudi, room->getOtherPlayers(weiwudi), objectName());
             room->setTag("GuishinModify", QVariant::fromValue(to_modify));
             QString kingdom = room->askForChoice(weiwudi, "guishin", "wei+shu+wu+qun");
@@ -220,6 +221,7 @@ public:
             room->sendLog(log);
 
         }else if(choice == "obtain"){
+            room->playSkillEffect(objectName(), qrand() % 2 + 3);
             QStringList lords = Sanguosha->getLords();
             QList<ServerPlayer *> players = room->getOtherPlayers(weiwudi);
             foreach(ServerPlayer *player, players){
