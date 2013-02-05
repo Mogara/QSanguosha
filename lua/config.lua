@@ -118,6 +118,16 @@ config = {
 	mini_max = 44 -- 此处以Config.S_MINI_MAX_COUNT为准
 }
 
+scenario = { -- 非身份局模式下的一些设置
+	savsa_packages = { -- 3v3模式：设置加载的扩展包
+		"standard",
+		"wind",
+	},
+	couple_lord = "caocao", -- 夫妻鞋展：设置主公
+	couple_spouse = { -- 设置新的夫妻
+--		"simayi+guojia",
+	},
+}
 ban_list = { -- 初始禁表设置
 	roles_ban = { -- 身份局单禁
 		"bgm_pangtong",
@@ -127,6 +137,7 @@ ban_list = { -- 初始禁表设置
 		"lvmeng"
 	},
 	savsa_ban = { -- 3v3模式
+		"yuji",
 		"caizhaoji",
 	},
 	basara_ban = { -- 暗将模式

@@ -18,11 +18,13 @@ public:
     virtual void getRoles(char *roles) const;
     virtual AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
 
+    QMap<QString, QString> mappy(QMap<QString, QString> mapr) const;
     void marryAll(Room *room) const;
     void setSpouse(ServerPlayer *player, ServerPlayer *spouse) const;
     ServerPlayer *getSpouse(const ServerPlayer *player) const;
     void remarry(ServerPlayer *enkemann, ServerPlayer *widow) const;
     bool isWidow(ServerPlayer *player) const;
+    QStringList getBoats(const QString &name) const;
 
 private:
     QMap<QString, QString> map;

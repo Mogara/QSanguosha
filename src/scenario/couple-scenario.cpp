@@ -19,18 +19,16 @@ public:
                 if(player->isLord()){
                     scenario->marryAll(room);
                     room->setTag("SkipNormalDeathProcess", true);
-                }else if(player->getGeneralName() == "lvbu"){
+                    break;
+                }
+                //get one wife's multi husband
+                QStringList cps = scenario->getBoats(scenario->getSpouse(player)->getGeneralName());
+                if(cps.length() != 2)
+                    break;
+                if(cps.contains(player->getGeneralName())){
+                    cps.removeOne(player->getGeneralName());
                     if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "dongzhuo", true);
-                }else if(player->getGeneralName() == "zhugeliang"){
-                    if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "wolong", true);
-                }else if(player->getGeneralName() == "xiaoqiao"){
-                    if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "huanggai", true);
-                }else if(player->getGeneralName() == "caopi"){
-                    if(player->askForSkillInvoke("reselect"))
-                        room->transfigure(player, "caozhi", true);
+                        room->transfigure(player, cps.first(), true);
                 }
 
                 break;
@@ -115,12 +113,12 @@ public:
 CoupleScenario::CoupleScenario()
     :Scenario("couple")
 {
-    lord = "caocao";
-    renegades << "lvbu" << "diaochan";
+    //lord = "caocao";
+    //renegades << "lvbu" << "diaochan";
     rule = new CoupleScenarioRule(this);
 
     map["caopi"] = "zhenji";
-    map["guojia"] = "simayi";
+    //map["guojia"] = "simayi";
     map["liubei"] = "sunshangxiang";
     map["zhugeliang"] = "huangyueying";
     map["menghuo"] = "zhurong";
@@ -138,13 +136,43 @@ CoupleScenario::CoupleScenario()
     full_map["zhouyu"] = "huanggai";
 }
 
+QMap<QString, QString> CoupleScenario::mappy(QMap<QString, QString> mapr) const{
+    lua_State *lua = Sanguosha->getLuaState();
+    QStringList spouses = GetConfigFromLuaState(lua, "couple_spouse", "scenario").toStringList();
+    QMap<QString, QString> mapper = mapr;
+    foreach(QString spouse, spouses){
+        QStringList couple = spouse.split("+");
+        mapper.insert(couple.first(), couple.last());
+    }
+    return mapper;
+}
+
+QStringList CoupleScenario::getBoats(const QString &name) const{
+    QStringList results;
+    QMap<QString, QString> final_map = mappy(full_map);
+    foreach(QString husband_name, final_map.keys()){
+        QString wife_name = final_map.value(husband_name, QString());
+        if(wife_name == name)
+            results << husband_name;
+    }
+    foreach(QString wife_name, final_map.values()){
+        QString husband_name = final_map.key(QString(), wife_name);
+        if(husband_name == name)
+            results << wife_name;
+    }
+    return results;
+}
+
 void CoupleScenario::marryAll(Room *room) const{
-    foreach(QString husband_name, full_map.keys()){
+    QMap<QString, QString> mapper = mappy(map);
+    QMap<QString, QString> full_mapper = mappy(full_map);
+
+    foreach(QString husband_name, full_mapper.keys()){
         ServerPlayer *husband = room->findPlayer(husband_name, true);
         if(husband == NULL)
             continue;
 
-        QString wife_name = map.value(husband_name, QString());
+        QString wife_name = mapper.value(husband_name, QString());
         if(!wife_name.isNull()){
             ServerPlayer *wife = room->findPlayer(wife_name, true);
             marry(husband, wife);
@@ -203,7 +231,7 @@ ServerPlayer *CoupleScenario::getSpouse(const ServerPlayer *player) const{
 }
 
 bool CoupleScenario::isWidow(ServerPlayer *player) const{
-    if(player->getGeneral()->isMale())
+    if(player->getGender() == General::Male)
         return false;
 
     ServerPlayer *spouse = getSpouse(player);
@@ -211,15 +239,18 @@ bool CoupleScenario::isWidow(ServerPlayer *player) const{
 }
 
 void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
+    lua_State *lua = Sanguosha->getLuaState();
+    QString lord = GetConfigFromLuaState(lua, "couple_lord", "scenario").toString();
     generals << lord;
 
-    QStringList husbands = map.keys();
+    QMap<QString, QString> mapper = mappy(map);
+    QStringList husbands = mapper.keys();
     qShuffle(husbands);
     husbands = husbands.mid(0, 4);
 
     QStringList others;
     foreach(QString husband, husbands)
-        others << husband << map.value(husband);
+        others << husband << mapper.value(husband);
 
     generals << others;
     qShuffle(generals);
@@ -246,7 +277,7 @@ AI::Relation CoupleScenario::relationTo(const ServerPlayer *a, const ServerPlaye
     if(getSpouse(a) == b)
         return AI::Friend;
 
-    if((a->isLord() || b->isLord()) && a->getGeneral()->isMale() != b->getGeneral()->isMale())
+    if((a->isLord() || b->isLord()) && a->getGenderString() != b->getGenderString())
         return AI::Neutrality;
 
     return AI::Enemy;
