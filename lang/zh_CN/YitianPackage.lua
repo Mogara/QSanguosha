@@ -218,9 +218,12 @@ return {
 -- CV&Designer
 	["designer:weiwudi"] = "官方内测第三版",
 	["illustrator:weiwudi"] = "三国志大战",
-	["cv:weiwudi"] = "Index",
-	["$guishin"] = "青青子衿，悠悠我心。",
-	["~weiwudi"] = "月明星稀，乌鹊南飞。",
+	["cv:weiwudi"] = "极光星逝",
+	["$guishin1"] = "青青子衿，悠悠我心。",
+	["$guishin2"] = "威服诸侯，师之所尊。",
+	["$guishin3"] = "日月之行，若出其中。",
+	["$guishin4"] = "星汉灿烂，若出其里。",
+	["~weiwudi"] = "月明星稀，乌鹊南飞，绕树三匝，无枝可依……",
 
 	["designer:caochong"] = "太阳神上",
 	["illustrator:caochong"] = "三国志大战",
@@ -276,9 +279,11 @@ return {
 	["cv:luboyan"] = "烨子风暴",
 	["designer:luboyanf"] = "太阳神上、冢冢的青藤",
 	["illustrator:luboyanf"] = "阿摸",
-	["cv:luboyanf"] = "",
+	["cv:luboyanf"] = "神马芯",
 	["$shaoying1"] = "烈焰升腾，万物尽毁！",
 	["$shaoying2"] = "以火应敌，贼人何处逃窜？！",
+	["$shaoying3"] = "烈焰升腾，万物尽毁！(女声)",
+	["$shaoying4"] = "以火应敌，贼人何处逃窜？！(女声)",
 	["$zonghuo"] = "（燃烧声）",
 	["~luboyan"] = "玩火自焚啊！",
 

@@ -6,6 +6,7 @@
 
 #ifdef USE_RCC
 #include <QResource>
+#include "crypto.h"
 #endif
 static CardOverview *Overview;
 
@@ -14,7 +15,8 @@ CardOverview *CardOverview::GetInstance(QWidget *main_window){
         Overview = new CardOverview(main_window);
 
 #ifdef USE_RCC
-    QResource::registerResource("image/big-card.rcc");
+    Crypto cry;
+    QResource::registerResource(cry.getEncryptedFile("image/big-card.dat"));
 #endif
     return Overview;
 }
@@ -84,7 +86,8 @@ void CardOverview::addCard(int i, const Card *card){
 CardOverview::~CardOverview()
 {
 #ifdef USE_RCC
-    QResource::unregisterResource("image/big-card.rcc");
+    Crypto cry;
+    QResource::unregisterResource(cry.getEncryptedFile("image/big-card.dat"));
 #endif
     delete ui;
 }

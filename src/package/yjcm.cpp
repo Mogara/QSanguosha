@@ -186,6 +186,10 @@ public:
         return true;
     }
 
+    virtual int getPriority() const{
+        return 2;
+    }
+
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->getTypeId() == Card::Trick){
@@ -834,10 +838,6 @@ public:
     Zhichi():TriggerSkill("zhichi"){
         events << Damaged << CardEffected;
         frequency = Compulsory;
-    }
-
-    virtual int getPriority() const{
-        return 1;
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{

@@ -115,11 +115,11 @@ return {
 
 -- cv
 	["illustrator:yuejin"] = "巴萨小马",
-	["cv:yuejin"] = "小鱼儿",
-	["$xiaoguo1"] = "天明之前定要攻下此城。",
-	["$xiaoguo2"] = "敌阵已经动摇，继续冲啊！",
-	["$xiaoguo3"] = "兄弟们随我直捣黄龙！",
-	["~yuejin"] = "魏王拔我于行伍，今当以死相报。",
+	["cv:yuejin"] = "裤衩",
+	["$xiaoguo1"] = "骁勇果敢，每战必先！",
+	["$xiaoguo2"] = "贼有防备，只伤皮毛，来日再战！ ", -- 弃置牌
+	["$xiaoguo3"] = "奋强突固，无坚不陷！", -- 伤害
+	["~yuejin"] = "吾戎马一生，何惧死乎？！",
 
 	["illustrator:ganfuren"] = "琛·美弟奇",
 	["cv:ganfuren"] = "神马芯",
@@ -130,25 +130,25 @@ return {
 
 	["illustrator:gz_zhouyu"] = "牧童的短笛",
 	["cv:gz_zhouyu"] = "猎狐",
-	["cv:lushun"] = "白水",
-	["$duoshi1"] = "诸公稍安勿躁，请先看清局势。",
-	["$duoshi2"] = "审时度势，方能出奇制胜。",
-	["~lushun"] = "等到花儿都谢了~",
+	["cv:lushun"] = "飞魔鬼",
+	["$duoshi1"] = "审时度势，方能出奇制胜！",
+	["$duoshi2"] = "广施方略，以观其变。",
+	["~lushun"] = "错估形势，贻误战机，吾之过也！",
 
 	["illustrator:dingfeng"] = "魔鬼鱼",
-	["cv:dingfeng"] = "小鱼儿",
-	["$duanbing1"] = "一寸短一寸险。",
-	["$duanbing2"] = "来一个杀一个，来一对杀一双！",
-	["$fenxun1"] = "杀你个措手不及！",
-	["$fenxun2"] = "不入虎穴，焉得虎子。",
-	["~dingfeng"] = "贴身肉搏竟能赢我，呃~",
+	["cv:dingfeng"] = "极光星逝",
+	["$duanbing1"] = "取封侯爵赏，正在今日！",
+	["$duanbing2"] = "身先士卒，雪夜奋兵！",
+	["$fenxun1"] = "奋迅若霹雳，破敌如破竹！",
+	["$fenxun2"] = "动若猛虎，势似疾风！",
+	["~dingfeng"] = "功高盖主啊！",
 
 	["illustrator:kongrong"] = "苍月白龙",
-	["cv:kongrong"] = "逍遥小鱼儿",
-	["$mingshi1"] = "在下是孔子后人，不知先生有何贵干？",
-	["$mingshi2"] = "来者何人，报上名来。",
-	["$lirang1"] = "退一步，海阔天空。",
-	["$lirang2"] = "你吃大的，我吃小的。",
+	["cv:kongrong"] = "清水浊流",
+	["$mingshi1"] = "其人欲自伤，何损于日月乎？",
+	["$mingshi2"] = "汝不行仁义，天下之士共击之！",
+	["$lirang1"] = "礼节民心，让则不争。",
+	["$lirang2"] = "守礼仪，懂谦让，方有吾今日之名！",
 	["~kongrong"] = "生存多所虑，长寝万事毕。",
 
 	["illustrator:tianfeng"] = "地狱许",
@@ -160,10 +160,11 @@ return {
 	["~tianfeng"] = "主公为何不听吾言啊！",
 
 	["illustrator:jiling"] = "樱花闪乱",
-	["cv:jiling"] = "火树",
-	["$shuangren1"] = "你可识得我手中兵器？",
-	["$shuangren2"] = "今日这兵器颇不顺手啊。。。",
-	["~jiling"] = "我的三尖两刃刀怎么会输给丈八蛇矛呢？",
+	["cv:jiling"] = "极光星逝",
+	["$shuangren1"] = "汝等无名下将，岂是本将军的对手！",
+	["$shuangren2"] = "仲家主将，尔等岂能匹敌！", --赢
+	["$shuangren3"] = "今日这武器颇不顺手！", --没赢
+	["~jiling"] = "环眼匹夫，尓敢如此……",
 
 	["illustrator:zoushi"] = "Tuu.",
 	["cv:zoushi"] = "神马芯",
@@ -173,13 +174,14 @@ return {
 	["~zoushi"] = "红颜祸水？哈哈……",
 
 	["illustrator:mateng"] = "DH",
-	["cv:mateng"] = "HeLi",
-	["$xiongyi"] = "西凉铁骑，锐不可当！",
-	["~mateng"] = "你们快走，让孟起为我报仇！",
+	["cv:mateng"] = "清水浊流",
+	["$xiongyi"] = "西凉铁骑，所向披靡！伏波之后，誓讨汉贼！",
+	["~mateng"] = "汝等快走，让孟起替我报仇……",
 
 	["illustrator:panfeng"] = "Yi 章",
-	["cv:panfeng"] = "水浒杀",
-	["$kuangfu"] = "吃俺一斧。",
-	["~panfeng"] = "哈哈……哦！",
+	["cv:panfeng"] = "清水浊流",
+	["$kuangfu"] = "汝等休想从我上将手下逃生！", -- 获得牌
+	["$kuangfu"] = "我的大斧已饥渴难耐！", -- 弃置牌
+	["~panfeng"] = "报，潘将军又被华雄斩了。。（画外音）",
 
 }

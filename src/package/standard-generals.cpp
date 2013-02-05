@@ -1069,26 +1069,23 @@ public:
     }
 };
 
-class Wushuang: public TriggerSkill{
+class Wushuang: public SlashBuffSkill{
 public:
-    Wushuang():TriggerSkill("wushuang"){
-        events << SlashProceed;
-
+    Wushuang():SlashBuffSkill("wushuang"){
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *lvbu, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        Room *room = effect.from->getRoom();
         room->playSkillEffect(objectName());
-
+        PlayerStar lvbu = effect.from;
         QString slasher = lvbu->objectName();
+        const Card *first_jink = NULL, *second_jink = NULL;
+        first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), JinkUsed);
+        if(first_jink)
+            second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), JinkUsed);
 
-            const Card *first_jink = NULL, *second_jink = NULL;
-            first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher, QVariant(), JinkUsed);
-            if(first_jink)
-                second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher, QVariant(), JinkUsed);
-
-            Card *jink = NULL;
+        Card *jink = NULL;
         if(first_jink && second_jink){
             jink = new DummyCard;
             jink->addSubcard(first_jink);

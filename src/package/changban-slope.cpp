@@ -377,7 +377,10 @@ bool CBChanSheCard::targetFilter(const QList<const Player *> &targets, const Pla
     if(!targets.isEmpty())
         canuse = false;
 
+    Indulgence *indulgence = new Indulgence(Card::NoSuit, 0);
     if(to_select->containsTrick("indulgence"))
+        canuse = false;
+    if(Self->isProhibited(to_select, indulgence))
         canuse = false;
 
     if(to_select == Self)

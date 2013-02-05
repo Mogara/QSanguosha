@@ -16,11 +16,13 @@ RoomThread3v3::RoomThread3v3(Room *room)
 QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     QList<const General *> generals;
 
-    const Package *stdpack = Sanguosha->findChild<const Package *>("standard");
-    const Package *windpack = Sanguosha->findChild<const Package *>("wind");
+    lua_State *lua = Sanguosha->getLuaState();
+    QStringList packages = GetConfigFromLuaState(lua, "savsa_packages", "scenario").toStringList();
 
-    generals << stdpack->findChildren<const General *>()
-             << windpack->findChildren<const General *>();
+    foreach(QString tmp, packages){
+        const Package *stdpack = Sanguosha->findChild<const Package *>(tmp);
+        generals << stdpack->findChildren<const General *>();
+    }
 
     // remove hidden generals
     QMutableListIterator<const General *> itor(generals);
@@ -34,8 +36,6 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     foreach(const General *general, generals)
         general_names << general->objectName();
 
-    general_names.removeOne("yuji");
-
     if(Config.value("3v3/UsingNewMode", false).toBool()){
           QStringList list_remove, list_add;
           list_remove << "zhangjiao" << "caoren" << "lvmeng" << "xiahoudun" << "weiyan";
@@ -45,6 +45,10 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
           foreach(QString general_name, list_add)
               general_names << general_name;
     }
+
+    QStringList bans = GetConfigFromLuaState(lua, "savsa_ban", "ban_list").toStringList();
+	foreach(QString ban, bans)
+        general_names.removeOne(ban);
 
     Q_ASSERT(general_names.length() >= 16);
 

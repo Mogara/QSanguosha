@@ -270,7 +270,7 @@ public:
 
             foreach(ServerPlayer *p, players){
                 if(p->getOffensiveHorse() == parent() &&
-                   p->askForSkillInvoke("grab_peach", data))
+                   p->askForSkillInvoke(objectName(), data))
                 {
                     room->throwCard(p->getOffensiveHorse());
                     p->playCardEffect(objectName());

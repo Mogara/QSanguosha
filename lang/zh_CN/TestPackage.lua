@@ -29,6 +29,7 @@ return {
 	["v5paiyi:equip"] = "装备区",
 	["v5paiyi:werpo"] = "红灯区",
 
+	["cv:v5zhonghui"] = "",
 	["$v5zhenggong"] = "伐逆之任，何不予吾？",
 	["$v5quanji1"] = "将军请留步。", -- 发动拼点
 	["$v5quanji2"] = "将军劳苦功高，宜当暂歇。", -- 赢
