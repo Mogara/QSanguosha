@@ -660,7 +660,7 @@ public:
 class WulingExEffect: public TriggerSkill{
 public:
     WulingExEffect():TriggerSkill("#wuling-ex-effect"){
-        events << CardEffected << DamageInflicted;
+        events << PreHpRecover << DamageInflicted;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -673,18 +673,17 @@ public:
             return false;
 
         QString wuling = xuandi->tag.value("wuling").toString();
-        if(triggerEvent == CardEffected && wuling == "water"){
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card && effect.card->isKindOf("Peach")){ // @todo_P: refactor this like JiuYuan
-                RecoverStruct recover;
-                recover.card = effect.card;
-                recover.who = effect.from;
-                room->recover(player, recover);
-
+        if(triggerEvent == PreHpRecover && wuling == "water"){
+            RecoverStruct rec = data.value<RecoverStruct>();
+            if(rec.card && rec.card->isKindOf("Peach")) {
                 LogMessage log;
                 log.type = "#WulingWater";
                 log.from = player;
                 room->sendLog(log);
+
+                rec.recover ++;
+
+                data = QVariant::fromValue(rec);
             }
         }else if(triggerEvent == DamageInflicted && wuling == "earth"){
             DamageStruct damage = data.value<DamageStruct>();

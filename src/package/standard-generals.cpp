@@ -800,7 +800,7 @@ public:
 class Jiuyuan: public TriggerSkill{
 public:
     Jiuyuan():TriggerSkill("jiuyuan$"){
-        events << Dying << AskForPeachesDone << TargetConfirmed << HpRecover;
+        events << Dying << AskForPeachesDone << TargetConfirmed << PreHpRecover;
         frequency = Compulsory;
     }
 
@@ -832,7 +832,7 @@ public:
             break;
         }
 
-        case HpRecover: {
+        case PreHpRecover: {
             RecoverStruct rec = data.value<RecoverStruct>();
             if(rec.card && rec.card->hasFlag("jiuyuan"))
             {
