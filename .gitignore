@@ -20,4 +20,6 @@ image/*.bat
 image/*.rcc
 image/generals/card2/*.*
 lib/libcryptopp.a
-QSanguosha.exe
+lua5*.dll
+li*3.dll
+QSanguo*.exe
