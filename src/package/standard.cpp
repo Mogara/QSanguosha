@@ -42,6 +42,18 @@ bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
     return cancelable;
 }
 
+int TrickCard::geteTargetsCount(const Player *from, const Card *card) const{
+    return 0;
+}
+
+int TrickCard::geteRange(const Player *from, const Card *card) const{
+    if(from->hasSkill("qicai"))
+        return 998;
+    if(from->hasSkill("duanliang") && card->isKindOf("SupplyShortage"))
+        return 2;
+    return 0;
+}
+
 TriggerSkill *EquipCard::getSkill() const{
     return skill;
 }

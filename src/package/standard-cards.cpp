@@ -771,13 +771,19 @@ Duel::Duel(Suit suit, int number)
 }
 
 bool Duel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
-        return false;
+    int trick_etargets = TrickCard::geteTargetsCount(Self, this);
+    int trick_distance = TrickCard::geteRange(Self, this);
 
+    trick_etargets ++;
+    if(targets.length() >= trick_etargets)
+        return false;
     if(to_select == Self)
         return false;
-
-    return targets.isEmpty();
+    //if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
+    //    return false;
+    if(trick_distance != 0 && Self->distanceTo(to_select) > trick_distance)
+        return false;
+    return true;
 }
 
 void Duel::onEffect(const CardEffectStruct &effect) const{
@@ -824,18 +830,20 @@ Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number, true) {
 }
 
 bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
-        return false;
+    int trick_etargets = TrickCard::geteTargetsCount(Self, this);
+    int trick_distance = TrickCard::geteRange(Self, this);
 
+    trick_etargets ++;
+    if(trick_distance == 0)
+        trick_distance = 1; //Is not specified, set default
+    if(targets.length() >= trick_etargets)
+        return false;
     if(to_select->isAllNude())
         return false;
-
     if(to_select == Self)
         return false;
-
-    if(Self->distanceTo(to_select) > 1 && !Self->hasSkill("qicai"))
+    if(Self->distanceTo(to_select) > trick_distance)
         return false;
-
     return true;
 }
 
@@ -856,15 +864,19 @@ Dismantlement::Dismantlement(Suit suit, int number)
 }
 
 bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
-        return false;
+    int trick_etargets = TrickCard::geteTargetsCount(Self, this);
+    int trick_distance = TrickCard::geteRange(Self, this);
 
+    trick_etargets ++;
+    if(targets.length() >= trick_etargets)
+        return false;
     if(to_select->isAllNude())
         return false;
-
     if(to_select == Self)
         return false;
-
+    if(trick_distance != 0 && Self->distanceTo(to_select) > trick_distance)
+        return false;
+    // If the original is the infinite distance, it returns the new distance constraints
     return true;
 }
 
@@ -893,15 +905,16 @@ Indulgence::Indulgence(Suit suit, int number)
 
 bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
+    int trick_distance = TrickCard::geteRange(Self, this);
+
     if(!targets.isEmpty())
         return false;
-
-    if(to_select->containsTrick(objectName()))
-        return false;
-
     if(to_select == Self)
         return false;
-
+    if(to_select->containsTrick(objectName()))
+        return false;
+    if(trick_distance != 0 && Self->distanceTo(to_select) > trick_distance)
+        return false;
     return true;
 }
 

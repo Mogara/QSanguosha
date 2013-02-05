@@ -364,6 +364,10 @@ public:
 
     }
 
+    virtual int getPriority() const{
+        return 2;
+    }
+
     virtual bool buff(const SlashEffectStruct &effect) const{
         ServerPlayer *huangzhong = effect.from;
         Room *room = huangzhong->getRoom();
