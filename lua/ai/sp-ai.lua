@@ -197,10 +197,17 @@ sgs.ai_card_intention.YuanhuCard = -30
 sgs.ai_skill_use["@@bifa"] = function(self, prompt)
 	if #self.enemies == 0 then return "." end
 	self:sort(self.enemies)
+	local target
+	for _, p in ipairs(self.enemies) do
+		if p:getPile("#pencil"):isEmpty() then
+			target = p
+			break
+		end
+	end
 	local cards = sgs.QList2Table(self.player:getCards("h"))
 	self:sortByUseValue(cards, true)
-	if self:getUseValue(cards[1]) < 5 then
-		return "@BifaCard=" .. cards[1]:getEffectiveId() .. "->" .. self.enemies[1]:objectName()
+	if self:getUseValue(cards[1]) < 5 and target then
+		return "@BifaCard=" .. cards[1]:getEffectiveId() .. "->" .. target:objectName()
 	end
 	return "."
 end

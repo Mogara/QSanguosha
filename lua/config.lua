@@ -125,7 +125,9 @@ scenario = { -- 非身份局模式下的一些设置
 	},
 	couple_lord = "caocao", -- 夫妻鞋展：设置主公
 	couple_spouse = { -- 设置新的夫妻
---		"simayi+guojia",
+		"simayi+guojia",
+		"ganfuren+liubei",
+		"hanxiandi+fushi",
 	},
 }
 ban_list = { -- 初始禁表设置

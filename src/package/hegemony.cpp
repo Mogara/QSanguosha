@@ -322,6 +322,7 @@ public:
         if(card && room->askForUseCard(player, "@@lirang", "@lirang")){
             PlayerStar target = player->tag["LirangTarget"].value<PlayerStar>();
             target->obtainCard(card);
+            return true;
         }
         return false;
     }

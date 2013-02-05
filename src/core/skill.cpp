@@ -336,6 +336,8 @@ SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const Q
 
 bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL) return false;
+    if(!ServerInfo.GameMode.endsWith("p") && !ServerInfo.GameMode.endsWith("pd") && !ServerInfo.GameMode.endsWith("pz"))
+        return false;
     QString package = Sanguosha->getGeneral(to)->getPackage();
     if(Sanguosha->getBanPackages().contains(package)) return false;
     return GameStartSkill::triggerable(target) && target->getGeneralName() == from;

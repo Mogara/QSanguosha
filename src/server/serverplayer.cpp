@@ -282,7 +282,8 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
             if(ban_list.contains(name))continue;
         }
         if((Config.GameMode.endsWith("p") ||
-            Config.GameMode.endsWith("pd")))
+            Config.GameMode.endsWith("pd") ||
+            Config.GameMode.endsWith("pz")))
         {
             QStringList ban_list = Config.value("Banlist/Roles").toStringList();
 

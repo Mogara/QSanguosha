@@ -22,7 +22,10 @@ public:
                     break;
                 }
                 //get one wife's multi husband
-                QStringList cps = scenario->getBoats(scenario->getSpouse(player)->getGeneralName());
+                ServerPlayer *other = scenario->getSpouse(player);
+                if(!other)
+                    break;
+                QStringList cps = scenario->getBoats(other->getGeneralName());
                 if(cps.length() != 2)
                     break;
                 if(cps.contains(player->getGeneralName())){
@@ -118,11 +121,11 @@ CoupleScenario::CoupleScenario()
     rule = new CoupleScenarioRule(this);
 
     map["caopi"] = "zhenji";
-    //map["guojia"] = "simayi";
-    map["liubei"] = "sunshangxiang";
+    map["guojia"] = "simayi";
+    map["sunshangxiang"] = "liubei";
     map["zhugeliang"] = "huangyueying";
     map["menghuo"] = "zhurong";
-    map["zhouyu"] = "xiaoqiao";
+    map["xiaoqiao"] = "zhouyu";
     map["lvbu"] = "diaochan";
     map["zhangfei"] = "xiahoujuan";
     map["sunjian"] = "wuguotai";
@@ -133,7 +136,7 @@ CoupleScenario::CoupleScenario()
     full_map["dongzhuo"] = "diaochan";
     full_map["wolong"] = "huangyueying";
     full_map["caozhi"] = "zhenji";
-    full_map["zhouyu"] = "huanggai";
+    full_map["huanggai"] = "zhouyu";
 }
 
 QMap<QString, QString> CoupleScenario::mappy(QMap<QString, QString> mapr) const{
@@ -148,19 +151,12 @@ QMap<QString, QString> CoupleScenario::mappy(QMap<QString, QString> mapr) const{
 }
 
 QStringList CoupleScenario::getBoats(const QString &name) const{
-    QStringList results;
     QMap<QString, QString> final_map = mappy(full_map);
-    foreach(QString husband_name, final_map.keys()){
-        QString wife_name = final_map.value(husband_name, QString());
-        if(wife_name == name)
-            results << husband_name;
-    }
-    foreach(QString wife_name, final_map.values()){
-        QString husband_name = final_map.key(QString(), wife_name);
-        if(husband_name == name)
-            results << wife_name;
-    }
-    return results;
+    QStringList wife_names = final_map.values(name);
+    QStringList husband_names = final_map.keys(name);
+    if(wife_names.length() + husband_names.length() == 2)
+        return husband_names + wife_names;
+    return QStringList();
 }
 
 void CoupleScenario::marryAll(Room *room) const{
