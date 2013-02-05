@@ -18,6 +18,7 @@ etc/customScenes/custom_scenario.txt
 *.dylib
 image/*.bat
 image/*.rcc
+image/*.dat
 image/generals/card2/*.*
 lib/libcryptopp.a
 QSanguosha.exe

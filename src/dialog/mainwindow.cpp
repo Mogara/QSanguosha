@@ -29,6 +29,7 @@
 
 #ifdef USE_RCC
 #include <QResource>
+#include "crypto.h"
 #endif
 
 class FitView : public QGraphicsView
@@ -65,7 +66,8 @@ MainWindow::MainWindow(QWidget *parent)
     scene = NULL;
 
 #ifdef USE_RCC
-    QResource::registerResource("image/card.rcc");
+    Crypto cry;
+    QResource::registerResource(cry.getEncryptedFile("image/card.dat"));
 #endif
 
     setWindowTitle(Sanguosha->translate("QSanguosha"));
@@ -137,7 +139,8 @@ void MainWindow::closeEvent(QCloseEvent *event){
 MainWindow::~MainWindow()
 {
 #ifdef USE_RCC
-    QResource::unregisterResource("image/card.rcc");
+    Crypto cry;
+    QResource::unregisterResource(cry.getEncryptedFile("image/card.dat"));
 #endif
     delete ui;
 }

@@ -58,18 +58,23 @@ bool Crypto::encryptMusicFile(const QString &filename, const char *GlobalKey){
     }
 }
 
-FMOD_SOUND *Crypto::initEncryptedFile(FMOD_SYSTEM *System, const QString &filename, const char *GlobalKey){
+const uchar *Crypto::getEncryptedFile(const QString &filename, const char *GlobalKey){
     QFile file(filename);
 
     if(file.open(QIODevice::ReadOnly) == false)
         return NULL;
 
-    qint64 size = file.size();
+    size = file.size();
     byte *buffer = new byte[size];
 
     file.read((char *)buffer, size);
-
     DES_Process(GlobalKey, buffer, size, CryptoPP::DECRYPTION);
+
+    return (const uchar *)buffer;
+}
+
+FMOD_SOUND *Crypto::initEncryptedFile(FMOD_SYSTEM *System, const QString &filename, const char *GlobalKey){
+    const uchar *buffer = getEncryptedFile(filename, GlobalKey);
 
     FMOD_SOUND *sound;
 
