@@ -273,7 +273,7 @@ public:
                    p->askForSkillInvoke(objectName(), data))
                 {
                     room->throwCard(p->getOffensiveHorse());
-                    p->playCardEffect(objectName());
+                    p->playCardEffect("grab_peach");
                     p->obtainCard(use.card);
 
                     return true;

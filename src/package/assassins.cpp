@@ -533,17 +533,24 @@ public:
             return false;
         if(effect.card->getTypeId() == Card::Skill)
             return false;
-        
+
         if(player->askForSkillInvoke(objectName(), data)) {
             room->playSkillEffect(objectName());
+            DummyCard *dummy = new DummyCard;
+            QList<int> card_ids;
             for(int i = 0; i < 2; i++) {
-                if(!effect.from || effect.from->isNude())
+                if(!effect.from || effect.from->getCardCount(true) - i == 0)
                     break;
                 if(room->askForChoice(player, objectName(), "discard+cancel") == "cancel")
                     break;
                 int card_id = room->askForCardChosen(player, effect.from, "he", objectName());
-                room->throwCard(card_id, effect.from, player);
+                while(card_ids.contains(card_id))
+                    card_id = effect.from->getRandomCardId("he");
+                card_ids << card_id;
+                dummy->addSubcard(card_id);
             }
+            room->throwCard(dummy, effect.from, player);
+            dummy->deleteLater();
             room->loseHp(player);
         }
         return false;

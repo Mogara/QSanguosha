@@ -1470,7 +1470,7 @@ TestPackage::TestPackage()
 
     General *dunkeng_caoren = new General(this, "dunkengcaoren", "wei", 4, true, true);
     dunkeng_caoren->addSkill(new SuperJushou);
-    dunkeng_caoren->addSkill(new Heidian);
+    //dunkeng_caoren->addSkill(new Heidian);
 
     new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);

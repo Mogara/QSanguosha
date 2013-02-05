@@ -1148,6 +1148,8 @@ bool ChangbanSlopeMode::trigger(TriggerEvent event, Room* room, ServerPlayer *pl
             }
 
             if(player->getGeneralName() == "cbzhangfei1" && player->getHp() <= 5){
+                room->broadcastInvoke("animate", "lightbox:$Tshenzhangfei:3000");
+                room->playSkillEffect("Tshenzhangfei");
                 room->transfigure(player, "cbzhangfei2", true, true);
             }
             return false;
