@@ -754,11 +754,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return true;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return false;
+        return !player->isNude();
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -842,6 +838,8 @@ HegemonyPackage::HegemonyPackage()
 
     General *jiling = new General(this, "jiling", "qun", 4);
     jiling->addSkill(new Shuangren);
+    jiling->addSkill(new SlashNoDistanceLimitSkill("shuangren"));
+    related_skills.insertMulti("shuangren", "#shuangren-slash-ndl");
 
     General *tianfeng = new General(this, "tianfeng", "qun", 3);
     tianfeng->addSkill(new Sijian);

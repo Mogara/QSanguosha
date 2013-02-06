@@ -239,6 +239,18 @@ protected:
     QString pattern;
 };
 
+class SlashNoDistanceLimitSkill: public TargetModSkill {
+    Q_OBJECT
+
+public:
+    SlashNoDistanceLimitSkill(const QString &skill_name);
+
+    virtual int getDistanceLimit(const Player *from, const Card *card) const;
+
+protected:
+    QString name;
+};
+
 // a nasty way for 'fake moves'
 class FakeMoveSkill: public TriggerSkill {
     Q_OBJECT

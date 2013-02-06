@@ -389,6 +389,18 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const{
     return 0;
 }
 
+SlashNoDistanceLimitSkill::SlashNoDistanceLimitSkill(const QString &skill_name)
+    : TargetModSkill(QString("#%1-slash-ndl").arg(skill_name)), name(skill_name)
+{
+}
+
+int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *card) const{
+    if (from->hasSkill(name) && card->getSkillName() == name)
+        return 1000;
+    else
+        return 0;
+}
+
 FakeMoveSkill::FakeMoveSkill(const QString &name, FakeCondition condition)
     : TriggerSkill(QString("#%1-fake-move").arg(name)), name(name), condition(condition)
 {

@@ -855,8 +855,26 @@ void Client::askForSkillInvoke(const Json::Value &arg){
     QString text;
     if(data.isEmpty())
         text = tr("Do you want to invoke skill [%1] ?").arg(Sanguosha->translate(skill_name));
-    else
-        text = Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(data));
+    else {
+        QStringList texts = data.split(":");
+        text = Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(texts.first()));
+
+        if (texts.length() >= 2)
+            text.replace("%src", getPlayerName(texts.at(1)));
+
+        if (texts.length() >= 3)
+            text.replace("%dest", getPlayerName(texts.at(2)));
+
+        if (texts.length() >= 4) {
+            QString arg = Sanguosha->translate(texts.at(3));
+            text.replace("%arg", arg);
+        }
+
+        if (texts.length() >= 5) {
+            QString arg2 = Sanguosha->translate(texts.at(4));
+            text.replace("%arg2", arg2);
+        }
+    }
 
     prompt_doc->setHtml(text);
     setStatus(AskForSkillInvoke);

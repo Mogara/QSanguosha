@@ -57,6 +57,10 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *shenguanyu, QVariant &) const{
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.who != shenguanyu)
+            return false;
+
         QList<ServerPlayer *> players = room->getOtherPlayers(shenguanyu);
 
         int max = 0;

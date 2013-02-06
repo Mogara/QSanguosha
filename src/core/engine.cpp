@@ -16,6 +16,7 @@
 #include "couple-scenario.h"
 #include "boss-mode-scenario.h"
 #include "zombie-scenario.h"
+#include "fancheng-scenario.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -55,6 +56,7 @@ void Engine::_loadModScenarios()
 {
     addScenario(new GuanduScenario());
     addScenario(new CoupleScenario());
+	addScenario(new FanchengScenario());
     addScenario(new ZombieScenario());
     addScenario(new ImpasseScenario());
 }
@@ -65,10 +67,6 @@ void Engine::addPackage(const QString &name){
         addPackage(pack);
     else
         qWarning("Package %s cannot be loaded!", qPrintable(name));
-}
-
-static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key){
-    return GetValueFromLuaState(L, "config", key);
 }
 
 Engine::Engine()
@@ -460,7 +458,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20121221";
+    return "20130214";
 }
 
 QString Engine::getVersion() const{
@@ -712,7 +710,7 @@ QStringList Engine::getRandomLords() const{
         banlist_ban = Config.value("Banlist/Basara").toStringList();
 
     if(Config.GameMode == "zombie_mode")
-        banlist_ban.append(Config.value("Banlist/zombie").toStringList());
+        banlist_ban.append(Config.value("Banlist/Zombie").toStringList());
     else if((Config.GameMode.endsWith("p") ||
              Config.GameMode.endsWith("pz") ||
              Config.GameMode.endsWith("pd")))

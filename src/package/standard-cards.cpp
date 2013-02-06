@@ -1,5 +1,6 @@
 #include "standard.h"
 #include "standard-equips.h"
+#include "maneuvering.h"
 #include "general.h"
 #include "engine.h"
 #include "client.h"
@@ -55,6 +56,60 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             room->setPlayerFlag(player, "-slashNoDistanceLimit");
         if (player->hasFlag("slashDisableExtraTarget"))
             room->setPlayerFlag(player, "-slashDisableExtraTarget");
+    }
+	
+	/* actually it's not proper to put the codes here.
+       considering the nasty design of the client and the convenience as well,
+       I just move these codes here */
+    if (objectName() == "slash") {
+        bool has_changed = false;
+        QString skill_name = getSkillName();
+        if (!skill_name.isEmpty()) {
+            const Skill *skill = Sanguosha->getSkill(skill_name);
+            if (skill && !skill->inherits("FilterSkill") && skill->objectName() != "guhuo")
+                has_changed = true;
+        }
+        if (!has_changed || subcardsLength() == 0) {
+            QVariant data = QVariant::fromValue(use);
+            if (player->hasSkill("lihuo"))
+                if (room->askForSkillInvoke(player, "lihuo", data)) {
+                    FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
+                    if (subcardsLength() > 0)
+                        fire_slash->addSubcard(this);
+                    fire_slash->setSkillName("lihuo");
+                    use.card = fire_slash;
+                }
+            if (player->hasSkill("Fan") && !use.card->isKindOf("FireSlash")) {
+                if (room->askForSkillInvoke(player, "Fan", data)) {
+                    FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
+                    if (subcardsLength() > 0)
+                        fire_slash->addSubcard(this);
+                    fire_slash->setSkillName("Fan");
+                    use.card = fire_slash;
+                }
+            }
+        }
+    }
+    if ((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || (getSkillName() == "guhuo" && use.card != this)) {
+        QList<ServerPlayer *> targets_ts;
+        while (true) {
+            QList<const Player *> targets_const;
+            foreach (ServerPlayer *p, use.to)
+                targets_const << qobject_cast<const Player *>(p);
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                if (!use.to.contains(p) && use.card->targetFilter(targets_const, p, use.from))
+                    targets_ts << p;
+            if (targets_ts.isEmpty())
+                break;
+            else if (room->askForSkillInvoke(player, "slash_extra_targets", "yes")) {
+                ServerPlayer *extra_target = room->askForPlayerChosen(player, targets_ts, "slash_extra_targets");
+                use.to.append(extra_target);
+                qSort(use.to.begin(), use.to.end(), ServerPlayer::CompareByActionOrder);
+            } else
+                break;
+            targets_ts.clear();
+            targets_const.clear();
+        }
     }
 
     if (player->getPhase() == Player::Play

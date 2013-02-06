@@ -490,6 +490,8 @@ NostalGeneralPackage::NostalGeneralPackage()
 
     General *nos_lingtong = new General(this, "nos_lingtong", "wu");
     nos_lingtong->addSkill(new NosXuanfeng);
+    nos_lingtong->addSkill(new SlashNoDistanceLimitSkill("nosxuanfeng"));
+    related_skills.insertMulti("nosxuanfeng", "#nosxuanfeng-slash-ndl");
 
     General *nos_xushu = new General(this, "nos_xushu", "shu", 3);
     nos_xushu->addSkill(new NosWuyan);

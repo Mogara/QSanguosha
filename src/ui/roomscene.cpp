@@ -1968,26 +1968,12 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach (int card_id, move.card_ids)
             log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
     }
-    if (move.reason.m_reason == CardMoveReason::S_REASON_TURNOVER) {
-        QString type = "$TurnOver";
-        Photo *srcphoto = name2photo[move.reason.m_playerId];
-        QString to_general;
-        if (srcphoto != NULL)
-            to_general = srcphoto->getPlayer()->objectName();
-        else if (move.reason.m_playerId == Self->objectName())
-            to_general = Self->objectName();
-        log_box->appendLog(type, to_general, QStringList(), Card::IdsToStrings(move.card_ids).join("+"));
-    }
+    if (move.reason.m_reason == CardMoveReason::S_REASON_TURNOVER)
+        log_box->appendLog("$TurnOver", move.reason.m_playerId, QStringList(), Card::IdsToStrings(move.card_ids).join("+"));
 }
 
-inline uint qHash(const QPointF p) { return qHash((int)p.x()+(int)p.y()); }
-
-void RoomScene::addSkillButton(const Skill *skill, bool from_left){
-    //SPConvertSkill is not important around the game, except on game start.
-    //Even it isn't a skill, it's only a temporary product of generals replacement system.
-    //So I think it is not necessary to exist in dashboard.
-    if(skill->inherits("SPConvertSkill"))
-        return;
+void RoomScene::addSkillButton(const Skill *skill, bool) {
+    if (skill->inherits("SPConvertSkill")) return;
     // check duplication
     QSanSkillButton* btn = dashboard->addSkillButton(skill->objectName());
     if(btn == NULL)

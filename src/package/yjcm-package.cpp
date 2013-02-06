@@ -731,19 +731,18 @@ MingceCard::MingceCard(){
 
 void MingceCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    bool can_use = false;
     QList <ServerPlayer *> targets;
-    foreach(ServerPlayer *p, room->getOtherPlayers(effect.to)){
-        if (effect.to->canSlash(p)){
-            targets << p;
-            can_use = true;
+    if (Slash::IsAvailable(effect.to)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(effect.to)) {
+            if (effect.to->canSlash(p))
+                targets << p;
         }
     }
 
     ServerPlayer *target;
     QStringList choicelist;
     choicelist << "draw";
-    if (can_use && effect.from->isAlive()){
+    if (!targets.isEmpty() && effect.from->isAlive()) {
         target = room->askForPlayerChosen(effect.from, targets, "mingce");
         target->setFlags("MingceTarget"); // For AI
 

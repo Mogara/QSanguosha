@@ -1403,7 +1403,7 @@ public:
                     targets << p;
             targets << xiahou;
             QString choice;
-            if (targets.isEmpty())
+            if (!Slash::IsAvailable(xiahou) || targets.isEmpty())
                 choice = "discard";
             else
                 choice = room->askForChoice(xiahou, objectName(), "discard+slash");
@@ -1503,8 +1503,10 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_xiahoudun->addSkill(new Fenyong);
     bgm_xiahoudun->addSkill(new FenyongClear);
     bgm_xiahoudun->addSkill(new Xuehen);
+    bgm_xiahoudun->addSkill(new SlashNoDistanceLimitSkill("xuehen"));
     bgm_xiahoudun->addSkill(new FakeMoveSkill("xuehen"));
     related_skills.insertMulti("fenyong", "#fenyong-clear");
+    related_skills.insertMulti("xuehen", "#xuehen-slash-ndl");
     related_skills.insertMulti("xuehen", "#xuehen-fake-move");
 
     addMetaObject<LihunCard>();
