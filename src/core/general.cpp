@@ -195,7 +195,7 @@ void General::lastWord() const{
 void General::winWord() const{
     QString filename = QString("audio/win/%1.dat").arg(objectName());
     if(isCaoCao())
-        filename = "audio/win/caocao.dat";
+        filename = "audio/win/caocao.ogg";
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly)){
         QStringList origin_generals = objectName().split("_");

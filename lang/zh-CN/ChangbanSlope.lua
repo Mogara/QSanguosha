@@ -65,4 +65,9 @@ return {
 	[":cbangercollect"] = "<b>锁定技，</b>聚气阶段，展示牌堆顶的一张牌置于你的武将牌之上，称为“怒”。",
 	["$Juqi"] = "%from 在聚气阶段亮出了牌堆顶的 %card 收之为“怒”",
 	["Angers"] = "怒",
+-- effects
+	["Tshenzhaoyun"] = "阶段转换",
+	[":Tshenzhaoyun"] = "长坂云的菊花被爆了。",
+	["Tshenzhangfei"] = "阶段转换",
+	[":Tshenzhangfei"] = "长坂飞的菊花被爆了。",
 }

@@ -11,11 +11,11 @@ CONFIG += warn_on audio
 #DEFINES += CLO_SOU
 
 # If you want to enable joystick support, please uncomment the following line:
-# CONFIG += joystick
+CONFIG += joystick
 # However, joystick is not supported under Mac OS X temporarily
 
 # If you want enable voice reading for chat content, uncomment the following line:
-# CONFIG += chatvoice
+CONFIG += chatvoice
 # Also, this function can only enabled under Windows system as it make use of Microsoft TTS
 
 SOURCES += \

@@ -147,6 +147,10 @@ QMap<QString, QString> CoupleScenario::mappy(QMap<QString, QString> mapr) const{
         QStringList couple = spouse.split("+");
         mapper.insert(couple.first(), couple.last());
     }
+
+    QStringList husbands = Config.value("Banlist/Couple", "").toStringList();
+    foreach(QString husband_name, husbands)
+        mapper.remove(husband_name);
     return mapper;
 }
 

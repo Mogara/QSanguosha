@@ -260,6 +260,8 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
+        if(judge->reason == "tuntian")
+            return false;
 
         QStringList prompt_list;
         prompt_list << "@guicai-card" << judge->who->objectName()
@@ -413,7 +415,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(ServerInfo.GameMode == "04_1v3"
+        if((ServerInfo.GameMode == "04_1v3" || ServerInfo.GameMode == "05_2v3")
            && selected.length() + Self->getMark("rende") >= 2)
            return false;
         else
