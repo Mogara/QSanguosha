@@ -170,7 +170,7 @@ public:
             int n = getWeaponCount(caoren);
             caoren->drawCards(n+2);
             caoren->turnOver();
-            room->playSkillEffect("kuiwei", 1);
+            room->playSkillEffect(objectName(), 1);
             if(caoren->getMark("@kuiwei") == 0)
                 caoren->gainMark("@kuiwei");
         }
@@ -186,7 +186,7 @@ public:
                 log.arg = QString::number(n);
                 log.arg2 = objectName();
                 room->sendLog(log);
-                room->playSkillEffect("kuiwei", 2);
+                room->playSkillEffect(objectName(), 2);
                 if(caoren->getCards("he").length() <= n){
                     caoren->throwAllEquips();
                     caoren->throwAllHandCards();
@@ -320,7 +320,7 @@ public:
     void doZuixiang(ServerPlayer *player) const{
         Room *room = player->getRoom();
 
-        room->playSkillEffect("zuixiang");
+        room->playSkillEffect(objectName());
         QList<int> ids = room->getNCards(3);
         foreach(int id, ids){
             const Card *cd = Sanguosha->getCard(id);
@@ -1836,7 +1836,7 @@ public:
         if(player->getPhase() == Player::Start){
             int x = player->getPile("hoo").length();
             if(x > 0)
-                room->playSkillEffect("tuqi");
+                room->playSkillEffect(objectName());
             room->setPlayerMark(player, "@tuqi", x);
             player->clearPile("hoo");
             if(x <= 2)

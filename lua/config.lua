@@ -253,9 +253,6 @@ ban_list = { -- 初始禁表设置
 		"bgm_zhangfei+guanyu",
 		"bgm_liubei+zhugeliang"
 	},
-	couple_ban = {
---		"huanggai",
-	},
 	forbid_packages = {
 		"New3v3Card",
 		"changban_slope",

@@ -121,7 +121,7 @@ CoupleScenario::CoupleScenario()
     rule = new CoupleScenarioRule(this);
 
     map["caopi"] = "zhenji";
-    map["guojia"] = "simayi";
+    //map["guojia"] = "simayi";
     map["sunshangxiang"] = "liubei";
     map["zhugeliang"] = "huangyueying";
     map["menghuo"] = "zhurong";
@@ -147,10 +147,6 @@ QMap<QString, QString> CoupleScenario::mappy(QMap<QString, QString> mapr) const{
         QStringList couple = spouse.split("+");
         mapper.insert(couple.first(), couple.last());
     }
-
-    QStringList husbands = Config.value("Banlist/Couple", "").toStringList();
-    foreach(QString husband_name, husbands)
-        mapper.remove(husband_name);
     return mapper;
 }
 
@@ -244,7 +240,11 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
     generals << lord;
 
     QMap<QString, QString> mapper = mappy(map);
-    QStringList husbands = mapper.keys();
+
+    foreach(QString husband_name, Config.value("Banlist/Couple", "").toStringList())
+        mapper.remove(husband_name);
+
+    QStringList husbands = mapper.size() >= 4 ? mapper.keys() : mappy(map).keys();
     qShuffle(husbands);
     husbands = husbands.mid(0, 4);
 

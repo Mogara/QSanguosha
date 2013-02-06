@@ -129,14 +129,13 @@ void Settings::init(){
     DisableLua = value("DisableLua", false).toBool();
 
 //banlist
-    QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban, couple_ban;
+    QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
     lua_State *lua = Sanguosha->getLuaState();
     roles_ban = GetConfigFromLuaState(lua, "roles_ban", "ban_list").toStringList();
     kof_ban = GetConfigFromLuaState(lua, "kof_ban", "ban_list").toStringList();
     basara_ban = GetConfigFromLuaState(lua, "basara_ban", "ban_list").toStringList();
     hegemony_ban = GetConfigFromLuaState(lua, "hegemony_ban", "ban_list").toStringList();
-    couple_ban = GetConfigFromLuaState(lua, "couple_ban", "ban_list").toStringList();
     foreach(QString general, Sanguosha->getLimitedGeneralNames())
         if(Sanguosha->getGeneral(general)->getKingdom() == "god" && !hegemony_ban.contains(general))
             hegemony_ban << general;
@@ -171,19 +170,18 @@ void Settings::init(){
     }
     setValue("Banlist/Hegemony", banlist);
 
+    banlist = value("Banlist/Couple").toStringList();
+    setValue("Banlist/Couple", banlist);
+
+    banlist = value("Banlist/zombie").toStringList();
+    setValue("Banlist/zombie", banlist);
+
     banlist = value("Banlist/Pairs").toStringList();
     foreach(QString ban_general, pairs_ban){
         if(!banlist.contains(ban_general))
             banlist << ban_general;
     }
     setValue("Banlist/Pairs", banlist);
-
-    banlist = value("Banlist/Couple").toStringList();
-    foreach(QString ban_general, couple_ban){
-        if(!banlist.contains(ban_general))
-            banlist << ban_general;
-    }
-    setValue("Banlist/Couple", banlist);
 
     QStringList forbid_packages = GetConfigFromLuaState(lua, "forbid_packages", "ban_list").toStringList();
     setValue("ForbidPackages", forbid_packages.join("+"));

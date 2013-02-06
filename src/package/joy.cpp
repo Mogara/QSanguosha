@@ -531,9 +531,7 @@ JoyEquipPackage::JoyEquipPackage()
     (new Monkey(Card::Diamond, 5))->setParent(this);
     (new GaleShell(Card::Heart, 1))->setParent(this);
     (new YxSword(Card::Club, 9))->setParent(this);
-#ifndef USE_RCC
     (new Fiveline(Card::Heart, 5))->setParent(this);
-#endif
     skills << new FivelineViewAsSkill;
 
     type = CardPack;

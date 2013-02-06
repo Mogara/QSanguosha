@@ -277,7 +277,7 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
         }
         if(Config.GameMode == "zombie_mode")
         {
-            QStringList ban_list = Config.value("Banlist/Zombie").toStringList();
+            QStringList ban_list = Config.value("Banlist/zombie").toStringList();
 
             if(ban_list.contains(name))continue;
         }

@@ -384,7 +384,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == PhaseChange){
-            if(player->getPhase() != Player::Discard || !player->askForSkillInvoke(objectName()))
+            if(player->getPhase() != Player::Discard || !player->askForSkillInvoke(objectName(), "cangni"))
                 return false;
             QStringList choices;
             choices << "draw";
@@ -405,7 +405,7 @@ public:
             else
                 player->drawCards(2);
 
-            room->playSkillEffect("cangni", 1);
+            room->playSkillEffect(objectName(), 1);
             player->turnOver();
             return false;
         }
@@ -420,17 +420,19 @@ public:
             ServerPlayer *target = room->getCurrent();
             if(target->isDead())
                 return false;
-            if(event == CardLostDone && !target->isNude() && player->tag.value("LostCangni", false).toBool() && player->askForSkillInvoke(objectName())){
+            if(event == CardLostDone && !target->isNude() && player->tag.value("LostCangni", false).toBool()
+                && player->askForSkillInvoke(objectName(), "cangni_lost")){
                 player->tag.remove("LostCangni");
-                room->playSkillEffect("cangni", 3);
+                room->playSkillEffect(objectName(), 3);
                 room->askForDiscard(target, objectName(), 1, 1, false, true);
                 return false;
             }
 
-            if(event == CardGotDone && !target->hasFlag("cangni_used") && player->tag.value("GotCangni", false).toBool() && player->askForSkillInvoke(objectName())){
+            if(event == CardGotDone && !target->hasFlag("cangni_used") && player->tag.value("GotCangni", false).toBool()
+                && player->askForSkillInvoke(objectName(), "cangni_got")){
                 player->tag.remove("GotCangni");
                 room->setPlayerFlag(target, "cangni_used");
-                room->playSkillEffect("cangni", 2);
+                room->playSkillEffect(objectName(), 2);
                 target->drawCards(1);
             }
         }
