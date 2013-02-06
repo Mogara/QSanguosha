@@ -175,6 +175,7 @@ return {
 	["illustrator:mateng"] = "DH",
 	["cv:mateng"] = "HeLi",
 	["$xiongyi"] = "西凉铁骑，锐不可当！",
+	["$Xiongyi"] = "西凉铁骑，锐不可当！",
 	["~mateng"] = "你们快走，让孟起为我报仇！",
 
 	["illustrator:panfeng"] = "Yi 章",

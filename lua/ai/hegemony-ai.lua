@@ -183,16 +183,15 @@ end
 
 sgs.ai_skill_use["@@shuangren"]=function(self,prompt)
 	if self.player:isKongcheng() then return "." end
-	local cards = sgs.QList2Table(self.player:getCards("h"))
-	self:sortByUseValue(cards, true)
-	if cards[1]:getNumber() > 9 then
+	local max_card = self:getMaxCard()
+	if max_card and max_card:getNumber() > 9 then
 		self:sort(self.enemies, "handcard")
 		for _, player in ipairs(self.enemies) do
 			if not player:isKongcheng() then
 				return "@ShuangrenCard="..cards[1]:getEffectiveId().."->"..player:objectName()
 			end
 		end
-	else
+	elseif max_card and max_card:getNumber() > 4 then
 		self:sort(self.friends_noself, "handcard2")
 		for _, player in ipairs(self.friends_noself) do
 			if not player:isKongcheng() then

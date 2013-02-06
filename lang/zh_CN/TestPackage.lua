@@ -46,6 +46,16 @@ return {
 	["$v5paiyi2"] = "若事成，会师洛阳，天下可定！", -- 放进其他人的区域并摸牌
 	["~v5zhonghui"] = "天之亡吾，争有何用……",
 
+	["#xiahoujie"] = "套马的汉子",
+	["xiahoujie"] = "夏侯杰",
+	["illustrator:xiahoujie"] = "小浣熊",
+	["designer:xiahoujie"] = "宇文天启",
+	["xianiao"] = "吓尿",
+	[":xianiao"] = "<b>锁定技</b>，当其他角色造成一次伤害时，若你在其攻击范围内，你须弃置所有手牌，然后摸等同于该角色体力值张数的牌。",
+	["tangqiang"] = "躺枪",
+	[":tangqiang"] = "<b>锁定技</b>，杀死你的角色失去1点体力上限并获得技能“躺枪”。",
+	["~xiahoujie"] = "如此身死，甚是……丢人啊……",
+
 -- test
 	["test"] = "测试",
 	["undead"] = "不死之身",

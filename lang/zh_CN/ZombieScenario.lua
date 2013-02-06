@@ -27,6 +27,7 @@ return {
 	["#zombie"] = "行尸走肉",
 
 	["$xunmeng"] = "(音效)",
+	["$ganran"] = "(音效)",
 	["$zaibian"] = "(音效)",
 	["$wansha2"] = "(音效)",
 	["$paoxiao3"] = "(音效)",

@@ -176,6 +176,8 @@ return {
 	["illustrator:mateng"] = "DH",
 	["cv:mateng"] = "清水浊流",
 	["$xiongyi"] = "西凉铁骑，所向披靡！伏波之后，誓讨汉贼！",
+	["$Xiongyi"] = "西凉铁骑，所向披靡！\
+伏波之后，誓讨汉贼！",
 	["~mateng"] = "汝等快走，让孟起替我报仇……",
 
 	["illustrator:panfeng"] = "Yi 章",

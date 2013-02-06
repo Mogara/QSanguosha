@@ -369,7 +369,7 @@ bool XiongyiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void XiongyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     source->loseMark("@xiongyi");
-    room->broadcastInvoke("animate", "lightbox:$xiongyi");
+    room->broadcastInvoke("animate", "lightbox:$Xiongyi");
     room->getThread()->delay(1500);
     bool onlyme = false;
     if(targets.contains(source) && targets.length() == 1)

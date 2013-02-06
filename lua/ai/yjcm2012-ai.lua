@@ -89,6 +89,9 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 	return "cancel"
 end
 
+
+sgs.ai_use_value.GongqiCard = 3.5
+sgs.ai_use_priority.GongqiCard = 7.8
 gongqi_skill={}
 gongqi_skill.name="gongqi"
 table.insert(sgs.ai_skills,gongqi_skill)

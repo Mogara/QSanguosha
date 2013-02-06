@@ -68,6 +68,8 @@ return {
 -- effects
 	["Tshenzhaoyun"] = "阶段转换",
 	[":Tshenzhaoyun"] = "长坂云的菊花被爆了。",
+	["$Tshenzhaoyun"] = "独仗英雄气，舍命破贼军！", -- 变身
 	["Tshenzhangfei"] = "阶段转换",
 	[":Tshenzhangfei"] = "长坂飞的菊花被爆了。",
+	["$Tshenzhangfei"] = "杂碎，休想再前进一步！", -- 变身
 }
