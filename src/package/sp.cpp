@@ -1024,6 +1024,11 @@ SPPackage::SPPackage()
     chenlin->addSkill(new Bifa);
     chenlin->addSkill(new Songci);
 
+    General *sp_lingju = new General(this, "sp_lingju", "qun", 3, false, true);
+    sp_lingju->addSkill("jieyuan");
+    sp_lingju->addSkill("fenxin");
+    sp_lingju->addSkill("#@burnheart-1");
+
     General *xiahouba = new General(this, "xiahouba", "shu");
     xiahouba->addSkill(new Baobian);
 

@@ -696,6 +696,7 @@ AssassinsPackage::AssassinsPackage()
     lingju->addSkill(new Jieyuan);
     lingju->addSkill(new Fenxin);
     lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
+    lingju->addSkill(new SPConvertSkill("#lingjup", "lingju", "sp_lingju"));
 
     General *mushun = new General(this, "mushun", "qun");
     mushun->addSkill(new Moukui);

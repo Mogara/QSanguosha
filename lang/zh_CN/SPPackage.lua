@@ -171,6 +171,13 @@ return {
 	["$songci2"] = "汝众违旅叛，当有此报！",             --discardCards
 	["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
 
+	["#sp_lingju"] = "情随梦逝",
+	["sp_lingju"] = "SP灵雎",
+	["illustrator:sp_lingju"] = "木美人",
+	["#lingjup"] = "拟态",
+	[":#lingjup"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP灵雎",
+	["cv:sp_lingju"] = "蒲小猫",
+
 	["#xiahouba"] = "棘途壮志",
 	["xiahouba"] = "夏侯霸",
 	["illustrator:xiahouba"] = "熊猫探员",
