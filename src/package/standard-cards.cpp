@@ -972,11 +972,6 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
 
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
-    if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())){
-        const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
-        rangefix += weapon->getRange() - 1;
-    }
-
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
