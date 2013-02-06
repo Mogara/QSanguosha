@@ -54,8 +54,9 @@
 "playerGeneralIcon-default-2": ["image/generals/avatar/%1.png",[71, 28, 145, 145], [134, 134]],
 "playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[63, 20, 126, 178], [63, 89]], //secondary avatar for photo
 "playerGeneralIcon-default-5": ["image/generals/avatar/%1.png",[71, 28, 124, 134], [61, 70]],  //small avatar for dashboard
-"playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[60, 30, 208, 125], [148, 89]],  	//primary avatar for photo
+"playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[60, 30, 208, 125], [148, 89]],  //primary avatar for photo
 "playerGeneralIcon-default-7": ["image/generals/avatar/%1.png",[80, 28, 134, 134]],  //primary avatar for dashboard
+"playerGeneralIcon-default-8": ["image/generals/avatar/%1.png",[16, 49, 244, 100], [122, 50]],  //avatar for KOF mode
 
 "generalCircleImage-0": "image/generals/double-general/circle-photo.png",
 "generalCircleImage-1": "image/generals/double-general/circle-dashboard.png",
@@ -70,6 +71,7 @@
 "playerGeneralIcon-anjiang-5": ["image/generals/big/anjiang.png", [9, 0, 117, 134], [61, 70]],
 "playerGeneralIcon-anjiang-6": "image/generals/small/anjiang.png",
 "playerGeneralIcon-anjiang-7": "image/generals/big/anjiang.png", 
+"playerGeneralIcon-anjiang-8": "image/generals/kof/anjiang.png",
 
 "playerGeneralIcon-erzhang-1": "image/generals/small/erzhang.png",
 "playerGeneralIcon-erzhang-2": "image/generals/big/erzhang.png",
@@ -77,6 +79,7 @@
 "playerGeneralIcon-erzhang-5": ["image/generals/big/erzhang.png", [0, 0, 124, 134], [61, 70]],
 "playerGeneralIcon-erzhang-6": "image/generals/small/erzhang.png",
 "playerGeneralIcon-erzhang-7": "image/generals/big/erzhang.png",
+"playerGeneralIcon-erzhang-8": "image/generals/kof/erzhang.png",
 
 "playerGeneralIcon-guanxingzhangbao-1": "image/generals/small/guanxingzhangbao.png",
 "playerGeneralIcon-guanxingzhangbao-2": "image/generals/big/guanxingzhangbao.png",
@@ -84,6 +87,7 @@
 "playerGeneralIcon-guanxingzhangbao-5": ["image/generals/big/guanxingzhangbao.png", [0, 0, 124, 134], [61, 70]],
 "playerGeneralIcon-guanxingzhangbao-6": "image/generals/small/guanxingzhangbao.png",
 "playerGeneralIcon-guanxingzhangbao-7": "image/generals/big/guanxingzhangbao.png",
+"playerGeneralIcon-guanxingzhangbao-8": "image/generals/kof/guanxingzhangbao.png",
 
 "playerGeneralIcon-yanliangwenchou-1": "image/generals/small/yanliangwenchou.png",
 "playerGeneralIcon-yanliangwenchou-2": "image/generals/big/yanliangwenchou.png",
@@ -91,6 +95,7 @@
 "playerGeneralIcon-yanliangwenchou-5": ["image/generals/big/yanliangwenchou.png", [0, 0, 124, 134], [61, 70]],
 "playerGeneralIcon-yanliangwenchou-6": "image/generals/small/yanliangwenchou.png",
 "playerGeneralIcon-yanliangwenchou-7": "image/generals/big/yanliangwenchou.png",
+"playerGeneralIcon-yanliangwenchou-8": "image/generals/kof/yanliangwenchou.png",
 
 // buttons
 "dashboardButtonSetBg": "image/system/button/platter/bg.png",
