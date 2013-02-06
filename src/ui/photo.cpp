@@ -678,10 +678,10 @@ void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
     painter->drawPixmap(suit_rect, equip->getSuitPixmap());
 
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getCard());
-    painter->setPen(Qt::black);
-    QFont bold_font;
+    painter->setPen(Qt::white);
+    /*QFont bold_font;
     bold_font.setBold(true);
-    painter->setFont(bold_font);
+    painter->setFont(bold_font);*/
     painter->drawText(20, 115 + 15 + order * 17, card->getNumberString());
     painter->drawText(35, 115 + 15 + order * 17, card->label());
 }
