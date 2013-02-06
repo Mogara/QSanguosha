@@ -3,8 +3,8 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130205",
-	version_name = "法海版",
+	version = "20130208",
+	version_name = "金蛇版",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
@@ -167,7 +167,7 @@ ban_list = { -- 初始禁表设置
 		"zuoci", -- 左慈：易产生BUG
 		"zhoutai", -- 周泰：耐久太高
 		"liaohua", -- 廖化：易产生BUG
---		"bgm_pangtong", -- SB庞统：不解释，已经身份单禁了
+		"bgm_pangtong", -- SB庞统：不解释，已经身份单禁了
 	--	副将禁用
 		"+luboyan", -- 陆伯言：变身BUG
 	--	特定禁用

@@ -88,7 +88,7 @@ return {
 	["cv:diychendao"] = "黄昏",
 	["$jingrui1"] = "精锐尽出，尔等何当！", -- 当杀使用
 	["$jingrui2"] = "白毦精兵在此，敌岂敢犯边~", -- 当闪使用
-	["~diychendao"] = "精锐灭尽，大汉危矣……",
+	["~diychendao"] = "精锐尽灭，大汉危矣……",
 
 	["#diysimazhao"] = "权倾谋朝", -- wei,3HP
 	["diysimazhao"] = "3D司马昭",

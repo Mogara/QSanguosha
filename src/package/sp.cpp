@@ -703,7 +703,7 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect(objectName());
-        room->broadcastInvoke("animate", "lightbox:$wuji:1500");
+        room->broadcastInvoke("animate", "lightbox:$Wuji:1500");
         room->getThread()->delay(1500);
 
         player->addMark("wuji");
