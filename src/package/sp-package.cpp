@@ -282,17 +282,17 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-		if (player->hasLordSkill("weidai"))
-			return pattern == "peach+analeptic";
-		
-		return false;
+        if (player->hasLordSkill("weidai"))
+            return pattern == "peach+analeptic";
+        
+        return false;
     }
 
     virtual const Card *viewAs() const{
-		if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-			return new WeidaiCard;
-		else
-			return new WeidiCard;
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+            return new WeidaiCard;
+        else
+            return new WeidiCard;
     }
 };
 
@@ -878,7 +878,7 @@ public:
                 player->tag.remove("BifaSource" + QString::number(card_id));
             }
         }
-    	return false;
+        return false;
     }
 };
 
@@ -936,7 +936,7 @@ public:
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("@songci") > 0)
                 room->setPlayerMark(p, "@songci", 0);
-    	return false;
+        return false;
     }
 };
 

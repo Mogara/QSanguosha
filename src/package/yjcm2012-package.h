@@ -27,7 +27,7 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
     virtual const Card *validate(const CardUseStruct *card_use) const;
-    //virtual const Card *validateInResposing(ServerPlayer *user, bool &continuable) const;
+    //virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const;
 };
 
 class GongqiCard: public SkillCard {

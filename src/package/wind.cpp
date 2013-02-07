@@ -1001,7 +1001,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
 }
 
 
-const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool &continuable) const{
+const Card *GuhuoCard::validateInResponse(ServerPlayer *yuji, bool &continuable) const{
     continuable = true;
     Room *room = yuji->getRoom();
     room->broadcastSkillInvoke("guhuo");
