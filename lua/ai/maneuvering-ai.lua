@@ -23,15 +23,21 @@ sgs.ai_use_priority.Fan = 2.655
 sgs.ai_use_priority.Vine = 1.6
 
 sgs.ai_skill_invoke.Fan = function(self, data)
-	local use = data:toCardUse()
+	local use = data:toCardUse()	
+	local jinxuandi = self.room:findPlayerBySkillName("wuling")
+
 	for _, target in sgs.qlist(use.to) do
 		if self:isFriend(target) then
-			if not (target:isChained() and self:isGoodChainTarget(target)) then return false end
+			if not (target:isChained() and self:isGoodChainTarget(target)) then return false end			
 		else
-			if target:isChained() and not self:isGoodChainTarget(target) then return false end
+			if target:isChained() and not self:isGoodChainTarget(target) then return false end			
+		end
+		if not self:damageIsEffective(target, sgs.DamageStruct_Fire) then return self:isFriend(target) end
+		if self:isEquip("Vine", target) or target:getMark("@gale") > 0 or (jinxuandi and jinxuandi:getMark("@wind") > 0) then
+			return true
 		end
 	end
-	return true
+	return false
 end
 
 sgs.ai_view_as.Fan = function(card, player, card_place)
@@ -71,7 +77,7 @@ fan_skill.getTurnUseCard=function(self)
 end
 
 function sgs.ai_weapon_value.Fan(self, enemy)
-	if enemy and (self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy)) then return 3 end
+	if enemy and (self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0 or  self:isEquip("GaleShell", enemy)) then return 6 end
 end
 
 function sgs.ai_armor_value.Vine(player, self)
@@ -82,11 +88,11 @@ function sgs.ai_armor_value.Vine(player, self)
 	if not self:damageIsEffective(player, sgs.DamageStruct_Fire) then return 6 end
 
 	for _, enemy in ipairs(self:getEnemies(player)) do
-		if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or self:hasSkills("huoji|shaoying", enemy) then return -1 end
+		if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or self:hasSkills("huoji|shaoying|yeyan", enemy) then return -1 end
 		if getKnownCard(enemy, "FireSlash", true)>=1 or getKnownCard(enemy, "FireAttack", true)>=1 then return -1 end
 	end
 
-	if #(self:getEnemies(player)) <= 3 or player:getHp()<=2 then return 3 end
+	if #(self:getEnemies(player)) < 3 or player:getHp()<=2 then return 3 end
 	return -1
 end
 
@@ -110,8 +116,8 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 		return
 	end
 
-	if ((enemy:getArmor() and enemy:getArmor():objectName() == "EightDiagram") or enemy:getHandcardNum() > 2) 
-		and not ((self:isEquip("Axe") and #allcards > 4) or self.player:getHandcardNum() > 1+self.player:getHp()) then
+	if self:hasSkills(sgs.masochism_skill .. "|longhun|buqu|" .. sgs.recover_skill ,enemy) and 
+			self.player:hasSkill("qianxi") and self.player:distanceTo(enemy) == 1 then
 		return
 	end
 
@@ -166,7 +172,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 	local enemies = self:exclude(self.enemies, card)
 
 	local zhanghe = self.room:findPlayerBySkillName("qiaobian")
-	local zhanghe_seat = zhanghe and zhanghe:faceUp() and self:isEnemy(zhanghe) and zhanghe:getSeat() or 0
+	local zhanghe_seat = zhanghe and zhanghe:faceUp() and not zhanghe:isKongcheng() and self:isEnemy(zhanghe) and zhanghe:getSeat() or 0
 
 	if #enemies==0 then return end
 
@@ -186,7 +192,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if not enemy:faceUp() then value = value -10 end
 		if self:hasSkills("keji|shensu", enemy) then value = value - enemy:getHandcardNum() end
 		if self:hasSkills("guanxing|xiuluo|tiandu|guidao", enemy) then value = value - 5 end
-		if not sgs.isGoodTarget(enemy) then value = value - 1 end
+		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 1 end
 		return value
 	end
 
@@ -290,14 +296,14 @@ function SmartAI:useCardIronChain(card, use)
 	for _, enemy in ipairs(self.enemies) do
 		if not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card) and not enemy:hasSkill("danlao")
 			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3) 
-			and not self:getDamagedEffects(enemy) and not (enemy:getHp() > getBestHp(enemy)) and sgs.isGoodTarget(enemy,self.enemies) then
+			and not self:getDamagedEffects(enemy) and not (enemy:getHp() > getBestHp(enemy)) and sgs.isGoodTarget(enemy,self.enemies, self) then
 			table.insert(enemytargets, enemy)
 		end
 	end
 
 	local chainSelf =(self.player:getHp() > getBestHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
 					and not self.player:hasSkill("jueqing")
-					and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash") or (self:getCardId("FireAttack") and self:getHandcardNum()>2))
+					and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash") or (self:getCardId("FireAttack") and self.player:getHandcardNum()>2))
 	
 	if not self.player:hasSkill("noswuyan") then
 		if #friendtargets > 1 then
@@ -335,9 +341,9 @@ end
 sgs.ai_card_intention.IronChain=function(card,from,tos)
 	for _, to in ipairs(tos) do
 		if to:isChained() then
-			sgs.updateIntention(from, to, 80)
-		else 
 			sgs.updateIntention(from, to, -80)
+		else 
+			sgs.updateIntention(from, to, 80)
 		end
 	end
 end
@@ -351,6 +357,33 @@ sgs.ai_event_callback[sgs.ChoiceMade].fireattack=function(self,player,data)
 	local datastr= data:toString()	
 	if string.match(datastr,"cardResponsed")  and  string.match(datastr,"@fire%-attack") and string.match(datastr,"_nil_") then
 		self.room:setPlayerFlag(self.player, "FireAttackFailed_" .. self.room:getTag("LastFireAttack"):toString())
+	end
+end
+
+sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local convert = { [".S"] = "spade", [".D"] = "diamond", [".H"] = "heart", [".C"] = "club"} 
+	local card
+
+	self:sortByUseValue(cards, true)
+
+	for _, acard in ipairs(cards) do
+		if acard:getSuitString() == convert[pattern] 
+				and not ( isCard("Peach", acard, self.player) 
+				and (not (self:isWeak(target) or self:isEquip("Vine", target) or target:getMark("@gale") > 0) or (self:isWeak() and self.player:isLord()))) then 
+			card = acard
+			break
+		end
+	end
+
+	local lord = self.room:getLord()
+	if card and isCard("Peach", card, self.player) and not self:isEnemy(lord) and sgs.isLordInDanger() then card = nil end
+
+	if card then
+		return card:getId()
+	else
+		self.room:setPlayerFlag(self.player, "FireAttackFailed_" .. self.room:getTag("LastFireAttack"):toString())
+		return "."
 	end
 end
 
@@ -386,13 +419,13 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	self:sort(self.enemies, "defense")
 
 	local can_attack =function(enemy)
-		if self.player:hasFlag("FireAttackFailed_" .. enemy:objectName()) and self:getOverflow() <= 0 and not self:hasSkill("jizhi") then
-			return false
-		end
+		if self.player:hasFlag("FireAttackFailed_" .. enemy:objectName()) then return false end
+		if self:getOverflow() <= 0 and not self:hasSkill("jizhi") then return false	end
+
 		return self:objectiveLevel(enemy) > 3 and not enemy:isKongcheng() and not self.room:isProhibited(self.player, enemy, fire_attack) 
 			and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(enemy) 
 			and self:hasTrickEffective(fire_attack, enemy)
-			and sgs.isGoodTarget(enemy,self.enemies)
+			and sgs.isGoodTarget(enemy, self.enemies, self)
 			and not (enemy:hasSkill("jianxiong") and not self:isWeak(enemy) and not self.player:hasSkill("jueqing"))
 			and not (self:getDamagedEffects(enemy,self.player) and not self.player:hasSkill("jueqing"))
 			and not (enemy:isChained() and not self:isGoodChainTarget(enemy) and not self.player:hasSkill("jueqing"))
@@ -412,6 +445,12 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 			and self:hasTrickEffective(fire_attack, self.player) 
 			and (self.player:getHp()>1 or self:getCardsNum("Peach")>=1 or self:getCardsNum("Analeptic")>=1 or self.player:hasSkill("buqu")
 				or (self.player:hasSkill("niepan") and self.player:getMark("@nirvana") > 0)) then
+		
+		local godsalvation = self:getCard("GodSalvation")
+		if godsalvation and godsalvation:getId()~= fire_attack:getId() and self:willUseGodSalvation(godsalvation) then
+			use.card = godsalvation return
+		end
+
 		use.card = fire_attack
 		if use.to then use.to:append(self.player) end
 		self.room:setTag("LastFireAttack",sgs.QVariant(self.player:objectName()))
@@ -427,6 +466,12 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 			if handcards[1]:hasFlag("visible") or handcards[1]:hasFlag(flag) then
 				local suitstring = handcards[1]:getSuitString()
 				if not lack[suitstring] then
+
+					local godsalvation = self:getCard("GodSalvation")
+					if godsalvation and godsalvation:getId()~= fire_attack:getId() and self:willUseGodSalvation(godsalvation) then
+						use.card = godsalvation return
+					end
+
 					use.card = fire_attack
 					if use.to then use.to:append(enemy) end
 					self.room:setTag("LastFireAttack",sgs.QVariant(enemy:objectName()))	
@@ -440,6 +485,10 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 
 	for _, enemy in ipairs(targets) do
 		if self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0 then
+			local godsalvation = self:getCard("GodSalvation")
+			if godsalvation and godsalvation:getId()~= fire_attack:getId() and self:willUseGodSalvation(godsalvation) then
+				use.card = godsalvation return
+			end
 			use.card = fire_attack
 			if use.to then use.to:append(enemy) end
 			self.room:setTag("LastFireAttack",sgs.QVariant(enemy:objectName()))	
@@ -447,6 +496,11 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		end
 	end
 	for _, enemy in ipairs(targets) do
+		local godsalvation = self:getCard("GodSalvation")
+		if godsalvation and godsalvation:getId()~= fire_attack:getId() and self:willUseGodSalvation(godsalvation) then
+			use.card = godsalvation return 
+		end
+
 		use.card = fire_attack
 		if use.to then use.to:append(enemy) end
 		self.room:setTag("LastFireAttack",sgs.QVariant(enemy:objectName()))	
@@ -489,6 +543,8 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 end
 
 sgs.ai_use_value.FireAttack = 4.8
-sgs.ai_use_priority.FireAttack = 2
+sgs.ai_use_priority.FireAttack = sgs.ai_use_priority.Dismantlement + 0.1
+
+sgs.dynamic_value.damage_card.FireAttack = true
 
 sgs.ai_card_intention.FireAttack = 80

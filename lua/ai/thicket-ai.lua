@@ -16,7 +16,7 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 			target = friend
 			break
 		end
-		if (friend:hasSkill("jushou") or friend:hasSkill("kuiwei")) and friend:getPhase() == sgs.Player_Play then
+		if (friend:hasSkill("jushou") or (friend:hasUsed("LihunCard") and friend:faceUp()) or friend:hasSkill("kuiwei")) and friend:getPhase() == sgs.Player_Play then
 			target = friend
 			break
 		end
@@ -30,7 +30,7 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 			self:sort(self.enemies)
 			for _, enemy in ipairs(self.enemies) do
 				local invoke = true
-				if (enemy:hasSkill("jushou") or enemy:hasSkill("kuiwei")) and enemy:getPhase() == sgs.Player_Play then invoke =false end
+				if (enemy:hasSkill("jushou") or (enemy:hasUsed("LihunCard") and enemy:faceUp()) or enemy:hasSkill("kuiwei")) and enemy:getPhase() == sgs.Player_Play then invoke =false end
 				if enemy:hasSkill("jijiu") and x ==2 then invoke =false end
 				if enemy:hasUsed("ShenfenCard") and enemy:faceUp() and enemy:getPhase() == sgs.Player_Play and
 				sgs.shenfensource and sgs.shenfensource:objectName() == enemy:objectName() then invoke = false end
@@ -121,7 +121,7 @@ duanliang_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_cardneed.duanliang = function(to, card)
-	return card:isBlack() and card:getTypeId() ~= sgs.Card_TypeTrick
+	return card:isBlack() and card:getTypeId() ~= sgs.Card_Trick and (getKnownCard(to, "club", false) + getKnownCard(to, "spade", false)) < 2
 end
 
 sgs.duanliang_suit_value = {
@@ -133,6 +133,10 @@ sgs.ai_chaofeng.xuhuang = 4
 
 sgs.ai_skill_invoke.zaiqi = function(self, data)
 	return self.player:getLostHp() >= 2
+end
+
+sgs.ai_cardneed.lieren = function(to, card)
+	return isCard("Slash", card, to) and getKnownCard(to, "Slash", true) == 0
 end
 
 sgs.ai_skill_invoke.lieren = function(self, data)
@@ -242,7 +246,22 @@ local function getBeggar(self)
 end
 
 sgs.ai_skill_invoke.haoshi = function(self, data)
-	if self.player:getHandcardNum() <= 1 and not self.player:hasSkill("yongsi") then
+	local extra = 0
+	if self.player:hasSkill("yongsi") then
+		local kingdoms = {}
+		for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+			kingdoms[p:getKingdom()] = true
+		end
+		extra=extra+#kingdoms
+	end
+	local sk = {["yingzi"]=1, ["zishou"]=self.player:getLostHp(), ["ayshuijian"]=1+self.player:getEquips():length(),
+	["shenwei"]=2, ["juejing"]=self.player:getLostHp()}
+	for s,n in ipairs(sk) do
+		if self.player:hasSkill(s) then
+			extra = extra+n
+		end
+	end
+	if self.player:getHandcardNum()+extra <= 1 then
 		return true
 	end
 
@@ -280,14 +299,67 @@ dimeng_skill.getTurnUseCard=function(self)
 
 end
 
+--要求：mycards是经过sortByKeepValue排序的--
+function DimengIsWorth(self, friend, enemy, mycards, myequips)
+	local hand1 = enemy:getHandcardNum()
+	local hand2 = friend:getHandcardNum()
+	if hand1 < hand2 then
+		return false
+	elseif hand1 == hand2 then
+		return friend:hasSkill("tuntian")
+	end
+	local cardNum = #mycards
+	local delt = hand1 - hand2 --assert: delt>0
+	if delt > cardNum then
+		return false
+	end
+	local equipNum = #myequips
+	if equipNum > 0 then
+		if self:hasSkills("xuanfeng|xiaoji|nosxuanfeng") then
+			return true
+		end
+	end
+	--now hand1>hand2 and delt<=cardNum
+	local soKeep = 0
+	local soUse = 0
+	local marker = math.ceil(delt / 2)
+	for i=1, delt, 1 do
+		local card = mycards[i]
+		local keepValue = self:getKeepValue(card)
+		if keepValue > 4 then
+			soKeep = soKeep + 1
+		end
+		local useValue = self:getUseValue(card)
+		if useValue > 7 then
+			soUse = soUse + 1
+		end
+	end
+	if soKeep > marker then
+		return false
+	end
+	if soUse > marker then
+		return false
+	end
+	return true
+end
 sgs.ai_skill_use_func.DimengCard=function(card,use,self)
 	local cardNum = 0
+	local mycards = {}
+	local myequips = {}
 	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if not self.player:isJilei(c) then cardNum = cardNum + 1 end
+		if not self.player:isJilei(c) then 
+			cardNum = cardNum + 1 
+			table.insert(mycards, c)
+		end
 	end
 	for _, c in sgs.qlist(self.player:getEquips()) do
-		if not self.player:isJilei(c) then cardNum = cardNum + 1 end
+		if not self.player:isJilei(c) then 
+			cardNum = cardNum + 1 
+			table.insert(mycards, c)
+			table.insert(myequips, c)
+		end
 	end
+	self:sortByKeepValue(mycards) --桃的keepValue是5，useValue是6；顺手牵羊的keepValue是1.9，useValue是9
 
 	self:sort(self.enemies,"handcard")
 	local friends={}
@@ -317,19 +389,52 @@ sgs.ai_skill_use_func.DimengCard=function(card,use,self)
 		end
 		for _, enemy in ipairs(self.enemies) do
 			local hand1=enemy:getHandcardNum()
-
-			if (hand1 > hand2) then
-				if (hand1-hand2)<=cardNum then
-					use.card=card
-					if use.to then
-						use.to:append(enemy)
-						use.to:append(lowest_friend)
-					end
-					return
+			if DimengIsWorth(self, lowest_friend, enemy, mycards, myequips) then
+				use.card=card
+				if use.to then
+					use.to:append(enemy)
+					use.to:append(lowest_friend)
 				end
+				return
 			end
 		end
 	end
+end
+--缔盟的弃牌策略--
+sgs.ai_skill_discard.DimengCard = function(self, discard_num, min_num, optional, include_equip)
+	local cards = self.player:getCards("he")
+	local to_discard = {}
+	cards = sgs.QList2Table(cards)
+	
+	local aux_func = function(card)
+		local place = self.room:getCardPlace(card:getEffectiveId())
+		if place == sgs.Player_PlaceEquip then
+			if card:isKindOf("SilverLion") and self.player:isWounded() then return -2
+			elseif card:isKindOf("OffensiveHorse") then return 1
+			elseif card:isKindOf("Weapon") then return 2
+			elseif card:isKindOf("DefensiveHorse") then return 3
+			elseif card:isKindOf("Armor") then return 4
+			end
+		elseif self:getUseValue(card) > 7 then return 3 --使用价值高的牌，如顺手牵羊(9)
+		elseif self:hasSkills(sgs.lose_equip_skill) then return 5
+		else return 0
+		end
+		return 0
+	end
+	
+	local compare_func = function(a, b)
+		if aux_func(a) ~= aux_func(b) then 
+			return aux_func(a) < aux_func(b) 
+		end
+		return self:getKeepValue(a) < self:getKeepValue(b)
+	end
+
+	table.sort(cards, compare_func)
+	for _, card in ipairs(cards) do
+		if not self.player:isJilei(card) then table.insert(to_discard, card:getId()) end
+		if #to_discard >= discard_num then break end
+	end
+	return to_discard
 end
 
 sgs.ai_card_intention.DimengCard = function(card, from, to)
@@ -338,12 +443,12 @@ sgs.ai_card_intention.DimengCard = function(card, from, to)
 	end
 	table.sort(to, compare_func)
 	if to[1]:getHandcardNum() < to[2]:getHandcardNum() then
-		sgs.updateIntention(from, to[1], (to[2]:getHandcardNum()-to[1]:getHandcardNum())*20+40)
+		sgs.updateIntention(from, to[1], -80)
 	end
 end
 
 sgs.ai_use_value.DimengCard = 3.5
-sgs.ai_use_priority.DimengCard = 2.3
+sgs.ai_use_priority.DimengCard = 5.3
 
 sgs.dynamic_value.control_card.DimengCard = true
 
@@ -448,6 +553,21 @@ sgs.ai_view_as.jiuchi = function(card, player, card_place)
 		end
 	end
 end
+
+function sgs.ai_cardneed.jiuchi(to, card, self)
+	return card:getSuit() == sgs.Card_Spade and (getKnownCard(to, "club", false) + getKnownCard(to, "spade", false)) == 0
+end
+
+function sgs.ai_cardneed.roulin(to, card, self)
+	for _, enemy in ipairs(self.enemies) do
+		if card:isKindOf("Slash") and to:canSlash(enemy, nil, true) and self:slashIsEffective(card, enemy) 
+				and not (enemy:hasSkill("kongcheng") and enemy:isKongcheng())
+				and sgs.isGoodTarget(enemy, self.enemies, self) and not self:slashProhibit(card, enemy) and enemy:isFemale() then
+			return getKnownCard(to, "Slash", true) == 0
+		end
+	end
+end
+
 
 sgs.ai_skill_cardask["@roulin1-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]
 sgs.ai_skill_cardask["@roulin2-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]

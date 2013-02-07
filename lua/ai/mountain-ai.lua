@@ -76,7 +76,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 			
 			if #targets > 0 then
 				if card:isKindOf("Weapon") or card:isKindOf("OffensiveHorse") then
-					self:sort(targets, "threat")
+					self:sort(targets, "defense")
 					target = targets[#targets]
 				else
 					self:sort(targets,"defense")
@@ -261,7 +261,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	if prompt == "@qiaobian-3" then
 		-- if self.player:getHandcardNum()-2 > self.player:getHp() then return "." end
 
-		self:sort(self.enemies, "hp")
+		self:sort(self.enemies, "defense")
 		for _, friend in ipairs(self.friends) do
 			if not friend:getCards("j"):isEmpty() and not friend:containsTrick("YanxiaoCard") and card_for_qiaobian(self, friend, ".") then
 				-- return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
@@ -314,6 +314,10 @@ sgs.ai_card_intention.QiaobianCard = function(card, from, tos, source)
 	return 0
 end
 
+function sgs.ai_cardneed.qiaobian(to, card)
+	return to:getCards("h"):length() <= 2
+end
+
 sgs.ai_skill_invoke.tuntian = true
 
 local jixi_skill={}
@@ -328,6 +332,7 @@ jixi_skill.getTurnUseCard = function(self)
 	local snatch=sgs.Sanguosha:getCard(self.player:getPile("field"):first())
 	snatch=sgs.Sanguosha:cloneCard("snatch", snatch:getSuit(), snatch:getNumber())
 	local use={isDummy=true}
+	snatch:setSkillName("jixi")
 	self:useCardSnatch(snatch,use)
 	if use.card then return sgs.Card_Parse("@JixiCard=.") end
 end
@@ -399,64 +404,69 @@ function sgs.ai_slash_prohibit.xiangle(self, to)
 end
 
 sgs.ai_skill_invoke.fangquan = function(self, data)
-	if #self.friends == 1 then
-		return false
-	end
 
+	if #self.friends == 1 then return end
+	
 	local limit = self.player:getMaxCards()
-	if self.player:getHandcardNum() > limit or self.player:isKongcheng() then return false end
+	if self.player:getHandcardNum() > limit + 2 then return end
+	if self.player:isKongcheng() then return end
+	if self:getCardsNum("Peach") >= limit and self.player:isWounded() then return end	
 
-	local to_discard = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
-
-	local index = 0
-	local all_peaches = 0
-	for _, card in ipairs(cards) do
-		if card:isKindOf("Peach") then
-			all_peaches = all_peaches + 1
+	local shouldUse = 0
+	for _ ,card in ipairs(cards) do
+		if card:isKindOf("TrickCard") and self:getUseValue(card) > 3.69 then
+			local dummy_use = { isDummy = true }
+			self:useTrickCard(card, dummy_use)
+			if dummy_use.card then shouldUse = shouldUse + 1 end
 		end
-	end
-	if all_peaches >= 2 and self:getOverflow() <= 0 then return {} end
-	self:sortByKeepValue(cards)
-	cards = sgs.reverse(cards)
-
-	for i = #cards, 1, -1 do
-		local card = cards[i]
-		if not card:isKindOf("Peach") and not self.player:isJilei(card) then
-			table.insert(to_discard, card:getEffectiveId())
-			table.remove(cards, i)
-			break
-		end
-	end
-	return #to_discard > 1
+		
+		if card:isKindOf("Slash") then
+			for _, enemy in ipairs(self.enemies) do
+				if (self:getCardsNum("Jink", enemy) < 1 or enemy:isKongcheng()) and self:slashIsEffective(card, enemy) and self.player:canSlash(enemy, nil, true) then
+					shouldUse = shouldUse + 1
+					break
+				end
+			end
+		end		
+	end	
+	if shouldUse >= 2 then return end
+	
+	return shouldUse < 2
 end
 
 sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, include_equip)
-	local to_discard = {}
-	local cards = sgs.QList2Table(self.player:getHandcards())
-	local index = 0
-	local all_peaches = 0
-	for _, card in ipairs(cards) do
-		if card:isKindOf("Peach") then
-			all_peaches = all_peaches + 1
-		end
-	end
-	if all_peaches >= 2 and self:getOverflow() <= 0 then return {} end
-	self:sortByKeepValue(cards)
-	cards = sgs.reverse(cards)
 
-	for i = #cards, 1, -1 do
-		local card = cards[i]
-		if not card:isKindOf("Peach") and not self.player:isJilei(card) then
-			table.insert(to_discard, card:getEffectiveId())
-			table.remove(cards, i)
-			break
-		end
-	end	
-	if #to_discard < 1 then return {} 
-	else
-		return to_discard
-	end
+	-- local to_discard = {}
+	-- local cards = sgs.QList2Table(self.player:getHandcards())
+	-- local index = 0
+	-- local all_peaches = 0
+	-- for _, card in ipairs(cards) do
+		-- if card:isKindOf("Peach") then
+			-- all_peaches = all_peaches + 1
+		-- end
+	-- end
+	-- if all_peaches >= 2 and self:getOverflow() <= 0 then return {} end
+	-- self:sortByKeepValue(cards)
+	-- cards = sgs.reverse(cards)
+
+	-- for i = #cards, 1, -1 do
+		-- local card = cards[i]
+		-- if not card:isKindOf("Peach") and not self.player:isJilei(card) then
+			-- table.insert(to_discard, card:getEffectiveId())
+			-- table.remove(cards, i)
+			-- break
+		-- end
+	-- end	
+	-- if #to_discard < 1 then return {} 
+	-- else
+		-- return to_discard
+	-- end
+	
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards, true)
+	
+	return cards[1]:getEffectiveId()
 end
 
 sgs.ai_skill_playerchosen.fangquan = function(self, targets)
@@ -464,7 +474,13 @@ sgs.ai_skill_playerchosen.fangquan = function(self, targets)
 	self:sort(self.friends_noself, "handcard", true)
 
 	for _, target in ipairs(self.friends_noself) do
-		if not target:hasSkill("dawu") and self:hasSkills("yongsi|zhiheng|"..sgs.priority_skill.."|shensu",target) and not target:containsTrick("indulgence") then
+		if not target:hasSkill("dawu") and self:hasSkills("yongsi",target) and not self:willSkipPlayPhase(target) and not self:willSkipDrawPhase(target) then
+			return target
+		end
+	end
+
+	for _, target in ipairs(self.friends_noself) do
+		if not target:hasSkill("dawu") and self:hasSkills("zhiheng|shensu|"..sgs.priority_skill, target) and not self:willSkipPlayPhase(target) and not self:willSkipDrawPhase(target) then
 			return target
 		end
 	end
@@ -475,10 +491,12 @@ sgs.ai_skill_playerchosen.fangquan = function(self, targets)
 		end
 	end
 
-	return #self.friends_noself>0 and self.friends_noself[1]
+	if #self.friends_noself>0 then return self.friends_noself[1] end
+	
+	return targets:first()
 end
 
-sgs.ai_playerchosen_intention.fangquan = -40
+sgs.ai_playerchosen_intention.fangquan = - 100
 
 local tiaoxin_skill={}
 tiaoxin_skill.name="tiaoxin"
@@ -510,6 +528,32 @@ end
 
 sgs.ai_skill_choice.tiaoxin = sgs.ai_skill_choice.collateral
 
+sgs.ai_skill_cardask["@tiaoxin-slash"] = function(self, data, pattern, target)
+	if target then
+		for _, slash in ipairs(self:getCards("Slash")) do
+			if self:slashIsEffective(slash, target) and self:isFriend(target) and target:hasSkill("leiji") then
+				return slash:toString()
+			end
+			
+			if self:slashIsEffective(slash, target) and not self:getDamagedEffects(target, self.player) and self:isEnemy(target) then
+				return slash:toString()
+			end
+			if (not self:slashIsEffective(slash, target) or self:getDamagedEffects(target, self.player) or target:getHp() > getBestHp(target))
+				and self:isFriend(target) then
+				return slash:toString()
+			end
+		end
+		for _, slash in ipairs(self:getCards("Slash")) do
+			if (not (self:getDamagedEffects(target, self.player) or target:getHp() > getBestHp(target)) or not self:slashIsEffective(slash, target))
+				and self:isEnemy(target) then
+				return slash:toString()
+			end
+		end
+	end
+	return "."
+end
+
+
 sgs.ai_card_intention.TiaoxinCard = 80
 sgs.ai_use_priority.TiaoxinCard = 8
 
@@ -522,10 +566,12 @@ local zhiba_pindian_skill={}
 zhiba_pindian_skill.name="zhiba_pindian"
 table.insert(sgs.ai_skills, zhiba_pindian_skill)
 zhiba_pindian_skill.getTurnUseCard = function(self)
-	if self.player:isKongcheng() or self.player:getHandcardNum() < self.player:getHp() or self.player:getKingdom() ~= "wu"
+	if self.player:isKongcheng() or self.player:getHandcardNum() <= self.player:getHp() or self.player:getKingdom() ~= "wu"
 		or self.player:hasUsed("ZhibaCard") then return end
 	return sgs.Card_Parse("@ZhibaCard=.")
 end
+
+sgs.ai_use_priority.ZhibaCard = sgs.ai_use_priority.Peach - 0.1
 
 sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 	local lords = {}
@@ -534,6 +580,7 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 	end
 	if #lords == 0 then return end
 	if self:needBear() then return end
+	if self:getOverflow() <= 0 then return end
 	self:sort(lords, "defense")
 	for _, lord in ipairs(lords) do
 		local zhiba_str
@@ -575,10 +622,13 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 			end
 		end
 
-		if self:isEnemy(lord) and max_num > 9 and max_num > lord_max_num then
+		if self:isEnemy(lord) and max_num > 10 and max_num > lord_max_num then
+			if isCard("Jink", max_card, self.player) and self:getCardsNum("Jink") ==1 then return end
+			if isCard("Peach", max_card, self.player) or isCard("Analeptic", max_card, self.player) then return false end
 			zhiba_str = "@ZhibaCard=" .. max_card:getEffectiveId()
 		end
-		if self:isFriend(lord) and not lord:hasSkill("manjuan") and ((lord_max_num > 0 and min_num <= lord_max_num) or min_num < 8) then
+		if self:isFriend(lord) and not lord:hasSkill("manjuan") and ((lord_max_num > 0 and min_num <= lord_max_num) or min_num < 7) then
+			if isCard("Jink", min_card, self.player) and self:getCardsNum("Jink") ==1 then return end
 			zhiba_str = "@ZhibaCard=" .. min_card:getEffectiveId()
 		end
 
@@ -608,16 +658,10 @@ sgs.ai_skill_choice.sunce_zhiba = function(self, choices)
 	return "yes"
 end
 
-function sgs.ai_skill_pindian.zhiba_pindian(minusecard, self, requestor, maxcard)
-	local cards, maxcard = sgs.QList2Table(self.player:getHandcards())
-	local function compare_func(a, b)
-		return a:getNumber() > b:getNumber()
-	end
-	table.sort(cards, compare_func)
-	for _, card in ipairs(cards) do
-		if self:getUseValue(card) < 6 then maxcard = card break end
-	end
-	return maxcard or cards[1]
+function sgs.ai_skill_pindian.zhiba_pindian(minusecard, self, requestor)
+	local maxcard=self:getMaxCard()
+	local point = self:isFriend(requestor) and 6 or 9
+	return maxcard:getNumber() <= point and minusecard or maxcard
 end
 
 function sgs.ai_card_intention.ZhibaCard(card, from, tos, source)
@@ -675,10 +719,13 @@ sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 	end
 	local zhijian = sgs.Card_Parse("@ZhijianCard=" .. select_equip:getId())
 	use.card = zhijian
+	if select_equip:isKindOf("GaleShell") then
+		sgs.updateIntention(self.player, target, 35)
+	end
 end
 
 sgs.ai_card_intention.ZhijianCard = -80
-
+sgs.ai_use_priority.ZhijianCard = sgs.ai_use_priority.RendeCard + 0.1  -- 刘备二张双将的话，优先直谏
 sgs.ai_cardneed.zhijian = sgs.ai_cardneed.equip
 
 sgs.ai_skill_invoke.guzheng = function(self, data)
@@ -710,8 +757,12 @@ sgs.ai_skill_invoke.beige = function(self, data)
 	return self:isFriend(damage.to) and not self:isFriend(damage.from)
 end
 
+function sgs.ai_cardneed.beige(to, card)
+	return to:getCards("h"):length() <= 2
+end
+
 function sgs.ai_slash_prohibit.duanchang(self, to)
-	if self:hasSkills("jueqing|qianxi") then return false end
+	if self.player:hasSkill("jueqing") or (self.player:hasSkill("qianxi") and self.player:distanceTo(to) == 1) then return false end
 	if to:getHp() > 1 or #self.enemies == 1 then return false end
 
 	if self.player:getMaxHp() == 3 and self.player:getArmor() and self.player:getDefensiveHorse() then return false end
@@ -730,15 +781,16 @@ function sgs.ai_skill_choice.huashen(self, choices)
 	local str = choices
 	choices = str:split("+")
 	if self.player:getHp() < 1 and str:matchOne("buqu") then return "buqu" end
-	if str:matchOne("guixin2") then return "guixin2" end
 	if self.player:getPhase() == sgs.Player_NotActive then
 		if self.player:getHp() == 1 then
 			if str:matchOne("wuhun") then return "wuhun" end
-			for _, askill in ipairs(("wuhun|duanchang|jijiu|longhun|jiushi|jiuchi|buyi|huilei|dushi|juejing|zhuiyi|jiefan"):split("|")) do
+			for _, askill in ipairs(("wuhun|duanchang|jijiu|longhun|jiushi|jiuchi|buyi|huilei|dushi|juejing|zhuiyi|jincui"):split("|")) do
 				if str:matchOne(askill) then return askill end
 			end
 		end
-		if str:matchOne("guixin") and (not self:isWeak() or self:getAllPeachNum() > 0) then return "guixin" end
+		
+		if str:matchOne("guixin") and (not self:isWeak() or self:getAllPeachNum() > 0) and self.room:alivePlayerCount() > 3 then return "guixin" end
+		
 		for _, askill in ipairs(sgs.masochism_skill:split("|")) do
 			if str:matchOne(askill) and (self.player:getHp() > 1 or self:getAllPeachNum() > 0) then return askill end
 		end
@@ -746,42 +798,115 @@ function sgs.ai_skill_choice.huashen(self, choices)
 		if self.player:isKongcheng() then
 			if str:matchOne("kongcheng") then return "kongcheng" end
 		end
+		
 		for _, askill in ipairs(("yizhong|bazhen"):split("|")) do
-				if str:matchOne(askill) and not self.player:getArmor() then return askill end
+			if str:matchOne(askill) and not self.player:getArmor() then return askill end
 		end
-		 
-		for _, askill in ipairs(("wuyan|weimu|kanpo|liuli|qingguo|longdan|xiangle|jiang|" ..
-		"danlao|qianxun|juxiang|huoshou|zhichi|jilei|feiying|yicong|wusheng|wushuang|tianxiang|leiji|" ..
-		"xuanfeng|luoying|xiliang|guhuo|guidao|guicai|lianying|xiaoji|zhiyu|hongyan|tiandu|guzheng|xingshang|weidi|badao|gushou"):split("|")) do
+		
+		for _, askill in ipairs(("jiushi|cangni"):split("|")) do
+			if str:matchOne(askill) and not self.player:faceUp() then return askill end
+		end
+		
+		if self.player:hasArmorEffect("Vine") or self.player:getMark("@gale") > 0 then
+			if str:matchOne("shuiyong") then return "shuiyong" end
+		end
+
+		if self.player:getHandcardNum() > self.player:getHp() and self.player:getCards("e"):length() > 0 then
+			if str:matchOne("yanzheng") then return "yanzheng" end
+		end
+
+		if self.player:getCards("e"):length() > 1 then
+			for _, askill in ipairs(sgs.lose_equip_skill:split("|")) do
+				if str:matchOne(askill) then return askill end
+			end
+		end
+
+		for _, askill in ipairs(("noswuyan|wuyan|weimu|guzheng|luoying|xiliang|kanpo|liuli|beige|qingguo|gushou|mingzhe|xiangle|feiying|longdan|tanlan"):split("|")) do
 			if str:matchOne(askill) then return askill end
 		end
+
+		for _, askill in ipairs(sgs.masochism_skill:split("|")) do
+			if str:matchOne(askill) then return askill end
+		end
+
+		for _, askill in ipairs(("huangen|jianxiong|jiang|qianxun|danlao|juxiang|huoshou|zhichi|yicong|wusheng|wushuang|tianxiang|" ..
+		"leiji|guhuo|nosshangshi|shangshi|zhiyu|guidao|guicai|jijiu|buyi|lianying|tianming|jieyuan|gzmingshi|gzxiaoguo|gzshushen|shuiyong|tiandu|zhenlie"):split("|")) do
+			if str:matchOne(askill) then return askill end
+		end
+
+		if self.player:getCards("e"):length() > 0 then
+			for _, askill in ipairs(sgs.lose_equip_skill:split("|")) do
+				if str:matchOne(askill) then return askill end
+			end
+		end
+
+		for _, askill in ipairs(("xingshang|weidi|chizhong|jilei|gzsijian|badao|jizhi|anxian|wuhun|hongyan|buqu|dushi|zhuiyi|huilei|jincui|beifa|yanzheng"):split("|")) do
+			if str:matchOne(askill) then return askill end
+		end
+
+		for _, askill in ipairs(("xiaoji|xuanfeng|nosxuanfeng|longhun|jiushi|jiuchi|jiefan|kuanggu|lianpo"):split("|")) do
+			if str:matchOne(askill) then return askill end
+		end
+		
+		for _, askill in ipairs(("tongxin|gongmou|weiwudi_guixin|wuling|kuangbao"):split("|")) do
+			if str:matchOne(askill) then return askill end
+		end
+
 	else
 		assert(self.player:getPhase() == sgs.Player_RoundStart)
 		if self.player:getHp() < 1 and str:matchOne("buqu") then return "buqu" end
-		if (self.player:getHandcardNum() < 20 and not self:isWeak()) or self.player:isSkipped(sgs.Player_Play) then
+		if (self.player:getHandcardNum() >= self.player:getHp() and self.player:getHandcardNum() < 10 and not self:isWeak()) or self.player:isSkipped(sgs.Player_Play) then
 			if str:matchOne("keji") then return "keji" end
 		end
-		if self.player:getHandcardNum() > 5 then
-			for _, askill in ipairs(("shuangxiong|fuhun|tianyi|xianzhen|paoxiao|huoji|luanji|qixi|duanliang|guose"):split("|")) do
+		if self.player:getHandcardNum() > 4 then
+			for _, askill in ipairs(("shuangxiong|fuhun|tianyi|xianzhen|paoxiao|luanji|huoji|qixi|duanliang|guose|luoyi|bawang|dangxian|neoluoyi|rende|gzlirang|longluo"):split("|")) do
 				if str:matchOne(askill) then return askill end
 			end
 		end
-		if self:isWeak() then
-			for _, askill in ipairs(("qingnang|jieyin|zaiqi|longhun|kuanggu|kuiwei|miji|caizhaoji_hujia|jushou|jincui|yuwen"):split("|")) do
+
+		if self.player:getHp() == 1 then
+			for _, askill in ipairs(("qingnang|jieyin|juejing|rende|miji|nosshangshi|shangshi|caizhaoji_hujia|kuiwei|neojushou|jushou|yinghun|zaiqi|kuanggu"):split("|")) do
 				if str:matchOne(askill) then return askill end
 			end
 		end
-		for _, askill in ipairs(("tuxi|dimeng|haoshi|guanxing|manjuan|zhiheng|rende|qiaobian|fangquan|qice|" ..
-		"lijian|quhu|fanjian|tieji|liegong|wushuang|shelie|luoshen|yongsi|yingzi|juejing|fuhun|qianxi|" ..
-		"gongxin|duanliang|guose|mingce|ganlu|anxu|tiaoxin|xuanhuo|guhuo|roulin|qiangxi|mengjin|lieren|pojun|longluo" ..
-		"jiushi|qixi|luoyi|wenjiu|jiuchi|longhun|wusheng|wushen|longdan|gongqi|lihuo|shensu|jiangchi|lianhuan|yinghun|houyuan|jujian|huoji|luanji|gongmou|" ..
-		"jueji|zhijian|shuangxiong|xinzhan|chouliang|zhenwei|guidao|guicai|zhenlie|lianpo|mashu|zhengfeng|yicong|jizhi|lianying|xuanfeng|xiaoji|tianyi" ..
-		"dangxian|qicai|xianzhen|wansha|zongshi|biyue|hongyan|lukang_weiyan|shipo|kurou|yicai|beifa|qinyin|zonghuo|shaoying|guihan|yishe|fuzuo|shouye"):split("|")) do
+
+		if self.player:getHandcardNum() < 2 then
+			if str:matchOne("haoshi") then return "haoshi" end
+		end
+
+		if self.player:isWounded() then
+			for _, askill in ipairs(("qingnang|jieyin|juejing|miji|rende"):split("|")) do
+				if str:matchOne(askill) then return askill end
+			end
+			if self.player:getHp() < 2 and self.player:getHandcardNum() == 1 then
+				if str:matchOne("gzshenzhi") then return "gzshenzhi" end
+			end
+		end
+
+		if self.player:getCards("e"):length() > 1 then
+			for _, askill in ipairs(("shuijian|xiaoji|xuanfeng|nosxuanfeng|shensu|neoluoyi"):split("|")) do
+				if str:matchOne(askill) then return askill end
+			end
+		end
+		
+		if self.player:getWeapon() then
+			for _, askill in ipairs(("qiangxi|zhulou"):split("|")) do
+				if str:matchOne(askill) then return askill end
+			end
+		end
+
+		for _, askill in ipairs(("tuxi|dimeng|haoshi|guanxing|manjuan|zhiheng|rende|qiaobian|qice|" ..
+		"lijian|neofanjian|shuijian|shelie|luoshen|yongsi|qingnang|biyue|yingzi|caizhaoji_hujia|anxu|fangquan|duyi|mizhao|quhu|fanjian|" ..
+		"gongxin|duanliang|guose|mingce|ganlu|tiaoxin|zhaolie|moukui|liegong|mengjin|tieji|wushuang|juejing|fuhun|qianxi|yanxiao|jueji|tanhu|guhuo|xuanhuo|nosxuanhuo|qiangxi|longluo|nosjujian|lieren|pojun|bawang|" ..
+		"qixi|yinling|jizhi|shude|zhaoxin|neoluoyi|luoyi|wenjiu|jie|jiangchi|wusheng|longdan|jueqing|longhun|jiuchi|gzqingcheng|gzshuangren|gzkuangfu|gongqi|wushen|paoxiao|lianhuan|chouliang|houyuan|jujian|shensu|jisu|luanji|chizhong|" ..
+		"zhijian|shuangxiong|xinzhan|zhenwei|jieyuan|gzduanbing|guidao|guicai|zhenlie|wansha|lianpo|mashu|zhengfeng|yicong|nosshangshi|shangshi|lianying|tianyi|xianzhen|kuiwei|neojushou|jushou|huoji|roulin|lihuo|xiaoji|xuanfeng|nosxuanfeng|" ..
+		"jiushi|dangxian|tannang|qicai|zongshi|keji|taichen|hongyan|kurou|lukang_weiyan|gzduoshi|yicai|beifa|qinyin|zonghuo|shaoying|shouye|hongyuan|yuwen|lianli|gongmou|weiwudi_guixin|wuling|shenfen"):split("|")) do
 			if str:matchOne(askill) then return askill end
 		end
+
 	end
 	for index = #choices, 1, -1 do
-		if ("renjie|benghuai|wuling|liqian|lianli|tongxin|shenjun|xunzhi|dongcha" ..
+		if ("renjie|benghuai|shenjun|xunzhi|dongcha|yishe|" ..
 		"juao|shiyong")
 		:match(choices[index]) then
 			table.remove(choices,index)

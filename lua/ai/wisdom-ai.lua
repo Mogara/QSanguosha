@@ -190,7 +190,7 @@ sgs.ai_skill_playerchosen.beifa = function(self, targets)
 	for _, target in ipairs(targetlist) do
 		if self:isEnemy(target) then
 			if self:slashIsEffective(slash, target) then
-				if sgs.isGoodTarget(target, targetlist) then
+				if sgs.isGoodTarget(target, targetlist, self) then
 					self.player:speak("嘿！没想到吧？")
 					return target
 				end
@@ -198,7 +198,7 @@ sgs.ai_skill_playerchosen.beifa = function(self, targets)
 		end
 	end
 	for i=#targetlist, 1, -1 do
-		if sgs.isGoodTarget(targetlist[i], targetlist) then
+		if sgs.isGoodTarget(targetlist[i], targetlist, self) then
 			return targetlist[i]
 		end
 	end
@@ -251,7 +251,7 @@ sgs.ai_skill_use_func.HouyuanCard = function(card, use, self)
 			use.to:append(target)
 		end
 		use.card = sgs.Card_Parse("@HouyuanCard=" .. table.concat(usecards, "+"))
-		if use.card then
+		if use.to then
 			self.player:speak("有你这样出远门不带粮食的么？接好了！")
 		end
 	end
@@ -271,12 +271,31 @@ sgs.ai_skill_invoke.bawang = function(self, data)
 	if max_card and max_card:getNumber() > 10 then
 		return self:isEnemy(effect.to)
 	end
+	if self:isEnemy(effect.to) then
+		if self:getOverflow() >= 0 then return true
+		end
+	end
+end
+
+function sgs.ai_skill_pindian.bawang(minusecard, self, requestor, maxcard)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local function compare_func(a, b)
+		return a:getNumber() > b:getNumber()
+	end
+	table.sort(cards, compare_func)
+	for _, card in ipairs(cards) do
+		if card:getNumber()> 9 then return card end
+	end
+	self:sortByKeepValue(cards)
+	return cards[1]
 end
 
 sgs.ai_skill_use["@@bawang"] = function(self, prompt)
 	local first_index, second_index
+	self:sort(self.enemies, "defenseSlash")
+	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 	for i=1, #self.enemies do
-		if not (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:isKongcheng()) then
+		if not (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:isKongcheng()) and not self:slashProhibit(slash ,self.enemies[i]) then
 			if not first_index then
 				first_index = i
 			else
@@ -295,6 +314,7 @@ sgs.ai_skill_use["@@bawang"] = function(self, prompt)
 	end
 end
 
+sgs.ai_cardneed.bawang = sgs.ai_cardneed.bignumber
 sgs.ai_card_intention.BawangCard = sgs.ai_card_intention.ShensuCard
 --[[
 	技能：危殆（主公技）
