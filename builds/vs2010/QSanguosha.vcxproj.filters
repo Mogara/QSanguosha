@@ -24,9 +24,6 @@
       <Extensions>ts;xlf</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="Swig Files">
-      <UniqueIdentifier>{9981aa0b-e6a2-412b-95d7-2e22d217b648}</UniqueIdentifier>
-    </Filter>
     <Filter Include="client">
       <UniqueIdentifier>{c840cc0f-f927-42a6-98f7-1f7f92888d93}</UniqueIdentifier>
     </Filter>
@@ -66,6 +63,9 @@
       <UniqueIdentifier>{f34c2bba-ec30-47e0-a92a-c941cd46ab62}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Translation Files\Swig Files">
+      <UniqueIdentifier>{9981aa0b-e6a2-412b-95d7-2e22d217b648}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1204,31 +1204,31 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\swig\sanguosha.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
     <None Include="sanguosha.ts">
       <Filter>Translation Files</Filter>
     </None>
     <None Include="..\..\swig\ai.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
     <None Include="..\..\swig\card.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
     <None Include="..\..\swig\list.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
     <None Include="..\..\swig\luaskills.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
     <None Include="..\..\swig\native.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
     <None Include="..\..\swig\naturalvar.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
     <None Include="..\..\swig\qvariant.i">
-      <Filter>Swig Files</Filter>
+      <Filter>Translation Files\Swig Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

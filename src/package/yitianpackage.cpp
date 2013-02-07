@@ -1613,11 +1613,11 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         source->invoke("clearAG");
     }
 
-    room->showCard(zhanglu, card_id);
+    source->obtainCard(Sanguosha->getCard(card_id));
+    room->showCard(source, card_id);
 
-    if(room->askForChoice(zhanglu, "yisheask", "allow+disallow") == "allow"){
-        source->obtainCard(Sanguosha->getCard(card_id));
-        room->showCard(source, card_id);
+    if(room->askForChoice(zhanglu, "yisheask", "allow+disallow") == "disallow"){
+        zhanglu->addToPile("rice", card_id);
     }
 }
 
@@ -1669,43 +1669,42 @@ public:
         events << CardsMoveOneTime;
 
         default_choice = "obtain";
-    }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && !target->hasSkill(objectName());
+        frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if (player == NULL) return false;
-
-        if (player->getPhase() != Player::Discard)
+        if(room->getCurrent()->getPhase() != Player::Discard)
             return false;
-
-        ServerPlayer *zhanglu = room->findPlayerBySkillName(objectName());
-
-        if(zhanglu == NULL)
-            return false;
-
-        DummyCard *dummy = new DummyCard;
-        dummy->deleteLater();
 
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if (move->from == player && move->to_place == Player::DiscardPile
-            && (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-            foreach (int id, move->card_ids) {
-                const Card *c = Sanguosha->getCard(id);
-                if (c->isRed()) dummy->addSubcard(id);
-            }
+        
+		if (move->from == player || (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_DISCARD)
+			return false;
+		
+		QList<int> red_cards;
+        for (int i = 0; i < move->card_ids.length(); i++) {
+            int id = move->card_ids[i];
+
+            if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile)
+                red_cards << id;
         }
 
-        if(dummy->subcardsLength() == 0 || !zhanglu->askForSkillInvoke(objectName(), data))
+        if(red_cards.isEmpty())
             return false;
 
-        bool can_put = 5 - zhanglu->getPile("rice").length() >= dummy->subcardsLength();
-        if(can_put && room->askForChoice(zhanglu, objectName(), "put+obtain") == "put"){
-            zhanglu->addToPile("rice", dummy);
+        if(!player->askForSkillInvoke(objectName(), data))
+            return false;
+
+        bool can_put = 5 - player->getPile("rice").length() >= red_cards.length();
+        if(can_put && room->askForChoice(player, objectName(), "put+obtain") == "put"){
+            foreach(int id, red_cards){
+                player->addToPile("rice", id);
+            }
         }else{
-            zhanglu->obtainCard(dummy);
+            foreach(int id, red_cards){
+                room->obtainCard(player, id);
+            }
         }
 
         return false;
@@ -1718,10 +1717,10 @@ public:
         events << SlashMissed;
     }
 
-    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-        if(effect.jink && player->getRoom()->getCardPlace(effect.jink->getEffectiveId()) == Player::DiscardPile
+        if(player->getRoom()->getCardPlace(effect.jink->getEffectiveId()) == Player::DiscardPile
             && player->askForSkillInvoke(objectName(), data))
 
             player->obtainCard(effect.jink);
