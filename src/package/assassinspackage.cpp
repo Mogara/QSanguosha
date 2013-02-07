@@ -449,9 +449,8 @@ void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
     ServerPlayer *target = room->askForPlayerChosen(source, room->getAlivePlayers(), "duyi");
     const Card *card = Sanguosha->getCard(id);
     target->obtainCard(card);
-    if(card->isBlack()) {
-        target->jilei(".|.|.|hand");
-        target->invoke("jilei", ".|.|.|hand");
+    if (card->isBlack()) {
+        room->setPlayerCardLimitation(target, "use,response", ".|.|.|hand", false);
         room->setPlayerFlag(target, "duyi_target");
         LogMessage log;
         log.type = "#duyi_eff";
@@ -465,8 +464,7 @@ void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
         room->broadcastSkillInvoke("duyi", 2);
 
     room->getThread()->delay();
-    foreach(ServerPlayer *p, room->getPlayers())
-        p->invoke("clearAG");
+    room->broadcastInvoke("clearAG");
 }
 
 class DuyiViewAsSkill:public ZeroCardViewAsSkill{
@@ -490,27 +488,15 @@ public:
         events << EventPhaseStart;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
+	virtual bool triggerable(const ServerPlayer *target) const {
+		return target && target->hasSkill(objectName());
+	}
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
-        if(!splayer)
-            return false;
-
-        if(splayer->getPhase() == Player::Discard) // @todo_P: rewrite it with setPlayerCardLimitation
-            if(splayer->hasFlag("duyi_target")) {
-                splayer->jilei(".");
-                splayer->invoke("jilei", ".");
-                room->setPlayerFlag(splayer, "-duyi_target");
-            }
-
-        if(splayer->getPhase() == Player::NotActive)
+        if(player->getPhase() == Player::NotActive)
             foreach(ServerPlayer *p, room->getAlivePlayers())
                 if(p->hasFlag("duyi_target")) {
-                    p->jilei(".");
-                    p->invoke("jilei", ".");
+                    room->removePlayerCardLimitation(p, "use,response", ".|.|.|hand$0");
                     room->setPlayerFlag(p, "-duyi_target");
                     LogMessage log;
                     log.type = "#duyi_clear";
@@ -529,20 +515,12 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
-        ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
-        if(splayer == NULL)
-            return false;
-
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->getTypeId() == Card::TypeSkill || use.from == splayer || !use.to.contains(splayer))
+        if(use.card->getTypeId() == Card::TypeSkill || use.from == player || !use.to.contains(player))
             return false;
         
-        if(player == splayer && player->askForSkillInvoke(objectName())) {
+        if(player->askForSkillInvoke(objectName())) {
             room->setPlayerFlag(player, "duanzhi_InTempMoving");
             ServerPlayer *target = use.from;
             DummyCard *dummy = new DummyCard;
