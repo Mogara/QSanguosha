@@ -1,0 +1,5 @@
+setPile:3,19,35,95,99,102,146,147,105,64,75,9,1,7,60
+general:select general2:select role:renegade starter:true hp:1 beforeNext:lord+loyalist draw:0 hand:4,5,34,51 
+general:xushu role:rebel draw:0 equip:66
+general:jiaxu role:lord maxhp:3 hp:3 draw:0 judge:106 
+general:liushan role:loyalist draw:0 
