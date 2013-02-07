@@ -45,22 +45,6 @@ return {
 	["#YongsiBad"] = "%from 触发【%arg2】，须弃置 %arg 张牌",
 	["#YongsiWorst"] = "%from 的锁定技【%arg2】被触发，弃置了所有的装备和手牌（共 %arg 张）",
 
-	["#sp_diaochan"] = "绝世的舞姬",
-	["sp_diaochan"] = "SP貂蝉",
-	["&sp_diaochan"] = "貂蝉",
-	["illustrator:sp_diaochan"] = "巴萨小马",
-	["cv_diaochan:convert"] = "你可以替换为SP貂蝉或台版貂蝉或国战貂蝉",
-	["cv_diaochan"] = "SP替换",
-	["cv_diaochan:sp_diaochan"] = "SP",
-	["cv_diaochan:tw_diaochan"] = "台湾版SP",
-	["cv_diaochan:heg_diaochan"] = "国战版",
-
-	["#sp_sunshangxiang"] = "梦醉良缘",
-	["sp_sunshangxiang"] = "SP孙尚香",
-	["&sp_sunshangxiang"] = "孙尚香",
-	["illustrator:sp_sunshangxiang"] = "木美人",
-	["cv_sunshangxiang:convert"] = "你可以替换为蜀势力SP孙尚香",
-
 	["#sp_guanyu"] = "汉寿亭侯",
 	["sp_guanyu"] = "SP关羽",
 	["&sp_guanyu"] = "关羽",
@@ -70,33 +54,6 @@ return {
 	[":danji"] = "<b>觉醒技</b>，回合开始阶段，若你的手牌数大于你当前的体力值，且本局主公为曹操时，你须减1点体力上限并永久获得技能“马术”。",
 	["#DanjiWake"] = "%from 的手牌数(%arg)多于体力值(%arg2)，且本局主公为曹操，达到【单骑】的觉醒条件",
 	["$danji"] = "吾兄待我甚厚，誓以共死，今往投之，望曹公见谅。",
-
-	["#sp_caiwenji"] = "金璧之才",
-	["sp_caiwenji"] = "SP蔡文姬",
-	["&sp_caiwenji"] = "蔡文姬",
-	["illustrator:sp_caiwenji"] = "木美人",
-	["cv_caiwenji:convert"] = "你可以替换为魏势力SP蔡文姬",
-	["cv:sp_caiwenji"] = "呼呼",
-	
-	["#sp_jiaxu"] = "算无遗策",
-	["sp_jiaxu"] = "SP贾诩",
-	["&sp_jiaxu"] = "贾诩",
-	["illustrator:sp_jiaxu"] = "雪君S",
-	["cv_jiaxu:convert"] = "你可以替换为魏势力SP贾诩",
-	["cv:sp_jiaxu"] = "落凤一箭",
-	
-	["#sp_pangde"] = "枱榇之悟",
-	["sp_pangde"] = "SP庞德",
-	["&sp_pangde"] = "庞德",
-	["illustrator:sp_pangde"] = "天空之城",
-	["cv_pangde:convert"] = "你可以替换为魏势力SP庞德",
-	["cv:sp_pangde"] = "Glory",
-
-	["#sp_machao"] = "西凉的猛狮",
-	["sp_machao"] = "SP马超",
-	["&sp_machao"] = "马超",
-	["illustrator:sp_machao"] = "天空之城",
-	["cv_machao:convert"] = "你可以替换为群雄势力SP马超",
 
 	["#caohong"] = "福将",
 	["caohong"] = "曹洪",
@@ -134,7 +91,14 @@ return {
 	["$huxiao2"] = "刀行如流水，杀你个措手不及！",
 	["$huxiao3"] = "紫髯老贼！还吾父命来！",              -- for sunquan
 	["$wuji"] = "武圣虽死，血脉尚存。先父佑我，再现武魂！",
-	--["~guanyinping"] = "父亲……",
+	["~guanyinping"] = "父亲……",
+	
+	["#xiahouba"] = "棘途壮志",
+	["xiahouba"] = "夏侯霸",
+	["illustrator:xiahouba"] = "熊猫探员",
+	["baobian"] = "豹变",
+	[":baobian"] = "<b>锁定技</b>，若你的体力值为3或更少，你视为拥有技能“挑衅”;若你的体力值为2或更少;你视为拥有技能“咆哮”;若你的体力值为1，你视为拥有技能“神速”。",
+
 	
 	["#chenlin"] = "破竹之咒",
 	["chenlin"] = "陈琳",
@@ -157,37 +121,95 @@ return {
 	["$songci2"] = "汝众违旅叛，当有此报！",             --discardCards
 	--["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
 	
-	["#tw_diaochan"] = "绝世的舞姬",
+	["sp_diaochan"] = "SP貂蝉",
+	["&sp_diaochan"] = "貂蝉",
+	["illustrator:sp_diaochan"] = "巴萨小马",
+	["cv_diaochan:convert"] = "你可以替换为SP貂蝉或台版貂蝉或国战貂蝉",
+	["cv_diaochan:sp_diaochan"] = "SP",
+	["cv_diaochan:tw_diaochan"] = "台湾版",
+	["cv_diaochan:heg_diaochan"] = "国战版",
+
+	["#sp_sunshangxiang"] = "梦醉良缘",
+	["sp_sunshangxiang"] = "SP孙尚香",
+	["&sp_sunshangxiang"] = "孙尚香",
+	["illustrator:sp_sunshangxiang"] = "木美人",
+	["cv_sunshangxiang:convert"] = "你可以替换为蜀势力SP孙尚香",
+
+	["#sp_pangde"] = "抬榇之悟",
+	["sp_pangde"] = "SP庞德",
+	["&sp_pangde"] = "庞德",
+	["illustrator:sp_pangde"] = "天空之城",
+	["cv_pangde:convert"] = "你可以替换为魏势力SP庞德",
+
+	["#sp_caiwenji"] = "金璧之才",
+	["sp_caiwenji"] = "SP蔡文姬",
+	["&sp_caiwenji"] = "蔡文姬",
+	["illustrator:sp_caiwenji"] = "木美人",
+	["cv_caiwenji:convert"] = "你可以替换为魏势力SP蔡文姬",
+
+	["#sp_machao"] = "西凉的猛狮",
+	["sp_machao"] = "SP马超",
+	["&sp_machao"] = "马超",
+	["illustrator:sp_machao"] = "天空之城",
+	["cv_machao:convert"] = "你可以替换为群雄势力SP马超或台版马超",
+	["cv_machao:sp_machao"] = "SP",
+	["cv_machao:tw_machao"] = "台湾版",
+
+	["#sp_jiaxu"] = "算无遗策",
+	["sp_jiaxu"] = "SP贾诩",
+	["&sp_jiaxu"] = "贾诩",
+	["illustrator:sp_jiaxu"] = "雪君S",
+	["cv_jiaxu:convert"] = "你可以替换为魏势力SP贾诩",
+	["$LuanwuAnimateSP"] = "anim=image/animate/luanwuSP.png",
+
 	["tw_diaochan"] = "台版貂蝉",
 	["&tw_diaochan"] = "貂蝉",
 	["illustrator:tw_diaochan"] = "陳俊佐",
-	
-	["#tw_yuanshu"] = "仲家帝",
+
 	["tw_yuanshu"] = "台版袁术",
 	["&tw_yuanshu"] = "袁术", 
+	["cv_yuanshu:convert"] = "你可以替换为台版袁术",
 	["illustrator:tw_yuanshu"] = "湯翔麟",
-	
-	["#tw_zhaoyun"] = "少年将军",
+
 	["tw_zhaoyun"] = "台版赵云",
 	["&tw_zhaoyun"] = "赵云", 
 	["illustrator:tw_zhaoyun"] = "湯翔麟",
 	["cv_zhaoyun:convert"] = "你可以替换为台版赵云",
-	
-	["#tw_daqiao"] = "矜持之花",
+
 	["tw_daqiao"] = "台版大乔",
 	["&tw_daqiao"] = "大乔", 
 	["illustrator:tw_daqiao"] = "玄兔",
 	["cv_daqiao:convert"] = "你可以替换为王战大乔或台版大乔",
-	["cv_daqiao"] = "SP替换",
 	["cv_daqiao:wz_daqiao"] = "王战版",
 	["cv_daqiao:tw_daqiao"] = "台湾版",
-	
-	["#wz_daqiao"] = "矜持之花",
+
+	["tw_zhenji"] = "台版甄姬",
+	["&tw_zhenji"] = "甄姬", 
+	["illustrator:tw_zhenji"] = "DM添",
+	["cv_zhenji:convert"] = "你可以替换为国战甄姬或台版甄姬",
+	["cv_zhenji:heg_zhenji"] = "国战版",
+	["cv_zhenji:tw_zhenji"] = "台湾版",
+
+	["tw_machao"] = "台版马超",
+	["&tw_machao"] = "马超", 
+	["illustrator:tw_machao"] = "greey",
+
+	["tw_ganning"] = "台版甘宁",
+	["&tw_ganning"] = "甘宁", 
+	["illustrator:tw_ganning"] = "greey",
+	["cv_ganning:convert"] = "你可以替换为台版甘宁",
+
+	["tw_lvbu"] = "台版吕布",
+	["&tw_lvbu"] = "吕布", 
+	["illustrator:tw_lvbu"] = "焚烧的大葱",
+	["cv_lvbu:convert"] = "你可以替换为国战吕布或台版吕布",
+	["cv_lvbu:heg_lvbu"] = "国战版",
+	["cv_lvbu:tw_lvbu"] = "台湾版",
+
 	["wz_daqiao"] = "王战大乔",
 	["&wz_daqiao"] = "大乔", 
 	["illustrator:wz_daqiao"] = "Natsu",
-	
-	["#wz_xiaoqiao"] = "矫情之花",
+
 	["wz_xiaoqiao"] = "王战小乔",
 	["&wz_xiaoqiao"] = "小乔", 
 	["illustrator:wz_xiaoqiao"] = "Natsu",
@@ -195,6 +217,17 @@ return {
 	["cv_xiaoqiao"] = "SP替换",
 	["cv_xiaoqiao:wz_xiaoqiao"] = "王战版",
 	["cv_xiaoqiao:heg_xiaoqiao"] = "国战版",
+
+	-- Hegemony SP
+	["hegemony_sp"] = "国战SP",
+
+	["sp_heg_zhouyu"] = "国战SP周瑜",
+	["&sp_heg_zhouyu"] = "周瑜",
+	["illustrator:sp_heg_zhouyu"] = "牧童的短笛",
+	["cv_zhouyu:convert"] = "你可以替换为国战周瑜或国战SP周瑜",
+	["cv_zhouyu:heg_zhouyu"] = "国战版",
+	["cv_zhouyu:sp_heg_zhouyu"] = "国战SP版",
+
 --hulao mode
 	["Hulaopass"] = "虎牢关模式",
 

@@ -141,52 +141,38 @@ return {
 	["$kuangfu2"] = "吾有上将潘凤，可斩华雄。",
 	["~panfeng"] = "报！潘凤又被华雄斩了！",
 	["cv:panfeng"] = "HeLi，小鱼儿",
-	
-	["#heg_caopi"] = "霸业的继承者",
+
 	["heg_caopi"] = "国战曹丕",
 	["&heg_caopi"] = "曹丕", 
 	["illustrator:heg_caopi"] = "DH",
-	["cv_caopi:convert"] = "你可以替换为国战曹丕或铜雀台曹丕",
-	["cv_caopi"] = "SP替换",
-	["cv_caopi:heg_caopi"] = "国战",
-	["cv_caopi:ass_caopi"] = "铜雀台",
-	
-	["#heg_zhenji"] = "薄幸的美人",
+	["cv_caopi:convert"] = "你可以替换为国战曹丕",
+
 	["heg_zhenji"] = "国战甄姬",
 	["&heg_zhenji"] = "甄姬", 
 	["illustrator:heg_zhenji"] = "DH",
-	["cv_zhenji:convert"] = "你可以替换为国战甄姬",
-	
-	["#heg_zhugeliang"] = "迟暮的丞相",
+
 	["heg_zhugeliang"] = "国战诸葛亮",
 	["&heg_zhugeliang"] = "诸葛亮", 
 	["illustrator:heg_zhugeliang"] = "木美人",
 	["cv_zhugeliang:convert"] = "你可以替换为国战诸葛亮",
-	
-	["#heg_huangyueying"] = "归隐的杰女",
+
 	["heg_huangyueying"] = "国战黄月英",
 	["&heg_huangyueying"] = "黄月英", 
 	["illustrator:heg_huangyueying"] = "木美人",
 	["cv_huangyueying:convert"] = "你可以替换为国战黄月英",
-	
-	["#heg_zhouyu"] = "大都督",
+
 	["heg_zhouyu"] = "国战周瑜",
 	["&heg_zhouyu"] = "周瑜", 
 	["illustrator:heg_zhouyu"] = "苍月白龙",
-	["cv_zhouyu:convert"] = "你可以替换为国战周瑜",
-	
-	["#heg_xiaoqiao"] = "矫情之花",
+
 	["heg_xiaoqiao"] = "国战小乔",
 	["&heg_xiaoqiao"] = "小乔", 
 	["illustrator:heg_xiaoqiao"] = "苍月白龙",
-	
-	["#heg_lvbu"] = "武的化身",
+
 	["heg_lvbu"] = "国战吕布",
 	["&heg_lvbu"] = "吕布", 
 	["illustrator:heg_lvbu"] = "LiuHeng",
-	["cv_lvbu:convert"] = "你可以替换为国战吕布",
-	
-	["#heg_diaochan"] = "绝世的舞姬",
+
 	["heg_diaochan"] = "国战貂蝉",
 	["&heg_diaochan"] = "貂蝉", 
 	["illustrator:heg_diaochan"] = "LiuHeng",
