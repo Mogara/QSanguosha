@@ -196,35 +196,20 @@ public:
 class Mingzhe: public TriggerSkill{
 public:
     Mingzhe():TriggerSkill("mingzhe"){
-        events << CardDiscarded;
+        events << CardLost;
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
-        const Card *card = data.value<CardStar>();
-        int n = 0;
-        if(event == CardDiscarded){
-            if(card->isVirtualCard()){
-                foreach(int card_id, card->getSubcards()){
-                    const Card *subcard = Sanguosha->getCard(card_id);
-                    if(subcard->isRed())
-                        n++;
-                }
-            }
-            else if(card->isRed())
-                n++;
-        }
-        else
-            n = card->isRed() ? 1 : 0;
-
-        if(n > 0 && player->askForSkillInvoke(objectName(), data)){
+        CardMoveStar move = data.value<CardMoveStar>();
+        const Card *card = Sanguosha->getCard(move->card_id);
+        if(card->isRed() && player->askForSkillInvoke(objectName(), data)){
             room->playSkillEffect(objectName());
-            player->drawCards(n);
+            player->drawCards(1);
         }
-
         return false;
     }
 };

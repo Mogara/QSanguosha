@@ -58,6 +58,32 @@ bool Crypto::encryptMusicFile(const QString &filename, const char *GlobalKey){
     }
 }
 
+bool Crypto::decryptMusicFile(const QString &filename, const QString &GlobalKey){
+    QFile file(filename);
+    QFileInfo info(filename);
+    QString output = QString("%1/%2.ogg").arg(info.absolutePath()).arg(info.baseName());
+
+    if(file.open(QIODevice::ReadOnly) == false)
+        return NULL;
+
+    const char *key = GlobalKey.toLocal8Bit().data();
+    qint64 size = file.size();
+    byte *buffer = new byte[size];
+
+    file.read((char *)buffer, size);
+    DES_Process(key, buffer, size, CryptoPP::DECRYPTION);
+
+    QFile newFile(output);
+    if(newFile.open(QIODevice::WriteOnly)){
+        newFile.write((char *)buffer, size);
+        delete buffer;
+        return true;
+    }else{
+        delete buffer;
+        return false;
+    }
+}
+
 const uchar *Crypto::getEncryptedFile(const QString &filename, const char *GlobalKey){
     QFile file(filename);
 
