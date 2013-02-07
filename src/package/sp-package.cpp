@@ -232,7 +232,7 @@ void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(yuanshu->hasLordSkill("jijiang") && room->getLord()->hasLordSkill("jijiang") && Slash::IsAvailable(yuanshu))
         choices << "jijiang";
 
-    if(yuanshu->hasLordSkill("weidai") && room->getLord()->hasLordSkill("weidai") && Analeptic::IsAvailable(yuanshu))
+    if(yuanshu->hasLordSkill("weidai") && Analeptic::IsAvailable(yuanshu) && !yuanshu->hasFlag("drank"))
         choices << "weidai";
 
     if(choices.isEmpty())
@@ -278,11 +278,21 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return (player->hasLordSkill("jijiang") && Slash::IsAvailable(player))
-                ||(player->hasLordSkill("weidai") && Analeptic::IsAvailable(player));
+                ||(player->hasLordSkill("weidai") && Analeptic::IsAvailable(player) && !player->hasFlag("drank"));
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+		if (player->hasLordSkill("weidai"))
+			return pattern == "peach+analeptic";
+		
+		return false;
     }
 
     virtual const Card *viewAs() const{
-        return new WeidiCard;
+		if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+			return new WeidaiCard;
+		else
+			return new WeidiCard;
     }
 };
 
