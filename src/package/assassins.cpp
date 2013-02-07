@@ -384,7 +384,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         if(event == PhaseChange){
-            if(player->getPhase() != Player::Discard || !player->askForSkillInvoke(objectName(), "cangni"))
+            if(player->getPhase() != Player::Discard || !player->askForSkillInvoke(objectName()))
                 return false;
             QStringList choices;
             choices << "draw";
