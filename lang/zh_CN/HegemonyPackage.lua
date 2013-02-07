@@ -145,7 +145,7 @@ return {
 	["heg_caopi"] = "国战曹丕",
 	["&heg_caopi"] = "曹丕", 
 	["illustrator:heg_caopi"] = "DH",
-	["cv_caopi:convert"] = "你可以替换为国战曹丕",
+	["cv_caopi:convert"] = "你可以替换为国战曹丕或铜雀台曹丕",
 
 	["heg_zhenji"] = "国战甄姬",
 	["&heg_zhenji"] = "甄姬", 

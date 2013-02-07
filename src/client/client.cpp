@@ -730,15 +730,16 @@ Replayer *Client::getReplayer() const{
 QString Client::getPlayerName(const QString &str){
     QRegExp rx("sgs\\d+");
     QString general_name;
-    if(rx.exactMatch(str)){
+    if (rx.exactMatch(str)) {
         ClientPlayer *player = getPlayer(str);
         general_name = player->getGeneralName();
         general_name = Sanguosha->translate(general_name);
-        if(ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
+        if (player->getGeneral2())
+            general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
+        if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
             general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
         return general_name;
-
-    }else
+    } else
         return Sanguosha->translate(str);
 }
 
