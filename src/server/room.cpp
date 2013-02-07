@@ -3961,7 +3961,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
                 }
 
                 LogMessage log;
-                log.type = "$ShowAllCards";
+                log.type = "$JileiShowAllCards";
                 log.from = player;
 
                 foreach (int card_id, jilei_list)
@@ -4662,6 +4662,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
         log.type = "$ChangedJudge";
         log.from = player;
         log.to << judge->who;
+		log.arg = skill_name;
         log.card_str = card->getEffectIdString();
         sendLog(log);
 

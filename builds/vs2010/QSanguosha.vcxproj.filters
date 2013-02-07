@@ -64,7 +64,7 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
-    <Filter Include="Translation Files\Swig Files">
+    <Filter Include="Swig Files">
       <UniqueIdentifier>{9981aa0b-e6a2-412b-95d7-2e22d217b648}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -1204,31 +1204,31 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\swig\sanguosha.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
     <None Include="sanguosha.ts">
       <Filter>Translation Files</Filter>
     </None>
     <None Include="..\..\swig\ai.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
     <None Include="..\..\swig\card.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
     <None Include="..\..\swig\list.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
     <None Include="..\..\swig\luaskills.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
     <None Include="..\..\swig\native.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
     <None Include="..\..\swig\naturalvar.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
     <None Include="..\..\swig\qvariant.i">
-      <Filter>Translation Files\Swig Files</Filter>
+      <Filter>Swig Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
