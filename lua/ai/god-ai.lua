@@ -53,7 +53,7 @@ sgs.ai_skill_playerchosen.wuhun = function(self, targets)
 end
 
 function sgs.ai_slash_prohibit.wuhun(self, to)
-	if self:hasSkills("jueqing|qianxi") then return false end
+	if self.player:hasSkill("jueqing") or (self.player:hasSkill("qianxi") and self.player:distanceTo(to) == 1) then return false end
 	local maxfriendmark = 0
 	local maxenemymark = 0
 	for _, friend in ipairs(self.friends) do
@@ -181,28 +181,65 @@ sgs.ai_use_priority.GongxinCard = 9.5
 sgs.ai_card_intention.GongxinCard = 80
 
 sgs.ai_skill_invoke.qinyin = function(self, data)
-	for _,friend in ipairs(self.friends) do
-		if friend:isWounded() then return true end
-	end
-	if sgs.ai_skill_choice.qinyin(self,"up+down")=="down" then return true end
-	return false
-end
-
-sgs.ai_skill_choice.qinyin = function(self, choices)
 	self:sort(self.friends, "hp")
 	self:sort(self.enemies, "hp")
-	if self.friends[1]:getHp() >= self.enemies[1]:getHp() and self:getAllPeachNum(self.player) > self:getAllPeachNum(self.enemies[1]) then
-		return "down"
-	else
-		return "up"
+	local up = 0
+	local down = 0
+	
+	for _, friend in ipairs(self.friends) do
+		down = down - 10
+		up = up + (friend:isWounded() and 10 or 0)
+		if self:hasSkills(sgs.masochism_skill, friend) then
+			down = down - 5
+			up = up + 5
+		end
+		if friend:getHp() > getBestHp(friend) then
+			down = down + 5
+			up = up - 5
+		end
+		if self:isWeak(friend) then
+			up = up + 10 + (friend:isLord() and 20 or 0)
+			down = down - 10 - (friend:isLord() and 40 or 0)
+			if friend:getHp() <= 1 and not friend:hasSkill("buqu") or friend:getPile("buqu"):length() > 4 then
+				down = down - 20 - (friend:isLord() and 40 or 0)
+			end
+		end
 	end
+	
+	for _, enemy in ipairs(self.enemies) do
+		down = down + 10
+		up = up - (enemy:isWounded() and 10 or 0)
+		if self:hasSkills(sgs.masochism_skill, enemy) then 
+			down = down + 10
+			up = up - 15
+		end
+		if enemy:getHp() > getBestHp(enemy) then
+			down = down - 5
+		end
+		if self:isWeak(enemy) then
+			up = up - 10
+			down = down + 10
+			if enemy:getHp() <= 1 and not enemy:hasSkill("buqu") then
+				down = down + 10 + ((enemy:isLord() and #self.enemies > 1) and 20 or 0)
+			end
+		end
+	end
+
+	if down > 0 then 
+		sgs.ai_skill_choice.qinyin = "down"
+		return true
+	elseif up > 0 then
+		sgs.ai_skill_choice.qinyin = "up"
+		return true
+	end
+	return false
 end
 
 local yeyan_skill={}
 yeyan_skill.name = "yeyan"
 table.insert(sgs.ai_skills, yeyan_skill)
 yeyan_skill.getTurnUseCard=function(self)
-	if self.player:getRole() == "lord" and (self.enemies > 1 or sgs.turncount == 1) then return end
+	if self.player:getRole() == "lord" and (#self.enemies > 1 or sgs.turncount == 1) then return end
 	if self.player:getMark("@flame") == 0 then return end
 	if self.player:getHandcardNum() >= 4 then
 		local spade, club, heart, diamond
@@ -556,9 +593,9 @@ function SmartAI:cansaveplayer(player)
 end
 
 function SmartAI:dangerousshenguanyu(player)
-	if not player then self.room:writeToConsole("Player is empty in isshenguanyu!") return end
+	if not player then self.room:writeToConsole("Player is empty in dangerousshenguanyu!") return end
 	local good = 0
-	if player:hasSkill("wuhun") and player:getHp() == 1 and #self.enemies>1 and sgs.turncount>1 then
+	if player:hasSkill("wuhun") and player:getHp() == 1 and (not self:isEnemy(player) or #self.enemies > 1 and sgs.turncout > 1) then
 		local maxnightmare = 0
 		local nightmareplayer = {}
 		for _, ap in sgs.qlist(self.room:getAlivePlayers()) do

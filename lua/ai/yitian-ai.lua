@@ -701,9 +701,8 @@ end
 	技能：毒士
 	描述：杀死你的角色获得崩坏技能直到游戏结束 
 ]]--
-function sgs.ai_slash_prohibit.dushi(self, to)
-	if self:isFriend(to) and self:isWeak(to) then return true end
-	return self.player:isLord() and self:isWeak(enemy)
+function sgs.ai_slash_prohibit.dushi(self, to)	
+	return self.player:isLord() and #self.enemies > 1
 end
 --[[
 	技能：争功
@@ -741,7 +740,7 @@ sgs.ai_skill_playerchosen.toudu = function(self, targets)
 	for _, target in ipairs(targetlist) do
 		if self:isEnemy(target) then
 			if self:slashIsEffective(slash, target) then
-				if sgs.isGoodTarget(target, targetlist) then
+				if sgs.isGoodTarget(target, targetlist, self) then
 					self.player:speak("嘿！没想到吧？")
 					return target
 				end
@@ -749,7 +748,7 @@ sgs.ai_skill_playerchosen.toudu = function(self, targets)
 		end
 	end
 	for i=#targetlist, 1, -1 do
-		if sgs.isGoodTarget(targetlist[i], targetlist) then
+		if sgs.isGoodTarget(targetlist[i], targetlist, self) then
 			return targetlist[i]
 		end
 	end
@@ -922,3 +921,4 @@ sgs.ai_skill_use_func.TaichenCard=function(card,use,self)
 end
 
 sgs.ai_cardneed.taichen = sgs.ai_cardneed.weapon
+sgs.taichen_keep_value = sgs.qiangxi_keep_value

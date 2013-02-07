@@ -144,7 +144,7 @@ sgs.ai_skill_use["@@huangen"] = function(self, prompt)
 				end
 			end
 			for k=1,total,1 do
-				if #targets < self.player:getHp() and templist[total-j+1]:hasFlag("huangen") then 
+				if #targets < self.player:getHp() and templist[total-k+1]:hasFlag("huangen") then 
 					if self:isFriend(templist[total-k+1]) then
 						table.insert(targets, templist[total-k+1])
 					else

@@ -70,6 +70,7 @@ sgs.ai_skill_discard.yongsi = function(self, discard_num, min_num, optional, inc
 		else 
 			return 0 
 		end
+		return 0
 	end
 	local compare_func = function(a, b)
 		if aux_func(a) ~= aux_func(b) then return aux_func(a) < aux_func(b) end
@@ -82,11 +83,11 @@ sgs.ai_skill_discard.yongsi = function(self, discard_num, min_num, optional, inc
 		least = discard_num -1
 	end
 	for _, card in ipairs(cards) do
-		if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num then 
-			break 
-		end
 		if not self.player:isJilei(card) then 
 			table.insert(to_discard, card:getId()) 
+		end
+		if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num then 
+			break 
 		end
 	end
 	return to_discard
@@ -280,6 +281,10 @@ sgs.yuanhu_keep_value = {
 	Horse = 4.9
 }
 
+sgs.ai_cardneed.xueji = function(to, card)
+	return to:getHandcardNum() < 3 and card:isRed()
+end
+
 local xueji_skill = {}
 xueji_skill.name="xueji"
 table.insert(sgs.ai_skills,xueji_skill)
@@ -468,8 +473,14 @@ end
 sgs.ai_use_value.SongciCard = 3
 sgs.ai_use_priority.SongciCard = 2.5
 
-sgs.ai_card_intention.SongciCard = function(card, from, to)
-	sgs.updateIntention(from, to[1], to[1]:getHandcardNum() > to[1]:getHp() and 80 or -80)	
+sgs.ai_card_intention.SongciCard = function(card, from, tos, source)	
+	for _, to in ipairs(tos) do
+		if to:getHandcardNum() > to:getHp() then
+			sgs.updateIntention(from, to, 100)
+		elseif to:getHandcardNum() < to:getHp() then
+			sgs.updateIntention(from, to, -100)
+		end
+	end	
 end
 
 sgs.ai_skill_invoke.cv_sunshangxiang = function(self, data)

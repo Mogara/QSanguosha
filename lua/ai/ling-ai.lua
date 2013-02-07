@@ -17,7 +17,7 @@ neoluoyi_skill.getTurnUseCard=function(self)
 	for _,card in ipairs(cards) do
 		if card:isKindOf("Slash") then
 			for _,enemy in ipairs(self.enemies) do
-				if self.player:canSlash(enemy, card, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
+				if self.player:canSlash(enemy, card) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 then
 					if getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
 						slashtarget = slashtarget + 1
 					end
@@ -67,13 +67,22 @@ neofanjian_skill.getTurnUseCard=function(self)
 
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
+	
+	local hand_card
+	local n = self.player:getHandcardNum()
+		for i = 1,n do
+		        if not (cards[i]:isKindOf("Analeptic") or cards[i]:isKindOf("Peach")) then
+				hand_card = cards[i]
+				break
+			end
+		end
+	if not hand_card then return nil end
 
-	local keep_value = self:getKeepValue(cards[1])
-	if cards[1]:getSuit() == sgs.Card_Diamond then keep_value = keep_value + 1 end
+	local keep_value = self:getKeepValue(hand_card)
+	if hand_card:getSuit() == sgs.Card_Diamond then keep_value = keep_value + 1 end
 
 	if keep_value < 6 then
-		if cards[1]:isKindOf("Peach") or cards[1]:isKindOf("Analeptic") then return nil end
-		local card_id = cards[1]:getEffectiveId()
+		local card_id = hand_card:getEffectiveId()
 		local card_str = "@NeoFanjianCard=" .. card_id
 		local fanjianCard = sgs.Card_Parse(card_str)
 		assert(fanjianCard)
@@ -81,25 +90,16 @@ neofanjian_skill.getTurnUseCard=function(self)
 	end
 end
 
-sgs.ai_skill_use_func.NeoFanjianCard=function(card,use,self)
-	self:sort(self.enemies, "hp")
-			
-	for _, enemy in ipairs(self.enemies) do		
-		if self:objectiveLevel(enemy) <= 3 or self:cantbeHurt(enemy) or not self:damageIsEffective(enemy) then
-		elseif (not enemy:hasSkill("qingnang")) or (enemy:getHp() == 1 and enemy:getHandcardNum() == 0 and not enemy:getEquips()) then
-			use.card = card
-			if use.to then use.to:append(enemy) end
-			return
-		end
-	end
-end
+sgs.ai_skill_use_func.NeoFanjianCard = sgs.ai_skill_use_func.FanjianCard
+sgs.ai_card_intention.NeoFanjianCard = sgs.ai_card_intention.FanjianCard
+sgs.dynamic_value.damage_card.NeoFanjianCard = true
 
-sgs.ai_card_intention.NeoFanjianCard = 70
-
-function sgs.ai_skill_suit.neofanjian()
+function sgs.ai_skill_suit.neofanjian(self)
 	local map = {0, 0, 1, 2, 2, 3, 3, 3}
-	return map[math.random(1,8)]
+	local suit = map[math.random(1, 8)]
+	if self.player:hasSkill("hongyan") and suit == sgs.Card_Spade then return sgs.Card_Heart else return suit end
 end
+
 sgs.ai_skill_invoke.yishi = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
@@ -158,22 +158,7 @@ end
 
 sgs.ai_cardneed.zhulou = sgs.ai_cardneed.weapon
 
-sgs.zhulou_keep_value = {
-	Peach = 6,
-	Jink = 5.1,
-	Crossbow = 5,
-	Blade = 5,
-	Spear = 5,
-	DoubleSword =5,
-	QinggangSword=5,
-	Axe=5,
-	KylinBow=5,
-	Halberd=5,
-	IceSword=5,
-	Fan=5,
-	MoonSpear=5,
-	GudingBlade=5
-}
+sgs.zhulou_keep_value = sgs.qiangxi_keep_value
 
 function sgs.ai_skill_invoke.neojushou(self, data)
 	if not self.player:faceUp() then return true end
@@ -201,7 +186,7 @@ end
 sgs.ai_need_damaged.neoganglie = function (self, attacker)
 	if self:getDamagedEffects(attacker,self.player) then return self:isFriend(attacker) end
 
-	if self:isEnemy(attacker) and attacker:getHp() <= 2 and not attacker:hasSkill("buqu") and sgs.isGoodTarget(attacker,self.enemies) then
+	if self:isEnemy(attacker) and attacker:getHp() <= 2 and not attacker:hasSkill("buqu") and sgs.isGoodTarget(attacker,self.enemies, self) then
 		return true
 	end
 	return false

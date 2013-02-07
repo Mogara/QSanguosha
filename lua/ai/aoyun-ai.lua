@@ -8,7 +8,7 @@ function slashdamage(self,gong,shou)  --定义了一个函数，可以计算，�
 	local godlikefriend = false
 	if (zj and self:isFriend(zj) and self:canRetrial(zj)) or
 		(sm and self:isFriend(sm) and sm:getHandcardNum() >= 2) or
-		(ssm and self:isFriend(ssm) and ssm:getHandcardNum() >= 2 and ssm:getMark("@bear")) then
+		(ssm and self:isFriend(ssm) and ssm:getHandcardNum() >= 2 and ssm:getMark("@bear") >0 ) then
 		godlikefriend = true
 	end
 	

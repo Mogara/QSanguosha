@@ -1,10 +1,11 @@
 sgs.ai_skill_invoke.moukui = function(self, data)
 	local target = data:toPlayer()
+	sgs.moukui_target = target
 	return not self:isFriend(target) 
 end
 
 sgs.ai_skill_choice.moukui = function(self, choices, data)
-	local target = data:toPlayer()
+	local target = sgs.moukui_target
 	local equip_num = target:getEquips():length()
 	if target:isKongcheng() and equip_num > 0 then
 		if self:hasSkills(sgs.lose_equip_skill, target) or (self:isEquip("SilverLion", target) and target:isWounded() and equip_num == 1) then
@@ -342,7 +343,7 @@ end
 
 sgs.ai_skill_use["@@fengyin"] = function(self, data)
 	local cards = self.player:getHandcards()
-	local allcard = {}
+	local card
 	cards = sgs.QList2Table(cards)
 	
 	for _,acard in ipairs(cards)  do

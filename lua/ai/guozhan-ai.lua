@@ -278,7 +278,7 @@ sgs.ai_skill_invoke.gzshuangren = function(self, data)
 			ph = true
 		end
 	end
-	if self:getMaxCard():getNumber() >= 10 then
+	if self:getMaxCard():getNumber() > 10 then
 		mch = true
 	end
 	if self.player:getHandcardNum() - 1 <= self.player:getHp() then
@@ -291,10 +291,11 @@ end
 
 sgs.ai_skill_playerchosen.gzshuangren = function(self, targets)
 	local target
-	self:sort(self.enemies, "defense")
-	for _, player in ipairs(self.enemies) do
-		if not player:isKongcheng() and not (self:isEquip("Vine", player) 
-		and not (self:isEquip("QinggangSword", self.player) or self:isEquip("Fan", self.player))) then
+	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	self:sort(self.enemies, "defenseSlash")
+	for _, enemy in ipairs(self.enemies) do
+		if not enemy:isKongcheng() and not self:slashProhibit(slash ,enemy) 
+		then
 			target = player
 			break
 		end
@@ -302,9 +303,23 @@ sgs.ai_skill_playerchosen.gzshuangren = function(self, targets)
 	return target
 end
 
-sgs.ai_playerchosen_intention.gzshuangren = 80
+function sgs.ai_skill_pindian.gzshuangren(minusecard, self, requestor, maxcard)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local function compare_func(a, b)
+		return a:getNumber() > b:getNumber()
+	end
+	table.sort(cards, compare_func)
+	for _, card in ipairs(cards) do
+		if card:getNumber()> 10 then return card end
+	end
+	self:sortByKeepValue(cards)
+	return cards[1]
+end
 
-sgs.ai_chaofeng.gzjiling = 4
+sgs.ai_playerchosen_intention.gzshuangren = 80
+sgs.ai_cardneed.gzshuangren = sgs.ai_cardneed.bignumber
+
+sgs.ai_chaofeng.gzjiling = 3
 
 sgs.ai_skill_invoke.gzhuoshui = function(self, data)
 	if not self.player:faceUp() or not self:isWeak() then
