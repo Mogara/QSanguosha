@@ -2100,6 +2100,11 @@
         <translation>加密音频文件 ...</translation>
     </message>
     <message>
+        <location filename="src/dialog/mainwindow.ui" line="387"/>
+        <source>Decrypto audio ...</source>
+        <translation>加密文件解密 ...</translation>
+    </message>
+    <message>
         <location filename="src/dialog/mainwindow.ui" line="237"/>
         <source>Alt+M</source>
         <translation></translation>
@@ -2262,6 +2267,36 @@
         <location filename="src/dialog/mainwindow.cpp" line="1077"/>
         <source>Delete all old files?</source>
         <translation>是否删除全部源文件？</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1094"/>
+        <source>Please select crypto files</source>
+        <translation>请选择一个或多个dat加密文件</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1095"/>
+        <source>Crypto files (*.dat)</source>
+        <translation>太阳神三国杀资源加密文件 (*.dat)</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1099"/>
+        <source>The key for decrypt</source>
+        <translation>密钥输入</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1099"/>
+        <source>Please input the key</source>
+        <translation>请输入密钥</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1100"/>
+        <source>Decrypt music file %1 failed!</source>
+        <translation>加密文件 %1 解密失败！</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1103"/>
+        <source>Decrypt %1 music files done!</source>
+        <translation>%1 个加密文件解密完成！</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="620"/>

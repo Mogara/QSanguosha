@@ -9,6 +9,7 @@
 class Crypto{
 public:
     bool encryptMusicFile(const QString &filename, const char *GlobalKey = "http://qsanguosha.org");
+    bool decryptMusicFile(const QString &filename, const QString &GlobalKey);
     FMOD_SOUND *initEncryptedFile(FMOD_SYSTEM *System, const QString &filename, const char *GlobalKey = "http://qsanguosha.org");
     const uchar *getEncryptedFile(const QString &filename, const char *GlobalKey = "http://qsanguosha.org");
 private:
