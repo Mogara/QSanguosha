@@ -173,7 +173,7 @@ public:
 
         QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *caiwenji, cais) {
-            if (!caiwenji->isNude() && room->askForCard(caiwenji, ".", "@beige", data, objectName())) { // todo_P: translation files and AI
+            if (!caiwenji->isNude() && room->askForCard(caiwenji, "..", "@beige", data, objectName())) { // todo_P: translation files and AI
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(.*):(.*)");
                 judge.good = true;

@@ -756,7 +756,7 @@ public:
                 room->acquireSkill(player, "keji");
             }
         } else if (player->getPhase() == Player::RoundStart && lvmeng && lvmeng->getMark("@wen") > 0
-                   && !lvmeng->isNude() && room->askForCard(lvmeng, ".", "@mouduan", QVariant(), objectName())) { // @todo_P: adjust the corresponding translation and AI
+                   && !lvmeng->isNude() && room->askForCard(lvmeng, "..", "@mouduan", QVariant(), objectName())) { // @todo_P: adjust the corresponding translation and AI
             if (lvmeng->getHandcardNum() > 2) {
                 room->broadcastSkillInvoke(objectName());
                 lvmeng->loseMark("@wen");

@@ -1266,7 +1266,7 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 
     QString general = room->askForGeneral(source, shu_generals);
     source->tag["newgeneral"] = general;
-    bool isSecondaryHero = !(source->getGeneralName() == "jiangboyue");
+    bool isSecondaryHero = (source->getGeneralName() != "jiangboyue");
     room->changeHero(source, general, false, true, isSecondaryHero);
     room->acquireSkill(source, "xunzhi", false);
     room->setPlayerFlag(source, "xunzhi");
@@ -1509,12 +1509,9 @@ public:
         if(dengshizai->isKongcheng())
             return;
 
-        if(!dengshizai->askForSkillInvoke("toudu"))
-            return;
-
         Room *room = dengshizai->getRoom();
 
-        if(!room->askForDiscard(dengshizai, "toudu", 1, 1, false, false))
+        if(!room->askForCard(dengshizai, ".", "@toudu", QVariant(), objectName())) // @todo_P: adjust the AI
             return;
 
         dengshizai->turnOver();
@@ -1835,8 +1832,6 @@ YitianPackage::YitianPackage()
     General *zhangjunyi = new General(this, "zhangjunyi", "qun");
     zhangjunyi->addSkill(new Jueji);
 
-    related_skills.insertMulti("jueji", "#jueji-get");
-
     General *lukang = new General(this, "lukang", "wu", 4);
     lukang->addSkill(new LukangWeiyan);
     lukang->addSkill(new Kegou);
@@ -1893,6 +1888,8 @@ YitianPackage::YitianPackage()
     General *dengshizai = new General(this, "dengshizai", "wei", 3);
     dengshizai->addSkill(new Zhenggong);
     dengshizai->addSkill(new Toudu);
+    dengshizai->addSkill(new SlashNoDistanceLimitSkill("toudu"));
+    related_skills.insertMulti("toudu", "#toudu-slash-ndl");
 
     General *zhanggongqi = new General(this, "zhanggongqi", "qun", 3);
     zhanggongqi->addSkill(new Yishe);
@@ -1920,4 +1917,4 @@ YitianPackage::YitianPackage()
     addMetaObject<TaichenCard>();
 }
 
-ADD_PACKAGE(Yitian);
+ADD_PACKAGE(Yitian)
