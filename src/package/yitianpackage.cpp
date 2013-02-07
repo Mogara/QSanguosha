@@ -1667,7 +1667,6 @@ class Xiliang: public TriggerSkill{
 public:
     Xiliang():TriggerSkill("xiliang"){
         events << CardsMoveOneTime;
-
         default_choice = "obtain";
     }
 
@@ -1676,8 +1675,6 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if (player == NULL) return false;
-
         if (player->getPhase() != Player::Discard)
             return false;
 
@@ -1694,7 +1691,7 @@ public:
             && (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
             foreach (int id, move->card_ids) {
                 const Card *c = Sanguosha->getCard(id);
-                if (c->isRed()) dummy->addSubcard(id);
+                if (room->getCardPlace(id) == Player::DiscardPile && c->isRed()) dummy->addSubcard(id);
             }
         }
 
