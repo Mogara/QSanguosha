@@ -474,13 +474,8 @@ enum TriggerEvent{
 
     ChoiceMade,
 
-    // For hulao pass only
-    StageChange,
-
-    // For miniscenarios only
-    FetchDrawPileCard,
-
-    CardDiscarded, // obsolete event. Do not use it to trigger skills!
+    StageChange, // For hulao pass only
+    FetchDrawPileCard, // For miniscenarios only
 
     NumOfEvents
 };
