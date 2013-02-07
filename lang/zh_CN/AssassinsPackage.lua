@@ -135,7 +135,7 @@ return {
 
 	["#yeshiwen"] = "出水青莲",
 	["yeshiwen"] = "叶诗文",
-	["cv:yeshiwen"] = "腾讯英雄杀",
+	["cv:yeshiwen"] = "蒲小猫",
 	["illustrator:yeshiwen"] = "叶诗文同人",
 	["jisu"] = "急速",
 	[":jisu"] = "你可以跳过你此回合的判定阶段和摸牌阶段。若如此做，视为对一名其他角色使用一张【杀】。",
@@ -143,9 +143,9 @@ return {
 	["shuiyong"] = "水泳",
 	[":shuiyong"] = "<b>锁定技</b>，防止你受到的火焰伤害。",
 	["#ShuiyongProtect"] = "%from 的锁定技【%arg】被触发，防止了 %arg2 点火焰伤害",
-	["$jisu"] = "不错哟~",
-	["$shuiyong"] = "还不赖嘛~",
-	["~yeshiwen"] = "香消玉散……",
+	["$jisu"] = "偶游得比你快！",
+	["$shuiyong"] = "对水里放火，你脑子秀逗了吧！",
+	["~yeshiwen"] = "偶没打兴奋剂……",
 
 	["#sunyang"] = "逐浪追风",
 	["sunyang"] = "孙杨",

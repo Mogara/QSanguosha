@@ -10,6 +10,7 @@
 #include "window.h"
 #include "halldialog.h"
 #include "pixmapanimation.h"
+#include "crypto.h"
 
 #include <cmath>
 #include <QGraphicsView>
@@ -29,7 +30,6 @@
 
 #ifdef USE_RCC
 #include <QResource>
-#include "crypto.h"
 #endif
 
 class FitView : public QGraphicsView
@@ -1056,7 +1056,6 @@ void MainWindow::on_actionAbout_Lua_triggered()
     window->appear();
 }
 
-#include "crypto.h"
 void MainWindow::on_actionCrypto_audio_triggered(){
     QStringList filenames = QFileDialog::getOpenFileNames(
             this, tr("Please select audio files"),
@@ -1079,5 +1078,28 @@ void MainWindow::on_actionCrypto_audio_triggered(){
         == QMessageBox::Yes){
         foreach(QString filename, filenames)
             QFile::remove(filename);
+    }
+}
+
+void MainWindow::on_actionDecrypto_audio_triggered(){
+    QStringList filenames = QFileDialog::getOpenFileNames(
+            this, tr("Please select crypto files"),
+            QString(),
+            tr("Crypto files (*.dat)"));
+
+    if(filenames.isEmpty())
+        return;
+
+    QString key = QInputDialog::getText(this, tr("The key for decrypt"), tr("Please input the key"));
+    if(!key.isEmpty()){
+        Crypto cry;
+        int count = 0;
+        foreach(QString filename, filenames){
+            if(!cry.decryptMusicFile(filename, key))
+                QMessageBox::warning(this, tr("Notice"), tr("Decrypt music file %1 failed!").arg(filename));
+            else
+                count++;
+        }
+        QMessageBox::information(this, tr("Notice"), tr("Decrypt %1 music files done!").arg(QString::number(count)));
     }
 }
