@@ -27,6 +27,8 @@ config = {
 		"HegemonySP",
 		"Ling",
 		"NostalGeneral",
+		"Yitian",
+		"Wisdom",
 		"Test"
 	},
 
