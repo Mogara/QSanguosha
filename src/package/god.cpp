@@ -56,7 +56,7 @@ public:
         return target != NULL && target->hasSkill("wuhun");
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *shenguanyu, QVariant &) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *shenguanyu, QVariant &data) const{
         DeathStruct death = data.value<DeathStruct>();
         if (death.who != shenguanyu)
             return false;
