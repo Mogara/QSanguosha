@@ -63,7 +63,7 @@ struct NormalRoomLayout : public RoomLayout{
     NormalRoomLayout(){
         discard = QPointF(-6, 8);
         drawpile = QPointF(-108, 8);
-        enemy_box = QPointF(-246, -307);
+        enemy_box = QPointF(-216, -327);
         self_box = QPointF(360, -90);
         chat_box_size = QSize(230, 175);
         chat_box_pos = QPointF(-343, -83);
@@ -77,13 +77,13 @@ struct CircularRoomLayout : public RoomLayout{
     CircularRoomLayout(){
         discard = QPointF(-140, 30);
         drawpile = QPointF(-260, 30);
-        enemy_box = QPointF(-391, -323);
+        enemy_box = QPointF(-361, -343);
         self_box = QPointF(201, -90);
         chat_box_size = QSize(268, 165);
         chat_box_pos = QPointF(367, -38);
         button1_pos = QPointF(-565,205);
         button2_pos = QPointF(-565, 260);
-        state_item_pos = QPointF(367, -325); // -320
+        state_item_pos = QPointF(367, -320);
     }
 };
 
@@ -371,6 +371,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
             log_box->resize(chat_box->width(), 210);
             log_box_widget->setPos(367, -246);
         }
+
+        log_box_widget->setFlag(QGraphicsItem::ItemIsMovable);
     }
 
     {
@@ -584,6 +586,84 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     static int four=0;
     static int five=0;
     static int six=0;
+    static int six_3v3=0;
+    static int seven=0;
+    static int eight=0;
+    static int nine=0;
+    static int cxw=0;//circle view correct data
+    static int stw=1;//standard view correct data
+
+    int player_count = photos.length() + 1;
+    switch(player_count){
+    case 4: four = 1; break;
+    case 5: five = 1; break;
+    case 6: if(ServerInfo.GameMode == "06_3v3")
+                six_3v3 = 1;
+            else
+                six = 1;
+            break;
+    case 7: seven = 1; break;
+    case 8: eight = 1; break;
+    case 9: nine = 1; break;
+    }
+
+
+    if(Config.CircularView){
+        cxw=1;
+        stw=0;
+    }
+
+    static const QPointF pos[] = {
+        QPointF((-630+stw*129)+(cxw*five*50)+(cxw*six_3v3*50)+(cxw*six*100)+(cxw*seven*100)+(cxw*eight*50)+(cxw*nine*20), (-70+stw)-(cxw*four*80)), // 0:zhugeliang
+        QPointF((-630+stw*129)+(cxw*five*50)+(cxw*six_3v3*50)+(cxw*eight*50)+(cxw*nine*20), (-270-stw*3)+(cxw*five*150)), // 1:wolong
+        QPointF((-487+stw*131)+(cxw*six*80)+(cxw*seven*5)+(cxw*nine*45), (-316+stw*22)+(cxw*six*15)+(cxw*seven*30)), // 2:shenzhugeliang
+        QPointF((-344+stw*133)+(cxw*five*15)+(cxw*seven*50)-(cxw*eight*50)+(cxw*nine*65), (-320+stw*26)), // 3:lusu
+        QPointF((-201+stw*135),(-324+stw*30)), // 4:dongzhuo
+        QPointF(( -58+stw*137)-(cxw*five*15)-(cxw*seven*50)+(cxw*eight*50)-(cxw*nine*65), (-320+stw*26)), // 5:caocao
+        QPointF((  85+stw*139)-(cxw*six*80)-(cxw*seven*5)-(cxw*nine*45), (-316+stw*22)+(cxw*six*15)+(cxw*seven*30)), // 6:shuangxiong
+        QPointF(( 228+stw*141)-(cxw*five*50)-(cxw*six_3v3*50)-(cxw*eight*50)-(cxw*nine*20), (-270-stw*3)+(cxw*five*150)), // 7:shenguanyu
+        QPointF(( 228+stw*141)-(cxw*five*50)-(cxw*six_3v3*50)-(cxw*six*100)-(cxw*seven*100)-(cxw*eight*50)-(cxw*nine*20), (-70+stw)-(cxw*four*80)), // 8:xiaoqiao
+    };
+
+    static int indices_table[][9] = {
+        {4 }, // 2
+        {3, 5}, // 3
+        {2-cxw*2, 4, 6+cxw*2}, // 4
+        {1, 3, 5, 7}, // 5
+        {0, 2, 4, 6, 8}, // 6
+        {1-cxw, 2, 3, 5, 6, 7+cxw}, // 7
+        {1-cxw, 2-cxw, 3, 4, 5, 6+cxw, 7+cxw}, // 8
+        {0, 1, 2, 3, 5, 6, 7, 8}, // 9
+        {0, 1, 2, 3, 4, 5, 6, 7, 8} // 10
+    };
+
+    static int indices_table_3v3[][5] = {
+        {0, 3, 4, 5, 8}, // lord
+        {0, 1, 3, 4, 5}, // loyalist (right), same with rebel (right)
+        {3, 4, 5, 7, 8}, // rebel (left), same with loyalist (left)
+        {0, 3, 4, 5, 8}, // renegade, same with lord
+        {0, 1, 3, 4, 5}, // rebel (right)
+        {3, 4, 5, 7, 8}, // loyalist (left)
+    };
+
+    QList<QPointF> positions;
+    int *indices;
+    if(ServerInfo.GameMode == "06_3v3" && !Self->getRole().isEmpty())
+        indices = indices_table_3v3[Self->getSeat() - 1];
+    else
+        indices = indices_table[photos.length() - 1];
+
+    int i;
+    for(i=0; i<photos.length(); i++){
+        int index = indices[i];
+        positions << pos[index];
+    }
+
+    return positions;
+    /*
+    static int four=0;
+    static int five=0;
+    static int six=0;
     static int seven=0;
     static int eight=0;
     static int nine=0;
@@ -606,7 +686,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         nine = 1;
     }
 
-    if(Config.CircularView){
+    if(Config.value("CircularView").toBool()){
         cxw=1;
         cxw2=0;
     }
@@ -618,7 +698,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         QPointF((-344+cxw2*133)+(-eight*cxw*50)+(cxw*five*15)+(cxw*seven*50)+(cxw*nine*65), (-320+cxw2*26)), // 3:lusu
         QPointF((-201+cxw2*135), -324+cxw2*30), // 4:dongzhuo
         QPointF((-58+cxw2*137)+(cxw*eight*50)+(-five*cxw*15)+(-seven*cxw*50)+(-nine*cxw*65), (-320+cxw2*26)), // 5:caocao
-        QPointF((85+cxw2*139)+(-six*cxw*80)+(seven*cxw*25)+(-nine*cxw*45), (-316+cxw2*22)+(six*cxw*15)+(seven*cxw*30)), // 6:yanliangwenchou
+        QPointF((85+cxw2*139)+(-six*cxw*80)+(seven*cxw*25)+(-nine*cxw*45), (-316+cxw2*22)+(six*cxw*15)+(seven*cxw*30)), // 6:shuangxiong
         QPointF((228+cxw2*141)+(-eight*cxw*50)+(-five*cxw*50)+(-nine*cxw*20), (-270-cxw2*3)+(five*cxw*100)), // 7:shenguanyu
         QPointF((228+cxw2*141)+(-four*cxw*70)+(-six*cxw*50), (-70+cxw2)+(-four*cxw*80)+(-six*cxw*50)), // 8:xiaoqiao
     };
@@ -662,7 +742,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
                              - dashboard->boundingRect().height()*(1-stretch_y)/2);
 
 
-    if(!Config.CircularView)
+    if(!Config.value("CircularView",false).toBool())
     {
         stretch_x = 1;
         stretch_y = 1;
@@ -683,7 +763,11 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         positions << aposition;
     }
 
+
+
+
     return positions;
+    */
 }
 
 void RoomScene::changeTextEditBackground(){
@@ -783,7 +867,12 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
     Photo *photo = name2photo[player->objectName()];
     int i;
     for(i=0; i<n; i++){
-        Pixmap *pixmap = new Pixmap("image/system/card-back.png");
+        Pixmap *pixmap ;
+        if(ServerInfo.GameMode == "06_3v3" && Config.value("3v3/UsingNewMode", false).toBool())
+            pixmap = new Pixmap("image/system/card-back-3v3.png");
+        else
+            pixmap = new Pixmap("image/system/card-back.png");
+
         addItem(pixmap);
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
@@ -1227,7 +1316,11 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
 
     int i;
     for(i=0; i<n; i++){
-        Pixmap *card_pixmap = new Pixmap("image/system/card-back.png");
+        Pixmap *card_pixmap ;
+        if(ServerInfo.GameMode == "06_3v3" && Config.value("3v3/UsingNewMode", false).toBool())
+            card_pixmap = new Pixmap("image/system/card-back-3v3.png");
+        else
+            card_pixmap = new Pixmap("image/system/card-back.png");
         addItem(card_pixmap);
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(card_pixmap, "pos");
@@ -3070,7 +3163,11 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 void RoomScene::createStateItem(){
     bool circular = Config.CircularView;
 
-    QPixmap state("image/system/state.png");
+    QPixmap state;
+    if(circular)
+        state = QPixmap("image/system/state2.png");
+    else
+        state = QPixmap("image/system/state.png");
 
     state_item = addPixmap(state);//QPixmap("image/system/state.png"));
     state_item->setPos(room_layout->state_item_pos);
@@ -3085,9 +3182,6 @@ void RoomScene::createStateItem(){
     text_item->setDocument(ClientInstance->getLinesDoc());
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
-
-    if(circular)
-        state_item->setPos(367, -320);
 
     add_robot = NULL;
     fill_robots = NULL;
@@ -3332,7 +3426,10 @@ void RoomScene::onGameStart(){
 #endif
 
     game_started = true;
-    drawPile = new Pixmap("image/system/card-back.png");
+    if(ServerInfo.GameMode == "06_3v3" && Config.value("3v3/UsingNewMode", false).toBool())
+        drawPile = new Pixmap("image/system/card-back-3v3.png");
+    else
+        drawPile = new Pixmap("image/system/card-back.png");
     addItem(drawPile);
     drawPile->setZValue(-2.0);
     drawPile->setPos(room_layout->drawpile);
@@ -4105,6 +4202,8 @@ void RoomScene::adjustPrompt()
 
 void RoomScene::reLayout(QMatrix matrix)
 {
+    return;
+
     if(matrix.m11()>1)matrix.setMatrix(1,0,0,1,matrix.dx(),matrix.dy());
     view_transform = matrix;
     //if(!Config.CircularView)

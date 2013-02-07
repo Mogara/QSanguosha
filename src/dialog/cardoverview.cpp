@@ -6,6 +6,7 @@
 
 #ifdef USE_RCC
 #include <QResource>
+#include <QFile>
 #include "crypto.h"
 #endif
 static CardOverview *Overview;
@@ -99,6 +100,8 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     const Card *card = Sanguosha->getCard(card_id);
 #ifdef USE_RCC
     QString pixmap_path = QString(":big-card/%1.png").arg(card->objectName());
+    if(!QFile::exists(pixmap_path))
+        pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
 #else
     QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
 #endif
