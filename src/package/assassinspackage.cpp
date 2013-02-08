@@ -488,9 +488,9 @@ public:
         events << EventPhaseStart;
     }
 
-	virtual bool triggerable(const ServerPlayer *target) const {
-		return target && target->hasSkill(objectName());
-	}
+    virtual bool triggerable(const ServerPlayer *target) const {
+        return target && target->hasSkill(objectName());
+    }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() == Player::NotActive)
@@ -647,7 +647,7 @@ public:
             return false;
 
         if(triggerEvent == EventPhaseStart && splayer == player && player->getPhase() == Player::Discard) {
-            if(player->getHandcardNum() > player->getHp()){
+            if(player->getHandcardNum() > player->getHp() && player->isWounded()){
                 LogMessage log;
                 log.type = "#Chizhong";
                 log.from = splayer;
@@ -658,17 +658,20 @@ public:
             return false;
         }
 
-        if(triggerEvent != Death || player == splayer)
-            return false;
+        if(triggerEvent == Death && TriggerSkill::triggerable(player))
+        {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who == player)
+                return false;
 
-        room->setPlayerProperty(splayer, "maxhp", splayer->getMaxHp()+1);
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = splayer;
-        log.arg = "chizhong";
-        room->sendLog(log);
-        room->broadcastSkillInvoke("chizhong", 2);
-
+            room->setPlayerProperty(splayer, "maxhp", splayer->getMaxHp()+1);
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = splayer;
+            log.arg = "chizhong";
+            room->sendLog(log);
+            room->broadcastSkillInvoke("chizhong", 2);
+        }
         return false;
     }
 };
