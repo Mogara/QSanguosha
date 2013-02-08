@@ -360,7 +360,7 @@ const Card *WeidaiCard::validate(const CardUseStruct *card_use) const {
     foreach (ServerPlayer *liege, room->getLieges("wu", sunce)) {
         QVariant tohelp = QVariant::fromValue((PlayerStar)sunce);
         QString prompt = QString("@weidai-analeptic:%1").arg(sunce->objectName());
-        const Card *card = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp, Card::MethodResponse, sunce);
+        const Card *card = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp, Card::MethodDiscard, sunce);
         if(card){
             Analeptic *ana = new Analeptic(card->getSuit(), card->getNumber());
             ana->setSkillName("weidai");
@@ -377,7 +377,7 @@ const Card *WeidaiCard::validateInResponse(ServerPlayer *user, bool &continuable
     foreach (ServerPlayer *liege, room->getLieges("wu", user)) {
         QVariant tohelp = QVariant::fromValue((PlayerStar)user);
         QString prompt = QString("@weidai-analeptic:%1").arg(user->objectName());
-        const Card *card = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp, Card::MethodResponse, user);
+        const Card *card = room->askForCard(liege, ".|spade|2~9|hand", prompt, tohelp, Card::MethodDiscard, user);
         if(card){
             Analeptic *ana = new Analeptic(card->getSuit(), card->getNumber());
             ana->setSkillName("weidai");

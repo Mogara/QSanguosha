@@ -239,6 +239,7 @@ public:
 
 JuejiCard::JuejiCard(){
     will_throw = false;
+    handling_method = MethodPindian;
 }
 
 bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -632,15 +633,14 @@ public:
         return target != NULL && target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
-        if (player == NULL) return false;
-        QList<ServerPlayer *> players = room->getAllPlayers();
-        foreach(ServerPlayer *player, players){
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.who != player)
+            return false;
+        foreach(ServerPlayer *player, room->getAlivePlayers()){
             if(player->getMark("@tied") > 0)
                 player->loseMark("@tied");
         }
-
-        return false;
     }
 };
 
@@ -721,7 +721,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(wuling == "wind"){
-            if(damage.nature == DamageStruct::Fire && !damage.chain && !damage.transfer){
+            if(damage.nature == DamageStruct::Fire){
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
 
@@ -733,7 +733,7 @@ public:
                 room->sendLog(log);
             }
         }else if(wuling == "thunder"){
-            if(damage.nature == DamageStruct::Thunder && !damage.chain && !damage.transfer){
+            if(damage.nature == DamageStruct::Thunder){
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
 
@@ -1363,10 +1363,10 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        DamageStar damage = data.value<DamageStar>();
-        ServerPlayer *killer = damage ? damage->from : NULL;
+        DeathStruct death = data.value<DeathStruct>();
+        ServerPlayer *killer = death.damage ? death.damage->from : NULL;
 
-        if(killer){
+        if(death.who == player && killer){
             Room *room = player->getRoom();
             if(killer != player && !killer->hasSkill("benghuai")){
                 killer->gainMark("@collapse");
@@ -1743,6 +1743,9 @@ public:
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(-- damage.damage);
             room->sendLog(log);
+
+            if (damage.damage <= 0)
+                return true;
 
             data.setValue(damage);
         }
