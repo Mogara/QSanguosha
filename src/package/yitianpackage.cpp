@@ -1758,7 +1758,7 @@ TaichenCard::TaichenCard(){
 bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty() || to_select->isAllNude())
         return false;
-    if(!subcards.isEmpty() && Self->getWeapon() &&subcards.first() == Self->getWeapon()->getId() && !Self->hasSkill("zhengfeng"))
+    if(!subcards.isEmpty() && Self->getWeapon() && subcards.first() == Self->getWeapon()->getId() && !Self->hasSkill("zhengfeng"))
         return Self->distanceTo(to_select) == 1;
     else
         return Self->inMyAttackRange(to_select);
@@ -1772,9 +1772,9 @@ void TaichenCard::onEffect(const CardEffectStruct &effect) const{
     else
         room->throwCard(this, effect.from);
         
-    for(int i = 0; i < 2; i++){ // @todo_P: are the cards throwed altogether?
+    for(int i = 0; i < 2; i++) {
         if(!effect.to->isAllNude())
-            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"), effect.to);
+            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"), effect.to, effect.from);
     }
 }
 

@@ -732,24 +732,20 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return (target != NULL);
-    }
-
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *jiaxu = room->findPlayerBySkillName(objectName());
-        if(jiaxu && jiaxu->objectName() == room->getCurrent()->objectName()){
-            if(!jiaxu->hasSkill("jilve"))
+        if(player->objectName() == room->getCurrent()->objectName()){
+            if(!player->hasSkill("jilve"))
                 room->broadcastSkillInvoke(objectName());
             else
                 room->broadcastSkillInvoke("jilve", 3);
 
             LogMessage log;
-            log.from = jiaxu;
-            log.arg = "wansha";
-            if(jiaxu != player){
+            log.from = player;
+            log.arg = objectName();
+            DyingStruct dying = data.value<DyingStruct>();
+            if(player != dying.who){
                 log.type = "#WanshaTwo";
-                log.to << player;
+                log.to << dying.who;
             }else{
                 log.type = "#WanshaOne";
             }
