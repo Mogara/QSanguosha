@@ -541,8 +541,9 @@ ShenfenCard::ShenfenCard(){
 
 void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, QList<ServerPlayer *> &) const{
     room->setPlayerFlag(shenlvbu, "ShenfenUsing");
-    room->broadcastSkillInvoke("shenfen");
-    room->broadcastInvoke("animate", "lightbox:$shenfen");
+	int index = qrand() % 2 + 1;
+    room->broadcastSkillInvoke("shenfen", index);
+    room->broadcastInvoke("animate", "lightbox:$shenfen" + QString::number(index));
     room->getThread()->delay(4500);
     shenlvbu->loseMark("@wrath", 6);
 
