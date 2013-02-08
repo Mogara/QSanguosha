@@ -641,6 +641,8 @@ public:
             if(player->getMark("@tied") > 0)
                 player->loseMark("@tied");
         }
+
+        return false;
     }
 };
 
