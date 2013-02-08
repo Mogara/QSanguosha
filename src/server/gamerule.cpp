@@ -24,8 +24,7 @@ GameRule::GameRule(QObject *)
            << AskForPeaches << AskForPeachesDone << BuryVictim << GameOverJudge
            << SlashHit << SlashMissed << SlashEffected << SlashProceed
            << ConfirmDamage << PreHpReduced << DamageDone << DamageComplete
-           << StartJudge << FinishRetrial << FinishJudge
-           << PindianVerifying;
+           << StartJudge << FinishRetrial << FinishJudge;
 }
 
 bool GameRule::triggerable(const ServerPlayer *target) const{
@@ -477,7 +476,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
     case StartJudge:{
             int card_id = room->drawCard();
-            room->getThread()->delay(Config.S_JUDGE_SHORT_DELAY);
+
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
 
@@ -492,14 +491,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                              judge->who->objectName(),
                              QString(), QString(), judge->reason), true);
             judge->updateResult();
-            room->getThread()->delay(Config.S_JUDGE_SHORT_DELAY);
             break;
         }
 
     case FinishRetrial:{
             JudgeStar judge = data.value<JudgeStar>();
-            if(judge->play_animation)
-                room->sendJudgeResult(judge);
 
             LogMessage log;
             log.type = "$JudgeResult";
@@ -507,25 +503,29 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
-            room->removeTag("retrial");            
+            int delay = Config.AIDelay;
+            if (judge->time_consuming) delay /= 1.25;
+            room->getThread()->delay(delay);
+            if (judge->play_animation) {
+                room->sendJudgeResult(judge);
+                room->getThread()->delay(Config.S_JUDGE_LONG_DELAY);
+            }
+
+            room->removeTag("retrial");
+
             break;
         }
 
     case FinishJudge:{
             JudgeStar judge = data.value<JudgeStar>();
-            room->getThread()->delay(Config.S_JUDGE_LONG_DELAY);
-            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge){
+
+            if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
                 CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
-            }            
+            }
+
             break;
         }
-    case PindianVerifying: {
-            PindianStar pindian_star = data.value<PindianStar>();
-            pindian_star->success = pindian_star->from_card->getNumber() > pindian_star->to_card->getNumber();
-            data = QVariant::fromValue(pindian_star);
-            return true;
-    }
     default:
             ;
     }
