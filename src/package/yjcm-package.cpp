@@ -1262,7 +1262,7 @@ bool Shangshi::trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhu
     }
     if (event == HpChanged || event == MaxHpChanged) {
         /* something strange */
-        if (zhangchunhua->getLostHp() <= 0) return false;
+        if (zhangchunhua->getHp() <= 0) return false;
         if (zhangchunhua->getPhase() == Player::Discard)
             zhangchunhua->addMark("shangshi");
     } else if (event == CardsMoveOneTime) {
