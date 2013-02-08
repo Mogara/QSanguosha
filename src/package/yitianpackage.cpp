@@ -966,7 +966,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (triggerEvent == PreHpReduced) {
-            if (!player->isChained() && damage.from && TriggerSkill::triggerable(damage.from)) {
+            if (!player->isChained() && damage.from && damage.nature == DamageStruct::Fire && TriggerSkill::triggerable(damage.from)) {
                 QList<ServerPlayer *> targets;
                 foreach(ServerPlayer *p, room->getAlivePlayers()) {
                     if (player->distanceTo(p) == 1)
