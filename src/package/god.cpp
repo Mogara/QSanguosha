@@ -606,10 +606,10 @@ public:
     }
 };
 
-class Wuqian: public TriggerSkill{
+class Wuqian: public TriggerSkill {
 public:
-    Wuqian():TriggerSkill("wuqian"){
-        events << EventPhaseStart << Death;
+    Wuqian(): TriggerSkill("wuqian") {
+        events << EventPhaseChanging << Death;
         view_as_skill = new WuqianViewAsSkill;
     }
 
@@ -617,21 +617,29 @@ public:
         return target != NULL && target->hasSkill("wuqian");
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to != Player::NotActive)
+                return false;
+        }
+        if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who != player)
+                return false;
+        }
 
-        if(triggerEvent == EventPhaseStart || triggerEvent == Death){
-            if(player->hasSkill(objectName()) && (triggerEvent == Death || player->getPhase() == Player::NotActive)){
-                foreach(ServerPlayer *p , room->getAllPlayers())
-                    if(p->hasFlag("wuqian"))
-                        room->setPlayerFlag(p, "-wuqian");
-                if(!player->hasInnateSkill("wushuang"))
-                    room->detachSkillFromPlayer(player, "wushuang");
+        foreach (ServerPlayer *p , room->getAllPlayers()) {
+            if (p->hasFlag("wuqian")) {
+                room->setPlayerFlag(p, "-wuqian");
             }
         }
+        room->detachSkillFromPlayer(player, "wushuang");
 
         return false;
     }
 };
+
 
 class Wushen: public FilterSkill{
 public:

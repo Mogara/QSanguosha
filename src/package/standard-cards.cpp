@@ -137,11 +137,11 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
                 room->broadcastSkillInvoke("huxiao", qrand() % 2 + 1);
         }
     }
-    if (card_use.to.size() > 1 && player->hasSkill("shenji"))
+    if (use.to.size() > 1 && player->hasSkill("shenji"))
         room->broadcastSkillInvoke("shenji");
-    else if (card_use.to.size() > 1 && player->hasSkill("lihuo") && getSkillName() != "lihuo")
+    else if (use.to.size() > 1 && player->hasSkill("lihuo") && getSkillName() != "lihuo")
         room->broadcastSkillInvoke("lihuo", 1);
-    else if (card_use.to.size() > 1 && player->hasSkill("duanbing"))
+    else if (use.to.size() > 1 && player->hasSkill("duanbing"))
         room->broadcastSkillInvoke("duanbing");
 
     if (use.from->hasFlag("BladeUse")) {
@@ -174,7 +174,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     else
         room->setEmotion(player, "killer");
 
-    BasicCard::onUse(room, card_use);
+    BasicCard::onUse(room, use);
 }
 
 void Slash::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
@@ -370,7 +370,7 @@ DoubleSword::DoubleSword(Suit suit, int number)
 class QinggangSwordSkill: public WeaponSkill{
 public:
     QinggangSwordSkill():WeaponSkill("QinggangSword"){
-        events << TargetConfirmed << Death;
+        events << TargetConfirmed;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
@@ -386,10 +386,6 @@ public:
                     room->setEmotion(use.from, "weapon/qinggang_sword");
                 }
             }
-        }
-        else{
-            foreach(ServerPlayer *p,room->getAlivePlayers())
-                p->setMark("qinggang", 0);
         }
         return false;
     }

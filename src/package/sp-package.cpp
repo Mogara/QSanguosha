@@ -933,6 +933,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const{
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.who != player) return false;
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("@songci") > 0)
                 room->setPlayerMark(p, "@songci", 0);
