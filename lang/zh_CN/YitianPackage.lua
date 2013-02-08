@@ -194,7 +194,7 @@ return {
 	[":zhenwei"] = "你的【杀】被手牌中的【闪】抵消时，可立即获得该【闪】。",
 	["yitian"] = "倚天",
 	[":yitian"] = "<b>联动技</b>，当你对曹操造成伤害时，可令该伤害-1",
-	["#YitianSolace"] = "%from 发动了技能【倚天】，对 %to 的 %arg 点伤害减至 %arg2 点",
+	["#YitianSolace"] = "%from 发动了技能“倚天”，对 %to 的 %arg 点伤害减至 %arg2 点",
 
 	-- 庞德
 	["#panglingming"] = "枱榇之悟",
