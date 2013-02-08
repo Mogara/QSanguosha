@@ -268,7 +268,7 @@ public:
             if (sp_pangtong->hasFlag("NoManjuan"))
                 return false;
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->to != sp_pangtong || move->to_place != Player::PlaceHand || move->to == move->from)
+            if (move->to != sp_pangtong || move->to_place != Player::PlaceHand)
                 return false;
             room->broadcastSkillInvoke(objectName());
             foreach(int card_id, move->card_ids){
