@@ -128,7 +128,7 @@ public:
         PindianStar pindian = data.value<PindianStar>();
         if(pindian->from != xuyou && pindian->to != xuyou)
             return false;
-        ServerPlayer *winner = pindian->from_card->getNumber() > pindian->to_card->getNumber() ? pindian->from : pindian->to;
+        ServerPlayer *winner = pindian->from_number > pindian->to_number ? pindian->from : pindian->to;
         if(winner == xuyou){
             LogMessage log;
             log.type = "#TriggerSkill";

@@ -168,13 +168,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             break;
         }
     case EventPhaseEnd: {
-            if (player->getMark("drank") > 0) {
+            if (player->hasFlag("drank")) {
                 LogMessage log;
                 log.type = "#UnsetDrankEndOfTurn";
                 log.from = player;
                 room->sendLog(log);
 
-                room->setPlayerMark(player, "drank", 0);
+                room->setPlayerFlag(player, "-drank");
             }
             break;
         }
