@@ -105,6 +105,7 @@ return {
 	["$LightningMove"] = "%card 从 %from 移动到 %to",
 	["$TurnOver"] = "%from 展示了牌堆顶的 %card",
 	["$DiscardCard"] = "%from 弃置了 %card",
+	["$DiscardCardWithSkill"] = "%from 发动“%arg”弃置了 %card",
 	["$DiscardCardByOther"] = "%from 弃置了 %to 的卡牌 %card",
 	["$EnterDiscardPile"] = "%card 被置入弃牌堆",
 	["$GotCardBack"] = "%from 收回了%card",
