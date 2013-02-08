@@ -250,6 +250,7 @@ ShensuCard::ShensuCard(){
 
 bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     Slash *slash = new Slash(NoSuit, 0);
+    slash->setSkillName("shensu");
     slash->deleteLater();
     return slash->targetFilter(targets, to_select, Self);
 }
