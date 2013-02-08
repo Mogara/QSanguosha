@@ -125,7 +125,6 @@ return {
 	["xiongyi"] = "雄异",
 	[":xiongyi"] = "<b>限定技</b>，出牌阶段，你可以令你与任意数量的角色摸三张牌：若以此法摸牌的角色数不大于全场角色数的一半，你回复1点体力。",
 	["@arise"] = "雄异",
-	["$XiongyiAnimate"] = "anim=image/animate/xiongyi.png",
 	["$xiongyi"] = "西凉铁骑，锐不可当！",
 	["~mateng"] = "你们快走，让孟起为我报仇！",
 	["cv:mateng"] = "HeLi",
