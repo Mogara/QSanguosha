@@ -856,13 +856,6 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QString getDefaultChoice(ServerPlayer *player) const{
-        if(player->getMaxHp() >= player->getHp() + 2)
-            return "maxhp";
-        else
-            return "hp";
-    } // @todo_P: move this to AI!!
-
     virtual bool onPhaseChange(ServerPlayer *dongzhuo) const{
         bool trigger_this = false;
         Room *room = dongzhuo->getRoom();
