@@ -1015,7 +1015,8 @@ public:
             break;
         }
         case Dying:{
-            if(player->getMark("@chou") > 0)
+            DyingStruct dying = data.value<DyingStruct>();
+            if(dying.who == player && player->getMark("@chou") > 0)
             {
                 player->loseMark("@chou");
                 foreach(ServerPlayer *lord, room->getAlivePlayers())
