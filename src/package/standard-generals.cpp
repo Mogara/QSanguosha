@@ -811,6 +811,8 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *sunquan, QVariant &data) const{
         switch(triggerEvent){
         case Dying: {
+                DyingStruct dying = data.value<DyingStruct>();
+                if (dying.who != player) return false;
                 foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
                     if(wu->getKingdom() == "wu"){
                         room->broadcastSkillInvoke("jiuyuan", 1);
