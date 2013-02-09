@@ -812,7 +812,7 @@ public:
         switch(triggerEvent){
         case Dying: {
                 DyingStruct dying = data.value<DyingStruct>();
-                if (dying.who != player) return false;
+                if (dying.who != sunquan) return false;
                 foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
                     if(wu->getKingdom() == "wu"){
                         room->broadcastSkillInvoke("jiuyuan", 1);
