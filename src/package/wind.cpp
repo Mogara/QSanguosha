@@ -624,6 +624,10 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         return changeToHeart(originalCard->getEffectiveId());
     }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return -2;
+    }
 };
 
 TianxiangCard::TianxiangCard()
