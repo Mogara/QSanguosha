@@ -50,13 +50,12 @@ LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
 }
 
 LuaTargetModSkill::LuaTargetModSkill(const char *name)
-    : TargetModSkill(name)
+    : TargetModSkill(name), residue_func(0), distance_limit_func(0), extra_target_func(0)
 {
-    pattern = "Slash";
 }
 
-void LuaTargetModSkill::setPattern(const char *pattern) {
-    this->pattern = pattern;
+QString LuaTargetModSkill::getPattern() const{
+    return QString(pattern);
 }
 
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;

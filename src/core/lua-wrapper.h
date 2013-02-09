@@ -96,7 +96,7 @@ class LuaTargetModSkill: public TargetModSkill {
 
 public:
     LuaTargetModSkill(const char *name);
-    void setPattern(const char *pattern);
+    virtual QString getPattern() const;
 
     virtual int getResidueNum(const Player *from, const Card *card) const;
     virtual int getDistanceLimit(const Player *from, const Card *card) const;
@@ -105,6 +105,7 @@ public:
     LuaFunction residue_func;
     LuaFunction distance_limit_func;
     LuaFunction extra_target_func;
+    char *pattern;
 };
 
 class LuaSkillCard: public SkillCard {

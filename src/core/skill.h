@@ -229,7 +229,7 @@ public:
     };
 
     TargetModSkill(const QString &name);
-    QString getPattern() const;
+    virtual QString getPattern() const;
 
     virtual int getResidueNum(const Player *from, const Card *card) const;
     virtual int getDistanceLimit(const Player *from, const Card *card) const;

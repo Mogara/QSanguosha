@@ -102,8 +102,9 @@ function sgs.CreateTargetModSkill(spec)
 	if spec.extra_target_func then
 		skill.extra_target_func = spec.extra_target_func
 	end
+	
 	if type(spec.pattern) == "string" then
-		skill:setPattern(pattern)
+		skill.pattern = spec.pattern
 	end
 
 	return skill
