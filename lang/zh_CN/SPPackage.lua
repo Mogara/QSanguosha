@@ -160,7 +160,14 @@ return {
 	["&sp_jiaxu"] = "贾诩",
 	["illustrator:sp_jiaxu"] = "雪君S",
 	["cv_jiaxu:convert"] = "你可以替换为魏势力SP贾诩",
-	["$LuanwuAnimateSP"] = "anim=image/animate/luanwuSP.png",
+
+	["sp_zhenji"] = "SP甄姬",
+	["&sp_zhenji"] = "甄姬",
+	["illustrator:sp_zhenji"] = "白姥姥",
+	["cv_zhenji:convert"] = "你可以替换为SP甄姬或台版甄姬或国战甄姬",
+	["cv_zhenji:heg_zhenji"] = "国战版",
+	["cv_zhenji:tw_zhenji"] = "台湾版",
+	["cv_zhenji:sp_zhenji"] = "SP",
 
 	["tw_diaochan"] = "台版貂蝉",
 	["&tw_diaochan"] = "貂蝉",
@@ -186,9 +193,6 @@ return {
 	["tw_zhenji"] = "台版甄姬",
 	["&tw_zhenji"] = "甄姬", 
 	["illustrator:tw_zhenji"] = "DM添",
-	["cv_zhenji:convert"] = "你可以替换为国战甄姬或台版甄姬",
-	["cv_zhenji:heg_zhenji"] = "国战版",
-	["cv_zhenji:tw_zhenji"] = "台湾版",
 
 	["tw_machao"] = "台版马超",
 	["&tw_machao"] = "马超", 
