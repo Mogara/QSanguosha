@@ -57,8 +57,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         if (player->hasFlag("slashDisableExtraTarget"))
             room->setPlayerFlag(player, "-slashDisableExtraTarget");
     }
-	
-	/* actually it's not proper to put the codes here.
+
+    /* actually it's not proper to put the codes here.
        considering the nasty design of the client and the convenience as well,
        I just move these codes here */
     if (objectName() == "slash") {

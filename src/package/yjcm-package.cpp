@@ -698,9 +698,9 @@ public:
         ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
         if (target) {
             room->setFixedDistance(gaoshun, target, -1);
-    	    gaoshun->tag.remove("XianzhenTarget");
+            gaoshun->tag.remove("XianzhenTarget");
             room->setPlayerFlag(target, "-wuqian");
-    	}
+        }
         return false;
     }
 };

@@ -980,13 +980,15 @@ public:
 
                 if (damage.from->askForSkillInvoke(objectName(), data))    {
                     ServerPlayer *target = room->askForPlayerChosen(damage.from, targets, objectName());
+
                     LogMessage log;
-					log.type = "#Shaoying";
-					log.from = damage.from;
-					log.to << target;
-					log.arg = objectName();
-					room->sendLog(log);
-					damage.from->tag["ShaoyingTarget"] = QVariant::fromValue(target);
+                    log.type = "#Shaoying";
+                    log.from = damage.from;
+                    log.to << target;
+                    log.arg = objectName();
+                    room->sendLog(log);
+
+                    damage.from->tag["ShaoyingTarget"] = QVariant::fromValue(target);
                 }
             }
 

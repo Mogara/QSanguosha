@@ -4662,7 +4662,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
         log.type = "$ChangedJudge";
         log.from = player;
         log.to << judge->who;
-		log.arg = skill_name;
+        log.arg = skill_name;
         log.card_str = card->getEffectIdString();
         sendLog(log);
 

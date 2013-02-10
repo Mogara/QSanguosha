@@ -56,7 +56,7 @@ void Engine::_loadModScenarios()
 {
     addScenario(new GuanduScenario());
     addScenario(new CoupleScenario());
-	addScenario(new FanchengScenario());
+    addScenario(new FanchengScenario());
     addScenario(new ZombieScenario());
     addScenario(new ImpasseScenario());
 }

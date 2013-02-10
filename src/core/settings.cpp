@@ -134,7 +134,7 @@ void Settings::init(){
     roles_ban = GetConfigFromLuaState(lua, "roles_ban").toStringList();
     kof_ban = GetConfigFromLuaState(lua, "kof_ban").toStringList();
     basara_ban = GetConfigFromLuaState(lua, "basara_ban").toStringList();
-	hegemony_ban = GetConfigFromLuaState(lua, "hegemony_ban").toStringList();
+    hegemony_ban = GetConfigFromLuaState(lua, "hegemony_ban").toStringList();
     hegemony_ban.append(basara_ban);
     foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
         if (Sanguosha->getGeneral(general)->getKingdom() == "god" && !hegemony_ban.contains(general))
