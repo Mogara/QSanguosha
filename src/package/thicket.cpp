@@ -21,7 +21,7 @@ public:
         if (player->isNude() || caopi == player)
             return false;
         if (caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)) {
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), (player->isCaocao() ? 3 : (player->isMale() ? 1 : 2)));
 
             DummyCard *dummy = new DummyCard;
             QList <const Card *> handcards = player->getHandcards();
