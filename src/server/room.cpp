@@ -1002,6 +1002,18 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
                              const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
                              bool isRetrial, const QString &skill_name) {
+    // For compatibility.
+    // ===================================================
+    TriggerEvent event = (TriggerEvent)int(method);
+    switch (event) {
+    case CardUsed: method = Card::MethodUse; break;
+    case CardResponded: method = Card::MethodResponse; break;
+    case AskForRetrial: method = Card::MethodResponse; isRetrial = true; break;
+    case NonTrigger: method = Card::MethodNone; break;
+    default: ;
+    }
+    // ===================================================
+
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
     const Card *card = NULL;
     QVariant asked = pattern;
