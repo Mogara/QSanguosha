@@ -1044,16 +1044,14 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     if (card) {
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
-            if (!(method == Card::MethodUse && pattern == "slash")) {
-                LogMessage log;
-                log.card_str = card->toString();
-                log.from = player;
-                log.type = QString("#%1").arg(card->getClassName());
-                if (method == Card::MethodResponse)
-                    log.type += "_Resp";
-                sendLog(log);
-                player->broadcastSkillInvoke(card);
-            }
+            LogMessage log;
+            log.card_str = card->toString();
+            log.from = player;
+            log.type = QString("#%1").arg(card->getClassName());
+            if (method == Card::MethodResponse)
+                log.type += "_Resp";
+            sendLog(log);
+            player->broadcastSkillInvoke(card);
         } else if (method == Card::MethodDiscard) {
             LogMessage log;
             log.type = skill_name.isEmpty()? "$DiscardCard" : "$DiscardCardWithSkill";
@@ -1111,7 +1109,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         result = card;
     } else if (continuable) {
         setPlayerFlag(player, "continuing");
-        result = askForCard(player, pattern, prompt, data, method, to, isRetrial);
+        result = askForCard(player, pattern, prompt, data, method, to, isRetrial, skill_name);
     } else {
         result = NULL;
     }
