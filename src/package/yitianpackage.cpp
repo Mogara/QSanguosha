@@ -1296,17 +1296,17 @@ public:
     }
 };
 
-class Xunzhi: public PhaseChangeSkill{
+class Xunzhi: public TriggerSkill{
 public:
-    Xunzhi():PhaseChangeSkill("xunzhi"){
+    Xunzhi():TriggerSkill("xunzhi"){
+        events << EventPhaseChanging;
         view_as_skill = new XunzhiViewAsSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::NotActive &&
-           target->hasFlag("xunzhi"))
-        {
-            Room *room = target->getRoom();
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to != Player::NotActive) return false;
+        if(target->hasFlag("xunzhi")){
             bool isSecondaryHero = !(target->getGeneralName() == target->tag.value("newgeneral", "").toString());
             room->changeHero(target, parent()->objectName(), false, false, isSecondaryHero);
             room->killPlayer(target);
