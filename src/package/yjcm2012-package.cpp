@@ -714,7 +714,7 @@ public:
             room->broadcastSkillInvoke("lihuo", 2);
             room->loseHp(player, 1);
         }
-        
+        return false;
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
