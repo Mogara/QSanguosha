@@ -80,7 +80,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["cardLimitation"] = &Client::cardLimitation;
     callbacks["jilei"] = &Client::jilei;
     callbacks["cardLock"] = &Client::cardLock;
-    callbacks["pile"] = &Client::pile;
 
     callbacks["updateStateItem"] = &Client::updateStateItem;
 
@@ -1688,24 +1687,6 @@ void Client::setFixedDistance(const QString &set_str){
 
     if(from && to)
         from->setFixedDistance(to, distance);
-}
-
-void Client::pile(const QString &pile_str){
-    QRegExp rx("(\\w+):(\\w+)([+-])(\\d+)");
-    if(!rx.exactMatch(pile_str)){
-        return;
-    }
-
-    QStringList texts = rx.capturedTexts();
-    ClientPlayer *player = getPlayer(texts.at(1));
-    QString name = texts.at(2);
-    bool add = texts.at(3) == "+";
-    int card_id = texts.at(4).toInt();
-    QList<int> card_ids;
-    card_ids.append(card_id);
-
-    if(player)
-        player->changePile(name, add, card_ids);
 }
 
 void Client::fillGenerals(const QString &generals){

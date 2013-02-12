@@ -17,7 +17,7 @@ return {
 作用效果：你对目标角色造成1点雷电伤害。\
 ◆你在每个出牌阶段内只能使用一张【杀】。",
 
-	["natural_slash"] = "普杀",
+	["normal_slash"] = "普通杀",
 
 	["analeptic"] = "酒",
 	[":analeptic"] = "基本牌\
