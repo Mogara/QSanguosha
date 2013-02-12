@@ -727,7 +727,7 @@ public:
 class Mouduan: public TriggerSkill{
 public:
     Mouduan():TriggerSkill("mouduan"){
-        events << TurnStart << CardsMoveOneTime;
+        events << EventPhaseStart << CardsMoveOneTime;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
