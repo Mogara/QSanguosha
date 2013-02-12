@@ -698,23 +698,23 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == DamageDone){
+        if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            if(damage.card && damage.card->isKindOf("Slash") && damage.card->getSkillName() == objectName())
-                damage.from->tag["Invokelihuo"] = true;
-        }
-        else if(TriggerSkill::triggerable(player) && player->tag.value("Invokelihuo", false).toBool()){
+            if (damage.card && damage.card->isKindOf("Slash") && damage.card->getSkillName() == objectName())
+                damage.from->tag["LihuoSlash"] = QVariant::fromValue(damage.card);
+        } else if (TriggerSkill::triggerable(player) && !player->tag.value("LihuoSlash").isNull()
+                   && data.value<CardUseStruct>().card == player->tag.value("LihuoSlash").value<CardStar>()) {
             LogMessage log;
             log.type = "#TriggerSkill";
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
 
-            player->tag["Invokelihuo"] = false;
+            player->tag.remove("LihuoSlash");
             room->broadcastSkillInvoke("lihuo", 2);
             room->loseHp(player, 1);
         }
-        return false;
+        
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
