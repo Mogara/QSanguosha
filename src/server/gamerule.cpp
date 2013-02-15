@@ -176,13 +176,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
                 room->setPlayerFlag(player, "-drank");
             }
+            if (player->getPhase() == Player::Play)
+                player->clearHistory();
             break;
         }
     case EventPhaseChanging: {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 player->clearFlags();
-                player->clearHistory();
                 room->clearPlayerCardLimitation(player, true);
             }
             break;
