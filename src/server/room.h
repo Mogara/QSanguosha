@@ -77,6 +77,7 @@ public:
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
     void doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target);
+    void playLightbox(ServerPlayer *player, const QString &skill_name, const QString &broad, int delay);
     int drawCard();
     const Card *peek();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL);

@@ -69,6 +69,7 @@ return {
 	["#Suicide"] = "%to【%arg】 自杀身亡",
 	["#InvokeSkill"] = "%from 使用了技能【%arg】",
 	["#TriggerSkill"] = "%from 的锁定技【%arg】被触发",
+	["#WakeUp"] = "已满足触发条件，%from 的觉醒技【%arg】被触发",
 	["#Pindian"] = "%from 向 %to 发起了拼点",
 	["#PindianSuccess"] = "%from (对 %to) 拼点成功！\\(^o^)/",
 	["#PindianFailure"] = "%from (对 %to) 拼点失败！-_-！",

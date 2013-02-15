@@ -1112,9 +1112,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-        room->playSkillEffect("zili");
-        room->broadcastInvoke("animate", "lightbox:$zili:2000");
-        room->getThread()->delay(2000);
+        room->playLightbox(zhonghui, objectName(), "2000", 2000);
         QStringList choicelist;
         choicelist << "draw";
         if (zhonghui->getLostHp() != 0)

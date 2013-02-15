@@ -385,10 +385,7 @@ public:
 
         Room *room = lukang->getRoom();
         lukang->setMark("kegou", 1);
-        room->broadcastInvoke("animate", "lightbox:$kegou");
-        room->getThread()->delay(1500);
-
-        lukang->playSkillEffect(objectName());
+        room->playLightbox(lukang, objectName(), "1700", 1700);
 
         LogMessage log;
         log.type = "#KegouWake";

@@ -419,8 +419,7 @@ public:
         if(dying_data.who != liaohua)
             return false;
         if(liaohua->askForSkillInvoke(objectName(), data)){
-            room->broadcastInvoke("animate", "lightbox:$fuli");
-            room->playSkillEffect(objectName());
+            room->playLightbox(liaohua, objectName(), "", 1500);
 
             liaohua->loseMark("@laoji");
             int x = getKingdoms(room);

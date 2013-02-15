@@ -690,9 +690,7 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        room->playSkillEffect(objectName());
-        room->broadcastInvoke("animate", "lightbox:$youqi:3000");
-        room->getThread()->delay(3000);
+        room->playLightbox(sunce, objectName(), "3000", 3000);
 
         room->loseMaxHp(sunce);
 

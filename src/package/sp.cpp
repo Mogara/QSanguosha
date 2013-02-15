@@ -445,8 +445,8 @@ public:
             guanyu->setMark("danji", 1);
 
             room->loseMaxHp(guanyu);
-            room->broadcastInvoke("animate", "lightbox:$danji");
-            room->getThread()->delay(2500);
+            room->playLightbox(guanyu, objectName(), "2500", 2500);
+
             room->acquireSkill(guanyu, "mashu");
         }
 
@@ -702,9 +702,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-        room->playSkillEffect(objectName());
-        room->broadcastInvoke("animate", "lightbox:$Wuji:1500");
-        room->getThread()->delay(1500);
+        room->playLightbox(player, "Wuji", "1600", 1600);
 
         player->addMark("wuji");
 

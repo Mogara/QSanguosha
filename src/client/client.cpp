@@ -803,11 +803,12 @@ void Client::askForNullification(const QString &ask_str){
 
     QString trick_path = trick_card->getPixmapPath();
     QString to = getPlayer(texts.at(3))->getGeneral()->getPixmapPath("big");
+    QString arrow = "image/system/arrow.png";
     if(source == NULL){
-        prompt_doc->setHtml(QString("<img src='%1' /> ==&gt; <img src='%2' />").arg(trick_path).arg(to));
+        prompt_doc->setHtml(QString("<img src='%1' /> <img src='%2' />  <img src='%3' />").arg(trick_path).arg(arrow).arg(to));
     }else{
         QString from = source->getGeneral()->getPixmapPath("big");
-        prompt_doc->setHtml(QString("<img src='%1' /> <img src='%2'/> ==&gt; <img src='%3' />").arg(trick_path).arg(from).arg(to));
+        prompt_doc->setHtml(QString("<img src='%1' /> <img src='%2'/> <img src='%3' />  <img src='%4' />").arg(trick_path).arg(from).arg(arrow).arg(to));
     }
 
     card_pattern = "nullification";

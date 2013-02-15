@@ -290,9 +290,7 @@ public:
             return false;
         room->setPlayerFlag(player, "FenxinTarget");
         if (room->askForSkillInvoke(killer, objectName(), QVariant::fromValue(player))) {
-            room->playSkillEffect(objectName());
-            room->broadcastInvoke("animate", "lightbox:$fenxin");
-            room->getThread()->delay(1500);
+            room->playLightbox(killer, objectName(), "", 1500);
             killer->loseMark("@burnheart");
             QString role1 = killer->getRole();
             killer->setRole(player->getRole());

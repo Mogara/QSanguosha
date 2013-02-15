@@ -955,9 +955,7 @@ public:
         log.arg = QString::number(shensimayi->getMark("@bear"));
         room->sendLog(log);
 
-        room->playSkillEffect(objectName());
-        room->broadcastInvoke("animate", "lightbox:$baiyin:2000");
-        room->getThread()->delay(2000);
+        room->playLightbox(shensimayi, objectName(), "2000", 2000);
 
         room->setPlayerMark(shensimayi, "baiyin", 1);
         room->loseMaxHp(shensimayi);

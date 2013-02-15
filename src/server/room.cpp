@@ -3233,6 +3233,19 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
         moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DrawPile, true);
 }
 
+void Room::playLightbox(ServerPlayer *player, const QString &skill_name, const QString &broad, int delay){
+    QString skillname = skill_name;
+    if(skillname.at(0).isUpper())
+        skillname[0] = skillname.at(0).toLower();
+    playSkillEffect(skillname);
+    QString bro = "";
+    if(broad != "")
+        bro = ":" + broad;
+    broadcastInvoke("animate", "lightbox:$" + skill_name + bro);
+    thread->delay(delay);
+    setEmotion(player, "skill/" + skill_name);
+}
+
 const Card *Room::askForPindian(ServerPlayer *player,
                                 ServerPlayer *from,
                                 ServerPlayer *to,
