@@ -188,14 +188,14 @@ sgs.ai_skill_use["@@shuangren"]=function(self,prompt)
 		self:sort(self.enemies, "handcard")
 		for _, player in ipairs(self.enemies) do
 			if not player:isKongcheng() then
-				return "@ShuangrenCard="..cards[1]:getEffectiveId().."->"..player:objectName()
+				return "@ShuangrenCard="..max_card:getEffectiveId().."->"..player:objectName()
 			end
 		end
 	elseif max_card and max_card:getNumber() > 4 then
 		self:sort(self.friends_noself, "handcard2")
 		for _, player in ipairs(self.friends_noself) do
 			if not player:isKongcheng() then
-				return "@ShuangrenCard="..cards[1]:getEffectiveId().."->"..player:objectName()
+				return "@ShuangrenCard="..max_card:getEffectiveId().."->"..player:objectName()
 			end
 		end
 	end

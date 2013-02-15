@@ -392,6 +392,8 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.slash->getSuit() != Card::Heart && !effect.jink->isVirtualCard()){
+            if(effect.slash->isVirtualCard())
+                return false;
             if(player->askForSkillInvoke(objectName(), data)){
                 room->playSkillEffect(objectName());
                 effect.to->obtainCard(effect.jink);

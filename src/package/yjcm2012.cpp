@@ -873,6 +873,8 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             while(dying.who->getHp() < 1 && chengpu->askForSkillInvoke(objectName(), data)){
                 QList<int> cards = chengpu->getPile("wine");
+                if(cards.isEmpty())
+                    break;
                 room->fillAG(cards, chengpu);
                 int card_id = room->askForAG(chengpu, cards, true, objectName());
                 room->broadcastInvoke("clearAG");

@@ -2009,7 +2009,7 @@ PasterPackage::PasterPackage()
     simazhao->addSkill(new Zhaoxin);
     simazhao->addSkill(new Langgu);
 
-    General *liuxie = new General(this, "liuxie", "qun");
+    General *liuxie = new General(this, "liuxie", "qun", 4, true, true);
     liuxie->addSkill(new Huangen);
     liuxie->addSkill(new Hantong);
     liuxie->addSkill(new HantongClear);

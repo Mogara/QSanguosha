@@ -1374,7 +1374,7 @@ public:
            zhuge->askForSkillInvoke(objectName()))
         {
             Room *room = zhuge->getRoom();
-            room->playSkillEffect("guanxing");
+            room->playSkillEffect(objectName());
 
             room->doGuanxing(zhuge, room->getNCards(5, false), false);
         }

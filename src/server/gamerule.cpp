@@ -146,6 +146,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
 
             player->clearFlags();
+            room->setPlayerMark(player, "rende", 0);
 
             return;
         }

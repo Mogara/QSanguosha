@@ -17,12 +17,12 @@ QiaobianCard::QiaobianCard(){
 }
 
 bool QiaobianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    if(Self->getPhase() == Player::Draw)
-        return targets.length() <= 2;
-    else if(Self->getPhase() == Player::Play)
-        return targets.length() <= 1;
-    else
+    switch(Self->getPhase()){
+    case Player::Draw: return !targets.isEmpty() && targets.length() <= 2;
+    case Player::Play: return !targets.isEmpty() && targets.length() == 1;
+    default:
         return targets.isEmpty();
+    }
 }
 
 bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
