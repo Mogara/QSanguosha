@@ -126,7 +126,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
-        if(judge->reason == "tuntian")
+        if(player->hasSkill("tuntian") && judge->reason == "tuntian")
             return false;
 
         QStringList prompt_list;

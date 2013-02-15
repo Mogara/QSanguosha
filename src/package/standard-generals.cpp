@@ -260,7 +260,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
-        if(judge->reason == "tuntian")
+        if(player->hasSkill("tuntian") && judge->reason == "tuntian")
             return false;
 
         QStringList prompt_list;
@@ -983,12 +983,22 @@ class Liuli: public TriggerSkill{
 public:
     Liuli():TriggerSkill("liuli"){
         view_as_skill = new LiuliViewAsSkill;
-        events << SlashEffected;
+        events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *daqiao, QVariant &data) const{
+    virtual int getPriority() const{
+        return 2;
+    }
+
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if(!daqiao->isNude() && room->alivePlayerCount() > 2){
+        PlayerStar daqiao = effect.to;
+        if(effect.from && daqiao->hasSkill(objectName()) &&
+           !daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(effect.from);
 
