@@ -1,4 +1,8 @@
+#ifndef CLO_SOU
 #include "crypto.h"
+#else
+#include "crypt0.h"
+#endif
 
 void DES_Process(const char *keyString, byte *block, size_t length, CryptoPP::CipherDir direction){
     using namespace CryptoPP;

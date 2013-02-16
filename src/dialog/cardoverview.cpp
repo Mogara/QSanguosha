@@ -7,7 +7,11 @@
 #ifdef USE_RCC
 #include <QResource>
 #include <QFile>
+#ifndef CLO_SOU
 #include "crypto.h"
+#else
+#include "crypt0.h"
+#endif
 #endif
 static CardOverview *Overview;
 

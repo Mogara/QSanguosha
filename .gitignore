@@ -21,6 +21,7 @@ image/*.rcc
 image/*.dat
 image/generals/card2/*.*
 lib/libcryptopp.a
+src/core/crypt0.h
 lua5*.dll
 li*3.dll
 QSanguo*.exe
