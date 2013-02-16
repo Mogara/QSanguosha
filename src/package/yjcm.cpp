@@ -305,6 +305,17 @@ public:
     }
 };
 
+class EyPattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return !player->hasEquip(card);
+    }
+
+    virtual bool willThrow() const{
+        return false;
+    }
+};
+
 class Enyuan: public TriggerSkill{
 public:
     Enyuan():TriggerSkill("enyuan"){
@@ -343,8 +354,8 @@ public:
                 for(i=0; i<x; i++){
                     if(room->askForSkillInvoke(player, objectName(), data)){
                         room->playSkillEffect(objectName(), qrand() % 2 + 3);
-					//fix this!
-                        const Card *card = room->askForCard(source, ".", "@enyuan:" + player->objectName(), QVariant(), NonTrigger);
+
+                        const Card *card = room->askForCard(source, ".ey", "@enyuan:" + player->objectName(), QVariant(), NonTrigger);
                         if(card)
                             player->obtainCard(card);
                         else
@@ -1298,6 +1309,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *fazheng = new General(this, "fazheng", "shu", 3);
     fazheng->addSkill(new Enyuan);
     fazheng->addSkill(new Xuanhuo);
+    patterns.insert(".ey", new EyPattern);
 
     General *lingtong = new General(this, "lingtong", "wu");
     lingtong->addSkill(new Xuanfeng);

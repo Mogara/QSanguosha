@@ -776,8 +776,9 @@ int Engine::correctSlash(const QString &type, const Player *from, const Player *
             int y = skill->getSlashRange(from, to, slash);
             if(y < 0) // fixed attack range
                 return y;
-            if(y > x) // use longest range
-                x = y;
+            /*if(y > x) // use longest range
+                x = y;*/
+            x += y; // range plus(wuliujian)
         }
         else if(type == "extragoals")
             x += skill->getSlashExtraGoals(from, to, slash);

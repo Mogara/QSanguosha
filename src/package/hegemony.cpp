@@ -804,6 +804,26 @@ TriDouble::TriDouble(Suit suit, int number)
     skill = new TriDoubleSkill;;
 }
 
+class WuLiuJianSkill: public SlashSkill{
+public:
+    WuLiuJianSkill():SlashSkill("wuliujian"){
+        frequency = NotFrequent;
+    }
+
+    virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
+        int wu6jian = 0;
+        QList<const Player *> players = from->getSiblings();
+        players << from;
+        foreach(const Player *p, players){
+            if(p->hasWeapon("wuliujian") && p->getKingdom() == from->getKingdom() && from->getKingdom() != "god"){
+                wu6jian = 1;
+                break;
+            }
+        }
+        return wu6jian;
+    }
+};
+
 WuLiuJian::WuLiuJian(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
@@ -819,6 +839,7 @@ HegemonyCardPackage::HegemonyCardPackage()
           << new KnowThyself(Card::Club, 3)
           << new TriDouble(Card::Diamond, 12)
           << new WuLiuJian(Card::Diamond, 6);
+    skills << new WuLiuJianSkill;
 
     foreach(Card *card, cards)
         card->setParent(this);
