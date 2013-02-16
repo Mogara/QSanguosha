@@ -517,9 +517,9 @@ void TianyiCard::use(Room *room, ServerPlayer *taishici, const QList<ServerPlaye
         room->setPlayerFlag(taishici, "tianyi_failed");
 }
 
-class TianyiViewAsSkill: public OneCardViewAsSkill{
+class Tianyi: public OneCardViewAsSkill{
 public:
-    TianyiViewAsSkill():OneCardViewAsSkill("tianyi"){
+    Tianyi():OneCardViewAsSkill("tianyi"){
 
     }
 
@@ -535,25 +535,6 @@ public:
         Card *card = new TianyiCard;
         card->addSubcard(card_item->getFilteredCard());
         return card;
-    }
-};
-
-class Tianyi: public PhaseChangeSkill{
-public:
-    Tianyi():PhaseChangeSkill("tianyi"){
-        view_as_skill = new TianyiViewAsSkill;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
-            Room *room = target->getRoom();
-            if(target->hasFlag("tianyi_failed"))
-                room->setPlayerFlag(target, "-tianyi_failed");
-            if(target->hasFlag("tianyi_success")){
-                room->setPlayerFlag(target, "-tianyi_success");
-            }
-        }
-        return false;
     }
 };
 

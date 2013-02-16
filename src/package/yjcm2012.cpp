@@ -280,27 +280,20 @@ public:
 class JiangchiForbid: public TriggerSkill{
 public:
     JiangchiForbid():TriggerSkill("#jiangchi_forbid"){
-        events << CardAsk << CardUseAsk << PhaseChange;
+        events << CardAsk << CardUseAsk;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *caozhang, QVariant &data) const{
-        if(event == PhaseChange){
-            if(caozhang->getPhase() == Player::NotActive)
-                room->setPlayerFlag(caozhang, "-jiangchi_forbid");
-            return false;
-        }
-        else{
-            QString asked = data.toString();
-            if(asked == "slash"){
-                /*room->playSkillEffect(objectName(), qrand() % 2 + 3);
-                LogMessage log;
-                log.type = "#Jiangchi";
-                log.from = caozhang;
-                log.arg = asked;
-                log.arg2 = objectName();
-                room->sendLog(log);*/
-                return true;
-            }
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *caozhang, QVariant &data) const{
+        QString asked = data.toString();
+        if(asked == "slash" && caozhang->hasFlag("jiangchi_forbid")){
+            /*room->playSkillEffect(objectName(), qrand() % 2 + 3);
+            LogMessage log;
+            log.type = "#Jiangchi";
+            log.from = caozhang;
+            log.arg = asked;
+            log.arg2 = objectName();
+            room->sendLog(log);*/
+            return true;
         }
         return false;
     }
@@ -315,7 +308,7 @@ public:
     virtual int getSlashResidue(const Player *t) const{
         if(t->hasSkill("jiangchi")){
             if(t->hasFlag("jiangchi_invoke"))
-                return qMax(1 - t->getSlashCount() + 1, 0);
+                return qMax(2 - t->getSlashCount(), 0);
             else if(t->hasFlag("jiangchi_forbid"))
                 return -998;
         }

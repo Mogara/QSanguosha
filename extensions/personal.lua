@@ -124,7 +124,7 @@ doubledao = sgs.CreateSlashSkill
 -- 攻击范围
 	s_range_func = function(self, from, to, slash)
 		if from:hasSkill("doubledao") and slash:getSuit() == sgs.Card_Heart then
-			return -4 -- 注意这里因为是锁定攻击范围，所以前面要加个负号，如果不加，则在所有技能和武器指定的攻击范围里，取最大值
+			return -4 -- 注意这里因为是锁定攻击范围，所以前面要加个负号，如果不加，则累加攻击范围
 		end
 	end,
 }
@@ -134,14 +134,14 @@ dragonfist = sgs.CreateSlashSkill
 	name = "dragonfist",
 -- 额外出杀（返回还能再使用的杀的数量）
 	s_residue_func = function(self, from)
-		if from:hasSkill("dragonfist") then
-            local init =  1 - from:getSlashCount() -- 还能再使用的杀的数量，若已经使用了1张杀，则init=1-1=0，不能使用杀了
-            return init + from:getMark("Fist") -- 如果获得了1个Fist标记，则在可用杀的基础上+1，本例中未0+1=1，有多少Fist标记可再使用多少张杀
+	    if from:hasSkill("dragonfist") then
+                local init =  1 - from:getSlashCount() -- 还能再使用的杀的数量，若已经使用了1张杀，则init=1-1=0，不能使用杀了
+                return init + from:getMark("Fist") -- 如果获得了1个Fist标记，则在可用杀的基础上+1，本例中未0+1=1，有多少Fist标记可再使用多少张杀
 			-- 返回值为998，表示使用杀无次数限制（如连弩、咆哮）
 			-- 返回值为-998，表示不能再使用杀（如天义拼点失败）
-        else
-            return 0
-		end
+            else
+                return 0
+	    end
 	end,
 }
 

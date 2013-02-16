@@ -107,7 +107,7 @@ public:
             return false;
 
         if(caozhi && caozhi->askForSkillInvoke(objectName(), data)){
-            if(player->getGeneralName() == "zhenji")
+            if(player->getGeneral()->isCaoCao("zhenji"))
                 room->playSkillEffect("luoying", 2);
             else
                 room->playSkillEffect("luoying", 1);
