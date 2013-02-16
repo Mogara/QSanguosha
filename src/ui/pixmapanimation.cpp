@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QPixmapCache>
 #include <QDir>
+#include <QSettings>
 
 PixmapAnimation::PixmapAnimation(QGraphicsScene *scene) :
     QGraphicsItem(0,scene)
@@ -62,7 +63,8 @@ void PixmapAnimation::start(bool permanent,int interval)
 PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsObject *parent, const QString &emotion)
 {
     PixmapAnimation *pma = new PixmapAnimation();
-    pma->setPath(QString("image/system/emotion/%1/").arg(emotion));
+    QString path = QString("image/system/emotion/%1/").arg(emotion);
+    pma->setPath(path);
     if(pma->valid())
     {
         if(emotion == "no-success")
@@ -92,6 +94,20 @@ PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsObject *parent, co
 
         pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width())/2,
                     (parent->boundingRect().height() - pma->boundingRect().height())/2);
+
+        if(emotion.contains("skill")){
+            QString spec_name = QString("%1/revise.ini").arg(path);
+            QSettings settings(spec_name, QSettings::IniFormat);
+            qreal x = settings.value("x", 65535).toReal();
+            qreal y = settings.value("y", 65535).toReal();
+            qreal scale = settings.value("s", 1.0).toReal();
+
+            if(x != 65535 && y != 65535){
+                pma->setX(x);
+                pma->setY(y);
+            }
+            pma->setScale(scale);
+        }
 
         pma->setParentItem(parent);
         pma->setZValue(2.5);

@@ -1,6 +1,7 @@
 debug/
 release/
 ui_*
+Thumbs.db
 Makefile*
 object_script*
 *.pro.user

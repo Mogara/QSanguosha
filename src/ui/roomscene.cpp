@@ -3479,15 +3479,29 @@ void RoomScene::moveFocus(const QString &who){
 }
 
 void RoomScene::setEmotion(const QString &who, const QString &emotion ,bool permanent){
+    if(emotion == "question" || emotion == "no-question")
+        permanent = true;
     Photo *photo = name2photo[who];
     if(photo){
-        photo->setEmotion(emotion,permanent);
+        photo->setEmotion(emotion, permanent);
         return;
     }
-    PixmapAnimation * pma = PixmapAnimation::GetPixmapAnimation(dashboard,emotion);
-    if(pma)
-    {
-        pma->moveBy(0,- dashboard->boundingRect().height()/2);
+    PixmapAnimation * pma = PixmapAnimation::GetPixmapAnimation(dashboard, emotion);
+    if(pma){
+        qreal movex = 0.0;
+        qreal movey = - dashboard->boundingRect().height() / 1.5;
+        if(emotion.contains("skill")){
+            QString spec_name = QString("image/system/emotion/%1/revise.ini").arg(emotion);
+            QSettings settings(spec_name, QSettings::IniFormat);
+            qreal x = settings.value("mvx", 65535).toReal();
+            qreal y = settings.value("mvy", 65535).toReal();
+
+            if(x != 65535 && y != 65535){
+                movex = x;
+                movey = y;
+            }
+        }
+        pma->moveBy(movex, movey);
         pma->setZValue(8.0);
     }
 }
