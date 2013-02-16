@@ -1278,10 +1278,12 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
 
     if(src_place == Player::Special){
         card_item = special_card;
-        card_item->hideFrame();
-        card_item->showAvatar(NULL);
-        special_card = NULL;
-        return card_item;
+        if(card_item){
+            card_item->hideFrame();
+            card_item->showAvatar(NULL);
+            special_card = NULL;
+            return card_item;
+        }
     }
 
     // from discard pile
@@ -3490,17 +3492,6 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion ,bool perm
     if(pma){
         qreal movex = 0.0;
         qreal movey = - dashboard->boundingRect().height() / 1.5;
-        if(emotion.contains("skill")){
-            QString spec_name = QString("image/system/emotion/%1/revise.ini").arg(emotion);
-            QSettings settings(spec_name, QSettings::IniFormat);
-            qreal x = settings.value("mvx", 65535).toReal();
-            qreal y = settings.value("mvy", 65535).toReal();
-
-            if(x != 65535 && y != 65535){
-                movex = x;
-                movey = y;
-            }
-        }
         pma->moveBy(movex, movey);
         pma->setZValue(8.0);
     }
@@ -4045,6 +4036,7 @@ void RoomScene::changeGeneral(const QString &general){
 }
 
 void RoomScene::revealGeneral(bool self, const QString &general){
+
     if(self)
         self_box->revealGeneral(general);
     else

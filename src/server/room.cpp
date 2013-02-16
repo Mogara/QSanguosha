@@ -2758,9 +2758,11 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
     if(move.from){
         if(move.from_place == Player::Special){
             QString pile_name = move.from->getPileName(move.card_id);
-            Q_ASSERT(!pile_name.isEmpty());
+
+            //@todo: if (pile_name.isEmpty());
+
             QString pile_str = QString("%1:%2-%3")
-                    .arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
+                .arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
 
             if(move.open)
                 broadcastInvoke("pile", pile_str);
@@ -2786,9 +2788,11 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
 
         if(move.to_place == Player::Special){
             QString pile_name = move.to->getPileName(move.card_id);
-            Q_ASSERT(!pile_name.isEmpty());
+
+            //@todo: if (pile_name.isEmpty());
+
             QString pile_str = QString("%1:%2+%3")
-                    .arg(move.to->objectName()).arg(pile_name).arg(move.card_id);
+                .arg(move.to->objectName()).arg(pile_name).arg(move.card_id);
 
             if(move.open)
                 broadcastInvoke("pile", pile_str);
@@ -2846,9 +2850,9 @@ QString CardMoveStruct::toString() const{
     QString to_str = to ? to->objectName() : "_";
 
     return QString("%1:%2@%3->%4@%5")
-            .arg(card_id)
-            .arg(from_str).arg(place2str.value(from_place, "_"))
-            .arg(to_str).arg(place2str.value(to_place, "_"));
+        .arg(card_id)
+        .arg(from_str).arg(place2str.value(from_place, "_"))
+        .arg(to_str).arg(place2str.value(to_place, "_"));
 }
 
 void Room::playSkillEffect(const QString &skill_name, int index){
