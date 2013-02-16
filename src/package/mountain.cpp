@@ -370,9 +370,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-        room->playSkillEffect("zaoxian");
-        room->broadcastInvoke("animate", "lightbox:$zaoxian:4000");
-        room->getThread()->delay(4000);
+        room->playLightbox(dengai, objectName(), "4000", 4000);
 
         room->acquireSkill(dengai, "jixi");
 
@@ -507,9 +505,7 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        room->playSkillEffect(objectName());
-        room->broadcastInvoke("animate", "lightbox:$Hunzi:5000");
-        room->getThread()->delay(5000);
+        room->playLightbox(sunce, "Hunzi", "5000", 5000);
 
         room->loseMaxHp(sunce);
 
@@ -679,9 +675,7 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        room->playSkillEffect("zhiji");
-        room->broadcastInvoke("animate", "lightbox:$Zhiji:5000");
-        room->getThread()->delay(5000);
+        room->playLightbox(jiangwei, "Zhiji", "5000", 5000);
 
         if(room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover"){
             RecoverStruct recover;

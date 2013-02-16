@@ -419,8 +419,7 @@ public:
         if(dying_data.who != liaohua)
             return false;
         if(liaohua->askForSkillInvoke(objectName(), data)){
-            room->broadcastInvoke("animate", "lightbox:$fuli");
-            room->playSkillEffect(objectName());
+            room->playLightbox(liaohua, objectName(), "", 1500);
 
             liaohua->loseMark("@laoji");
             int x = getKingdoms(room);
@@ -578,13 +577,13 @@ bool GongqiCard::targetsFeasible(const QList<const Player *> &targets, const Pla
         return targets.isEmpty();
 }
 
-void GongqiCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-    if(Sanguosha->getCard(getSubcards().first())->isKindOf("EquipCard")){
-        int card_id = room->askForCardChosen(effect.from, effect.to, "he", skill_name);
-        room->throwCard(card_id, effect.to, effect.from);
+void GongqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->setPlayerFlag(source, "gongqi_range");
+    if(Sanguosha->getCard(getSubcards().first())->isKindOf("EquipCard") && !targets.isEmpty()){
+        PlayerStar target = targets.first();
+        int card_id = room->askForCardChosen(source, target, "he", skill_name);
+        room->throwCard(card_id, target, source);
     }
-    room->setPlayerFlag(effect.from, "gongqi_range");
 }
 
 class Gongqi: public OneCardViewAsSkill{

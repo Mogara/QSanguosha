@@ -405,75 +405,10 @@ Axe::Axe(Suit suit, int number)
     attach_skill = true;
 }
 
-HalberdCard::HalberdCard(){
-}
-
-bool HalberdCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(targets.length() >= 2)
-        return false;
-    if(to_select == Self)
-        return false;
-    if(to_select->hasFlag("halber"))
-        return false;
-    return Self->canSlash(to_select);
-}
-
-void HalberdCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    CardUseStruct use = source->tag["Halber"].value<CardUseStruct>();
-    use.to.append(targets);
-}
-
-class HalberdViewAsSkill: public ZeroCardViewAsSkill{
-public:
-    HalberdViewAsSkill():ZeroCardViewAsSkill("halberd"){
-    }
-
-    virtual const Card *viewAs() const{
-        return new HalberdCard;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@@halberd";
-    }
-};
-
-class HalberdSkill: public WeaponSkill{
-public:
-    HalberdSkill():WeaponSkill("halberd"){
-        events << CardUsed;
-    }
-
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(!use.card || !use.card->isKindOf("Slash"))
-            return false;
-        if(!player->isLastHandCard(use.card))
-            return false;
-        Q_ASSERT(player->isDead());
-        foreach(ServerPlayer *tmp, use.to)
-            room->setPlayerFlag(tmp, "halber");
-        player->tag["Halber"] = data;
-        if(room->askForUseCard(player, "@@halberd", "@halberd")){
-            room->setEmotion(player,"weapon/halberd");
-            data = player->tag["Halber"];
-        }
-        foreach(ServerPlayer *tmp, use.to)
-            room->setPlayerFlag(tmp, "-halber");
-        player->tag.remove("Halber");
-        return false;
-    }
-};
-
 Halberd::Halberd(Suit suit, int number)
     :Weapon(suit, number, 4)
 {
     setObjectName("halberd");
-    skill = new HalberdSkill;
-    attach_skill = true;
 }
 
 class KylinBowSkill: public WeaponSkill{
@@ -1103,7 +1038,7 @@ public:
             return 0;
     }
 };
-/*
+
 class HalberdSkill: public SlashSkill{
 public:
     HalberdSkill():SlashSkill("halberd"){
@@ -1116,7 +1051,7 @@ public:
             return 0;
     }
 };
-*/
+
 class HorseSkill: public DistanceSkill{
 public:
     HorseSkill():DistanceSkill("horse"){
@@ -1217,7 +1152,7 @@ StandardCardPackage::StandardCardPackage()
 
     skills << EightDiagramSkill::GetInstance();
     skills << new CrossbowSkill;
-    //skills << new HalberdSkill;
+    skills << new HalberdSkill;
 
     {
         QList<Card *> horses;
@@ -1278,8 +1213,7 @@ StandardCardPackage::StandardCardPackage()
     foreach(Card *card, cards)
         card->setParent(this);
 
-    skills << new SpearSkill << new AxeViewAsSkill << new HalberdViewAsSkill;
-    addMetaObject<HalberdCard>();
+    skills << new SpearSkill << new AxeViewAsSkill;
 }
 
 StandardExCardPackage::StandardExCardPackage()

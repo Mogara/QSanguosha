@@ -317,7 +317,15 @@ local lianli_slash_skill={name="lianli-slash"}
 table.insert(sgs.ai_skills, lianli_slash_skill)
 lianli_slash_skill.getTurnUseCard = function(self)
 	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
-	if self.player:getMark("@tied")>0 and slash:isAvailable(self.player) then return sgs.Card_Parse("@LianliSlashCard=.") end
+	if self.player:getMark("@tied")>0 and slash:isAvailable(self.player) then
+		local target
+		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if p:getMark("@tied")>0 then target = p break end
+		end
+		if target and self:getCardsNum("Slash", target) > 0 then
+			return sgs.Card_Parse("@LianliSlashCard=.")
+		end
+	end
 end
 
 sgs.ai_skill_use_func.LianliSlashCard = function(card, use, self)

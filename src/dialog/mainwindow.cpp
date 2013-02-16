@@ -10,7 +10,12 @@
 #include "window.h"
 #include "halldialog.h"
 #include "pixmapanimation.h"
+
+#ifndef CLO_SOU
 #include "crypto.h"
+#else
+#include "crypt0.h"
+#endif
 
 #include <cmath>
 #include <QGraphicsView>

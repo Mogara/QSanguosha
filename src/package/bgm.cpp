@@ -357,7 +357,7 @@ public:
                 if(sp_pangtong->getMark("@sleep") == 1){
                     if(sp_pangtong->askForSkillInvoke(objectName())){
                         sp_pangtong->loseMark("@sleep", 1);
-                        room->broadcastInvoke("animate", "lightbox:$zuixiang");
+                        room->playLightbox(sp_pangtong, objectName(), "", 1500);
                         doZuixiang(sp_pangtong);
                     }
                 }else
@@ -791,7 +791,7 @@ void ShichouCard::onEffect(const CardEffectStruct &effect) const{
     PlayerStar player = effect.from;
     PlayerStar victim = effect.to;
 
-    room->broadcastInvoke("animate", "lightbox:$shichou");
+    room->playLightbox(player, skill_name, "", 1500);
 
     player->addMark("hate");
     victim->addMark("hate"+player->objectName());

@@ -121,8 +121,7 @@ public:
         int ec = player->getEquips().count();
         if(ec >= 3){
             Room *room = player->getRoom();
-            room->broadcastInvoke("animate", "lightbox:$V5Baijiang");
-            room->playSkillEffect(objectName());
+            room->playLightbox(player, "V5Baijiang", "", 1500);
 
             LogMessage log;
             log.type = "#BaijiangWake";
@@ -248,9 +247,7 @@ public:
             log.arg2 = objectName();
             room->sendLog(log);
 
-            room->playSkillEffect(objectName());
-            room->broadcastInvoke("animate", "lightbox:$V5Zili:2500");
-            room->getThread()->delay(2500);
+            room->playLightbox(player, "V5Zili", "2500", 2500);
 
             room->loseMaxHp(player);
 

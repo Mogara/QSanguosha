@@ -1,7 +1,7 @@
 -- translations for Hegemony Package
 
 return {
-	["hegemony"] = "国战",
+	["hegemony"] = "国战身份",
 	["hegemony_card"] = "国战新卡",
 
 -- card
