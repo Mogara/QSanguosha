@@ -133,6 +133,7 @@ scenario = { -- 非身份局模式下的一些设置
 ban_list = { -- 初始禁表设置
 	roles_ban = { -- 身份局单禁
 		"bgm_pangtong",
+		"liuxie"
 	},
 	kof_ban = { -- 1v1模式
 		"huatuo",

@@ -1276,7 +1276,7 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_caoren->addSkill(new Kuiwei);
     bgm_caoren->addSkill(new Yanzheng);
 
-    General *bgm_pangtong = new General(this, "bgm_pangtong", "qun", 3);
+    General *bgm_pangtong = new General(this, "bgm_pangtong", "qun", 3, true, true);
     bgm_pangtong->addSkill(new Manjuan);
     bgm_pangtong->addSkill(new Zuixiang);
     bgm_pangtong->addSkill(new MarkAssignSkill("@sleep", 1));
