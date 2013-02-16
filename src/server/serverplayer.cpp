@@ -847,6 +847,16 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
 }
 
+void ServerPlayer::addToYanxiao(const Card *card){
+    piles["#yanxiao"] << card->getEffectiveId();
+
+    room->moveCardTo(card, this, Player::Judging);
+}
+
+void ServerPlayer::removeFromYanxiao(const Card *card){
+    piles["#yanxiao"].removeOne(card->getEffectiveId());
+}
+
 void ServerPlayer::clearPile(const QString &pile_name){
     foreach(int a, getPile(pile_name))
         room->throwCard(a);

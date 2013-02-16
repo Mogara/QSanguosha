@@ -156,6 +156,8 @@ void Engine::addPackage(Package *package){
 
     QList<Card *> all_cards = package->findChildren<Card *>();
     foreach(Card *card, all_cards){
+        if(card->getNumber() < 0)
+            continue;
         card->setId(cards.length());
         cards << card;
 

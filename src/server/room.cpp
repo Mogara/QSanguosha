@@ -2730,17 +2730,21 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             from = move.from;
     }
 
-    if(from_place == Player::Judging && card->getSuit() == Card::Diamond){
-        QStringList yanxiaos;
-        if(from)
-            yanxiaos = from->property("yanxiao").toString().split("|");
-        QString idstr = card->getEffectIdString();
-        if(yanxiaos.contains(idstr))
-            yanxiaos.removeOne(idstr);
-        if(yanxiaos.isEmpty() && from)
-            setPlayerProperty(from, "yanxiao", QString());
-        if(place == Player::Judging && to)
-            setPlayerProperty(to, "yanxiao", yanxiaos.join("|"));
+    if(from_place == Player::Judging){
+        const DelayedTrick *trick = DelayedTrick::CastFrom(card, from);
+        if(trick && trick->isKindOf("Smile")){
+            if(from)
+                from->removeFromYanxiao(card);
+                //yanxiaos = from->property("yanxiao").toString().split("|");
+            //QString idstr = card->getEffectIdString();
+            //if(yanxiaos.contains(idstr))
+            //    yanxiaos.removeOne(idstr);
+            //if(yanxiaos.isEmpty() && from)
+            //    setPlayerProperty(from, "yanxiao", QString());
+            if(place == Player::Judging && to)
+                to->addToYanxiao(card);
+                //setPlayerProperty(to, "yanxiao", yanxiaos.join("|"));
+        }
     }
 
     if(from)

@@ -334,7 +334,7 @@ void Dashboard::hideAvatar(){
 
 void Dashboard::installDelayedTrick(CardItem *card){
     judging_area << card;
-    const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard());
+    const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard(), Self);
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
     item->setPixmap(QPixmap(trick->getIconPath()));
     QString tooltip;

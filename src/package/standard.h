@@ -186,7 +186,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual void takeEffect(ServerPlayer *target) const = 0;
 
-    static const DelayedTrick *CastFrom(const Card *card);
+    static const DelayedTrick *CastFrom(const Card *card, const Player *player = NULL);
 
 protected:
     JudgeStruct judge;
@@ -365,5 +365,16 @@ public:
 };
 
 // Skill cards
+class Smile: public DelayedTrick{
+public:
+    Smile(Suit suit = Card::NoSuit, int number = -1)
+        :DelayedTrick(suit, number){
+        setObjectName("smile");
+        target_fixed = false;
+    }
+
+    void takeEffect(ServerPlayer *) const{
+    }
+};
 
 #endif // STANDARD_H

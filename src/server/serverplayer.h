@@ -102,6 +102,8 @@ public:
     void addToPile(const QString &pile_name, int card_id, bool open = true);
     void clearPile(const QString &pile_name);
     void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
+    void addToYanxiao(const Card *card);
+    void removeFromYanxiao(const Card *card);
 
     void copyFrom(ServerPlayer* sp);
 

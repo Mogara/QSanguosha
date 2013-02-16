@@ -899,9 +899,10 @@ void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     ServerPlayer *target = targets.value(0, source);
     room->playSkillEffect(skill_name, target->getGeneral()->isCaoCao("sunce") ? 2 : 1);
     room->moveCardTo(this, target, Player::Judging);
-    QStringList yanxiaos = target->property("yanxiao").toString().split("|");
-    yanxiaos << getEffectIdString();
-    room->setPlayerProperty(target, "yanxiao", yanxiaos.join("|"));
+    target->addToYanxiao(this);
+    //QStringList yanxiaos = target->property("yanxiao").toString().split("|");
+    //yanxiaos << getEffectIdString();
+    //room->setPlayerProperty(target, "yanxiao", yanxiaos.join("|"));
 }
 
 class YanxiaoViewAsSkill: public OneCardViewAsSkill{
@@ -943,26 +944,32 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::Judge)
             return false;
-        QString yanx = player->property("yanxiao").toString();
+        bool yx = false;
+        foreach(const DelayedTrick *trick, player->delayedTricks()){
+            if(trick->isKindOf("Smile") && player->getPile("#yanxiao").contains(trick->getEffectiveId())){
+                yx = true;
+                break;
+            }
+        }
+        /*QString yanx = player->property("yanxiao").toString();
         if(yanx.isEmpty())
             return false;
         QStringList yanxiaos = yanx.split("|");
-        bool yx = false;
-        QList<const Card *> judgis = player->getJudgingArea();
         foreach(const Card *c, judgis){
             QString idstr = c->getEffectIdString();
             if(yanxiaos.contains(idstr)){
                 yx = true;
                 break;
             }
-        }
+        }*/
         if(yx){
-            while(!judgis.isEmpty() && player->isAlive()){
-                const Card *trick = judgis.takeLast();
-                player->obtainCard(trick);
-            }
+            DummyCard *dummy_card = new DummyCard;
+            foreach(const Card *cd, player->getJudgingArea())
+                dummy_card->addSubcard(cd);
+            if(player->isAlive())
+                room->moveCardTo(dummy_card, player, Player::Hand);
         }
-        room->setPlayerProperty(player, "yanxiao", QString());
+        //room->setPlayerProperty(player, "yanxiao", QString());
         return true;
     }
 };
@@ -1297,6 +1304,7 @@ BGMPackage::BGMPackage():Package("BGM"){
     General *bgm_daqiao = new General(this, "bgm_daqiao", "wu", 3, false);
     bgm_daqiao->addSkill(new Yanxiao);
     bgm_daqiao->addSkill(new Anxian);
+    (new Smile)->setParent(this);
 
     General *bgm_ganning = new General(this, "bgm_ganning", "qun");
     bgm_ganning->addSkill(new Yinling);
