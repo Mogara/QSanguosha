@@ -240,7 +240,6 @@ class Duanchang: public TriggerSkill{
 public:
     Duanchang():TriggerSkill("duanchang"){
         events << Death;
-
         frequency = Compulsory;
     }
 
