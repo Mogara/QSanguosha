@@ -247,15 +247,11 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from) {
             room->broadcastSkillInvoke(objectName());
-            QVariant data_for_ai = QVariant::fromValue((PlayerStar)damage.to);
-            if (damage.damage > 1)
-                room->setPlayerFlag(damage.from, "damage_plus"); //for AI
             QString choice;
             if (!damage.from->isKongcheng())
-                choice = room->askForChoice(damage.from, objectName(), "yes+no", data_for_ai);
+                choice = room->askForChoice(damage.from, objectName(), "yes+no", data);
             else
                 choice = "yes";
-            room->setPlayerFlag(damage.from, "-damage_plus");
             if (choice == "no") {
                 LogMessage log;
                 log.type = "#Mingshi";
