@@ -334,14 +334,13 @@ void Dashboard::hideAvatar(){
 
 void Dashboard::installDelayedTrick(CardItem *card){
     judging_area << card;
-    const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard(), Self);
+    const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard());
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
     item->setPixmap(QPixmap(trick->getIconPath()));
-    QString tooltip;
+    QString tooltip = trick->getDescription();
     if(trick->isVirtualCard())
-        tooltip=Sanguosha->getCard((trick->getSubcards()).at(0))->getDescription();
-    else
-        tooltip=trick->getDescription();
+        tooltip = QString("%1<br/>----------<br/>%2").arg(tooltip)
+                .arg(Sanguosha->getCard((trick->getSubcards()).at(0))->getDescription());
     item->setToolTip(tooltip);
     item->setPos(3 + delayed_tricks.length() * 27, 5);
     delayed_tricks << item;

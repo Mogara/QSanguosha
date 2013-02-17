@@ -236,20 +236,18 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
         room->throwCard(this);
 }
 
-const DelayedTrick *DelayedTrick::CastFrom(const Card *card, const Player *player){
+const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
     DelayedTrick *trick = NULL;
     int id = card->getEffectiveId();
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
     if(card->getSuit() == Card::Diamond){
-        if(player){
-            //QString name = player->getPileName(id);
-            //if(name.contains("yanxiao")){
-            if(card->hasFlag("yanxiao")){
-                trick = new Smile(suit, number);
-                trick->addSubcard(id);
-                return trick;
-            }
+        //QString name = player->getPileName(id);
+        //if(name.contains("yanxiao")){
+        if(card->hasFlag("yanxiao")){
+            trick = new Smile(suit, number);
+            trick->addSubcard(id);
+            return trick;
         }
         trick = new Indulgence(suit, number);
         trick->addSubcard(id);

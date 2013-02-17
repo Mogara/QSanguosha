@@ -2731,19 +2731,12 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     }
 
     if(from_place == Player::Judging){
-        const DelayedTrick *trick = DelayedTrick::CastFrom(card, from);
+        const DelayedTrick *trick = DelayedTrick::CastFrom(card);
         if(trick && trick->isKindOf("Smile")){
             if(from)
                 from->removeFromYanxiao(card);
-                //yanxiaos = from->property("yanxiao").toString().split("|");
-            //QString idstr = card->getEffectIdString();
-            //if(yanxiaos.contains(idstr))
-            //    yanxiaos.removeOne(idstr);
-            //if(yanxiaos.isEmpty() && from)
-            //    setPlayerProperty(from, "yanxiao", QString());
             if(place == Player::Judging && to)
                 to->addToYanxiao(card);
-                //setPlayerProperty(to, "yanxiao", yanxiaos.join("|"));
         }
     }
 

@@ -901,9 +901,6 @@ void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     room->playSkillEffect(skill_name, target->getGeneral()->isCaoCao("sunce") ? 2 : 1);
     const Card *card = Sanguosha->getCard(getSubcards().first());
     target->addToYanxiao(card);
-    //QStringList yanxiaos = target->property("yanxiao").toString().split("|");
-    //yanxiaos << getEffectIdString();
-    //room->setPlayerProperty(target, "yanxiao", yanxiaos.join("|"));
 }
 
 class YanxiaoViewAsSkill: public OneCardViewAsSkill{
@@ -927,10 +924,9 @@ public:
     }
 };
 
-class Yanxiao: public TriggerSkill{
+class Yanxiao: public PhaseChangeSkill{
 public:
-    Yanxiao():TriggerSkill("yanxiao"){
-        events << PhaseChange;
+    Yanxiao():PhaseChangeSkill("yanxiao"){
         view_as_skill = new YanxiaoViewAsSkill;
     }
 
@@ -942,38 +938,34 @@ public:
         return 2;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
         if(player->getPhase() != Player::Judge)
             return false;
         bool yx = false;
         foreach(const DelayedTrick *trick, player->delayedTricks()){
-            if(player->getPile("#yanxiao").contains(trick->getEffectiveId())){
+            //if(player->getPile("#yanxiao").contains(trick->getEffectiveId())){
+            if(trick->isKindOf("Smile")){
                 yx = true;
                 break;
             }
         }
-        /*QString yanx = player->property("yanxiao").toString();
-        if(yanx.isEmpty())
-            return false;
-        QStringList yanxiaos = yanx.split("|");
-        foreach(const Card *c, judgis){
-            QString idstr = c->getEffectIdString();
-            if(yanxiaos.contains(idstr)){
-                yx = true;
-                break;
-            }
-        }*/
         if(yx){
+            LogMessage log;
+            log.type = "#Yanxiao";
+            log.from = player;
+            log.arg = objectName();
+            room->sendLog(log);
             DummyCard *dummy_card = new DummyCard;
             foreach(const Card *cd, player->getJudgingArea()){
                 dummy_card->addSubcard(cd);
                 player->removeFromYanxiao(cd);
             }
             if(player->isAlive())
-                room->moveCardTo(dummy_card, player, Player::Hand);
+                room->obtainCard(player, dummy_card);
+                //room->moveCardTo(dummy_card, player, Player::Hand);
             return true;
         }
-        //room->setPlayerProperty(player, "yanxiao", QString());
         return false;
     }
 };

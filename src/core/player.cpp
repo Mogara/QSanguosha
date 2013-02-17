@@ -544,7 +544,7 @@ bool Player::isAllNude() const{
 
 void Player::addDelayedTrick(const Card *trick){
     judging_area << trick;
-    delayed_tricks << DelayedTrick::CastFrom(trick, this);
+    delayed_tricks << DelayedTrick::CastFrom(trick);
 }
 
 void Player::removeDelayedTrick(const Card *trick){
@@ -567,11 +567,9 @@ QList<const DelayedTrick *> Player::delayedTricks() const{
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
-    //QStringList yanxiaos = property("yanxiao").toString().split("|");
     foreach(const DelayedTrick *trick, delayed_tricks){
-        QString name = getPileName(trick->getEffectiveId());
         if(trick->objectName() == trick_name)
-            return !name.contains("yanxiao");
+            return !trick->hasFlag("yanxiao");
     }
     return false;
 }

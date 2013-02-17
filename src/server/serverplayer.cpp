@@ -849,15 +849,14 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
 }
 
 void ServerPlayer::addToYanxiao(const Card *card){
-    piles["#yanxiao"] << card->getEffectiveId();
-
-    card->setFlags("yanxiao");
+    //piles["#yanxiao"] << card->getEffectiveId();
+    room->setCardFlag(card, "yanxiao", this);
     room->moveCardTo(card, this, Player::Judging);
 }
 
 void ServerPlayer::removeFromYanxiao(const Card *card){
-    card->setFlags("-yanxiao");
-    piles["#yanxiao"].removeOne(card->getEffectiveId());
+    room->setCardFlag(card, "-yanxiao", this);
+   // piles["#yanxiao"].removeOne(card->getEffectiveId());
 }
 
 void ServerPlayer::clearPile(const QString &pile_name){

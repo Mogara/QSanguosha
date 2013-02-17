@@ -1433,7 +1433,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
                 card_item->writeCardDesc(show_name);
 
             putToDiscard(card_item);
-//              if(discarded_queue.length() > 8){
+//            if(discarded_queue.length() > 8){
 //                CardItem *first = discarded_queue.dequeue();
 //                delete first;
 //            }

@@ -65,7 +65,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             equip_index = static_cast<int>(equip->location());
         }else
-            trick = DelayedTrick::CastFrom(card, from);
+            trick = DelayedTrick::CastFrom(card);
 
         QList<ServerPlayer *> tos;
         foreach(ServerPlayer *p, room->getAlivePlayers()){

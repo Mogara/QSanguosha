@@ -425,6 +425,7 @@ void Photo::installDelayedTrick(CardItem *trick){
 
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
     const DelayedTrick *delay = player->topDelayedTrick();
+    //const DelayedTrick *delay = DelayedTrick::CastFrom(trick->getCard());
     item->setPixmap(QPixmap(delay->getIconPath()));
     QString tooltip = delay->getDescription();
     if(delay->isVirtualCard())
