@@ -365,12 +365,13 @@ public:
 };
 
 // Skill cards
+
 class Smile: public DelayedTrick{
+    Q_OBJECT
 public:
-    Smile(Suit suit = Card::NoSuit, int number = -1)
+    Q_INVOKABLE Smile(Card::Suit suit = Card::NoSuit, int number = -1)
         :DelayedTrick(suit, number){
         setObjectName("smile");
-        target_fixed = false;
     }
 
     void takeEffect(ServerPlayer *) const{

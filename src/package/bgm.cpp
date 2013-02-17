@@ -946,7 +946,7 @@ public:
             return false;
         bool yx = false;
         foreach(const DelayedTrick *trick, player->delayedTricks()){
-            if(trick->isKindOf("Smile") && player->getPile("#yanxiao").contains(trick->getEffectiveId())){
+            if(player->getPile("#yanxiao").contains(trick->getEffectiveId())){
                 yx = true;
                 break;
             }
@@ -964,13 +964,16 @@ public:
         }*/
         if(yx){
             DummyCard *dummy_card = new DummyCard;
-            foreach(const Card *cd, player->getJudgingArea())
+            foreach(const Card *cd, player->getJudgingArea()){
                 dummy_card->addSubcard(cd);
+                player->removeFromYanxiao(cd);
+            }
             if(player->isAlive())
                 room->moveCardTo(dummy_card, player, Player::Hand);
+            return true;
         }
         //room->setPlayerProperty(player, "yanxiao", QString());
-        return true;
+        return false;
     }
 };
 

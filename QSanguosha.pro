@@ -15,7 +15,7 @@ CONFIG += joystick
 # However, joystick is not supported under Mac OS X temporarily
 
 # If you want enable voice reading for chat content, uncomment the following line:
-CONFIG += chatvoice
+# CONFIG += chatvoice
 # Also, this function can only enabled under Windows system as it make use of Microsoft TTS
 
 SOURCES += \
@@ -50,7 +50,7 @@ SOURCES += \
 	src/dialog/roleassigndialog.cpp \
 	src/dialog/scenario-overview.cpp \
 	src/dialog/halldialog.cpp \
-	src/package/package.cpp \
+        src/package/package.cpp \
 	src/package/fire.cpp \
 	src/package/god.cpp \
 	src/package/joy.cpp \

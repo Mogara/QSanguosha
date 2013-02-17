@@ -357,6 +357,7 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 
     case Judging:{
             removeDelayedTrick(card);
+            removeFromYanxiao(card);
             break;
         }
 

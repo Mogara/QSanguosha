@@ -69,7 +69,7 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     room->recover(effect.to, recover, true);
 
     int index = -1;
-    if(effect.from->getGeneralName().contains("shangxiang") && effect.to->getGeneralName().contains("liubei"))
+    if(effect.from->getGeneral()->isCaoCao("shangxiang") && effect.to->getGeneral()->isCaoCao("liubei"))
         index = 2;
     else if(effect.from->getGeneral()->isMale()){
         if(effect.from == effect.to)

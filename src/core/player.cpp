@@ -569,8 +569,9 @@ QList<const DelayedTrick *> Player::delayedTricks() const{
 bool Player::containsTrick(const QString &trick_name) const{
     //QStringList yanxiaos = property("yanxiao").toString().split("|");
     foreach(const DelayedTrick *trick, delayed_tricks){
+        QString name = getPileName(trick->getEffectiveId());
         if(trick->objectName() == trick_name)
-            return true;
+            return !name.contains("yanxiao");
     }
     return false;
 }

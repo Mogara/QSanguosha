@@ -238,27 +238,26 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
 const DelayedTrick *DelayedTrick::CastFrom(const Card *card, const Player *player){
     DelayedTrick *trick = NULL;
+    int id = card->getEffectiveId();
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
-    if(player){
-        QList<int> yanxiaos = player->getPile("#yanxiao");
-        foreach(int yx, yanxiaos){
-            if(yx == card->getEffectiveId()){
+    if(card->getSuit() == Card::Diamond){
+        if(player){
+            QString name = player->getPileName(id);
+            if(name.contains("yanxiao")){
                 trick = new Smile(suit, number);
-                trick->addSubcard(card->getEffectiveId());
+                trick->addSubcard(id);
                 return trick;
             }
         }
-    }
-    if(card->inherits("DelayedTrick"))
-        return qobject_cast<const DelayedTrick *>(card);
-    else if(card->getSuit() == Card::Diamond){
         trick = new Indulgence(suit, number);
-        trick->addSubcard(card->getId());
+        trick->addSubcard(id);
     }
-    else if(card->isBlack() && (card->inherits("BasicCard") || card->inherits("EquipCard"))){
+    else if(card->inherits("DelayedTrick"))
+        return qobject_cast<const DelayedTrick *>(card);
+    else if(card->isBlack() && (card->isKindOf("BasicCard") || card->isKindOf("EquipCard"))){
         trick = new SupplyShortage(suit, number);
-        trick->addSubcard(card->getId());
+        trick->addSubcard(id);
     }
 
     return trick;
