@@ -1145,7 +1145,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
 
             if(use.card && use.card->isKindOf("Slash")){
-                if(room->askForCard(daqiao, ".", "@anxian-discard")){
+                if(room->askForCard(daqiao, ".", "@anxian-discard", data)){
                     room->broadcastSkillInvoke(objectName(), 2);
                     daqiao->addMark("anxian");
                     use.from->drawCards(1);
