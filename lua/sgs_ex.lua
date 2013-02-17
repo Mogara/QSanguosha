@@ -105,6 +105,8 @@ function sgs.CreateTargetModSkill(spec)
 	
 	if type(spec.pattern) == "string" then
 		skill.pattern = spec.pattern
+	else
+		skill.pattern = "Slash"
 	end
 
 	return skill

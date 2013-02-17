@@ -52,7 +52,6 @@ LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
 LuaTargetModSkill::LuaTargetModSkill(const char *name)
     : TargetModSkill(name), residue_func(0), distance_limit_func(0), extra_target_func(0)
 {
-    pattern = "Slash";
 }
 
 QString LuaTargetModSkill::getPattern() const{

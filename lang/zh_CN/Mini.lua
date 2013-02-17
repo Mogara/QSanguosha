@@ -46,6 +46,7 @@ return
     ["_mini_43"] = "连环计",
     ["_mini_44"] = "樊城之战",
     ["_mini_45"] = "武智防",
+    ["_mini_46"] = "精打细算",
 
     ["#WelcomeToMiniScenario"] = "欢迎来到小型场景第 %arg 关： %arg2",
 

@@ -1,0 +1,7 @@
+setPile:104,85,87,133,121,79,103,67,119,135,129,131,132,84,75,118,78,80,45
+general:caopi general2:select role:renegade starter:true endedByPile:lord+loyalist draw:0 
+general:simayi role:loyalist draw:0 
+general:xiahoudun role:loyalist draw:0 
+general:sujiang role:lord chained:true draw:0 equip:122 hand:98 
+general:caozhi role:loyalist draw:0 
+general:caocao role:loyalist chained:true draw:0 hand:127
