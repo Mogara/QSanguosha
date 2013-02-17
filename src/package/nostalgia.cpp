@@ -546,7 +546,7 @@ public:
 class NosJiefan : public TriggerSkill{
 public:
     NosJiefan():TriggerSkill("nosjiefan"){
-        events << Dying << SlashHit << SlashMissed << CardFinished;
+        events << Dying << Predamage << SlashMissed << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -572,16 +572,16 @@ public:
                 room->useCard(use);
             }
         }
-        else if(event == SlashHit){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(!player->hasSkill(objectName())
+        else if(event == Predamage){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(!damage.card->isKindOf("Slash") || !player->hasSkill(objectName())
                || room->getTag("NosJiefanTarget").isNull())
                 return false;
 
             DyingStruct dying = room->getTag("NosJiefanTarget").value<DyingStruct>();
             ServerPlayer *target = dying.who;
             room->removeTag("NosJiefanTarget");
-            Peach *peach = new Peach(effect.slash->getSuit(), effect.slash->getNumber());
+            Peach *peach = new Peach(damage.card->getSuit(), damage.card->getNumber());
             peach->setSkillName(objectName());
             CardUseStruct use;
             use.card = peach;

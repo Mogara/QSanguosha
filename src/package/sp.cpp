@@ -701,7 +701,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-        room->playLightbox(player, "Wuji", "1600", 1600);
+        room->playLightbox(player, "Wuji", "3100", 3100);
 
         player->addMark("wuji");
 
