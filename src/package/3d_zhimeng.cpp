@@ -500,6 +500,7 @@ void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
             room->obtainCard(source, card_id, room->getCardPlace(card_id) != Player::Hand);
         }
     }
+    room->broadcastInvoke("clearAG");
 }
 
 class Zha0xin: public ZeroCardViewAsSkill{

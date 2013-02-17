@@ -251,28 +251,38 @@ public:
 class Mingshi: public TriggerSkill{
 public:
     Mingshi():TriggerSkill("mingshi"){
-        events << Predamaged;
+        events << Predamaged << DamageComplete;
         frequency = Compulsory;
         view_as_skill = new MingshiViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.from && !damage.from->isKongcheng() && damage.damage > 0){
-            room->playSkillEffect(objectName());
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = player;
-            log.arg = objectName();
-            room->sendLog(log);
-            damage.from->tag["Mingshi"] = data;
-            if(room->askForUseCard(damage.from, "@@mingshi", "@mingshi:" + damage.to->objectName()))
-                room->showAllCards(damage.from);
-            else{
-                damage.damage --;
-                data = QVariant::fromValue(damage);
+        if(event == DamageComplete){
+            if(player->hasFlag("mingshi")){
+                room->broadcastInvoke("clearAG");
+                player->setFlags("-mingshi");
             }
-            damage.from->tag.remove("Mingshi");
+        }
+        else{
+            if(damage.from && !damage.from->isKongcheng() && damage.damage > 0){
+                room->playSkillEffect(objectName());
+                LogMessage log;
+                log.type = "#TriggerSkill";
+                log.from = player;
+                log.arg = objectName();
+                room->sendLog(log);
+                damage.from->tag["Mingshi"] = data;
+                if(room->askForUseCard(damage.from, "@@mingshi", "@mingshi:" + damage.to->objectName())){
+                    player->setFlags("mingshi");
+                    room->showAllCards(damage.from);
+                }
+                else{
+                    damage.damage --;
+                    data = QVariant::fromValue(damage);
+                }
+                damage.from->tag.remove("Mingshi");
+            }
         }
         return false;
     }

@@ -244,6 +244,8 @@ public:
 
             if(same_color && damage.from && !damage.from->isKongcheng())
                 room->askForDiscard(damage.from, objectName(), 1);
+
+            room->broadcastInvoke("clearAG");
         }
     }
 };

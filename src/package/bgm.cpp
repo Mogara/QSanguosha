@@ -540,6 +540,7 @@ public:
             if(!pindian->from->isKongcheng()){
                 room->showAllCards(pindian->from);
                 room->askForDiscard(pindian->from, "dahe", 1, false, false);
+                room->broadcastInvoke("clearAG");
             }
         }
         return false;
@@ -1433,6 +1434,8 @@ public:
         card_use.to << target;
         card_use.card = slash;
         room->useCard(card_use, false);
+
+        room->broadcastInvoke("clearAG");
         return false;
     }
 };
