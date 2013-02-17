@@ -105,7 +105,7 @@ public:
     LuaFunction residue_func;
     LuaFunction distance_limit_func;
     LuaFunction extra_target_func;
-    char *pattern;
+    const char *pattern;
 };
 
 class LuaSkillCard: public SkillCard {
