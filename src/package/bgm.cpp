@@ -898,8 +898,8 @@ bool YanxiaoCard::targetFilter(const QList<const Player *> &targets, const Playe
 void YanxiaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.value(0, source);
     room->playSkillEffect(skill_name, target->getGeneral()->isCaoCao("sunce") ? 2 : 1);
-    room->moveCardTo(this, target, Player::Judging);
-    target->addToYanxiao(this);
+    const Card *card = Sanguosha->getCard(getSubcards().first());
+    target->addToYanxiao(card);
     //QStringList yanxiaos = target->property("yanxiao").toString().split("|");
     //yanxiaos << getEffectIdString();
     //room->setPlayerProperty(target, "yanxiao", yanxiaos.join("|"));

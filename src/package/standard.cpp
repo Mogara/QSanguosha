@@ -243,8 +243,9 @@ const DelayedTrick *DelayedTrick::CastFrom(const Card *card, const Player *playe
     int number = card->getNumber();
     if(card->getSuit() == Card::Diamond){
         if(player){
-            QString name = player->getPileName(id);
-            if(name.contains("yanxiao")){
+            //QString name = player->getPileName(id);
+            //if(name.contains("yanxiao")){
+            if(card->hasFlag("yanxiao")){
                 trick = new Smile(suit, number);
                 trick->addSubcard(id);
                 return trick;

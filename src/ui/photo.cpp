@@ -424,12 +424,12 @@ void Photo::installDelayedTrick(CardItem *trick){
     trick->goBack(true);
 
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
-    item->setPixmap(QPixmap(player->topDelayedTrick()->getIconPath()));
-    QString tooltip;
-    if(player->topDelayedTrick()->isVirtualCard())
-        tooltip=Sanguosha->getCard((player->topDelayedTrick()->getSubcards()).at(0))->getDescription();
-    else
-        tooltip=player->topDelayedTrick()->getDescription();
+    const DelayedTrick *delay = player->topDelayedTrick();
+    item->setPixmap(QPixmap(delay->getIconPath()));
+    QString tooltip = delay->getDescription();
+    if(delay->isVirtualCard())
+        tooltip = QString("%1<br/>----------<br/>%2").arg(tooltip)
+                .arg(Sanguosha->getCard((delay->getSubcards()).at(0))->getDescription());
     item->setToolTip(tooltip);
 
     item->setPos(-10, 16 + judging_area.count() * 19);
