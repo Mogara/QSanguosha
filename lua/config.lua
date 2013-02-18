@@ -137,7 +137,8 @@ ban_list = { -- 初始禁表设置
 	},
 	kof_ban = { -- 1v1模式
 		"huatuo",
-		"lvmeng"
+		"lvmeng",
+		"zuoci"
 	},
 	savsa_ban = { -- 3v3模式
 		"yuji",

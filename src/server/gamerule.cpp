@@ -245,7 +245,10 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
 
     case CardFinished: {
             CardUseStruct use = data.value<CardUseStruct>();
-            use.card->setFlags(".");
+            bool hasyanxiao = use.card->hasFlag("yanxiao");
+            use.card->clearFlags();
+            if(hasyanxiao)
+                room->setCardFlag(use.card, "yanxiao");
 
             break;
     }

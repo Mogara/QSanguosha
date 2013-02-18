@@ -395,9 +395,9 @@ public:
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
-            room->playSkillEffect(objectName());
             room->loseMaxHp(killer);
             room->acquireSkill(killer, objectName());
+            killer->playSkillEffect(objectName());
         }
         return false;
     }
