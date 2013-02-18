@@ -68,23 +68,31 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
             trick = DelayedTrick::CastFrom(card);
 
         QList<ServerPlayer *> tos;
-        foreach(ServerPlayer *p, room->getAlivePlayers()){
+        foreach(ServerPlayer *p, room->getOtherPlayers(from)){
             if(equip_index != -1){
                 if(p->getEquip(equip_index) == NULL)
                     tos << p;
             }else{
+                if(trick && trick->isKindOf("Smile")){
+                    tos << p;
+                    continue;
+                }
                 if(!zhanghe->isProhibited(p, trick) && !p->containsTrick(trick->objectName()))
                     tos << p;
             }
         }
 
-        if(trick && trick->isVirtualCard())
-            delete trick;
-
         room->setTag("QiaobianTarget", QVariant::fromValue(from));
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian");
-        if(to)
-            room->moveCardTo(card, to, place);
+        if(to){
+            if(trick && trick->isKindOf("Smile"))
+                to->addToYanxiao(card);
+            else
+                room->moveCardTo(card, to, place);
+        }
+
+        if(trick && trick->isVirtualCard())
+            delete trick;
         room->removeTag("QiaobianTarget");
     }
     else if(zhanghe->getPhase() == Player::Judge)

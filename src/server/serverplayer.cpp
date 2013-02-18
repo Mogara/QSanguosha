@@ -357,7 +357,7 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 
     case Judging:{
             removeDelayedTrick(card);
-            removeFromYanxiao(card);
+            removeYanxiao(card);
             break;
         }
 
@@ -849,14 +849,12 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
 }
 
 void ServerPlayer::addToYanxiao(const Card *card){
-    //piles["#yanxiao"] << card->getEffectiveId();
-    room->setCardFlag(card, "yanxiao", this);
+    room->setCardFlag(card, "yanxiao");
     room->moveCardTo(card, this, Player::Judging);
 }
 
-void ServerPlayer::removeFromYanxiao(const Card *card){
-    room->setCardFlag(card, "-yanxiao", this);
-   // piles["#yanxiao"].removeOne(card->getEffectiveId());
+void ServerPlayer::removeYanxiao(const Card *card){
+    room->setCardFlag(card, "-yanxiao");
 }
 
 void ServerPlayer::clearPile(const QString &pile_name){

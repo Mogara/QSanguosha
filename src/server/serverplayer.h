@@ -103,7 +103,7 @@ public:
     void clearPile(const QString &pile_name);
     void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
     void addToYanxiao(const Card *card);
-    void removeFromYanxiao(const Card *card);
+    void removeYanxiao(const Card *card);
 
     void copyFrom(ServerPlayer* sp);
 

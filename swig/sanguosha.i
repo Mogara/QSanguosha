@@ -619,6 +619,7 @@ public:
 
 	void setFlags(const char *flag) const;
 	bool hasFlag(const char *flag) const;
+	bool hasFlag(const char *flag, bool getreal) const;
 	void clearFlags() const;
 
 	virtual void onUse(Room *room, const CardUseStruct &card_use) const;

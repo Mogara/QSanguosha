@@ -2801,7 +2801,7 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
     if(move.from_place == Player::Judging){
         if(card->hasFlag("yanxiao")){
             if(move.from)
-                move.from->removeFromYanxiao(card);
+                move.from->removeYanxiao(card);
             if(move.to_place == Player::Judging && move.to)
                 move.to->addToYanxiao(card);
         }
