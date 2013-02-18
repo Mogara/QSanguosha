@@ -211,6 +211,24 @@ void General::winWord() const{
     Sanguosha->playEffect(filename);
 }
 
+QString General::getLastword() const{
+    QString general_name = objectName();
+    QString last_word = Sanguosha->translate("~" + general_name);
+    if(last_word.startsWith("~")){
+        QStringList origin_generals = general_name.split("_");
+        if(origin_generals.length()>1)
+            last_word = Sanguosha->translate(("~") +  origin_generals.at(1));
+    }
+
+    if(last_word.startsWith("~") && general_name.endsWith("f")){
+        QString origin_general = general_name;
+        origin_general.chop(1);
+        if(Sanguosha->getGeneral(origin_general))
+            last_word = Sanguosha->translate(("~") + origin_general);
+    }
+    return last_word;
+}
+
 QString General::getWinword() const{
     QString general_name = objectName();
     QString win_word = Sanguosha->translate("`" + general_name);

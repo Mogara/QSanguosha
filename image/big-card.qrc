@@ -10,10 +10,12 @@
 		<file>big-card/collateral.png</file>
 		<file>big-card/crossbow.png</file>
 		<file>big-card/dayuan.png</file>
+		<file>big-card/deluge.png</file>
 		<file>big-card/dilu.png</file>
 		<file>big-card/dismantlement.png</file>
 		<file>big-card/double_sword.png</file>
 		<file>big-card/duel.png</file>
+		<file>big-card/earthquake.png</file>
 		<file>big-card/ease_fatigue.png</file>
 		<file>big-card/eight_diagram.png</file>
 		<file>big-card/ex_nihilo.png</file>
@@ -33,12 +35,15 @@
 		<file>big-card/know_thyself.png</file>
 		<file>big-card/kylin_bow.png</file>
 		<file>big-card/lightning.png</file>
+		<file>big-card/monkey.png</file>
 		<file>big-card/moon_spear.png</file>
+		<file>big-card/mudslide.png</file>
 		<file>big-card/nullification.png</file>
 		<file>big-card/peach.png</file>
 		<file>big-card/qinggang_sword.png</file>
 		<file>big-card/renwang_shield.png</file>
 		<file>big-card/savage_assault.png</file>
+		<file>big-card/shit.png</file>
 		<file>big-card/silver_lion.png</file>
 		<file>big-card/slash.png</file>
 		<file>big-card/snatch.png</file>
@@ -46,12 +51,15 @@
 		<file>big-card/sp_moonspear.png</file>
 		<file>big-card/supply_shortage.png</file>
 		<file>big-card/thunder_slash.png</file>
+		<file>big-card/typhoon.png</file>
 		<file>big-card/vine.png</file>
+		<file>big-card/volcano.png</file>
 		<file>big-card/yitian_sword.png</file>
 		<file>big-card/yx_sword.png</file>
 		<file>big-card/zhuahuangfeidian.png</file>
 		<file>big-card/zixing.png</file>
 		<file>big-card/wuliujian.png</file>
 		<file>big-card/tri_double.png</file>
+		<file>big-card/fiveline.png</file>
 	</qresource>
 </RCC>
