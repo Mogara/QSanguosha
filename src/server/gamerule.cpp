@@ -176,8 +176,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
                 room->setPlayerFlag(player, "-drank");
             }
-            if (player->getPhase() == Player::Play)
+            if (player->getPhase() == Player::Play) {
+                room->setPlayerMark(player, "SlashCount", 0);
                 player->clearHistory();
+            }
             break;
         }
     case EventPhaseChanging: {

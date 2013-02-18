@@ -2589,6 +2589,8 @@ void Room::useCard(const CardUseStruct &use, bool add_history){
             wrapped->onUse(this, card_use);
             return;
         }
+        if (card_use.card->isKindOf("Slash") && add_history && slash_count > 0)
+            setPlayerMark(card_use.from, "SlashCount", card_use.from->getMark("SlashCount") + 1);
         card_use.card->onUse(this, card_use);
     }
     else if(card){
