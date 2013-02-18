@@ -544,7 +544,13 @@ bool Player::isAllNude() const{
 
 void Player::addDelayedTrick(const Card *trick){
     judging_area << trick;
-    delayed_tricks << DelayedTrick::CastFrom(trick);
+    if(trick->hasFlag("yanxiao")){
+        DelayedTrick *yanxiao = new Smile(trick->getSuit(), trick->getNumber());
+        yanxiao->addSubcard(trick);
+        delayed_tricks << yanxiao;
+    }
+    else
+        delayed_tricks << DelayedTrick::CastFrom(trick);
 }
 
 void Player::removeDelayedTrick(const Card *trick){

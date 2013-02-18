@@ -181,6 +181,8 @@ public:
                     room->installEquip(guanyu, "chitu");
                     room->acquireSkill(guanyu, "zhanshuangxiong");
 
+                    ServerPlayer *zhenji = room->findPlayer("zhenji");
+                    room->setPlayerProperty(zhenji, "kingdom", "qun");
 
                     ServerPlayer *zhangliao = room->findPlayer("zhangliao");
                     room->detachSkillFromPlayer(zhangliao, "tuxi");
@@ -214,6 +216,7 @@ public:
                 if(player->getGeneralName() == "yuanshao" && damage.nature == DamageStruct::Fire
                    && damage.from->getRoleEnum() == Player::Rebel){
                     room->setTag("BurnWuchao", true);
+                    room->playLightbox(player, "burnwuchao", "3000", 3000);
 
                     QStringList tos;
                     tos << "yuanshao" << "yanliangwenchou" << "zhenji" << "liubei";
@@ -273,7 +276,8 @@ GuanduScenario::GuanduScenario()
     skills << new SmallTuxi
             << new ZhanShuangxiong
             << new GreatYiji
-            << new DamageBeforePlay;
+            << new DamageBeforePlay
+            << new Skill("burnwuchao");
 
     addMetaObject<ZhanShuangxiongCard>();
     addMetaObject<SmallTuxiCard>();
@@ -282,8 +286,29 @@ GuanduScenario::GuanduScenario()
 AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
     if(a->getRole() == "renegade" && b->getRole() == "renegade")
         return AI::Friend;
-    else
-        return AI::GetRelation(a, b);
+
+    bool burned = a->getRoom()->getTag("BurnWuchao").toBool();
+    if(!burned && a->getRoom()->getAlivePlayers().length() > 4){
+        if(a->getGeneral()->isCaoCao("liubei")){
+            if(b->getRole() == "loyalist" || b->isLord())
+                return AI::Friend;
+            if(b->getRole() == "rebel")
+                return AI::Enemy;
+        }
+        if(a->getGeneral()->isCaoCao("guanyu")){
+            if(b->getRole() == "loyalist")
+                return AI::Enemy;
+        }
+        if(a->getRole() == "loyalist" || a->isLord()){
+            if(b->getGeneral()->isCaoCao("liubei"))
+                return AI::Friend;
+        }
+        if(a->getRole() == "rebel"){
+            if(b->getGeneral()->isCaoCao("guanyu"))
+                return AI::Friend;
+        }
+    }
+    return AI::GetRelation(a, b);
 }
 
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{

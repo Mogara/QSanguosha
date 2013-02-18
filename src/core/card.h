@@ -121,6 +121,7 @@ public:
 
     void setFlags(const QString &flag) const;
     bool hasFlag(const QString &flag) const;
+    bool hasFlag(const QString &flag, bool getreal) const;
     void clearFlags() const;
     bool hasSameSuit() const;
 

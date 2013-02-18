@@ -307,6 +307,8 @@ return {
 	["designer:jiawenhe"] = "氢弹",
 	["illustrator:jiawenhe"] = "三国豪杰传",
 	["cv:jiawenhe"] = "喵小林",
+	["$dongcha1"] = "破善攻者，须先知其所守！",
+	["$dongcha2"] = "破善守者，须先知其所攻！",
 	["$dushi"] = "毒龙有逆鳞，毒士有遗兵。",
 	["~jiawenhe"] = "时机未到，我当蛰伏！",
 

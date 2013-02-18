@@ -410,7 +410,7 @@ public:
         log.arg = QString::number(damage.damage);
         log.arg2 = QString::number(damage.damage + 1);
         room->sendLog(log);
-        room->playSkillEffect(objectName());
+        room->playSkillEffect(objectName(), damage.to->getGeneral()->isCaoCao("lvbu") ? 2 : 1);
         damage.damage ++;
         data = QVariant::fromValue(damage);
 
@@ -944,7 +944,6 @@ public:
             return false;
         bool yx = false;
         foreach(const DelayedTrick *trick, player->delayedTricks()){
-            //if(player->getPile("#yanxiao").contains(trick->getEffectiveId())){
             if(trick->isKindOf("Smile")){
                 yx = true;
                 break;
@@ -959,7 +958,7 @@ public:
             DummyCard *dummy_card = new DummyCard;
             foreach(const Card *cd, player->getJudgingArea()){
                 dummy_card->addSubcard(cd);
-                player->removeFromYanxiao(cd);
+                player->removeYanxiao(cd);
             }
             if(player->isAlive())
                 room->obtainCard(player, dummy_card);

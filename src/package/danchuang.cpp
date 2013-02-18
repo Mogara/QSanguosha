@@ -395,9 +395,9 @@ public:
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
-            room->playSkillEffect(objectName());
             room->loseMaxHp(killer);
             room->acquireSkill(killer, objectName());
+            killer->playSkillEffect(objectName());
         }
         return false;
     }
@@ -416,7 +416,7 @@ DanchuangPackage::DanchuangPackage()
     v5zhonghui->addSkill(new V5Zili);
     v5zhonghui->addRelateSkill("v5paiyi");
 
-    General *xiahoujie = new General(this, "xiahoujie", "wei", 3, true, true);
+    General *xiahoujie = new General(this, "xiahoujie", "wei", 3);
     xiahoujie->addSkill(new Xianiao);
     xiahoujie->addSkill(new Tangqiang);
 

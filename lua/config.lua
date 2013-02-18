@@ -3,8 +3,8 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130208",
-	version_name = "金蛇版",
+	version = "20130216",
+	version_name = "金蛇版·法海补丁",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
@@ -137,7 +137,8 @@ ban_list = { -- 初始禁表设置
 	},
 	kof_ban = { -- 1v1模式
 		"huatuo",
-		"lvmeng"
+		"lvmeng",
+		"zuoci"
 	},
 	savsa_ban = { -- 3v3模式
 		"yuji",

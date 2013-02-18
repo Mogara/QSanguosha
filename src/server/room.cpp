@@ -1002,13 +1002,11 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     player->setProperty(property_name, value);
     broadcastProperty(player, property_name);
 
-    if(strcmp(property_name, "hp") == 0){
+    if(strcmp(property_name, "hp") == 0)
         thread->trigger(HpChanged, player);
-    }
 
-    if(strcmp(property_name, "maxhp") == 0){
+    if(strcmp(property_name, "maxhp") == 0)
         thread->trigger(MaxHpChanged, player);
-    }
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
@@ -2730,16 +2728,6 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             from = move.from;
     }
 
-    if(from_place == Player::Judging){
-        const DelayedTrick *trick = DelayedTrick::CastFrom(card);
-        if(trick && trick->isKindOf("Smile")){
-            if(from)
-                from->removeFromYanxiao(card);
-            if(place == Player::Judging && to)
-                to->addToYanxiao(card);
-        }
-    }
-
     if(from)
         thread->trigger(CardLostDone, from);
     if(to)
@@ -2805,6 +2793,15 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         case Player::Special: table_cards.append(move.card_id); break;
         default:
             break;
+        }
+    }
+
+    if(move.from_place == Player::Judging){
+        if(card->hasFlag("yanxiao")){
+            if(move.from)
+                move.from->removeYanxiao(card);
+            if(move.to_place == Player::Judging && move.to)
+                move.to->addToYanxiao(card);
         }
     }
 

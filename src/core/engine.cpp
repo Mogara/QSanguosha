@@ -558,7 +558,8 @@ QStringList Engine::getRandomLords() const{
     QStringList lords;
 
     foreach(QString alord, getLords()){
-        if(banlist_ban.contains(alord))continue;
+        if(banlist_ban.contains(alord))
+            continue;
 
         lords << alord;
     }
@@ -567,6 +568,8 @@ QStringList Engine::getRandomLords() const{
     foreach(QString nonlord, this->nonlord_list){
         const General *general = generals.value(nonlord);
         if(ban_package.contains(general->getPackage()))
+            continue;
+        if(general->isCaoCao("bgm_pangtong"))
             continue;
 
         if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
@@ -598,6 +601,7 @@ QStringList Engine::getLimitedGeneralNames() const{
         }
     }
 
+    general_names.removeOne("bgm_pangtong");
     return general_names;
 }
 

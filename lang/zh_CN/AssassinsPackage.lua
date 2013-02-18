@@ -145,7 +145,7 @@ return {
 	["#ShuiyongProtect"] = "%from 的锁定技【%arg】被触发，防止了 %arg2 点火焰伤害",
 	["$jisu"] = "偶游得比你快！",
 	["$shuiyong"] = "对水里放火，你脑子秀逗了吧！",
-	["~yeshiwen"] = "偶没打兴奋剂……",
+	["~yeshiwen"] = "我……我没打兴奋剂……",
 
 	["#sunyang"] = "逐浪追风",
 	["sunyang"] = "孙杨",

@@ -484,6 +484,7 @@ public:
 };
 
 XuanfengCard::XuanfengCard(){
+    mute = true;
 }
 
 bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -511,6 +512,7 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, const QList<ServerPla
             map[sp]++;
         }
     }
+    room->playSkillEffect(skill_name, lingtong->getPhase() == Player::Discard ? 2 : 1);
     foreach(ServerPlayer* sp,map.keys()){
         while(map[sp] > 0){
             if(!sp->isNude()){
@@ -543,7 +545,7 @@ protected:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@xuanfeng";
+        return pattern == "@@xuanfeng";
     }
 };
 
@@ -581,16 +583,11 @@ public:
                     else if(p->isNude())
                         other_players.removeOne(p);
                 }
-                if(!other_players.empty()){
-                    QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
-                    if(choice == "throw"){
-                        room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
-                    }
-                }
+                if(!other_players.empty())
+                    room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
             }
-        }else if(event == PhaseChange && lingtong->getPhase() == Player::Finish){
+        }else if(event == PhaseChange && lingtong->getPhase() == Player::Finish)
             lingtong->setMark("xuanfeng", 0);
-        }
 
         return false;
     }
@@ -755,7 +752,6 @@ public:
 class Jinjiu: public FilterSkill{
 public:
     Jinjiu():FilterSkill("jinjiu"){
-
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

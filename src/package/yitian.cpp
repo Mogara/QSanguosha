@@ -1351,6 +1351,7 @@ public:
                     room->setTag("Dongchaee", dongchaee->objectName());
                     room->setTag("Dongchaer", jiawenhe->objectName());
 
+                    room->playSkillEffect(objectName());
                     room->showAllCards(dongchaee, jiawenhe);
                 }
 

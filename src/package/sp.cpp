@@ -701,7 +701,7 @@ public:
         log.arg2 = objectName();
         room->sendLog(log);
 
-        room->playLightbox(player, "Wuji", "1600", 1600);
+        room->playLightbox(player, "Wuji", "3100", 3100);
 
         player->addMark("wuji");
 
@@ -818,27 +818,28 @@ public:
 };
 
 SongciCard::SongciCard(){
+    mute = true;
 }
 
-bool SongciCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool SongciCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const{
     return to_select->getMark("@songci") == 0 && to_select->getHandcardNum() != to_select->getHp();
 }
 
 void SongciCard::onEffect(const CardEffectStruct &effect) const{
     int handcard_num = effect.to->getHandcardNum();
     int hp = effect.to->getHp();
-	Room *room = effect.from->getRoom();
-	if (handcard_num == hp)
-		return;
+    Room *room = effect.from->getRoom();
+    if(handcard_num == hp)
+        return;
     effect.to->gainMark("@songci");
-    if (handcard_num > hp) {
+    if(handcard_num > hp){
         room->playSkillEffect("songci", 2);
         effect.to->getRoom()->askForDiscard(effect.to, "songci", 2, false, true);
-	}
-    else if (handcard_num < hp) {
+    }
+    else if(handcard_num < hp){
         room->playSkillEffect("songci", 1);
         effect.to->drawCards(2, "songci");
-	}
+    }
 }
 
 class SongciViewAsSkill: public ZeroCardViewAsSkill{

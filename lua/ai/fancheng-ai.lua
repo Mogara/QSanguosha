@@ -113,7 +113,7 @@ sgs.ai_skill_use_func["FloodCard"]=function(card,use,self)
 	end
 end
 
-sgs.ai_skill_use["@dujiang-card"]=function(self)
+sgs.ai_skill_use["@@dujiang"]=function(self)
 	local equips=self.player:getEquips()
 	equips=sgs.QList2Table(equips)
 

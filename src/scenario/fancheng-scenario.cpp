@@ -11,7 +11,6 @@ class Guagu: public TriggerSkill{
 public:
     Guagu():TriggerSkill("guagu"){
         events << Damage;
-
         frequency = Compulsory;
     }
 
@@ -24,6 +23,7 @@ public:
             recover.card = damage.card;
             recover.who = damage.from;
             recover.recover = x*2;
+            room->playSkillEffect(objectName());
             room->recover(damage.to, recover);
             player->drawCards(x);
         }
@@ -34,6 +34,7 @@ public:
 
 DujiangCard::DujiangCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -43,6 +44,7 @@ void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     log.arg = "dujiang";
     room->sendLog(log);
 
+    room->playLightbox(source, skill_name, "3000", 3000);
     room->transfigure(source, "shenlvmeng", false);
 
     room->setTag("Dujiang", true);
@@ -59,7 +61,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@dujiang-card";
+        return pattern == "@@dujiang";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -96,7 +98,7 @@ public:
                 return false;
 
             Room *room = target->getRoom();
-            room->askForUseCard(target, "@dujiang-card", "@@dujiang");
+            room->askForUseCard(target, "@@dujiang", "@dujiang-card");
         }
 
         return false;
@@ -105,10 +107,12 @@ public:
 
 FloodCard::FloodCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void FloodCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->setTag("Flood", true);
+    room->playLightbox(source, skill_name, "3000", 3000);
 
     room->setPlayerFlag(source, "flood");
 
@@ -212,11 +216,11 @@ public:
             Room *room = guanyu->getRoom();
 
             if(guanyu->askForSkillInvoke("xiansheng")){
+                room->playLightbox(guanyu, objectName(), "3000", 3000);
                 guanyu->throwAllEquips();
                 guanyu->throwAllHandCards();
 
                 room->transfigure(guanyu, "shenguanyu", true);
-
                 room->drawCards(guanyu, 3);
             }
         }

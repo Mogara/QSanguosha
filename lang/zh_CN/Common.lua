@@ -1,5 +1,5 @@
 return {
-	["QSanguosha"] = "太阳神三国杀 - 金蛇",
+	["QSanguosha"] = "太阳神三国杀 - 金蛇 - 法海你不懂爱",
 	["Pairs"] = "双将",
 
 	["spade"] = "黑桃",
