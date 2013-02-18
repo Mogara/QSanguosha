@@ -9,7 +9,7 @@
     "cardNumberArea": [0, 2, 27, 28],
     "cardFootnoteArea": [0, 70, 93, 50],
     "cardAvatarArea": [44, 87, 42, 36],
-    "cardFootnoteFont": ["msyh", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
+    "cardFootnoteFont": ["DroidSansFallback", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
     "chooseGeneralBoxSwitchIconSizeThreshold": 10,
     "chooseGeneralBoxSwitchIconEachRow": 5,
     "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 6,
@@ -26,12 +26,12 @@
     // to specify a solid border of width 5.
     // @todo: adjust these colors!
     "magatamaFont": [
-        ["msyh", [15, 15, -1], 80, [233, 0, 0, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["msyh", [15, 15, -1], 80, [233, 34, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["msyh", [15, 15, -1], 80, [233, 116, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["msyh", [15, 15, -1], 80, [195, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["msyh", [15, 15, -1], 80, [141, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["msyh", [15, 15, -1], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
+        ["DroidSansFallback", [15, 15, -1], 80, [233, 0, 0, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["DroidSansFallback", [15, 15, -1], 80, [233, 34, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["DroidSansFallback", [15, 15, -1], 80, [233, 116, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["DroidSansFallback", [15, 15, -1], 80, [195, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["DroidSansFallback", [15, 15, -1], 80, [141, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["DroidSansFallback", [15, 15, -1], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
     // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
@@ -62,7 +62,7 @@
     "mainFrameArea": [0, 0, 157, 181],
     "canvasArea": [0, 0, 157, 181],
     "handCardNumIconArea": [3, 94, 21, 22],
-    "handCardFont": ["msyh", [12, 12, -1], 20, [255, 255, 255, 255]],	
+    "handCardFont": ["DroidSansFallback", [12, 12, -1], 20, [255, 255, 255, 255]],	
     "equipAreas": [[3, 122, 150, 13], [3, 136, 150, 13], [3, 150, 150, 13], [3, 164, 150, 13]],
     "equipImageArea": [1, 1, 11, 11], // need adjustment
     "equipTextArea": [35, -5, 85, 21], // need adjustment
@@ -70,7 +70,7 @@
     "equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [120, 0, 14, 13], // need adjustment
     "equipFont": ["simli", [14, 14, 0], 0, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["msyh", [12, 12, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [255, 255, 190, 255]], 
+    "equipPointFont": ["DroidSansFallback", [12, 12, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [255, 255, 190, 255]], 
     "delayedTrickFirstRegion": [-10, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [130, 1],
@@ -88,7 +88,7 @@
     "kingdomIconArea": [2, 0, 28, 28],
     "kingdomMaskArea": [-2, 15, 36, 98],
     "screenNameArea": [0, 12, 157, 13],
-    "screenNameFont": ["msyh", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
+    "screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
     "magatamaSize": [14, 17],
     "magatamaImageArea": [0, 0, 14, 17],
@@ -98,7 +98,7 @@
     "phaseArea": [25, 174, 140, 12],
     "onlineStatusArea": [122, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
-    "onlineStatusFont": ["msyh", 12, 0, [255, 255, 255, 255], 2, 20, [0, 0], [20, 20, 20, 128]],
+    "onlineStatusFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 2, 20, [0, 0], [20, 20, 20, 128]],
     "skillNameArea": [0, 38, 157, 50],
     "skillNameFont": ["simli", 30, 80, [255, 255, 255, 255], 2, 11, [0, 0], [102, 16, 120, 255]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 8], [160, 10]],
@@ -125,7 +125,7 @@
     "normalHeight": 170,
     "floatingAreaHeight": 50,
     "handCardNumIconArea": [-100, 145, 21, 22],
-    "handCardFont": ["msyh", [12, 12, -1], 20, [255, 255, 255, 255]],	
+    "handCardFont": ["DroidSansFallback", [12, 12, -1], 20, [255, 255, 255, 255]],	
     "equipAreas": [[7, 44, 149, 25], [7, 76, 149, 25], [7, 108, 149, 25], [7, 140, 149, 25]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
@@ -135,7 +135,7 @@
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
     "equipFont": ["simli", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
-    "equipPointFont": ["msyh", [14, 14, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
+    "equipPointFont": ["DroidSansFallback", [14, 14, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
     "delayedTrickFirstRegion": [3, 3, 28, 28],
     "delayedTrickStep": [28, 0],
     // the width of the region to disperse cards when the cards are to be moved to the special pile. 
@@ -168,7 +168,7 @@
     "kingdomIconArea": [2, 2, 28, 28],
     // "kingdomMaskArea": [10, 27, 23, 89],
     "screenNameArea": [0, 7, 157, 25],
-    "screenNameFont": ["msyh", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
+    "screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
     "magatamaSize": [23, 30],
     "magatamaImageArea": [0, 3, 22, 26],
