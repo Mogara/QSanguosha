@@ -61,40 +61,42 @@ struct RoomLayout {
 
 struct NormalRoomLayout : public RoomLayout{
     NormalRoomLayout(){
-        discard = QPointF(-6, 8);
-        drawpile = QPointF(-108, 8);
-        enemy_box = QPointF(-216, -327);
-        self_box = QPointF(360, -90);
-        chat_box_size = QSize(230, 175);
-        chat_box_pos = QPointF(-343, -83);
-        button1_pos = QPointF(15, 5);
-        button2_pos = QPointF(15, 60);
-        state_item_pos = QPointF(-110, -80);
-    }
-};
+        QString type = Config.CircularView ? "circular" : "normal";
+        QString spec_name = QString("image/system/coord_%1.ini").arg(type);
+        QSettings settings(spec_name, QSettings::IniFormat);
 
-struct CircularRoomLayout : public RoomLayout{
-    CircularRoomLayout(){
-        discard = QPointF(-140, 30);
-        drawpile = QPointF(-260, 30);
-        enemy_box = QPointF(-361, -343);
-        self_box = QPointF(201, -90);
-        chat_box_size = QSize(268, 165);
-        chat_box_pos = QPointF(367, -38);
-        button1_pos = QPointF(-565,205);
-        button2_pos = QPointF(-565, 260);
-        state_item_pos = QPointF(367, -320);
+        QList<QVariant> tmp = settings.value("RoomLayout/discard").toList();
+        discard = QPointF(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/drawpile").toList();
+        drawpile = QPointF(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/enemy_box").toList();
+        enemy_box = QPointF(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/self_box").toList();
+        self_box = QPointF(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/chat_box_size").toList();
+        chat_box_size = QSize(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/chat_box_pos").toList();
+        chat_box_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/button1_pos").toList();
+        button1_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/button2_pos").toList();
+        button2_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
+
+        tmp = settings.value("RoomLayout/state_item_pos").toList();
+        state_item_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
     }
 };
 
 static RoomLayout *GetRoomLayout(){
     static NormalRoomLayout normal;
-    static CircularRoomLayout circular;
-    //return Config.CircularView ? &circular : &normal;
-    if(Config.CircularView){
-        return &circular;
-    }else
-        return &normal;
+    return &normal;
 }
 
 RoomScene *RoomSceneInstance;
@@ -2623,6 +2625,8 @@ void RoomScene::onGameOver(){
     if(victory){
         win_effect = "win";
         foreach(const Player *player, ClientInstance->getPlayers()){
+            if(!player->isLord() && !player->isCaoCao())
+                break;
             if(player->property("win").toBool() && !player->getGeneral()->getWinword().startsWith("`")){
                 Audio::stop();
                 player->getGeneral()->winWord();
