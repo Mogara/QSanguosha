@@ -138,6 +138,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     general_label->setPixmap(QPixmap("image/system/disabled.png"));
     general_label->setFixedSize(42, 36);
     QGroupBox *general_box = new QGroupBox(tr("General"));
+    general_box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     QVBoxLayout *general_lay = new QVBoxLayout();
     general_box->setLayout(general_lay);
     general_lay->addWidget(general_label);
@@ -146,6 +147,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     general_label2->setPixmap(QPixmap("image/system/disabled.png"));
     general_label2->setFixedSize(42, 36);
     QGroupBox *general_box2 = new QGroupBox(tr("General2"));
+    general_box2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     QVBoxLayout *general_lay2 = new QVBoxLayout();
     general_box2->setLayout(general_lay2);
     general_lay2->addWidget(general_label2);
@@ -156,6 +158,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *pileAssign = new QPushButton(tr("PileCardAssign"));
 
     random_roles_box = new QCheckBox(tr("RandomRoles"));
+    rest_in_DP_box = new QCheckBox(tr("RestInDiscardPile"));
 
     max_hp_prompt = new QCheckBox(tr("Max Hp"));
     max_hp_prompt->setChecked(false);
@@ -188,6 +191,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     nationalities->setEnabled(false);
 
     extra_skill_set = new QPushButton(tr("Set Extra Skills"));
+
     ended_by_pile_text = new QLabel(tr("When pile ends"));
     ended_by_pile_text2 = new QLabel(tr("win"));
     ended_by_pile_box = new QComboBox();
@@ -227,23 +231,25 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     label_lay->addWidget(general_box2);
     vlayout->addLayout(label_lay);
     vlayout->addLayout(HLay(self_select_general, self_select_general2));
-    vlayout->addLayout(HLay(max_hp_prompt,max_hp_spin));
-    vlayout->addLayout(HLay(hp_prompt,hp_spin));
+    vlayout->addLayout(HLay(max_hp_prompt, max_hp_spin));
+    vlayout->addLayout(HLay(hp_prompt, hp_spin));
     vlayout->addLayout(HLay(set_turned, set_chained));
     vlayout->addLayout(HLay(choose_nationality, nationalities));
-    vlayout->addWidget(random_roles_box);
     vlayout->addWidget(extra_skill_set);
-    vlayout->addWidget(starter_group);
-    vlayout->addWidget(ended_by_pile);
-    vlayout->addLayout(HLay(ended_by_pile_text, ended_by_pile_text2, ended_by_pile_box));
-    vlayout->addWidget(single_turn);
-    vlayout->addLayout(HLay(single_turn_text, single_turn_text2, single_turn_box));
-    vlayout->addWidget(before_next);
-    vlayout->addLayout(HLay(before_next_text, before_next_text2, before_next_box));
     vlayout->addStretch();
-    vlayout->addWidget(defaultLoadButton);
-    vlayout->addLayout(HLay(loadButton, saveButton));
-    vlayout->addLayout(HLay(okButton, cancelButton));
+    vlayout->addWidget(random_roles_box);
+    vlayout->addWidget(rest_in_DP_box);
+    vlayout2->addWidget(starter_group);
+    vlayout2->addWidget(ended_by_pile);
+    vlayout2->addLayout(HLay(ended_by_pile_text, ended_by_pile_text2, ended_by_pile_box));
+    vlayout2->addWidget(single_turn);
+    vlayout2->addLayout(HLay(single_turn_text, single_turn_text2, single_turn_box));
+    vlayout2->addWidget(before_next);
+    vlayout2->addLayout(HLay(before_next_text, before_next_text2, before_next_box));
+    vlayout2->addStretch();
+    vlayout2->addWidget(defaultLoadButton);
+    vlayout2->addLayout(HLay(loadButton, saveButton));
+    vlayout2->addLayout(HLay(okButton, cancelButton));
 
     ended_by_pile_text->hide();
     ended_by_pile_text2->hide();
@@ -315,6 +321,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addLayout(info_lay);
     layout->addLayout(vlayout);
+    layout->addLayout(vlayout2);
     QVBoxLayout *mainlayout = new QVBoxLayout();
     mainlayout->addLayout(layout);
     setLayout(mainlayout);
@@ -1341,6 +1348,7 @@ void CustomAssignDialog::load()
     num_ComboBox->setCurrentIndex(list->count()-2);
 
     random_roles_box->setChecked(options.contains(MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES));
+    rest_in_DP_box->setChecked(options.contains(MiniSceneRule::S_EXTRA_OPTION_REST_IN_DISCARD_PILE));
 
     updatePileInfo();
     file.close();
@@ -1392,7 +1400,7 @@ bool CustomAssignDialog::save(QString path)
 
     QString line;
 
-    set_options << random_roles_box->isChecked();
+    set_options << random_roles_box->isChecked() << rest_in_DP_box->isChecked();
     foreach(bool option, set_options){
         if(option){
             line.append("extraOptions:");
@@ -1401,6 +1409,10 @@ bool CustomAssignDialog::save(QString path)
     }
     if(random_roles_box->isChecked()) {
         line.append(MiniSceneRule::S_EXTRA_OPTION_RANDOM_ROLES);
+        line.append(" ");
+    }
+    if (rest_in_DP_box->isChecked()) {
+        line.append(MiniSceneRule::S_EXTRA_OPTION_REST_IN_DISCARD_PILE);
         line.append(" ");
     }
     line.remove(line.length()-1, 1);
