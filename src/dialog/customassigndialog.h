@@ -62,6 +62,7 @@ private:
     QCheckBox *set_turned, *set_chained;
     QComboBox *ended_by_pile_box, *single_turn_box, *before_next_box;
     QCheckBox *random_roles_box;
+    QCheckBox *rest_in_DP_box;
     QCheckBox *ended_by_pile, *single_turn, *before_next;
     QLabel *ended_by_pile_text, *ended_by_pile_text2,
            *single_turn_text, *single_turn_text2,
