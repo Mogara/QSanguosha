@@ -22,7 +22,7 @@ GameRule::GameRule(QObject *)
            << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
            << AskForPeaches << AskForPeachesDone << BuryVictim << GameOverJudge
-           << SlashHit << SlashMissed << SlashEffected << SlashProceed
+           << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << PreHpReduced << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge;
 }
@@ -231,9 +231,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
         }
     case CardFinished: {
             CardUseStruct use = data.value<CardUseStruct>();
-            foreach(ServerPlayer *p, use.to)
-                if(p->getMark("qinggang") > 0)
-                    p->setMark("qinggang", 0);
             room->clearCardFlag(use.card);
 
             break;
@@ -340,6 +337,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
     case DamageDone:{
             DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && !damage.from->isAlive())
+                damage.from = NULL;
+            data = QVariant::fromValue(damage);
+            if (damage.card && damage.card->isKindOf("Slash") && player->getMark("qinggang") > 0) {
+                room->setPlayerMark(player, "qinggang", player->getMark("qinggang") - 1);
+                room->setPlayerMark(player, "qinggang_clear",
+                                    player->getMark("qinggang_clear") + 1);
+            }
             room->sendDamageLog(damage);
 
             room->applyDamage(player, damage);
@@ -348,6 +353,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
         }
     case DamageComplete:{
             DamageStruct damage = data.value<DamageStruct>();
+            if (player->getMark("qinggang_clear") == 0) {
+                if (damage.card && damage.card->isKindOf("Slash") && player->getMark("qinggang") > 0)
+                    room->setPlayerMark(player, "qinggang", player->getMark("qinggang") - 1);
+            } else {
+                room->setPlayerMark(player, "qinggang_clear",
+                                    player->getMark("qinggang_clear") - 1);
+            }
             if(damage.trigger_chain){
                 // iron chain effect
                 if(!damage.chain){
@@ -422,13 +434,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             damage.nature = effect.nature;
             room->damage(damage);
 
-            break;
-        }
-
-    case SlashMissed:{
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.to->getMark("qinggang") > 0)
-                effect.to->setMark("qinggang", 0);
             break;
         }
 

@@ -373,20 +373,18 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
-        if(triggerEvent == TargetConfirmed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->isKindOf("Slash") && use.from->getWeapon() && use.from->getWeapon()->objectName() == objectName()){
-                bool do_anim = false;
-                foreach(ServerPlayer *p, use.to){
-                    p->addMark("qinggang");
-                    if (p->getArmor() || p->hasSkill("bazhen")) do_anim = true;
-                }
-                if (do_anim){
-                    room->setEmotion(use.from, "weapon/qinggang_sword");
-                }
+    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (WeaponSkill::triggerable(use.from) && use.from == player && use.card->isKindOf("Slash")) {
+            bool do_anim = false;
+            foreach (ServerPlayer *p, use.to.toSet()) {
+                room->setPlayerMark(p, "qinggang", p->getMark("qinggang") + 1);
+                if (p->getArmor() || p->hasSkill("bazhen"))  do_anim = true;
             }
+            if (do_anim)
+                room->setEmotion(use.from, "weapon/qinggang_sword");
         }
+        return false;
         return false;
     }
 };
