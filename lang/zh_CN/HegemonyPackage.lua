@@ -131,6 +131,8 @@ return {
 	["illustrator:gz_zhouyu"] = "牧童的短笛",
 	["cv:gz_zhouyu"] = "猎狐",
 	["cv:lushun"] = "飞魔鬼",
+	["$qianxun1"] = "谦虚谨慎，为将当如是~",
+	["$qianxun2"] = "吾智尚不及周郎，仍需历练~",
 	["$duoshi1"] = "审时度势，方能出奇制胜！",
 	["$duoshi2"] = "广施方略，以观其变。",
 	["~lushun"] = "错估形势，贻误战机，吾之过也！",
