@@ -1137,15 +1137,15 @@ SPPackage::SPPackage()
     sp_zhenji->addSkill("qingguo");
     sp_zhenji->addSkill("luoshen");
 
-    General *xiahouba = new General(this, "xiahouba", "shu");
-    xiahouba->addSkill(new Baobian);
-
     General *lingju = new General(this, "lingju", "qun", 3, false);
     lingju->addSkill(new Jieyuan);
     lingju->addSkill(new Fenxin);
     lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
     related_skills.insertMulti("fenxin", "#@burnheart-1");
     lingju->addSkill(new SPConvertSkill("lingju", "ass_lingju"));
+
+    General *xiahouba = new General(this, "xiahouba", "shu");
+    xiahouba->addSkill(new Baobian);
 
     General *chenlin = new General(this, "chenlin", "wei", 3);
     chenlin->addSkill(new Bifa);

@@ -123,7 +123,7 @@ return {
 	
 	["#lingju"] = "情随梦逝",
 	["lingju"] = "灵雎",
-	--["illustrator:lingju"] = "",
+	["illustrator:lingju"] = "木美人",
 	["designer:lingju"] = "韩旭",
 	["cv:lingju"] = "蒲小猫",
 	["jieyuan"] = "竭缘",
