@@ -776,6 +776,10 @@ public:
         log.arg2 = "shouye";
         room->sendLog(log);
 
+        room->broadcastSkillInvoke(objectName());
+        room->broadcastInvoke("animate", "lightbox:$JiehuoAnimate:3000");
+        room->getThread()->delay(2500);
+
         room->setPlayerMark(player, "jiehuo", 1);
         player->loseAllMarks("@shouye");
         room->acquireSkill(player, "shien");

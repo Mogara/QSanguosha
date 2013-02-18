@@ -49,6 +49,7 @@ return {
 	["kegou"] = "克构",
 	[":kegou"] = "<b>觉醒技</b>，回合开始阶段开始时，若你是除主公外唯一的吴势力角色，你须减少1点体力上限并获得技能“连营”。",
 	["#KegouWake"] = "%from 是场上唯一的吴势力角色，满足“克构”的觉醒条件",
+	["$KegouAnimate"] = "吾父遗风，具体而微，谓克构者哉！",
 	["lukang_weiyan:draw2play"] = "您是否想发动“围堰”将 摸牌阶段 视为 出牌阶段？",
 	["lukang_weiyan:play2draw"] = "您是否想发动“围堰”将 出牌阶段 视为 摸牌阶段？",
 
@@ -274,6 +275,8 @@ return {
 	["$lexue3"] = "此乃诸葛武侯之智",
 	["$xunzhi1"] = "丞相,计若不成,维亦无悔!",
 	["$xunzhi2"] = "蜀汉英烈,忠魂佑我!",
+	["$XunzhiAnimate1"] = "丞相，计若不成，维亦无悔！",
+	["$XunzhiAnimate2"] = "蜀汉英烈，忠魂佑我！",
 	["~jiangboyue"] = "吾计不成,乃天命也!",
 
 	["designer:jiawenhe"] = "氢弹",

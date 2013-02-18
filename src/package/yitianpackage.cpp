@@ -362,6 +362,10 @@ public:
         log.from = lukang;
         room->sendLog(log);
 
+        room->broadcastSkillInvoke(objectName());
+        room->broadcastInvoke("animate", "lightbox:$KegouAnimate:4000");
+        room->getThread()->delay(3500);
+
         room->loseMaxHp(lukang);
         room->acquireSkill(lukang, "lianying");
 
@@ -1256,9 +1260,14 @@ public:
 
 XunzhiCard::XunzhiCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    int index = qrand() % 2 + 1;
+    room->broadcastSkillInvoke("xunzhi", index);
+    room->broadcastInvoke("animate", QString("lightbox:$XunzhiAnimate%1").arg(index));
+    room->getThread()->delay(2000);
     source->drawCards(3);
 
     QList<ServerPlayer *> players = room->getAlivePlayers();
