@@ -51,6 +51,15 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
+#ifdef Q_OS_LINUX
+    QDir dir(QString("lua"));
+    if (dir.exists() && (dir.exists(QString("config.lua")))) {
+        // things look good and use current dir
+    } else {
+        QDir::setCurrent(qApp->applicationDirPath());
+    }
+#endif
+
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
