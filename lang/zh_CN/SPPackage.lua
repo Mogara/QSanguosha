@@ -121,6 +121,27 @@ return {
 	["$songci2"] = "汝众违旅叛，当有此报！",             --discardCards
 	--["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
 	
+	["#lingju"] = "情随梦逝",
+	["lingju"] = "灵雎",
+	--["illustrator:lingju"] = "",
+	["designer:lingju"] = "韩旭",
+	["cv:lingju"] = "蒲小猫",
+	["jieyuan"] = "竭缘",
+	[":jieyuan"] = "当你对一名其他角色造成伤害时，若其体力值大于或等于你的体力值，你可弃置一张黑色手牌令此伤害+1；当你受到一名其他角色造成的伤害时，若其体力值大于或等于你的体力值，你可弃置一张红色手牌令此伤害-1",
+	["@JieyuanIncrease"] = "你可以弃一张黑色手牌令此伤害+1",
+	["@JieyuanDecrease"] = "你可以弃一张红色手牌令此伤害-1",
+	["#JieyuanIncrease"] = "%from 发动了技能【竭缘】，伤害点数从 %arg 点增加至 %arg2 点",
+	["#JieyuanDecrease"] = "%from 发动了技能【竭缘】，伤害点数从 %arg 点减少至 %arg2 点",
+	["$jieyuan1"] = "我与君缘尽于此!",
+	["$jieyuan2"] = "君如何下得了手?",
+	["fenxin"] = "焚心",
+	[":fenxin"] = "<b>限定技</b>，当你杀死一名非主公角色时，在其翻开身份牌之前，你可以与该角色交换身份牌。（你的身份为主公时不能发动此技能。）",
+	["@burnheart"] = "焚心",
+	["$jieyuan1"] = "权谋一世，剑指曹贼！",
+	["$jieyuan2"] = "虽有谋，亦有情。",
+	["$fenxin"] = "天下与我何干？",
+	["~lingju"] = "魏王……",
+	
 	["sp_diaochan"] = "SP貂蝉",
 	["&sp_diaochan"] = "貂蝉",
 	["illustrator:sp_diaochan"] = "巴萨小马",
@@ -281,4 +302,6 @@ return {
 	["cv_zhouyu"] = "SP替换",
 	["cv_zhouyu:heg_zhouyu"] = "国战版",
 	["cv_zhouyu:sp_heg_zhouyu"] = "国战SP版",
+	
+	["sp_convert"] = "SP替换",
 }
