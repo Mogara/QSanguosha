@@ -125,7 +125,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-    inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
+    inline virtual bool isKindOf(const char* cardType) const { return cardType ? inherits(cardType) : false; }
     inline virtual QStringList getFlags() const { return flags; }
 
     inline virtual bool isModified() const {return false;}
