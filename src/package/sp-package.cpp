@@ -554,7 +554,7 @@ public:
             log.arg2 = QString::number(guanyu->getHp());
             room->sendLog(log);
             room->broadcastSkillInvoke(objectName());
-            room->broadcastInvoke("animate", "lightbox:$danji:5000");
+            room->broadcastInvoke("animate", "lightbox:$DanjiAnimate:5000");
             room->getThread()->delay(5000);
 
             guanyu->setMark("danji", 1);
@@ -723,8 +723,8 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke(objectName());
-        //room->broadcastInvoke("animate", "lightbox:$wuji:3000");
-        //room->getThread()->delay(4000);
+        room->broadcastInvoke("animate", "lightbox:$WujiAnimate:4000");
+        room->getThread()->delay(4000);
 
         player->addMark("wuji");
         player->gainMark("@waked");
@@ -863,7 +863,7 @@ public:
         room->setPlayerFlag(player, "FenxinTarget");
         if (room->askForSkillInvoke(killer, objectName(), QVariant::fromValue(player))) {
             room->broadcastSkillInvoke(objectName());
-            room->broadcastInvoke("animate", "lightbox:$fenxin");
+            room->broadcastInvoke("animate", "lightbox:$FenxinAnimate");
             room->getThread()->delay(1500);
             killer->loseMark("@burnheart");
             QString role1 = killer->getRole();

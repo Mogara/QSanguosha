@@ -77,6 +77,7 @@ return {
 	["@laoji"] = "老骥",
 	["$dangxian"] = "先锋一职，老夫责无旁贷。",
 	["$fuli"] = "心系蜀汉，虽死必归。",
+	["$FuliAnimate"] = "心系蜀汉，虽死必归！",
 	["~liaohua"] = "阅尽兴亡，此生无憾矣.",
 	
 	["#guanxingzhangbao"] = "将门虎子",
@@ -141,6 +142,8 @@ return {
 	["$gongqi"] = "弓马齐备，远射近突！",
 	["$jiefan1"] = "解烦军至，此危自解！",
 	["$jiefan2"] = "吾主莫慌，韩义公在此！",
+	["$JiefanAnimate1"] = "解烦军至，此危自解！",
+	["$JiefanAnimate2"] = "吾主莫慌，韩义公在此！",
 	["~handang"] = "我主堪忧，我主堪忧啊……",
 
 	["#liubiao"] = "跨蹈汉南",

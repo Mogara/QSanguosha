@@ -543,7 +543,7 @@ void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
         use.to << use.from;
     use.from->loseMark("@arise");
     room->broadcastSkillInvoke("xiongyi");
-    //room->broadcastInvoke("animate", "lightbox:$XiongyiAnimate");
+    room->broadcastInvoke("animate", "lightbox:$XiongyiAnimate");
     room->getThread()->delay(2000);
     SkillCard::onUse(room, use);
 }

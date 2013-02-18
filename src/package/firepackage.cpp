@@ -370,7 +370,8 @@ public:
             return false;
 
         if(pangtong->askForSkillInvoke(objectName(), data)){
-            room->broadcastInvoke("animate", "lightbox:$niepan");
+            room->broadcastInvoke("animate", "lightbox:$NiepanAnimate");
+            room->getThread()->delay(1500);
             room->broadcastSkillInvoke(objectName());
 
             pangtong->loseMark("@nirvana");
