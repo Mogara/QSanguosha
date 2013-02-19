@@ -111,7 +111,7 @@ config = {
 		"lukang+liubei", "lukang+wolong", "lukang+yuji", "jiangboyue+lukang", "lukang+yanliangwenchou", "lukang+guanxingzhangbao", "lukang+heg_luxun",
 		"caoren+caizhaoji", "bgm_caoren+caizhaoji", "neo_caoren+caizhaoji", "dengshizai+caizhaoji",
 		"zhugejin+caizhaoji", "simayi+caizhaoji", "shensimayi+caizhaoji", "caozhi+caizhaoji", "shenlvbu+caozhaoji", "bgm_diaochan+caizhaoji",
-		"wisjiangwei+zhanggongqi", "luxun+zhanggongqi"
+		"wis_jiangwei+zhanggongqi", "luxun+zhanggongqi"
 	},
 	
 	couple_lord = "caocao",
