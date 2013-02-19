@@ -303,10 +303,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 log.type = "#AnalepticBuff";
                 log.from = damage.from;
                 log.to << damage.to;
-                log.arg = "analeptic";
+                log.arg = QString::number(damage.damage);
+                log.arg2 = QString::number(++damage.damage);
                 room->sendLog(log);
 
-                damage.damage++;
                 data = QVariant::fromValue(damage);
             }
 
