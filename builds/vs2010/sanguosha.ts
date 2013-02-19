@@ -1791,7 +1791,7 @@
         <location filename="../../src/dialog/mainwindow.ui" line="14"/>
         <location filename="../../src/dialog/mainwindow.cpp" line="160"/>
         <source>Sanguosha</source>
-        <translation>太阳神三国杀</translation>
+        <translation>新太阳神三国杀</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.ui" line="28"/>
@@ -3036,7 +3036,7 @@
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
-%1</translation>
+ %1</translation>
     </message>
     <message>
         <location filename="../../src/server/room.cpp" line="4798"/>
@@ -3096,7 +3096,7 @@
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="280"/>
         <source>QSanguosha</source>
-        <translation>太阳神三国杀</translation>
+        <translation>新太阳神三国杀</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="1421"/>
@@ -3361,10 +3361,6 @@
         <location filename="../../src/ui/roomscene.cpp" line="3469"/>
         <source>&lt;font color=&apos;%1&apos;&gt;---------- Game Start ----------&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;%1&apos;&gt;---------- 游戏开始 ----------&lt;/font&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;font color=&apos;white&apos;&gt;------- Game Start --------&lt;/font&gt;</source>
-        <translation type="obsolete">&lt;font color=&apos;white&apos;&gt;------- 游戏开始 --------&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="3836"/>
