@@ -54,6 +54,8 @@ return {
 	[":danji"] = "<b>觉醒技</b>，回合开始阶段，若你的手牌数大于你当前的体力值，且本局主公为曹操时，你须减1点体力上限并永久获得技能“马术”。",
 	["#DanjiWake"] = "%from 的手牌数(%arg)多于体力值(%arg2)，且本局主公为曹操，达到【单骑】的觉醒条件",
 	["$danji"] = "吾兄待我甚厚，誓以共死，今往投之，望曹公见谅。",
+	["$DanjiAnimate"] = "吾兄待我甚厚，誓以共死，\
+今往投之，望曹公见谅。",
 
 	["#caohong"] = "福将",
 	["caohong"] = "曹洪",
@@ -91,6 +93,8 @@ return {
 	["$huxiao2"] = "刀行如流水，杀你个措手不及！",
 	["$huxiao3"] = "紫髯老贼！还吾父命来！",              -- for sunquan
 	["$wuji"] = "武圣虽死，血脉尚存。先父佑我，再现武魂！",
+	["$WujiAnimate"] = "武圣虽死，血脉尚存。\
+先父佑我，再现武魂！",
 	["~guanyinping"] = "父亲……",
 	
 	["#xiahouba"] = "棘途壮志",
@@ -120,6 +124,28 @@ return {
 	["$songci1"] = "广宜恩信，班扬符赏。",               --drawCards
 	["$songci2"] = "汝众违旅叛，当有此报！",             --discardCards
 	--["~chenlin"] = "文未达意，贼不伏诛，吾之过也……",
+	
+	["#lingju"] = "情随梦逝",
+	["lingju"] = "灵雎",
+	["illustrator:lingju"] = "木美人",
+	["designer:lingju"] = "韩旭",
+	["cv:lingju"] = "蒲小猫",
+	["jieyuan"] = "竭缘",
+	[":jieyuan"] = "当你对一名其他角色造成伤害时，若其体力值大于或等于你的体力值，你可弃置一张黑色手牌令此伤害+1；当你受到一名其他角色造成的伤害时，若其体力值大于或等于你的体力值，你可弃置一张红色手牌令此伤害-1",
+	["@JieyuanIncrease"] = "你可以弃一张黑色手牌令此伤害+1",
+	["@JieyuanDecrease"] = "你可以弃一张红色手牌令此伤害-1",
+	["#JieyuanIncrease"] = "%from 发动了技能【竭缘】，伤害点数从 %arg 点增加至 %arg2 点",
+	["#JieyuanDecrease"] = "%from 发动了技能【竭缘】，伤害点数从 %arg 点减少至 %arg2 点",
+	["$jieyuan1"] = "我与君缘尽于此!",
+	["$jieyuan2"] = "君如何下得了手?",
+	["fenxin"] = "焚心",
+	[":fenxin"] = "<b>限定技</b>，当你杀死一名非主公角色时，在其翻开身份牌之前，你可以与该角色交换身份牌。（你的身份为主公时不能发动此技能。）",
+	["@burnheart"] = "焚心",
+	["$jieyuan1"] = "权谋一世，剑指曹贼！",
+	["$jieyuan2"] = "虽有谋，亦有情。",
+	["$fenxin"] = "天下与我何干？",
+	["$FenxinAnimate"] = "天下与我何干？",
+	["~lingju"] = "魏王……",
 	
 	["sp_diaochan"] = "SP貂蝉",
 	["&sp_diaochan"] = "貂蝉",
@@ -281,4 +307,6 @@ return {
 	["cv_zhouyu"] = "SP替换",
 	["cv_zhouyu:heg_zhouyu"] = "国战版",
 	["cv_zhouyu:sp_heg_zhouyu"] = "国战SP版",
+	
+	["sp_convert"] = "SP替换",
 }

@@ -22,7 +22,7 @@ GameRule::GameRule(QObject *)
            << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
            << AskForPeaches << AskForPeachesDone << BuryVictim << GameOverJudge
-           << SlashHit << SlashMissed << SlashEffected << SlashProceed
+           << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << PreHpReduced << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge;
 }
@@ -176,8 +176,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
                 room->setPlayerFlag(player, "-drank");
             }
-            if (player->getPhase() == Player::Play)
+            if (player->getPhase() == Player::Play) {
+                room->setPlayerMark(player, "SlashCount", 0);
                 player->clearHistory();
+            }
             break;
         }
     case EventPhaseChanging: {
@@ -229,9 +231,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
         }
     case CardFinished: {
             CardUseStruct use = data.value<CardUseStruct>();
-            foreach(ServerPlayer *p, use.to)
-                if(p->getMark("qinggang") > 0)
-                    p->setMark("qinggang", 0);
             room->clearCardFlag(use.card);
 
             break;
@@ -338,6 +337,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
     case DamageDone:{
             DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && !damage.from->isAlive())
+                damage.from = NULL;
+            data = QVariant::fromValue(damage);
+            if (damage.card && damage.card->isKindOf("Slash") && player->getMark("qinggang") > 0) {
+                room->setPlayerMark(player, "qinggang", player->getMark("qinggang") - 1);
+                room->setPlayerMark(player, "qinggang_clear",
+                                    player->getMark("qinggang_clear") + 1);
+            }
             room->sendDamageLog(damage);
 
             room->applyDamage(player, damage);
@@ -346,6 +353,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
         }
     case DamageComplete:{
             DamageStruct damage = data.value<DamageStruct>();
+            if (player->getMark("qinggang_clear") == 0) {
+                if (damage.card && damage.card->isKindOf("Slash") && player->getMark("qinggang") > 0)
+                    room->setPlayerMark(player, "qinggang", player->getMark("qinggang") - 1);
+            } else {
+                room->setPlayerMark(player, "qinggang_clear",
+                                    player->getMark("qinggang_clear") - 1);
+            }
             if(damage.trigger_chain){
                 // iron chain effect
                 if(!damage.chain){
@@ -420,13 +434,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             damage.nature = effect.nature;
             room->damage(damage);
 
-            break;
-        }
-
-    case SlashMissed:{
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.to->getMark("qinggang") > 0)
-                effect.to->setMark("qinggang", 0);
             break;
         }
 
@@ -637,6 +644,18 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
 
             winner = winners.join("+");
         }
+        if (!winner.isNull()) {
+            foreach (ServerPlayer *player, room->getAllPlayers()) {
+                if (player->getGeneralName() == "anjiang") {
+                    QStringList generals = room->getTag(player->objectName()).toStringList();
+                    room->changePlayerGeneral(player, generals.at(0));
+                }
+                if (Config.Enable2ndGeneral && player->getGeneral2Name() == "anjiang") {
+                    QStringList generals = room->getTag(player->objectName()).toStringList();
+                    room->changePlayerGeneral2(player, generals.at(1));
+                }
+            }
+        }
     }else{
         QStringList alive_roles = room->aliveRoles(victim);
         switch(victim->getRoleEnum()){
@@ -826,7 +845,7 @@ BasaraMode::BasaraMode(QObject *parent)
 {
     setObjectName("basara_mode");
 
-    events << /* CardsMoveOneTime <<*/ DamageInflicted;
+    events << EventPhaseStart << DamageInflicted;
 
     skill_mark["niepan"] = "@nirvana";
     skill_mark["yeyan"] = "@flame";
@@ -889,6 +908,8 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     if(player->getGeneralName() == "anjiang")
     {
         room->changeHero(player, general_name, false, false, false, false);
+        room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+        room->setPlayerProperty(player, "role", getMappedRole(player->getKingdom()));
         foreach(QString skill_name, skill_mark.keys()){
             if (player->hasSkill(skill_name, true))
                 room->setPlayerMark(player, skill_mark[skill_name], 1);
@@ -947,8 +968,8 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
                 sp->invoke("log",log.toString());
                 sp->tag["roles"] = room->getTag(sp->objectName()).toStringList().join("+");
             }
-            return false;
         }
+        return false;
     }
 
 
@@ -983,24 +1004,12 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
 
     case EventPhaseStart:{
             if (player->getPhase() == Player::RoundStart)
-            playerShowed(player);
+                playerShowed(player);
 
         break;
     }
     case DamageInflicted:{
         playerShowed(player);
-        break;
-    }
-    case GameOverJudge:{
-        if(Config.EnableHegemony){
-            if(player->getGeneralName() == "anjiang"){
-                QStringList generals = room->getTag(player->objectName()).toStringList();
-                room->changePlayerGeneral(player, generals.at(0));
-                if(Config.Enable2ndGeneral)room->changePlayerGeneral2(player, generals.at(1));
-                room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
-                room->setPlayerProperty(player, "role", getMappedRole(player->getKingdom()));
-            }
-        }
         break;
     }
     case BuryVictim: {

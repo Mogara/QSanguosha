@@ -138,6 +138,9 @@ return {
 	["$yeyan1"] = "血色火海，葬敌万千",
 	["$yeyan2"] = "浮生罪业，皆归灰烬",
 	["$yeyan3"] = "红莲业火，焚尽世间万物!",
+	["$YeyanAnimate1"] = "血色火海，葬敌万千",
+	["$YeyanAnimate2"] = "浮生罪业，皆归灰烬",
+	["$YeyanAnimate3"] = "红莲业火，焚尽世间万物!",
 	["~shenzhouyu"] = "残炎黯然，弦歌不复",
 
 	["cv:shenzhugeliang"] = "背后灵",
@@ -149,6 +152,8 @@ return {
 
 	["cv:shencaocao"] = "倚天の剑",
 	["$guixin"] = "山不厌高，海不厌深，周公吐哺，天下归心",
+	["$GuixinAnimate"] = "山不厌高，海不厌深。\
+周公吐哺，天下归心。",
 	["~shencaocao"] = "神龟虽寿，犹有竟时。腾蛇乘雾，终为土灰",
 
 	["cv:shenlvbu"] = "笑傲糨糊",
@@ -158,6 +163,9 @@ return {
 	["$wuqian2"] = "顺我者生，逆我者死",
 	["$shenfen1"] = "颤抖着滚开吧杂鱼们！这天下还有谁能满足我？！",
 	["$shenfen2"] = "战神之怒，神挡杀神，佛挡杀佛！",
+	["$ShenfenAnimate1"] = "颤抖着滚开吧杂鱼们！\
+这天下还有谁能满足我？！",
+	["$ShenfenAnimate2"] = "战神之怒，神挡杀神，佛挡杀佛！",
 	["~shenlvbu"] = "大耳贼最叵信……啊！",
 
 	["cv:shenzhaoyun"] = "猎狐",
@@ -171,6 +179,7 @@ return {
 	["cv:shensimayi"] = "泥马",
 	["$renjie"] = "韬光养晦，静待时机。",
 	["$baiyin"] = "是可忍，孰不可忍！",
+	["$BaiyinAnimate"] = "是可忍，孰不可忍！",
 	["$jilve1"] = "天意如何，我命由我。", -- guicai
 	["$jilve2"] = "远逐敌雠，拔除异己。", -- fangzhu
 	["$jilve3"] = "心狠手毒，方能成事。", -- wansha

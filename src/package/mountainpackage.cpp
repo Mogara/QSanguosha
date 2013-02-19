@@ -350,7 +350,7 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke("zaoxian");
-        room->broadcastInvoke("animate", "lightbox:$zaoxian:4000");
+        room->broadcastInvoke("animate", "lightbox:$ZaoxianAnimate:4000");
         room->getThread()->delay(4000);
 
         room->acquireSkill(dengai, "jixi");
@@ -478,7 +478,7 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke(objectName());
-        room->broadcastInvoke("animate", "lightbox:$Hunzi:5000");
+        room->broadcastInvoke("animate", "lightbox:$HunziAnimate:5000");
         room->getThread()->delay(5000);
         sunce->gainMark("@waked");
         room->loseMaxHp(sunce);
@@ -659,7 +659,7 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke("zhiji");
-        room->broadcastInvoke("animate", "lightbox:$Zhiji:5000");
+        room->broadcastInvoke("animate", "lightbox:$ZhijiAnimate:5000");
         room->getThread()->delay(5000);
         QStringList choicelist;
         choicelist << "draw";
@@ -985,6 +985,9 @@ public:
             log.arg = QString::number(liushan->getHp());
             log.arg2 = objectName();
             room->sendLog(log);
+
+            room->broadcastInvoke("animate", "lightbox:$RuoyuAnimate");
+            room->getThread()->delay(2000);
 
             room->setPlayerMark(liushan, "ruoyu", 1);
             liushan->gainMark("@waked");

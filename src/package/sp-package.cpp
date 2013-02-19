@@ -554,7 +554,7 @@ public:
             log.arg2 = QString::number(guanyu->getHp());
             room->sendLog(log);
             room->broadcastSkillInvoke(objectName());
-            room->broadcastInvoke("animate", "lightbox:$danji:5000");
+            room->broadcastInvoke("animate", "lightbox:$DanjiAnimate:5000");
             room->getThread()->delay(5000);
 
             guanyu->setMark("danji", 1);
@@ -723,8 +723,8 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke(objectName());
-        //room->broadcastInvoke("animate", "lightbox:$wuji:3000");
-        //room->getThread()->delay(4000);
+        room->broadcastInvoke("animate", "lightbox:$WujiAnimate:4000");
+        room->getThread()->delay(4000);
 
         player->addMark("wuji");
         player->gainMark("@waked");
@@ -782,6 +782,97 @@ public:
         BaobianChange(room, player, 1, "shensu");
         BaobianChange(room, player, 2, "paoxiao");
         BaobianChange(room, player, 3, "tiaoxin");
+        return false;
+    }
+};
+
+class Jieyuan: public TriggerSkill {
+public:
+    Jieyuan(): TriggerSkill("jieyuan"){
+        events << DamageCaused << DamageInflicted;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(triggerEvent == DamageCaused){
+            if(damage.to && damage.to->isAlive()
+               && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng())
+                if(room->askForCard(player, ".black", "@JieyuanIncrease", data, objectName())){
+                    room->broadcastSkillInvoke(objectName(), 1);
+
+                    LogMessage log;
+                    log.type = "#JieyuanIncrease";
+                    log.from = player;
+                    log.arg = QString::number(damage.damage);
+                    log.arg2 = QString::number(++damage.damage);
+                    room->sendLog(log);
+
+                    data = QVariant::fromValue(damage);
+                }
+        }else if(triggerEvent == DamageInflicted){
+            if(damage.from && damage.from->isAlive()
+               && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng())
+                if(room->askForCard(player, ".red", "@JieyuanDecrease", data, objectName())){
+                    room->broadcastSkillInvoke(objectName(), 2);
+
+                    LogMessage log;
+                    log.type = "#JieyuanDecrease";
+                    log.from = player;
+                    log.arg = QString::number(damage.damage);
+                    log.arg2 = QString::number(--damage.damage);
+                    room->sendLog(log);
+
+                    if (damage.damage < 1){
+                        LogMessage log;
+                        log.type = "#ZeroDamage";
+                        log.from = damage.from;
+                        log.to << player;
+                        room->sendLog(log);
+                        return true;
+                    }
+                    data = QVariant::fromValue(damage);
+                }
+        }
+
+        return false;
+    }
+};
+
+class Fenxin: public TriggerSkill{
+public:
+    Fenxin(): TriggerSkill("fenxin") {
+        events << BeforeGameOverJudge;
+        frequency = Limited;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+        if (!room->getMode().endsWith("p") && !room->getMode().endsWith("pd") && !room->getMode().endsWith("pz"))
+            return false;
+        DamageStar damage = data.value<DamageStar>();
+        if (damage == NULL)
+            return false;
+        ServerPlayer *killer = damage->from;
+        if (killer == NULL || killer->isLord() || player->isLord() || player->getHp() > 0)
+            return false;
+        if (!TriggerSkill::triggerable(killer) || killer->getMark("@burnheart") == 0)
+            return false;
+        room->setPlayerFlag(player, "FenxinTarget");
+        if (room->askForSkillInvoke(killer, objectName(), QVariant::fromValue(player))) {
+            room->broadcastSkillInvoke(objectName());
+            room->broadcastInvoke("animate", "lightbox:$FenxinAnimate");
+            room->getThread()->delay(1500);
+            killer->loseMark("@burnheart");
+            QString role1 = killer->getRole();
+            killer->setRole(player->getRole());
+            room->setPlayerProperty(killer, "role", player->getRole());
+            player->setRole(role1);
+            room->setPlayerProperty(player, "role", role1);
+        }
+        room->setPlayerFlag(player, "-FenxinTarget");
         return false;
     }
 };
@@ -1045,6 +1136,13 @@ SPPackage::SPPackage()
     General *sp_zhenji = new General(this, "sp_zhenji", "wei", 3, false, true);
     sp_zhenji->addSkill("qingguo");
     sp_zhenji->addSkill("luoshen");
+
+    General *lingju = new General(this, "lingju", "qun", 3, false);
+    lingju->addSkill(new Jieyuan);
+    lingju->addSkill(new Fenxin);
+    lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
+    related_skills.insertMulti("fenxin", "#@burnheart-1");
+    lingju->addSkill(new SPConvertSkill("lingju", "ass_lingju"));
 
     General *xiahouba = new General(this, "xiahouba", "shu");
     xiahouba->addSkill(new Baobian);

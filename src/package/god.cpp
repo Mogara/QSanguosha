@@ -266,11 +266,11 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
         room->loseHp(shenzhouyu, 3);
         shenzhouyu->loseMark("@flame");
         if(totalvictim > 1){
-            room->broadcastInvoke("animate", "lightbox:$yeyan2");
+            room->broadcastInvoke("animate", "lightbox:$YeyanAnimate2");
             room->broadcastSkillInvoke("yeyan", 2);
         }
         else{
-            room->broadcastInvoke("animate", "lightbox:$yeyan3");
+            room->broadcastInvoke("animate", "lightbox:$YeyanAnimate3");
             room->broadcastSkillInvoke("yeyan", 3);
         }
 
@@ -298,7 +298,7 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 }
 
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$yeyan1");
+    room->broadcastInvoke("animate", "lightbox:$YeyanAnimate1");
     room->broadcastSkillInvoke("yeyan", 1);
     shenzhouyu->loseMark("@flame");
     Card::use(room, shenzhouyu, targets);
@@ -428,7 +428,7 @@ public:
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
                 if(players.length() >=5)
-                    room->broadcastInvoke("animate", "lightbox:$guixin");
+                    room->broadcastInvoke("animate", "lightbox:$GuixinAnimate");
 
                 foreach (ServerPlayer *player, players) {
                     if (player->isAlive() && !player->isAllNude()) {
@@ -543,7 +543,7 @@ void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, QList<ServerPlayer *> 
     room->setPlayerFlag(shenlvbu, "ShenfenUsing");
     int index = qrand() % 2 + 1;
     room->broadcastSkillInvoke("shenfen", index);
-    room->broadcastInvoke("animate", "lightbox:$shenfen" + QString::number(index));
+    room->broadcastInvoke("animate", QString("lightbox:$ShenfenAnimate%1").arg(index));
     room->getThread()->delay(4500);
     shenlvbu->loseMark("@wrath", 6);
 
@@ -993,7 +993,7 @@ public:
         room->sendLog(log);
         
         room->broadcastSkillInvoke(objectName());
-        room->broadcastInvoke("animate", "lightbox:$baiyin");
+        room->broadcastInvoke("animate", "lightbox:$BaiyinAnimate");
         room->getThread()->delay(2000);
 
         room->setPlayerMark(shensimayi, "baiyin", 1);

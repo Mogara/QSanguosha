@@ -3588,13 +3588,19 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
 }
 
 void RoomScene::removeLightBox(){    
+    PixmapAnimation *pma = qobject_cast<PixmapAnimation *>(sender());
+    if (pma) {
+        removeItem(pma->parentItem());
+    } else {
     QPropertyAnimation *animation = qobject_cast<QPropertyAnimation *>(sender());
     QGraphicsTextItem *line = qobject_cast<QGraphicsTextItem *>(animation->targetObject());
-    if (line == NULL) {
-        QSanSelectableItem *line = qobject_cast<QSanSelectableItem *>(animation->targetObject());
+        if (line) {
         removeItem(line->parentItem());
-    } else
+        } else {
+            QSanSelectableItem *line = qobject_cast<QSanSelectableItem *>(animation->targetObject());
         removeItem(line->parentItem());
+        }
+    }
 }
 
 QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const{
@@ -3693,7 +3699,6 @@ void RoomScene::doAppearingAnimation(const QString &name, const QStringList &arg
 }
 
 void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
-    // hide discarded card
     QString word = args.first();
     word = Sanguosha->translate(word);
 
@@ -3703,7 +3708,34 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
     lightbox->setBrush(QColor(32, 32, 32, 204));
     lightbox->setZValue(20001.0);
 
-    if (!word.startsWith("anim=")) {
+    if (word.startsWith("image=")) {
+        QSanSelectableItem *line = new QSanSelectableItem(word.mid(6));
+        addItem(line);
+
+        QRectF line_rect = line->boundingRect();
+        line->setParentItem(lightbox);
+        line->setPos(m_tableCenterPos - line_rect.center());
+
+        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
+        appear->setStartValue(0.0);
+        appear->setKeyValueAt(0.8, 1.0);
+        appear->setEndValue(1.0);
+
+        int duration = args.value(1, "2000").toInt();
+        appear->setDuration(duration);
+
+        appear->start(QAbstractAnimation::DeleteWhenStopped);
+
+        connect(appear, SIGNAL(finished()), line, SLOT(deleteLater()));
+        connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
+    } else if (word.startsWith("anim=")) {
+        PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(lightbox, word.mid(5));
+        if (pma) {
+            pma->setZValue(20002.0);
+            pma->moveBy(-sceneRect().width() * _m_roomLayout->m_infoPlaneWidthPercentage / 2, 0);
+            connect(pma, SIGNAL(finished()), this, SLOT(removeLightBox()));
+        }
+    } else {
         QFont font = Config.BigFont;
         QGraphicsTextItem *line = addText(word, font);
         line->setDefaultTextColor(Qt::white);
@@ -3722,26 +3754,6 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
 
         appear->start();
 
-        connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
-    } else {
-        QSanSelectableItem *line = new QSanSelectableItem(word.mid(5));
-        addItem(line);
-
-        QRectF line_rect = line->boundingRect();
-        line->setParentItem(lightbox);
-        line->setPos(m_tableCenterPos - line_rect.center());
-
-        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
-        appear->setStartValue(0.0);
-        appear->setKeyValueAt(0.8, 1.0);
-        appear->setEndValue(1.0);
-
-        int duration = args.value(1, "2000").toInt();
-        appear->setDuration(duration);
-
-        appear->start(QAbstractAnimation::DeleteWhenStopped);
-
-        connect(appear, SIGNAL(finished()), line, SLOT(deleteLater()));
         connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
     }
 }

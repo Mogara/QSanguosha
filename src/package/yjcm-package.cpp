@@ -1118,7 +1118,7 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke(objectName());
-        room->broadcastInvoke("animate", "lightbox:$zili:4000");
+        room->broadcastInvoke("animate", "lightbox:$ZiliAnimate:4000");
         room->getThread()->delay(4000);
         QStringList choicelist;
         choicelist << "draw";

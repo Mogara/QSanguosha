@@ -327,7 +327,7 @@ public:
         Room *room = player->getRoom();
         room->broadcastSkillInvoke("zuixiang");
         if (player->getPile("dream").isEmpty()) {
-            room->broadcastInvoke("animate", "lightbox:$zuixiang:3000");
+            room->broadcastInvoke("animate", "lightbox:$ZuixiangAnimate:3000");
             room->getThread()->delay(3000);
         }
 
@@ -965,7 +965,7 @@ public:
 
                 if(player->askForSkillInvoke(objectName())){
                     room->broadcastSkillInvoke(objectName());
-                    room->broadcastInvoke("animate", "lightbox:$shichou:4500");
+                    room->broadcastInvoke("animate", "lightbox:$ShichouAnimate:4500");
                     room->getThread()->delay(4500);
                     player->loseMark("@hate", 1);
                     room->setPlayerMark(player, "shichouInvoke", 1);

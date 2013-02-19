@@ -691,7 +691,10 @@ LuanwuCard::LuanwuCard(){
 
 void LuanwuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     source->loseMark("@chaos");
-    room->broadcastInvoke("animate", "lightbox:$luanwu");
+    QString lightbox = "lightbox:$LuanwuAnimate";
+    if (source->getGeneralName() != "jiaxu" && (source->getGeneralName() == "sp_jiaxu" || source->getGeneral2Name() == "sp_jiaxu"))
+        lightbox = lightbox + "SP";
+    room->broadcastInvoke("animate", lightbox);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){
