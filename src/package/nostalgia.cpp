@@ -344,7 +344,7 @@ public:
 class NosJuejing: public TriggerSkill{
 public:
     NosJuejing():TriggerSkill("nosjuejing"){
-        events << CardLostDone << CardGotDone << PhaseChange;
+        events << CardLostDone << CardGotDone << PhaseChange << CardDrawnDone;
         frequency = Compulsory;
     }
 

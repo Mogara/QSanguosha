@@ -215,6 +215,7 @@ ban_list = { -- 初始禁表设置
 		"zhugejin+huatuo", -- 急救明哲
 		"fazheng+xiahoudun", -- 双重肛裂
 		"nosfazheng+xiahoudun", -- 双重肛裂
+		"caozhi+kongrong",
 
 		"caochong+caocao",
 		"caochong+yuanshu",

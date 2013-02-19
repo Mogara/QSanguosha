@@ -65,32 +65,32 @@ struct NormalRoomLayout : public RoomLayout{
         QString spec_name = QString("image/system/coord_%1.ini").arg(type);
         QSettings settings(spec_name, QSettings::IniFormat);
 
-        QList<QVariant> tmp = settings.value("RoomLayout/discard").toList();
-        discard = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        QList<QVariant> coord = settings.value("RoomLayout/discard").toList();
+        discard = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/drawpile").toList();
-        drawpile = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/drawpile").toList();
+        drawpile = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/enemy_box").toList();
-        enemy_box = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/enemy_box").toList();
+        enemy_box = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/self_box").toList();
-        self_box = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/self_box").toList();
+        self_box = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/chat_box_size").toList();
-        chat_box_size = QSize(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/chat_box_size").toList();
+        chat_box_size = QSize(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/chat_box_pos").toList();
-        chat_box_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/chat_box_pos").toList();
+        chat_box_pos = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/button1_pos").toList();
-        button1_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/button1_pos").toList();
+        button1_pos = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/button2_pos").toList();
-        button2_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/button2_pos").toList();
+        button2_pos = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        tmp = settings.value("RoomLayout/state_item_pos").toList();
-        state_item_pos = QPointF(tmp.first().toReal(), tmp.last().toReal());
+        coord = settings.value("RoomLayout/state_item_pos").toList();
+        state_item_pos = QPointF(coord.first().toReal(), coord.last().toReal());
     }
 };
 
@@ -585,6 +585,10 @@ void RoomScene::adjustItems(QMatrix matrix){
 }
 
 QList<QPointF> RoomScene::getPhotoPositions() const{
+    int player_count = photos.length() + 1;
+    static int cxw=0;//circle view correct data
+    static int stw=1;//standard view correct data
+/*
     static int four=0;
     static int five=0;
     static int six=0;
@@ -592,10 +596,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     static int seven=0;
     static int eight=0;
     static int nine=0;
-    static int cxw=0;//circle view correct data
-    static int stw=1;//standard view correct data
 
-    int player_count = photos.length() + 1;
     switch(player_count){
     case 4: four = 1; break;
     case 5: five = 1; break;
@@ -608,18 +609,16 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     case 8: eight = 1; break;
     case 9: nine = 1; break;
     }
-
-
+*/
+    QString type = "normal";
     if(Config.CircularView){
-        cxw=1;
-        stw=0;
+        cxw = 1;
+        stw = 0;
+        type = "circular";
     }
-
-    QString spec_name = "image/system/coord_normal.ini";
+    QString spec_name = QString("image/system/coord_%1.ini").arg(type);
     QSettings settings(spec_name, QSettings::IniFormat);
-
-    QList<QVariant> tmp = settings.value("3V3/lord").toList();
-
+/*
     static const QPointF pos[] = {
         QPointF((-630+stw*129)+(cxw*five*50)+(cxw*six_3v3*50)+(cxw*six*100)+(cxw*seven*100)+(cxw*eight*50)+(cxw*nine*20), (-70+stw)-(cxw*four*80)), // 0:zhugeliang
         QPointF((-630+stw*129)+(cxw*five*50)+(cxw*six_3v3*50)+(cxw*eight*50)+(cxw*nine*20), (-270-stw*3)+(cxw*five*150)), // 1:wolong
@@ -631,7 +630,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         QPointF(( 228+stw*141)-(cxw*five*50)-(cxw*six_3v3*50)-(cxw*eight*50)-(cxw*nine*20), (-270-stw*3)+(cxw*five*150)), // 7:shenguanyu
         QPointF(( 228+stw*141)-(cxw*five*50)-(cxw*six_3v3*50)-(cxw*six*100)-(cxw*seven*100)-(cxw*eight*50)-(cxw*nine*20), (-70+stw)-(cxw*four*80)), // 8:xiaoqiao
     };
-
+*/
     static int indices_table[][9] = {
         {4 }, // 2
         {3, 5}, // 3
@@ -666,123 +665,18 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     int i;
     for(i=0; i<photos.length(); i++){
         int index = indices[i];
-        positions << pos[index];
+
+        QList<QVariant> coord = settings.value(QString("%1/sgs%2").arg(is33 ? "3v3" : QString::number(player_count)).arg(index)).toList();
+        positions << QPointF(coord.first().toReal(), coord.last().toReal());
+/*
 #ifdef QT_DEBUG
         QString dg = QString("sgs%1 = %2, %3").arg(index).arg(pos[index].x()).arg(pos[index].y());
         qDebug() << dg;
         settings.setValue(QString("%1/sgs%2").arg(is33 ? "3v3" : QString::number(player_count)).arg(index), QString("%1, %2").arg(pos[index].x()).arg(pos[index].y()));
 #endif
+*/
     }
-
     return positions;
-    /*
-    static int four=0;
-    static int five=0;
-    static int six=0;
-    static int seven=0;
-    static int eight=0;
-    static int nine=0;
-    static int cxw=0;
-    static int cxw2=1;
-
-    int player_count = photos.length() + 1;
-    switch(player_count){
-    case 4: four = 1; break;
-    case 5: five = 1; break;
-    case 6: six = 1; break;
-    case 7: seven = 1; break;
-    case 8: eight = 1; break;
-    case 9: nine = 1; break;
-    }
-
-    if(ServerInfo.GameMode == "06_3v3" )
-    {
-        six   = 0;
-        nine = 1;
-    }
-
-    if(Config.value("CircularView").toBool()){
-        cxw=1;
-        cxw2=0;
-    }
-
-    static const QPointF pos[] = {
-        QPointF((-630+cxw2*129)+(cxw*four*70)+(cxw*six*50), (-70+cxw2)+(-four*cxw*80)+(-six*cxw*50)), // 0:zhugeliang
-        QPointF((-630+cxw2*129)+(cxw*eight*50)+(cxw*five*50)+(cxw*nine*20), (-270-cxw2*3)+(cxw*five*100)), // 1:wolong
-        QPointF((-487+cxw2*131)+(cxw*six*80)+(-seven*cxw*25)+(cxw*nine*45), (-316+cxw2*22)+(cxw*six*15)+(cxw*seven*30)), // 2:shenzhugeliang
-        QPointF((-344+cxw2*133)+(-eight*cxw*50)+(cxw*five*15)+(cxw*seven*50)+(cxw*nine*65), (-320+cxw2*26)), // 3:lusu
-        QPointF((-201+cxw2*135), -324+cxw2*30), // 4:dongzhuo
-        QPointF((-58+cxw2*137)+(cxw*eight*50)+(-five*cxw*15)+(-seven*cxw*50)+(-nine*cxw*65), (-320+cxw2*26)), // 5:caocao
-        QPointF((85+cxw2*139)+(-six*cxw*80)+(seven*cxw*25)+(-nine*cxw*45), (-316+cxw2*22)+(six*cxw*15)+(seven*cxw*30)), // 6:shuangxiong
-        QPointF((228+cxw2*141)+(-eight*cxw*50)+(-five*cxw*50)+(-nine*cxw*20), (-270-cxw2*3)+(five*cxw*100)), // 7:shenguanyu
-        QPointF((228+cxw2*141)+(-four*cxw*70)+(-six*cxw*50), (-70+cxw2)+(-four*cxw*80)+(-six*cxw*50)), // 8:xiaoqiao
-    };
-
-    static int indices_table[][9] = {
-        {4 }, // 2
-        {3, 5}, // 3
-        {2-cxw*2, 4, 6+cxw*2}, // 4
-        {1, 3, 5, 7}, // 5
-        {0, 2, 4, 6, 8}, // 6
-        {1-cxw, 2, 3, 5, 6, 7+cxw}, // 7
-        {1-cxw, 2-cxw, 3, 4, 5, 6+cxw, 7+cxw}, // 8
-        {0, 1, 2, 3, 5, 6, 7, 8}, // 9
-        {0, 1, 2, 3, 4, 5, 6, 7, 8} // 10
-    };
-
-    static int indices_table_3v3[][5] = {
-        {0, 2, 4, 6, 8}, // lord
-        {0, 1, 5, 6, 7}, // loyalist (right), same with rebel (right)
-        {1, 2, 3, 7, 8}, // rebel (left), same with loyalist (left)
-        {0, 2, 4, 6, 8}, // renegade, same with lord
-        {0, 1, 5, 6, 7}, // rebel (right)
-        {1, 2, 3, 7, 8}, // loyalist (left)
-    };
-
-    QList<QPointF> positions;
-    int *indices;
-    if(ServerInfo.GameMode == "06_3v3" && !Self->getRole().isEmpty())
-        indices = indices_table_3v3[Self->getSeat() - 1];
-    else
-        indices = indices_table[photos.length() - 1];
-
-    qreal stretch_x = dashboard->boundingRect().width() - chat_box->width();
-    stretch_x/=1060;
-    qreal stretch_y = (state_item->boundingRect().height()
-                       + log_box->height()
-                       + chat_box->height()
-                       + chat_edit->height())/480;
-
-    QPointF offset = QPoint( - chat_box->width()*(1-stretch_x)/2 - 20,
-                             - dashboard->boundingRect().height()*(1-stretch_y)/2);
-
-
-    if(!Config.value("CircularView",false).toBool())
-    {
-        stretch_x = 1;
-        stretch_y = 1;
-        offset=QPoint(0,0);
-    }
-
-    int i;
-    for(i=0; i<photos.length(); i++){
-        int index = indices[i];
-        QPointF aposition = pos[index];
-
-        aposition.rx()*=stretch_x;
-        aposition.ry()*=stretch_y;
-
-        aposition.rx()+=offset.x();
-        aposition.ry()+=offset.y();
-
-        positions << aposition;
-    }
-
-
-
-
-    return positions;
-    */
 }
 
 void RoomScene::changeTextEditBackground(){

@@ -963,7 +963,7 @@ public:
             if(player->isAlive())
                 room->obtainCard(player, dummy_card);
                 //room->moveCardTo(dummy_card, player, Player::Hand);
-            delete dummy_card;
+            //delete dummy_card;
             return true;
         }
         return false;
