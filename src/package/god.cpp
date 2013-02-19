@@ -647,11 +647,11 @@ public:
             room->fillAG(stars, shenzhuge);
         }
         room->obtainCard(shenzhuge, dummy, false);
-        dummy->deleteLater();
 
         Config.AIDelay = ai_delay;
 
         shenzhuge->invoke("clearAG");
+        delete dummy;
 
         if(n == 0)
             return;

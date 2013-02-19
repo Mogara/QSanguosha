@@ -39,10 +39,9 @@ public:
                 caopi->obtainCard(player->getOffensiveHorse());
 
                 DummyCard *all_cards = player->wholeHandCards();
-                if(all_cards){
+                if(all_cards)
                     room->moveCardTo(all_cards, caopi, Player::Hand, false);
-                    delete all_cards;
-                }
+                delete all_cards;
                 break;
             }
         }

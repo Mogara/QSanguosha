@@ -177,7 +177,7 @@ void V5YexinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     foreach(int x, getSubcards())
         source->addToPile("werpo", x);
     room->moveCardTo(dummy, source, Player::Hand, false);
-    dummy->deleteLater();
+    delete dummy;
 }
 
 class V5YexinViewAsSkill: public ViewAsSkill{

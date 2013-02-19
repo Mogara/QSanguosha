@@ -963,6 +963,7 @@ public:
             if(player->isAlive())
                 room->obtainCard(player, dummy_card);
                 //room->moveCardTo(dummy_card, player, Player::Hand);
+            delete dummy_card;
             return true;
         }
         return false;
@@ -1247,7 +1248,7 @@ public:
                 room->playSkillEffect(objectName(), 1);
                 DummyCard *dummy = room->getCardsOnetime(xiahou, player, xiahou->getLostHp(), objectName());
                 room->throwCard(dummy, player, xiahou);
-                dummy->deleteLater();
+                delete dummy;
             }
         }
         return false;

@@ -246,6 +246,7 @@ public:
                     foreach(const Card *card, handcards.toSet() - jilei_cards)
                         dummy_card->addSubcard(card);
                     room->throwCard(dummy_card, yuanshu);
+                    delete dummy_card;
                 }
             }else{
                 room->askForDiscard(yuanshu, "yongsi", x, false, true);

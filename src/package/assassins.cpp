@@ -550,7 +550,7 @@ public:
                 dummy->addSubcard(card_id);
             }
             room->throwCard(dummy, effect.from, player);
-            dummy->deleteLater();
+            delete dummy;
             room->loseHp(player);
         }
         return false;

@@ -2632,7 +2632,7 @@ DummyCard *Room::getCardsOnetime(ServerPlayer *thrower, ServerPlayer *target, in
         card_ids << card_id;
         dummy->addSubcard(card_id);
     }
-    dummy->deleteLater();
+    //dummy->deleteLater();
     return dummy;
 }
 
@@ -3598,9 +3598,9 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
             }
 
             moveCardTo(dummy_card, who, Player::Hand, false);
-            dummy_card->deleteLater();
 
             setEmotion(who, "draw-card");
+            delete dummy_card;
 
             return true;
         }
