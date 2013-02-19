@@ -460,7 +460,9 @@ void Room::slashEffect(const SlashEffectStruct &effect) {
 
     bool broken = thread->trigger(SlashEffect, this, effect.from, data);
     if(!broken)
-        thread->trigger(SlashEffected, this, effect.to, data);
+        if (thread->trigger(SlashEffected, this, effect.to, data))
+            if (effect.to->getMark("qinggang") > 0)
+                setPlayerMark(effect.to, "qinggang", effect.to->getMark("qinggang") - 1);
 }
 
 void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
@@ -476,6 +478,8 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
         thread->trigger(SlashHit, this, effect.from, data);
     else{
         setEmotion(effect.to, "jink");
+        if (effect.to->getMark("qinggang") > 0)
+            setPlayerMark(effect.to, "qinggang", effect.to->getMark("qinggang") - 1);
         thread->trigger(SlashMissed, this, effect.from, data);
     }
 }
@@ -2723,8 +2727,11 @@ void Room::damage(DamageStruct &damage_data){
         damage_data = data.value<DamageStruct>();
 
         // Predamage
-        if(thread->trigger(Predamage, this, damage_data.from, data))
+        if(thread->trigger(Predamage, this, damage_data.from, data)) {
+            if (damage_data.card && damage_data.card->isKindOf("Slash") && damage_data.to->getMark("qinggang") > 0)
+                setPlayerMark(damage_data.to, "qinggang", damage_data.to->getMark("qinggang") - 1);
             return;
+        }
     }
 
     do{

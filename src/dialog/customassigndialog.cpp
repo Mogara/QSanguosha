@@ -45,7 +45,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     list = new QListWidget;
     list->setFlow(QListView::TopToBottom);
     list->setMovement(QListView::Static);
-	
+    
     QVBoxLayout *vlayout = new QVBoxLayout;
     QVBoxLayout *vlayout2 = new QVBoxLayout;
     num_ComboBox = new QComboBox;

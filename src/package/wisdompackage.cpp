@@ -158,7 +158,7 @@ public:
 
         if(card && card->isNDTrick())
             if(room->askForSkillInvoke(jiangwei, objectName(), data))
-                room->askForUseSlashTo(jiangwei, room->getOtherPlayers(jiangwei), "@askforslash");
+                room->askForUseCard(jiangwei, "slash", "@askforslash");
 
         return false;
     }
@@ -841,38 +841,38 @@ WisdomPackage::WisdomPackage()
             *wissunce, *wiszhangzhao,
             *wishuaxiong, *wistianfeng, *wisshuijing;
 
-        wisxuyou = new General(this, "wisxuyou", "wei", 3);
+        wisxuyou = new General(this, "wis_xuyou", "wei", 3);
         wisxuyou->addSkill(new Juao);
         wisxuyou->addSkill(new Tanlan);
         wisxuyou->addSkill(new Shicai);
 
-        wisjiangwei = new General(this, "wisjiangwei", "shu");
+        wisjiangwei = new General(this, "wis_jiangwei", "shu");
         wisjiangwei->addSkill(new Yicai);
         wisjiangwei->addSkill(new Beifa);
 
-        wisjiangwan = new General(this, "wisjiangwan", "shu", 3);
+        wisjiangwan = new General(this, "wis_jiangwan", "shu", 3);
         wisjiangwan->addSkill(new Houyuan);
         wisjiangwan->addSkill(new Chouliang);
 
-        wissunce = new General(this, "wissunce$", "wu");
+        wissunce = new General(this, "wis_sunce$", "wu");
         wissunce->addSkill(new Bawang);
         wissunce->addSkill(new Weidai);
 
-        wiszhangzhao = new General(this, "wiszhangzhao", "wu", 3);
+        wiszhangzhao = new General(this, "wis_zhangzhao", "wu", 3);
         wiszhangzhao->addSkill(new Longluo);
         wiszhangzhao->addSkill(new Fuzuo);
         wiszhangzhao->addSkill(new Jincui);
 
-        wishuaxiong = new General(this, "wishuaxiong", "qun");
+        wishuaxiong = new General(this, "wis_huaxiong", "qun");
         wishuaxiong->addSkill(new Badao);
         wishuaxiong->addSkill(new Wenjiu);
 
-        wistianfeng = new General(this, "wistianfeng", "qun", 3);
+        wistianfeng = new General(this, "wis_tianfeng", "qun", 3);
         wistianfeng->addSkill(new Shipo);
         wistianfeng->addSkill(new Gushou);
         wistianfeng->addSkill(new Yuwen);
 
-        wisshuijing = new General(this, "wisshuijing", "qun");
+        wisshuijing = new General(this, "wis_shuijing", "qun");
         wisshuijing->addSkill(new Shouye);
         wisshuijing->addSkill(new Jiehuo);
 
