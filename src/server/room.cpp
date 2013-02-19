@@ -2630,9 +2630,11 @@ DummyCard *Room::getCardsOnetime(ServerPlayer *thrower, ServerPlayer *target, in
         while(card_ids.contains(card_id))
             card_id = target->getRandomCardId(flags);
         card_ids << card_id;
+        if(getCardPlace(card_id) == Player::Equip)
+            target->addToPile("#temp", card_id);
         dummy->addSubcard(card_id);
     }
-    //dummy->deleteLater();
+    dummy->deleteLater();
     return dummy;
 }
 

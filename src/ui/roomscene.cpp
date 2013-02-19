@@ -615,6 +615,11 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         stw=0;
     }
 
+    QString spec_name = "image/system/coord_normal.ini";
+    QSettings settings(spec_name, QSettings::IniFormat);
+
+    QList<QVariant> tmp = settings.value("3V3/lord").toList();
+
     static const QPointF pos[] = {
         QPointF((-630+stw*129)+(cxw*five*50)+(cxw*six_3v3*50)+(cxw*six*100)+(cxw*seven*100)+(cxw*eight*50)+(cxw*nine*20), (-70+stw)-(cxw*four*80)), // 0:zhugeliang
         QPointF((-630+stw*129)+(cxw*five*50)+(cxw*six_3v3*50)+(cxw*eight*50)+(cxw*nine*20), (-270-stw*3)+(cxw*five*150)), // 1:wolong
@@ -626,15 +631,6 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         QPointF(( 228+stw*141)-(cxw*five*50)-(cxw*six_3v3*50)-(cxw*eight*50)-(cxw*nine*20), (-270-stw*3)+(cxw*five*150)), // 7:shenguanyu
         QPointF(( 228+stw*141)-(cxw*five*50)-(cxw*six_3v3*50)-(cxw*six*100)-(cxw*seven*100)-(cxw*eight*50)-(cxw*nine*20), (-70+stw)-(cxw*four*80)), // 8:xiaoqiao
     };
-
-    QString spec_name = "image/system/coord_normal.ini";
-    QSettings settings(spec_name, QSettings::IniFormat);
-
-    QMap<QString, QList<QVariant> > in33;
-    QStringList item33;
-    item33 << "lord" << "loyalist_right" << "rebel_left" << "renegade" << "rebel_right" << "loyalist_left";
-    foreach(QString item, item33)
-        in33[item] = settings.value("3V3/" + item).toList();
 
     static int indices_table[][9] = {
         {4 }, // 2
@@ -649,18 +645,21 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     };
 
     static int indices_table_3v3[][5] = {
-        {in33["lord"][0].toReal(), in33["lord"][1].toReal(), in33["lord"][2].toReal(), in33["lord"][3].toReal(), in33["lord"][4].toReal()}, // lord
-        {in33["loyalist_right"][0].toReal(), in33["loyalist_right"][1].toReal(), in33["loyalist_right"][2].toReal(), in33["loyalist_right"][3].toReal(), in33["loyalist_right"][4].toReal()}, // loyalist (right), same with rebel (right)
-        {in33["rebel_left"][0].toReal(), in33["rebel_left"][1].toReal(), in33["rebel_left"][2].toReal(), in33["rebel_left"][3].toReal(), in33["rebel_left"][4].toReal()}, // rebel (left), same with loyalist (left)
-        {in33["lord"][0].toReal(), in33["lord"][1].toReal(), in33["lord"][2].toReal(), in33["lord"][3].toReal(), in33["lord"][4].toReal()}, // renegade, same with lord
-        {in33["lord"][0].toReal(), in33["lord"][1].toReal(), in33["lord"][2].toReal(), in33["lord"][3].toReal(), in33["lord"][4].toReal()}, // rebel (right)
-        {in33["lord"][0].toReal(), in33["lord"][1].toReal(), in33["lord"][2].toReal(), in33["lord"][3].toReal(), in33["lord"][4].toReal()}, // loyalist (left)
+        {0, 3, 4, 5, 8}, // lord
+        {0, 1, 3, 4, 5}, // loyalist (right), same with rebel (right)
+        {3, 4, 5, 7, 8}, // rebel (left), same with loyalist (left)
+        {0, 3, 4, 5, 8}, // renegade, same with lord
+        {0, 1, 3, 4, 5}, // rebel (right)
+        {3, 4, 5, 7, 8}, // loyalist (left)
     };
 
     QList<QPointF> positions;
     int *indices;
-    if(ServerInfo.GameMode == "06_3v3" && !Self->getRole().isEmpty())
+    bool is33 = false;
+    if(ServerInfo.GameMode == "06_3v3" && !Self->getRole().isEmpty()){
         indices = indices_table_3v3[Self->getSeat() - 1];
+        is33 = true;
+    }
     else
         indices = indices_table[photos.length() - 1];
 
@@ -668,6 +667,11 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     for(i=0; i<photos.length(); i++){
         int index = indices[i];
         positions << pos[index];
+#ifdef QT_DEBUG
+        QString dg = QString("sgs%1 = %2, %3").arg(index).arg(pos[index].x()).arg(pos[index].y());
+        qDebug() << dg;
+        settings.setValue(QString("%1/sgs%2").arg(is33 ? "3v3" : QString::number(player_count)).arg(index), QString("%1, %2").arg(pos[index].x()).arg(pos[index].y()));
+#endif
     }
 
     return positions;
