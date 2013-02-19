@@ -487,6 +487,7 @@ public:
         PindianStar pindian = data.value<PindianStar>();
         room->setPlayerFlag(pindian->from, "fuzuo_target");
         room->setPlayerFlag(pindian->to, "fuzuo_target");
+        room->setTag("FuzuoPindianData", data);
         if (room->askForUseCard(zhangzhao, "@@fuzuo", "@fuzuo-pindian", -1, Card::MethodDiscard)) {
             bool isFrom = (pindian->from->getMark(objectName()) > 0);
 
@@ -515,6 +516,7 @@ public:
         room->setPlayerFlag(pindian->from, "-fuzuo_target");
         room->setPlayerFlag(pindian->to, "-fuzuo_target");
 
+        room->removeTag("FuzuoPindianData");
         return false;
     }
 };
