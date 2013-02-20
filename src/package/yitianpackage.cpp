@@ -483,7 +483,7 @@ public:
 
         ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
         if(xiahoujuan){
-            const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash");
+            const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash", data, Card::MethodResponse);
             if(slash){
                 room->provide(slash);
                 return true;
@@ -517,7 +517,7 @@ public:
             if(player->getMark("@tied") > 0){
                 ServerPlayer *zhangfei = player;
 
-                const Card *jink = room->askForCard(zhangfei, "jink", "@lianli-jink");
+                const Card *jink = room->askForCard(zhangfei, "jink", "@lianli-jink", data, Card::MethodResponse);
                 if(jink){
                     room->provide(jink);
                     return true;

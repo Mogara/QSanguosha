@@ -3258,11 +3258,11 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             case Player::DrawPile: m_drawPile->removeOne(card_id); break;
             case Player::PlaceSpecial:
                 {
-                    table_cards.removeOne(card_id); 
+                    table_cards.removeOne(card_id);
                     break;
                 }
             default:
-                break;            
+                break;
             }
         }
     }
