@@ -429,7 +429,7 @@ public:
         if(use.card->getTypeId() == Card::TypeSkill || use.from == player || !use.to.contains(player))
             return false;
         
-        if(player->askForSkillInvoke(objectName())) {
+        if(player->askForSkillInvoke(objectName(), data)) {
             room->setPlayerFlag(player, "duanzhi_InTempMoving");
             ServerPlayer *target = use.from;
             DummyCard *dummy = new DummyCard;
