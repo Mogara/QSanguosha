@@ -146,7 +146,10 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
 
             player->clearFlags();
-            room->setPlayerMark(player, "rende", 0);
+            if(player->hasMark("rende"))
+                room->setPlayerMark(player, "rende", 0);
+            if(player->hasMark("fl_jizhi"))
+                room->setPlayerMark(player, "fl_jizhi", 0);
 
             return;
         }
@@ -227,9 +230,11 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
 
                 if(card_use.from->getArmor() && card_use.from->getArmor()->isKindOf("Fiveline")
                     && card->isNDTrick()){ // fivelines
-                    if(card_use.from->getHp() == 2 && room->askForSkillInvoke(card_use.from, "jizhi")){
+                    if(card_use.from->getMark("fl_jizhi") < 6 && card_use.from->getHp() == 2
+                            && room->askForSkillInvoke(card_use.from, "jizhi")){
                         room->playSkillEffect("jizhi");
                         card_use.from->drawCards(1);
+                        card_use.from->addMark("fl_jizhi");
                     }
                 }
 
