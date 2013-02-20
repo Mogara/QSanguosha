@@ -229,6 +229,11 @@ QWidget *ServerDialog::createAdvancedTab(){
     hegemony_maxchoice_spinbox->setRange(5, 10);
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
 
+    hegemony_maxsamekingdoms_label = new QLabel(tr("Max num of same-kingdom generals"));
+    hegemony_maxsamekingdoms_spinbox = new QSpinBox;
+    hegemony_maxsamekingdoms_spinbox->setRange(2, 10);
+    hegemony_maxsamekingdoms_spinbox->setValue(Config.value("HegemonyMaxSameKingdomGenerals", 2).toInt());
+
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
 
@@ -256,6 +261,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
     layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
+    layout->addLayout(HLay(hegemony_maxsamekingdoms_label, hegemony_maxsamekingdoms_spinbox));
     layout->addLayout(HLay(scene_checkbox, same_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
@@ -275,6 +281,10 @@ QWidget *ServerDialog::createAdvancedTab(){
     connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_label, SLOT(setVisible(bool)));
     hegemony_maxchoice_spinbox->setVisible(Config.EnableHegemony);
     connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_spinbox, SLOT(setVisible(bool)));
+    hegemony_maxsamekingdoms_label->setVisible(Config.EnableHegemony);
+    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxsamekingdoms_label, SLOT(setVisible(bool)));
+    hegemony_maxsamekingdoms_spinbox->setVisible(Config.EnableHegemony);
+    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxsamekingdoms_spinbox, SLOT(setVisible(bool)));
 
     return widget;
 }
@@ -941,6 +951,7 @@ bool ServerDialog::config(){
     Config.setValue("EnableBasara",Config.EnableBasara);
     Config.setValue("EnableHegemony",Config.EnableHegemony);
     Config.setValue("HegemonyMaxChoice", hegemony_maxchoice_spinbox->value());
+    Config.setValue("HegemonyMaxSameKingdomGenerals", hegemony_maxsamekingdoms_spinbox->value());
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());

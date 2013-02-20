@@ -889,7 +889,7 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
             kingdom_roles[p->getKingdom()]++;
         }
 
-        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= 2
+        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= Config.value("HegemonyMaxSameKingdomGenerals", 2).toInt()
                 && player->getGeneralName() == "anjiang")
             return;
     }

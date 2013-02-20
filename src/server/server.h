@@ -106,6 +106,8 @@ private:
     QCheckBox *hegemony_checkbox;
     QLabel *hegemony_maxchoice_label;
     QSpinBox *hegemony_maxchoice_spinbox;
+    QLabel *hegemony_maxsamekingdoms_label;
+    QSpinBox *hegemony_maxsamekingdoms_spinbox;
     QLabel *max_hp_label;
     QComboBox *max_hp_scheme_ComboBox;
     QCheckBox *announce_ip_checkbox;
