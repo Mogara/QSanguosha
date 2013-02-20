@@ -196,6 +196,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 const Card *card = card_use.card;
                 if (card_use.from->hasFlag("jijiang_failed"))
                     room->setPlayerFlag(card_use.from, "-jijiang_failed");
+                if (card_use.from->hasFlag("weidai_failed"))
+                    room->setPlayerFlag(card_use.from, "-weidai_failed");
 
                 RoomThread *thread = room->getThread();
 
@@ -270,7 +272,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
                 if(!current->hasSkill("wansha") || current->isDead() || dying.who->objectName() == player->objectName()
                         || player->hasFlag("dying") || player == jiaxu)
                     if(dying.who->isAlive())
+                    {
+                        if (player->hasFlag("weidai_failed"))
+                            room->setPlayerFlag(player, "-weidai_failed");
                         peach = room->askForSinglePeach(player, dying.who);
+                    }
                 if(peach == NULL)
                     break;
 

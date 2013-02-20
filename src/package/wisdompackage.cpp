@@ -368,6 +368,7 @@ const Card *WeidaiCard::validate(const CardUseStruct *card_use) const {
             return ana;
         }
     }
+    room->setPlayerFlag(sunce, "weidai_failed");
     return NULL;
 }
 
@@ -385,6 +386,7 @@ const Card *WeidaiCard::validateInResponse(ServerPlayer *user, bool &continuable
             return ana;
         }
     }
+    room->setPlayerFlag(user, "weidai_failed");
     return NULL;
 }
 
@@ -394,17 +396,25 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const {
-        return player->hasLordSkill("weidai")
-                && Analeptic::IsAvailable(player)
-                && !player->hasFlag("drank");
+        return hasWuGenerals(player) && player->hasLordSkill("weidai")
+               && !player->hasFlag("weidai_failed")
+               && Analeptic::IsAvailable(player);
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "peach+analeptic";
+        return hasWuGenerals(player) && pattern == "peach+analeptic" && !player->hasFlag("weidai_failed");
     }
 
     virtual const Card *viewAs() const{
         return new WeidaiCard;
+    }
+
+private:
+    static bool hasWuGenerals(const Player *player) {
+        foreach (const Player *p, player->getSiblings())
+            if (p->isAlive() && p->getKingdom() == "wu")
+                return true;
+        return false;
     }
 };
 

@@ -242,7 +242,7 @@ void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     if(choices.length() == 1)
         choice = choices.first();
     else
-        choice = room->askForChoice(yuanshu, "weidi", "jijiang+weidai");
+        choice = room->askForChoice(yuanshu, "weidi", choices.join("+"));
 
     if(choice == "jijiang"){
         QList<ServerPlayer *> targets;
