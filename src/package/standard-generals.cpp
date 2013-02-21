@@ -915,38 +915,38 @@ public:
     }
 };
 
-class Keji: public TriggerSkill{
+class Keji: public TriggerSkill {
 public:
-    Keji():TriggerSkill("keji"){
-        events << EventPhaseChanging << CardResponded;
+    Keji(): TriggerSkill("keji") {
+        events << EventPhaseChanging << CardUsed << CardResponded;
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
-        if(triggerEvent == CardResponded && lvmeng->getPhase() == Player::Play){
-            CardStar card_star = data.value<ResponsedStruct>().m_card;
-            if(card_star->isKindOf("Slash"))
-                lvmeng->setFlags("keji_use_slash");
-        }
-        else if(triggerEvent == EventPhaseChanging)
-        {
+        if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if(change.to == Player::Discard){
-                if(!lvmeng->hasFlag("keji_use_slash") &&
-                        lvmeng->getSlashCount() == 0 &&
-                        lvmeng->askForSkillInvoke("keji"))
-                {
+            if (change.to == Player::Discard) {
+                if (!lvmeng->hasFlag("keji_use_slash") && lvmeng->askForSkillInvoke(objectName())) {
                     if (lvmeng->getHandcardNum() > lvmeng->getMaxCards()) {
                         int index = qrand() % 2 + 1;
                         if (!lvmeng->hasInnateSkill(objectName()) && lvmeng->hasSkill("mouduan"))
                             index += 2;
                         room->broadcastSkillInvoke(objectName(), index);
                     }
-
                     lvmeng->skip(Player::Discard);
                 }
             }
+        } else if (lvmeng->getPhase() == Player::Play) {
+            CardStar card = NULL;
+            if (event == CardUsed)
+                card = data.value<CardUseStruct>().card;
+            else
+                card = data.value<ResponsedStruct>().m_card;
+
+            if (card->isKindOf("Slash"))
+                room->setPlayerFlag(lvmeng, "keji_use_slash");
         }
+
         return false;
     }
 };
