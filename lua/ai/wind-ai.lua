@@ -232,7 +232,7 @@ function sgs.ai_slash_prohibit.leiji(self, to, card)
 	end
 
 	if getKnownCard(to,"Jink",true) >= 1 or (self:hasSuit("spade", true, to) and hcard >= 2) or hcard >= 4 then return true end
-	if self:isEquip("EightDiagram", to) and not IgoreArmor(self.player, to) then return true end
+	if self:isEquip("EightDiagram", to) and not IgnoreArmor(self.player, to) then return true end
 end
 
 

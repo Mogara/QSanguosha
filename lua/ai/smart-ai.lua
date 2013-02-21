@@ -2070,7 +2070,8 @@ function SmartAI:filterEvent(event, player, data)
 
 				if isCard("SupplyShortage", card, player) and not self.room:getLord():hasSkill("qiaobian") then
 					for _, target in sgs.qlist(self.room:getOtherPlayers(player)) do
-						if not (target:containsTrick("supply_shortage") or target:containsTrick("YanxiaoCard") or self:hasSkills("qiaobian", target)) then
+						if player:distanceTo(target) <= (player:hasSkill("duanliang") and 2 or 1) and 
+								not (target:containsTrick("supply_shortage") or target:containsTrick("YanxiaoCard") or self:hasSkills("qiaobian", target)) then
 							local aplayer = self:exclude( {target}, card)
 							if #aplayer ==1 and is_neutral then sgs.updateIntention(player, target, -35) end
 						end
