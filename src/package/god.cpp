@@ -1014,6 +1014,7 @@ void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *shensimayi = card_use.from;
 
     QStringList choices;
+    choices << "cancel";
     if(!shensimayi->hasUsed("ZhihengCard") && !shensimayi->hasSkill("zhiheng"))
         choices << "zhiheng";
 
@@ -1025,15 +1026,17 @@ void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     QString choice = room->askForChoice(shensimayi, "jilve", choices.join("+"));
 
-    shensimayi->loseMark("@bear");
-
     if(choice == "wansha"){
+        shensimayi->loseMark("@bear");
         room->acquireSkill(shensimayi, "wansha");
-        room->broadcastSkillInvoke("jilve",3);
+        room->broadcastSkillInvoke("jilve", 3);
         shensimayi->tag["JilveWansha"] = true;
-    }else{
-        room->askForUseCard(shensimayi, "@zhiheng", "@jilve-zhiheng");
-        room->broadcastSkillInvoke("jilve",4);
+    }else if (choice == "zhiheng"){
+        if (room->askForUseCard(shensimayi, "@zhiheng", "@jilve-zhiheng"))
+        {
+            shensimayi->loseMark("@bear");
+            room->broadcastSkillInvoke("jilve", 4);
+        }
     }
 }
 
@@ -1045,12 +1048,12 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        int extra = 0;
-        if(player->hasSkill("zhiheng"))
-            extra++;
-        else if(player->hasInnateSkill("wansha"))
-            extra++;
-        return player->usedTimes("JilveCard")+extra < 2 && player->getMark("@bear") > 0;
+        int times = 0;
+        if(player->hasUsed("ZhihengCard"))
+            times++;
+        else if(player->tag.value("JilveWansha", false).toBool())
+            times++;
+        return times < 2 && player->getMark("@bear") > 0;
     }
 
     virtual const Card *viewAs() const{
@@ -1088,17 +1091,28 @@ public:
                 player->drawCards(1);
             }
         }else if(triggerEvent == AskForRetrial){
-            const TriggerSkill *guicai = Sanguosha->getTriggerSkill("guicai");
-            if(guicai && !player->isKongcheng() && !player->hasSkill("guicai") && player->askForSkillInvoke("jilve", data)){
-                player->loseMark("@bear");
-                guicai->trigger(triggerEvent, room, player, data);
+            if(!player->isKongcheng() && !player->hasSkill("guicai") && player->askForSkillInvoke("jilve", data)){
+                JudgeStar judge = data.value<JudgeStar>();
+
+                QStringList prompt_list;
+                prompt_list << "@jilve-guicai" << judge->who->objectName()
+                        << objectName() << judge->reason << judge->card->getEffectIdString();
+                QString prompt = prompt_list.join(":");
+                const Card *card = room->askForCard(player, "@guicai", prompt, data, Card::MethodResponse, judge->who, true);
+                if (card != NULL){
+                    room->broadcastSkillInvoke("jilve", 1);
+                    room->retrial(card, player, judge, objectName());
+                }
+
+                return false;
             }
         }else if(triggerEvent == Damaged){
-            const TriggerSkill *fangzhu = Sanguosha->getTriggerSkill("fangzhu");
-            if(fangzhu && !player->hasSkill("fangzhu") && player->askForSkillInvoke("jilve", data)){
-                player->loseMark("@bear");
-                room->broadcastSkillInvoke("jilve",2);
-                fangzhu->trigger(triggerEvent, room, player, data);
+            if(!player->hasSkill("fangzhu") && player->askForSkillInvoke("jilve", data)){
+                if (room->askForUseCard(player, "@@fangzhu", "@jilve-fangzhu"))
+                {
+                    player->loseMark("@bear");
+                    room->broadcastSkillInvoke("jilve",2);
+                }
             }
         }
         player->setMark("JilveEvent",0);

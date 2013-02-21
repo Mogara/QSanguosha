@@ -279,10 +279,7 @@ public:
         QString prompt = prompt_list.join(":");
         const Card *card = room->askForCard(player, "@guicai", prompt, data, Card::MethodResponse, judge->who, true);
         if (card != NULL){
-            if (player->hasInnateSkill("guicai") || !player->hasSkill("jilve"))
-                room->broadcastSkillInvoke(objectName());
-            else
-                room->broadcastSkillInvoke("jilve", 1);
+            room->broadcastSkillInvoke(objectName());
             room->retrial(card, player, judge, objectName());
         }
 

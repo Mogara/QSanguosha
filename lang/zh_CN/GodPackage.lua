@@ -111,8 +111,11 @@ return {
 	["lianpo"] = "连破",
 	[":lianpo"] = "若你在一回合内杀死了至少一名角色，此回合结束后，你可以进行一个额外的回合。\
 ◆发动条件是否满足是根据你杀死一名角色时，该角色亮出身份牌后，此时是否为一名角色的回合内来判断的。",
+	["jilve:cancel"] = "取消",
 	["@jilve-zhiheng"] = "请发动【制衡】",
 	["~zhiheng"] = "选择需要弃置的牌→点击确定",
+	["@jilve-fangzhu"] = "请发动【放逐】",
+	["@jilve-guicai"] = "你可以发动【%dest】来修改 %src 的 %arg 判定",
 	["#LianpoCanInvoke"] = "%from 在本回合内杀死了 %arg 名角色，达成【%arg2】的发动条件",
 	["#LianpoRecord"] = "%from 在 %arg 的回合内杀死了 %to，将可在 %arg 回合结束后进行一个额外的回合",
 -- CV

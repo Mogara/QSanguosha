@@ -1000,6 +1000,8 @@ public:
 
             return false;
         } else if (triggerEvent == DamageComplete) {
+            if (damage.from == NULL)
+                return false;
             PlayerStar target = damage.from->tag.value("ShaoyingTarget", QVariant()).value<PlayerStar>();
             damage.from->tag.remove("ShaoyingTarget");
             if (!target || !damage.from || damage.from->isDead())
