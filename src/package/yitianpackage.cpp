@@ -362,6 +362,8 @@ public:
         log.from = lukang;
         room->sendLog(log);
 
+        lukang->gainMark("@waked");
+
         room->broadcastSkillInvoke(objectName());
         room->broadcastInvoke("animate", "lightbox:$KegouAnimate:4000");
         room->getThread()->delay(3500);

@@ -797,6 +797,7 @@ public:
 
         room->setPlayerMark(player, "jiehuo", 1);
         player->loseAllMarks("@shouye");
+        player->gainMark("@waked");
         room->acquireSkill(player, "shien");
 
         room->loseMaxHp(player);
