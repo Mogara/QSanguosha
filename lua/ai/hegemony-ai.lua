@@ -52,7 +52,11 @@ sgs.ai_skill_use["@@shushen"]=function(self,prompt)
 end
 
 sgs.ai_skill_invoke.shenzhi = function(self, data)
-	return self.player:getHandcardNum() > self.player:getLostHp() and self.player:isWounded()
+	if not self.player:isWounded() or self:getCardsNum("Shit") > 0 then return false end
+	if self.player:getHandcardNum() >= self.player:getHp() and self.player:containsTrick("indulgence") then
+		return true
+	end
+	return self.player:getHandcardNum() == self.player:getHp() and self:getCardsNum("Peach") == 0
 end
 
 sgs.ai_chaofeng.ganfuren = 3
@@ -215,7 +219,20 @@ end
 sgs.ai_chaofeng.jiling = 4
 
 sgs.ai_skill_invoke.huoshui = function(self, data)
-	return false
+	return not self.player:faceUp() or (not self.player:isWounded() and self.player:getHandcardNum() > 2 and math.random(0,1) == 0)
+end
+sgs.ai_skill_playerchosen["huoshui"] = function(self, targets)
+	local list=sgs.QList2Table(targets)
+	self:sort(list, "defense")
+	for _, target in ipairs(list) do
+		if self:isFriend(target) and not target:faceUp() then
+			return target
+		end
+		if self:isEnemy(target) and target:faceUp() then
+			return target
+		end
+	end
+	return self.enemies[1]
 end
 
 local qingcheng_skill={}
