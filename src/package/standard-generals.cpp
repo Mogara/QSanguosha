@@ -938,7 +938,7 @@ public:
             }
         } else if (lvmeng->getPhase() == Player::Play) {
             CardStar card = NULL;
-            if (event == CardUsed)
+            if (triggerEvent == CardUsed)
                 card = data.value<CardUseStruct>().card;
             else
                 card = data.value<ResponsedStruct>().m_card;
