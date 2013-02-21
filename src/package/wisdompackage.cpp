@@ -170,6 +170,7 @@ public:
         events << CardsMoveOneTime;
         frequency = Compulsory;
     }
+
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *jiangwei, QVariant &data) const{
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         if(move->from == jiangwei && move->from_places.contains(Player::PlaceHand) && jiangwei->isKongcheng())

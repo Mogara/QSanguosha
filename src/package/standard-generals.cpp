@@ -959,6 +959,10 @@ public:
         frequency = Frequent;
     }
 
+    virtual int getPriority() const{
+        return 1;
+    }
+
     virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *luxun, QVariant &data) const{
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         if(move->from == luxun && move->from_places.contains(Player::PlaceHand) && luxun->isKongcheng()){
