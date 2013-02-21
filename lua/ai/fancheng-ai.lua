@@ -9,7 +9,7 @@ zhiyuan_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 
 	for _,card in ipairs(cards)  do
-		if card:getTypeId()==sgs.Card_Basic then
+		if card:getTypeId() == sgs.Card_Basic then
 			if card:isKindOf("Slash") and (self:getCardsNum("Slash")<=1)then
 			elseif card:isKindOf("Jink") and (self:getCardsNum("Jink")<=1)then
 			elseif card:isKindOf("Peach") and (self.player:getHp()<=2)then
@@ -154,3 +154,7 @@ sgs.ai_skill_use["@@smalltuxi"] = function(self, prompt)
 end
 
 sgs.ai_card_intention.SmallTuxiCard = 80
+
+sgs.ai_skill_invoke.reselect = function(self)
+	return os.time() % 3 == 1
+end

@@ -639,6 +639,7 @@ ganning             machao              3
 ganning             masu                3         
 ganning             menghuo             3         
 ganning             nos_xushu           0         
+ganning             nosxushu            0         
 ganning             pangde              3         
 ganning             pangtong            1         
 ganning             shenlvbu            0         
@@ -1008,6 +1009,7 @@ huangyueying        machao              3
 huangyueying        masu                4         
 huangyueying        menghuo             3         
 huangyueying        nos_xushu           0         
+huangyueying        nosxushu            0         
 huangyueying        pangde              3         
 huangyueying        pangtong            5         
 huangyueying        shenlvbu            0         
@@ -1653,6 +1655,7 @@ machao              zhouyu              4
 machao              zhugeliang          5         
 machao              zhurong             5         
 madai               nos_zhangchunhua    0         
+madai               noszhangchunhua     0         
 madai               zhangchunhua        0         
 masu                caocao              3         
 masu                caopi               3         
@@ -1786,7 +1789,14 @@ nos_xushu           yanliangwenchou     0
 nos_zhangchunhua    madai               0         
 nos_zhangchunhua    weiyan              0         
 nos_zhangchunhua    xusheng             0         
-nos_zhouyu          yanliangwenchou     0         
+nosxushu            ganning             0         
+nosxushu            huangyueying        0         
+nosxushu            yanliangwenchou     0         
+noszhangchunhua     madai               0         
+noszhangchunhua     weiyan              0         
+noszhangchunhua     xusheng             0         
+noszhouyu           yanliangwenchou     0         
+noszhouyu           yanliangwenchou     0         
 pangde              caocao              3         
 pangde              caopi               3         
 pangde              caoren              3         
@@ -2250,6 +2260,7 @@ weiyan              machao              5
 weiyan              masu                3         
 weiyan              menghuo             4         
 weiyan              nos_zhangchunhua    0         
+weiyan              noszhangchunhua     0         
 weiyan              pangde              5         
 weiyan              pangtong            3         
 weiyan              simayi              4         
@@ -2809,6 +2820,7 @@ xusheng             machao              5
 xusheng             masu                3         
 xusheng             menghuo             3         
 xusheng             nos_zhangchunhua    0         
+xusheng             noszhangchunhua     0         
 xusheng             pangde              5         
 xusheng             pangtong            3         
 xusheng             simayi              3         
@@ -2935,6 +2947,8 @@ yanliangwenchou     menghuo             1
 yanliangwenchou     neo_xuchu           0         
 yanliangwenchou     nos_xushu           0         
 yanliangwenchou     nos_zhouyu          0         
+yanliangwenchou     nosxushu            0         
+yanliangwenchou     noszhouyu           0         
 yanliangwenchou     pangde              3         
 yanliangwenchou     pangtong            2         
 yanliangwenchou     simayi              4         

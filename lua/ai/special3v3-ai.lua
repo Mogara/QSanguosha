@@ -67,6 +67,7 @@ end
 		（身份局）摸牌阶段，你可以少摸一张牌，令一至两名其他角色各摸一张牌。
 ]]--
 sgs.ai_skill_use["@@hongyuan"] = function(self, prompt)
+	if self:needBear() then return "." end
 	self:sort(self.friends_noself, "handcard")
 	local first_index, second_index
 	for i=1, #self.friends_noself do

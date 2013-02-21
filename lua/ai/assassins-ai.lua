@@ -8,7 +8,7 @@ sgs.ai_skill_choice.moukui = function(self, choices, data)
 	local target = sgs.moukui_target
 	local equip_num = target:getEquips():length()
 	if target:isKongcheng() and equip_num > 0 then
-		if self:hasSkills(sgs.lose_equip_skill, target) or (self:isEquip("SilverLion", target) and target:isWounded() and equip_num == 1) then
+		if self:hasSkills(sgs.lose_equip_skill, target) or (target:hasArmorEffect("SilverLion") and target:isWounded() and equip_num == 1) then
 			return "draw"
 		end
 	end
@@ -54,15 +54,15 @@ sgs.ai_skill_invoke.tianming = function(self, data)
 			end
 		end
 	
-		if self.player:getWeapon() and self.player:getHandcardNum()<3 then
+		if self.player:getWeapon() and self.player:getHandcardNum() < 3 then
 			table.insert(unpreferedCards, self.player:getWeapon():getId())
 		end
 				
-		if (self:isEquip("SilverLion") and self.player:isWounded()) then
+		if (self.player:hasArmorEffect("SilverLion") and self.player:isWounded()) then
 			table.insert(unpreferedCards, self.player:getArmor():getId())
 		end	
 
-		if self.player:getOffensiveHorse() and self.player:getWeapon() then
+		if self.player:getOffensiveHorse() then
 			table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
 		end
 	end	
@@ -117,11 +117,11 @@ sgs.ai_skill_discard.tianming = function(self, discard_num, min_num, optional, i
 			table.insert(unpreferedCards, self.player:getWeapon():getId())
 		end
 				
-		if (self:isEquip("SilverLion") and self.player:isWounded()) then
+		if (self.player:hasArmorEffect("SilverLion") and self.player:isWounded()) then
 			table.insert(unpreferedCards, self.player:getArmor():getId())
 		end	
 
-		if self.player:getOffensiveHorse() and self.player:getWeapon() then
+		if self.player:getOffensiveHorse() then
 			table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
 		end
 	end	
@@ -145,6 +145,7 @@ mizhao_skill.name="mizhao"
 table.insert(sgs.ai_skills, mizhao_skill)
 mizhao_skill.getTurnUseCard=function(self)
 	if self.player:hasUsed("MizhaoCard") or self.player:isKongcheng() then return end
+	if self:needBear() then return end
 	local cards = self.player:getHandcards()
 	local allcard = {}
 	cards = sgs.QList2Table(cards)
@@ -211,8 +212,8 @@ sgs.ai_skill_cardask["@JieyuanIncrease"] = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
 	if self:isFriend(target) then return "." end
-	if self:isEquip("SilverLion", target) then return "." end
-	local cards=sgs.QList2Table(self.player:getHandcards())
+	if target:hasArmorEffect("SilverLion") then return "." end
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	for _,card in ipairs(cards) do
 		if card:isBlack() then return "$" .. card:getEffectiveId() end
@@ -222,8 +223,9 @@ end
 
 sgs.ai_skill_cardask["@JieyuanDecrease"] = function(self, data)
 	local damage = data:toDamage()
-	if self:hasSkills(sgs.masochism_skill) and damage.damage <= 1 and self.player:getHp() > 1 then return "." end
-	local cards=sgs.QList2Table(self.player:getHandcards())
+	if (self:getDamagedEffects(self.player) or self.player:getHp() > getBestHp(self.player))
+	  and damage.damage <= 1 and self.player:getHp() > 1 then return "." end
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	for _,card in ipairs(cards) do
 		if card:isRed() then return "$" .. card:getEffectiveId() end
@@ -231,26 +233,24 @@ sgs.ai_skill_cardask["@JieyuanDecrease"] = function(self, data)
 	return "."
 end
 
+sgs.ai_cardneed.jieyuan = sgs.ai_cardneed.beige
+
 sgs.ai_skill_invoke.fenxin = function(self, data)
 	local target = data:toPlayer()
 	local target_role = sgs.evaluatePlayerRole(target)
 	local self_role = self.player:getRole()
 	if target_role == "renegade" or target_role == "unknown" then return false end
-	local count1, count2 = 1, 0
-	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if target_role == "loyalist" then count1 = count1 + 1 end
-		if target_role == "rebel" then count2 = count2 + 1 end
-	end
-	if self_role ~= "loyalist" and target_role == "loyalist" and count1 >= count2 then return true end
-	if self_role ~= "rebel" and target_role == "rebel" and count1 < count2 then return true end
-	return false
+	local process = sgs.gameProcess(self.room)
+	return (target_role == "rebel" and self.role ~= "rebel" and process:match("rebel"))
+			or (target_role == "loyalist" and self.role ~= "loyalist" and process:match("loyal"))
 end
 
 local mixin_skill={}
 mixin_skill.name="mixin"
 table.insert(sgs.ai_skills, mixin_skill)
-mixin_skill.getTurnUseCard=function(self)
+mixin_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("MixinCard") or self.player:isKongcheng() then return end
+	if self:needBear() then return end
 	local cards = self.player:getHandcards()
 	local allcard = {}
 	cards = sgs.QList2Table(cards)
@@ -286,7 +286,7 @@ end
 sgs.ai_skill_playerchosen.mixin = sgs.ai_skill_playerchosen.zero_card_as_slash
 
 sgs.ai_use_priority.MixinCard = 0
-sgs.ai_card_intention.MixinCard = 20
+sgs.ai_card_intention.MixinCard = -20
 
 sgs.ai_skill_invoke.cangni = function(self, data)
 	local target = self.room:getCurrent()
@@ -310,22 +310,20 @@ end
 duyi_skill={}
 duyi_skill.name="duyi"
 table.insert(sgs.ai_skills, duyi_skill)
-duyi_skill.getTurnUseCard=function(self)
+duyi_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("DuyiCard") then return end
 	return sgs.Card_Parse("@DuyiCard=.")
 end
 
-sgs.ai_skill_use_func.DuyiCard=function(card,use,self)
+sgs.ai_skill_use_func.DuyiCard = function(card,use,self)
 	use.card = card
 end
 
-sgs.ai_skill_playerchosen.duyi=function(self, targets)
-	local targetlist=sgs.QList2Table(targets)
-	self:sort(targetlist,"hp")
-	for _, target in sgs.qlist(targets) do
-		if self:isFriend(target) and target:objectName() ~= self.player:objectName() then return target end
+sgs.ai_skill_playerchosen.duyi = function(self, targets)
+	local to = player_to_draw(self, "all")
+	if to then return to
+	else return self.player
 	end
-	return targetlist[#targetlist]
 end
 
 -- 需要data
@@ -342,6 +340,7 @@ sgs.ai_skill_choice.duanzhi = function(self, choices)
 end
 
 sgs.ai_skill_use["@@fengyin"] = function(self, data)
+	if self:needBear() then return "." end
 	local cards = self.player:getHandcards()
 	local card
 	cards = sgs.QList2Table(cards)

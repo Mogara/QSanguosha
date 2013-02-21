@@ -11,8 +11,8 @@ local function findPlayerForModifyKingdom(self, players) --从目标列表中选
 	local isGood = self:isFriend(lord) --自己是否为忠方
 
 	for _, player in sgs.qlist(players) do
-		if not player:isLord() or player:hasLordSkill("weidai") then
-			if  sgs.evaluateRoleTrends(player) == "loyalist" and not self:hasSkills("huashen|liqian",player) then
+		if not player:isLord() then
+			if sgs.evaluateRoleTrends(player) == "loyalist" and not self:hasSkills("huashen|liqian",player) then
 				local sameKingdom = player:getKingdom() == lord:getKingdom() 
 				if isGood ~= sameKingdom then
 					return player
@@ -165,7 +165,8 @@ end
 
 sgs.ai_skill_use_func.JuejiCard=function(card,use,self)
 	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-	if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and zhugeliang:objectName()~=self.player:objectName() then
+	if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and zhugeliang:objectName() ~= self.player:objectName()
+	  and self:getEnemyNumBySeat(self.player,zhugeliang) > 0 then
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		self:sortByUseValue(cards,true)
 		use.card = sgs.Card_Parse("@JuejiCard=" .. cards[1]:getId())
@@ -177,7 +178,7 @@ sgs.ai_skill_use_func.JuejiCard=function(card,use,self)
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
 	
-	if self:hasSkills(sgs.need_kongcheng, self.player) and self.player:getHandcardNum()==1 then
+	if self:hasSkills(sgs.need_kongcheng, self.player) and self.player:getHandcardNum() == 1 then
 		for _, enemy in ipairs(self.enemies) do
 			if not enemy:isKongcheng() then
 				use.card = sgs.Card_Parse("@JuejiCard=" .. max_card:getId())
@@ -237,8 +238,10 @@ sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
 
 	local prompt = data:toString()
 	if prompt == "draw2play" then
-		return handcard >= max_card and #(self:getTurnUse())>0
+		if self:needBear() then return false end
+		return handcard >= max_card and #(self:getTurnUse()) > 0
 	elseif prompt == "play2draw" then
+		if self:needBear() then return true end
 		return handcard < max_card or #(self:getTurnUse()) == 0
 	end
 end
@@ -569,7 +572,6 @@ sgs.ai_skill_playerchosen.shaoying = function(self, targets)
 	
 	if #tos > 0 then
 		tos = self:SortByAtomDamageCount(tos, self.player, sgs.DamageStruct_Fire, nil)
-		tos[1]:speak("有人趁火打劫啊！快去报警啊！")
 		return tos[1]
 	end
 end
@@ -668,7 +670,7 @@ sgs.ai_skill_use_func.LexueCard = function(card, use, self)
 		end
 		if not target then
 			self:sort(self.enemies,"handcard")
-			if not self.enemies[1]:isKongcheng() then target = self.enemies[1] else return end
+			if self.enemies[1] and not self.enemies[1]:isKongcheng() then target = self.enemies[1] else return end
 		end
 		use.card = card
 		if use.to then use.to:append(target) end
@@ -702,6 +704,8 @@ end
 	描述：杀死你的角色获得崩坏技能直到游戏结束 
 ]]--
 function sgs.ai_slash_prohibit.dushi(self, to)	
+	if self.player:hasSkill("jueqing") then return false end
+	if self.player:hasFlag("nosjiefanUsed") then return false end
 	return self.player:isLord() and #self.enemies > 1
 end
 --[[
@@ -741,7 +745,7 @@ sgs.ai_skill_playerchosen.toudu = function(self, targets)
 		if self:isEnemy(target) then
 			if self:slashIsEffective(slash, target) then
 				if sgs.isGoodTarget(target, targetlist, self) then
-					self.player:speak("嘿！没想到吧？")
+					self:speak("嘿！没想到吧？")
 					return target
 				end
 			end
@@ -758,43 +762,33 @@ end
 	技能：义舍
 	描述：出牌阶段，你可将任意数量手牌正面朝上移出游戏称为“米”（至多存在五张）或收回；其他角色在其出牌阶段可选择一张“米”询问你，若你同意，该角色获得这张牌，每阶段限两次 
 ]]--
-local yishe_skill={name="yishe"}
+local yishe_skill = {name = "yishe"}
 table.insert(sgs.ai_skills,yishe_skill)
 yishe_skill.getTurnUseCard = function(self)
+	if self:needBear() then return end
 	return sgs.Card_Parse("@YisheCard=.")
 end
 
 sgs.ai_skill_use_func.YisheCard=function(card,use,self)
 	if self.player:getPile("rice"):isEmpty() then
-		local cards=self.player:getHandcards()
-		cards=sgs.QList2Table(cards)
-		local usecards={}
+		local cards = self.player:getHandcards()
+		cards = sgs.QList2Table(cards)
+		local usecards = {}
 		local discards = self:askForDiscard("yishe", math.min(self:getOverflow(),5-#usecards), math.min(self:getOverflow(),5-#usecards))
 		for _,card in ipairs(discards) do
 			table.insert(usecards,card)
 		end
-		if #usecards>0 then
-			use.card=sgs.Card_Parse("@YisheCard=" .. table.concat(usecards,"+"))
+		if #usecards > 0 then
+			use.card = sgs.Card_Parse("@YisheCard=" .. table.concat(usecards,"+"))
 		end
 	else
 		if not self.player:hasUsed("YisheCard") then use.card=card return end
 	end
 end
 
-table.insert(sgs.ai_global_flags, "yisheasksource")
-local yisheask_filter = function(player, carduse)
-	if carduse.card:isKindOf("YisheAskCard") then
-		sgs.yisheasksource = player
-	else
-		sgs.yisheasksource = nil
-	end
-end
 
-table.insert(sgs.ai_choicemade_filter.cardUsed, yisheask_filter)
-
-sgs.ai_skill_choice.yisheask=function(self,choices)
-	assert(sgs.yisheasksource)
-	if self:isFriend(sgs.yisheasksource) then return "allow" else return "disallow" end
+sgs.ai_skill_choice.yisheask = function(self,choices)
+	if self:isFriend(self.room:getCurrent()) then return "allow" else return "disallow" end
 end
 
 local yisheask_skill={name="yisheask"}
@@ -812,12 +806,36 @@ sgs.ai_skill_use_func.YisheAskCard=function(card,use,self)
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if player:hasSkill("yishe") and not player:getPile("rice"):isEmpty() then zhanglu=player cards=player:getPile("rice") break end
 	end	
-	if not zhanglu or not self:isFriend(zhanglu) then return end
+	if not zhanglu or self:isEnemy(zhanglu) then return end
 	cards = sgs.QList2Table(cards)
 	for _, pcard in ipairs(cards) do
 		use.card = card
 		return
 	end
+end
+
+sgs.ai_event_callback[sgs.ChoiceMade].yisheask=function(self,player,data)
+	local datastr= data:toString()
+	if datastr == "skillChoice:yisheask:allow" then
+		sgs.updateIntention(self.player, self.room:getCurrent(), -70)
+	end
+end
+
+--[[
+	技能：惜粮
+	描述：你可将其他角色弃牌阶段弃置的红牌收为“米”或加入手牌。 
+]]--
+sgs.ai_skill_invoke.xiliang = true
+
+sgs.ai_skill_choice.xiliang = function(self,choices)
+	if self.player:hasSkill("manjuan") then return "put" end
+	if self.player:containsTrick("indulgence") and not self.player:containsTrick("YanxiaoCard")
+	  and self.player:getHandcardNum() > 2 then
+		return "put"
+	end
+	if self.player:getHandcardNum() < 3 or self:getCardsNum("Jink") < 1 then return "obtain" end
+	if self:getOverflow() >= 1 then return "put" end
+	return "obtain"
 end
 
 sgs.ai_chaofeng.zhanggongqi = 4
@@ -914,6 +932,9 @@ sgs.ai_skill_use_func.TaichenCard=function(card,use,self)
 	
 	if card_str then
 		if use.to then
+			if self:isFriend(target) then
+				self.room:setPlayerFlag(target, "TaichenOK")
+			end
 			use.to:append(target)
 		end
 		use.card = sgs.Card_Parse(card_str)
@@ -922,3 +943,15 @@ end
 
 sgs.ai_cardneed.taichen = sgs.ai_cardneed.weapon
 sgs.taichen_keep_value = sgs.qiangxi_keep_value
+sgs.ai_card_intention.TaichenCard = function(card, from, tos)
+	if #tos > 0 then
+		for _,to in ipairs(tos) do
+			if to:hasFlag("TaichenOK") then
+				sgs.updateIntention(from, to, -30)
+			else
+				sgs.updateIntention(from, to, 30)
+			end
+		end
+	end
+	return 0
+end

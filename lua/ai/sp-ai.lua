@@ -190,7 +190,7 @@ sgs.ai_skill_use["@@yuanhu"] = function(self, prompt)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
-	if self:isEquip("SilverLion") and yuanhu_validate(self, "SilverLion", false) then
+	if self.player:hasArmorEffect("SilverLion") and yuanhu_validate(self, "SilverLion", false) then
 		local player = yuanhu_validate(self, "SilverLion", false)
 		local card_id = self.player:getArmor():getEffectiveId()
 		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
@@ -323,7 +323,7 @@ function can_be_selected_as_target(self, card, who)
 	if self:cantbeHurt(who) or self:damageIsEffective(who) then return false end
 	if self:isEnemy(who) then
 		if not self.player:hasSkill("jueqing") then
-			if who:hasSkill("guixin") and (self.room:getAliveCount() >= 4 or not who:faceUp()) then return false end
+			if who:hasSkill("guixin") and (self.room:getAliveCount() >= 4 or not who:faceUp()) and not who:hasSkill("manjuan") then return false end
 			if (who:hasSkill("ganglie") or who:hasSkill("neoganglie")) and (self.player:getHp() == 1 and self.player:getHandcardNum() <= 2) then return false end
 			if who:hasSkill("jieming") then
 				for _, enemy in ipairs(self.enemies) do
@@ -333,6 +333,12 @@ function can_be_selected_as_target(self, card, who)
 			if who:hasSkill("fangzhu") then
 				for _, enemy in ipairs(self.enemies) do
 					if not enemy:faceUp() then return false end
+				end
+			end
+			if who:hasSkill("yiji") then
+				local huatuo = self.room:findPlayerBySkillName("jijiu")
+				if huatuo and self:isEnemy(huatuo) and huatuo:getHandcardNum() >= 3 then
+					return false
 				end
 			end
 		end
@@ -345,7 +351,8 @@ function can_be_selected_as_target(self, card, who)
 				return true 
 			end 
 		end
-		if who:hasSkill("hunzi") and who:getMark("hunzi") == 0 and who == self.player:getNextAlive() and who:getHp() == 2 then return true end
+		if who:hasSkill("hunzi") and who:getMark("hunzi") == 0
+			and who:objectName() == self.player:getNextAlive():objectName() and who:getHp() == 2 then return true end
 		return false
 	end
 	return false
@@ -386,6 +393,53 @@ sgs.ai_skill_use_func.XuejiCard=function(card,use,self)
 			end
 			assert(use.to:length() > 0)
 		end
+	end
+end
+--[[
+sgs.ai_card_intention.XuejiCard = function(self, card, from, tos)
+	--服务器报错：lua/ai/sp-ai.lua:400: attempt to index field 'room' (a nil value)
+	local huatuo = self.room:findPlayerBySkillName("jijiu")
+	for _, to in ipairs(tos) do
+		local intention = 60
+		if to:hasSkill("yiji") and not from:hasSkill("jueqing") then
+			if (huatuo and self:isFriend(huatuo) and huatuo:getHandcardNum() >= 3 and huatuo:objectName() ~= from:objectName()) then
+				intention = -30
+			end
+			if to:getLostHp() == 0 and to:getMaxHp() >= 3 then
+				intention = -10
+			end
+		end
+		if to:hasSkill("hunzi") and to:getMark("hunzi") == 0
+			and to:objectName() == to:getNextAlive():objectName() and to:getHp() == 2 then intention = -20 end
+		sgs.updateIntention(from, to, intention)
+	end
+end
+]]--
+sgs.ai_card_intention.XuejiCard = function(card, from, tos)
+	local room = from:getRoom()
+	local huatuo = room:findPlayerBySkillName("jijiu")
+	for _,to in ipairs(tos) do
+		local intention = 60
+		if to:hasSkill("yiji") and not from:hasSkill("jueqing") then
+			if huatuo then
+				local roleHuatuo = sgs.compareRoleEvaluation(huatuo, "rebel", "loyalist")
+				local roleSource = sgs.compareRoleEvaluation(from, "rebel", "loyalist")
+				if roleHuatuo == roleSource then
+					if huatuo:getHandcardNum() >= 3 and huatuo:objectName() ~= from:objectName() then
+						intention = -30
+					end
+				end
+			end
+			if to:getLostHp() == 0 and to:getMaxHp() >= 3 then
+				intention = -10
+			end
+		end
+		if to:hasSkill("hunzi") and to:getMark("hunzi") == 0 then
+			if to:objectName() == to:getNextAlive():objectName() and to:getHp() == 2 then 
+				intention = -20 
+			end
+		end
+		sgs.updateIntention(from, to, intention)
 	end
 end
 
@@ -457,11 +511,12 @@ sgs.ai_skill_use_func.SongciCard = function(card,use,self)
 		end
 	end
 	
-	self:sort(self.enemies, "handcard", true)
+	self:sort(self.enemies, "handcard")
+	self.enemies = sgs.reverse(self.enemies)
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getMark("@songci") == 0 and enemy:getHandcardNum() > enemy:getHp() and not enemy:isNude() then
 			if not ((self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getEquips():length() > 0) 
-					or (self:isEquip("SilverLion", enemy) and enemy:isWounded())) then
+					or (enemy:hasArmorEffect("SilverLion") and enemy:isWounded() and self:isWeak(enemy))) then
 				use.card = sgs.Card_Parse("@SongciCard=.")
 				if use.to then use.to:append(enemy) end
 				return
@@ -472,6 +527,7 @@ end
 
 sgs.ai_use_value.SongciCard = 3
 sgs.ai_use_priority.SongciCard = 2.5
+sgs.ai_chaofeng.chenlin = 3
 
 sgs.ai_card_intention.SongciCard = function(card, from, tos, source)	
 	for _, to in ipairs(tos) do

@@ -100,6 +100,8 @@ end
 --其他火焰伤害的情况，分别修改了 火攻，朱雀发动，亚炎 三处，需在相应位置查看修改痕迹
 --没有考虑铁索 铁索收益计算 神诸葛狂风的问题，无力做的那么细致
 function sgs.ai_slash_prohibit.ayshuiyong(self, to, card)
+	if self.player:hasSkill("jueqing") then return false end
+	if self.player:hasSkill("qianxi") and self.player:distanceTo(self.player) == 1 then return false end
 	if card:isKindOf("FireSlash") then return true end
 	return false
 end

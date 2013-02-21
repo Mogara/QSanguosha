@@ -1,10 +1,12 @@
-neoluoyi_skill={}
-neoluoyi_skill.name="neoluoyi"
+neoluoyi_skill = {}
+neoluoyi_skill.name = "neoluoyi"
 table.insert(sgs.ai_skills, neoluoyi_skill)
-neoluoyi_skill.getTurnUseCard=function(self)
+neoluoyi_skill.getTurnUseCard = function(self)
+	if self:needBear() then return nil end
 	if self.player:hasUsed("LuoyiCard") then return nil end
-	local cards=self.player:getHandcards()
-	cards=sgs.QList2Table(cards)
+	if self.player:getSlashCount() > 0 and not (self.player:hasSkill("paoxiao") or self:isEquip("Crossbow")) then return nil end
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
 	local slashtarget = 0
 	local dueltarget = 0
 	local equipnum = 0
@@ -33,7 +35,7 @@ neoluoyi_skill.getTurnUseCard=function(self)
 			end
 		end
 	end		
-	if (slashtarget+dueltarget) > 0 and equipnum > 0 then
+	if (slashtarget + dueltarget) > 0 and equipnum > 0 then
 		self:speak("luoyi")
 		local luoyicard
 		for _, card in sgs.qlist(self.player:getCards("he")) do
@@ -112,9 +114,9 @@ sgs.ai_skill_invoke.yishi = function(self, data)
 				then return true
 		end
 	else
-		if damage.card:hasFlag("drank") then return false end
+		if self:hasHeavySlashDamage(self.player, damage.card, target) then return false end
 		if self:isWeak(target) then return false end
-		if target:getArmor() and self:evaluateArmor(target:getArmor(), target)>3 and not self:isEquip("Vine", target) then return true end
+		if target:getArmor() and self:evaluateArmor(target:getArmor(), target) > 3 then return true end
 		if target:hasSkill("tuntian") then return false end
 		if self:hasSkills(sgs.need_kongcheng, target) then return false end
 		return false

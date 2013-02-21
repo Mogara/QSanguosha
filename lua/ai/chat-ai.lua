@@ -84,7 +84,7 @@ sgs.ai_chat_func[sgs.Dying].fuck_renegade=function(self, player, data)
 				"小内，我死了，你也赢不了",
 				"没戏了，小内不帮忙的话，我们全部托管吧",
 				}
-	if (self.role=="rebel" or self.role=="loyalist") and sgs.current_mode_players["renegade"]>0 then
+	if (self.role=="rebel" or self.role=="loyalist") and sgs.current_mode_players["renegade"]>0 and self.player:objectName() == player:objectName() then
 		local index =1+ (os.time() % #chat)
 		player:speak(chat[index])
 	end
@@ -122,13 +122,15 @@ end
 
 function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", true) then return end
-	if self.player:getState() ~= "robot" then return end
+	if self.player:getState() ~= "robot" then return end	
 	
-	local i =math.random(1,#sgs.ai_chat[type])
-	if isFemale then
-		type = type .. "_female"
+	if sgs.ai_chat[type] then
+		local i =math.random(1,#sgs.ai_chat[type])	
+		if isFemale then type = type .. "_female" end
+		self.player:speak(sgs.ai_chat[type][i])
+	else
+		self.player:speak(type)
 	end
-	self.player:speak(sgs.ai_chat[type][i])
 end
 
 sgs.ai_chat={}

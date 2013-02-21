@@ -85,6 +85,14 @@ nos_xushu           0
 nos_zhangchunhua    7         
 nos_zhonghui        8         
 nos_zhouyu          9         
+nosfazheng          7         
+noshandang          5         
+noslingtong         6         
+nosshencaocao       4         
+nosxushu            0         
+noszhangchunhua     7         
+noszhonghui         8         
+noszhouyu           9         
 panfeng             5         
 pangde              5         
 pangtong            5         

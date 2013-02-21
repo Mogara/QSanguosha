@@ -55,7 +55,7 @@ function debugFunc(self, room, player, data)
 		end
 		if choice == "objectiveLevel" then
 			debugmsg(" ")
-			debugmsg("============%s(%.1f)", sgs.processvalue[sgs.gameProcess(room)], sgs.gameProcess(room,1))
+			debugmsg("============%s(%.1f)", sgs.gameProcess(room), sgs.gameProcess(room,1))
 			debugmsg("查看关系; 当前AI是: %s[%s]",sgs.Sanguosha:translate(player:getGeneralName()),sgs.Sanguosha:translate(player:getRole()) )
 			for i=1, #players, 1 do
 				local level=self:objectiveLevel(players[i])
@@ -94,7 +94,7 @@ end
 
 function endlessNiepan(who)
 	local room = who:getRoom()	
-	if who:getGeneral2() then return end
+	if who:getGeneral2() or who:getHp() > 0 then return end
 
 	local rebel_value = sgs.role_evaluation[who:objectName()]["rebel"]
 	local renegade_value = sgs.role_evaluation[who:objectName()]["renegade"]

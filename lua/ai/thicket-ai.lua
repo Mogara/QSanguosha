@@ -180,15 +180,26 @@ sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 
 	if #self.friends > 1 then
 		for _, friend in ipairs(self.friends_noself) do
-			if self:hasSkills(sgs.lose_equip_skill, friend) and friend:isAlive() then
+			if self:hasSkills(sgs.lose_equip_skill, friend) and not friend:hasSkill("manjuan") and friend:isAlive() then
 				self.yinghun = friend
 				self.yinghunchoice = "dxt1"
 				break
 			end
 		end
-		self:sort(self.friends_noself, "chaofeng")
-		for _, afriend in ipairs(self.friends_noself) do
-			if not afriend:hasSkill("manjuan") and afriend:isAlive() then self.yinghun = afriend end
+		if not self.yinghun then
+			for _, friend in ipairs(self.friends_noself) do
+				if friend:hasSkill("tuntian") and not friend:hasSkill("manjuan") and friend:isAlive() then
+					self.yinghun = friend
+					self.yinghunchoice = "dxt1"
+					break
+				end
+			end
+		end
+		if not self.yinghun then
+			self:sort(self.friends_noself, "chaofeng")
+			for _, afriend in ipairs(self.friends_noself) do
+				if not afriend:hasSkill("manjuan") and afriend:isAlive() then self.yinghun = afriend end
+			end
 		end
 		if self.yinghun and not self.yinghunchoice then self.yinghunchoice = "dxt1" end
 	else
@@ -215,6 +226,7 @@ end
 function sgs.ai_card_intention.YinghunCard(card, from, tos, source)
 	local intention = -80
 	if from:hasFlag("yinghun_to_enemy") then intention = -intention end
+	if tos[1]:hasSkill("manjuan") then intention = -intention end
 	sgs.updateIntention(from, tos[1], intention)
 end
 
@@ -289,12 +301,13 @@ function sgs.ai_cardneed.haoshi(to, card, self)
 	return not self:willSkipDrawPhase(to)
 end
 
-dimeng_skill={}
-dimeng_skill.name="dimeng"
+dimeng_skill = {}
+dimeng_skill.name = "dimeng"
 table.insert(sgs.ai_skills,dimeng_skill)
-dimeng_skill.getTurnUseCard=function(self)
+dimeng_skill.getTurnUseCard = function(self)
+	if self:needBear() then return end
 	if self.player:hasUsed("DimengCard") then return end
-	card=sgs.Card_Parse("@DimengCard=.")
+	card = sgs.Card_Parse("@DimengCard=.")
 	return card
 
 end
@@ -572,6 +585,18 @@ end
 sgs.ai_skill_cardask["@roulin1-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]
 sgs.ai_skill_cardask["@roulin2-jink-1"] = sgs.ai_skill_cardask["@wushuang-jink-1"]
 
+sgs.ai_skill_choice.benghuai = function(self, choices, data)
+	for _, friend in ipairs(self.friends) do
+		if friend:hasSkill("tianxiang") and (self.player:getHp() >= 3 or (self:getCardsNum("Peach") + self:getCardsNum("Analeptic") > 0 and self.player:getHp() > 1)) then
+			return "hp"
+		end
+	end
+	if self.player:getMaxHp() >= self.player:getHp() + 2 then
+		return "maxhp"
+	else
+		return "hp"
+	end
+end
 sgs.ai_skill_invoke.baonue = function(self, data)
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if p:hasLordSkill("baonue") and self:isFriend(p) and not p:hasFlag("baonueused") and p:isAlive() and p:isWounded() then
