@@ -2538,7 +2538,7 @@ void RoomScene::onGameOver(){
         win_effect = "win";
         foreach(const Player *player, ClientInstance->getPlayers()){
             if(!player->isLord() && !player->isCaoCao())
-                break;
+                continue;
             if(player->property("win").toBool() && !player->getGeneral()->getWinword().startsWith("`")){
                 Audio::stop();
                 player->getGeneral()->winWord();

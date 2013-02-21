@@ -571,13 +571,11 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
         QPixmapCache::insert(path, label);
     }
 
-    if(label.isNull())
-    {
+    if(label.isNull()){
         painter->setPen(Qt::white);
         QString text = QString("%1").arg(card->label());
         painter->drawText(10, y + 20, text);
-    }else
-    {
+    }else{
         QFont font("Algerian",12);
         font.setBold(true);
         painter->setFont(font);

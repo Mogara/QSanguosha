@@ -99,12 +99,14 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
 
 void TuxiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
-    const Card *card = Sanguosha->getCard(card_id);
-    room->moveCardTo(card, effect.from, Player::Hand, false);
+    if(!effect.to->isKongcheng()){
+        int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
+        const Card *card = Sanguosha->getCard(card_id);
+        room->moveCardTo(card, effect.from, Player::Hand, false);
 
-    room->setEmotion(effect.to, "bad");
-    room->setEmotion(effect.from, "good");
+        room->setEmotion(effect.to, "bad");
+        room->setEmotion(effect.from, "good");
+    }
 }
 
 FanjianCard::FanjianCard(){
