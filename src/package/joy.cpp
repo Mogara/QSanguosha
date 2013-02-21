@@ -428,8 +428,13 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         switch(player->getHp()){
-        case 1:
         case 3:
+            if(player->hasUsed("JieyinCard"))
+                return player->isWounded();
+            else
+                return true;
+            break;
+        case 1:
         case 4:
         case 5: return true; break;
         default:

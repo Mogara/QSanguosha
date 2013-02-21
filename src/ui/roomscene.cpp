@@ -65,32 +65,36 @@ struct NormalRoomLayout : public RoomLayout{
         QString spec_name = QString("image/system/coord_%1.ini").arg(type);
         QSettings settings(spec_name, QSettings::IniFormat);
 
-        QList<QVariant> coord = settings.value("RoomLayout/discard").toList();
+        settings.beginGroup("RoomLayout");
+        QList<QVariant> coord = settings.value("discard").toList();
         discard = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/drawpile").toList();
+        coord = settings.value("drawpile").toList();
         drawpile = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/enemy_box").toList();
+        coord = settings.value("enemy_box").toList();
         enemy_box = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/self_box").toList();
+        coord = settings.value("self_box").toList();
         self_box = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/chat_box_size").toList();
+        coord = settings.value("chat_box_size").toList();
         chat_box_size = QSize(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/chat_box_pos").toList();
+        coord = settings.value("chat_box_pos").toList();
         chat_box_pos = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/button1_pos").toList();
+        coord = settings.value("button1_pos").toList();
         button1_pos = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/button2_pos").toList();
+        coord = settings.value("button2_pos").toList();
         button2_pos = QPointF(coord.first().toReal(), coord.last().toReal());
 
-        coord = settings.value("RoomLayout/state_item_pos").toList();
+        coord = settings.value("state_item_pos").toList();
         state_item_pos = QPointF(coord.first().toReal(), coord.last().toReal());
+
+        settings.endGroup();
+        settings.deleteLater();
     }
 };
 
@@ -676,6 +680,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
 #endif
 */
     }
+    settings.deleteLater();
     return positions;
 }
 
@@ -2533,7 +2538,7 @@ void RoomScene::onGameOver(){
         win_effect = "win";
         foreach(const Player *player, ClientInstance->getPlayers()){
             if(!player->isLord() && !player->isCaoCao())
-                break;
+                continue;
             if(player->property("win").toBool() && !player->getGeneral()->getWinword().startsWith("`")){
                 Audio::stop();
                 player->getGeneral()->winWord();

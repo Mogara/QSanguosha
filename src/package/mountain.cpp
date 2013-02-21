@@ -874,7 +874,7 @@ public:
                 return invoked;
             }
 
-        case Player::Finish: {
+        case Player::NotActive: {
                 if(liushan->hasFlag("fangquan")){
                     Room *room = liushan->getRoom();
 

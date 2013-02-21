@@ -451,8 +451,9 @@ void DuyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     const Card *card = Sanguosha->getCard(id);
     target->obtainCard(card);
     if(card->isBlack()) {
-        target->jilei(".|.|.|hand");
-        target->invoke("jilei", ".|.|.|hand");
+        room->setPlayerCardLock(target, ".|.|.|hand");
+        //target->jilei(".|.|.|hand");
+        //target->invoke("jilei", ".|.|.|hand");
         room->setPlayerFlag(target, "duyi_target");
         LogMessage log;
         log.type = "#duyi_eff";
@@ -498,17 +499,19 @@ public:
             return false;
 
         if(splayer->getPhase() == Player::Discard)
-            if(splayer->hasFlag("duyi_target")) {
-                splayer->jilei(".");
-                splayer->invoke("jilei", ".");
+            if(splayer->hasFlag("duyi_target")){
+                room->setPlayerCardLock(splayer, ".");
+                //splayer->jilei(".");
+                //splayer->invoke("jilei", ".");
                 room->setPlayerFlag(splayer, "-duyi_target");
             }
 
         if(splayer->getPhase() == Player::NotActive)
             foreach(ServerPlayer *p, room->getAlivePlayers())
                 if(p->hasFlag("duyi_target")) {
-                    p->jilei(".");
-                    p->invoke("jilei", ".");
+                    room->setPlayerCardLock(p, ".");
+                    //p->jilei(".");
+                    //p->invoke("jilei", ".");
                     room->setPlayerFlag(p, "-duyi_target");
                     LogMessage log;
                     log.type = "#duyi_clear";

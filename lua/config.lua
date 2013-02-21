@@ -3,7 +3,7 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130216",
+	version = "20130221",
 	version_name = "金蛇版·法海补丁",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},

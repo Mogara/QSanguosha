@@ -290,6 +290,14 @@ INCLUDEPATH += src/lua
 LIBS += -Llib -lcryptopp
 LIBS += -L.
 
+TRANSLATIONS += sanguosha.ts
+
+OTHER_FILES += \
+        sanguosha.qss \
+        acknowledgement/main.qml \
+        acknowledgement/list.png \
+        acknowledgement/back.png
+
 CONFIG(audio){
 	DEFINES += AUDIO_SUPPORT
 	INCLUDEPATH += include/fmod
@@ -317,11 +325,3 @@ CONFIG(rcc){
         TARGET = QSanguosha
         win32: RC_FILE = resource/icon.rc
 }
-
-TRANSLATIONS += sanguosha.ts
-
-OTHER_FILES += \
-	sanguosha.qss \
-	acknowledgement/main.qml \
-	acknowledgement/list.png \
-	acknowledgement/back.png

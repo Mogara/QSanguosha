@@ -102,6 +102,7 @@ PixmapAnimation* PixmapAnimation::GetPixmapAnimation(QGraphicsObject *parent, co
             qreal y = settings.value("y", 65535).toReal();
             qreal scale = settings.value("s", 1.0).toReal();
             qreal oca = settings.value("o", 1.0).toReal();
+            settings.deleteLater();
 
             if(x != 65535 && y != 65535)
                 pma->moveBy(x, y);

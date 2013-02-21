@@ -73,9 +73,8 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-    foreach(QString ban, getBanPackages()){
+    foreach(QString ban, getBanPackages())
         addBanPackage(ban);
-    }
 
     foreach(const Skill *skill, skills.values()){
         Skill *mutable_skill = const_cast<Skill *>(skill);
@@ -215,11 +214,11 @@ QString Engine::translate(const QString &to_translate) const{
 }
 
 int Engine::getRoleIndex() const{
-    if(ServerInfo.GameMode == "06_3v3"){
+    if(ServerInfo.GameMode == "06_3v3")
         return 4;
-    }else if(ServerInfo.EnableHegemony){
+    else if(ServerInfo.EnableHegemony)
         return 5;
-    }else
+    else
         return 1;
 }
 
