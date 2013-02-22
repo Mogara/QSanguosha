@@ -88,6 +88,8 @@ private:
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
+    QCheckBox *random_seat_checkbox;
+    QCheckBox *enable_cheat_checkbox;
     QCheckBox *free_choose_checkbox;
     QCheckBox *free_assign_checkbox;
     QCheckBox *free_assign_self_checkbox;

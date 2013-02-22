@@ -1720,16 +1720,18 @@ void Room::prepareForStart(){
                 player->setRole("rebel");
             broadcastProperty(player, "role");
         }
-    }else if(Config.value("FreeAssign", false).toBool()){
+    } else if (Config.EnableCheat && Config.value("FreeAssign", false).toBool()) {
         ServerPlayer *owner = getOwner();
         notifyMoveFocus(owner, S_COMMAND_CHOOSE_ROLE);
         if(owner && owner->isOnline()){            
             bool success = doRequest(owner, S_COMMAND_CHOOSE_ROLE, Json::Value::null, true);
             //executeCommand(owner, "askForAssign", "assignRolesCommand", ".", ".");
             Json::Value clientReply = owner->getClientReply();
-            if(!success || !clientReply.isArray() || clientReply.size() != 2)
+            if (!success || !clientReply.isArray() || clientReply.size() != 2) {
+                if (Config.RandomSeat)
+                    qShuffle(m_players);
                 assignRoles();
-            else if(Config.FreeAssignSelf){                
+            } else if (Config.FreeAssignSelf) {
                 QString name = toQString(clientReply[0][0]);
                 QString role = toQString(clientReply[1][0]);
                 ServerPlayer *player_self = findChild<ServerPlayer *>(name);
@@ -1766,10 +1768,16 @@ void Room::prepareForStart(){
                     m_players.swap(i, m_players.indexOf(player));
                 }
             }
-        }else
+        } else {
+            if (Config.RandomSeat)
+                qShuffle(m_players);
             assignRoles();
-    }else
+        }
+    } else {
+        if (Config.RandomSeat)
+            qShuffle(m_players);
         assignRoles();
+    }
 
     adjustSeats();
 }
@@ -1861,7 +1869,7 @@ void Room::trustCommand(ServerPlayer *player, const QString &){
 
 bool Room::processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet)
 {
-    if (!Config.FreeChoose) return false;
+    if (!Config.EnableCheat) return false;
     Json::Value arg = packet->getMessageBody();
     if (!arg.isArray() || !arg[0].isInt()) return false;
     //@todo: synchronize this
@@ -2404,12 +2412,18 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b){
 }
 
 void Room::adjustSeats(){
-    for (int i = 0; i < m_players.length(); i++) {
-        if (m_players.at(i)->getRoleEnum() == Player::Lord) {
-            m_players.swap(0, i);
+    QList<ServerPlayer *> players;
+    int i = 0;
+    for (i = 0; i < m_players.length(); i++) {
+        if (m_players.at(i)->getRoleEnum() == Player::Lord)
             break;
         }
-    }
+    for (int j = i; j < m_players.length(); j++)
+        players << m_players.at(j);
+    for (int j = 0; j < i; j++)
+        players << m_players.at(j);
+
+    m_players = players;
 
     for (int i = 0; i < m_players.length(); i++)
         m_players.at(i)->setSeat(i+1);
@@ -3852,13 +3866,10 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
             makeSurrender(player);
             if (!game_finished)
                 return activate(player, card_use);
-        }
-        else
-        {
-            //@todo: change FreeChoose to EnableCheat
-            if (Config.FreeChoose) {
-                if(makeCheat(player)){
-                    if(player->isAlive())
+        } else {
+            if (Config.EnableCheat) {
+                if (makeCheat(player)) {
+                    if (player->isAlive())
                         return activate(player, card_use);
                     return;
                 }

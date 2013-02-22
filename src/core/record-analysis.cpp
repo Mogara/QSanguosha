@@ -49,9 +49,9 @@ void RecAnalysis::initialize(QString dir){
             continue;
         }
 
-        if(line.contains("setup")){
-            QRegExp rx("(.*):(\\w+):(\\w+):(.*):([FSCTBHAM12]*)(\\s+)?");
-            if(!rx.exactMatch(line))
+        if (line.contains("setup")) {
+            QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSTBHAM1234]*)(\\s+)?");
+            if (!rx.exactMatch(line))
                 continue;
 
             QStringList texts = rx.capturedTexts();
@@ -64,9 +64,10 @@ void RecAnalysis::initialize(QString dir){
             }
 
             QString flags = texts.at(5);
-            if(flags.contains("F")) { m_recordGameMode << tr("FreeChoose"), m_recordHasCheat = true; }
+            if(flags.contains("R")) m_recordGameMode << tr("RandomSeats");
+            if(flags.contains("C")) { m_recordGameMode << tr("EnableCheat"), m_recordHasCheat = true; }
+            if(flags.contains("F")) m_recordGameMode << tr("FreeChoose");
             if(flags.contains("S")) m_recordGameMode << tr("Enable2ndGeneral");
-            if(flags.contains("C")) m_recordGameMode << tr("EnableScene");
             if(flags.contains("T")) m_recordGameMode << tr("EnableSame");
             if(flags.contains("B")) m_recordGameMode << tr("EnableBasara");
             if(flags.contains("H")) m_recordGameMode << tr("EnableHegemony");

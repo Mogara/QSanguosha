@@ -31,9 +31,9 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     return timeOut;
 }
 
-bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCTBHAM1234]*)");
-    if(!rx.exactMatch(str)){
+bool ServerInfoStruct::parse(const QString &str) {
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSTBHAM1234]*)");
+    if (!rx.exactMatch(str)) {
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
         GameMode = QString("%1p").arg(count, 2, 10, QChar('0'));
@@ -64,9 +64,11 @@ bool ServerInfoStruct::parse(const QString &str){
 
     QString flags = texts.at(5);
 
-    FreeChoose = flags.contains("F");
+    RandomSeat = flags.contains("R");
+    EnableCheat = flags.contains("C");
+    FreeChoose = EnableCheat && flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
-    EnableScene = flags.contains("C");
+    EnableScene = false; // !!NOT FIXED!!
     EnableSame = flags.contains("T");
     EnableBasara= flags.contains("B");
     EnableHegemony = flags.contains("H");
@@ -120,6 +122,8 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     layout->addRow(tr("Basara Mode"), basara_label);
     layout->addRow(tr("Hegemony Mode"), hegemony_label);
     layout->addRow(tr("Max HP scheme"), max_hp_label);
+    layout->addRow(tr("Random seat"), random_seat_label);
+    layout->addRow(tr("Enable cheat"), enable_cheat_label);
     layout->addRow(tr("Free choose"), free_choose_label);
     layout->addRow(tr("Enable AI"), enable_ai_label);
     layout->addRow(tr("Operation time"), time_limit_label);
@@ -158,6 +162,8 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
         max_hp_label->setEnabled(false);
     }
 
+    random_seat_label->setText(info.RandomSeat ? tr("Enabled") : tr("Disabled"));
+    enable_cheat_label->setText(info.EnableCheat ? tr("Enabled") : tr("Disabled"));
     free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
     enable_ai_label->setText(info.EnableAI ? tr("Enabled") : tr("Disabled"));
 
@@ -202,6 +208,8 @@ void ServerInfoWidget::clear(){
     same_label->clear();
     basara_label->clear();
     hegemony_label->clear();
+    random_seat_label->clear();
+    enable_cheat_label->clear();
     free_choose_label->clear();
     time_limit_label->clear();
     list_widget->clear();

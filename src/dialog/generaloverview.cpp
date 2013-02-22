@@ -276,9 +276,8 @@ void GeneralOverview::playAudioEffect()
 
 #include "clientstruct.h"
 #include "client.h"
-void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem*)
-{
-    if(ServerInfo.FreeChoose && Self){
+void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *) {
+    if (ServerInfo.EnableCheat && Self) {
         int row = ui->tableWidget->currentRow();
         QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
         ClientInstance->requestCheatChangeGeneral(general_name);

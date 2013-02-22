@@ -303,7 +303,7 @@ void MainWindow::enterRoom(){
     connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
-    if(ServerInfo.FreeChoose){
+    if (ServerInfo.EnableCheat) {
         ui->menuCheat->setEnabled(true);
 
         connect(ui->actionGet_card, SIGNAL(triggered()), ui->actionCard_Overview, SLOT(trigger()));

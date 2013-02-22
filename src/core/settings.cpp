@@ -77,12 +77,14 @@ void Settings::init(){
         setValue("BanPackages", banlist);
     }
     BanPackages = value("BanPackages").toStringList();
-    FreeChoose = value("FreeChoose", false).toBool();
+    RandomSeat = value("RandomSeat", true).toBool();
+    EnableCheat = value("EnableCheat", false).toBool();
+    FreeChoose = EnableCheat && value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
-    FreeAssignSelf = value("FreeAssignSelf", false).toBool();
+    FreeAssignSelf = EnableCheat && value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
-    EnableScene = value("EnableScene", false).toBool();    //changjing
+    EnableScene = false; // !!NOT FIXED NOW!! value("EnableScene", false).toBool();    //changjing
     EnableSame = value("EnableSame", false).toBool();
     EnableBasara = value("EnableBasara", false).toBool();
     EnableHegemony = value("EnableHegemony", false).toBool();

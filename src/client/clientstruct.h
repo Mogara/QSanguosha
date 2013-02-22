@@ -18,6 +18,8 @@ struct ServerInfoStruct{
     QString GameMode;
     int OperationTimeout;
     QStringList Extensions;
+    bool RandomSeat;
+    bool EnableCheat;
     bool FreeChoose;
     bool Enable2ndGeneral;
     bool EnableScene;
@@ -55,6 +57,8 @@ private:
     QLabel *basara_label;
     QLabel *hegemony_label;
     QLabel *max_hp_label;
+    QLabel *random_seat_label;
+    QLabel *enable_cheat_label;
     QLabel *free_choose_label;
     QLabel *enable_ai_label;
     QLabel *time_limit_label;

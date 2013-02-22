@@ -155,17 +155,30 @@ QWidget *ServerDialog::createPackageTab(){
 QWidget *ServerDialog::createAdvancedTab(){
     QVBoxLayout *layout = new QVBoxLayout;
 
+    random_seat_checkbox = new QCheckBox(tr("Arrange the seats randomly"));
+    random_seat_checkbox->setChecked(Config.RandomSeat);
+
+    enable_cheat_checkbox = new QCheckBox(tr("Enable cheat"));
+    enable_cheat_checkbox->setToolTip(tr("This option enables the cheat menu"));
+    enable_cheat_checkbox->setChecked(Config.EnableCheat);
+
     free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
-    free_choose_checkbox->setToolTip(tr("This option enables the cheat menu"));
     free_choose_checkbox->setChecked(Config.FreeChoose);
+    free_choose_checkbox->setVisible(Config.EnableCheat);
 
     free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));
     free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
+    free_assign_checkbox->setVisible(Config.EnableCheat);
 
     free_assign_self_checkbox = new QCheckBox(tr("Assign only your own role"));
     free_assign_self_checkbox->setChecked(Config.FreeAssignSelf);
     free_assign_self_checkbox->setEnabled(free_assign_checkbox->isChecked());
-    connect(free_assign_checkbox,SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
+    free_assign_self_checkbox->setVisible(Config.EnableCheat);
+
+    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_choose_checkbox, SLOT(setVisible(bool)));
+    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_assign_checkbox, SLOT(setVisible(bool)));
+    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setVisible(bool)));
+    connect(free_assign_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
 
     pile_swapping_spinbox = new QSpinBox;
     pile_swapping_spinbox->setRange(0, 15);
@@ -220,7 +233,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     connect(mode_group,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(updateButtonEnablility(QAbstractButton*)));
 
     hegemony_checkbox = new QCheckBox(tr("Enable Hegemony"));
-    hegemony_checkbox->setChecked(Config.EnableHegemony);
+    hegemony_checkbox->setChecked(Config.EnableBasara && Config.EnableHegemony);
     hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
     connect(basara_checkbox,SIGNAL(toggled(bool)),hegemony_checkbox, SLOT(setEnabled(bool)));
 
@@ -250,8 +263,10 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     layout->addWidget(forbid_same_ip_checkbox);
     layout->addWidget(disable_chat_checkbox);
-    layout->addLayout(HLay(free_choose_checkbox, free_assign_checkbox));
-    layout->addWidget(free_assign_self_checkbox);
+    layout->addWidget(random_seat_checkbox);
+    layout->addWidget(enable_cheat_checkbox);
+    layout->addWidget(free_choose_checkbox);
+    layout->addLayout(HLay(free_assign_checkbox, free_assign_self_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Pile-swapping limitation")), pile_swapping_spinbox));
     layout->addLayout(HLay(without_lordskill_checkbox, sp_convert_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
@@ -542,7 +557,8 @@ void ServerDialog::edit1v1Banlist(){
 
 QGroupBox *ServerDialog::create3v3Box(){
     QGroupBox *box = new QGroupBox(tr("3v3 options"));
-    box->setEnabled(Config.GameMode == "06_3v3");
+    box->setVisible(Config.GameMode == "06_3v3");
+    box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
 
@@ -899,12 +915,14 @@ bool ServerDialog::config(){
     Config.ServerName = server_name_edit->text();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
-    Config.FreeChoose = free_choose_checkbox->isChecked();
-    Config.FreeAssignSelf = free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
+    Config.RandomSeat = random_seat_checkbox->isChecked();
+    Config.EnableCheat = enable_cheat_checkbox->isChecked();
+    Config.FreeChoose = Config.EnableCheat && free_choose_checkbox->isChecked();
+    Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
-    Config.EnableScene = scene_checkbox->isChecked();        //changjing
+    Config.EnableScene = false; // !!NOT FIXED!! scene_checkbox->isChecked();        //changjing
     Config.EnableSame = same_checkbox->isChecked();
     Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
@@ -934,8 +952,10 @@ bool ServerDialog::config(){
     Config.setValue("GameMode", Config.GameMode);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
+    Config.setValue("RandomSeat", Config.RandomSeat);
+    Config.setValue("EnableCheat", Config.EnableCheat);
     Config.setValue("FreeChoose", Config.FreeChoose);
-    Config.setValue("FreeAssign", free_assign_checkbox->isChecked());
+    Config.setValue("FreeAssign", Config.EnableCheat && free_assign_checkbox->isChecked());
     Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
     Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
     Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
@@ -946,7 +966,7 @@ bool ServerDialog::config(){
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
-    Config.setValue("EnableScene", Config.EnableScene);    //changjing
+    Config.setValue("EnableScene", false); // !!NOT FIXED!! Config.EnableScene);    //changjing
     Config.setValue("EnableSame", Config.EnableSame);
     Config.setValue("EnableBasara",Config.EnableBasara);
     Config.setValue("EnableHegemony",Config.EnableHegemony);

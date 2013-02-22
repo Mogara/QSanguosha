@@ -531,12 +531,16 @@ QStringList Engine::getChattingEasyTexts() const{
 QString Engine::getSetupString() const{
     int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
     QString flags;
-    if(Config.FreeChoose)
+    if (Config.RandomSeat)
+        flags.append("R");
+    if (Config.EnableCheat)
+        flags.append("C");
+    if (Config.EnableCheat && Config.FreeChoose)
         flags.append("F");
     if(Config.Enable2ndGeneral)
         flags.append("S");
-    if(Config.EnableScene)
-        flags.append("C");
+    /*if(Config.EnableScene)
+        flags.append("C");*/ // !!NOT FIXED!!
     if(Config.EnableSame)
         flags.append("T");
     if(Config.EnableBasara)

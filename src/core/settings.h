@@ -29,6 +29,8 @@ public:
     int CountDownSeconds;
     QString GameMode;
     QStringList BanPackages;
+    bool RandomSeat;
+    bool EnableCheat;
     bool FreeChoose;
     bool ForbidSIMC;
     bool DisableChat;
