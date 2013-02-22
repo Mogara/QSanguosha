@@ -578,7 +578,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem*> &tricks)
                                   .arg(Sanguosha->translate(card->objectName()))
                                   .arg(card->getSuitString())
                                   .arg(card->getNumber());
-        trick->setToolTip(toolTip);
+        item->setToolTip(toolTip);
         _m_judgeCards.append(trick);
         _m_judgeIcons.append(item);
     }
