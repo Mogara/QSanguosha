@@ -192,16 +192,17 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
     log.card_str = toString();
     room->sendLog(log);
 
-    CardMoveReason reason(CardMoveReason::S_REASON_THROW, diaochan->objectName(), QString(), "lijian", QString());
-    room->moveCardTo(this, diaochan, NULL, Player::DiscardPile, reason, true);
-
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
+
+    thread->trigger(PreCardUsed, room, diaochan, data);
+
+    CardMoveReason reason(CardMoveReason::S_REASON_THROW, diaochan->objectName(), QString(), "lijian", QString());
+    room->moveCardTo(this, diaochan, NULL, Player::DiscardPile, reason, true);
 
     thread->trigger(CardUsed, room, diaochan, data);
 
     thread->trigger(CardFinished, room, diaochan, data);
-
 }
 
 void LijianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{

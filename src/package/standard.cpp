@@ -63,8 +63,8 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
+    thread->trigger(PreCardUsed, room, player, data);
     thread->trigger(CardUsed, room, player, data);
-
     thread->trigger(CardFinished, room, player, data);
 }
 
@@ -223,8 +223,8 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
     room->sendLog(log);
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
+    thread->trigger(PreCardUsed, room, card_use.from, data);
     thread->trigger(CardUsed, room, card_use.from, data);
-
     thread->trigger(CardFinished, room, card_use.from, data);
 }
 

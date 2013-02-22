@@ -948,24 +948,30 @@ public:
     }
 };
 
-class Lianying: public TriggerSkill{
+class Lianying: public TriggerSkill {
 public:
-    Lianying():TriggerSkill("lianying"){
-        events << CardsMoveOneTime;
-
+    Lianying(): TriggerSkill("lianying") {
+        events << BeforeCardsMove << CardsMoveOneTime;
         frequency = Frequent;
     }
 
-    virtual int getPriority() const{
-        return 1;
-    }
-
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *luxun, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *luxun, QVariant &data) const{
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(move->from == luxun && move->from_places.contains(Player::PlaceHand) && luxun->isKongcheng()){
-            if(room->askForSkillInvoke(luxun, objectName(), data)){
-                room->broadcastSkillInvoke(objectName());
-                luxun->drawCards(1);
+        if (move->from == luxun && move->from_places.contains(Player::PlaceHand)) {
+            if (triggerEvent == BeforeCardsMove) {
+                foreach (int id, luxun->handCards()) {
+                    if (!move->card_ids.contains(id))
+                        return false;
+                }
+                luxun->addMark(objectName());
+            } else {
+                if (luxun->getMark(objectName()) == 0)
+                    return false;
+                luxun->removeMark(objectName());
+                if (room->askForSkillInvoke(luxun, objectName(), data)) {
+                    room->broadcastSkillInvoke(objectName());
+                    luxun->drawCards(1);
+                }
             }
         }
         return false;

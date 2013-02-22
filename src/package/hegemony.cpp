@@ -361,14 +361,23 @@ public:
 class Sijian: public TriggerSkill {
 public:
     Sijian(): TriggerSkill("sijian") {
-        events << CardsMoveOneTime;
+        events << BeforeCardsMove << CardsMoveOneTime;
         view_as_skill = new SijianViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data) const{
-        if (tianfeng->isKongcheng()) {
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if (move->from == tianfeng && move->from_places.contains(Player::PlaceHand)) {
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data) const{
+        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+        if (move->from == tianfeng && move->from_places.contains(Player::PlaceHand)) {
+            if (triggerEvent == BeforeCardsMove) {
+                foreach (int id, tianfeng->handCards()) {
+                    if (!move->card_ids.contains(id))
+                        return false;
+                }
+                tianfeng->addMark(objectName());
+            } else {
+                if (tianfeng->getMark(objectName()) == 0)
+                    return false;
+                tianfeng->removeMark(objectName());
                 bool can_invoke = false;
                 QList<ServerPlayer *> other_players = room->getOtherPlayers(tianfeng);
                 foreach (ServerPlayer *p, other_players) {

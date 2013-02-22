@@ -128,11 +128,11 @@ private:
 class JiushiFlip: public TriggerSkill{
 public:
     JiushiFlip():TriggerSkill("#jiushi-flip"){
-        events << CardUsed << PreHpReduced << DamageComplete;
+        events << PreCardUsed << PreHpReduced << DamageComplete;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == CardUsed){
+        if(triggerEvent == PreCardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->getSkillName() == "jiushi")
                 player->turnOver();

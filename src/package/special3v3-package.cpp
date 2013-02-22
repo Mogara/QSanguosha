@@ -179,35 +179,46 @@ public:
 
 class Mingzhe: public TriggerSkill{
 public:
-    Mingzhe():TriggerSkill("mingzhe"){
-        events << CardsMoveOneTime;
+    Mingzhe(): TriggerSkill("mingzhe") {
+        events << BeforeCardsMove << CardsMoveOneTime;
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if(player->getPhase() != Player::NotActive)
             return false;
 
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if(move->from != player)
+        if (move->from != player)
             return false;
 
-        CardMoveReason reason = move->reason;
+        if (triggerEvent == BeforeCardsMove) {
+            CardMoveReason reason = move->reason;
 
-        if((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+            if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
-                || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE){
-            const Card *card;
-            int i = 0;
-            foreach(int card_id, move->card_ids){
-                card = Sanguosha->getCard(card_id);
-                if(card->isRed() && (move->from_places[i] == Player::PlaceHand || move->from_places[i] == Player::PlaceEquip)
-                    && player->askForSkillInvoke(objectName(), data)){
+                || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
+                const Card *card;
+                int i = 0;
+                foreach (int card_id, move->card_ids) {
+                    card = Sanguosha->getCard(card_id);
+                    if (card->isRed() && (move->from_places[i] == Player::PlaceHand
+                                          || move->from_places[i] == Player::PlaceEquip)) {
+                        player->addMark(objectName());
+                    }
+                    i++;
+                }
+            }
+        } else {
+            for (int i = 0; i < player->getMark(objectName()); i++) {
+                if (player->askForSkillInvoke(objectName(), data)) {
                     room->broadcastSkillInvoke(objectName());
                     player->drawCards(1);
+                } else {
+                    break;
                 }
-                i++;
             }
+            player->setMark(objectName(), 0);
         }
         return false;
     }
