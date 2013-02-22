@@ -1209,10 +1209,13 @@ public:
         if(!player->hasFlag("lexue"))
             return false;
 
-        if(player->hasUsed("LexueCard")){
+        if(player->hasUsed("LexueCard") && player->hasFlag("lexue")){
             int card_id = player->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
-            return  pattern.contains(card->objectName());
+            QString name = card->objectName();
+            if (name.contains("slash"))
+                name = "slash";
+            return pattern.contains(name);
         }else
             return false;
     }

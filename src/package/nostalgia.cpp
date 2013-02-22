@@ -398,7 +398,6 @@ public:
                 if(handang->hasFlag("nosjiefan_success"))
                     room->setPlayerFlag(handang, "-nosjiefan_success");
 
-
                 if(handang->hasFlag("nosjiefan_failed")){
                     room->setPlayerFlag(handang, "-nosjiefan_failed");
                     break;
