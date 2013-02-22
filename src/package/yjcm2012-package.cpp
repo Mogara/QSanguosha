@@ -292,13 +292,11 @@ class Dangxian: public TriggerSkill{
 public:
     Dangxian():TriggerSkill("dangxian"){
         frequency = Compulsory;
-        events << EventPhaseChanging;
+        events << EventPhaseStart;
     }
 
-
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *liaohua, QVariant &data) const{
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if(change.to == Player::Start && change.from != Player::Play){
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *liaohua, QVariant &) const{
+        if (liaohua->getPhase() == Player::RoundStart) {
             room->broadcastSkillInvoke(objectName());
             LogMessage log;
             log.type = "#TriggerSkill";
@@ -306,9 +304,8 @@ public:
             log.arg = objectName();
             room->sendLog(log);
 
-            change.to = Player::Play;
-            data = QVariant::fromValue(change);
-            liaohua->insertPhase(Player::Play);
+            liaohua->setPhase(Player::Play);
+            room->broadcastProperty(liaohua, "phase");
         }
         return false;
     }
