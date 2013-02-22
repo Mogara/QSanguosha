@@ -655,10 +655,12 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                 if (player->getGeneralName() == "anjiang") {
                     QStringList generals = room->getTag(player->objectName()).toStringList();
                     room->changePlayerGeneral(player, generals.at(0));
+                    generals.takeFirst();
+                    room->setTag(player->objectName(), QVariant::fromValue(generals));
                 }
                 if (Config.Enable2ndGeneral && player->getGeneral2Name() == "anjiang") {
                     QStringList generals = room->getTag(player->objectName()).toStringList();
-                    room->changePlayerGeneral2(player, generals.at(1));
+                    room->changePlayerGeneral2(player, generals.at(0));
                 }
             }
         }
@@ -851,7 +853,7 @@ BasaraMode::BasaraMode(QObject *parent)
 {
     setObjectName("basara_mode");
 
-    events << EventPhaseStart << DamageInflicted;
+    events << EventPhaseStart << DamageInflicted << BeforeGameOverJudge;
 
     skill_mark["niepan"] = "@nirvana";
     skill_mark["yeyan"] = "@flame";
@@ -1016,6 +1018,19 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
     }
     case DamageInflicted:{
         playerShowed(player);
+            break;
+        }
+    case BeforeGameOverJudge: {
+            if (player->getGeneralName() == "anjiang") {
+                QStringList generals = room->getTag(player->objectName()).toStringList();
+                room->changePlayerGeneral(player, generals.at(0));
+                generals.takeFirst();
+                room->setTag(player->objectName(), QVariant::fromValue(generals));
+            }
+            if (Config.Enable2ndGeneral && player->getGeneral2Name() == "anjiang") {
+                QStringList generals = room->getTag(player->objectName()).toStringList();
+                room->changePlayerGeneral2(player, generals.at(0));
+            }
         break;
     }
     case BuryVictim: {
