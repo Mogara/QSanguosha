@@ -181,6 +181,8 @@ void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme)
             if(role != "abstain"){
                 player->setRole(role);
                 all_roles.removeOne(role);
+                if (!all_roles.contains(role))
+                    roleChoices.removeOne(role);
 
                 for(int i = 0; i < 6; i++){
                     if(roles.at(i) == role && new_players.at(i) == NULL){

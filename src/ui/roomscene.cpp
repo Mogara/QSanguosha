@@ -1560,14 +1560,8 @@ void RoomScene::chooseRole(const QString &scheme, const QStringList &roles)
         jargon["leader2"] = tr("Leader of Team 2");
         jargon["guard2"] = tr("Guard of Team 2");
     }
-    
-    QStringList possibleRoles;
-    if(scheme == "AllRoles")
-        possibleRoles << "lord" << "loyalist" << "renegade" << "rebel";
-    else
-        possibleRoles << "leader1" << "guard1" << "leader2" << "guard2";
 
-    foreach (QString role, possibleRoles)
+    foreach (QString role, roles)
     {
         QCommandLinkButton *button = new QCommandLinkButton(jargon[role]);
         if(scheme == "AllRoles")
