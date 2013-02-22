@@ -557,7 +557,7 @@ void ServerDialog::edit1v1Banlist(){
 
 QGroupBox *ServerDialog::create3v3Box(){
     QGroupBox *box = new QGroupBox(tr("3v3 options"));
-    box->setVisible(Config.GameMode == "06_3v3");
+    box->setEnabled(Config.GameMode == "06_3v3");
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QVBoxLayout *vlayout = new QVBoxLayout;

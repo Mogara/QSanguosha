@@ -150,9 +150,6 @@
     <ClCompile Include="..\..\src\dialog\choosegeneraldialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\bgm-package.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\firepackage.cpp">
       <Filter>package</Filter>
     </ClCompile>
@@ -449,6 +446,9 @@
     </ClCompile>
     <ClCompile Include="Release\moc_fancheng-scenario.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\bgm-package.cpp">
+      <Filter>package</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

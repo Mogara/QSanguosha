@@ -63,4 +63,67 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
+
+class BGMDIYPackage: public Package {
+    Q_OBJECT
+
+public:
+    BGMDIYPackage();
+};
+
+class ZhaoxinCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ZhaoxinCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class LangguCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LangguCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class FuluanCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE FuluanCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class HuangenCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HuangenCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class HantongCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HantongCard();
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class DIYYicongCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DIYYicongCard();
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 #endif // BGMPACKAGE_H
