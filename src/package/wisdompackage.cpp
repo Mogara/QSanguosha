@@ -435,6 +435,7 @@ public:
                     ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
                     target->drawCards(drawnum);
                 }
+            } else if (player->getPhase() == Player::NotActive) {
                 room->setPlayerMark(player, objectName(), 0);
             }
         } else if (player->getPhase() == Player::Discard) {
