@@ -1535,7 +1535,7 @@ void ZhaoxinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
     room->showAllCards(source);
 
     Slash *slash = new Slash(Card::NoSuit, 0);
-    slash->setSkillName("ZHAOXIN");
+    slash->setSkillName("zhaoxin");
     CardUseStruct use;
     use.card = slash;
     use.from = source;
@@ -1931,7 +1931,7 @@ public:
         return player->getPile("edict").length() > 0
                && pattern == "slash"
                && !ClientInstance->hasNoTargetResponsing()
-               && !player->hasFlag("jijiang_failed");;
+               && !player->hasFlag("jijiang_failed");
     }
 };
 
