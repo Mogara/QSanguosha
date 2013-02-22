@@ -431,17 +431,17 @@ public:
         if (triggerEvent == EventPhaseStart) {
             if (player->getPhase() == Player::Finish) {
                 int drawnum = player->getMark(objectName());
-                room->setPlayerMark(player, objectName(), 0);
                 if (drawnum > 0 && player->askForSkillInvoke(objectName(), data)) {
                     ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
                     target->drawCards(drawnum);
                 }
+                room->setPlayerMark(player, objectName(), 0);
             }
         } else if (player->getPhase() == Player::Discard) {
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->from == player && move->to_place == Player::DiscardPile
                 && (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-                room->setPlayerMark(player, objectName(), move->card_ids.length());
+                room->setPlayerMark(player, objectName(), player->getMark(objectName()) + move->card_ids.length());
             }
         }
         return false;
