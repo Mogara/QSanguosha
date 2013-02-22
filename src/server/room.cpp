@@ -1296,7 +1296,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
 const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
     notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
 
-    const Card * card;
+    const Card *card = NULL;
     bool continuable = false;
 
     AI *ai = player->getAI();
