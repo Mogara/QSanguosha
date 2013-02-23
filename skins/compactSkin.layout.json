@@ -66,7 +66,7 @@
     "privatePileStartPos": [32, 26],
     "privatePileStep": [0, 16],
     "privatePileButtonSize": [60, 16],
-    "actionedIconRegion": [100, 78, 52, 21],
+    "actionedIconRegion": [72, 45, 52, 21],
     "saveMeIconRegion": [16, 24, 122, 50],
     "votesIconRegion": [41, 51, 50, 50],
     "chainedIconRegion": [0, 79, 131, 19],

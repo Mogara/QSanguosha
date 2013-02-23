@@ -179,6 +179,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             if (player->getPhase() == Player::Play) {
                 room->setPlayerMark(player, "SlashCount", 0);
                 player->clearHistory();
+                player->invoke("addHistory", ".");
             }
             break;
         }

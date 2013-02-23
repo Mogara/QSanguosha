@@ -989,6 +989,9 @@ void Client::addHistory(const QString &add_str){
     {
         emit card_used();
         return;
+    } else if (add_str == ".") {
+        Self->clearHistory();
+        return;
     }
 
     QRegExp rx("(.+):(-?\\d+)?");
