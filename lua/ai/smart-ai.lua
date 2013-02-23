@@ -4418,12 +4418,12 @@ function getLord(player)
 	if sgs.GetConfig("EnableHegemony", false) then return nil end
 	local room = global_room	
 	player = findPlayerByObjectName(room, player:objectName(), true)
-	--特殊模式：3v3--
+
 	local mode = string.lower(room:getMode())
 	if mode == "06_3v3" then
 		if player:getRole() == "lord" or player:getRole() == "renegade" then return player end
 		if player:getRole() == "loyalist" then return room:getLord() end
-		for _, p in sgs.qlist(allplayers) do
+		for _, p in sgs.qlist(room:getAllPlayers()) do
 			if p:getRole() == "renegade" then return p end
 		end
 	end

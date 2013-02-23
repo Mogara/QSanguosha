@@ -2,15 +2,14 @@ sgs.ai_skill_invoke.xingshang = true
 
 function toTurnOver(self, player, n) 
 	if not player then global_room:writeToConsole(debug.traceback()) return end			
-	if player:hasUsed("ShenfenCard") and player:faceUp() and player:getPhase() == sgs.Player_Play
-	  and sgs.shenfensource and sgs.shenfensource:objectName() == player:objectName() then
+	if (player:hasFlag("GuixinUsing") or player:hasFlag("ShenfenUsing")) and player:faceUp() then
 		return false
 	end
 	if n > 1 and player:hasSkill("jijiu") 
 	  and not (player:hasSkill("manjuan") and player:getPhase() == sgs.Player_NotActive) then
 		return false
 	end
-	if not player:faceUp() and (sgs.shenfensource == nil or player:objectName() ~= sgs.shenfensource:objectName()) then
+	if not player:faceUp() and not (player:hasFlag("GuixinUsing") or player:hasFlag("ShenfenUsing")) then
 		return false
 	end
 	if ( self:hasSkills("jushou|neojushou|kuiwei", player) or (player:hasSkill("lihun") and not player:hasUsed("LihunCard") and player:faceUp()) )
