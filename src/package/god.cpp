@@ -1101,6 +1101,7 @@ public:
                 const Card *card = room->askForCard(player, "@guicai", prompt, data, Card::MethodResponse, judge->who, true);
                 if (card != NULL){
                     room->broadcastSkillInvoke("jilve", 1);
+                    player->loseMark("@bear");
                     room->retrial(card, player, judge, objectName());
                 }
 
