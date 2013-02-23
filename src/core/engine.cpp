@@ -758,8 +758,10 @@ QStringList Engine::getRandomLords() const{
     int extra = Config.value("NonLordMaxChoice", 2).toInt();
     if (lord_num == 0 && extra == 0)
         extra = 1;
-    for(i = 0; i < extra; i++)
+    for (i = 0; i < extra; i++) {
         lords << nonlord_list.at(i);
+        if (i == nonlord_list.length() - 1) break;
+    }
 
     return lords;
 }
