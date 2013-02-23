@@ -240,9 +240,12 @@ houyuan_skill.getTurnUseCard = function(self)
 		local index = 0
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
+		self:sortByKeepValue(cards)
 		for _, fcard in ipairs(cards) do
-			table.insert(givecard, fcard:getId())
-			index = index + 1
+			if not fcard:isKindOf("Peach") then
+				table.insert(givecard, fcard:getId())
+				index = index + 1
+			end
 			if index == 2 then break end
 		end
 		if index < 2 then return end
@@ -253,7 +256,7 @@ end
 sgs.ai_skill_use_func.HouyuanCard = function(card, use, self)
 	if #self.friends == 1 then return end
 	local target
-	target = player_to_draw(self, "noself")
+	target = player_to_draw(self, "noself", 2)
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
@@ -284,7 +287,7 @@ sgs.ai_skill_invoke.bawang = function(self, data)
 		return self:isEnemy(effect.to)
 	end
 	if self:isEnemy(effect.to) then
-		if self:getOverflow() >= 0 then return true
+		if self:getOverflow() > 0 then return true
 		end
 	end
 end
@@ -378,7 +381,8 @@ sgs.ai_chaofeng.wis_sunce = 1
 	描述：回合结束阶段开始时，你可以选择一名其他角色摸取与你弃牌阶段弃牌数量相同的牌 
 ]]--
 sgs.ai_skill_playerchosen.longluo = function(self, targets)
-	local to = player_to_draw(self, "noself")
+	local n = self.player:getMark("longluo")
+	local to = player_to_draw(self, "noself", n)
 	if to then return to end
 	return self.friends_noself[1]
 end
@@ -521,7 +525,10 @@ end
 ]]--
 sgs.ai_skill_invoke.badao = function(self, data)
 	for _, enemy in ipairs(self.enemies) do
-		if self.player:canSlash(enemy, nil, true) and self:getCardsNum("Slash") > 0 then return true end
+		if self.player:canSlash(enemy, nil, true) and self:getCardsNum("Slash") > 0 then 
+			self:speak("看我大霸刀！就是比你刀快！") --此句证明这段函数没有被执行，疑为源代码变更所致。
+			return true 
+		end
 	end
 end
 

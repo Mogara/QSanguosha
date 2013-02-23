@@ -221,10 +221,15 @@ fenxun_skill.getTurnUseCard = function(self)
 		  or (self:hasSkills("bazhen|yizhong") and self.player:getArmor()) then
 			return sgs.Card_Parse("@FenxunCard=" .. self.player:getArmor():getId())
 		elseif self.player:getHandcardNum() > 0 then
-			for _, acard in ipairs(cards) do
-				if (acard:isKindOf("Disaster") or acard:isKindOf("AmazingGrace") or acard:isKindOf("EquipCard")) then
-					card_id = acard:getEffectiveId()
-					break
+			local lightning = self:getCard("Lightning")
+			if lightning and not self:willUseLightning(lightning) then
+				card_id = lightning:getEffectiveId()
+			else
+				for _, acard in ipairs(cards) do
+					if (acard:isKindOf("AmazingGrace") or acard:isKindOf("EquipCard")) then
+						card_id = acard:getEffectiveId()
+						break
+					end
 				end
 			end
 		elseif jinkcount > 1 then

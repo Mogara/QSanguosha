@@ -20,34 +20,44 @@ lihun_skill.getTurnUseCard = function(self)
 	if self:needBear() then return end
 	if self.player:hasUsed("LihunCard") or self.player:isNude() then return end
 	local card_id
-	if (self.player:hasArmorEffect("SilverLion") and self.player:isWounded()) or self:evaluateArmor() < -5 then
-		return sgs.Card_Parse("@LihunCard=" .. self.player:getArmor():getId())
-	elseif self.player:getHandcardNum() > self.player:getHp() then
-		local cards = self.player:getHandcards()
-		cards=sgs.QList2Table(cards)
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+	local lightning = self:getCard("Lightning")
 
-		for _, acard in ipairs(cards) do
-			if (acard:getTypeId() ~= sgs.Card_Trick or acard:isKindOf("AmazingGrace"))
-				and not acard:isKindOf("Peach") then
-				card_id = acard:getEffectiveId()
-				break
+	if (self.player:hasArmorEffect("SilverLion") and self.player:isWounded())
+	  or (self:hasSkills("bazhen|yizhong") and self.player:getArmor()) then
+		card_id = self.player:getArmor():getId()
+	elseif self.player:getHandcardNum() > self.player:getHp() then			
+		if lightning and not self:willUseLightning(lightning) then
+			card_id = lightning:getEffectiveId()
+		else	
+			for _, acard in ipairs(cards) do
+				if (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard") or acard:isKindOf("AmazingGrace"))
+					and not acard:isKindOf("Peach") then 
+					card_id = acard:getEffectiveId()
+					break
+				end
 			end
 		end
 	elseif not self.player:getEquips():isEmpty() then
 		local player = self.player
 		if player:getWeapon() then card_id = player:getWeapon():getId()
-		elseif player:getOffensiveHorse() then card_id=player:getOffensiveHorse():getId()
-		elseif player:getDefensiveHorse() then card_id=player:getDefensiveHorse():getId()
+		elseif player:getOffensiveHorse() then card_id = player:getOffensiveHorse():getId()
+		elseif player:getDefensiveHorse() then card_id = player:getDefensiveHorse():getId()
 		elseif player:getArmor() and player:getHandcardNum() <= 1 then card_id = player:getArmor():getId()
 		end
 	end
 	if not card_id then
-		cards=sgs.QList2Table(self.player:getHandcards())
-		for _, acard in ipairs(cards) do
-			if (acard:getTypeId() ~= sgs.Card_Trick or acard:isKindOf("AmazingGrace"))
-				and not acard:isKindOf("Peach") then
-				card_id = acard:getEffectiveId()
-				break
+		if lightning and not self:willUseLightning(lightning) then
+			card_id = lightning:getEffectiveId()
+		else
+			for _, acard in ipairs(cards) do
+				if (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard") or acard:isKindOf("AmazingGrace"))
+				  and not acard:isKindOf("Peach") then 
+					card_id = acard:getEffectiveId()
+					break
+				end
 			end
 		end
 	end
@@ -970,6 +980,11 @@ sgs.ai_skill_choice.xuehen = function(self, choices)
 	local current = self.room:getCurrent()
 	if self:isFriend(current) then return "slash" end
 	if self:isEnemy(current) then
+		if self.player:getLostHp() >= 3 and current:getCardCount(true) >= 3 and not self:needKongcheng(current) 
+				and not (self:hasSkills(sgs.lose_equip_skill, current) and current:getHandcardNum() < self.player:getLostHp()) then
+			return "discard"
+		end
+
 		if self:hasSkills("jijiu|tuntian|beige|qiaobian", current) and self.player:getLostHp() >= 2 and current:getCardCount(true) >= 2 then return "discard" end
 	end
 	if #self.enemies > 0 then return "slash" end
@@ -1110,7 +1125,7 @@ sgs.ai_skill_use_func.FuluanCard = function(card, use, self)
 end
 
 sgs.ai_use_priority.FuluanCard = 2.3
-sgs.ai_card_intention.FuluanCard = function(self, card, from, tos)
+sgs.ai_card_intention.FuluanCard = function(card, from, tos)
 	sgs.updateIntention(from, tos[1], tos[1]:faceUp() and 80 or -80)
 end
 
@@ -1186,7 +1201,7 @@ sgs.ai_skill_use["@@huangen"] = function(self, prompt)
 	end
 end
 
-sgs.ai_card_intention.HuangenCard = function(self, card, from, tos)
+sgs.ai_card_intention.HuangenCard = function(card, from, tos)
 	local cardx = sgs.Card_Parse(from:getTag("Huangen_user"):toString())
 	if not cardx then return end
 	for _, to in ipairs(tos) do
@@ -1252,7 +1267,7 @@ sgs.ai_card_intention.HantongCard = sgs.ai_card_intention.JijiangCard
 sgs.ai_skill_use["@@diyyicong"] = function(self, prompt)
 	local yicongcards = {}
 	local cards = self.player:getCards("he")
-	if self.player:hasArmorEffect("silver_lion") and self.player:isWounded() then
+	if self.player:hasArmorEffect("SilverLion") and self.player:isWounded() then
 		table.insert(yicongcards, self.player:getArmor():getId())
 	end
 	cards = sgs.QList2Table(cards)

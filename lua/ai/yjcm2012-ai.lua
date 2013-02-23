@@ -52,7 +52,7 @@ sgs.ai_skill_invoke.zhenlie = function(self, data)
 end
 
 sgs.ai_skill_playerchosen.miji = function(self, targets)
-	local to = player_to_draw(self, "all")
+	local to = player_to_draw(self, "all", self.player:getLostHp())
 	if to then return to end
 	return self.player
 end

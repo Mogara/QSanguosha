@@ -70,21 +70,21 @@ sgs.ai_chat_func[sgs.Death].stupid_lord=function(self, player, data)
 				"还有更2的吗",
 				"对这个主，真的很无语",
 				}
-	if damage and damage.from and damage.from:isLord() and self.role=="loyalist" then
+	if damage and damage.from and damage.from:isLord() and self.role=="loyalist" and damage.to:objectName() == player:objectName() then
 		local index =1+ (os.time() % #chat)
 		damage.to:speak(chat[index])
 	end
 end
 
 sgs.ai_chat_func[sgs.Dying].fuck_renegade=function(self, player, data)
-	local damage=data:toDamageStar()
+	local dying = data:toDying()
 	local chat ={"小内，你还不跳啊，要崩盘吧",
 				"9啊，不9就输了",
 				"999...999...",
 				"小内，我死了，你也赢不了",
 				"没戏了，小内不帮忙的话，我们全部托管吧",
 				}
-	if (self.role=="rebel" or self.role=="loyalist") and sgs.current_mode_players["renegade"]>0 and self.player:objectName() == player:objectName() then
+	if (self.role=="rebel" or self.role=="loyalist") and sgs.current_mode_players["renegade"]>0 and dying.who:objectName() == player:objectName() then
 		local index =1+ (os.time() % #chat)
 		player:speak(chat[index])
 	end
