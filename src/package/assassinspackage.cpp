@@ -447,13 +447,13 @@ public:
             }
 
             if (dummy->subcardsLength() > 0)
-                for (int i = 0; i < dummy->subcardsLength(); i++) {
+                for (int i = 0; i < dummy->subcardsLength(); i++)
                     room->moveCardTo(Sanguosha->getCard(card_ids[i]), target, original_places[i], false);
-                    room->throwCard(dummy, target, player);
-                    dummy->deleteLater();
-                }
             
             room->setPlayerFlag(player, "-duanzhi_InTempMoving");
+			
+            room->throwCard(dummy, target, player);
+            delete dummy;
             room->loseHp(player);
         }
         return false;
