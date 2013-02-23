@@ -255,7 +255,7 @@ public:
                     room->detachSkillFromPlayer(death.damage->from, skill->objectName());
             }
             death.damage->from->gainMark("@duanchang");
-            if(death.damage->from->getKingdom() != death.damage->from->getGeneral()->getKingdom())
+            if(death.damage->from->getKingdom() != death.damage->from->getGeneral()->getKingdom() && death.damage->from->getGeneral()->getKingdom() != "god")
                 room->setPlayerProperty(death.damage->from, "kingdom", death.damage->from->getGeneral()->getKingdom());
             if(death.damage->from->getGender() != death.damage->from->getGeneral()->getGender())
                 death.damage->from->setGender(death.damage->from->getGeneral()->getGender());
