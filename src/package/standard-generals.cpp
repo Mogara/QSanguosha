@@ -1092,8 +1092,10 @@ public:
                             return true;
                         }
                     }
+                } else {
+                    daqiao->tag.remove("liuli-card");
+                    room->setPlayerFlag(use.from, "-slash_source");
                 }
-                daqiao->tag.remove("liuli-card");
             }
         }
 
