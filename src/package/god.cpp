@@ -424,6 +424,7 @@ public:
                 }
             }
             if(can_invoke && shencc->askForSkillInvoke(objectName())){
+                shencc->setFlags("GuixinUsing");
                 room->broadcastSkillInvoke(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
@@ -440,6 +441,7 @@ public:
                 }
                 can_invoke = false;
                 shencc->turnOver();
+                shencc->setFlags("-GuixinUsing");
             }else
                 break;
         }
