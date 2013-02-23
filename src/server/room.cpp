@@ -1008,8 +1008,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                              bool isRetrial, const QString &skill_name) {
     // For compatibility.
     // ===================================================
-    TriggerEvent event = (TriggerEvent)int(method);
-    switch (event) {
+    TriggerEvent triggerEvent = (TriggerEvent)int(method);
+    switch (triggerEvent) {
     case CardUsed: method = Card::MethodUse; break;
     case CardResponded: method = Card::MethodResponse; break;
     case AskForRetrial: method = Card::MethodResponse; isRetrial = true; break;

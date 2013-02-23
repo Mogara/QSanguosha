@@ -1493,8 +1493,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *gaodayihao, QVariant &data) const{
-        if (event == CardsMoveOneTime){
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *gaodayihao, QVariant &data) const{
+        if (triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
             if (move->from != gaodayihao && move->to != gaodayihao)
                 return false;
@@ -1503,7 +1503,7 @@ public:
                 return false;
             }
         }
-        if (event == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::Draw) {
                 gaodayihao->skip(change.to);

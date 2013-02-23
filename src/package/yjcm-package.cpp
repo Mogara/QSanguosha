@@ -1246,9 +1246,9 @@ int Shangshi::getMaxLostHp(ServerPlayer *zhangchunhua) const{
     return qMin(losthp, zhangchunhua->getMaxHp());
 }
 
-bool Shangshi::trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
+bool Shangshi::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
     int losthp = getMaxLostHp(zhangchunhua);
-    if (event == CardsMoveOneTime) {
+    if (triggerEvent == CardsMoveOneTime) {
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         if (zhangchunhua->getPhase() == Player::Discard) {
             bool changed = false;
@@ -1260,12 +1260,12 @@ bool Shangshi::trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhu
                 zhangchunhua->addMark("shangshi");
         }
     }
-    if (event == HpChanged || event == MaxHpChanged) {
+    if (triggerEvent == HpChanged || triggerEvent == MaxHpChanged) {
         /* something strange */
         if (zhangchunhua->getHp() <= 0) return false;
         if (zhangchunhua->getPhase() == Player::Discard)
             zhangchunhua->addMark("shangshi");
-    } else if (event == CardsMoveOneTime) {
+    } else if (triggerEvent == CardsMoveOneTime) {
         CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
         bool can_invoke = false;
         if (move->from == zhangchunhua && move->from_places.contains(Player::PlaceHand))
@@ -1274,7 +1274,7 @@ bool Shangshi::trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhu
             can_invoke = true;
         if (!can_invoke)
             return false;
-    } else if (event == EventPhaseChanging) {
+    } else if (triggerEvent == EventPhaseChanging) {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to != Player::Finish)
             return false;

@@ -105,7 +105,7 @@ class Shangshi: public TriggerSkill {
 
 public:
     Shangshi();
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const;
 
 protected:
     virtual int getMaxLostHp(ServerPlayer *zhangchunhua) const;
