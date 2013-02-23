@@ -844,66 +844,67 @@ function SmartAI:ImitateResult_DrawNCards(player, skills, self, overall)
 			end
 		end
 	end
-	assert(#drawSkills > 0)
-	local room = player:getRoom() --当前房间
-	local others = room:getOtherPlayers(player) --其他角色
-	local alives = room:getAlivePlayers() --存活角色
-	local count = 2 --初始摸牌数目
-	local lost = player:getLostHp() --已损失体力值
-	for _,skillname in pairs(drawSkills) do
-		if skillname == "tuxi" then --突袭，放弃摸牌
-			return math.min(2, others:length())
-		elseif skillname == "shuangxiong" then --双雄，放弃摸牌
-			return 1
-		elseif skillname == "zaiqi" then --再起，放弃摸牌（摸牌数目不定，返回期望值）
-			return math.floor(lost * 3 / 4) 
-		elseif skillname == "shelie" then --涉猎，放弃摸牌（摸牌数目不定，返回期望值）
-			return 3
-		elseif skillname == "xuanhuo" then --眩惑，放弃摸牌（摸牌数目不定，返回期望值）
-			return 1
-		elseif skillname == "fuhun" then --父魂，放弃摸牌
-			return 2
-		elseif skillname == "luoyi" then --裸衣，少摸一张牌
-			count = count - 1
-		elseif skillname == "yingzi" then --英姿，多摸一张牌
-			count = count + 1
-		elseif skillname == "haoshi" then --好施，多摸两张牌
-			count = count + 1
-		elseif skillname == "juejing" then --绝境，多摸已损失体力值数目的牌
-			count = count + lost
-		elseif skillname == "yongsi" then --庸肆，多摸现存势力数目的牌
-			local kingdoms = self:KingdomsCount(alives)
-			count = count + #kingdoms
-		elseif skillname == "shenwei" then --神威，多摸两张牌
-			count = count + 2
-		elseif skillname == "jiangchi" then --将驰，多摸一张牌或少摸一张牌
-			local choices = "jiang+chi+cancel"
-			local func = sgs.ai_skill_choice.jiangchi
-			if func then
-				local choice = func(self, choices) 
-				if choice == "jiang" then
-					count = count + 1
-				elseif choice == "chi" then
-					count = count - 1
-				end
-			end
-		elseif skillname == "zishou" then --自守，多摸已损失体力值数目的牌
-			count = count + lost
-		elseif skillname == "hongyuan" then --弘援，少摸一张牌
-			count = count - 1
-		elseif skillname == "kuiwei" then --溃围，弃置场上武器数目的牌
-			if player:getMark("@kuiwei") > 0 then
-				for _,p in sgs.qlist(alives) do
-					if p:getWeapon() then
+	if #drawSkills > 0 then
+		local room = player:getRoom() --当前房间
+		local others = room:getOtherPlayers(player) --其他角色
+		local alives = room:getAlivePlayers() --存活角色
+		local count = 2 --初始摸牌数目
+		local lost = player:getLostHp() --已损失体力值
+		for _,skillname in pairs(drawSkills) do
+			if skillname == "tuxi" then --突袭，放弃摸牌
+				return math.min(2, others:length())
+			elseif skillname == "shuangxiong" then --双雄，放弃摸牌
+				return 1
+			elseif skillname == "zaiqi" then --再起，放弃摸牌（摸牌数目不定，返回期望值）
+				return math.floor(lost * 3 / 4) 
+			elseif skillname == "shelie" then --涉猎，放弃摸牌（摸牌数目不定，返回期望值）
+				return 3
+			elseif skillname == "xuanhuo" then --眩惑，放弃摸牌（摸牌数目不定，返回期望值）
+				return 1
+			elseif skillname == "fuhun" then --父魂，放弃摸牌
+				return 2
+			elseif skillname == "luoyi" then --裸衣，少摸一张牌
+				count = count - 1
+			elseif skillname == "yingzi" then --英姿，多摸一张牌
+				count = count + 1
+			elseif skillname == "haoshi" then --好施，多摸两张牌
+				count = count + 1
+			elseif skillname == "juejing" then --绝境，多摸已损失体力值数目的牌
+				count = count + lost
+			elseif skillname == "yongsi" then --庸肆，多摸现存势力数目的牌
+				local kingdoms = self:KingdomsCount(alives)
+				count = count + #kingdoms
+			elseif skillname == "shenwei" then --神威，多摸两张牌
+				count = count + 2
+			elseif skillname == "jiangchi" then --将驰，多摸一张牌或少摸一张牌
+				local choices = "jiang+chi+cancel"
+				local func = sgs.ai_skill_choice.jiangchi
+				if func then
+					local choice = func(self, choices) 
+					if choice == "jiang" then
+						count = count + 1
+					elseif choice == "chi" then
 						count = count - 1
 					end
 				end
+			elseif skillname == "zishou" then --自守，多摸已损失体力值数目的牌
+				count = count + lost
+			elseif skillname == "hongyuan" then --弘援，少摸一张牌
+				count = count - 1
+			elseif skillname == "kuiwei" then --溃围，弃置场上武器数目的牌
+				if player:getMark("@kuiwei") > 0 then
+					for _,p in sgs.qlist(alives) do
+						if p:getWeapon() then
+							count = count - 1
+						end
+					end
+				end
+			elseif skillname == "zhaolie" then --昭烈，少摸一张牌
+				count = count - 1
+			elseif skillname == "ayshuijian" then --水箭，多摸(自身装备数目+1)的牌
+				local equips = player:getCards("e")
+				count = count + 1 + math.floor(equips:length() / 2)
 			end
-		elseif skillname == "zhaolie" then --昭烈，少摸一张牌
-			count = count - 1
-		elseif skillname == "ayshuijian" then --水箭，多摸(自身装备数目+1)的牌
-			local equips = player:getCards("e")
-			count = count + 1 + math.floor(equips:length() / 2)
 		end
 	end
 	return count

@@ -318,6 +318,13 @@ end
 
 sgs.ai_skill_invoke.tuntian = true
 
+sgs.ai_slash_prohibit.tuntian = function(self, to, card)
+	if self:isFriend(to) then return false end
+	if getCardsNum("Jink", to) < 1 or sgs.card_lack[to:objectName()]["Jink"] == 1 or self:isWeak(to) then return false end
+	if to:getHandcardNum() >= 3 then return true end	
+	return false	
+end
+
 local jixi_skill={}
 jixi_skill.name="jixi"
 table.insert(sgs.ai_skills, jixi_skill)
@@ -530,7 +537,7 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 	local targets = {}
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:distanceTo(self.player) <= enemy:getAttackRange() and
-			(getCardsNum("Slash", enemy) < 1 or self:getCardsNum("Jink") > 0) and
+			((getCardsNum("Slash", enemy) < 1 and self.player:getHp() > 1) or getCardsNum("Slash", enemy) == 0 or self:getCardsNum("Jink") > 0) and
 			not enemy:isNude() then
 			table.insert(targets, enemy)
 		end
@@ -950,4 +957,8 @@ end
 
 sgs.ai_suit_priority.jiang=function(self,card) 
 	return (card:isKindOf("Slash") or card:isKindOf("Duel")) and "diamond|heart|club|spade" or "club|spade|diamond|heart"
+end
+
+sgs.ai_cardneed.jiang = function(to, card, self)	
+	return isCard("Duel", card, to) or (isCard("Slash", card, to) and card:isRed())	
 end

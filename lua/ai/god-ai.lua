@@ -519,7 +519,7 @@ sgs.ai_need_damaged.guixin = function (self, attacker)
 	if self.room:alivePlayerCount() <=3 then return false end
 	local diaochan = self.room:findPlayerBySkillName("lihun")
 	if diaochan and self:isEnemy(diaochan) then return false end
-	local num =self.player:getHandcardNum()
+	local num = self.player:getHandcardNum()
 	if self.player:faceUp() and num - self.player:getHp() > 2 then return false end
 	return true
 end
@@ -536,7 +536,7 @@ end
 local wuqian_skill={}
 wuqian_skill.name = "wuqian"
 table.insert(sgs.ai_skills, wuqian_skill)
-wuqian_skill.getTurnUseCard=function(self)
+wuqian_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("WuqianCard") or self.player:getMark("@wrath") < 2 then return end
 
 	local card_str = ("@WuqianCard=.")
@@ -659,7 +659,7 @@ sgs.ai_skill_use_func.ShenfenCard=function(card,use,self)
 	
 	for _,friend in ipairs(self.friends_noself) do
 		if (friend:hasSkill("fangzhu") and friend:getHp() > 1) or 
-		(friend:hasSkill("jilve") and friend:getMark("@waked") >0 and friend:getMark("@bear") >0 and friend:getHp() > 1) then
+		(friend:hasSkill("jilve") and friend:getMark("@waked") > 0 and friend:getMark("@bear") > 0 and friend:getHp() > 1) then
 			good = good + friend:getLostHp()*0.5 + 0.5
 			break
 		end
@@ -863,5 +863,7 @@ sgs.ai_skill_use["@zhiheng"]=function(self,prompt)
 	if dummy_use.card then return (dummy_use.card):toString() .. "->." end
 	return "."
 end
+
+sgs.ai_skill_cardask["@jilve-guicai"]=sgs.ai_skill_cardask["@guicai-card"]
 
 sgs.ai_suit_priority.wushen= "club|spade|diamond|heart"

@@ -145,16 +145,6 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	local allcards = self.player:getCards("he")
 	allcards = sgs.QList2Table(allcards)
 
-	if enemy:getArmor() and enemy:getArmor():objectName() == "SilverLion" and not self.player:hasWeapon("QinggangSword") 
-	  and not self.player:hasSkill("jueqing") then
-		return
-	end
-
-	if self:hasSkills(sgs.masochism_skill .. "|longhun|buqu|" .. sgs.recover_skill ,enemy) and 
-			self.player:hasSkill("qianxi") and self.player:distanceTo(enemy) == 1 then
-		return
-	end
-
 	if self.player:getPhase() == sgs.Player_Play then
 		if self.player:hasFlag("lexue") then
 			local lexuesrc = sgs.Sanguosha:getCard(self.player:getMark("lexue"))
@@ -208,25 +198,33 @@ function SmartAI:useCardSupplyShortage(card, use)
 	local zhanghe = self.room:findPlayerBySkillName("qiaobian")
 	local zhanghe_seat = zhanghe and zhanghe:faceUp() and not zhanghe:isKongcheng() and self:isEnemy(zhanghe) and zhanghe:getSeat() or 0
 
-	if #enemies==0 then return end
+	if #enemies == 0 then return end
 
-	local getvalue=function(enemy)
+	local getvalue = function(enemy)
 		if enemy:containsTrick("supply_shortage") or enemy:containsTrick("YanxiaoCard") or self:hasSkills("qiaobian", enemy) and self:enemiesContainsTrick() <= 1 then return -100 end
-		if zhanghe_seat>0 and self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 then return - 100 end
+		if zhanghe_seat > 0 and self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 then return - 100 end
 
 		local value = 0 - enemy:getHandcardNum()
 
-		if self:hasSkills("yongsi|haoshi|tuxi|lijian|fanjian|neofanjian|dimeng|jijiu|jieyin",enemy) or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1)
+		if self:hasSkills("yongsi|haoshi|tuxi|lijian|fanjian|neofanjian|dimeng|jijiu|jieyin|manjuan",enemy)
+		  or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1)
 			then value = value + 10 
-		end		
+		end
+		if self:hasSkills(sgs.cardneed_skill,enemy) or self:hasSkills("zhaolie|tianxiang|qinyin|yanxiao|zhaoxin|toudu",enemy)
+			then value = value + 5 
+		end
+		if self:hasSkills("yingzi|shelie|xuanhuo|buyi|jujian|jiangchi|mizhao|hongyuan|chongzhen|duoshi",enemy) then value = value + 1 end
+		if enemy:hasSkill("zishou") then value = value + enemy:getLostHp() end
 		if self:isWeak(enemy) then value = value + 5 end
 		if enemy:isLord() then value = value + 3 end
 
-		if self:objectiveLevel(enemy)<3 then value = value -10 end
-		if not enemy:faceUp() then value = value -10 end
+		if self:objectiveLevel(enemy) < 3 then value = value - 10 end
+		if not enemy:faceUp() then value = value - 10 end
 		if self:hasSkills("keji|shensu", enemy) then value = value - enemy:getHandcardNum() end
 		if self:hasSkills("guanxing|xiuluo|tiandu|guidao|zhenlie", enemy) then value = value - 5 end
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 1 end
+		if self:needKongcheng(enemy) then value = value - 1 end
+		if enemy:getMark("@kuiwei") > 0 then value = value - 2 end
 		return value
 	end
 
@@ -236,7 +234,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 
 	table.sort(enemies, cmp)
 
-	local target=enemies[1]
+	local target = enemies[1]
 	if getvalue(target) > -100 then
 		use.card = card
 		if use.to then use.to:append(target) end
@@ -280,33 +278,38 @@ function SmartAI:isGoodChainPartner(player)
 end
 
 function SmartAI:isGoodChainTarget(who)	
-	local haslord															
 	local good = #(self:getChainedEnemies(self.player))
 	local bad = #(self:getChainedFriends(self.player))
+	
+	if not sgs.GetConfig("EnableHegemony", false) then	
+		local lord = self.room:getLord()
+		if self:isWeak(lord) and lord:isChained() and not self:isEnemy(lord) then
+			return false
+		end
+	end
+
 	for _, friend in ipairs(self:getChainedFriends(self.player)) do
 		if self:cantbeHurt(friend) then
 			return false
 		end
 		if self:isGoodChainPartner(friend) then 
 			good = good+1 
-		elseif self:isWeak(friend) and not friend:hasSkill("buqu") then 
+		elseif self:isWeak(friend) then 
 			good = good-1
 		end
 	end
+
 	for _, enemy in ipairs(self:getChainedEnemies(self.player)) do
-		if enemy:getHp() < 3 and not enemy:hasSkill("buqu") and enemy:getRole() == "lord" and self.player:getRole() == "renegade" then
-			return false
-		end
 		if self:cantbeHurt(enemy) then
 			return false
 		end
 		if self:isGoodChainPartner(enemy) then 
 			bad = bad+1 
-		elseif self:isWeak(enemy) and not enemy:hasSkill("buqu") then
+		elseif self:isWeak(enemy) then
 			bad = bad-1 
 		end
 	end
-	return good > bad and who:isChained()
+	return good >= bad and who:isChained()
 end
 
 
@@ -400,18 +403,30 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 	local card
 
 	self:sortByUseValue(cards, true)
-
-	for _, acard in ipairs(cards) do
-		if acard:getSuitString() == convert[pattern] 
-				and not ( isCard("Peach", acard, self.player) 
-				and (not (self:isWeak(target) or self:isEquip("Vine", target) or target:getMark("@gale") > 0) or (self:isWeak() and self.player:isLord()))) then 
-			card = acard
-			break
+	local lord = self.room:getLord()
+	if sgs.GetConfig("EnableHegemony", false) then lord = nil end
+	
+	for _, acard in ipairs(cards) do		
+		if acard:getSuitString() == convert[pattern] then
+			if not isCard("Peach", acard, self.player) then
+				card = acard
+				break
+			else
+				local needKeepPeach = true
+				if (self:isWeak(target) and not self:isWeak()) or target:getHp() == 1
+						or self:isGoodChainTarget(target) or self:isEquip("Vine", target) or target:getMark("@gale") > 0 then 
+					needKeepPeach = false 
+				end
+				if lord and not self:isEnemy(lord) and sgs.isLordInDanger() and self:getCardsNum("Peach") == 1 and self.player:aliveCount() > 2 then 
+					needKeepPeach = true 
+				end
+				if not needKeepPeach then
+					card = acard
+					break
+				end
+			end
 		end
 	end
-
-	local lord = self.room:getLord()
-	if card and isCard("Peach", card, self.player) and not self:isEnemy(lord) and sgs.isLordInDanger() then card = nil end
 
 	if card then
 		return card:getId()
