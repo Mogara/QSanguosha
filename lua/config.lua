@@ -126,6 +126,7 @@ config = {
 		"lvbu|dongzhuo+diaochan",
 		"sunjian+wuguotai",
 		"sunce+daqiao",
-		"sunquan+bulianshi"
+		"sunquan+bulianshi",
+		"diy_simazhao+diy_wangyuanji"
 	}
 }
