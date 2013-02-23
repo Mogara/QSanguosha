@@ -10,7 +10,7 @@
 class SPMoonSpearSkill: public WeaponSkill{
 public:
     SPMoonSpearSkill():WeaponSkill("SPMoonSpear"){
-        events << CardFinished << CardResponded;
+        events << CardUsed << CardResponded;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -18,16 +18,12 @@ public:
             return false;
 
         CardStar card = NULL;
-        if(triggerEvent == CardFinished){
+        if(triggerEvent == CardUsed){
             CardUseStruct card_use = data.value<CardUseStruct>();
             card = card_use.card;
-
-            if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
-                card = NULL;
-            }
         }else if(triggerEvent == CardResponded){
-            card = data.value<ResponsedStruct>().m_card;
-            player->tag["MoonSpearSlash"] = data;
+            ResponsedStruct resp = data.value<ResponsedStruct>();
+            card = resp.m_card;
         }
 
         if(card == NULL || !card->isBlack())
