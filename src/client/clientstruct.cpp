@@ -101,6 +101,8 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     same_label = new QLabel;
     basara_label = new QLabel;
     hegemony_label = new QLabel;
+    random_seat_label = new QLabel;
+    enable_cheat_label = new QLabel;
     free_choose_label = new QLabel;
     enable_ai_label = new QLabel;
     time_limit_label = new QLabel;
