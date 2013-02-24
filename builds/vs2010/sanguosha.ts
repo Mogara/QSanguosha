@@ -1504,7 +1504,7 @@
     <message>
         <location filename="../../src/core/engine.cpp" line="474"/>
         <source>NewQSanguosha</source>
-        <translation>新太阳神三国杀</translation>
+        <translation>太阳神三国杀 - 20130224</translation>
     </message>
     <message>
         <location filename="../../src/core/engine.cpp" line="104"/>
