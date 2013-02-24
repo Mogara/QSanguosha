@@ -1302,8 +1302,6 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
     AI *ai = player->getAI();
     if(ai) {
         card = ai->askForSinglePeach(dying);
-        if (card != NULL)
-            thread->delay(Config.AIDelay);
     } else {
         int peaches = 1 - dying->getHp();
         Json::Value arg(Json::arrayValue);
