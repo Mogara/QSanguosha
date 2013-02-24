@@ -465,6 +465,10 @@ function SmartAI:getDynamicUsePriority(card)
 			value = sgs.ai_use_priority.SupplyShortage - 0.01
 		end
 
+		if use_card:isKindOf("IronChain") and self:hasSkills("yeyan") then 
+			value = sgs.ai_use_priority.GreatYeyanCard + 0.1
+		end
+
 		if use_card:isKindOf("Analeptic") and use_card:isVirtualCard() then 
 			value = sgs.ai_use_priority.Analeptic - 0.01
 		end
@@ -1045,6 +1049,7 @@ sgs.ai_card_intention.general = function(from,to,level)
 		end
 	end
 	
+	--[[
 	if global_room:getTag("humanCount") and global_room:getTag("humanCount"):toInt() ==1 then
 		local diffarr = {
 			add_loyalist_value	= sgs.role_evaluation[from:objectName()]["loyalist"] - loyalist_value ,
@@ -1081,6 +1086,7 @@ sgs.ai_card_intention.general = function(from,to,level)
 			global_room:sendLog(log)
 		end
 	end
+	]]
 
 	--sgs.outputProcessValues(from:getRoom())
 	sgs.outputRoleValues(from, level)
@@ -2114,7 +2120,7 @@ function SmartAI:filterEvent(event, player, data)
 			self.room:setTag("humanCount",sgs.QVariant(humanCount))
 
 			if humanCount == 1 and not sgs.isRolePredictable() and not sgs.GetConfig("EnableHegemony", false) then 
-				global_room:writeToConsole(msg)
+				--global_room:writeToConsole(msg)
 			end
 		end
 
@@ -3505,7 +3511,7 @@ function SmartAI:needRetrial(judge)
 	if reason == "lightning" then  
 		if self:hasSkills("wuyan|hongyan",who) then return false end
 
-		if (who:isLord() or (who:isChained() and lord:isChained())) and self:objectiveLevel(lord) <= 3 then
+		if lord and (who:isLord() or (who:isChained() and lord:isChained())) and self:objectiveLevel(lord) <= 3 then
 			if lord:hasArmorEffect("SilverLion") and lord:getHp() >= 2 and self:isGoodChainTarget(lord) then return false end
 			return self:damageIsEffective(lord, sgs.DamageStruct_Thunder) and not judge:isGood()
 		end
@@ -4440,17 +4446,31 @@ function SmartAI:getAoeValue(card, player)
 	local lord = getLord(self.player)
 
 	local canHelpLord =function()
-		local goodnull, badnull = 0, 0
+	
 		if (not lord) or (not self:isFriend(lord)) then return false end
-		if card:isKindOf("SavageAssault") then
-			return lord:hasLordSkill("jijiang") and self.player:getKingdom() == "shu" and self:getCardsNum("Slash") > 0
-		end
-		if card:isKindOf("ArcheryAttack") then
-			return lord:hasLordSkill("hujia") and self.player:getKingdom() == "wei" and self:getCardsNum("Jink") > 0
+	
+		if self.player:hasSkill("qice") and card:isVirtualCard() then return false end
+		
+		local peach_num, null_num, slash_num, jink_num = 0, 0, 0, 0
+		if card:isVirtualCard() and card:subcardsLength() > 0 then	
+			for _, subcardid in sgs.qlist(card:getSubcards()) do
+				local subcard = sgs.Sanguosha:getCard(subcardid)
+				if subcard:getClassName() == "Peach" then peach_num = peach_num - 1 end
+				if subcard:getClassName() == "Slash" then slash_num = slash_num - 1 end
+				if subcard:getClassName() == "Jink" then jink_num = jink_num - 1 end
+				if subcard:getClassName() == "Nullification" then null_num = null_num - 1 end
+			end
 		end
 		
-		if self:getCardsNum("Peach") > 0 then return true end
-				
+		if card:isKindOf("SavageAssault") and lord:hasLordSkill("jijiang") and self.player:getKingdom() == "shu" and
+			self:getCardsNum("Slash") - slash_num > 0 then return true end		
+		
+		if card:isKindOf("ArcheryAttack") and lord:hasLordSkill("hujia") and self.player:getKingdom() == "wei" and
+			self:getCardsNum("Jink") - jink_num > 0 then return true end
+		
+		if self:getCardsNum("Peach") - peach_num > 0 then return true end
+		
+		local goodnull, badnull = 0, 0
 		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 			if self:isFriend(lord, p) then 
 				goodnull = goodnull +  getCardsNum("Nullification", p) 
@@ -4458,7 +4478,7 @@ function SmartAI:getAoeValue(card, player)
 				badnull = badnull +  getCardsNum("Nullification", p) 
 			end
 		end
-		return goodnull - badnull >= 2
+		return goodnull - null_num - badnull >= 2
 	end
 
 	if card:isKindOf("SavageAssault") then
@@ -4485,12 +4505,11 @@ function SmartAI:getAoeValue(card, player)
 
 	
 	if not sgs.GetConfig("EnableHegemony", false) then
-		--if self.role ~= "lord" and sgs.isLordInDanger() and self:aoeIsEffective(card, lord, attacker) and not canHelpLord() then
-		if self.role ~= "lord" and sgs.isLordInDanger() and self:aoeIsEffective(card, lord, attacker) then
+		if self.role ~= "lord" and sgs.isLordInDanger() and self:aoeIsEffective(card, lord, attacker) and not canHelpLord() then
 			if self:isEnemy(lord) then
 				good = good + (lord:getHp() == 1 and 250 or 150)
 			else
-				good = good - (lord:getHp() == 1 and -2013 or -250)
+				good = good - (lord:getHp() == 1 and 2013 or 250)
 			end
 		end
 	end

@@ -380,3 +380,13 @@ sgs.ai_skill_use["@@fengyin"] = function(self, data)
 	end
 	return "."
 end
+
+sgs.ai_skill_invoke.cv_caocao = function(self, data)
+	if math.random(0, 6) == 0 then return true end
+	return false
+end
+
+sgs.ai_skill_invoke.cv_lingju = function(self, data)
+	if math.random(0, 2) == 0 then return true end
+	return false
+end

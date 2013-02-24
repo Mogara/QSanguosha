@@ -579,10 +579,11 @@ sgs.ai_skill_invoke.fanqu = sgs.ai_skill_invoke.cv_machao
 
 sgs.ai_chaofeng.sp_machao = sgs.ai_chaofeng.machao
 
-sgs.ai_skill_invoke.tuoqiao = function(self, data)
+sgs.ai_skill_invoke.cv_diaochan = function(self, data)
 	if math.random(0, 2) == 0 then return false
-	elseif math.random(0, 2) == 0  then sgs.ai_skill_choice.tuoqiao="SP-Diaochan" return true
-	else sgs.ai_skill_choice.tuoqiao="BGM-Diaochan" return true end
+	elseif math.random(0, 3) == 0 then sgs.ai_skill_choice.cv_diaochan = "tw_diaochan" return true
+	elseif math.random(0, 3) == 0 then sgs.ai_skill_choice.cv_diaochan = "heg_diaochan" return true
+	else sgs.ai_skill_choice.cv_diaochan = "sp_diaochan" return true end
 end
 
 sgs.ai_chaofeng.sp_diaochan = sgs.ai_chaofeng.diaochan
@@ -591,7 +592,17 @@ sgs.ai_skill_invoke.guiwei = sgs.ai_skill_invoke.guixiang
 
 sgs.ai_skill_invoke.pangde_guiwei = sgs.ai_skill_invoke.guixiang
 
+sgs.ai_skill_invoke.cv_yuanshu = function(self, data)
+	if math.random(0, 2) == 0 then return true end
+	return false
+end
+
 sgs.ai_skill_invoke.cv_zhaoyun = function(self, data)
+	if math.random(0, 2) == 0 then return true end
+	return false
+end
+
+sgs.ai_skill_invoke.cv_ganning = function(self, data)
 	if math.random(0, 2) == 0 then return true end
 	return false
 end
@@ -610,6 +621,18 @@ end
 
 sgs.ai_skill_invoke.cv_zhouyu = function(self, data)
 	if math.random(0, 3) >= 1 then return false
-	elseif math.random(0, 4) == 0 then sgs.ai_skill_choice.cv_xiaoqiao = "heg_zhouyu" return true
-	else sgs.ai_skill_choice.cv_xiaoqiao = "sp_heg_zhouyu" return true end
+	elseif math.random(0, 4) == 0 then sgs.ai_skill_choice.cv_zhouyu = "heg_zhouyu" return true
+	else sgs.ai_skill_choice.cv_zhouyu = "sp_heg_zhouyu" return true end
+end
+
+sgs.ai_skill_invoke.cv_zhenji = function(self, data)
+	if math.random(0, 3) >= 2 then return false
+	elseif math.random(0, 4) == 0 then sgs.ai_skill_choice.cv_zhenji = "tw_zhenji" return true
+	else sgs.ai_skill_choice.cv_zhenji = "heg_zhenji" return true end
+end
+
+sgs.ai_skill_invoke.cv_lvbu = function(self, data)
+	if math.random(0, 3) >= 1 then return false
+	elseif math.random(0, 4) == 0 then sgs.ai_skill_choice.cv_lvbu = "tw_lvbu" return true
+	else sgs.ai_skill_choice.cv_lvbu = "heg_lvbu" return true end
 end

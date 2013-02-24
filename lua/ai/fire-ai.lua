@@ -126,8 +126,8 @@ sgs.ai_card_intention.JiemingCard =-80
 
 sgs.ai_chaofeng.xunyu = 3
 
-local qiangxi_skill={}
-qiangxi_skill.name="qiangxi"
+local qiangxi_skill = {}
+qiangxi_skill.name= "qiangxi"
 table.insert(sgs.ai_skills,qiangxi_skill)
 qiangxi_skill.getTurnUseCard=function(self)
 	if not self.player:hasUsed("QiangxiCard") then
@@ -169,7 +169,7 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and self:damageIsEffective(enemy) then
-				if self.player:distanceTo(enemy) <= self.player:getAttackRange() and self.player:getHp() > enemy:getHp() and self.player:getHp() > 2 then
+				if self.player:distanceTo(enemy) <= self.player:getAttackRange() and self.player:getHp() > enemy:getHp() and self.player:getHp() > 1 then
 					use.card = sgs.Card_Parse("@QiangxiCard=.")
 					if use.to then
 						use.to:append(enemy)
@@ -468,50 +468,54 @@ local luanji_skill={}
 luanji_skill.name="luanji"
 table.insert(sgs.ai_skills,luanji_skill)
 luanji_skill.getTurnUseCard=function(self)
-	local archery = sgs.Sanguosha:cloneCard("archery_attack", sgs.Card_NoSuit, 0)
-	local dummy_use = {isDummy = true}
-	self:useTrickCard(archery, dummy_use)
-	if dummy_use.card then
-		local first_found, second_found = false, false
-		local first_card, second_card
-		if self.player:getHandcardNum() >= 2 then
-			local cards = self.player:getHandcards()
-			local same_suit=false
-			cards = sgs.QList2Table(cards)
-			for _, fcard in ipairs(cards) do
-				if not (fcard:isKindOf("Peach") or fcard:isKindOf("ExNihilo") or fcard:isKindOf("AOE")) then
-					first_card = fcard
-					first_found = true
-					for _, scard in ipairs(cards) do
-						if first_card ~= scard and scard:getSuitString() == first_card:getSuitString() and 
-							not (scard:isKindOf("Peach") or scard:isKindOf("ExNihilo") or scard:isKindOf("AOE")) then
-							second_card = scard
-							second_found = true
-							break
-						end
+	local first_found, second_found = false, false
+	local first_card, second_card
+	if self.player:getHandcardNum() >= 2 then
+		local cards = self.player:getHandcards()
+		local same_suit=false
+		cards = sgs.QList2Table(cards)
+		for _, fcard in ipairs(cards) do
+			if not (fcard:isKindOf("Peach") or fcard:isKindOf("ExNihilo") or fcard:isKindOf("AOE")) then
+				first_card = fcard
+				first_found = true
+				for _, scard in ipairs(cards) do
+					if first_card ~= scard and scard:getSuitString() == first_card:getSuitString() and 
+						not (scard:isKindOf("Peach") or scard:isKindOf("ExNihilo") or scard:isKindOf("AOE")) then
+						
+						second_card = scard
+						
+						local archery = sgs.Sanguosha:cloneCard("archery_attack", sgs.Card_NoSuit, 0)
+						archery:addSubcard(first_card)
+						archery:addSubcard(second_card)
+						
+						local dummy_use = {isDummy = true}
+						self:useTrickCard(archery, dummy_use)
+						if dummy_use.card then second_found = true break end	
+						
 					end
-					if second_card then break end
 				end
+				if first_found and second_found then break end
 			end
 		end
+	end
 
-		if first_found and second_found then
-			local first_id, second_id =  first_card:getId(), second_card:getId()
-			local suit="no_suit"
-			if first_card:isBlack() == second_card:isBlack() then suit = first_card:getSuitString() end
+	if first_found and second_found then
+		local first_id, second_id =  first_card:getId(), second_card:getId()
+		local suit="no_suit"
+		if first_card:isBlack() == second_card:isBlack() then suit = first_card:getSuitString() end
 
-			local card_str
+		local card_str
 
-			if sgs.Sanguosha:getVersion() <= "20121221" then
-				card_str = ("archery_attack:luanji[%s:%s]=%d+%d"):format(suit, 0, first_id, second_id)
-			else
-				card_str = ("archery_attack:luanji[to_be_decided:0]=%d+%d"):format(first_id, second_id)
-			end
-
-			local archeryattack = sgs.Card_Parse(card_str)
-			assert(archeryattack)
-			return archeryattack
+		if sgs.Sanguosha:getVersion() <= "20121221" then
+			card_str = ("archery_attack:luanji[%s:%s]=%d+%d"):format(suit, 0, first_id, second_id)
+		else
+			card_str = ("archery_attack:luanji[to_be_decided:0]=%d+%d"):format(first_id, second_id)
 		end
+
+		local archeryattack = sgs.Card_Parse(card_str)
+		assert(archeryattack)
+			
+		return archeryattack
 	end
 end
 

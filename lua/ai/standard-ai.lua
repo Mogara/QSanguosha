@@ -1806,6 +1806,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 		if lord and lord:isMale() then		-- 优先离间1血忠和主
 			self:sort(self.enemies,"handcard")
 			local e_peaches = 0
+			local loyalist
 			
 			for _, enemy in ipairs(self.enemies) do
 				e_peaches = e_peaches + getCardsNum("Peach", enemy)
@@ -1929,12 +1930,12 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 			
 		elseif self:isEnemy(shenguanyu) and #self.enemies >= 2 then
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:objectName() ~= shenguangyu:objectName() and enemy:isMale() and self:damageIsEffective(shenguanyu, sgs.DamageStruct_Normal, enemy) then
+				if enemy:objectName() ~= shenguanyu:objectName() and enemy:isMale() and self:damageIsEffective(shenguanyu, sgs.DamageStruct_Normal, enemy) then
 				
 					use.card = card
 					if use.to then
 						use.to:append(enemy)
-						use.to:append(shenguangyu)
+						use.to:append(shenguanyu)
 					end
 					return
 				end
