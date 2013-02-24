@@ -94,7 +94,7 @@
     "magatamaImageArea": [0, 0, 14, 17],
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [163, 115]],
-    "cardMoveArea": [-50, 35, 200, 130],
+    "cardMoveArea": [-15, 35, 200, 130],
     "phaseArea": [25, 174, 140, 12],
     "onlineStatusArea": [122, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],

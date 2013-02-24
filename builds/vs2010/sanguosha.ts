@@ -1731,7 +1731,7 @@
         <location filename="../../src/dialog/mainwindow.ui" line="14"/>
         <location filename="../../src/dialog/mainwindow.cpp" line="160"/>
         <source>Sanguosha</source>
-        <translation>新太阳神三国杀</translation>
+        <translation>太阳神三国杀 - 20130224</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.ui" line="28"/>
@@ -2994,7 +2994,7 @@
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="280"/>
         <source>QSanguosha</source>
-        <translation>新太阳神三国杀</translation>
+        <translation>太阳神三国杀</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="1421"/>
