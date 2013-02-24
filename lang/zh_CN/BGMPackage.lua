@@ -197,7 +197,7 @@ return {
 	
 	--FOR BGMDIY
 	
-	["BGMDIY"] = "桌游志贴纸DIY",
+	["BGMDIY"] = "桌游志贴纸",
 
 	["#diy_simazhao"] = "狼子野心",
 	["diy_simazhao"] = "司马昭",

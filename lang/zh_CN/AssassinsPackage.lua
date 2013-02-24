@@ -4,7 +4,6 @@ return {
 	["assassins"] = "铜雀台",
 	
 	["cv_caocao:convert"] = "你可以替换为铜雀台曹操",
-	["cv_caopi:convert"] = "你可以替换为铜雀台曹丕",
 	["cv_lingju:convert"] = "你可以替换为铜雀台灵雎",
 	["ass_caocao"] = "铜雀台曹操",
 	["&ass_caocao"] = "曹操",
