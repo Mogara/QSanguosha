@@ -428,8 +428,10 @@ public:
                 room->broadcastSkillInvoke(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
-                if(players.length() >=5)
+                if(players.length() >= 4) {
                     room->broadcastInvoke("animate", "lightbox:$GuixinAnimate");
+                    room->getThread()->delay(1500);
+				}
 
                 foreach (ServerPlayer *player, players) {
                     if (player->isAlive() && !player->isAllNude()) {
