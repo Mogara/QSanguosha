@@ -50,7 +50,7 @@ class PlayerCardContainer: public GenericCardContainer
 
 public:
     PlayerCardContainer();
-    void showProgressBar(QSanProtocol::Countdown countdown);
+    virtual void showProgressBar(QSanProtocol::Countdown countdown);
     void hideProgressBar();
     void hideAvatars();
     const ClientPlayer *getPlayer() const;

@@ -40,6 +40,7 @@ public:
     
     void hideControlButtons();
     void showControlButtons();
+    virtual void showProgressBar(QSanProtocol::Countdown countdown);
 
     QSanSkillButton *removeSkillButton(const QString &skillName);
     QSanSkillButton *addSkillButton(const QString &skillName);

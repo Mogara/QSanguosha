@@ -162,6 +162,7 @@ public:
     void askForGeneral(const Json::Value &);
     void askForYiji(const Json::Value &);
     void askForGuanxing(const Json::Value &);
+    void showAllCards(const Json::Value &);
     void askForGongxin(const Json::Value &);
     void askForAssign(const Json::Value &); // Assign roles at the beginning of game
     void askForSurrender(const Json::Value &);

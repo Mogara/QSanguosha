@@ -1826,7 +1826,7 @@ void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
 {
     if(move.from && move.to_place == Player::DrawPile){
         QString type = "$PutCard";
-        QString from_general = move.from->getGeneralName();
+        QString from_general = move.from->objectName();
         log_box->appendLog(type, from_general, QStringList(), QString::number(move.card_ids.first()));
     }
 }
@@ -2570,23 +2570,20 @@ void RoomScene::doOkButton(){
     useSelectedCard();
 }
 
-void RoomScene::doCancelButton(){
-    switch(ClientInstance->getStatus()){
-    case Client::Playing:{
+void RoomScene::doCancelButton() {
+    switch (ClientInstance->getStatus() & Client::ClientStatusBasicMask) {
+    case Client::Playing: {
             dashboard->skillButtonDeactivated();
             const ViewAsSkill *skill = dashboard->currentSkill();
             dashboard->unselectAll();
             if (skill)
                 cancelViewAsSkill();
-            else            
+            else
                 dashboard->stopPending();
             dashboard->enableCards();
             break;
         }
-    case Client::Responding:
-    case Client::RespondingUse:
-    case Client::RespondingForDiscard:
-    case Client::RespondingNonTrigger: {
+    case Client::Responding: {
             dashboard->skillButtonDeactivated();
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             if(pattern.isEmpty())
