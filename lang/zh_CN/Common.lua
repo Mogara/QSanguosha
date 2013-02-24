@@ -65,7 +65,7 @@ return {
 	["global_effect"] = "全局效果",
 	["aoe"] = "范围效果",
 	["single_target_trick"] = "单目标锦囊",
-	["mutiple_target_trick"] = "多目标锦囊",
+	["multiple_target_trick"] = "多目标锦囊",
 	["delayed_trick"] = "延时锦囊",
 	["buff_card"] = "辅助伤害卡",
 	["damage_spread"] = "伤害传导",
