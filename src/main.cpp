@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
     } else {
-        QDir::setCurrent(qApp->applicationDirPath());
+        QDir::setCurrent(qApp->applicationFilePath().replace("games","share"));
     }
 #endif
 

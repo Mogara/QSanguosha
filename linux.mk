@@ -48,13 +48,15 @@ $(BUILD)/QSanguosha: $(BUILD)/libfmodex.so $(BUILD)/swig/sanguosha_wrap.cxx $(BU
 	@ln -sf $(BUILD)/QSanguosha QSanguosha
 
 sanguosha.qm: $(BUILD)/QSanguosha sanguosha.ts
+	lupdate QSanguosha.pro
 	lrelease QSanguosha.pro
 	@echo "Well, compile done. Now you can run make install with root "
 
-install:
-	rm -rf $(PREFIX)/share/QSanguosha/*
+install: $(BUILD)/QSanguosha
+	mkdir -p $(PREFIX)/games
 	mkdir -p $(PREFIX)/share/QSanguosha
-	install -s $(BUILD)/QSanguosha $(PREFIX)/share/QSanguosha/QSanguosha
+	rm -rf $(PREFIX)/share/QSanguosha/*
+	install -s $(BUILD)/QSanguosha $(PREFIX)/games/QSanguosha
 	cp -r acknowledgement $(PREFIX)/share/QSanguosha/.
 	cp -r audio $(PREFIX)/share/QSanguosha/.
 	cp -r backdrop $(PREFIX)/share/QSanguosha/.
@@ -77,4 +79,4 @@ distclean:
 	-cd $(BUILD) && $(MAKE) distclean
 	rm -f QSanguosha Makefile swig/sanguosha_wrap.cxx sanguosha.qm
 
-.PHONY: $(BUILD)/QSanguosha swig/sanguosha_wrap.cxx
+.PHONY: $(BUILD)/QSanguosha
