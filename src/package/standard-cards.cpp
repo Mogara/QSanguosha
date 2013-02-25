@@ -624,7 +624,11 @@ public:
                 judge.play_animation = true;
 
                 room->setEmotion(player, "armor/eight_diagram");
+                if (player->getArmor())
+					player->getArmor()->setFlags("using");
                 room->judge(judge);
+                if (player->getArmor())
+					player->getArmor()->setFlags("-using");
                 if(judge.isGood()){
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
