@@ -687,10 +687,8 @@ table.insert(sgs.ai_skills, xunzhi_skill)
 function xunzhi_skill.getTurnUseCard(self)
 	if self.player:hasUsed("XunzhiCard") then return end
 	if self:needBear() then return end
-	if (#self.friends > 1 and self.role ~= "renegade") or (#self.enemies == 1 and sgs.turncount > 1) then
-		if not sgs.GetConfig("EnableHegemony", false) then
-			if self.role == "renegade" or self.role == "lord" then return end
-		end
+	if not sgs.GetConfig("EnableHegemony", false) then
+		if self.role == "renegade" or self.role == "lord" then return end
 	end
 	if (#self.friends > 1) or (#self.enemies == 1 and sgs.turncount > 1) then
 		if self:getAllPeachNum() == 0 and self.player:getHp() == 1 then

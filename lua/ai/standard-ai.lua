@@ -1878,7 +1878,7 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 	end
 	
 	if lord and self:isFriend(lord) and lord:hasSkill("hunzi") and lord:getHp() == 2 and lord:getMark("hunzi") == 0 and
-	self:hasTrickEffective(dule, lord) then																	 --让孙策主觉醒
+	self:hasTrickEffective(duel, lord) then																	 --让孙策主觉醒
 
 		local enemycount = self:playerGetRound(lord, self.player, "enemy")		--我和主公之间有几个敌人
 		local peaches = self:getAllPeachNum()
