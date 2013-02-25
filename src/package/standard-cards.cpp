@@ -1148,11 +1148,11 @@ public:
         if(damage.card && damage.card->isKindOf("Slash") && !damage.to->isNude()
             && !damage.chain && !damage.transfer && player->askForSkillInvoke("IceSword", data)){
                 room->setEmotion(player, "weapon/ice_sword");
-                int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+                int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword");
                 room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
 
                 if(!damage.to->isNude()){
-                    card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+                    card_id = room->askForCardChosen(player, damage.to, "he", "IceSword");
                     room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
                 }
 
