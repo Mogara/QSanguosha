@@ -641,7 +641,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
         return false;
 
     if(distance_limit)
-        return distanceTo(other, rangefix) <= getAttackRange();
+        return distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, this, slash);
     else
         return true;
 }
