@@ -360,7 +360,7 @@ void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
     target->obtainCard(card);
     if (card->isBlack()) {
         room->setPlayerCardLimitation(target, "use,response", ".|.|.|hand", false);
-        room->setPlayerFlag(target, "duyi_target");
+        room->setPlayerMark(target, "duyi_target", 1);
         LogMessage log;
         log.type = "#duyi_eff";
         log.from = source;
@@ -417,10 +417,10 @@ public:
             return false;
 
         foreach(ServerPlayer *p, room->getAlivePlayers())
-            if(p->hasFlag("duyi_target"))
+            if(p->getMark("duyi_target") > 0)
             {
                 room->removePlayerCardLimitation(p, "use,response", ".|.|.|hand$0");
-                room->setPlayerFlag(p, "-duyi_target");
+                room->setPlayerMark(p, "duyi_target", 0);
                 LogMessage log;
                 log.type = "#duyi_clear";
                 log.from = p;
