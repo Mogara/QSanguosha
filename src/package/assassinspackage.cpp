@@ -394,25 +394,34 @@ class Duyi:public TriggerSkill{
 public:
     Duyi():TriggerSkill("duyi"){
         view_as_skill = new DuyiViewAsSkill;
-        events << EventPhaseStart;
+        events << EventPhaseStart << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const {
         return target && target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        if(player->getPhase() == Player::NotActive)
-            foreach(ServerPlayer *p, room->getAlivePlayers())
-                if(p->hasFlag("duyi_target")) {
-                    room->removePlayerCardLimitation(p, "use,response", ".|.|.|hand$0");
-                    room->setPlayerFlag(p, "-duyi_target");
-                    LogMessage log;
-                    log.type = "#duyi_clear";
-                    log.from = p;
-                    log.arg = objectName();
-                    room->sendLog(log);
-                }
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == Death)
+        {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who != player)
+                return false;
+        }
+        else if(player->getPhase() != Player::NotActive)
+            return false;
+
+        foreach(ServerPlayer *p, room->getAlivePlayers())
+            if(p->hasFlag("duyi_target"))
+            {
+                room->removePlayerCardLimitation(p, "use,response", ".|.|.|hand$0");
+                room->setPlayerFlag(p, "-duyi_target");
+                LogMessage log;
+                log.type = "#duyi_clear";
+                log.from = p;
+                log.arg = objectName();
+                room->sendLog(log);
+            }
 
         return false;
     }
