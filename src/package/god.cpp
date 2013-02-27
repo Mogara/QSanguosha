@@ -20,28 +20,18 @@ void GongxinCard::onEffect(const CardEffectStruct &effect) const{
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
-        events << Damaged << EventLoseSkill;
+        events << Damaged;
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(triggerEvent == Damaged && TriggerSkill::triggerable(player)){
-            DamageStruct damage = data.value<DamageStruct>();
+        if(damage.from && damage.from != player){
+            damage.from->gainMark("@nightmare", damage.damage);
+            damage.from->getRoom()->broadcastSkillInvoke(objectName(), 1);
+        }
 
-            if(damage.from && damage.from != player){
-                damage.from->gainMark("@nightmare", damage.damage);
-                damage.from->getRoom()->broadcastSkillInvoke(objectName(), 1);
-            }
-        }
-        else if(triggerEvent == EventLoseSkill && data.toString() == objectName()){
-            foreach(ServerPlayer *player, room->getAllPlayers()){
-                player->loseAllMarks("@nightmare");
-            }
-        }
         return false;
     }
 };
