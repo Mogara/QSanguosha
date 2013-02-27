@@ -927,37 +927,27 @@ public:
 class Renjie: public TriggerSkill{
 public:
     Renjie():TriggerSkill("renjie"){
-        events << Damaged << CardsMoveOneTime << EventLoseSkill;
+        events << Damaged << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if(TriggerSkill::triggerable(player))
-        {
-            if (triggerEvent == CardsMoveOneTime) {
-                if (player->getPhase() == Player::Discard) {
-                    CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-                    if (move->from == player && move->to_place == Player::DiscardPile
-                        && (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-                        int n = move->card_ids.length();
-                        if (n > 0) {
-                            room->broadcastSkillInvoke(objectName());
-                            player->gainMark("@bear", n);
-                        }
+        if (triggerEvent == CardsMoveOneTime) {
+            if (player->getPhase() == Player::Discard) {
+                CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+                if (move->from == player && move->to_place == Player::DiscardPile
+                    && (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+                    int n = move->card_ids.length();
+                    if (n > 0) {
+                        room->broadcastSkillInvoke(objectName());
+                        player->gainMark("@bear", n);
                     }
                 }
-            }else if(triggerEvent == Damaged){
-                DamageStruct damage = data.value<DamageStruct>();
-                room->broadcastSkillInvoke(objectName());
-                player->gainMark("@bear", damage.damage);
             }
-        }
-        else if(triggerEvent == EventLoseSkill && data.toString() == objectName()){
-            player->loseAllMarks("@bear");
+        }else if(triggerEvent == Damaged){
+            DamageStruct damage = data.value<DamageStruct>();
+            room->broadcastSkillInvoke(objectName());
+            player->gainMark("@bear", damage.damage);
         }
 
         return false;
