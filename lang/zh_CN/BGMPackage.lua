@@ -129,7 +129,7 @@ return {
 	["ShichouGive"] = "请给目标 %arg 张牌（包括装备）",
 	["#ShichouProtect"] = "%from 的技能【%arg】被触发，%to 代其承受本次伤害",
 	["$zhaolie1"] = "不灭东吴，誓不归蜀！",
-	["$zhaolie2"] = "汝等务劝，此战势在必行！",
+	["$zhaolie2"] = "汝等勿劝，此战势在必行！",
 	["$shichou"] = "尔等叛贼，害我兄弟，饶不得汝！",
 	["$ShichouAnimate"] = "尔等叛贼，害我兄弟，饶不得汝！",
 	["~bgm_liubei"] = "一时不仁，毁己功业，吾悔矣！",
