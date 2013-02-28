@@ -460,8 +460,9 @@ public:
                 target->addToPile("#duanzhi", card_ids[i], false);
             }
 
-            for (int i = 0; i < dummy->subcardsLength(); i++)
-                room->moveCardTo(Sanguosha->getCard(card_ids[i]), target, original_places[i], false);
+            if (dummy->subcardsLength() > 0)
+                for (int i = 0; i < dummy->subcardsLength(); i++)
+                    room->moveCardTo(Sanguosha->getCard(card_ids[i]), target, original_places[i], false);
             
             room->setPlayerFlag(player, "-duanzhi_InTempMoving");
 
