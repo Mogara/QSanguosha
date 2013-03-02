@@ -394,27 +394,26 @@ class Duyi:public TriggerSkill{
 public:
     Duyi():TriggerSkill("duyi"){
         view_as_skill = new DuyiViewAsSkill;
-        events << EventPhaseStart << Death << EventLoseSkill;
+        events << EventPhaseChanging << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const {
-        return target != NULL;
+		return target != NULL && target->hasInnateSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == Death)
         {
             DeathStruct death = data.value<DeathStruct>();
-            if (!player->hasSkill(objectName()) || death.who != player)
+            if (death.who != player)
                 return false;
         }
-        else if (triggerEvent == EventLoseSkill)
+        else
         {
-            if (data.toString() != objectName())
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to != Player::NotActive)
                 return false;
         }
-        else if(!TriggerSkill::triggerable(player) || player->getPhase() != Player::NotActive)
-            return false;
 
         foreach(ServerPlayer *p, room->getAlivePlayers())
             if(p->getMark("duyi_target") > 0)

@@ -421,7 +421,7 @@ public:
                 if(players.length() >= 4) {
                     room->broadcastInvoke("animate", "lightbox:$GuixinAnimate");
                     room->getThread()->delay(1500);
-				}
+                }
 
                 foreach (ServerPlayer *player, players) {
                     if (player->isAlive() && !player->isAllNude()) {

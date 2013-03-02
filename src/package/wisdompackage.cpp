@@ -833,7 +833,7 @@ public:
                 return false;
 
             if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue((PlayerStar)shuijing)))
-			{
+            {
                 LogMessage log;
                 log.type = "#InvokeOthersSkill";
                 log.from = player;
@@ -841,7 +841,7 @@ public:
                 log.arg = objectName();
                 room->sendLog(log);
                 shuijing->drawCards(1);
-			}
+            }
             else{
                 QString choice = room->askForChoice(player, "forbid_shien", "yes+no+maybe");
                 if(choice == "yes")
