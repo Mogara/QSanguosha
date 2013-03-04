@@ -4734,7 +4734,13 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, bool is_preview, 
     if (cards.isEmpty())
         return false;
     CardMoveReason reason(0, guojia->objectName());
-    reason.m_reason = is_preview ? CardMoveReason::S_REASON_PREVIEWGIVE : CardMoveReason::S_REASON_GIVE; // nasty hack only
+    // fix a bug on debug build
+    if (is_preview) {
+        reason.m_reason = CardMoveReason::S_REASON_PREVIEWGIVE;
+    } else {
+        reason.m_reason = CardMoveReason::S_REASON_GIVE;
+    }
+
     notifyMoveFocus(guojia, S_COMMAND_SKILL_YIJI);
     AI *ai = guojia->getAI();
     if(ai){
