@@ -19,6 +19,7 @@ etc/customScenes/custom_scenario.txt
 *.dylib
 QSanguosha.exe
 QSanguosha
+debugQSanguosha
 lib/jsoncpp.lib
 lib/lua.lib
 lib/breakpad.lib
