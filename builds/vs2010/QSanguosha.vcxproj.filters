@@ -1195,12 +1195,6 @@
     <ClCompile Include="release\moc_yjcm2012-package.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <CustomBuild Include="debug\scenerule.moc">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="release\scenerule.moc">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\swig\sanguosha.i">

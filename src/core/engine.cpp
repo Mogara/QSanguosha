@@ -539,8 +539,8 @@ QString Engine::getSetupString() const{
         flags.append("F");
     if(Config.Enable2ndGeneral)
         flags.append("S");
-    /*if(Config.EnableScene)
-        flags.append("C");*/ // !!NOT FIXED!!
+    if(Config.EnableScene)
+        flags.append("C");
     if(Config.EnableSame)
         flags.append("T");
     if(Config.EnableBasara)
