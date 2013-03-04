@@ -10,8 +10,11 @@ int SceneRule::getPriority() const{
 }
 
 bool SceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const {
-    if (player && triggerEvent == GameStart  && Sanguosha->getSkill("#scenerule")) 
-        room->acquireSkill(player, "#scenerule");	
+    if (!player && triggerEvent == GameStart  && Sanguosha->getSkill("#scenerule")){
+        foreach(ServerPlayer *p, room->getPlayers()){
+            room->acquireSkill(p, "#scenerule");
+        }        
+    }
     
     return GameRule::trigger(triggerEvent, room, player, data);
 }
