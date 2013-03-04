@@ -17,28 +17,37 @@ DEBUG_BUILD:=$(OLDPWD)_debugbuild
 
 all: sanguosha.qm
 
+debug: debugQSanguosha
+
+debugQSanguosha: $(DEBUG_BUILD)/QSanguosha
+	@cp $(DEBUG_BUILD)/QSanguosha debugQSanguosha
+
 $(BUILD)/libfmodex.so:
 	mkdir -p $(BUILD)
 	@echo "NOTE: if you had installed fmodex please copy the .so file from /usr/local/lib/ to $(BUILD)/libfmodex.so"
 	@ls $@
 
 $(DEBUG_BUILD)/libfmodex.so:
-	mkdir -p $(BUILD)
+	mkdir -p $(DEBUG_BUILD)
 	@echo "NOTE: if you had installed fmodex please copy the .so file from /usr/local/lib/ to $(DEBUG_BUILD)/libfmodex.so"
 	@ls $@
 
 swig/sanguosha_wrap.cxx: swig/sanguosha.i
 	cd swig && swig -c++ -lua sanguosha.i
 
-$(DEBUG_BUILD)/Makefile: $(OLDPWD)/QSanguosha.pro
-	cd $(DEBUG_BUILD) && qmake $(OLDPWD)/QSanguosha.pro "CONFIG+=declarative_debug"
-
 $(BUILD)/Makefile: $(OLDPWD)/QSanguosha.pro
 	cd $(BUILD) && qmake $(OLDPWD)/QSanguosha.pro "CONFIG+=release"
+
+$(DEBUG_BUILD)/Makefile: $(OLDPWD)/QSanguosha.pro
+	cd $(DEBUG_BUILD) && qmake $(OLDPWD)/QSanguosha.pro "CONFIG+=debug"
 
 $(BUILD)/swig/sanguosha_wrap.cxx: swig/sanguosha_wrap.cxx
 	mkdir -p $(BUILD)/swig
 	cp $(PWD)/swig/sanguosha_wrap.cxx $(BUILD)/swig/sanguosha_wrap.cxx
+
+$(DEBUG_BUILD)/swig/sanguosha_wrap.cxx: swig/sanguosha_wrap.cxx
+	mkdir -p $(DEBUG_BUILD)/swig
+	cp $(PWD)/swig/sanguosha_wrap.cxx $(DEBUG_BUILD)/swig/sanguosha_wrap.cxx
 
 $(BUILD)/QSanguosha: $(BUILD)/libfmodex.so $(BUILD)/swig/sanguosha_wrap.cxx $(BUILD)/Makefile
 	@echo "PWD is: $(OLDPWD)"
@@ -46,6 +55,12 @@ $(BUILD)/QSanguosha: $(BUILD)/libfmodex.so $(BUILD)/swig/sanguosha_wrap.cxx $(BU
 	cd $(BUILD) && $(MAKE)
 	@rm -f QSanguosha
 	@ln -sf $(BUILD)/QSanguosha QSanguosha
+
+$(DEBUG_BUILD)/QSanguosha: $(DEBUG_BUILD)/libfmodex.so $(DEBUG_BUILD)/swig/sanguosha_wrap.cxx $(DEBUG_BUILD)/Makefile
+	@echo "PWD is: $(OLDPWD)"
+	@ln -sf linux.mk Makefile
+	cd $(DEBUG_BUILD) && $(MAKE)
+	@rm -f QSanguosha
 
 sanguosha.qm: $(BUILD)/QSanguosha sanguosha.ts
 	lupdate QSanguosha.pro
@@ -79,4 +94,4 @@ distclean:
 	-cd $(BUILD) && $(MAKE) distclean
 	rm -f QSanguosha Makefile swig/sanguosha_wrap.cxx sanguosha.qm
 
-.PHONY: $(BUILD)/QSanguosha
+.PHONY: $(BUILD)/QSanguosha swig/sanguosha_wrap.cxx debug
