@@ -50,7 +50,7 @@ void RecAnalysis::initialize(QString dir){
         }
 
         if (line.contains("setup")) {
-            QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSTBHAM1234]*)(\\s+)?");
+            QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSNTBHAM1234]*)(\\s+)?");
             if (!rx.exactMatch(line))
                 continue;
 

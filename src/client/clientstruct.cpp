@@ -32,7 +32,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 }
 
 bool ServerInfoStruct::parse(const QString &str) {
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSTBHAM1234]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSNTBHAM1234]*)");
     if (!rx.exactMatch(str)) {
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
