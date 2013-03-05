@@ -69,6 +69,7 @@ void RecAnalysis::initialize(QString dir){
             if(flags.contains("F")) m_recordGameMode << tr("FreeChoose");
             if(flags.contains("S")) m_recordGameMode << tr("Enable2ndGeneral");
             if(flags.contains("T")) m_recordGameMode << tr("EnableSame");
+            if(flags.contains("N")) m_recordGameMode << tr("EnableScene");
             if(flags.contains("B")) m_recordGameMode << tr("EnableBasara");
             if(flags.contains("H")) m_recordGameMode << tr("EnableHegemony");
             if(flags.contains("A")) m_recordGameMode << tr("EnableAI");

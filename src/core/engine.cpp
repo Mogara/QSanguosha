@@ -540,7 +540,7 @@ QString Engine::getSetupString() const{
     if(Config.Enable2ndGeneral)
         flags.append("S");
     if(Config.EnableScene)
-        flags.append("C");
+        flags.append("N");
     if(Config.EnableSame)
         flags.append("T");
     if(Config.EnableBasara)
