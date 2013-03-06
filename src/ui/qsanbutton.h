@@ -153,7 +153,7 @@ public:
     virtual QRectF boundingRect() const {return QRectF(0, -height(), width(), height());}
     inline QList<QSanInvokeSkillButton*> getAllSkillButtons(){return _m_buttons;}
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {}    
+    virtual void paint(QPainter * /*painter*/, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) {}
     QList<QSanInvokeSkillButton*> _m_buttons;
     int _m_width;    
 signals:

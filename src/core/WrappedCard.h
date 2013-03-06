@@ -121,9 +121,9 @@ public:
     }
 
     virtual void setFlags(const QString &flag) const;
-    inline virtual void addSubcard(int card_id) { Q_ASSERT(false); }
-    inline virtual void addSubcard(const Card *card) { Q_ASSERT(false); }
-    inline virtual void addSubcards(const QList<const Card *> &cards) { Q_ASSERT(false); }
+    inline virtual void addSubcard(int /*card_id*/) { Q_ASSERT(false); }
+    inline virtual void addSubcard(const Card * /*card*/) { Q_ASSERT(false); }
+    inline virtual void addSubcards(const QList<const Card *> & /*cards*/) { Q_ASSERT(false); }
     // inline virtual QList<int> getSubcards() const;
     // inline virtual void clearSubcards();
     // inline virtual QString subcardString() const;
