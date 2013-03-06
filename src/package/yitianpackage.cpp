@@ -1495,27 +1495,9 @@ public:
         if(dengshizai && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
 
+            dengshizai->gainAnExtraTurn();
+
             dengshizai->turnOver();
-
-            PlayerStar zhenggong = room->getTag("Zhenggong").value<PlayerStar>();
-            if(zhenggong == NULL){
-                PlayerStar p = player;
-                room->setTag("Zhenggong", QVariant::fromValue(p));
-                player->gainMark("@zhenggong");
-            }
-
-            room->setCurrent(dengshizai);
-            dengshizai->play();
-
-            return true;
-
-        }else{
-            PlayerStar p = room->getTag("Zhenggong").value<PlayerStar>();
-            if(p && !player->hasFlag("isExtraTurn")){
-                p->loseMark("@zhenggong");
-                room->setCurrent(p);
-                room->setTag("Zhenggong", QVariant());
-            }
         }
 
         return false;
