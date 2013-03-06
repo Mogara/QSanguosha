@@ -32,7 +32,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 }
 
 bool ServerInfoStruct::parse(const QString &str) {
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSTBHAM1234]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([RCFSNTBHAM1234]*)");
     if (!rx.exactMatch(str)) {
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -68,7 +68,7 @@ bool ServerInfoStruct::parse(const QString &str) {
     EnableCheat = flags.contains("C");
     FreeChoose = EnableCheat && flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
-    EnableScene = false; // !!NOT FIXED!!
+    EnableScene = flags.contains("N"); // changjing
     EnableSame = flags.contains("T");
     EnableBasara= flags.contains("B");
     EnableHegemony = flags.contains("H");

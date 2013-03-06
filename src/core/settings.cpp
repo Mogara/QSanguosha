@@ -84,7 +84,7 @@ void Settings::init(){
     DisableChat = value("DisableChat", false).toBool();
     FreeAssignSelf = EnableCheat && value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
-    EnableScene = false; // !!NOT FIXED NOW!! value("EnableScene", false).toBool();    //changjing
+    EnableScene = value("EnableScene", false).toBool();
     EnableSame = value("EnableSame", false).toBool();
     EnableBasara = value("EnableBasara", false).toBool();
     EnableHegemony = value("EnableHegemony", false).toBool();
