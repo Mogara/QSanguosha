@@ -2740,7 +2740,7 @@
     <message>
         <location filename="src/core/record-analysis.cpp" line="72"/>
         <source>EnableScene</source>
-        <translation type="unfinished">启用场景模式</translation>
+        <translation>启用场景模式</translation>
     </message>
     <message>
         <location filename="src/core/record-analysis.cpp" line="71"/>
