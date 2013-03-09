@@ -936,7 +936,7 @@ public:
         } else if (lvmeng->getPhase() == Player::Play) {
             CardStar card = NULL;
             bool isSlash = false;
-            if (event == CardUsed)
+            if (triggerEvent == CardUsed)
                 isSlash = data.value<CardUseStruct>().card->isKindOf("Slash");
             else {
                 card = data.value<ResponsedStruct>().m_card;

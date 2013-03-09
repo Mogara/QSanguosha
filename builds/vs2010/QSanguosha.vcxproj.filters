@@ -450,6 +450,15 @@
     <ClCompile Include="..\..\src\package\bgm-package.cpp">
       <Filter>package</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\server\roomthreadxmode.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_roomthreadxmode.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_roomthreadxmode.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -724,6 +733,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\fancheng-scenario.h">
       <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\roomthreadxmode.h">
+      <Filter>server</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

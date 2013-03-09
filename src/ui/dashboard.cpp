@@ -933,7 +933,7 @@ void Dashboard::updatePending(){
         cards.append(item->getCard());
 
     foreach(CardItem *item, m_handCards){
-        if(!item->isSelected() || pendings.isEmpty()){
+        if (!item->isSelected() || pendings.isEmpty())
             item->setEnabled(view_as_skill->viewFilter(cards, item->getCard()));
         if (!item->isEnabled())
             animations->effectOut(item);
@@ -951,7 +951,6 @@ void Dashboard::updatePending(){
         emit card_selected(pending_card);
     }
 }
-
 
 void Dashboard::onCardItemThrown(){
     CardItem *card_item = qobject_cast<CardItem *>(sender());

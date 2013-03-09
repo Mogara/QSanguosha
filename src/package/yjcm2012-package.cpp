@@ -80,7 +80,7 @@ public:
             QStringList draw_num;
             for (int i = 1; i <= target->getLostHp(); draw_num << QString::number(i++)) {}
             int num = room->askForChoice(target, "miji_draw", draw_num.join("+")).toInt();
-            target->drawCards(num, objectName());
+            target->drawCards(num, true, objectName());
 
             if (!target->isKongcheng()) {
                 int n = 0;

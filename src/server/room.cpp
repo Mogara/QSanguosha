@@ -4923,8 +4923,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
     moveCardTo(dummy_card, target, Player::PlaceHand, reason, visible);
     delete dummy_card;
 
-        return true;
-    }
+    return true;
 }
 
 QString Room::generatePlayerName(){
