@@ -185,11 +185,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("FenxunCard");
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return false;
+        return !player->isNude() && !player->hasUsed("FenxunCard");
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -307,7 +303,7 @@ public:
             move2.to = kongrong;
             room->moveCardsAtomic(move2, true);
 
-            while (room->askForYiji(kongrong, lirang_card, false, true)) {}
+            while (room->askForYiji(kongrong, lirang_card, objectName(), false, true)) {}
 
             CardsMoveStruct move3;
             move3.card_ids = lirang_card;
@@ -709,6 +705,11 @@ public:
                     room->filterCards(player, player->getCards("he"), true);
             }
         }
+
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
         return false;
     }
 };
@@ -750,6 +751,10 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->tag["Qingcheng"] = QVariant::fromValue(Qingchenglist);
         room->setPlayerMark(effect.to, "Qingcheng" + skill_qc, 1);
         room->filterCards(effect.to, effect.to->getCards("he"), true);
+
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }
 }
 
@@ -804,6 +809,10 @@ public:
             }
             player->tag.remove("Qingcheng");
             room->filterCards(player, player->getCards("he"), false);
+
+            Json::Value args;
+            args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
         }
         return false;
     }

@@ -36,15 +36,19 @@ void RecAnalysis::initialize(QString dir){
     records_line.removeAll(QString());
 
     QStringList role_list;
-    foreach(QString line, records_line){
-        if(line.contains("MG_SELF")){
+    foreach (QString line, records_line) {
+        if (line.contains(QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID))) {
             line = line.split("[").last().remove("]");
             line.remove(QRegExp("[^a-zA-Z0-9_,]"));
             QStringList self_info = line.split(",");
-            if(self_info.at(1) == "objectName") getPlayer(self_info.at(2), "MG_SELF")->m_screenName = Config.UserName;
-            else if(self_info.at(1) == "role") getPlayer("MG_SELF")->m_role = self_info.at(2);
-            else if(self_info.at(1) == "general") getPlayer("MG_SELF")->m_generalName = self_info.at(2);
-            else if(self_info.at(1) == "general2") getPlayer("MG_SELF")->m_general2Name = self_info.at(2);
+            if (self_info.at(1) == "objectName")
+                getPlayer(self_info.at(2), "MG_SELF")->m_screenName = Config.UserName;
+            else if (self_info.at(1) == "role")
+                getPlayer(QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID))->m_role = self_info.at(2);
+            else if (self_info.at(1) == "general")
+                getPlayer(QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID))->m_generalName = self_info.at(2);
+            else if (self_info.at(1) == "general2")
+                getPlayer(QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID))->m_general2Name = self_info.at(2);
 
             continue;
         }
@@ -148,25 +152,31 @@ void RecAnalysis::initialize(QString dir){
             continue;
         }
 
-        if(line.contains("#Damage")){
-            QRegExp rx("(.*):(.*)::(\\d+):(\\w+)");
-            if(!rx.exactMatch(line))
-                continue;
+        if (line.contains("#Damage")) {
+            QStringList texts = line.split(",");
+            QString object_damage = line.contains("#DamageNoSource") ? QString() : texts.at(5).mid(1, texts.at(5).length() - 2);
+            QString object_damaged = texts.at(6).mid(1, texts.at(6).length() - 2);
+            int damage = texts.at(8).mid(1, texts.at(8).length() - 2).toInt();
 
-            QStringList texts = rx.capturedTexts();
-            QString object_damage = line.contains("#DamageNoSource") ? QString() : texts.at(2).split("->").first();
-            QString object_damaged = texts.at(2).split("->").last();
-            int damage = texts.at(3).toInt();
-
-            if(!object_damage.isEmpty()) getPlayer(object_damage)->m_damage += damage;
+            if (!object_damage.isEmpty())
+                getPlayer(object_damage)->m_damage += damage;
             getPlayer(object_damaged)->m_damaged += damage;
             continue;
         }
 
-        if(line.contains("#Murder")){
-            QString object = line.split(":").at(1).split("->").first();
+        if (line.contains("#Murder") || line.contains("#Suicide")) {
+            QStringList texts = line.split(",");
+            QString object = texts.at(5).mid(1, texts.at(5).length() - 2);
             getPlayer(object)->m_kill++;
-            object = line.split(":").at(1).split("->").last();
+            object = texts.at(6).mid(1, texts.at(6).length() - 2);
+            getPlayer(object)->m_isAlive = false;
+
+            continue;
+        }
+
+        if (line.contains("#Contingency")) {
+            QStringList texts = line.split(",");
+            QString object = texts.at(6).mid(1, texts.at(6).length() - 2);
             getPlayer(object)->m_isAlive = false;
 
             continue;

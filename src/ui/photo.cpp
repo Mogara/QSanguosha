@@ -232,13 +232,16 @@ bool Photo::_addCardItems(QList<CardItem*> &card_items, const CardsMoveStruct &m
 
 void Photo::setFrame(FrameType type){
     _m_frameType = type;
-    if (type == S_FRAME_NO_FRAME)
-    {
-        if (_m_focusFrame)
-            _m_focusFrame->hide();
-    }
-    else
-    {
+    if (type == S_FRAME_NO_FRAME) {
+        if (_m_focusFrame) {
+            if (_m_saveMeIcon && _m_saveMeIcon->isVisible())
+                setFrame(S_FRAME_SOS);
+            else if (m_player->getPhase() != Player::NotActive)
+                setFrame(S_FRAME_PLAYING);
+            else
+                _m_focusFrame->hide();
+        }
+    } else {
         _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea,
                      _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)),
                      _m_groupMain);

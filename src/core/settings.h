@@ -49,6 +49,7 @@ public:
     bool AlterAIDelayAD;
     int AIDelayAD;
     ushort ServerPort;
+    bool DisableLua;
 
     // client side
     QString HostAddress;
@@ -71,7 +72,6 @@ public:
     bool EnableBgMusic;
     float BGMVolume;
     float EffectVolume;
-    bool DisableLua;
 
     QString BackgroundImage;
 

@@ -166,26 +166,23 @@ QString ClientLogBox::bold(const QString &str, QColor color) const{
             .arg(color.name()).arg(str);
 }
 
-void ClientLogBox::appendLog(const QString &log_str){
-    QRegExp rx("([#$]\\w+):(\\w*)->([+\\w]*):(.*):(@?\\w*):(\\w*)");
-
-    if(!rx.exactMatch(log_str)){
-        append(tr("Log string is not well formatted: %1").arg(log_str));
+void ClientLogBox::appendLog(const QStringList &log_str) {
+    bool valid = true;
+    QString err_string = QString();
+    if (log_str.length() != 6) {
+        valid = false;
+    } else if (!log_str.first().startsWith("$") && !log_str.first().startsWith("#")) {
+        valid = false;
+        err_string = QString("%1:%2->%3:%4:%5:%6")
+                             .arg(log_str[0]).arg(log_str[1]).arg(log_str[2])
+                             .arg(log_str[3]).arg(log_str[4]).arg(log_str[5]);
+    }
+    if (!valid) {
+        append(tr("Log string is not well formatted: %1").arg(err_string));
         return;
     }
-
-    QStringList texts = rx.capturedTexts();   
-
-    QString type = texts.at(1);
-    QString from = texts.at(2);
-    QStringList tos;
-    if(!texts.at(3).isEmpty())
-        tos = texts.at(3).split("+");
-    QString card_str = texts.at(4);
-    QString arg = texts.at(5);
-    QString arg2 = texts.at(6);
-
-    appendLog(type, from, tos, card_str, arg, arg2);
+    appendLog(log_str[0], log_str[1], log_str[2].isEmpty() ? QStringList() : log_str[2].split("+"),
+              log_str[3], log_str[4], log_str[5]);
 }
 
 void ClientLogBox::appendSeparator(){

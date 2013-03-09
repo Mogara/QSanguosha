@@ -139,7 +139,8 @@ bool ViewAsSkill::isAvailable(const Player* invoker,
         return false;
     switch (reason) {
     case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
-    case CardUseStruct::CARD_USE_REASON_RESPONSE: return isEnabledAtResponse(invoker, pattern);
+    case CardUseStruct::CARD_USE_REASON_RESPONSE:
+    case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: return isEnabledAtResponse(invoker, pattern);
     default:
         return false;
     }
@@ -323,7 +324,9 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
             break;
         }
     }
-    return GameStartSkill::triggerable(target) && target->getGeneralName() == from && available && canInvoke;
+    return GameStartSkill::triggerable(target)
+           && (target->getGeneralName() == from || target->getGeneral2Name() == from)
+           && available && canInvoke;
 }
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
@@ -337,20 +340,35 @@ void SPConvertSkill::onGameStart(ServerPlayer *player) const{
                     && !Sanguosha->getBanPackages().contains(gen->getPackage()))
                 choicelist << to_gen;
         }
-        QString to_cv = room->askForChoice(player, objectName(), choicelist.join("+"));
+        QString to_cv;
+        AI *ai = player->getAI();
+        if (ai)
+            to_cv = room->askForChoice(player, objectName(), choicelist.join("+"));
+        else
+            to_cv = choicelist.length() == 1 ? choicelist.first() : room->askForGeneral(player, choicelist.join("+"));
+        bool isSecondaryHero = (player->getGeneralName() != from && player->getGeneral2Name() == from);
 
         LogMessage log;
-        log.type = "#Transfigure";
+        log.type = player->getGeneral2() ? "#TransfigureDual" : "#Transfigure";
         log.from = player;
         log.arg = to_cv;
+        log.arg2 = player->getGeneral2() ? (isSecondaryHero ? "GeneralB" : "GeneralA") : QString();
         room->sendLog(log);
-        room->setPlayerProperty(player, "general", to_cv);
+        room->setPlayerProperty(player, isSecondaryHero ? "general2" : "general", to_cv);
 
         const General *general = Sanguosha->getGeneral(to_cv);
         const QString kingdom = general->getKingdom();
-        if (kingdom != player->getKingdom())
+        if (!isSecondaryHero && kingdom != player->getKingdom())
             room->setPlayerProperty(player, "kingdom", kingdom);
     }
+}
+
+QString SPConvertSkill::getFromName() const{
+    return from;
+}
+
+QStringList SPConvertSkill::getToName() const{
+    return to_list;
 }
 
 ProhibitSkill::ProhibitSkill(const QString &name)
@@ -404,7 +422,7 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
 FakeMoveSkill::FakeMoveSkill(const QString &name, FakeCondition condition)
     : TriggerSkill(QString("#%1-fake-move").arg(name)), name(name), condition(condition)
 {
-    events << CardsMoving << CardsMoveOneTime;
+    events << BeforeCardsMove << CardsMoving << CardsMoveOneTime;
 }
 
 int FakeMoveSkill::getPriority() const{

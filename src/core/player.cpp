@@ -124,11 +124,11 @@ void Player::setAlive(bool alive){
 }
 
 QString Player::getFlags() const{
-    QStringList flags_list;
-    foreach(QString flag, flags)
-        flags_list << flag;
+    return QStringList(flags.toList()).join("|");
+}
 
-    return flags_list.join("+");
+QStringList Player::getFlagList() const{
+    return QStringList(flags.toList());
 }
 
 void Player::setFlags(const QString &flag){
@@ -305,6 +305,20 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
            || acquired_skills.contains(skill_name);
 }
 
+bool Player::hasSkills(const QString &skill_name, bool include_lose) const{
+    foreach (QString skill, skill_name.split("|")) {
+        bool checkpoint = true;
+        foreach (QString sk, skill.split("+")) {
+            if (!hasSkill(sk, include_lose)) {
+                checkpoint = false;
+                break;
+            }
+        }
+        if (checkpoint) return true;
+    }
+    return false;
+}
+
 bool Player::hasInnateSkill(const QString &skill_name) const{
     if(general && general->hasSkill(skill_name))
         return true;
@@ -329,7 +343,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
         return true;
 
     QString mode = getGameMode();
-    if(mode == "06_3v3" || mode == "02_1v1" || Config.value("WithoutLordskill", false).toBool())
+    if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1" || Config.value("WithoutLordskill", false).toBool())
         return false;
 
     if (ServerInfo.EnableHegemony)
@@ -750,6 +764,22 @@ QSet<QString> Player::getAcquiredSkills() const
     return acquired_skills;
 }
 
+QString Player::getSkillDescription() const{
+    QString description = QString();
+
+    foreach (const Skill *skill, getVisibleSkillList()) {
+        if (skill->inherits("SPConvertSkill") || skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
+            continue;
+        QString skill_name = Sanguosha->translate(skill->objectName());
+        QString desc = skill->getDescription();
+        desc.replace("\n", "<br/>");
+        description.append(QString("<b>%1</b>: %2 <br/> <br/>").arg(skill_name).arg(desc));
+    }
+
+    if (description.isEmpty()) description = tr("No skills");
+    return description;
+}
+
 bool Player::isProhibited(const Player *to, const Card *card) const
 {
     return Sanguosha->isProhibited(this, to, card);
@@ -836,7 +866,7 @@ void Player::clearCardLimitation(bool single_turn) {
     foreach (Card::HandlingMethod method, limit_type) {
         QStringList limit_patterns = card_limitation[method];
         foreach (QString pattern, limit_patterns) {
-            if (!single_turn || (single_turn && pattern.endsWith("$1")))
+            if (!single_turn || pattern.endsWith("$1"))
                 card_limitation[method].removeAll(pattern);
         }
     }

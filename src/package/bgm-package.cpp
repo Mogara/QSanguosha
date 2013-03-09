@@ -66,6 +66,7 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
         room->moveCardTo(dummy_card, effect.to, effect.from, Player::PlaceHand, reason, false);
     }
     effect.to->setFlags("LihunTarget");
+    delete dummy_card;
 }
 
 class LihunSelect: public OneCardViewAsSkill {
@@ -78,7 +79,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("LihunCard");
+        return !player->isNude() && !player->hasUsed("LihunCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -734,6 +735,10 @@ public:
         return target != NULL;
     }
 
+    virtual int getPriority() const{
+        return 1;
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *lvmeng = room->findPlayerBySkillName(objectName());
 
@@ -986,6 +991,7 @@ public:
             if(player->hasLordSkill(objectName(), true) && !player->tag.value("ShichouTarget").isNull())
             {
                 ServerPlayer *target = player->tag.value("ShichouTarget").value<PlayerStar>();
+                if (target->isDead()) break;
 
                 LogMessage log;
                 log.type = "#ShichouProtect";
@@ -1645,10 +1651,11 @@ public:
                 judge.who = simazhao;
                 judge.reason = objectName();
 
-                if (damage.from->hasSkill("hongyan"))
-                    room->setPlayerFlag(simazhao, "langgu_hongyan"); //for AI
+                if (damage.from && damage.from->hasSkill("hongyan"))
+                    simazhao->setFlags("langgu_hongyan"); //for AI
                 room->judge(judge);
-                room->setPlayerFlag(simazhao, "-langgu_hongyan");
+                if (simazhao->hasFlag("langgu_hongyan"))
+                    simazhao->setFlags("-langgu_hongyan");
 
                 if (damage.from && damage.from->isAlive() && !damage.from->isKongcheng()) {
                     room->showAllCards(damage.from, simazhao);

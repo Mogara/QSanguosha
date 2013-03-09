@@ -26,9 +26,8 @@ void RoomState::resetCard(int cardId)
     if (newCard == NULL) return;
     newCard->setFlags(m_cards[cardId]->getFlags());
     m_cards[cardId]->copyEverythingFrom(newCard);
-    //m_cards[cardId]->clearFlags();
-    m_cards[cardId]->setModified(false);
     newCard->clearFlags();
+    m_cards[cardId]->setModified(false);
 }
 
 // Reset all cards, generals' states of the room instance

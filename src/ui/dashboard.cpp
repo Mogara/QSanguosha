@@ -879,6 +879,7 @@ void Dashboard::stopPending(){
     foreach (CardItem* item, m_handCards)
     {
         item->setEnabled(false);
+        animations->effectOut(item);
     }
 
     for (int i = 0; i < 4; i++) {
@@ -934,7 +935,8 @@ void Dashboard::updatePending(){
     foreach(CardItem *item, m_handCards){
         if(!item->isSelected() || pendings.isEmpty()){
             item->setEnabled(view_as_skill->viewFilter(cards, item->getCard()));
-        }
+        if (!item->isEnabled())
+            animations->effectOut(item);
     }
 
     for (int i = 0; i < 4; i++){

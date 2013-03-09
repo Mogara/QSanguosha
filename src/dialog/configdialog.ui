@@ -638,22 +638,6 @@
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="disableLuaCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>160</y>
-       <width>241</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Disable Lua extensions</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
    </widget>
   </widget>
   <widget class="QDialogButtonBox" name="buttonBox">

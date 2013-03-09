@@ -542,10 +542,22 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
 
     LogMessage log;
     log.from = player;
-    log.to = card_use.to;
+    if (!card_use.card->targetFixed() || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
+        log.to = card_use.to;
     log.type = "#UseCard";
     log.card_str = card_use.card->toString();
     room->sendLog(log);
+
+    if (card_use.card->isKindOf("Collateral")) { // put it here for I don't wanna repeat these codes in Card::onUse
+        ServerPlayer *victim = room->getTag("collateralVictim").value<PlayerStar>();
+        if (victim) {
+            LogMessage log;
+            log.type = "#CollateralSlash";
+            log.from = card_use.from;
+            log.to << victim;
+            room->sendLog(log);
+        }
+    }
 
     QList<int> used_cards;
     QList<CardsMoveStruct> moves;
@@ -631,10 +643,8 @@ void Card::clearSubcards(){
 }
 
 bool Card::isAvailable(const Player *player) const{
-    if (!can_recast)
-        return !player->isCardLimited(this, handling_method);
-    else
-        return !player->isCardLimited(this, handling_method) || !player->isCardLimited(this, Card::MethodRecast);
+    return !player->isCardLimited(this, handling_method)
+           || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
 const Card *Card::validate(const CardUseStruct *) const{
@@ -698,6 +708,10 @@ SkillCard::SkillCard()
 
 void SkillCard::setUserString(const QString &user_string){
     this->user_string = user_string;
+}
+
+QString SkillCard::getUserString() const{
+    return user_string;
 }
 
 QString SkillCard::getType() const{

@@ -61,7 +61,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     //callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
-    callbacks["log"] = &Client::log;
+    m_callbacks[S_COMMAND_LOG_SKILL] = &Client::log;
     callbacks["speak"] = &Client::speak;
     callbacks["attachSkill"] = &Client::attachSkill;
     m_callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus; 
@@ -279,7 +279,7 @@ void Client::disconnectFromHost(){
     }
 }
 
-typedef char buffer_t[1024];
+typedef char buffer_t[65535];
 
 void Client::processServerPacket(const QString &cmd){
     processServerPacket(cmd.toAscii().data());
@@ -524,10 +524,11 @@ void Client::requestCheatGetOneCard(int card_id){
     requestToServer(S_COMMAND_CHEAT, cheatArg);
 }
 
-void Client::requestCheatChangeGeneral(QString name){
+void Client::requestCheatChangeGeneral(const QString &name, bool isSecondaryHero) {
     Json::Value cheatArg;
     cheatArg[0] = (int)S_CHEAT_CHANGE_GENERAL;
     cheatArg[1] = toJsonString(name);
+    cheatArg[2] = isSecondaryHero;
     requestToServer(S_COMMAND_CHEAT, cheatArg);
 }
 
@@ -609,7 +610,7 @@ void Client::notifyRoleChange(const QString &new_role){
         QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));
         if(new_role != "lord")
             prompt_str += tr("\n wait for the lord player choosing general, please");
-        lines_doc->setHtml(prompt_str);
+        lines_doc->setHtml(QString("<p align = \"center\">%1</p>").arg(prompt_str));
     }
 }
 
@@ -670,8 +671,10 @@ void Client::setStatus(Status status){
     this->status = status;
     if (status == Client::Playing)
         _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_PLAY);
-    else if ((status & ClientStatusBasicMask) == Responding)
+    else if (status == Responding)
         _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE);
+    else if (status == RespondingUse)
+        _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     else
         _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_UNKNOWN);
     emit status_changed(old_status, status);
@@ -1567,15 +1570,20 @@ void Client::askForPindian(const Json::Value &ask_str){
     setStatus(AskForShowOrPindian);
 }
 
-void Client::askForYiji(const Json::Value &card_list){
-    if (!card_list.isArray()) return;
-    int count = card_list.size();
-    prompt_doc->setHtml(tr("Please distribute %1 cards as you wish").arg(count));
+void Client::askForYiji(const Json::Value &ask_str) {
+    if (!ask_str.isArray() || ask_str.size() != 3) return;
+    //if (!ask_str[0].isArray() || !ask_str[1].isBool() || !ask_str[2].isInt()) return;
+    Json::Value card_list = ask_str[0];
+    int count = ask_str[2].asInt();
+    m_isDiscardActionRefusable = ask_str[1].asBool();
+    prompt_doc->setHtml(tr("Please distribute %1 cards %2 as you wish")
+                           .arg(count)
+                           .arg(m_isDiscardActionRefusable ? QString() : tr("to another player")));
     //@todo: use cards directly rather than the QString
     QStringList card_str;
     for (unsigned int i = 0; i < card_list.size(); i++)
         card_str << QString::number(card_list[i].asInt());       
-    _m_roomState.setCurrentCardUsePattern(card_str.join("+"));
+    _m_roomState.setCurrentCardUsePattern(QString("%1=%2").arg(count).arg(card_str.join("+")));
     setStatus(AskForYiji);
 }
 
@@ -1615,8 +1623,14 @@ void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> 
     setStatus(NotActive);
 }
 
-void Client::log(const QString &log_str){
-    emit log_received(log_str);
+void Client::log(const Json::Value &log_str) {
+    if (!log_str.isArray() || log_str.size() != 6)
+        emit log_received(QStringList() << QString());
+    else {
+        QStringList log;
+        tryParse(log_str, log);
+        emit log_received(log);
+    }
 }
 
 void Client::speak(const QString &speak_data){
@@ -1720,8 +1734,8 @@ void Client::takeGeneral(const QString &take_str){
     emit general_taken(who, name);
 }
 
-void Client::startArrange(const QString &){
-    emit arrange_started();
+void Client::startArrange(const QString &to_arrange) {
+    emit arrange_started(to_arrange);
 }
 
 void Client::onPlayerChooseRole3v3(){

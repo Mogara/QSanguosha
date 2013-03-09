@@ -179,24 +179,24 @@ AI *Room::cloneAI(ServerPlayer *player){
     return new TrustAI(player);
 }
 
-ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, int &card_id){
-    if(callback == 0)
-        return TrustAI::askForYiji(cards, card_id);
+ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, int &card_id) {
+    if (callback == 0)
+        return TrustAI::askForYiji(cards, reason, card_id);
 
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
     lua_createtable(L, cards.length(), 0);
+    lua_pushstring(L, reason.toAscii());
 
-    int i;
-    for(i=0; i<cards.length(); i++){
+    for (int i = 0; i < cards.length(); i++) {
         int elem = cards.at(i);
         lua_pushnumber(L, elem);
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -3, i + 1);
     }
 
-    int error = lua_pcall(L, 2, 2, 0);
-    if(error){
+    int error = lua_pcall(L, 3, 2, 0);
+    if (error) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);

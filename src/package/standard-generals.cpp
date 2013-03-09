@@ -164,7 +164,7 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
             continue;
         }
 
-        while (room->askForYiji(guojia, yiji_cards)) {}
+        while (room->askForYiji(guojia, yiji_cards, objectName())) {}
 
         if (yiji_cards.isEmpty()) {
             room->setPlayerFlag(guojia, "-yiji_InTempMoving");
@@ -580,8 +580,8 @@ public:
                 // jink as slash
                 return card->isKindOf("Jink");
             }
-
-        case CardUseStruct::CARD_USE_REASON_RESPONSE:{
+        case CardUseStruct::CARD_USE_REASON_RESPONSE:
+        case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: {
                 QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
                 if(pattern == "slash")
                     return card->isKindOf("Jink");
@@ -935,12 +935,19 @@ public:
             }
         } else if (lvmeng->getPhase() == Player::Play) {
             CardStar card = NULL;
-            if (triggerEvent == CardUsed)
-                card = data.value<CardUseStruct>().card;
-            else
+            bool isSlash = false;
+            if (event == CardUsed)
+                isSlash = data.value<CardUseStruct>().card->isKindOf("Slash");
+            else {
                 card = data.value<ResponsedStruct>().m_card;
-
-            if (card->isKindOf("Slash"))
+                if (card->isKindOf("Slash"))
+                    isSlash = true;
+                else if (card->isVirtualCard()) {
+                    const Card *tr_card = Sanguosha->getCard(card->getEffectiveId());
+                    isSlash = (tr_card->isKindOf("Slash"));
+                }
+            }
+            if (isSlash)
                 room->setPlayerFlag(lvmeng, "keji_use_slash");
         }
 
@@ -1077,9 +1084,13 @@ public:
             if(can_invoke){
                 QString prompt = "@liuli:" + use.from->objectName();
                 room->setPlayerFlag(use.from, "slash_source");
-                daqiao->tag["liuli-card"] = QVariant::fromValue((CardStar)use.card);
+                // a temp nasty trick
+                daqiao->tag["liuli-card"] = QVariant::fromValue((CardStar)use.card); // for the server (AI)
+                QString flag = "LiuliFlag:" + use.card->toString(); // for the client (UI)
+                room->setPlayerFlag(daqiao, flag);
                 if (room->askForUseCard(daqiao, "@@liuli", prompt, -1, Card::MethodDiscard)) {
                     daqiao->tag.remove("liuli-card");
+                    room->setPlayerFlag(daqiao, "-" + flag);
                     room->setPlayerFlag(use.from, "-slash_source");
                     foreach (ServerPlayer *p, players) {
                         if (p->hasFlag("liuli_target")) {
@@ -1094,6 +1105,7 @@ public:
                     }
                 } else {
                     daqiao->tag.remove("liuli-card");
+                    room->setPlayerFlag(daqiao, "-" + flag);
                     room->setPlayerFlag(use.from, "-slash_source");
                 }
             }
@@ -1110,7 +1122,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("JieyinCard");
+        return player->getHandcardNum() >= 2 && !player->hasUsed("JieyinCard");
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{

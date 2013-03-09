@@ -772,8 +772,16 @@ void PlayerCardContainer::addEquips(QList<CardItem*> &equips)
      }
  }
 
-PlayerCardContainer::PlayerCardContainer()
-{
+void PlayerCardContainer::updateAvatarTooltip() {
+    if (m_player) {
+        QString description = m_player->getSkillDescription();
+        _m_avatarArea->setToolTip(description);
+        if (m_player->getGeneral2())
+            _m_smallAvatarArea->setToolTip(description);
+    }
+}
+
+PlayerCardContainer::PlayerCardContainer() {
     _m_layout = NULL;
     _m_avatarArea = _m_smallAvatarArea = NULL;
     _m_avatarNameItem = _m_smallAvatarNameItem = NULL;

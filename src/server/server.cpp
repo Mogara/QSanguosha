@@ -61,9 +61,8 @@ QWidget *ServerDialog::createBasicTab(){
     timeout_spinbox->setValue(Config.OperationTimeout);
     timeout_spinbox->setSuffix(tr(" seconds"));
     nolimit_checkbox = new QCheckBox(tr("No limit"));
-    nolimit_checkbox->setChecked(false);
-    connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
+    connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
 
     // add 1v1 banlist edit button
     QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
@@ -88,7 +87,11 @@ QWidget *ServerDialog::createBasicTab(){
     return widget;
 }
 
-QWidget *ServerDialog::createPackageTab(){
+QWidget *ServerDialog::createPackageTab() {
+    disable_lua_checkbox = new QCheckBox(tr("Disable Lua"));
+    disable_lua_checkbox->setChecked(Config.DisableLua);
+    disable_lua_checkbox->setToolTip(tr("The setting takes effect after reboot"));
+
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
@@ -145,6 +148,7 @@ QWidget *ServerDialog::createPackageTab(){
 
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(disable_lua_checkbox);
     layout->addWidget(box1);
     layout->addWidget(box2);
 
@@ -235,7 +239,8 @@ QWidget *ServerDialog::createAdvancedTab(){
     hegemony_checkbox = new QCheckBox(tr("Enable Hegemony"));
     hegemony_checkbox->setChecked(Config.EnableBasara && Config.EnableHegemony);
     hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
-    connect(basara_checkbox,SIGNAL(toggled(bool)),hegemony_checkbox, SLOT(setEnabled(bool)));
+    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setChecked(bool)));
+    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setEnabled(bool)));
 
     hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
     hegemony_maxchoice_spinbox = new QSpinBox;
@@ -392,8 +397,8 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
 {
     setWindowTitle(tr("Select generals that are excluded"));
 
-    if(ban_list.isEmpty())
-        ban_list << "Roles" << "1v1" << "Basara" << "Hegemony" << "Pairs";
+    if (ban_list.isEmpty())
+        ban_list << "Roles" << "1v1" << "HulaoPass" << "XMode" << "Basara" << "Hegemony" << "Pairs";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
@@ -586,8 +591,7 @@ QGroupBox *ServerDialog::create3v3Box(){
     else if(scheme == "AllRoles")
         roleChooseComboBox->setCurrentIndex(2);
 
-    vlayout->addWidget(standard_3v3_radiobutton);
-    vlayout->addWidget(new_3v3_radiobutton);
+    vlayout->addLayout(HLay(standard_3v3_radiobutton, new_3v3_radiobutton));
     vlayout->addLayout(HLay(extend, extend_edit_button));
     vlayout->addWidget(exclude_disaster_checkbox);
     vlayout->addLayout(HLay(new QLabel(tr("Role choose")), role_choose_ComboBox));
@@ -605,7 +609,29 @@ QGroupBox *ServerDialog::create3v3Box(){
     return box;
 }
 
-QGroupBox *ServerDialog::createGameModeBox(){
+QGroupBox *ServerDialog::createXModeBox() {
+    QGroupBox *box = new QGroupBox(tr("XMode options"));
+    box->setEnabled(Config.GameMode == "06_XMode");
+    box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    QComboBox *roleChooseComboBox = new QComboBox;
+    roleChooseComboBox->addItem(tr("Normal"), "Normal");
+    roleChooseComboBox->addItem(tr("Random"), "Random");
+    roleChooseComboBox->addItem(tr("All roles"), "AllRoles");
+
+    role_choose_xmode_ComboBox = roleChooseComboBox;
+
+    QString scheme = Config.value("XMode/RoleChooseX", "Normal").toString();
+    if (scheme == "Random")
+        roleChooseComboBox->setCurrentIndex(1);
+    else if (scheme == "AllRoles")
+        roleChooseComboBox->setCurrentIndex(2);
+
+    box->setLayout(HLay(new QLabel(tr("Role choose")), role_choose_xmode_ComboBox));
+    return box;
+}
+
+QGroupBox *ServerDialog::createGameModeBox() {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_group = new QButtonGroup;
 
@@ -622,9 +648,13 @@ QGroupBox *ServerDialog::createGameModeBox(){
             button->setObjectName(itor.key());
             mode_group->addButton(button);
 
-            if(itor.key() == "06_3v3"){
-                // add 3v3 options
+            if (itor.key() == "06_3v3") {
                 QGroupBox *box = create3v3Box();
+                connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
+
+                item_list << button << box;
+            } else if (itor.key() == "06_XMode") {
+                QGroupBox *box = createXModeBox();
                 connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
 
                 item_list << button << box;
@@ -707,7 +737,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
     for(int i = 0; i < item_list.length(); i++){
         QObject *item = item_list.at(i);
 
-        QVBoxLayout *side = i < item_list.length()/2 - 2 ? left : right;
+        QVBoxLayout *side = i <= item_list.length() / 2 - 2 ? left : right;
 
         if(item->isWidgetType()){
             QWidget *widget = qobject_cast<QWidget *>(item);
@@ -716,6 +746,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
             QLayout *item_layout = qobject_cast<QLayout *>(item);
             side->addLayout(item_layout);
         }
+        if (i == item_list.length() / 2 - 2)
+            side->addStretch();
     }
 
     right->addStretch();
@@ -934,6 +966,7 @@ bool ServerDialog::config(){
     Config.AIDelayAD = ai_delay_ad_spinbox->value();
     Config.AlterAIDelayAD = ai_delay_altered_checkbox->isChecked();
     Config.ServerPort = port_edit->text().toInt();
+    Config.DisableLua = disable_lua_checkbox->isChecked();
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();
@@ -981,12 +1014,17 @@ bool ServerDialog::config(){
     Config.setValue("AIDelayAD", Config.AIDelayAD);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("Address", Config.Address);
+    Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
 
     Config.beginGroup("3v3");
     Config.setValue("UsingExtension", !standard_3v3_radiobutton->isChecked() && !new_3v3_radiobutton->isChecked());
     Config.setValue("RoleChoose", role_choose_ComboBox->itemData(role_choose_ComboBox->currentIndex()).toString());
     Config.setValue("ExcludeDisaster", exclude_disaster_checkbox->isChecked());
     Config.setValue("UsingNewMode", new_3v3_radiobutton->isChecked());
+    Config.endGroup();
+
+    Config.beginGroup("XMode");
+    Config.setValue("RoleChooseX", role_choose_xmode_ComboBox->itemData(role_choose_xmode_ComboBox->currentIndex()).toString());
     Config.endGroup();
 
     QSet<QString> ban_packages;

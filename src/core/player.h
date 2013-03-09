@@ -115,6 +115,7 @@ public:
     void setAlive(bool alive);
 
     QString getFlags() const;
+    QStringList getFlagList() const;
     virtual void setFlags(const QString &flag);
     bool hasFlag(const QString &flag) const;
     void clearFlags();
@@ -136,6 +137,7 @@ public:
     virtual void addSkill(const QString &skill_name);
     virtual void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name, bool include_lose = false) const;
+    bool hasSkills(const QString &skill_name, bool include_lose = false) const;
     bool hasInnateSkill(const QString &skill_name) const;
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
@@ -194,6 +196,7 @@ public:
     QSet<const Skill *> getVisibleSkills() const;
     QList<const Skill *> getVisibleSkillList() const;
     QSet<QString> getAcquiredSkills() const;
+    QString getSkillDescription() const;
 
     virtual bool isProhibited(const Player *to, const Card *card) const;
     bool canSlashWithoutCrossbow() const;

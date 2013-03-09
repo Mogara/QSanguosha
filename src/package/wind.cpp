@@ -938,7 +938,7 @@ bool GuhuoCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 bool GuhuoCard::targetFixed() const{
-    if(Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!ClientInstance->hasNoTargetResponsing()) {
             CardStar card = Sanguosha->cloneCard(user_string, NoSuit, 0);
             Self->tag["guhuo"] = QVariant::fromValue(card);
@@ -962,7 +962,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
 
     QString to_guhuo = user_string;
     if (user_string == "slash"
-        && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         QStringList guhuo_list;
         guhuo_list << "slash";
         if (!Config.BanPackages.contains("maneuvering"))
@@ -995,7 +995,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
             user_str = to_guhuo;
         Card *use_card = Sanguosha->cloneCard(user_str, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
-        use_card->addSubcard(this);
+        use_card->addSubcard(subcards.first());
         /* @todo: verify this...
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, card_use->from->objectName());
         room->throwCard(this, reason, NULL); */
@@ -1051,6 +1051,7 @@ const Card *GuhuoCard::validateInResponse(ServerPlayer *yuji, bool &continuable)
             user_str = to_guhuo;
         Card *use_card = Sanguosha->cloneCard(user_str, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
+        use_card->addSubcard(subcards.first());
         use_card->deleteLater();
         return use_card;
     } else
@@ -1080,7 +1081,8 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
+            || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             GuhuoCard *card = new GuhuoCard;
             card->setUserString(Sanguosha->currentRoomState()->getCurrentCardUsePattern());
             card->addSubcard(originalCard);

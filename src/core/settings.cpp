@@ -66,17 +66,18 @@ void Settings::init(){
     GameMode = value("GameMode", "02p").toString();
 
 
-    if(!contains("BanPackages")){
-        QStringList banlist;
-        banlist << "nostalgia" << "nostal_general" << "yitian" << "wisdom"
-                << "disaster" << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
-                << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
-                << "hegemony" << "ling" << "BGMDIY";
-
-        setValue("BanPackages", banlist);
+    QStringList banpackagelist = value("BanPackages").toStringList();
+    if (banpackagelist.isEmpty()) {
+        banpackagelist << "nostalgia" << "nostal_general" << "yitian" << "wisdom"
+                       << "disaster" << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
+                       << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
+                       << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
+                       << "hegemony" << "ling" << "BGMDIY";
     }
+    setValue("BanPackages", banpackagelist);
+
     BanPackages = value("BanPackages").toStringList();
+
     RandomSeat = value("RandomSeat", true).toBool();
     EnableCheat = value("EnableCheat", false).toBool();
     FreeChoose = EnableCheat && value("FreeChoose", false).toBool();
@@ -96,6 +97,7 @@ void Settings::init(){
     AlterAIDelayAD = value("AlterAIDelayAD", false).toBool();
     AIDelayAD = value("AIDelayAD", 0).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
+    DisableLua = value("DisableLua", false).toBool();
 
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
@@ -126,15 +128,16 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
-    DisableLua = value("DisableLua", false).toBool();
 
     BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
 
     lua_State *lua = Sanguosha->getLuaState();
-    QStringList roles_ban, kof_ban, basara_ban, hegemony_ban, pairs_ban;
+    QStringList roles_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
 
     roles_ban = GetConfigFromLuaState(lua, "roles_ban").toStringList();
     kof_ban = GetConfigFromLuaState(lua, "kof_ban").toStringList();
+    hulao_ban = GetConfigFromLuaState(lua, "hulao_ban").toStringList();
+    xmode_ban = GetConfigFromLuaState(lua, "xmode_ban").toStringList();
     basara_ban = GetConfigFromLuaState(lua, "basara_ban").toStringList();
     hegemony_ban = GetConfigFromLuaState(lua, "hegemony_ban").toStringList();
     hegemony_ban.append(basara_ban);
@@ -158,6 +161,22 @@ void Settings::init(){
                 banlist << ban_general;
 
         setValue("Banlist/1v1", banlist);
+    }
+
+    banlist = value("Banlist/HulaoPass").toStringList();
+    if (banlist.isEmpty()) {
+        foreach (QString ban_general, hulao_ban)
+            banlist << ban_general;
+
+        setValue("Banlist/HulaoPass", banlist);
+    }
+
+    banlist = value("Banlist/XMode").toStringList();
+    if (banlist.isEmpty()) {
+        foreach (QString ban_general, xmode_ban)
+            banlist << ban_general;
+
+        setValue("Banlist/XMode", banlist);
     }
 
     banlist = value("Banlist/Basara").toStringList();

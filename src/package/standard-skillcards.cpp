@@ -279,8 +279,18 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
         }
     }
 
-    CardStar slash = Self->tag["liuli-card"].value<CardStar>();
-    if (!from || !slash || from->isProhibited(to_select, slash))
+    QString slash_string;
+    foreach (QString flag, Self->getFlagList()) {
+        if (flag.startsWith("LiuliFlag:")) {
+            slash_string = flag.mid(10);
+            break;
+        }
+    }
+    const Card *slash = NULL;
+    if (!slash_string.isEmpty())
+        slash = Card::Parse(slash_string);
+
+    if (from && !from->canSlash(to_select, slash, false))
         return false;
 
     int card_id = subcards.first();

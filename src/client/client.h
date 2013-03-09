@@ -34,7 +34,7 @@ public:
         AskForYiji = 0x09,
         AskForGuanxing = 0x0A,
         AskForGongxin = 0x0B,
-        AskForShowOrPindian = 0x0c,
+        AskForShowOrPindian = 0x0C,
 
         RespondingUse = 0x11,
         RespondingForDiscard = 0x21,
@@ -54,11 +54,11 @@ public:
 
     // cheat functions
     void requestCheatGetOneCard(int card_id);
-    void requestCheatChangeGeneral(QString name);
-    void requestCheatKill(const QString& killer, const QString& victim);
-    void requestCheatDamage(const QString& source, const QString& target, DamageStruct::Nature nature, int points);
-    void requestCheatRevive(const QString& name);
-    void requestCheatRunScript(const QString& script);
+    void requestCheatChangeGeneral(const QString &name, bool isSecondaryHero = false);
+    void requestCheatKill(const QString &killer, const QString &victim);
+    void requestCheatDamage(const QString &source, const QString &target, DamageStruct::Nature nature, int points);
+    void requestCheatRevive(const QString &name);
+    void requestCheatRunScript(const QString &script);
 
     // other client requests
     void requestSurrender();
@@ -121,7 +121,7 @@ public:
     void warn(const QString &);
     void setMark(const QString &mark_str);
     void showCard(const Json::Value &show_str);    
-    void log(const QString &log_str);
+    void log(const Json::Value &log_str);
     void speak(const QString &speak_data);
     void addHistory(const QString &card);
     void moveFocus(const Json::Value &focus);
@@ -176,7 +176,7 @@ public:
     void fillGenerals(const QString &generals);
     void askForGeneral3v3(const QString &);
     void takeGeneral(const QString &take_str);
-    void startArrange(const QString &);    
+    void startArrange(const QString &to_arrange);
     
     void recoverGeneral(const QString &);
     void revealGeneral(const QString &);
@@ -297,7 +297,7 @@ signals:
     void player_killed(const QString &who);
     void player_revived(const QString &who);
     void card_shown(const QString &player_name, int card_id);
-    void log_received(const QString &log_str);
+    void log_received(const QStringList &log_str);
     void guanxing(const QList<int> &card_ids, bool up_only);
     void gongxin(const QList<int> &card_ids, bool enable_heart);
     void focus_moved(const QStringList &focus, QSanProtocol::Countdown countdown);
@@ -328,7 +328,7 @@ signals:
     void generals_filled(const QStringList &general_names);
     void general_taken(const QString &who, const QString &name);
     void general_asked();
-    void arrange_started();
+    void arrange_started(const QString &to_arrange);
     void general_recovered(int index, const QString &name);
     void general_revealed(bool self, const QString &general);
 

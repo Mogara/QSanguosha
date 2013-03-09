@@ -97,6 +97,7 @@ Engine::Engine()
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");
     modes["06_3v3"] = tr("6 players (3v3)");
+    modes["06_XMode"] = tr("6 players (XMode)");
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
@@ -107,8 +108,6 @@ Engine::Engine()
     modes["10pz"] = tr("10 players (0 renegade)");
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
-
-
 
     foreach(QString ban, getBanPackages()){
         addBanPackage(ban);
@@ -247,7 +246,7 @@ QString Engine::translate(const QString &to_translate) const{
 }
 
 int Engine::getRoleIndex() const{
-    if(ServerInfo.GameMode == "06_3v3"){
+    if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
         return 4;
     }else if(ServerInfo.EnableHegemony){
         return 5;
@@ -300,28 +299,30 @@ int Engine::getGeneralCount(bool include_banned) const{
 
     int total = generals.size();
     QHashIterator<QString, const General *> itor(generals);
-    while(itor.hasNext()){
+    while (itor.hasNext()) {
         itor.next();
         const General *general = itor.value();
-        if(ban_package.contains(general->getPackage()))
+        if (ban_package.contains(general->getPackage()))
             total--;
-
-        else if( (ServerInfo.GameMode.endsWith("p") ||
-                  ServerInfo.GameMode.endsWith("pd") ||
-                  ServerInfo.GameMode.endsWith("pz"))
+        else if ((ServerInfo.GameMode.endsWith("p")
+                 || ServerInfo.GameMode.endsWith("pd")
+                 || ServerInfo.GameMode.endsWith("pz"))
                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
-
-        else if(ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+        else if (ServerInfo.GameMode == "04_1v3"
+                 && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
             total--;
-
-        else if(ServerInfo.EnableBasara &&
-                Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
-            total-- ;
-
-        else if(ServerInfo.EnableHegemony &&
-                Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
-            total-- ;
+        else if (ServerInfo.GameMode == "06_XMode"
+                 && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
+            total--;
+        else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+            total--;
+        else if (ServerInfo.EnableBasara
+                 && Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
+            total--;
+        else if (ServerInfo.EnableHegemony
+                 && Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
+            total--;
     }
 
     return total;
@@ -371,6 +372,14 @@ RoomState* Engine::currentRoomState()
         Q_ASSERT(client != NULL);
         return client->getRoomState();
     }
+}
+
+QString Engine::getCurrentCardUsePattern() {
+    return currentRoomState()->getCurrentCardUsePattern();
+}
+
+CardUseStruct::CardUseReason Engine::getCurrentCardUseReason() {
+    return currentRoomState()->getCurrentCardUseReason();
 }
 
 WrappedCard *Engine::getWrappedCard(int cardId) {
@@ -769,10 +778,23 @@ QStringList Engine::getRandomLords() const{
 QStringList Engine::getLimitedGeneralNames() const{
     QStringList general_names;
     QHashIterator<QString, const General *> itor(generals);
-    while(itor.hasNext()){
-        itor.next();
-        if(!ban_package.contains(itor.value()->getPackage())){
-            general_names << itor.key();
+    if (ServerInfo.GameMode == "04_1v3") {
+        QList<const General *> hulao_generals = QList<const General *>();
+        foreach (QString pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
+             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
+             if (pack) hulao_generals << pack->findChildren<const General *>();
+        }
+
+        foreach (const General *general, hulao_generals) {
+            if (general->isTotallyHidden())
+                continue;
+            general_names << general->objectName();
+        }
+    } else {
+        while (itor.hasNext()) {
+            itor.next();
+            if (!ban_package.contains(itor.value()->getPackage()))
+                general_names << itor.key();
         }
     }
 
@@ -785,15 +807,19 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     Q_ASSERT(all_generals.count() >= count);
 
-    if(Config.EnableBasara) general_set =
-            general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
-    if(Config.EnableHegemony) general_set =
-            general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
+    if (Config.EnableBasara)
+        general_set = general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
+    if (Config.EnableHegemony)
+        general_set = general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
 
-    if(ServerInfo.GameMode.endsWith("p") ||
-            ServerInfo.GameMode.endsWith("pd")||
-            ServerInfo.GameMode.endsWith("pz"))
-        general_set.subtract(Config.value("Banlist/Roles","").toStringList().toSet());
+    if (ServerInfo.GameMode.endsWith("p")
+        || ServerInfo.GameMode.endsWith("pd")
+        || ServerInfo.GameMode.endsWith("pz"))
+        general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+    else if (ServerInfo.GameMode == "04_1v3")
+        general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
+    else if (ServerInfo.GameMode == "06_XMode")
+        general_set.subtract(Config.value("Banlist/XMode", "").toStringList().toSet());
 
     all_generals = general_set.subtract(ban_set).toList();
 

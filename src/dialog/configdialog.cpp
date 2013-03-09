@@ -21,7 +21,11 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic", "audio/system/background.ogg").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
+
+    ui->enableLastWordCheckBox->setEnabled(Config.EnableEffects);
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
+    connect(ui->enableEffectCheckBox, SIGNAL(toggled(bool)), ui->enableLastWordCheckBox, SLOT(setEnabled(bool)));
+
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
     ui->noEquipAnimCheckBox->setChecked(Config.value("NoEquipAnim", false).toBool());
@@ -31,7 +35,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->effectVolumeSlider->setValue(100 * Config.EffectVolume);
 
     // tab 2
-    ui->disableLuaCheckBox->setChecked(Config.DisableLua);
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
     ui->gameStartSpinBox->setValue(Config.CountDownSeconds);
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
@@ -114,7 +117,7 @@ void ConfigDialog::saveConfig()
 
     enabled = ui->enableLastWordCheckBox->isChecked();
     Config.EnableLastWord = enabled;
-    Config.setValue("EnabledLastWord", enabled);
+    Config.setValue("EnableLastWord", enabled);
 
     enabled = ui->enableBgMusicCheckBox->isChecked();
     Config.EnableBgMusic = enabled;
@@ -134,9 +137,6 @@ void ConfigDialog::saveConfig()
 
     Config.EnableMinimizeDialog = ui->minimizecCheckBox->isChecked();
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
-
-    Config.DisableLua = ui->disableLuaCheckBox->isChecked();
-    Config.setValue("DisableLua", Config.DisableLua);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {

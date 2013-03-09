@@ -265,28 +265,14 @@ public:
     }
 };
 
-class Tuntian: public DistanceSkill{
+class Tuntian: public TriggerSkill {
 public:
-    Tuntian():DistanceSkill("tuntian"){
-        frequency = NotFrequent;
-    }
-
-    virtual int getCorrect(const Player *from, const Player *) const{
-        if(from->hasSkill(objectName()))
-            return -from->getPile("field").length();
-        else
-            return 0;
-    }
-};
-
-class TuntianGet: public TriggerSkill{
-public:
-    TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardsMoveOneTime << FinishJudge << EventLoseSkill;
+    Tuntian(): TriggerSkill("tuntian") {
+        events << CardsMoveOneTime << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+        return TriggerSkill::triggerable(target) && target->getPhase() == Player::NotActive;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -319,6 +305,20 @@ public:
             player->removePileByName("field");
 
         return false;
+    }
+};
+
+class TuntianDistance: public DistanceSkill {
+public:
+    TuntianDistance(): DistanceSkill("#tuntian-dist") {
+        frequency = NotFrequent;
+    }
+
+    virtual int getCorrect(const Player *from, const Player *) const{
+        if (from->hasSkill("tuntian"))
+            return -from->getPile("field").length();
+        else
+            return 0;
     }
 };
 
@@ -397,31 +397,74 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
         targets << p;
     }
+    if (targets.isEmpty()) return;
 
-    if(targets.isEmpty())
-        return;
-
-    ServerPlayer *target = room->askForPlayerChosen(dengai, targets, "jixi");
+    QString flag = QString("JixiSnatch:%1").arg(snatch->toString());
+    room->setPlayerFlag(dengai, flag);
 
     CardUseStruct use;
     use.card = snatch;
     use.from = dengai;
-    use.to << target;
 
+    if (room->askForUseCard(dengai, "@@jixi!", "@jixi-target")) {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasFlag("JixiSnatchTarget")) {
+                room->setPlayerFlag(p, "-JixiSnatchTarget");
+                use.to << p;
+            }
+        }
+    } else {
+        use.to << targets.at(qrand() % targets.length());
+    }
+    room->setPlayerFlag(dengai, QString("-%1").arg(flag));
     room->useCard(use);
 }
 
-class Jixi:public ZeroCardViewAsSkill{
+JixiSnatchCard::JixiSnatchCard() {
+}
+
+bool JixiSnatchCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    const Card *card = NULL;
+    foreach (QString flag, Self->getFlagList()) {
+        if (flag.startsWith("JixiSnatch:")) {
+            card = Card::Parse(flag.mid(11));
+            break;
+        }
+    }
+    if (card == NULL)
+        return false;
+    else {
+        const Snatch *snatch = qobject_cast<const Snatch *>(card);
+        return !Self->isProhibited(to_select, snatch) && snatch->targetFilter(targets, to_select, Self);
+    }
+}
+
+void JixiSnatchCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    foreach (ServerPlayer *to, card_use.to)
+        room->setPlayerFlag(to, "JixiSnatchTarget");
+}
+
+class Jixi: public ZeroCardViewAsSkill {
 public:
     Jixi():ZeroCardViewAsSkill("jixi"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->getPile("field").isEmpty();
+        Snatch *snatch = new Snatch(Card::NoSuit, 0);
+        snatch->deleteLater();
+        return !player->getPile("field").isEmpty() && snatch->isAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@jixi!";
     }
 
     virtual const Card *viewAs() const{
-        return new JixiCard;
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        if (pattern == "@@jixi!")
+            return new JixiSnatchCard;
+        else
+            return new JixiCard;
     }
 
     virtual Location getLocation() const{
@@ -1039,6 +1082,8 @@ public:
         log.arg = QString::number(n);
         log.arg2 = QString::number(huashens.length());
         zuoci->getRoom()->sendLog(log);
+
+        zuoci->getRoom()->setPlayerMark(zuoci, "@huashen", huashens.length());
     }
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci){
@@ -1047,14 +1092,23 @@ public:
         if (room->getMode().endsWith("p")
             || room->getMode().endsWith("pd")
             || room->getMode().endsWith("pz"))
-            all.subtract(Config.value("Banlist/Roles","").toStringList().toSet());
+            all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+        else if (room->getMode() == "04_1v3")
+            all.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
+        else if (room->getMode() == "06_XMode") {
+            all.subtract(Config.value("Banlist/XMode", "").toStringList().toSet());
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["XModeBackup"].toStringList().toSet());
+        } else if (room->getMode() == "02_1v1") {
+            all.subtract(Config.value("Banlist/1v1", "").toStringList().toSet());
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["1v1Arrange"].toStringList().toSet());
+        }
         QSet<QString> huashen_set, room_set;
         QVariantList huashens = zuoci->tag["Huashens"].toList();
-        foreach(QVariant huashen, huashens)
+        foreach (QVariant huashen, huashens)
             huashen_set << huashen.toString();
-        QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
-        foreach (const ServerPlayer *player, players) {
-            if (!player->isAlive()) continue;
+        foreach (ServerPlayer *player, room->getAlivePlayers()) {
             room_set << player->getGeneralName();
             if(player->getGeneral2())
                 room_set << player->getGeneral2Name();
@@ -1132,9 +1186,16 @@ public:
 
         QString kingdom = general->getKingdom();
         
-        if(zuoci->getKingdom() != kingdom){
-            if(kingdom == "god")
+        if (zuoci->getKingdom() != kingdom) {
+            if (kingdom == "god") {
                 kingdom = room->askForKingdom(zuoci);
+
+                LogMessage log;
+                log.type = "#ChooseKingdom";
+                log.from = zuoci;
+                log.arg = kingdom;
+                room->sendLog(log);
+            }
             room->setPlayerProperty(zuoci, "kingdom", kingdom);
         }
 
@@ -1228,7 +1289,29 @@ public:
     }
 };
 
-class Xinsheng: public MasochismSkill{
+class HuashenClear: public TriggerSkill {
+public:
+    HuashenClear(): TriggerSkill("#huashen-clear") {
+        events << EventLoseSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target && !target->hasSkill("huashen") && !target->tag["Huashens"].toList().isEmpty();
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &)const{
+        if (player->getKingdom() != player->getGeneral()->getKingdom() && player->getGeneral()->getKingdom() != "god")
+            room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+        if (player->getGender() != player->getGeneral()->getGender())
+            player->setGender(player->getGeneral()->getGender());
+        room->detachSkillFromPlayer(player, player->tag["HuashenSkill"].toString());
+        player->tag.remove("Huashens");
+        room->setPlayerMark(player, "@huashen", 0);
+        return false;
+    }
+};
+
+class Xinsheng: public MasochismSkill {
 public:
     Xinsheng():MasochismSkill("xinsheng"){
         frequency = Frequent;
@@ -1254,10 +1337,10 @@ MountainPackage::MountainPackage()
 
     General *dengai = new General(this, "dengai", "wei", 4);
     dengai->addSkill(new Tuntian);
-    dengai->addSkill(new TuntianGet);
+    dengai->addSkill(new TuntianDistance);
     dengai->addSkill(new Zaoxian);
     dengai->addRelateSkill("jixi");
-    related_skills.insertMulti("tuntian", "#tuntian-get");
+    related_skills.insertMulti("tuntian", "#tuntian-dist");
 
     General *jiangwei = new General(this, "jiangwei", "shu");
     jiangwei->addSkill(new Tiaoxin);
@@ -1287,11 +1370,13 @@ MountainPackage::MountainPackage()
     zuoci->addSkill(new Huashen);
     zuoci->addSkill(new HuashenBegin);
     zuoci->addSkill(new HuashenEnd);
+    zuoci->addSkill(new HuashenClear);
     zuoci->addSkill(new Xinsheng);
     zuoci->addSkill("#lianpo-count");
 
     related_skills.insertMulti("huashen", "#huashen-begin");
     related_skills.insertMulti("huashen", "#huashen-end");
+    related_skills.insertMulti("huashen", "#huashen-clear");
 
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
@@ -1303,6 +1388,7 @@ MountainPackage::MountainPackage()
     addMetaObject<ZhijianCard>();
     addMetaObject<ZhibaCard>();
     addMetaObject<JixiCard>();
+    addMetaObject<JixiSnatchCard>();
 
     skills << new ZhibaPindian << new Jixi;
 }

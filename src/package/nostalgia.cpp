@@ -316,7 +316,62 @@ public:
     }
 };
 
-class NosGongqi : public OneCardViewAsSkill{
+class NosFuhun: public TriggerSkill {
+public:
+    NosFuhun(): TriggerSkill("nosfuhun") {
+        events << EventPhaseStart << EventPhaseChanging;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *shuangying, QVariant &data) const{
+        if (event == EventPhaseStart && shuangying->getPhase() ==  Player::Draw && TriggerSkill::triggerable(shuangying)) {
+            if (shuangying->askForSkillInvoke(objectName())) {
+                int card1 = room->drawCard();
+                int card2 = room->drawCard();
+                bool diff = (Sanguosha->getCard(card1)->getColor() != Sanguosha->getCard(card2)->getColor());
+
+                CardsMoveStruct move, move2;
+                move.card_ids.append(card1);
+                move.card_ids.append(card2);
+                move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, shuangying->objectName(), "fuhun", QString());
+                move.to_place = Player::PlaceTable;
+                room->moveCardsAtomic(move, true);
+                room->getThread()->delay();
+
+                move2 = move;
+                move2.to_place = Player::PlaceHand;
+                move2.to = shuangying;
+                move2.reason.m_reason = CardMoveReason::S_REASON_DRAW;
+                room->moveCardsAtomic(move2, true);
+
+                if (diff) {
+                    room->acquireSkill(shuangying, "wusheng");
+                    room->acquireSkill(shuangying, "paoxiao");
+
+                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
+                    shuangying->setFlags(objectName());
+                } else {
+                    room->broadcastSkillInvoke(objectName(), 3);
+                }
+
+                return true;
+            }
+        } else if (event == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && shuangying->hasFlag(objectName())) {
+                room->detachSkillFromPlayer(shuangying, "wusheng");
+                room->detachSkillFromPlayer(shuangying, "paoxiao");
+            }
+        }
+
+        return false;
+    }
+};
+
+class NosGongqi: public OneCardViewAsSkill {
 public:
     NosGongqi():OneCardViewAsSkill("nosgongqi"){
 
@@ -475,6 +530,124 @@ public:
     }
 };
 
+class NosQianxi: public TriggerSkill {
+public:
+    NosQianxi(): TriggerSkill("nosqianxi") {
+        events << DamageCaused;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if (player->distanceTo(damage.to) == 1 && damage.card && damage.card->isKindOf("Slash")
+            && !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)) {
+            room->broadcastSkillInvoke(objectName(), 1);
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart):(.*)");
+            judge.good = false;
+            judge.who = player;
+            judge.reason = objectName();
+
+            room->judge(judge);
+            if (judge.isGood()) {
+                room->broadcastSkillInvoke(objectName(), 2);
+                room->loseMaxHp(damage.to);
+                return true;
+            } else
+                room->broadcastSkillInvoke(objectName(), 3);
+        }
+        return false;
+    }
+};
+
+class NosZhenlie: public TriggerSkill {
+public:
+    NosZhenlie(): TriggerSkill("noszhenlie") {
+        events << AskForRetrial;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        JudgeStar judge = data.value<JudgeStar>();
+        if (judge->who != player)
+            return false;
+
+        if (player->askForSkillInvoke(objectName(), data)) {
+            int card_id = room->drawCard();
+            room->broadcastSkillInvoke(objectName(), room->getCurrent() == player ? 2 : 1);
+            room->getThread()->delay();
+            const Card *card = Sanguosha->getCard(card_id);
+
+            room->retrial(card, player, judge, objectName());
+        }
+        return false;
+    }
+};
+
+class NosMiji: public PhaseChangeSkill {
+public:
+    NosMiji(): PhaseChangeSkill("nosmiji") {
+        frequency = Frequent;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *wangyi) const{
+        if (!wangyi->isWounded())
+            return false;
+        if (wangyi->getPhase() == Player::Start || wangyi->getPhase() == Player::Finish) {
+            if (!wangyi->askForSkillInvoke(objectName()))
+                return false;
+            Room *room = wangyi->getRoom();
+            room->broadcastSkillInvoke(objectName(), 1);
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(club|spade):(.*)");
+            judge.good = true;
+            judge.reason = objectName();
+            judge.who = wangyi;
+
+            room->judge(judge);
+
+            if (judge.isGood() && wangyi->isAlive()) {
+                room->setPlayerFlag(wangyi, "nosmiji_InTempMoving");
+                int x = wangyi->getLostHp();
+                wangyi->drawCards(x); //It should be preview, not draw
+                ServerPlayer *target = room->askForPlayerChosen(wangyi, room->getAllPlayers(), objectName());
+
+                if (target == wangyi)
+                    room->broadcastSkillInvoke(objectName(), 2);
+                else if (target->getGeneralName().contains("machao"))
+                    room->broadcastSkillInvoke(objectName(), 4);
+                else
+                    room->broadcastSkillInvoke(objectName(), 3);
+
+                QList<const Card *> miji_cards = wangyi->getHandcards().mid(wangyi->getHandcardNum() - x);
+                QList<int> ids;
+                foreach (const Card *card, miji_cards)
+                    ids << card->getId();
+                CardsMoveStruct move;
+                move.card_ids = ids;
+                move.from = wangyi;
+                move.from_place = Player::PlaceHand;
+                move.to = target;
+                move.to_place = Player::PlaceHand;
+                move.reason = CardMoveReason(CardMoveReason::S_REASON_PREVIEWGIVE,
+                                             wangyi->objectName(), target->objectName(), objectName());
+                if (target != wangyi) {
+                    room->moveCardsAtomic(move, false);
+                    room->setPlayerFlag(wangyi, "-nosmiji_InTempMoving");
+                } else {
+                    wangyi->addToPile("#nosmiji_tempPile", ids, false);
+                    DummyCard *dummy = new DummyCard;
+                    foreach (int id, ids)
+                        dummy->addSubcard(id);
+                    room->setPlayerFlag(wangyi, "-nosmiji_InTempMoving");
+                    wangyi->obtainCard(dummy, false);
+                    dummy->deleteLater();
+                }
+            }
+        }
+        return false;
+    }
+};
+
 NostalGeneralPackage::NostalGeneralPackage()
     :Package("nostal_general")
 {
@@ -495,11 +668,24 @@ NostalGeneralPackage::NostalGeneralPackage()
     nos_zhangchunhua->addSkill("jueqing");
     nos_zhangchunhua->addSkill(new NosShangshi);
 
+    General *nos_guanxingzhangbao = new General(this, "nos_guanxingzhangbao", "shu");
+    nos_guanxingzhangbao->addSkill(new NosFuhun);
+
     General *nos_handang = new General(this, "nos_handang", "wu");
     nos_handang->addSkill(new NosGongqi);
     nos_handang->addSkill(new NosGongqiTargetMod);
     related_skills.insertMulti("nosgongqi", "#nosgongqi-target");
     nos_handang->addSkill(new NosJiefan);
+
+    General *nos_madai = new General(this, "nos_madai", "shu");
+    nos_madai->addSkill(new NosQianxi);
+    nos_madai->addSkill("mashu");
+
+    General *nos_wangyi = new General(this, "nos_wangyi", "wei", 3, false);
+    nos_wangyi->addSkill(new NosZhenlie);
+    nos_wangyi->addSkill(new NosMiji);
+    nos_wangyi->addSkill(new FakeMoveSkill("nosmiji", FakeMoveSkill::SourceOnly));
+    related_skills.insertMulti("nosmiji", "#nosmiji-fake-move");
 
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();

@@ -84,6 +84,7 @@ private:
 
     QGroupBox *createGameModeBox();
     QGroupBox *create3v3Box();
+    QGroupBox *createXModeBox();
 
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
@@ -128,6 +129,8 @@ private:
     QRadioButton *new_3v3_radiobutton;
     QComboBox *role_choose_ComboBox;
     QCheckBox *exclude_disaster_checkbox;
+    QComboBox *role_choose_xmode_ComboBox;
+    QCheckBox *disable_lua_checkbox;
 
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;

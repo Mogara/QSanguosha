@@ -5,6 +5,7 @@ class TriggerSkill;
 class ProhibitSkill;
 class Scenario;
 class RoomThread3v3;
+class RoomThreadXMode;
 class RoomThread1v1;
 class TrickCard;
 
@@ -24,6 +25,7 @@ class Room : public QThread
 public:
     friend class RoomThread;
     friend class RoomThread3v3;
+    friend class RoomThreadXMode;
     friend class RoomThread1v1;
 
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
@@ -60,6 +62,8 @@ public:
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
+    void addPlayerMark(ServerPlayer *player, const QString &mark, int add_num = 1);
+    void removePlayerMark(ServerPlayer *player, const QString &mark, int remove_num = 1);
     void setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
                                  const QString &pattern, bool single_turn);
     void removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
@@ -308,7 +312,8 @@ public:
     bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit = true, bool disable_extra = false);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason);
-    bool askForYiji(ServerPlayer *guojia, QList<int> &cards, bool is_preview = true, bool visible = false);
+    bool askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &skill_name = QString(),
+                    bool is_preview = true, bool visible = false, int optional = true, int max_num = -1);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());    
@@ -403,6 +408,7 @@ private:
 
     RoomThread *thread;
     RoomThread3v3 *thread_3v3;
+    RoomThreadXMode *thread_xmode;
     RoomThread1v1 *thread_1v1;
     QSemaphore *sem; // Legacy semaphore, expected to be reomved after new synchronization is fully deployed.
     QSemaphore _m_semRaceRequest; // When race starts, server waits on his semaphore for the first replier

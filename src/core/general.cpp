@@ -130,7 +130,7 @@ QString General::getPackage() const{
         return QString(); // avoid null pointer exception;
 }
 
-QString General::getSkillDescription() const{
+QString General::getSkillDescription(bool include_name) const{
     QString description;
 
     foreach (const Skill *skill, getVisibleSkillList()) {
@@ -140,6 +140,16 @@ QString General::getSkillDescription() const{
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
         description.append(QString("<b>%1</b>: %2 <br/> <br/>").arg(skill_name).arg(desc));
+    }
+
+    if (include_name) {
+        QString color_str = GetConfigFromLuaState(Sanguosha->getLuaState(), ("color_" + kingdom).toAscii()).toString();
+        QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(Sanguosha->translate(objectName()));
+        name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
+        for (int i = 0; i < max_hp; i++)
+            name.append("<img src='image/system/magatamas/5.png' height = 12/>");
+        name.append("<br/> <br/>");
+        description.prepend(name);
     }
 
     return description;

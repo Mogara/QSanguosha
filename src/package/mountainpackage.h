@@ -55,7 +55,17 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class HuashenDialog: public GeneralOverview{
+class JixiSnatchCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JixiSnatchCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
+
+class HuashenDialog: public GeneralOverview {
     Q_OBJECT
 
 public:

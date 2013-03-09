@@ -12,6 +12,7 @@
 struct LogMessage{
     LogMessage();
     QString toString() const;
+    Json::Value toJsonValue() const;
 
     QString type;
     ServerPlayer *from;

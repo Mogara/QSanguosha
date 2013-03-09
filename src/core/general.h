@@ -52,7 +52,7 @@ public:
     QStringList getRelatedSkillNames() const;
 
     QString getPackage() const;
-    QString getSkillDescription() const;
+    QString getSkillDescription(bool include_name = false) const;
 
 public slots:
     void lastWord() const;

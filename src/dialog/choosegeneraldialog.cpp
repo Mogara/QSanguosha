@@ -83,7 +83,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         OptionButton *button = new OptionButton(QString(), caption);
         button->setIcon(QIcon(icon));
         button->setIconSize(icon_size);
-        button->setToolTip(general->getSkillDescription());        
+        button->setToolTip(general->getSkillDescription(true));
         buttons << button;
 
         mapper->setMapping(button, general->objectName());
@@ -124,7 +124,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             QLabel *label = new QLabel;
             //label->setCaption(tr("Lord's general"));
             label->setPixmap(G_ROOM_SKIN.getGeneralPixmap(lord->objectName(), icon_type));
-            label->setToolTip(lord->getSkillDescription());
+            label->setToolTip(lord->getSkillDescription(true));
             layout->addWidget(label);
         }
 
@@ -134,15 +134,14 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         QGridLayout *grid_layout = new QGridLayout;
         layout = grid_layout;
 
-        if(lord_name.size())
-        {
-            const General * lord = Sanguosha->getGeneral(lord_name);
+        if (lord_name.size() && !ServerInfo.EnableHegemony) {
+            const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
             //label->setCaption(tr("Lord's general"));
             label->setPixmap(G_ROOM_SKIN.getGeneralPixmap(lord->objectName(), icon_type));
-            label->setToolTip(lord->getSkillDescription());
-            grid_layout->addWidget(label,0,0);
+            label->setToolTip(lord->getSkillDescription(true));
+            grid_layout->addWidget(label, 0, 0);
         }
 
         for (int i = 0; i < buttons.length(); i++){
@@ -170,16 +169,18 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     QVBoxLayout *dialog_layout = new QVBoxLayout;
     dialog_layout->addLayout(layout);
 
-    // role prompt
-    QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
-    QLabel *seat_label = new QLabel(tr("Your seat is %1").arg(Sanguosha->translate("CAPITAL("
-                                                              + QString::number(Self->getSeat())
-                                                              + ")")));
-    if(lord_name.size())role_label->setText(tr("The lord has chosen %1. %2, %3.")
-                                            .arg(Sanguosha->translate(lord_name))
-                                            .arg(role_label->text())
-                                            .arg(seat_label->text()));
-    dialog_layout->addWidget(role_label);
+    if (!ServerInfo.EnableHegemony) {
+        // role prompt
+        QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
+        QLabel *seat_label = new QLabel(tr("Your seat is %1").arg(Sanguosha->translate("CAPITAL("
+                                                                  + QString::number(Self->getSeat())
+                                                                  + ")")));
+        if(lord_name.size())role_label->setText(tr("The lord has chosen %1. %2, %3.")
+                                                .arg(Sanguosha->translate(lord_name))
+                                                .arg(role_label->text())
+                                                .arg(seat_label->text()));
+        dialog_layout->addWidget(role_label);
+    }
 
     // progress bar & free choose button
     QHBoxLayout *last_layout = new QHBoxLayout;
@@ -194,7 +195,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         last_layout->addWidget(progress_bar);
     }
 
-    bool free_choose = ServerInfo.FreeChoose;
+    bool free_choose = ServerInfo.FreeChoose
+                       || ServerInfo.GameMode.startsWith("_mini_") || ServerInfo.GameMode == "custom_scenario";
 
     if(free_choose){
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
@@ -261,7 +263,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         if(!generals.isEmpty()){
             QWidget *tab = createTab(generals);
             tab_widget->addTab(tab,
-                               QIcon(QString("image/kingdom/icon/%1.png").arg(kingdom)),
+                               QIcon(G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom)),
                                Sanguosha->translate(kingdom));
         }
     }
@@ -336,8 +338,8 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals){
         else
             button = new QRadioButton(text);
         button->setObjectName(general_name);
-        button->setToolTip(general->getSkillDescription());
-        if(general->isLord())
+        button->setToolTip(general->getSkillDescription(true));
+        if (general->isLord())
             button->setIcon(lord_icon);
 
         group->addButton(button);

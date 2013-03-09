@@ -166,6 +166,7 @@ class ExNihilo: public SingleTargetTrick{
 
 public:
     Q_INVOKABLE ExNihilo(Card::Suit suit, int number);
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
 };
@@ -213,7 +214,7 @@ class Disaster: public DelayedTrick{
 
 public:
     Disaster(Card::Suit suit, int number);
-
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual bool isAvailable(const Player *player) const;
 };
 
@@ -339,7 +340,7 @@ class Peach: public BasicCard{
 public:
     Q_INVOKABLE Peach(Card::Suit suit, int number);
     virtual QString getSubtype() const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
 };

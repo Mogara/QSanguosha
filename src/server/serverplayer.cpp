@@ -44,8 +44,8 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
 
     QString skill_name = card->getSkillName();
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(skill == NULL){
-        if(!card->isVirtualCard() && card->getCommonEffectName().isNull())
+    if (skill == NULL) {
+        if (card->getCommonEffectName().isNull())
             broadcastSkillInvoke(card->objectName());
         else
             room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
@@ -178,18 +178,22 @@ bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &
     return room->askForSkillInvoke(this, skill_name, data);
 }
 
-QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip){
+QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, bool is_discard) {
     QList<int> to_discard;
 
     QString flags = "h";
-    if(include_equip)
+    if (include_equip)
         flags.append("e");
 
     QList<const Card *> all_cards = getCards(flags);
     qShuffle(all_cards);
 
-    for(int i = 0; i < discard_num; i++)
-        to_discard << all_cards.at(i)->getId();
+    for (int i = 0; i < all_cards.length(); i++) {
+        if (!is_discard || !isJilei(all_cards.at(i)))
+            to_discard << all_cards.at(i)->getId();
+        if (to_discard.length() == discard_num)
+            break;
+    }
 
     return to_discard;
 }
@@ -860,7 +864,7 @@ int ServerPlayer::getGeneralMaxHp() const{
         int second = getGeneral2()->getMaxHp();
 
         int plan = Config.MaxHpScheme;
-        if(Config.GameMode.contains("_mini_"))plan = 1;
+        if (Config.GameMode.contains("_mini_") || Config.GameMode == "custom_scenario") plan = 1;
 
         switch(plan){
         case 4: max_hp = qMax(first, second); break;

@@ -128,20 +128,21 @@ YijiViewAsSkill::YijiViewAsSkill()
     card = new RendeCard;
 }
 
-void YijiViewAsSkill::setCards(const QString &card_str)
-{
+void YijiViewAsSkill::setCards(const QString &card_str) {
     QStringList cards = card_str.split("+");
     ids = Card::StringsToIds(cards);
 }
 
-bool YijiViewAsSkill::viewFilter(const QList<const Card *> &, const Card* card) const
-{
-    return ids.contains(card->getId());
+void YijiViewAsSkill::setMaxNum(int max_num) {
+    this->max_num = max_num;
 }
 
-const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const
-{
-    if(cards.isEmpty())
+bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card) const{
+    return ids.contains(card->getId()) && selected.length() < max_num;
+}
+
+const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const{
+    if (cards.isEmpty() || cards.length() > max_num)
         return NULL;
 
     card->clearSubcards();
