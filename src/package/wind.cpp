@@ -144,9 +144,15 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
-        if (zhangjiao == NULL) return false;
         CardStar card_star = data.value<ResponsedStruct>().m_card;
+        bool isJink = false;
         if (card_star->isKindOf("Jink"))
+            isJink = true;
+        else if (card_star->isVirtualCard()) {
+            const Card *tr_card = Sanguosha->getCard(card_star->getEffectiveId());
+            isJink = (tr_card->isKindOf("Jink"));
+        }
+        if (isJink)
             room->askForUseCard(zhangjiao, "@@leiji", "@leiji");
         return false;
     }

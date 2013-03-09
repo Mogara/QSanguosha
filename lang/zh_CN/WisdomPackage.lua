@@ -57,6 +57,8 @@ local t = {
 	[":jincui"] = "当你死亡时，可选择一名角色，令该角色摸三张牌或者弃置三张牌。",
 	["jincui:draw"] = "摸三张牌",
 	["jincui:throw"] = "弃置三张牌",
+	["@fuzuo-pindian"] = "你可以发动技能“辅佐”",
+	["~fuzuo"] = "选择一张牌→选择一名进行拼点的角色→点击确定",
 
 	["#wis_huaxiong"] = "心高命薄",
 	["wis_huaxiong"] = "智华雄",
