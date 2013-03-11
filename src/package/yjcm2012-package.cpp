@@ -18,13 +18,15 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (TriggerSkill::triggerable(player)) {
-            if (event == TargetConfirmed) {
+        if (event == TargetConfirmed) {
+            if (TriggerSkill::triggerable(player)) {
                 CardUseStruct use = data.value<CardUseStruct>();
                 if (use.to.contains(player) && use.from != player) {
                     if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
                         if (room->askForSkillInvoke(player, objectName(), data)) {
+                            room->broadcastSkillInvoke(objectName());
                             room->setCardFlag(use.card, "ZhenlieNullify");
+                            player->setFlags("ZhenlieTarget");
                             room->loseHp(player);
                             if (player->isAlive() && !use.from->isNude()) {
                                 int id = room->askForCardChosen(player, use.from, "he", objectName());
@@ -36,7 +38,9 @@ public:
             }
         } else if (event == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (!effect.card->isKindOf("Slash") && effect.card->hasFlag("ZhenlieNullify")) {
+            if (!effect.card->isKindOf("Slash") && effect.card->hasFlag("ZhenlieNullify") && player->hasFlag("ZhenlieTarget")) {
+                player->setFlags("-ZhenlieTarget");
+
                 LogMessage log;
                 log.type = "#DanlaoAvoid";
                 log.from = player;
@@ -48,7 +52,9 @@ public:
             }
         } else if (event == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("ZhenlieNullify")) {
+            if (effect.slash->hasFlag("ZhenlieNullify") && player->hasFlag("ZhenlieTarget")) {
+                player->setFlags("-ZhenlieTarget");
+
                 LogMessage log;
                 log.type = "#DanlaoAvoid";
                 log.from = player;
