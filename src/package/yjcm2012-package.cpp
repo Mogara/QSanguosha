@@ -87,7 +87,8 @@ public:
                 forever {
                     int original_handcardnum = target->getHandcardNum();
                     if (n < num && !target->isKongcheng()) {
-                        if (!room->askForYiji(target, target->handCards(), objectName(), false, false, false, num - n))
+                        QList<int> handcards=target->handCards();
+                        if (!room->askForYiji(target, handcards, objectName(), false, false, false, num - n))
                             break;
                         n += original_handcardnum - target->getHandcardNum();
                     } else {
