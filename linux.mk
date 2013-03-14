@@ -32,7 +32,7 @@ $(DEBUG_BUILD)/libfmodex.so:
 	@echo "NOTE: if you had installed fmodex please copy the .so file from /usr/local/lib/ to $(DEBUG_BUILD)/libfmodex.so"
 	@ls $@
 
-swig/sanguosha_wrap.cxx: swig/sanguosha.i
+swig/sanguosha_wrap.cxx: swig/ai.i swig/card.i swig/list.i swig/luaskills.i swig/native.i swig/naturalvar.i swig/qvariant.i swig/sanguosha.i
 	cd swig && swig -c++ -lua sanguosha.i
 
 $(BUILD)/Makefile: $(OLDPWD)/QSanguosha.pro
@@ -94,4 +94,4 @@ distclean:
 	-cd $(BUILD) && $(MAKE) distclean
 	rm -f QSanguosha Makefile swig/sanguosha_wrap.cxx sanguosha.qm
 
-.PHONY: $(BUILD)/QSanguosha swig/sanguosha_wrap.cxx debug
+.PHONY: $(BUILD)/QSanguosha debug
