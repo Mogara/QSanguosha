@@ -86,6 +86,7 @@ SOURCES += \
     src/server/roomthread.cpp \
     src/server/roomthread1v1.cpp \
     src/server/roomthread3v3.cpp \
+    src/server/roomthreadxmode.cpp \
     src/server/server.cpp \
     src/server/serverplayer.cpp \
     src/ui/button.cpp \
@@ -195,6 +196,7 @@ HEADERS += \
     src/server/roomthread.h \
     src/server/roomthread1v1.h \
     src/server/roomthread3v3.h \
+    src/server/roomthreadxmode.h \
     src/server/server.h \
     src/server/serverplayer.h \
     src/ui/button.h \
