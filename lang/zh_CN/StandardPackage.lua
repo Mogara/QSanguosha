@@ -11,6 +11,7 @@ local t = {
 ◆你在每个出牌阶段内只能使用一张【杀】。",
 	["slash_extra_targets:yes"] = "你可以为你的【杀】选择一个额外目标",
 	["slash_extra_targets"] = "【杀】的额外目标",
+	["slash-jink"] = "%src 使用了杀，请使用闪响应，否则将受到伤害。",
 
 	["jink"] = "闪",
 	[":jink"] = "基本牌\
