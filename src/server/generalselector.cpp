@@ -30,6 +30,7 @@ GeneralSelector::GeneralSelector()
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates){
     QString role = player->getRole();
     int seat = player->getSeat();
+    Q_ASSERT(player->getRoom() != NULL);
     int player_count = Sanguosha->getPlayerCount(player->getRoom()->getMode());
     int index = seat;
     if(player_count < 8 && seat == player_count)
@@ -48,6 +49,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     else
         default_value = 6.3;
 
+    Q_ASSERT(player->getRoom() != NULL);
     ServerPlayer *lord = player->getRoom()->getLord();
     QString lord_kingdom, suffix = QString();
     if(lord->getGeneral() && lord->getGeneral()->isLord()){

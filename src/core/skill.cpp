@@ -107,10 +107,12 @@ void Skill::playAudioEffect(int index) const{
 }
 
 void Skill::setFlag(ServerPlayer *player) const{
+    Q_ASSERT(player->getRoom() != NULL);
     player->getRoom()->setPlayerFlag(player, objectName());
 }
 
 void Skill::unsetFlag(ServerPlayer *player) const{
+    Q_ASSERT(player->getRoom() != NULL);
     player->getRoom()->setPlayerFlag(player, "-" + objectName());
 }
 

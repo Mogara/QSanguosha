@@ -38,7 +38,9 @@ AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b){
 }
 
 AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b){
+    Q_ASSERT(a->getRoom() != NULL);
     const bool aShown = a->getRoom()->getTag(a->objectName()).toStringList().isEmpty();
+    Q_ASSERT(b->getRoom() != NULL);
     const bool bShown = b->getRoom()->getTag(b->objectName()).toStringList().isEmpty();
 
     const QString aName = aShown ?
@@ -48,7 +50,9 @@ AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *
                 b->getGeneralName() :
                 b->getRoom()->getTag(b->objectName()).toStringList().first();
 
+    Q_ASSERT(Sanguosha->getGeneral(aName) != NULL);
     const QString aKingdom = Sanguosha->getGeneral(aName)->getKingdom();
+    Q_ASSERT(Sanguosha->getGeneral(bName) != NULL);
     const QString bKingdom = Sanguosha->getGeneral(bName)->getKingdom();
 
 
@@ -231,6 +235,7 @@ Card::Suit TrustAI::askForSuit(const QString &){
 QString TrustAI::askForKingdom(){
     QString role;
     ServerPlayer *lord = room->getLord();
+    Q_ASSERT(lord != NULL);
     QStringList kingdoms = Sanguosha->getKingdoms();
     switch(self->getRoleEnum()){
     case Player::Lord: role = kingdoms.at(qrand() % kingdoms.length()); break;

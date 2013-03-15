@@ -282,10 +282,12 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
 
             if(Config.EnableHegemony)
             {
-                if(getGeneral())
+                if(getGeneral()) {
+                    Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
                     if((getGeneral()->getKingdom()
                             != Sanguosha->getGeneral(name)->getKingdom()))
                         continue;
+                }
             }
         }
         if(Config.EnableBasara)
@@ -555,6 +557,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     PindianStar pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
+    Q_ASSERT(room->getThread() != NULL);
     room->getThread()->trigger(PindianVerifying, room, this, data);
     PindianStar new_star = data.value<PindianStar>();
     pindian_struct.from_number = new_star->from_number;
@@ -572,6 +575,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     pindian_star = &pindian_struct;
     data = QVariant::fromValue(pindian_star);
+    Q_ASSERT(room->getThread() != NULL);
     room->getThread()->trigger(Pindian, room, this, data);
 
     if (room->getCardPlace(pindian_struct.from_card->getEffectiveId()) == Player::PlaceTable) {
@@ -598,11 +602,13 @@ void ServerPlayer::turnOver(){
     log.arg = faceUp() ? "face_up" : "face_down";
     room->sendLog(log);
 
+    Q_ASSERT(room->getThread() != NULL);
     room->getThread()->trigger(TurnedOver, room, this);
 }
 
 bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to){
     RoomThread *thread = room->getThread();
+    Q_ASSERT(room->getThread() != NULL);
 
     setPhase(Player::PhaseNone);
 

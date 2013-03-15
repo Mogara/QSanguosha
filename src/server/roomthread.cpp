@@ -273,6 +273,7 @@ RoomThread::RoomThread(Room *room)
 }
 
 void RoomThread::resetRoomState() {
+    Q_ASSERT(room->getRoomState() != NULL);
     room->getRoomState()->reset();
 }
 
@@ -478,6 +479,7 @@ void RoomThread::run(){
             forever {
                 trigger(TurnStart, room, room->getCurrent());
                 if (room->isFinished()) break;
+                Q_ASSERT(room->getCurrent() != NULL);
                 room->setCurrent(room->getCurrent()->getNextAlive());
             }
         }

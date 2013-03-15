@@ -198,6 +198,7 @@ void Engine::addPackage(Package *package){
         card->setId(cards.length());
         cards << card;
 
+        Q_ASSERT(card->metaObject() != NULL);
         QString class_name = card->metaObject()->className();
         metaobjects.insert(class_name, card->metaObject());
         className2objectName.insert(class_name, card->objectName());
@@ -425,6 +426,7 @@ const Card *Engine::getEngineCard(int cardId) const{
 }
 
 Card *Engine::cloneCard(const Card* card) const{
+    Q_ASSERT(card->metaObject() != NULL);
     QString name = card->metaObject()->className();
     Card* result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
     if (result == NULL)

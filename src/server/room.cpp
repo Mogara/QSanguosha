@@ -1430,6 +1430,7 @@ void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who)
 void Room::setCardFlag(int card_id, const QString &flag, ServerPlayer *who){
     if(flag.isEmpty()) return;
 
+    Q_ASSERT(Sanguosha->getCard(card_id) != NULL);
     Sanguosha->getCard(card_id)->setFlags(flag);
 
     QString pattern = QString::number(card_id) + ":" + flag;
@@ -1447,6 +1448,7 @@ void Room::clearCardFlag(const Card *card, ServerPlayer *who){
 }
 
 void Room::clearCardFlag(int card_id, ServerPlayer *who){
+    Q_ASSERT(Sanguosha->getCard(card_id) != NULL);
     Sanguosha->getCard(card_id)->clearFlags();
 
     QString pattern = QString::number(card_id) + ":.";
@@ -1943,6 +1945,7 @@ bool Room::makeSurrender(ServerPlayer* initiator)
         else if (playerRole == "renegade" && player->isAlive()) renegadeAlive++;        
         if (player != initiator && player->isAlive() && player->isOnline())
         {
+            Q_ASSERT(initiator->getGeneral() != NULL);
             player->m_commandArgs = toJsonString(initiator->getGeneral()->objectName());
             playersAlive << player;
         }        
@@ -2209,6 +2212,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
 
                 //keep legal generals
                 foreach(QString name, old_list) {
+                    Q_ASSERT(sp->getGeneral() != NULL);
                     if(Sanguosha->getGeneral(name)->getKingdom() != sp->getGeneral()->getKingdom()
                        || sp->findReasonable(old_list, true) == name) {
                         sp->addToSelected(name);
@@ -2523,11 +2527,15 @@ QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
             Q_ASSERT(!name.isEmpty());
             if (player->getGeneral() != NULL) { // choosing first general
                 if (name == player->getGeneralName()) continue;
+                Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
+                Q_ASSERT(player->getGeneral() != NULL);
                 if (Sanguosha->getGeneral(name)->getKingdom() == player->getGeneral()->getKingdom())
                     return name;
             } else {
                 foreach(QString other,player->getSelected()) { // choosing second general
                     if (name == other) continue;
+                    Q_ASSERT(Sanguosha->getGeneral(other) != NULL);
+                    Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
                     if (Sanguosha->getGeneral(name)->getKingdom() == Sanguosha->getGeneral(other)->getKingdom())
                         return name;
                 }
@@ -3824,6 +3832,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
             player->loseSkill(skill->objectName());
     }
     setPlayerProperty(player, "general", new_general);
+    Q_ASSERT(player->getGeneral() != NULL);
     player->setGender(player->getGeneral()->getGender());
     foreach(const Skill* skill, player->getGeneral()->getSkillList())
         player->addSkill(skill->objectName());
@@ -3836,6 +3845,7 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
             player->loseSkill(skill->objectName());
     }
     setPlayerProperty(player, "general2", new_general);
+    Q_ASSERT(player->getGeneral2() != NULL);
     foreach(const Skill* skill, player->getGeneral2()->getSkillList())
         player->addSkill(skill->objectName());
     filterCards(player, player->getCards("he"), true);

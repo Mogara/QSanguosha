@@ -67,6 +67,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
             }
 
             qnum.setValue(num);
+            Q_ASSERT(room->getThread() != NULL);
             room->getThread()->trigger(DrawNCards, room, player, qnum);
             num = qnum.toInt();
             if(num > 0)
@@ -133,6 +134,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
         if (triggerEvent == GameStart) {
             foreach (ServerPlayer* player, room->getPlayers())
             {
+                Q_ASSERT(player->getGeneral() != NULL);
                 if(player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang"){
                     QString new_kingdom = room->askForKingdom(player);
                     room->setPlayerProperty(player, "kingdom", new_kingdom);
@@ -356,6 +358,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             room->sendDamageLog(damage);
 
             room->applyDamage(player, damage);
+            Q_ASSERT(room->getThread() != NULL);
             room->getThread()->trigger(PostHpReduced, room, player, data);
             break;
         }
@@ -414,6 +417,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
             QVariant data = QVariant::fromValue(effect);
+            Q_ASSERT(room->getThread() != NULL);
             room->getThread()->trigger(SlashProceed, room, effect.from, data);
 
             break;
@@ -524,6 +528,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
 
             int delay = Config.AIDelay;
             if (judge->time_consuming) delay /= 1.25;
+            Q_ASSERT(room->getThread() != NULL);
             room->getThread()->delay(delay);
             if (judge->play_animation) {
                 room->sendJudgeResult(judge);
@@ -560,6 +565,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     player->tag.remove("1v1ChangeGeneral");
     room->revivePlayer(player);
     room->changeHero(player, new_general, true, true);
+    Q_ASSERT(player->getGeneral() != NULL);
     if (player->getGeneral()->getKingdom() == "god") {
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
@@ -605,6 +611,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const{
     leader->tag["XModeBackup"] = QVariant::fromValue(backup);
     room->revivePlayer(player);
     room->changeHero(player, general, true, true);
+    Q_ASSERT(player->getGeneral() != NULL);
     if (player->getGeneral()->getKingdom() == "god") {
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
@@ -632,6 +639,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const{
 }
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{
+    Q_ASSERT(killer->getRoom() != NULL);
     if (killer->isDead() || killer->getRoom()->getMode() == "06_XMode")
         return;
 
@@ -711,6 +719,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                     QStringList generals = room->getTag(player->objectName()).toStringList();
                     room->changePlayerGeneral(player, generals.at(0));
 
+                    Q_ASSERT(player->getGeneral() != NULL);
                     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
                     room->setPlayerProperty(player, "role", BasaraMode::getMappedRole(player->getKingdom()));
 
@@ -770,6 +779,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer 
         room->setPlayerMark(lord, "secondMode", 1);
         room->changeHero(lord, "shenlvbu2", true, true);
         room->broadcastInvoke("animate", "lightbox:$StageChange:5000");
+        Q_ASSERT(room->getThread() != NULL);
         room->getThread()->delay(5000);
 
         QList<const Card *> tricks = lord->getJudgingArea();
@@ -963,6 +973,7 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
         QString general_name = room->askForGeneral(player,names);
 
         generalShowed(player,general_name);
+        Q_ASSERT(room->getThread() != NULL);
         if (Config.EnableHegemony) room->getThread()->trigger(GameOverJudge, room, player);
         playerShowed(player);
     }
@@ -977,6 +988,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     if(player->getGeneralName() == "anjiang")
     {
         room->changeHero(player, general_name, false, false, false, false);
+        Q_ASSERT(player->getGeneral() != NULL);
         room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
 
         if (player->getGeneral()->getKingdom() == "god") {
@@ -1006,6 +1018,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         }
     }
 
+    Q_ASSERT(room->getThread() != NULL);
     room->getThread()->addPlayerSkills(player);
 
     names.removeOne(general_name);
@@ -1097,6 +1110,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pl
                 QStringList generals = room->getTag(player->objectName()).toStringList();
                 room->changePlayerGeneral(player, generals.at(0));
 
+                Q_ASSERT(player->getGeneral() != NULL);
                 room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
                 if (Config.EnableHegemony)
                     room->setPlayerProperty(player, "role", getMappedRole(player->getKingdom()));

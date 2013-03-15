@@ -538,6 +538,7 @@ void BanlistDialog::save(){
 
     int i;
     for(i=0; i<list->count(); i++){
+        Q_ASSERT(list->item(i) != NULL);
         banset << list->item(i)->data(Qt::UserRole).toString();
     }
 
@@ -1131,6 +1132,7 @@ void Server::processRequest(const char *request){
         foreach(QString objname, name2objname.values(screen_name)){
             ServerPlayer *player = players.value(objname);
             if(player && player->getState() == "offline"){
+                Q_ASSERT(player->getRoom());
                 player->getRoom()->reconnect(player, socket);
                 return;
             }
