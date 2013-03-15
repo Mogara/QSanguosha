@@ -438,7 +438,11 @@ AvatarRectItem::AvatarRectItem(qreal width, qreal height, const QRectF &box_rect
     name_box->setOpacity(0.7);
     name_box->setPen(Qt::NoPen);
 
+#ifdef Q_OS_LINUX
+    QFont font("DroidSansFallback");
+#else
     QFont font("SimHei");
+#endif
     font.setPixelSize(font_size);
     name = new BlackEdgeTextItem;
     name->setFont(font);
@@ -1024,14 +1028,22 @@ void CardEditor::closeEvent(QCloseEvent *event){
 QWidget *CardEditor::createLeft(){
     QVBoxLayout *layout = new QVBoxLayout;
     QGroupBox *box = createTextItemBox(Config.value("CardEditor/TitleText", tr("Title")).toString(),
+#ifdef Q_OS_LINUX
+                                       Config.value("CardEditor/TitleFont", QFont("DroidSansFallback", 20)).value<QFont>(),
+#else
                                        Config.value("CardEditor/TitleFont", QFont("Times", 20)).value<QFont>(),
+#endif
                                        Config.value("CardEditor/TitleSkip", 0).toInt(),
                                        card_scene->getTitleItem());
     box->setTitle(tr("Title"));
     layout->addWidget(box);
 
     box = createTextItemBox(Config.value("CardEditor/NameText", tr("Name")).toString(),
+#ifdef Q_OS_LINUX
+                            Config.value("CardEditor/NameFont", QFont("DroidSansFallback", 36)).value<QFont>(),
+#else
                             Config.value("CardEditor/NameFont", QFont("Times", 36)).value<QFont>(),
+#endif
                             Config.value("CardEditor/NameSkip", 0).toInt(),
                             card_scene->getNameItem());
 

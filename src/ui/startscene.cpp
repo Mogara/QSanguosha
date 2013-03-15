@@ -80,7 +80,11 @@ void StartScene::switchToServer(Server *server){
     server_log->resize(700, 420);
     server_log->move(-400, -180);
     server_log->setFrameShape(QFrame::NoFrame);
+#ifdef Q_OS_LINUX
+    server_log->setFont(QFont("DroidSansFallback", 12));
+#else
     server_log->setFont(QFont("Verdana", 12));
+#endif
     server_log->setTextColor(Config.TextEditColor);
     setServerLogBackground();
 
