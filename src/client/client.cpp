@@ -167,6 +167,11 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc->setDefaultFont(QFont("SimHei"));
 }
 
+Client::~Client(void)
+{
+    ClientInstance = NULL;
+}
+
 void Client::updateCard(const Json::Value &val)
 {
     if (val.isInt())

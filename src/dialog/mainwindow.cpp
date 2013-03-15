@@ -367,7 +367,8 @@ void MainWindow::gotoStartScene(){
     addAction(ui->actionFullscreen);
 
     systray = NULL;
-    delete ClientInstance;
+    if (ClientInstance)
+        delete ClientInstance;
 }
 
 void MainWindow::startGameInAnotherInstance(){

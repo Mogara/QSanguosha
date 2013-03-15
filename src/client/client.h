@@ -44,6 +44,7 @@ public:
     };
 
     explicit Client(QObject *parent, const QString &filename = QString());
+    ~Client(void);
 
     void roomBegin(const QString &begin_str);
     void room(const QString &room_str);
