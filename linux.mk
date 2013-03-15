@@ -20,7 +20,8 @@ all: sanguosha.qm
 debug: debugQSanguosha
 
 debugQSanguosha: $(DEBUG_BUILD)/QSanguosha
-	@cp $(DEBUG_BUILD)/QSanguosha debugQSanguosha
+	cp $(DEBUG_BUILD)/QSanguosha debugQSanguosha
+	@rm $(DEBUG_BUILD)/QSanguosha
 
 $(BUILD)/libfmodex.so:
 	mkdir -p $(BUILD)
