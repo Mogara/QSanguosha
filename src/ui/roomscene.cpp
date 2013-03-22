@@ -274,7 +274,7 @@ RoomScene::RoomScene(QMainWindow *main_window):
         log_box_widget = addWidget(log_box);
         log_box_widget->setObjectName("log_box_widget");
         log_box_widget->setZValue(-1.0);
-        connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
+        connect(ClientInstance, SIGNAL(log_received(QStringList)), log_box, SLOT(appendLog(QStringList)));
     }
 
     {
