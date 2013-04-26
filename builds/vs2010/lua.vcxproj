@@ -81,6 +81,7 @@
     <ClInclude Include="..\..\src\lua\lapi.h" />
     <ClInclude Include="..\..\src\lua\lauxlib.h" />
     <ClInclude Include="..\..\src\lua\lcode.h" />
+    <ClInclude Include="..\..\src\lua\lctype.h" />
     <ClInclude Include="..\..\src\lua\ldebug.h" />
     <ClInclude Include="..\..\src\lua\ldo.h" />
     <ClInclude Include="..\..\src\lua\lfunc.h" />
@@ -107,7 +108,10 @@
     <ClCompile Include="..\..\src\lua\lapi.c" />
     <ClCompile Include="..\..\src\lua\lauxlib.c" />
     <ClCompile Include="..\..\src\lua\lbaselib.c" />
+    <ClCompile Include="..\..\src\lua\lbitlib.c" />
     <ClCompile Include="..\..\src\lua\lcode.c" />
+    <ClCompile Include="..\..\src\lua\lcorolib.c" />
+    <ClCompile Include="..\..\src\lua\lctype.c" />
     <ClCompile Include="..\..\src\lua\ldblib.c" />
     <ClCompile Include="..\..\src\lua\ldebug.c" />
     <ClCompile Include="..\..\src\lua\ldo.c" />
@@ -130,10 +134,10 @@
     <ClCompile Include="..\..\src\lua\ltable.c" />
     <ClCompile Include="..\..\src\lua\ltablib.c" />
     <ClCompile Include="..\..\src\lua\ltm.c" />
+    <ClCompile Include="..\..\src\lua\lua.c" />
     <ClCompile Include="..\..\src\lua\lundump.c" />
     <ClCompile Include="..\..\src\lua\lvm.c" />
     <ClCompile Include="..\..\src\lua\lzio.c" />
-    <ClCompile Include="..\..\src\lua\print.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
