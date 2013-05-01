@@ -203,7 +203,7 @@ return {
 	["biyue:yes"] = "您可以摸一张牌",
 
 -- effect
-	["cv:caocao"] = "鬼叔，倚天の剑",
+	["cv:caocao"] = "鬼叔，殆尘",
 	["$jianxiong1"] = "宁教我负天下人，休教天下人负我！",
 	["$jianxiong2"] = "孤好梦中杀人！",
 	["$hujia1"] = "魏将何在？",

@@ -7,11 +7,14 @@ TEMPLATE = app
 win32 : RC_FILE = resource/icono.rc
 macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio
-#CONFIG += crypto
-#DEFINES += CLO_SOU
+
+# If you want to use crypto and rcc, please uncomment the following line:
+# CONFIG += crypto
+# DEFINES += CLO_SOU
+# However, this is not supported under Linux or Mac OS X temporarily
 
 # If you want to enable joystick support, please uncomment the following line:
-CONFIG += joystick
+# CONFIG += joystick
 # However, joystick is not supported under Mac OS X temporarily
 
 # If you want enable voice reading for chat content, uncomment the following line:
