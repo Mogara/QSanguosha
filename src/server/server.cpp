@@ -341,7 +341,6 @@ void BanlistDialog::switchTo(int item)
     if(add2nd) add2nd->setVisible((list->objectName()=="Pairs"));
 }
 
-
 BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     :QDialog(parent),add2nd(NULL)
 {

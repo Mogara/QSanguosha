@@ -7,7 +7,7 @@ TEMPLATE = app
 win32 : RC_FILE = resource/icono.rc
 macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio
-#CONFIG += rcc
+#CONFIG += crypto
 #DEFINES += CLO_SOU
 
 # If you want to enable joystick support, please uncomment the following line:
@@ -24,8 +24,7 @@ SOURCES += \
 	src/client/client.cpp \
 	src/client/clientplayer.cpp \
 	src/client/clientstruct.cpp \
-	src/core/banpair.cpp \
-	src/core/crypto.cpp \
+        src/core/banpair.cpp \
 	src/core/card.cpp \
 	src/core/engine.cpp \
 	src/core/exppattern.cpp \
@@ -152,9 +151,7 @@ HEADERS += \
 	src/client/clientplayer.h \
 	src/client/clientstruct.h \
 	src/core/audio.h \
-	src/core/banpair.h \
-	src/core/crypto.h \
-	src/core/crypt0.h \
+        src/core/banpair.h \
 	src/core/card.h \
 	src/core/engine.h \
 	src/core/exppattern.h \
@@ -287,7 +284,7 @@ INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
 INCLUDEPATH += src/lua
 
-LIBS += -Llib -lcryptopp
+LIBS += -Llib
 LIBS += -L.
 
 TRANSLATIONS += sanguosha.ts
@@ -320,8 +317,13 @@ CONFIG(chatvoice){
 	}
 }
 
-CONFIG(rcc){
-        DEFINES += USE_RCC
+CONFIG(crypto){
+        DEFINES += USE_CRYPTO
+        LIBS += -lcryptopp
+        HEADERS += \
+            src/core/crypto.h \
+            src/core/crypt0.h
+        SOURCES += src/core/crypto.cpp
         TARGET = QSanguosha
         win32: RC_FILE = resource/icon.rc
 }

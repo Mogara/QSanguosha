@@ -48,7 +48,7 @@ void CardItem::changeGeneral(const QString &general_name){
 
     const General *general = Sanguosha->getGeneral(general_name);
     if(general){
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
         changePixmap(general->getPixmapPath("card2"));
 #else
         changePixmap(general->getPixmapPath("card"));

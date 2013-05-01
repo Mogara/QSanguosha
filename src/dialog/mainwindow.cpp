@@ -11,10 +11,12 @@
 #include "halldialog.h"
 #include "pixmapanimation.h"
 
-#ifndef CLO_SOU
-#include "crypto.h"
-#else
-#include "crypt0.h"
+#ifdef USE_CRYPTO
+    #ifndef CLO_SOU
+    #include "crypto.h"
+    #else
+    #include "crypt0.h"
+    #endif
 #endif
 
 #include <cmath>
@@ -33,7 +35,7 @@
 #include <QInputDialog>
 #include <QLabel>
 
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
 #include <QResource>
 #endif
 
@@ -70,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = NULL;
 
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     Crypto cry;
     QResource::registerResource(cry.getEncryptedFile("image/card.dat"));
 #endif
@@ -143,7 +145,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
 
 MainWindow::~MainWindow()
 {
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     Crypto cry;
     QResource::unregisterResource(cry.getEncryptedFile("image/card.dat"));
 #endif
@@ -914,7 +916,7 @@ void MeleeDialog::setGeneral(const QString &general_name){
     const General *general = Sanguosha->getGeneral(general_name);
 
     if(general){
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
         avatar_button->setIcon(QIcon(general->getPixmapPath("card2")));
 #else
         avatar_button->setIcon(QIcon(general->getPixmapPath("card")));
@@ -1062,6 +1064,7 @@ void MainWindow::on_actionAbout_Lua_triggered()
 }
 
 void MainWindow::on_actionCrypto_audio_triggered(){
+#ifdef USE_CRYPTO
     QStringList filenames = QFileDialog::getOpenFileNames(
             this, tr("Please select audio files"),
             QString(),
@@ -1084,9 +1087,11 @@ void MainWindow::on_actionCrypto_audio_triggered(){
         foreach(QString filename, filenames)
             QFile::remove(filename);
     }
+#endif
 }
 
 void MainWindow::on_actionDecrypto_audio_triggered(){
+#ifdef USE_CRYPTO
     QStringList filenames = QFileDialog::getOpenFileNames(
             this, tr("Please select crypto files"),
             QString(),
@@ -1107,4 +1112,5 @@ void MainWindow::on_actionDecrypto_audio_triggered(){
         }
         QMessageBox::information(this, tr("Notice"), tr("Decrypt %1 music files done!").arg(QString::number(count)));
     }
+#endif
 }

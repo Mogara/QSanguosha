@@ -4,14 +4,14 @@
 #include "clientstruct.h"
 #include "client.h"
 
-#ifdef USE_RCC
-#include <QResource>
-#include <QFile>
-#ifndef CLO_SOU
-#include "crypto.h"
-#else
-#include "crypt0.h"
-#endif
+#ifdef USE_CRYPTO
+    #include <QResource>
+    #include <QFile>
+    #ifndef CLO_SOU
+    #include "crypto.h"
+    #else
+    #include "crypt0.h"
+    #endif
 #endif
 static CardOverview *Overview;
 
@@ -19,7 +19,7 @@ CardOverview *CardOverview::GetInstance(QWidget *main_window){
     if(Overview == NULL)
         Overview = new CardOverview(main_window);
 
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     Crypto cry;
     QResource::registerResource(cry.getEncryptedFile("image/big-card.dat"));
 #endif
@@ -90,7 +90,7 @@ void CardOverview::addCard(int i, const Card *card){
 
 CardOverview::~CardOverview()
 {
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     Crypto cry;
     QResource::unregisterResource(cry.getEncryptedFile("image/big-card.dat"));
 #endif
@@ -102,7 +102,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
     const Card *card = Sanguosha->getCard(card_id);
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     QString pixmap_path = QString(":big-card/%1.png").arg(card->objectName());
     if(!QFile::exists(pixmap_path))
         pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());

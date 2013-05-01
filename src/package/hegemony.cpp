@@ -654,7 +654,7 @@ HegemonyPackage::HegemonyPackage()
     lushun->addSkill("qianxun");
     lushun->addSkill(new Duoshi);
 
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     General *gz_zhouyu = new General(this, "gz_zhouyu", "wu", 3, true, true);
     gz_zhouyu->addSkill("yingzi");
     gz_zhouyu->addSkill("fanjian");

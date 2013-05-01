@@ -2,10 +2,12 @@
 #include "fmod.h"
 #include "settings.h"
 
-#ifndef CLO_SOU
-#include "crypto.h"
-#else
-#include "crypt0.h"
+#ifdef USE_CRYPTO
+    #ifndef CLO_SOU
+    #include "crypto.h"
+    #else
+    #include "crypt0.h"
+    #endif
 #endif
 
 #include <QCache>
@@ -25,10 +27,12 @@ public:
     {
         if(!filename.endsWith("dat"))
             FMOD_System_CreateSound(System, filename.toAscii(), FMOD_DEFAULT, NULL, &sound);
+#ifdef USE_CRYPTO
         else{
             Crypto cry;
             sound = cry.initEncryptedFile(System, filename);
         }
+#endif
     }
 
     ~Sound(){

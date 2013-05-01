@@ -62,7 +62,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     QSignalMapper *mapper = new QSignalMapper(this);
     QList<OptionButton *> buttons;
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     QString category("card2");
 #else
     QString category("card");

@@ -1314,7 +1314,7 @@ void StandardPackage::addGenerals(){
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);
     zhouyu->addSkill(new Fanjian);
-#ifdef USE_RCC
+#ifdef USE_CRYPTO
     zhouyu->addSkill(new SPConvertSkill("#zhouyug", "zhouyu", "gz_zhouyu"));
 #endif
 
