@@ -609,7 +609,7 @@ public:
             return false;
 
         if(triggerEvent == EventPhaseChanging && data.value<PhaseChangeStruct>().to == Player::Start)
-            if(player->getHp() > splayer->getHp())
+            if(player->getHp() >= splayer->getHp())
                 room->askForUseCard(splayer, "@@fengyin", "@fengyin", -1, Card::MethodNone);
         
         if(triggerEvent == EventPhaseStart && player->hasFlag("fengyin_target")){
