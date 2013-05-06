@@ -503,7 +503,7 @@ const EquipCard *Player::getEquip(int index) const{
 
 bool Player::hasWeapon(const QString &weapon_name) const{
     if (getMark("Equips_Nullified_to_Yourself") > 0) return false;
-    return weapon && (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str()));
+    return weapon && weapon->objectName() == weapon_name;
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
@@ -513,7 +513,7 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
     if (armor_name == "bazhen")
         return armor == NULL && alive && hasSkill("bazhen");
     else
-        return armor && (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str()));
+        return armor && armor->objectName() == armor_name;
 
     return false;
 }

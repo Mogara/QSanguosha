@@ -28,11 +28,11 @@ bool Slash::IsAvailable(const Player *player, const Card *slash) {
     if (player->isCardLimited(THIS_SLASH, Card::MethodUse))
        return false;
 
-    if (player->hasWeapon("crossbow") || player->canSlashWithoutCrossbow())
+    if (player->hasWeapon("Crossbow") || player->canSlashWithoutCrossbow())
         return true;
     int used = player->getSlashCount();
     int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
-    if (player->hasWeapon("vscrossbow") && used < valid + 3)
+    if (player->hasWeapon("VSCrossbow") && used < valid + 3)
         return true;
     return false;
 #undef THIS_SLASH
@@ -175,7 +175,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->setEmotion(player, "weapon/fan");
     if (player->getPhase() == Player::Play
         && player->hasFlag("Global_MoreSlashInOneTurn")
-        && (player->hasWeapon("crossbow") || player->hasWeapon("vscrossbow"))
+        && (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow"))
         && !player->hasSkill("paoxiao")
         && !player->hasSkill("huxiao")) {
         player->setFlags("-Global_MoreSlashInOneTurn");

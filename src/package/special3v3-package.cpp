@@ -509,7 +509,7 @@ public:
 VSCrossbow::VSCrossbow(Suit suit, int number)
     : Crossbow(suit, number)
 {
-    setObjectName("vscrossbow");
+    setObjectName("VSCrossbow");
 }
 
 Drowning::Drowning(Suit suit, int number)
