@@ -1,5 +1,5 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef _PLAYER_H
+#define _PLAYER_H
 
 #include "general.h"
 #include "WrappedCard.h"
@@ -15,8 +15,7 @@ class DelayedTrick;
 class DistanceSkill;
 class TriggerSkill;
 
-class Player : public QObject
-{
+class Player: public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
@@ -42,18 +41,17 @@ class Player : public QObject
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
     Q_PROPERTY(bool all_nude READ isAllNude)
-    Q_PROPERTY(bool caocao READ isCaoCao)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
     Q_ENUMS(Role)
 
 public:
-    enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone};
+    enum Phase { RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone };
     enum Place { PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
                  PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
-                 PlaceWuGu};
-    enum Role {Lord, Loyalist, Rebel, Renegade};
+                 PlaceWuGu };
+    enum Role { Lord, Loyalist, Rebel, Renegade };
 
     explicit Player(QObject *parent);
 
@@ -138,7 +136,7 @@ public:
     virtual void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;
-    bool hasInnateSkill(const QString &skill_name) const;
+    bool hasInnateSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
 
@@ -155,6 +153,7 @@ public:
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
     virtual void addCard(const Card *card, Place place) = 0;
+    virtual QList<const Card *> getHandcards() const = 0;
 
     WrappedCard *getWeapon() const;
     WrappedCard *getArmor() const;
@@ -192,18 +191,20 @@ public:
     int usedTimes(const QString &card_class) const;
     int getSlashCount() const;
 
+    bool hasEquipSkill(const QString &skill_name) const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
-    QSet<const Skill *> getVisibleSkills() const;
-    QList<const Skill *> getVisibleSkillList() const;
+    QSet<const Skill *> getSkills(bool include_equip = false, bool visible_only = true) const;
+    QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true) const;
+    QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
+    QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
     QSet<QString> getAcquiredSkills() const;
     QString getSkillDescription() const;
 
     virtual bool isProhibited(const Player *to, const Card *card) const;
     bool canSlashWithoutCrossbow() const;
-    virtual bool isLastHandCard(const Card *card) const = 0;
+    virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
-    void jilei(const QString &type);
-    bool isJilei(const Card *card) const;
+    inline bool isJilei(const Card *card) const{ return isCardLimited(card, Card::MethodDiscard); }
 
     void setCardLocked(const QString &name);
     bool isLocked(const Card *card) const;
@@ -213,8 +214,7 @@ public:
     void clearCardLimitation(bool single_turn = false);
     bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
 
-    bool isCaoCao() const;
-    void copyFrom(Player* p);
+    void copyFrom(Player *p);
 
     QList<const Player *> getSiblings() const;
 
@@ -262,4 +262,5 @@ signals:
     void ready_changed(bool ready);
 };
 
-#endif // PLAYER_H
+#endif
+

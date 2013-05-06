@@ -1,26 +1,17 @@
-#ifndef THICKET_H
-#define THICKET_H
+#ifndef _THICKET_H
+#define _THICKET_H
 
 #include "package.h"
 #include "card.h"
 
-class ThicketPackage: public Package{
+class ThicketPackage: public Package {
     Q_OBJECT
 
 public:
     ThicketPackage();
 };
 
-class YinghunCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE YinghunCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-class HaoshiCard: public SkillCard{
+class HaoshiCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -30,7 +21,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class DimengCard: public SkillCard{
+class DimengCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -41,7 +32,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class LuanwuCard: public SkillCard{
+class LuanwuCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -51,12 +42,5 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class FangzhuCard: public SkillCard{
-    Q_OBJECT
+#endif
 
-public:
-    Q_INVOKABLE FangzhuCard();
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-#endif // THICKET_H

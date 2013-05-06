@@ -1,17 +1,17 @@
-#ifndef LINGPACKAGE_H
-#define LINGPACKAGE_H
+#ifndef _LING_H
+#define _LING_H
 
 #include "package.h"
 #include "card.h"
 
-class LingPackage : public Package{
+class LingPackage: public Package {
     Q_OBJECT
 
 public:
     LingPackage();
 };
 
-class LuoyiCard: public SkillCard{
+class LuoyiCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -19,7 +19,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class NeoFanjianCard: public SkillCard{
+class NeoFanjianCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -27,4 +27,5 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-#endif // LINGPACKAGE_H
+#endif
+

@@ -1,12 +1,12 @@
-#ifndef PLAYERCARDDIALOG_H
-#define PLAYERCARDDIALOG_H
+#ifndef _PLAYER_CARD_DIALOG_H
+#define _PLAYER_CARD_DIALOG_H
 
 #include "clientplayer.h"
 
 #include <QDialog>
 #include <QMap>
 
-class MagatamaWidget : public QWidget{
+class MagatamaWidget: public QWidget {
     Q_OBJECT
 
 public:
@@ -16,7 +16,7 @@ public:
     static QPixmap GetSmallMagatama(int index);
 };
 
-class PlayerCardDialog : public QDialog{
+class PlayerCardDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -38,4 +38,5 @@ signals:
     void card_id_chosen(int card_id);
 };
 
-#endif // PLAYERCARDDIALOG_H
+#endif
+

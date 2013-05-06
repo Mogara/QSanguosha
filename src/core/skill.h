@@ -1,5 +1,5 @@
-#ifndef SKILL_H
-#define SKILL_H
+#ifndef _SKILL_H
+#define _SKILL_H
 
 class Player;
 class Card;
@@ -10,14 +10,13 @@ class QDialog;
 
 #include <QObject>
 
-class Skill : public QObject
-{
+class Skill: public QObject {
     Q_OBJECT
     Q_ENUMS(Frequency)
     Q_ENUMS(Location)
 
 public:
-    enum Frequency{
+    enum Frequency {
         Frequent,
         NotFrequent,
         Compulsory,
@@ -25,7 +24,7 @@ public:
         Wake
     };
 
-    enum Location{
+    enum Location {
         Left,
         Right
     };
@@ -45,10 +44,9 @@ public:
 
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
-    void setFlag(ServerPlayer *player) const;
-    void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;
     QStringList getSources() const;
+
 protected:
     Frequency frequency;
     QString default_choice;
@@ -59,7 +57,7 @@ private:
     QStringList sources;
 };
 
-class ViewAsSkill:public Skill{
+class ViewAsSkill: public Skill {
     Q_OBJECT
 
 public:
@@ -68,46 +66,45 @@ public:
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const = 0;
     virtual const Card *viewAs(const QList<const Card *> &cards) const = 0;
 
-    bool isAvailable(const Player* invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const;
+    bool isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const;
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
-    static const ViewAsSkill* parseViewAsSkill(const Skill* skill);
+    static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
 };
 
-class ZeroCardViewAsSkill: public ViewAsSkill{
+class ZeroCardViewAsSkill: public ViewAsSkill {
     Q_OBJECT
 
 public:
     ZeroCardViewAsSkill(const QString &name);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
-
+    virtual const Card *viewAs(const QList<const Card *> &cards) const;
     virtual const Card *viewAs() const = 0;
 };
 
-class OneCardViewAsSkill: public ViewAsSkill{
+class OneCardViewAsSkill: public ViewAsSkill {
     Q_OBJECT
 
 public:
     OneCardViewAsSkill(const QString &name);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
     virtual bool viewFilter(const Card *to_select) const = 0;
     virtual const Card *viewAs(const Card *originalCard) const = 0;
 };
 
-class FilterSkill: public OneCardViewAsSkill{
+class FilterSkill: public OneCardViewAsSkill {
     Q_OBJECT
 
 public:
     FilterSkill(const QString &name);
 };
 
-class TriggerSkill:public Skill{
+class TriggerSkill: public Skill {
     Q_OBJECT
 
 public:
@@ -117,16 +114,22 @@ public:
 
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const = 0;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const = 0;
+
+    inline double getDynamicPriority() const{ return dynamic_priority; }
+    inline void setDynamicPriority(double value) { dynamic_priority = value; }
 
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
+
+private:
+    mutable double dynamic_priority;
 };
 
 class Scenario;
 
-class ScenarioRule: public TriggerSkill{
+class ScenarioRule: public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -136,43 +139,43 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
-class MasochismSkill: public TriggerSkill{
+class MasochismSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
     MasochismSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };
 
-class PhaseChangeSkill: public TriggerSkill{
+class PhaseChangeSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
     PhaseChangeSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
-    virtual bool onPhaseChange(ServerPlayer *target) const =0;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool onPhaseChange(ServerPlayer *target) const = 0;
 };
 
-class DrawCardsSkill: public TriggerSkill{
+class DrawCardsSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
     DrawCardsSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual int getDrawNum(ServerPlayer *player, int n) const = 0;
 };
 
-class GameStartSkill: public TriggerSkill{
+class GameStartSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
     GameStartSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
@@ -193,7 +196,7 @@ private:
     QStringList to_list;
 };
 
-class ProhibitSkill: public Skill{
+class ProhibitSkill: public Skill {
     Q_OBJECT
 
 public:
@@ -202,7 +205,7 @@ public:
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
 };
 
-class DistanceSkill: public Skill{
+class DistanceSkill: public Skill {
     Q_OBJECT
 
 public:
@@ -211,7 +214,7 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
 
-class MaxCardsSkill: public Skill{
+class MaxCardsSkill: public Skill {
     Q_OBJECT
 
 public:
@@ -254,29 +257,36 @@ protected:
     QString name;
 };
 
-// a nasty way for 'fake moves'
+// a nasty way for 'fake moves', usually used in the process of multi-card chosen
 class FakeMoveSkill: public TriggerSkill {
     Q_OBJECT
-    Q_ENUMS(FakeCondition)
 
 public:
-    enum FakeCondition {
-        Global,
-        SourceOnly
-    };
-
-    FakeMoveSkill(const QString &skillname, FakeCondition condition = Global);
+    FakeMoveSkill(const QString &skillname);
 
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
 private:
     QString name;
-    FakeCondition condition;
 };
 
-class WeaponSkill: public TriggerSkill{
+class DetachEffectSkill: public TriggerSkill {
+    Q_OBJECT
+
+public:
+    DetachEffectSkill(const QString &skillname, const QString &pilename = QString());
+
+    virtual bool triggerable(const ServerPlayer *target) const;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual void onSkillDetached(Room *room, ServerPlayer *player) const;
+
+private:
+    QString name, pile_name;
+};
+
+class WeaponSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -285,7 +295,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
-class ArmorSkill: public TriggerSkill{
+class ArmorSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -294,7 +304,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
-class MarkAssignSkill: public GameStartSkill{
+class MarkAssignSkill: public GameStartSkill {
     Q_OBJECT
 
 public:
@@ -307,4 +317,5 @@ private:
     int n;
 };
 
-#endif // SKILL_H
+#endif
+

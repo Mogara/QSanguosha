@@ -1,5 +1,5 @@
-#ifndef SCENARIO_H
-#define SCENARIO_H
+#ifndef _SCENARIO_H
+#define _SCENARIO_H
 
 #include "package.h"
 #include "ai.h"
@@ -9,8 +9,7 @@ class ScenarioRule;
 
 #include <QMap>
 
-class Scenario : public Package
-{
+class Scenario: public Package {
     Q_OBJECT
 
 public:
@@ -31,4 +30,5 @@ protected:
     ScenarioRule *rule;
 };
 
-#endif // SCENARIO_H
+#endif
+

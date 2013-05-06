@@ -1,5 +1,5 @@
-#ifndef CARDOVERVIEW_H
-#define CARDOVERVIEW_H
+#ifndef _CARD_OVERVIEW_H
+#define _CARD_OVERVIEW_H
 
 #include "card.h"
 
@@ -11,14 +11,15 @@ namespace Ui {
     class CardOverview;
 }
 
-class CardOverview : public QDialog {
+class CardOverview: public QDialog {
     Q_OBJECT
+
 public:
     static CardOverview *getInstance(QWidget *main_window);
 
     CardOverview(QWidget *parent = 0);
     void loadFromAll();
-    void loadFromList(const QList<const Card*> &list);
+    void loadFromList(const QList<const Card *> &list);
 
     ~CardOverview();
 
@@ -30,9 +31,10 @@ private:
 private slots:
     void on_femalePlayButton_clicked();
     void on_malePlayButton_clicked();
-    void on_tableWidget_itemDoubleClicked(QTableWidgetItem* item);
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
     void on_tableWidget_itemSelectionChanged();
     void askCard();
 };
 
-#endif // CARDOVERVIEW_H
+#endif
+

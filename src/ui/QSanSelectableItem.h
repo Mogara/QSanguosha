@@ -1,10 +1,10 @@
-#ifndef PIXMAP_H
-#define PIXMAP_H
+#ifndef _QSAN_SELECTABLE_ITEM_H
+#define _QSAN_SELECTABLE_ITEM_H
 
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class QSanSelectableItem : public QGraphicsObject {
+class QSanSelectableItem: public QGraphicsObject {
     Q_OBJECT
 
 public:
@@ -38,4 +38,5 @@ signals:
     void enable_changed();
 };
 
-#endif // PIXMAP_H
+#endif
+

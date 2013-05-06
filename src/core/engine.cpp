@@ -30,18 +30,15 @@
 
 Engine *Sanguosha = NULL;
 
-int Engine::getMiniSceneCounts()
-{
+int Engine::getMiniSceneCounts() {
     return m_miniScenes.size();
 }
 
-void Engine::_loadMiniScenarios()
-{
+void Engine::_loadMiniScenarios() {
     static bool loaded = false;
     if (loaded) return;
     int i = 1;
-    while(true)
-    {
+    while (true) {
         if (!QFile::exists(QString("etc/customScenes/%1.txt").arg(QString::number(i))))
             break;
 
@@ -52,8 +49,7 @@ void Engine::_loadMiniScenarios()
     loaded = true;
 }
 
-void Engine::_loadModScenarios()
-{
+void Engine::_loadModScenarios() {
     addScenario(new GuanduScenario());
     addScenario(new CoupleScenario());
     addScenario(new FanchengScenario());
@@ -61,9 +57,9 @@ void Engine::_loadModScenarios()
     addScenario(new ImpasseScenario());
 }
 
-void Engine::addPackage(const QString &name){
+void Engine::addPackage(const QString &name) {
     Package *pack = PackageAdder::packages()[name];
-    if(pack)
+    if (pack)
         addPackage(pack);
     else
         qWarning("Package %s cannot be loaded!", qPrintable(name));
@@ -77,7 +73,7 @@ Engine::Engine()
     DoLuaScript(lua, "lua/config.lua");
 
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
-    foreach(QString name, package_names)
+    foreach (QString name, package_names)
         addPackage(name);
 
     _loadMiniScenarios();
@@ -109,11 +105,7 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-    foreach(QString ban, getBanPackages()){
-        addBanPackage(ban);
-    }
-
-    foreach(const Skill *skill, skills.values()){
+    foreach (const Skill *skill, skills.values()) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
         mutable_skill->initMediaSource();
     }
@@ -123,17 +115,14 @@ lua_State *Engine::getLuaState() const{
     return lua;
 }
 
-void Engine::addTranslationEntry(const char *key, const char *value){
+void Engine::addTranslationEntry(const char *key, const char *value) {
     translations.insert(key, QString::fromUtf8(value));
 }
 
-Engine::~Engine(){
+Engine::~Engine() {
     lua_close(lua);
-
 #ifdef AUDIO_SUPPORT
-
     Audio::quit();
-
 #endif
 }
 
@@ -157,18 +146,18 @@ const Scenario *Engine::getScenario(const QString &name) const{
     else return NULL;
 }
 
-void Engine::addSkills(const QList<const Skill *> &all_skills){
-    foreach(const Skill *skill, all_skills){
-        if(skills.contains(skill->objectName()))
+void Engine::addSkills(const QList<const Skill *> &all_skills) {
+    foreach (const Skill *skill, all_skills) {
+        if (skills.contains(skill->objectName()))
             QMessageBox::warning(NULL, "", tr("Duplicated skill : %1").arg(skill->objectName()));
 
         skills.insert(skill->objectName(), skill);
 
-        if(skill->inherits("ProhibitSkill"))
+        if (skill->inherits("ProhibitSkill"))
             prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
-        else if(skill->inherits("DistanceSkill"))
+        else if (skill->inherits("DistanceSkill"))
             distance_skills << qobject_cast<const DistanceSkill *>(skill);
-        else if(skill->inherits("MaxCardsSkill"))
+        else if (skill->inherits("MaxCardsSkill"))
             maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
         else if (skill->inherits("TargetModSkill"))
             targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
@@ -187,14 +176,14 @@ QList<const TargetModSkill *> Engine::getTargetModSkills() const{
     return targetmod_skills;
 }
 
-void Engine::addPackage(Package *package){
-    if(findChild<const Package *>(package->objectName()))
+void Engine::addPackage(Package *package) {
+    if (findChild<const Package *>(package->objectName()))
         return;
 
     package->setParent(this);
 
     QList<Card *> all_cards = package->findChildren<Card *>();
-    foreach(Card *card, all_cards){
+    foreach (Card *card, all_cards) {
         card->setId(cards.length());
         cards << card;
 
@@ -207,15 +196,21 @@ void Engine::addPackage(Package *package){
     addSkills(package->getSkills());
 
     QList<General *> all_generals = package->findChildren<General *>();
-    foreach(General *general, all_generals){
+    foreach (General *general, all_generals) {
         addSkills(general->findChildren<const Skill *>());
+        foreach (QString skill_name, general->getExtraSkillSet()) {
+            if (skill_name.startsWith("#")) continue;
+            foreach (const Skill *related, getRelatedSkills(skill_name))
+                general->addSkill(related->objectName());
+        }
 
-        if(general->isHidden()){
+        if ((general->isHidden() && !Config.value("EnableHidden", false).toBool())
+            || (general->objectName() == "shenlvbu1" || general->objectName() == "shenlvbu2")) {
             hidden_generals.insert(general->objectName(), general);
             continue;
         }
 
-        if(general->isLord())
+        if (general->isLord())
             lord_list << general->objectName();
         else
             nonlord_list << general->objectName();
@@ -224,19 +219,19 @@ void Engine::addPackage(Package *package){
     }
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
-    foreach(const QMetaObject *meta, metas)
+    foreach (const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
 
     patterns.unite(package->getPatterns());
     related_skills.unite(package->getRelatedSkills());
 }
 
-void Engine::addBanPackage(const QString &package_name){
+void Engine::addBanPackage(const QString &package_name) {
     ban_package.insert(package_name);
 }
 
 QStringList Engine::getBanPackages() const{
-    if(qApp->arguments().contains("-server"))
+    if (qApp->arguments().contains("-server"))
         return Config.BanPackages;
     else
         return ban_package.toList();
@@ -249,15 +244,15 @@ QString Engine::translate(const QString &to_translate) const{
 int Engine::getRoleIndex() const{
     if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
         return 4;
-    }else if(ServerInfo.EnableHegemony){
+    } else if (ServerInfo.EnableHegemony) {
         return 5;
-    }else
+    } else
         return 1;
 }
 
 const CardPattern *Engine::getPattern(const QString &name) const{
-    const CardPattern * ptn = patterns.value(name, NULL);
-    if(ptn)return ptn;
+    const CardPattern *ptn = patterns.value(name, NULL);
+    if (ptn) return ptn;
 
     return new ExpPattern(name);
 }
@@ -281,21 +276,31 @@ Card::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) c
 
 QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
     QList<const Skill *> skills;
-    foreach(QString name, related_skills.values(skill_name))
+    foreach (QString name, related_skills.values(skill_name))
         skills << getSkill(name);
 
     return skills;
 }
 
+const Skill *Engine::getMainSkill(const QString &skill_name) const{
+    const Skill *skill = getSkill(skill_name);
+    if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name)) return skill;
+    foreach (QString key, related_skills.keys()) {
+        foreach (QString name, related_skills.values(key))
+            if (name == skill_name) return getSkill(key);
+    }
+    return skill;
+}
+
 const General *Engine::getGeneral(const QString &name) const{
-    if(generals.contains(name))
+    if (generals.contains(name))
         return generals.value(name);
     else
         return hidden_generals.value(name, NULL);
 }
 
 int Engine::getGeneralCount(bool include_banned) const{
-    if(include_banned)
+    if (include_banned)
         return generals.size();
 
     int total = generals.size();
@@ -303,11 +308,13 @@ int Engine::getGeneralCount(bool include_banned) const{
     while (itor.hasNext()) {
         itor.next();
         const General *general = itor.value();
-        if (ban_package.contains(general->getPackage()))
+        if (getBanPackages().contains(general->getPackage()))
             total--;
         else if ((ServerInfo.GameMode.endsWith("p")
                  || ServerInfo.GameMode.endsWith("pd")
-                 || ServerInfo.GameMode.endsWith("pz"))
+                 || ServerInfo.GameMode.endsWith("pz")
+                 || ServerInfo.GameMode.contains("_mini_")
+                 || ServerInfo.GameMode == "custom_scenario")
                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.GameMode == "04_1v3"
@@ -329,7 +336,7 @@ int Engine::getGeneralCount(bool include_banned) const{
     return total;
 }
 
-void Engine::registerRoom(QObject* room) {
+void Engine::registerRoom(QObject *room) {
     m_mutex.lock();
     m_rooms[QThread::currentThread()] = room;
     m_mutex.unlock();
@@ -341,9 +348,8 @@ void Engine::unregisterRoom() {
     m_mutex.unlock();
 }
 
-QObject* Engine::currentRoomObject()
-{
-    QObject* room = NULL;
+QObject *Engine::currentRoomObject() {
+    QObject *room = NULL;
     m_mutex.lock();
     room = m_rooms[QThread::currentThread()];
     Q_ASSERT(room);
@@ -351,25 +357,20 @@ QObject* Engine::currentRoomObject()
     return room;
 }
 
-Room* Engine::currentRoom()
-{
-    QObject* roomObject = currentRoomObject();
-    Room *room = qobject_cast<Room*>(roomObject);
+Room *Engine::currentRoom() {
+    QObject *roomObject = currentRoomObject();
+    Room *room = qobject_cast<Room *>(roomObject);
     Q_ASSERT(room != NULL);
     return room;
 }
 
-RoomState* Engine::currentRoomState()
-{
+RoomState *Engine::currentRoomState() {
     QObject *roomObject = currentRoomObject();
-    Room *room = qobject_cast<Room*>(roomObject);
-    if (room != NULL)
-    {
+    Room *room = qobject_cast<Room *>(roomObject);
+    if (room != NULL) {
         return room->getRoomState();
-    }
-    else
-    {
-        Client *client = qobject_cast<Client*>(roomObject);
+    } else {
+        Client *client = qobject_cast<Client *>(roomObject);
         Q_ASSERT(client != NULL);
         return client->getRoomState();
     }
@@ -385,7 +386,7 @@ CardUseStruct::CardUseReason Engine::getCurrentCardUseReason() {
 
 WrappedCard *Engine::getWrappedCard(int cardId) {
     Card *card = getCard(cardId);
-    WrappedCard* wrappedCard = qobject_cast<WrappedCard*>(card);
+    WrappedCard *wrappedCard = qobject_cast<WrappedCard *>(card);
     Q_ASSERT(wrappedCard != NULL && wrappedCard->getId() == cardId);
     return wrappedCard;
 }
@@ -394,15 +395,12 @@ Card *Engine::getCard(int cardId) {
     Card *card = NULL;
     if (cardId < 0 || cardId >= cards.length())
         return NULL;
-    QObject* room = currentRoomObject();
+    QObject *room = currentRoomObject();
     Q_ASSERT(room);
     Room *serverRoom = qobject_cast<Room *>(room);
-    if (serverRoom != NULL)
-    {
+    if (serverRoom != NULL) {
         card = serverRoom->getCard(cardId);
-    }
-    else
-    {
+    } else {
         Client *clientRoom = qobject_cast<Client *>(room);
         Q_ASSERT(clientRoom != NULL);
         card = clientRoom->getCard(cardId);
@@ -412,23 +410,21 @@ Card *Engine::getCard(int cardId) {
 }
 
 const Card *Engine::getEngineCard(int cardId) const{
-    if (cardId == Card::S_UNKNOWN_CARD_ID) return NULL;
-    else if(cardId < 0 || cardId >= cards.length())
-    {
+    if (cardId == Card::S_UNKNOWN_CARD_ID)
+        return NULL;
+    else if (cardId < 0 || cardId >= cards.length()) {
         Q_ASSERT(FALSE);
         return NULL;
-    }
-    else
-    {
+    } else {
         Q_ASSERT(cards[cardId] != NULL);
         return cards[cardId];
     }
 }
 
-Card *Engine::cloneCard(const Card* card) const{
+Card *Engine::cloneCard(const Card *card) const{
     Q_ASSERT(card->metaObject() != NULL);
     QString name = card->metaObject()->className();
-    Card* result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
+    Card *result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
     if (result == NULL)
         return NULL;
     result->setId(card->getEffectiveId());
@@ -437,39 +433,37 @@ Card *Engine::cloneCard(const Card* card) const{
     return result;
 }
 
-Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
+Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const{
+    Card *card = NULL;
     const QMetaObject *meta = metaobjects.value(name, NULL);
-    if(meta == NULL)
+    if (meta == NULL)
         meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
-    if(meta){
+    if (meta) {
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
         card_obj->setObjectName(className2objectName.value(name, name));
-        return qobject_cast<Card *>(card_obj);
-    }else
-        return NULL;
-}
-
-Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const{
-    Card* card = cloneCard(name, suit, number);
+        card = qobject_cast<Card *>(card_obj);
+    }
     if (!card) return NULL;
     card->clearFlags();
-    foreach (QString flag, flags)
-        card->setFlags(flag);
+    if (!flags.isEmpty()) {
+        foreach (QString flag, flags)
+            card->setFlags(flag);
+    }
     return card;
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name) const{
     const QMetaObject *meta = metaobjects.value(name, NULL);
-    if(meta){
+    if (meta) {
         QObject *card_obj = meta->newInstance();
         SkillCard *card = qobject_cast<SkillCard *>(card_obj);
         return card;
-    }else
+    } else
         return NULL;
 }
 
 QString Engine::getVersionNumber() const{
-    return "20130224";
+    return "20130508";
 }
 
 QString Engine::getVersion() const{
@@ -492,8 +486,8 @@ QString Engine::getMODName() const{
 QStringList Engine::getExtensions() const{
     QStringList extensions;
     QList<const Package *> packages = findChildren<const Package *>();
-    foreach(const Package *package, packages){
-        if(package->inherits("Scenario"))
+    foreach (const Package *package, packages) {
+        if (package->inherits("Scenario"))
             continue;
 
         extensions << package->objectName();
@@ -503,7 +497,7 @@ QStringList Engine::getExtensions() const{
 
 QStringList Engine::getKingdoms() const{
     static QStringList kingdoms;
-    if(kingdoms.isEmpty())
+    if (kingdoms.isEmpty())
         kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();
 
     return kingdoms;
@@ -511,11 +505,11 @@ QStringList Engine::getKingdoms() const{
 
 QColor Engine::getKingdomColor(const QString &kingdom) const{
     static QMap<QString, QColor> color_map;
-    if(color_map.isEmpty()){
-        foreach(QString k, getKingdoms()){
-            QString color_str = GetConfigFromLuaState(lua,  ("color_" + k).toAscii()).toString();
+    if (color_map.isEmpty()) {
+        foreach (QString k, getKingdoms()) {
+            QString color_str = GetConfigFromLuaState(lua, ("color_" + k).toAscii()).toString();
             QRegExp rx("#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})");
-            if(rx.exactMatch(color_str)){
+            if (rx.exactMatch(color_str)) {
                 QStringList results = rx.capturedTexts();
                 int red = results.at(1).toInt(NULL, 16);
                 int green = results.at(2).toInt(NULL, 16);
@@ -548,37 +542,40 @@ QString Engine::getSetupString() const{
         flags.append("C");
     if (Config.EnableCheat && Config.FreeChoose)
         flags.append("F");
-    if(Config.Enable2ndGeneral)
+    if (Config.Enable2ndGeneral)
         flags.append("S");
-    if(Config.EnableScene)
+    if (Config.EnableScene)
         flags.append("N");
-    if(Config.EnableSame)
+    if (Config.EnableSame)
         flags.append("T");
-    if(Config.EnableBasara)
+    if (Config.EnableBasara)
         flags.append("B");
-    if(Config.EnableHegemony)
+    if (Config.EnableHegemony)
         flags.append("H");
-    if(Config.EnableAI)
+    if (Config.EnableAI)
         flags.append("A");
-    if(Config.DisableChat)
+    if (Config.DisableChat)
         flags.append("M");
 
-    if(Config.MaxHpScheme == 1)
+    if (Config.MaxHpScheme == 1)
         flags.append("1");
-    else if(Config.MaxHpScheme == 2)
+    else if (Config.MaxHpScheme == 2)
         flags.append("2");
-    else if(Config.MaxHpScheme == 3)
+    else if (Config.MaxHpScheme == 3)
         flags.append("3");
-    else if(Config.MaxHpScheme == 4)
-        flags.append("4");
+    else if (Config.MaxHpScheme == 0) {
+        char c = Config.Scheme0Subtraction + 5 + 'a'; // from -5 to 12
+        flags.append(c);
+    }
 
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;
     setup_items << server_name
-            << Config.GameMode
-            << QString::number(timeout)
-            << Sanguosha->getBanPackages().join("+")
-            << flags;
+                << Config.GameMode
+                << QString::number(timeout)
+                << QString::number(Config.NullificationCountDown)
+                << Sanguosha->getBanPackages().join("+")
+                << flags;
 
     return setup_items.join(":");
 }
@@ -588,19 +585,19 @@ QMap<QString, QString> Engine::getAvailableModes() const{
 }
 
 QString Engine::getModeName(const QString &mode) const{
-    if(modes.contains(mode))
+    if (modes.contains(mode))
         return modes.value(mode);
     else
         return tr("%1 [Scenario mode]").arg(translate(mode));
 }
 
 int Engine::getPlayerCount(const QString &mode) const{
-    if(modes.contains(mode)){
+    if (modes.contains(mode)) {
         QRegExp rx("(\\d+)");
         int index = rx.indexIn(mode);
-        if(index != -1)
+        if (index != -1)
             return rx.capturedTexts().first().toInt();
-    }else{
+    } else {
         // scenario mode
         const Scenario *scenario = getScenario(mode);
         Q_ASSERT(scenario);
@@ -613,13 +610,13 @@ int Engine::getPlayerCount(const QString &mode) const{
 QString Engine::getRoles(const QString &mode) const{
     int n = getPlayerCount(mode);
 
-    if(mode == "02_1v1"){        
+    if (mode == "02_1v1") {
         return "ZN";
-    }else if(mode == "04_1v3"){        
+    } else if (mode == "04_1v3") {
         return "ZFFF";
     }
 
-    if(modes.contains(mode)){
+    if (modes.contains(mode)) {
         static const char *table1[] = {
             "",
             "",
@@ -652,23 +649,22 @@ QString Engine::getRoles(const QString &mode) const{
 
         const char **table = mode.endsWith("d") ? table2 : table1;
         QString rolechar = table[n];
-        if(mode.endsWith("z"))
+        if (mode.endsWith("z"))
             rolechar.replace("N", "C");
-        else if(Config.EnableHegemony){
+        else if (Config.EnableHegemony) {
             rolechar.replace("F", "N");
             rolechar.replace("C", "N");
         }
 
         return rolechar;
-    }else if(mode.startsWith("@")){
-        if(n == 8)
+    } else if (mode.startsWith("@")) {
+        if (n == 8)
             return "ZCCCNFFF";
-        else if(n == 6)
+        else if (n == 6)
             return "ZCCNFF";
-
-    }else{
+    } else {
         const Scenario *scenario = getScenario(mode);
-        if(scenario)
+        if (scenario)
             return scenario->getRoles();
     }
     return QString();
@@ -678,9 +674,9 @@ QStringList Engine::getRoleList(const QString &mode) const{
     QString roles = getRoles(mode);
 
     QStringList role_list;
-    for(int i=0; roles[i] != '\0'; i++){
+    for (int i = 0; roles[i] != '\0'; i++) {
         QString role;
-        switch(roles[i].toAscii()){
+        switch(roles[i].toAscii()) {
         case 'Z': role = "lord"; break;
         case 'C': role = "loyalist"; break;
         case 'N': role = "renegade"; break;
@@ -702,12 +698,14 @@ QStringList Engine::getLords(bool contain_banned) const{
     // add intrinsic lord
     foreach (QString lord, lord_list) {
         const General *general = generals.value(lord);
-        if (ban_package.contains(general->getPackage()))
+        if (getBanPackages().contains(general->getPackage()))
             continue;
         if (!contain_banned) {
             if (ServerInfo.GameMode.endsWith("p")
-               || ServerInfo.GameMode.endsWith("pd")
-               || ServerInfo.GameMode.endsWith("pz"))
+                || ServerInfo.GameMode.endsWith("pd")
+                || ServerInfo.GameMode.endsWith("pz")
+                || ServerInfo.GameMode.contains("_mini_")
+                || ServerInfo.GameMode == "custom_scenario")
                 if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
                     continue;
             if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
@@ -721,22 +719,20 @@ QStringList Engine::getLords(bool contain_banned) const{
 
 QStringList Engine::getRandomLords() const{
     QStringList banlist_ban;
-    if(Config.EnableBasara)
+    if (Config.EnableBasara)
         banlist_ban = Config.value("Banlist/Basara").toStringList();
 
-    if(Config.GameMode == "zombie_mode")
+    if (Config.GameMode == "zombie_mode")
         banlist_ban.append(Config.value("Banlist/Zombie").toStringList());
-    else if((Config.GameMode.endsWith("p") ||
-             Config.GameMode.endsWith("pz") ||
-             Config.GameMode.endsWith("pd")))
+    else if (Config.GameMode.endsWith("p")
+             || Config.GameMode.endsWith("pz")
+             || Config.GameMode.endsWith("pd"))
         banlist_ban.append(Config.value("Banlist/Roles").toStringList());
 
     QStringList lords;
 
-    foreach(QString alord,getLords())
-    {
-        if(banlist_ban.contains(alord))continue;
-
+    foreach (QString alord, getLords()) {
+        if (banlist_ban.contains(alord)) continue;
         lords << alord;
     }
 
@@ -749,15 +745,13 @@ QStringList Engine::getRandomLords() const{
     }
 
     QStringList nonlord_list;
-    foreach(QString nonlord, this->nonlord_list){
+    foreach (QString nonlord, this->nonlord_list) {
         const General *general = generals.value(nonlord);
-        if(ban_package.contains(general->getPackage()))
+        if (getBanPackages().contains(general->getPackage()))
             continue;
-
-        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+        if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             continue;
-
-        if(banlist_ban.contains(general->objectName()))
+        if (banlist_ban.contains(general->objectName()))
             continue;
 
         nonlord_list << nonlord;
@@ -795,7 +789,7 @@ QStringList Engine::getLimitedGeneralNames() const{
     } else {
         while (itor.hasNext()) {
             itor.next();
-            if (!ban_package.contains(itor.value()->getPackage()))
+            if (!getBanPackages().contains(itor.value()->getPackage()))
                 general_names << itor.key();
         }
     }
@@ -816,7 +810,9 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     if (ServerInfo.GameMode.endsWith("p")
         || ServerInfo.GameMode.endsWith("pd")
-        || ServerInfo.GameMode.endsWith("pz"))
+        || ServerInfo.GameMode.endsWith("pz")
+        || ServerInfo.GameMode.contains("_mini_")
+        || ServerInfo.GameMode == "custom_scenario")
         general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "04_1v3")
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
@@ -835,30 +831,40 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
-    bool exclude_disaters = false, using_new_3v3 = false;
+    bool exclude_disaters = false, using_2012_3v3 = false, using_2013_3v3 = false;
 
-    if(Config.GameMode == "06_3v3"){
-        using_new_3v3 = Config.value("3v3/UsingNewMode", false).toBool();
-        exclude_disaters = Config.value("3v3/ExcludeDisasters", true).toBool() ||
-                            using_new_3v3;
+    if (Config.GameMode == "06_3v3") {
+        using_2012_3v3 = (Config.value("3v3/OfficialRule", "2012").toString() == "2012");
+        using_2013_3v3 = (Config.value("3v3/OfficialRule", "2012").toString() == "2013");
+        exclude_disaters = !Config.value("3v3/UsingExtension", false).toBool() || Config.value("3v3/ExcludeDisasters", true).toBool();
     }
 
-    if(Config.GameMode == "04_1v3")
+    if (Config.GameMode == "04_1v3")
         exclude_disaters = true;
 
     QList<int> list;
-    foreach(Card *card, cards){
+    foreach (Card *card, cards) {
         card->clearFlags();
 
-        if(exclude_disaters && card->isKindOf("Disaster"))
+        if (exclude_disaters && card->isKindOf("Disaster"))
             continue;
 
-        if(card->getPackage() == "New3v3Card" && using_new_3v3){
+        if (card->getPackage() == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
             list << card->getId();
-            list.removeOne(98);
-        }
-        else if(!ban_package.contains(card->getPackage()))
+        else if (card->getPackage() == "New3v3_2013Card" && using_2013_3v3)
             list << card->getId();
+
+        if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
+            && card->getPackage() != "standard_cards" && card->getPackage() != "standard_ex_cards")
+            continue;
+        if (!getBanPackages().contains(card->getPackage()))
+            list << card->getId();
+    }
+    if (using_2012_3v3 || using_2013_3v3)
+        list.removeOne(98);
+    if (using_2013_3v3) {
+        list.removeOne(53);
+        list.removeOne(54);
     }
 
     qShuffle(list);
@@ -876,21 +882,18 @@ void Engine::playSystemAudioEffect(const QString &name) const{
 
 void Engine::playAudioEffect(const QString &filename) const{
 #ifdef AUDIO_SUPPORT
-
-    if(!Config.EnableEffects)
+    if (!Config.EnableEffects)
         return;
-
-    if(filename.isNull())
+    if (filename.isNull())
         return;
 
     Audio::play(filename);
-
 #endif
 }
 
 void Engine::playSkillAudioEffect(const QString &skill_name, int index) const{
     const Skill *skill = skills.value(skill_name, NULL);
-    if(skill)
+    if (skill)
         skill->playAudioEffect(index);
 }
 
@@ -899,12 +902,12 @@ const Skill *Engine::getSkill(const QString &skill_name) const{
 }
 
 const Skill *Engine::getSkill(const EquipCard *equip) const{
-    const Skill* skill;
-    if (equip == NULL) skill = NULL;
-    else {
+    const Skill *skill;
+    if (equip == NULL)
+        skill = NULL;
+    else
         skill = Sanguosha->getSkill(equip->objectName());
-        if (skill == NULL) skill = equip->getSkill();
-    }
+
     return skill;
 }
 
@@ -914,7 +917,7 @@ QStringList Engine::getSkillNames() const{
 
 const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const{
     const Skill *skill = getSkill(skill_name);
-    if(skill)
+    if (skill)
         return qobject_cast<const TriggerSkill *>(skill);
     else
         return NULL;
@@ -922,21 +925,21 @@ const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const{
 
 const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const{
     const Skill *skill = getSkill(skill_name);
-    if(skill == NULL)
+    if (skill == NULL)
         return NULL;
 
-    if(skill->inherits("ViewAsSkill"))
+    if (skill->inherits("ViewAsSkill"))
         return qobject_cast<const ViewAsSkill *>(skill);
-    else if(skill->inherits("TriggerSkill")){
+    else if (skill->inherits("TriggerSkill")) {
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
         return trigger_skill->getViewAsSkill();
-    }else
+    } else
         return NULL;
 }
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card) const{
-    foreach(const ProhibitSkill *skill, prohibit_skills){
-        if(to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
+    foreach (const ProhibitSkill *skill, prohibit_skills) {
+        if (to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
             return skill;
     }
 
@@ -946,7 +949,7 @@ const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, 
 int Engine::correctDistance(const Player *from, const Player *to) const{
     int correct = 0;
 
-    foreach(const DistanceSkill *skill, distance_skills){
+    foreach (const DistanceSkill *skill, distance_skills) {
         correct += skill->getCorrect(from, to);
     }
 

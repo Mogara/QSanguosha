@@ -1,19 +1,19 @@
-#ifndef GOD_H
-#define GOD_H
+#ifndef _GOD_H
+#define _GOD_H
 
 #include "package.h"
 #include "card.h"
 #include "skill.h"
 #include "standard.h"
 
-class GodPackage : public Package{
+class GodPackage: public Package {
     Q_OBJECT
 
 public:
     GodPackage();
 };
 
-class GongxinCard: public SkillCard{
+class GongxinCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -23,29 +23,28 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class YeyanCard: public SkillCard{
+class YeyanCard: public SkillCard {
     Q_OBJECT
 
 public:
     void damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point) const;
 };
 
-class GreatYeyanCard: public YeyanCard{
+class GreatYeyanCard: public YeyanCard {
     Q_OBJECT
 
 public:
     Q_INVOKABLE GreatYeyanCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets,
-                                  const Player *to_select, const Player *Self) const;
+                              const Player *to_select, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select,
                               const Player *Self, int &maxVotes) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
-class SmallYeyanCard: public YeyanCard{
+class SmallYeyanCard: public YeyanCard {
     Q_OBJECT
 
 public:
@@ -56,7 +55,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class ShenfenCard: public SkillCard{
+class ShenfenCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -65,7 +64,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class WuqianCard: public SkillCard{
+class WuqianCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -85,7 +84,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class DawuCard: public SkillCard{
+class DawuCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -95,7 +94,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class JilveCard: public SkillCard{
+class JilveCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -104,4 +103,21 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-#endif // GOD_H
+class Longhun: public ViewAsSkill {
+    Q_OBJECT
+
+public:
+    Longhun();
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
+    virtual bool isEnabledAtPlay(const Player *player) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *card) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const;
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
+
+protected:
+    virtual int getEffHp(const Player *zhaoyun) const;
+};
+
+#endif
+

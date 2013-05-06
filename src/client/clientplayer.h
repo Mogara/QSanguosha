@@ -1,5 +1,5 @@
-#ifndef CLIENTPLAYER_H
-#define CLIENTPLAYER_H
+#ifndef _CLIENT_PLAYER_H
+#define _CLIENT_PLAYER_H
 
 #include "player.h"
 #include "clientstruct.h"
@@ -7,15 +7,13 @@
 class Client;
 class QTextDocument;
 
-class ClientPlayer : public Player
-{
+class ClientPlayer: public Player {
     Q_OBJECT
     Q_PROPERTY(int handcard READ getHandcardNum WRITE setHandcardNum)
 
 public:
     explicit ClientPlayer(Client *client);
-    void handCardChange(int delta);
-    QList<const Card *> getCards() const;
+    virtual QList<const Card *> getHandcards() const;
     void setCards(const QList<int> &card_ids);
     QTextDocument *getMarkDoc() const;
     void changePile(const QString &name, bool add, QList<int> card_ids);
@@ -29,7 +27,7 @@ public:
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
     virtual void addKnownHandCard(const Card *card);
-    virtual bool isLastHandCard(const Card *card) const;
+    virtual bool isLastHandCard(const Card *card, bool contain = false) const;
     virtual void setMark(const QString &mark, int value);
 
 private:
@@ -42,8 +40,10 @@ signals:
     void drank_changed();
     void action_taken();
     void skill_state_changed(const QString &skill_name);
+    void duanchang_invoked();
 };
 
 extern ClientPlayer *Self;
 
-#endif // CLIENTPLAYER_H
+#endif
+

@@ -1,5 +1,5 @@
-#ifndef CHOOSEGENERALDIALOG_H
-#define CHOOSEGENERALDIALOG_H
+#ifndef _CHOOSE_GENERAL_DIALOG_H
+#define _CHOOSE_GENERAL_DIALOG_H
 
 class General;
 
@@ -11,9 +11,9 @@ class General;
 
 #include <QToolButton>
 
-class OptionButton : public QToolButton
-{
+class OptionButton: public QToolButton {
     Q_OBJECT
+
 public:
     explicit OptionButton(const QString icon_path, const QString &caption = "", QWidget *parent = 0);
 #ifdef Q_WS_X11
@@ -25,16 +25,14 @@ protected:
 
 signals:
     void double_clicked();
-
 };
 
-class ChooseGeneralDialog : public QDialog
-{
+class ChooseGeneralDialog: public QDialog {
     Q_OBJECT
 
 public:
-    explicit ChooseGeneralDialog(const QStringList &general_names,
-                                 QWidget *parent);
+    explicit ChooseGeneralDialog(const QStringList &general_names, QWidget *parent);
+
 public slots:
     void done(int);
 
@@ -48,7 +46,7 @@ private slots:
     void freeChoose();   
 };
 
-class FreeChooseDialog: public QDialog{
+class FreeChooseDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -68,4 +66,5 @@ signals:
     void pair_chosen(const QString &first, const QString &second);
 };
 
-#endif // CHOOSEGENERALDIALOG_H
+#endif
+

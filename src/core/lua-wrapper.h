@@ -1,28 +1,28 @@
-#ifndef LUAWRAPPER_H
-#define LUAWRAPPER_H
+#ifndef _LUA_WRAPPER_H
+#define _LUA_WRAPPER_H
 
 #include "skill.h"
 
 typedef int LuaFunction;
 
-class LuaTriggerSkill: public TriggerSkill{
+class LuaTriggerSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
     LuaTriggerSkill(const char *name, Frequency frequency);
-    void addEvent(TriggerEvent event);
+    void addEvent(TriggerEvent triggerEvent);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
 
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
     LuaFunction on_trigger;
     LuaFunction can_trigger;
     int priority;
 };
 
-class LuaProhibitSkill: public ProhibitSkill{
+class LuaProhibitSkill: public ProhibitSkill {
     Q_OBJECT
 
 public:
@@ -33,14 +33,14 @@ public:
     LuaFunction is_prohibited;
 };
 
-class LuaViewAsSkill: public ViewAsSkill{
+class LuaViewAsSkill: public ViewAsSkill {
     Q_OBJECT
 
 public:
     LuaViewAsSkill(const char *name);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
     void pushSelf(lua_State *L) const;
 
@@ -56,20 +56,20 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
 };
 
-class LuaFilterSkill: public FilterSkill{
+class LuaFilterSkill: public FilterSkill {
     Q_OBJECT
 
 public:
     LuaFilterSkill(const char *name);
 
-    virtual bool viewFilter(const Card* to_select) const;
+    virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const;
 
     LuaFunction view_filter;
     LuaFunction view_as;
 };
 
-class LuaDistanceSkill: public DistanceSkill{
+class LuaDistanceSkill: public DistanceSkill {
     Q_OBJECT
 
 public:
@@ -80,7 +80,7 @@ public:
     LuaFunction correct_func;
 };
 
-class LuaMaxCardsSkill: public MaxCardsSkill{
+class LuaMaxCardsSkill: public MaxCardsSkill {
     Q_OBJECT
 
 public:
@@ -123,7 +123,7 @@ public:
     static LuaSkillCard *Parse(const QString &str);
     void pushSelf(lua_State *L) const;
 
-    virtual QString toString() const;
+    virtual QString toString(bool hidden = false) const;
 
     // these functions are defined at swig/luaskills.i
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
@@ -138,4 +138,4 @@ public:
     LuaFunction on_effect;
 };
 
-#endif // LUAWRAPPER_H
+#endif

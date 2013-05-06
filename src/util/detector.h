@@ -1,13 +1,12 @@
-#ifndef DETECTOR_H
-#define DETECTOR_H
+#ifndef _DETECTOR_H
+#define _DETECTOR_H
 
 #include <QObject>
 #include <QString>
 #include <QUdpSocket>
 #include <QThread>
 
-class Detector : public QObject
-{
+class Detector: public QObject {
     Q_OBJECT
 
 public slots:
@@ -18,7 +17,7 @@ signals:
     void detected(const QString &server_name, const QString &address);
 };
 
-class UdpDetector: public Detector{
+class UdpDetector: public Detector {
     Q_OBJECT
 
 public:
@@ -33,4 +32,5 @@ private:
     QUdpSocket *socket;
 };
 
-#endif // DETECTOR_H
+#endif
+

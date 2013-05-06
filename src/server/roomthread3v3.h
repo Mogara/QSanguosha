@@ -1,5 +1,5 @@
-#ifndef ROOMTHREAD3V3_H
-#define ROOMTHREAD3V3_H
+#ifndef _ROOM_THREAD_3V3_H
+#define _ROOM_THREAD_3V3_H
 
 class Room;
 
@@ -8,8 +8,7 @@ class Room;
 
 #include "serverplayer.h"
 
-class RoomThread3v3 : public QThread
-{
+class RoomThread3v3: public QThread {
     Q_OBJECT
 
 public:
@@ -29,8 +28,9 @@ private:
 
     QStringList getGeneralsWithoutExtension() const;
     void askForTakeGeneral(ServerPlayer *player);
-    void startArrange(ServerPlayer *player);
+    void startArrange(QList<ServerPlayer *> &players);
     void assignRoles(const QStringList &roles, const QString &scheme);
 };
 
-#endif // ROOMTHREAD3V3_H
+#endif
+

@@ -1,19 +1,19 @@
-#ifndef BGMPACKAGE_H
-#define BGMPACKAGE_H
+#ifndef _BGM_H
+#define _BGM_H
 
 #include "package.h"
 #include "card.h"
 #include "skill.h"
 #include "standard.h"
 
-class BGMPackage : public Package{
+class BGMPackage: public Package {
     Q_OBJECT
 
 public:
     BGMPackage();
 };
 
-class LihunCard: public SkillCard{
+class LihunCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -23,7 +23,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class DaheCard: public SkillCard{
+class DaheCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -33,7 +33,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class TanhuCard: public SkillCard{
+class TanhuCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -43,7 +43,17 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class YanxiaoCard:public DelayedTrick{
+class ShichouCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ShichouCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class YanxiaoCard: public DelayedTrick {
     Q_OBJECT
 
 public:
@@ -52,9 +62,20 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void takeEffect(ServerPlayer *) const;
+
+    virtual QString getType() const{ return "skill_card"; }
+    virtual QString getSubtype() const{ return "skill_card"; }
+    virtual CardType getTypeId() const{ return TypeSkill; }
+    virtual bool isKindOf(const char *cardType) const{
+        if (strcmp(cardType, "SkillCard") == 0)
+            return true;
+        else
+            return inherits(cardType);
+    }
+
 };
 
-class YinlingCard: public SkillCard{
+class YinlingCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -78,15 +99,6 @@ public:
     Q_INVOKABLE ZhaoxinCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-
-class LangguCard: public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE LangguCard();
-
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
@@ -126,4 +138,5 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-#endif // BGMPACKAGE_H
+#endif
+

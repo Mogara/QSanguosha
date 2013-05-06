@@ -1,27 +1,26 @@
-
-class LuaTriggerSkill: public TriggerSkill{
+class LuaTriggerSkill: public TriggerSkill {
 public:
     LuaTriggerSkill(const char *name, Frequency frequency);
     void addEvent(TriggerEvent event);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
     
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
 
     LuaFunction on_trigger;
     LuaFunction can_trigger;
     int priority;
 };
 
-class GameStartSkill: public TriggerSkill{
+class GameStartSkill: public TriggerSkill {
 public:
     GameStartSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
-class ProhibitSkill: public Skill{
+class ProhibitSkill: public Skill {
 public:
     ProhibitSkill(const QString &name);
 
@@ -35,7 +34,7 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
 
-class MaxCardsSkill: public Skill{
+class MaxCardsSkill: public Skill {
 public:
     MaxCardsSkill(const QString &name);
 
@@ -61,7 +60,7 @@ protected:
     QString pattern;
 };
 
-class LuaProhibitSkill: public ProhibitSkill{
+class LuaProhibitSkill: public ProhibitSkill {
 public:
     LuaProhibitSkill(const char *name);
 
@@ -70,7 +69,7 @@ public:
     LuaFunction is_prohibited;
 };
 
-class ViewAsSkill:public Skill{
+class ViewAsSkill: public Skill {
 public:
     ViewAsSkill(const QString &name);
 
@@ -81,12 +80,12 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const char *pattern) const;
 };
 
-class LuaViewAsSkill: public ViewAsSkill{
+class LuaViewAsSkill: public ViewAsSkill {
 public:
     LuaViewAsSkill(const char *name);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
     LuaFunction view_filter;
     LuaFunction view_as;
@@ -96,34 +95,34 @@ public:
     LuaFunction enabled_at_nullification;
 };
 
-class OneCardViewAsSkill: public ViewAsSkill{
+class OneCardViewAsSkill: public ViewAsSkill {
 public:
     OneCardViewAsSkill(const QString &name);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
-    virtual bool viewFilter(const Card* to_select) const = 0;
+    virtual bool viewFilter(const Card *to_select) const = 0;
     virtual const Card *viewAs(const Card *originalCard) const = 0;
 };
 
-class FilterSkill: public OneCardViewAsSkill{
+class FilterSkill: public OneCardViewAsSkill {
 public:
     FilterSkill(const QString &name);
 };
 
-class LuaFilterSkill: public FilterSkill{
+class LuaFilterSkill: public FilterSkill {
 public:
     LuaFilterSkill(const char *name);
 
-    virtual bool viewFilter(const Card* to_select) const;
+    virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const;
 
     LuaFunction view_filter;
     LuaFunction view_as;
 };
 
-class LuaDistanceSkill: public DistanceSkill{
+class LuaDistanceSkill: public DistanceSkill {
 public:
     LuaDistanceSkill(const char *name);
     virtual int getCorrect(const Player *from, const Player *to) const;
@@ -131,7 +130,7 @@ public:
     LuaFunction correct_func;
 };
 
-class LuaMaxCardsSkill: public MaxCardsSkill{
+class LuaMaxCardsSkill: public MaxCardsSkill {
 public:
     LuaMaxCardsSkill(const char *name);
     virtual int getExtra(const Player *target) const;
@@ -174,7 +173,7 @@ public:
 #include "clientplayer.h"
 
 bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const{
-    if(can_trigger == 0)
+    if (can_trigger == 0)
         return TriggerSkill::triggerable(target);
     
     Room *room = target->getRoom();
@@ -186,20 +185,20 @@ bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const{
     SWIG_NewPointerObj(L, target, SWIGTYPE_p_ServerPlayer, 0);
 
     int error = lua_pcall(L, 2, 1, 0);
-    if(error){
+    if (error) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
         return false;
-    }else{
+    } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
     }
 }
 
-bool LuaTriggerSkill::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-    if(on_trigger == 0)
+bool LuaTriggerSkill::trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const{
+    if (on_trigger == 0)
         return false;
         
     lua_State *L = room->getLuaState();
@@ -222,12 +221,12 @@ bool LuaTriggerSkill::trigger(TriggerEvent event, Room* room, ServerPlayer *play
     SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
     
     int error = lua_pcall(L, 4, 1, 0);
-    if(error){
+    if (error) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
         return false;
-    }else{
+    } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
@@ -236,14 +235,14 @@ bool LuaTriggerSkill::trigger(TriggerEvent event, Room* room, ServerPlayer *play
 
 #include <QMessageBox>
 
-static void Error(lua_State *L){
+static void Error(lua_State *L) {
     const char *error_string = lua_tostring(L, -1);
     lua_pop(L, 1);
     QMessageBox::warning(NULL, "Lua script error!", error_string);
 }
 
 bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const Card *card) const{
-    if(is_prohibited == 0)
+    if (is_prohibited == 0)
         return false;
 
     lua_State *L = Sanguosha->getLuaState();
@@ -256,7 +255,7 @@ bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const 
     SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
 
     int error = lua_pcall(L, 4, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return false;
     }
@@ -267,7 +266,7 @@ bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const 
 }
 
 int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{
-    if(correct_func == 0)
+    if (correct_func == 0)
         return 0;
 
     lua_State *L = Sanguosha->getLuaState();
@@ -279,7 +278,7 @@ int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{
     SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
 
     int error = lua_pcall(L, 3, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return 0;
     }
@@ -291,7 +290,7 @@ int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{
 }
 
 int LuaMaxCardsSkill::getExtra(const Player *target) const{
-    if(extra_func == 0)
+    if (extra_func == 0)
         return 0;
 
     lua_State *L = Sanguosha->getLuaState();
@@ -302,7 +301,7 @@ int LuaMaxCardsSkill::getExtra(const Player *target) const{
     SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);
 
     int error = lua_pcall(L, 2, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return 0;
     }
@@ -397,7 +396,7 @@ bool LuaFilterSkill::viewFilter(const Card *to_select) const{
     SWIG_NewPointerObj(L, to_select, SWIGTYPE_p_Card, 0);
 
     int error = lua_pcall(L, 2, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return false;
     }
@@ -408,7 +407,7 @@ bool LuaFilterSkill::viewFilter(const Card *to_select) const{
 }
 
 const Card *LuaFilterSkill::viewAs(const Card *originalCard) const{
-    if(view_as == 0)
+    if (view_as == 0)
         return false;
 
     lua_State *L = Sanguosha->getLuaState();
@@ -419,7 +418,7 @@ const Card *LuaFilterSkill::viewAs(const Card *originalCard) const{
     SWIG_NewPointerObj(L, originalCard, SWIGTYPE_p_Card, 0);
 
     int error = lua_pcall(L, 2, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return NULL;
     }
@@ -427,13 +426,12 @@ const Card *LuaFilterSkill::viewAs(const Card *originalCard) const{
     void *card_ptr;
     int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
     lua_pop(L, 1);
-    if(SWIG_IsOK(result)){
+    if (SWIG_IsOK(result)) {
         const Card *card = static_cast<const Card *>(card_ptr);
         return card;
-    }else
+    } else
         return NULL;
 }
-
 
 // ----------------------
 
@@ -443,7 +441,7 @@ void LuaViewAsSkill::pushSelf(lua_State *L) const{
 }
 
 bool LuaViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-    if(view_filter == 0)
+    if (view_filter == 0)
         return false;
 
     lua_State *L = Sanguosha->getLuaState();
@@ -456,7 +454,7 @@ bool LuaViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card 
     for(int i = 0; i < selected.length(); i++){
         const Card *card = selected[i];
         SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -2, i + 1);
     }
 
     const Card *card = to_select;
@@ -484,14 +482,14 @@ const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const{
     pushSelf(L);
 
     lua_createtable(L, cards.length(), 0);
-    for(int i = 0; i < cards.length(); i++){
+    for (int i = 0; i < cards.length(); i++) {
         const Card *card = cards[i];
         SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -2, i + 1);
     }
 
     int error = lua_pcall(L, 2, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return NULL;
     }
@@ -499,15 +497,15 @@ const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const{
     void *card_ptr;
     int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
     lua_pop(L, 1);
-    if(SWIG_IsOK(result)){
+    if (SWIG_IsOK(result)) {
         const Card *card = static_cast<const Card *>(card_ptr);
         return card;
-    }else
+    } else
         return NULL;
 }
 
 bool LuaViewAsSkill::isEnabledAtPlay(const Player *player) const{
-    if(enabled_at_play == 0)
+    if (enabled_at_play == 0)
         return ViewAsSkill::isEnabledAtPlay(player);
 
     lua_State *L = Sanguosha->getLuaState();
@@ -520,10 +518,10 @@ bool LuaViewAsSkill::isEnabledAtPlay(const Player *player) const{
     SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
 
     int error = lua_pcall(L, 2, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return false;
-    }else{
+    } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
@@ -531,7 +529,7 @@ bool LuaViewAsSkill::isEnabledAtPlay(const Player *player) const{
 }
 
 bool LuaViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pattern) const{
-    if(enabled_at_response == 0)
+    if (enabled_at_response == 0)
         return ViewAsSkill::isEnabledAtResponse(player, pattern);
 
     lua_State *L = Sanguosha->getLuaState();
@@ -546,10 +544,10 @@ bool LuaViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pa
     lua_pushstring(L, pattern.toAscii());
 
     int error = lua_pcall(L, 3, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return false;
-    }else{
+    } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
@@ -557,7 +555,7 @@ bool LuaViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pa
 }
 
 bool LuaViewAsSkill::isEnabledAtNullification(const ServerPlayer *player) const{
-    if(enabled_at_nullification == 0)
+    if (enabled_at_nullification == 0)
         return ViewAsSkill::isEnabledAtNullification(player);
 
     lua_State *L = Sanguosha->getLuaState();
@@ -570,10 +568,10 @@ bool LuaViewAsSkill::isEnabledAtNullification(const ServerPlayer *player) const{
     SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
 
     int error = lua_pcall(L, 2, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return false;
-    }else{
+    } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
@@ -587,7 +585,7 @@ void LuaSkillCard::pushSelf(lua_State *L) const{
 }
 
 bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const{
-    if(filter == 0)
+    if (filter == 0)
         return SkillCard::targetFilter(targets, to_select, self);
 
     lua_State *L = Sanguosha->getLuaState();
@@ -598,20 +596,19 @@ bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Play
     pushSelf(L);
 
     lua_createtable(L, targets.length(), 0);
-    int i;
-    for(i=0; i<targets.length(); i++){
+    for (int i = 0; i < targets.length(); i++) {
         SWIG_NewPointerObj(L, targets.at(i), SWIGTYPE_p_Player, 0);
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -2, i + 1);
     }
 
     SWIG_NewPointerObj(L, to_select, SWIGTYPE_p_Player, 0);
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_Player, 0);
 
     int error = lua_pcall(L, 4, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return false;
-    }else{
+    } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
@@ -619,7 +616,7 @@ bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Play
 }
 
 bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const Player *self) const{
-    if(feasible == 0)
+    if (feasible == 0)
         return SkillCard::targetsFeasible(targets, self);
 
     lua_State *L = Sanguosha->getLuaState();
@@ -630,19 +627,18 @@ bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const P
     pushSelf(L);
 
     lua_createtable(L, targets.length(), 0);
-    int i;
-    for(i=0; i<targets.length(); i++){
+    for (int i = 0; i < targets.length(); i++) {
         SWIG_NewPointerObj(L, targets.at(i), SWIGTYPE_p_Player, 0);
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -2, i + 1);
     }
 
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_Player, 0);
 
     int error = lua_pcall(L, 3, 1, 0);
-    if(error){
+    if (error) {
         Error(L);
         return false;
-    }else{
+    } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
@@ -650,7 +646,7 @@ bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const P
 }
 
 void LuaSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if(on_use == 0)
+    if (on_use == 0)
         return SkillCard::use(room, source, targets);
 
     lua_State *L = Sanguosha->getLuaState();
@@ -665,14 +661,13 @@ void LuaSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     SWIG_NewPointerObj(L, source, SWIGTYPE_p_ServerPlayer, 0);
 
     lua_createtable(L, targets.length(), 0);
-    int i;
-    for(i=0; i<targets.length(); i++){
+    for (int i = 0; i < targets.length(); i++) {
         SWIG_NewPointerObj(L, targets.at(i), SWIGTYPE_p_ServerPlayer, 0);
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -2, i + 1);
     }
 
     int error = lua_pcall(L, 4, 0, 0);
-    if(error){
+    if (error) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
@@ -680,7 +675,7 @@ void LuaSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 }
 
 void LuaSkillCard::onEffect(const CardEffectStruct &effect) const{
-    if(on_effect == 0)
+    if (on_effect == 0)
         return SkillCard::onEffect(effect);
 
     lua_State *L = Sanguosha->getLuaState();
@@ -693,14 +688,12 @@ void LuaSkillCard::onEffect(const CardEffectStruct &effect) const{
     SWIG_NewPointerObj(L, &effect, SWIGTYPE_p_CardEffectStruct, 0);
 
     int error = lua_pcall(L, 2, 0, 0);
-    if(error){
+    if (error) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         Room *room = effect.to->getRoom();
         room->output(error_msg);
     }
 }
-
-
 
 %}

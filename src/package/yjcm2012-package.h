@@ -1,5 +1,5 @@
-#ifndef YJCM2012PACKAGE_H
-#define YJCM2012PACKAGE_H
+#ifndef _YJCM2012_H
+#define _YJCM2012_H
 
 #include "package.h"
 #include "card.h"
@@ -9,14 +9,14 @@
 #include <QGroupBox>
 #include <QAbstractButton>
 
-class YJCM2012Package: public Package{
+class YJCM2012Package: public Package {
     Q_OBJECT
 
 public:
     YJCM2012Package();
 };
 
-class QiceCard: public SkillCard{
+class QiceCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -27,7 +27,6 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
     virtual const Card *validate(const CardUseStruct *card_use) const;
-    //virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const;
 };
 
 class GongqiCard: public SkillCard {
@@ -49,7 +48,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class AnxuCard: public SkillCard{
+class AnxuCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -60,7 +59,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class ChunlaoCard: public SkillCard{
+class ChunlaoCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -69,4 +68,14 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-#endif // YJCM2012PACKAGE_H
+class ChunlaoWineCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ChunlaoWineCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+#endif
+

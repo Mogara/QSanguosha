@@ -3,8 +3,12 @@
 #include "engine.h"
 #include "settings.h"
 #include "generalselector.h"
+#include "jsonutils.h"
 
 #include <QDateTime>
+
+using namespace QSanProtocol;
+using namespace QSanProtocol::Utils;
 
 RoomThreadXMode::RoomThreadXMode(Room *room)
     :room(room)
@@ -47,16 +51,17 @@ void RoomThreadXMode::run() {
     qShuffle(general_names);
 
     int index = 0;
+    QList<QStringList> all_names;
     QStringList names;
-    foreach (ServerPlayer *p, room->m_players) {
+    for (int i = 0; i < room->m_players.length(); i++) {
         names.clear();
-        for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             names << general_names.at(index);
             index++;
         }
-        startArrange(p, names);
+        all_names << names;
     }
-    room->sem->acquire(6);
+    startArrange(room->m_players, all_names);
 
     QStringList warm_backup, cool_backup;
     foreach (ServerPlayer *player, room->m_players) {
@@ -69,37 +74,63 @@ void RoomThreadXMode::run() {
         }
         player->tag.remove("XModeBackup");
     }
-    startArrange(warm_leader, warm_backup);
-    startArrange(cool_leader, cool_backup);
-
-    room->sem->acquire(2);
+    startArrange(QList<ServerPlayer *>() << warm_leader << cool_leader,
+                 QList<QStringList>() << warm_backup << cool_backup);
 }
 
-void RoomThreadXMode::startArrange(ServerPlayer *player, const QStringList &to_arrange) {
-    if (!player->isOnline()) {
-        // @todo: AI
-        QStringList arranged = to_arrange.mid(0, 3);
-        arrange(player, arranged);
-    } else {
-        player->invoke("startArrange", to_arrange.join("+"));
+void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QStringList> &to_arrange) {
+    while (room->isPaused()) {}
+    QList<ServerPlayer *> online;
+    for (int i = 0; i < players.length(); i++) {
+        ServerPlayer *player = players.at(i);
+        if (!player->isOnline()) {
+            // @todo: AI
+            QStringList mutable_to_arrange = to_arrange.at(i);
+            qShuffle(mutable_to_arrange);
+            QStringList arranged = mutable_to_arrange.mid(0, 3);
+            arrange(player, arranged);
+        } else {
+            online << player;
+        }
+    }
+    if (online.isEmpty()) return;
+
+    for (int i = 0; i < online.length(); i++) {
+        ServerPlayer *player = online.at(i);
+        player->m_commandArgs = toJsonArray(to_arrange.at(i));
+    }
+
+    room->doBroadcastRequest(online, S_COMMAND_ARRANGE_GENERAL);
+
+    for (int i = 0; i < online.length(); i++) {
+        ServerPlayer *player = online.at(i);
+        Json::Value clientReply = player->getClientReply();
+        if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
+            QStringList arranged;
+            tryParse(clientReply, arranged);
+            arrange(player, arranged);
+        } else {
+            QStringList mutable_to_arrange = to_arrange.at(i);
+            qShuffle(mutable_to_arrange);
+            QStringList arranged = mutable_to_arrange.mid(0, 3);
+            arrange(player, arranged);
+        }
     }
 }
 
 void RoomThreadXMode::arrange(ServerPlayer *player, const QStringList &arranged) {
     Q_ASSERT(arranged.length() == 3);
 
-    if (!player->hasFlag("XModeGeneralSelected")) {
+    if (!player->hasFlag("Global_XModeGeneralSelected")) {
         QStringList left = arranged.mid(1, 2);
         player->tag["XModeBackup"] = QVariant::fromValue(left);
         player->setGeneralName(arranged.first());
-        player->setFlags("XModeGeneralSelected");
+        player->setFlags("Global_XModeGeneralSelected");
     } else {
-        player->setFlags("-XModeGeneralSelected");
+        player->setFlags("-Global_XModeGeneralSelected");
         QStringList backup = arranged;
         player->tag["XModeBackup"] = QVariant::fromValue(backup);
     }
-
-    room->sem->release();
 }
 
 void RoomThreadXMode::assignRoles(const QStringList &roles, const QString &scheme) {

@@ -1,5 +1,5 @@
-#ifndef CONNECTIONDIALOG_H
-#define CONNECTIONDIALOG_H
+#ifndef _CONNECTION_DIALOG_H
+#define _CONNECTION_DIALOG_H
 
 #include <QDialog>
 #include <QListWidget>
@@ -12,7 +12,7 @@ namespace Ui {
     class ConnectionDialog;
 }
 
-class ConnectionDialog : public QDialog {
+class ConnectionDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -26,12 +26,12 @@ private:
 private slots:
     void on_detectLANButton_clicked();
     void on_clearHistoryButton_clicked();
-    void on_avatarList_itemDoubleClicked(QListWidgetItem* item);
+    void on_avatarList_itemDoubleClicked(QListWidgetItem *item);
     void on_changeAvatarButton_clicked();
     void on_connectButton_clicked();
 };
 
-class UdpDetectorDialog : public QDialog{
+class UdpDetectorDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -52,4 +52,5 @@ signals:
     void address_chosen(const QString &address);
 };
 
-#endif // CONNECTIONDIALOG_H
+#endif
+

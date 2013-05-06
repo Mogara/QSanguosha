@@ -1,5 +1,5 @@
-#ifndef CONFIGDIALOG_H
-#define CONFIGDIALOG_H
+#ifndef _CONFIG_DIALOG_H
+#define _CONFIG_DIALOG_H
 
 #include <QDialog>
 #include <QLineEdit>
@@ -8,7 +8,7 @@ namespace Ui {
     class ConfigDialog;
 }
 
-class ConfigDialog : public QDialog {
+class ConfigDialog: public QDialog {
     Q_OBJECT
 public:
     ConfigDialog(QWidget *parent = 0);
@@ -16,7 +16,6 @@ public:
 
 private:
     Ui::ConfigDialog *ui;
-
     void showFont(QLineEdit *lineedit, const QFont &font);
 
 private slots:
@@ -33,4 +32,5 @@ signals:
     void bg_changed();
 };
 
-#endif // CONFIGDIALOG_H
+#endif
+

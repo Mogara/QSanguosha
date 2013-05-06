@@ -1,19 +1,19 @@
-#ifndef ASSASSINSPACKAGE_H
-#define ASSASSINSPACKAGE_H
+#ifndef _ASSASSINS_H
+#define _ASSASSINS_H
 
 #include "package.h"
 #include "card.h"
 #include "skill.h"
 #include "standard.h"
 
-class AssassinsPackage : public Package{
+class AssassinsPackage: public Package {
     Q_OBJECT
 
 public:
     AssassinsPackage();
 };
 
-class MizhaoCard: public SkillCard{
+class MizhaoCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -51,4 +51,5 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
 };
 
-#endif // ASSASSINSPACKAGE_H
+#endif
+

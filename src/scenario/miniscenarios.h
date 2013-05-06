@@ -1,22 +1,22 @@
-#ifndef MINISCENARIOS_H
-#define MINISCENARIOS_H
+#ifndef _MINI_SCENARIOS_H
+#define _MINI_SCENARIOS_H
 
 #include "scenario.h"
 #include "engine.h"
 #include "room.h"
 
-class MiniSceneRule : public ScenarioRule
-{
+class MiniSceneRule: public ScenarioRule {
     Q_OBJECT
+
 public:
-    static const char* S_EXTRA_OPTION_RANDOM_ROLES;
+    static const char *S_EXTRA_OPTION_RANDOM_ROLES;
     static const char *S_EXTRA_OPTION_REST_IN_DISCARD_PILE;
 
     MiniSceneRule(Scenario *scenario);
     void assign(QStringList &generals, QStringList &roles) const;
     QStringList existedGenerals() const;
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
 
     void addNPC(QString feature);
     void setOptions(QStringList option);
@@ -31,48 +31,38 @@ protected:
     QList<int> m_fixedDrawCards;
 };
 
-class MiniScene : public Scenario
-{
+class MiniScene: public Scenario {
     Q_OBJECT
 
 public:
-    static const char* S_KEY_MINISCENE;
+    static const char *S_KEY_MINISCENE;
     MiniScene(const QString &name);
     void setupCustom(QString name) const;
     virtual void onTagSet(Room *room, const QString &key) const;
-    virtual void assign(QStringList &generals, QStringList &roles) const
-    {
-        MiniSceneRule *rule = qobject_cast<MiniSceneRule*>(getRule());
-        rule->assign(generals,roles);
+    virtual void assign(QStringList &generals, QStringList &roles) const{
+        MiniSceneRule *rule = qobject_cast<MiniSceneRule *>(getRule());
+        rule->assign(generals, roles);
     }
-    virtual int getPlayerCount() const
-    {
-        QStringList generals,roles;
-        assign(generals,roles);
+    virtual int getPlayerCount() const{
+        QStringList generals, roles;
+        assign(generals, roles);
         return roles.length();
     }
 };
 
-class CustomScenario : public MiniScene
-{
+class CustomScenario: public MiniScene {
     Q_OBJECT
+
 public:
-    CustomScenario()
-        :MiniScene("custom_scenario")
-    {
-        setupCustom(NULL);
-    }
+    CustomScenario(): MiniScene("custom_scenario") { setupCustom(NULL); }
 };
 
-class LoadedScenario : public MiniScene
-{
+class LoadedScenario: public MiniScene {
     Q_OBJECT
+
 public:
-    LoadedScenario(const QString &name)
-        :MiniScene(QString(MiniScene::S_KEY_MINISCENE).arg(name))
-    {
-        setupCustom(name);
-    }
+    LoadedScenario(const QString &name): MiniScene(QString(MiniScene::S_KEY_MINISCENE).arg(name)) { setupCustom(name); }
 };
 
-#endif // MINISCENARIOS_H
+#endif
+

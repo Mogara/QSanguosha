@@ -15,7 +15,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->isLord() ){
+        if (damage.to->isLord()) {
             int x = damage.damage;
             Room *room = player->getRoom();
 
@@ -57,7 +57,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@dujiang-card";
+        return pattern == "@@dujiang";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -91,7 +91,7 @@ public:
                 return false;
 
             Room *room = target->getRoom();
-            room->askForUseCard(target, "@dujiang-card", "@@dujiang", -1, Card::MethodDiscard);
+            room->askForUseCard(target, "@@dujiang", "@dujiang-card", -1, Card::MethodDiscard);
         }
 
         return false;
@@ -105,7 +105,7 @@ FloodCard::FloodCard() {
 void FloodCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->setTag("Flood", true);
 
-    room->setPlayerFlag(source, "flood");
+    room->setPlayerMark(source, "flood", 1);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach (ServerPlayer *player, players) {
@@ -118,13 +118,8 @@ void FloodCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->throwAllEquips();
 
     Room *room = effect.to->getRoom();
-    if (!room->askForDiscard(effect.to, "flood", 2, 2, true)) {
-        DamageStruct damage;
-        damage.from = effect.from;
-        damage.to = effect.to;
-
-        room->damage(damage);
-    }
+    if (!room->askForDiscard(effect.to, "flood", 2, 2, true))
+        room->damage(DamageStruct("flood", effect.from, effect.to));
 }
 
 class Flood: public ViewAsSkill {
@@ -134,7 +129,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasFlag("flood");
+        return player->getMark("flood") == 0;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -156,21 +151,17 @@ TaichenFightCard::TaichenFightCard() {
     target_fixed = true;
 }
 
-void TaichenFightCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void TaichenFightCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->loseHp(source);
 
     if (source->isAlive()) {
         Duel *duel = new Duel(Card::NoSuit, 0);
-        duel->setSkillName("taichenfight");
+        duel->setSkillName("TAICHENFIGHT");
         duel->setCancelable(false);
 
-        room->setPlayerMark(source, "WushuangTarget", 1);
-        CardUseStruct use;
-        use.from = source;
-        use.to << room->getLord();
-        use.card = duel;
-        room->useCard(use);
-        room->setPlayerMark(source, "WushuangTarget", 0);
+        room->addPlayerMark(source, "WushuangTarget");
+        room->useCard(CardUseStruct(duel, source, room->getLord()));
+        room->removePlayerMark(source, "WushuangTarget");
     }
 }
 
@@ -184,9 +175,8 @@ public:
             return false;
         Duel *duel = new Duel(Card::NoSuit, 0);
         duel->deleteLater();
-        if (player->isCardLimited(duel, Card::MethodUse)) {
+        if (player->isCardLimited(duel, Card::MethodUse))
             return false;
-        }
         return true;
     }
 
@@ -237,7 +227,7 @@ bool ZhiyuanCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void ZhiyuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     targets.first()->obtainCard(this, false);
-    room->setPlayerMark(source, "zhiyuan", source->getMark("zhiyuan") - 1);
+    room->removePlayerMark(source, "zhiyuan");
 }
 
 class ZhiyuanViewAsSkill: public OneCardViewAsSkill {
@@ -306,6 +296,7 @@ public:
                 ServerPlayer *caoren = room->findPlayer("caoren");
                 room->installEquip(caoren, "renwang_shield");
                 room->acquireSkill(caoren, "zhiyuan");
+                room->acquireSkill(caoren, "#caoren-max-cards", false);
 
 
                 break;
@@ -327,6 +318,19 @@ public:
     }
 };
 
+class CaorenMaxCards: public MaxCardsSkill {
+public:
+    CaorenMaxCards():MaxCardsSkill("#caoren-max-cards") {
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if (target->getMark("CaorenMaxCards") > 0)
+            return -1;
+        else
+            return 0;
+    }
+};
+
 FanchengScenario::FanchengScenario()
     : Scenario("fancheng")
 {
@@ -342,7 +346,8 @@ FanchengScenario::FanchengScenario()
            << new Flood
            << new TaichenFight
            << new Xiansheng
-           << new Zhiyuan;
+           << new Zhiyuan
+           << new CaorenMaxCards;
 
     addMetaObject<DujiangCard>();
     addMetaObject<FloodCard>();
@@ -360,11 +365,11 @@ void FanchengScenario::onTagSet(Room *room, const QString &key) const{
 
         ServerPlayer *caoren = room->findPlayer("caoren");
         if (caoren)
-            room->setPlayerProperty(caoren, "xueyi", -1);
+            room->setPlayerMark(caoren, "CaorenMaxCards", 1);
     } else if (key == "Dujiang") {
         ServerPlayer *caoren = room->findPlayer("caoren");
         if (caoren)
-            room->setPlayerProperty(caoren, "xueyi", 0);
+            room->setPlayerMark(caoren, "CaorenMaxCards", 0);
     }
 }
 

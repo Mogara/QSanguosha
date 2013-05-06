@@ -12,7 +12,6 @@ class RoomThreadXMode: public QThread {
 
 public:
     explicit RoomThreadXMode(Room *room);
-    //void takeGeneral(ServerPlayer *player, const QString &name);
     void arrange(ServerPlayer *player, const QStringList &arranged);
     void assignRoles(const QString &scheme);
 
@@ -25,9 +24,7 @@ private:
     QStringList general_names;
     QString result;
 
-    //QStringList getGeneralsWithoutExtension() const;
-    //void askForTakeGeneral(ServerPlayer *player);
-    void startArrange(ServerPlayer *player, const QStringList &to_arrange);
+    void startArrange(QList<ServerPlayer *> &players, QList<QStringList> &to_arrange);
     void assignRoles(const QStringList &roles, const QString &scheme);
 };
 

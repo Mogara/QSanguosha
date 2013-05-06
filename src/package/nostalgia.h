@@ -1,32 +1,39 @@
-#ifndef NOSTALGIA_H
-#define NOSTALGIA_H
+#ifndef _NOSTALGIA_H
+#define _NOSTALGIA_H
 
 #include "package.h"
 #include "card.h"
 #include "standard.h"
 
-class NostalgiaPackage: public Package{
+class NostalgiaPackage: public Package {
     Q_OBJECT
 
 public:
     NostalgiaPackage();
 };
 
-class MoonSpear:public Weapon{
+class MoonSpear: public Weapon {
     Q_OBJECT
 
 public:
     Q_INVOKABLE MoonSpear(Card::Suit suit = Diamond, int number = 12);
 };
 
-class NostalGeneralPackage: public Package{
+class NostalYJCMPackage: public Package {
     Q_OBJECT
 
 public:
-    NostalGeneralPackage();
+    NostalYJCMPackage();
 };
 
-class NosJujianCard: public SkillCard{
+class NostalYJCM2012Package: public Package {
+    Q_OBJECT
+
+public:
+    NostalYJCM2012Package();
+};
+
+class NosJujianCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -35,7 +42,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class NosXuanhuoCard: public SkillCard{
+class NosXuanhuoCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -44,4 +51,14 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-#endif // NOSTALGIA_H
+class NosJiefanCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE NosJiefanCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+#endif
+

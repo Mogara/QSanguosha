@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef _MAIN_WINDOW_H
+#define _MAIN_WINDOW_H
 
 #include "engine.h"
 #include "connectiondialog.h"
@@ -27,7 +27,7 @@ class QToolButton;
 class QGroupBox;
 class RoomItem;
 
-class BroadcastBox: public QDialog{
+class BroadcastBox: public QDialog {
     Q_OBJECT
 
 public:
@@ -41,27 +41,29 @@ private:
     QTextEdit *text_edit;
 };
 
-class BackLoader
-{
+class BackLoader {
 public:
     static void preload();
 };
 
-class AcknowledgementScene : public QGraphicsScene
-{
+class AcknowledgementScene: public QGraphicsScene {
     Q_OBJECT
+
 public:
     explicit AcknowledgementScene(QObject *parent = 0);
+
 signals:
     void go_back();
+
 private:
     QDeclarativeView *view;
     QDeclarativeContext *ctxt;
-    QList<QObject*> tokens,equipped,loaded;
+    QList<QObject *> tokens, equipped, loaded;
 };
 
-class MainWindow : public QMainWindow {
+class MainWindow: public QMainWindow {
     Q_OBJECT
+
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -84,14 +86,12 @@ public slots:
     void startConnection();
 
 private slots:
+    void on_actionAbout_GPLv3_triggered();
     void on_actionAbout_Lua_triggered();
     void on_actionAbout_fmod_triggered();
     void on_actionReplay_file_convert_triggered();
-    void on_actionPackaging_triggered();
-    void on_actionScript_editor_triggered();
     void on_actionPC_Console_Start_triggered();
     void on_actionRecord_analysis_triggered();
-    void on_actionCard_editor_triggered();
     void on_actionAcknowledgement_triggered();
     void on_actionBroadcast_triggered();
     void on_actionScenario_Overview_triggered();
@@ -101,7 +101,8 @@ private slots:
     void on_actionFullscreen_triggered();
     void on_actionReplay_triggered();
     void on_actionAbout_triggered();
-    void on_actionEnable_Hotkey_toggled(bool );
+    void on_actionEnable_Hotkey_toggled(bool);
+    void on_actionNever_nullify_my_trick_toggled(bool);
     void on_actionCard_Overview_triggered();
     void on_actionGeneral_Overview_triggered();
     void on_actionStart_Server_triggered();
@@ -112,10 +113,10 @@ private slots:
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
     void gotoStartScene();
-    void sendLowLevelCommand();
     void startGameInAnotherInstance();
     void changeBackground();
     void on_actionView_ban_list_triggered();
 };
 
-#endif // MAINWINDOW_H
+#endif
+

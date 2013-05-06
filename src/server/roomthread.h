@@ -1,5 +1,5 @@
-#ifndef ROOMTHREAD_H
-#define ROOMTHREAD_H
+#ifndef _ROOM_THREAD_H
+#define _ROOM_THREAD_H
 
 #include <QThread>
 #include <QSemaphore>
@@ -9,7 +9,7 @@
 
 #include "structs.h"
 
-struct LogMessage{
+struct LogMessage {
     LogMessage();
     QString toString() const;
     Json::Value toJsonValue() const;
@@ -22,35 +22,38 @@ struct LogMessage{
     QString arg2;
 };
 
-class EventTriplet{
+class EventTriplet {
 public:
-    inline EventTriplet(TriggerEvent event, Room* room, ServerPlayer *target, QVariant *data)
-        :_m_event(event), _m_room(room), _m_target(target), _m_data(data){}
+    inline EventTriplet(TriggerEvent triggerEvent, Room *room, ServerPlayer *target)
+               : _m_event(triggerEvent), _m_room(room), _m_target(target) {}
     QString toString() const;
 
 private:
     TriggerEvent _m_event;
-    Room* _m_room;
+    Room *_m_room;
     ServerPlayer *_m_target;
-    QVariant *_m_data;
 };
 
-class RoomThread : public QThread{
+class RoomThread: public QThread {
     Q_OBJECT
 
 public:
     explicit RoomThread(Room *room);
     void resetRoomState();
     void constructTriggerTable();
-    bool trigger(TriggerEvent event, Room* room, ServerPlayer *target, QVariant &data);
-    bool trigger(TriggerEvent event, Room* room, ServerPlayer *target);
+    bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data);
+    bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target);
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
     void addTriggerSkill(const TriggerSkill *skill);
     void delay(long msecs = -1);
-    void run3v3();
+    ServerPlayer *find3v3Next(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second);
+    void run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &last, GameRule *game_rule, ServerPlayer *current);
     void action3v3(ServerPlayer *player);
+    void actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, GameRule *game_rule, int stage);
+    ServerPlayer *findHulaoPassNext(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, int stage);
+    void actionNormal(GameRule *game_rule);
 
     const QList<EventTriplet> *getEventStack() const;
 
@@ -62,11 +65,10 @@ private:
     QString order;
 
     QList<const TriggerSkill *> skill_table[NumOfEvents];
-    // I temporarily use the set of skill names instead of the skills themselves
-    // in order to avoid duplication. Maybe we need a better solution later.
     QSet<QString> skillSet;
 
     QList<EventTriplet> event_stack;
 };
 
-#endif // ROOMTHREAD_H
+#endif
+

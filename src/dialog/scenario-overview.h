@@ -1,12 +1,12 @@
-#ifndef SCENARIOOVERVIEW_H
-#define SCENARIOOVERVIEW_H
+#ifndef _SCENARIO_OVERVIEW_H
+#define _SCENARIO_OVERVIEW_H
 
 #include <QDialog>
 
 class QListWidget;
 class QTextEdit;
 
-class ScenarioOverview: public QDialog{
+class ScenarioOverview: public QDialog {
     Q_OBJECT
 
 public:
@@ -20,4 +20,5 @@ private slots:
     void loadContent(int row);
 };
 
-#endif // SCENARIOOVERVIEW_H
+#endif
+

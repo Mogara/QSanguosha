@@ -1,5 +1,5 @@
-#ifndef CARD_H
-#define CARD_H
+#ifndef _CARD_H
+#define _CARD_H
 
 #include <QObject>
 #include <QMap>
@@ -14,11 +14,9 @@ class ClientPlayer;
 class CardItem;
 
 struct CardEffectStruct;
-struct CardMoveStruct;
 struct CardUseStruct;
 
-class Card : public QObject
-{
+class Card: public QObject {
     Q_OBJECT
     Q_PROPERTY(QString suit READ getSuitString CONSTANT)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
@@ -57,7 +55,6 @@ public:
     int getId() const;
     virtual void setId(int id);
     int getEffectiveId() const;
-    QString getEffectIdString() const;
 
     int getNumber() const;
     virtual void setNumber(int number);
@@ -71,7 +68,7 @@ public:
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
     QString getName() const;
-    QString getSkillName() const;
+    QString getSkillName(bool toLower = true) const;
     virtual void setSkillName(const QString &skill_name);
     QString getDescription() const;
     
@@ -87,7 +84,7 @@ public:
     virtual void clearFlags() const;
 
     virtual QString getPackage() const;
-    inline virtual QString getClassName() const {return metaObject()->className();}
+    inline virtual QString getClassName() const{ return metaObject()->className(); }
     virtual bool isVirtualCard() const;
     virtual bool isEquipped() const;
     virtual QString getCommonEffectName() const;
@@ -115,7 +112,7 @@ public:
                               int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
     
-    inline virtual const Card *getRealCard() const {return this;}
+    inline virtual const Card *getRealCard() const{ return this; }
     virtual const Card *validate(const CardUseStruct *cardUse) const;
     virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const;
 
@@ -125,29 +122,22 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-    inline virtual bool isKindOf(const char* cardType) const { return cardType ? inherits(cardType) : false; }
-    inline virtual QStringList getFlags() const { return flags; }
+    inline virtual bool isKindOf(const char *cardType) const{ Q_ASSERT(cardType); return inherits(cardType); }
+    inline virtual QStringList getFlags() const{ return flags; }
 
-    inline virtual bool isModified() const {return false;}
-    inline virtual void onNullified(ServerPlayer * /*target*/) const {return;}
+    inline virtual bool isModified() const{ return false; }
+    inline virtual void onNullified(ServerPlayer */*target*/) const{ return; }
 
     // static functions
-    static bool CompareByColor(const Card *a, const Card *b);
-    static bool CompareBySuitNumber(const Card *a, const Card *b);
+    static bool CompareByNumber(const Card *a, const Card *b);
+    static bool CompareBySuit(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
     static Card *Clone(const Card *card);
     static QString Suit2String(Suit suit);
-    static QString Number2String(int number);
-    static QStringList IdsToStrings(const QList<int> &ids);
-    static QList<int> StringsToIds(const QStringList &strings);
     static const int S_UNKNOWN_CARD_ID;
 
-    static Card *tryParse(Json::Value val);
-    virtual Json::Value toJsonValue() const;
-
-    // to be deprecated
     static const Card *Parse(const QString &str);
-    virtual QString toString() const;
+    virtual QString toString(bool hidden = false) const;
     
 protected:
     QList<int> subcards;
@@ -165,7 +155,7 @@ protected:
     mutable QStringList flags;
 };
 
-class SkillCard: public Card{
+class SkillCard: public Card {
     Q_OBJECT
 
 public:
@@ -176,13 +166,13 @@ public:
     virtual QString getSubtype() const;
     virtual QString getType() const;
     virtual CardType getTypeId() const;
-    virtual QString toString() const;
+    virtual QString toString(bool hidden = false) const;
 
 protected:
     QString user_string;
 };
 
-class DummyCard: public SkillCard{
+class DummyCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -190,7 +180,8 @@ public:
 
     virtual QString getSubtype() const;
     virtual QString getType() const;
-    virtual QString toString() const;
+    virtual QString toString(bool hidden = false) const;
 };
 
-#endif // CARD_H
+#endif
+

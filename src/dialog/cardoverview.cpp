@@ -10,16 +10,15 @@
 
 static CardOverview *Overview;
 
-CardOverview *CardOverview::getInstance(QWidget *main_window){
-    if(Overview == NULL)
+CardOverview *CardOverview::getInstance(QWidget *main_window) {
+    if (Overview == NULL)
         Overview = new CardOverview(main_window);
 
     return Overview;
 }
 
-CardOverview::CardOverview(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::CardOverview)
+CardOverview::CardOverview(QWidget *parent)
+    : QDialog(parent), ui(new Ui::CardOverview)
 {
     ui->setupUi(this);
 
@@ -37,29 +36,29 @@ CardOverview::CardOverview(QWidget *parent) :
     ui->cardDescriptionBox->setProperty("description", true);
 }
 
-void CardOverview::loadFromAll(){
+void CardOverview::loadFromAll() {
     int n = Sanguosha->getCardCount();
     ui->tableWidget->setRowCount(n);
-    for (int i = 0; i < n ;i++){
+    for (int i = 0; i < n ;i++) {
         const Card *card = Sanguosha->getEngineCard(i);
         addCard(i, card);
     }
 
-    if(n>0)
-        ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
+    if (n > 0)
+        ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 }
 
-void CardOverview::loadFromList(const QList<const Card*> &list){
+void CardOverview::loadFromList(const QList<const Card *> &list) {
     int n = list.length();
     ui->tableWidget->setRowCount(n);
     for (int i = 0; i < n; i++)
         addCard(i, list.at(i));    
 
     if (n > 0)
-        ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
+        ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 }
 
-void CardOverview::addCard(int i, const Card *card){
+void CardOverview::addCard(int i, const Card *card) {
     QString name = Sanguosha->translate(card->objectName());
     QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
     QString suit_str = Sanguosha->translate(card->getSuitString());
@@ -79,13 +78,11 @@ void CardOverview::addCard(int i, const Card *card){
     ui->tableWidget->setItem(i, 5, new QTableWidgetItem(package));    
 }
 
-CardOverview::~CardOverview()
-{
+CardOverview::~CardOverview() {
     delete ui;
 }
 
-void CardOverview::on_tableWidget_itemSelectionChanged()
-{
+void CardOverview::on_tableWidget_itemSelectionChanged() {
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
     const Card *card = Sanguosha->getEngineCard(card_id);
@@ -100,9 +97,9 @@ void CardOverview::askCard() {
         return;
 
     int row = ui->tableWidget->currentRow();
-    if(row >= 0){
+    if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        if (Config.BanPackages.contains(Sanguosha->getEngineCard(card_id)->getPackage())) {
+        if (!ClientInstance->getAvailableCards().contains(card_id)) {
             QMessageBox::warning(this, tr("Warning"), tr("These packages don't contain this card"));
             return;
         }
@@ -110,28 +107,25 @@ void CardOverview::askCard() {
     }
 }
 
-void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
-{
-    if(Self)
-        askCard();
+void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *) {
+    if (Self) askCard();
 }
 
-void CardOverview::on_malePlayButton_clicked()
-{
+void CardOverview::on_malePlayButton_clicked() {
     int row = ui->tableWidget->currentRow();
-    if(row >= 0){
+    if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getEngineCard(card_id);
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), true));
     }
 }
 
-void CardOverview::on_femalePlayButton_clicked()
-{
+void CardOverview::on_femalePlayButton_clicked() {
     int row = ui->tableWidget->currentRow();
-    if(row >= 0){
+    if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getEngineCard(card_id);
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), false));
     }
 }
+

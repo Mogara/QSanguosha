@@ -22,16 +22,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class ShushenCard: public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ShushenCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
 class FenxunCard: public SkillCard {
     Q_OBJECT
 
@@ -59,18 +49,7 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-class SijianCard: public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE SijianCard();
-
-    void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class QingchengCard: public SkillCard {
@@ -80,7 +59,8 @@ public:
     Q_INVOKABLE QingchengCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
 #endif
+

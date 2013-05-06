@@ -1,12 +1,12 @@
-#ifndef GUANDUSCENARIO_H
-#define GUANDUSCENARIO_H
+#ifndef _GUANDU_SCENARIO_H
+#define _GUANDU_SCENARIO_H
 
 #include "scenario.h"
 #include "card.h"
 #include "standard.h"
 #include "standard-skillcards.h"
 
-class ZhanShuangxiongCard: public SkillCard{
+class ZhanShuangxiongCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -16,7 +16,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class SmallTuxiCard: public TuxiCard{
+class SmallTuxiCard: public TuxiCard {
     Q_OBJECT
 
 public:
@@ -25,7 +25,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class GuanduScenario : public Scenario{
+class GuanduScenario : public Scenario {
     Q_OBJECT
 
 public:
@@ -35,4 +35,5 @@ public:
     virtual void onTagSet(Room *room, const QString &key) const;
 };
 
-#endif // GUANDUSCENARIO_H
+#endif
+

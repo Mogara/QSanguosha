@@ -1,9 +1,9 @@
-#ifndef AUXSKILLS_H
-#define AUXSKILLS_H
+#ifndef _AUX_SKILLS_H
+#define _AUX_SKILLS_H
 
 #include "skill.h"
 
-class DiscardSkill : public ViewAsSkill{
+class DiscardSkill: public ViewAsSkill {
     Q_OBJECT
 
 public:
@@ -27,7 +27,7 @@ private:
 
 class CardPattern;
 
-class ResponseSkill: public OneCardViewAsSkill{
+class ResponseSkill: public OneCardViewAsSkill {
     Q_OBJECT
 
 public:
@@ -44,7 +44,7 @@ protected:
     Card::HandlingMethod request;
 };
 
-class ShowOrPindianSkill: public ResponseSkill{
+class ShowOrPindianSkill: public ResponseSkill {
     Q_OBJECT
 
 public:
@@ -52,41 +52,29 @@ public:
     virtual bool matchPattern(const Player *player, const Card *card) const;
 };
 
-class FreeDiscardSkill: public ViewAsSkill{
-    Q_OBJECT
+class YijiCard;
 
-public:
-    explicit FreeDiscardSkill(QObject *parent);
-
-    virtual bool isEnabledAtPlay(const Player *) const;
-
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card* viewAs(const QList<const Card *> &cards) const;
-
-private:
-    DummyCard *card;
-};
-
-class YijiViewAsSkill : public ViewAsSkill{
+class YijiViewAsSkill: public ViewAsSkill {
     Q_OBJECT
 
 public:
     explicit YijiViewAsSkill();
     void setCards(const QString &card_str);
     void setMaxNum(int max_num);
+    void setPlayerNames(const QStringList &names);
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
     virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
 private:
-    Card *card;
+    YijiCard *card;
     QList<int> ids;
     int max_num;
 };
 
 class ChoosePlayerCard;
 
-class ChoosePlayerSkill: public ZeroCardViewAsSkill{
+class ChoosePlayerSkill: public ZeroCardViewAsSkill {
     Q_OBJECT
 
 public:
@@ -99,4 +87,5 @@ private:
     ChoosePlayerCard *card;
 };
 
-#endif // AUXSKILLS_H
+#endif
+

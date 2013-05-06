@@ -1,5 +1,5 @@
-#ifndef ROLEComboBox_H
-#define ROLEComboBox_H
+#ifndef _ROLE_COMBO_BOX_H
+#define _ROLE_COMBO_BOX_H
 
 #include <QObject>
 
@@ -9,7 +9,7 @@
 
 class Photo;
 
-class RoleComboBoxItem : public QSanSelectableItem{
+class RoleComboBoxItem: public QSanSelectableItem {
     Q_OBJECT
 
 public:
@@ -29,8 +29,7 @@ signals:
     void clicked();
 };
 
-class RoleComboBox : public QGraphicsObject
-{
+class RoleComboBox: public QGraphicsObject{
     Q_OBJECT
 
 public:
@@ -40,18 +39,23 @@ public:
     static const int S_ROLE_COMBO_BOX_GAP = 5;
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
 public slots:
     void fix(const QString &role);
+
 protected:
     qreal _m_posX, _m_posY;
     QString _m_fixedRole;
+
 private:
     QList<RoleComboBoxItem *> items;
-    RoleComboBoxItem* m_currentRole;
+    RoleComboBoxItem *m_currentRole;
+
 private slots:
     void collapse();
     void expand();
     void toggle();
 };
 
-#endif // ROLEComboBox_H
+#endif
+

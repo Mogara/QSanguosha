@@ -1,5 +1,5 @@
-#ifndef GENERALSELECTOR_H
-#define GENERALSELECTOR_H
+#ifndef _GENERAL_SELECTOR_H
+#define _GENERAL_SELECTOR_H
 
 #include <QObject>
 #include <QHash>
@@ -8,7 +8,7 @@
 class ServerPlayer;
 
 // singleton class
-class GeneralSelector: public QObject{
+class GeneralSelector: public QObject {
     Q_OBJECT
 
 public:
@@ -37,4 +37,5 @@ private:
     QSet<QString> sacrifice;
 };
 
-#endif // GENERALSELECTOR_H
+#endif
+

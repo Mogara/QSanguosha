@@ -1,13 +1,12 @@
-#ifndef COUPLESCENARIO_H
-#define COUPLESCENARIO_H
+#ifndef _COUPLE_SCENARIO_H
+#define _COUPLE_SCENARIO_H
 
 #include "scenario.h"
 #include "roomthread.h"
 
 class ServerPlayer;
 
-class CoupleScenario : public Scenario
-{
+class CoupleScenario: public Scenario {
     Q_OBJECT
 
 public:
@@ -38,4 +37,5 @@ private:
     void marry(ServerPlayer *husband, ServerPlayer *wife) const;
 };
 
-#endif // COUPLESCENARIO_H
+#endif
+

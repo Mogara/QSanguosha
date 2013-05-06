@@ -1,30 +1,28 @@
-#ifndef SERVERPLAYER_H
-#define SERVERPLAYER_H
+#ifndef _SERVER_PLAYER_H
+#define _SERVER_PLAYER_H
 
 class Room;
-struct CardMoveStruct;
 class AI;
 class Recorder;
+
+struct PhaseStruct;
 
 #include "player.h"
 #include "socket.h"
 #include "protocol.h"
-#include "structs.h"
 
 #include <QSemaphore>
 #include <QDateTime>
 
-class ServerPlayer : public Player
-{
+class ServerPlayer: public Player {
     Q_OBJECT
-
     Q_PROPERTY(QString ip READ getIp)
 
 public:
     explicit ServerPlayer(Room *room);
 
     void setSocket(ClientSocket *socket);
-    void invoke(const QSanProtocol::QSanPacket* packet);
+    void invoke(const QSanProtocol::QSanPacket *packet);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
     void unicast(const QString &message);
@@ -40,18 +38,17 @@ public:
     void throwAllHandCardsAndEquips();
     void throwAllCards();
     void bury();
-    void throwAllMarks();
+    void throwAllMarks(bool visible_only = true);
+    void clearOnePrivatePile(QString pile_name);
     void clearPrivatePiles();
-    void removePileByName(const QString &pileName);
-    void drawCards(int n, bool set_emotion = true, const QString &reason = QString());
+    void drawCards(int n, const QString &reason = QString());
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
     QList<int> handCards() const;
-    QList<const Card *> getHandcards() const;
+    virtual QList<const Card *> getHandcards() const;
     QList<const Card *> getCards(const QString &flags) const;
     DummyCard *wholeHandCards() const;
     bool hasNullification() const;
-    void kick();
     bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
     void turnOver();
     void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
@@ -75,14 +72,14 @@ public:
     AI *getAI() const;
     AI *getSmartAI() const;
 
-    bool isOnline() const; // @todo: better rename this to be re
-    inline bool isOffline() const { return getState() == "robot" || getState() == "offline"; }
+    bool isOnline() const;
+    inline bool isOffline() const{ return getState() == "robot" || getState() == "offline"; }
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
-    virtual bool isLastHandCard(const Card *card) const;
+    virtual bool isLastHandCard(const Card *card, bool contain = false) const;
 
     void addVictim(ServerPlayer *victim);
     QList<ServerPlayer *> getVictims() const;
@@ -92,7 +89,7 @@ public:
 
     void setNext(ServerPlayer *next);
     ServerPlayer *getNext() const;
-    ServerPlayer *getNextAlive() const;
+    ServerPlayer *getNextAlive(int n = 1) const;
 
     // 3v3 methods
     void addToSelected(const QString &general);
@@ -111,9 +108,9 @@ public:
     void addToPile(const QString &pile_name, int card_id, bool open = true);
     void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true);
     void exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit = 1000, bool include_equip = false);
-    void gainAnExtraTurn(ServerPlayer *clearflag = NULL);
+    void gainAnExtraTurn();
 
-    void copyFrom(ServerPlayer* sp);
+    void copyFrom(ServerPlayer *sp);
 
     void startNetworkDelayTest();
     qint64 endNetworkDelayTest();
@@ -123,22 +120,22 @@ public:
         SEMA_MUTEX, // used to protect mutex access to member variables        
         SEMA_COMMAND_INTERACTIVE // used to wait for response from client        
     };
-    inline QSemaphore* getSemaphore(SemaphoreType type){ return semas[type]; }
-    inline void acquireLock(SemaphoreType type){ semas[type]->acquire(); }
-    inline bool tryAcquireLock(SemaphoreType type, int timeout = 0){
+    inline QSemaphore *getSemaphore(SemaphoreType type) { return semas[type]; }
+    inline void acquireLock(SemaphoreType type) { semas[type]->acquire(); }
+    inline bool tryAcquireLock(SemaphoreType type, int timeout = 0) {
         return semas[type]->tryAcquire(1, timeout); 
     }
-    inline void releaseLock(SemaphoreType type){ semas[type]->release(); }
-    inline void drainLock(SemaphoreType type){ while ((semas[type]->tryAcquire())) ; }
-    inline void drainAllLocks(){
-        for(int i=0; i< S_NUM_SEMAPHORES; i++){
+    inline void releaseLock(SemaphoreType type) { semas[type]->release(); }
+    inline void drainLock(SemaphoreType type) { while (semas[type]->tryAcquire()) {} }
+    inline void drainAllLocks() {
+        for (int i  =0; i < S_NUM_SEMAPHORES; i++) {
             drainLock((SemaphoreType)i);
         }
     }
-    inline QString getClientReplyString(){return m_clientResponseString;}
-    inline void setClientReplyString(const QString &val){m_clientResponseString = val;}
-    inline Json::Value getClientReply(){return _m_clientResponse;}
-    inline void setClientReply(const Json::Value &val){_m_clientResponse = val;}    
+    inline QString getClientReplyString() { return m_clientResponseString; }
+    inline void setClientReplyString(const QString &val) { m_clientResponseString = val; }
+    inline Json::Value getClientReply() { return _m_clientResponse; }
+    inline void setClientReply(const Json::Value &val) { _m_clientResponse = val; }
     unsigned int m_expectedReplySerial; // Suggest the acceptable serial number of an expected response.
     bool m_isClientResponseReady; //Suggest whether a valid player's reponse has been received.
     bool m_isWaitingReply; // Suggest if the server player is waiting for client's response.
@@ -156,7 +153,7 @@ protected:
 
 private:
     ClientSocket *socket;
-    QList<const Card*> handcards;
+    QList<const Card *> handcards;
     Room *room;
     AI *ai;
     AI *trust_ai;
@@ -181,4 +178,5 @@ signals:
     void message_ready(const QString &msg);
 };
 
-#endif // SERVERPLAYER_H
+#endif
+

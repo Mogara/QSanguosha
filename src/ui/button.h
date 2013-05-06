@@ -1,5 +1,5 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef _BUTTON_H
+#define _BUTTON_H
 
 #include "settings.h"
 
@@ -7,9 +7,9 @@
 #include <QFont>
 #include <QFontMetrics>
 
-class Button : public QGraphicsObject
-{
+class Button: public QGraphicsObject{
     Q_OBJECT
+
 public:
     explicit Button(const QString &label, qreal scale = 1.0);
     explicit Button(const QString &label, const QSizeF &size);
@@ -43,4 +43,5 @@ signals:
     void clicked();
 };
 
-#endif // BUTTON_H
+#endif
+

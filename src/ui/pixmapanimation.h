@@ -1,12 +1,12 @@
-#ifndef PIXMAPANIMATION_H
-#define PIXMAPANIMATION_H
+#ifndef _PIXMAP_ANIMATION_H
+#define _PIXMAP_ANIMATION_H
 
 #include <QGraphicsPixmapItem>
 
-class PixmapAnimation : public QObject,public QGraphicsItem
-{
+class PixmapAnimation: public QObject, public QGraphicsItem {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
+
 public:
     PixmapAnimation(QGraphicsScene *scene = 0);
 
@@ -18,10 +18,10 @@ public:
     void setPath(const QString &path);
     bool valid();
 
-    void start(bool permanent = true,int interval = 50);
+    void start(bool permanent = true, int interval = 50);
     void stop();
 
-    static PixmapAnimation* GetPixmapAnimation(QGraphicsItem *parent,const QString & emotion);
+    static PixmapAnimation *GetPixmapAnimation(QGraphicsItem *parent, const QString & emotion);
     static QPixmap GetFrameFromCache(const QString &filename);
     static int GetFrameCount(const QString &emotion);
 
@@ -38,7 +38,8 @@ private:
     int _m_timerId;
     QString path;
     QList<QPixmap> frames;
-    int current,off_x,off_y;
+    int current, off_x, off_y;
 };
 
-#endif // PIXMAPANIMATION_H
+#endif
+

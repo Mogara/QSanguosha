@@ -1,5 +1,5 @@
-#ifndef CHATWIDGET_H
-#define CHATWIDGET_H
+#ifndef _CHAT_WIDGET_H
+#define _CHAT_WIDGET_H
 
 #include <QObject>
 #include <QIcon>
@@ -9,23 +9,22 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsPixmapItem>
 
-// --> class MyPixmapItem
-class MyPixmapItem : public QObject , public QGraphicsPixmapItem
-{
+class MyPixmapItem: public QObject , public QGraphicsPixmapItem {
     Q_OBJECT
+
 public:
-    MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem=0);
+    MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem = 0);
     ~MyPixmapItem();
 
 public:
     QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget=0);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     void setSize(int x, int y);
     QString itemName;
 
 private:
-    virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
-    virtual void hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void initFaceBoardPos();
     void initEasyTextPos();
     int mouseCanClick(int x, int y);
@@ -42,17 +41,17 @@ signals:
     void my_pixmap_item_msg(QString);
 };
 
-// --> class ChatWidget
-class ChatWidget : public QGraphicsObject
-{
+class ChatWidget: public QGraphicsObject {
     Q_OBJECT
 
 public:
     ChatWidget();
     ~ChatWidget();
     virtual QRectF boundingRect() const;
+
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget); 
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
 private:
     QPixmap base_pixmap;
     QPushButton *returnButton;
@@ -63,14 +62,17 @@ private:
 
     QGraphicsProxyWidget *addWidget(QWidget *widget, int x);
     QPushButton *addButton(const QString &name, int x);
-    QPushButton *createButton(const QString &name);    
+    QPushButton *createButton(const QString &name);
+
 private slots:
     void showEasyTextBoard();
     void showFaceBoard();
     void sendText();
+
 signals:
     void chat_widget_msg(QString);
     void return_button_click();
 };
 
-#endif // CHATWIDGET_H
+#endif
+

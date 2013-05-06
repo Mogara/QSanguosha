@@ -1,18 +1,29 @@
-#ifndef YJCMPACKAGE_H
-#define YJCMPACKAGE_H
+#ifndef _YJCM_H
+#define _YJCM_H
 
 #include "package.h"
 #include "card.h"
 #include "skill.h"
 
-class YJCMPackage: public Package{
+class YJCMPackage: public Package {
     Q_OBJECT
 
 public:
     YJCMPackage();
 };
 
-class MingceCard: public SkillCard{
+class Shangshi: public TriggerSkill {
+    Q_OBJECT
+
+public:
+    Shangshi();
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const;
+
+protected:
+    virtual int getMaxLostHp(ServerPlayer *zhangchunhua) const;
+};
+
+class MingceCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -21,7 +32,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class GanluCard: public SkillCard{
+class GanluCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -33,7 +44,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class XianzhenSlashCard: public SkillCard{
+class XianzhenSlashCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -42,7 +53,7 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class XianzhenCard: public SkillCard{
+class XianzhenCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -71,17 +82,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class XuanhuoCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE XuanhuoCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-class XinzhanCard: public SkillCard{
+class XinzhanCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -90,7 +91,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class PaiyiCard: public SkillCard{
+class PaiyiCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -100,15 +101,5 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class Shangshi: public TriggerSkill {
-    Q_OBJECT
+#endif
 
-public:
-    Shangshi();
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const;
-
-protected:
-    virtual int getMaxLostHp(ServerPlayer *zhangchunhua) const;
-};
-
-#endif // YJCMPACKAGE_H

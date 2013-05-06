@@ -1,13 +1,13 @@
-#ifndef DISTANCEVIEWDIALOG_H
-#define DISTANCEVIEWDIALOG_H
+#ifndef _DISTANCE_VIEW_DIALOG_H
+#define _DISTANCE_VIEW_DIALOG_H
 
 class ClientPlayer;
 
 #include <QDialog>
 
-struct DistanceViewDialogUI;
+class DistanceViewDialogUI;
 
-class DistanceViewDialog : public QDialog {
+class DistanceViewDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -21,4 +21,5 @@ private slots:
     void showDistance();
 };
 
-#endif // DISTANCEVIEWDIALOG_H
+#endif
+

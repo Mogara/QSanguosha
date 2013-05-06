@@ -1,11 +1,11 @@
-#ifndef NATIVESOCKET_H
-#define NATIVESOCKET_H
+#ifndef _NATIVESOCKET_H
+#define _NATIVESOCKET_H
 
 #include "socket.h"
 
 class QUdpSocket;
 
-class NativeServerSocket: public ServerSocket{
+class NativeServerSocket: public ServerSocket {
     Q_OBJECT
 
 public:
@@ -24,7 +24,7 @@ private:
 };
 
 
-class NativeClientSocket: public ClientSocket{
+class NativeClientSocket: public ClientSocket {
     Q_OBJECT
 
 public:
@@ -43,9 +43,10 @@ private slots:
     void raiseError(QAbstractSocket::SocketError socket_error);
 
 private:
-    QTcpSocket * const socket;
+    QTcpSocket *const socket;
 
     void init();
 };
 
-#endif // NATIVESOCKET_H
+#endif
+

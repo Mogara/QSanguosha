@@ -3,30 +3,27 @@
 
 #include <QApplication>
 
-UdpDetector::UdpDetector()
-{
+UdpDetector::UdpDetector() {
     socket = new QUdpSocket(this);
-
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadReady()));
 }
 
-void UdpDetector::detect(){
+void UdpDetector::detect() {
     socket->bind(Config.DetectorPort, QUdpSocket::ShareAddress);
 
     const char *ask_str = "whoIsServer";
-
     socket->writeDatagram(ask_str,
                           strlen(ask_str) + 1,
                           QHostAddress::Broadcast,
                           Config.ServerPort);
 }
 
-void UdpDetector::stop(){
+void UdpDetector::stop() {
     socket->close();
 }
 
-void UdpDetector::onReadReady(){
-    while(socket->hasPendingDatagrams()){
+void UdpDetector::onReadReady() {
+    while (socket->hasPendingDatagrams()) {
         QHostAddress from;
         QByteArray data;
         data.resize(socket->pendingDatagramSize());
@@ -36,6 +33,4 @@ void UdpDetector::onReadReady(){
         emit detected(server_name, from.toString());
     }
 }
-
-// ----------------------------------
 

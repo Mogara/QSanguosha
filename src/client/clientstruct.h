@@ -1,5 +1,5 @@
-#ifndef CLIENTSTRUCT_H
-#define CLIENTSTRUCT_H
+#ifndef _CLIENT_STRUCT_H
+#define _CLIENT_STRUCT_H
 
 #include "player.h"
 #include "QSanSelectableItem.h"
@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QWidget>
 
-struct ServerInfoStruct{
+struct ServerInfoStruct {
     bool parse(const QString &str);
     //Get the timeout allowance for a command. Server countdown is more lenient than the client.
     //@param command: type of command
@@ -17,6 +17,7 @@ struct ServerInfoStruct{
     QString Name;
     QString GameMode;
     int OperationTimeout;
+    int NullificationCountDown;
     QStringList Extensions;
     bool RandomSeat;
     bool EnableCheat;
@@ -28,7 +29,8 @@ struct ServerInfoStruct{
     bool EnableHegemony;
     bool EnableAI;
     bool DisableChat;
-    int MaxHPScheme;
+    int MaxHpScheme;
+    int Scheme0Subtraction;
 
     bool DuringGame;
 };
@@ -38,7 +40,7 @@ extern ServerInfoStruct ServerInfo;
 class QLabel;
 class QListWidget;
 
-class ServerInfoWidget: public QWidget{
+class ServerInfoWidget: public QWidget {
     Q_OBJECT
 
 public:
@@ -67,4 +69,5 @@ private:
     QLabel *lack_label;
     QListWidget *list_widget;
 };
-#endif // CLIENTSTRUCT_H
+#endif
+

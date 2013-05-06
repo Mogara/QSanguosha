@@ -1,5 +1,5 @@
-#ifndef ROOMTHREAD1V1_H
-#define ROOMTHREAD1V1_H
+#ifndef _ROOM_THREAD_1V1_H
+#define _ROOM_THREAD_1V1_H
 
 #include <QThread>
 #include <QStringList>
@@ -7,8 +7,7 @@
 class Room;
 class ServerPlayer;
 
-class RoomThread1v1 : public QThread
-{
+class RoomThread1v1: public QThread {
     Q_OBJECT
 
 public:
@@ -28,4 +27,5 @@ private:
     void startArrange(ServerPlayer *player);
 };
 
-#endif // ROOMTHREAD1V1_H
+#endif
+

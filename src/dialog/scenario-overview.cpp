@@ -9,7 +9,7 @@
 #include <QTextStream>
 
 ScenarioOverview::ScenarioOverview(QWidget *parent)
-    :QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Scenario overview"));
     resize(800, 600);
@@ -30,7 +30,7 @@ ScenarioOverview::ScenarioOverview(QWidget *parent)
 
     QStringList names = Sanguosha->getModScenarioNames();
     names << "Hulaopass" << "Basara" << "Hegemony" << "MiniScene";
-    foreach(QString name, names){
+    foreach (QString name, names) {
         QString text = Sanguosha->translate(name);
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, name);
@@ -38,20 +38,19 @@ ScenarioOverview::ScenarioOverview(QWidget *parent)
 
     connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(loadContent(int)));
 
-    if(!names.isEmpty()){
+    if (!names.isEmpty())
         loadContent(0);
-    }
 }
 
-void ScenarioOverview::loadContent(int row){
+void ScenarioOverview::loadContent(int row) {
     QString name = list->item(row)->data(Qt::UserRole).toString();
     QString filename = QString("scenarios/%1.html").arg(name);
     QFile file(filename);
-    if(file.open(QIODevice::ReadOnly)){
+    if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
         stream.setCodec("UTF-8");
         QString content = stream.readAll();
-
         content_box->setHtml(content);
     }
 }
+

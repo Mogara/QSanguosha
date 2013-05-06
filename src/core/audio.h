@@ -1,11 +1,11 @@
-#ifndef AUDIO_H
-#define AUDIO_H
+#ifndef _AUDIO_H
+#define _AUDIO_H
 
 #ifdef AUDIO_SUPPORT
 
 #include <QString>
 
-class Audio{
+class Audio {
 public:
     static void init();
     static void quit();
@@ -22,4 +22,5 @@ public:
 
 #endif
 
-#endif // AUDIO_H
+#endif
+

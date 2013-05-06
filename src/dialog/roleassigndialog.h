@@ -1,5 +1,5 @@
-#ifndef ROLEASSIGNDIALOG_H
-#define ROLEASSIGNDIALOG_H
+#ifndef _ROLE_ASSIGN_DIALOG_H
+#define _ROLE_ASSIGN_DIALOG_H
 
 #include <QDialog>
 #include <QListWidget>
@@ -7,7 +7,7 @@
 #include <QCheckBox>
 #include <QMap>
 
-class RoleAssignDialog: public QDialog{
+class RoleAssignDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -29,4 +29,5 @@ private slots:
     void moveDown();
 };
 
-#endif // ROLEASSIGNDIALOG_H
+#endif
+

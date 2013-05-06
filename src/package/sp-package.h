@@ -1,18 +1,29 @@
-#ifndef SPPACKAGE_H
-#define SPPACKAGE_H
+#ifndef _SP_H
+#define _SP_H
 
 #include "package.h"
 #include "card.h"
 #include "standard.h"
 
-class SPPackage: public Package{
+class SPPackage: public Package {
     Q_OBJECT
 
 public:
     SPPackage();
 };
 
-class WeidiCard: public SkillCard{
+class Yongsi: public TriggerSkill {
+    Q_OBJECT
+
+public:
+    Yongsi();
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *yuanshu, QVariant &data) const;
+
+protected:
+    virtual int getKingdoms(ServerPlayer *yuanshu) const;
+};
+
+class WeidiCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -42,7 +53,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class BifaCard: public SkillCard{
+class BifaCard: public SkillCard {
     Q_OBJECT
 
 public:
@@ -62,14 +73,14 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class SPCardPackage: public Package{
+class SPCardPackage: public Package {
     Q_OBJECT
 
 public:
     SPCardPackage();
 };
 
-class SPMoonSpear:public Weapon{
+class SPMoonSpear: public Weapon {
     Q_OBJECT
 
 public:
@@ -83,4 +94,5 @@ public:
     HegemonySPPackage();
 };
 
-#endif // SPPACKAGE_H
+#endif
+

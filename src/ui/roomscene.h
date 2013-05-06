@@ -1,5 +1,5 @@
-#ifndef ROOMSCENE_H
-#define ROOMSCENE_H
+#ifndef _ROOM_SCENE_H
+#define _ROOM_SCENE_H
 
 #include "photo.h"
 #include "dashboard.h"
@@ -23,12 +23,8 @@ struct RoomLayout;
 
 #include <QGraphicsScene>
 #include <QTableWidget>
-#include <QQueue>
 #include <QMainWindow>
-#include <QSharedMemory>
-#include <QProgressBar>
 #include <QTextEdit>
-#include <QDockWidget>
 #include <QSpinBox>
 #include <QDialog>
 #include <QGraphicsWidget>
@@ -38,7 +34,7 @@ struct RoomLayout;
 #include <QMutex>
 #include <QStack>
 
-class ScriptExecutor: public QDialog{
+class ScriptExecutor: public QDialog {
     Q_OBJECT
 
 public:
@@ -48,7 +44,7 @@ public slots:
     void doScript();
 };
 
-class DeathNoteDialog: public QDialog{
+class DeathNoteDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -61,7 +57,7 @@ private:
     QComboBox *killer, *victim;
 };
 
-class DamageMakerDialog: public QDialog{
+class DamageMakerDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -82,7 +78,7 @@ private slots:
     void disableSource();
 };
 
-class KOFOrderBox: public QGraphicsPixmapItem{
+class KOFOrderBox: public QGraphicsPixmapItem {
 public:
     KOFOrderBox(bool self, QGraphicsScene *scene);
     void revealGeneral(const QString &name);
@@ -93,8 +89,7 @@ private:
     int revealed;
 };
 
-class ReplayerControlBar: public QGraphicsObject
-{
+class ReplayerControlBar: public QGraphicsObject{
     Q_OBJECT
 
 public:
@@ -111,38 +106,14 @@ protected:
     static const int S_BUTTON_GAP = 3;
     static const int S_BUTTON_WIDTH = 25;
     static const int S_BUTTON_HEIGHT = 21;
+
 private:
     QLabel *time_label;
     QString duration_str;
     qreal speed;
 };
 
-#ifdef CHAT_VOICE
-
-class QAxObject;
-
-class SpeakThread: public QThread{
-    Q_OBJECT
-
-public:
-    SpeakThread();
-
-public slots:
-    void speak(const QString &text);
-    void finish();
-
-protected:
-    virtual void run();
-
-private:
-    QAxObject *voice_obj;
-    QSemaphore sem;
-    QString to_speak;
-};
-
-#endif
-
-class RoomScene : public QGraphicsScene{
+class RoomScene: public QGraphicsScene {
     Q_OBJECT
 
 public:
@@ -153,6 +124,9 @@ public:
     void showPromptBox();
     static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
     void updateTable();
+    inline QMainWindow *mainWindow() { return main_window; }
+
+    bool m_skillButtonSank;
 
 public slots:
     void addPlayer(ClientPlayer *player);
@@ -166,13 +140,13 @@ public slots:
     void chooseSuit(const QStringList &suits);
     void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason);
     void chooseKingdom(const QStringList &kingdoms);
-    void chooseOption(const QString& skillName, const QStringList &options);
+    void chooseOption(const QString &skillName, const QStringList &options);
     void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
     void chooseRole(const QString &scheme, const QStringList &roles);
     void chooseDirection();
 
-    void bringToFront(QGraphicsItem* item);
-    void arrangeSeats(const QList<const ClientPlayer*> &seats);
+    void bringToFront(QGraphicsItem *item);
+    void arrangeSeats(const QList<const ClientPlayer *> &seats);
     void toggleDiscards();
     void enableTargets(const Card *card);
     void useSelectedCard();
@@ -180,7 +154,6 @@ public slots:
     void killPlayer(const QString &who);
     void revivePlayer(const QString &who);
     void showServerInformation();
-    void kick();
     void surrender();
     void saveReplayRecord();
     void makeDamage();
@@ -190,7 +163,7 @@ public slots:
 
     void handleGameEvent(const Json::Value &arg);
 
-    EffectAnimation * getEA() const{return animations;}
+    EffectAnimation *getEA() const{ return animations; }
     
 protected:    
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -200,7 +173,7 @@ protected:
     //this method causes crashes
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QMutex m_roomMutex;
-    QMutex m_zValueMutex;    
+    QMutex m_zValueMutex;
 
 private:
     void _getSceneSizes(QSize &minSize, QSize &maxSize);
@@ -208,37 +181,37 @@ private:
     bool _processCardsMove(CardsMoveStruct &move, bool isLost);
     bool _m_isMouseButtonDown;
     bool _m_isInDragAndUseMode;
-    const QSanRoomSkin::RoomLayout* _m_roomLayout;
-    const QSanRoomSkin::PhotoLayout* _m_photoLayout;
-    const QSanRoomSkin::CommonLayout* _m_commonLayout;
+    const QSanRoomSkin::RoomLayout *_m_roomLayout;
+    const QSanRoomSkin::PhotoLayout *_m_photoLayout;
+    const QSanRoomSkin::CommonLayout *_m_commonLayout;
     const QSanRoomSkin* _m_roomSkin;
-    QGraphicsItem* _m_last_front_item;
+    QGraphicsItem *_m_last_front_item;
     double _m_last_front_ZValue;
-    GenericCardContainer* _getGenericCardContainer(Player::Place place, Player* player);
-    QMap<int, QList<QList<CardItem*> > > _m_cardsMoveStash;
-    Button* add_robot, *fill_robots;
-    QList<Photo*> photos;
-    QMap<QString, Photo*> name2photo;
+    GenericCardContainer *_getGenericCardContainer(Player::Place place, Player *player);
+    QMap<int, QList<QList<CardItem *> > > _m_cardsMoveStash;
+    Button *add_robot, *fill_robots;
+    QList<Photo *> photos;
+    QMap<QString, Photo *> name2photo;
     Dashboard *dashboard;
     TablePile *m_tablePile;
-    // QQueue<CardItem*> piled_discards;
     QMainWindow *main_window;
     QSanButton *ok_button, *cancel_button, *discard_button;
     QSanButton *trust_button;
-    QMenu *known_cards_menu, *change_general_menu;
+    QMenu *miscellaneous_menu, *change_general_menu;
     Window *prompt_box;
+    Window *pindian_box;
+    CardItem *pindian_from_card, *pindian_to_card;
     QGraphicsItem *control_panel;
     QMap<PlayerCardContainer *, const ClientPlayer *> item2player;
     QDialog *m_choiceDialog; // Dialog for choosing generals, suits, card/equip, or kingdoms
 
-    int timer_id;
-    int tick;
-
+    QGraphicsRectItem *pausing_item;
+    QGraphicsSimpleTextItem *pausing_text;
     
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
     
-    QList<QSanSkillButton*> m_skillButtons;
+    QList<QSanSkillButton *> m_skillButtons;
 
     ResponseSkill *response_skill;
     ShowOrPindianSkill *showorpindian_skill;
@@ -278,20 +251,10 @@ private:
     QPointF m_tableCenterPos;
     ReplayerControlBar *m_replayControl;
 
-    struct _MoveCardsClassifier
-    {
-        inline _MoveCardsClassifier(const CardsMoveStruct &move)
-        {
-            m_card_ids = move.card_ids;
-        }
-        inline bool operator == (const _MoveCardsClassifier &other) const
-        {
-            return m_card_ids == other.m_card_ids;
-        }
-        inline bool operator < (const _MoveCardsClassifier &other) const
-        {
-            return m_card_ids.first() < other.m_card_ids.first();
-        }
+    struct _MoveCardsClassifier {
+        inline _MoveCardsClassifier(const CardsMoveStruct &move) { m_card_ids = move.card_ids; }
+        inline bool operator ==(const _MoveCardsClassifier &other) const{ return m_card_ids == other.m_card_ids; }
+        inline bool operator <(const _MoveCardsClassifier &other) const{ return m_card_ids.first() < other.m_card_ids.first(); }
         QList<int> m_card_ids;
     };
 
@@ -299,7 +262,7 @@ private:
 
     // @todo: this function shouldn't be here. But it's here anyway, before someone find a better
     // home for it.
-    QString _translateMovement(const CardsMoveStruct& move);
+    QString _translateMovement(const CardsMoveStruct &move);
 
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
@@ -321,6 +284,8 @@ private:
     void fillGenerals1v1(const QStringList &names);
     void fillGenerals3v3(const QStringList &names);
 
+    void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id);
+
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
     QGraphicsObject *getAnimationObject(const QString &name) const;
@@ -332,17 +297,18 @@ private:
     void doIndicate(const QString &name, const QStringList &args);
     void animatePopup(const QString &name, const QStringList &args);
     EffectAnimation *animations;
+    bool pindian_success;
 
     // re-layout attempts
     bool game_started;
-    void _dispersePhotos(QList<Photo*> &photos, QRectF disperseRegion,
-                         Qt::Orientation orientation, Qt::Alignment align);
+    void _dispersePhotos(QList<Photo *> &photos, QRectF disperseRegion, Qt::Orientation orientation, Qt::Alignment align);
 
     void _cancelAllFocus();
     // for miniscenes
     int _m_currentStage;
+
 private slots:
-    void fillCards(const QList<int>& card_ids);
+    void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
     void updateSelectedTargets();
@@ -387,12 +353,7 @@ private slots:
     void onSelectChange();
     void onEnabledChange();
 
-#ifdef JOYSTICK_SUPPORT
-    void onJoyButtonClicked(int bit);
-    void onJoyDirectionClicked(int direction);
-#endif
-
-    void takeAmazingGrace(ClientPlayer *taker, int card_id);
+    void takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards);
 
     void attachSkill(const QString &skill_name, bool from_left);
     void detachSkill(const QString &skill_name);
@@ -401,13 +362,15 @@ private slots:
 
     void startAssign();
 
+    void doPindianAnimation();
+
     // 3v3 mode & 1v1 mode
     void fillGenerals(const QStringList &names);
     void takeGeneral(const QString &who, const QString &name);
     void recoverGeneral(int index, const QString &name);
     void startGeneralSelection();
     void selectGeneral();
-    void startArrange(const QString &to_arrange = QString());
+    void startArrange(const QString &to_arrange);
     void toggleArrange();
     void finishArrange();
     void changeGeneral(const QString &general);
@@ -415,6 +378,7 @@ private slots:
 
     void skillStateChange(const QString &skill_name);
     void trust();
+
 signals:
     void restart();
     void return_to_start();
@@ -422,4 +386,5 @@ signals:
 
 extern RoomScene *RoomSceneInstance;
 
-#endif // ROOMSCENE_H
+#endif
+

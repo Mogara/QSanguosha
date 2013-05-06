@@ -1,5 +1,5 @@
-#ifndef CUSTOMASSIGNDIALOG_H
-#define CUSTOMASSIGNDIALOG_H
+#ifndef _CUSTOM_ASSIGN_DIALOG_H
+#define _CUSTOM_ASSIGN_DIALOG_H
 
 #include "engine.h"
 
@@ -15,27 +15,21 @@
 #include <QTextEdit>
 #include <QLineEdit>
 
-class LabelButton : public QLabel {
+class LabelButton: public QLabel {
     Q_OBJECT
+
 public:
-    LabelButton()
-        :QLabel(){}
+    LabelButton(): QLabel() {}
 
-    void mouseDoubleClickEvent(QMouseEvent *)
-    {
-        emit double_clicked();
-    }
+    void mouseDoubleClickEvent(QMouseEvent *) { emit double_clicked(); }
+    void mousePressEvent(QMouseEvent *) { emit clicked(); }
 
-    void mousePressEvent(QMouseEvent *)
-    {
-        emit clicked();
-    }
 signals:
     void double_clicked();
     void clicked();
 };
 
-class CustomAssignDialog: public QDialog{
+class CustomAssignDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -54,8 +48,8 @@ private:
     QComboBox *role_ComboBox, *num_ComboBox, *marks_ComboBox;
     QCheckBox  *starter_box;
     LabelButton *general_label, *general_label2;
-    QCheckBox *max_hp_prompt,*hp_prompt;
-    QSpinBox *max_hp_spin,*hp_spin;
+    QCheckBox *max_hp_prompt, *hp_prompt;
+    QSpinBox *max_hp_spin, *hp_spin;
     QSpinBox *player_draw, *marks_count;
     QCheckBox *self_select_general, *self_select_general2;
     QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
@@ -139,8 +133,6 @@ private slots:
     void clearGeneral2();
 
     void exchangeListItem();
-   // void exchangeJudgeItem();
-  //  void exchangePileItem();
 
     void checkSingleTurnBox(bool toggled);
     void checkBeforeNextBox(bool toggled);
@@ -164,7 +156,7 @@ signals:
 };
 
 
-class GeneralAssignDialog: public QDialog{
+class GeneralAssignDialog: public QDialog {
     Q_OBJECT
 
 public:
@@ -183,11 +175,12 @@ signals:
     void general_cleared();
 };
 
-class CardAssignDialog : public QDialog {
+class CardAssignDialog: public QDialog {
     Q_OBJECT
-public:
 
+public:
     CardAssignDialog(QWidget *parent = 0, QString card_type = QString(), QString class_name = QString(), QList<int> excluded = QList<int>());
+
 private:
     void addCard(const Card *card);
 
@@ -204,10 +197,11 @@ signals:
     void card_chosen(int card_id);
 };
 
-class SkillAssignDialog : public QDialog{
+class SkillAssignDialog: public QDialog {
     Q_OBJECT
+
 public:
-    SkillAssignDialog(QDialog *parent,QString player_name, QStringList &player_skills);
+    SkillAssignDialog(QDialog *parent, QString player_name, QStringList &player_skills);
 
 private:
     QListWidget *skill_list;
@@ -233,4 +227,5 @@ signals:
     void skill_update(QStringList);
 };
 
-#endif // CUSTOMASSIGNDIALOG_H
+#endif
+

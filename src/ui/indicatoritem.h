@@ -1,13 +1,13 @@
-#ifndef INDICATORITEM_H
-#define INDICATORITEM_H
-
-#include <QGraphicsObject>
+#ifndef _INDICATOR_ITEM_H
+#define _INDICATOR_ITEM_H
 
 #include "player.h"
 
-class IndicatorItem: public QGraphicsObject{
+#include <QGraphicsObject>
+
+class IndicatorItem: public QGraphicsObject {
     Q_OBJECT
-    Q_PROPERTY(QPointF finish READ getFinish WRITE setFinish);
+    Q_PROPERTY(QPointF finish READ getFinish WRITE setFinish)
 
 public:
     IndicatorItem(const QPointF &start, const QPointF &real_finish, Player *from);
@@ -18,7 +18,6 @@ public:
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-
     virtual QRectF boundingRect() const;
 
 private:
@@ -27,4 +26,5 @@ private:
     qreal width;
 };
 
-#endif // INDICATORITEM_H
+#endif
+

@@ -1,5 +1,5 @@
-#ifndef GENERAL_H
-#define GENERAL_H
+#ifndef _GENERAL_H
+#define _GENERAL_H
 
 class Skill;
 class TriggerSkill;
@@ -11,8 +11,7 @@ class QSize;
 #include <QMap>
 #include <QStringList>
 
-class General : public QObject
-{
+class General: public QObject {
     Q_OBJECT
     Q_ENUMS(Gender)
     Q_PROPERTY(QString kingdom READ getKingdom CONSTANT)
@@ -24,7 +23,8 @@ class General : public QObject
     Q_PROPERTY(bool hidden READ isHidden CONSTANT)
 
 public:
-    explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
+    explicit General(Package *package, const QString &name, const QString &kingdom,
+                     int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
 
     // property getters/setters
     int getMaxHp() const;
@@ -36,11 +36,11 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    enum Gender {SexLess, Male, Female, Neuter};
+    enum Gender { SexLess, Male, Female, Neuter };
     Gender getGender() const;
     void setGender(Gender gender);
 
-    void addSkill(Skill* skill);
+    void addSkill(Skill *skill);
     void addSkill(const QString &skill_name);    
     bool hasSkill(const QString &skill_name) const;
     QList<const Skill *> getSkillList() const;
@@ -54,6 +54,8 @@ public:
     QString getPackage() const;
     QString getSkillDescription(bool include_name = false) const;
 
+    inline QSet<QString> getExtraSkillSet() const{ return extra_set; }
+
 public slots:
     void lastWord() const;
 
@@ -64,9 +66,11 @@ private:
     bool lord;
     QSet<QString> skill_set;
     QSet<QString> extra_set;
+    QStringList skillname_list;
     QStringList related_skills;
     bool hidden;
     bool never_shown;
 };
 
-#endif // GENERAL_H
+#endif
+
