@@ -26,7 +26,8 @@ GameRule::GameRule(QObject *)
            << AskForPeaches << AskForPeachesDone << BuryVictim << GameOverJudge
            << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << DamageDone << DamageComplete
-           << StartJudge << FinishRetrial << FinishJudge;
+           << StartJudge << FinishRetrial << FinishJudge
+           << ChoiceMade;
 
     skill_mark["niepan"] = "@nirvana";
     skill_mark["yeyan"] = "@flame";
@@ -102,23 +103,14 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
             break;
         }
     case Player::Discard: {
-            int discard_num, keep_num;
-            QSet<const Card *> jilei_cards;
-            QList<const Card *> handcards;
+            int discard_num = 0;
             do {
-                handcards = player->getHandcards();
-                foreach (const Card *card, handcards) {
-                    if (player->isJilei(card))
-                        jilei_cards << card;
+                discard_num = player->getHandcardNum() - player->getMaxCards();
+                if (discard_num > 0) {
+                    if (!room->askForDiscard(player, "gamerule", discard_num, 1))
+                        break;
                 }
-                keep_num = qMax(player->getMaxCards(), jilei_cards.size());
-                discard_num = player->getHandcardNum() - keep_num;
-                jilei_cards.clear();
-                if (discard_num > 0)
-                    room->askForDiscard(player, "gamerule", discard_num, 1);
             } while (discard_num > 0);
-            if (player->getHandcardNum() > player->getMaxCards())
-                room->showAllCards(player);
             break;
         }
     case Player::Finish: {
@@ -215,8 +207,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     card_use.from->setFlags("-Global_ForbidSurrender");
                     room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, Json::Value(true));
                 }
-                if (card_use.from->hasFlag("JijiangFailed"))
-                    room->setPlayerFlag(card_use.from, "-JijiangFailed");
                 if (card->isKindOf("Slash"))
                     card_use.from->setFlags("Global_SlashInPlayPhase");
 
@@ -605,6 +595,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
             }
 
+            break;
+        }
+    case ChoiceMade: {
+            foreach (QString flag, player->getFlagList()) {
+                if (flag.startsWith("Global_") && flag.endsWith("Failed"))
+                    room->setPlayerFlag(player, "-" + flag);
+            }
             break;
         }
     default:
@@ -1110,7 +1107,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
                         playerShowed(player);
 
                 const ProhibitSkill *prohibit = room->isProhibited(ces.from, ces.to, ces.card);
-                if (prohibit) {
+                if (prohibit && ces.to->hasSkill(prohibit->objectName())) {
                     LogMessage log;
                     log.type = "#SkillAvoid";
                     log.from = ces.to;

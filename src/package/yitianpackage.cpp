@@ -453,7 +453,7 @@ void LianliSlashCard::onEffect(const CardEffectStruct &effect) const{
 class LianliSlashViewAsSkill:public ZeroCardViewAsSkill{
 public:
     LianliSlashViewAsSkill():ZeroCardViewAsSkill("lianli-slash"){
-
+        attached_lord_skill = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -653,17 +653,6 @@ public:
 };
 
 // -------- end of Lianli related skills
-
-class Jinshen: public ProhibitSkill{
-public:
-    Jinshen():ProhibitSkill("jinshen"){
-
-    }
-
-    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
-        return card->isKindOf("Indulgence") || card->isKindOf("SupplyShortage");
-    }
-};
 
 class WulingExEffect: public TriggerSkill{
 public:
@@ -964,7 +953,7 @@ public:
 class Shaoying: public TriggerSkill{
 public:
     Shaoying():TriggerSkill("shaoying"){
-        events << PreHpReduced << DamageComplete;
+        events << PreDamageDone << DamageComplete;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -973,7 +962,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if (triggerEvent == PreHpReduced) {
+        if (triggerEvent == PreDamageDone) {
             if (!player->isChained() && damage.from && damage.nature == DamageStruct::Fire && TriggerSkill::triggerable(damage.from)) {
                 QList<ServerPlayer *> targets;
                 foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -1632,6 +1621,7 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 class YisheAsk: public ZeroCardViewAsSkill{
 public:
     YisheAsk():ZeroCardViewAsSkill("yisheask"){
+        attached_lord_skill = true;
         default_choice = "disallow";
     }
 
@@ -1694,10 +1684,10 @@ public:
         DummyCard *dummy = new DummyCard;
         dummy->deleteLater();
 
-        CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-        if (move->from == player && move->to_place == Player::DiscardPile
-            && (move->reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-            foreach (int id, move->card_ids) {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.from == player
+            && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+            foreach (int id, move.card_ids) {
                 const Card *c = Sanguosha->getCard(id);
                 if (room->getCardPlace(id) == Player::DiscardPile && c->isRed()) dummy->addSubcard(id);
             }
@@ -1743,7 +1733,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.to->isCaoCao() && player->askForSkillInvoke(objectName(), data)){
+		if(damage.to->getGeneralName().contains("caocao") && player->askForSkillInvoke(objectName(), data)){
             LogMessage log;
             log.type = "#YitianSolace";
             log.from = player;

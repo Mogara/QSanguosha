@@ -513,7 +513,7 @@ VSCrossbow::VSCrossbow(Suit suit, int number)
 }
 
 Drowning::Drowning(Suit suit, int number)
-    : SingleTargetTrick(suit, number, false)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("drowning");
 }

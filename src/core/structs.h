@@ -417,6 +417,7 @@ enum TriggerEvent {
     DamageComplete,   // the moment for trigger iron chain
 
     Dying,
+    QuitDying,
     AskForPeaches,
     AskForPeachesDone,
     Death,

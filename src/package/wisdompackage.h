@@ -38,7 +38,7 @@ class WeidaiCard: public SkillCard{
 public:
     Q_INVOKABLE WeidaiCard();
 
-    virtual const Card *validate(const CardUseStruct *card_use) const;
+    virtual const Card *validate(CardUseStruct &card_use) const;
     virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const;
 };
 

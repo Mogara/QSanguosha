@@ -46,7 +46,7 @@ bool Analeptic::IsAvailable(const Player *player, const Card *analeptic) {
     newanal->deleteLater();
 #define THIS_ANAL (analeptic == NULL ? newanal : analeptic)
     if (player->isCardLimited(THIS_ANAL, Card::MethodUse) || player->isProhibited(player, THIS_ANAL))
-            return false;
+        return false;
 
     return player->usedTimes("Analeptic") <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_ANAL);
 #undef THIS_ANAL
@@ -272,7 +272,7 @@ void SilverLion::onUninstall(ServerPlayer *player) const{
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)
-    : SingleTargetTrick(suit, number, true)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("fire_attack");
 }
@@ -315,7 +315,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
 }
 
 IronChain::IronChain(Card::Suit suit, int number)
-    : TrickCard(suit, number, false)
+    : TrickCard(suit, number)
 {
     setObjectName("iron_chain");
     can_recast = true;

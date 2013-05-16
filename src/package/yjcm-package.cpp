@@ -1,4 +1,4 @@
-#include "yjcm.h"
+#include "yjcm-package.h"
 #include "skill.h"
 #include "standard.h"
 #include "maneuvering.h"
@@ -84,20 +84,17 @@ public:
                 Config.AIDelay = ai_delay;
 
                 if (!card_ids.empty()) {
-                    QList<int> ids = move.card_ids;
-                    int i = 0;
-                    foreach (int id, ids) {
-                        if (card_ids.contains(id)) {
-                            move.card_ids.removeOne(id);
-                            move.from_places.removeAt(i);
-                        }
-                        i++;
-                    }
-                    data = QVariant::fromValue(move);
-
                     room->broadcastSkillInvoke("luoying", move.from->getGeneralName().contains("zhenji") ? 2 : 1);
-                    foreach (int id, card_ids)
-                        room->obtainCard(caozhi, id);
+                    foreach (int id, card_ids) {
+                        if (move.card_ids.contains(id)) {
+                            move.from_places.removeAt(move.card_ids.indexOf(id));
+                            move.card_ids.removeOne(id);
+                            data = QVariant::fromValue(move);
+                        }
+                        room->moveCardTo(Sanguosha->getCard(id), caozhi, Player::PlaceHand, move.reason, true);
+                        if (!caozhi->isAlive())
+                            break;
+                    }
                 }
             }
         }
@@ -927,6 +924,13 @@ XinzhanCard::XinzhanCard() {
 
 void XinzhanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     QList<int> cards = room->getNCards(3), left;
+
+    LogMessage log;
+    log.type = "$ViewDrawPile";
+    log.from = source;
+    log.card_str = IntList2StringList(cards).join("+");
+    room->doNotify(source, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
     left = cards;
 
     QList<int> hearts, non_hearts;
@@ -1178,28 +1182,28 @@ bool Shangshi::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhan
                 changed = true;
             if (changed)
                 zhangchunhua->addMark("shangshi");
-        }
-    }
-    if (triggerEvent == HpChanged || triggerEvent == MaxHpChanged) {
-        if (zhangchunhua->getPhase() == Player::Discard)
-            zhangchunhua->addMark("shangshi");
-    } else if (triggerEvent == CardsMoveOneTime) {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        bool can_invoke = false;
-        if (move.from == zhangchunhua && move.from_places.contains(Player::PlaceHand))
-            can_invoke = true;
-        if (move.to == zhangchunhua && move.to_place == Player::PlaceHand)
-            can_invoke = true;
-        if (!can_invoke)
             return false;
+        } else {
+            bool can_invoke = false;
+            if (move.from == zhangchunhua && move.from_places.contains(Player::PlaceHand))
+                can_invoke = true;
+            if (move.to == zhangchunhua && move.to_place == Player::PlaceHand)
+                can_invoke = true;
+            if (!can_invoke)
+                return false;
+        }
+    } else if (triggerEvent == HpChanged || triggerEvent == MaxHpChanged) {
+        if (zhangchunhua->getPhase() == Player::Discard) {
+            zhangchunhua->addMark("shangshi");
+            return false;
+        }
     } else if (triggerEvent == EventPhaseChanging) {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to != Player::Finish)
+        if (change.from != Player::Discard)
             return false;
         if (zhangchunhua->getMark("shangshi") <= 0)
             return false;
-        else
-            zhangchunhua->setMark("shangshi", 0);
+        zhangchunhua->setMark("shangshi", 0);
     }
 
     if (zhangchunhua->getHandcardNum()<losthp && zhangchunhua->getPhase() != Player::Discard
@@ -1277,7 +1281,7 @@ YJCMPackage::YJCMPackage()
     addMetaObject<XianzhenCard>();
     addMetaObject<XianzhenSlashCard>();
     addMetaObject<XinzhanCard>();
-    addMetaObject<XuanfengCard>()
+    addMetaObject<XuanfengCard>();
     addMetaObject<JujianCard>();
     addMetaObject<PaiyiCard>();
 

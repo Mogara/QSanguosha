@@ -649,7 +649,7 @@ function SmartAI:KingdomsCount(players)
 		local kingdom = p:getKingdom()
 		local flag = true
 		for _,k in pairs(kingdoms) do
-			if k == kingdoms then
+			if k == kingdom then
 				flag = false
 			end
 		end
@@ -815,14 +815,13 @@ end
 	参数表：
 		player：摸牌目标，ServerPlayer类型
 		skills：技能列表，表示加以考虑的技能，QList<Skill*>类型
-		self：SmartAI
 		overall：是否考虑所有指定的技能，取值为：
 			true：考虑所有所给技能
 			false：仅考虑所给技能中目标实际拥有的技能（默认值）
 	返回值：一个数值，表示最终的摸牌数目
 	注：神速、巧变、绝境（高达一号）等因属于跳过阶段的情形，这里不加以考虑
 ]]--
-function SmartAI:ImitateResult_DrawNCards(player, skills, self, overall)
+function SmartAI:ImitateResult_DrawNCards(player, skills, overall)
 	if not player then
 		return 0
 	end
@@ -844,11 +843,10 @@ function SmartAI:ImitateResult_DrawNCards(player, skills, self, overall)
 			end
 		end
 	end
+	local count = 2 --初始摸牌数目
 	if #drawSkills > 0 then
-		local room = player:getRoom() --当前房间
-		local others = room:getOtherPlayers(player) --其他角色
-		local alives = room:getAlivePlayers() --存活角色
-		local count = 2 --初始摸牌数目
+		local others = self.room:getOtherPlayers(player) --其他角色
+		local alives = self.room:getAlivePlayers() --存活角色
 		local lost = player:getLostHp() --已损失体力值
 		for _,skillname in pairs(drawSkills) do
 			if skillname == "tuxi" then --突袭，放弃摸牌
@@ -861,7 +859,7 @@ function SmartAI:ImitateResult_DrawNCards(player, skills, self, overall)
 				return 3
 			elseif skillname == "xuanhuo" then --眩惑，放弃摸牌（摸牌数目不定，返回期望值）
 				return 1
-			elseif skillname == "fuhun" then --父魂，放弃摸牌
+			elseif skillname == "nosfuhun" then --老父魂，放弃摸牌
 				return 2
 			elseif skillname == "luoyi" then --裸衣，少摸一张牌
 				count = count - 1
@@ -873,7 +871,7 @@ function SmartAI:ImitateResult_DrawNCards(player, skills, self, overall)
 				count = count + lost
 			elseif skillname == "yongsi" then --庸肆，多摸现存势力数目的牌
 				local kingdoms = self:KingdomsCount(alives)
-				count = count + #kingdoms
+				count = count + kingdoms
 			elseif skillname == "shenwei" then --神威，多摸两张牌
 				count = count + 2
 			elseif skillname == "jiangchi" then --将驰，多摸一张牌或少摸一张牌

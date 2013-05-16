@@ -55,8 +55,7 @@ void BanPair::loadBanPairs() {
                 BanPair pair(first, second);
                 BanPairSet.insert(pair);
             }
-        }
-        else if (names.length()==1) {
+        } else if (names.length() == 1) {
             AllBanSet.insert(first);
         }
     }

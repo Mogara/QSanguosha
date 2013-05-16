@@ -4,6 +4,7 @@
 #include "package.h"
 #include "card.h"
 #include "standard.h"
+#include "standard-skillcards.h"
 
 class NostalgiaPackage: public Package {
     Q_OBJECT
@@ -17,6 +18,13 @@ class MoonSpear: public Weapon {
 
 public:
     Q_INVOKABLE MoonSpear(Card::Suit suit = Diamond, int number = 12);
+};
+
+class NostalStandardPackage: public Package {
+    Q_OBJECT
+
+public:
+    NostalStandardPackage();
 };
 
 class NostalYJCMPackage: public Package {
@@ -58,6 +66,22 @@ public:
     Q_INVOKABLE NosJiefanCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+
+class NosRendeCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE NosRendeCard();
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class NosLijianCard: public LijianCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE NosLijianCard();
 };
 
 #endif

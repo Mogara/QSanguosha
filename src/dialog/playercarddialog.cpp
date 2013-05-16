@@ -10,8 +10,13 @@
 #include <QLabel>
 #include <QHBoxLayout>
 
-PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags)
-    : player(player)
+PlayerCardButton::PlayerCardButton(const QString &name)
+    : QCommandLinkButton(name), scale(1.0)
+{
+}
+
+PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags, bool handcard_visible)
+    : player(player), handcard_visible(handcard_visible)
 {
     QVBoxLayout *vlayout1 = new QVBoxLayout, *vlayout2 = new QVBoxLayout;
     QHBoxLayout *layout = new QHBoxLayout;
@@ -52,25 +57,46 @@ QWidget *PlayerCardDialog::createAvatar() {
     return box;
 }
 
-QWidget *PlayerCardDialog::createHandcardButton(){
-    if (!player->isKongcheng() && ((Self->hasSkill("dongcha") && player->hasFlag("dongchaee")) || Self == player)) {
+QWidget *PlayerCardDialog::createHandcardButton() {
+    if (!player->isKongcheng() && ((Self->hasSkill("dongcha") && player->hasFlag("dongchaee")) || Self == player || handcard_visible)) {
         QGroupBox *area = new QGroupBox(tr("Handcard area"));
         QVBoxLayout *layout =  new QVBoxLayout;
-        QList<const Card *> cards = player->getCards();
-        foreach (const Card *card, cards) {
-            QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
-            button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+        QList<const Card *> cards = player->getHandcards();
+        for (int i = 0; i < cards.length(); i += 2) {
+            const Card *card = Sanguosha->getEngineCard(cards.at(i)->getId());
+            PlayerCardButton *button1 = new PlayerCardButton(card->getFullName());
+            button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
 
-            mapper.insert(button, card->getId());
-            connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-            layout->addWidget(button);
+            mapper.insert(button1, card->getId());
+            connect(button1, SIGNAL(clicked()), this, SLOT(emitId()));
+
+            PlayerCardButton *button2 = NULL;
+            if (i < cards.length() - 1) {
+                card = Sanguosha->getEngineCard(cards.at(i + 1)->getId());;
+                button2 = new PlayerCardButton(card->getFullName());
+                button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+
+                mapper.insert(button2, card->getId());
+                connect(button2, SIGNAL(clicked()), this, SLOT(emitId()));
+            }
+            if (button1 && button2) {
+                QHBoxLayout *hlayout = new QHBoxLayout;
+                button1->setScale(0.65);
+                button2->setScale(0.65);
+                hlayout->addWidget(button1);
+                hlayout->addWidget(button2);
+                layout->addLayout(hlayout);
+            } else {
+                Q_ASSERT(button1 != NULL);
+                layout->addWidget(button1);
+            }
         }
 
         area->setLayout(layout);
         return area;
     }
 
-    QCommandLinkButton *button = new QCommandLinkButton(tr("Handcard"));
+    PlayerCardButton *button = new PlayerCardButton(tr("Handcard"));
     button->setObjectName("handcard_button");
     int num = player->getHandcardNum();
     if (num == 0) {
@@ -91,7 +117,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
 
     WrappedCard *weapon = player->getWeapon();
     if (weapon) {
-        QCommandLinkButton *button = new QCommandLinkButton(weapon->getFullName());
+        PlayerCardButton *button = new PlayerCardButton(weapon->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(weapon->getId())->getSuit()));
 
         mapper.insert(button, weapon->getId());
@@ -101,7 +127,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
 
     WrappedCard *armor = player->getArmor();
     if (armor) {
-        QCommandLinkButton *button = new QCommandLinkButton(armor->getFullName());
+        PlayerCardButton *button = new PlayerCardButton(armor->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(armor->getId())->getSuit()));
 
         mapper.insert(button, armor->getId());
@@ -111,7 +137,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
 
     WrappedCard *horse = player->getDefensiveHorse();
     if (horse) {
-        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(+1 horse)"));
+        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(+1 horse)"));
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
 
         mapper.insert(button, horse->getId());
@@ -121,7 +147,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
 
     horse = player->getOffensiveHorse();
     if (horse) {
-        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(-1 horse)"));
+        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(-1 horse)"));
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
 
         mapper.insert(button, horse->getId());
@@ -130,7 +156,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
     }
 
     if (layout->count() == 0) {
-        QCommandLinkButton *no_equip = new QCommandLinkButton(tr("No equip"));
+        PlayerCardButton *no_equip = new PlayerCardButton(tr("No equip"));
         no_equip->setEnabled(false);
         no_equip->setObjectName("noequip_button");
         return no_equip;
@@ -146,7 +172,7 @@ QWidget *PlayerCardDialog::createJudgingArea() {
     QList<const Card *> cards = player->getJudgingArea();
     foreach (const Card *card, cards) {
         const Card *real = Sanguosha->getEngineCard(card->getId());
-        QCommandLinkButton *button = new QCommandLinkButton(real->getFullName());
+        PlayerCardButton *button = new PlayerCardButton(real->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(real->getSuit()));
         layout->addWidget(button);
 
@@ -155,7 +181,7 @@ QWidget *PlayerCardDialog::createJudgingArea() {
     }
 
     if (layout->count() == 0) {
-        QCommandLinkButton *button = new QCommandLinkButton(tr("No judging cards"));
+        PlayerCardButton *button = new PlayerCardButton(tr("No judging cards"));
         button->setEnabled(false);
         button->setObjectName("nojuding_button");
         return button;

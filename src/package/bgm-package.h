@@ -127,7 +127,8 @@ class HantongCard: public SkillCard {
 
 public:
     Q_INVOKABLE HantongCard();
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual const Card *validate(CardUseStruct &cardUse) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
 class DIYYicongCard: public SkillCard {

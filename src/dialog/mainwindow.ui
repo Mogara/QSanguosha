@@ -47,11 +47,11 @@
     <addaction name="actionRecord_analysis"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
+    <addaction name="actionNever_nullify_my_trick"/>
     <addaction name="actionView_Discarded"/>
     <addaction name="actionView_distance"/>
     <addaction name="actionServerInformation"/>
     <addaction name="actionSurrender"/>
-    <addaction name="actionKick"/>
     <addaction name="actionSaveRecord"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -60,6 +60,7 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
+    <addaction name="actionAbout_GPLv3"/>
     <addaction name="actionAbout_Lua"/>
     <addaction name="actionAbout_fmod"/>
     <addaction name="separator"/>
@@ -84,7 +85,6 @@
     <addaction name="actionDamage_maker"/>
     <addaction name="actionDeath_note"/>
     <addaction name="actionRevive_wand"/>
-    <addaction name="actionSend_lowlevel_command"/>
     <addaction name="actionExecute_script_at_server_side"/>
    </widget>
    <widget class="QMenu" name="menuDIY">
@@ -92,7 +92,6 @@
      <string>DIY</string>
     </property>
     <addaction name="actionCard_editor"/>
-    <addaction name="actionScript_editor"/>
     <addaction name="actionPackaging"/>
    </widget>
    <addaction name="menuGame"/>
@@ -197,14 +196,6 @@
    </property>
    <property name="text">
     <string>Server information</string>
-   </property>
-  </action>
-  <action name="actionKick">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Kick</string>
    </property>
   </action>
   <action name="actionReplay">
@@ -376,6 +367,19 @@
   <action name="actionRecord_analysis">
    <property name="text">
     <string>Record analysis</string>
+   </property>
+  </action>
+  <action name="actionAbout_GPLv3">
+   <property name="text">
+    <string>About GPLv3</string>
+   </property>
+  </action>
+  <action name="actionNever_nullify_my_trick">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Never nullify my trick</string>
    </property>
   </action>
  </widget>

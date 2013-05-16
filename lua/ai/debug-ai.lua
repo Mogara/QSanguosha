@@ -16,7 +16,7 @@ function debugFunc(self, room, player, data)
 	local choices = {"showVisiblecards","showHandcards","objectiveLevel","getDefenseSlash"}
 	local debugmsg =function(fmt,...)
 		if type(fmt)=="boolean" then fmt = fmt and "true" or "false" end
-		local msg=string.format(fmt, unpack(arg))
+		local msg=string.format(fmt, ...)
 		player:speak(msg)
 		logmsg("ai.html","<pre>"..msg.."</pre>")
 	end
@@ -88,7 +88,7 @@ end
 function logmsg(fname,fmt,...)
 	local fp = io.open(fname,"ab")
 	if type(fmt)=="boolean" then fmt = fmt and "true" or "false" end
-	fp:write(string.format(fmt, unpack(arg)).."\r\n")
+	fp:write(string.format(fmt, ...).."\r\n")
 	fp:close()
 end
 
@@ -150,6 +150,7 @@ function SmartAI:log(outString)
 end
 
 function outputPlayersEvaluation()
+	if not global_room:getLord() then return end
 	global_room:writeToConsole("=========== MISJUDGE START ===========" )
 	for _, player in sgs.qlist(global_room:getOtherPlayers(global_room:getLord())) do
 		local evaluate_role = sgs.evaluatePlayerRole(player)
@@ -163,6 +164,8 @@ function outputPlayersEvaluation()
 end
 
 function sgs.checkMisjudge(player)
+	if not global_room:getLord() then return end
+
 	local room = global_room
 	local mode = room:getMode()
 	if player then

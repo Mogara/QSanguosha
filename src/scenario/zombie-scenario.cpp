@@ -87,7 +87,7 @@ public:
             }else hasHuman=true;
 
             DeathStruct death = data.value<DeathStruct>();
-            DamageStar damage = death.damage;
+            DamageStruct *damage = death.damage;
             if(damage && damage->from){
                 ServerPlayer *killer = damage->from;
 

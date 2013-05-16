@@ -28,7 +28,7 @@ class LuaProhibitSkill: public ProhibitSkill {
 public:
     LuaProhibitSkill(const char *name);
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const;
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
 
     LuaFunction is_prohibited;
 };
@@ -112,7 +112,7 @@ class LuaSkillCard: public SkillCard {
     Q_OBJECT
 
 public:
-    LuaSkillCard(const char *name);
+    LuaSkillCard(const char *name, const char *skillName);
     LuaSkillCard *clone() const;
     void setTargetFixed(bool target_fixed);
     void setWillThrow(bool will_throw);
@@ -130,12 +130,16 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual const Card *validate(CardUseStruct &cardUse) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
 
     // the lua callbacks
     LuaFunction filter;
     LuaFunction feasible;
     LuaFunction on_use;
     LuaFunction on_effect;
+    LuaFunction on_validate;
+    LuaFunction on_validate_in_response;
 };
 
 #endif

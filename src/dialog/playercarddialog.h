@@ -5,6 +5,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QCommandLinkButton>
 
 class MagatamaWidget: public QWidget {
     Q_OBJECT
@@ -20,7 +21,7 @@ class PlayerCardDialog: public QDialog {
     Q_OBJECT
 
 public:
-    explicit PlayerCardDialog(const ClientPlayer *player, const QString &flags = "hej");
+    explicit PlayerCardDialog(const ClientPlayer *player, const QString &flags = "hej", bool handcard_visible = false);
 
 private:
     QWidget *createAvatar();
@@ -30,12 +31,27 @@ private:
 
     const ClientPlayer *player;
     QMap<QObject *, int> mapper;
+    bool handcard_visible;
 
 private slots:
     void emitId();
 
 signals:
     void card_id_chosen(int card_id);
+};
+
+class PlayerCardButton: public QCommandLinkButton {
+public:
+    explicit PlayerCardButton(const QString &name);
+    virtual QSize sizeHint() const{
+        QSize size = QCommandLinkButton::sizeHint();
+        return QSize(size.width() * scale, size.height());
+    }
+
+    inline void setScale(double scale) { this->scale = scale; }
+
+private:
+    double scale;
 };
 
 #endif

@@ -177,8 +177,10 @@ public:
     void setChained(bool chained);
     bool isChained() const;
 
-    bool canSlash(const Player *other, const Card *slash, bool distance_limit = true, int rangefix = 0) const;
-    bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0) const;
+    bool canSlash(const Player *other, const Card *slash, bool distance_limit = true,
+                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+    bool canSlash(const Player *other, bool distance_limit = true,
+                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip) const;
 
     QList<int> getPile(const QString &pile_name) const;
@@ -200,7 +202,7 @@ public:
     QSet<QString> getAcquiredSkills() const;
     QString getSkillDescription() const;
 
-    virtual bool isProhibited(const Player *to, const Card *card) const;
+    virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow() const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 

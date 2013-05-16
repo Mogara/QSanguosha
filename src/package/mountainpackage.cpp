@@ -449,7 +449,7 @@ bool JixiSnatchCard::targetFilter(const QList<const Player *> &targets, const Pl
         return false;
     else {
         const Snatch *snatch = qobject_cast<const Snatch *>(card);
-        return !Self->isProhibited(to_select, snatch) && snatch->targetFilter(targets, to_select, Self);
+        return !Self->isProhibited(to_select, snatch, targets) && snatch->targetFilter(targets, to_select, Self);
     }
 }
 
@@ -1087,10 +1087,11 @@ public:
     }
 
     static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name) {
-        zuoci->getRoom()->broadcastSkillInvoke(skill_name,  zuoci->isMale(), -1);
+        zuoci->getRoom()->broadcastSkillInvoke(skill_name, zuoci->isMale(), -1);
     }
 
     static void AcquireGenerals(ServerPlayer *zuoci, int n) {
+        Room *room = zuoci->getRoom();
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         QStringList list = GetAvailableGenerals(zuoci);
         qShuffle(list);
@@ -1098,23 +1099,17 @@ public:
         n = qMin(n, list.length());
 
         QStringList acquired = list.mid(0, n);
-        foreach (QString huashen, acquired) {
-            huashens << huashen;
-            const General *general = Sanguosha->getGeneral(huashen);
-            foreach (const TriggerSkill *skill, general->getTriggerSkills()) {
-                zuoci->getRoom()->getThread()->addTriggerSkill(skill);
-            }
-        }
-
+        foreach (QString name, acquired)
+            huashens << name;
         zuoci->tag["Huashens"] = huashens;
 
         QStringList hidden;
         for (int i = 0; i < n; i++) hidden << "unknown";
-        foreach (ServerPlayer *p, zuoci->getRoom()->getAllPlayers()) {
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p == zuoci)
-                p->invoke("animate", QString("huashen:%1:%2").arg(zuoci->objectName()).arg(acquired.join(":")));
+                room->doAnimate(QSanProtocol::S_ANIMATE_HUASHEN, zuoci->objectName(), acquired.join(":"), QList<ServerPlayer *>() << p);
             else
-                p->invoke("animate", QString("huashen:%1:%2").arg(zuoci->objectName()).arg(hidden.join(":")));
+                room->doAnimate(QSanProtocol::S_ANIMATE_HUASHEN, zuoci->objectName(), hidden.join(":"), QList<ServerPlayer *>() << p);
         }
 
         LogMessage log;
@@ -1122,17 +1117,15 @@ public:
         log.from = zuoci;
         log.arg = QString::number(n);
         log.arg2 = QString::number(huashens.length());
-        zuoci->getRoom()->sendLog(log);
+        room->sendLog(log);
 
-        zuoci->getRoom()->setPlayerMark(zuoci, "@huashen", huashens.length());
+        room->setPlayerMark(zuoci, "@huashen", huashens.length());
     }
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci) {
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
         Room *room = zuoci->getRoom();
-        if (room->getMode().endsWith("p")
-            || room->getMode().endsWith("pd")
-            || room->getMode().endsWith("pz")
+        if (isNormalGameMode(room->getMode())
             || room->getMode().contains("_mini_")
             || room->getMode() == "custom_scenario")
             all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());

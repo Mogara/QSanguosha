@@ -259,7 +259,7 @@ public:
             room->broadcastSkillInvoke(objectName());
 
             QList<int> original_lirang = lirang_card;
-            while (room->askForYiji(kongrong, lirang_card, objectName(), false, true)) {}
+            while (room->askForYiji(kongrong, lirang_card, objectName(), false, true, true, -1, QList<ServerPlayer *>(), move.reason)) {}
 
             QList<int> ids = move.card_ids;
             i = 0;
@@ -771,7 +771,7 @@ HegemonyPackage::HegemonyPackage()
     heg_luxun->addSkill(new Duoshi);
 
     General *dingfeng = new General(this, "dingfeng", "wu"); // WU 016
-    dingfeng->addSkill(new Skill("duanbing"));
+    dingfeng->addSkill(new Skill("duanbing", Skill::Compulsory));
     dingfeng->addSkill(new Fenxun);
 
     General *mateng = new General(this, "mateng", "qun"); // QUN 013

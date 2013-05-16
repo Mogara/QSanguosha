@@ -271,12 +271,6 @@ QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int min_num,
 }
 
 const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *, ServerPlayer *to, bool positive) {
-    if (self == to && trick->isAggressive() && positive) {
-        QList<const Card *> cards = self->getHandcards();
-        foreach (const Card *card, cards)
-            if (card->isKindOf("Nullification")) return card;
-    }
-
     return NULL;
 }
 

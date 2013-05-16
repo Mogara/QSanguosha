@@ -637,14 +637,15 @@ int Player::getMark(const QString &mark) const{
     return marks.value(mark, 0);
 }
 
-bool Player::canSlash(const Player *other, const Card *slash, bool distance_limit, int rangefix) const{
+bool Player::canSlash(const Player *other, const Card *slash, bool distance_limit,
+                      int rangefix, const QList<const Player *> &others) const{
     if (other == this || !other->isAlive())
         return false;
 
     Slash *newslash = new Slash(Card::NoSuit, 0);
     newslash->deleteLater();
 #define THIS_SLASH (slash == NULL ? newslash : slash)
-    if (isProhibited(other, THIS_SLASH))
+    if (isProhibited(other, THIS_SLASH, others))
         return false;
 
     if (distance_limit)
@@ -654,8 +655,8 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
 #undef THIS_SLASH
 }
 
-bool Player::canSlash(const Player *other, bool distance_limit, int rangefix) const{
-    return canSlash(other, NULL, distance_limit, rangefix);
+bool Player::canSlash(const Player *other, bool distance_limit, int rangefix, const QList<const Player *> &others) const{
+    return canSlash(other, NULL, distance_limit, rangefix, others);
 }
 
 int Player::getCardCount(bool include_equip) const{
@@ -784,8 +785,8 @@ QString Player::getSkillDescription() const{
     return description;
 }
 
-bool Player::isProhibited(const Player *to, const Card *card) const{
-    return Sanguosha->isProhibited(this, to, card);
+bool Player::isProhibited(const Player *to, const Card *card, const QList<const Player *> &others) const{
+    return Sanguosha->isProhibited(this, to, card, others);
 }
 
 bool Player::canSlashWithoutCrossbow() const{

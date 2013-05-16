@@ -145,7 +145,7 @@ public:
         if(has_frantic && (triggerEvent == CardEffected)){
             if(player->isWounded()){
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                if(!effect.multiple && effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){
+                if(!effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){ // @todo_P: fix this!!
                     LogMessage log;
                     log.type = "#DajiAvoid";
                     log.from = effect.from;
@@ -181,14 +181,14 @@ public:
 class Guzhan: public TriggerSkill{
 public:
     Guzhan():TriggerSkill("guzhan"){
-        events << CardsMoveOneTime << SlashEffect;
+        events << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         if(triggerEvent == CardsMoveOneTime){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from != player)
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if(move.from != player)
                 return false;
 
             if(player->getWeapon() == NULL){
@@ -199,15 +199,6 @@ public:
                 if(player->hasSkill("paoxiao"))
                     room->detachSkillFromPlayer(player, "paoxiao");
             }
-
-            QList<ServerPlayer *> players = room->getAllPlayers();
-            foreach(ServerPlayer *player, players){
-                player->setMark("qinggang", 0);
-            }
-        }
-        else{
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            effect.to->addMark("qinggang");
         }
         return false;
     }
@@ -230,8 +221,8 @@ public:
             room->recover(player, recover);
         }
         else if(triggerEvent == CardsMoveOneTime){
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
-            if(move->from != player)
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if(move.from != player)
                 return false;
             QList<ServerPlayer *> players = room->getAlivePlayers();
             if(player->getHandcardNum() < players.length())
@@ -246,8 +237,8 @@ public:
     Duduan():ProhibitSkill("duduan"){
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        return card->isKindOf("DelayedTrick");
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const{
+        return to->hasSkill(objectName()) && card->isKindOf("DelayedTrick");
     }
 };
 
@@ -449,7 +440,7 @@ public:
                 room->gameOver("lord");
 
             DeathStruct death = data.value<DeathStruct>();
-            DamageStar damage = death.damage;
+            DamageStruct *damage = death.damage;
             if(damage && damage->from){
                 if(damage->from->getRole() == damage->to->getRole())
                     damage->from->throwAllHandCards();
@@ -463,7 +454,7 @@ public:
                 }
 
                 damage = NULL;
-                data = QVariant::fromValue(damage);
+                data = QVariant::fromValue(death);
             }
             break;
         }

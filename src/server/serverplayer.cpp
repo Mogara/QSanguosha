@@ -157,7 +157,7 @@ void ServerPlayer::throwAllCards() {
 
     QList<const Card *> tricks = getJudgingArea();
     foreach (const Card *trick, tricks) {
-        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, this->objectName());
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, this->objectName());
         room->throwCard(trick, reason, NULL);
     }
 }
@@ -292,7 +292,7 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
     }
 
     if (no_unreasonable)
-        return NULL;
+        return QString();
 
     return generals.first();
 }
@@ -545,6 +545,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     arg[3] = toJsonString(target->objectName());
     arg[4] = pindian_struct.to_card->getEffectiveId();
     arg[5] = pindian_struct.success;
+    arg[6] = toJsonString(reason);
     room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
 
     pindian_star = &pindian_struct;
@@ -969,12 +970,17 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open) {
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open) {
+    return addToPile(pile_name, card_ids, open, CardMoveReason());
+}
+
+void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason) {
     piles[pile_name].append(card_ids);
 
     CardsMoveStruct move;
     move.card_ids = card_ids;
     move.to = this;
     move.to_place = Player::PlaceSpecial;
+    move.reason = reason;
     room->moveCardsAtomic(move, open);
 }
 

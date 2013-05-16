@@ -113,8 +113,8 @@ public:
     virtual bool isAvailable(const Player *player) const;
     
     inline virtual const Card *getRealCard() const{ return this; }
-    virtual const Card *validate(const CardUseStruct *cardUse) const;
-    virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const;
+    virtual const Card *validate(CardUseStruct &cardUse) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
 
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
@@ -126,7 +126,7 @@ public:
     inline virtual QStringList getFlags() const{ return flags; }
 
     inline virtual bool isModified() const{ return false; }
-    inline virtual void onNullified(ServerPlayer */*target*/) const{ return; }
+    inline virtual void onNullified(ServerPlayer *target) const{ return; }
 
     // static functions
     static bool CompareByNumber(const Card *a, const Card *b);

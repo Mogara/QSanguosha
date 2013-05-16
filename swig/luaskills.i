@@ -24,7 +24,7 @@ class ProhibitSkill: public Skill {
 public:
     ProhibitSkill(const QString &name);
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const = 0;
 };
 
 class DistanceSkill: public Skill {
@@ -64,7 +64,7 @@ class LuaProhibitSkill: public ProhibitSkill {
 public:
     LuaProhibitSkill(const char *name);
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const;
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
 
     LuaFunction is_prohibited;
 };
@@ -154,7 +154,7 @@ public:
 
 class LuaSkillCard: public SkillCard {
 public:
-    LuaSkillCard(const char *name);
+    LuaSkillCard(const char *name, const char *skillName);
     void setTargetFixed(bool target_fixed);
     void setWillThrow(bool will_throw);
     void setCanRecast(bool can_recast);
@@ -165,6 +165,8 @@ public:
     LuaFunction feasible;
     LuaFunction on_use;
     LuaFunction on_effect;
+    LuaFunction on_validate;
+    LuaFunction on_validate_in_response;
 };
 
 %{
@@ -241,7 +243,7 @@ static void Error(lua_State *L) {
     QMessageBox::warning(NULL, "Lua script error!", error_string);
 }
 
-bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const Card *card) const{
+bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const{
     if (is_prohibited == 0)
         return false;
 
@@ -254,7 +256,14 @@ bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const 
     SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
     SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
 
-    int error = lua_pcall(L, 4, 1, 0);
+    lua_createtable(L, others.length(), 0);
+    for(int i = 0; i < others.length(); i++){
+        const Player *player = others[i];
+        SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
+        lua_rawseti(L, -5, i + 1);
+    }
+
+    int error = lua_pcall(L, 5, 1, 0);
     if (error) {
         Error(L);
         return false;
@@ -472,7 +481,7 @@ bool LuaViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card 
 }
 
 const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const{
-    if(view_as == 0)
+    if (view_as == 0)
         return NULL;
 
     lua_State *L = Sanguosha->getLuaState();
@@ -694,6 +703,64 @@ void LuaSkillCard::onEffect(const CardEffectStruct &effect) const{
         Room *room = effect.to->getRoom();
         room->output(error_msg);
     }
+}
+
+const Card *LuaSkillCard::validate(CardUseStruct &cardUse) const{
+    if (on_validate == 0)
+        return SkillCard::validate(cardUse);
+
+    lua_State *L = Sanguosha->getLuaState();
+    
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_validate);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, &cardUse, SWIGTYPE_p_CardUseStruct, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if (error) {
+        Error(L);
+        return SkillCard::validate(cardUse);
+    }
+
+    void *card_ptr;
+    int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
+    lua_pop(L, 1);
+    if (SWIG_IsOK(result)) {
+        const Card *card = static_cast<const Card *>(card_ptr);
+        return card;
+    } else
+        return SkillCard::validate(cardUse);
+}
+
+const Card *LuaSkillCard::validateInResponse(ServerPlayer *user) const{
+    if (on_validate_in_response == 0)
+        return SkillCard::validateInResponse(user);
+
+    lua_State *L = Sanguosha->getLuaState();
+    
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_validate_in_response);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, user, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if (error) {
+        Error(L);
+        return SkillCard::validateInResponse(user);
+    }
+
+    void *card_ptr;
+    int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
+    lua_pop(L, 1);
+    if (SWIG_IsOK(result)) {
+        const Card *card = static_cast<const Card *>(card_ptr);
+        return card;
+    } else
+        return SkillCard::validateInResponse(user);
 }
 
 %}

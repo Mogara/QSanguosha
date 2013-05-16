@@ -131,7 +131,7 @@ bool QiceCard::targetFilter(const QList<const Player *> &targets, const Player *
     Card *mutable_card = const_cast<Card *>(card);
     foreach (int id, subcards)
         mutable_card->addSubcard(id);
-    return mutable_card && mutable_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, mutable_card);
+    return mutable_card && mutable_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, mutable_card, targets);
 }
 
 bool QiceCard::targetFixed() const{
@@ -150,18 +150,18 @@ bool QiceCard::targetsFeasible(const QList<const Player *> &targets, const Playe
     return mutable_card && mutable_card->targetsFeasible(targets, Self);
 }
 
-const Card *QiceCard::validate(const CardUseStruct *card_use) const{
+const Card *QiceCard::validate(CardUseStruct &card_use) const{
     Card *use_card = Sanguosha->cloneCard(user_string);
     use_card->setSkillName("qice");
     foreach (int id, this->getSubcards())
         use_card->addSubcard(id);
     bool available = true;
-    foreach (ServerPlayer *to, card_use->to)
-        if (card_use->from->isProhibited(to, use_card)) {
+    foreach (ServerPlayer *to, card_use.to)
+        if (card_use.from->isProhibited(to, use_card)) {
             available = false;
             break;
         }
-    available = available && use_card->isAvailable(card_use->from);
+    available = available && use_card->isAvailable(card_use.from);
     use_card->deleteLater();
     if (!available) return NULL;
     return use_card;
@@ -539,8 +539,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-               && player->getHandcardNum() >= 2 && pattern == "slash";
+        return player->getHandcardNum() >= 2 && pattern == "slash";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{

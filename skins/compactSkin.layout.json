@@ -1,4 +1,11 @@
 {
+"common":
+{
+    "chooseGeneralBoxSwitchIconSizeThreshold": 10,
+    "chooseGeneralBoxSwitchIconEachRow": 5,
+    "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 6,
+    "chooseGeneralBoxNoIconThreshold": 24
+},
 "room":
 {
     "scenePadding": 0,
@@ -6,7 +13,7 @@
     "chatTextBoxHeight": 35,
     "logBoxHeightPercentage": 0.6,
     "chatBoxHeightPercentage": 0.4,
-    "infoPlaneWidthPercentage": 0.2,
+    "infoPlaneWidthPercentage": 0.18,
     "photoRoomPadding": 10,
     "photoHDistance": 32,
     "photoVDistance": 15,
@@ -23,8 +30,8 @@
     "normalHeight": 152,
     "mainFrameArea": [0, 0, 131, 152],
     "canvasArea": [0, 0, 131, 152],
-    "handCardNumIconArea": [3, 70, 21, 22],
-    "handCardFont": ["Arial", [12, 12, 3], 20, [255, 255, 255, 255]],	
+    "handCardNumIconArea": [3, 69, 21, 22],
+    "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255]],	
     "equipAreas": [[3, 94, 150, 13], [3, 108, 150, 13], [3, 122, 150, 13], [3, 136, 150, 13]],
     "equipImageArea": [1, 1, 11, 11],
     //"equipTextArea": [35, -5, 85, 21], // need adjustment
@@ -51,17 +58,18 @@
     "screenNameArea": [0, 12, 131, 13],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
+    "magatamasArea": [0, 0, 14, 17], 
     "magatamaSize": [14, 17],
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [136, 85]],
     "cardMoveArea": [-50, 35, 200, 130],
-    "phaseArea": [5, 147, 140, 12],	
+    "phaseArea": [5, 147, 140, 12],
     "onlineStatusArea": [93, 20, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["SimSun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
-    "skillNameArea": [0, 25, 131, 50],
+    "skillNameArea": [25, 20, 300, 50],
     "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
-    "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [133, 10]],
+    "progressBarArea": ["topLeft", "bottomLeft", [0, 8], [133, 10]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [32, 26],
     "privatePileStep": [0, 16],

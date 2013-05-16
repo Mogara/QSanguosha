@@ -871,25 +871,22 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
     yuji->tag.remove("GuhuoSlash");
     room->setTag("Guhuoing", false);
     room->removeTag("GuhuoType");
-    if (!success)
-        room->setPlayerFlag(yuji, "GuhuoFailed");
-
     return success;
 }
 
 bool GuhuoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     CardStar card = Self->tag.value("guhuo").value<CardStar>();
-    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card);
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
 bool GuhuoCard::targetFixed() const{
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!ClientInstance->hasNoTargetResponding()) {
-            CardStar card = Sanguosha->cloneCard(user_string);
-            Self->tag["guhuo"] = QVariant::fromValue(card);
-            return card && card->targetFixed();
-        } else
-            return true;
+        const Card *card = NULL;
+        if (!user_string.isEmpty())
+            card = Sanguosha->cloneCard(user_string.split("+").first());
+        return card && card->targetFixed();
+    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        return true;
     }
 
     CardStar card = Self->tag.value("guhuo").value<CardStar>();
@@ -901,8 +898,8 @@ bool GuhuoCard::targetsFeasible(const QList<const Player *> &targets, const Play
     return card && card->targetsFeasible(targets, Self);
 }
 
-const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
-    ServerPlayer *yuji = card_use->from;
+const Card *GuhuoCard::validate(CardUseStruct &card_use) const{
+    ServerPlayer *yuji = card_use.from;
     Room *room = yuji->getRoom();
 
     QString to_guhuo = user_string;
@@ -918,15 +915,15 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     room->broadcastSkillInvoke("guhuo");
 
     LogMessage log;
-    log.type = card_use->to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
+    log.type = card_use.to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
     log.from = yuji;
-    log.to = card_use->to;
+    log.to = card_use.to;
     log.arg = to_guhuo;
     log.arg2 = "guhuo";
 
     room->sendLog(log);
 
-    if (guhuo(card_use->from)) {
+    if (guhuo(card_use.from)) {
         const Card *card = Sanguosha->getCard(subcards.first());
         QString user_str;
         if (to_guhuo == "slash") {
@@ -947,8 +944,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         return NULL;
 }
 
-const Card *GuhuoCard::validateInResponse(ServerPlayer *yuji, bool &continuable) const{
-    continuable = true;
+const Card *GuhuoCard::validateInResponse(ServerPlayer *yuji) const{
     Room *room = yuji->getRoom();
     room->broadcastSkillInvoke("guhuo");
 

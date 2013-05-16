@@ -795,7 +795,7 @@ gongsunzan          zhoutai             3
 gongsunzan          zhouyu              3         
 gongsunzan          zhugeliang          4         
 gongsunzan          zhurong             4         
-guanxingzhangbao    yuanshu             0         
+guanxingzhangbao    yuanshu             2         
 guanyu              caocao              4         
 guanyu              caopi               3         
 guanyu              caoren              3         
@@ -1923,6 +1923,7 @@ shenguanyu          xiaoqiao            0
 shenlvbu            ganning             0         
 shenlvbu            huangyueying        0         
 shenlvbu            wolong              0         
+shensimayi          zhanghe             0         
 shenzhouyu          xiaoqiao            0         
 simayi              caocao              5         
 simayi              caopi               5         
@@ -3055,7 +3056,7 @@ yuanshu             fazheng             5
 yuanshu             ganning             5         
 yuanshu             gaoshun             5         
 yuanshu             gongsunzan          3         
-yuanshu             guanxingzhangbao    0         
+yuanshu             guanxingzhangbao    2         
 yuanshu             guanyu              2         
 yuanshu             guojia              4         
 yuanshu             huanggai            3         
@@ -3291,6 +3292,7 @@ zhangfei            zhouyu              4
 zhangfei            zhugeliang          5         
 zhangfei            zhurong             5         
 zhanghe             zhangliao           0         
+zhanghe             shensimayi          0         
 zhangjiao           caocao              4         
 zhangjiao           caopi               3         
 zhangjiao           caoren              4         

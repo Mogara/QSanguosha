@@ -1,7 +1,6 @@
 %{
 
 #include "ai.h"
-#include "joypackage.h"
 
 %}
 

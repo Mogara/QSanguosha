@@ -1109,6 +1109,255 @@ public:
     }
 };
 
+#include "jsonutils.h"
+class AocaiViewAsSkill: public ZeroCardViewAsSkill {
+public:
+    AocaiViewAsSkill(): ZeroCardViewAsSkill("aocai") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        if (player->getPhase() != Player::NotActive || player->hasFlag("Global_AocaiFailed")) return false;
+        if (pattern == "slash")
+            return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+        else if (pattern == "peach")
+            return !player->hasFlag("Global_PreventPeach");
+        else if (pattern.contains("analeptic"))
+            return true;
+        return false;
+    }
+
+    virtual const Card *viewAs() const{
+        AocaiCard *aocai_card = new AocaiCard;
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        if (pattern == "peach+analeptic" && Self->hasFlag("Global_PreventPeach"))
+            pattern = "analeptic";
+        aocai_card->setUserString(pattern);
+        return aocai_card;
+    }
+};
+
+class Aocai: public TriggerSkill {
+public:
+    Aocai(): TriggerSkill("aocai") {
+        events << CardAsked;
+        view_as_skill = new AocaiViewAsSkill;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QString pattern = data.toStringList().first();
+        if (player->getPhase() == Player::NotActive
+            && (pattern == "slash" || pattern == "jink")
+            && room->askForSkillInvoke(player, objectName(), data)) {
+            QList<int> ids = room->getNCards(2, false);
+            QList<int> enabled, disabled;
+            foreach (int id, ids) {
+                if (Sanguosha->getCard(id)->objectName().contains(pattern))
+                    enabled << id;
+                else
+                    disabled << id;
+            }
+            int id = Aocai::view(room, player, ids, enabled, disabled);
+            if (id != -1) {
+                const Card *card = Sanguosha->getCard(id);
+                room->provide(card);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static int view(Room *room, ServerPlayer *player, QList<int> &ids, QList<int> &enabled, QList<int> &disabled) {
+        int result = -1;
+        LogMessage log;
+        log.type = "$ViewDrawPile";
+        log.from = player;
+        log.card_str = IntList2StringList(ids).join("+");
+        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        room->broadcastSkillInvoke("aocai");
+        room->notifySkillInvoked(player, "aocai");
+        if (enabled.isEmpty()) {
+            Json::Value arg(Json::arrayValue);
+            arg[0] = QSanProtocol::Utils::toJsonString(".");
+            arg[1] = false;
+            arg[2] = QSanProtocol::Utils::toJsonArray(ids);
+            room->doNotify(player, QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, arg);
+        } else {
+            room->fillAG(ids, player, disabled);
+            int id = room->askForAG(player, enabled, true, "aocai");
+            if (id != -1) {
+                ids.removeOne(id);
+                result = id;
+            }
+            room->clearAG(player);
+        }
+
+        QList<int> &drawPile = room->getDrawPile();
+        for (int i = ids.length() - 1; i >= 0; i--)
+            drawPile.prepend(ids.at(i));
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_UPDATE_PILE, Json::Value(drawPile.length()));
+        if (result == -1)
+            room->setPlayerFlag(player, "Global_AocaiFailed");
+        return result;
+    }
+};
+
+AocaiCard::AocaiCard() {
+}
+
+bool AocaiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    QString name;
+    const Card *card = NULL;
+    if (!user_string.isEmpty()) {
+        name = user_string.split("+").first();
+        card = Sanguosha->cloneCard(name);
+    }
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+}
+
+bool AocaiCard::targetFixed() const{
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        return true;
+
+    const Card *card = NULL;
+    if (!user_string.isEmpty())
+        card = Sanguosha->cloneCard(user_string.split("+").first());
+    return card && card->targetFixed();
+}
+
+bool AocaiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    QString name;
+    const Card *card = NULL;
+    if (!user_string.isEmpty()) {
+        name = user_string.split("+").first();
+        card = Sanguosha->cloneCard(name);
+    }
+    return card && card->targetsFeasible(targets, Self);
+}
+
+const Card *AocaiCard::validateInResponse(ServerPlayer *user) const{
+    Room *room = user->getRoom();
+    QList<int> ids = room->getNCards(2, false);
+    QStringList names = user_string.split("+");
+    if (names.contains("slash")) names << "fire_slash" << "thunder_slash";
+
+    QList<int> enabled, disabled;
+    foreach (int id, ids) {
+        if (names.contains(Sanguosha->getCard(id)->objectName()))
+            enabled << id;
+        else
+            disabled << id;
+    }
+
+    LogMessage log;
+    log.type = "#InvokeSkill";
+    log.from = user;
+    log.arg = "aocai";
+    room->sendLog(log);
+
+    int id = Aocai::view(room, user, ids, enabled, disabled);
+    return Sanguosha->getCard(id);
+}
+
+const Card *AocaiCard::validate(CardUseStruct &cardUse) const{
+    cardUse.m_isOwnerUse = false;
+    ServerPlayer *user = cardUse.from;
+    Room *room = user->getRoom();
+    QList<int> ids = room->getNCards(2, false);
+    QStringList names = user_string.split("+");
+    if (names.contains("slash")) names << "fire_slash" << "thunder_slash";
+
+    QList<int> enabled, disabled;
+    foreach (int id, ids) {
+        if (names.contains(Sanguosha->getCard(id)->objectName()))
+            enabled << id;
+        else
+            disabled << id;
+    }
+
+    LogMessage log;
+    log.type = "#InvokeSkill";
+    log.from = user;
+    log.arg = "aocai";
+    room->sendLog(log);
+
+    int id = Aocai::view(room, user, ids, enabled, disabled);
+    return Sanguosha->getCard(id);
+}
+
+DuwuCard::DuwuCard() {
+}
+
+bool DuwuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (!targets.isEmpty() || qMax(0, to_select->getHp()) != subcardsLength())
+        return false;
+    if (!Self->inMyAttackRange(to_select) || Self == to_select)
+        return false;
+
+    if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())) {
+        const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
+        int distance_fix = weapon->getRange() - 1;
+        if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
+            distance_fix += 1;
+        return Self->distanceTo(to_select, distance_fix) <= Self->getAttackRange();
+    } else if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId())) {
+        return Self->distanceTo(to_select, 1) <= Self->getAttackRange();
+    } else
+        return true;
+}
+
+void DuwuCard::onEffect(const CardEffectStruct &effect) const{
+    effect.from->getRoom()->damage(DamageStruct("duwu", effect.from, effect.to));
+}
+
+class DuwuViewAsSkill: public ViewAsSkill {
+public:
+    DuwuViewAsSkill(): ViewAsSkill("duwu") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->isNude() && !player->hasFlag("DuwuEnterDying");
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        DuwuCard *duwu = new DuwuCard;
+        if (!cards.isEmpty())
+            duwu->addSubcards(cards);
+        return duwu;
+    }
+};
+
+class Duwu: public TriggerSkill {
+public:
+    Duwu(): TriggerSkill("duwu") {
+        events << QuitDying;
+        view_as_skill = new DuwuViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
+        DyingStruct dying = data.value<DyingStruct>();
+        if (dying.damage && dying.damage->getReason() == "duwu") {
+            ServerPlayer *from = dying.damage->from;
+            if (from && from->isAlive()) {
+                room->setPlayerFlag(from, "DuwuEnterDying");
+                room->loseHp(from, 1);
+            }
+        }
+        return false;
+    }
+};
+
 SPCardPackage::SPCardPackage()
     : Package("sp_cards")
 {
@@ -1217,6 +1466,10 @@ SPPackage::SPPackage()
     erqiao->addSkill(new Xingwu);
     erqiao->addSkill(new Luoyan);
 
+    General *zhugeke = new General(this, "zhugeke", "wu", 3);
+    zhugeke->addSkill(new Aocai);
+    zhugeke->addSkill(new Duwu);
+
     General *tw_diaochan = new General(this, "tw_diaochan", "qun", 3, false, true); // TW SP 002
     tw_diaochan->addSkill("lijian");
     tw_diaochan->addSkill("biyue");
@@ -1281,6 +1534,8 @@ SPPackage::SPPackage()
     addMetaObject<XuejiCard>();
     addMetaObject<BifaCard>();
     addMetaObject<SongciCard>();
+    addMetaObject<AocaiCard>();
+    addMetaObject<DuwuCard>();
 }
 
 ADD_PACKAGE(SP)

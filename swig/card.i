@@ -14,8 +14,7 @@ public:
 
 class TrickCard:public Card {
 public:
-    TrickCard(Suit suit, int number, bool aggressive);
-    bool isAggressive() const;
+    TrickCard(Suit suit, int number);
     void setCancelable(bool cancelable);
 
     virtual QString getType() const;
@@ -23,7 +22,6 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
 private:
-    bool aggressive;
     bool cancelable;
 };
 

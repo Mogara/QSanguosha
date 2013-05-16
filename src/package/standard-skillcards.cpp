@@ -25,22 +25,23 @@ RendeCard::RendeCard() {
 }
 
 void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = NULL;
-    if (targets.isEmpty()) {
-        foreach (ServerPlayer *player, room->getAlivePlayers()) {
-            if (player != source) {
-                target = player;
-                break;
-            }
-        }
-    } else
-        target = targets.first();
+    ServerPlayer *target = targets.first();
 
+    int old_value = source->getMark("rende");
+    if (old_value > 0) {
+        QList<int> rende_list = StringList2IntList(source->property("rende").toString().split("+"));
+        foreach (int id, this->subcards)
+            rende_list.removeOne(id);
+        room->setPlayerProperty(source, "rende", IntList2StringList(rende_list).join("+"));
+    }
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
     reason.m_playerId = target->objectName();
     room->obtainCard(target, this, reason, false);
 
-    int old_value = source->getMark("rende");
+    if (old_value == 0 && !source->isKongcheng()) {
+        QList<int> handcards = source->handCards();
+        room->setPlayerProperty(source, "rende", IntList2StringList(handcards).join("+"));
+    }
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
 
@@ -50,6 +51,12 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         recover.who = source;
         room->recover(source, recover);
     }
+
+    if (room->getMode() == "04_1v3" && source->getMark("rende") >= 2) return;
+    if (source->isKongcheng()) return;
+    room->addPlayerHistory(source, "RendeCard", -1);
+    if (!room->askForUseCard(source, "@@rende", "@rende-give", -1, Card::MethodUse))
+        room->addPlayerHistory(source, "RendeCard");
 }
 
 JieyinCard::JieyinCard(){
@@ -150,7 +157,8 @@ void KurouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
         room->drawCards(source, 2);
 }
 
-LijianCard::LijianCard() {
+LijianCard::LijianCard(bool cancelable): duel_cancelable(cancelable) {
+    mute = true;
 }
 
 bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -186,6 +194,7 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
     RoomThread *thread = room->getThread();
 
     thread->trigger(PreCardUsed, room, diaochan, data);
+    room->broadcastSkillInvoke("lijian");
 
     CardMoveReason reason(CardMoveReason::S_REASON_THROW, diaochan->objectName(), QString(), "lijian", QString());
     room->moveCardTo(this, diaochan, NULL, Player::DiscardPile, reason, true);
@@ -199,8 +208,8 @@ void LijianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
     ServerPlayer *from = targets.at(1);
 
     Duel *duel = new Duel(Card::NoSuit, 0);
-    duel->setCancelable(false);
-    duel->setSkillName("LIJIAN");
+    duel->setCancelable(duel_cancelable);
+    duel->setSkillName(getSkillName().toUpper());
     room->useCard(CardUseStruct(duel, from, to));
 }
 
@@ -280,10 +289,24 @@ bool JijiangCard::targetFilter(const QList<const Player *> &targets, const Playe
     return slash->targetFilter(targets, to_select, Self);
 }
 
-void JijiangCard::use(Room *room, ServerPlayer *liubei, QList<ServerPlayer *> &targets) const{
-    QList<ServerPlayer *> lieges = room->getLieges("shu", liubei);
+const Card *JijiangCard::validate(CardUseStruct &cardUse) const{
+    cardUse.m_isOwnerUse = false;
+    ServerPlayer *liubei = cardUse.from;
+    QList<ServerPlayer *> targets = cardUse.to;
+    Room *room = liubei->getRoom();
+    liubei->broadcastSkillInvoke(this);
+    room->notifySkillInvoked(liubei, "jijiang");
+
+    LogMessage log;
+    log.from = liubei;
+    log.to = targets;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
     const Card *slash = NULL;
 
+    QList<ServerPlayer *> lieges = room->getLieges("shu", liubei);
     foreach (ServerPlayer *target, targets)
         target->setFlags("JijiangTarget");
     foreach (ServerPlayer *liege, lieges) {
@@ -302,12 +325,11 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, QList<ServerPlayer *> &t
             foreach (ServerPlayer *target, targets)
                 target->setFlags("-JijiangTarget");
 
-            room->useCard(CardUseStruct(slash, liubei, targets, false));
-            return;
+            return slash;
         }
     }
     foreach (ServerPlayer *target, targets)
         target->setFlags("-JijiangTarget");
-    room->setPlayerFlag(liubei, "JijiangFailed");
+    room->setPlayerFlag(liubei, "Global_JijiangFailed");
+    return NULL;
 }
-

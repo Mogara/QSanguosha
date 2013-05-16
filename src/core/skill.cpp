@@ -298,9 +298,7 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL) return false;
     if (!Config.value("EnableSPConvert", true).toBool()) return false;
     if (Config.value("EnableHidden", false).toBool()) return false;
-    bool canInvoke = Config.GameMode.endsWith("p") || Config.GameMode.endsWith("pd")
-                     || Config.GameMode.endsWith("pz");
-    if (!canInvoke) return false;
+    if (!isNormalGameMode(Config.GameMode)) return false;
     bool available = false;
     foreach (QString to_gen, to_list) {
         const General *gen = Sanguosha->getGeneral(to_gen);
@@ -311,8 +309,7 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
         }
     }
     return GameStartSkill::triggerable(target)
-           && (target->getGeneralName() == from || target->getGeneral2Name() == from)
-           && available && canInvoke;
+           && (target->getGeneralName() == from || target->getGeneral2Name() == from) && available;
 }
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{

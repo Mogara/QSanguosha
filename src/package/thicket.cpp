@@ -183,7 +183,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == TargetConfirmed && player->hasSkill(objectName()) && player->isAlive()) {
+        if (triggerEvent == TargetConfirmed && TriggerSkill::triggerable(player)) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("SavageAssault") && use.from != player) {
                 room->notifySkillInvoked(player, objectName());
@@ -721,8 +721,8 @@ public:
     Weimu(): ProhibitSkill("weimu") {
     }
 
-    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
-        return (card->isKindOf("TrickCard") || card->isKindOf("QiceCard"))
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const{
+        return to->hasSkill(objectName()) && (card->isKindOf("TrickCard") || card->isKindOf("QiceCard"))
                && card->isBlack() && card->getSkillName() != "guhuo"; // Be care!!!!!!
     }
 };

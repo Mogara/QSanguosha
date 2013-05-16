@@ -34,8 +34,7 @@ class TrickCard:public Card {
     Q_OBJECT
 
 public:
-    TrickCard(Suit suit, int number, bool aggressive);
-    bool isAggressive() const;
+    TrickCard(Suit suit, int number);
     void setCancelable(bool cancelable);
 
     virtual QString getType() const;
@@ -43,7 +42,6 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
 private:
-    bool aggressive;
     bool cancelable;
 };
 
@@ -78,7 +76,7 @@ class GlobalEffect: public TrickCard {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number): TrickCard(suit, number, false) { target_fixed = true; }
+    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number): TrickCard(suit, number) { target_fixed = true; }
     virtual QString getSubtype() const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual bool isAvailable(const Player *player) const;
@@ -107,7 +105,7 @@ class AOE: public TrickCard {
     Q_OBJECT
 
 public:
-    AOE(Suit suit, int number): TrickCard(suit, number, true) { target_fixed = true; }
+    AOE(Suit suit, int number): TrickCard(suit, number) { target_fixed = true; }
     virtual QString getSubtype() const;
     virtual bool isAvailable(const Player *player) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
@@ -133,7 +131,7 @@ class SingleTargetTrick: public TrickCard {
     Q_OBJECT
 
 public:
-    SingleTargetTrick(Suit suit, int number, bool aggressive): TrickCard(suit, number, aggressive) {}
+    SingleTargetTrick(Suit suit, int number): TrickCard(suit, number) {}
     virtual QString getSubtype() const;
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
@@ -316,6 +314,7 @@ public:
 
 protected:
     DamageStruct::Nature nature;
+    mutable int drank;
 };
 
 class Jink: public BasicCard {

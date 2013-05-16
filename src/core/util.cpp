@@ -85,3 +85,7 @@ QList<int> StringList2IntList(const QStringList &stringlist) {
     }
     return intlist;
 }
+
+bool isNormalGameMode(const QString &mode) {
+    return mode.endsWith("p") || mode.endsWith("pd") || mode.endsWith("pz");
+}

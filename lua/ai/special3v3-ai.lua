@@ -22,7 +22,7 @@ sgs.ai_skill_invoke.huanshi = true
 
 sgs.ai_skill_choice.huanshi = function(self, choices)
 	local zhugejin = self.room:findPlayerBySkillName("huanshi")
-	if self:objectiveLevel(zhugejin) > 2 then return "reject" end
+	if zhugejin and self:isEnemy(zhugejin) then return "reject" end
 	return "accept"
 end
 
@@ -46,8 +46,7 @@ end
 sgs.ai_skill_invoke.hongyuan = function(self, data)
 	local count = 0
 	for i = 1, #self.friends_noself do
-		if self:needKongcheng(self.friends_noself[i]) and self.friends_noself[i]:getHandcardNum() == 0
-			or self.friends_noself[i]:hasSkill("manjuan") then
+		if self:needKongcheng(self.friends_noself[i], true) or self.friends_noself[i]:hasSkill("manjuan") then
 		else
 			count = count + 1
 		end
@@ -59,7 +58,7 @@ end
 sgs.ai_skill_invoke.mingzhe = true
 
 sgs.ai_suit_priority.mingzhe=function(self)	
-	return self.player:getPhase()==sgs.Player_NotActive and "diamond|heart|club|spade" or "club|spade|diamond|heart"
+	return self.player:getPhase() == sgs.Player_NotActive and "diamond|heart|club|spade" or "club|spade|diamond|heart"
 end
 --[[
 	技能：弘援
@@ -71,8 +70,7 @@ sgs.ai_skill_use["@@hongyuan"] = function(self, prompt)
 	self:sort(self.friends_noself, "handcard")
 	local first_index, second_index
 	for i=1, #self.friends_noself do
-		if self:needKongcheng(self.friends_noself[i]) and self.friends_noself[i]:getHandcardNum() == 0 
-			or self.friends_noself[i]:hasSkill("manjuan") then
+		if self:needKongcheng(self.friends_noself[i], true) or self.friends_noself[i]:hasSkill("manjuan") then
 		else
 			if not first_index then
 				first_index = i
@@ -86,7 +84,7 @@ sgs.ai_skill_use["@@hongyuan"] = function(self, prompt)
 	if first_index and not second_index then
 		local others = self.room:getOtherPlayers(self.player)
 		for _, other in sgs.qlist(others) do
-			if (not self:isFriend(other) and (self:needKongcheng(other) and others:getHandcardNum() == 0 or other:hasSkill("manjuan"))) and
+			if not self:isFriend(other) and (self:needKongcheng(other, true) and not other:hasSkill("manjuan")) and
 				self.friends_noself[first_index]:objectName() ~= other:objectName() then
 				return ("@HongyuanCard=.->%s+%s"):format(self.friends_noself[first_index]:objectName(), other:objectName())
 			end
@@ -101,7 +99,7 @@ sgs.ai_skill_use["@@hongyuan"] = function(self, prompt)
 	return ("@HongyuanCard=.->%s+%s"):format(first, second)
 end
 
-sgs.ai_card_intention.HongyuanCard = function(card, from, tos, source)
+sgs.ai_card_intention.HongyuanCard = function(self, card, from, tos, source)
 	for _, to in ipairs(tos) do
 		sgs.updateIntention(from, to, -80)
 	end

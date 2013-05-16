@@ -12,21 +12,21 @@ namespace QSanProtocol {
     }
 
     enum PacketDescription {
-      S_DESC_UNKNOWN,
-      S_TYPE_REQUEST = 0x1,
-      S_TYPE_REPLY = 0x2,
-      S_TYPE_NOTIFICATION = 0x4,
-      S_TYPE_MASK = 0xf,
-      S_SRC_ROOM = 0x10,
-      S_SRC_LOBBY = 0x20,
-      S_SRC_CLIENT = 0x40,
-      S_SRC_MASK = 0xf0,
-      S_DEST_ROOM = 0x100,
-      S_DEST_LOBBY = 0x200,
-      S_DEST_CLIENT = 0x400,
-      S_DEST_MASK = 0xf00,
+        S_DESC_UNKNOWN,
+        S_TYPE_REQUEST = 0x1,
+        S_TYPE_REPLY = 0x2,
+        S_TYPE_NOTIFICATION = 0x4,
+        S_TYPE_MASK = 0xf,
+        S_SRC_ROOM = 0x10,
+        S_SRC_LOBBY = 0x20,
+        S_SRC_CLIENT = 0x40,
+        S_SRC_MASK = 0xf0,
+        S_DEST_ROOM = 0x100,
+        S_DEST_LOBBY = 0x200,
+        S_DEST_CLIENT = 0x400,
+        S_DEST_MASK = 0xf00,
 
-      S_DESC_DUMMY
+        S_DESC_DUMMY
     };
 
     enum ProcessInstanceType {
@@ -57,7 +57,6 @@ namespace QSanProtocol {
         S_COMMAND_UNKNOWN,
         S_COMMAND_CHOOSE_CARD,
         S_COMMAND_PLAY_CARD,
-        S_COMMAND_USE_CARD,        
         S_COMMAND_RESPONSE_CARD,
         S_COMMAND_SHOW_CARD,
         S_COMMAND_SHOW_ALL_CARDS,
@@ -110,6 +109,7 @@ namespace QSanProtocol {
         S_COMMAND_ATTACH_SKILL,
         S_COMMAND_NULLIFICATION_ASKED,
         S_COMMAND_EXCHANGE_KNOWN_CARDS, // For Dimeng only
+        S_COMMAND_SET_KNOWN_CARDS,
         S_COMMAND_UPDATE_PILE,
         S_COMMAND_RESET_PILE,
         S_COMMAND_UPDATE_STATE_ITEM,
@@ -120,7 +120,8 @@ namespace QSanProtocol {
         S_COMMAND_TAKE_GENERAL,
         S_COMMAND_RECOVER_GENERAL,
         S_COMMAND_REVEAL_GENERAL,
-        S_COMMAND_AVAILABLE_CARDS
+        S_COMMAND_AVAILABLE_CARDS,
+        S_COMMAND_ANIMATE
     };
 
     enum GameEventType {
@@ -140,6 +141,17 @@ namespace QSanProtocol {
         S_GAME_EVENT_SKILL_INVOKED,
         S_GAME_EVENT_PAUSE,
         S_GAME_EVENT_REVEAL_PINDIAN
+    };
+
+    enum AnimateType {
+        S_ANIMATE_NULL,
+
+        S_ANIMATE_INDICATE,
+        S_ANIMATE_LIGHTBOX,
+        S_ANIMATE_NULLIFICATION,
+        S_ANIMATE_HUASHEN,
+        S_ANIMATE_FIRE,
+        S_ANIMATE_LIGHTNING
     };
 
     enum Game3v3ChooseOrderCommand {

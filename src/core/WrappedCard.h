@@ -153,14 +153,14 @@ public:
 
     inline virtual bool isAvailable(const Player *player) const{ return m_card->isAvailable(player); }
 
-    inline virtual const Card *validate(const CardUseStruct *cardUse) const{
+    inline virtual const Card *validate(CardUseStruct &cardUse) const{
         Q_ASSERT(m_card != NULL);
         return m_card->validate(cardUse);
     }
 
-    inline virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const{
+    inline virtual const Card *validateInResponse(ServerPlayer *user) const{
         Q_ASSERT(m_card != NULL);
-        return m_card->validateInResponse(user, continuable);
+        return m_card->validateInResponse(user);
     }
 
     inline virtual void doPreAction(Room *room, const CardUseStruct &cardUse) const{

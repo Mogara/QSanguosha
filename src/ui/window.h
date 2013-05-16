@@ -13,6 +13,7 @@ public:
     void addCloseButton(const QString &label);
     void shift(int pos_x = 0, int pos_y = 0);
     void keepWhenDisappear();
+    void setTitle(const QString &title);
 
     virtual QRectF boundingRect() const;
 
@@ -24,7 +25,7 @@ public slots:
     void disappear();
 
 private:
-    QString title;
+    QGraphicsTextItem *titleItem;
     QGraphicsScale *scaleTransform;
     QSizeF size;
     bool keep_when_disappear;

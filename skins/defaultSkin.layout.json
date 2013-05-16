@@ -8,13 +8,15 @@
     "cardSuitArea": [3, 19, 21, 17],
     "cardNumberArea": [0, 2, 27, 28],
     "cardFootnoteArea": [0, 70, 93, 50],
-    "cardAvatarArea": [44, 87, 42, 36],
+    "cardAvatarArea": [46, 83, 40, 40],
     "cardFootnoteFont": ["simsun", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
-    "chooseGeneralBoxSwitchIconSizeThreshold": 10,
-    "chooseGeneralBoxSwitchIconEachRow": 5,
-    "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 6,
+    "chooseGeneralBoxSwitchIconSizeThreshold": 12,
+    "chooseGeneralBoxSwitchIconEachRow": 6,
+    "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 7,
+    "chooseGeneralBoxNoIconThreshold": 21, 
     "chooseGeneralBoxSparseIconSize": [160, 232],
-    "chooseGeneralBoxDenseIconSize": [94, 94],
+    "chooseGeneralBoxDenseIconSize": [130, 130],
+    "tinyAvatarSize": [40, 40],
     // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
     // and font are specified below.
     // All the font in skin file takes the following format:
@@ -26,12 +28,12 @@
     // to specify a solid border of width 5.
     // @todo: adjust these colors!
     "magatamaFont": [
-        ["Arial", [15, 15, -1], 80, [233, 0, 0, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, -1], 80, [233, 34, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, -1], 80, [233, 116, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, -1], 80, [195, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, -1], 80, [141, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["Arial", [15, 15, -1], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
+        ["Arial", [15, 15, -2], 80, [233, 0, 0, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -2], 80, [233, 34, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -2], 80, [233, 116, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -2], 80, [195, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -2], 80, [141, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
+        ["Arial", [15, 15, -2], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
     // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
@@ -95,12 +97,12 @@
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [163, 115]],
     "cardMoveArea": [-15, 35, 200, 130],
-    "phaseArea": [25, 174, 140, 12],
+    "phaseArea": [25, 176, 140, 12],
     "onlineStatusArea": [122, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
-    "onlineStatusFont": ["simsun", 12, 0, [255, 255, 255, 255], 2, 20, [0, 0], [20, 20, 20, 128]],
-    "skillNameArea": [0, 38, 157, 50],
-    "skillNameFont": ["simli", 30, 80, [255, 255, 255, 255], 2, 11, [0, 0], [102, 16, 120, 255]],
+    "onlineStatusFont": ["simsun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
+    "skillNameArea": [25, 30, 300, 50],
+    "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 8], [160, 10]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [34, 27],
@@ -113,6 +115,7 @@
     "readyIconRegion": [97, 125, 44, 53],
     "deathIconRegion": [0, 50, 157, 102],
     "drankMaskColor": [250, 0, 0, 115],
+    "duanchangMaskColor": [255, 255, 255, 128],
     "deathEffectColor": [50, 50, 50, 255],
     "extraSkillArea": [26, 94, 56, 20],
     "extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
@@ -148,7 +151,7 @@
     "primaryAvatarImageType": 7,
     "circleImageType": 1,
     "avatarArea": [8, 10, 134, 134],
-    "secondaryAvatarArea": [81, 10, 61, 70],
+    "secondaryAvatarArea": [81, 10, 70, 70],
     "circleArea": [8, 10, 134, 134],
     "avatarNameArea": [8, 28, 30, 89],
     "focusFrameArea": [8, 10, 134, 134],
@@ -166,7 +169,7 @@
     "markTextArea": ["bottomRight", "bottomRight",  [-10, -10]],
     "phaseArea": ["bottomRight", "bottomRight", [-100, 0], [209, 20]],
     "kingdomIconArea": [2, 2, 28, 28],
-    // "kingdomMaskArea": [10, 27, 23, 89],
+    //"kingdomMaskArea": [10, 27, 23, 89],
     "screenNameArea": [0, 7, 157, 25],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
@@ -183,21 +186,24 @@
     "actionedIconRegion": [80, 37, 52, 21],
     "saveMeIconRegion": [5, 15, 122, 50],
     "votesIconRegion": [50, 52, 50, 50],
-    "chainedIconRegion": [8, 100, 134, 19],
+    "chainedIconRegion": [8, 90, 134, 19],
     "readyIconRegion": [86, 102, 44, 53],
     "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
+    "duanchangMaskColor": [255, 255, 255, 128],
     "buttonSetSize": [106, 168],
     "confirmButtonArea": [5, 3, 61, 75],
-    "cancelButtonArea":	[5, 92, 61, 75],
+    "cancelButtonArea": [5, 92, 61, 75],
     "discardButtonArea": [70, 45, 33, 81],
-    "trustButtonArea":	[69, 133, 36, 35]	
+    "trustButtonArea": [69, 133, 36, 35],
+    "trustEffectColor": [38, 26, 66]
 },
 "skillButton":
 {
 "height": 26,
 "width": [134, 67, 45], 
 "textArea": [[23, 2, 112, 20], [19, 2, 44, 20], [11, 2, 35, 20]],
+"textAreaDown": [[23, 2, 112, 20], [19, 2, 44, 20], [11, 2, 35, 20]],
 "textFont": [["simkai", [15, 15, 10], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
              ["simkai", [15, 15, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
              ["simkai", [12, 12, 0], 40, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
@@ -220,9 +226,13 @@
                     [[255, 255, 255, 255], [0, 0, 0, 155]],
                     [[255, 255, 255, 255], [0, 0, 0, 155]],
                     [[255, 255, 255, 255], [0, 0, 0, 155]]],
-"proactiveFontColor": [[[247, 247, 216, 255], [0, 0, 0, 155]],
+"proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]],
                        [[255, 255, 255, 255], [0, 0, 0, 155]],
                        [[255, 255, 255, 255], [0, 0, 0, 155]],
-                       [[255, 255, 255, 255], [0, 0, 0, 155]]]
+                       [[255, 255, 255, 255], [0, 0, 0, 155]]],
+"attachedlordFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]],
+                          [[255, 255, 255, 255], [0, 0, 0, 155]],
+                          [[255, 255, 255, 255], [0, 0, 0, 155]],
+                          [[255, 255, 255, 255], [0, 0, 0, 155]]]
 }
 }

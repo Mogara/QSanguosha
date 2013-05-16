@@ -132,7 +132,6 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
                 }
             }
             name = "huxiao";
-            room->broadcastSkillInvoke("huxiao", toSunquan ? 3 : qrand() % 2 + 1);
 		}
         if (!name.isEmpty()) {
             player->setFlags("-Global_MoreSlashInOneTurn");
@@ -140,14 +139,37 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     		    room->broadcastSkillInvoke("huxiao", toSunquan ? 3 : qrand() % 2 + 1);
             else
                 room->broadcastSkillInvoke(name);
+            room->notifySkillInvoked(player, name);
         }
     }
-    if (use.to.size() > 1 && player->hasSkill("shenji"))
+    if (use.to.size() > 1 && player->hasSkill("shenji")) {
         room->broadcastSkillInvoke("shenji");
-    else if (use.to.size() > 1 && player->hasSkill("lihuo") && use.card->isKindOf("FireSlash") && use.card->getSkillName() != "lihuo")
+        room->notifySkillInvoked(player, "shenji");
+    } else if (use.to.size() > 1 && player->hasSkill("lihuo") && use.card->isKindOf("FireSlash") && use.card->getSkillName() != "lihuo") {
         room->broadcastSkillInvoke("lihuo", 1);
-    else if (use.to.size() > 1 && player->hasSkill("duanbing"))
+        room->notifySkillInvoked(player, "lihuo");
+    } else if (use.to.size() > 1 && player->hasSkill("duanbing")) {
         room->broadcastSkillInvoke("duanbing");
+        room->notifySkillInvoked(player, "duanbing");
+    }
+
+    int rangefix = 0;
+    if (use.card->isVirtualCard()) {
+        if (use.from->getWeapon() && use.card->getSubcards().contains(use.from->getWeapon()->getId())) {
+            const Weapon *weapon = qobject_cast<const Weapon *>(use.from->getWeapon()->getRealCard());
+            rangefix += weapon->getRange() - 1;
+        }
+        if (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId()))
+            rangefix += 1;
+    }
+    foreach (ServerPlayer *p, use.to) {
+        if (p->hasSkill("tongji") && p->getHandcardNum() > p->getHp()
+            && use.from->distanceTo(p, rangefix) <= use.from->getAttackRange()) {
+            room->broadcastSkillInvoke("tongji");
+            room->notifySkillInvoked(p, "tongji");
+            break;
+        }
+    }
 
     if (use.from->hasFlag("BladeUse")) {
         use.from->setFlags("-BladeUse");
@@ -265,14 +287,14 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
                     break;
                 }
             if (hasExtraTarget)
-                return Self->canSlash(to_select, this, distance_limit, rangefix);
+                return Self->canSlash(to_select, this, distance_limit, rangefix, targets);
             else
-                return Self->canSlash(to_select, this) && Self->distanceTo(to_select) == 1;
+                return Self->canSlash(to_select, this, true, 0, targets) && Self->distanceTo(to_select) == 1;
         } else
             return false;
     }
 
-    return Self->canSlash(to_select, this, distance_limit, rangefix);
+    return Self->canSlash(to_select, this, distance_limit, rangefix, targets);
 }
 
 Jink::Jink(Suit suit, int number): BasicCard(suit, number)
@@ -707,11 +729,14 @@ bool GodSalvation::isCancelable(const CardEffectStruct &effect) const{
 
 void GodSalvation::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-
-    RecoverStruct recover;
-    recover.card = this;
-    recover.who = effect.from;
-    room->recover(effect.to, recover);
+    if (!effect.to->isWounded())
+        ;//room->setEmotion(effect.to, "skill_nullify");
+    else {
+        RecoverStruct recover;
+        recover.card = this;
+        recover.who = effect.from;
+        room->recover(effect.to, recover);
+    }
 }
 
 SavageAssault::SavageAssault(Suit suit, int number)
@@ -776,7 +801,7 @@ void SingleTargetTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer
 }
 
 Collateral::Collateral(Card::Suit suit, int number)
-    : SingleTargetTrick(suit, number, false)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("collateral");
 }
@@ -871,8 +896,9 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
 }
 
 Nullification::Nullification(Suit suit, int number)
-    : SingleTargetTrick(suit, number, false)
+    : SingleTargetTrick(suit, number)
 {
+    target_fixed = true;
     setObjectName("nullification");
 }
 
@@ -887,7 +913,7 @@ bool Nullification::isAvailable(const Player *) const{
 }
 
 ExNihilo::ExNihilo(Suit suit, int number)
-    : SingleTargetTrick(suit, number, false)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("ex_nihilo");
     target_fixed = true;
@@ -923,7 +949,7 @@ void ExNihilo::onEffect(const CardEffectStruct &effect) const{
 }
 
 Duel::Duel(Suit suit, int number)
-    : SingleTargetTrick(suit, number, true)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("duel");
 }
@@ -986,7 +1012,9 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     room->damage(DamageStruct(this, second->isAlive() ? second : NULL, first));
 }
 
-Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number, true) {
+Snatch::Snatch(Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
     setObjectName("snatch");
 }
 
@@ -1028,7 +1056,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)
-    : SingleTargetTrick(suit, number, false)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("dismantlement");
 }
@@ -1052,11 +1080,19 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
         return;
 
     Room *room = effect.to->getRoom();
-    int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
+    bool handcard_visible = false;
+    if (!effect.to->isKongcheng()
+        && room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013") {
+        handcard_visible = true;
+        LogMessage log;
+        log.type = "$ViewAllCards";
+        log.from = effect.from;
+        log.to << effect.to;
+        log.card_str = IntList2StringList(effect.to->handCards()).join("+");
+        room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    }
+    int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName(), handcard_visible);
     room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to, effect.from);
-    if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013"
-        && !effect.to->isKongcheng())
-        room->showAllCards(effect.to, effect.from);
 }
 
 Indulgence::Indulgence(Suit suit, int number)

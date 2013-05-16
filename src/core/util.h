@@ -26,5 +26,7 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
 QStringList IntList2StringList(const QList<int> &intlist);
 QList<int> StringList2IntList(const QStringList &stringlist);
 
+bool isNormalGameMode(const QString &mode);
+
 #endif
 

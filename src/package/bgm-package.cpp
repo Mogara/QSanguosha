@@ -809,6 +809,7 @@ public:
             room->getThread()->delay();
         }
         DummyCard *dummy = new DummyCard;
+        dummy->deleteLater();
         for (int i = 0; i < 3; i++) {
             int card_id = cardIds[i];
             const Card *card = Sanguosha->getCard(card_id);
@@ -820,45 +821,42 @@ public:
                 cards << card;
             }
         }
-        if (dummy->subcardsLength() > 0) {
-            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "zhaolie", QString());
+        if (dummy->subcardsLength() > 0)
             room->throwCard(dummy, reason, NULL);
-        }
-        dummy->deleteLater();
+        dummy->clearSubcards();
 
-        QStringList choicelist;
-        choicelist << "damage";
-        if (victim->getCards("he").length() >= no_basic)
-            choicelist << "throw";
+        if (no_basic == 0 && cards.isEmpty())
+            return false;
+        foreach (const Card *c, cards)
+            dummy->addSubcard(c);
 
-        QVariant data = QVariant::fromValue(no_basic);
-        QString choice = room->askForChoice(victim, "zhaolie", choicelist.join("+"), data);
-
-        if (choice == "damage") {
-            room->broadcastSkillInvoke("zhaolie", 1);
-            if (no_basic > 0)
-                room->damage(DamageStruct("zhaolie", liubei, victim, no_basic));
-            if (!cards.empty()) {
-                DummyCard *dummy_card = new DummyCard;
-                foreach (const Card *c, cards)
-                    dummy_card->addSubcard(c);
-                CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, victim->objectName());
-                if (victim->isAlive())
-                    room->obtainCard(victim, dummy_card, reason, true);
-                else {
-                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, victim->objectName(), "zhaolie", QString());
-                    room->throwCard(dummy_card, reason, NULL);
-                }
-                delete dummy_card;
+        if (no_basic == 0) {
+            if (room->askForSkillInvoke(victim, "zhaolie_obtain", "obtain:" + liubei->objectName())) {
+                room->broadcastSkillInvoke("zhaolie", 1);
+                victim->obtainCard(dummy);
+            } else {
+                room->broadcastSkillInvoke("zhaolie", 2);
+                liubei->obtainCard(dummy);
             }
         } else {
-            room->broadcastSkillInvoke("zhaolie", 2);
-            if (no_basic > 0)
-                room->askForDiscard(victim, "zhaolie", no_basic, no_basic, false, true);
-            if (!cards.empty()) {
-                foreach (const Card *c, cards) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, liubei->objectName());
-                    room->obtainCard(liubei, c, reason);
+            if (room->askForDiscard(victim, "zhaolie", no_basic, no_basic, true, true, "@zhaolie-discard:" + liubei->objectName())) {
+                room->broadcastSkillInvoke("zhaolie", 2);
+                if (dummy->subcardsLength() > 0) {
+                    if (liubei->isAlive())
+                        liubei->obtainCard(dummy);
+                    else
+                        room->throwCard(dummy, reason, NULL);
+                }
+            } else {
+                room->broadcastSkillInvoke("zhaolie", 1);
+                if (no_basic > 0)
+                    room->damage(DamageStruct("zhaolie", liubei, victim, no_basic));
+                if (dummy->subcardsLength() > 0) {
+                    if (victim->isAlive())
+                        victim->obtainCard(dummy);
+                    else
+                        room->throwCard(dummy, reason, NULL);
                 }
             }
         }
@@ -1350,7 +1348,6 @@ public:
             foreach (ServerPlayer *p, room->getOtherPlayers(xiahou))
                 if (xiahou->canSlash(p, NULL, false))
                     targets << p;
-            targets << xiahou;
             QString choice;
             if (!Slash::IsAvailable(xiahou) || targets.isEmpty())
                 choice = "discard";
@@ -1552,33 +1549,36 @@ public:
                 judge.who = simazhao;
                 judge.reason = objectName();
 
-                if (damage.from && damage.from->hasSkill("hongyan"))
-                    simazhao->setFlags("LangguForHongyan"); // For AI
-                else if (simazhao->hasFlag("LangguForHongyan"))
-                    simazhao->setFlags("-LangguForHongyan");
                 room->judge(judge);
-                if (simazhao->hasFlag("LangguForHongyan"))
-                    simazhao->setFlags("-LangguForHongyan");
-
                 if (damage.from && damage.from->isAlive() && !damage.from->isKongcheng()) {
-                    room->showAllCards(damage.from, simazhao);
-
-                    QList<int> langgu_discard;
+                    QList<int> langgu_discard, other;
                     foreach (int card_id, damage.from->handCards()) {
-                        if (Sanguosha->getWrappedCard(card_id)->getSuit() == judge.card->getSuit())
+                        if (Sanguosha->getCard(card_id)->getSuit() == judge.card->getSuit())
                             langgu_discard << card_id;
+                        else
+                            other << card_id;
                     }
-                    if (langgu_discard.empty())
+                    if (langgu_discard.isEmpty()) {
+                        room->showAllCards(damage.from, simazhao);
                         return false;
+                    }
+
+                    LogMessage log;
+                    log.type = "$ViewAllCards";
+                    log.from = simazhao;
+                    log.to << damage.from;
+                    log.card_str = IntList2StringList(damage.from->handCards()).join("+");
+                    room->doNotify(simazhao, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
                     while (!langgu_discard.empty()) {
-                        room->fillAG(langgu_discard, simazhao);
+                        room->fillAG(langgu_discard + other, simazhao, other);
                         int id = room->askForAG(simazhao, langgu_discard, true, objectName());
                         if (id == -1) {
                             room->clearAG(simazhao);
                             break;
                         }
                         langgu_discard.removeOne(id);
+                        other.prepend(id);
                         room->clearAG(simazhao);
                     }
 
@@ -1797,32 +1797,6 @@ HantongCard::HantongCard() {
     mute = true;
 }
 
-void HantongCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    QList<int> edict = source->getPile("edict");
-
-    int ai_delay = Config.AIDelay;
-    Config.AIDelay = 0;
-
-    int card_id = 0;
-    room->fillAG(edict, source);
-    if (edict.length() == 1)
-        card_id = edict.first();
-    else
-        card_id = room->askForAG(source, edict, false, objectName());
-    room->clearAG(source);
-
-    edict.removeOne(card_id);
-
-    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), "hantong", QString());
-    room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
-
-    Config.AIDelay = ai_delay;
-
-    source->tag["Hantong_use"] = true;
-    room->acquireSkill(source, "jijiang");
-    room->askForUseCard(source, "@jijiang", "@hantong-jijiang");
-}
-
 class HantongViewAsSkill: public ZeroCardViewAsSkill {
 public:
     HantongViewAsSkill(): ZeroCardViewAsSkill("hantong") {
@@ -1865,21 +1839,19 @@ public:
             if (liuxie->askForSkillInvoke(objectName())) {
                 room->broadcastSkillInvoke(objectName(), 1);
                 int i = 0;
-                DummyCard *dummy = new DummyCard;
-                QList<int> ids = move.card_ids;
+                QList<int> ids = move.card_ids, to_add;
                 QList<Player::Place> places = move.from_places;
                 foreach (int card_id, ids) {
                     if (places[i] == Player::PlaceHand) {
-                        dummy->addSubcard(card_id);
+                        to_add.append(card_id);
                         move.card_ids.removeOne(card_id);
                         move.from_places.removeAt(i);
                     }
                     i++;
                 }
-                if (dummy->subcardsLength() > 0)
-                    liuxie->addToPile("edict", dummy);
-                dummy->deleteLater();
                 data = QVariant::fromValue(move);
+                if (!to_add.isEmpty())
+                    liuxie->addToPile("edict", to_add, true, move.reason);
             }
         }
         return false;
@@ -1894,10 +1866,17 @@ public:
                << EventPhaseStart; //For XueYi
     }
 
-    void RemoveEdict(ServerPlayer *liuxie) const{
+    static void RemoveEdict(ServerPlayer *liuxie) {
         Room *room = liuxie->getRoom();
         QList<int> edict = liuxie->getPile("edict");
-        room->broadcastSkillInvoke("hantong");
+        room->broadcastSkillInvoke("hantong", 2);
+        room->notifySkillInvoked(liuxie, "hantong");
+
+        LogMessage log;
+        log.type = "#InvokeSkill";
+        log.arg = "hantong";
+        log.from = liuxie;
+        room->sendLog(log);
 
         int ai_delay = Config.AIDelay;
         Config.AIDelay = 0;
@@ -1907,7 +1886,7 @@ public:
         if (edict.length() == 1)
             card_id = edict.first();
         else
-            card_id = room->askForAG(liuxie, edict, false, objectName());
+            card_id = room->askForAG(liuxie, edict, false, "hantong");
         room->clearAG(liuxie);
 
         edict.removeOne(card_id);
@@ -1931,7 +1910,7 @@ public:
         switch (triggerEvent) {
         case CardAsked: {
                 QString pattern = data.toStringList().first();
-                if (pattern == "slash" && !liuxie->hasFlag("JijiangFailed")) {
+                if (pattern == "slash" && !liuxie->hasFlag("Global_JijiangFailed")) {
                     QVariant data_for_ai = "jijiang";
                     if (room->askForSkillInvoke(liuxie, "hantong_acquire", data_for_ai)) {
                         RemoveEdict(liuxie);
@@ -2005,6 +1984,24 @@ public:
         return false;
     }
 };
+
+const Card *HantongCard::validate(CardUseStruct &cardUse) const{
+    cardUse.m_isOwnerUse = false;
+    ServerPlayer *source = cardUse.from;
+    Room *room = source->getRoom();
+
+    HantongAcquire::RemoveEdict(source);
+    source->tag["Hantong_use"] = true;
+    room->acquireSkill(source, "jijiang");
+    if (!room->askForUseCard(source, "@jijiang", "@hantong-jijiang")) {
+        room->setPlayerFlag(source, "Global_JijiangFailed");
+        return NULL;
+    } else
+        return this;
+}
+
+void HantongCard::onUse(Room *, const CardUseStruct &) const{
+}
 
 DIYYicongCard::DIYYicongCard() {
     will_throw = false;

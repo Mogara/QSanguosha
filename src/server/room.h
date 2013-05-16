@@ -79,7 +79,7 @@ public:
     void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);
     void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
     void clearCardFlag(int card_id, ServerPlayer *who = NULL);
-    void useCard(const CardUseStruct &card_use, bool add_history = true);
+    bool useCard(const CardUseStruct &card_use, bool add_history = true);
     void damage(DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
@@ -224,6 +224,13 @@ public:
     void broadcastSkillInvoke(const QString &skillName, int type);
     void broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
     void doLightbox(const QString &lightboxName, int duration = 2000);
+    void doAnimate(QSanProtocol::AnimateType type, const QString &arg1 = QString(), const QString &arg2 = QString(),
+                   QList<ServerPlayer *> players = QList<ServerPlayer *>());
+
+    inline void doAnimate(int type, const QString &arg1 = QString(), const QString &arg2 = QString(),
+                          QList<ServerPlayer *> players = QList<ServerPlayer *>()) {
+        doAnimate((QSanProtocol::AnimateType)type, arg1, arg2, players);
+    }
 
     void preparePlayers();
     void changePlayerGeneral(ServerPlayer *player, const QString &new_general);
@@ -260,7 +267,7 @@ public:
 
     void sortByActionOrder(QList<ServerPlayer *> &players);
 
-    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
+    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
@@ -307,7 +314,7 @@ public:
                                const QString &prompt = QString(), bool optional = false);
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
-    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
+    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason, bool handcard_visible = false);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
                            Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
@@ -321,8 +328,8 @@ public:
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &skill_name = QString(),
-                    bool is_preview = true, bool visible = false, int optional = true, int max_num = -1,
-                    QList<ServerPlayer *> players = QList<ServerPlayer *>());
+                    bool is_preview = false, bool visible = false, int optional = true, int max_num = -1,
+                    QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason());
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     QList<const Card *> askForPindianRace(ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason,

@@ -25,6 +25,7 @@ public:
     bool setProperty(const char *name, const QVariant &value);
     QVariant property(const char *name) const;
     void setParent(QObject *parent);
+    void deleteLater();
 };
 
 class General: public QObject {
@@ -181,8 +182,10 @@ public:
     void setChained(bool chained);
     bool isChained() const;
 
-    bool canSlash(const Player *other, const Card *slash, bool distance_limit = true, int rangefix = 0) const;
-    bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0) const;
+    bool canSlash(const Player *other, const Card *slash, bool distance_limit = true,
+                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+    bool canSlash(const Player *other, bool distance_limit = true,
+                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip) const;
 
     QList<int> getPile(const char *pile_name);
@@ -204,7 +207,7 @@ public:
     QSet<QString> getAcquiredSkills() const;
     QString getSkillDescription() const;
 
-    virtual bool isProhibited(const Player *to, const Card *card) const;
+    virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow() const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
@@ -317,6 +320,7 @@ public:
     void addToPile(const char *pile_name, const Card *card, bool open = true);
     void addToPile(const char *pile_name, int card_id, bool open = true);
     void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true);
+    void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason);
     void exchangeFreelyFromPrivatePile(const char *skill_name, const char *pile_name, int upperlimit = 1000, bool include_equip = false);
     void gainAnExtraTurn();
 };
@@ -715,8 +719,8 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const;
     virtual bool isAvailable(const Player *player) const;
-    virtual const Card *validate(const CardUseStruct *card_use) const;
-    virtual const Card *validateInResponse(ServerPlayer *user, bool &continuable) const;
+    virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
 
     bool isMute() const;
     bool willThrow() const;
@@ -856,7 +860,7 @@ public:
     void playAudioEffect(const char *filename) const;
     void playSkillAudioEffect(const char *skill_name, int index) const;
 
-    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
+    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target) const;
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
@@ -1006,6 +1010,9 @@ public:
     void broadcastSkillInvoke(const char *skillName, const char *category);
     void broadcastSkillInvoke(const char *skillName, int type);
     void broadcastSkillInvoke(const char *skillName, bool isMale, int type);
+    void doLightbox(const char *lightboxName, int duration = 2000);
+    void doAnimate(int type, const char *arg1 = NULL, const char *arg2 = NULL, QList<ServerPlayer *> players = QList<ServerPlayer *>());
+
     bool notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard);
     bool broadcastUpdateCard(const QList<ServerPlayer *> &players, int cardId, const Card *newCard);
     bool notifyResetCard(ServerPlayer *player, int cardId);
@@ -1039,7 +1046,7 @@ public:
 
     void sortByActionOrder(QList<ServerPlayer *> &players);
 
-    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
+    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
 
     void setTag(const char *key, const QVariant &value);
     QVariant getTag(const char *key) const;
@@ -1084,7 +1091,7 @@ public:
                                const char *prompt = NULL, bool optional = false);
     bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
-    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
+    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason, bool handcard_visible = false);
     const Card *askForCard(ServerPlayer *player, const char *pattern,
                            const char *prompt, const QVariant &data, const char *skill_name);
     const Card *askForCard(ServerPlayer *player, const char *pattern,
@@ -1099,7 +1106,7 @@ public:
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards, const char *skill_name = NULL,
                     bool is_preview = true, bool visible = false, bool optional = false, int max_num = -1,
-                    QList<ServerPlayer *> players = QList<ServerPlayer *>());
+                    QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason());
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);
     QList<const Card *> askForPindianRace(ServerPlayer *from, ServerPlayer *to, const char *reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason,

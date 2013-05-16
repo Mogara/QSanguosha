@@ -16,14 +16,10 @@ Card::CardType BasicCard::getTypeId() const{
     return TypeBasic;
 }
 
-TrickCard::TrickCard(Suit suit, int number, bool aggressive)
-    : Card(suit, number), aggressive(aggressive), cancelable(true)
+TrickCard::TrickCard(Suit suit, int number)
+    : Card(suit, number), cancelable(true)
 {
     handling_method = Card::MethodUse;
-}
-
-bool TrickCard::isAggressive() const{
-    return aggressive;
 }
 
 void TrickCard::setCancelable(bool cancelable) {
@@ -214,7 +210,7 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-    : TrickCard(suit, number, true), movable(movable)
+    : TrickCard(suit, number), movable(movable)
 {
     judge.negative = true;
 }

@@ -437,7 +437,7 @@ void RecAnalysis::addDesignation(const QString &designation,
         if ((data_requirement & player_test_mask) == 0) continue;
 
         if (!addition_option_role.isEmpty()) {
-            if (!m_recordGameMode.endsWith("p") && !m_recordGameMode.endsWith("pd") && !m_recordGameMode.endsWith("pz"))
+            if (!isNormalGameMode(m_recordGameMode))
                 continue;
             if (addition_option_role.startsWith("~")) {
                 QString role = addition_option_role;

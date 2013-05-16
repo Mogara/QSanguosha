@@ -36,6 +36,13 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     }
 
     generals.removeOne(Sanguosha->getGeneral("yuji"));
+    QStringList list_nostal, list_neo;
+    list_nostal << "nos_liubei" << "nos_diaochan" /*<< "nos_huangyueying"*/;
+    list_neo << "liubei" << "diaochan" /*<< "huangyueying"*/ << "st_yuanshu" << "st_huaxiong";
+    foreach (QString general_name, list_neo)
+        generals.removeOne(Sanguosha->getGeneral(general_name));
+    foreach (QString general_name, list_nostal)
+        generals << Sanguosha->getGeneral(general_name);
 
     QString rule = Config.value("3v3/OfficialRule", "2012").toString();
     if (rule == "2012") {

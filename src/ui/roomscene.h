@@ -138,7 +138,7 @@ public slots:
     // choice dialog
     void chooseGeneral(const QStringList &generals);
     void chooseSuit(const QStringList &suits);
-    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason);
+    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
     void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -284,7 +284,7 @@ private:
     void fillGenerals1v1(const QStringList &names);
     void fillGenerals3v3(const QStringList &names);
 
-    void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id);
+    void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id, const QString &reason);
 
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
@@ -295,7 +295,6 @@ private:
     void doLightboxAnimation(const QString &name, const QStringList &args);
     void doHuashen(const QString &name, const QStringList &args);
     void doIndicate(const QString &name, const QStringList &args);
-    void animatePopup(const QString &name, const QStringList &args);
     EffectAnimation *animations;
     bool pindian_success;
 
@@ -327,7 +326,7 @@ private slots:
     void setEmotion(const QString &who, const QString &emotion);
     void setEmotion(const QString &who, const QString &emotion, bool permanent);
     void showSkillInvocation(const QString &who, const QString &skill_name);
-    void doAnimation(const QString &name, const QStringList &args);
+    void doAnimation(int name, const QStringList &args);
     void showOwnerButtons(bool owner);
     void showPlayerCards();
     void updateRolesBox();

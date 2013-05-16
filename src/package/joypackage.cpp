@@ -332,7 +332,6 @@ public:
 
 GaleShell::GaleShell(Suit suit, int number) :Armor(suit, number){
     setObjectName("GaleShell");
-    skill = new GaleShellSkill;
 
     target_fixed = false;
 }
@@ -416,7 +415,6 @@ YxSword::YxSword(Suit suit, int number)
     :Weapon(suit, number, 3)
 {
     setObjectName("YxSword");
-    skill = new YxSwordSkill;
 }
 
 JoyEquipPackage::JoyEquipPackage()
@@ -427,6 +425,7 @@ JoyEquipPackage::JoyEquipPackage()
     (new YxSword)->setParent(this);
 
     type = CardPack;
+    skills << new GaleShellSkill << new YxSwordSkill;
 }
 
 //ADD_PACKAGE(Joy)

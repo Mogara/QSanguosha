@@ -152,30 +152,40 @@ end
 ]]--
 sgs.ai_skill_invoke.tanlan = function(self, data)
 	local damage = data:toDamage()
+	local from = damage.from
 	local max_card = self:getMaxCard()
 	if not max_card then return end
-	if max_card:getNumber() > 10 and self:isFriend(damage.from) and damage.from:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng, damage.from) then return true end
-	if self:isFriend(damage.from) then return end
+	if max_card:getNumber() > 10 and self:isFriend(from) then
+		if from:getHandcardNum() == 1 and self:needKongcheng(from) then return true end
+		if self:getOverflow(from) > 2 then return true end
+		if not self:hasLoseHandcardEffective(from) then return true end
+	end
+	if self:isFriend(from) then return false end
 	if max_card:getNumber() > 10 
 		or (self.player:getHp() > 2 and self.player:getHandcardNum() > 2 and max_card:getNumber() > 4)
 		or (self.player:getHp() > 1 and self.player:getHandcardNum() > 1 and max_card:getNumber() > 7)
-		or (damage.from:getHandcardNum() <= 2 and max_card:getNumber() > 2) 
-		or (damage.from:getHandcardNum() == 1 and not self:hasSkills(sgs.need_kongcheng, damage.from)) then
+		or (from:getHandcardNum() <= 2 and max_card:getNumber() > 2) 
+		or (from:getHandcardNum() == 1 and self:hasLoseHandcardEffective(from) and not self:needKongcheng(from))
+		or self:getOverflow() > 2 then
 		return true
 	end
 end
 
-function sgs.ai_skill_pindian.tanlan(minusecard, self, requestor, maxcard)
-	local cards, maxcard = sgs.QList2Table(self.player:getHandcards())
-	local function compare_func(a, b)
-		return a:getNumber() > b:getNumber()
+sgs.ai_choicemade_filter.skillInvoke.tanlan = function(player, promptlist, self)
+	if sgs.tanlan_target and promptlist[3] == "yes" then
+		local target = sgs.tanlan_target
+		local intention = 10
+		if target:getHandcardNum() == 1 and self:needKongcheng(target) then intention = 0 end
+		if self:getOverflow(target) > 2 then intention = 0 end
+		if not self:hasLoseHandcardEffective(target) then intention = 0 end
+		sgs.updateIntention(player, sgs.tanlan_target, intention)
 	end
-	table.sort(cards, compare_func)
-	for _, card in ipairs(cards) do
-		if card:getNumber() > 10 then return card end
-		if self:getUseValue(card) < 6 then maxcard = card break end
-	end
-	return maxcard or cards[1]
+	sgs.tanlan_target = nil
+end
+
+function sgs.ai_skill_pindian.tanlan(minusecard, self, requestor)
+	local maxcard = self:getMaxCard()	
+	return self:isFriend(requestor) and minusecard or ( maxcard:getNumber() < 6 and minusecard or maxcard )
 end
 
 sgs.ai_cardneed.tanlan = sgs.ai_cardneed.bignumber
@@ -256,7 +266,12 @@ end
 sgs.ai_skill_use_func.HouyuanCard = function(card, use, self)
 	if #self.friends == 1 then return end
 	local target
-	target = player_to_draw(self, "noself", 2)
+	local AssistTarget = self:AssistTarget()
+	if AssistTarget and not AssistTarget:hasSkill("manjuan") and not self:needKongcheng(AssistTarget, true) then
+		target = AssistTarget
+	else
+		target = self:findPlayerToDraw("noself", 2)
+	end
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
@@ -287,8 +302,7 @@ sgs.ai_skill_invoke.bawang = function(self, data)
 		return self:isEnemy(effect.to)
 	end
 	if self:isEnemy(effect.to) then
-		if self:getOverflow() > 0 then return true
-		end
+		if self:getOverflow() > 0 then return true end
 	end
 end
 
@@ -299,7 +313,7 @@ function sgs.ai_skill_pindian.bawang(minusecard, self, requestor, maxcard)
 	end
 	table.sort(cards, compare_func)
 	for _, card in ipairs(cards) do
-		if card:getNumber()> 9 then return card end
+		if card:getNumber() > 10 then return card end
 	end
 	self:sortByKeepValue(cards)
 	return cards[1]
@@ -382,7 +396,7 @@ sgs.ai_chaofeng.wis_sunce = 1
 ]]--
 sgs.ai_skill_playerchosen.longluo = function(self, targets)
 	local n = self.player:getMark("longluo")
-	local to = player_to_draw(self, "noself", n)
+	local to = self:findPlayerToDraw("noself", n)
 	if to then return to end
 	return self.friends_noself[1]
 end
@@ -505,29 +519,118 @@ sgs.ai_skill_invoke.jincui = function(self, data)
 end
 
 sgs.ai_skill_playerchosen.jincui = function(self, targets)
-	for _, player in sgs.qlist(targets) do
-		if self:isFriend(player) and player:getHp() - player:getHandcardNum() > 1 then
-			return player
+	local AssistTarget = self:AssistTarget()
+	if AssistTarget and not AssistTarget:hasSkill("manjuan") and not self:needKongcheng(AssistTarget, true) then return AssistTarget end
+	local wf
+	for _, friend in ipairs(self.friends_noself) do
+		if self:isWeak(friend) then
+			wf = true 
+			break 
 		end
 	end
-	if #self.friends > 1 then return self.friends_noself[1] end
+
+	if not wf then
+		self:sort(self.enemies, "handcard")
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:getCards("he"):length() == 3 
+			  and not self:doNotDiscard(enemy, "he", true, 3, true) then
+				sgs.jincui_discard = true
+				return enemy
+			end
+		end
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:getCards("he"):length() >= 3 
+			  and not self:doNotDiscard(enemy, "he", true, 3, true)
+			  and self:hasSkills(sgs.cardneed_skill, enemy) then
+				sgs.jincui_discard = true
+				return enemy
+			end
+		end
+	end
+
+	local to = self:findPlayerToDraw("noself", 3)
+	if to then return to end
 	sgs.jincui_discard = true
 	return self.enemies[1]
 end
 
+
 sgs.ai_skill_choice.jincui = function(self, choices)
 	if sgs.jincui_discard then return "throw" else return "draw" end
+end
+
+
+--你使用黑色的【杀】造成的伤害+1，你无法闪避红色的【杀】
+
+sgs.ai_slash_prohibit.wenjiu = function(self, to, card)
+	local has_black_slash, has_red_slash
+	local slashes = self:getCards("Slash")
+	for _, slash in ipairs(slashes) do
+		if slash:isBlack() and self:slashIsEffective(slash, to) then has_black_slash = true end
+		if slash:isRed() and self:slashIsEffective(slash, to) then has_red_slash = true end
+	end
+
+	if self:isFriend(to) then
+		return card:isRed() and (has_black_slash or self:isWeak(to))
+	else		
+		if has_red_slash and getCardsNum("Jink", to) > 0 then return not card:isRed() end
+	end
 end
 
 --[[
 	技能：霸刀
 	描述：当你成为黑色的【杀】目标时，你可以对你攻击范围内的一名其他角色使用一张【杀】 
 ]]--
-sgs.ai_skill_invoke.badao = function(self, data)
-	for _, enemy in ipairs(self.enemies) do
-		if self.player:canSlash(enemy, nil, true) and self:getCardsNum("Slash") > 0 then 
-			self:speak("看我大霸刀！就是比你刀快！") --此句证明这段函数没有被执行，疑为源代码变更所致。
-			return true 
+
+sgs.ai_skill_cardask["@askforslash"] = function(self, data)
+	local slashes = self:getCards("Slash")	
+	self:sort(self.enemies, "defenseSlash")
+	
+	for _, slash in ipairs(slashes) do
+		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
+		for _, enemy in ipairs(self.enemies) do
+			if self.player:canSlash(enemy, slash, not no_distance) and not self:slashProhibit(slash, enemy) and slash:isBlack() and self:hasSkills("wenjiu")
+				and self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
+				and not (self.player:hasFlag("slashTargetFix") and not enemy:hasFlag("SlashAssignee")) then
+				return ("%s->%s"):format(slash:toString(), enemy:objectName())
+			end
+		end
+	end
+	for _, slash in ipairs(slashes) do
+		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
+		for _, enemy in ipairs(self.enemies) do
+			if self.player:canSlash(enemy, slash, not no_distance) and not self:slashProhibit(slash, enemy) and not slash:isBlack()
+				and self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
+				and not (self.player:hasFlag("slashTargetFix") and not enemy:hasFlag("SlashAssignee")) then
+				return ("%s->%s"):format(slash:toString(), enemy:objectName())
+			end
+		end
+	end
+	return "."
+end
+
+
+sgs.ai_slash_prohibit.badao = function(self, to, card)
+	local has_black_slash, has_red_slash
+	local slashes = self:getCards("Slash")
+	for _, slash in ipairs(slashes) do
+		if slash:isBlack() and self:slashIsEffective(slash, to) then has_black_slash = true end
+		if slash:isRed() and self:slashIsEffective(slash, to) then has_red_slash = true end
+	end
+	if self:isFriend(to) then 
+		return card:isRed() and (has_black_slash or self:isWeak(to)) 
+	else
+		if has_red_slash then return card:isBlack() end
+		if getCardsNum("Slash", to) > 1 then
+			local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+			for _, target in ipairs(self:getEnemies(to)) do
+				if to:canSlash(target, slash) and not self:slashProhibit(slash, target)
+					and self:slashIsEffective(slash, target) and not self:getDamagedEffects(target, to, true) 
+					and not self:needToLoseHp(target, to, true, true) 
+					and self:canHit(target, to) and self:isWeak(target) then
+						return card:isBlack()
+				end
+			end
 		end
 	end
 end
@@ -547,6 +650,13 @@ sgs.ai_skill_invoke.shipo = function(self, data)
 	end
 end
 
+sgs.ai_choicemade_filter.skillInvoke.shipo = function(player, promptlist, self)
+	if promptlist[3] == "yes" then
+		local cp = self.room:getCurrent()
+		sgs.updateIntention(player, cp, -10)
+	end
+end
+
 sgs.ai_cardneed.gushou = function(to, card)
 	return to:getHandcardNum() < 3 and card:getTypeId() == sgs.Card_Basic
 end
@@ -556,16 +666,16 @@ sgs.ai_chaofeng.tianfeng = -1
 	技能：授业
 	描述：出牌阶段，你可以弃置一张红色手牌，指定最多两名其他角色各摸一张牌 
 ]]--
-local shouye_skill={}
+local shouye_skill = {}
 shouye_skill.name = "shouye"
 table.insert(sgs.ai_skills, shouye_skill)
-shouye_skill.getTurnUseCard=function(self)
+shouye_skill.getTurnUseCard = function(self)
 	if #self.friends_noself == 0 then return end
 	if self.player:getHandcardNum() > 0 then
-		local n = self.player:getMark("jiehuo")
-		if n > 0 and self.player:hasUsed("ShouyeCard") then return end
+		if self.player:getMark("jiehuo") > 0 and self.player:hasUsed("ShouyeCard") then return end
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
+		self:sortByKeepValue(cards)
 		for _, hcard in ipairs(cards) do
 			if hcard:isRed() then
 				return sgs.Card_Parse("@ShouyeCard=" .. hcard:getId())
@@ -575,35 +685,77 @@ shouye_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func.ShouyeCard = function(card, use, self)
-	self:sort(self.friends_noself, "handcard")
-	local first_index, second_index
-	for i=1, #self.friends_noself do
-		if not self.friends_noself[i]:hasSkill("manjuan") 
-		and not (self.friends_noself[i]:hasSkill("kongcheng") and self.friends_noself[i]:isKongcheng()) then
-			if not first_index then
-				first_index = i
-			else
-				second_index = i
-			end
-		end
-		if second_index then break end
-	end
+	self:sort(self.friends_noself, "defense")
+	local first
+	local second
+	local AssistTarget = self:AssistTarget()
+	if AssistTarget and not AssistTarget:hasSkill("manjuan") and not self:needKongcheng(AssistTarget, true) then first = AssistTarget end
 
-	if first_index then
-		if use.to then use.to:append(self.friends_noself[first_index]) end
+	for _, friend in ipairs(self.friends_noself) do
+		if not friend:hasSkill("manjuan") and not self:needKongcheng(friend, true) then
+			if not first then
+				first = friend
+			elseif first:objectName() ~= friend:objectName() then
+				second = friend
+			end
+			if second then break end
+		end
 	end
-	if second_index then
-		if use.to then use.to:append(self.friends_noself[second_index]) end
+	
+	if self.player:hasSkill("jiehuo") and self.player:getMark("jiehuo") < 1 then
+		sgs.ai_use_priority.ShouyeCard = 9.29
+		if first and not second then
+			for _, friend in ipairs(self.friends_noself) do
+				if first:objectName() ~= friend:objectName() then
+					second = friend
+				end
+				if second then break end
+			end
+			if not second then
+				for _, enemy in ipairs(self.enemies) do
+					if first:objectName() ~= enemy:objectName() and (enemy:hasSkill("manjuan") or self:needKongcheng(enemy, true)) then
+						second = enemy
+					end
+					if second then break end
+				end
+			end
+			if not second then sgs.ai_use_priority.ShouyeCard = 0 end
+		end
+	else
+		sgs.ai_use_priority.ShouyeCard = 0
+	end
+	
+	if not second and self:getOverflow() <= 0 then return end
+	if first then
+		if use.to then
+			use.to:append(first)
+			self:speak("好好学习，天天向上！")
+		end
+	end
+	if second then
+		if use.to then
+			use.to:append(second)
+		end
 	end
 	use.card = card
 	return
 end
 
 sgs.ai_cardneed.shouye = function(to, card)
-	return to:getMark("jiehuo") < 1 and to:getHandcardNum() < 3 and card:isRed()
+	return to:hasSkill("jiehuo") and to:getMark("jiehuo") < 1 and to:getHandcardNum() < 3 and card:isRed()
 end
 
-sgs.ai_card_intention.ShouyeCard = -70
+sgs.ai_card_intention.ShouyeCard = function(self, card, from, tos)
+	local intention = -70
+	for i=1, #tos do
+		local to = tos[i]
+		if to:hasSkill("manjuan") or self:needKongcheng(to, true) then
+			intention = 0
+		end
+		sgs.updateIntention(from, tos[i], intention)
+	end
+end
+
 --[[
 	技能：师恩
 	描述：其他角色使用非延时锦囊时，可以让你摸一张牌
@@ -614,6 +766,13 @@ sgs.ai_skill_invoke.shien = function(self, data)
 		return self:isFriend(target)
 	end
 	return false
+end
+
+sgs.ai_choicemade_filter.skillInvoke.shien = function(player, promptlist, self)
+	local simahui = self.room:findPlayerBySkillName("shien")
+	if simahui and promptlist[3] == "yes" then
+		sgs.updateIntention(player, simahui, -10)
+	end
 end
 
 sgs.ai_chaofeng.wis_shuijing = 5

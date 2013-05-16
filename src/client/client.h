@@ -62,12 +62,10 @@ public:
     void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void requestToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void request(const QString &message);
-    void onPlayerUseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
+    void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;    
-    bool hasNoTargetResponding() const;
-    void onPlayerResponseCard(const Card *card);
     void onPlayerInvokeSkill(bool invoke);
     void onPlayerDiscardCards(const Card *card);
     void onPlayerReplyYiji(const Card *card, const Player *to);
@@ -118,11 +116,12 @@ public:
     void moveFocus(const Json::Value &focus);
     void setEmotion(const Json::Value &set_str);
     void skillInvoked(const Json::Value &invoke_str);
-    void animate(const QString &animate_str);
+    void animate(const Json::Value &animate_str);
     void cardLimitation(const Json::Value &limit);
     void setNullification(const Json::Value &str);
     void enableSurrender(const Json::Value &enabled);
     void exchangeKnownCards(const Json::Value &players);
+    void setKnownCards(const Json::Value &set_str);
     void setFixedDistance(const Json::Value &set_str);
     void updateStateItem(const Json::Value &state_str);
     void setAvailableCards(const Json::Value &pile);
@@ -134,8 +133,7 @@ public:
     void clearAG(const Json::Value &);
 
     //interactive server callbacks
-    void askForCard(const Json::Value &);
-    void askForUseCard(const Json::Value &);
+    void askForCardOrUseCard(const Json::Value &);
     void askForAG(const Json::Value &);
     void askForSinglePeach(const Json::Value &);
     void askForCardShow(const Json::Value &);
@@ -233,7 +231,6 @@ private:
     QHash<QSanProtocol::CommandType, CallBack> m_interactions;
     QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
     QList<const ClientPlayer *> players;
-    bool m_isUseCard;
     QStringList ban_packages;
     Recorder *recorder;
     Replayer *replayer;
@@ -249,7 +246,6 @@ private:
     QString _processCardPattern(const QString &pattern);
     void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
 
-    void _askForCardOrUseCard(const Json::Value &);
     bool _loseSingleCard(int card_id, CardsMoveStruct move);
     bool _getSingleCard(int card_id, CardsMoveStruct move);
 
@@ -276,7 +272,7 @@ signals:
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
-    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason);
+    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();    
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -297,7 +293,7 @@ signals:
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
     void skill_acquired(const ClientPlayer *player, const QString &skill_name);
-    void animated(const QString &name, const QStringList &args);
+    void animated(int name, const QStringList &args);
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);
     void card_used();

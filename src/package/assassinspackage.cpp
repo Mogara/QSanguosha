@@ -15,7 +15,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == TargetConfirmed){
+        if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (player != use.from || !TriggerSkill::triggerable(player) || !use.card->isKindOf("Slash"))
                 return false;
@@ -257,7 +257,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        if (!room->getMode().endsWith("p") && !room->getMode().endsWith("pd") && !room->getMode().endsWith("pz"))
+        if (!isNormalGameMode(room->getMode()))
             return false;
         DeathStruct death = data.value<DeathStruct>();
         if (death.damage == NULL)
@@ -382,15 +382,15 @@ public:
             if(player->getPhase() != Player::NotActive)
                 return false;
 
-            CardsMoveOneTimeStar move = data.value<CardsMoveOneTimeStar>();
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *target = room->getCurrent();
             if(target->isDead())
                 return false;
 
-            if(move->from == player && move->to != player) {
+            if(move.from == player && move.to != player) {
                 bool invoke = false;
-                for(int i = 0; i < move->card_ids.size(); i++)
-                    if(move->from_places[i] == Player::PlaceHand || move->from_places[i] == Player::PlaceEquip) {
+                for(int i = 0; i < move.card_ids.size(); i++)
+                    if(move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip) {
                         invoke = true;
                         break;
                     }
@@ -407,8 +407,8 @@ public:
                 return false;
             }
         
-            if(move->to == player && move->from != player)
-                if(move->to_place == Player::PlaceHand || move->to_place == Player::PlaceEquip){
+            if(move.to == player && move.from != player)
+                if(move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip){
                     room->setPlayerFlag(player, "cangniget");    //for AI
 
                     if(!target->hasFlag("cangni_used") && player->askForSkillInvoke(objectName())) {

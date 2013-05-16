@@ -440,7 +440,7 @@ const Card *Card::Parse(const QString &str) {
         dummy->deleteLater();
         return dummy;
     } else if (str.startsWith(QChar('#'))) {
-        LuaSkillCard *new_card =  LuaSkillCard::Parse(str);
+        LuaSkillCard *new_card = LuaSkillCard::Parse(str);
         new_card->deleteLater();
         return new_card;
     } else if (str.contains(QChar('='))) {
@@ -569,7 +569,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
             log.from = card_use.from;
             log.to << victim;
             room->sendLog(log);
-            room->broadcastInvoke("animate", QString("indicate:%1:%2").arg(card_use.to.first()->objectName()).arg(victim->objectName()));
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, card_use.to.first()->objectName(), victim->objectName());
         }
     }
 
@@ -654,11 +654,11 @@ bool Card::isAvailable(const Player *player) const{
            || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
-const Card *Card::validate(const CardUseStruct *) const{
+const Card *Card::validate(CardUseStruct &) const{
     return this;
 }
 
-const Card *Card::validateInResponse(ServerPlayer *, bool &continuable) const{
+const Card *Card::validateInResponse(ServerPlayer *) const{
     return this;
 }
 

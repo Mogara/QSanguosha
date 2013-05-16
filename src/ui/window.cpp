@@ -9,7 +9,7 @@
 #include <QGraphicsDropShadowEffect>
 
 Window::Window(const QString &title, const QSizeF &size, const QString &path)
-    : title(title), size(size), keep_when_disappear(false)
+    : size(size), keep_when_disappear(false)
 {
     setFlags(ItemIsMovable);
 
@@ -57,18 +57,8 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
 
     this->setOpacity(0.0);
 
-    QGraphicsTextItem *titleItem = new QGraphicsTextItem(this);
-
-    QString style;
-    style.append("font-size:18pt; ");
-    style.append("color:#77c379; ");
-    style.append(QString("font-family: %1").arg(Config.SmallFont.family()));
-
-    QString content;
-    content.append(QString("<h style=\"%1\">%2</h>").arg(style).arg(title));
-
-    titleItem->setHtml(content);
-    titleItem->moveBy(size.width() / 2 - titleItem->boundingRect().width() / 2, 10);
+    titleItem = new QGraphicsTextItem(this);
+    setTitle(title);
 }
 
 void Window::addContent(const QString &content) {
@@ -154,3 +144,15 @@ void Window::disappear() {
         connect(group, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
+void Window::setTitle(const QString &title) {
+    QString style;
+    style.append("font-size:18pt; ");
+    style.append("color:#77c379; ");
+    style.append(QString("font-family: %1").arg(Config.SmallFont.family()));
+
+    QString content;
+    content.append(QString("<h style=\"%1\">%2</h>").arg(style).arg(title));
+
+    titleItem->setHtml(content);
+    titleItem->setPos(size.width() / 2 - titleItem->boundingRect().width() / 2, 10);
+}
