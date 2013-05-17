@@ -1366,7 +1366,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QGraphicsScene::contextMenuEvent(event);
 
     QGraphicsItem *item = itemAt(event->scenePos());
-    if (!item) { // @todo_P: tableBg?
+    if (item->zValue() < -99999) { // @todo_P: tableBg?
         QMenu *menu = miscellaneous_menu;
         menu->clear();
         menu->setTitle(tr("Miscellaneous"));
@@ -2742,7 +2742,7 @@ void RoomScene::onGameOver() {
     if (victory) {
         win_effect = "win";
         foreach (const Player *player, ClientInstance->getPlayers()) {
-            if (player->property("win").toBool() && (player->getGeneralName().contains("caocao") || player->getGeneralName() == "weiwudi")) {
+            if (player->property("win").toBool() && player->getGeneralName().contains("caocao")) {
                 Audio::stop();
                 win_effect = "win-cc";
                 break;
@@ -2796,7 +2796,7 @@ void RoomScene::onGameOver() {
 void RoomScene::addRestartButton(QDialog *dialog) {
     dialog->resize(main_window->width() / 2, dialog->height());
     bool goto_next = false;
-    if (Config.GameMode.contains("_mini_") && Self->property("win").toBool())
+    if (ServerInfo.GameMode.contains("_mini_") && Self->property("win").toBool())
         goto_next = (_m_currentStage < Sanguosha->getMiniSceneCounts());
 
     QPushButton *restart_button;

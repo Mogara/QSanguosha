@@ -20,7 +20,7 @@ public:
         if (player->isNude() || caopi == player)
             return false;
         if (caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)) {
-            bool isCaoCao = player->getGeneralName().contains("caocao") || player->getGeneralName() == "weiwudi";
+            bool isCaoCao = player->getGeneralName().contains("caocao");
             room->broadcastSkillInvoke(objectName(), (isCaoCao ? 3 : (player->isMale() ? 1 : 2)));
 
             DummyCard *dummy = new DummyCard;

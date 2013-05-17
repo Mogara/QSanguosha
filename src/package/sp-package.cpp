@@ -413,7 +413,7 @@ void YuanhuCard::onUse(Room *room, const CardUseStruct &card_use) const{
     int index = -1;
     if (card_use.to.first() == card_use.from)
         index = 5;
-    else if (card_use.to.first()->getGeneralName().contains("caocao") || card_use.to.first()->getGeneralName() == "weiwudi")
+    else if (card_use.to.first()->getGeneralName().contains("caocao"))
         index = 4;
     else {
         const Card *card = Sanguosha->getCard(card_use.card->getSubcards().first());
@@ -1444,16 +1444,20 @@ SPPackage::SPPackage()
     related_skills.insertMulti("huxiao", "#huxiao-count");
     related_skills.insertMulti("huxiao", "#huxiao-clear");
 
-    General *sp_zhenji = new General(this, "sp_zhenji", "wei", 3, false, true);
+    General *sp_zhenji = new General(this, "sp_zhenji", "wei", 3, false, true); // SP 015
     sp_zhenji->addSkill("qingguo");
     sp_zhenji->addSkill("luoshen");
 
-    /*General *lingju = new General(this, "lingju", "qun", 3, false); //@todo_P: deal with it later
-    lingju->addSkill(new Jieyuan);
-    lingju->addSkill(new Fenxin);
-    lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
-    related_skills.insertMulti("fenxin", "#@burnheart-1");
-    lingju->addSkill(new SPConvertSkill("lingju", "ass_lingju"));*/
+    General *liuxie = new General(this, "liuxie", "qun", 3);
+    liuxie->addSkill("tianming");
+    liuxie->addSkill("mizhao");
+
+    General *lingju = new General(this, "lingju", "qun", 3, false);
+    lingju->addSkill("jieyuan");
+    lingju->addSkill("fenxin");
+
+    General *fuwan = new General(this, "fuwan", "qun", 4);
+    fuwan->addSkill("moukui");
 
     General *xiahouba = new General(this, "xiahouba", "shu"); // SP 019
     xiahouba->addSkill(new Baobian);

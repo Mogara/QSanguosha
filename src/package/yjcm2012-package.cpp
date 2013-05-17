@@ -877,7 +877,7 @@ void ChunlaoWineCard::use(Room *room, ServerPlayer *chengpu, QList<ServerPlayer 
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), "chunlao", QString());
         room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
         Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
-        analeptic->setSkillName("CHUNLAO");
+        analeptic->setSkillName("_chunlao");
         room->useCard(CardUseStruct(analeptic, who, who, false));
     }
 }

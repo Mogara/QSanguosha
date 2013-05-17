@@ -399,7 +399,7 @@ public:
             }
 
             int index = 1;
-            if (room->findPlayer("caocao+shencaocao+weiwudi"))
+            if (room->findPlayer("caocao+shencaocao+yt_shencaocao"))
                 index = 3;
 
             room->broadcastSkillInvoke(objectName(), index);

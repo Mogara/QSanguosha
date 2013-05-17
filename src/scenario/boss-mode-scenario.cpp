@@ -126,8 +126,12 @@ public:
 class Daji: public TriggerSkill{
 public:
     Daji():TriggerSkill("daji"){
-        events << Damaged << EventPhaseStart << CardEffected << DamageInflicted;
+        events << Damaged << EventPhaseStart << TargetConfirmed << CardFinished << CardEffected << DamageInflicted;
         frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -135,17 +139,26 @@ public:
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
 
-        if(triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish){
+        if(TriggerSkill::triggerable(player) && triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish){
             if(has_frantic)
                 player->drawCards(players.length());
             else
                 player->drawCards(player->getMaxHp());
         }
 
-        if(has_frantic && (triggerEvent == CardEffected)){
-            if(player->isWounded()){
+        if(has_frantic){
+            if(TriggerSkill::triggerable(player) && player->isWounded() && triggerEvent == TargetConfirmed){
+                CardUseStruct use = data.value<CardUseStruct>();
+                if (use.to.length() > 0 && player == use.to.first()) {
+                    foreach (ServerPlayer *p, use.to) {
+                        if (p != player)
+                            return false;
+                    }
+                    player->setFlags("DajiOnlyTarget");
+                }
+            } else if (player->hasFlag("DajiOnlyTarget") && triggerEvent == CardEffected) {
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                if(!effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){ // @todo_P: fix this!!
+                if(!effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){
                     LogMessage log;
                     log.type = "#DajiAvoid";
                     log.from = effect.from;
@@ -157,10 +170,14 @@ public:
 
                     return true;
                 }
+            } else if (triggerEvent == CardFinished) {
+                CardUseStruct use = data.value<CardUseStruct>();
+                if (use.to.length() > 0 && use.to.first()->hasFlag("DajiOnlyTarget"))
+                    use.to.first()->setFlags("-DajiOnlyTarget");
             }
         }
 
-        if(triggerEvent == DamageInflicted){
+        if(TriggerSkill::triggerable(player) && triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.damage > 1){
                 damage.damage = damage.damage-1;

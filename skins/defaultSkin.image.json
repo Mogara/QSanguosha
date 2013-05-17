@@ -49,53 +49,84 @@
 "dashboardExtraSkillBg": "image/system/huashenSkillBg.png",
 
 // general default directories
-"playerGeneralIcon-default-0": "image/generals/tiny/%1.png",
-"playerGeneralIcon-default-1": ["image/generals/avatar/%1.png",[28, 46, 220, 132], [148, 89]],
-"playerGeneralIcon-default-2": ["image/generals/avatar/%1.png",[71, 28, 145, 145], [134, 134]],
+"playerGeneralIcon-default-0": ["image/generals/avatar/%1.png", [71, 28, 134, 134], [40, 40]],
+"playerGeneralIcon-default-1": ["image/generals/avatar/%1.png", [28, 46, 220, 132], [148, 89]],
+"playerGeneralIcon-default-2": ["image/generals/avatar/%1.png", [71, 28, 134, 134]],
 "playerGeneralIcon-default-4": ["image/generals/avatar/%1.png",[63, 20, 126, 178], [63, 89]], //secondary avatar for photo
-"playerGeneralIcon-default-5": ["image/generals/avatar/%1.png",[71, 28, 124, 134], [61, 70]],  //small avatar for dashboard
+"playerGeneralIcon-default-5": ["image/generals/avatar/%1.png", [71, 28, 134, 134], [70, 70]],  //small avatar for dashboard
 "playerGeneralIcon-default-6": ["image/generals/avatar/%1.png",[60, 30, 208, 125], [148, 89]],  //primary avatar for photo
-"playerGeneralIcon-default-7": ["image/generals/avatar/%1.png",[80, 28, 134, 134]],  //primary avatar for dashboard
-"playerGeneralIcon-default-8": ["image/generals/avatar/%1.png",[16, 49, 244, 100], [122, 50]],  //avatar for KOF mode
+"playerGeneralIcon-default-7": ["image/generals/avatar/%1.png", [71, 28, 134, 134]],  //primary avatar for dashboard
+"playerGeneralIcon-default-8": ["image/generals/avatar/%1.png", [16, 49, 244, 100], [122, 50]],  //avatar for KOF mode
 
 "generalCircleImage-0": "image/generals/double-general/circle-photo.png",
 "generalCircleImage-1": "image/generals/double-general/circle-dashboard.png",
 
 "generalCircleMask-0": "image/generals/double-general/circle-photo-mask.png",
-"generalCircleMask-1": ["image/generals/double-general/circle-dashboard-mask.png", [73, 0, 61, 70]],
+"generalCircleMask-1": ["image/generals/double-general/circle-dashboard-mask.png", [73, 0, 71, 71]],
 
 // generals defined later will override default path and also previously defined generals
-"playerGeneralIcon-anjiang-1": "image/generals/small/anjiang.png", 
-"playerGeneralIcon-anjiang-2": "image/generals/big/anjiang.png", 
+"playerGeneralIcon-anjiang-0": ["image/generals/big/anjiang.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-anjiang-1": "image/generals/small/anjiang.png",
+"playerGeneralIcon-anjiang-2": "image/generals/big/anjiang.png",
 "playerGeneralIcon-anjiang-4": ["image/generals/small/anjiang.png", [32, 0, 63, 89]],
-"playerGeneralIcon-anjiang-5": ["image/generals/big/anjiang.png", [9, 0, 117, 134], [61, 70]],
+"playerGeneralIcon-anjiang-5": ["image/generals/big/anjiang.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-anjiang-6": "image/generals/small/anjiang.png",
-"playerGeneralIcon-anjiang-7": "image/generals/big/anjiang.png", 
+"playerGeneralIcon-anjiang-7": "image/generals/big/anjiang.png",
 "playerGeneralIcon-anjiang-8": "image/generals/kof/anjiang.png",
 
+"playerGeneralIcon-yanliangwenchou-0": ["image/generals/big/yanliangwenchou.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-yanliangwenchou-1": "image/generals/small/yanliangwenchou.png",
+"playerGeneralIcon-yanliangwenchou-2": "image/generals/big/yanliangwenchou.png",
+"playerGeneralIcon-yanliangwenchou-4": ["image/generals/big/yanliangwenchou.png", [11, 0, 63, 89]],
+"playerGeneralIcon-yanliangwenchou-5": ["image/generals/big/yanliangwenchou.png", [0, 0, 134, 134], [70, 70]],
+"playerGeneralIcon-yanliangwenchou-6": "image/generals/small/yanliangwenchou.png",
+"playerGeneralIcon-yanliangwenchou-7": "image/generals/big/yanliangwenchou.png",
+"playerGeneralIcon-yanliangwenchou-8": "image/generals/kof/yanliangwenchou.png",
+
+"playerGeneralIcon-erzhang-0": ["image/generals/big/erzhang.png", [0, 0, 134, 134], [40, 40]],
 "playerGeneralIcon-erzhang-1": "image/generals/small/erzhang.png",
 "playerGeneralIcon-erzhang-2": "image/generals/big/erzhang.png",
 "playerGeneralIcon-erzhang-4": ["image/generals/big/erzhang.png", [3, 20, 81, 114], [63, 89]],
-"playerGeneralIcon-erzhang-5": ["image/generals/big/erzhang.png", [0, 0, 124, 134], [61, 70]],
+"playerGeneralIcon-erzhang-5": ["image/generals/big/erzhang.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-erzhang-6": "image/generals/small/erzhang.png",
 "playerGeneralIcon-erzhang-7": "image/generals/big/erzhang.png",
 "playerGeneralIcon-erzhang-8": "image/generals/kof/erzhang.png",
 
+"playerGeneralIcon-guanxingzhangbao-0": ["image/generals/big/guanxingzhangbao.png", [0, 0, 134, 134], [40, 40]],
 "playerGeneralIcon-guanxingzhangbao-1": "image/generals/small/guanxingzhangbao.png",
 "playerGeneralIcon-guanxingzhangbao-2": "image/generals/big/guanxingzhangbao.png",
 "playerGeneralIcon-guanxingzhangbao-4": ["image/generals/big/guanxingzhangbao.png", [10, 0, 63, 89]],
-"playerGeneralIcon-guanxingzhangbao-5": ["image/generals/big/guanxingzhangbao.png", [0, 0, 124, 134], [61, 70]],
+"playerGeneralIcon-guanxingzhangbao-5": ["image/generals/big/guanxingzhangbao.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-guanxingzhangbao-6": "image/generals/small/guanxingzhangbao.png",
 "playerGeneralIcon-guanxingzhangbao-7": "image/generals/big/guanxingzhangbao.png",
 "playerGeneralIcon-guanxingzhangbao-8": "image/generals/kof/guanxingzhangbao.png",
 
-"playerGeneralIcon-yanliangwenchou-1": "image/generals/small/yanliangwenchou.png",
-"playerGeneralIcon-yanliangwenchou-2": "image/generals/big/yanliangwenchou.png",
-"playerGeneralIcon-yanliangwenchou-4": ["image/generals/big/yanliangwenchou.png", [11, 0, 63, 89]],
-"playerGeneralIcon-yanliangwenchou-5": ["image/generals/big/yanliangwenchou.png", [0, 0, 124, 134], [61, 70]],
-"playerGeneralIcon-yanliangwenchou-6": "image/generals/small/yanliangwenchou.png",
-"playerGeneralIcon-yanliangwenchou-7": "image/generals/big/yanliangwenchou.png",
-"playerGeneralIcon-yanliangwenchou-8": "image/generals/kof/yanliangwenchou.png",
+"playerGeneralIcon-panzhangmazhong-0": ["image/generals/big/panzhangmazhong.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-panzhangmazhong-1": "image/generals/small/panzhangmazhong.png",
+"playerGeneralIcon-panzhangmazhong-2": "image/generals/big/panzhangmazhong.png",
+"playerGeneralIcon-panzhangmazhong-4": ["image/generals/big/panzhangmazhong.png", [3, 20, 81, 114], [63, 89]],
+"playerGeneralIcon-panzhangmazhong-5": ["image/generals/big/panzhangmazhong.png", [0, 0, 134, 134], [70, 70]],
+"playerGeneralIcon-panzhangmazhong-6": "image/generals/small/panzhangmazhong.png",
+"playerGeneralIcon-panzhangmazhong-7": "image/generals/big/panzhangmazhong.png",
+"playerGeneralIcon-panzhangmazhong-8": "image/generals/kof/panzhangmazhong.png",
+
+"playerGeneralIcon-erqiao-0": ["image/generals/big/erqiao.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-erqiao-1": "image/generals/small/erqiao.png",
+"playerGeneralIcon-erqiao-2": "image/generals/big/erqiao.png",
+"playerGeneralIcon-erqiao-4": ["image/generals/big/erqiao.png", [3, 20, 81, 114], [63, 89]],
+"playerGeneralIcon-erqiao-5": ["image/generals/big/erqiao.png", [0, 0, 134, 134], [70, 70]],
+"playerGeneralIcon-erqiao-6": "image/generals/small/erqiao.png",
+"playerGeneralIcon-erqiao-7": "image/generals/big/erqiao.png",
+"playerGeneralIcon-erqiao-8": "image/generals/kof/erqiao.png",
+
+"playerGeneralIcon-nos_guanxingzhangbao-0": ["image/generals/big/nos_guanxingzhangbao.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-nos_guanxingzhangbao-1": "image/generals/small/nos_guanxingzhangbao.png",
+"playerGeneralIcon-nos_guanxingzhangbao-2": "image/generals/big/nos_guanxingzhangbao.png",
+"playerGeneralIcon-nos_guanxingzhangbao-4": ["image/generals/big/nos_guanxingzhangbao.png", [10, 0, 63, 89]],
+"playerGeneralIcon-nos_guanxingzhangbao-5": ["image/generals/big/nos_guanxingzhangbao.png", [0, 0, 134, 134], [70, 70]],
+"playerGeneralIcon-nos_guanxingzhangbao-6": "image/generals/small/nos_guanxingzhangbao.png",
+"playerGeneralIcon-nos_guanxingzhangbao-7": "image/generals/big/nos_guanxingzhangbao.png",
+"playerGeneralIcon-nos_guanxingzhangbao-8": "image/generals/kof/nos_guanxingzhangbao.png",
 
 // buttons
 "dashboardButtonSetBg": "image/system/button/platter/bg.png",

@@ -416,6 +416,8 @@ public:
 
 struct DamageStruct {
     DamageStruct();
+    DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage = 1, DamageStruct::Nature nature = Normal);
+    DamageStruct(const char *reason, ServerPlayer *from, ServerPlayer *to, int damage = 1, DamageStruct::Nature nature = Normal);
 
     enum Nature {
         Normal, // normal slash, duel and most damage caused by skill
@@ -469,6 +471,8 @@ struct CardUseStruct {
     } m_reason;
 
     CardUseStruct();
+    CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to, bool isOwnerUse = true);
+    CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
     bool isValid(const char *pattern) const;
     void parse(const char *str, Room *room);
     bool tryParse(const Json::Value &, Room *room);
@@ -693,7 +697,7 @@ public:
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
     QString getName() const;
-    QString getSkillName(bool isLower = true) const;
+    QString getSkillName(bool removePrefix = true) const;
     void setSkillName(const char *skill_name);
     QString getDescription() const;
 

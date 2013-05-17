@@ -388,7 +388,7 @@ void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
         ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "shuangren", "@dummy-slash");
 
         Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("SHUANGREN");
+        slash->setSkillName("_shuangren");
         room->useCard(CardUseStruct(slash, effect.from, target), false);
     } else {
         room->broadcastSkillInvoke("shuangren", 2);

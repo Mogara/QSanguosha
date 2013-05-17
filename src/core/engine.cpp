@@ -426,7 +426,7 @@ Card *Engine::cloneCard(const Card *card) const{
     if (result == NULL)
         return NULL;
     result->setId(card->getEffectiveId());
-    result->setSkillName(card->getSkillName());
+    result->setSkillName(card->getSkillName(false));
     result->setObjectName(card->objectName());
     return result;
 }
@@ -788,6 +788,12 @@ QStringList Engine::getLimitedGeneralNames() const{
             if (!getBanPackages().contains(itor.value()->getPackage()))
                 general_names << itor.key();
         }
+    }
+
+    if (!getBanPackages().contains("sp") && !getBanPackages().contains("assassins")) {
+        general_names.removeOne("liuxie");
+        general_names.removeOne("lingju");
+        general_names.removeOne("fuwan");
     }
 
     return general_names;

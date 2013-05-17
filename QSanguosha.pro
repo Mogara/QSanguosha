@@ -126,7 +126,8 @@ SOURCES += \
     src/core/record-analysis.cpp \
     src/package/assassinspackage.cpp \
     src/package/hegemony.cpp \
-    src/scenario/fancheng-scenario.cpp
+    src/scenario/fancheng-scenario.cpp \
+    src/package/yjcm2013-package.cpp
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -241,7 +242,8 @@ HEADERS += \
     src/core/record-analysis.h \
     src/package/assassinspackage.h \
     src/package/hegemony.h \
-    src/scenario/fancheng-scenario.h
+    src/scenario/fancheng-scenario.h \
+    src/package/yjcm2013-package.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

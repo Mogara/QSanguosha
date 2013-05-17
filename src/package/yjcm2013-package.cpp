@@ -591,7 +591,7 @@ void XiansiSlashCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *
     delete dummy;
 
     Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->setSkillName("XIANSI");
+    slash->setSkillName("_xiansi");
     room->useCard(CardUseStruct(slash, source, liufeng));
 }
 

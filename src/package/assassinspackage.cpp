@@ -174,7 +174,7 @@ public:
         ServerPlayer *loser = pindian->isSuccess() ? pindian->to : pindian->from;
         if (winner->canSlash(loser, NULL, false)) {
             Slash *slash = new Slash(Card::NoSuit, 0);
-            slash->setSkillName("MIZHAO");
+            slash->setSkillName("_mizhao");
             room->useCard(CardUseStruct(slash, winner, loser), false);
         }
 
@@ -680,41 +680,32 @@ public:
 };
 
 AssassinsPackage::AssassinsPackage(): Package("assassins") {
-    General *ass_caocao = new General(this, "ass_caocao$", "wei", 4, true, true);
-    ass_caocao->addSkill("jianxiong");
-    ass_caocao->addSkill("hujia");
-
-    General *ass_caopi = new General(this, "ass_caopi$", "wei", 3, true, true);
-    ass_caopi->addSkill("xingshang");
-    ass_caopi->addSkill("fangzhu");
-    ass_caopi->addSkill("songwei");
-
-    General *fuhuanghou = new General(this, "fuhuanghou", "qun", 3, false);
+    General *fuhuanghou = new General(this, "as_fuhuanghou", "qun", 3, false);
     fuhuanghou->addSkill(new Mixin);
     fuhuanghou->addSkill(new Cangni);
 
-    General *jiben = new General(this, "jiben", "qun", 3);
+    General *jiben = new General(this, "as_jiben", "qun", 3);
     jiben->addSkill(new Duyi);
     jiben->addSkill(new Duanzhi);
     jiben->addSkill(new FakeMoveSkill("duanzhi"));
     related_skills.insertMulti("duanzhi", "#duanzhi-fake-move");
 
-    General *fuwan = new General(this, "fuwan", "qun", 3);
+    General *fuwan = new General(this, "as_fuwan", "qun", 3);
     fuwan->addSkill(new Fengyin);
     fuwan->addSkill(new ChizhongKeep);
     fuwan->addSkill(new Chizhong);
     related_skills.insertMulti("chizhong", "#chizhong");
 
-    General *mushun = new General(this, "mushun", "qun");
+    General *mushun = new General(this, "as_mushun", "qun");
     mushun->addSkill(new Moukui);
 
-    General *hanxiandi = new General(this, "hanxiandi", "qun", 3);
+    General *hanxiandi = new General(this, "as_liuxie", "qun", 3);
     hanxiandi->addSkill(new Tianming);
     hanxiandi->addSkill(new Mizhao);
     hanxiandi->addSkill(new MizhaoSlashNoDistanceLimit);
     related_skills.insertMulti("mizhao", "#mizhao-slash-ndl");
 
-    General *lingju = new General(this, "lingju", "qun", 3, false);
+    General *lingju = new General(this, "as_lingju", "qun", 3, false);
     lingju->addSkill(new Jieyuan);
     lingju->addSkill(new Fenxin);
     lingju->addSkill(new MarkAssignSkill("@burnheart", 1));

@@ -487,7 +487,7 @@ public:
 
 class Fuzuo: public TriggerSkill {
 public:
-    Fuzuo(): TriggerSkill("fuzuo") { // @todo_P: adjust AI
+    Fuzuo(): TriggerSkill("fuzuo") {
         events << PindianVerifying;
         view_as_skill = new FuzuoViewAsSkill;
     }
@@ -573,7 +573,7 @@ public:
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *hua, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->isKindOf("Slash") && use.card->isBlack() && use.to.contains(hua)){
-            room->askForUseCard(hua, "slash", "@askforslash"); // @todo_P: adjust AI
+            room->askForUseCard(hua, "slash", "@askforslash");
         }
         return false;
     }

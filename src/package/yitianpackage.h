@@ -11,11 +11,11 @@ public:
     YitianPackage();
 };
 
-class ChengxiangCard: public SkillCard{
+class YTChengxiangCard: public SkillCard{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ChengxiangCard();
+    Q_INVOKABLE YTChengxiangCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
@@ -57,7 +57,7 @@ public:
     Q_INVOKABLE LianliSlashCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual const Card *validate(CardUseStruct &cardUse) const;
 };
 
 class GuihanCard: public SkillCard{

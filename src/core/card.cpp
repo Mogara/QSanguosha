@@ -301,8 +301,11 @@ QString Card::getName() const{
     return Sanguosha->translate(objectName());
 }
 
-QString Card::getSkillName(bool toLower) const{
-    return toLower ? m_skillName.toLower() : m_skillName;
+QString Card::getSkillName(bool removePrefix) const{
+    if (m_skillName.startsWith("_") && removePrefix)
+        return m_skillName.mid(1);
+    else
+        return m_skillName;
 }
 
 void Card::setSkillName(const QString &name) {
