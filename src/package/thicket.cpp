@@ -850,7 +850,7 @@ public:
             room->notifySkillInvoked(dongzhuo, objectName());
 
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+maxhp");
-            int index = (result == "hp") ? 1 : 2;
+            int index = (dongzhuo->isFemale()) ? 2 : 1;
             room->broadcastSkillInvoke(objectName(), index);
             if (result == "hp")
                 room->loseHp(dongzhuo);

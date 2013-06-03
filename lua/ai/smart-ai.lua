@@ -1665,7 +1665,7 @@ sgs.ai_choicemade_filter.playerChosen.general = function(from, promptlist, self)
 	end
 end
 
-sgs.ai_choicemade_filter.cardChosen.general = function(from, promptlist)
+sgs.ai_choicemade_filter.cardChosen.general = function(from, promptlist, self)
 	local reason = string.gsub(promptlist[2], "%-", "_")
 	local callback = sgs.ai_cardChosen_intention[reason] 
 	local to = global_room:getCurrent()
@@ -1679,7 +1679,7 @@ sgs.ai_choicemade_filter.cardChosen.general = function(from, promptlist)
 	end	
 end
 
-sgs.ai_choicemade_filter.viewCards.general = function(from, promptlist)
+sgs.ai_choicemade_filter.viewCards.general = function(from, promptlist, self)
 	local to = findPlayerByObjectName(self.room, promptlist[#promptlist])
 	if to and not to:isKongcheng() then
 		local flag = string.format("%s_%s_%s", "visible", from:objectName(), to:objectName())
