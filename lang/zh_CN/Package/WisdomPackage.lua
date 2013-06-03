@@ -95,7 +95,7 @@ local t = {
 	["forbid_shien:yes"] = "是，永久关闭（不可逆操作）",
 	["forbid_shien:no"] = "不，谢谢",
 	["forbid_shien:maybe"] = "是，暂时关闭（直到我下回合结束）",
-	["$JiehuoAnimate"] = "桃李满天下，吾可归隐矣…",
+	["$JiehuoAnimate"] = "image=image/animate/jiehuo.png",
 
 	["cv:wis_xuyou"] = "",
 	["cv:wis_jiangwei"] = "",
