@@ -1302,6 +1302,41 @@ end
 
 sgs.ai_chaofeng.machao = 1
 
+function SmartAI:isValuableCard(card, player)
+	player = player or self.player
+	if (isCard("Peach", card, player) and getCardsNum("Peach", player) <= 2)
+		or (self:isWeak(player) and isCard("Analeptic", card, player))
+		or (player:getPhase() ~= sgs.Player_Play
+			and ((isCard("Nullification", card, player) and getCardsNum("Nullification", player) < 2 and player:hasSkills("jizhi|nosjizhi|jilve"))
+				or (isCard("Jink", card, player) and getCardsNum("Jink", player) < 2)))
+		or (player:getPhase() == sgs.Player_Play and isCard("ExNihilo", card, player) and not player:isLocked(card)) then
+		return true
+	end
+end
+
+sgs.ai_skill_cardask["@jizhi-exchange"] = function(self, data)
+	local card = data:toCard()
+	local handcards = sgs.QList2Table(self.player:getHandcards())
+	if self.player:getPhase() ~= sgs.Player_Play then
+		if self.player:hasSkill("manjuan") and self.player:getPhase() == sgs.Player_NotActive then return "." end
+		self:sortByKeepValue(handcards)
+		for _, card_ex in ipairs(handcards) do
+			if self:getKeepValue(card_ex) < self:getKeepValue(card) and not self:isValuableCard(card_ex) then
+				return "$" .. card_ex:getEffectiveId()
+			end
+		end
+	else
+		if card:isKindOf("Slash") and not self:slashIsAvailable() then return "." end
+		self:sortByUseValue(handcards)
+		for _, card_ex in ipairs(handcards) do
+			if self:getUseValue(card_ex) < self:getUseValue(card) and not self:isValuableCard(card_ex) then
+				return "$" .. card_ex:getEffectiveId()
+			end
+		end
+	end
+	return "."
+end
+
 function sgs.ai_cardneed.jizhi(to, card)
 	return card:isNDTrick()
 end
