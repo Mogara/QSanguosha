@@ -476,7 +476,7 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return tr("NewQSanguosha");
+    return "V2";
 }
 
 QString Engine::getMODName() const{

@@ -537,66 +537,9 @@ function DimengIsWorth(self, friend, enemy, mycards, myequips)
 	end
 	return true
 end
-sgs.ai_skill_use_func.DimengCard=function(card,use,self)
-	local cardNum = 0
-	local mycards = {}
-	local myequips = {}
-	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if not self.player:isJilei(c) then 
-			cardNum = cardNum + 1 
-			table.insert(mycards, c)
-		end
-	end
-	for _, c in sgs.qlist(self.player:getEquips()) do
-		if not self.player:isJilei(c) then 
-			cardNum = cardNum + 1 
-			table.insert(mycards, c)
-			table.insert(myequips, c)
-		end
-	end
-	self:sortByKeepValue(mycards) --桃的keepValue是5，useValue是6；顺手牵羊的keepValue是1.9，useValue是9
 
-	self:sort(self.enemies,"handcard")
-	local friends={}
-	for _,player in ipairs(self.friends_noself) do
-		if not player:hasSkill("manjuan") then
-			table.insert(friends, player)
-		end
-	end
-	self:sort(friends,"handcard")
-
-	local lowest_friend=friends[1]
-
-	self:sort(self.enemies,"defense")
-	if lowest_friend then
-		local hand2=lowest_friend:getHandcardNum()
-		for _,enemy in ipairs(self.enemies) do
-			local hand1=enemy:getHandcardNum()
-
-			if enemy:hasSkill("manjuan") and (hand1 > hand2 - 1) and (hand1 - hand2) <= cardNum then
-				use.card = card
-				if use.to then
-					use.to:append(enemy)
-					use.to:append(lowest_friend)
-				end
-				return
-			end
-		end
-		for _, enemy in ipairs(self.enemies) do
-			local hand1=enemy:getHandcardNum()
-			if DimengIsWorth(self, lowest_friend, enemy, mycards, myequips) then
-				use.card=card
-				if use.to then
-					use.to:append(enemy)
-					use.to:append(lowest_friend)
-				end
-				return
-			end
-		end
-	end
-end
 --缔盟的弃牌策略--
-sgs.ai_skill_discard.DimengCard = function(self, discard_num, min_num, optional, include_equip)
+local dimeng_discard = function(self, discard_num)
 	local cards = self.player:getCards("he")
 	local to_discard = {}
 	cards = sgs.QList2Table(cards)
@@ -629,7 +572,80 @@ sgs.ai_skill_discard.DimengCard = function(self, discard_num, min_num, optional,
 		if not self.player:isJilei(card) then table.insert(to_discard, card:getId()) end
 		if #to_discard >= discard_num then break end
 	end
+	if #to_discard ~= discard_num then return {} end
 	return to_discard
+end
+
+sgs.ai_skill_use_func.DimengCard=function(card,use,self)
+	local cardNum = 0
+	local mycards = {}
+	local myequips = {}
+	for _, c in sgs.qlist(self.player:getHandcards()) do
+		if not self.player:isJilei(c) then 
+			cardNum = cardNum + 1 
+			table.insert(mycards, c)
+		end
+	end
+	for _, c in sgs.qlist(self.player:getEquips()) do
+		if not self.player:isJilei(c) then 
+			cardNum = cardNum + 1 
+			table.insert(mycards, c)
+			table.insert(myequips, c)
+		end
+	end
+	self:sortByKeepValue(mycards) --桃的keepValue是5，useValue是6；顺手牵羊的keepValue是1.9，useValue是9
+
+	self:sort(self.enemies,"handcard")
+	local friends={}
+	for _,player in ipairs(self.friends_noself) do
+		if not player:hasSkill("manjuan") then
+			table.insert(friends, player)
+		end
+	end
+	if #friends == 0 then return end
+	self:sort(friends,"handcard")
+
+	local lowest_friend=friends[1]
+
+	self:sort(self.enemies,"defense")
+	if lowest_friend then
+		local hand2=lowest_friend:getHandcardNum()
+		for _,enemy in ipairs(self.enemies) do
+			local hand1=enemy:getHandcardNum()
+
+			if enemy:hasSkill("manjuan") and (hand1 > hand2 - 1) and (hand1 - hand2) <= cardNum then
+				if hand1 == hand2 then
+					use.card = card
+				else
+					local discard_num = hand1 - hand2
+					local discards = dimeng_discard(self, discard_num)
+					if #discards > 0 then use.card = sgs.Card_Parse("@DimengCard=" .. table.concat(discards, "+")) end
+				end
+				if use.card and use.to then
+					use.to:append(enemy)
+					use.to:append(lowest_friend)
+				end
+				return
+			end
+		end
+		for _, enemy in ipairs(self.enemies) do
+			local hand1=enemy:getHandcardNum()
+			if DimengIsWorth(self, lowest_friend, enemy, mycards, myequips) then
+				if hand1 == hand2 then
+					use.card = card
+				else
+					local discard_num = math.abs(hand1 - hand2)
+					local discards = dimeng_discard(self, discard_num)
+					if #discards > 0 then use.card = sgs.Card_Parse("@DimengCard=" .. table.concat(discards, "+")) end
+				end
+				if use.to then
+					use.to:append(enemy)
+					use.to:append(lowest_friend)
+				end
+				return
+			end
+		end
+	end
 end
 
 sgs.ai_card_intention.DimengCard = function(self,card, from, to)

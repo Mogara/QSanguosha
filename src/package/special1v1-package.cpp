@@ -753,7 +753,7 @@ Special1v1Package::Special1v1Package()
     kof_xuchu->addSkill(new MarkAssignSkill("@twine", 1));
     related_skills.insertMulti("xiechan", "#@twine-1");
 
-    General *kof_zhenji = new General(this, "kof_zhenji", "wei", 3);
+    General *kof_zhenji = new General(this, "kof_zhenji", "wei", 3, false);
     kof_zhenji->addSkill(new KOFQingguo);
     kof_zhenji->addSkill("luoshen");
 

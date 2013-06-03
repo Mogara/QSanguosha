@@ -1918,7 +1918,7 @@ jieyin_skill.getTurnUseCard=function(self)
 	for _, card in ipairs(cards) do
 		if card:getTypeId() ~= sgs.Card_Equip then
 			if not first then first = card:getEffectiveId()
-			elseif first and not second then second = card:getEffectiveId()
+			elseif first and first ~= card:getEffectiveId() and not second then second = card:getEffectiveId()
 			end
 		end
 		if first and second then break end

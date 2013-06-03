@@ -5393,7 +5393,7 @@ end
 
 function IgnoreArmor(from, to)
 	if not from or not to then global_room:writeToConsole(debug.traceback()) return end
-	if from:hasWeapon("QinggangSword") or to:hasFlag("wuqian") or to:getMark("qinggang") > 0 then
+	if from:hasWeapon("QinggangSword") or to:getMark("Armor_Nullified") > 0 or #to:getTag("Qinggang"):toStringList() > 0 then
 		return true
 	end
 	return false
