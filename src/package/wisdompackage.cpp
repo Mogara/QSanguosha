@@ -794,7 +794,7 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke(objectName());
-        room->broadcastInvoke("animate", "lightbox:$JiehuoAnimate:3000");
+        room->doLightbox("$JiehuoAnimate", 3000);
         room->getThread()->delay(2500);
 
         room->setPlayerMark(player, "jiehuo", 1);

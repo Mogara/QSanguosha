@@ -322,7 +322,7 @@ void MixinCard::onEffect(const CardEffectStruct &effect) const{
         room->fillAG(card_ids, target2);
         int cdid = room->askForAG(target2, card_ids, false, objectName());
         room->obtainCard(target2, cdid, false);
-        target2->invoke("clearAG");
+        room->clearAG(target2);
     }
     return;
 }
@@ -453,7 +453,7 @@ void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
         room->broadcastSkillInvoke("duyi", 2);
 
     room->getThread()->delay();
-    room->broadcastInvoke("clearAG");
+    room->clearAG();
 }
 
 class DuyiViewAsSkill:public ZeroCardViewAsSkill{

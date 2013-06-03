@@ -790,7 +790,7 @@ sgs.ai_skill_choice.benghuai = function(self, choices, data)
 		end
 	end
 	if self.player:getMaxHp() >= self.player:getHp() + 2 then
-		if self.player:getMaxHp() > 5 and (self.player:hasSkills("nosmiji|yinghun") or self.player:hasSkill("miji") and self:findPlayerToDraw("noself")) then
+		if self.player:getMaxHp() > 5 and (self.player:hasSkills("nosmiji|yinghun") or self.player:hasSkill("miji") and self:findPlayerToDraw(false)) then
 			local enemy_num = 0
 			for _, p in ipairs(self.enemies) do
 				if p:inMyAttackRange(self.player) and not self:willSkipPlayPhase(p) then enemy_num = enemy_num + 1 end

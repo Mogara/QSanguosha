@@ -114,7 +114,7 @@ void Deluge::takeEffect(ServerPlayer *target) const{
     foreach(int card_id, card_ids)
         room->takeAG(NULL, card_id);
 
-    room->broadcastInvoke("clearAG");
+    room->clearAG();
 }
 
 // -----------  Typhoon -----------------

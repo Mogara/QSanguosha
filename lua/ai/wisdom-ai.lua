@@ -270,7 +270,7 @@ sgs.ai_skill_use_func.HouyuanCard = function(card, use, self)
 	if AssistTarget and not AssistTarget:hasSkill("manjuan") and not self:needKongcheng(AssistTarget, true) then
 		target = AssistTarget
 	else
-		target = self:findPlayerToDraw("noself", 2)
+		target = self:findPlayerToDraw(false, 2)
 	end
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
@@ -396,7 +396,7 @@ sgs.ai_chaofeng.wis_sunce = 1
 ]]--
 sgs.ai_skill_playerchosen.longluo = function(self, targets)
 	local n = self.player:getMark("longluo")
-	local to = self:findPlayerToDraw("noself", n)
+	local to = self:findPlayerToDraw(false, n)
 	if to then return to end
 	return self.friends_noself[1]
 end
@@ -548,7 +548,7 @@ sgs.ai_skill_playerchosen.jincui = function(self, targets)
 		end
 	end
 
-	local to = self:findPlayerToDraw("noself", 3)
+	local to = self:findPlayerToDraw(false, 3)
 	if to then return to end
 	sgs.jincui_discard = true
 	return self.enemies[1]

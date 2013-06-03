@@ -364,7 +364,7 @@ public:
         lukang->gainMark("@waked");
 
         room->broadcastSkillInvoke(objectName());
-        room->broadcastInvoke("animate", "lightbox:$KegouAnimate:4000");
+        room->doLightbox("$KegouAnimate", 4000);
         room->getThread()->delay(3500);
 
         room->loseMaxHp(lukang);
@@ -1269,7 +1269,7 @@ XunzhiCard::XunzhiCard(){
 void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     int index = qrand() % 2 + 1;
     room->broadcastSkillInvoke("xunzhi", index);
-    room->broadcastInvoke("animate", QString("lightbox:$XunzhiAnimate%1").arg(index));
+    room->doLightbox("$XunzhiAnimate");
     room->getThread()->delay(2000);
     source->drawCards(3);
 
@@ -1614,7 +1614,7 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     else{
         room->fillAG(yishe, source);
         card_id = room->askForAG(source, yishe, false, "yisheask");
-        source->invoke("clearAG");
+        room->clearAG(source);
     }
 
     room->showCard(zhanglu, card_id);

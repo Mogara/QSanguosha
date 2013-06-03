@@ -376,9 +376,9 @@ sgs.ai_skill_playerchosen.duyi = function(self, targets)
 	if self:needBear() then return self.player end
 	local to
 	if self:getOverflow() < 0 then
-		to = self:findPlayerToDraw("all")
+		to = self:findPlayerToDraw(true)
 	else
-		to = self:findPlayerToDraw("noself")
+		to = self:findPlayerToDraw(false)
 	end
 	if to then return to
 	else return self.player
