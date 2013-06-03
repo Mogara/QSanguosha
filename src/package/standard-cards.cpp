@@ -641,14 +641,14 @@ KylinBow::KylinBow(Suit suit, int number)
 
 class EightDiagramSkill: public ArmorSkill {
 public:
-    EightDiagramSkill(): ArmorSkill("eight_diagram") {
+    EightDiagramSkill(): ArmorSkill("EightDiagram") {
         events << CardAsked;
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QString asked = data.toStringList().first();
         if (asked == "jink") {
-            if (room->askForSkillInvoke(player, "eight_diagram")) {
+            if (room->askForSkillInvoke(player, "EightDiagram")) {
                 room->setCardFlag(player->getArmor()->getId(), "using");
                 room->setEmotion(player, "armor/eight_diagram");
                 JudgeStruct judge;
@@ -663,7 +663,6 @@ public:
                     room->setCardFlag(player->getArmor()->getId(), "-using");
 
                 if (judge.isGood()) {
-                    room->setEmotion(player, "armor/eight_diagram");
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
