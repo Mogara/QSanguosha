@@ -233,7 +233,6 @@ public:
 
                     room->broadcastSkillInvoke("shuangxiong");
                     JudgeStruct judge;
-                    judge.pattern = QRegExp("(.*)");
                     judge.good = true;
                     judge.play_animation = false;
                     judge.reason = objectName();
@@ -263,10 +262,10 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *pangde, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (effect.to->isAlive() && !effect.to->isNude()) {
+        if (effect.to->isAlive() && pangde->canDiscard(effect.to, "he")) {
             if (pangde->askForSkillInvoke(objectName(), data)) {
                 room->broadcastSkillInvoke(objectName());
-                int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
+                int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName(), false, Card::MethodDiscard);
                 room->throwCard(Sanguosha->getCard(to_throw), effect.to, pangde);
             }
         }
@@ -374,7 +373,7 @@ public:
 
         if (wolong->askForSkillInvoke(objectName())) {
             JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+            judge.pattern = ".|red";
             judge.good = true;
             judge.reason = objectName();
             judge.who = wolong;

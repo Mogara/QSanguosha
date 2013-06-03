@@ -19,7 +19,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("LuoyiCard") && !player->isNude();
+        return !player->hasUsed("LuoyiCard") && player->canDiscard(player, "he");
     }
 
     virtual bool viewFilter(const Card *card) const{
@@ -45,7 +45,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *xuchu, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.chain || damage.transfer) return false;
+        if (damage.chain || damage.transfer || !damage.by_user) return false;
         const Card *reason = damage.card;
         if (reason && (reason->isKindOf("Slash") || reason->isKindOf("Duel"))) {
             LogMessage log;
@@ -123,8 +123,8 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if (damage.card && damage.card->isKindOf("Slash") && damage.card->getSuit() == Card::Heart
-            && !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)){
-           
+            && damage.by_user && !damage.chain && !damage.transfer
+            && player->askForSkillInvoke(objectName(), data)) {
             room->broadcastSkillInvoke("yishi", 1);
             LogMessage log;
             log.type = "#Yishi";
@@ -205,7 +205,7 @@ public:
             room->broadcastSkillInvoke("ganglie");
 
             JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(heart):(.*)");
+            judge.pattern = ".|heart";
             judge.good = false;
             judge.reason = objectName();
             judge.who = xiahou;

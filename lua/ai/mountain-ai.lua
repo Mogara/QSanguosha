@@ -162,7 +162,17 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 	elseif current_phase == sgs.Player_Draw and not self.player:hasSkill("tuxi") then
 		local cardstr = sgs.ai_skill_use["@@tuxi"](self, "@tuxi")
 		if cardstr:match("->") then
-			return to_discard
+			local targetstr = cardstr:split("->")[2]
+			local targets = targetstr:split("+")
+			if #targets == 2 then
+				table.insert(self.qiaobian_draw_targets, targets[1])
+				table.insert(self.qiaobian_draw_targets, targets[2])
+				return to_discard
+			else
+				return {}
+			end
+		else
+			return {}
 		end
 	elseif current_phase == sgs.Player_Play then
 		self:sortByKeepValue(cards)
@@ -340,8 +350,7 @@ local jixi_skill = {}
 jixi_skill.name = "jixi"
 table.insert(sgs.ai_skills, jixi_skill)
 jixi_skill.getTurnUseCard = function(self)
-	if self.player:hasFlag("AI_JixiForbid")
-		or self.player:getPile("field"):isEmpty()
+	if self.player:getPile("field"):isEmpty()
 		or (self.player:getHandcardNum() >= self.player:getHp() + 2
 			and self.player:getPile("field"):length() <= self.room:getAlivePlayers():length() / 2 - 1) then
 		return
@@ -350,62 +359,37 @@ jixi_skill.getTurnUseCard = function(self)
 	for i = 0, self.player:getPile("field"):length() - 1, 1 do
 		local snatch = sgs.Sanguosha:getCard(self.player:getPile("field"):at(i))
 		local snatch_str = ("snatch:jixi[%s:%s]=%d"):format(snatch:getSuitString(), snatch:getNumberString(), self.player:getPile("field"):at(i))
-		self.jixisnatch = sgs.Card_Parse(snatch_str)
+		local jixisnatch = sgs.Card_Parse(snatch_str)
 
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if (self.player:distanceTo(player, 1) <= 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, self.jixisnatch))
-				and not self.room:isProhibited(self.player, player, self.jixisnatch) and self:hasTrickEffective(self.jixisnatch, player) then
-				can_use = true
-				self.jixi = i + 1
-				break
+			if (self.player:distanceTo(player, 1) <= 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, jixisnatch))
+				and not self.room:isProhibited(self.player, player, jixisnatch) and self:hasTrickEffective(jixisnatch, player) then
+
+				local suit = snatch:getSuitString()
+				local number = snatch:getNumberString()
+				local card_id = snatch:getEffectiveId()
+				local card_str = ("snatch:jixi[%s:%s]=%d"):format(suit, number, card_id)
+				local snatch = sgs.Card_Parse(card_str)
+				assert(snatch)
+				return snatch
 			end
 		end
 	end
+end
 
-	if not can_use then self.player:setFlags("AI_JixiForbid") end
-
-	if self.jixisnatch then
-		local use = { to = sgs.SPlayerList(), isDummy = true }
-		self:useCardSnatch(self.jixisnatch, use)
-		if can_use and use.card then
-			self.jixitargets = {}
-			for _, to in sgs.qlist(use.to) do
-				table.insert(self.jixitargets, to)
-			end
-			self.jixisnatch = nil
-			return sgs.Card_Parse("@JixiCard=.")
-		end
+sgs.ai_view_as.jixi = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card_place == sgs.Player_PlaceSpecial and player:getPileName(card_id) == "field" then
+		return ("snatch:jixi[%s:%s]=%d"):format(suit, number, card_id)
 	end
-	return
 end
-
-sgs.ai_skill_use_func.JixiCard = function(card, use, self)
-	use.card = sgs.Card_Parse("@JixiCard=.")
-end
-
-sgs.ai_use_priority.JixiCard = sgs.ai_use_priority.Snatch
-
-sgs.ai_skill_askforag.jixi = function(self, card_ids)
-	if self.jixi then self.jixi = card_ids[self.jixi] else self.jixi = card_ids[math.random(1, #card_ids)] end
-	return self.jixi
-end
-
-sgs.ai_skill_use["@@jixi!"] = function(self, prompt)
-	local target = {}
-	for _, to in ipairs(self.jixitargets) do
-		table.insert(target, to:objectName())
-	end
-	return "@JixiSnatchCard=.->" .. table.concat(target, "+")
-end
-
-sgs.ai_card_intention.JixiCard = sgs.ai_card_intention.Snatch
-
-sgs.dynamic_value.control_card.JixiCard = true
 
 sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	local target = data:toPlayer()
 	if self:isFriend(target) and not
-		(target:hasSkill("leiji") and (getCardsNum("Jink", target)>0 or (not self:isWeak(target) and self:isEquip("EightDiagram",target))))
+		(target:hasSkill("leiji") and (getCardsNum("Jink", target) > 0 or (not self:isWeak(target) and self:hasEightDiagramEffect(target))))
 		then return "." end
 	local has_peach, has_anal, has_slash, has_jink
 	for _, card in sgs.qlist(self.player:getHandcards()) do
@@ -419,7 +403,7 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	if has_slash then return "$" .. has_slash:getEffectiveId()
 	elseif has_jink then return "$" .. has_jink:getEffectiveId()
 	elseif has_anal or has_peach then
-		if getCardsNum("Jink", target) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(target) == 0 then
+		if getCardsNum("Jink", target) == 0 and self.player:getMark("drank") > 0 and self:getAllPeachNum(target) == 0 then
 			if has_anal then return "$" .. has_anal:getEffectiveId()
 			else return "$" .. has_peach:getEffectiveId()
 			end
@@ -558,7 +542,7 @@ sgs.ai_skill_playerchosen.fangquan = function(self, targets)
 	end
 end
 
-sgs.ai_playerchosen_intention.fangquan = function(from, to)
+sgs.ai_playerchosen_intention.fangquan = function(self, from, to)
 	sgs.fangquan_effect = false
 	local intention = -10
 	if to:hasSkill("benghuai") then
@@ -652,8 +636,8 @@ local zhiba_pindian_skill = {}
 zhiba_pindian_skill.name = "zhiba_pindian"
 table.insert(sgs.ai_skills, zhiba_pindian_skill)
 zhiba_pindian_skill.getTurnUseCard = function(self)
-	if self.player:isKongcheng() or self.player:getHandcardNum() <= self.player:getHp() or self.player:getKingdom() ~= "wu"
-		or self.player:hasUsed("ZhibaCard") or self:needBear() or self:getOverflow() <= 0 then return end
+	if self.player:isKongcheng() or self:needBear() or self:getOverflow() <= 0 or self.player:getKingdom() ~= "wu"
+		or self.player:hasFlag("ForbidZhiba") then return end
 	return sgs.Card_Parse("@ZhibaCard=.")
 end
 
@@ -662,7 +646,7 @@ sgs.ai_use_priority.ZhibaCard = 0
 sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 	local lords = {}
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:hasLordSkill("sunce_zhiba") and not player:isKongcheng() and not player:hasFlag("ZhibaInvoked")
+		if player:hasLordSkill("zhiba") and not player:isKongcheng() and not player:hasFlag("ZhibaInvoked")
 			and not (self:isEnemy(player) and player:getMark("hunzi") > 0) then
 				table.insert(lords, player) 
 		end
@@ -710,20 +694,20 @@ sgs.ai_skill_use_func.ZhibaCard = function(card, use, self)
 		end
 
 		if self:isEnemy(lord) and max_num > 10 and max_num > lord_max_num then
-			if isCard("Jink", max_card, self.player) and self:getCardsNum("Jink") ==1 then return end
-			if isCard("Peach", max_card, self.player) or isCard("Analeptic", max_card, self.player) then return false end
-			zhiba_str = "@ZhibaCard=" .. max_card:getEffectiveId()
+			if isCard("Jink", max_card, self.player) and self:getCardsNum("Jink") == 1 then return end
+			if isCard("Peach", max_card, self.player) or isCard("Analeptic", max_card, self.player) then return end
+			self.zhiba_pindian_card = max_card:getEffectiveId()
+			zhiba_str = "@ZhibaCard=."
 		end
 		if self:isFriend(lord) and not lord:hasSkill("manjuan") and ((lord_max_num > 0 and min_num <= lord_max_num) or min_num < 7) then
-			if isCard("Jink", min_card, self.player) and self:getCardsNum("Jink") ==1 then return end
-			zhiba_str = "@ZhibaCard=" .. min_card:getEffectiveId()
+			if isCard("Jink", min_card, self.player) and self:getCardsNum("Jink") == 1 then return end
+			self.zhiba_pindian_card = min_card:getEffectiveId()
+			zhiba_str = "@ZhibaCard=."
 		end
 
 		if zhiba_str then
 			use.card = sgs.Card_Parse(zhiba_str)
-			if use.to then 
-				use.to:append(lord) 
-			end
+			if use.to then use.to:append(lord) end
 			return
 		end
 	end
@@ -734,7 +718,7 @@ sgs.ai_skill_choice.zhiba_pindian = function(self, choices)
 	local cards = self.player:getHandcards()
 	local has_large_number, all_small_number = false, true
 	for _, c in sgs.qlist(cards) do
-		if c:getNumber() > 12 then
+		if c:getNumber() > 11 then
 			has_large_number = true
 			break
 		end
@@ -750,33 +734,25 @@ sgs.ai_skill_choice.zhiba_pindian = function(self, choices)
 	end
 end
 
-sgs.ai_skill_choice.sunce_zhiba = function(self, choices)
-	return "yes"
-end
-
 function sgs.ai_skill_pindian.zhiba_pindian(minusecard, self, requestor, maxcard)
-	local maxcard = self:getMaxCard()
-	local point = self:isFriend(requestor) and 5 or 9
-	return maxcard:getNumber() <= point and minusecard or maxcard
+	local cards, maxcard = sgs.QList2Table(self.player:getHandcards())
+	local function compare_func(a, b)
+		return a:getNumber() > b:getNumber()
+	end
+	table.sort(cards, compare_func)
+	for _, card in ipairs(cards) do
+		if self:getUseValue(card) < 6 then maxcard = card break end
+	end
+	return maxcard or cards[1]
 end
 
-sgs.ai_card_intention.ZhibaCard = function(self, card, from, tos, source)
-	assert(#tos == 1)
-	local subcards = card:getSubcards()
-	local id = 0
-	local number = 7
-	if subcards and not subcards:isEmpty() then
-		id = subcards:first()
-		number = sgs.Sanguosha:getCard(id):getNumber()
-	end
-	if number < 6 then sgs.updateIntention(from, tos[1], -60)
-	elseif number > 8 then sgs.updateIntention(from, tos[1], 60) end
-end 
-
-sgs.ai_need_damaged.hunzi = function(self, attacker, player)
-	if player:hasSkill("hunzi") and player:getMark("hunzi") == 0 and
-		(player:getHp() > 2 or player:getHp() == 2 and (player:faceUp() or player:hasSkills("guixin|toudu"))) then return true end
-	return false
+sgs.ai_card_intention.ZhibaCard = 0
+sgs.ai_choicemade_filter.pindian.zhiba_pindian = function(from, promptlist, self)
+	local number = sgs.Sanguosha:getCard(tonumber(promptlist[4])):getNumber()
+	local lord = findPlayerByObjectName(self.room, promptlist[5])
+	if not lord then return end
+	if number < 6 then sgs.updateIntention(from, lord, -60)
+	elseif number > 8 then sgs.updateIntention(from, lord, 60) end
 end
 
 local zhijian_skill = {}
@@ -785,7 +761,7 @@ table.insert(sgs.ai_skills, zhijian_skill)
 zhijian_skill.getTurnUseCard = function(self)
 	local equips = {}
 	for _, card in sgs.qlist(self.player:getHandcards()) do
-		if card:getTypeId() == sgs.Card_Equip then
+		if card:getTypeId() == sgs.Card_TypeEquip then
 			table.insert(equips, card)
 		end
 	end
@@ -991,8 +967,8 @@ sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 		if slash or valueless then
 			return slash or valueless 
 		end
-		
-		return new_cards[1]
+
+		return new_cards[1]:getEffectiveId()
 	end
 
 			
@@ -1000,12 +976,6 @@ sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 end
 
 sgs.ai_chaofeng.erzhang = 5
-
-sgs.ai_skill_invoke.beige = function(self, data)
-	local damage = data:toDamage()
-	return self:isFriend(damage.to) and not self:isFriend(damage.from)
-end
-
 
 sgs.ai_skill_cardask["@beige"] = function(self, data)
 	local damage = data:toDamage()
@@ -1020,12 +990,11 @@ end
 
 function sgs.ai_slash_prohibit.duanchang(self, to, card, from)
 	if from:hasSkill("jueqing") or (from:hasSkill("nosqianxi") and from:distanceTo(to) == 1) then return false end
-	if from:hasFlag("nosjiefanUsed") then return false end
-	if to:getHp() > 1 or #self.enemies == 1 then return false end
-
+	if from:hasFlag("NosJiefanUsed") then return false end
+	if to:getHp() > 1 or #(self:getEnemies(from)) == 1 then return false end
 	if from:getMaxHp() == 3 and from:getArmor() and from:getDefensiveHorse() then return false end
-	if from:getMaxHp() <= 3 or (from:isLord() and self:isWeak()) then return true end
-	if from:getMaxHp() <= 3 or (self.room:getLord() and self.role == "renegade") then return true end
+	if from:getMaxHp() <= 3 or (from:isLord() and self:isWeak(from)) then return true end
+	if from:getMaxHp() <= 3 or (self.room:getLord() and from:getRole() == "renegade") then return true end
 	return false
 end
 
@@ -1112,7 +1081,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 		"baobian|ganlu|tiaoxin|zhaolie|moukui|liegong|mengjin|qianxi|tieji|wushuang|juejing|nosfuhun|nosqianxi|yanxiao|jueji|tanhu|huoshui|guhuo|xuanhuo|" ..
 		"nosxuanhuo|qiangxi|fangquan|lirang|longluo|nosjujian|lieren|pojun|bawang|qixi|yinling|jizhi|duoshi|zhaoxin|gongqi|neoluoyi|luoyi|wenjiu|jie|" ..
 		"jiangchi|wusheng|longdan|jueqing|xueji|yinghun|longhun|jiuchi|qingcheng|shuangren|kuangfu|nosgongqi|wushen|paoxiao|lianhuan|chouliang|" ..
-		"houyuan|jujian|shensu|jisu|luanji|chizhong|zhijian|shuangxiong|xinzhan|zhenwei|jieyuan|duanbing|fenxun|guidao|guicai|noszhenlie|wansha|" ..
+		"houyuan|jujian|shensu|jisu|luanji|chizhong|zhijian|shuangxiong|xinzhan|ytzhenwei|jieyuan|duanbing|fenxun|guidao|guicai|noszhenlie|wansha|" ..
 		"bifa|lianpo|yicong|nosshangshi|shangshi|lianying|tianyi|xianzhen|zongshi|keji|kuiwei|yuanhu|juao|neojushou|jushou|huoji|roulin|fuhun|lihuo|xiaoji|" ..
 		"mashu|zhengfeng|xuanfeng|nosxuanfeng|jiushi|dangxian|tannang|qicai|taichen|hongyan|kurou|lukang_weiyan|yicai|beifa|qinyin|zonghuo|" ..
 		"shouye|shaoying|xingshang|suishi|yuwen|gongmou|weiwudi_guixin|wuling|shenfen"):split("|")) do

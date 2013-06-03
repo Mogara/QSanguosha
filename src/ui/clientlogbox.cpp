@@ -119,7 +119,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             }
 
             delete card;
-        } else if (card->isModified() && card->getSkillName() != QString()) {
+        } else if (card->getSkillName() != QString()) {
             const Card *real = Sanguosha->getEngineCard(card->getEffectiveId());
             QString skill_name = Sanguosha->translate(card->getSkillName());
             skill_name = bold(skill_name, Qt::yellow);

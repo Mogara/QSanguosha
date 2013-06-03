@@ -19,7 +19,7 @@ GameRule::GameRule(QObject *)
 
     events << GameStart << TurnStart
            << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging
-           << PreCardUsed << CardUsed << CardFinished << CardEffected << PostCardEffected
+           << PreCardUsed << CardUsed << CardFinished << CardEffected
            << CardResponded
            << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
@@ -40,6 +40,7 @@ GameRule::GameRule(QObject *)
     skill_mark["fenxin"] = "@burnheart";
     skill_mark["xiongyi"] = "@arise";
     skill_mark["zhongyi"] = "@loyal";
+    skill_mark["xiechan"] = "@twine";
 }
 
 bool GameRule::triggerable(const ServerPlayer *target) const{
@@ -145,7 +146,22 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 }
             }
             room->setTag("FirstRound", true);
-            room->drawCards(room->getPlayers(), 4, QString());
+            if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013") {
+                QList<CardsMoveStruct> moves;
+                foreach (ServerPlayer *player, room->getPlayers()) {
+                    QList<int> card_ids = room->getNCards(player->getMaxHp(), false);
+
+                    CardsMoveStruct move;
+                    move.card_ids = card_ids;
+                    move.from = NULL;
+                    move.to = player;
+                    move.to_place = Player::PlaceHand;
+                    moves.append(move);
+                }
+                room->moveCardsAtomic(moves, false);
+            } else {
+                room->drawCards(room->getPlayers(), 4, QString());
+            }
         }
         return false;
     }
@@ -202,29 +218,27 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
     case PreCardUsed: {
             if (data.canConvert<CardUseStruct>()) {
                 CardUseStruct card_use = data.value<CardUseStruct>();
-                const Card *card = card_use.card;
                 if (card_use.from->hasFlag("Global_ForbidSurrender")) {
                     card_use.from->setFlags("-Global_ForbidSurrender");
                     room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, Json::Value(true));
                 }
-                if (card->isKindOf("Slash"))
+                if (card_use.card->isKindOf("Slash"))
                     card_use.from->setFlags("Global_SlashInPlayPhase");
 
-                card_use.from->broadcastSkillInvoke(card);
-                if (!card->getSkillName().isNull() && card->getSkillName(true) == card->getSkillName(false)
-                    && card_use.m_isOwnerUse && card_use.from->hasSkill(card->getSkillName()))
-                    room->notifySkillInvoked(card_use.from, card->getSkillName());
+                card_use.from->broadcastSkillInvoke(card_use.card);
+                if (!card_use.card->getSkillName().isNull() && card_use.card->getSkillName(true) == card_use.card->getSkillName(false)
+                    && card_use.m_isOwnerUse && card_use.from->hasSkill(card_use.card->getSkillName()))
+                    room->notifySkillInvoked(card_use.from, card_use.card->getSkillName());
             }
             break;
         }
     case CardUsed: {
             if (data.canConvert<CardUseStruct>()) {
                 CardUseStruct card_use = data.value<CardUseStruct>();
-                const Card *card = card_use.card;
                 RoomThread *thread = room->getThread();
 
-                if (card->hasPreAction())
-                    card->doPreAction(room, card_use);
+                if (card_use.card->hasPreAction())
+                    card_use.card->doPreAction(room, card_use);
 
                 QList<ServerPlayer *> targets = card_use.to;
                 if (card_use.from && !card_use.to.empty()) {
@@ -236,31 +250,30 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                         }
                     }
                 }
-
-                if (card_use.card->isKindOf("Slash") || card_use.card->isNDTrick()) {
-                    foreach (ServerPlayer *p, card_use.to) {
-                        QStringList card_list = p->tag["CurrentCardUse"].toStringList();
-                        card_list << card_use.card->toString();
-                        p->tag["CurrentCardUse"] = QVariant::fromValue(card_list);
-                    }
-                }
-
-                QVariantList jink_list_backup;
-                if (card_use.card->isKindOf("Slash")) {
-                    jink_list_backup = card_use.from->tag["Jink_" + card_use.card->toString()].toList();
-                    QVariantList jink_list;
-                    for (int i = 0; i < card_use.to.length(); i++)
-                        jink_list.append(QVariant(1));
-                    card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
-                }
                 card_use = data.value<CardUseStruct>();
-                if (card_use.from && !card_use.to.isEmpty()) {
-                    foreach (ServerPlayer *p, room->getAllPlayers())
-                        thread->trigger(TargetConfirmed, room, p, data);
+
+                try {
+                    QVariantList jink_list_backup;
+                    if (card_use.card->isKindOf("Slash")) {
+                        jink_list_backup = card_use.from->tag["Jink_" + card_use.card->toString()].toList();
+                        QVariantList jink_list;
+                        for (int i = 0; i < card_use.to.length(); i++)
+                            jink_list.append(QVariant(1));
+                        card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
+                    }
+                    if (card_use.from && !card_use.to.isEmpty()) {
+                        foreach (ServerPlayer *p, room->getAllPlayers())
+                            thread->trigger(TargetConfirmed, room, p, data);
+                    }
+                    card_use.card->use(room, card_use.from, card_use.to);
+                    if (!jink_list_backup.isEmpty())
+                        card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
                 }
-                card->use(room, card_use.from, card_use.to);
-                if (!jink_list_backup.isEmpty())
-                    card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
+                catch (TriggerEvent triggerEvent) {
+                    if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+                        card_use.from->tag.remove("Jink_" + card_use.card->toString());
+                    throw triggerEvent;
+                }
             }
 
             break;
@@ -412,21 +425,12 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     }
                 }
             }
-
-            if (room->getMode() == "02_1v1" && player->isDead()) {
-                if (!damage.card || !player->tag["CurrentCardUse"].toStringList().contains(damage.card->toString())) {
-                    QString new_general = player->tag["1v1ChangeGeneral"].toString();
-                    if (!new_general.isEmpty())
-                        changeGeneral1v1(player);
-                }
-            }
-
             break;
         }
     case CardEffected: {
             if (data.canConvert<CardEffectStruct>()) {
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                if (room->isCanceled(effect)) {
+                if (effect.card->getTypeId() == Card::TypeTrick && room->isCanceled(effect)) {
                     effect.to->setFlags("Global_NonSkillNullify");
                     return true;
                 }
@@ -434,22 +438,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     effect.card->onEffect(effect);
             }
 
-            break;
-        }
-    case PostCardEffected: {
-            if (data.canConvert<CardEffectStruct>()) {
-                CardEffectStruct effect = data.value<CardEffectStruct>();
-                QStringList card_list = effect.to->tag["CurrentCardUse"].toStringList();
-                if (effect.card && card_list.contains(effect.card->toString())) {
-                    card_list.removeOne(effect.card->toString());
-                    effect.to->tag["CurrentCardUse"] = QVariant::fromValue(card_list);
-                    if (room->getMode() == "02_1v1" && effect.to->isDead()) {
-                        QString new_general = effect.to->tag["1v1ChangeGeneral"].toString();
-                        if (!new_general.isEmpty())
-                            changeGeneral1v1(effect.to);
-                    }
-                }
-            }
             break;
         }
     case SlashEffected: {
@@ -535,11 +523,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                         player->tag["1v1ChangeGeneral"] = list.first();
                     }
 
-                    QStringList card_list = player->tag["CurrentCardUse"].toStringList();
-                    if (death.damage == NULL && card_list.isEmpty()) {
-                        changeGeneral1v1(player);
-                        return false;
-                    }
+                    changeGeneral1v1(player);
+                    return false;
                 }
             } else if (room->getMode() == "06_XMode") {
                 changeGeneralXMode(player);
@@ -663,6 +648,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     int draw_num = classical ? 4 : player->getMaxHp();
     player->drawCards(draw_num);
     room->setTag("FirstRound", false);
+    room->getThread()->trigger(Debut, room, player);
 }
 
 void GameRule::changeGeneralXMode(ServerPlayer *player) const{

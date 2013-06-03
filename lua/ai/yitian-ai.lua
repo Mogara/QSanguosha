@@ -13,7 +13,7 @@ local function findPlayerForModifyKingdom(self, players) --从目标列表中选
 
 		for _, player in sgs.qlist(players) do
 			if not player:isLord() then
-				if sgs.evaluateRoleTrends(player) == "loyalist" and not self:hasSkills("huashen|liqian",player) then
+				if sgs.evaluatePlayerRole(player) == "loyalist" and not self:hasSkills("huashen|liqian",player) then
 					local sameKingdom =lord and player:getKingdom() == lord:getKingdom() 
 					if isGood ~= sameKingdom then
 						return player
@@ -32,7 +32,7 @@ end
 local function chooseKingdomForPlayer(self, to_modify) --选择合适的势力以修改目标势力
 	local lord = self.room:getLord()
 	local isGood = self:isFriend(lord)
-	if  sgs.evaluateRoleTrends(to_modify) == "loyalist" or sgs.evaluateRoleTrends(to_modify) == "renegade" then
+	if  sgs.evaluatePlayerRole(to_modify) == "loyalist" or sgs.evaluatePlayerRole(to_modify) == "renegade" then
 		if isGood then
 			return lord and lord:getKingdom()
 		else
@@ -107,9 +107,9 @@ end
 	技能：称象
 	描述：每当你受到1次伤害，你可打出X张牌（X小于等于3），它们的点数之和与造成伤害的牌的点数相等，你可令X名角色各恢复1点体力（若其满体力则摸2张牌）
 ]]--
-sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
+sgs.ai_skill_use["@@ytchengxiang"]=function(self,prompt)
 	local prompts=prompt:split(":")
-	assert(prompts[1]=="@chengxiang-card")
+	assert(prompts[1]=="@ytchengxiang-card")
 	local point=tonumber(prompts[4])
 	local targets=self.friends
 	if not targets then return end
@@ -128,17 +128,17 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 	self:sortByUseValue(cards,true)
 	local opt1, opt2
 	for _,card in ipairs(cards) do
-		if card:getNumber()==point then opt1 = "@ChengxiangCard=" .. card:getId() .. "->" .. targets[1]:objectName() break end
+		if card:getNumber()==point then opt1 = "@YTChengxiangCard=" .. card:getId() .. "->" .. targets[1]:objectName() break end
 	end
 	for _,card1 in ipairs(cards) do
 		for __,card2 in ipairs(cards) do
 			if card1:getId()==card2:getId() then
 			elseif card1:getNumber()+card2:getNumber()==point then
 				if #targets >= 2 and targets[2]:isWounded() then
-					opt2 = "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
+					opt2 = "@YTChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
 					break
 				elseif targets[1]:getHp()==1 or self:getUseValue(card1)+self:getUseValue(card2)<=6 then
-					opt2 = "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()
+					opt2 = "@YTChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()
 					break
 				end
 			end
@@ -151,10 +151,10 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 	return opt2 or opt1 or "."
 end
 
-sgs.ai_card_intention.ChengxiangCard = sgs.ai_card_intention.QingnangCard
+sgs.ai_card_intention.YTChengxiangCard = sgs.ai_card_intention.QingnangCard
 
-function sgs.ai_cardneed.chengxiang(to, card, self)
-	return card:getNumber()<8 and self:getUseValue(card)<6 and to:hasSkill("chengxiang") and to:getHandcardNum() < 12
+function sgs.ai_cardneed.ytchengxiang(to, card, self)
+	return card:getNumber()<8 and self:getUseValue(card)<6 and to:hasSkill("ytchengxiang") and to:getHandcardNum() < 12
 end
 --[[
 	技能：绝汲
@@ -460,7 +460,7 @@ local lianli_slash_skill={name="lianli-slash"}
 table.insert(sgs.ai_skills, lianli_slash_skill)
 lianli_slash_skill.getTurnUseCard = function(self) --考虑主动使用连理杀
 	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
-	if self.player:getMark("@tied")>0 and slash:isAvailable(self.player) then 
+	if self.player:getMark("@tied")>0 and slash:isAvailable(self.player) and not self.player:hasFlag("Global_LianliFailed") then 
 		return sgs.Card_Parse("@LianliSlashCard=.") 
 	end
 end
@@ -513,7 +513,7 @@ function guihan_skill.getTurnUseCard(self)
 	if self.room:alivePlayerCount() == 2 or self.role == "renegade" then return end
 	local rene = 0
 	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		if sgs.evaluateRoleTrends(aplayer) == "renegade" then rene = rene + 1 end
+		if sgs.evaluatePlayerRole(aplayer) == "renegade" then rene = rene + 1 end
 	end
 	if #self.friends + #self.enemies + rene < self.room:alivePlayerCount() then return end
 	local cards = sgs.QList2Table(self.player:getHandcards())
@@ -659,7 +659,7 @@ sgs.ai_skill_playerchosen.shaoying = function(self, targets)
 	end
 end
 
-sgs.ai_playerchosen_intention.shaoying = function(from, to)
+sgs.ai_playerchosen_intention.shaoying = function(self, from, to)
 	sgs.shaoying_target = to
 	sgs.updateIntention(from, to , 10)
 end
@@ -699,7 +699,7 @@ sgs.ai_skill_playerchosen.gongmou = function(self, targets)
 	return self.enemies[1]
 end
 
-sgs.ai_playerchosen_intention.gongmou = function(from, to)
+sgs.ai_playerchosen_intention.gongmou = function(self, from, to)
 	local intention = 60
 	if to:hasSkill("manjuan") then intention = -intention
 	elseif to:hasSkill("enyuan") then intention = 0
@@ -1006,7 +1006,7 @@ sgs.ai_use_priority.YisheAskCard = 9.1
 	技能：镇威
 	描述：你的【杀】被手牌中的【闪】抵消时，可立即获得该【闪】。 
 ]]--
-sgs.ai_skill_invoke.zhenwei = function(self, data)
+sgs.ai_skill_invoke.ytzhenwei = function(self, data)
 	return not self:needKongcheng(self.player) 
 end
 --[[

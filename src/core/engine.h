@@ -123,8 +123,8 @@ private:
     QHash<QString, const Skill *> skills;
     QHash<QThread *, QObject *> m_rooms;
     QMap<QString, QString> modes;
-    QMap<QString, const CardPattern *> patterns;
     QMultiMap<QString, QString> related_skills;
+    mutable QMap<QString, const CardPattern *> patterns;
 
     // special skills
     QList<const ProhibitSkill *> prohibit_skills;

@@ -27,13 +27,21 @@ void RoomThread1v1::run() {
         const Package *windpack = Sanguosha->findChild<const Package *>("wind");
 
         QStringList candidates;
-        foreach (const General *general, stdpack->findChildren<const General *>())
-            candidates << general->objectName();
-        foreach (const General *general, windpack->findChildren<const General *>())
-            candidates << general->objectName();
-        if (new_rule)
-            candidates << "dianwei" << "xuhuang" << "menghuo" << "zhurong"
-                       << "jiangwei" << "sunjian" << "pangde" << "yanliangwenchou";
+        if (!new_rule) {
+            foreach (const General *general, stdpack->findChildren<const General *>())
+                candidates << general->objectName();
+            foreach (const General *general, windpack->findChildren<const General *>())
+                candidates << general->objectName();
+        } else {
+            candidates << "caocao" << "simayi" << "xiahoudun" << "kof_zhangliao"
+                       << "kof_xuchu" << "guojia" << "kof_zhenji" << "kof_xiahouyuan"
+                       << "caoren" << "dianwei" << "kof_guanyu" << "zhangfei"
+                       << "zhugeliang" << "zhaoyun" << "kof_machao" << "kof_nos_huangyueying"
+                       << "kof_huangzhong" << "kof_jiangwei" << "kof_menghuo" << "kof_zhurong"
+                       << "sunquan" << "ganning" << "huanggai" << "zhouyu"
+                       << "luxun" << "kof_sunshangxiang" << "sunjian" << "xiaoqiao"
+                       << "lvbu" << "kof_nos_diaochan" << "yanliangwenchou" << "hejin";
+        }
         qShuffle(candidates);
         general_names = candidates.mid(0, total_num);
     } else {
@@ -61,11 +69,9 @@ void RoomThread1v1::run() {
         askForTakeGeneral(first);
         askForTakeGeneral(first);
     }
-
     askForTakeGeneral(next);
 
-    startArrange(first);
-    startArrange(next);
+    startArrange(QList<ServerPlayer *>() << first << next);
 }
 
 void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
@@ -125,16 +131,26 @@ void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name) {
     player->addToSelected(general_name);
 }
 
-void RoomThread1v1::startArrange(ServerPlayer *player) {
+void RoomThread1v1::startArrange(QList<ServerPlayer *> players) {
     while (room->isPaused()) {}
+    QList<ServerPlayer *> online = players;
+    foreach (ServerPlayer *player, players) {
+        if (!player->isOnline()) {
+            GeneralSelector *selector = GeneralSelector::getInstance();
+            arrange(player, selector->arrange1v1(player));
+            online.removeOne(player);
+        }
+    }
+    if (online.isEmpty()) return;
 
-    if (player->getState() != "online") {
-        GeneralSelector *selector = GeneralSelector::getInstance();
-        arrange(player, selector->arrange1v1(player));
-    } else {
-        bool success = room->doRequest(player, S_COMMAND_ARRANGE_GENERAL, Json::Value::null, true);
+    foreach (ServerPlayer *player, online)
+        player->m_commandArgs = Json::Value::null;
+
+    room->doBroadcastRequest(online, S_COMMAND_ARRANGE_GENERAL);
+
+    foreach (ServerPlayer *player, online) {
         Json::Value clientReply = player->getClientReply();
-        if (success && clientReply.isArray() && clientReply.size() == 3) {
+        if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
             QStringList arranged;
             tryParse(clientReply, arranged);
             arrange(player, arranged);

@@ -63,7 +63,7 @@ sgs.ai_chat_func[sgs.SlashEffected].blindness=function(self, player, data)
 end
 
 sgs.ai_chat_func[sgs.Death].stupid_lord=function(self, player, data)
-	local damage=data:toDamageStar()
+	local damage=data:toDeath().damage
 	local chat ={"2B了吧，老子这么忠还杀我",
 				"主要臣死，臣不得不死",
 				"房主下盘T了这个主，拉黑不解释",

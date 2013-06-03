@@ -207,7 +207,7 @@ public:
         room->broadcastSkillInvoke("ganglie");
 
         JudgeStruct judge;
-        judge.pattern = QRegExp("(.*):(heart):(.*)");
+        judge.pattern = ".|heart";
         judge.good = false;
         judge.reason = objectName();
         judge.who = xiahou;
@@ -270,7 +270,7 @@ public:
         QString mode = room->getMode();
         if (triggerEvent == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.chain || damage.transfer) return false;
+            if (damage.chain || damage.transfer || !damage.by_user) return false;
             if (damage.card && damage.card->isKindOf("Slash")) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getPile("loyal").isEmpty()) continue;
@@ -325,7 +325,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        if (pattern != "peach" || player->isNude() || player->getHp() <= 1) return false;
+        if (pattern != "peach" || !player->canDiscard(player, "he") || player->getHp() <= 1) return false;
         QString dyingobj = player->property("currentdying").toString();
         const Player *who = NULL;
         foreach (const Player *p, player->getSiblings()) {
@@ -510,32 +510,6 @@ VSCrossbow::VSCrossbow(Suit suit, int number)
     : Crossbow(suit, number)
 {
     setObjectName("VSCrossbow");
-}
-
-Drowning::Drowning(Suit suit, int number)
-    : SingleTargetTrick(suit, number)
-{
-    setObjectName("drowning");
-}
-
-bool Drowning::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-
-    if (to_select == Self)
-        return false;
-
-    return true;
-}
-
-void Drowning::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
-    if (!effect.to->getEquips().isEmpty()
-        && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
-        effect.to->throwAllEquips();
-    else
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
 }
 
 New3v3CardPackage::New3v3CardPackage()

@@ -137,6 +137,10 @@ function sgs.ai_skill_invoke.jushou(self, data)
 	if not self.player:faceUp() then return true end
 	for _, friend in ipairs(self.friends) do
 		if self:hasSkills("fangzhu|jilve", friend) then return true end
+		if friend:hasSkill("junxing") and friend:faceUp() and not self:willSkipPlayPhase(friend)
+			and not (friend:isKongcheng() and self:willSkipDrawPhase(friend)) then
+			return true
+		end
 	end
 	return self:isWeak()
 end
@@ -154,8 +158,8 @@ function SmartAI:canLiegong(to, from)
 	from = from or self.room:getCurrent()
 	to = to or self.player
 	if not from then return false end
-	if not from:hasSkill("liegong") then return false end
-	if from:getPhase() == sgs.Player_Play and (to:getHandcardNum() >= from:getHp() or to:getHandcardNum() <= from:getAttackRange()) then return true end
+	if from:hasSkill("liegong") and from:getPhase() == sgs.Player_Play and (to:getHandcardNum() >= from:getHp() or to:getHandcardNum() <= from:getAttackRange()) then return true end
+	if from:hasSkill("kofliegong") and from:getPhase() == sgs.Player_Play and to:getHandcardNum() >= from:getHp() then return true end
 	return false
 end
 
@@ -168,7 +172,7 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 	if all_cards:isEmpty() then return "." end
 	local cards = {}
 	for _, card in sgs.qlist(all_cards) do
-		if card:isBlack() then
+		if card:isBlack() and not card:hasFlag("using") then
 			table.insert(cards, card)
 		end
 	end
@@ -179,12 +183,12 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 		if self:needRetrial(judge) and judge.reason ~= "beige" then
 			self:sortByUseValue(cards, true)
 			if self:getUseValue(judge.card) > self:getUseValue(cards[1]) then
-				return "@GuidaoCard[" .. cards[1]:getSuitString() .. ":" .. cards[1]:getNumberString() .."]=" .. cards[1]:getId()
+				return "$" .. cards[1]:getId()
 			end
 		end
 	elseif self:needRetrial(judge) or self:getUseValue(judge.card) > self:getUseValue(sgs.Sanguosha:getCard(card_id)) then
 		local card = sgs.Sanguosha:getCard(card_id)
-		return "@GuidaoCard[" .. card:getSuitString() .. ":" .. card:getNumberString() .. "]=" .. card_id
+		return "$" .. card_id
 	end
 	
 	return "."
@@ -239,21 +243,19 @@ function SmartAI:findLeijiTarget(player, leiji_value)
 	return nil
 end
 
-sgs.ai_skill_use["@@leiji"] = function(self, prompt)
+sgs.ai_skill_playerchosen.leiji = function(self, targets)
 	local mode = self.room:getMode()
-	if mode:find("_mini_17") or mode:find("_mini_19") or mode:find("_mini_20") or mode:find("_mini_26") then 
+	if mode:find("_mini_17") or mode:find("_mini_19") or mode:find("_mini_20") or mode:find("_mini_26") then
 		local players = self.room:getAllPlayers();
-		for _,aplayer in sgs.qlist(players) do
+		for _, aplayer in sgs.qlist(players) do
 			if aplayer:getState() ~= "robot" then
-				return "@LeijiCard=.->"..aplayer:objectName()
+				return aplayer
 			end
 		end
 	end
 
 	self:updatePlayers()
-	local to = self:findLeijiTarget(self.player, 100)
-	if not to then return "." end
-	return "@LeijiCard=.->"..to:objectName()
+	return self:findLeijiTarget(self.player, 100)
 end
 
 function SmartAI:needLeiji(to, from)
@@ -498,7 +500,7 @@ sgs.ai_card_intention.TianxiangCard = function(self, card, from, tos)
 	if self:getDamagedEffects(to) or self:needToLoseHp(to) then return end
 	local intention = 10
 	if (to:getHp() >= 2 and self:hasSkills("yiji|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu", to))
-		or (to:getHandcardNum() < 3 and to:hasSkill("rende"))
+		or (to:getHandcardNum() < 3 and (to:hasSkill("nosrende") or (to:hasSkill("rende") and not to:hasUsed("RendeCard"))))
 		or to:hasSkill("buqu") then
 		intention = -10
 	end
@@ -508,9 +510,9 @@ end
 function sgs.ai_slash_prohibit.tianxiang(self, to, card, from)
 	if from:hasSkill("jueqing") then return false end
 	if from:hasSkill("nosqianxi") and from:distanceTo(to) == 1 then return false end
-	if from:hasFlag("nosjiefanUsed") then return false end
-	if self:isFriend(to) then return false end
-	return self:cantbeHurt(to)
+	if from:hasFlag("NosJiefanUsed") then return false end
+	if self:isFriend(to, from) then return false end
+	return self:cantbeHurt(to, 1, from)
 end
 
 sgs.tianxiang_suit_value = {
@@ -545,10 +547,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	self:sort(self.friends,"hp")
 
 	if self.player:getHp() < 2 and self:getCardsNum("Peach") < 1 and self.room:alivePlayerCount() > 2 then return "noquestion" end
-	for _, other in ipairs(players) do
-		if other:hasSkill("guhuo") then yuji = other break end
-	end
-	if self.lua_ai:isFriend(yuji) then return "noquestion"
+	if self:isFriend(yuji) then return "noquestion"
 	elseif sgs.questioner then return "noquestion"
 	else
 		if self.player:getHp() < self.friends[#self.friends]:getHp() then return "noquestion" end
@@ -742,37 +741,51 @@ sgs.ai_skill_use_func.GuhuoCard=function(card,use,self)
 	local userstring=card:toString()
 	userstring=(userstring:split(":"))[3]
 	local guhuocard=sgs.Sanguosha:cloneCard(userstring, card:getSuit(), card:getNumber())
-	if guhuocard:getTypeId() == sgs.Card_Basic then self:useBasicCard(guhuocard,use,false) else assert(guhuocard) self:useTrickCard(guhuocard,use) end
+	guhuocard:setSkillName("guhuo")
+	if guhuocard:getTypeId() == sgs.Card_TypeBasic then self:useBasicCard(guhuocard, use) else assert(guhuocard) self:useTrickCard(guhuocard, use) end
 	if not use.card then return end
 	use.card=card
 end
 
 sgs.ai_use_priority.GuhuoCard = 10
 
-local function getGuhuoViewCard(self, class_name, player)
+function SmartAI:getGuhuoViewCard(class_name)
 	local card_use = {}
-	card_use = self:getCards(class_name, player)
+	local ghly = (self.room:getMode() == "_mini_48")
+	if ghly then
+		card_use = sgs.QList2Table(self.player:getHandcards())
+	else
+		card_use = self:getCards(class_name, "h")
+	end
 
-	if #card_use > 1 or (#card_use > 0 and card_use[1]:getSuit() == sgs.Card_Heart) then
+	local classname2objectname = {
+		["Slash"] = "slash", ["Jink"] = "jink",
+		["Peach"] = "peach", ["Analeptic"] = "analeptic",
+		["Nullification"] = "nullification",
+	}
+
+	if #card_use > 1 or (#card_use > 0 and (card_use[1]:getSuit() == sgs.Card_Heart or ghly)) then
 		local index = 1
-		if class_name == "Peach" or class_name == "Analeptic" or class_name == "Jink" then
+		if class_name == "Peach" or (class_name == "Analeptic" and not sgs.GetConfig("BanPackages", ""):match("maneuvering")) or class_name == "Jink" then
 			index = #card_use
 		end
-		return "@GuhuoCard=" .. card_use[index]:getEffectiveId() ..":".. card_use[index]:objectName()
+		return "@GuhuoCard=" .. card_use[index]:getEffectiveId() .. ":" .. classname2objectname[class_name]
 	end
 end
 
-function SmartAI:getGuhuoCard(class_name, player, at_play)
-	player = player or self.player
+function SmartAI:getGuhuoCard(class_name, at_play)
+	local player = self.player
 	if not player or not player:hasSkill("guhuo") then return end
 	if at_play then
 		if class_name == "Peach" and not player:isWounded() then return
 		elseif class_name == "Analeptic" and player:hasUsed("Analeptic") then return
-		elseif class_name == "Slash" and not self:slashIsAvailable(player) then return
+		elseif (class_name == "Slash" or class_name == "ThunderSlash" or class_name == "FireSlash") and not self:slashIsAvailable(player) then return
 		elseif class_name == "Jink" or class_name == "Nullification" then return
 		end
+	else
+		if class_name == "Peach" and self.player:hasFlag("Global_PreventPeach") then return end
 	end
-	return getGuhuoViewCard(self, class_name, player)
+	return self:getGuhuoViewCard(class_name)
 end
 
 sgs.guhuo_suit_value = {

@@ -71,22 +71,39 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         }
         if (!has_changed || subcardsLength() == 0) {
             QVariant data = QVariant::fromValue(use);
-            if (player->hasSkill("lihuo"))
-                if (room->askForSkillInvoke(player, "lihuo", data)) {
-                    FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
-                    if (!isVirtualCard() || subcardsLength() > 0)
-                        fire_slash->addSubcard(this);
-                    fire_slash->setSkillName("lihuo");
-                    use.card = fire_slash;
+            if (player->hasSkill("lihuo")) {
+                FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
+                if (!isVirtualCard() || subcardsLength() > 0)
+                    fire_slash->addSubcard(this);
+                fire_slash->setSkillName("lihuo");
+                bool can_use = true;
+                foreach (ServerPlayer *p, use.to) {
+                    if (!player->canSlash(p, fire_slash, false)) {
+                        can_use = false;
+                        break;
+                    }
                 }
-            if (player->hasWeapon("Fan")) {
-                if (room->askForSkillInvoke(player, "Fan", data)) {
-                    FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
-                    if (!isVirtualCard() || subcardsLength() > 0)
-                        fire_slash->addSubcard(this);
-                    fire_slash->setSkillName("Fan");
+                if (can_use && room->askForSkillInvoke(player, "lihuo", data))
                     use.card = fire_slash;
+                else
+                    delete fire_slash;
+            }
+            if (use.card->objectName() == "slash" && player->hasWeapon("Fan")) {
+                FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
+                if (!isVirtualCard() || subcardsLength() > 0)
+                    fire_slash->addSubcard(this);
+                fire_slash->setSkillName("Fan");
+                bool can_use = true;
+                foreach (ServerPlayer *p, use.to) {
+                    if (!player->canSlash(p, fire_slash, false)) {
+                        can_use = false;
+                        break;
+                    }
                 }
+                if (can_use && room->askForSkillInvoke(player, "Fan", data))
+                    use.card = fire_slash;
+                else
+                    delete fire_slash;
             }
         }
     }
@@ -370,7 +387,7 @@ public:
                     to->getRoom()->setEmotion(use.from, "weapon/double_sword");
 
                     bool draw_card = false;
-                    if (to->isKongcheng())
+                    if (!to->canDiscard(to, "h"))
                         draw_card = true;
                     else {
                         QString prompt = "double-sword-card:" + use.from->objectName();
@@ -588,11 +605,11 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         QStringList horses;
-        if (damage.card && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer
+        if (damage.card && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0) {
-            if (damage.to->getDefensiveHorse())
+            if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()))
                 horses << "dhorse";
-            if (damage.to->getOffensiveHorse())
+            if (damage.to->getOffensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getOffensiveHorse()->getEffectiveId()))
                 horses << "ohorse";
 
             if (horses.isEmpty())
@@ -635,7 +652,7 @@ public:
                 room->setCardFlag(player->getArmor()->getId(), "using");
                 room->setEmotion(player, "armor/eight_diagram");
                 JudgeStruct judge;
-                judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+                judge.pattern = ".|red";
                 judge.good = true;
                 judge.reason = objectName();
                 judge.who = player;
@@ -1009,7 +1026,10 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     room->setPlayerMark(first, "WushuangTarget", 0);
     room->setPlayerMark(second, "WushuangTarget", 0);
 
-    room->damage(DamageStruct(this, second->isAlive() ? second : NULL, first));
+    DamageStruct damage(this, second->isAlive() ? second : NULL, first);
+    if (second != effect.from)
+        damage.by_user = false;
+    room->damage(damage);
 }
 
 Snatch::Snatch(Suit suit, int number)
@@ -1076,22 +1096,33 @@ bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Pla
 }
 
 void Dismantlement::onEffect(const CardEffectStruct &effect) const{
-    if (effect.from->isDead() || effect.to->isAllNude())
+    if (effect.from->isDead())
         return;
 
     Room *room = effect.to->getRoom();
-    bool handcard_visible = false;
-    if (!effect.to->isKongcheng()
-        && room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013") {
-        handcard_visible = true;
-        LogMessage log;
-        log.type = "$ViewAllCards";
-        log.from = effect.from;
-        log.to << effect.to;
-        log.card_str = IntList2StringList(effect.to->handCards()).join("+");
-        room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013");
+    QString flag = using_2013 ? "he" : "hej";
+    if (!effect.from->canDiscard(effect.to, flag))
+        return;
+
+    int card_id = -1;
+    AI *ai = effect.from->getAI();
+    if (!using_2013 || ai)
+        card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
+    else {
+        if (!effect.to->getEquips().isEmpty())
+            card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName(), false, Card::MethodDiscard);
+        if (card_id == -1 || (!effect.to->isKongcheng() && effect.to->handCards().contains(card_id))) {
+            LogMessage log;
+            log.type = "$ViewAllCards";
+            log.from = effect.from;
+            log.to << effect.to;
+            log.card_str = IntList2StringList(effect.to->handCards()).join("+");
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
+            card_id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), true, Card::MethodDiscard);
+        }
     }
-    int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName(), handcard_visible);
     room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to, effect.from);
 }
 
@@ -1100,7 +1131,7 @@ Indulgence::Indulgence(Suit suit, int number)
 {
     setObjectName("indulgence");
 
-    judge.pattern = QRegExp("(.*):(heart):(.*)");
+    judge.pattern = ".|heart";
     judge.good = true;
     judge.reason = objectName();
 }
@@ -1146,7 +1177,7 @@ bool Disaster::isAvailable(const Player *player) const{
 Lightning::Lightning(Suit suit, int number):Disaster(suit, number) {
     setObjectName("lightning");
 
-    judge.pattern = QRegExp("(.*):(spade):([2-9])");
+    judge.pattern = ".|spade|2~9";
     judge.good = false;
     judge.reason = objectName();
 }
@@ -1168,15 +1199,17 @@ public:
 
         if (damage.card && damage.card->isKindOf("Slash")
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
-            && !damage.to->isNude()
+            && !damage.to->isNude() && damage.by_user
             && !damage.chain && !damage.transfer && player->askForSkillInvoke("ice_sword", data)) {
                 room->setEmotion(player, "weapon/ice_sword");
-                int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
-                room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
-
-                if (!damage.to->isNude()) {
-                    card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword");
+                if (damage.from->canDiscard(damage.to, "he")) {
+                    int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword", false, Card::MethodDiscard);
                     room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
+
+                    if (damage.from->canDiscard(damage.to, "he")) {
+                        card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword", false, Card::MethodDiscard);
+                        room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
+                    }
                 }
                 return true;
         }

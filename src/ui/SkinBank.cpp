@@ -4,6 +4,7 @@
 #include "uiUtils.h"
 #include "engine.h"
 #include "settings.h"
+#include "clientstruct.h"
 #include <fstream>
 #include <QGraphicsPixmapItem>
 #include <QTextItem>
@@ -260,7 +261,12 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const{
 
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const{
     if (cardName == "unknown") return getPixmap("handCardBack");
-    return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, cardName);
+    QString name = cardName;
+    if (ServerInfo.GameMode == "06_3v3" && name.startsWith("vs_"))
+        name = name.mid(3);
+    else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
+        name = name.mid(4);
+    return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, name);
 }
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const{
@@ -277,19 +283,29 @@ QPixmap QSanRoomSkin::getCardJudgeIconPixmap(const QString &judgeName) const{
 }
 
 QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName) const{
-    return getGeneralPixmap(generalName, S_GENERAL_ICON_SIZE_TINY);
+    QString name = generalName;
+    if (ServerInfo.GameMode == "06_3v3" && name.startsWith("vs_"))
+        name = name.mid(3);
+    else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
+        name = name.mid(4);
+    return getGeneralPixmap(name, S_GENERAL_ICON_SIZE_TINY);
 }
 
 QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size) const{
+    QString name = generalName;
+    if (ServerInfo.GameMode == "06_3v3" && name.startsWith("vs_"))
+        name = name.mid(3);
+    else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
+        name = name.mid(4);
     if (size == S_GENERAL_ICON_SIZE_CARD)
-        return getCardMainPixmap(generalName);
+        return getCardMainPixmap(name);
     else {
-        QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(generalName);
+        QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
         if (isImageKeyDefined(key))
             return getPixmap(key);
         else {
             key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size);
-            return getPixmap(key, generalName);
+            return getPixmap(key, name);
         }
     }
 }
@@ -950,11 +966,11 @@ bool QSanSkinScheme::load(Json::Value configs) {
     return _m_roomSkin.load(layoutFile, imageFile, audioFile, animFile);
 }
 
-const QSanRoomSkin& QSanSkinScheme::getRoomSkin() const{
+const QSanRoomSkin &QSanSkinScheme::getRoomSkin() const{
     return _m_roomSkin;
 }
 
-QSanSkinFactory& QSanSkinFactory::getInstance() {
+QSanSkinFactory &QSanSkinFactory::getInstance() {
     if (_sm_singleton == NULL) {
 #ifdef Q_WS_WIN
         _sm_singleton = new QSanSkinFactory("skins/skinList.json");

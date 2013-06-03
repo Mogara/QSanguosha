@@ -341,7 +341,7 @@ void SPConvertSkill::onGameStart(ServerPlayer *player) const{
 
         const General *general = Sanguosha->getGeneral(to_cv);
         const QString kingdom = general->getKingdom();
-        if (!isSecondaryHero && kingdom != player->getKingdom())
+        if (!isSecondaryHero && kingdom != "god" && kingdom != player->getKingdom())
             room->setPlayerProperty(player, "kingdom", kingdom);
     }
 }

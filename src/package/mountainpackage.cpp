@@ -122,7 +122,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->isKongcheng();
+        return TriggerSkill::triggerable(target) && target->canDiscard(target, "h");
     }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *zhanghe, QVariant &data) const{
@@ -172,9 +172,8 @@ public:
 
             QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *caiwenji, cais) {
-                if (!caiwenji->isNude() && room->askForCard(caiwenji, "..", "@beige", data, objectName())) {
+                if (caiwenji->canDiscard(caiwenji, "he") && room->askForCard(caiwenji, "..", "@beige", data, objectName())) {
                     JudgeStruct judge;
-                    judge.pattern = QRegExp("(.*):(.*):(.*)");
                     judge.good = true;
                     judge.play_animation = false;
                     judge.who = player;
@@ -182,9 +181,7 @@ public:
 
                     room->judge(judge);
 
-                    QVariantList judgelist = player->tag[objectName()].toList();
-                    Card::Suit suit = (Card::Suit)(judgelist.takeLast().toInt());
-                    player->tag[objectName()] = QVariant::fromValue(judgelist);
+                    Card::Suit suit = (Card::Suit)(judge.pattern.toInt());
                     switch (suit) {
                     case Card::Heart: {
                             room->broadcastSkillInvoke(objectName(), 4);
@@ -221,9 +218,7 @@ public:
         } else {
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason != objectName()) return false;
-            QVariantList judgelist = player->tag[objectName()].toList();
-            judgelist.append(QVariant::fromValue(int(judge->card->getSuit())));
-            player->tag[objectName()] = QVariant::fromValue(judgelist);
+            judge->pattern = QString::number(int(judge->card->getSuit()));
         }
         return false;
     }
@@ -289,7 +284,7 @@ public:
                 && player->askForSkillInvoke("tuntian", data)) {
                 room->broadcastSkillInvoke("tuntian");
                 JudgeStruct judge;
-                judge.pattern = QRegExp("(.*):(heart):(.*)");
+                judge.pattern = ".|heart";
                 judge.good = false;
                 judge.reason = "tuntian";
                 judge.who = player;
@@ -468,6 +463,7 @@ public:
             return false;
         foreach (int id, player->getPile("field")) {
             Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
+            snatch->setSkillName("jixi");
             snatch->addSubcard(id);
             snatch->deleteLater();
             if (!snatch->isAvailable(player))
@@ -703,8 +699,8 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     bool use_slash = false;
     if (effect.to->canSlash(effect.from, NULL, false))
         use_slash = room->askForUseSlashTo(effect.to, effect.from, "@tiaoxin-slash:" + effect.from->objectName());
-    if (!use_slash && !effect.to->isNude())
-        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"), effect.to, effect.from);
+    if (!use_slash && effect.from->canDiscard(effect.to, "he"))
+        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin", false, Card::MethodDiscard), effect.to, effect.from);
 }
 
 class Tiaoxin: public ZeroCardViewAsSkill {
@@ -974,7 +970,7 @@ public:
             }
         case Player::NotActive: {
                 if (liushan->hasFlag("fangquan")) {
-                    if (liushan->isKongcheng() || !room->askForDiscard(liushan, "fangquan", 1, 1, true))
+                    if (!liushan->canDiscard(liushan, "h") || !room->askForDiscard(liushan, "fangquan", 1, 1, true))
                         return false;
 
                     ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
@@ -1159,7 +1155,7 @@ public:
         return (all - banned - huashen_set - room_set).toList();
     }
 
-    static QString SelectSkill(ServerPlayer *zuoci) {
+    static void SelectSkill(ServerPlayer *zuoci) {
         Room *room = zuoci->getRoom();
         playAudioEffect(zuoci, "huashen");
         QStringList ac_dt_list;
@@ -1169,8 +1165,7 @@ public:
             ac_dt_list.append("-" + huashen_skill);
 
         QVariantList huashens = zuoci->tag["Huashens"].toList();
-        if (huashens.isEmpty())
-            return QString();
+        if (huashens.isEmpty()) return;
 
         QStringList huashen_generals;
         foreach (QVariant huashen, huashens)
@@ -1196,7 +1191,7 @@ public:
                     }
                 }
             }
-            Q_ASSERT(skill_names.length() > 0);
+            if (skill_names.isEmpty()) return;
             skill_name = ai->askForChoice("huashen", skill_names.join("+"), QVariant());
             general = hash[skill_name];
             Q_ASSERT(general != NULL);
@@ -1213,14 +1208,12 @@ public:
                 skill_names << skill->objectName();
             }
 
-            if (skill_names.isEmpty())
-                return QString();
+            if (skill_names.isEmpty()) return;
 
             skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
         }
 
         QString kingdom = general->getKingdom();
-        
         if (zuoci->getKingdom() != kingdom) {
             if (kingdom == "god") {
                 kingdom = room->askForKingdom(zuoci);
@@ -1237,8 +1230,6 @@ public:
         if (zuoci->getGender() != general->getGender())
             zuoci->setGender(general->getGender());
 
-        Q_ASSERT(!skill_name.isNull() && !skill_name.isEmpty());
-
         Json::Value arg(Json::arrayValue);
         arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
         arg[1] = QSanProtocol::Utils::toJsonString(zuoci->objectName());
@@ -1249,7 +1240,6 @@ public:
         zuoci->tag["HuashenSkill"] = skill_name;
         ac_dt_list.append(skill_name);
         room->handleAcquireDetachSkills(zuoci, ac_dt_list);
-        return skill_name;
     }
 
     virtual void onGameStart(ServerPlayer *zuoci) const{

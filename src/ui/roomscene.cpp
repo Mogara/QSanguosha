@@ -135,7 +135,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(generals_got(QStringList)), this, SLOT(chooseGeneral(QStringList)));
     connect(ClientInstance, SIGNAL(suits_got(QStringList)), this, SLOT(chooseSuit(QStringList)));
     connect(ClientInstance, SIGNAL(options_got(QString, QStringList)), this, SLOT(chooseOption(QString, QStringList)));
-    connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool)), this, SLOT(chooseCard(const ClientPlayer *, QString, QString, bool)));
+    connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod)), this, SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod)));
     connect(ClientInstance, SIGNAL(roles_got(QString, QStringList)), this, SLOT(chooseRole(QString, QStringList)));
     connect(ClientInstance, SIGNAL(directions_got()), this, SLOT(chooseDirection()));
     connect(ClientInstance, SIGNAL(orders_got(QSanProtocol::Game3v3ChooseOrderCommand)), this, SLOT(chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand)));
@@ -1116,9 +1116,10 @@ void RoomScene::enableTargets(const Card *card) {
         return;
     }
 
+    Client::Status status = ClientInstance->getStatus();
     if (card->targetFixed()
-        || ((ClientInstance->getStatus() & Client::ClientStatusBasicMask) == Client::Responding
-            && ClientInstance->getStatus() != Client::RespondingUse)
+        || ((status & Client::ClientStatusBasicMask) == Client::Responding
+            && (status == Client::Responding || (card->getTypeId() != Card::TypeSkill && status != Client::RespondingUse)))
         || ClientInstance->getStatus() == Client::AskForShowOrPindian) {
         foreach (PlayerCardContainer *item, item2player.keys()) {
             QGraphicsItem *animationTarget = item->getMouseClickReceiver();
@@ -1550,8 +1551,9 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     m_choiceDialog = dialog;
 }
 
-void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible) {
-    PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible);
+void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason,
+                           bool handcard_visible, Card::HandlingMethod method) {
+    PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method);
     dialog->setWindowTitle(Sanguosha->translate(reason));
     connect(dialog, SIGNAL(card_id_chosen(int)), ClientInstance, SLOT(onPlayerChooseCard(int)));
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseCard()));
@@ -2278,7 +2280,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
         if (vsSkill != NULL) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            QRegExp rx("@@?([A-Za-z]+)(\\d+)?!?");
+            QRegExp rx("@@?([_A-Za-z]+)(\\d+)?!?");
             CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
             if ((newStatus & Client::ClientStatusBasicMask) == Client::Responding) {
                 if (newStatus == Client::RespondingUse)
@@ -2333,7 +2335,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             discard_button->setEnabled(false);
 
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            QRegExp rx("@@?([A-Za-z]+)(\\d+)?!?");
+            QRegExp rx("@@?([_A-Za-z]+)(\\d+)?!?");
             if (rx.exactMatch(pattern)) {
                 QString skill_name = rx.capturedTexts().at(1);
                 const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);

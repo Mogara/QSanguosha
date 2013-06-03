@@ -142,7 +142,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->isNude() && !player->hasUsed("NosJujianCard");
+        return player->canDiscard(player, "he") && !player->hasUsed("NosJujianCard");
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
@@ -166,25 +166,34 @@ public:
         if (triggerEvent == HpRecover) {
             RecoverStruct recover = data.value<RecoverStruct>();
             if (recover.who && recover.who != player) {
-                recover.who->drawCards(recover.recover);
-
                 LogMessage log;
-                log.type = "#EnyuanRecover";
+                log.type = "#TriggerSkill";
                 log.from = player;
-                log.to << recover.who;
-                log.arg = QString::number(recover.recover);
-                log.arg2 = objectName();
+                log.arg = objectName();
                 room->sendLog(log);
+
                 room->broadcastSkillInvoke("enyuan", qrand() % 2 + 1);
+                room->notifySkillInvoked(player, objectName());
+                recover.who->drawCards(recover.recover);
             }
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
             if (source && source != player) {
+                LogMessage log;
+                log.type = "#TriggerSkill";
+                log.from = player;
+                log.arg = objectName();
+                room->sendLog(log);
+
                 room->broadcastSkillInvoke("enyuan", qrand() % 2 + 3);
+                room->notifySkillInvoked(player, objectName());
 
                 const Card *card = room->askForCard(source, ".|heart|.|hand", "@enyuanheart", data, Card::MethodNone);
-                if (card) player->obtainCard(card); else room->loseHp(source);
+                if (card)
+                    player->obtainCard(card);
+                else
+                    room->loseHp(source);
             }
         }
 
@@ -274,6 +283,12 @@ public:
                     room->useCard(CardUseStruct(slash, lingtong, target), false);
                 } else if (choice == "damage") {
                     room->broadcastSkillInvoke(objectName(), 2);
+
+                    LogMessage log;
+                    log.type = "#InvokeSkill";
+                    log.from = lingtong;
+                    log.arg = objectName();
+                    room->sendLog(log);
                     room->notifySkillInvoked(lingtong, objectName());
 
                     ServerPlayer *target = room->askForPlayerChosen(lingtong, targets2, "nosxuanfeng_damage", "@nosxuanfeng-damage");
@@ -485,7 +500,7 @@ public:
                     room->sendLog(log);
                 } else {
                     Peach *peach = new Peach(Card::NoSuit, 0);
-                    peach->setSkillName("JIEFAN");
+                    peach->setSkillName("_jiefan");
 
                     room->setCardFlag(damage.card, "nosjiefan_success");
                     if ((target->getGeneralName().contains("sunquan")
@@ -529,10 +544,10 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if (player->distanceTo(damage.to) == 1 && damage.card && damage.card->isKindOf("Slash")
-            && !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)) {
+            && damage.by_user && !damage.chain && !damage.transfer && player->askForSkillInvoke(objectName(), data)) {
             room->broadcastSkillInvoke(objectName(), 1);
             JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(heart):(.*)");
+            judge.pattern = ".|heart";
             judge.good = false;
             judge.who = player;
             judge.reason = objectName();
@@ -587,7 +602,7 @@ public:
             Room *room = wangyi->getRoom();
             room->broadcastSkillInvoke(objectName(), 1);
             JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(club|spade):(.*)");
+            judge.pattern = ".|black";
             judge.good = true;
             judge.reason = objectName();
             judge.who = wangyi;
@@ -696,6 +711,39 @@ public:
     }
 };
 
+class NosJizhi: public TriggerSkill {
+public:
+    NosJizhi(): TriggerSkill("nosjizhi") {
+        frequency = Frequent;
+        events << CardUsed;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *yueying, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+
+        if (use.card->isNDTrick() && room->askForSkillInvoke(yueying, objectName())) {
+            room->broadcastSkillInvoke("jizhi");
+            yueying->drawCards(1);
+        }
+
+        return false;
+    }
+};
+
+class NosQicai: public TargetModSkill {
+public:
+    NosQicai(): TargetModSkill("nosqicai") {
+        pattern = "TrickCard";
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()))
+            return 1000;
+        else
+            return 0;
+    }
+};
+
 NosLijianCard::NosLijianCard(): LijianCard(false) {
 }
 
@@ -705,7 +753,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->isNude() && !player->hasUsed("NosLijianCard");
+        return player->canDiscard(player, "he") && !player->hasUsed("NosLijianCard");
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -729,6 +777,11 @@ NostalStandardPackage::NostalStandardPackage()
     General *nos_liubei = new General(this, "nos_liubei$", "shu");
     nos_liubei->addSkill(new NosRende);
     nos_liubei->addSkill("jijiang");
+
+    General *huangyueying = new General(this, "nos_huangyueying", "shu", 3, false);
+    huangyueying->addSkill(new NosJizhi);
+    huangyueying->addSkill(new NosQicai);
+    huangyueying->addSkill(new SPConvertSkill("nos_huangyueying", "heg_huangyueying+tw_huangyueying"));
 
     General *nos_diaochan = new General(this, "nos_diaochan", "qun", 3, false);
     nos_diaochan->addSkill(new NosLijian);

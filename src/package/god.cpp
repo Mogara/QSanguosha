@@ -98,7 +98,7 @@ public:
         room->notifySkillInvoked(shenguanyu, "wuhun");
 
         JudgeStruct judge;
-        judge.pattern = QRegExp("(Peach|GodSalvation):(.*):(.*)");
+        judge.pattern = "Peach,GodSalvation";
         judge.good = true;
         judge.negative = true;
         judge.reason = "wuhun";
@@ -590,7 +590,10 @@ ShenfenCard::ShenfenCard() {
 void ShenfenCard::use(Room *room, ServerPlayer *shenlvbu, QList<ServerPlayer *> &) const{
     shenlvbu->setFlags("ShenfenUsing");
     room->broadcastSkillInvoke("shenfen");
-    room->doLightbox("$ShenfenAnimate", 5000);
+    QString lightbox = "$ShenfenAnimate";
+    if (shenlvbu->getGeneralName() != "shenlvbu" && (shenlvbu->getGeneralName() == "sp_shenlvbu" || shenlvbu->getGeneral2Name() == "sp_shenlvbu"))
+        lightbox = lightbox + "SP";
+    room->doLightbox(lightbox, 5000);
     shenlvbu->loseMark("@wrath", 6);
 
     try {
@@ -1023,7 +1026,7 @@ void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *shensimayi = card_use.from;
 
     QStringList choices;
-    if (!shensimayi->hasFlag("JilveZhiheng") && !shensimayi->isNude())
+    if (!shensimayi->hasFlag("JilveZhiheng") && shensimayi->canDiscard(shensimayi, "he"))
         choices << "zhiheng";
     if (!shensimayi->hasFlag("JilveWansha"))
         choices << "wansha";
@@ -1083,7 +1086,7 @@ public:
             if (triggerEvent == CardUsed) {
                 const TriggerSkill *jizhi = Sanguosha->getTriggerSkill("jizhi");
                 CardUseStruct use = data.value<CardUseStruct>();
-                if (jizhi && use.card && use.card->isNDTrick() && player->askForSkillInvoke("jilve_jizhi", data)) {
+                if (jizhi && use.card && use.card->getTypeId() == Card::TypeTrick && player->askForSkillInvoke("jilve_jizhi", data)) {
                     room->notifySkillInvoked(player, objectName());
                     player->loseMark("@bear");
                     jizhi->trigger(triggerEvent, room, player, data);
@@ -1154,8 +1157,9 @@ public:
             if (death.who != player)
                 return false;
             ServerPlayer *killer = death.damage ? death.damage->from : NULL;
+            ServerPlayer *current = room->getCurrent();
 
-            if (killer && room->getCurrent()->isAlive()) {
+            if (killer && current && current->isAlive() && current->getPhase() != Player::NotActive) {
                 killer->addMark("lianpo");
 
                 if (killer->hasSkill("lianpo")) {
@@ -1435,6 +1439,7 @@ GodPackage::GodPackage()
     shenlvbu->addSkill(new Wuqian);
     shenlvbu->addSkill(new Shenfen);
     related_skills.insertMulti("kuangbao", "#@wrath-2");
+    shenlvbu->addSkill(new SPConvertSkill("shenlvbu", "sp_shenlvbu"));
 
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2); // LE 007
     shenzhaoyun->addSkill(new JuejingKeep);

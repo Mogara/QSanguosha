@@ -180,8 +180,14 @@ local function GuanXing(self, cards)
 	local count = #bottom
 	if count > 0 then
 		local zhaolieFlag = false
-		if self:hasSkills("zhaolie", self.player) then
-			zhaolieFlag = sgs.ai_skill_invoke.zhaolie(self, nil)
+		if self.player:hasSkill("zhaolie") then
+			local targets = sgs.SPlayerList()
+			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if self.player:inMyAttackRange(p) then targets:append(p) end
+			end
+			if target:length() > 0 then
+				zhaolieFlag = (sgs.ai_skill_playerchosen(self, targets) ~= nil)
+			end
 		end
 		if zhaolieFlag then 
 			local drawCount = 1 --自身摸牌数目，待完善

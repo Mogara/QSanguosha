@@ -272,7 +272,7 @@ signals:
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
-    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible);
+    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();    
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);

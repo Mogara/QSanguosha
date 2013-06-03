@@ -3989,7 +3989,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../../src/client/clientstruct.cpp" line="168"/>
         <source>Maximum</source>
-        <translation type="unfinished">较大值</translation>
+        <translation>较大值</translation>
     </message>
     <message>
         <location filename="../../src/client/clientstruct.cpp" line="169"/>

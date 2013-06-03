@@ -90,39 +90,61 @@ end
 
 sgs.ai_use_priority.LuoyiCard = 9.2
 
-local neofanjian_skill={}
+local neofanjian_skill = {}
 neofanjian_skill.name = "neofanjian"
 table.insert(sgs.ai_skills, neofanjian_skill)
-neofanjian_skill.getTurnUseCard=function(self)
+neofanjian_skill.getTurnUseCard = function(self)
 	if self.player:isKongcheng() then return nil end
 	if self.player:usedTimes("NeoFanjianCard") > 0 then return nil end
+	return sgs.Card_Parse("@NeoFanjianCard=.")
+end
 
-	local cards = sgs.QList2Table(self.player:getHandcards())
-	self:sortByKeepValue(cards)
-	
-	local hand_card
-	local n = self.player:getHandcardNum()
-		for i = 1,n do
-		        if not (cards[i]:isKindOf("Analeptic") or cards[i]:isKindOf("Peach")) then
-				hand_card = cards[i]
-				break
+sgs.ai_skill_use_func.NeoFanjianCard = function(card, use, self)
+	self:sort(self.enemies, "defense")
+	local target
+	for _, enemy in ipairs(self.enemies) do
+		if self:canAttack(enemy) and not self:hasSkills("qingnang|tianxiang", enemy) then
+			target = enemy
+
+			local wuguotai = self.room:findPlayerBySkillName("buyi")
+			local care = (target:getHp() <= 1) and (self:isFriend(target, wuguotai))
+			local ucard = nil
+			local handcards = self.player:getCards("h")
+			handcards = sgs.QList2Table(handcards)
+			self:sortByKeepValue(handcards)
+			for _,cd in ipairs(handcards) do
+				local flag = not (cd:isKindOf("Peach") or card:isKindOf("Analeptic"))
+				local suit = cd:getSuit()
+				if flag and care then
+					flag = cd:isKindOf("BasicCard")
+				end
+				if flag and target:hasSkill("longhun") then
+					flag = (suit ~= sgs.Card_Heart)
+				end
+				if flag and target:hasSkill("jiuchi") then
+					flag = (suit ~= sgs.Card_Spade)
+				end
+				if flag and target:hasSkill("jijiu") then
+					flag = (cd:isBlack())
+				end
+				if flag then
+					ucard = cd
+					break
+				end
+			end
+			if ucard then
+				local keep_value = self:getKeepValue(ucard)
+				if ucard:getSuit() == sgs.Card_Diamond then keep_value = keep_value + 0.5 end
+				if keep_value < 6 then
+					use.card = sgs.Card_Parse("@NeoFanjianCard=" .. ucard:getId() .. "->" .. target:objectName())
+					if use.to then use.to:append(target) end
+					return
+				end
 			end
 		end
-	if not hand_card then return nil end
-
-	local keep_value = self:getKeepValue(hand_card)
-	if hand_card:getSuit() == sgs.Card_Diamond then keep_value = keep_value + 1 end
-
-	if keep_value < 6 then
-		local card_id = hand_card:getEffectiveId()
-		local card_str = "@NeoFanjianCard=" .. card_id
-		local fanjianCard = sgs.Card_Parse(card_str)
-		assert(fanjianCard)
-		return fanjianCard
 	end
 end
 
-sgs.ai_skill_use_func.NeoFanjianCard = sgs.ai_skill_use_func.FanjianCard
 sgs.ai_card_intention.NeoFanjianCard = sgs.ai_card_intention.FanjianCard
 sgs.dynamic_value.damage_card.NeoFanjianCard = true
 

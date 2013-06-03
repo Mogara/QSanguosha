@@ -31,6 +31,7 @@ struct DamageStruct {
     Nature nature;
     bool chain;
     bool transfer;
+    bool by_user;
     QString reason;
 
     QString getReason() const;
@@ -283,28 +284,18 @@ struct PindianStruct {
     bool success;
 };
 
-class JudgeStructPattern {
-public:
-    JudgeStructPattern();
-    JudgeStructPattern &operator = (const QRegExp &rx);
-    JudgeStructPattern &operator = (const QString &str);
-    bool match(const Player *player, const Card *card) const;
-
-private:
-    QString pattern;
-    bool isRegex;
-};
-
 struct JudgeStruct {
     JudgeStruct();
     bool isGood() const;
-    bool isGood(const Card *card) const;
-    void updateResult();
-    bool isEffected();
     bool isBad() const;
+    bool isEffected() const;
+    void updateResult();
+
+    bool isGood(const Card *card) const; // For AI
+
     ServerPlayer *who;
     const Card *card;
-    JudgeStructPattern pattern;
+    QString pattern;
     bool good;
     QString reason;
     bool time_consuming;
@@ -453,6 +444,7 @@ enum TriggerEvent {
     StageChange, // For hulao pass only
     FetchDrawPileCard, // For miniscenarios only
     ActionedReset, // For 3v3 only
+    Debut, // For 1v1 only
 
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 

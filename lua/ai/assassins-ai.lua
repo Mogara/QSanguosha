@@ -179,6 +179,17 @@ sgs.ai_skill_playerchosen.mizhao = function(self, targets)
 end
 
 function sgs.ai_skill_pindian.mizhao(minusecard, self, requestor, maxcard)
+	local req
+	if self.player:objectName() == requestor:objectName() then
+		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if p:hasFlag("MizhaoPindianTarget") then
+				req = p
+				break
+			end
+		end
+	else
+		req = requestor
+	end
 	local cards, maxcard = sgs.QList2Table(self.player:getHandcards())
 	local function compare_func1(a, b)
 		return a:getNumber() > b:getNumber()
@@ -186,7 +197,7 @@ function sgs.ai_skill_pindian.mizhao(minusecard, self, requestor, maxcard)
 	local function compare_func2(a, b)
 		return a:getNumber() < b:getNumber()
 	end
-	if self:isFriend(requestor) and self.player:getHp() > requestor:getHp() then
+	if self:isFriend(req) and self.player:getHp() > req:getHp() then
 		table.sort(cards, compare_func2)
 	else
 		table.sort(cards, compare_func1)
@@ -197,7 +208,7 @@ function sgs.ai_skill_pindian.mizhao(minusecard, self, requestor, maxcard)
 	return maxcard or cards[1]
 end
 
-sgs.ai_skill_cardask["@JieyuanIncrease"] = function(self, data)
+sgs.ai_skill_cardask["@jieyuan-increase"] = function(self, data)
 	local damage = data:toDamage()
 	local target = damage.to
 	if self:isFriend(target) then return "." end
@@ -210,7 +221,7 @@ sgs.ai_skill_cardask["@JieyuanIncrease"] = function(self, data)
 	return "."
 end
 
-sgs.ai_skill_cardask["@JieyuanDecrease"] = function(self, data)
+sgs.ai_skill_cardask["@jieyuan-decrease"] = function(self, data)
 	local damage = data:toDamage()
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)

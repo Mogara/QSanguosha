@@ -10,6 +10,7 @@ config = {
 		"SPCard",
 		"Nostalgia",
 		"New3v3Card",
+		"New1v1Card",
 
 		"Standard",
 		"Wind",
@@ -23,6 +24,7 @@ config = {
 		"Assassins", 
 		"Special3v3",
 		"Special3v3_2013",
+		"Special1v1",
 		"SP",
 		"BGM",
 		"BGMDIY",
@@ -72,7 +74,20 @@ config = {
 		"vs_xiahoudun",
 		"vs_guanyu",
 		"vs_zhaoyun",
-		"vs_lvbu"
+		"vs_lvbu",
+		"kof_zhangliao",
+		"kof_xuchu",
+		"kof_zhenji",
+		"kof_xiahouyuan",
+		"kof_guanyu",
+		"kof_machao",
+		"kof_nos_huangyueying",
+		"kof_huangzhong",
+		"kof_jiangwei",
+		"kof_menghuo",
+		"kof_zhurong",
+		"kof_sunshangxiang",
+		"kof_nos_diaochan"
 	},
 
 	kof_ban = {
@@ -146,7 +161,7 @@ config = {
 		"jiangboyue+huangyueying", "jiangboyue+wolong", "jiangboyue+yuanshao",
 		"jiangboyue+yanliangwenchou", "jiangboyue+ganning", "jiangboyue+luxun", "jiangboyue+zhanggongqi",
 		"yt_caochong+caocao", "yuanshu+caocao",
-		"lukang+liubei", "lukang+wolong", "lukang+yuji", "jiangboyue+lukang", "lukang+yanliangwenchou", "lukang+guanxingzhangbao", "lukang+heg_luxun",
+		"lukang+nos_liubei", "lukang+wolong", "lukang+yuji", "jiangboyue+lukang", "lukang+yanliangwenchou", "lukang+guanxingzhangbao", "lukang+heg_luxun",
 		"caoren+caizhaoji", "bgm_caoren+caizhaoji", "neo_caoren+caizhaoji", "dengshizai+caizhaoji",
 		"zhugejin+caizhaoji", "simayi+caizhaoji", "shensimayi+caizhaoji", "caozhi+caizhaoji", "shenlvbu+caizhaoji", "bgm_diaochan+caizhaoji",
 		"wis_jiangwei+zhanggongqi", "luxun+zhanggongqi"
@@ -165,6 +180,6 @@ config = {
 		"sunce+daqiao",
 		"sunquan+bulianshi",
 		"diy_simazhao+diy_wangyuanji",
-                "liuxie+fuhuanghou|as_fuhuanghou"
+		"liuxie+fuhuanghou|as_fuhuanghou"
 	}
 }

@@ -639,8 +639,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases) {
 
     for (int i = 0; i < _m_phases_state.size(); i++) {
         if (isDead()) {
-            setPhase(NotActive);
-            room->broadcastProperty(this, "phase");
+            changePhase(getPhase(), NotActive);
             break;
         }
 
@@ -828,9 +827,7 @@ ServerPlayer *ServerPlayer::getNextAlive(int n) const{
     ServerPlayer *next = const_cast<ServerPlayer *>(this);
     if (!hasAlive) return next;
     for (int i = 0; i < n; i++) {
-        next = next->next;
-        while (next->isDead())
-            next = next->next;
+        do next = next->next; while (next->isDead());
     }
     return next;
 }

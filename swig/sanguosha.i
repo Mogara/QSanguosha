@@ -174,6 +174,9 @@ public:
     bool isNude() const;
     bool isAllNude() const;
 
+    bool canDiscard(const Player *to, const char *flags) const;
+    bool canDiscard(const Player *to, int card_id) const;
+
     void addMark(const char *mark);
     void removeMark(const char *mark);
     virtual void setMark(const char *mark, int value);
@@ -212,8 +215,6 @@ public:
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
     bool isJilei(const Card *card) const;
-
-    void setCardLocked(const char *name);
     bool isLocked(const Card *card) const;
 
     void setCardLimitation(const char *limit_list, const char *pattern, bool single_turn = false);
@@ -432,6 +433,7 @@ struct DamageStruct {
     Nature nature;
     bool chain;
     bool transfer;
+    bool by_user;
     QString reason;
 
     QString getReason() const;
@@ -529,15 +531,17 @@ struct RecoverStruct {
 
 struct JudgeStruct {
     JudgeStruct();
-    bool isGood(const Card *card = NULL) const;
-    bool isEffected();
+    bool isGood() const;
     bool isBad() const;
+    bool isEffected() const;
+
+    bool isGood(const Card *card) const; // For AI
 
     bool negative;
     bool play_animation;
     ServerPlayer *who;
     const Card *card;
-    QRegExp pattern;
+    QString pattern;
     bool good;
     QString reason;
     bool time_consuming;
@@ -656,6 +660,7 @@ enum TriggerEvent {
     StageChange, // For hulao pass only
     FetchDrawPileCard, // For miniscenarios only
     ActionedReset, // For 3v3 only
+    Debut, // For 1v1 only
 
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 
@@ -929,7 +934,6 @@ struct LogMessage {
 class RoomThread: public QThread {
 public:
     explicit RoomThread(Room *room);
-    void resetRoomState();
     void constructTriggerTable();
     bool trigger(TriggerEvent event, Room *room, ServerPlayer *target, QVariant &data);
     bool trigger(TriggerEvent event, Room *room, ServerPlayer *target);
@@ -977,13 +981,12 @@ public:
     void setPlayerCardLimitation(ServerPlayer *player, const char *limit_list, const char *pattern, bool single_turn);
     void removePlayerCardLimitation(ServerPlayer *player, const char *limit_list, const char *pattern);
     void clearPlayerCardLimitation(ServerPlayer *player, bool single_turn);
-    void setPlayerCardLock(ServerPlayer *player, const char *name);
     void setCardFlag(const Card *card, const char *flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const char *flag, ServerPlayer *who = NULL);
     void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
     void clearCardFlag(int card_id, ServerPlayer *who = NULL);
     void useCard(const CardUseStruct &card_use, bool add_history = true);
-    void damage(DamageStruct &data);
+    void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
     void loseMaxHp(ServerPlayer *victim, int lose = 1);
@@ -1093,9 +1096,10 @@ public:
                        bool optional = false, bool include_equip = false, const char *prompt = NULL);
     const Card *askForExchange(ServerPlayer *player, const char *reason, int discard_num, bool include_equip = false,
                                const char *prompt = NULL, bool optional = false);
-    bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
+    bool askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
-    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason, bool handcard_visible = false);
+    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason,
+                         bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone);
     const Card *askForCard(ServerPlayer *player, const char *pattern,
                            const char *prompt, const QVariant &data, const char *skill_name);
     const Card *askForCard(ServerPlayer *player, const char *pattern,
@@ -1161,12 +1165,6 @@ void Room::doScript(const QString &script) {
 }
 
 %}
-
-class QRegExp {
-public:
-    QRegExp(const char *);
-    bool exactMatch(const char *);
-};
 
 %include "luaskills.i"
 %include "card.i"

@@ -74,13 +74,12 @@ public:
     void removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
                                     const QString &pattern);
     void clearPlayerCardLimitation(ServerPlayer *player, bool single_turn);
-    void setPlayerCardLock(ServerPlayer *player, const QString &name);
     void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);
     void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
     void clearCardFlag(int card_id, ServerPlayer *who = NULL);
     bool useCard(const CardUseStruct &card_use, bool add_history = true);
-    void damage(DamageStruct &data);
+    void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
     void loseMaxHp(ServerPlayer *victim, int lose = 1);
@@ -312,9 +311,10 @@ public:
                        bool optional = false, bool include_equip = false, const QString &prompt = QString());
     const Card *askForExchange(ServerPlayer *player, const QString &reason, int discard_num, bool include_equip = false,
                                const QString &prompt = QString(), bool optional = false);
-    bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
+    bool askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
-    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason, bool handcard_visible = false);
+    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason,
+                         bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
                            Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
@@ -510,11 +510,11 @@ private:
 
     //helper functions and structs
     struct _NullificationAiHelper {
-        const TrickCard *m_trick;
+        const Card *m_trick;
         ServerPlayer *m_from;
         ServerPlayer *m_to;
     };
-    bool _askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper helper);
+    bool _askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper helper);
     void _setupChooseGeneralRequestArgs(ServerPlayer *player);    
 
 private slots:

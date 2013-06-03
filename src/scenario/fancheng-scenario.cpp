@@ -156,7 +156,7 @@ void TaichenFightCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer 
 
     if (source->isAlive()) {
         Duel *duel = new Duel(Card::NoSuit, 0);
-        duel->setSkillName("TAICHENFIGHT");
+        duel->setSkillName("_taichenfight");
         duel->setCancelable(false);
 
         room->addPlayerMark(source, "WushuangTarget");

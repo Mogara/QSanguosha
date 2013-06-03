@@ -35,11 +35,7 @@ Card::CardType TrickCard::getTypeId() const{
 }
 
 bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
-    if (!cancelable) return false;
-    if (!effect.to) return true;
-    Room *room = effect.to->getRoom();
-    QVariant data = QVariant::fromValue(effect);
-    return !room->getThread()->trigger(TrickCardCanceling, room, effect.to, data);
+    return cancelable;
 }
 
 QString EquipCard::getType() const{
@@ -226,14 +222,15 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
     thread->trigger(PreCardUsed, room, card_use.from, data);
+
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), card_use.to.first()->objectName(), this->getSkillName(), QString());
+    room->moveCardTo(this, card_use.from, card_use.to.first(), Player::PlaceDelayedTrick, reason, true);
+
     thread->trigger(CardUsed, room, card_use.from, data);
     thread->trigger(CardFinished, room, card_use.from, data);
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.value(0, source);
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), target->objectName(), this->getSkillName(), QString());
-    room->moveCardTo(this, source, target, Player::PlaceDelayedTrick, reason, true);
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -425,8 +422,8 @@ StandardPackage::StandardPackage()
     patterns[".H"] = new ExpPattern(".|heart|.|hand");
     patterns[".D"] = new ExpPattern(".|diamond|.|hand");
 
-    patterns[".black"] = new ExpPattern(".|.|.|hand|black");
-    patterns[".red"] = new ExpPattern(".|.|.|hand|red");
+    patterns[".black"] = new ExpPattern(".|black|.|hand");
+    patterns[".red"] = new ExpPattern(".|red|.|hand");
 
     patterns[".."] = new ExpPattern(".");
     patterns["..S"] = new ExpPattern(".|spade");

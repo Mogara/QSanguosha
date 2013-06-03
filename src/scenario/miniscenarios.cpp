@@ -24,8 +24,8 @@ void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const{
     }
 }
 
-bool MiniSceneRule::trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &) const{
-    if (event == EventPhaseStart) {
+bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+    if (triggerEvent == EventPhaseStart) {
         if (player == room->getTag("Starter").value<PlayerStar>()) {
             if (player->getPhase() == Player::Start) {
                 room->setTag("Round", room->getTag("Round").toInt() + 1);
@@ -42,7 +42,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room *room, ServerPlayer *player
             }
         }
 
-        if (player->getPhase() == Player::Start && this->players.first()["beforeNext"] != QString()) {
+        if (player->getPhase() == Player::RoundStart && this->players.first()["beforeNext"] != QString()) {
             if (player->tag["playerHasPlayed"].toBool())
                 room->gameOver(this->players.first()["beforeNext"]);
             else player->tag["playerHasPlayed"] = true;
@@ -53,7 +53,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room *room, ServerPlayer *player
             return false;
         room->gameOver(this->players.first()["singleTurn"]);
         return true;
-    } else if (event == FetchDrawPileCard) {
+    } else if (triggerEvent == FetchDrawPileCard) {
         if (this->players.first()["endedByPile"] != QString()) {
             const QList<int> &drawPile = room->getDrawPile();
             foreach (int id, m_fixedDrawCards) {
@@ -64,7 +64,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room *room, ServerPlayer *player
             return true;
         }
         return false;
-    } else if (event == GameStart) {
+    } else if (triggerEvent == GameStart) {
         if (room->getTag("WaitForPlayer").toBool())
             return true;
 
@@ -103,23 +103,28 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room *room, ServerPlayer *player
             delete dummy;
         }
 
-        int i = 0, j = 0;
         QList<int> int_list;
-        for (i = 0; i < players.length(); i++)
+        for (int i = 0; i < players.length(); i++)
             int_list << i;
         if (ex_options.contains(S_EXTRA_OPTION_RANDOM_ROLES))
             qShuffle(int_list);
 
-        for (j = 0; j < players.length(); j++) {
-            i = int_list[j];
+        QStringList all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
+        qShuffle(all);
+        for (int i = 0; i < players.length(); i++) {
+            QString general = this->players[i]["general"];
+            if (!general.isEmpty() && general != "select") all.removeOne(general);
+            general = this->players[i]["general2"];
+            if (!general.isEmpty() && general != "select") all.removeOne(general);
+        }
+        for (int j = 0; j < players.length(); j++) {
+            int i = int_list[j];
             ServerPlayer *sp = players.at(j);
-            room->setPlayerProperty(sp, "role", this->players.at(i)["role"]);
+            room->setPlayerProperty(sp, "role", this->players[i]["role"]);
 
             QString general = this->players[i]["general"];
             if (general == "select") {
-                QStringList available, all;
-                all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
-                qShuffle(all);
+                QStringList available;
                 for (int k = 0; k < 5; k++) {
                     if (sp->getGeneral()) {
                         foreach (const Skill *skill, sp->getGeneral()->getSkillList())
@@ -131,15 +136,16 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room *room, ServerPlayer *player
                     all.removeOne(choice);
                 }
                 general = room->askForGeneral(sp, available);
+                all.append(available);
+                all.removeOne(general);
+                qShuffle(all);
             }
             room->changeHero(sp, general, false, false, false, false);
 
             general = this->players[i]["general2"];
             if (!general.isEmpty()) {
                 if (general == "select") {
-                    QStringList available, all;
-                    all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
-                    qShuffle(all);
+                    QStringList available;
                     for (int k = 0; k < 5; k++) {
                         if (sp->getGeneral2()) {
                             foreach (const Skill *skill, sp->getGeneral2()->getSkillList())
@@ -151,6 +157,9 @@ bool MiniSceneRule::trigger(TriggerEvent event, Room *room, ServerPlayer *player
                         all.removeOne(choice);
                      }
                      general = room->askForGeneral(sp, available);
+                     all.append(available);
+                     all.removeOne(general);
+                     qShuffle(all);
                  }
                  if (general == sp->getGeneralName()) general = this->players.at(i)["general3"];
                  room->changeHero(sp, general, false, false, true, false);

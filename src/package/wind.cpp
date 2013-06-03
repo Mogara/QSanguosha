@@ -38,7 +38,7 @@ public:
         prompt_list << "@guidao-card" << judge->who->objectName()
                     << objectName() << judge->reason << QString::number(judge->card->getEffectiveId());
         QString prompt = prompt_list.join(":");
-        const Card *card = room->askForCard(player, ".|.|.|.|black", prompt, data, Card::MethodResponse, judge->who, true);
+        const Card *card = room->askForCard(player, ".|black", prompt, data, Card::MethodResponse, judge->who, true);
 
         if (card != NULL) {
             room->broadcastSkillInvoke(objectName());
@@ -62,7 +62,7 @@ public:
                 room->broadcastSkillInvoke(objectName());
 
                 JudgeStruct judge;
-                judge.pattern = QRegExp("(.*):(spade):(.*)");
+                judge.pattern = ".|spade";
                 judge.good = false;
                 judge.negative = true;
                 judge.reason = objectName();
@@ -205,9 +205,16 @@ bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    Slash *slash = new Slash(Card::NoSuit, 0);
-    slash->setSkillName("_shensu");
-    room->useCard(CardUseStruct(slash, source, targets));
+    foreach (ServerPlayer *target, targets) {
+        if (!source->canSlash(target, NULL, false))
+            targets.removeOne(target);
+    }
+
+    if (targets.length() > 0) {
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->setSkillName("_shensu");
+        room->useCard(CardUseStruct(slash, source, targets));
+    }
 }
 
 class ShensuViewAsSkill: public ViewAsSkill {
@@ -261,7 +268,7 @@ public:
                 xiahouyuan->skip(Player::Draw);
             }
         } else if (Slash::IsAvailable(xiahouyuan) && change.to == Player::Play && !xiahouyuan->isSkipped(Player::Play)) {
-            if (!xiahouyuan->isNude() && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard))
+            if (xiahouyuan->canDiscard(xiahouyuan, "he") && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard))
                 xiahouyuan->skip(Player::Play);
         }
         return false;
@@ -416,9 +423,9 @@ public:
         events << PostHpReduced << AskForPeachesDone;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
         if (triggerEvent == PostHpReduced && zhoutai->getHp() < 1) {
-            if (room->askForSkillInvoke(zhoutai, objectName())) {
+            if (room->askForSkillInvoke(zhoutai, objectName(), data)) {
                 room->setTag("Buqu", zhoutai->objectName());
                 room->broadcastSkillInvoke(objectName());
                 const QList<int> &buqu = zhoutai->getPile("buqu");
@@ -610,7 +617,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data) const{
-        if (!xiaoqiao->isKongcheng()) {
+        if (xiaoqiao->canDiscard(xiaoqiao, "h")) {
             DamageStruct damage = data.value<DamageStruct>();
             xiaoqiao->tag["TianxiangDamage"] = QVariant::fromValue(damage);
             return room->askForUseCard(xiaoqiao, "@@tianxiang", "@tianxiang-card", -1, Card::MethodDiscard);

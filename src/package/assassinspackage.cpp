@@ -22,7 +22,7 @@ public:
             foreach (ServerPlayer *p, use.to) {
                 if (player->askForSkillInvoke(objectName(), QVariant::fromValue(p))) {
                     QString choice;
-                    if (p->isNude())
+                    if (!player->canDiscard(p, "he"))
                         choice = "draw";
                     else
                         choice = room->askForChoice(player, objectName(), "draw+discard", QVariant::fromValue(p));
@@ -31,7 +31,7 @@ public:
                         player->drawCards(1);
                     } else {
                         room->broadcastSkillInvoke(objectName(), 2);
-                        int disc = room->askForCardChosen(player, p, "he", objectName());
+                        int disc = room->askForCardChosen(player, p, "he", objectName(), false, Card::MethodDiscard);
                         room->throwCard(disc, p, player);
                     }
                     room->addPlayerMark(p, objectName() + use.card->toString());
@@ -41,9 +41,9 @@ public:
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.to->isDead() || effect.to->getMark(objectName() + effect.slash->toString()) <= 0)
                 return false;
-            if (!effect.from->isAlive() || !effect.to->isAlive() || effect.from->isNude())
+            if (!effect.from->isAlive() || !effect.to->isAlive() || effect.to->canDiscard(effect.from, "he"))
                 return false;
-            int disc = room->askForCardChosen(effect.to, effect.from, "he", objectName());
+            int disc = room->askForCardChosen(effect.to, effect.from, "he", objectName(), false, Card::MethodDiscard);
             room->broadcastSkillInvoke(objectName(), 3);
             room->throwCard(disc, effect.from, effect.to);
             room->removePlayerMark(effect.to, objectName() + effect.slash->toString());
@@ -209,7 +209,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (triggerEvent == DamageCaused) {
             if (damage.to && damage.to->isAlive()
-                && damage.to->getHp() >= player->getHp() && damage.to != player && !player->isKongcheng()
+                && damage.to->getHp() >= player->getHp() && damage.to != player && player->canDiscard(player, "h")
                 && room->askForCard(player, ".black", "@jieyuan-increase:" + damage.to->objectName(), data, objectName())) {
                 room->broadcastSkillInvoke(objectName(), 1);
 
@@ -224,7 +224,7 @@ public:
             }
         } else if (triggerEvent == DamageInflicted) {
             if (damage.from && damage.from->isAlive()
-                && damage.from->getHp() >= player->getHp() && damage.from != player && !player->isKongcheng()
+                && damage.from->getHp() >= player->getHp() && damage.from != player && player->canDiscard(player, "h")
                 && room->askForCard(player, ".red", "@jieyuan-decrease:" + damage.from->objectName(), data, objectName())) {
                 room->broadcastSkillInvoke(objectName(), 2);
 
@@ -529,7 +529,7 @@ public:
             QList<int> card_ids;
             QList<Player::Place> original_places;
             for (int i = 0; i < 2; i++) {
-                if (player->isNude())
+                if (!player->canDiscard(target, "he"))
                     break;
                 if (room->askForChoice(player, objectName(), "discard+cancel") == "cancel")
                     break;

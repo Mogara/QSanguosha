@@ -9,7 +9,7 @@ zhiyuan_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 
 	for _,card in ipairs(cards)  do
-		if card:getTypeId() == sgs.Card_Basic then
+		if card:getTypeId() == sgs.Card_TypeBasic then
 			if card:isKindOf("Slash") and (self:getCardsNum("Slash")<=1)then
 			elseif card:isKindOf("Jink") and (self:getCardsNum("Jink")<=1)then
 			elseif card:isKindOf("Peach") and (self.player:getHp()<=2)then
@@ -31,8 +31,8 @@ zhiyuan_skill.getTurnUseCard=function(self)
 	return nil
 end
 
-sgs.ai_skill_use_func["ZhiyuanCard"]=function(card,use,self)
-	if self.player:usedTimes("ZhiyuanCard")>1 then return end
+sgs.ai_skill_use_func.ZhiyuanCard = function(card, use, self)
+	if self.player:usedTimes("ZhiyuanCard") > 1 then return end
 	self:sort(self.friends_noself, "handcard")
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getRole()=="rebel" then
@@ -56,7 +56,7 @@ taichen_fight_skill.getTurnUseCard=function(self)
 		return taichen_card
 end
 
-sgs.ai_skill_use_func["TaichenFightCard"]=function(card,use,self)
+sgs.ai_skill_use_func.TaichenFightCard = function(card, use, self)
 	if self.player:usedTimes("TaichenFightCard")>0 then return end
 	local lord=self.room:getLord()
 	if lord and self.player:getHp()>=lord:getHp() then
@@ -112,7 +112,8 @@ sgs.ai_skill_use_func["FloodCard"]=function(card,use,self)
 	end
 end
 
-sgs.ai_skill_use["@dujiang-card"]=function(self)
+sgs.ai_skill_discard.flood = sgs.ai_skill_discard.ganglie
+sgs.ai_skill_use["@@dujiang"] = function(self)
 	local equips=self.player:getEquips()
 	equips=sgs.QList2Table(equips)
 
@@ -140,7 +141,7 @@ sgs.ai_skill_use["@@smalltuxi"] = function(self, prompt)
 	self:sort(self.enemies, "handcard")
 
 	local first_index
-	for i = 1, #self.enemies - 1 do
+	for i = 1, #self.enemies do
 		if self:hasSkills(sgs.need_kongcheng, self.enemies[i]) and self.enemies[i]:getHandcardNum() == 1 then
 		elseif not self.enemies[i]:isKongcheng() then
 			first_index = i
@@ -148,13 +149,12 @@ sgs.ai_skill_use["@@smalltuxi"] = function(self, prompt)
 		end
 	end
 
-	self:log(self.enemies[first_index]:getGeneralName())
 	local first = self.enemies[first_index]:objectName()
-	return ("@SmallTuxiCard=.->%s+%s"):format(first)
+	return ("@SmallTuxiCard=.->%s"):format(first)
 end
 
 sgs.ai_card_intention.SmallTuxiCard = 80
 
 sgs.ai_skill_invoke.reselect = function(self)
-	return os.time() % 3 == 1
+	return math.random(0, 2) == 0
 end

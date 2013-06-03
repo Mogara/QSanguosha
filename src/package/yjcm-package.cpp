@@ -258,7 +258,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *xushu) const{
         Room *room = xushu->getRoom();
-        if (xushu->getPhase() == Player::Finish && !xushu->isNude())
+        if (xushu->getPhase() == Player::Finish && xushu->canDiscard(xushu, "he"))
             room->askForUseCard(xushu, "@@jujian", "@jujian-card", -1, Card::MethodDiscard);
         return false;
     }
@@ -420,7 +420,7 @@ bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Play
     if(to_select == Self)
         return false;
 
-    return !to_select->isNude();
+    return Self->canDiscard(to_select, "he");
 }
 
 void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *> &targets) const{
@@ -439,8 +439,8 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *>
     }
     foreach(ServerPlayer* sp,map.keys()){
         while(map[sp] > 0){
-            if(!sp->isNude()){
-                int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng");
+            if(lingtong->canDiscard(sp, "he")){
+                int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng", false, Card::MethodDiscard);
                 room->throwCard(card_id, sp, lingtong);
             }
             map[sp]--;
@@ -488,21 +488,19 @@ public:
 
             if ((lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("XuanfengUsed"))
                 || move.from_places.contains(Player::PlaceEquip)) {
-                bool can_invoke = false;
-                QList<ServerPlayer *> other_players = room->getOtherPlayers(lingtong);
-                foreach (ServerPlayer *player, other_players) {
-                    if (!player->isNude()) {
-                        can_invoke = true;
-                        break;
-                    }
+                QList<ServerPlayer *> targets;
+                foreach (ServerPlayer *target, room->getOtherPlayers(lingtong)) {
+                    if (lingtong->canDiscard(target, "he"))
+                        targets << target;
                 }
-                if (can_invoke) {
-                    QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
-                    if (choice == "throw") {
-                        lingtong->setFlags("XuanfengUsed");
-                        room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
-                    }
+                if (targets.isEmpty())
+                    return false;
+                QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
+                if (choice == "throw") {
+                    lingtong->setFlags("XuanfengUsed");
+                    room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
                 }
+
             }
         }
 
@@ -694,9 +692,11 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
     if (target && target->hasFlag("MingceTarget")) target->setFlags("-MingceTarget");
 
     if (choice == "use") {
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("_mingce");
-        room->useCard(CardUseStruct(slash, effect.to, target), false);
+        if (effect.to->canSlash(target, NULL, false)) {
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            slash->setSkillName("_mingce");
+            room->useCard(CardUseStruct(slash, effect.to, target), false);
+        }
     } else if (choice == "draw") {
         effect.to->drawCards(1);
     }

@@ -47,12 +47,12 @@ Json::Value LogMessage::toJsonValue() const{
 }
 
 DamageStruct::DamageStruct()
-    : from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false), reason(QString())
+    : from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false), by_user(true), reason(QString())
 {
 }
 
 DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-    : chain(false), transfer(false), reason(QString())
+    : chain(false), transfer(false), by_user(true), reason(QString())
 {
     this->card = card;
     this->from = from;
@@ -62,7 +62,7 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
 }
 
 DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-    : card(NULL), chain(false), transfer(false)
+    : card(NULL), chain(false), by_user(true), transfer(false)
 {
     this->from = from;
     this->to = to;
@@ -113,54 +113,18 @@ bool PindianStruct::isSuccess() const{
     return success;
 }
 
-JudgeStructPattern::JudgeStructPattern() {
-}
-
-bool JudgeStructPattern::match(const Player *player, const Card *card) const{
-    if (pattern.isEmpty())
-        return false;
-
-    if (isRegex) {
-        QString class_name = card->getClassName();
-        Card::Suit suit = card->getSuit();
-
-        QString number = card->getNumberString();
-        QString card_str = QString("%1:%2:%3").arg(class_name).arg(Card::Suit2String(suit)).arg(number);
-
-        return QRegExp(pattern).exactMatch(card_str);
-    } else {
-        const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
-        return card_pattern && card_pattern->match(player, card);
-    }
-}
-
-JudgeStructPattern &JudgeStructPattern::operator =(const QRegExp &rx) {
-    pattern = rx.pattern();
-    isRegex = true;
-
-    return *this;
-}
-
-JudgeStructPattern &JudgeStructPattern::operator =(const QString &str) {
-    pattern = str;
-    isRegex = false;
-
-    return *this;
-}
-
-// members should be initilized the same order as defined
 JudgeStruct::JudgeStruct()
-    : who(NULL), card(NULL), good(true), time_consuming(false),
+    : who(NULL), card(NULL), pattern("."), good(true), time_consuming(false),
       negative(false), play_animation(true), _m_result(TRIAL_RESULT_UNKNOWN)
 {
 }
 
-bool JudgeStruct::isEffected() {
+bool JudgeStruct::isEffected() const{
     return negative ? isBad() : isGood();
 }
 
 void JudgeStruct::updateResult() {
-    bool effected = (good == pattern.match(who, card));
+    bool effected = (good == ExpPattern(pattern).match(who, card));
     if (effected)
         _m_result = TRIAL_RESULT_GOOD;
     else
@@ -172,13 +136,13 @@ bool JudgeStruct::isGood() const{
     return _m_result == TRIAL_RESULT_GOOD;
 }
 
-bool JudgeStruct::isGood(const Card *card) const{
-    Q_ASSERT(card);
-    return good == pattern.match(who, card);
-}
-
 bool JudgeStruct::isBad() const{
     return !isGood();
+}
+
+bool JudgeStruct::isGood(const Card *card) const{
+    Q_ASSERT(card);
+    return (good == ExpPattern(pattern).match(who, card));
 }
 
 PhaseChangeStruct::PhaseChangeStruct()
@@ -299,11 +263,6 @@ RoomThread::RoomThread(Room *room)
 {
 }
 
-void RoomThread::resetRoomState() {
-    Q_ASSERT(room->getRoomState() != NULL);
-    room->getRoomState()->reset();
-}
-
 void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start) {
     QVariant void_data;
     bool invoke_verify = false;
@@ -360,6 +319,7 @@ void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &sec
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken) {
             ServerPlayer *player = room->getCurrent();
+            trigger(TurnBroken, room, player);
             if (player->getPhase() != Player::NotActive) {
                 game_rule->trigger(EventPhaseEnd, room, player, QVariant());
                 player->changePhase(player->getPhase(), Player::NotActive);
@@ -504,6 +464,7 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
             actionHulaoPass(shenlvbu, league, game_rule, 2);
         } else if (triggerEvent == TurnBroken) {
             ServerPlayer *player = room->getCurrent();
+            trigger(TurnBroken, room, player);
             ServerPlayer *next = findHulaoPassNext(shenlvbu, league, stage);
             if (player->getPhase() != Player::NotActive) {
                 game_rule->trigger(EventPhaseEnd, room, player, QVariant());
@@ -531,6 +492,7 @@ void RoomThread::actionNormal(GameRule *game_rule) {
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken) {
             ServerPlayer *player = room->getCurrent();
+            trigger(TurnBroken, room, player);
             ServerPlayer *next = player->getNextAlive();
             if (player->getPhase() != Player::NotActive) {
                 game_rule->trigger(EventPhaseEnd, room, player, QVariant());

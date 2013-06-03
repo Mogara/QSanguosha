@@ -860,7 +860,7 @@ public:
                 }
 
                 JudgeStruct judge;
-                judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+                judge.pattern = ".|red";
                 judge.good = true;
                 judge.reason = objectName();
                 judge.who = caizhaoji;
@@ -1004,7 +1004,7 @@ public:
                 return false;
 
             JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+            judge.pattern = ".|red";
             judge.good = true;
             judge.reason = objectName();
             judge.who = damage.from;
@@ -1764,7 +1764,7 @@ TaichenCard::TaichenCard(){
 }
 
 bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty() || to_select->isAllNude())
+    if(!targets.isEmpty() || !Self->canDiscard(to_select, "hej"))
         return false;
     if(!subcards.isEmpty() && Self->getWeapon() && subcards.first() == Self->getWeapon()->getId() && !Self->hasSkill("zhengfeng"))
         return Self->distanceTo(to_select) == 1;
@@ -1781,7 +1781,7 @@ void TaichenCard::onEffect(const CardEffectStruct &effect) const{
         room->throwCard(this, effect.from);
         
     for(int i = 0; i < 2; i++) {
-        if(!effect.to->isAllNude())
+        if(effect.from->canDiscard(effect.to, "hej"))
             room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"), effect.to, effect.from);
     }
 }

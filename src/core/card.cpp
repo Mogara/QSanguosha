@@ -497,7 +497,7 @@ const Card *Card::Parse(const QString &str) {
         bool ok;
         int card_id = str.toInt(&ok);
         if (ok)
-            return Sanguosha->getCard(card_id);
+            return Sanguosha->getCard(card_id)->getRealCard();
         else
             return NULL;
     }
@@ -589,14 +589,14 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
     thread->trigger(PreCardUsed, room, player, data);
     card_use = data.value<CardUseStruct>();
  
-    if (getTypeId() != TypeSkill) {
+    if (card_use.card->getTypeId() != TypeSkill) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
         CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);
-    } else if (willThrow()) {
+    } else if (card_use.card->willThrow()) {
         CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
     }
@@ -752,6 +752,7 @@ QString SkillCard::toString(bool hidden) const{
 
 DummyCard::DummyCard(): SkillCard() {
     target_fixed = true;
+    handling_method = Card::MethodNone;
     setObjectName("dummy");
 }
 

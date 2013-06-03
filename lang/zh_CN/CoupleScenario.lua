@@ -1,4 +1,4 @@
--- translation for CoupleScenario
+-- translation for Couple Scenario
 
 return {
 	["couple"] = "夫妻协战",

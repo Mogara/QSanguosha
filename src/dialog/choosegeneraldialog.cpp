@@ -347,7 +347,14 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals) {
         layout->addWidget(button, row, column);
     }
 
-    tab->setLayout(layout);
+    QVBoxLayout *layout2 = new QVBoxLayout;
+    layout2->addStretch();
+
+    QVBoxLayout *tablayout = new QVBoxLayout;
+    tablayout->addLayout(layout);
+    tablayout->addLayout(layout2);
+
+    tab->setLayout(tablayout);
 
     if (pair_choose) {
         connect(group, SIGNAL(buttonClicked(QAbstractButton *)),

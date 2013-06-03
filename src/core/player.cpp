@@ -583,6 +583,32 @@ bool Player::isAllNude() const{
     return isNude() && judging_area.isEmpty();
 }
 
+bool Player::canDiscard(const Player *to, const QString &flags) const{
+    static QChar handcard_flag('h');
+    static QChar equip_flag('e');
+    static QChar judging_flag('j');
+
+    if (flags.contains(handcard_flag) && !to->isKongcheng()) return true;
+    if (flags.contains(judging_flag) && !to->getJudgingArea().isEmpty()) return true;
+    if (flags.contains(equip_flag)) {
+        if (to->getDefensiveHorse() || to->getOffensiveHorse()) return true;
+        if ((to->getWeapon() || to->getArmor()) && (!to->hasSkill("qicai") || this == to)) return true;
+    }
+    return false;
+}
+
+bool Player::canDiscard(const Player *to, int card_id) const{
+    if (to->hasSkill("qicai") && this != to) {
+        if ((to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
+            || (to->getArmor() && card_id == to->getArmor()->getEffectiveId()))
+            return false;
+    } else if (this == to) {
+        if (isJilei(Sanguosha->getCard(card_id)))
+            return false;
+    }
+    return true;
+}
+
 void Player::addDelayedTrick(const Card *trick) {
     judging_area << trick->getId();
 }
@@ -796,21 +822,6 @@ bool Player::canSlashWithoutCrossbow() const{
     slash->deleteLater();
     valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, slash);
     return slash_count < valid_slash_count;
-}
-
-void Player::setCardLocked(const QString &name) {
-    static QChar unset_symbol('-');
-    if (name.isEmpty())
-        return;
-    else if (name.startsWith(unset_symbol)) {
-        QString copy = name.mid(1);
-        removeCardLimitation("use,response", copy + "$0");
-    } else
-        setCardLimitation("use,response", name + "$0");
-}
-
-bool Player::isLocked(const Card *card) const{
-    return isCardLimited(card, Card::MethodUse);
 }
 
 void Player::setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn) {

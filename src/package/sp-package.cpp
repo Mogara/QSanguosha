@@ -445,12 +445,12 @@ void YuanhuCard::onEffect(const CardEffectStruct &effect) const{
     if (card->isKindOf("Weapon")) {
       QList<ServerPlayer *> targets;
       foreach (ServerPlayer *p, room->getAllPlayers()) {
-          if (effect.to->distanceTo(p) == 1 && !p->isAllNude())
+          if (effect.to->distanceTo(p) == 1 && caohong->canDiscard(p, "hej"))
               targets << p;
       }
       if (!targets.isEmpty()) {
           ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "yuanhu", "@yuanhu-discard:" + effect.to->objectName());
-          int card_id = room->askForCardChosen(caohong, to_dismantle, "hej", "yuanhu");
+          int card_id = room->askForCardChosen(caohong, to_dismantle, "hej", "yuanhu", false, Card::MethodDiscard);
           room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
       }
     } else if (card->isKindOf("Armor")) {
@@ -542,7 +542,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getLostHp() > 0 && !player->isNude() && !player->hasUsed("XuejiCard");
+        return player->getLostHp() > 0 && player->canDiscard(player, "he") && !player->hasUsed("XuejiCard");
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -792,6 +792,14 @@ public:
                 ServerPlayer *chenlin = player->tag["BifaSource" + QString::number(card_id)].value<PlayerStar>();
                 QList<int> ids;
                 ids << card_id;
+
+                LogMessage log;
+                log.type = "$BifaView";
+                log.from = player;
+                log.card_str = QString::number(card_id);
+                log.arg = "bifa";
+                room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
                 room->fillAG(ids, player);
                 const Card *cd = Sanguosha->getCard(card_id);
                 QString pattern;
@@ -893,13 +901,13 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const{
         return PhaseChangeSkill::triggerable(target)
                && target->getPhase() == Player::Start
-               && !target->isKongcheng()
+               && target->canDiscard(target, "h")
                && hasDelayedTrick(target);
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
-        while (hasDelayedTrick(target) && !target->isKongcheng()) {
+        while (hasDelayedTrick(target) && target->canDiscard(target, "h")) {
             QStringList suits;
             foreach (const Card *jcard, target->getJudgingArea()) {
                 if (!suits.contains(jcard->getSuitString()))
@@ -1049,9 +1057,12 @@ public:
                 QList<const Card *> equips = target->getEquips();
                 if (!equips.isEmpty()) {
                     DummyCard *dummy = new DummyCard;
-                    foreach (const Card *equip, equips)
-                        dummy->addSubcard(equip);
-                    room->throwCard(dummy, target, player);
+                    foreach (const Card *equip, equips) {
+                        if (player->canDiscard(target, equip->getEffectiveId()))
+                            dummy->addSubcard(equip);
+                    }
+                    if (dummy->subcardsLength() > 0)
+                        room->throwCard(dummy, target, player);
                     delete dummy;
                 }
             }
@@ -1319,7 +1330,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->isNude() && !player->hasFlag("DuwuEnterDying");
+        return player->canDiscard(player, "he") && !player->hasFlag("DuwuEnterDying");
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -1470,7 +1481,13 @@ SPPackage::SPPackage()
     erqiao->addSkill(new Xingwu);
     erqiao->addSkill(new Luoyan);
 
-    General *zhugeke = new General(this, "zhugeke", "wu", 3);
+    General *sp_shenlvbu = new General(this, "sp_shenlvbu", "god", 5, true, true); // SP 022
+    sp_shenlvbu->addSkill("kuangbao");
+    sp_shenlvbu->addSkill("wumou");
+    sp_shenlvbu->addSkill("wuqian");
+    sp_shenlvbu->addSkill("shenfen");
+
+    General *zhugeke = new General(this, "zhugeke", "wu", 3); // OL 002
     zhugeke->addSkill(new Aocai);
     zhugeke->addSkill(new Duwu);
 
@@ -1504,8 +1521,8 @@ SPPackage::SPPackage()
     tw_machao->addSkill("tieji");
 
     General *tw_huangyueying = new General(this, "tw_huangyueying", "shu", 3, false, true); // TW SP 011
-    tw_huangyueying->addSkill("jizhi");
-    tw_huangyueying->addSkill("qicai");
+    tw_huangyueying->addSkill("nosjizhi");
+    tw_huangyueying->addSkill("nosqicai");
 
     General *tw_zhugeliang = new General(this, "tw_zhugeliang", "shu", 3, true, true); // TW SP 012
     tw_zhugeliang->addSkill("guanxing");

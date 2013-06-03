@@ -270,14 +270,12 @@ QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int min_num,
         return self->forceToDiscard(discard_num, include_equip, self->hasFlag("Global_AIDiscardExchanging"));
 }
 
-const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *, ServerPlayer *to, bool positive) {
+const Card *TrustAI::askForNullification(const Card *, ServerPlayer *, ServerPlayer *, bool) {
     return NULL;
 }
 
-int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &) {
-    QList<const Card *> cards = who->getCards(flags);
-    int r = qrand() % cards.length();
-    return cards.at(r)->getId();
+int TrustAI::askForCardChosen(ServerPlayer *, const QString &, const QString &, Card::HandlingMethod) {
+    return -1;
 }
 
 const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, const QVariant &data) {

@@ -465,6 +465,15 @@
     <ClCompile Include="Release\moc_yjcm2013-package.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\package\special1v1-package.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_special1v1-package.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_special1v1-package.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -741,6 +750,9 @@
       <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\yjcm2013-package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\special1v1-package.h">
       <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>

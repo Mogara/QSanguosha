@@ -67,7 +67,7 @@ void Settings::init() {
                        << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
                        << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
                        << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
-                       << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013";
+                       << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card";
     }
     setValue("BanPackages", banpackagelist);
 
@@ -201,7 +201,7 @@ void Settings::init() {
 
     QStringList forbid_packages = value("ForbidPackages").toStringList();
     if (forbid_packages.isEmpty()) {
-        forbid_packages << "New3v3Card" << "New3v3_2013Card" << "test";
+        forbid_packages << "New3v3Card" << "New3v3_2013Card" << "New1v1Card" << "test";
 
         setValue("ForbidPackages", forbid_packages);
     }

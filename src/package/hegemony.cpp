@@ -22,7 +22,7 @@ public:
         ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
         if (!yuejin || yuejin == player)
             return false;
-        if (!yuejin->isKongcheng() && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
+        if (yuejin->canDiscard(yuejin, "h") && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
             room->broadcastSkillInvoke(objectName(), 1);
             if (!room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
                 room->broadcastSkillInvoke(objectName(), 2);
@@ -65,13 +65,13 @@ public:
         Room *room = ganfuren->getRoom();
         if (ganfuren->getPhase() != Player::Start || ganfuren->isKongcheng())
             return false;
-        // As the cost, if one of her handcards cannot be throwed, the skill is unable to invoke
-        foreach (const Card *card, ganfuren->getHandcards()) {
-            if (ganfuren->isJilei(card))
-                return false;
-        }
-        //==================================
         if (room->askForSkillInvoke(ganfuren, objectName())) {
+            // As the cost, if one of her handcards cannot be throwed, the skill is unable to invoke
+            foreach (const Card *card, ganfuren->getHandcards()) {
+                if (ganfuren->isJilei(card))
+                    return false;
+            }
+            //==================================
             int handcard_num = ganfuren->getHandcardNum();
             room->broadcastSkillInvoke(objectName());
             ganfuren->throwAllHandCards();
@@ -150,7 +150,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->isNude() && !player->hasUsed("FenxunCard");
+        return player->canDiscard(player, "he") && !player->hasUsed("FenxunCard");
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -299,14 +299,14 @@ public:
                 QList<ServerPlayer *> other_players = room->getOtherPlayers(tianfeng);
                 QList<ServerPlayer *> targets;
                 foreach (ServerPlayer *p, other_players) {
-                    if (!p->isNude())
+                    if (tianfeng->canDiscard(p, "he"))
                         targets << p;
                 }
                 if (targets.isEmpty()) return false;
                 ServerPlayer *to = room->askForPlayerChosen(tianfeng, targets, objectName(), "sijian-invoke", true, true);
                 if (to) {
                     room->broadcastSkillInvoke(objectName(), to->isLord() ? 2 : 1);
-                    int card_id = room->askForCardChosen(tianfeng, to, "he", objectName());
+                    int card_id = room->askForCardChosen(tianfeng, to, "he", objectName(), false, Card::MethodDiscard);
                     room->throwCard(card_id, to, tianfeng);
                 }
             }
@@ -506,17 +506,21 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
         if (damage.card && damage.card->isKindOf("Slash") && target->hasEquip() && !damage.chain && !damage.transfer) {
-            if (!panfeng->askForSkillInvoke(objectName(), data))
+            QStringList equiplist;
+            for (int i = 0; i <= 3; i++) {
+                if (!target->getEquip(i)) continue;
+                if (panfeng->canDiscard(target, target->getEquip(i)->getEffectiveId()) || panfeng->getEquip(i) == NULL)
+                    equiplist << QString::number(i);
+            }
+            if (equiplist.isEmpty() || !panfeng->askForSkillInvoke(objectName(), data))
                 return false;
-            int card_id = room->askForCardChosen(panfeng, target , "e", "kuangfu");
-            const Card *card = Sanguosha->getCard(card_id);
-
-            int equip_index = -1;
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
-            equip_index = static_cast<int>(equip->location());
+            int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue((PlayerStar)target)).toInt();
+            const Card *card = target->getEquip(equip_index);
+            int card_id = card->getEffectiveId();
 
             QStringList choicelist;
-            choicelist << "throw";
+            if (panfeng->canDiscard(target, card_id))
+                choicelist << "throw";
             if (equip_index > -1 && panfeng->getEquip(equip_index) == NULL)
                 choicelist << "move";
 
@@ -701,7 +705,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->isNude();
+        return player->canDiscard(player, "he");
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -814,8 +818,8 @@ HegemonyPackage::HegemonyPackage()
     heg_zhugeliang->addSkill("kongcheng");
 
     General *heg_huangyueying = new General(this, "heg_huangyueying", "shu", 3, false, true); // SHU 007 G
-    heg_huangyueying->addSkill("jizhi");
-    heg_huangyueying->addSkill("qicai");
+    heg_huangyueying->addSkill("nosjizhi");
+    heg_huangyueying->addSkill("nosqicai");
 
     General *heg_zhouyu = new General(this, "heg_zhouyu", "wu", 3, true, true); // WU 005 G
     heg_zhouyu->addSkill("yingzi");

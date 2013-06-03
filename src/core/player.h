@@ -169,6 +169,9 @@ public:
     bool isNude() const;
     bool isAllNude() const;
 
+    bool canDiscard(const Player *to, const QString &flags) const;
+    bool canDiscard(const Player *to, int card_id) const;
+
     void addMark(const QString &mark);
     void removeMark(const QString &mark);
     virtual void setMark(const QString &mark, int value);
@@ -207,9 +210,7 @@ public:
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
     inline bool isJilei(const Card *card) const{ return isCardLimited(card, Card::MethodDiscard); }
-
-    void setCardLocked(const QString &name);
-    bool isLocked(const Card *card) const;
+    inline bool isLocked(const Card *card) const{ return isCardLimited(card, Card::MethodUse); }
 
     void setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn = false);
     void removeCardLimitation(const QString &limit_list, const QString &pattern);

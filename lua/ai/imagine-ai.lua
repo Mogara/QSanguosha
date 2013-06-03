@@ -38,12 +38,9 @@ function SmartAI:AtomDamageCount(target, source, nature, card)
 		isSlash = card:isKindOf("Slash")
 		isNDTrick = card:isNDTrick()
 	end
-	if target:hasSkill("zhichi") then --如果目标有技能智迟
-		local tag = self.room:getTag("Zhichi")
-		if tag:toString() == target:objectName() then --如果目标智迟中
-			if isSlash or isNDTrick then --如果卡牌为杀或非延时性锦囊
-				return 0
-			end
+	if target:getMark("@late") > 0 then --如果目标智迟中
+		if isSlash or isNDTrick then --如果卡牌为杀或非延时性锦囊
+			return 0
 		end
 	end
 	if target:hasSkill("wuyan") or target:hasSkill("noswuyan") then --如果目标有技能无言

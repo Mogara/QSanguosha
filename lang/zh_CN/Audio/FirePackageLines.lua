@@ -1,0 +1,41 @@
+-- lines for Fire Package
+
+return {
+	["$bazhen1"] = "此阵可挡精兵十万",
+	["$huoji1"] = "欲破敌军，宜用火攻",
+	["$huoji2"] = "且备硫磺焰硝，待命引火",
+	["$jieming1"] = "为守汉节，不惜吾命",
+	["$jieming2"] = "秉忠贞之志，守谦退之节",
+	["$kanpo"] = "哼，此小计耳",
+	["$lianhuan"] = "舟船成排，潮水何惧",
+	["$luanji1"] = "弓箭手出列！",
+	["$luanji2"] = "放箭！",
+	["$niepan"] = "凤凰涅盘，浴火重生！",
+	["$NiepanAnimate"] = "凤凰涅盘，浴火重生！",
+	["$qiangxi"] = "五步之内，汝命休矣！",
+	["$quhu1"] = "主公莫忧，吾有一计",
+	["$quhu2"] = "驱虎吞狼，坐收渔利",
+	["$tianyi"] = "大丈夫生于乱世，当立不世之功",
+	["$mengjin"] = "西凉铁骑，杀汝片甲不留",
+	["$shuangxiong1"] = "虎狼兄弟，无往不利",
+	["$shuangxiong2"] = "兄弟齐心，其利断金",
+	
+	["~pangtong"] = "落凤坡？此地不利于吾。",
+	["~wolong"] = "悠悠苍天，曷此其极",
+	["~dianwei"] = "主公，我就到这了",
+	["~xunyu"] = "身为汉臣，至死不渝",
+	["~yuanshao"] = "天不助袁哪！",
+	["~taishici"] = "今所志未遂，奈何死乎",
+	["~pangde"] = "宁做国家鬼，不为贼将也",
+	["~yanliangwenchou"] = "生不逢时啊……",
+
+	-- CV
+	["cv:xunyu"] = "听雨",
+	["cv:dianwei"] = "褪色",
+	["cv:wolong"] = "彗星",
+	["cv:pangtong"] = "无花有酒",
+	["cv:taishici"] = "口渴口樂",
+	["cv:yuanshao"] = "耗子王",
+	["cv:pangde"] = "Glory",
+	["cv:yanliangwenchou"] = "墨染の飞猫，霸气爷们",
+}

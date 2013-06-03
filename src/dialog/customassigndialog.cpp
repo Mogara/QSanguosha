@@ -211,8 +211,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     before_next_box = new QComboBox();
     before_next = new QCheckBox(tr("Before next turn begin player lose"));
     before_next_box->addItem(tr("Lord"), "lord+loyalist");
-    before_next_box->addItem(tr("Renegade"), "Renegade");
-    before_next_box->addItem(tr("Rebel"), "Rebel");
+    before_next_box->addItem(tr("Renegade"), "renegade");
+    before_next_box->addItem(tr("Rebel"), "rebel");
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));

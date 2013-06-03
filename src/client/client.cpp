@@ -1213,14 +1213,16 @@ void Client::askForChoice(const Json::Value &ask_str) {
 }
 
 void Client::askForCardChosen(const Json::Value &ask_str) {
-    if (!ask_str.isArray() || ask_str.size() != 4 || !isStringArray(ask_str, 0, 2) || !ask_str[3].isBool()) return;
+    if (!ask_str.isArray() || ask_str.size() != 5 || !isStringArray(ask_str, 0, 2)
+        || !ask_str[3].isBool() || !ask_str[4].isInt()) return;
     QString player_name = toQString(ask_str[0]);
     QString flags = toQString(ask_str[1]);
     QString reason = toQString(ask_str[2]);
     bool handcard_visible = ask_str[3].asBool();
+    Card::HandlingMethod method = (Card::HandlingMethod)ask_str[4].asInt();
     ClientPlayer *player = getPlayer(player_name);
     if (player == NULL) return;
-    emit cards_got(player, flags, reason, handcard_visible);
+    emit cards_got(player, flags, reason, handcard_visible, method);
     setStatus(ExecDialog);
 }
 

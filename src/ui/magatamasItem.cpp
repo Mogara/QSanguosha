@@ -120,7 +120,12 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
         yStep = height;
     }
 
-    for (int i = newHp; i < m_hp; i++) {
+    int mHp = m_hp;
+    if (m_hp < 0) {
+        newHp -= m_hp;
+        mHp = 0;
+    }
+    for (int i = newHp; i < mHp; i++) {
         Sprite *aniMaga = new Sprite();
         aniMaga->setPixmap(_icons[qBound(0, i, 5)]);
         aniMaga->setParentItem(this);

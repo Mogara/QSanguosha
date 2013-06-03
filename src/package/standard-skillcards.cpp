@@ -60,14 +60,13 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 }
 
 JieyinCard::JieyinCard() {
-    mute = true;
 }
 
 bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (!targets.isEmpty())
         return false;
 
-    return to_select->isMale() && to_select->isWounded();
+    return to_select->isMale() && to_select->isWounded() && to_select != Self;
 }
 
 void JieyinCard::onEffect(const CardEffectStruct &effect) const{
@@ -78,20 +77,6 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
 
     room->recover(effect.from, recover, true);
     room->recover(effect.to, recover, true);
-
-    int index = -1;
-    if (effect.from->isMale()) {
-        if (effect.from == effect.to)
-            index = 5;
-        else if (effect.from->getHp() >= effect.to->getHp())
-            index = 3;
-        else
-            index = 4;
-    } else {
-        index = 1 + qrand() % 2;
-    }
-
-    room->broadcastSkillInvoke("jieyin", index);
 }
 
 TuxiCard::TuxiCard() {
@@ -173,7 +158,7 @@ bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player
     if (targets.length() == 1 && to_select->isCardLimited(duel, Card::MethodUse))
         return false;
 
-    return targets.length() < 2;
+    return targets.length() < 2 && to_select != Self;
 }
 
 bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
@@ -210,7 +195,10 @@ void LijianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
     Duel *duel = new Duel(Card::NoSuit, 0);
     duel->setCancelable(duel_cancelable);
     duel->setSkillName(QString("_%1").arg(getSkillName()));
-    room->useCard(CardUseStruct(duel, from, to));
+    if (!from->isCardLimited(duel, Card::MethodUse) && !from->isProhibited(to, duel))
+        room->useCard(CardUseStruct(duel, from, to));
+    else
+        delete duel;
 }
 
 QingnangCard::QingnangCard() {
