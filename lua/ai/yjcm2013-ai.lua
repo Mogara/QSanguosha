@@ -773,7 +773,7 @@ sgs.ai_skill_invoke.danshou = function(self, data)
 							if self:isFriend(p) then
 								dmg_val = dmg_val + 1
 							else
-								if self:cantbeHurt(p, self.player, damage.damage) then dmg_val = dmg_val + 1 end
+								if self:cantbeHurt(p, damage.damage, self.player) then dmg_val = dmg_val + 1 end
 								if self:getDamagedEffects(p, self.player) then dmg_val = dmg_val + 0.5 end
 								if self:isEnemy(p) then dmg_val = dmg_val - 1 end
 							end

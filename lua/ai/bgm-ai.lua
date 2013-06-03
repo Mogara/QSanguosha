@@ -500,7 +500,7 @@ sgs.ai_skill_invoke.zhaolie_obtain = function(self, data)
 end
 
 local function will_invoke_shichou(self)
-	local shu = 0
+	local shu,enemynum = 0, 0
 	local first = self.player:hasFlag("Global_FirstRound")
 	local players = self.room:getOtherPlayers(self.player)
 	local shenguanyu = self.room:findPlayerBySkillName("wuhun");

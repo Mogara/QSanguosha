@@ -558,7 +558,7 @@ sgs.ai_skill_cardask["@xingwu"] = function(self, data)
 
 	local good_enemies = {}
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:isMale() and ((self:damageIsEffective(enemy) and not self:cantbeHurt(enemy, self.player, 2))
+		if enemy:isMale() and ((self:damageIsEffective(enemy) and not self:cantbeHurt(enemy, 2, self.player))
 								or (not self:damageIsEffective(enemy) and not enemy:getEquips():isEmpty()
 									and not (enemy:getEquips():length() == 1 and enemy:getArmor() and self:needToThrowArmor()))) then
 			table.insert(good_enemies, enemy)
@@ -623,7 +623,7 @@ sgs.ai_skill_playerchosen.xingwu = function(self, targets)
 			local dmg = enemy:hasArmorEffect("silver_lion") and 1 or 2
 			if enemy:getHp() <= dmg then value = 5 else value = value + enemy:getHp() / (enemy:getHp() - dmg) end
 			if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 2 end
-			if self:cantbeHurt(enemy, self.player, dmg) then value = value - 5 end
+			if self:cantbeHurt(enemy, dmg, self.player) then value = value - 5 end
 			if enemy:isLord() then value = value + 2 end
 			if enemy:hasArmorEffect("silver_lion") then value = value - 1.5 end
 			if self:hasSkills(sgs.exclusive_skill, enemy) then value = value - 1 end

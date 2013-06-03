@@ -8,7 +8,7 @@ function SmartAI:canAttack(enemy, attacker, nature)
 	end
 	if #self.enemies == 1 or self:hasSkills("jueqing") then return true end
 	if self:getDamagedEffects(enemy, attacker) or (self:needToLoseHp(enemy, attacker, false, true) and #self.enemies > 1) or not sgs.isGoodTarget(enemy, self.enemies, self) then return false end
-	if self:objectiveLevel(enemy) <= 2 or self:cantbeHurt(enemy, self.player, damage) or not self:damageIsEffective(enemy, nature, attacker) then return false end
+	if self:objectiveLevel(enemy) <= 2 or self:cantbeHurt(enemy, damage, self.player) or not self:damageIsEffective(enemy, nature, attacker) then return false end
 	if nature ~= sgs.DamageStruct_Normal and enemy:isChained() and not self:isGoodChainTarget(enemy) then return false end
 	return true
 end
@@ -835,7 +835,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		slash = sgs.Sanguosha:cloneCard("slash")
 	end
 	local cards = sgs.QList2Table(self.player:getHandcards())
-	if (not target or self:isFriend(target)) and effect.slash:hasFlag("nosjiefan-slash") then return "." end
+	if (not target or self:isFriend(target)) and slash:hasFlag("nosjiefan-slash") then return "." end
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 	if effect and effect.nature == sgs.DamageStruct_Fire and self.player:hasSkill("ayshuiyong") then return "." end
 	
@@ -886,7 +886,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		elseif not self:hasLoseHandcardEffective() and not self.player:isKongcheng() then
 		elseif self:isEquip("Axe", target) and target:getHandcardNum() - target:getHp() > 2 then return "."
 		elseif self:isEquip("Blade", target) then
-			if self:hasHeavySlashDamage(target, effect.slash, self.player) then
+			if self:hasHeavySlashDamage(target, slash, self.player) then
 			elseif self:getCardsNum("Jink") <= self:getCardsNum("Slash", target) or self:hasSkills("jijiu|qingnang") or self:canUseJieyuanDecrease(target) then
 				return "."
 			end
