@@ -297,7 +297,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
-        if (triggerEvent == EventPhaseChanging && TriggerSkill::triggerable(target)
+        if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(target)
             && target->getPhase() == Player::Start) {
             if (room->askForSkillInvoke(target, objectName())) {
                 room->broadcastSkillInvoke(objectName());
