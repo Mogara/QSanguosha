@@ -7,3 +7,4 @@ sgs.Card_Trick = sgs.Card_Trick or sgs.Card_TypeTrick
 sgs.CardResponsed = sgs.CardResponsed or sgs.CardResponded
 sgs.HpLost = sgs.HpLost or sgs.PreHpLost
 sgs.CardDiscarded = sgs.CardDiscarded or sgs.Card_MethodDiscard
+sgs.PreHpReduced = sgs.PreHpReduced or sgs.PreDamageDone

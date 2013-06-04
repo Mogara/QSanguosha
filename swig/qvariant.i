@@ -126,4 +126,9 @@ public:
     CardResponseStruct toCardResponse() const{
         return $self->value<CardResponseStruct>();
     }
+
+    // @@Compatibility
+    CardResponseStruct toResponsed() const{
+        return $self->value<CardResponseStruct>();
+    }
 };

@@ -25,7 +25,7 @@ return {
 	["menghuo"] = "孟获",
 	["illustrator:menghuo"] = "废柴男",
 	["huoshou"] = "祸首",
-	[":huoshou"] = "<font color=\"blue\"><b>锁定技。</b></font>【南蛮入侵】对你无效。每当其他角色使用【南蛮入侵】指定目标后，你成为【南蛮入侵】的伤害来源。",
+	[":huoshou"] = "<font color=\"blue\"><b>锁定技，</b></font>【南蛮入侵】对你无效。每当其他角色使用【南蛮入侵】指定目标后，你成为【南蛮入侵】的伤害来源。",
 	["zaiqi"] = "再起",
 	[":zaiqi"] = "摸牌阶段开始时，若你已受伤，你可以放弃摸牌，改为从牌堆顶亮出X张牌（X为你已损失的体力值），你回复等同于其中<font color=\"red\">♥</font>牌数量的体力，然后将这些<font color=\"red\">♥</font>牌置入弃牌堆，最后获得其余的牌。",
 	["#HuoshouTransfer"] = "%from 的“%arg2”被触发，【<font color=\"yellow\"><b>南蛮入侵</b></font>】的伤害来源改为 %from",
@@ -34,7 +34,7 @@ return {
 	["zhurong"] = "祝融",
 	["illustrator:zhurong"] = "废柴男",
 	["juxiang"] = "巨象",
-	[":juxiang"] = "<font color=\"blue\"><b>锁定技。</b></font>【南蛮入侵】对你无效。其他角色使用的【南蛮入侵】在结算完毕后置入弃牌堆时，你获得之。",
+	[":juxiang"] = "<font color=\"blue\"><b>锁定技，</b></font>【南蛮入侵】对你无效。其他角色使用的【南蛮入侵】在结算完毕后置入弃牌堆时，你获得之。",
 	["lieren"] = "烈刃",
 	[":lieren"] = "每当你使用【杀】对目标角色造成一次伤害后，你可以与该角色拼点：若你赢，你获得其一张牌。",
 

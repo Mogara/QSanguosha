@@ -223,7 +223,12 @@ function sgs.ai_skill_invoke.neojushou(self, data)
 end
 
 sgs.ai_skill_invoke.neoganglie = function(self, data)
-	local who = data:toPlayer()
+	local damage = data:toDamage()
+	if not damage.from then
+		local zhangjiao = self.room:findPlayerBySkillName("guidao")
+		return zhangjiao and self:isFriend(zhangjiao)
+	end
+	local who = damage.from
 	if self:isFriend(who) and (self:getDamagedEffects(who, self.player) or self:needToLoseHp(who, self.player, nil, true)) then
 		who:setFlags("ganglie_target")
 		return true

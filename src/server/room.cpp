@@ -803,6 +803,31 @@ bool Room::doBroadcastNotify(int command, const QString &arg) {
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except) {
+    // @@Compatibility
+    // ================================================
+    if (strcmp(method, "clearAG") == 0) {
+        clearAG();
+        return;
+    } else if (strcmp(method, "animate") == 0) {
+        AnimateType a_type;
+        QString arg1, arg2;
+        QStringList list = arg.split(":");
+        if (list.length() > 1)
+            arg1 = list.at(1);
+        if (list.length() > 2)
+            arg2 = list.at(2);
+        QString type = list.first();
+        if (type == "animate")
+            a_type = S_ANIMATE_LIGHTBOX;
+        else if (type == "nullification")
+            a_type = S_ANIMATE_NULLIFICATION;
+        else if (type == "indicate")
+            a_type = S_ANIMATE_INDICATE;
+        doAnimate(a_type, arg1, arg2);
+        return;
+    }
+    // ================================================
+
     broadcast(QString("%1 %2").arg(method).arg(arg), except);
 }
 
@@ -3196,6 +3221,7 @@ void Room::damage(const DamageStruct &data) {
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == StageChange || triggerEvent == TurnBroken) {
+            removeTag("is_chained");
             removeTag("CurrentDamageStruct");
             m_damageStack.clear();
         }

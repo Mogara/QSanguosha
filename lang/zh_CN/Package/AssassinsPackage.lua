@@ -30,7 +30,7 @@ return {
 	["#JieyuanIncrease"] = "%from 发动了“<font color=\"yellow\"><b>竭缘</b></font>”，伤害点数从 %arg 点增加至 %arg2 点",
 	["#JieyuanDecrease"] = "%from 发动了“<font color=\"yellow\"><b>竭缘</b></font>”，伤害点数从 %arg 点减少至 %arg2 点",
 	["fenxin"] = "焚心",
-	[":fenxin"] = "<font color=\"red\"><b>限定技。</b></font>若你不是主公，你杀死一名非主公其他角色检验胜利条件之前，你可以与该角色交换身份牌。",
+	[":fenxin"] = "<font color=\"red\"><b>限定技，</b></font>若你不是主公，你杀死一名非主公其他角色检验胜利条件之前，你可以与该角色交换身份牌。",
 	["@burnheart"] = "焚心",
 	["$FenxinAnimate"] = "image=image/animate/fenxin.png",
 
@@ -39,7 +39,7 @@ return {
 	["designer:as_jiben"] = "凌天翼",
 	["illustrator:as_jiben"] = "Aimer彩三",
 	["duyi"] = "毒医",
-	[":duyi"] = "出牌阶段，你可以亮出牌堆顶的一张牌并交给一名角色，若此牌为黑色，该角色不能使用或打出其手牌，直到回合结束。每阶段限一次。",
+	[":duyi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以亮出牌堆顶的一张牌并交给一名角色，若此牌为黑色，该角色不能使用或打出其手牌，直到回合结束。",
 	["#duyi_eff"] = "由于 %from 的技能【%arg】的效果, %to 不能使用或打出其手牌",
 	["#duyi_clear"] = " %from 受到的【%arg】的效果消失",
 	["duanzhi"] = "断指",
@@ -57,7 +57,7 @@ return {
 	["cangni:draw"] = "摸两张牌",
 	["mixin"] = "密信",
 	["#mixin"] = "请使用一张【杀】，否则对方将观看你的手牌并获得其中一张",
-	[":mixin"] = "出牌阶段，你可以将一张手牌交给一名其他角色，该角色须对你选择的另一名角色使用一张【杀】（无距离限制），否则你选择的角色观看其手牌并获得其中任意一张。每阶段限一次。",
+	[":mixin"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌交给一名其他角色，该角色须对你选择的另一名角色使用一张【杀】（无距离限制），否则你选择的角色观看其手牌并获得其中任意一张。",
 
 	["#as_mushun"] = "屈身为国",
 	["as_mushun"] = "穆顺",

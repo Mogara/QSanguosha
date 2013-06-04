@@ -1544,7 +1544,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
 
             for (int i = 0; i < damage.damage; i++) {
-                if (!simazhao->askForSkillInvoke(objectName(), data))
+                if (!simazhao->isAlive() || !simazhao->askForSkillInvoke(objectName(), data))
                     return false;
                 room->broadcastSkillInvoke(objectName());
 
@@ -1555,7 +1555,7 @@ public:
                 judge.reason = objectName();
 
                 room->judge(judge);
-                if (damage.from && damage.from->isAlive() && !damage.from->isKongcheng()) {
+                if (simazhao->isAlive() && damage.from && damage.from->isAlive() && !damage.from->isKongcheng()) {
                     QList<int> langgu_discard, other;
                     Card::Suit suit = (Card::Suit)(judge.pattern.toInt());
                     foreach (int card_id, damage.from->handCards()) {

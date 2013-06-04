@@ -140,7 +140,7 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
     Room *room = guojia->getRoom();
     int x = damage.damage, i;
     for (i = 0; i < x; i++) {
-        if (!room->askForSkillInvoke(guojia, objectName()))
+        if (!guojia->isAlive() || !room->askForSkillInvoke(guojia, objectName()))
             return;
         room->broadcastSkillInvoke("yiji");
 
@@ -181,6 +181,8 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
             moves.append(move);
             room->notifyMoveCards(true, moves, false, _guojia);
             room->notifyMoveCards(false, moves, false, _guojia);
+            if (!guojia->isAlive())
+                return;
         }
 
         if (!yiji_cards.isEmpty()) {
@@ -1180,6 +1182,8 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == sunshangxiang && move.from_places.contains(Player::PlaceEquip)) {
             for (int i = 0; i < move.card_ids.size(); i++) {
+                if (!sunshangxiang->isAlive())
+                    return false;
                 if (move.from_places[i] == Player::PlaceEquip) {
                     if (room->askForSkillInvoke(sunshangxiang, objectName())) {
                         room->broadcastSkillInvoke(objectName());

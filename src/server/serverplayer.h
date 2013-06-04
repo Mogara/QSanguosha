@@ -148,6 +148,9 @@ public:
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
+    // @@Compatibility
+    inline void removePileByName(QString pile_name) { clearOnePrivatePile(pile_name); }
+
 protected:    
     //Synchronization helpers
     QSemaphore **semas;

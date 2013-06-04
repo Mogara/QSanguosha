@@ -69,6 +69,7 @@ private:
     QStringList m_recordServerOptions;
     QString m_recordChat;
     int m_recordPlayers;
+    PlayerRecordStruct *m_currentPlayer;
 
     mutable QStringList m_tempSatisfiedObject;
 };
@@ -83,6 +84,7 @@ struct PlayerRecordStruct {
     QString m_screenName;
     QString m_statue;
     QString m_role;
+    int m_turnCount;
     int m_recover;
     int m_damage;
     int m_damaged;

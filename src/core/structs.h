@@ -146,8 +146,7 @@ public:
     static const int S_REASON_RULEDISCARD = 0x13;       //  discard at one's Player::Discard for gamerule
     static const int S_REASON_THROW = 0x23;             /*  gamerule(dying or punish)
                                                             as the cost of some skills   */
-    static const int S_REASON_CHANGE_EQUIP = 0x33;      //  replace existed equip
-    static const int S_REASON_DISMANTLE = 0x43;         //  one throw card of another
+    static const int S_REASON_DISMANTLE = 0x33;         //  one throw card of another
 
     //subcategory of gotcard
     static const int S_REASON_GIVE = 0x17;              // from one hand to another hand
@@ -173,6 +172,7 @@ public:
                                                         //  e.g. delayed trick enters discardpile
     static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
     static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
+    static const int S_REASON_CHANGE_EQUIP = 0x4A;      //  replace existed equip
 
     static const int S_MASK_BASIC_REASON = 0x0F;
 };

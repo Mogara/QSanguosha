@@ -138,7 +138,7 @@ sgs.ai_skill_use_func.JunxingCard = function(card, use, self)
 		end
 		if basic and trick and equip then break end
 	end
-	self:sort(self.enemies, "handcards")
+	self:sort(self.enemies, "handcard")
 	local other_enemy
 	for _, enemy in ipairs(self.enemies) do
 		local id = nil

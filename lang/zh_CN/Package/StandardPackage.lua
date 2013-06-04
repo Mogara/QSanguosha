@@ -25,7 +25,7 @@ local t = {
 	["double-sword-card"] = "%src 发动了【雌雄双股剑】效果，你须弃置一张手牌，或令 %src 摸一张牌",
 
 	["QinggangSword"] = "青釭剑",
-	[":QinggangSword"] = "装备牌·武器<br />攻击范围：２<br />武器特效：<font color=\"blue\"><b>锁定技。</b></font>每当你使用【杀】指定一名角色为目标后，你无视其防具，直到此【杀】被【闪】抵消后或造成伤害扣减体力前。",
+	[":QinggangSword"] = "装备牌·武器<br />攻击范围：２<br />武器特效：<font color=\"blue\"><b>锁定技，</b></font>每当你使用【杀】指定一名角色为目标后，你无视其防具，直到此【杀】被【闪】抵消后或造成伤害扣减体力前。",
 
 	["Blade"] = "青龙偃月刀",
 	[":Blade"] = "装备牌·武器<br />攻击范围：３<br />武器特效：每当你使用的【杀】被【闪】抵消后，你可以对该角色再使用一张【杀】。",
@@ -54,7 +54,7 @@ local t = {
 	["standard_ex_cards"] = "标准版EX",
 
 	["RenwangShield"] = "仁王盾",
-	[":RenwangShield"] = "装备牌·防具<br />防具效果：<font color=\"blue\"><b>锁定技。</b></font>黑色【杀】对你无效",
+	[":RenwangShield"] = "装备牌·防具<br />防具效果：<font color=\"blue\"><b>锁定技，</b></font>黑色【杀】对你无效",
 
 	["IceSword"] = "寒冰剑",
 	[":IceSword"] = "装备牌·武器<br />攻击范围：２<br />武器特效：每当你使用【杀】对目标角色造成伤害时，若该角色有牌，你可以防止此伤害，然后依次弃置其两张牌。",

@@ -177,6 +177,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             LogMessage log;
             log.type = "$AppendSeparator";
             room->sendLog(log);
+            room->addPlayerMark(player, "Global_TurnCount");
 
             if (!player->faceUp()) {
                 room->setPlayerFlag(player, "-Global_FirstRound");
@@ -382,13 +383,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             room->sendDamageLog(damage);
 
             room->applyDamage(player, damage);
-            if (damage.nature != DamageStruct::Normal) {
-                if (player->isChained() && !damage.chain) {
-                    int n = room->getTag("is_chained").toInt();
-                    n++;
-                    room->setTag("is_chained", n);
-                }
-                room->setPlayerProperty(player, "chained", false);
+            if (damage.nature != DamageStruct::Normal && player->isChained() && !damage.chain) {
+                int n = room->getTag("is_chained").toInt();
+                n++;
+                room->setTag("is_chained", n);
             }
             room->getThread()->trigger(PostHpReduced, room, player, data);
 
@@ -396,8 +394,9 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
         }
     case DamageComplete: {
             DamageStruct damage = data.value<DamageStruct>();
+            if (damage.nature != DamageStruct::Normal && player->isChained())
+                room->setPlayerProperty(player, "chained", false);
             if (room->getTag("is_chained").toInt() > 0) {
-                DamageStruct damage = data.value<DamageStruct>();
                 if (damage.nature != DamageStruct::Normal && !damage.chain) {
                     // iron chain effect
                     int n = room->getTag("is_chained").toInt();
@@ -842,6 +841,10 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
                 room->throwCard(dummy, reason, NULL);
                 delete dummy;
             }
+            if (!lord->faceUp())
+                lord->turnOver();
+            if (lord->isChained())
+                room->setPlayerProperty(lord, "chained", false);
             break;
         }
     case GameStart: {
@@ -894,6 +897,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
                 LogMessage log;
                 log.type = "$AppendSeparator";
                 room->sendLog(log);
+                room->addPlayerMark(player, "Global_TurnCount");
 
                 if (!player->faceUp())
                     player->turnOver();
@@ -938,6 +942,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
                     LogMessage log;
                     log.type = "$AppendSeparator";
                     room->sendLog(log);
+                    room->addPlayerMark(player, "Global_TurnCount");
 
                     if (!player->faceUp())
                         player->turnOver();

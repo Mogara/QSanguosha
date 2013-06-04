@@ -220,7 +220,8 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
         room->recover(effect.to, recover);
     }
     else if (choice == "reset") {
-        room->setPlayerProperty(effect.to, "chained", false);
+        if (effect.to->isChained())
+            room->setPlayerProperty(effect.to, "chained", false);
         if (!effect.to->faceUp())
             effect.to->turnOver();
     }
@@ -290,7 +291,7 @@ public:
             if (!source || source == player) return false;
             int x = damage.damage;
             for (int i = 0; i < x; i++) {
-                if (room->askForSkillInvoke(player, objectName(), data)) {
+                if (source->isAlive() && player->isAlive() && room->askForSkillInvoke(player, objectName(), data)) {
                     room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
                     const Card *card = NULL;
                     if (!source->isKongcheng())
@@ -397,13 +398,13 @@ public:
             room->sendLog(log);
             room->notifySkillInvoked(player, objectName());
 
-            killer->throwAllHandCardsAndEquips();
-
             QString killer_name = killer->getGeneralName();
             if (killer_name.contains("zhugeliang") || killer_name == "wolong")
                 room->broadcastSkillInvoke(objectName(), 1);
             else
                 room->broadcastSkillInvoke(objectName(), 2);
+
+            killer->throwAllHandCardsAndEquips();
         }
 
         return false;
@@ -439,7 +440,7 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *>
     }
     foreach(ServerPlayer* sp,map.keys()){
         while(map[sp] > 0){
-            if(lingtong->canDiscard(sp, "he")){
+            if(lingtong->isAlive() && sp->isAlive() && lingtong->canDiscard(sp, "he")){
                 int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng", false, Card::MethodDiscard);
                 room->throwCard(card_id, sp, lingtong);
             }

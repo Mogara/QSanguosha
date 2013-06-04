@@ -34,7 +34,7 @@ return {
 	["designer:nos_fazheng"] = "Michael_Lee",
 	["illustrator:nos_fazheng"] = "雷没才",
 	["nosenyuan"] = "恩怨",
-	[":nosenyuan"] = "<font color=\"blue\"><b>锁定技。</b></font>每当你回复1点体力后，令你回复体力的角色摸一张牌；每当你受到伤害后，伤害来源选择一项：交给你一张<font color=\"red\">♥</font>手牌，或失去1点体力。",
+	[":nosenyuan"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你回复1点体力后，令你回复体力的角色摸一张牌；每当你受到伤害后，伤害来源选择一项：交给你一张<font color=\"red\">♥</font>手牌，或失去1点体力。",
 	["nosxuanhuo"] = "眩惑",
 	[":nosxuanhuo"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张<font color=\"red\">♥</font>手牌交给一名其他角色，然后你获得该角色的一张牌，将该牌交给除该角色外的另一名角色。",
 	["@nosxuanhuo-give"] = "你可以将该牌交给除 %src 外的一名角色",

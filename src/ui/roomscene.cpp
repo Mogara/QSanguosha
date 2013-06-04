@@ -3042,6 +3042,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         else
             labels << tr("Role");
 
+        labels << tr("TurnCount");
         labels << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
         labels << tr("Handcards");
 
@@ -3102,26 +3103,30 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         table->setItem(i, 3, item);
 
+        item = new QTableWidgetItem;
+        item->setText(QString::number(player->getMark("Global_TurnCount")));
+        table->setItem(i, 4, item);
+
         PlayerRecordStruct *rec = record_map.value(player->objectName());
         item = new QTableWidgetItem;
         item->setText(QString::number(rec->m_recover));
-        table->setItem(i, 4, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_damage));
         table->setItem(i, 5, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_damaged));
+        item->setText(QString::number(rec->m_damage));
         table->setItem(i, 6, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_kill));
+        item->setText(QString::number(rec->m_damaged));
         table->setItem(i, 7, item);
 
         item = new QTableWidgetItem;
-        item->setText(rec->m_designation.join(", "));
+        item->setText(QString::number(rec->m_kill));
         table->setItem(i, 8, item);
+
+        item = new QTableWidgetItem;
+        item->setText(rec->m_designation.join(", "));
+        table->setItem(i, 9, item);
 
         item = new QTableWidgetItem;
         QString handcards = QString::fromUtf8(QByteArray::fromBase64(player->property("last_handcards").toString().toAscii()));
@@ -3130,10 +3135,10 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         handcards.replace("<img src='image/system/log/club.png' height = 12/>", tr("Club"));
         handcards.replace("<img src='image/system/log/diamond.png' height = 12/>", tr("Diamond"));
         item->setText(handcards);
-        table->setItem(i, 9, item);
+        table->setItem(i, 10, item);
     }
 
-    for (int i = 2; i <= 9; i++)
+    for (int i = 2; i <= 10; i++)
         table->resizeColumnToContents(i);
 }
 

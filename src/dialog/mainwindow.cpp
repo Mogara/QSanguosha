@@ -696,7 +696,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
 
     static QStringList labels;
     if (labels.isEmpty()) {
-        labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Living") << tr("WinOrLose")
+        labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Living") << tr("WinOrLose") << tr("TurnCount")
                << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
     }
     table->setHorizontalHeaderLabels(labels);
@@ -728,30 +728,34 @@ void MainWindow::on_actionRecord_analysis_triggered() {
         table->setItem(i, 3, item);
 
         item = new QTableWidgetItem;
-        bool is_win = record->getRecordWinners().contains(rec->m_role) ||
-                        record->getRecordWinners().contains(record_map.key(rec));
+        bool is_win = record->getRecordWinners().contains(rec->m_role)
+                      || record->getRecordWinners().contains(record_map.key(rec));
         item->setText(is_win ? tr("Win") : tr("Lose"));
         table->setItem(i, 4, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_recover));
+        item->setText(QString::number(rec->m_turnCount));
         table->setItem(i, 5, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_damage));
+        item->setText(QString::number(rec->m_recover));
         table->setItem(i, 6, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_damaged));
+        item->setText(QString::number(rec->m_damage));
         table->setItem(i, 7, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_kill));
+        item->setText(QString::number(rec->m_damaged));
         table->setItem(i, 8, item);
 
         item = new QTableWidgetItem;
-        item->setText(rec->m_designation.join(", "));
+        item->setText(QString::number(rec->m_kill));
         table->setItem(i, 9, item);
+
+        item = new QTableWidgetItem;
+        item->setText(rec->m_designation.join(", "));
+        table->setItem(i, 10, item);
         i++;
     }
 

@@ -324,6 +324,9 @@ public:
     void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason);
     void exchangeFreelyFromPrivatePile(const char *skill_name, const char *pile_name, int upperlimit = 1000, bool include_equip = false);
     void gainAnExtraTurn();
+
+    // @@Compatibility
+    void removePileByName(const char *pile_name);
 };
 
 %extend ServerPlayer {
@@ -384,8 +387,7 @@ public:
     static const int S_REASON_RULEDISCARD = 0x13;       //  discard at one's Player::Discard for gamerule
     static const int S_REASON_THROW = 0x23;             /*  gamerule(dying or punish)
                                                             as the cost of some skills   */
-    static const int S_REASON_CHANGE_EQUIP = 0x33;      //  replace existed equip
-    static const int S_REASON_DISMANTLE = 0x43;         //  one throw card of another
+    static const int S_REASON_DISMANTLE = 0x33;         //  one throw card of another
 
     //subcategory of gotcard
     static const int S_REASON_GIVE = 0x17;              // from one hand to another hand
@@ -410,6 +412,7 @@ public:
     static const int S_REASON_NATURAL_ENTER = 0x1A;     //  a card with no-owner move into discardpile
     static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
     static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
+    static const int S_REASON_CHANGE_EQUIP = 0x4A;      //  replace existed equip
 
 
     static const int S_MASK_BASIC_REASON = 0x0F;

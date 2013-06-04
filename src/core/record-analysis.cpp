@@ -8,7 +8,7 @@
 
 using namespace QSanProtocol;
 
-RecAnalysis::RecAnalysis(QString dir): m_recordPlayers(0) {
+RecAnalysis::RecAnalysis(QString dir): m_recordPlayers(0), m_currentPlayer(NULL) {
     initialize(dir);
 }
 
@@ -183,6 +183,15 @@ void RecAnalysis::initialize(QString dir) {
 
             continue;
         }
+
+        if (line.contains("Global_TurnCount")) {
+            QString object = line.split("\"").at(1);
+            PlayerRecordStruct *rec = getPlayer(object);
+            rec->m_turnCount++;
+            m_currentPlayer = rec;
+
+            continue;
+        }
     }
 
     QString winners = records_line.last();
@@ -332,7 +341,20 @@ void RecAnalysis::setDesignation() {
 
     initialDesignation();
 
-    addDesignation(tr("Soy"), ZeroDamage | ZeroRecover, M_ALL_PLAYER, true, "~lord", true);
+    unsigned int rec_data = 0;
+    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+        if (s->m_turnCount == 0) rec_data++;
+        rec_data *= 2;
+    }
+    addDesignation(tr("Soy"), NoOption, rec_data / 2, true, QString(), false, true);
+
+    rec_data = 0;
+    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+        if (s->m_turnCount == 1 && m_currentPlayer == s) rec_data++;
+        rec_data *= 2;
+    }
+    addDesignation(tr("Rapid Victory"), NoOption, rec_data / 2, true, QString(), true, false, true);
+
     addDesignation(tr("Burning Soul"), MostDamage | MostDamaged);
     addDesignation(tr("Regretful Lose"), MostDamage | ZeroKill, M_ALL_PLAYER, true, QString(), false, false, false, true);
     addDesignation(tr("Fall Short"), NoOption, findPlayerOfKills(m_recordPlayers - 2), m_recordWinners.contains("lord"),
@@ -385,8 +407,8 @@ void RecAnalysis::setDesignation() {
 
     int loyal_num = 0, rebel_num = 0;
     foreach (PlayerRecordStruct *s, m_recordMap.values()) {
-        if (s->m_role == "loyalist" && s->m_isAlive) loyal_num ++;
-        if (s->m_role == "rebel" && s->m_isAlive) rebel_num ++;
+        if (s->m_role == "loyalist" && s->m_isAlive) loyal_num++;
+        if (s->m_role == "rebel" && s->m_isAlive) rebel_num++;
     }
     addDesignation(tr("Priority Honor"), NoOption, M_ALL_PLAYER, loyal_num == 1, "loyalist", true, false, true);
     addDesignation(tr("Impasse Strike"), NoOption, M_ALL_PLAYER, rebel_num == 1, "rebel", true, false, true);
@@ -406,7 +428,7 @@ void RecAnalysis::addDesignation(const QString &designation,
     QList<DesignationType> des_union;
     for (long i = ZeroDamaged; i > 0 && designation_union > 0; i /= 2) {
         if ((unsigned long)i <= designation_union) {
-            des_union <<  static_cast<DesignationType>(i);
+            des_union << static_cast<DesignationType>(i);
             designation_union -= (unsigned long)i;
         }
     }
@@ -541,7 +563,7 @@ void RecAnalysis::initialDesignation() {
 }
 
 PlayerRecordStruct::PlayerRecordStruct()
-    : m_statue("online"), m_recover(0), m_damage(0),
+    : m_statue("online"), m_turnCount(0), m_recover(0), m_damage(0),
       m_damaged(0), m_kill(0), m_isAlive(true)
 {
 }

@@ -17,15 +17,15 @@ return {
 	[":Fan"] = "装备牌·武器<br />攻击范围：４<br />武器特效：你可以将一张普通【杀】当火【杀】使用",
 
 	["GudingBlade"] = "古锭刀",
-	[":GudingBlade"] = "装备牌·武器<br />攻击范围：２<br />武器特效：<font color=\"blue\"><b>锁定技。</b></font>每当你使用【杀】对目标角色造成伤害时，若该角色没有手牌，此伤害+1",
+	[":GudingBlade"] = "装备牌·武器<br />攻击范围：２<br />武器特效：<font color=\"blue\"><b>锁定技，</b></font>每当你使用【杀】对目标角色造成伤害时，若该角色没有手牌，此伤害+1",
 	["#GudingBladeEffect"] = "%from 的【<font color=\"yellow\"><b>古锭刀</b></font>】效果被触发， %to 没有手牌，伤害从 %arg 增加至 %arg2",
 
 	["Vine"] = "藤甲",
-	[":Vine"] = "装备牌·防具<br />防具效果：<font color=\"blue\"><b>锁定技。</b></font>【南蛮入侵】、【万箭齐发】和普通【杀】对你无效。每当你受到火焰伤害时，此伤害+1",
+	[":Vine"] = "装备牌·防具<br />防具效果：<font color=\"blue\"><b>锁定技，</b></font>【南蛮入侵】、【万箭齐发】和普通【杀】对你无效。每当你受到火焰伤害时，此伤害+1",
 	["#VineDamage"] = "%from 的防具【<font color=\"yellow\"><b>藤甲</b></font>】效果被触发，火焰伤害由 %arg 点增加至 %arg2 点",
 
 	["SilverLion"] = "白银狮子",
-	[":SilverLion"] = "装备牌·防具<br />防具效果：<font color=\"blue\"><b>锁定技。</b></font>每当你受到伤害时，若该伤害多于1点，你防止多余的伤害。每当你失去装备区里的【白银狮子】后，你回复1点体力",
+	[":SilverLion"] = "装备牌·防具<br />防具效果：<font color=\"blue\"><b>锁定技，</b></font>每当你受到伤害时，若该伤害多于1点，你防止多余的伤害。每当你失去装备区里的【白银狮子】后，你回复1点体力",
 	["#SilverLion"] = "%from 的防具【%arg2】防止了 %arg 点伤害，减至 <font color=\"yellow\"><b>1</b></font> 点",
 
 	["fire_attack"] = "火攻",
