@@ -699,7 +699,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->getMark("rende") > 0;
+        return target != NULL && target->getMark("nosrende") > 0;
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{

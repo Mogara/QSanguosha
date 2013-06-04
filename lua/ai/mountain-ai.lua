@@ -165,8 +165,6 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 			local targetstr = cardstr:split("->")[2]
 			local targets = targetstr:split("+")
 			if #targets == 2 then
-				table.insert(self.qiaobian_draw_targets, targets[1])
-				table.insert(self.qiaobian_draw_targets, targets[2])
 				return to_discard
 			else
 				return {}

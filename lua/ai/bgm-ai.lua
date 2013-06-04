@@ -455,7 +455,7 @@ local function will_discard_zhaolie(self, nobasic)
 	if not spliubei:hasSkill("jueqing") and self.player:hasSkill("wuhun") and self.role == "rebel" then
 		local mark = 0
 		local spmark = spliubei:isLord() and spliubei:getMark("@nightmare") or 0
-		for _, ap in sgs.qlist(self.room:getOtherPlayer(spliubei)) do
+		for _, ap in sgs.qlist(self.room:getOtherPlayers(spliubei)) do
 			if ap:getMark("@nightmare") > mark then
 				mark = ap:getMark("@nightmare")
 			end

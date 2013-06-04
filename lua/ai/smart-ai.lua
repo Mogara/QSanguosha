@@ -868,6 +868,7 @@ end
 
 function sgs.evaluatePlayerRole(player)
 	if not player then global_room:writeToConsole("Player is empty in role's evaluation!") return end
+	if not player:inherits("Player") then global_room:writeToConsole(debug.traceback()) end
 	if player:isLord() then return "loyalist" end
 	if sgs.isRolePredictable() then return player:getRole() end
 	return sgs.ai_role[player:objectName()]

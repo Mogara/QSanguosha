@@ -355,7 +355,7 @@ sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
 	local first
 	local second	
 	first = self:findPlayerToDiscard("he", false)
-	second = self:findPlayerToDiscard("he", false, self.room:getOtherPlayers(first))
+	second = self:findPlayerToDiscard("he", false, true, self.room:getOtherPlayers(first))
 
 	if first then
 		if first and not second then

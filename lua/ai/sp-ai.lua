@@ -690,6 +690,32 @@ sgs.ai_skill_askforag.aocai = function(self, card_ids)
 	return card_ids[1]
 end
 
+function SmartAI:getSaveNum(isFriend)
+	local num = 0
+	for _, player in sgs.qlist(self.room:getAllPlayers()) do
+		if (isFriend and self:isFriend(player)) or (not isFriend and self:isEnemy(player)) then
+			if not self.player:hasSkill("wansha") or player:objectName() == self.player:objectName() then
+				if player:hasSkill("jijiu") then
+					num = num + self:getSuitNum("heart", true, player)
+					num = num + self:getSuitNum("diamond", true, player)
+					num = num + player:getHandcardNum() * 0.4
+				end
+				if player:hasSkill("nosjiefan") and getCardsNum("Slash", player) > 0 then
+					if self:isFriend(player) or self:getCardsNum("Jink") == 0 then num = num + getCardsNum("Slash", player) end
+				end
+				num = num + getCardsNum("Peach", player)
+			end
+			if player:hasSkill("buyi") and not player:isKongcheng() then num = num + 0.3 end
+			if player:hasSkill("chunlao") and not player:getPile("wine"):isEmpty() then num = num + player:getPile("wine"):length() end
+			if player:hasSkill("jiuzhu") and player:getHp() > 1 and not player:isNude() then
+				num = num + 0.9 * math.max(0, math.min(player:getHp() - 1, player:getCardCount(true)))
+			end
+			if player:hasSkill("renxin") and player:objectName() ~= self.player:objectName() and not player:isKongcheng() then num = num + 1 end
+		end
+	end
+	return num
+end
+
 local duwu_skill = {}
 duwu_skill.name = "duwu"
 table.insert(sgs.ai_skills, duwu_skill)

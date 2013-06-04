@@ -541,7 +541,6 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 		self.player:getHp() > self.player:getLostHp() then return "question" end
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
-	local yuji
 	local x = math.random(1, 5)
 
 	self:sort(self.friends,"hp")
