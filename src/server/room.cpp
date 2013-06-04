@@ -817,7 +817,7 @@ void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer 
         if (list.length() > 2)
             arg2 = list.at(2);
         QString type = list.first();
-        if (type == "animate")
+        if (type == "lightbox")
             a_type = S_ANIMATE_LIGHTBOX;
         else if (type == "nullification")
             a_type = S_ANIMATE_NULLIFICATION;
