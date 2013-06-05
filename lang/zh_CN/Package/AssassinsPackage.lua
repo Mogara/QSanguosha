@@ -72,9 +72,12 @@ return {
 	["@fengyin"] = "是否发动技能【奉印】",
 	["~fengyin"] = "选择一张【杀】→点击确定",
 	["chizhong"] = "持重",
-	[":chizhong"] = "<b>锁定技</b>，你的手牌上限等于你的体力上限；其他角色死亡时，你加1点体力上限。",
+	[":chizhong"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限等于你的体力上限；其他角色死亡时，你加1点体力上限。",
 	["#Chizhong"] = " %from 受到【%arg】的影响，偷偷藏下了更多的手牌！",
 
 	["as_liuxie"] = "刘协",
 	["as_lingju"] = "灵雎",
+	["illustrator:as_fuwan"] = "LiuHeng",
+	["illustrator:as_lingju"] = "木美人",
+	["illustrator:as_liuxie"] = "LiuHeng",
 }
