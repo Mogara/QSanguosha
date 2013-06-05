@@ -1033,7 +1033,7 @@ sgs.ai_skill_playerchosen.qiuyuan = function(self, targets)
 	for _, p in ipairs(targetlist) do
 		if self:isFriend(p) then
 			if (p:hasSkill("kongcheng") and p:getHandcardNum() == 1) or (p:getCardCount(true) >= 2 and self:canLiuli(p, self.enemies)) then return p
-			elseif not friend and getCardsNum("Jink", friend) >= 1 then friend = p end
+			elseif not friend and getCardsNum("Jink", p) >= 1 then friend = p end
 		end
 	end
 	return friend

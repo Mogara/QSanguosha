@@ -580,7 +580,7 @@ sgs.ai_skill_cardask["@xingwu"] = function(self, data)
 			heart = heart + 1
 		elseif isCard("Jink", card, self.player) then
 			if self.player:hasSkill("liuli") and self.room:alivePlayerCount() > 2 then
-				for _, p in ipairs(self.room:getOtherPlayers(self.player)) do
+				for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 					if self:canLiuli(self.player, p) then
 						xwcard = card
 						break
