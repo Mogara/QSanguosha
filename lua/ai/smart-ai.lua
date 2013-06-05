@@ -3887,9 +3887,9 @@ function SmartAI:damageIsEffective(to, nature, from)
 	if to:hasSkill("yuce") and not to:isKongcheng() and to:getHp() > 1 then
 		if self:isFriend(to, from) then return false
 		else
-			if (getKnownCard("TrickCard", to, "h") + getKnownCard("EquipCard", to, "h") < to:getHandcardNum()
-				and self:getCardsNum("TrickCard", from, "h") + self:getCardsNum("EquipCard", from, "h") < 1)
-				or self:getCardsNum("BasicCard", from, "h") < 2 then
+			if (getKnownCard(to, "TrickCard", false, "h") + getKnownCard(to, "EquipCard", false, "h") < to:getHandcardNum()
+				and self:getCardsNum(from, "TrickCard", false, "h") + self:getCardsNum(from, "EquipCard", false, "h") < 1)
+				or self:getCardsNum(from, "BasicCard", false, "h") < 2 then
 				return false
 			end
 		end
