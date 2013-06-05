@@ -44,7 +44,6 @@ SOURCES += \
     src/dialog/customassigndialog.cpp \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
-    src/dialog/halldialog.cpp \
     src/dialog/mainwindow.cpp \
     src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
@@ -156,7 +155,6 @@ HEADERS += \
     src/dialog/customassigndialog.h \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
-    src/dialog/halldialog.h \
     src/dialog/mainwindow.h \
     src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
