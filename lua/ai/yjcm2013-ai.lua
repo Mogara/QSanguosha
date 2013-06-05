@@ -1055,7 +1055,7 @@ sgs.ai_skill_cardask["@qiuyuan-give"] = function(self, data, pattern, target)
 	return "$" .. cards[1]:getEffectiveId()
 end
 
-function sgs.ai_slash_prohibit.qiuyuan(self, from, to)
+function sgs.ai_slash_prohibit.qiuyuan(self, to, card, from)
 	if self:isFriend(to, from) then return false end
 	if from:hasFlag("NosJiefanUsed") then return false end
 	for _, friend in ipairs(self:getFriendsNoself(from)) do

@@ -3880,11 +3880,11 @@ function SmartAI:damageIsEffective(to, nature, from)
 	if to:hasSkill("ayshuiyong") and nature == sgs.DamageStruct_Fire then
 		return false
 	end
-	if to:hasSkill("mingshi") and from:getEquips():length() - (self.equipsToDec or 0) <= player:getEquips():length() then return false end
-	if to:hasSkill("yuce") and not to:isKongcheng() and player:getHp() > 1 then
+	if to:hasSkill("mingshi") and from:getEquips():length() - (self.equipsToDec or 0) <= to:getEquips():length() then return false end
+	if to:hasSkill("yuce") and not to:isKongcheng() and to:getHp() > 1 then
 		if self:isFriend(to, from) then return false
 		else
-			if (getKnownCard("TrickCard", to, "h") + getKnownCard("EquipCard", to, "h") < player:getHandcardNum()
+			if (getKnownCard("TrickCard", to, "h") + getKnownCard("EquipCard", to, "h") < to:getHandcardNum()
 				and self:getCardsNum("TrickCard", from, "h") + self:getCardsNum("EquipCard", from, "h") < 1)
 				or self:getCardsNum("BasicCard", from, "h") < 2 then
 				return false
