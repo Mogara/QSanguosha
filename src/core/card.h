@@ -130,7 +130,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-    inline virtual bool isKindOf(const char* cardType) const { return inherits(cardType); }
+    inline virtual QString getClassName() const {return metaObject()->className();}
+    inline virtual bool isKindOf(const char* cardType) const {return this && inherits(cardType);}
     virtual void onMove(const CardMoveStruct &move) const;
 
     // static functions

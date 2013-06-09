@@ -1,11 +1,13 @@
 return {
-	["QSanguosha"] = "太阳神三国杀 - 金蛇 - 法海你不懂爱",
+	["QSanguosha"] = "太阳神三国杀 - 鬼隐[公测]",
 	["Pairs"] = "双将",
 
 	["spade"] = "黑桃",
 	["club"] = "梅花",
 	["heart"] = "红桃",
 	["diamond"] = "方块",
+	["red"] = "红色",
+	["black"] = "黑色",
 	["no_suit"] = "无色",
 	["basic"] = "基本牌",
 	["trick"] = "锦囊牌",
@@ -124,13 +126,4 @@ return {
 	["#LoseMark"] = "%from 失去了 %arg2 枚 %arg 标记",
 	["@askforslash"] = "你可以对你攻击范围内的一名其他角色使用一张【杀】",
 	["@askforretrial"] = "请使用【%dest】技能来修改 %src 的 %arg 判定",
-
-	["3v3:cw"] = "顺时针",
-	["3v3:ccw"] = "逆时针",
-	["cw"] = "顺时针",
-	["ccw"] = "逆时针",
-	["#TrickDirection"] = "%from 选择了 %arg 作为锦囊的顺序",
-	["custom"] = "自定义模式",
-	["UnknowNick"] = "无称号",
-	["DefaultIllustrator"] = "KayaK",
 }

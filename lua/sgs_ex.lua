@@ -121,6 +121,30 @@ function sgs.CreateSlashSkill(spec)
 	return skill
 end
 
+function sgs.CreateTargetModSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.residue_func) == "function" or type(spec.distance_limit_func) == "function" or type(spec.extra_target_func) == "function")
+
+	local skill = sgs.LuaTargetModSkill(spec.name)
+	if spec.residue_func then
+		skill.residue_func = spec.residue_func
+	end
+	if spec.distance_limit_func then
+		skill.distance_limit_func = spec.distance_limit_func
+	end
+	if spec.extra_target_func then
+		skill.extra_target_func = spec.extra_target_func
+	end
+
+	if type(spec.pattern) == "string" then
+		skill.pattern = spec.pattern
+	else
+		skill.pattern = "Slash"
+	end
+
+	return skill
+end
+
 --------------------------------------------
 
 -- skill cards

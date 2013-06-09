@@ -35,6 +35,7 @@ public:
 class General : public QObject
 {
 public:
+	enum Gender {Male = 0, Female = 1, Neuter = 2};
 	explicit General(Package *package, const char *name, const char *kingdom, int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
 
 	// property getters/setters
@@ -47,7 +48,6 @@ public:
 	bool isHidden() const;
 	bool isTotallyHidden() const;
 
-	enum Gender {Male, Female, Neuter};
 	Gender getGender() const;
 	void setGender(Gender gender);
 
@@ -69,7 +69,7 @@ class Player: public QObject
 {
 public:
 	enum Phase {RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive};
-	enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
+	enum Place {Special, Hand, Equip, Judging, DiscardedPile, DrawPile};
 	enum Role {Lord, Loyalist, Rebel, Renegade};
 
 	explicit Player(QObject *parent);
@@ -453,9 +453,9 @@ struct PindianStruct{
 };
 
 struct PhaseChangeStruct{
-    PhaseChangeStruct();
-    Player::Phase from;
-    Player::Phase to;
+	PhaseChangeStruct();
+	Player::Phase from;
+	Player::Phase to;
 };
 
 typedef PindianStruct *PindianStar;
@@ -537,9 +537,8 @@ class Card: public QObject
 public:
 	// enumeration type
 	enum Suit {Spade, Club, Heart, Diamond, NoSuit};
-	enum Color {Red, Black, Colorless};
-
 	static const Suit AllSuits[4];
+	enum Color {Red, Black, Colorless};
 
 	// card types
 	enum CardType{
@@ -712,6 +711,7 @@ public:
 	QList<const DistanceSkill *> getDistanceSkills() const;
 	QList<const MaxCardsSkill *> getMaxCardsSkills() const;
 	QList<const SlashSkill *> getSlashSkills() const;
+	QList<const TargetModSkill *> getTargetModSkills() const;
 	void addSkills(const QList<const Skill *> &skills);
 
 	int getCardCount() const;
@@ -730,6 +730,9 @@ public:
 
 	const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 	int correctDistance(const Player *from, const Player *to) const;
+	int correctMaxCards(const Player *target) const;
+	int correctSlash(const SlashSkill::Type type, const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+	int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
 };
 
 extern Engine *Sanguosha;

@@ -52,11 +52,36 @@ public:
 
 class SlashSkill: public Skill{
 public:
+    enum Type {
+        Residue,
+        AttackRange,
+        ExtraGoals
+    };
+
 	SlashSkill(const QString &name);
 
 	virtual int getSlashRange(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
 	virtual int getSlashExtraGoals(const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
 	virtual int getSlashResidue(const Player *target) const;
+};
+
+class TargetModSkill: public Skill {
+public:
+    enum ModType {
+        Residue,
+        DistanceLimit,
+        ExtraTarget
+    };
+
+    TargetModSkill(const QString &name);
+    virtual QString getPattern() const;
+
+    virtual int getResidueNum(const Player *from, const Card *card) const;
+    virtual int getDistanceLimit(const Player *from, const Card *card) const;
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const;
+
+protected:
+    QString pattern;
 };
 
 class LuaProhibitSkill: public ProhibitSkill{
@@ -146,6 +171,20 @@ public:
     virtual int getSlashResidue(const Player *target) const;
 
     LuaFunction s_range_func, s_extra_func, s_residue_func;
+};
+
+class LuaTargetModSkill: public TargetModSkill {
+public:
+    LuaTargetModSkill(const char *name);
+
+    virtual int getResidueNum(const Player *from, const Card *card) const;
+    virtual int getDistanceLimit(const Player *from, const Card *card) const;
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const;
+
+    LuaFunction residue_func;
+    LuaFunction distance_limit_func;
+    LuaFunction extra_target_func;
+    const char *pattern;
 };
 
 class LuaSkillCard: public SkillCard{
@@ -380,6 +419,78 @@ int LuaSlashSkill::getSlashResidue(const Player *target) const{
     return res;
 }
 
+int LuaTargetModSkill::getResidueNum(const Player *from, const Card *card) const{
+    if (residue_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, residue_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTargetModSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 3, 1, 0);
+    if (error) {
+        Error(L);
+        return 0;
+    }
+
+    int residue = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return residue;
+}
+
+int LuaTargetModSkill::getDistanceLimit(const Player *from, const Card *card) const{
+    if (distance_limit_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, distance_limit_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTargetModSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 3, 1, 0);
+    if (error) {
+        Error(L);
+        return 0;
+    }
+
+    int distance_limit = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return distance_limit;
+}
+
+int LuaTargetModSkill::getExtraTargetNum(const Player *from, const Card *card) const{
+    if (extra_target_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, extra_target_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTargetModSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 3, 1, 0);
+    if (error) {
+        Error(L);
+        return 0;
+    }
+
+    int extra_target_func = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return extra_target_func;
+}
+
 bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{
 	if(view_filter == 0)
 		return false;
@@ -566,7 +677,7 @@ bool LuaViewAsSkill::isEnabledAtNullification(const ServerPlayer *player) const{
 
     SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
 
-    int error = lua_pcall(L, 2, 1, 0);
+    int error = lua_pcall(L, 3, 1, 0);
     if(error){
         Error(L);
         return false;

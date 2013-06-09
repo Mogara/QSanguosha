@@ -1,0 +1,5 @@
+
+general:jianyong role:lord 
+general:lusu role:loyalist 
+general:manchong role:rebel starter:true maxhp:4 hp:4 
+general:chengong role:renegade 

@@ -70,6 +70,7 @@ public:
     QList<const DistanceSkill *> getDistanceSkills() const;
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
     QList<const SlashSkill *> getSlashSkills() const;
+    QList<const TargetModSkill *> getTargetModSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     bool isDuplicated(const QString &name, bool is_skill = true);
@@ -92,8 +93,11 @@ public:
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target) const;
-    int correctSlash(const QString &type, const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    int correctSlash(const SlashSkill::Type type, const Player *from, const Player *to = NULL, const Card *slash = NULL) const;
+    int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
 
+    bool useNew3v3();
+    bool is3v3Friend(const ServerPlayer *a, const ServerPlayer *b);
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals, hidden_generals;
@@ -107,7 +111,8 @@ private:
     QList<const ProhibitSkill *> prohibit_skills;
     QList<const DistanceSkill *> distance_skills;
     QList<const MaxCardsSkill *> maxcards_skills;
-	QList<const SlashSkill *> slash_skills;
+    QList<const SlashSkill *> slash_skills;
+    QList<const TargetModSkill *> targetmod_skills;
 
     QHash<QString, const Scenario *> scenarios;
 

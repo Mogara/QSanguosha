@@ -1,6 +1,6 @@
 #include "sp.h"
 #include "general.h"
-#include "skill.h"
+#include "client.h"
 #include "standard-skillcards.h"
 #include "carditem.h"
 #include "engine.h"

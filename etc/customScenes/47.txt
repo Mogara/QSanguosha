@@ -1,0 +1,6 @@
+
+general:zhuran general2:select role:lord starter:true maxhp:5 hp:5 equip:62,66 
+general:zhanghe role:rebel maxhp:2 hp:2 
+general:xiahoudun role:rebel maxhp:2 hp:2 
+general:sujiang role:rebel nationality:wei 
+general:sujiang role:rebel nationality:wei 

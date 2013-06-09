@@ -628,16 +628,16 @@ void ServerPlayer::loseMark(const QString &mark, int n){
     log.arg = mark;
     log.arg2 = QString::number(n);
 
-    room->sendLog(log);
+    if(mark.startsWith("@"))
+        room->sendLog(log);
 
     room->setPlayerMark(this, mark, value);
 }
 
 void ServerPlayer::loseAllMarks(const QString &mark_name){
     int n = getMark(mark_name);
-    if(n > 0){
+    if(n > 0)
         loseMark(mark_name, n);
-    }
 }
 
 bool ServerPlayer::isOnline() const {

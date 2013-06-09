@@ -1,0 +1,4 @@
+
+general:new_huaxiong role:lord starter:true draw:6 equip:59 
+general:panfeng role:rebel hp:2 
+general:guanyu role:rebel hp:2 

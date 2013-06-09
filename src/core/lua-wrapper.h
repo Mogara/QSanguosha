@@ -104,6 +104,23 @@ public:
     LuaFunction s_range_func, s_extra_func, s_residue_func;
 };
 
+class LuaTargetModSkill: public TargetModSkill {
+    Q_OBJECT
+
+public:
+    LuaTargetModSkill(const char *name);
+    virtual QString getPattern() const;
+
+    virtual int getResidueNum(const Player *from, const Card *card) const;
+    virtual int getDistanceLimit(const Player *from, const Card *card) const;
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const;
+
+    LuaFunction residue_func;
+    LuaFunction distance_limit_func;
+    LuaFunction extra_target_func;
+    const char *pattern;
+};
+
 class LuaSkillCard: public SkillCard{
     Q_OBJECT
 

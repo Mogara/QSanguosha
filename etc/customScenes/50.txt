@@ -1,0 +1,6 @@
+
+general:chenlin role:rebel maxhp:5 hp:3 nationality:qun hand:0,62,89,116 
+general:yuanshao role:rebel hand:45 
+general:caocao role:lord starter:true maxhp:4 hp:4 chained:true 
+general:xiahoudun role:loyalist turned:true chained:true 
+general:zhangliao role:loyalist turned:true chained:true 

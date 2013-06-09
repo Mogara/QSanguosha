@@ -159,7 +159,7 @@ int Player::getAttackRange(const Player *other, const Card *slash) const{
         if(getWeapon()->getEffectiveId() != slash->getEffectiveId())
             atkrg = getWeapon()->getRange();
     }
-    int extra = Sanguosha->correctSlash("attackrange", this, other, slash);
+    int extra = Sanguosha->correctSlash(SlashSkill::AttackRange, this, other, slash);
     return extra >= 0 ? atkrg + extra: qAbs(extra);
 }
 
@@ -504,7 +504,7 @@ int Player::getMaxCards() const{
 
 int Player::getSlashTarget(const Player *other, const Card *slash) const{
     int rule = 1, extra = 0;
-    extra = Sanguosha->correctSlash("extragoals", this, other, slash);
+    extra = Sanguosha->correctSlash(SlashSkill::ExtraGoals, this, other, slash);
     return rule + extra;
 }
 

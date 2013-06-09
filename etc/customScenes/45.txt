@@ -1,0 +1,10 @@
+
+general:select role:loyalist starter:true 
+general:caocao role:rebel hp:3 
+general:caopi role:rebel hp:2 
+general:liubei role:loyalist 
+general:caozhi role:rebel hp:2 
+general:caozhang role:rebel hp:3 
+general:sunquan role:loyalist 
+general:ca0chong role:rebel 
+general:yuanshao general2:lvbu role:lord hp:3 

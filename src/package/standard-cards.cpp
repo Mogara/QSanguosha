@@ -21,7 +21,7 @@ void Slash::setNature(DamageStruct::Nature nature){
 }
 
 bool Slash::IsAvailable(const Player *player){
-    int slash_residue = Sanguosha->correctSlash("residue", player);
+    int slash_residue = Sanguosha->correctSlash(SlashSkill::Residue, player);
     return slash_residue > 0;
 }
 
@@ -118,8 +118,8 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    int slash_targets = 1 + Sanguosha->correctSlash("extragoals", Self, to_select, this);
-    bool distance_limit = Sanguosha->correctSlash("attackrange", Self, to_select, this) < 50;
+    int slash_targets = 1 + Sanguosha->correctSlash(SlashSkill::ExtraGoals, Self, to_select, this);
+    bool distance_limit = Sanguosha->correctSlash(SlashSkill::AttackRange, Self, to_select, this) < 50;
 
     if(targets.length() >= slash_targets)
         return false;
@@ -500,8 +500,6 @@ public:
         return false;
     }
 };
-
-
 
 EightDiagram::EightDiagram(Suit suit, int number)
     :Armor(suit, number){

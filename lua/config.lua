@@ -3,8 +3,8 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130221",
-	version_name = "金蛇版·法海补丁",
+	version = "20130602",
+	version_name = "拟·鬼隐版",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {
@@ -55,7 +55,7 @@ config = {
 	},
 
 	ai_names = {
-		"太阳神的三国杀",
+		"太阳神Style",
 		"启姐的小雏田",
 		"KenKic的充气女仆",
 		"米叔的种子",
@@ -64,6 +64,7 @@ config = {
 		"葱娘家的灵魂手办",
 		"donle的最后之作",
 		"天霜雪舞的烤萝莉",
+		"连庄的天音",
 		"逮捕麻麻的手铐",
 		"冢冢的青藤",
 		"安歧的小黑屋",
@@ -104,6 +105,7 @@ config = {
 		"龙凤呈祥",
 		"总司令的拆迁队",
 		"纠结的金田一君",
+		"李助和小柴进",
 		"失落的三好学生",
 		"肉酱茧",
 	-- 感谢一路走来，为太阳神三国杀付出和支持过的朋友们！
@@ -115,7 +117,7 @@ config = {
 	color_qun = "#8A807A",
 	color_god = "#96943D",
 
-	mini_max = 44 -- 此处以Config.S_MINI_MAX_COUNT为准
+	mini_max = 50 -- 此处以Config.S_MINI_MAX_COUNT为准
 }
 
 scenario = { -- 非身份局模式下的一些设置

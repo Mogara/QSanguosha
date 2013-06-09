@@ -224,6 +224,7 @@ void Room::revivePlayer(ServerPlayer *player){
 
     broadcastInvoke("revivePlayer", player->objectName());
     updateStateItem();
+    setEmotion(player, "revive");
 }
 
 static bool CompareByRole(ServerPlayer *player1, ServerPlayer *player2){
@@ -481,7 +482,8 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
     if(jink == NULL)
         thread->trigger(SlashHit, effect.from, data);
     else{
-        setEmotion(effect.to, "jink");
+        //if (!(jink->getSkillName() == "eight_diagram")
+            setEmotion(effect.to, "jink");
         thread->trigger(SlashMissed, effect.from, data);
     }
 }
@@ -743,7 +745,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     QVariant asked = pattern;
     if(thread->trigger(CardAsk, player, asked))
         return NULL;
-    thread->trigger(CardAsked, player, asked);
+    if(trigger_event == CardResponsed || trigger_event == JinkUsed)
+        thread->trigger(CardAsked, player, asked);
     if(has_provided){
         card = provided;
         provided = NULL;
@@ -780,15 +783,16 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card = card->validateInResposing(player, &continuable);
 
     if(card){
-        if(card->getTypeId() != Card::Skill){
-            const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
-            if(card_pattern == NULL || card_pattern->willThrow())
+        if(trigger_event != NonTrigger){
+            if(card->getTypeId() != Card::Skill){
+                const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
+                if(card_pattern == NULL || card_pattern->willThrow())
+                    moveCardTo(card, NULL, Player::DiscardedPile, true);
+                    //throwCard(card, trigger_event == CardDiscarded ? player: NULL);
+            }else if(card->willThrow())
                 moveCardTo(card, NULL, Player::DiscardedPile, true);
                 //throwCard(card, trigger_event == CardDiscarded ? player: NULL);
-        }else if(card->willThrow())
-            moveCardTo(card, NULL, Player::DiscardedPile, true);
-            //throwCard(card, trigger_event == CardDiscarded ? player: NULL);
-
+        }
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, player, decisionData);
 
@@ -1142,9 +1146,8 @@ void Room::swapPile(){
 
     qShuffle(*draw_pile);
 
-    foreach(int card_id, *draw_pile){
+    foreach(int card_id, *draw_pile)
         setCardMapping(card_id, NULL, Player::DrawPile);
-    }
 }
 
 QList<int> Room::getDiscardPile(){
@@ -1161,7 +1164,7 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     if(general_name.contains("+")){
         QStringList names = general_name.split("+");
         foreach(ServerPlayer *player, list){
-            if(names.contains(player->getGeneralName()))
+            if(names.contains(player->getGeneralName()) || names.contains(player->objectName()))
                 return player;
         }
 
@@ -1169,7 +1172,7 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     }
 
     foreach(ServerPlayer *player, list){
-        if(player->getGeneralName() == general_name)
+        if(player->getGeneralName() == general_name || player->objectName() == general_name)
             return player;
     }
 
@@ -2309,9 +2312,8 @@ void Room::sendDamageLog(const DamageStruct &data){
     if(data.from){
         log.type = "#Damage";
         log.from = data.from;
-    }else{
+    }else
         log.type = "#DamageNoSource";
-    }
 
     log.to << data.to;
     log.arg = QString::number(data.damage);
@@ -2730,9 +2732,9 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             from = move.from;
     }
 
-    if(from)
+    if(from && (from_place == Player::Hand || from_place == Player::Equip))
         thread->trigger(CardLostDone, from);
-    if(to)
+    if(to && (place == Player::Hand || place == Player::Equip))
         thread->trigger(CardGotDone, to);
 }
 
@@ -2933,6 +2935,8 @@ void Room::setEmotion(ServerPlayer *target, const QString &emotion){
 #include <QElapsedTimer>
 
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
+    if(player->hasFlag("ShutUp"))
+        return;
     AI *ai = player->getAI();
     if(ai){
         QElapsedTimer timer;

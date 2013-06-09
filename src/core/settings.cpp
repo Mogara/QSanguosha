@@ -17,7 +17,7 @@ static const qreal ViewWidth = 1280 * 0.8;
 static const qreal ViewHeight = 800 * 0.8;
 
 //consts
-const int Settings::S_MINI_MAX_COUNT = 44;
+const int Settings::S_MINI_MAX_COUNT = 50;
 
 Settings::Settings()
 

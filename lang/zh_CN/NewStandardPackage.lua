@@ -1,0 +1,53 @@
+-- translation for NewStandard Package
+
+return {
+	["new_standard"] = "新标准版",
+
+	["#new_huaxiong"] = "飞扬跋扈",
+	["new_huaxiong"] = "华雄",
+	["designer:new_huaxiong"] = "不明",
+	["illustrator:new_huaxiong"] = "地狱许",
+	["cv:new_huaxiong"] = "极光星逝",
+	["yaowu"] = "耀武",
+	[":yaowu"] = "<b>锁定技</b>，当任意一名角色使用红色【杀】对你造成伤害时，该角色回复一点体力或摸一张牌。",
+	["$yaowu"] = "好快！",
+
+	["#new_yuanshu"] = "野心徒增",
+	["new_yuanshu"] = "袁术",
+	["designer:new_yuanshu"] = "不明",
+	["illustrator:new_yuanshu"] = "LiuHeng",
+	["wangzun"] = "妄尊",
+	[":wangzun"] = "主公的准备阶段开始时，你可以摸一张牌，若如此做，本回合主公手牌上限-1. ",
+	["tongji"] = "同疾",
+	[":tongji"] = "<b>锁定技</b>，如你的手牌数大于你的体力值，则只要你在任一其他角色的攻击范围内，该角色使用【杀】时便不能指定你以外的角色为目标。",
+
+	["#new_huangyueying"] = "倒霉的杰女",
+	["new_huangyueying"] = "黄月英",
+	["illustrator:new_huangyueying"] = "Ask",
+	["cv:new_huangyueying"] = "眠眠",
+	["new_jizhi"] = "集彘",
+	[":new_jizhi"] = "当你使用一张锦囊牌时，你可以展示牌堆顶牌，若该牌为基本牌，将之置入弃牌堆或用一张手牌与之交换；若不为基本牌，则将之收入手牌。",
+	["@newjizhi"] = "你可以用一张手牌替换 %arg，或者将 %arg 置入弃牌堆",
+	["new_qicai"] = "奇柴",
+	[":new_qicai"] = "锁定技，你使用任何锦囊牌无距离限制；其他角色不能弃置你装备区里除坐骑之外的牌。",
+	["#NewQicai"] = "受到 %to 的锁定技【%arg】影响，%from 不能弃置 %to 装备区里除坐骑之外的牌",
+	["$new_jizhi"] = "哼哼~",
+	["$new_qicai"] = "如何？",
+
+	["#new_liubei"] = "倒霉的皇叔",
+	["new_liubei"] = "刘备",
+	["illustrator:new_liubei"] = "木美人",
+	["cv:new_liubei"] = "鬼叔",
+	["new_rende"] = "人德",
+	[":new_rende"] = "出牌阶段限一次，你可以将任意数量的手牌交给其他角色，若你给出的牌张数达2张或更多时，你回复1点体力。",
+	["newrende"] = "人德",
+	["$new_rende"] = "以德服人。",
+
+	["#new_diaochan"] = "倒霉的舞姬",
+	["new_diaochan"] = "貂蝉",
+	["illustrator:new_diaochan"] = "木美人",
+	["cv:new_diaochan"] = "眠眠",
+	["new_lijian"] = "離間",
+	[":new_lijian"] = "出牌阶段限一次，你可以弃置一张牌并选择两名男性角色，若如此做，视为其中一名男性角色对另一名男性角色使用一张【决斗】。",
+	["$new_lijian"] = "嗯哼～",
+}

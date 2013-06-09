@@ -1,0 +1,6 @@
+
+general:guanping role:loyalist hp:2 
+general:shenguanyu role:lord starter:true hp:1 equip:57 
+general:panzhangmazhong role:rebel maxhp:5 hp:5 
+general:liaohua role:loyalist hp:2 
+general:xuhuang role:rebel maxhp:5 hp:5 acquireSkills:duodao 

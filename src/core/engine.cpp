@@ -132,6 +132,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills){
             maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
         else if(skill->inherits("SlashSkill"))
             slash_skills << qobject_cast<const SlashSkill *>(skill);
+        else if (skill->inherits("TargetModSkill"))
+            targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
     }
 }
 
@@ -145,6 +147,10 @@ QList<const MaxCardsSkill *> Engine::getMaxCardsSkills() const{
 
 QList<const SlashSkill *> Engine::getSlashSkills() const{
     return slash_skills;
+}
+
+QList<const TargetModSkill *> Engine::getTargetModSkills() const{
+    return targetmod_skills;
 }
 
 void Engine::addPackage(Package *package){
@@ -591,16 +597,27 @@ QStringList Engine::getRandomLords() const{
 }
 
 QStringList Engine::getLimitedGeneralNames() const{
+    QStringList sys_ban;
+    sys_ban << "zhangchunhua" << "fazheng" << "shenguanyu"
+            << "bgm_xiahoudun" << "bgm_pangtong" << "bgm_daqiao";
     QStringList general_names;
     QHashIterator<QString, const General *> itor(generals);
     while(itor.hasNext()){
         itor.next();
-        if(!ban_package.contains(itor.value()->getPackage())){
+        if(!ban_package.contains(itor.value()->getPackage()))
             general_names << itor.key();
+    }
+
+    foreach(QString sys, sys_ban){
+        QMutableListIterator<QString> itor(general_names);
+        while(itor.hasNext()){
+            itor.next();
+            if(itor.value().contains(sys))
+                itor.remove();
         }
     }
 
-    general_names.removeOne("bgm_pangtong");
+    //general_names.removeOne("yuji");
     return general_names;
 }
 
@@ -767,27 +784,93 @@ int Engine::correctMaxCards(const Player *target) const{
     return extra;
 }
 
-int Engine::correctSlash(const QString &type, const Player *from, const Player *to, const Card *slash) const{
+int Engine::correctSlash(const SlashSkill::Type type, const Player *from, const Player *to, const Card *slash) const{
     int x = 0;
 
     foreach(const SlashSkill *skill, slash_skills){
-        if(type == "residue"){
+        switch(type){
+        case SlashSkill::Residue : {
             int y = skill->getSlashResidue(from);
             if(y < -200) // use slash never
                 return y;
             x += y;
+            break;
         }
-        else if(type == "attackrange"){
+        case SlashSkill::AttackRange : {
             int y = skill->getSlashRange(from, to, slash);
             if(y < 0) // fixed attack range
                 return y;
             /*if(y > x) // use longest range
                 x = y;*/
             x += y; // range plus(wuliujian)
+            break;
         }
-        else if(type == "extragoals")
+        case SlashSkill::ExtraGoals : {
             x += skill->getSlashExtraGoals(from, to, slash);
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
+    //if(slash == NULL)
+    //    slash = cloneCard("slash", Card::NoSuit, 0);
+    if(slash){
+        switch(type){
+        case SlashSkill::Residue :
+            x += correctCardTarget(TargetModSkill::Residue, from, slash);
+            break;
+        case SlashSkill::AttackRange :
+            x += correctCardTarget(TargetModSkill::DistanceLimit, from, slash);
+            break;
+        case SlashSkill::ExtraGoals :
+            x += correctCardTarget(TargetModSkill::ExtraTarget, from, slash);
+            break;
+        default:
+            break;
+        }
     }
 
     return x;
+}
+
+int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const{
+    int x = 0;
+
+    foreach(const TargetModSkill *skill, targetmod_skills){
+        ExpPattern sp(skill->getPattern());
+        if(sp.match(from, card)){
+            switch(type){
+            case TargetModSkill::Residue : {
+                int history = from->usedTimes(card->getClassName());
+                if(card->isKindOf("Slash"))
+                    history = from->getSlashCount();
+                x += qMax(1 + skill->getResidueNum(from, card) - history, 0);
+                break;
+            }
+            case TargetModSkill::DistanceLimit : {
+                x += skill->getDistanceLimit(from, card);
+                break;
+            }
+            case TargetModSkill::ExtraTarget : {
+                x += skill->getExtraTargetNum(from, card);
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
+
+    return x;
+}
+
+bool Engine::useNew3v3(){
+    return Config.GameMode == "06_3v3" && Config.value("3v3/UsingNewMode", false).toBool();
+}
+
+bool Engine::is3v3Friend(const ServerPlayer *a, const ServerPlayer *b){
+    QChar c = a->getRole().at(0);
+    return b->getRole().startsWith(c);
 }
