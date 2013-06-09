@@ -1290,7 +1290,7 @@ sgs.ai_chaofeng.diy_liuxie = 3
 
 function sgs.ai_cardsview_valuable.hantong(self, class_name, player)
 	if class_name == "Slash" and player:getPile("edict"):length() > 0 and not player:hasSkill("jijiang") then
-		local ret = sgs.ai_cardsview_valuable.jijiang(self, class_name, player)
+		local ret = sgs.ai_cardsview_valuable.jijiang(self, class_name, player, false)
 		if ret then return "@HantongCard=." end
 	end
 end

@@ -1,0 +1,4 @@
+extraOptions:restInDiscardPile
+setPile:86,88,103,105,71,130,45,8,7,136,92,123,122,95,80,78,5,70,102,13,74,66,76,61,34,12,131,135,124,56,129,79,33,11,10
+general:zhugeliang role:lord starter:true endedByPile:rebel draw:0 equip:54 
+general:menghuo general2:zhurong role:rebel maxhp:4 nationality:qun draw:0 

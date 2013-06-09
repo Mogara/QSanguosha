@@ -1,0 +1,4 @@
+
+setPile:103,96,95,47,31
+general:select general2:select role:lord starter:true maxhp:3 endedByPile:rebel singleTurn:rebel draw:0 hand:4,9,89,59 
+general:sujiang role:rebel maxhp:3 hp:3 acquireSkills:guhuo,lianying draw:0 hand:0,1,2,3 

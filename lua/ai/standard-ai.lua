@@ -1107,9 +1107,9 @@ sgs.ai_skill_cardask["@jijiang-slash"] = function(self, data)
 	return "."
 end
 
-function sgs.ai_cardsview_valuable.jijiang(self, class_name, player)
+function sgs.ai_cardsview_valuable.jijiang(self, class_name, player, need_lord)
 	if class_name == "Slash" and sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE
-		and not player:hasFlag("Global_JijiangFailed") then
+		and not player:hasFlag("Global_JijiangFailed") and (need_lord ~= false or player:hasLordSkill("jijiang")) then
 		local current = self.room:getCurrent()
 		if self:isFriend(current, player) and current:getKingdom() == "shu" and self:getOverflow(current) > 2 and not self:hasCrossbowEffect(current) then
 			return "@JijiangCard=."

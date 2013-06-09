@@ -1,6 +1,6 @@
-setPile:53,8,7,5,3,1,0,74,73,137,78
-general:caopi general2:select role:rebel starter:true hp:2 endedByPile:lord+loyalist beforeNext:lord+loyalist draw:0 equip:68 hand:109 
-general:yuanshao general2:zhangfei role:lord draw:0 hand:2,24,9 
-general:liubei role:renegade hp:3 turned:true draw:0 judge:103 
+setPile:53,8,7,5,3,1,0,74,73,137,78 
+general:caopi general2:select role:rebel starter:true hp:2 endedByPile:lord+loyalist beforeNext:lord+loyalist draw:0 equip:68 
+general:yuanshao general2:weiyan role:lord draw:0 hand:2,24,9 
+general:liubei role:renegade hp:1 draw:0 equip:105 hand:77 judge:103 
 general:zhenji role:loyalist draw:0 equip:64 
-general:caocao general2:chengong role:rebel hp:2 draw:0 hand:55
+general:caocao general2:chengong role:rebel hp:2 draw:0 hand:55 

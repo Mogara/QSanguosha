@@ -350,7 +350,7 @@ sgs.ai_card_intention.BawangCard = sgs.ai_card_intention.ShensuCard
 	描述：当你需要使用一张【酒】时，所有吴势力角色按行动顺序依次选择是否打出一张黑桃2~9的手牌，视为你使用了一张【酒】，直到有一名角色或没有任何角色决定如此做时为止 
 ]]--
 
-function sgs.ai_cardsview.weidai(class_name, player)
+function sgs.ai_cardsview.weidai(self, class_name, player)
 	if class_name == "Analeptic" and player:hasLordSkill("weidai") and not player:hasFlag("weidai_failed") then
 		return "@WeidaiCard=.->."
 	end
