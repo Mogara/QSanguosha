@@ -298,6 +298,7 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL) return false;
     if (!Config.value("EnableSPConvert", true).toBool()) return false;
     if (Config.value("EnableHidden", false).toBool()) return false;
+    if (Config.EnableHegemony) return false;
     if (!isNormalGameMode(Config.GameMode)) return false;
     bool available = false;
     foreach (QString to_gen, to_list) {

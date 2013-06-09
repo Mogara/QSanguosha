@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20130222 (V1.05 Alpha)"
+version = "QSanguosha AI 20130610 (V1.10 Alpha)"
 
 -- checkout https://github.com/haveatry823/QSanguoshaAI for details
 
@@ -967,7 +967,7 @@ sgs.ai_card_intention.general = function(from, to, level)
 		}
 
 		local value_changed = false
-		
+		--[[
 		for msgtype,diffvalue in pairs(diffarr) do
 			if diffvalue ~= 0 then
 				value_changed = true
@@ -986,7 +986,7 @@ sgs.ai_card_intention.general = function(from, to, level)
 			log.arg  = string.format("%d", math.abs(math.ceil(sgs.role_evaluation[from:objectName()]["loyalist"])))
 			log.arg2 = string.format("%d", sgs.role_evaluation[from:objectName()]["renegade"])
 			global_room:sendLog(log)			
-		end
+		end]]
 	end
 	sgs.outputRoleValues(from, level)
 end
@@ -2131,7 +2131,7 @@ function SmartAI:filterEvent(event, player, data)
 			self.room:setTag("humanCount",sgs.QVariant(humanCount))
 
 			if humanCount == 1 and not sgs.isRolePredictable() and not sgs.GetConfig("EnableHegemony", false) then 
-				global_room:writeToConsole(msg)
+				--global_room:writeToConsole(msg)
 			end
 		end
 
@@ -4192,7 +4192,6 @@ function SmartAI:getCards(class_name, flag)
 
 	local cards = {}
 	local card_place, card_str
-	if not room then card_place = sgs.Player_PlaceHand end
 
 	card_str = cardsViewValuable(self, class_name, player)
 	if card_str then
@@ -4201,7 +4200,7 @@ function SmartAI:getCards(class_name, flag)
 	end
 
 	for _, card in sgs.qlist(all_cards) do
-		card_place = card_place or room:getCardPlace(card:getEffectiveId())
+		card_place = room:getCardPlace(card:getEffectiveId())
 
 		if class_name == "." and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
 		elseif card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
@@ -5703,6 +5702,7 @@ function askForAssistMode()
 	end
 	if human_count == 1 and player then
 		local log = sgs.LogMessage()
+		--[[
 		if global_room:askForChoice(player, "ai_AssistMode", "#ai_AssistMode+yes+no") == "yes" then
 			global_room:setTag("ai_AssistMode", sgs.QVariant(true))
 			sgs.ai_AssistTarget = player
@@ -5716,6 +5716,7 @@ function askForAssistMode()
 			global_room:sendLog(log)
 			global_room:sendLog(log)
 		end
+		]]
 	end
 end
 

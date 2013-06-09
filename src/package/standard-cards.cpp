@@ -1205,7 +1205,7 @@ public:
                     int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword", false, Card::MethodDiscard);
                     room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
 
-                    if (damage.from->canDiscard(damage.to, "he")) {
+                    if (damage.from->isAlive() && damage.to->isAlive() && damage.from->canDiscard(damage.to, "he")) {
                         card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword", false, Card::MethodDiscard);
                         room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
                     }

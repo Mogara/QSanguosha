@@ -626,7 +626,7 @@ end
 sgs.ai_skill_use["@@kuangfeng"] = function(self,prompt)
 	local friendly_fire
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:faceUp() and not self:willSkipPlayPhase(friend)
+		if friend:getMark("@gale") == 0 and self:damageIsEffective(friend, sgs.DamageStruct_Fire) and friend:faceUp() and not self:willSkipPlayPhase(friend)
 			and (friend:hasSkill("huoji") or friend:hasWeapon("fan") or (friend:hasSkill("yeyan") and friend:getMark("@flame") > 0)) then
 			friendly_fire = true
 			break
@@ -636,13 +636,14 @@ sgs.ai_skill_use["@@kuangfeng"] = function(self,prompt)
 	local is_chained = 0
 	local target = {}
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:isChained() then
-			is_chained = is_chained + 1
-			table.insert(target, enemy)
-		end
-		if enemy:hasArmorEffect("Vine") then
-			table.insert(target, 1, enemy)
-			break
+		if enemy:getMark("@gale") == 0 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
+			if enemy:isChained() then
+				is_chained = is_chained + 1
+				table.insert(target, enemy)
+			elseif enemy:hasArmorEffect("Vine") then
+				table.insert(target, 1, enemy)
+				break
+			end
 		end
 	end
 	local usecard=false
@@ -666,12 +667,12 @@ sgs.ai_skill_use["@@dawu"] = function(self, prompt)
 	local targets = {}
 	local lord = self.room:getLord()
 	self:sort(self.friends_noself,"defense")
-	if lord and self:isFriend(lord) and not sgs.isLordHealthy() and not self.player:isLord() and not lord:hasSkill("buqu")
+	if lord and lord:getMark("@fog") == 0 and self:isFriend(lord) and not sgs.isLordHealthy() and not self.player:isLord() and not lord:hasSkill("buqu")
 		and not (lord:hasSkill("hunzi") and lord:getMark("hunzi") == 0 and lord:getHp() > 1) then 
 			table.insert(targets, lord:objectName())
 	else
 		for _, friend in ipairs(self.friends_noself) do
-			if self:isWeak(friend) and not friend:hasSkill("buqu") 
+			if friend:getMark("@fog") == 0 and self:isWeak(friend) and not friend:hasSkill("buqu") 
 				and not (friend:hasSkill("hunzi") and friend:getMark("hunzi") == 0 and friend:getHp() > 1) then
 					table.insert(targets, friend:objectName())
 					break 

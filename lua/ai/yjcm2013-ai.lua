@@ -979,15 +979,20 @@ sgs.ai_skill_discard.fencheng = function(self, discard_num, min_num, optional, i
 		end
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		self:sortByKeepValue(cards, true)
-		if self:needToThrowArmor() then table.insert(to_discard, self.player:getArmor():getEffectiveId())
+		local wep_id, arm_id, def_id, off_id
+		if self.player:getWeapon() then wep_id = self.player:getWeapon():getEffectiveId() end
+		if self.player:getArmor() then arm_id = self.player:getArmor():getEffectiveId() end
+		if self.player:getDefensiveHorse() then def_id = self.player:getDefensiveHorse():getEffectiveId() end
+		if self.player:getOffensiveHorse() then off_id = self.player:getOffensiveHorse():getEffectiveId() end
+		if self:needToThrowArmor() and not table.contains(to_discard, arm_id) then table.insert(to_discard, arm_id)
 		else
-			if self.player:getOffensiveHorse() then table.insert(to_discard, self.player:getOffensiveHorse():getEffectiveId())
-			elseif self.player:getWeapon() then table.insert(to_discard, self.player:getWeapon():getEffectiveId())
-			elseif self.player:getDefensiveHorse() then
-				if self:isWeak() then table.insert(to_discard, self.player:getDefensiveHorse():getEffectiveId())
+			if self.player:getOffensiveHorse() and not table.contains(to_discard, off_id) then table.insert(to_discard, off_id)
+			elseif self.player:getWeapon() and not table.contains(to_discard, wep_id) then table.insert(to_discard, wep_id)
+			elseif self.player:getDefensiveHorse() and not table.contains(to_discard, def_id) then
+				if self:isWeak() then table.insert(to_discard, def_id)
 				else return {} end
-			elseif self.player:getArmor() then
-				if self:isWeak() then table.insert(to_discard, self.player:getArmor():getEffectiveId())
+			elseif self.player:getArmor() and not table.contains(to_discard, arm_id) then
+				if self:isWeak() then table.insert(to_discard, arm_id)
 				else return {} end
 			end
 			if #to_discard == discard_num + 1 then table.removeOne(to_discard, cards[1]:getEffectiveId()) end

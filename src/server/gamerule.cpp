@@ -28,19 +28,6 @@ GameRule::GameRule(QObject *)
            << ConfirmDamage << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge
            << ChoiceMade;
-
-    skill_mark["niepan"] = "@nirvana";
-    skill_mark["yeyan"] = "@flame";
-    skill_mark["luanwu"] = "@chaos";
-    skill_mark["fuli"] = "@laoji";
-    skill_mark["jiefan"] = "@rescue";
-    skill_mark["fencheng"] = "@burn";
-    skill_mark["zuixiang"] = "@sleep";
-    skill_mark["shichou"] = "@hate";
-    skill_mark["fenxin"] = "@burnheart";
-    skill_mark["xiongyi"] = "@arise";
-    skill_mark["zhongyi"] = "@loyal";
-    skill_mark["xiechan"] = "@twine";
 }
 
 bool GameRule::triggerable(const ServerPlayer *target) const{
@@ -1014,9 +1001,15 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     QStringList names = room->getTag(player->objectName()).toStringList();
     if (names.isEmpty()) return;
 
+    LogMessage log;
+    log.type = "#BasaraReveal";
+    log.from = player;
+    log.arg  = player->getGeneralName();
+    log.arg2 = player->getGeneral2Name();
+    room->sendLog(log);
+
     if (player->getGeneralName() == "anjiang") {
-        room->changeHero(player, general_name, false, false, false, false);
-        Q_ASSERT(player->getGeneral() != NULL);
+        room->changeHero(player, general_name, false, true, false, false);
         room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
 
         if (player->getGeneral()->getKingdom() == "god") {
@@ -1032,16 +1025,8 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 
         if (Config.EnableHegemony)
             room->setPlayerProperty(player, "role", getMappedRole(player->getKingdom()));
-        foreach (QString skill_name, GameRule::skill_mark.keys()) {
-            if (player->hasSkill(skill_name, true))
-                room->addPlayerMark(player, GameRule::skill_mark[skill_name]);
-        }
     } else {
-        room->changeHero(player, general_name, false, false, true, false);
-        foreach (QString skill_name, GameRule::skill_mark.keys()) {
-            if (player->hasSkill(skill_name, true))
-                room->addPlayerMark(player, GameRule::skill_mark[skill_name]);
-        }
+        room->changeHero(player, general_name, false, true, true, false);
     }
 
     Q_ASSERT(room->getThread() != NULL);
@@ -1049,14 +1034,6 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 
     names.removeOne(general_name);
     room->setTag(player->objectName(), QVariant::fromValue(names));
-
-    LogMessage log;
-    log.type = "#BasaraReveal";
-    log.from = player;
-    log.arg  = player->getGeneralName();
-    log.arg2 = player->getGeneral2Name();
-
-    room->sendLog(log);
 }
 
 bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{

@@ -743,7 +743,8 @@ public:
         if (player->getPhase() != Player::NotActive)
             return false;
 
-        if (room->getCurrent() && room->getCurrent()->isAlive()) {
+        ServerPlayer *current = room->getCurrent();
+        if (current && current->isAlive() && current->getPhase() != Player::NotActive) {
             room->broadcastSkillInvoke(objectName(), 1);
             room->notifySkillInvoked(player, objectName());
             if (player->getMark("@late") == 0)

@@ -18,9 +18,6 @@ private:
     void changeGeneral1v1(ServerPlayer *player) const;
     void changeGeneralXMode(ServerPlayer *player) const;
     QString getWinner(ServerPlayer *victim) const;
-
-protected:
-    QMap<QString, QString> skill_mark;
 };
 
 class HulaoPassMode: public GameRule {

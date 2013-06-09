@@ -319,7 +319,7 @@ public:
             }
 
             if (can_invoke)
-                room->askForUseCard(jianyong, "@@qiaoshui", "@qiaoshui-card");
+                room->askForUseCard(jianyong, "@@qiaoshui", "@qiaoshui-card", 1);
         }
 
         return false;

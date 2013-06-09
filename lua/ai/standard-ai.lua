@@ -1797,7 +1797,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	others = sgs.QList2Table(others)
 	local source
 	for _, player in ipairs(others) do
-		if player:hasFlag("slash_source") then
+		if player:hasFlag("LiuliSlashSource") then
 			source = player
 			break
 		end
