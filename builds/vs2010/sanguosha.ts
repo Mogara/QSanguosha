@@ -600,7 +600,7 @@
     <message>
         <location filename="../../src/ui/clientlogbox.cpp" line="19"/>
         <source>&lt;font color=&apos;%1&apos;&gt;------------------------------&lt;/font&gt;</source>
-        <translation>&lt;font color=&apos;%1&apos;&gt;─────────────────────&lt;/font&gt;</translation>
+        <translation>&lt;font color=&apos;%1&apos;&gt;───────────────&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/ui/clientlogbox.cpp" line="89"/>
@@ -894,23 +894,23 @@
     <message>
         <location filename="../../src/server/contestdb.cpp" line="26"/>
         <source>Database open error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/server/contestdb.cpp" line="26"/>
         <source>The database can not be opened:
  %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/server/contestdb.cpp" line="59"/>
         <source>Database query error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/server/contestdb.cpp" line="59"/>
         <source>Please create database before using this mode</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -2667,7 +2667,7 @@
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="356"/>
         <source>Rapid Victory</source>
-        <translation type="unfinished"></translation>
+        <translation>旗开得胜</translation>
     </message>
     <message>
         <location filename="../../src/core/record-analysis.cpp" line="358"/>
@@ -3163,7 +3163,7 @@
         <location filename="../../src/ui/roomscene.cpp" line="2713"/>
         <location filename="../../src/ui/roomscene.cpp" line="2736"/>
         <source>&lt;font color=&apos;%1&apos;&gt;---------- Game Finish ----------&lt;/font&gt;</source>
-        <translation>&lt;font color=&apos;%1&apos;&gt;────────游戏结束────────&lt;/font&gt;</translation>
+        <translation>&lt;font color=&apos;%1&apos;&gt;─────游戏结束─────&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="2720"/>
@@ -3336,7 +3336,7 @@
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="3459"/>
         <source>&lt;font color=&apos;%1&apos;&gt;---------- Game Start ----------&lt;/font&gt;</source>
-        <translation>&lt;font color=&apos;%1&apos;&gt;────────游戏开始────────&lt;/font&gt;</translation>
+        <translation>&lt;font color=&apos;%1&apos;&gt;─────游戏开始─────&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="3775"/>
