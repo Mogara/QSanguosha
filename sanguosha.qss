@@ -10,21 +10,16 @@ QProgressBar::chunk{
     background: #B22222;
 }
 
-QTextEdit{
+QTextEdit[type="border"]{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
     background-color: rgba(43,45,31,120);
 }
 
-QTextEdit[description="true"]{
+QTextEdit[type="description"]{
     border: 10px;
 	border-image: none;
     background-color: rgba(255,255,255,255);
-}
-
-QTextEdit QScrollBar:vertical  {
-
-     margin: 22px 0 22px 0;
 }
 
 QScrollBar:add-page
@@ -63,6 +58,11 @@ QScrollBar::handle:vertical    {
 QScrollBar::up-arrow:vertical
 {
     border-image: url(image/system/button/scroll-up-arrow.png);
+}
+
+QScrollBar::handle:vertical
+{
+	border-image: url(image/system/button/scroll-handle.png);
 }
 
 QScrollBar::down-arrow:vertical

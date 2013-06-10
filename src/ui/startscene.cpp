@@ -27,7 +27,12 @@ StartScene::StartScene()
 }
 
 void StartScene::addButton(QAction *action){
-    Button *button = new Button(action->text());
+    QString text = action->text();
+    if(action->objectName() == "actionPackaging")
+        text = tr("Lua Manager");
+    else if(action->objectName() == "actionReplay")
+        text = tr("Replay");
+    Button *button = new Button(text);
     button->setMute(false);
 
     connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
@@ -35,11 +40,10 @@ void StartScene::addButton(QAction *action){
 
     QRectF rect = button->boundingRect();
     int n = buttons.length();
-    if(n < 5){
+    if(n < 5)
         button->setPos(- rect.width() - 5, (n - 1) * (rect.height() * 1.2));
-    }else{
+    else
         button->setPos(5, (n - 6) * (rect.height() * 1.2));
-    }
 
     buttons << button;
 }
@@ -83,6 +87,7 @@ void StartScene::switchToServer(Server *server){
     server_log->setFrameShape(QFrame::NoFrame);
     server_log->setFont(QFont("Verdana", 12));
     server_log->setTextColor(Config.TextEditColor);
+    server_log->setProperty("type", "border");
     setServerLogBackground();
 
     addWidget(server_log);
@@ -145,10 +150,6 @@ void StartScene::printServerInfo(){
                         tr("Scene Mode is enabled") :
                         tr("Scene Mode is disabled"));
 
-    server_log->append( Config.EnableSame ?
-                        tr("Same Mode is enabled") :
-                        tr("Same Mode is disabled"));
-
     server_log->append( Config.EnableBasara ?
                         tr("Basara Mode is enabled") :
                         tr("Basara Mode is disabled"));
@@ -156,6 +157,14 @@ void StartScene::printServerInfo(){
     server_log->append( Config.EnableHegemony ?
                         tr("Hegemony Mode is enabled") :
                         tr("Hegemony Mode is disabled"));
+
+    server_log->append( Config.EnableSame ?
+                        tr("Same Mode is enabled") :
+                        tr("Same Mode is disabled"));
+
+    server_log->append( Config.EnableEndless ?
+                        tr("Endless Mode is enabled, time: %1").arg(Config.value("EndlessTimes").toString()) :
+                        tr("Endless Mode is disabled"));
 
     if(Config.EnableAI){
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));

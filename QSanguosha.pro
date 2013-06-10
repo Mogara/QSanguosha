@@ -1,16 +1,15 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
-TARGET = QSanguoshaO
+TARGET = QSanguosha
 QT += network sql declarative
 TEMPLATE = app
-win32 : RC_FILE = resource/icono.rc
+win32 : RC_FILE = resource/icon.rc
 macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio
 
 # If you want to use crypto and rcc, please uncomment the following line:
-# CONFIG += crypto
-# DEFINES += CLO_SOU
+CONFIG += crypto
 # However, this is not supported under Linux or Mac OS X temporarily
 
 # If you want to enable joystick support, please uncomment the following line:
@@ -324,9 +323,6 @@ CONFIG(crypto){
         DEFINES += USE_CRYPTO
         LIBS += -lcryptopp
         HEADERS += \
-            src/core/crypto.h \
-            src/core/crypt0.h
+            src/core/crypto.h
         SOURCES += src/core/crypto.cpp
-        TARGET = QSanguosha
-        win32: RC_FILE = resource/icon.rc
 }

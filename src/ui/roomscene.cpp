@@ -307,6 +307,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_box_size.rwidth() += widen_width;
         chat_box->resize(chat_box_size);
         chat_box->setObjectName("chat_box");
+        chat_box->setProperty("type", "border");
 
         chat_box_widget = addWidget(chat_box);
         QPointF chat_box_pos = room_layout->chat_box_pos;
@@ -366,6 +367,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         log_box->resize(chat_box->width(), 205);
         log_box->setTextColor(Config.TextEditColor);
         log_box->setObjectName("log_box");
+        log_box->setProperty("type", "border");
 
         QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
         log_box_widget->setPos(114, -83);
@@ -1015,7 +1017,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         }
 
         menu->popup(event->screenPos());
-    }else if(ServerInfo.FreeChoose && arrange_button){
+    }else if(Config.value("Cheat/EnableCheatMenu", false).toBool() && arrange_button){
         QGraphicsObject *obj = item->toGraphicsObject();
         if(obj && Sanguosha->getGeneral(obj->objectName())){
             to_change = qobject_cast<CardItem *>(obj);
@@ -1537,9 +1539,14 @@ void RoomScene::updateSkillButtons(){
         if(skill->isLordSkill()){
             if(Config.NoLordSkill)
                 continue;
+            if(Sanguosha->useNew3v3())
+                continue;
             if(Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3")
                 continue;
         }
+
+        if(skill->objectName().startsWith("x~") && !Sanguosha->useNew3v3())
+            continue;
 
         addSkillButton(skill);
     }
@@ -2115,13 +2122,14 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::ExecDialog:{
-            ClientInstance->ask_dialog->setParent(main_window, Qt::Dialog);
-            ClientInstance->ask_dialog->exec();
+            if(ClientInstance->ask_dialog != NULL){
+                ClientInstance->ask_dialog->setParent(main_window, Qt::Dialog);
+                ClientInstance->ask_dialog->exec();
 
-            ok_button->setEnabled(false);
-            cancel_button->setEnabled(true);
-            discard_button->setEnabled(false);
-
+                ok_button->setEnabled(false);
+                cancel_button->setEnabled(true);
+                discard_button->setEnabled(false);
+            }
             break;
         }
 
@@ -2488,7 +2496,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
     }
 }
 
-void RoomScene::changeMaxHp(const QString &who, int delta) {
+void RoomScene::changeMaxHp(const QString &, int delta) {
     if (delta < 0)
         Sanguosha->playAudio("maxhplost");
 }

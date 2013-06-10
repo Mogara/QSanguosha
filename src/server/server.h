@@ -74,11 +74,13 @@ public:
     ServerDialog(QWidget *parent);
     void ensureEnableAI();
     bool config();
+    bool isPCConsole() {return pc_console;}
 
 private:
     QWidget *createBasicTab();
     QWidget *createPackageTab();
     QWidget *createAdvancedTab();
+    QWidget *createCheatTab();
     QWidget *createAITab();
     QLayout *createButtonLayout();
 
@@ -86,14 +88,14 @@ private:
     QGroupBox *createChangbanSlopeBox();
     QGroupBox *create3v3Box();
     QPushButton *ok_button;
+    QCheckBox *minimize_checkbox;
 
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
     QCheckBox *contest_mode_checkbox;
-    QCheckBox *free_choose_checkbox;
-    QCheckBox *free_assign_checkbox;
-    QCheckBox *free_assign_self_checkbox;
+    QCheckBox *random_seat_checkbox;
+    QSpinBox *swap_spinbox;
     QSpinBox *maxchoice_spinbox;
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;
@@ -101,6 +103,8 @@ private:
     QCheckBox *nolordskill_checkbox;
     QCheckBox *scene_checkbox;	//changjing
     QCheckBox *same_checkbox;
+    QCheckBox *endless_checkbox;
+    QSpinBox *endless_timebox;
     QCheckBox *basara_checkbox;
     QCheckBox *hegemony_checkbox;
     QLabel *max_hp_label;
@@ -111,6 +115,16 @@ private:
     QPushButton *mini_scene_button;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
+    QCheckBox *cheat_enable_checkbox;
+    QCheckBox *free_choose_generals_checkbox;
+    QCheckBox *free_choose_cards_checkbox;
+    QCheckBox *free_assign_checkbox;
+    QCheckBox *free_assign_self_checkbox;
+    QCheckBox *free_discard_checkbox;
+    QCheckBox *gambling_cards_checkbox;
+    QCheckBox *free_change_general_checkbox;
+    QCheckBox *free_undead_checkbox;
+    QCheckBox *hands_up_checkbox;
     QCheckBox *ai_enable_checkbox;
     QCheckBox *role_predictable_checkbox;
     QCheckBox *ai_nickname_checkbox, *ai_chat_checkbox;
@@ -124,15 +138,19 @@ private:
 
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;
+    bool pc_console;
 
 private slots:
     void onOkButtonClicked();
+    void onSerButtonClicked();
+    void onPCCButtonClicked();
     void onDetectButtonClicked();
     void onHttpDone(bool error);
     void select3v3Generals();
     void edit1v1Banlist();
     void updateButtonEnablility(QAbstractButton* button);
     void updateCheckBoxState(bool toggled);
+    void doCheat(bool enable);
 
     void doCustomAssign();
     void setMiniCheckBox();

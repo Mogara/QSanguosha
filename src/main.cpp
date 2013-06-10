@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
             Config.HostAddress = arg;
             Config.setValue("HostAddress", arg);
 
-            main_window->startConnection();
+            main_window->on_actionRestart_game_triggered();
 
             break;
         }

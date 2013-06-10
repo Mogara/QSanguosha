@@ -123,7 +123,7 @@ void Dashboard::createRight(){
     handcard_num = new QGraphicsSimpleTextItem(handcard_pixmap);
     handcard_num->setPos(6,8);
 
-     QFont serifFont("Times", 10, QFont::Bold);
+    QFont serifFont("Times", 10, QFont::Bold);
     handcard_num->setFont(serifFont);
     handcard_num->setBrush(Qt::white);
 

@@ -280,12 +280,12 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
     else emit toggle_discards();
 }
 
-void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     emit enter_hover();
 }
 
-void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     emit leave_hover();
 }

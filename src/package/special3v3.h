@@ -6,6 +6,15 @@
 #include "skill.h"
 #include "standard.h"
 
+class XZhongyiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XZhongyiCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 class HongyuanCard: public SkillCard{
     Q_OBJECT
 

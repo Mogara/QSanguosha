@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCTBHAM12]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSRCTEBHAM12]*)");
     if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -48,6 +48,7 @@ bool ServerInfoStruct::parse(const QString &str){
     Enable2ndGeneral = flags.contains("S");
     EnableScene = flags.contains("C");
     EnableSame = flags.contains("T");
+    EnableEndless = flags.contains("E");
     EnableBasara= flags.contains("B");
     EnableHegemony = flags.contains("H");
     EnableAI = flags.contains("A");
@@ -73,6 +74,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     two_general_label = new QLabel;
     scene_label = new QLabel;
     same_label = new QLabel;
+    endless_label = new QLabel;
     basara_label = new QLabel;
     hegemony_label = new QLabel;
     free_choose_label = new QLabel;
