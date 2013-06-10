@@ -345,15 +345,11 @@ end
 
 sgs.ai_chaofeng.fazheng = -3
 
-sgs.ai_skill_choice.xuanfeng = function(self, choices)
-	local erzhang = self.room:findPlayerBySkillName("guzheng")
-	if erzhang and self:isEnemy(erzhang) and self.room:getCurrent():getPhase() == sgs.Player_Discard then return "nothing" end
-	return "throw"
-end
-
 sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
+	local erzhang = self.room:findPlayerBySkillName("guzheng")
+	if erzhang and self:isEnemy(erzhang) and self.room:getCurrent():getPhase() == sgs.Player_Discard then return "." end
 	local first
-	local second	
+	local second
 	first = self:findPlayerToDiscard("he", false)
 	second = self:findPlayerToDiscard("he", false, true, self.room:getOtherPlayers(first))
 

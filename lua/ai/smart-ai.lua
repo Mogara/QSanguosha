@@ -3382,12 +3382,7 @@ function SmartAI:askForPlayerChosen(targets, reason)
 	if type(playerchosen) == "function" then
 		target = playerchosen(self,targets)
 	end
-	if target then
-		return target
-	elseif not targets:isEmpty() then
-		local r = math.random(0, targets:length() - 1)
-		return targets:at(r)
-	end
+	return target
 end
 
 function SmartAI:ableToSave(saver, dying)

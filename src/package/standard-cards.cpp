@@ -1199,14 +1199,14 @@ public:
         if (damage.card && damage.card->isKindOf("Slash")
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && !damage.to->isNude() && damage.by_user
-            && !damage.chain && !damage.transfer && player->askForSkillInvoke("ice_sword", data)) {
+            && !damage.chain && !damage.transfer && player->askForSkillInvoke("IceSword", data)) {
                 room->setEmotion(player, "weapon/ice_sword");
                 if (damage.from->canDiscard(damage.to, "he")) {
-                    int card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword", false, Card::MethodDiscard);
+                    int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
                     room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
 
                     if (damage.from->isAlive() && damage.to->isAlive() && damage.from->canDiscard(damage.to, "he")) {
-                        card_id = room->askForCardChosen(player, damage.to, "he", "ice_sword", false, Card::MethodDiscard);
+                        card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
                         room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
                     }
                 }

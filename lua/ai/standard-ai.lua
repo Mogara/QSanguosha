@@ -46,7 +46,7 @@ end
 function sgs.ai_slash_prohibit.hujia(self, to, card, from)
 	if self:isFriend(to) then return false end
 	local guojia = self.room:findPlayerBySkillName("tiandu")
-	if guojia and guojia:getKingdom() == "wei" and self:isFriend(to, guojia) then return sgs.ai_slash_prohibit.tiandu(self, guojia) end
+	if guojia and guojia:getKingdom() == "wei" and self:isFriend(to, guojia) then return sgs.ai_slash_prohibit.tiandu(self, guojia, card, from) end
 end
 
 sgs.ai_choicemade_filter.cardResponded["@hujia-jink"] = function(player, promptlist)
@@ -299,7 +299,7 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, min_num, optional, in
 	return ganglie_discard(self, discard_num, min_num, optional, include_equip, "ganglie")
 end
 
-function sgs.ai_slash_prohibit.ganglie(self, from, to)
+function sgs.ai_slash_prohibit.ganglie(self, to, card, from)
 	if self:isFriend(from, to) then return false end
 	if from:hasSkill("jueqing") or (from:hasSkill("nosqianxi") and from:distanceTo(to) == 1) then return false end
 	if from:hasFlag("NosJiefanUsed") then return false end

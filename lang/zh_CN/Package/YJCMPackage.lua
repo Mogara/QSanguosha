@@ -65,6 +65,8 @@ return {
 	["illustrator:lingtong"] = "绵Myan",
 	["xuanfeng"] = "旋风",
 	[":xuanfeng"] = "每当你失去一次装备区的装备牌后，或于弃牌阶段内因你的弃置而失去两张或更多的手牌后（弃牌阶段限一次），你可以依次弃置一至两名其他角色的共计两张牌。",
+	["@xuanfeng-card"] = "你可以发动“旋风”",
+	["~xuanfeng"] = "选择1-2名其他角色→点击确定",
 
 	["#wuguotai"] = "武烈皇后",
 	["wuguotai"] = "吴国太",

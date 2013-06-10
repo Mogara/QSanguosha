@@ -425,6 +425,7 @@ bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Play
 }
 
 void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *> &targets) const{
+    lingtong->setFlags("XuanfengUsed");
     QMap<ServerPlayer*,int> map;
     int totaltarget = 0;
     foreach(ServerPlayer* sp, targets)
@@ -438,7 +439,7 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *>
             map[sp]++;
         }
     }
-    foreach(ServerPlayer* sp,map.keys()){
+    foreach(ServerPlayer* sp, targets){
         while(map[sp] > 0){
             if(lingtong->isAlive() && sp->isAlive() && lingtong->canDiscard(sp, "he")){
                 int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng", false, Card::MethodDiscard);
@@ -496,12 +497,7 @@ public:
                 }
                 if (targets.isEmpty())
                     return false;
-                QString choice = room->askForChoice(lingtong, objectName(), "throw+nothing");
-                if (choice == "throw") {
-                    lingtong->setFlags("XuanfengUsed");
-                    room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
-                }
-
+                room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
             }
         }
 

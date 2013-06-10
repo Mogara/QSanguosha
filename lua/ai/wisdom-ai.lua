@@ -351,7 +351,7 @@ sgs.ai_card_intention.BawangCard = sgs.ai_card_intention.ShensuCard
 ]]--
 
 function sgs.ai_cardsview.weidai(self, class_name, player)
-	if class_name == "Analeptic" and player:hasLordSkill("weidai") and not player:hasFlag("weidai_failed") then
+	if class_name == "Analeptic" and player:hasLordSkill("weidai") and not player:hasFlag("Global_WeidaiFailed") then
 		return "@WeidaiCard=.->."
 	end
 end
