@@ -49,7 +49,8 @@ config = {
 	xmode_packages = {
 		"standard",
 		"wind",
-		"fire"
+		"fire",
+		"nostal_standard"
 	},
 
 	color_wei = "#547998",
@@ -103,7 +104,12 @@ config = {
 	xmode_ban = {
 		"huatuo",
 		"zhangjiao",
-		"yuji"
+		"yuji",
+		"liubei",
+		"diaochan",
+		"huangyueying",
+		"st_yuanshu",
+		"st_huaxiong"
 	},
 
 	basara_ban = {

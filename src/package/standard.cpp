@@ -212,22 +212,26 @@ DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
 }
 
 void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct use = card_use;
+    WrappedCard *wrapped = Sanguosha->getWrappedCard(this->getEffectiveId());
+    use.card = wrapped;
+
     LogMessage log;
-    log.from = card_use.from;
-    log.to = card_use.to;
+    log.from = use.from;
+    log.to = use.to;
     log.type = "#UseCard";
     log.card_str = toString();
     room->sendLog(log);
 
-    QVariant data = QVariant::fromValue(card_use);
+    QVariant data = QVariant::fromValue(use);
     RoomThread *thread = room->getThread();
-    thread->trigger(PreCardUsed, room, card_use.from, data);
+    thread->trigger(PreCardUsed, room, use.from, data);
 
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), card_use.to.first()->objectName(), this->getSkillName(), QString());
-    room->moveCardTo(this, card_use.from, card_use.to.first(), Player::PlaceDelayedTrick, reason, true);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), this->getSkillName(), QString());
+    room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
 
-    thread->trigger(CardUsed, room, card_use.from, data);
-    thread->trigger(CardFinished, room, card_use.from, data);
+    thread->trigger(CardUsed, room, use.from, data);
+    thread->trigger(CardFinished, room, use.from, data);
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
