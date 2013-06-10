@@ -1428,7 +1428,7 @@ public:
             }
             // find yuanshu
             foreach (const Player *p, from->getSiblings()) {
-                if (p->hasSkill(objectName()) && p->getHandcardNum() > p->getHp()
+                if (p->isAlive() && p->hasSkill(objectName()) && p->getHandcardNum() > p->getHp()
                     && from->distanceTo(p, rangefix) <= from->getAttackRange()) {
                     return true;
                 }
