@@ -93,7 +93,7 @@ public:
 
         sum += to_select->getNumber();
 
-        return sum <= Self->getMark("chengxiang");
+        return sum <= Self->getMark("ytchengxiang");
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
@@ -102,7 +102,7 @@ public:
             sum += card->getNumber();
         }
 
-        if(sum == Self->getMark("chengxiang")){
+        if(sum == Self->getMark("ytchengxiang")){
             YTChengxiangCard *card = new YTChengxiangCard;
             card->addSubcards(cards);
             return card;
@@ -132,7 +132,7 @@ public:
         Room *room = caochong->getRoom();
         room->setPlayerMark(caochong, objectName(), point);
 
-        QString prompt = QString("@chengxiang-card:::%1").arg(point);
+        QString prompt = QString("@ytchengxiang-card:::%1").arg(point);
         room->askForUseCard(caochong, "@@ytchengxiang", prompt);
     }
 };
