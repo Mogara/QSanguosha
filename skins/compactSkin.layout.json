@@ -22,7 +22,7 @@
     "maximumSceneSize": [1130, 675], // if greater than this size, switch to default skin
     "minimumSceneSize": [940, 595], // if smaller than this size, start scaling 
     "maximumSceneSize-10player": [1145, 845],
-    "minimumSceneSize-10player": [990, 740]
+    "minimumSceneSize-10player": [990, 700]
 },
 "photo":
 {

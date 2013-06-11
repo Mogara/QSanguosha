@@ -1470,8 +1470,15 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	end
 
 	if #use_cards > 0 then
-		use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards, "+"))
-		return
+		if self.player:getMark("ZhihengInLatestKOF") > 0 then
+			local use_cards_kof = { use_cards[1] }
+			if #use_cards > 1 then table.insert(use_cards_kof, use_cards[2]) end
+			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards_kof, "+"))
+			return
+		else
+			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards, "+"))
+			return
+		end
 	end
 end
 
