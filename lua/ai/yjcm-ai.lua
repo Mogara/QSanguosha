@@ -228,11 +228,6 @@ sgs.ai_card_intention.XuanhuoCard = -30
 
 sgs.ai_chaofeng.fazheng = -3
 
-
-sgs.ai_skill_choice.xuanfeng = function(self, choices)
-	return "throw"
-end
-
 sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
 	if #self.enemies == 0 then
 		return "."
@@ -262,7 +257,7 @@ sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
 end
 
 sgs.ai_card_intention.XuanfengCard = 80
-
+--[[
 sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
@@ -273,8 +268,7 @@ sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)
 		end
 	end
 end
-
-
+]]
 
 sgs.ai_skill_invoke.pojun = function(self, data)
 	local damage = data:toDamage()

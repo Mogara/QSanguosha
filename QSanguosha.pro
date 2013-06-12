@@ -9,7 +9,7 @@ macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio
 
 # If you want to use crypto and rcc, please uncomment the following line:
-CONFIG += crypto
+# CONFIG += crypto
 # However, this is not supported under Linux or Mac OS X temporarily
 
 # If you want to enable joystick support, please uncomment the following line:

@@ -13,12 +13,15 @@ struct ServerInfoStruct{
     QString GameMode;
     int OperationTimeout;
     QStringList Extensions;
-    bool FreeChoose;
+    //bool Statistic;
     bool Enable2ndGeneral;
+    bool EnableReincarnation;
     bool EnableScene;
     bool EnableSame;
+    bool EnableEndless;
     bool EnableBasara;
     bool EnableHegemony;
+    bool FreeChoose;
     bool EnableAI;
     bool DisableChat;
     int MaxHPScheme;
@@ -46,8 +49,10 @@ private:
     QLabel *game_mode_label;
     QLabel *player_count_label;
     QLabel *two_general_label;
+    QLabel *reincarnation_label;
     QLabel *scene_label;
     QLabel *same_label;
+    QLabel *endless_label;
     QLabel *basara_label;
     QLabel *hegemony_label;
     QLabel *max_hp_label;

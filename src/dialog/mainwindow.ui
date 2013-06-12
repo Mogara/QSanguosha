@@ -25,8 +25,10 @@
      <string>Game</string>
     </property>
     <addaction name="actionStart_Game"/>
-    <addaction name="actionStart_Server"/>
-    <addaction name="actionPC_Console_Start"/>
+    <addaction name="actionJoin_Game"/>
+    <addaction name="separator"/>
+    <addaction name="actionRestart_game"/>
+    <addaction name="actionReturn_main"/>
     <addaction name="actionReplay"/>
     <addaction name="actionExit"/>
    </widget>
@@ -46,6 +48,7 @@
     <addaction name="actionReplay_file_convert"/>
     <addaction name="actionCrypto_audio"/>
     <addaction name="actionDecrypto_audio"/>
+    <addaction name="actionCheck_resource"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionExpand_dashboard"/>
@@ -70,9 +73,28 @@
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="menuCard_style">
+     <property name="title">
+      <string>Card style</string>
+     </property>
+     <addaction name="actionCStandard"/>
+     <addaction name="actionCGolden_Snake"/>
+     <addaction name="actionSgs_OL"/>
+    </widget>
+    <widget class="QMenu" name="menuGeneral_style">
+     <property name="title">
+      <string>General style</string>
+     </property>
+     <addaction name="actionGStandard"/>
+     <addaction name="actionGGolden_Snake"/>
+     <addaction name="actionCustom"/>
+    </widget>
     <addaction name="actionShow_Hide_Menu"/>
     <addaction name="actionFullscreen"/>
     <addaction name="actionMinimize_to_system_tray"/>
+    <addaction name="separator"/>
+    <addaction name="menuCard_style"/>
+    <addaction name="menuGeneral_style"/>
    </widget>
    <widget class="QMenu" name="menuCheat">
     <property name="enabled">
@@ -96,6 +118,8 @@
     <addaction name="actionCard_editor"/>
     <addaction name="actionScript_editor"/>
     <addaction name="actionPackaging"/>
+    <addaction name="separator"/>
+    <addaction name="actionEnable_Lua"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuView"/>
@@ -121,17 +145,17 @@
     <string>Configure</string>
    </property>
   </action>
-  <action name="actionStart_Server">
+  <action name="actionStart_Game">
    <property name="text">
-    <string>Start server</string>
+    <string>Start game</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionStart_Game">
+  <action name="actionJoin_Game">
    <property name="text">
-    <string>Start game</string>
+    <string>Join game</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
@@ -327,11 +351,6 @@
     <string>Ctrl+T</string>
    </property>
   </action>
-  <action name="actionPC_Console_Start">
-   <property name="text">
-    <string>PC Console Start</string>
-   </property>
-  </action>
   <action name="actionPackaging">
    <property name="text">
     <string>Package manager ...</string>
@@ -378,6 +397,22 @@
     <string>Execute script at server side ...</string>
    </property>
   </action>
+  <action name="actionRestart_game">
+   <property name="text">
+    <string>Restart game</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
+  <action name="actionReturn_main">
+   <property name="text">
+    <string>Return main</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+  </action>
   <action name="actionChange_general">
    <property name="text">
     <string>Change general ...</string>
@@ -389,8 +424,72 @@
    </property>
   </action>
   <action name="actionDecrypto_audio">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Decrypto audio ...</string>
+   </property>
+  </action>
+  <action name="actionCheck_resource">
+   <property name="text">
+    <string>Check resource</string>
+   </property>
+  </action>
+  <action name="actionCStandard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Standard</string>
+   </property>
+  </action>
+  <action name="actionSgs_OL">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sgs OL</string>
+   </property>
+  </action>
+  <action name="actionCGolden_Snake">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Golden Snake</string>
+   </property>
+  </action>
+  <action name="actionGStandard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Standard</string>
+   </property>
+  </action>
+  <action name="actionGGolden_Snake">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Golden Snake</string>
+   </property>
+  </action>
+  <action name="actionCustom">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Custom</string>
+   </property>
+  </action>
+  <action name="actionEnable_Lua">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Lua</string>
    </property>
   </action>
  </widget>

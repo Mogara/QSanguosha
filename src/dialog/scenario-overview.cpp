@@ -19,7 +19,7 @@ ScenarioOverview::ScenarioOverview(QWidget *parent)
 
     content_box = new QTextEdit;
     content_box->setReadOnly(true);
-    content_box->setProperty("description", true);
+    //content_box->setProperty("type", "description");
 
     QHBoxLayout *layout = new QHBoxLayout;
 
@@ -29,7 +29,7 @@ ScenarioOverview::ScenarioOverview(QWidget *parent)
     setLayout(layout);
 
     QStringList names = Sanguosha->getScenarioNames();
-    names << "Hulaopass" << "Basara" << "Hegemony" << "MiniScene" << "Changban";
+    names << "reincarnation" << "Hulaopass" << "Basara" << "Hegemony" << "MiniScene" << "endlessmode" << "Changban";
     foreach(QString name, names){
         QString text = Sanguosha->translate(name);
         QListWidgetItem *item = new QListWidgetItem(text, list);

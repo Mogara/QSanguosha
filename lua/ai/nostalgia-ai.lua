@@ -171,12 +171,12 @@ sgs.ai_skill_playerchosen.nosxuanhuo = function(self, targets)
 	end
 end
 
-sgs.nosfazheng_suit_value = 
+sgs.nos_fazheng_suit_value = 
 {
 	heart = 3.9
 }
 
-sgs.ai_chaofeng.nosfazheng = -3
+sgs.ai_chaofeng.nos_fazheng = -3
 
 sgs.ai_skill_choice.nosxuanfeng = function(self, choices)
 	self:sort(self.enemies, "defense")
@@ -191,12 +191,12 @@ sgs.ai_skill_choice.nosxuanfeng = function(self, choices)
 	return "nothing"
 end
 
-sgs.ai_skill_playerchosen.nosxuanfeng_damage = sgs.ai_skill_playerchosen.damage
+sgs.ai_skill_playerchosen.xuanfeng_damage = sgs.ai_skill_playerchosen.damage
 
-sgs.ai_skill_playerchosen.nosxuanfeng_slash = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_skill_playerchosen.xuanfeng_slash = sgs.ai_skill_playerchosen.zero_card_as_slash
 
-sgs.ai_playerchosen_intention.nosxuanfeng_damage = 80
-sgs.ai_playerchosen_intention.nosxuanfeng_slash = 80
+sgs.ai_playerchosen_intention.xuanfeng_damage = 80
+sgs.ai_playerchosen_intention.xuanfeng_slash = 80
 
 sgs.ai_view_as.nosgongqi = function(card, player, card_place)
 	local suit = card:getSuitString()
@@ -260,4 +260,36 @@ sgs.ai_skill_cardask["nosjiefan-slash"] = function(self, data, pattern, target)
 		end 
 	end
 	return "."
+end
+
+sgs.ai_skill_invoke.nosfuhun = function(self, data)
+	local target = 0
+	for _,enemy in ipairs(self.enemies) do
+		if (self.player:distanceTo(enemy) <= self.player:getAttackRange())  then target = target + 1 end
+	end
+	return target > 0 and not self.player:isSkipped(sgs.Player_Play)
+end
+
+sgs.ai_skill_invoke.noszhenlie = function(self, data)
+	local judge = data:toJudge()
+	if not judge:isGood() then 
+	return true end
+	return false
+end
+
+sgs.ai_skill_playerchosen.nosmiji = function(self, targets)
+	targets = sgs.QList2Table(targets)
+	self:sort(targets, "defense")
+	for _, target in ipairs(targets) do
+		if self:isFriend(target) then return target end 
+	end
+end
+
+sgs.ai_skill_invoke.nosqianxi = function(self, data)
+	local damage = data:toDamage()
+	local target = damage.to
+	if self:isFriend(target) then return false end
+	if self:hasSkills(sgs.masochism_skill,target) or self:hasSkills(sgs.recover_skill,target) or self:hasSkills("longhun|buqu",target) then return true end
+	if damage.card:hasFlag("drank") then return false end
+	return (target:getMaxHp() - target:getHp()) < 2 
 end

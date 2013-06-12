@@ -3,15 +3,12 @@
 #include "engine.h"
 #include "clientstruct.h"
 #include "client.h"
+#include "settings.h"
 
 #ifdef USE_CRYPTO
     #include <QResource>
     #include <QFile>
-    #ifndef CLO_SOU
     #include "crypto.h"
-    #else
-    #include "crypt0.h"
-    #endif
 #endif
 static CardOverview *Overview;
 
@@ -38,12 +35,13 @@ CardOverview::CardOverview(QWidget *parent) :
     ui->tableWidget->setColumnWidth(3, 60);
     ui->tableWidget->setColumnWidth(4, 70);
 
-    if(ServerInfo.FreeChoose)
+    if(ServerInfo.isPlay && Config.FreeChooseCards){
+        ui->getCardButton->show();
         connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
-    else
+    }else
         ui->getCardButton->hide();
 
-    ui->cardDescriptionBox->setProperty("description", true);
+    //ui->cardDescriptionBox->setProperty("type", "description");
 }
 
 void CardOverview::loadFromAll(){
@@ -62,7 +60,7 @@ void CardOverview::loadFromList(const QList<const Card*> &list){
     int i, n = list.length();
     ui->tableWidget->setRowCount(n);
     for(i=0; i<n; i++)
-        addCard(i, list.at(i));    
+        addCard(i, list.at(i));
 
     if(n>0)
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
@@ -85,7 +83,7 @@ void CardOverview::addCard(int i, const Card *card){
     ui->tableWidget->setItem(i, 2, new QTableWidgetItem(point));
     ui->tableWidget->setItem(i, 3, new QTableWidgetItem(type));
     ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
-    ui->tableWidget->setItem(i, 5, new QTableWidgetItem(package));    
+    ui->tableWidget->setItem(i, 5, new QTableWidgetItem(package));
 }
 
 CardOverview::~CardOverview()
@@ -102,13 +100,18 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
     const Card *card = Sanguosha->getCard(card_id);
-#ifdef USE_CRYPTO
-    QString pixmap_path = QString(":big-card/%1.png").arg(card->objectName());
+
+    QString pixmap_path = QString();
+    int style = Config.value("UI/CStyle", 1).toInt();
+    if(style == 1)
+        pixmap_path = QString(":big-card/%1.png").arg(card->objectName());
+    else if(style == 2)
+        pixmap_path = QString("image/big-card2/%1.png").arg(card->objectName());
+    else
+        pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
+
     if(!QFile::exists(pixmap_path))
         pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
-#else
-    QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
-#endif
 
     ui->cardLabel->setPixmap(pixmap_path);
 
@@ -116,7 +119,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 }
 
 void CardOverview::askCard(){
-    if(!ServerInfo.FreeChoose)
+    if(!Config.FreeChooseCards)
         return;
 
     int row = ui->tableWidget->currentRow();

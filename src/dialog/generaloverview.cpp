@@ -2,6 +2,7 @@
 #include "ui_generaloverview.h"
 #include "engine.h"
 #include "client.h"
+#include "settings.h"
 
 #include <QMessageBox>
 #include <QRadioButton>
@@ -21,14 +22,8 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     group_box->setTitle(tr("Effects"));
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
-    ui->skillTextEdit->setProperty("description", true);
-
-    if(ServerInfo.isPlay && ServerInfo.FreeChoose){
-        ui->changeGeneralButton->show();
-        connect(ui->changeGeneralButton, SIGNAL(clicked()), this, SLOT(askChange()));
-    }
-    else
-        ui->changeGeneralButton->hide();
+    //ui->skillTextEdit->setProperty("type", "description");
+    setProperty("GeneralName", "songjiang");
 }
 
 void GeneralOverview::fillGenerals(const QList<const General *> &generals){
@@ -183,15 +178,21 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
-#ifdef USE_CRYPTO
-    ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card2")));
-#else
-    ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
-#endif
-    if(Self && general_name == Self->getGeneralName())
-        ui->changeGeneralButton->setEnabled(false);
+
+    QString category = QString();
+    int style = Config.value("UI/GStyle", 1).toInt();
+    if(style == 1)
+        category = "card2";
+    else if(style == 2)
+        category = "card3";
     else
-        ui->changeGeneralButton->setEnabled(true);
+        category = "card";
+    ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath(category)));
+
+    if(ServerInfo.isPlay && Config.value("Cheat/FreeChange", false).toBool())
+        ui->changeGeneralButton->show();
+    else
+        ui->changeGeneralButton->hide();
 
     QList<const Skill *> skills = general->getVisibleSkillList();
 
@@ -272,12 +273,12 @@ void GeneralOverview::playEffect()
 }
 
 void GeneralOverview::askChange(){
-    if(!ServerInfo.FreeChoose)
+    if(!Self || !Config.value("Cheat/FreeChange", false).toBool())
         return;
 
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-    if(general_name != Self->getGeneralName()){
+    if(Self && general_name != Self->getGeneralName()){
         ClientInstance->changeGeneral(general_name);
         ui->changeGeneralButton->setEnabled(false);
     }

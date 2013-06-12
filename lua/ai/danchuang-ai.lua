@@ -50,24 +50,18 @@ sgs.ai_skill_invoke.v5yexin = true
 -- paiyi
 sgs.ai_skill_invoke.v5paiyi = true
 sgs.ai_skill_askforag.v5paiyi = function(self, card_ids)
-	local card
-	if not self.v5py then self.v5py = self.friends[1] end
 	return card_ids[1]
 end
 
 sgs.ai_skill_playerchosen.v5paiyi = function(self, targets)
-	local target = self.v5py
-	for _, friend in ipairs(self.friends_noself) do
-		if friend ~= target then
-			self.v5py = friend
-			break
+	targets = sgs.QList2Table(targets)
+	self:sort(targets, "defense")
+	for _, friend in ipairs(targets) do
+		if self:isFriend(friend) then
+			return friend
 		end
 	end
-	if target and target:isAlive() then
-		return target
-	else
-		return self.player
-	end
+	return targets[1]
 end
 
 sgs.ai_skill_choice.v5paiyi = function(self, choices)

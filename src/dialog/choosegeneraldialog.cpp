@@ -62,11 +62,16 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     QSignalMapper *mapper = new QSignalMapper(this);
     QList<OptionButton *> buttons;
-#ifdef USE_CRYPTO
-    QString category("card2");
-#else
-    QString category("card");
-#endif
+
+    QString category = QString();
+    int style = Config.value("UI/GStyle", 1).toInt();
+    if(style == 1)
+        category = "card2";
+    else if(style == 2)
+        category = "card3";
+    else
+        category = "card";
+
     QSize icon_size(200*0.8, 290*0.8);
     if(generals.length() > 10){
         category = "big";
@@ -190,9 +195,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         last_layout->addWidget(progress_bar);
     }
 
-    bool free_choose = ServerInfo.FreeChoose;
-
-    if(free_choose){
+    if(Config.FreeChooseGenerals){
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
         connect(free_choose_button, SIGNAL(clicked()), this, SLOT(freeChoose()));
         last_layout->addWidget(free_choose_button);
@@ -200,9 +203,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     last_layout->addStretch();
 
-    if(last_layout->count() != 0){
+    if(last_layout->count() != 0)
         dialog_layout->addLayout(last_layout);
-    }
 
     setLayout(dialog_layout);
 

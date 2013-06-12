@@ -48,7 +48,7 @@ function SmartAI:slashIsEffective(slash, to)
 			return false
 		end
 	end
-	if (to:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == to:objectName()) then
+	if (to:hasSkill("zhichi") and to:hasFlag("Zhichi")) then
 		return false
 	end
 
@@ -1012,14 +1012,19 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			hasLion = true
 			target = friend
 		end
+		if self:isEquip("GaleShell", friend) and self:hasTrickEffective(card, friend) then
+			hasLion = true
+			target = friend
+		end
 	end
 
 	for _, enemy in ipairs(enemies) do
 		if not enemy:isNude() and self:hasTrickEffective(card, enemy) then
-			if self:getValuableCard(enemy) then
+			local vb = self:getValuableCard(enemy)
+			if vb then
 				use.card = card
 				if use.to then
-					sgs.ai_skill_cardchosen[name] = self:getValuableCard(enemy)
+					sgs.ai_skill_cardchosen[name] = vb
 					use.to:append(enemy)
 					self:speak("hostile", self.player:getGeneral():isFemale())
 				end
@@ -1063,15 +1068,17 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 				if self:hasSkills(sgs.cardneed_skill, enemy) then
 					use.card = card
 					if use.to then
-						sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "he")
-						use.to:append(enemy)
-						self:speak("hostile", self.player:getGeneral():isFemale())
+						if not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell", enemy)) then
+							sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "he")
+							use.to:append(enemy)
+							self:speak("hostile", self.player:getGeneral():isFemale())
+						end
 					end
 					return
 				else
 					use.card = card
 					if use.to then
-						if not equips:isEmpty() then
+						if not equips:isEmpty() and not (equips:length() == 1 and self:isEquip("GaleShell", enemy)) then
 							sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "e")
 						else
 							sgs.ai_skill_cardchosen[name] = self:getCardRandomly(enemy, "h") end

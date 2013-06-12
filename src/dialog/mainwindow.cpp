@@ -12,11 +12,7 @@
 #include "pixmapanimation.h"
 
 #ifdef USE_CRYPTO
-    #ifndef CLO_SOU
     #include "crypto.h"
-    #else
-    #include "crypt0.h"
-    #endif
 #endif
 
 #include <cmath>
@@ -79,8 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle(Sanguosha->translate("QSanguosha"));
     connection_dialog = new ConnectionDialog(this);
-    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
-    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
+    connect(ui->actionJoin_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
+    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(on_actionRestart_game_triggered()));
 
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
@@ -91,10 +87,10 @@ MainWindow::MainWindow(QWidget *parent)
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
-    actions << ui->actionStart_Game
-            << ui->actionStart_Server
-            << ui->actionPC_Console_Start
+    actions << ui->actionStart_Game //Start_Server
+            << ui->actionJoin_Game
             << ui->actionReplay
+            << ui->actionPackaging
             << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
@@ -130,6 +126,16 @@ void MainWindow::restoreFromConfig(){
         QApplication::setFont(Config.UIFont, "QTextEdit");
 
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
+    ui->actionEnable_Lua->setChecked(!Config.DisableLua);
+    int style = Config.value("UI/CStyle", 1).toInt();
+    ui->actionCStandard->setChecked(style == 0);
+    ui->actionCGolden_Snake->setChecked(style == 1);
+    ui->actionSgs_OL->setChecked(style == 2);
+    style = Config.value("UI/GStyle", 1).toInt();
+    ui->actionGStandard->setChecked(style == 0);
+    ui->actionGGolden_Snake->setChecked(style == 1);
+    ui->actionCustom->setChecked(style == 2);
+    //ui->actionTurn_snake->setChecked(Config.value("SnakeStyle", true).toBool());
 }
 
 void MainWindow::closeEvent(QCloseEvent *event){
@@ -174,9 +180,11 @@ void MainWindow::on_actionExit_triggered()
     }
 }
 
-void MainWindow::on_actionStart_Server_triggered()
+void MainWindow::on_actionStart_Game_triggered()
 {
     ServerDialog *dialog = new ServerDialog(this);
+    if(dialog->isPCConsole())
+        dialog->ensureEnableAI();
     if(!dialog->config())
         return;
 
@@ -187,10 +195,18 @@ void MainWindow::on_actionStart_Server_triggered()
         return;
     }
 
+    if(dialog->isPCConsole()){
+        server->createNewRoom();
+
+        Config.HostAddress = "127.0.0.1";
+        on_actionRestart_game_triggered();
+        return;
+    }
+
     server->daemonize();
 
-    ui->actionStart_Game->disconnect();
-    connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
+    ui->actionJoin_Game->disconnect();
+    connect(ui->actionJoin_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
 
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if(start_scene){
@@ -235,7 +251,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
     QMessageBox::warning(this, tr("Warning"), text);
 }
 
-void MainWindow::startConnection(){
+void MainWindow::on_actionRestart_game_triggered(){
     Client *client = new Client(this);
 
     connect(client, SIGNAL(version_checked(QString,QString)), SLOT(checkVersion(QString,QString)));
@@ -281,9 +297,10 @@ void MainWindow::enterRoom(){
         Config.setValue("HistoryIPs", Config.HistoryIPs);
     }
 
+    ui->actionJoin_Game->setEnabled(false);
     ui->actionStart_Game->setEnabled(false);
-    ui->actionStart_Server->setEnabled(false);
-	ui->actionAI_Melee->setEnabled(false);
+    //ui->actionRestart_game->setEnabled(false);
+    ui->actionAI_Melee->setEnabled(false);
 
     RoomScene *room_scene = new RoomScene(this);
 
@@ -303,7 +320,7 @@ void MainWindow::enterRoom(){
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
     connect(ui->actionExpand_dashboard, SIGNAL(triggered()), room_scene, SLOT(adjustDashboard()));
 
-    if(ServerInfo.FreeChoose){
+    if(Config.value("Cheat/EnableCheatMenu", false).toBool()){
         ui->menuCheat->setEnabled(true);
 
         connect(ui->actionGet_card, SIGNAL(triggered()), ui->actionCard_Overview, SLOT(trigger()));
@@ -324,14 +341,14 @@ void MainWindow::enterRoom(){
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
-    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
+    connect(room_scene, SIGNAL(restart()), this, SLOT(on_actionRestart_game_triggered()));
+    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(on_actionReturn_main_triggered()));
 
     room_scene->adjustItems();
     gotoScene(room_scene);
 }
 
-void MainWindow::gotoStartScene(){
+void MainWindow::on_actionReturn_main_triggered(){
     QList<Server *> servers = findChildren<Server *>();
     if(!servers.isEmpty())
         servers.first()->deleteLater();
@@ -339,11 +356,12 @@ void MainWindow::gotoStartScene(){
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
-    actions << ui->actionStart_Game
-            << ui->actionStart_Server
-            << ui->actionPC_Console_Start
+    actions << ui->actionStart_Game //Start_Server
+            << ui->actionJoin_Game
             << ui->actionReplay
+            << ui->actionPackaging
             << ui->actionConfigure
+
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
@@ -591,6 +609,60 @@ void MainWindow::on_actionScenario_Overview_triggered()
     dialog->show();
 }
 
+void MainWindow::on_actionCStandard_toggled(bool checked)
+{
+    if(checked && Config.value("UI/CStyle", 1).toInt() != 0){
+        Config.setValue("UI/CStyle", 0);
+        ui->actionCGolden_Snake->setChecked(!checked);
+        ui->actionSgs_OL->setChecked(!checked);
+    }
+}
+
+void MainWindow::on_actionCGolden_Snake_toggled(bool checked)
+{
+    if(checked && Config.value("UI/CStyle", 1).toInt() != 1){
+        Config.setValue("UI/CStyle", 1);
+        ui->actionCStandard->setChecked(!checked);
+        ui->actionSgs_OL->setChecked(!checked);
+    }
+}
+
+void MainWindow::on_actionSgs_OL_toggled(bool checked)
+{
+    if(checked && Config.value("UI/CStyle", 1).toInt() != 2){
+        Config.setValue("UI/CStyle", 2);
+        ui->actionCStandard->setChecked(!checked);
+        ui->actionCGolden_Snake->setChecked(!checked);
+    }
+}
+
+void MainWindow::on_actionGStandard_toggled(bool checked)
+{
+    if(checked && Config.value("UI/GStyle", 1).toInt() != 0){
+        Config.setValue("UI/GStyle", 0);
+        ui->actionGGolden_Snake->setChecked(!checked);
+        ui->actionCustom->setChecked(!checked);
+    }
+}
+
+void MainWindow::on_actionGGolden_Snake_toggled(bool checked)
+{
+    if(checked && Config.value("UI/GStyle", 1).toInt() != 1){
+        Config.setValue("UI/GStyle", 1);
+        ui->actionGStandard->setChecked(!checked);
+        ui->actionCustom->setChecked(!checked);
+    }
+}
+
+void MainWindow::on_actionCustom_toggled(bool checked)
+{
+    if(checked && Config.value("UI/GStyle", 1).toInt() != 2){
+        Config.setValue("UI/GStyle", 2);
+        ui->actionGStandard->setChecked(!checked);
+        ui->actionGGolden_Snake->setChecked(!checked);
+    }
+}
+
 BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
     :QDialog(parent), server(server)
 {
@@ -636,33 +708,36 @@ void MainWindow::on_actionBroadcast_triggered()
 void MainWindow::on_actionAcknowledgement_triggered()
 {
     AcknowledgementScene* ack = new AcknowledgementScene;
-    connect(ack,SIGNAL(go_back()),this,SLOT(gotoStartScene()));
+    connect(ack,SIGNAL(go_back()),this,SLOT(on_actionReturn_main_triggered()));
     gotoScene(ack);
-}
-
-void MainWindow::on_actionPC_Console_Start_triggered()
-{
-    ServerDialog *dialog = new ServerDialog(this);
-    dialog->ensureEnableAI();
-    if(!dialog->config())
-        return;
-
-    Server *server = new Server(this);
-    if(! server->listen()){
-        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
-
-        return;
-    }
-
-    server->createNewRoom();
-
-    Config.HostAddress = "127.0.0.1";
-    startConnection();
 }
 
 void MainWindow::on_actionScript_editor_triggered()
 {
     QMessageBox::information(this, tr("Warning"), tr("This function is not implemented yet!"));
+}
+
+void MainWindow::on_actionEnable_Lua_triggered()
+{
+    QMessageBox::StandardButton result =
+            QMessageBox::question(this,
+                                  tr("LUA derail"),
+                                  tr("Enable or disable Lua need to restart, are you sure?"),
+                                  QMessageBox::Ok | QMessageBox::Cancel);
+    if(result == QMessageBox::Ok){
+        close();
+        //qApp->quit();
+        QProcess::startDetached(qApp->applicationFilePath(), QStringList());
+        //http://blog.csdn.net/dbzhang800/article/details/6906743
+    }
+}
+
+void MainWindow::on_actionEnable_Lua_toggled(bool checked)
+{
+    if(Config.DisableLua == checked){
+        Config.DisableLua = !checked;
+        Config.setValue("DisableLua", !checked);
+    }
 }
 
 #include <QGroupBox>
@@ -694,7 +769,7 @@ MeleeDialog::MeleeDialog(QWidget *parent)
     server_log->setMinimumWidth(400);
     server_log->setReadOnly(true);
     server_log->setFrameStyle(QFrame::Box);
-    server_log->setProperty("description", true);
+    server_log->setProperty("type", "description");
     server_log->setFont(QFont("Verdana", 12));
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -778,9 +853,8 @@ public:
     }
 
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *){
-        foreach(QGraphicsItem *item, childItems()){
+        foreach(QGraphicsItem *item, childItems())
             item->setVisible(! item->isVisible());
-        }
     }
 };
 
@@ -788,14 +862,14 @@ typedef RoomItem *RoomItemStar;
 Q_DECLARE_METATYPE(RoomItemStar);
 
 void MeleeDialog::startTest(){
-    foreach(RoomItemStar room_item, room_items){
+    foreach(RoomItemStar room_item, room_items)
         if(room_item) delete room_item;
-    }
+
     room_items.clear();
 
-    if(server){
+    if(server)
         server->gamesOver();
-    }else{
+    else{
         server = new Server(this->parentWidget());
         server->listen();
         connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
@@ -916,11 +990,16 @@ void MeleeDialog::setGeneral(const QString &general_name){
     const General *general = Sanguosha->getGeneral(general_name);
 
     if(general){
-#ifdef USE_CRYPTO
-        avatar_button->setIcon(QIcon(general->getPixmapPath("card2")));
-#else
-        avatar_button->setIcon(QIcon(general->getPixmapPath("card")));
-#endif
+        QString category = QString();
+        int style = Config.value("UI/GStyle", 1).toInt();
+        if(style == 1)
+            category = "card2";
+        else if(style == 2)
+            category = "card3";
+        else
+            category = "card";
+        avatar_button->setIcon(QIcon(general->getPixmapPath(category)));
+
         Config.setValue("MeleeGeneral", general_name);
         avatar_button->setProperty("to_test", general_name);
     }
@@ -943,6 +1022,143 @@ AcknowledgementScene::AcknowledgementScene(QObject *parent) :
 void MainWindow::on_actionAI_Melee_triggered()
 {
     MeleeDialog *dialog = new MeleeDialog(this);
+    dialog->exec();
+}
+
+void MainWindow::fillTable(QTableWidget *table){
+    table->setColumnCount(8);
+    table->setRowCount(Sanguosha->getGeneralCount(true));
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    static QStringList labels;
+    if(labels.isEmpty()){
+        labels
+                << tr("General") << tr("Package") << "card"
+                << "big" << "small" << "tiny" << tr("Death Effect") << tr("Skills");
+    }
+    table->setHorizontalHeaderLabels(labels);
+
+    table->setSelectionBehavior(QTableWidget::SelectRows);
+
+    int i = 0;
+    QHashIterator<QString, const General *> itor(Sanguosha->getGenerals());
+    while(itor.hasNext()){
+        itor.next();
+        const General *general = itor.value();
+
+        QTableWidgetItem *item = new QTableWidgetItem;
+        QString name = Sanguosha->translate(itor.key());
+        item->setText(name);
+        if(general->isTotallyHidden()){
+            item->setBackgroundColor(Qt::black);
+            item->setTextColor(Qt::white);
+        }
+        else if(general->isHidden())
+            item->setBackgroundColor(Qt::gray);
+        table->setItem(i, 0, item);
+
+        item = new QTableWidgetItem;
+        item->setText(Sanguosha->translate(general->getPackage()));
+        table->setItem(i, 1, item);
+
+        item = new QTableWidgetItem;
+
+        QString category = QString();
+        int style = Config.value("UI/GStyle", 1).toInt();
+        if(style == 1)
+            category = "card2";
+        else if(style == 2)
+            category = "card3";
+        else
+            category = "card";
+
+        if(QFile::exists(general->getPixmapPath(category))){
+            item->setTextColor(Qt::darkGreen);
+            item->setText(tr("Full"));
+        }else{
+            item->setTextColor(Qt::red);
+            item->setText(tr("Empty"));
+        }
+        table->setItem(i, 2, item);
+
+        item = new QTableWidgetItem;
+        if(QFile::exists(general->getPixmapPath("big"))){
+            item->setTextColor(Qt::darkGreen);
+            item->setText(tr("Full"));
+        }else{
+            item->setTextColor(Qt::red);
+            item->setText(tr("Empty"));
+        }
+        table->setItem(i, 3, item);
+
+        item = new QTableWidgetItem;
+        if(QFile::exists(general->getPixmapPath("small"))){
+            item->setTextColor(Qt::darkGreen);
+            item->setText(tr("Full"));
+        }else{
+            item->setTextColor(Qt::red);
+            item->setText(tr("Empty"));
+        }
+        table->setItem(i, 4, item);
+
+        item = new QTableWidgetItem;
+        if(QFile::exists(general->getPixmapPath("tiny"))){
+            item->setTextColor(Qt::darkGreen);
+            item->setText(tr("Full"));
+        }else{
+            item->setTextColor(Qt::red);
+            item->setText(tr("Empty"));
+        }
+        table->setItem(i, 5, item);
+
+        item = new QTableWidgetItem;
+        if(QFile::exists(general->getLastEffectPath())){
+            item->setTextColor(Qt::darkGreen);
+            item->setText(tr("Full"));
+        }else{
+            item->setTextColor(Qt::red);
+            item->setText(tr("Empty"));
+        }
+        table->setItem(i, 6, item);
+
+        item = new QTableWidgetItem;
+        QString desc = QString();
+        foreach(const Skill *skill, general->getVisibleSkillList()){
+            QString skill_name = Sanguosha->translate(skill->objectName());
+            desc.append(skill_name);
+            desc.append(",");
+        }
+        item->setText(desc);
+        table->setItem(i, 7, item);
+
+        table->setColumnWidth(0, 70);
+        table->setColumnWidth(1, 70);
+        table->setColumnWidth(2, 50);
+        table->setColumnWidth(3, 50);
+        table->setColumnWidth(4, 50);
+        table->setColumnWidth(5, 50);
+        table->setColumnWidth(6, 50);
+
+        i++;
+    }
+}
+
+void MainWindow::on_actionCheck_resource_triggered()
+{
+    QDialog *dialog = new QDialog(this);
+    dialog->setMinimumSize(550, 400);
+    dialog->setWindowTitle(tr("Check Resource"));
+
+    QTableWidget *table = new QTableWidget;
+    table->setSortingEnabled(true);
+    table->setCornerButtonEnabled(true);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(table);
+    dialog->setLayout(layout);
+
+    fillTable(table);
+
     dialog->exec();
 }
 

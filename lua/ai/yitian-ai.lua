@@ -134,17 +134,17 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 	self:sortByUseValue(cards,true)
 	local opt1, opt2
 	for _,card in ipairs(cards) do
-		if card:getNumber()==point then opt1 = "@ChengxiangCard=" .. card:getId() .. "->" .. targets[1]:objectName() break end
+		if card:getNumber()==point then opt1 = "@Chengx1angCard=" .. card:getId() .. "->" .. targets[1]:objectName() break end
 	end
 	for _,card1 in ipairs(cards) do
 		for __,card2 in ipairs(cards) do
 			if card1:getId()==card2:getId() then
 			elseif card1:getNumber()+card2:getNumber()==point then
 				if #targets >= 2 and targets[2]:isWounded() then
-					opt2 = "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
+					opt2 = "@Chengx1angCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
 					break
 				elseif targets[1]:getHp()==1 or self:getUseValue(card1)+self:getUseValue(card2)<=6 then
-					opt2 = "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()
+					opt2 = "@Chengx1angCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()
 					break
 				end
 			end
@@ -157,15 +157,21 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 	return opt2 or opt1 or "."
 end
 
-sgs.ai_card_intention.ChengxiangCard = sgs.ai_card_intention.QingnangCard
+sgs.ai_card_intention.Chengx1angCard = sgs.ai_card_intention.QingnangCard
 
-function sgs.ai_cardneed.chengxiang(to, card, self)
-	return card:getNumber()<8 and self:getUseValue(card)<6 and to:hasSkill("chengxiang") and to:getHandcardNum() < 12
+function sgs.ai_cardneed.chengx1ang(to, card, self)
+	return card:getNumber()<8 and self:getUseValue(card)<6 and to:hasSkill("chengx1ang") and to:getHandcardNum() < 12
 end
 
 sgs.ai_skill_invoke.jueji = true
 
-sgs.ai_skill_use["@@jueji"]=function(self,prompt)
+local jueji_skill={}
+jueji_skill.name="jueji"
+table.insert(sgs.ai_skills,jueji_skill)
+jueji_skill.getTurnUseCard=function(self)
+	if not self.player:hasUsed("JuejiCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@JuejiCard=.") end
+end
+sgs.ai_skill_use_func.JuejiCard=function(card,use,self)
 	local target
 	local handcard
 	if not self.enemies then return end
@@ -187,7 +193,13 @@ sgs.ai_skill_use["@@jueji"]=function(self,prompt)
 			if self:getUseValue(hcard) > top_value then	top_value = self:getUseValue(hcard) end
 		end
 	end
-	if top_value >= 4.7 then return "." else return "@JuejiCard=" .. self:getMaxCard():getEffectiveId() .. "->" .. target:objectName() end
+	if top_value >= 4.7 then
+		return "."
+	else
+		use.card = sgs.Card_Parse("@JuejiCard=" .. self:getMaxCard():getEffectiveId())
+		if use.to then use.to:append(target) end
+		return
+	end
 end
 
 sgs.ai_card_intention.JuejiCard = 30
@@ -597,11 +609,51 @@ end
 
 sgs.ai_skill_invoke.zhenggong  = true
 
-sgs.ai_skill_invoke.toudu = function(self, data)
-	return #self.enemies>0
+sgs.ai_skill_cardask["@toudu"] = function(self, data, pattern, target, target2)
+	self.toudu_target = nil
+	local targets = sgs.SPlayerList()
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if self.player:canSlash(p, nil, false) then targets:append(p) end
+	end
+	if targets:length() == 0 then return "." end
+	self.toudu_target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, targets)
+	if not self.toudu_target then return "." end
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	for _, card in ipairs(cards) do
+		if not (isCard("Peach", card, self.player) and self:isFriend(self.toudu_target)) then return card:getEffectiveId() end
+	end
+	return "."
 end
 
-sgs.ai_skill_playerchosen.toudu = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_skill_playerchosen.toudu = function(self, targets)
+	if self.toudu_target then return self.toudu_target end
+
+	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	local targetlist = {}
+	for _,p in sgs.qlist(targets) do
+		if not self:slashProhibit(slash, p) then
+			table.insert(targetlist, p)
+		end
+	end
+	self:sort(targetlist, "defenseSlash")
+	for _, target in ipairs(targetlist) do
+		if self:isEnemy(target) then
+			if self:slashIsEffective(slash, target) then
+				if sgs.isGoodTarget(target, targetlist, self) then
+					self:speak("ºÙ£¡Ã»Ïëµ½°É£¿")
+					return target
+				end
+			end
+		end
+	end
+	for i=#targetlist, 1, -1 do
+		if sgs.isGoodTarget(targetlist[i], targetlist, self) then
+			return targetlist[i]
+		end
+	end
+	return targetlist[#targetlist]
+end
 
 local yishe_skill={name="yishe"}
 table.insert(sgs.ai_skills,yishe_skill)
