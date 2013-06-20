@@ -60,7 +60,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 
     /* actually it's not proper to put the codes here.
        considering the nasty design of the client and the convenience as well,
-       I just move these codes here */
+       I just move them here */
     if (objectName() == "slash" && use.m_isOwnerUse) {
         bool has_changed = false;
         QString skill_name = getSkillName();
@@ -138,24 +138,13 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 
     if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn")) {
         QString name;
-        bool toSunquan = false;
         if (player->hasSkill("paoxiao"))
             name = "paoxiao";
-        else if (player->hasSkill("huxiao")) {
-            foreach (ServerPlayer *p, use.to) {
-                if (p->getGeneralName().contains("sunquan") || p->getGeneral2Name().contains("sunquan")) {
-                    toSunquan = true;
-                    break;
-                }
-            }
+        else if (player->hasSkill("huxiao"))
             name = "huxiao";
-		}
         if (!name.isEmpty()) {
             player->setFlags("-Global_MoreSlashInOneTurn");
-            if (name == "huxiao")
-    		    room->broadcastSkillInvoke("huxiao", toSunquan ? 3 : qrand() % 2 + 1);
-            else
-                room->broadcastSkillInvoke(name);
+            room->broadcastSkillInvoke(name);
             room->notifySkillInvoked(player, name);
         }
     }
@@ -174,7 +163,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     if (use.card->isVirtualCard()) {
         if (use.from->getWeapon() && use.card->getSubcards().contains(use.from->getWeapon()->getId())) {
             const Weapon *weapon = qobject_cast<const Weapon *>(use.from->getWeapon()->getRealCard());
-            rangefix += weapon->getRange() - 1;
+            rangefix += weapon->getRange() - Self->getAttackRange(false);
         }
         if (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId()))
             rangefix += 1;
@@ -273,7 +262,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     int rangefix = 0;
     if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())) {
         const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
-        rangefix += weapon->getRange() - 1;
+        rangefix += weapon->getRange() - Self->getAttackRange(false);
     }
 
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
@@ -423,9 +412,7 @@ public:
             foreach (ServerPlayer *p, use.to.toSet()) {
                 if (p->getMark("Equips_of_Others_Nullified_to_You") == 0) {
                     do_anim = (p->getArmor() && p->hasArmorEffect(p->getArmor()->objectName())) || p->hasArmorEffect("bazhen");
-                    QStringList qinggang = p->tag["Qinggang"].toStringList();
-                    qinggang.append(use.card->toString());
-                    p->tag["Qinggang"] = QVariant::fromValue(qinggang);
+                    p->addQinggangTag(use.card);
                 }
             }
             if (do_anim)
@@ -695,11 +682,7 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
 void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const{
     QList<int> card_ids = room->getNCards(room->getAllPlayers().length());
     room->fillAG(card_ids);
-
-    QVariantList ag_list;
-    foreach (int card_id, card_ids)
-        ag_list << card_id;
-    room->setTag("AmazingGrace", ag_list);
+    room->setTag("AmazingGrace", IntList2VariantList(card_ids));
 }
 
 void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
@@ -709,9 +692,7 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     // throw the rest cards
     QVariantList ag_list = room->getTag("AmazingGrace").toList();
     if (ag_list.isEmpty()) return;
-    DummyCard *dummy = new DummyCard;
-    foreach (QVariant card_id, ag_list)
-        dummy->addSubcard(card_id.toInt());
+    DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
     room->throwCard(dummy, reason, NULL);
     delete dummy;

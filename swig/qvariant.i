@@ -127,8 +127,20 @@ public:
         return $self->value<CardResponseStruct>();
     }
 
-    // @@Compatibility
-    CardResponseStruct toResponsed() const{
-        return $self->value<CardResponseStruct>();
+    void setValue(QList<int> intlist) {
+        QVariantList varlist;
+        for (int i = 0; i < intlist.length(); i++)
+            varlist.append(QVariant::fromValue(intlist.at(i)));
+        $self->setValue(QVariant::fromValue(varlist));
+    }
+
+    QList<int> toIntList() const{
+        QList<int> result;
+        if ($self->canConvert<QVariantList>()) {
+            QVariantList res_var = $self->toList();
+            for (int i = 0; i < res_var.length(); i++)
+                result.append(res_var.at(i).toInt());
+        }
+        return result;
     }
 };

@@ -1,4 +1,5 @@
 #include "lua-wrapper.h"
+#include "util.h"
 
 LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency)
     : TriggerSkill(name), on_trigger(0), can_trigger(0), priority(2)
@@ -147,11 +148,9 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
 
     LuaSkillCard *new_card = c->clone();
 
-    if (subcard_str != ".") {
-        foreach (QString subcard, subcard_str.split("+")) {
-            new_card->addSubcard(subcard.toInt());
-        }
-    }
+    if (subcard_str != ".")
+        new_card->addSubcards(StringList2IntList(subcard_str.split("+")));
+
     if (!suit.isEmpty())
         new_card->setSuit(suit_map.value(suit, Card::NoSuit));
     if (!number.isEmpty()) {

@@ -760,7 +760,7 @@ function SmartAI:willSkipPlayPhase(player, NotContains_Null)
 		and fuhuanghou:isWounded() and fuhuanghou:getHandcardNum() > 1 and not player:isKongcheng() and not self:isWeak(fuhuanghou) then
 		local max_card = self:getMaxCard(fuhuanghou)
 		local player_max_card = self:getMaxCard(player)
-		if (max_card and player_max_card and max_card:getNumber() > player_max_card) or (max_card and max_card:getNumber() >= 12) then return true end
+		if (max_card and player_max_card and max_card:getNumber() > player_max_card:getNumber()) or (max_card and max_card:getNumber() >= 12) then return true end
 	end
 	
 	local friend_null = 0
@@ -1470,15 +1470,8 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	end
 
 	if #use_cards > 0 then
-		if self.player:getMark("ZhihengInLatestKOF") > 0 then
-			local use_cards_kof = { use_cards[1] }
-			if #use_cards > 1 then table.insert(use_cards_kof, use_cards[2]) end
-			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards_kof, "+"))
-			return
-		else
-			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards, "+"))
-			return
-		end
+		use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards, "+"))
+		return
 	end
 end
 
@@ -1736,7 +1729,7 @@ sgs.ai_chaofeng.zhouyu = 3
 
 sgs.ai_skill_invoke.lianying = function(self, data)
 	if self:needKongcheng(self.player, true) then
-		return player:getPhase() == sgs.Player_Play
+		return self.player:getPhase() == sgs.Player_Play
 	end
 	return true
 end
@@ -2373,6 +2366,40 @@ function SmartAI:findLijianTarget(card_name, use)
 					end
 				end
 				if #males >= 2 then break end
+			end
+		end
+		
+		if #males >= 1 and sgs.ai_role[males[1]:objectName()] == "rebel" and males[1]:getHp() == 1 then
+			if lord and self:isFriend(lord) and lord:isMale() and lord:objectName() ~= males[1]:objectName() and self:hasTrickEffective(duel, males[1], lord) and not lord:isLocked(duel)
+				and (getCardsNum("Slash", males[1]) < 1
+					or getCardsNum("Slash", males[1]) < getCardsNum("Slash", lord)
+					or self:getKnownNum(males[1]) == males[1]:getHandcardNum() and getKnownCard(males[1], "Slash", true, "he") == 0)
+				then
+				return males[1], lord
+			end
+			
+			local afriend = findFriend_maxSlash(self, males[1])
+			if afriend and afriend:objectName() ~= males[1]:objectName() then
+				return males[1], afriend
+			end
+		end
+		
+		if #males == 1 then
+			if isLord(males[1]) and sgs.turncount <= 1 and self.role == "rebel" and self.player:aliveCount() >= 3 then
+				local p_slash, max_p, max_pp = 0
+				for _, p in sgs.qlist(getOtherPlayers(self.player)) do
+					if p:isMale() and not self:isFriend(p) and p:objectName() ~= males[1]:objectName() and self:hasTrickEffective(duel, males[1], p) and not p:isLocked(duel)
+						and p_slash < getCardsNum("Slash", p) then
+						if p:getKingdom() == males[1]:getKingdom() then
+							max_p = p
+							break
+						elseif not max_pp then
+							max_pp = p
+						end
+					end
+				end
+				if max_p then table.insert(males, max_p) end
+				if max_pp and #males == 1 then table.insert(males, max_pp) end
 			end
 		end
 		

@@ -450,8 +450,8 @@ void RecAnalysis::addDesignation(const QString &designation,
         }
 
         if (need_lose
-            && m_recordWinners.contains(m_recordMap[objectName]->m_role)
-            && !m_recordWinners.contains(objectName)) {
+            && (m_recordWinners.contains(m_recordMap[objectName]->m_role)
+                || m_recordWinners.contains(objectName))) {
             has_player = false;
         }
 

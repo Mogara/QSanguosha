@@ -391,7 +391,7 @@ sgs.ai_skill_use["@@lianli"] = function(self, prompt)
 
 	if sgs.turncount <= 2 then
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if player:isMale() and not self:isEnemy(player) then
+			if player:isMale() and not self:isEnemy(player) and not player:inMyAttackRange(self.player) then
 				return "@LianliCard=.->" .. player:objectName()
 			end
 		end
@@ -511,6 +511,7 @@ table.insert(sgs.ai_skills, guihan_skill)
 function guihan_skill.getTurnUseCard(self)
 	if self:getOverflow() <= 0 or self.player:hasUsed("GuihanCard") then return end
 	if self.room:alivePlayerCount() == 2 or self.role == "renegade" then return end
+	if #self.friends_noself == 0 then return end
 	local rene = 0
 	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
 		if sgs.evaluatePlayerRole(aplayer) == "renegade" then rene = rene + 1 end
@@ -533,13 +534,30 @@ function guihan_skill.getTurnUseCard(self)
 end
 
 function sgs.ai_skill_use_func.GuihanCard(card, use, self)
-	local values, range, fediff = {}, self.player:getAttackRange(), 0
+	local values, range = {}, self.player:getAttackRange()
 	local nplayer = self.player
-	while nplayer:getNextAlive():objectName() ~= self.player:objectName() do
+	for i = 1, self.player:aliveCount() do
+		local fediff, add, isfriend = 0, 0
+		local np = nplayer
+		for value = #self.friends_noself, 1, -1 do
+			np = np:getNextAlive()
+			if np:objectName() == self.player:objectName() then
+				if self:isFriend(nplayer) then fediff = fediff + value
+				else fediff = fediff - value
+				end
+			else
+				if self:isFriend(np) then
+					fediff = fediff + value
+					if isfriend then add = add + 1
+					else isfriend = true end
+				elseif self:isEnemy(np) then
+					fediff = fediff - value
+					isfriend = false
+				end
+			end
+		end
+		values[nplayer:objectName()] = fediff + add
 		nplayer = nplayer:getNextAlive()
-		if self:isFriend(nplayer) then fediff = fediff - 1
-		elseif self:isEnemy(nplayer) then fediff = fediff + 1 end
-		if self:isFriend(nplayer:getNextAlive()) then values[nplayer:objectName()] = fediff else values[nplayer:objectName()] = -1 end
 	end
 	local function get_value(a)
 		local ret = 0
@@ -555,9 +573,9 @@ function sgs.ai_skill_use_func.GuihanCard(card, use, self)
 			return get_value(a) > get_value(b)
 		end
 	end
-	local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
+	local players = sgs.QList2Table(self.room:getAlivePlayers())
 	table.sort(players, compare_func)
-	if values[players[1]:objectName()] > 0 then
+	if values[players[1]:objectName()] > 0 and players[1]:objectName() ~= self.player:objectName() then
 		use.card = card
 		if use.to then use.to:append(players[1]) end
 	end

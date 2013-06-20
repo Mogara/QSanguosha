@@ -51,6 +51,7 @@ return {
 	["mingshi:no"] = "不展示",
 	["lirang"] = "礼让",
 	[":lirang"] = "当你的牌因弃置而置入弃牌堆时，你可以将其中任意数量的牌以任意分配方式交给任意数量的其他角色。",
+	["@lirang-distribute"] = "你可以发动“礼让”将 %arg 张牌任意分配给任意数量的其他角色",
 	["#Mingshi"] = "%from 的“<font color=\"yellow\"><b>名士</b></font>”被触发，伤害从 %arg 点减少至 %arg2 点",
 
 	["#jiling"] = "仲家的主将",

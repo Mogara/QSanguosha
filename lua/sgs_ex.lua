@@ -154,7 +154,7 @@ function sgs.CreateSkillCard(spec)
 	card.on_use = spec.on_use
 	card.on_effect = spec.on_effect
 	card.on_validate = spec.on_validate
-	card_on_validate_in_response = spec.on_validate_in_response
+	card.on_validate_in_response = spec.on_validate_in_response
 
 	return card
 end
@@ -369,7 +369,8 @@ sgs.CommandType = {
 	"S_COMMAND_RECOVER_GENERAL",
 	"S_COMMAND_REVEAL_GENERAL",
 	"S_COMMAND_AVAILABLE_CARDS",
-	"S_COMMAND_ANIMATE"
+	"S_COMMAND_ANIMATE",
+	"S_COMMAND_LUCK_CARD"
 }
 
 local i = 0

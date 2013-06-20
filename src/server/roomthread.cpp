@@ -527,11 +527,12 @@ void RoomThread::run() {
     }
 
     // start game
-    try {        
-        trigger(GameStart, (Room *)room, NULL);
-        constructTriggerTable();
-        if (room->mode == "06_3v3") {
-            QList<ServerPlayer *> warm, cool;
+    try {
+        QString order;
+        QList<ServerPlayer *> warm, cool;
+        QList<ServerPlayer *> first, second;
+        if (room->getMode() == "06_3v3") {
+            order = room->askForOrder(cool.first());
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {
                 case Player::Lord: warm.prepend(player); break;
@@ -540,10 +541,6 @@ void RoomThread::run() {
                 case Player::Rebel: cool.append(player); break;
                 }
             }
-
-            QString order = room->askForOrder(cool.first());
-            QList<ServerPlayer *> first, second;
-
             if (order == "warm") {
                 first = warm;
                 second = cool;
@@ -551,6 +548,10 @@ void RoomThread::run() {
                 first = cool;
                 second = warm;
             }
+        }
+        trigger(GameStart, (Room *)room, NULL);
+        constructTriggerTable();
+        if (room->getMode() == "06_3v3") {
             run3v3(first, second, game_rule, first.first());
         } else if (room->getMode() == "04_1v3") {
             ServerPlayer *shenlvbu = room->getLord();
@@ -560,8 +561,13 @@ void RoomThread::run() {
             room->setCurrent(league.first());
             actionHulaoPass(shenlvbu, league, game_rule, 1);
         } else {
-            if (room->getMode() == "02_1v1")
-                room->setCurrent(room->getPlayers().at(1));
+            if (room->getMode() == "02_1v1") {
+                ServerPlayer *first = room->getPlayers().first();
+                if (first->getRole() == "renegade")
+                    room->setCurrent(first);
+                else
+                    room->setCurrent(room->getPlayers().at(1));
+            }
 
             actionNormal(game_rule);
         }
@@ -659,7 +665,20 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill) {
     foreach (TriggerEvent triggerEvent, events) {
         QList<const TriggerSkill *> &table = skill_table[triggerEvent];
         table << skill;
-        //qStableSort(table.begin(), table.end(), CompareByPriority);
+        foreach (const TriggerSkill *askill, table) {
+            double priority = askill->getPriority();
+            int len = room->getPlayers().length();
+            foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+                if (p->hasSkill(askill->objectName())) {
+                    priority += (double)len / 100;
+                    break;
+                }
+                len--;
+            }
+            TriggerSkill *mutable_skill = const_cast<TriggerSkill *>(askill);
+            mutable_skill->setDynamicPriority(priority);
+        }
+        qStableSort(table.begin(), table.end(), CompareByPriority);
     }
 
     if (skill->isVisible()) {

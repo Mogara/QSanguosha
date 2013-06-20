@@ -915,14 +915,12 @@ public:
         if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card && use.card->isKindOf("Slash")) {
-                liushan->setMark("xiangle", 0);
                 room->broadcastSkillInvoke(objectName());
                 room->notifySkillInvoked(liushan, objectName());
 
                 LogMessage log;
                 log.type = "#TriggerSkill";
-                log.from = use.from;
-                log.to << liushan;
+                log.from = liushan;
                 log.arg = objectName();
                 room->sendLog(log);
 
@@ -944,6 +942,26 @@ public:
             }
         }
 
+        return false;
+    }
+};
+
+class XiangleRemoveMark: public TriggerSkill {
+public:
+    XiangleRemoveMark(): TriggerSkill("#xiangle") {
+        events << CardFinished;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash")) {
+            foreach (ServerPlayer *to, use.to)
+                to->setMark("xiangle", 0);
+        }
         return false;
     }
 };
@@ -1095,8 +1113,16 @@ public:
         n = qMin(n, list.length());
 
         QStringList acquired = list.mid(0, n);
-        foreach (QString name, acquired)
+        foreach (QString name, acquired) {
             huashens << name;
+            const General *general = Sanguosha->getGeneral(name);
+            if (general) {
+                foreach (const TriggerSkill *skill, general->getTriggerSkills()) {
+                    if (skill->isVisible())
+                        room->getThread()->addTriggerSkill(skill);
+                }
+            }
+        }
         zuoci->tag["Huashens"] = huashens;
 
         QStringList hidden;
@@ -1212,6 +1238,7 @@ public:
 
             skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
         }
+        Q_ASSERT(!skill_name.isNull() && !skill_name.isEmpty());
 
         QString kingdom = general->getKingdom();
         if (zuoci->getKingdom() != kingdom) {
@@ -1239,7 +1266,7 @@ public:
 
         zuoci->tag["HuashenSkill"] = skill_name;
         ac_dt_list.append(skill_name);
-        room->handleAcquireDetachSkills(zuoci, ac_dt_list);
+        room->handleAcquireDetachSkills(zuoci, ac_dt_list, true);
     }
 
     virtual void onGameStart(ServerPlayer *zuoci) const{
@@ -1318,7 +1345,7 @@ public:
             room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
         if (player->getGender() != player->getGeneral()->getGender())
             player->setGender(player->getGeneral()->getGender());
-        room->detachSkillFromPlayer(player, player->tag["HuashenSkill"].toString());
+        room->detachSkillFromPlayer(player, player->tag["HuashenSkill"].toString(), false, true);
         player->tag.remove("Huashens");
         room->setPlayerMark(player, "@huashen", 0);
     }
@@ -1360,9 +1387,11 @@ MountainPackage::MountainPackage()
 
     General *liushan = new General(this, "liushan$", "shu", 3); // SHU 013
     liushan->addSkill(new Xiangle);
+    liushan->addSkill(new XiangleRemoveMark);
     liushan->addSkill(new Fangquan);
     liushan->addSkill(new FangquanGive);
     liushan->addSkill(new Ruoyu);
+    related_skills.insertMulti("xiangle", "#xiangle");
     related_skills.insertMulti("fangquan", "#fangquan-give");
 
     General *sunce = new General(this, "sunce$", "wu"); // WU 010
@@ -1386,7 +1415,6 @@ MountainPackage::MountainPackage()
     related_skills.insertMulti("huashen", "#huashen-begin");
     related_skills.insertMulti("huashen", "#huashen-end");
     related_skills.insertMulti("huashen", "#huashen-clear");
-    zuoci->addSkill("#lianpo-count"); // For LianPo we need a nasty trick
 
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false); // QUN 012
     caiwenji->addSkill(new Beige);

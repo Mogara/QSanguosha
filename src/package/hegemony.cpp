@@ -253,13 +253,10 @@ public:
             }
             if (lirang_card.isEmpty())
                 return false;
-            if (!kongrong->askForSkillInvoke(objectName(), data))
-                return false;
-
-            room->broadcastSkillInvoke(objectName());
 
             QList<int> original_lirang = lirang_card;
-            while (room->askForYiji(kongrong, lirang_card, objectName(), false, true, true, -1, QList<ServerPlayer *>(), move.reason)) {
+            while (room->askForYiji(kongrong, lirang_card, objectName(), false, true, true, -1,
+                                    QList<ServerPlayer *>(), move.reason, "@lirang-distribute", true)) {
                 if (kongrong->isDead()) return false;
             }
 
@@ -281,39 +278,26 @@ public:
 class Sijian: public TriggerSkill {
 public:
     Sijian(): TriggerSkill("sijian") {
-        events << BeforeCardsMove << CardsMoveOneTime;
+        events << CardsMoveOneTime;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from == tianfeng && move.from_places.contains(Player::PlaceHand)) {
-            if (triggerEvent == BeforeCardsMove) {
-                if (tianfeng->isKongcheng()) return false;
-                foreach (int id, tianfeng->handCards()) {
-                    if (!move.card_ids.contains(id))
-                        return false;
-                }
-                tianfeng->addMark(objectName());
-            } else {
-                if (tianfeng->getMark(objectName()) == 0)
-                    return false;
-                tianfeng->removeMark(objectName());
-                QList<ServerPlayer *> other_players = room->getOtherPlayers(tianfeng);
-                QList<ServerPlayer *> targets;
-                foreach (ServerPlayer *p, other_players) {
-                    if (tianfeng->canDiscard(p, "he"))
-                        targets << p;
-                }
-                if (targets.isEmpty()) return false;
-                ServerPlayer *to = room->askForPlayerChosen(tianfeng, targets, objectName(), "sijian-invoke", true, true);
-                if (to) {
-                    room->broadcastSkillInvoke(objectName(), to->isLord() ? 2 : 1);
-                    int card_id = room->askForCardChosen(tianfeng, to, "he", objectName(), false, Card::MethodDiscard);
-                    room->throwCard(card_id, to, tianfeng);
-                }
+        if (move.from == tianfeng && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
+            QList<ServerPlayer *> other_players = room->getOtherPlayers(tianfeng);
+            QList<ServerPlayer *> targets;
+            foreach (ServerPlayer *p, other_players) {
+                if (tianfeng->canDiscard(p, "he"))
+                    targets << p;
+            }
+            if (targets.isEmpty()) return false;
+            ServerPlayer *to = room->askForPlayerChosen(tianfeng, targets, objectName(), "sijian-invoke", true, true);
+            if (to) {
+                room->broadcastSkillInvoke(objectName(), to->isLord() ? 2 : 1);
+                int card_id = room->askForCardChosen(tianfeng, to, "he", objectName(), false, Card::MethodDiscard);
+                room->throwCard(card_id, to, tianfeng);
             }
         }
-
         return false;
     }
 };

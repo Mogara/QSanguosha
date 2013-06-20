@@ -119,6 +119,7 @@ public:
     inline virtual void addSubcard(int /*card_id*/) { Q_ASSERT(false); }
     inline virtual void addSubcard(const Card * /*card*/) { Q_ASSERT(false); }
     inline virtual void addSubcards(const QList<const Card *> & /*cards*/) { Q_ASSERT(false); }
+    inline virtual void addSubcards(const QList<int> & /*subcards_list*/) { Q_ASSERT(false); }
     // inline virtual QList<int> getSubcards() const;
     // inline virtual void clearSubcards();
     // inline virtual QString subcardString() const;

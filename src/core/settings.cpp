@@ -68,7 +68,7 @@ void Settings::init() {
                        << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
                        << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
                        << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card" << "assassins"
-                       << "hegemony_sp" << "Special1v1" << "Special3v3_2013";
+                       << "hegemony_sp" << "Special1v1" << "Special1v1OL" << "Special3v3_2013";
     }
     setValue("BanPackages", banpackagelist);
 
@@ -94,6 +94,7 @@ void Settings::init() {
     AlterAIDelayAD = value("AlterAIDelayAD", false).toBool();
     AIDelayAD = value("AIDelayAD", 0).toInt();
     SurrenderAtDeath = value("SurrenderAtDeath", false).toBool();
+    EnableLuckCard = value("EnableLuckCard", false).toBool();
     ServerPort = value("ServerPort", 9527u).toUInt();
     DisableLua = value("DisableLua", false).toBool();
 

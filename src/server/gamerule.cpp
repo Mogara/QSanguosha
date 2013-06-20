@@ -20,7 +20,6 @@ GameRule::GameRule(QObject *)
     events << GameStart << TurnStart
            << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging
            << PreCardUsed << CardUsed << CardFinished << CardEffected
-           << CardResponded
            << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
            << AskForPeaches << AskForPeachesDone << BuryVictim << GameOverJudge
@@ -134,21 +133,15 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             }
             room->setTag("FirstRound", true);
             if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013") {
-                QList<CardsMoveStruct> moves;
-                foreach (ServerPlayer *player, room->getPlayers()) {
-                    QList<int> card_ids = room->getNCards(player->getMaxHp(), false);
-
-                    CardsMoveStruct move;
-                    move.card_ids = card_ids;
-                    move.from = NULL;
-                    move.to = player;
-                    move.to_place = Player::PlaceHand;
-                    moves.append(move);
-                }
-                room->moveCardsAtomic(moves, false);
+                QList<int> n_list;
+                foreach (ServerPlayer *player, room->getPlayers())
+                    n_list << player->getMaxHp();
+                room->drawCards(room->getPlayers(), n_list, QString());
             } else {
                 room->drawCards(room->getPlayers(), 4, QString());
             }
+            if (Config.EnableLuckCard)
+                room->askForLuckCard();
         }
         return false;
     }
@@ -199,8 +192,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 room->setPlayerFlag(player, ".");
                 room->clearPlayerCardLimitation(player, true);
             }
-            if (player->hasFlag("Global_SlashInPlayPhase"))
-                player->setFlags("-Global_SlashInPlayPhase");
             break;
         }
     case PreCardUsed: {
@@ -210,8 +201,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     card_use.from->setFlags("-Global_ForbidSurrender");
                     room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, Json::Value(true));
                 }
-                if (card_use.card->isKindOf("Slash"))
-                    card_use.from->setFlags("Global_SlashInPlayPhase");
 
                 card_use.from->broadcastSkillInvoke(card_use.card);
                 if (!card_use.card->getSkillName().isNull() && card_use.card->getSkillName(true) == card_use.card->getSkillName(false)
@@ -277,12 +266,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             if (use.card->isKindOf("Slash"))
                 use.from->tag.remove("Jink_" + use.card->toString());
 
-            break;
-        }
-    case CardResponded: {
-            const Card *card = data.value<CardResponseStruct>().m_card;
-            if (card->isKindOf("Slash"))
-                player->setFlags("Global_SlashInPlayPhase");
             break;
         }
     case EventAcquireSkill:
@@ -877,7 +860,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
                     p->drawCards(1);
             }
 
-            break;
+            return false;
         }
     case TurnStart: {
             if (player->isLord()) {
@@ -1114,6 +1097,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
             if (Config.Enable2ndGeneral && player->getGeneral2Name() == "anjiang") {
                 QStringList generals = room->getTag(player->objectName()).toStringList();
                 room->changePlayerGeneral2(player, generals.at(0));
+                room->removeTag(player->objectName());
             }
             break;
         }

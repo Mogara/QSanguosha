@@ -99,7 +99,7 @@ void TablePile::showJudgeResult(int cardId, bool takeEffect) {
     QList<CardItem *> cardsToClear;
     for (int i = m_visibleCards.size() - 1; i >= 0; i--) {
         CardItem *item = m_visibleCards[i];
-        if (item->getCard()->getId() == cardId)
+        if (item->getCard() && item->getCard()->getId() == cardId)
             judgeCard = m_visibleCards[i];
         else
             cardsToClear.append(item);

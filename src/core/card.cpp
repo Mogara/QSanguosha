@@ -344,6 +344,10 @@ void Card::addSubcards(const QList<const Card *> &cards) {
         subcards.append(card->getId());
 }
 
+void Card::addSubcards(const QList<int> &subcards_list) {
+    subcards.append(subcards_list);
+}
+
 int Card::subcardsLength() const{
     return subcards.length();
 }
@@ -398,8 +402,7 @@ const Card *Card::Parse(const QString &str) {
         if (card == NULL)
             return NULL;
 
-        foreach (QString subcard_id, subcard_ids)
-            card->addSubcard(subcard_id.toInt());
+        card->addSubcards(StringList2IntList(subcard_ids));
 
         // skill name
         // @todo: This is extremely dirty and would cause endless troubles.
@@ -437,9 +440,7 @@ const Card *Card::Parse(const QString &str) {
         QString copy = str;
         copy.remove(QChar('$'));
         QStringList card_strs = copy.split("+");
-        DummyCard *dummy = new DummyCard;
-        foreach (QString card_str, card_strs)
-            dummy->addSubcard(card_str.toInt());
+        DummyCard *dummy = new DummyCard(StringList2IntList(card_strs));
         dummy->deleteLater();
         return dummy;
     } else if (str.startsWith(QChar('#'))) {
@@ -462,9 +463,7 @@ const Card *Card::Parse(const QString &str) {
             subcard_ids = subcard_str.split("+");
 
         Suit suit = Card::NoSuit;
-        DummyCard *dummy = new DummyCard;
-        foreach (QString subcard_id, subcard_ids)
-            dummy->addSubcard(subcard_id.toInt());
+        DummyCard *dummy = new DummyCard(StringList2IntList(subcard_ids));
         if (suit_string == "to_be_decided")
             suit = dummy->getSuit();
         else
@@ -487,9 +486,7 @@ const Card *Card::Parse(const QString &str) {
         if (card == NULL)
             return NULL;
 
-        foreach (QString subcard_id, subcard_ids)
-            card->addSubcard(subcard_id.toInt());
-
+        card->addSubcards(StringList2IntList(subcard_ids));
         card->setSkillName(m_skillName);
         card->deleteLater();
         return card;
@@ -754,6 +751,14 @@ DummyCard::DummyCard(): SkillCard() {
     target_fixed = true;
     handling_method = Card::MethodNone;
     setObjectName("dummy");
+}
+
+DummyCard::DummyCard(const QList<int> &subcards): SkillCard() {
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+    setObjectName("dummy");
+    foreach (int id, subcards)
+        this->subcards.append(id);
 }
 
 QString DummyCard::getType() const{

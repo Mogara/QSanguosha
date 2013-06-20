@@ -105,6 +105,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
     m_interactions[S_COMMAND_CHOOSE_ROLE_3V3] = &Client::askForRole3v3;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
+    m_interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
 
     m_callbacks[S_COMMAND_FILL_AMAZING_GRACE] = &Client::fillAG;
     m_callbacks[S_COMMAND_TAKE_AMAZING_GRACE] = &Client::takeAG;
@@ -851,6 +852,12 @@ void Client::askForSurrender(const Json::Value &initiator) {
     setStatus(AskForSkillInvoke);
 }
 
+void Client::askForLuckCard(const Json::Value &) {
+    skill_to_invoke = "luck_card";
+    prompt_doc->setHtml(tr("Do you want to use the luck card?"));
+    setStatus(AskForSkillInvoke);
+}
+
 void Client::askForNullification(const Json::Value &arg) {
     if (!arg.isArray() || arg.size() != 3 || !arg[0].isString()
         || !(arg[1].isNull() || arg[1].isString())
@@ -1050,6 +1057,10 @@ void Client::askForDiscard(const Json::Value &req) {
             prompt = tr("Please discard %1 card(s), include equip").arg(discard_num);
         else
             prompt = tr("Please discard %1 card(s), only hand cards is allowed").arg(discard_num);
+        if (min_num < discard_num) {
+            prompt.append("<br/>");
+            prompt.append(tr("%1 %2 cards(s) are required at least").arg(min_num).arg(m_canDiscardEquip ? "" : tr("hand")));
+        }
         prompt_doc->setHtml(prompt);
     } else {
         QStringList texts = prompt.split(":");
@@ -1488,14 +1499,27 @@ void Client::askForPindian(const Json::Value &ask_str) {
 }
 
 void Client::askForYiji(const Json::Value &ask_str) {
-    if (!ask_str.isArray() || ask_str.size() != 4) return;
+    if (!ask_str.isArray() || (ask_str.size() != 4 && ask_str.size() != 5)) return;
     //if (!ask_str[0].isArray() || !ask_str[1].isBool() || !ask_str[2].isInt()) return;
     Json::Value card_list = ask_str[0];
     int count = ask_str[2].asInt();
     m_isDiscardActionRefusable = ask_str[1].asBool();
-    prompt_doc->setHtml(tr("Please distribute %1 cards %2 as you wish")
-                           .arg(count)
-                           .arg(m_isDiscardActionRefusable ? QString() : tr("to another player")));
+
+    if (ask_str.size() == 5) {
+        QString prompt = toQString(ask_str[4]);
+        QStringList texts = prompt.split(":");
+        if (texts.length() < 4) {
+            while (texts.length() < 3)
+                texts.append(QString());
+            texts.append(QString::number(count));
+        }
+        setPromptList(texts);
+    } else {
+        prompt_doc->setHtml(tr("Please distribute %1 cards %2 as you wish")
+                               .arg(count)
+                               .arg(m_isDiscardActionRefusable ? QString() : tr("to another player")));
+    }
+
     //@todo: use cards directly rather than the QString
     QStringList card_str;
     for (unsigned int i = 0; i < card_list.size(); i++)
@@ -1567,6 +1591,11 @@ void Client::log(const Json::Value &log_str) {
         tryParse(log_str, log);
         if (log.first() == "#BasaraReveal")
             Sanguosha->playSystemAudioEffect("choose-item");
+        else if (log.first() == "#UseLuckCard") {
+            ClientPlayer *from = getPlayer(log.at(1));
+            if (from && from != Self)
+                from->setHandcardNum(0);
+        }
         emit log_received(log);
     }
 }

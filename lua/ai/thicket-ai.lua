@@ -670,6 +670,7 @@ luanwu_skill.name = "luanwu"
 table.insert(sgs.ai_skills, luanwu_skill)
 luanwu_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@chaos") <= 0 then return end
+	if self.room:getMode() == "_mini_13" then return sgs.Card_Parse("@LuanwuCard=.") end
 	local good, bad = 0, 0
 	local lord = self.room:getLord()
 	if lord and self.role ~= "rebel" and self:isWeak(lord) then return end

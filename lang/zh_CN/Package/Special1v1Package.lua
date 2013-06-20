@@ -97,4 +97,14 @@ return {
 	[":drowning"] = "锦囊牌<br />出牌时机：出牌阶段<br />使用目标：对手 <br />作用效果：令目标角色选择一项：弃置所有装备区的所有装备牌（至少一张），或受到1点伤害",
 	["drowning:damage"] = "受到1点伤害",
 	["drowning:throw"] = "弃置所有装备",
+
+	["Special1v1OL"] = "1v1-OL",
+
+	["kof_daqiao"] = "大乔1v1",
+	["&kof_daqiao"] = "大乔",
+	["wanrong"] = "婉容",
+	[":wanrong"] = "每当你成为【杀】的目标后，你可以摸一张牌。",
+
+	["kof_pangde"] = "庞德1v1",
+	["&kof_pangde"] = "庞德",
 }

@@ -23,11 +23,7 @@ public:
             bool isCaoCao = player->getGeneralName().contains("caocao");
             room->broadcastSkillInvoke(objectName(), (isCaoCao ? 3 : (player->isMale() ? 1 : 2)));
 
-            DummyCard *dummy = new DummyCard;
-            QList <const Card *> handcards = player->getHandcards();
-            foreach (const Card *card, handcards)
-                dummy->addSubcard(card);
-
+            DummyCard *dummy = new DummyCard(player->handCards());
             QList <const Card *> equips = player->getEquips();
             foreach (const Card *card, equips)
                 dummy->addSubcard(card);
@@ -270,12 +266,9 @@ public:
                         card_to_gotback << ids[i];
                 }
                 if (!card_to_throw.isEmpty()) {
-                    DummyCard *dummy = new DummyCard;
-                    foreach (int id, card_to_throw)
-                        dummy->addSubcard(id);
+                    DummyCard *dummy = new DummyCard(card_to_throw);
 
                     RecoverStruct recover;
-                    recover.card = dummy;
                     recover.who = menghuo;
                     recover.recover = card_to_throw.length();
                     room->recover(menghuo, recover);
@@ -286,10 +279,7 @@ public:
                     has_heart = true;
                 }
                 if (!card_to_gotback.isEmpty()) {
-                    DummyCard *dummy2 = new DummyCard;
-                    foreach (int id, card_to_gotback)
-                        dummy2->addSubcard(id);
-
+                    DummyCard *dummy2 = new DummyCard(card_to_gotback);
                     CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, menghuo->objectName());
                     room->obtainCard(menghuo, dummy2, reason);
                     dummy2->deleteLater();
@@ -405,6 +395,7 @@ HaoshiCard::HaoshiCard() {
     will_throw = false;
     mute = true;
     handling_method = Card::MethodNone;
+    m_skillName = "_haoshi";
 }
 
 bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -482,8 +473,7 @@ public:
                 int n = lusu->getHandcardNum() / 2;
                 QList<int> to_give = lusu->handCards().mid(0, n);
                 HaoshiCard *haoshi_card = new HaoshiCard;
-                foreach (int card_id, to_give)
-                    haoshi_card->addSubcard(card_id);
+                haoshi_card->addSubcards(to_give);
                 QList<ServerPlayer *> targets;
                 targets << beggar;
                 haoshi_card->use(room, lusu, targets);

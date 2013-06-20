@@ -105,9 +105,7 @@ public:
                         rest_num -= give;
                         QList<int> to_give = handcard_list.length() < give ? handcard_list : handcard_list.mid(0, give);
                         ServerPlayer *receiver = room->getOtherPlayers(target).at(qrand() % (target->aliveCount() - 1));
-                        DummyCard *dummy = new DummyCard;
-                        foreach (int id, to_give)
-                            dummy->addSubcard(id);
+                        DummyCard *dummy = new DummyCard(to_give);
                         room->obtainCard(receiver, dummy, false);
                         delete dummy;
                         if (rest_num == 0 || target->isKongcheng())
@@ -129,32 +127,31 @@ QiceCard::QiceCard() {
 bool QiceCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     CardStar card = Self->tag.value("qice").value<CardStar>();
     Card *mutable_card = const_cast<Card *>(card);
-    foreach (int id, subcards)
-        mutable_card->addSubcard(id);
+    if (mutable_card)
+        mutable_card->addSubcards(this->subcards);
     return mutable_card && mutable_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, mutable_card, targets);
 }
 
 bool QiceCard::targetFixed() const{
     CardStar card = Self->tag.value("qice").value<CardStar>();
     Card *mutable_card = const_cast<Card *>(card);
-    foreach (int id, subcards)
-        mutable_card->addSubcard(id);
+    if (mutable_card)
+        mutable_card->addSubcards(this->subcards);
     return mutable_card && mutable_card->targetFixed();
 }
 
 bool QiceCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     CardStar card = Self->tag.value("qice").value<CardStar>();
     Card *mutable_card = const_cast<Card *>(card);
-    foreach (int id, subcards)
-        mutable_card->addSubcard(id);
+    if (mutable_card)
+        mutable_card->addSubcards(this->subcards);
     return mutable_card && mutable_card->targetsFeasible(targets, Self);
 }
 
 const Card *QiceCard::validate(CardUseStruct &card_use) const{
     Card *use_card = Sanguosha->cloneCard(user_string);
     use_card->setSkillName("qice");
-    foreach (int id, this->getSubcards())
-        use_card->addSubcard(id);
+    use_card->addSubcards(this->subcards);
     bool available = true;
     foreach (ServerPlayer *to, card_use.to)
         if (card_use.from->isProhibited(to, use_card)) {
@@ -514,25 +511,6 @@ public:
     }
 };
 
-GongqiCard::GongqiCard() {
-    target_fixed = true;
-}
-
-void GongqiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    room->setPlayerFlag(source, "InfinityAttackRange");
-    const Card *cd = Sanguosha->getCard(subcards.first());
-    if (cd->isKindOf("EquipCard")) {
-        QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, room->getOtherPlayers(source))
-            if (source->canDiscard(p, "he")) targets << p;
-        if (!targets.isEmpty()) {
-            ServerPlayer *to_discard = room->askForPlayerChosen(source, targets, "gongqi", "@gongqi-discard", true);
-            if (to_discard)
-                room->throwCard(room->askForCardChosen(source, to_discard, "he", "gongqi", false, Card::MethodDiscard), to_discard, source);
-        }
-    }
-}
-
 class FuhunViewAsSkill: public ViewAsSkill {
 public:
     FuhunViewAsSkill(): ViewAsSkill("fuhun") {
@@ -585,7 +563,7 @@ public:
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive && player->hasFlag(objectName()))
-                room->handleAcquireDetachSkills(player, "-wusheng|-paoxiao");
+                room->handleAcquireDetachSkills(player, "-wusheng|-paoxiao", true);
         }
 
         return false;
@@ -595,6 +573,29 @@ public:
         return 1;
     }
 };
+
+GongqiCard::GongqiCard() {
+    mute = true;
+    target_fixed = true;
+}
+
+void GongqiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    room->setPlayerFlag(source, "InfinityAttackRange");
+    const Card *cd = Sanguosha->getCard(subcards.first());
+    if (cd->isKindOf("EquipCard")) {
+        room->broadcastSkillInvoke("gongqi", 2);
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getOtherPlayers(source))
+            if (source->canDiscard(p, "he")) targets << p;
+        if (!targets.isEmpty()) {
+            ServerPlayer *to_discard = room->askForPlayerChosen(source, targets, "gongqi", "@gongqi-discard", true);
+            if (to_discard)
+                room->throwCard(room->askForCardChosen(source, to_discard, "he", "gongqi", false, Card::MethodDiscard), to_discard, source);
+        }
+    } else {
+        room->broadcastSkillInvoke("gongqi", 1);
+    }
+}
 
 class Gongqi: public OneCardViewAsSkill {
 public:

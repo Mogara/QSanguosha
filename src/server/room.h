@@ -61,9 +61,9 @@ public:
     void slashEffect(const SlashEffectStruct &effect);
     void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
-    void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip = false);
-    void handleAcquireDetachSkills(ServerPlayer *player, const QStringList &skill_names);
-    void handleAcquireDetachSkills(ServerPlayer *player, const QString &skill_names);
+    void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip = false, bool acquire_only = false);
+    void handleAcquireDetachSkills(ServerPlayer *player, const QStringList &skill_names, bool acquire_only = false);
+    void handleAcquireDetachSkills(ServerPlayer *player, const QString &skill_names, bool acquire_only = false);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
@@ -280,6 +280,7 @@ public:
 
     void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
     void drawCards(QList<ServerPlayer *> players, int n, const QString &reason = QString());
+    void drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QString &reason = QString());
     void obtainCard(ServerPlayer *target, const Card *card, bool unhide = true);
     void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
     void obtainCard(ServerPlayer *target, const Card *card,  const CardMoveReason &reason, bool unhide = true);
@@ -303,6 +304,7 @@ public:
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
+    void askForLuckCard();
     Card::Suit askForSuit(ServerPlayer *player, const QString &reason);
     QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
@@ -328,8 +330,9 @@ public:
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &skill_name = QString(),
-                    bool is_preview = false, bool visible = false, int optional = true, int max_num = -1,
-                    QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason());
+                    bool is_preview = false, bool visible = false, bool optional = true, int max_num = -1,
+                    QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason(),
+                    const QString &prompt = QString(), bool notify_skill = false);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     QList<const Card *> askForPindianRace(ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason,
@@ -410,19 +413,20 @@ private:
             m_from_pile_name = moveOneTime.from_pile_names[index]; m_to_pile_name = moveOneTime.to_pile_name;
             m_open = moveOneTime.open[index];
             m_reason = moveOneTime.reason;
+            m_is_last_handcard = moveOneTime.is_last_handcard;
         }
 
         inline bool operator ==(const _MoveSeparateClassifier &other) const{
             return m_from == other.m_from && m_to == other.m_to
                    && m_from_place == other.m_from_place && m_to_place == other.m_to_place
                    && m_from_pile_name == other.m_from_pile_name && m_to_pile_name == other.m_to_pile_name
-                   && m_open == other.m_open && m_reason == other.m_reason;
+                   && m_open == other.m_open && m_reason == other.m_reason && m_is_last_handcard == other.m_is_last_handcard;
         }
         inline bool operator < (const _MoveSeparateClassifier &other) const{
             return m_from < other.m_from && m_to < other.m_to
                     && m_from_place < other.m_from_place && m_to_place < other.m_to_place
                     && m_from_pile_name < other.m_from_pile_name && m_to_pile_name < other.m_to_pile_name
-                    && m_open < other.m_open;
+                    && m_open < other.m_open && m_is_last_handcard < other.m_is_last_handcard;
         }
         Player *m_from;
         Player *m_to;
@@ -430,6 +434,7 @@ private:
         QString m_from_pile_name, m_to_pile_name;
         bool m_open;
         CardMoveReason m_reason;
+        bool m_is_last_handcard;
     };
 
     int _m_lastMovementId;

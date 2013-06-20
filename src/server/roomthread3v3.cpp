@@ -27,14 +27,6 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     generals << stdpack->findChildren<const General *>()
              << windpack->findChildren<const General *>();
 
-    // remove hidden generals
-    QMutableListIterator<const General *> itor(generals);
-    while (itor.hasNext()) {
-        itor.next();
-        if (itor.value()->isHidden())
-            itor.remove();
-    }
-
     generals.removeOne(Sanguosha->getGeneral("yuji"));
     QStringList list_nostal, list_neo;
     list_nostal << "nos_liubei" << "nos_diaochan" << "nos_huangyueying";

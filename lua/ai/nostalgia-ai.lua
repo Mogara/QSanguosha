@@ -285,18 +285,18 @@ sgs.ai_skill_use_func.NosXuanhuoCard = function(card, use, self)
 	end
 
 	if target then
-		local willUse = false
+		local willUse
 		if self:isFriend(target) then
 			for _, card in ipairs(cards) do
 				if card:getSuit() == sgs.Card_Heart then
-					willUse = true
+					willUse = card
 					break
 				end
 			end
 		else
 			for _, card in ipairs(cards) do
 				if card:getSuit() == sgs.Card_Heart and not isCard("Peach", card, target) and not isCard("Nullification", card, target) then
-					willUse = true
+					willUse = card
 					break
 				end
 			end
@@ -304,7 +304,7 @@ sgs.ai_skill_use_func.NosXuanhuoCard = function(card, use, self)
 
 		if willUse then
 			target:setFlags("AI_NosXuanhuoTarget")
-			use.card = sgs.Card_Parse("@NosXuanhuoCard=" .. card:getEffectiveId())
+			use.card = sgs.Card_Parse("@NosXuanhuoCard=" .. willUse:getEffectiveId())
 			if use.to then use.to:append(target) end
 		end
 	end

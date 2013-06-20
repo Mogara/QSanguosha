@@ -565,13 +565,8 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->addMark("TianxiangTarget");
     DamageStruct damage = effect.from->tag.value("TianxiangDamage").value<DamageStruct>();
 
-    if (damage.card && damage.card->isKindOf("Slash")) {
-        QStringList qinggang = effect.from->tag["Qinggang"].toStringList();
-        if (!qinggang.isEmpty()) {
-            qinggang.removeOne(damage.card->toString());
-            effect.from->tag["Qinggang"] = qinggang;
-        }
-    }
+    if (damage.card && damage.card->isKindOf("Slash"))
+        effect.from->removeQinggangTag(damage.card);
 
     damage.to = effect.to;
     damage.transfer = true;

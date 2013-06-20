@@ -187,6 +187,7 @@ struct CardsMoveOneTimeStruct {
     QString to_pile_name;
 
     QList<bool> open; // helper to prevent sending card_id to unrelevant clients
+    bool is_last_handcard;
 };
 
 struct CardsMoveStruct {
@@ -195,6 +196,7 @@ struct CardsMoveStruct {
         to_place = Player::PlaceUnknown;
         from = NULL;
         to = NULL;
+        is_last_handcard = false;
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place to_place, CardMoveReason reason) {
@@ -204,6 +206,7 @@ struct CardsMoveStruct {
         this->from = from;
         this->to = to;
         this->reason = reason;
+        this->is_last_handcard = false;
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, CardMoveReason reason) {
@@ -213,6 +216,7 @@ struct CardsMoveStruct {
         this->from = NULL;
         this->to = to;
         this->reason = reason;
+        this->is_last_handcard = false;
     }
 
     inline bool hasSameSourceAs(const CardsMoveStruct &move) {
@@ -241,6 +245,7 @@ struct CardsMoveStruct {
     Player *from, *to;
     CardMoveReason reason;
     bool open; // helper to prevent sending card_id to unrelevant clients
+    bool is_last_handcard;
     bool tryParse(const Json::Value &);
     Json::Value toJsonValue() const;
     inline bool isRelevant(const Player *player) {

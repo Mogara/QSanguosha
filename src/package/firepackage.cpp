@@ -411,9 +411,8 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        const Card *first = originalCard;
-        Card *ncard = new Nullification(first->getSuit(), first->getNumber());
-        ncard->addSubcard(first);
+        Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
+        ncard->addSubcard(originalCard);
         ncard->setSkillName(objectName());
         return ncard;
     }

@@ -1853,6 +1853,7 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move) {
 
 void RoomScene::keepLoseCardLog(const CardsMoveStruct &move) {
     if (move.from && move.to_place == Player::DrawPile) {
+        if (move.reason.m_reason == CardMoveReason::S_REASON_PUT && move.reason.m_skillName == "luck_card") return;
         bool hidden = false;
         foreach (int id, move.card_ids) {
             if (id == Card::S_UNKNOWN_CARD_ID) {
@@ -1881,6 +1882,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move) {
             if (flag.endsWith("_InTempMoving"))
                 return;
     }
+
     // private pile
     if (move.to_place == Player::PlaceSpecial && !move.to_pile_name.isNull() && !move.to_pile_name.startsWith('#')) {
         bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
@@ -3685,6 +3687,7 @@ void RoomScene::doHuashen(const QString &, const QStringList &args) {
     QStringList hargs = args;
     QString name = hargs.first();
     hargs.removeOne(name);
+    hargs = hargs.first().split(":");
     ClientPlayer *player = ClientInstance->getPlayer(name);
     bool owner = (hargs.first() != "unknown");
 

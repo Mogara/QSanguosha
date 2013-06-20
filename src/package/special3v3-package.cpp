@@ -173,15 +173,24 @@ public:
                 }
             }
         } else {
-            for (int i = 0; i < player->getMark(objectName()); i++) {
-                if (player->askForSkillInvoke(objectName(), data)) {
-                    room->broadcastSkillInvoke(objectName());
-                    player->drawCards(1);
-                } else {
-                    break;
+            int n = player->getMark(objectName());
+            try {
+                for (int i = 0; i < n; i++) {
+                    player->removeMark(objectName());
+                    if (player->isAlive() && player->askForSkillInvoke(objectName(), data)) {
+                        room->broadcastSkillInvoke(objectName());
+                        player->drawCards(1);
+                    } else {
+                        break;
+                    }
                 }
+                player->setMark(objectName(), 0);
             }
-            player->setMark(objectName(), 0);
+            catch (TriggerEvent triggerEvent) {
+                if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+                    player->setMark(objectName(), 0);
+                throw triggerEvent;
+            }
         }
         return false;
     }

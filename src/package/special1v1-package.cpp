@@ -165,11 +165,7 @@ public:
         if (room->askForSkillInvoke(xiahouyuan, objectName(), data)) {
             room->broadcastSkillInvoke(objectName());
 
-            DummyCard *dummy = new DummyCard;
-            QList <const Card *> handcards = player->getHandcards();
-            foreach (const Card *card, handcards)
-                dummy->addSubcard(card);
-
+            DummyCard *dummy = new DummyCard(player->handCards());
             QList <const Card *> equips = player->getEquips();
             foreach (const Card *card, equips)
                 dummy->addSubcard(card);
@@ -252,12 +248,6 @@ bool CangjiCard::targetFilter(const QList<const Player *> &targets, const Player
 void CangjiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
-    LogMessage log;
-    log.type = "#InvokeSkill";
-    log.from = effect.from;
-    log.arg = "cangji";
-    room->sendLog(log);
-
     CardsMoveStruct move;
     move.from = effect.from;
     move.to = effect.to;
@@ -268,7 +258,7 @@ void CangjiCard::onEffect(const CardEffectStruct &effect) const{
     if (effect.from->getEquips().isEmpty())
         return;
     bool loop = false;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i <= 3; i++) {
         if (effect.from->getEquip(i)) {
             foreach (ServerPlayer *p, room->getOtherPlayers(effect.from)) {
                 if (!p->getEquip(i)) {
@@ -716,6 +706,22 @@ public:
     }
 };
 
+class Wanrong: public TriggerSkill {
+public:
+    Wanrong(): TriggerSkill("wanrong") {
+        events << TargetConfirmed;
+        frequency = Frequent;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash") && use.to.contains(player)
+            && room->askForSkillInvoke(player, objectName(), data))
+            player->drawCards(1);
+        return false;
+    }
+};
+
 Drowning::Drowning(Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -792,6 +798,7 @@ Special1v1Package::Special1v1Package()
 
     General *kof_zhurong = new General(this, "kof_zhurong", "shu", 4, false);
     kof_zhurong->addSkill("manyi");
+    kof_zhurong->addSkill("#manyi-avoid");
     kof_zhurong->addSkill("lieren");
 
     General *kof_sunshangxiang = new General(this, "kof_sunshangxiang", "wu", 3, false);
@@ -812,6 +819,20 @@ Special1v1Package::Special1v1Package()
 }
 
 ADD_PACKAGE(Special1v1)
+
+Special1v1OLPackage::Special1v1OLPackage()
+    : Package("Special1v1OL")
+{
+    General *kof_daqiao = new General(this, "kof_daqiao", "wu", 3, false);
+    kof_daqiao->addSkill("guose");
+    kof_daqiao->addSkill(new Wanrong);
+
+    General *kof_pangde = new General(this, "kof_pangde", "qun", 4);
+    kof_pangde->addSkill("mengjin");
+    kof_pangde->addSkill("xiaoxi");
+}
+
+ADD_PACKAGE(Special1v1OL)
 
 #include "maneuvering.h"
 New1v1CardPackage::New1v1CardPackage()

@@ -6,6 +6,7 @@ class QVariant;
 
 #include <QList>
 #include <QStringList>
+#include <QVariant>
 
 template<typename T>
 void qShuffle(QList<T> &list) {
@@ -25,6 +26,8 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
 
 QStringList IntList2StringList(const QList<int> &intlist);
 QList<int> StringList2IntList(const QStringList &stringlist);
+QVariantList IntList2VariantList(const QList<int> &intlist);
+QList<int> VariantList2IntList(const QVariantList &variantlist);
 
 bool isNormalGameMode(const QString &mode);
 

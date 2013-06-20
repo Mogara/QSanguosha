@@ -26,6 +26,7 @@ config = {
 		"Special3v3",
 		"Special3v3_2013",
 		"Special1v1",
+		"Special1v1OL",
 		"SP",
 		"BGM",
 		"BGMDIY",
@@ -139,15 +140,18 @@ config = {
 		"zhugeliang+xushu", "zhugeliang+nos_xushu",
 		"huangyueying+wolong", "huangyueying+ganning", "huangyueying+huanggai", "huangyueying+yuanshao", "huangyueying+yanliangwenchou",
 		"huangzhong+xusheng",
-		"wolong+luxun", "wolong+zhangchunhua", "wolong+nos_zhangchunhua",
+		"wolong+luxun", "wolong+zhangchunhua", "wolong+nos_huangyueying", "wolong+nos_zhangchunhua",
 		"sunquan+sunshangxiang",
+		"ganning+nos_huangyueying",
 		"lvmeng+yuanshu",
 		"huanggai+sunshangxiang", "huanggai+yuanshao", "huanggai+yanliangwenchou", "huanggai+dongzhuo",
-		    "huanggai+wuguotai", "huanggai+guanxingzhangbao", "huanggai+huaxiong", "huanggai+xiahouba", "huanggai+nos_guanxingzhangbao", "huanggai+neo_zhangfei",
+		    "huanggai+wuguotai", "huanggai+guanxingzhangbao", "huanggai+huaxiong", "huanggai+xiahouba",
+		    "huanggai+nos_huangyueying", "huanggai+nos_guanxingzhangbao", "huanggai+neo_zhangfei",
 		"luxun+yuji", "luxun+yanliangwenchou", "luxun+guanxingzhangbao", "luxun+heg_luxun", "luxun+nos_liubei", "luxun+nos_guanxingzhangbao",
 		"sunshangxiang+shensimayi", "sunshangxiang+heg_luxun",
 		"sunce+guanxingzhangbao", "sunce+nos_guanxingzhangbao",
-		"yanliangwenchou+zhangchunhua", "yanliangwenchou+nos_zhangchunhua",
+		"yuanshao+nos_huangyueying",
+		"yanliangwenchou+zhangchunhua", "yanliangwenchou+nos_huangyueying", "yanliangwenchou+nos_zhangchunhua",
 		"dongzhuo+shenzhaoyun", "dongzhuo+wangyi", "dongzhuo+diy_wangyuanji", "dongzhuo+nos_zhangchunhua", "dongzhuo+nos_wangyi",
 		"yuji+zhangchunhua", "yuji+nos_zhangchunhua",
 		"shencaocao+caozhi",
@@ -187,6 +191,6 @@ config = {
 		"sunce+daqiao",
 		"sunquan+bulianshi",
 		"diy_simazhao+diy_wangyuanji",
-		"liuxie+fuhuanghou|as_fuhuanghou"
+		"liuxie|diy_liuxie+fuhuanghou|as_fuhuanghou"
 	}
 }

@@ -788,7 +788,7 @@ sgs.ai_skill_use_func.DuwuCard = function(card, use, self)
 		if index <= hc_num then return 0
 		elseif index == hc_num + 1 then
 			if eq_num == 2 then
-				return sgs.weapon_range[self.player:getWeapon():getClassName()] - 1
+				return sgs.weapon_range[self.player:getWeapon():getClassName()] - self.player:getAttackRange(false)
 			else
 				return 1
 			end
@@ -812,12 +812,14 @@ sgs.ai_skill_use_func.DuwuCard = function(card, use, self)
 				end
 				use.card = sgs.Card_Parse("@DuwuCard=" .. table.concat(hp_ids, "+"))
 				if use.to then use.to:append(enemy) end
+				return
 			end
 		else
 			if not self:isWeak() or self:getSaveNum(true) >= 1 then
 				if self.player:distanceTo(enemy, getRangefix(1)) <= self.player:getAttackRange() then
 					use.card = sgs.Card_Parse("@DuwuCard=" .. card_ids[1])
 					if use.to then use.to:append(enemy) end
+					return
 				end
 			end
 		end

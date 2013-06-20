@@ -93,7 +93,7 @@ return {
 	[":gongqi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张牌，令你于此回合内攻击范围无限，若你以此法弃置的牌为装备牌，你可以弃置一名其他角色的一张牌。",
 	["@gongqi-discard"] = "你可以弃置一名其他角色的一张牌",
 	["jiefan"] = "解烦",
-	[":jiefan"] = "<font color=\"green\"><b>限定技，</b></font>出牌阶段，你可以选择一名角色，令攻击范围内含有该角色的所有角色各选择一项：1.弃置一张武器牌；2.令其摸一张牌。 ",
+	[":jiefan"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以选择一名角色，令攻击范围内含有该角色的所有角色各选择一项：1.弃置一张武器牌；2.令其摸一张牌。 ",
 	["@jiefan-discard"] = "请弃置一张武器牌，否则 %dest 摸一张牌",
 	["@rescue"] = "解烦",
 	["$JiefanAnimate"] = "image=image/animate/jiefan.png",

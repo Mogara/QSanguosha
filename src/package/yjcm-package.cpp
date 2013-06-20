@@ -479,12 +479,13 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lingtong, QVariant &data) const{
         if (triggerEvent == EventPhaseStart) {
             lingtong->setMark("xuanfeng", 0);
+            lingtong->setFlags("-XuanfengUsed");
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from != lingtong)
                 return false;
 
-            if (move.to_place == Player::DiscardPile && lingtong->getPhase() == Player::Discard
+            if (lingtong->getPhase() == Player::Discard
                 && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
                 lingtong->setMark("xuanfeng", lingtong->getMark("xuanfeng") + move.card_ids.length());
 
@@ -652,7 +653,7 @@ MingceCard::MingceCard() {
 
 void MingceCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    QList <ServerPlayer *> targets;
+    QList<ServerPlayer *> targets;
     if (Slash::IsAvailable(effect.to)) {
         foreach (ServerPlayer *p, room->getOtherPlayers(effect.to)) {
             if (effect.to->canSlash(p))
@@ -660,7 +661,7 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
         }
     }
 
-    ServerPlayer *target;
+    ServerPlayer *target = NULL;
     QStringList choicelist;
     choicelist << "draw";
     if (!targets.isEmpty() && effect.from->isAlive()) {
@@ -1052,7 +1053,7 @@ public:
         room->sendLog(log);
 
         room->broadcastSkillInvoke(objectName());
-        room->doLightbox("$ZiliAnimate", 3000);
+        room->doLightbox("$ZiliAnimate", 4000);
 
         room->addPlayerMark(zhonghui, "zili");
         if (room->changeMaxHpForAwakenSkill(zhonghui)) {
@@ -1078,18 +1079,14 @@ bool PaiyiCard::targetFilter(const QList<const Player *> &targets, const Player 
     return targets.isEmpty();
 }
 
-void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    ServerPlayer *zhonghui = card_use.from;
-    ServerPlayer *target = card_use.to.first();
+void PaiyiCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *zhonghui = effect.from;
+    ServerPlayer *target = effect.to;
+    Room *room = zhonghui->getRoom();
     QList<int> powers = zhonghui->getPile("power");
     if (powers.isEmpty()) return;
 
-    LogMessage log;
-    log.from = zhonghui;
-    log.to = card_use.to;
-    log.type = "#UseCard";
-    log.card_str = toString();
-    room->sendLog(log);
+    room->broadcastSkillInvoke("paiyi", target == zhonghui ? 1 : 2);
 
     int card_id;
     if (powers.length() == 1)
@@ -1098,12 +1095,7 @@ void PaiyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
         room->fillAG(powers, zhonghui);
         card_id = room->askForAG(zhonghui, powers, false, "paiyi");
         room->clearAG(zhonghui);
-
-        if (card_id == -1)
-            return;
     }
-
-    room->broadcastSkillInvoke("paiyi", target == zhonghui ? 1 : 2);
 
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(),
                           target->objectName(), "paiyi", QString());

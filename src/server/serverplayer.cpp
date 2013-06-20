@@ -122,9 +122,7 @@ void ServerPlayer::clearOnePrivatePile(QString pile_name) {
         return;
     QList<int> &pile = piles[pile_name];
 
-    DummyCard *dummy = new DummyCard;
-    foreach (int card_id, pile)
-        dummy->addSubcard(card_id);
+    DummyCard *dummy = new DummyCard(pile);
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
     room->throwCard(dummy, reason, NULL);
     dummy->deleteLater();
@@ -1054,8 +1052,7 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
     addToPile(pile_name, will_to_handcard_x, false);
     room->setPlayerFlag(this, "-" + tempMovingFlag);
 
-    DummyCard *dummy = new DummyCard;
-    foreach (int id, will_to_handcard_x) dummy->addSubcard(id);
+    DummyCard *dummy = new DummyCard(will_to_handcard_x);
     CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, this->objectName());
     room->obtainCard(this, dummy, reason, false);
     delete dummy;

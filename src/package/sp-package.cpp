@@ -36,7 +36,7 @@ public:
         }
         if (targets.isEmpty()) return false;
 
-        ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@sp_moonspear", true);
+        ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@sp_moonspear", true, true);
         if (!target) return false;
         room->setEmotion(player, "weapon/moonspear");
         if (!room->askForCard(target, "jink", "@moon-spear-jink", QVariant(), Card::MethodResponse, player))
@@ -511,7 +511,7 @@ bool XuejiCard::targetFilter(const QList<const Player *> &targets, const Player 
     int range_fix = 0;
     if (Self->getWeapon() && Self->getWeapon()->getEffectiveId() == getEffectiveId()) {
         const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
-        range_fix += weapon->getRange() - 1;
+        range_fix += weapon->getRange() - Self->getAttackRange(false);
     } else if (Self->getOffensiveHorse() && Self->getOffensiveHorse()->getEffectiveId() == getEffectiveId())
         range_fix += 1;
 
@@ -1081,13 +1081,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventLoseSkill && data.toString() == objectName()) {
-            QStringList detachList;
-            if (player->getAcquiredSkills().contains("tianxiang"))
-                detachList.append("-tianxiang");
-            if (player->getAcquiredSkills().contains("liuli"))
-                detachList.append("-liuli");
-            if (!detachList.isEmpty())
-                room->handleAcquireDetachSkills(player, detachList);
+            room->handleAcquireDetachSkills(player, "-tianxiang|-liuli", true);
         } else if (triggerEvent == EventAcquireSkill && data.toString() == objectName()) {
             if (!player->getPile("xingwu").isEmpty()) {
                 room->notifySkillInvoked(player, objectName());
@@ -1102,15 +1096,8 @@ public:
                 }
             } else if (move.from == player && move.from_places.contains(Player::PlaceSpecial)
                        && move.from_pile_names.contains("xingwu")) {
-                if (player->getPile("xingwu").isEmpty()) {
-                    QStringList detachList;
-                    if (player->getAcquiredSkills().contains("tianxiang"))
-                        detachList.append("-tianxiang");
-                    if (player->getAcquiredSkills().contains("liuli"))
-                        detachList.append("-liuli");
-                    if (!detachList.isEmpty())
-                        room->handleAcquireDetachSkills(player, detachList);
-                }
+                if (player->getPile("xingwu").isEmpty())
+                    room->handleAcquireDetachSkills(player, "-tianxiang|-liuli", true);
             }
         }
         return false;
@@ -1307,7 +1294,7 @@ bool DuwuCard::targetFilter(const QList<const Player *> &targets, const Player *
 
     if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())) {
         const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
-        int distance_fix = weapon->getRange() - 1;
+        int distance_fix = weapon->getRange() - Self->getAttackRange(false);
         if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
             distance_fix += 1;
         return Self->distanceTo(to_select, distance_fix) <= Self->getAttackRange();

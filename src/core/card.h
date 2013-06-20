@@ -96,6 +96,7 @@ public:
     virtual void clearSubcards();
     virtual QString subcardString() const;
     virtual void addSubcards(const QList<const Card *> &cards);
+    virtual void addSubcards(const QList<int> &subcards_list);
     virtual int subcardsLength() const;
 
     virtual QString getType() const = 0;
@@ -177,6 +178,7 @@ class DummyCard: public SkillCard {
 
 public:
     DummyCard();
+    DummyCard(const QList<int> &subcards);
 
     virtual QString getSubtype() const;
     virtual QString getType() const;

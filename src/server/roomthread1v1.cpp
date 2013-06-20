@@ -60,7 +60,19 @@ void RoomThread1v1::run() {
     } else {
         room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(general_names));
     }
-    ServerPlayer *first = room->getPlayers().at(0), *next = room->getPlayers().at(1);
+
+    int index = qrand() % 2;
+    ServerPlayer *first = room->getPlayers().at(index), *next = room->getPlayers().at(1 - index);
+    QString order = room->askForOrder(first);
+    if (order == "cool")
+        qSwap(first, next);
+    first->setRole("lord");
+    next->setRole("renegade");
+
+    room->broadcastProperty(first, "role");
+    room->broadcastProperty(next, "role");
+    room->adjustSeats();
+
     askForTakeGeneral(first);
 
     while (general_names.length() > 1) {

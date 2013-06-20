@@ -134,6 +134,7 @@ local duoshi_skill = {}
 duoshi_skill.name = "duoshi"
 table.insert(sgs.ai_skills, duoshi_skill)
 duoshi_skill.getTurnUseCard = function(self, inclusive)
+	if sgs.turncount <= 1 and #self.friends_noself == 0 and not self:isWeak() then return end
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 
@@ -301,10 +302,6 @@ sgs.ai_use_value.FenxunCard = 5.5
 sgs.ai_use_priority.FenxunCard = 4.1
 sgs.ai_card_intention.FenxunCard = 50
 
-sgs.ai_skill_invoke.lirang = function(self, data)
-	return #self.friends_noself > 0
-end
-
 sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	local cards = {}
 	for _, card_id in ipairs(card_ids) do
@@ -365,7 +362,6 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 			return new_friends[1], cards[1]:getEffectiveId()
 		end
 	end
-
 end
 
 sgs.ai_skill_playerchosen.sijian = function(self, targets)

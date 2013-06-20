@@ -199,9 +199,7 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
             room->notifyMoveCards(true, moves, false, _guojia);
             room->notifyMoveCards(false, moves, false, _guojia);
 
-            DummyCard *dummy = new DummyCard;
-            foreach (int id, yiji_cards)
-                dummy->addSubcard(id);
+            DummyCard *dummy = new DummyCard(yiji_cards);
             guojia->obtainCard(dummy, false);
             delete dummy;
         } else {
@@ -379,9 +377,7 @@ public:
                     }
                 } else {
                     if (isHegVer && zhenji->hasSkills("guicai|guidao|huanshi")) {
-                        DummyCard *dummy = new DummyCard;
-                        foreach (QVariant id, zhenji->tag[objectName()].toList())
-                            dummy->addSubcard(id.toInt());
+                        DummyCard *dummy = new DummyCard(VariantList2IntList(zhenji->tag[objectName()].toList()));
                         zhenji->obtainCard(dummy);
                         zhenji->tag.remove(objectName());
                         delete dummy;
@@ -482,8 +478,7 @@ JijiangViewAsSkill::JijiangViewAsSkill(): ZeroCardViewAsSkill("jijiang$") {
 }
 
 bool JijiangViewAsSkill::isEnabledAtPlay(const Player *player) const{
-    return hasShuGenerals(player) && player->hasLordSkill("jijiang") && !player->hasFlag("Global_JijiangFailed")
-           && Slash::IsAvailable(player);
+    return hasShuGenerals(player) && !player->hasFlag("Global_JijiangFailed") && Slash::IsAvailable(player);
 }
 
 bool JijiangViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -943,22 +938,38 @@ public:
 class Keji: public TriggerSkill {
 public:
     Keji(): TriggerSkill("keji") {
-        events << EventPhaseChanging;
+        events << PreCardUsed << CardResponded << EventPhaseChanging;
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::Discard) {
-            if (!lvmeng->hasFlag("Global_SlashInPlayPhase") && lvmeng->askForSkillInvoke(objectName())) {
-                if (lvmeng->getHandcardNum() > lvmeng->getMaxCards()) {
-                    int index = qrand() % 2 + 1;
-                    if (!lvmeng->hasInnateSkill(objectName()) && lvmeng->hasSkill("mouduan"))
-                        index += 2;
-                    room->broadcastSkillInvoke(objectName(), index);
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::Discard && TriggerSkill::triggerable(lvmeng)) {
+                if (!lvmeng->hasFlag("KejiSlashInPlayPhase") && lvmeng->askForSkillInvoke(objectName())) {
+                    if (lvmeng->getHandcardNum() > lvmeng->getMaxCards()) {
+                        int index = qrand() % 2 + 1;
+                        if (!lvmeng->hasInnateSkill(objectName()) && lvmeng->hasSkill("mouduan"))
+                            index += 2;
+                        room->broadcastSkillInvoke(objectName(), index);
+                    }
+                    lvmeng->skip(Player::Discard);
                 }
-                lvmeng->skip(Player::Discard);
             }
+            if (lvmeng->hasFlag("KejiSlashInPlayPhase"))
+                lvmeng->setFlags("-KejiSlashInPlayPhase");
+        } else if (lvmeng->getPhase() == Player::Play) {
+            CardStar card = NULL;
+            if (triggerEvent == PreCardUsed)
+                card = data.value<CardUseStruct>().card;
+            else
+                card = data.value<CardResponseStruct>().m_card;
+            if (card->isKindOf("Slash"))
+                lvmeng->setFlags("KejiSlashInPlayPhase");
         }
 
         return false;
@@ -968,36 +979,18 @@ public:
 class Lianying: public TriggerSkill {
 public:
     Lianying(): TriggerSkill("lianying") {
-        events << BeforeCardsMove << CardsMoveOneTime;
+        events << CardsMoveOneTime;
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *luxun, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *luxun, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from == luxun && move.from_places.contains(Player::PlaceHand)) {
-            if (triggerEvent == BeforeCardsMove) {
-                if (luxun->isKongcheng()) return false;
-                foreach (int id, luxun->handCards()) {
-                    if (!move.card_ids.contains(id))
-                        return false;
-                }
-                if (luxun->getMaxCards() == 0 && luxun->getPhase() == Player::Discard
-                    && move.reason.m_reason == CardMoveReason::S_REASON_RULEDISCARD) {
-                    luxun->setFlags("LianyingZeroMaxCards");
-                    return false;
-                }
-                luxun->addMark(objectName());
-            } else {
-                if (luxun->getMark(objectName()) == 0)
-                    return false;
-                luxun->removeMark(objectName());
-                if (room->askForSkillInvoke(luxun, objectName(), data)) {
-                    room->broadcastSkillInvoke(objectName());
-                    luxun->drawCards(1);
-                }
+        if (move.from == luxun && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
+            if (room->askForSkillInvoke(luxun, objectName(), data)) {
+                room->broadcastSkillInvoke(objectName());
+                luxun->drawCards(1);
             }
         }
-
         return false;
     }
 };
@@ -1106,7 +1099,7 @@ public:
 
             bool can_invoke = false;
             foreach (ServerPlayer *p, players) {
-                if (use.from->canSlash(p, use.card) && daqiao->inMyAttackRange(p)) {
+                if (use.from->canSlash(p, use.card, false) && daqiao->inMyAttackRange(p)) {
                     can_invoke = true;
                     break;
                 }
@@ -1420,7 +1413,7 @@ public:
                 QList<int> subcards = card->getSubcards();
                 if (from->getWeapon() && subcards.contains(from->getWeapon()->getId())) {
                     const Weapon *weapon = qobject_cast<const Weapon *>(from->getWeapon()->getRealCard());
-                    rangefix += weapon->getRange() - 1;
+                    rangefix += weapon->getRange() - Self->getAttackRange(false);
                 }
 
                 if (from->getOffensiveHorse() && subcards.contains(from->getOffensiveHorse()->getId()))

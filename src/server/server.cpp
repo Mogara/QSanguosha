@@ -369,6 +369,12 @@ QWidget *ServerDialog::createMiscTab() {
     minimize_dialog_checkbox = new QCheckBox(tr("Minimize the dialog when server runs"));
     minimize_dialog_checkbox->setChecked(Config.EnableMinimizeDialog);
 
+    surrender_at_death_checkbox = new QCheckBox(tr("Surrender at the time of Death"));
+    surrender_at_death_checkbox->setChecked(Config.SurrenderAtDeath);
+
+    luck_card_checkbox = new QCheckBox(tr("Enable the luck card"));
+    luck_card_checkbox->setChecked(Config.EnableLuckCard);
+
     QGroupBox *ai_groupbox = new QGroupBox(tr("Artificial intelligence"));
     ai_groupbox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -377,9 +383,6 @@ QWidget *ServerDialog::createMiscTab() {
     ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
     ai_enable_checkbox->setChecked(Config.EnableAI);
     ai_enable_checkbox->setEnabled(false); // Force to enable AI for disabling it causes crashes!!
-
-    role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
-    role_predictable_checkbox->setChecked(Config.value("RolePredictable", false).toBool());
 
     ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
     ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
@@ -401,16 +404,11 @@ QWidget *ServerDialog::createMiscTab() {
     ai_delay_ad_spinbox->setEnabled(ai_delay_altered_checkbox->isChecked());
     connect(ai_delay_altered_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setEnabled(bool)));
 
-    surrender_at_death_checkbox = new QCheckBox(tr("Surrender at the time of Death"));
-    surrender_at_death_checkbox->setChecked(Config.SurrenderAtDeath);
-
     layout->addWidget(ai_enable_checkbox);
-    layout->addWidget(role_predictable_checkbox);
     layout->addWidget(ai_chat_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
     layout->addWidget(ai_delay_altered_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay After Death")), ai_delay_ad_spinbox));
-    layout->addWidget(surrender_at_death_checkbox);
 
     ai_groupbox->setLayout(layout);
 
@@ -418,6 +416,8 @@ QWidget *ServerDialog::createMiscTab() {
     tablayout->addLayout(HLay(new QLabel(tr("Game start count down")), game_start_spinbox));
     tablayout->addLayout(HLay(new QLabel(tr("Nullification count down")), nullification_spinbox));
     tablayout->addWidget(minimize_dialog_checkbox);
+    tablayout->addWidget(surrender_at_death_checkbox);
+    tablayout->addWidget(luck_card_checkbox);
     tablayout->addWidget(ai_groupbox);
     tablayout->addStretch();
 
@@ -1054,6 +1054,8 @@ bool ServerDialog::config() {
     Config.AlterAIDelayAD = ai_delay_altered_checkbox->isChecked();
     Config.ServerPort = port_edit->text().toInt();
     Config.DisableLua = disable_lua_checkbox->isChecked();
+    Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
+    Config.EnableLuckCard = luck_card_checkbox->isChecked();
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();
@@ -1098,12 +1100,12 @@ bool ServerDialog::config() {
     Config.setValue("NullificationCountDown", nullification_spinbox->value());
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
     Config.setValue("EnableAI", Config.EnableAI);
-    Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());
     Config.setValue("AIChat", ai_chat_checkbox->isChecked());
     Config.setValue("OriginAIDelay", Config.OriginAIDelay);
     Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
     Config.setValue("AIDelayAD", Config.AIDelayAD);
-    Config.setValue("SurrenderAtDeath", surrender_at_death_checkbox->isChecked());
+    Config.setValue("SurrenderAtDeath", Config.SurrenderAtDeath);
+    Config.setValue("EnableLuckCard", Config.EnableLuckCard);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());

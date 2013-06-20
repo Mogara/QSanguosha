@@ -154,12 +154,12 @@ void Player::clearFlags() {
     flags.clear();
 }
 
-int Player::getAttackRange() const{
+int Player::getAttackRange(bool include_weapon) const{
     int original_range = 1;
     if (hasSkill("zhengfeng") && !weapon && hp > 1) original_range = hp; // @todo_P: new way to remove coupling or just put it into TargetModSkill
     if (hasFlag("InfinityAttackRange") || getMark("InfinityAttackRange") > 0) original_range = 10000; // Actually infinity
     int weapon_range = 0;
-    if (weapon != NULL) {
+    if (include_weapon && weapon != NULL) {
         const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
         Q_ASSERT(card);
         weapon_range = card->getRange();
@@ -886,6 +886,20 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
     }
 
     return false;
+}
+
+void Player::addQinggangTag(const Card *card) {
+    QStringList qinggang = this->tag["Qinggang"].toStringList();
+    qinggang.append(card->toString());
+    this->tag["Qinggang"] = QVariant::fromValue(qinggang);
+}
+
+void Player::removeQinggangTag(const Card *card) {
+    QStringList qinggang = this->tag["Qinggang"].toStringList();
+    if (!qinggang.isEmpty()) {
+        qinggang.removeOne(card->toString());
+        this->tag["Qinggang"] = qinggang;
+    }
 }
 
 void Player::copyFrom(Player *p) {

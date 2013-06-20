@@ -180,26 +180,24 @@ public:
 
             room->takeAG(shenlvmeng, card_id, false);
 
-            QMutableListIterator<int> itor(card_ids);
-            while (itor.hasNext()) {
-                const Card *c = Sanguosha->getCard(itor.next());
+            QList<int> _card_ids = card_ids;
+            foreach (int id, _card_ids) {
+                const Card *c = Sanguosha->getCard(id);
                 if (c->getSuit() == suit) {
-                    itor.remove();
-                    room->takeAG(NULL, c->getId(), false);
-                    to_throw << c->getId();
+                    card_ids.removeOne(id);
+                    room->takeAG(NULL, id, false);
+                    to_throw.append(id);
                 }
             }
         }
         DummyCard *dummy = new DummyCard;
         if (!to_get.isEmpty()) {
-            foreach (int id, to_get)
-                dummy->addSubcard(id);
+            dummy->addSubcards(to_get);
             shenlvmeng->obtainCard(dummy);
         }
         dummy->clearSubcards();
         if (!to_throw.isEmpty()) {
-            foreach (int id, to_throw)
-                dummy->addSubcard(id);
+            dummy->addSubcards(to_throw);
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, shenlvmeng->objectName(), objectName(), QString());
             room->throwCard(dummy, reason, NULL);
         }
@@ -442,8 +440,8 @@ public:
         QVariant data = QVariant::fromValue(damage);
         QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
         try {
-            bool can_invoke = false;
             for (int i = 0; i < damage.damage; i++) {
+                bool can_invoke = false;
                 foreach (ServerPlayer *p, players) {
                     if (!p->isAllNude()) {
                         can_invoke = true;
@@ -688,7 +686,7 @@ public:
                     room->removePlayerMark(p, "Armor_Nullified");
             }
         }
-        room->detachSkillFromPlayer(player, "wushuang");
+        room->detachSkillFromPlayer(player, "wushuang", false, true);
 
         return false;
     }
@@ -1136,7 +1134,7 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to != Player::NotActive)
             return false;
-        room->detachSkillFromPlayer(target, "wansha");
+        room->detachSkillFromPlayer(target, "wansha", false, true);
         return false;
     }
 };

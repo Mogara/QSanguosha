@@ -1094,7 +1094,7 @@ end
 local function can_be_selected_as_target_fuluan(self, card, who)
 	local subcards = card:getSubcards()
 	if self.player:getWeapon() and subcards:contains(self.player:getWeapon():getId()) then
-		local distance_fix = sgs.weapon_range[self.player:getWeapon():getClassName()] - 1
+		local distance_fix = sgs.weapon_range[self.player:getWeapon():getClassName()] - self.player:getAttackRange(false)
 		if self.player:getOffensiveHorse() and subcards:contains(self.player:getOffensiveHorse():getId()) then
 			distance_fix = distance_fix + 1
 		end

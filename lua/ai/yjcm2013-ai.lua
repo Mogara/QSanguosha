@@ -1030,7 +1030,7 @@ sgs.ai_skill_playerchosen.qiuyuan = function(self, targets)
 	for _, p in ipairs(targetlist) do
 		if self:isEnemy(p) and not (p:getHandcardNum() == 1 and (p:hasSkill("kongcheng") or (p:hasSkill("zhiji") and p:getMark("zhiji") == 0))) then
 			if p:hasSkills(sgs.cardneed_skill) then return p
-			elseif not enemy and not enemy:canLiuli(enemy, self.friends_noself) then enemy = p end
+			elseif not enemy and not self:canLiuli(p, self.friends_noself) then enemy = p end
 		end
 	end
 	targetlist = sgs.reverse(targetlist)
