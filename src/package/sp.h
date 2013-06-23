@@ -61,6 +61,36 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class MizhaoCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MizhaoCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class DuwuCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DuwuCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class MouzhuCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MouzhuCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+};
+
 class SPCardPackage: public Package{
     Q_OBJECT
 

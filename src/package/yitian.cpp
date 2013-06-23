@@ -48,19 +48,19 @@ void YitianSword::onMove(const CardMoveStruct &move) const{
     }
 }
 
-ChengxiangCard::ChengxiangCard()
+Chengx1angCard::Chengx1angCard()
 {
 }
 
-bool ChengxiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool Chengx1angCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.length() < subcardsLength();
 }
 
-bool ChengxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool Chengx1angCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return targets.length() <= subcardsLength();
 }
 
-void ChengxiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void Chengx1angCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     if(targets.isEmpty()){
         QList<ServerPlayer *> to;
         to << source;
@@ -69,7 +69,7 @@ void ChengxiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPla
         SkillCard::use(room, source, targets);
 }
 
-void ChengxiangCard::onEffect(const CardEffectStruct &effect) const{
+void Chengx1angCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
     if(effect.to->isWounded()){
@@ -81,9 +81,9 @@ void ChengxiangCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->drawCards(2);
 }
 
-class ChengxiangViewAsSkill: public ViewAsSkill{
+class Chengx1angViewAsSkill: public ViewAsSkill{
 public:
-    ChengxiangViewAsSkill():ViewAsSkill("chengxiang"){
+    Chengx1angViewAsSkill():ViewAsSkill("chengx1ang"){
 
     }
 
@@ -91,8 +91,8 @@ public:
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@chengxiang";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@chengxiang";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -116,7 +116,7 @@ public:
         }
 
         if(sum == Self->getMark("chengxiang")){
-            ChengxiangCard *card = new ChengxiangCard;
+            Chengx1angCard *card = new Chengx1angCard;
             card->addSubcards(cards);
             return card;
         }else
@@ -124,10 +124,10 @@ public:
     }
 };
 
-class Chengxiang: public MasochismSkill{
+class Chengx1ang: public MasochismSkill{
 public:
-    Chengxiang():MasochismSkill("chengxiang"){
-        view_as_skill = new ChengxiangViewAsSkill;
+    Chengx1ang():MasochismSkill("chengx1ang"){
+        view_as_skill = new Chengx1angViewAsSkill;
     }
 
     virtual void onDamaged(ServerPlayer *caochong, const DamageStruct &damage) const{
@@ -315,9 +315,8 @@ public:
 
     virtual bool trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &data) const{
         PindianStar pindian = data.value<PindianStar>();
-        if(pindian->reason == "jueji" && pindian->isSuccess()){
+        if(pindian->reason == "jueji" && pindian->isSuccess())
             player->obtainCard(pindian->to_card);
-        }
 
         return false;
     }
@@ -1486,40 +1485,29 @@ public:
 class Zhenggong: public TriggerSkill{
 public:
     Zhenggong():TriggerSkill("zhenggong"){
-        events << TurnStart;
+        events << TurnStart << PhaseChange;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return ! target->hasSkill(objectName());
+        return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
-        ServerPlayer *dengshizai = room->findPlayerBySkillName(objectName());
-
-        if(dengshizai && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
-            room->playSkillEffect(objectName());
-
-            dengshizai->turnOver();
-
-            PlayerStar zhenggong = room->getTag("Zhenggong").value<PlayerStar>();
-            if(zhenggong == NULL){
-                PlayerStar p = player;
-                room->setTag("Zhenggong", QVariant::fromValue(p));
-                player->gainMark("@zhenggong");
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
+        if(event == TurnStart){
+            ServerPlayer *dengshizai = room->findPlayerBySkillName(objectName());
+            if(!dengshizai || dengshizai == player)
+                return false;
+            if(dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
+                room->playSkillEffect(objectName());
+                room->setPlayerFlag(dengshizai, "zhengong");
+                dengshizai->gainAnExtraTurn();
             }
-
-            room->setCurrent(dengshizai);
-            dengshizai->play();
-
-            return true;
-
-        }else{
-            PlayerStar p = room->getTag("Zhenggong").value<PlayerStar>();
-            if(p){
-                p->loseMark("@zhenggong");
-                room->setCurrent(p);
-                room->setTag("Zhenggong", QVariant());
-            }
+        }
+        else{
+            if(!player->hasSkill(objectName()))
+                return false;
+            if(player->getPhase() == Player::Start && player->hasFlag("zhengong"))
+                player->turnOver();
         }
 
         return false;
@@ -1539,12 +1527,9 @@ public:
         if(dengshizai->isKongcheng())
             return;
 
-        if(!dengshizai->askForSkillInvoke("toudu"))
-            return;
-
         Room *room = dengshizai->getRoom();
 
-        if(!room->askForDiscard(dengshizai, "toudu", 1, false, false))
+        if(!room->askForCard(dengshizai, ".", "@toudu", QVariant(), CardDiscarded))
             return;
 
         dengshizai->turnOver();
@@ -1886,10 +1871,10 @@ YitianPackage::YitianPackage()
     weiwudi->addSkill(new Guishin);
     weiwudi->addSkill("feiying");
 
-    General *caochong = new General(this, "caochong", "wei", 3);
-    caochong->addSkill(new Chengxiang);
-    caochong->addSkill(new Conghui);
-    caochong->addSkill(new Zaoyao);
+    General *ca0chong = new General(this, "ca0chong", "wei", 3);
+    ca0chong->addSkill(new Chengx1ang);
+    ca0chong->addSkill(new Conghui);
+    ca0chong->addSkill(new Zaoyao);
 
     General *zhangjunyi = new General(this, "zhangjunyi", "qun");
     zhangjunyi->addSkill(new Jueji);
@@ -1973,7 +1958,7 @@ YitianPackage::YitianPackage()
 
     skills << new LianliSlashViewAsSkill << new YisheAsk;
 
-    addMetaObject<ChengxiangCard>();
+    addMetaObject<Chengx1angCard>();
     addMetaObject<JuejiCard>();
     addMetaObject<LianliCard>();
     addMetaObject<LianliSlashCard>();

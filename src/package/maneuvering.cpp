@@ -337,7 +337,9 @@ QString IronChain::getEffectPath(bool is_male) const{
 }
 
 bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(targets.length() >= 2)
+    int trick_etargets = TrickCard::geteTargetsCount(Self, this);
+    trick_etargets += 2;
+    if(targets.length() >= trick_etargets)
         return false;
 
     return true;

@@ -174,6 +174,7 @@ void Engine::addPackage(Package *package){
 
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
+        full_generals.insert(general->objectName(), general);
         addSkills(general->findChildren<const Skill *>());
 
         if(general->isHidden()){
@@ -381,14 +382,18 @@ QColor Engine::getKingdomColor(const QString &kingdom) const{
 QString Engine::getSetupString() const{
     int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
     QString flags;
-    if(Config.FreeChoose)
+    if(Config.FreeChooseGenerals || Config.FreeChooseCards)
         flags.append("F");
     if(Config.Enable2ndGeneral)
         flags.append("S");
+    if(Config.EnableReincarnation)
+        flags.append("R");
     if(Config.EnableScene)
         flags.append("C");
     if(Config.EnableSame)
         flags.append("T");
+    if(Config.EnableEndless)
+        flags.append("E");
     if(Config.EnableBasara)
         flags.append("B");
     if(Config.EnableHegemony)
@@ -598,7 +603,7 @@ QStringList Engine::getRandomLords() const{
 
 QStringList Engine::getLimitedGeneralNames() const{
     QStringList sys_ban;
-    sys_ban << "zhangchunhua" << "fazheng" << "shenguanyu"
+    sys_ban << "zhangchunhua" << "fazheng" << "shenguanyu" << "xiahoujuan"
             << "bgm_xiahoudun" << "bgm_pangtong" << "bgm_daqiao";
     QStringList general_names;
     QHashIterator<QString, const General *> itor(generals);
@@ -757,7 +762,7 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const{
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card) const{
     foreach(const ProhibitSkill *skill, prohibit_skills){
-        if(to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
+        if(skill->prohibitable(to) && skill->isProhibited(from, to, card))
             return skill;
     }
 

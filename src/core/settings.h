@@ -29,20 +29,25 @@ public:
     int CountDownSeconds;
     QString GameMode;
     QStringList BanPackages;
+    bool Pause;
     bool ContestMode;
-    bool FreeChoose;
+    bool RandomSeat;
     bool ForbidSIMC;
     bool DisableChat;
-    bool FreeAssignSelf;
     bool Enable2ndGeneral;
     bool NoLordSkill;
+    bool EnableReincarnation;
     bool EnableScene;	//changjing
     bool EnableSame;
+    bool EnableEndless;
     bool EnableBasara;
     bool EnableHegemony;
     int MaxHpScheme;
     bool AnnounceIP;
     QString Address;
+    bool FreeChooseGenerals;
+    bool FreeChooseCards;
+    bool FreeAssignSelf;
     bool EnableAI;
     int AIDelay;
     ushort ServerPort;
@@ -76,6 +81,7 @@ public:
 
     // consts
     static const int S_MINI_MAX_COUNT;
+    static const int S_STYLE_INDEX;
 };
 
 extern Settings Config;

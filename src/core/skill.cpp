@@ -31,7 +31,12 @@ bool Skill::isLordSkill() const{
 QString Skill::getDescription() const{
     if(!Sanguosha->isDuplicated(objectName()))
         return Sanguosha->translate("::");
-    return Sanguosha->translate(":" + objectName());
+    QString desc = Sanguosha->translate(":" + objectName());
+    if(Sanguosha->useNew3v3()){
+        if(!Sanguosha->translate(":3v3:" + objectName()).startsWith(":3v3:"))
+            desc = Sanguosha->translate(":3v3:" + objectName());
+    }
+    return desc;
 }
 
 QString Skill::getText() const{
@@ -359,6 +364,10 @@ void SPConvertSkill::onGameStart(ServerPlayer *player) const{
 ProhibitSkill::ProhibitSkill(const QString &name)
     :Skill(name, Skill::Compulsory)
 {
+}
+
+bool ProhibitSkill::prohibitable(const Player *to) const{
+    return to->hasSkill(objectName());
 }
 
 DistanceSkill::DistanceSkill(const QString &name)

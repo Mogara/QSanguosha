@@ -121,7 +121,7 @@ public:
         int ec = player->getEquips().count();
         if(ec >= 3){
             Room *room = player->getRoom();
-            room->playLightbox(player, "V5Baijiang", "", 1500);
+            room->playLightbox(player, "V5baijiang", "", 1500);
 
             LogMessage log;
             log.type = "#BaijiangWake";

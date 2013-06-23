@@ -695,7 +695,7 @@ public:
         }else if(event == CardResponsed)
             card = data.value<CardStar>();
 
-        if(card->inherits("BasicCard") && !card->isVirtualCard()){
+        if(card->getType() == "basic")/* && !card->isVirtualCard())*/{
             if(room->askForSkillInvoke(tianfeng, objectName(), data)){
                 int inx = card->inherits("Slash") ? 2 : 1;
                 room->playSkillEffect(objectName(), inx);

@@ -3,11 +3,7 @@
 #include "settings.h"
 
 #ifdef USE_CRYPTO
-    #ifndef CLO_SOU
     #include "crypto.h"
-    #else
-    #include "crypt0.h"
-    #endif
 #endif
 
 #include <QCache>

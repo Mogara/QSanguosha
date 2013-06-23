@@ -163,6 +163,7 @@ class ExNihilo: public SingleTargetTrick{
 public:
     Q_INVOKABLE ExNihilo(Card::Suit suit, int number);
     virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool isAvailable(const Player *player) const;
 };
 
 class Duel:public SingleTargetTrick{

@@ -339,7 +339,7 @@ public:
                     const Card *card = Sanguosha->getCard(id);
                     room->moveCardTo(card, player, Player::Hand, true);
                     player->addMark("zuixiangHasTrigger");
-                    room->setPlayerCardLock(player, ".");
+                    room->setPlayerCardLock(player, "-" + type[card->getTypeId()]);
                 }
                 return;
             }
@@ -538,7 +538,7 @@ public:
         }else{
             room->playSkillEffect("dahe", 3);
             if(!pindian->from->isKongcheng()){
-                room->showAllCards(pindian->from);
+                room->showAllCards(pindian->from, true);
                 room->askForDiscard(pindian->from, "dahe", 1, false, false);
                 room->broadcastInvoke("clearAG");
             }
@@ -1068,17 +1068,6 @@ public:
     }
 };
 
-class JunweiPattern: public CardPattern{
-public:
-    virtual bool match(const Player *player, const Card *card) const{
-        return card->isKindOf("Jink");
-    }
-
-    virtual bool willThrow() const{
-        return false;
-    }
-};
-
 class Junwei:public TriggerSkill{
 public:
     Junwei():TriggerSkill("junwei") {
@@ -1110,7 +1099,7 @@ public:
 
             ServerPlayer *target = room->askForPlayerChosen(ganning, room->getAllPlayers(), objectName());
             QVariant ai_data = QVariant::fromValue((PlayerStar)ganning);
-            const Card *card = room->askForCard(target, ".junwei", "@junwei-show", ai_data, NonTrigger);
+            const Card *card = room->askForCard(target, "Jink", "@junwei-show", ai_data, NonTrigger);
             if(card){
                 room->showCard(target, card->getEffectiveId());
                 ServerPlayer *receiver = room->askForPlayerChosen(ganning, room->getAllPlayers(), "junweigive");
@@ -1307,7 +1296,6 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_ganning->addSkill(new YinlingClear);
     bgm_ganning->addSkill(new Junwei);
     bgm_ganning->addSkill(new JunweiGot);
-    patterns.insert(".junwei", new JunweiPattern);
     related_skills.insertMulti("yinling", "#yinling-clear");
     related_skills.insertMulti("junwei", "#junwei-got");
 
@@ -1416,7 +1404,7 @@ public:
         }
         if(targets.isEmpty() || !player->askForSkillInvoke(objectName()))
             return false;
-        room->showAllCards(player);
+        room->showAllCards(player, true);
 
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName(objectName());
@@ -2014,14 +2002,14 @@ PasterPackage::PasterPackage()
     General *simazhao = new General(this, "simazhao", "wei", 3);
     simazhao->addSkill(new Zhaoxin);
     simazhao->addSkill(new Langgu);
-
+/*
     General *liuxie = new General(this, "liuxie", "qun", 4, true, true);
     liuxie->addSkill(new Huangen);
     liuxie->addSkill(new Hantong);
     liuxie->addSkill(new HantongClear);
     related_skills.insertMulti("hantong", "#hantong_clear");
     skills << new ZhaoXueyi;
-
+*/
     General *gongshunzan = new General(this, "gongshunzan", "qun");
     gongshunzan->addSkill(new Yic0ng);
     gongshunzan->addSkill(new Tuqi);

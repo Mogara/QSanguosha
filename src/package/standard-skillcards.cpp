@@ -36,7 +36,12 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
-    room->setPlayerMark(source, "rende", new_value);
+    if(skill_name == "new_rende"){
+        old_value = 0;
+        new_value = subcards.length();
+    }
+    else
+        room->setPlayerMark(source, "rende", new_value);
 
     if(old_value < 2 && new_value >= 2){
         RecoverStruct recover;
@@ -178,7 +183,7 @@ void LijianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &ta
     ServerPlayer *from = targets.at(1);
 
     Duel *duel = new Duel(Card::NoSuit, 0);
-    duel->setCancelable(false);
+    duel->setCancelable(skill_name == "new_lijian");
 
     CardUseStruct use;
     use.from = from;
@@ -293,7 +298,7 @@ CheatCard::CheatCard(){
 }
 
 void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(Config.FreeChoose)
+    if(Config.FreeChooseCards)
         room->obtainCard(source, subcards.first());
 }
 
@@ -302,7 +307,7 @@ ChangeCard::ChangeCard(){
 }
 
 void ChangeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(Config.FreeChoose){
+    if(Config.value("Cheat/FreeChange", false).toBool()){
         QString name = Self->tag["GeneralName"].toString();
         room->transfigure(source, name, false, true);
     }

@@ -155,6 +155,7 @@ enum TriggerEvent{
     AskForRetrial,
     FinishJudge,
 
+    Interrupt,
     Pindian,
     TurnedOver,
 
@@ -185,7 +186,10 @@ enum TriggerEvent{
     CardUseAsk,
     CardUsed,
     CardResponsed,
+    CardThrow,
+    CardDiscard,
     CardDiscarded,
+    CardRecord,
     CardMoving,
     CardLost,
     CardLostDone,

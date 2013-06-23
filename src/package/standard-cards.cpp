@@ -515,7 +515,7 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
 
 void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     QList<ServerPlayer *> players = targets.isEmpty() ? room->getAllPlayers() : targets;
-    QList<int> card_ids = room->getNCards(players.length());
+    QList<int> card_ids = room->getNCards(room->getAllPlayers().length());
     room->fillAG(card_ids);
 
     QVariantList ag_list;
@@ -759,7 +759,25 @@ ExNihilo::ExNihilo(Suit suit, int number)
 }
 
 void ExNihilo::onEffect(const CardEffectStruct &effect) const{
-    effect.to->drawCards(2);
+    int n = 2;
+    if(Sanguosha->useNew3v3()){
+        Room *room = effect.from->getRoom();
+        int i = 0;
+        int u = 0;
+        foreach(ServerPlayer *other, room->getAlivePlayers()){
+            if(Sanguosha->is3v3Friend(effect.to, other))
+                i ++;
+            else
+                u ++;
+        }
+        if(i < u)
+            n++;
+    }
+    effect.to->drawCards(n);
+}
+
+bool ExNihilo::isAvailable(const Player *player) const{
+    return !player->isProhibited(player, this);
 }
 
 Duel::Duel(Suit suit, int number)
@@ -770,7 +788,7 @@ Duel::Duel(Suit suit, int number)
 
 bool Duel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int trick_etargets = TrickCard::geteTargetsCount(Self, this);
-    int trick_distance = TrickCard::geteRange(Self, this);
+    int trick_distance = TrickCard::geteRange(Self, this); //if return 0 then use default
 
     trick_etargets ++;
     if(targets.length() >= trick_etargets)
@@ -779,9 +797,10 @@ bool Duel::targetFilter(const QList<const Player *> &targets, const Player *to_s
         return false;
     //if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
     //    return false;
-    if(trick_distance != 0 && Self->distanceTo(to_select) > trick_distance)
-        return false;
-    return true;
+    if(trick_distance != 0)
+        return Self->distanceTo(to_select) <= trick_distance;
+    else
+        return true;
 }
 
 void Duel::onEffect(const CardEffectStruct &effect) const{
@@ -1030,8 +1049,12 @@ public:
     }
 
     virtual int getSlashResidue(const Player *target) const{
-        if(target->hasWeapon("crossbow"))
-            return 998;
+        if(target->hasWeapon("crossbow")){
+            if(Sanguosha->useNew3v3())
+                return 4 - target->getSlashCount();
+            else
+                return 998;
+        }
         else
             return 0;
     }

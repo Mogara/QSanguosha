@@ -163,7 +163,7 @@ bool Card::isEquipped() const{
 }
 
 bool Card::match(const QString &pattern) const{
-    return objectName() == pattern || getType() == pattern || getSubtype() == pattern;
+    return pattern.contains(objectName()) || pattern.contains(getType()) || pattern.contains(getSubtype());
 }
 
 bool Card::CompareByColor(const Card *a, const Card *b){
@@ -194,13 +194,18 @@ bool Card::CompareByType(const Card *a, const Card *b){
 }
 
 QString Card::getPixmapPath() const{
-#ifdef USE_CRYPTO
-    QString path = QString(":card/%1.jpg").arg(objectName());
+    QString path = QString();
+    int style = Config.value("UI/CStyle", Config.S_STYLE_INDEX).toInt();
+    if(style == 1)
+        path = QString(":card/%1.jpg").arg(objectName());
+    else if(style == 2)
+        path = QString("image/card2/%1.jpg").arg(objectName());
+    else
+        path = QString("image/card/%1.jpg").arg(objectName());
+
     if(!QFile::exists(path))
         path = QString("image/card/%1.jpg").arg(objectName());
-#else
-    QString path = QString("image/card/%1.jpg").arg(objectName());
-#endif
+
     return QFile::exists(path) ? path : "image/card/unknown.jpg";
 }
 
@@ -273,6 +278,10 @@ void Card::setSkillName(const QString &name){
 
 QString Card::getDescription() const{
     QString desc = Sanguosha->translate(":" + objectName());
+    if(Sanguosha->useNew3v3()){
+        if(!Sanguosha->translate(":3v3:" + objectName()).startsWith(":3v3:"))
+            desc = Sanguosha->translate(":3v3:" + objectName());
+    }
     desc.replace("\n", "<br/>");
     return tr("<b>[%1]</b> %2").arg(getName()).arg(desc);
 }

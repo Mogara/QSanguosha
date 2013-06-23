@@ -90,10 +90,6 @@ public:
         events << SlashMissed;
     }
 
-    virtual int getPriority() const{
-        return 2;
-    }
-
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
@@ -113,6 +109,7 @@ public:
                 room->playSkillEffect(objectName(), 2);
                 effect.to->drawCards(qMin(effect.to->getHp(), 5));
             }
+            return true;
         }
 
         return false;
@@ -471,7 +468,7 @@ Zha0xinCard::Zha0xinCard(){
 }
 
 void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &tar) const{
-    room->showAllCards(source);
+    room->showAllCards(source, true);
     int samecount = 0, unsamecount = 0;
     foreach(const Card *card1, source->getHandcards()){
         foreach(const Card *card2, source->getHandcards()){

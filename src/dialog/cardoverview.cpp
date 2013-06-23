@@ -102,7 +102,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     const Card *card = Sanguosha->getCard(card_id);
 
     QString pixmap_path = QString();
-    int style = Config.value("UI/CStyle", 1).toInt();
+    int style = Config.value("UI/CStyle", Config.S_STYLE_INDEX).toInt();
     if(style == 1)
         pixmap_path = QString(":big-card/%1.png").arg(card->objectName());
     else if(style == 2)

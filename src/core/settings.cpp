@@ -18,6 +18,11 @@ static const qreal ViewHeight = 800 * 0.8;
 
 //consts
 const int Settings::S_MINI_MAX_COUNT = 50;
+#ifdef USE_CRYPTO
+const int Settings::S_STYLE_INDEX = 1;
+#else
+const int Settings::S_STYLE_INDEX = 0;
+#endif
 
 Settings::Settings()
 
@@ -72,29 +77,30 @@ void Settings::init(){
     }
     BanPackages = value("BanPackages").toStringList();
 
+    Pause = false;
     ContestMode = value("ContestMode", false).toBool();
-    FreeChoose = value("FreeChoose", false).toBool();
+    RandomSeat = value("RandomSeat", true).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
-    FreeAssignSelf = value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     NoLordSkill = value("NoLordSkill", false).toBool();
+    EnableReincarnation = value("EnableReincarnation", false).toBool();
     EnableScene = value("EnableScene", false).toBool();	//changjing
     EnableSame = value("EnableSame", false).toBool();
+    EnableEndless = value("EnableEndless", false).toBool();
     EnableBasara = value("EnableBasara", false).toBool();
     EnableHegemony = value("EnableHegemony", false).toBool();
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
+    FreeChooseGenerals = value("Cheat/FreeChooseGenerals", false).toBool();
+    FreeChooseCards = value("Cheat/FreeChooseCards", false).toBool();
+    FreeAssignSelf = value("Cheat/FreeAssignSelf", false).toBool();
     EnableAI = value("EnableAI", true).toBool();
     AIDelay = value("AIDelay", 1000).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
 
-#ifdef CLO_SOU
     setValue("Language", "zh_CN");
-#else
-    setValue("Language", "zh-CN");
-#endif
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
 #else

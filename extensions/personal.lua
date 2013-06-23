@@ -117,13 +117,13 @@ doubledao = sgs.CreateSlashSkill
 	name = "doubledao",
 -- 额外目标
 	s_extra_func = function(self, from, to, slash) -- from：使用者；to：目标；slash：所用的杀。这三个参数除了from，其余都是可有可无的
-		if from:hasSkill("doubledao") and slash:getSuit() == sgs.Card_Club then --注意必须先判断from是否有这个技能，否则谁都会发动的
+		if from:hasSkill("doubledao") and slash and slash:getSuit() == sgs.Card_Club then --注意必须先判断from是否有这个技能，否则谁都会发动的
 			return 1 -- 这张杀可以指定一个额外目标，注意加上原本的，一共两个目标
 		end
 	end,
 -- 攻击范围
 	s_range_func = function(self, from, to, slash)
-		if from:hasSkill("doubledao") and slash:getSuit() == sgs.Card_Heart then
+		if from:hasSkill("doubledao") and slash and slash:getSuit() == sgs.Card_Heart then
 			return -4 -- 注意这里因为是锁定攻击范围，所以前面要加个负号，如果不加，则累加攻击范围
 		end
 	end,

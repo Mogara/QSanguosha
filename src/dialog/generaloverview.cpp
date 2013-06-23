@@ -180,7 +180,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     const General *general = Sanguosha->getGeneral(general_name);
 
     QString category = QString();
-    int style = Config.value("UI/GStyle", 1).toInt();
+    int style = Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt();
     if(style == 1)
         category = "card2";
     else if(style == 2)

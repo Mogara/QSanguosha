@@ -125,13 +125,14 @@ void MainWindow::restoreFromConfig(){
     if(Config.UIFont != font)
         QApplication::setFont(Config.UIFont, "QTextEdit");
 
+    ui->actionPause->setChecked(false);
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
     ui->actionEnable_Lua->setChecked(!Config.DisableLua);
-    int style = Config.value("UI/CStyle", 1).toInt();
+    int style = Config.value("UI/CStyle", Config.S_STYLE_INDEX).toInt();
     ui->actionCStandard->setChecked(style == 0);
     ui->actionCGolden_Snake->setChecked(style == 1);
     ui->actionSgs_OL->setChecked(style == 2);
-    style = Config.value("UI/GStyle", 1).toInt();
+    style = Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt();
     ui->actionGStandard->setChecked(style == 0);
     ui->actionGGolden_Snake->setChecked(style == 1);
     ui->actionCustom->setChecked(style == 2);
@@ -165,6 +166,16 @@ void MainWindow::gotoScene(QGraphicsScene *scene){
     this->scene = scene;
 
     changeBackground();
+}
+
+void MainWindow::on_actionPause_toggled(bool checked)
+{
+    if(!Config.value("PCConsole", false).toBool()){
+        QMessageBox::warning(this, tr("Warning"), tr("Can not pause in online game!"));
+        return;
+    }
+    if(Config.Pause != checked)
+        Config.Pause = checked;
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -611,7 +622,7 @@ void MainWindow::on_actionScenario_Overview_triggered()
 
 void MainWindow::on_actionCStandard_toggled(bool checked)
 {
-    if(checked && Config.value("UI/CStyle", 1).toInt() != 0){
+    if(checked && Config.value("UI/CStyle", Config.S_STYLE_INDEX).toInt() != 0){
         Config.setValue("UI/CStyle", 0);
         ui->actionCGolden_Snake->setChecked(!checked);
         ui->actionSgs_OL->setChecked(!checked);
@@ -620,7 +631,7 @@ void MainWindow::on_actionCStandard_toggled(bool checked)
 
 void MainWindow::on_actionCGolden_Snake_toggled(bool checked)
 {
-    if(checked && Config.value("UI/CStyle", 1).toInt() != 1){
+    if(checked && Config.value("UI/CStyle", Config.S_STYLE_INDEX).toInt() != 1){
         Config.setValue("UI/CStyle", 1);
         ui->actionCStandard->setChecked(!checked);
         ui->actionSgs_OL->setChecked(!checked);
@@ -629,7 +640,7 @@ void MainWindow::on_actionCGolden_Snake_toggled(bool checked)
 
 void MainWindow::on_actionSgs_OL_toggled(bool checked)
 {
-    if(checked && Config.value("UI/CStyle", 1).toInt() != 2){
+    if(checked && Config.value("UI/CStyle", Config.S_STYLE_INDEX).toInt() != 2){
         Config.setValue("UI/CStyle", 2);
         ui->actionCStandard->setChecked(!checked);
         ui->actionCGolden_Snake->setChecked(!checked);
@@ -638,7 +649,7 @@ void MainWindow::on_actionSgs_OL_toggled(bool checked)
 
 void MainWindow::on_actionGStandard_toggled(bool checked)
 {
-    if(checked && Config.value("UI/GStyle", 1).toInt() != 0){
+    if(checked && Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt() != 0){
         Config.setValue("UI/GStyle", 0);
         ui->actionGGolden_Snake->setChecked(!checked);
         ui->actionCustom->setChecked(!checked);
@@ -647,7 +658,7 @@ void MainWindow::on_actionGStandard_toggled(bool checked)
 
 void MainWindow::on_actionGGolden_Snake_toggled(bool checked)
 {
-    if(checked && Config.value("UI/GStyle", 1).toInt() != 1){
+    if(checked && Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt() != 1){
         Config.setValue("UI/GStyle", 1);
         ui->actionGStandard->setChecked(!checked);
         ui->actionCustom->setChecked(!checked);
@@ -656,7 +667,7 @@ void MainWindow::on_actionGGolden_Snake_toggled(bool checked)
 
 void MainWindow::on_actionCustom_toggled(bool checked)
 {
-    if(checked && Config.value("UI/GStyle", 1).toInt() != 2){
+    if(checked && Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt() != 2){
         Config.setValue("UI/GStyle", 2);
         ui->actionGStandard->setChecked(!checked);
         ui->actionGGolden_Snake->setChecked(!checked);
@@ -991,7 +1002,7 @@ void MeleeDialog::setGeneral(const QString &general_name){
 
     if(general){
         QString category = QString();
-        int style = Config.value("UI/GStyle", 1).toInt();
+        int style = Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt();
         if(style == 1)
             category = "card2";
         else if(style == 2)
@@ -1064,7 +1075,7 @@ void MainWindow::fillTable(QTableWidget *table){
         item = new QTableWidgetItem;
 
         QString category = QString();
-        int style = Config.value("UI/GStyle", 1).toInt();
+        int style = Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt();
         if(style == 1)
             category = "card2";
         else if(style == 2)

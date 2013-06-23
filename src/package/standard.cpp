@@ -43,15 +43,16 @@ bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
 }
 
 int TrickCard::geteTargetsCount(const Player *from, const Card *card) const{
-    return 0;
+    return Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, from, card);
 }
 
 int TrickCard::geteRange(const Player *from, const Card *card) const{
+    /*
     if(from->hasSkill("qicai"))
         return 998;
     if(from->hasSkill("duanliang") && card->isKindOf("SupplyShortage"))
-        return 2;
-    return 0;
+        return 2;*/
+    return Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, from, card);
 }
 
 TriggerSkill *EquipCard::getSkill() const{
@@ -206,14 +207,18 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     room->judge(judge_struct);
 
     bool willthrow = true;
+    bool takeffect = false;
     if(judge_struct.isBad())
-        takeEffect(effect.to);
+        takeffect = true;
     else if(movable){
         willthrow = false;
         onNullified(effect.to);
     }
     if(willthrow)
-        room->throwCard(this);
+        room->moveCardTo(this, NULL, Player::DiscardedPile);
+        //room->throwCard(this);
+    if(takeffect)
+        takeEffect(effect.to);
 }
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
@@ -393,7 +398,7 @@ StandardPackage::StandardPackage()
 
     patterns["slash"] = new ExpPattern("Slash");
     patterns["jink"] = new ExpPattern("Jink");
-    patterns["peach"] = new  ExpPattern("Peach");
+    patterns["peach"] = new ExpPattern("Peach");
     patterns["nullification"] = new ExpPattern("Nullification");
     patterns["peach+analeptic"] = new ExpPattern("Peach,Analeptic");
 }

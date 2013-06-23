@@ -167,16 +167,24 @@ public:
 class Ganglie:public MasochismSkill{
 public:
     Ganglie():MasochismSkill("ganglie"){
-
     }
 
     virtual void onDamaged(ServerPlayer *xiahou, const DamageStruct &damage) const{
-        ServerPlayer *from = damage.from;
+        PlayerStar from = damage.from;
         Room *room = xiahou->getRoom();
-        QVariant source = QVariant::fromValue(from);
 
-        if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
+        bool invoke = Sanguosha->useNew3v3() ? true :
+                      from && from->isAlive();
+        if(invoke && room->askForSkillInvoke(xiahou, "ganglie", QVariant::fromValue(from))){
             room->playSkillEffect(objectName());
+            if(Sanguosha->useNew3v3()){
+                QList<ServerPlayer *> enemies;
+                foreach(ServerPlayer *enemy, room->getAlivePlayers()){
+                    if(!Sanguosha->is3v3Friend(xiahou, enemy))
+                        enemies << enemy;
+                }
+                from = room->askForPlayerChosen(xiahou, enemies, objectName());
+            }
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(heart):(.*)");
@@ -427,6 +435,7 @@ public:
             return NULL;
 
         RendeCard *rende_card = new RendeCard;
+        rende_card->setSkillName(objectName());
         rende_card->addSubcards(cards);
         return rende_card;
     }
@@ -720,6 +729,20 @@ public:
         }
 
         return false;
+    }
+};
+
+class Qicai: public TargetModSkill {
+public:
+    Qicai(): TargetModSkill("qicai") {
+        pattern = "TrickCard";
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()))
+            return 998;
+        else
+            return 0;
     }
 };
 
@@ -1235,7 +1258,6 @@ void StandardPackage::addGenerals(){
     caocao = new General(this, "caocao$", "wei");
     caocao->addSkill(new Jianxiong);
     caocao->addSkill(new Hujia);
-    caocao->addSkill(new SPConvertSkill("#caocaot", "caocao", "ass_caocao"));
 
     simayi = new General(this, "simayi", "wei", 3);
     simayi->addSkill(new Fankui);
@@ -1260,7 +1282,7 @@ void StandardPackage::addGenerals(){
     zhenji->addSkill(new Luoshen);
     zhenji->addSkill(new Qingguo);
     zhenji->addSkill(new SPConvertSkill("#zhenjip", "zhenji", "sp_zhenji"));
-    zhenji->addSkill(new SPConvertSkill("#zhenjit", "zhenji", "tai_zhenji"));
+    //zhenji->addSkill(new SPConvertSkill("#zhenjit", "zhenji", "tai_zhenji"));
 
     General *liubei, *guanyu, *zhangfei, *zhaoyun, *machao, *zhugeliang, *huangyueying;
     liubei = new General(this, "liubei$", "shu");
@@ -1269,6 +1291,7 @@ void StandardPackage::addGenerals(){
 
     guanyu = new General(this, "guanyu", "shu");
     guanyu->addSkill(new Wusheng);
+    guanyu->addSkill("x~zhongyi");
     guanyu->addSkill(new SPConvertSkill("#guanyup", "guanyu", "sp_guanyu"));
 
     zhangfei = new General(this, "zhangfei", "shu");
@@ -1282,17 +1305,18 @@ void StandardPackage::addGenerals(){
 
     zhaoyun = new General(this, "zhaoyun", "shu");
     zhaoyun->addSkill(new Longdan);
-    zhaoyun->addSkill(new SPConvertSkill("#zhaoyunt", "zhaoyun", "tai_zhaoyun"));
+    zhaoyun->addSkill("x~jiuzhu");
+    //zhaoyun->addSkill(new SPConvertSkill("#zhaoyunt", "zhaoyun", "tai_zhaoyun"));
 
     machao = new General(this, "machao", "shu");
     machao->addSkill(new Tieji);
     machao->addSkill(new Mashu);
     machao->addSkill(new SPConvertSkill("#machaop", "machao", "sp_machao"));
-    machao->addSkill(new SPConvertSkill("#machaot", "machao", "tai_machao"));
+    //machao->addSkill(new SPConvertSkill("#machaot", "machao", "tai_machao"));
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
-    huangyueying->addSkill(new Skill("qicai", Skill::Compulsory));
+    huangyueying->addSkill(new Qicai);
 
     General *sunquan, *zhouyu, *lvmeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
@@ -1301,7 +1325,7 @@ void StandardPackage::addGenerals(){
 
     ganning = new General(this, "ganning", "wu");
     ganning->addSkill(new Qixi);
-    ganning->addSkill(new SPConvertSkill("#ganningt", "ganning", "tai_ganning"));
+    //ganning->addSkill(new SPConvertSkill("#ganningt", "ganning", "tai_ganning"));
 
     lvmeng = new General(this, "lvmeng", "wu");
     lvmeng->addSkill(new Keji);
@@ -1314,14 +1338,12 @@ void StandardPackage::addGenerals(){
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);
     zhouyu->addSkill(new Fanjian);
-#ifdef USE_CRYPTO
-    zhouyu->addSkill(new SPConvertSkill("#zhouyug", "zhouyu", "gz_zhouyu"));
-#endif
+    //zhouyu->addSkill(new SPConvertSkill("#zhouyug", "zhouyu", "gz_zhouyu"));
 
     daqiao = new General(this, "daqiao", "wu", 3, false);
     daqiao->addSkill(new Guose);
     daqiao->addSkill(new Liuli);
-    daqiao->addSkill(new SPConvertSkill("#daqiaot", "daqiao", "tai_daqiao"));
+    //daqiao->addSkill(new SPConvertSkill("#daqiaot", "daqiao", "tai_daqiao"));
 
     luxun = new General(this, "luxun", "wu", 3);
     luxun->addSkill(new Qianxun);
@@ -1340,13 +1362,14 @@ void StandardPackage::addGenerals(){
 
     lvbu = new General(this, "lvbu", "qun");
     lvbu->addSkill(new Wushuang);
-    lvbu->addSkill(new SPConvertSkill("#lvbut", "lvbu", "tai_lvbu"));
+    lvbu->addSkill("x~zhanshen");
+    //lvbu->addSkill(new SPConvertSkill("#lvbut", "lvbu", "tai_lvbu"));
 
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
     diaochan->addSkill(new SPConvertSkill("#diaochanp", "diaochan", "sp_diaochan"));
-    diaochan->addSkill(new SPConvertSkill("#diaochant", "diaochan", "tai_diaochan"));
+    //diaochan->addSkill(new SPConvertSkill("#diaochant", "diaochan", "tai_diaochan"));
 
     // for skill cards
     addMetaObject<ZhihengCard>();
@@ -1467,6 +1490,54 @@ public:
     }
 };
 
+// zhuanshi-mode
+#include "settings.h"
+SacrificeCard::SacrificeCard(){
+    will_throw = false;
+    target_fixed = true;
+}
+
+void SacrificeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    if(!Config.EnableReincarnation)
+        return;
+
+    QStringList deathnote, targets_object;
+    foreach(ServerPlayer *target, room->getAllPlayers(true)){
+        if(target->isDead()){
+            deathnote << target->getGeneralName();
+            targets_object << target->objectName();
+        }
+    }
+    if(deathnote.isEmpty())
+        return;
+
+    QString choice = deathnote.length() == 1 ? deathnote.first() :
+                     room->askForChoice(source, "sacrifice", deathnote.join("+"));
+    int index = deathnote.indexOf(choice);
+    PlayerStar target = room->findPlayer(targets_object.at(index), true);
+    const Card *card = room->askForCardShow(source, target, "sacrifice");
+    target->obtainCard(card, false);
+}
+
+class Sacrifice:public ZeroCardViewAsSkill{
+public:
+    Sacrifice():ZeroCardViewAsSkill("sacrifice"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(player->hasUsed("SacrificeCard"))
+            return false;
+        foreach(const Player *p, player->getSiblings())
+            if(p->isDead())
+                return !player->isKongcheng();
+        return false;
+    }
+
+    virtual const Card *viewAs() const{
+        return new SacrificeCard;
+    }
+};
+
 TestPackage::TestPackage()
     :Package("test")
 {
@@ -1489,6 +1560,8 @@ TestPackage::TestPackage()
 
     new General(this, "anjiang", "god", 4,true, true, true);
 
+    skills << new Sacrifice;
+    addMetaObject<SacrificeCard>();
     addMetaObject<CheatCard>();
     addMetaObject<ChangeCard>();
 }

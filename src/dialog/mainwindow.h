@@ -139,6 +139,7 @@ private slots:
     void on_actionGeneral_Overview_triggered();
     void on_actionStart_Game_triggered();
     void on_actionReturn_main_triggered();
+    void on_actionPause_toggled(bool);
     void on_actionExit_triggered();
     void on_actionView_ban_list_triggered();
 

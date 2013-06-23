@@ -305,17 +305,6 @@ public:
     }
 };
 
-class EyPattern: public CardPattern{
-public:
-    virtual bool match(const Player *player, const Card *card) const{
-        return !player->hasEquip(card);
-    }
-
-    virtual bool willThrow() const{
-        return false;
-    }
-};
-
 class Enyuan: public TriggerSkill{
 public:
     Enyuan():TriggerSkill("enyuan"){
@@ -355,7 +344,7 @@ public:
                     if(room->askForSkillInvoke(player, objectName(), data)){
                         room->playSkillEffect(objectName(), qrand() % 2 + 3);
 
-                        const Card *card = room->askForCard(source, ".ey", "@enyuan:" + player->objectName(), QVariant(), NonTrigger);
+                        const Card *card = room->askForCard(source, ".", "@enyuan:" + player->objectName(), QVariant(), NonTrigger);
                         if(card)
                             player->obtainCard(card);
                         else
@@ -605,18 +594,17 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.to->isDead())
+        if(damage.to->isDead() || damage.chain)
+            return false;
+        if(!damage.card || !damage.card->isKindOf("Slash"))
             return false;
 
-        if(damage.card && damage.card->inherits("Slash") &&
-           player->askForSkillInvoke(objectName(), data))
-        {
-
+        if(player->askForSkillInvoke(objectName(), data)){
             int x = qMin(5, damage.to->getHp());
-                if (x >= 3)
-                    room->playSkillEffect(objectName(), 2);
-                else
-                    room->playSkillEffect(objectName(), 1);
+            if (x >= 3)
+                room->playSkillEffect(objectName(), 2);
+            else
+                room->playSkillEffect(objectName(), 1);
             damage.to->drawCards(x);
             damage.to->turnOver();
         }
@@ -825,7 +813,7 @@ public:
 class ZhichiClear: public TriggerSkill{
 public:
     ZhichiClear():TriggerSkill("#zhichi-clear"){
-        events << PhaseChange;
+        events << PhaseEnd;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -833,8 +821,11 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
-        if(player->getPhase() == Player::NotActive)
-            room->setTag("Zhichi", QVariant());
+        if(player->getPhase() != Player::Finish)
+            return false;
+        QList<ServerPlayer *> players = room->findPlayersBySkillName("zhichi");
+        foreach(ServerPlayer *chengong, players)
+            room->setPlayerFlag(chengong, "-Zhichi");
 
         return false;
     }
@@ -852,7 +843,7 @@ public:
             return false;
 
         if(event == Damaged){
-            room->setTag("Zhichi", player->objectName());
+            room->setPlayerFlag(player, "Zhichi");
 
             DamageStruct damage = data.value<DamageStruct>();
             int dex = damage.from->isCaoCao() ? 3 : qrand() %2 + 1;
@@ -864,7 +855,7 @@ public:
             room->sendLog(log);
 
         }else if(event == CardEffected){
-            if(room->getTag("Zhichi").toString() != player->objectName())
+            if(!player->hasFlag("Zhichi"))
                 return false;
 
             CardEffectStruct effect = data.value<CardEffectStruct>();
@@ -1238,50 +1229,20 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
-        int losthp = zhangchunhua->getLostHp();
-        /* a mix zch,if you want,make the follow work
-        if(losthp > 2 && qrand() % 2 == 1)
-            losthp = 2; */
-        if(event == HpChanged){
-            if(zhangchunhua->getHandcardNum()<losthp && zhangchunhua->getHp() > 0){
-                if( room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->playSkillEffect(objectName());
-                }
-            }
-        }else if(event == CardLostDone && zhangchunhua->getPhase() != Player::Discard){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place == Player::Hand){
-                if(zhangchunhua->getHandcardNum()<losthp && room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->playSkillEffect(objectName());
-                }
+        if(zhangchunhua->getPhase() == Player::Discard)
+            return false;
+        int x = qMin(2, zhangchunhua->getLostHp());
+        if(x == 0)
+            return false;
+        int hc = zhangchunhua->getHandcardNum();
+        if(hc < x && zhangchunhua->getHp() > 0){
+            if(zhangchunhua->askForSkillInvoke(objectName())){
+                room->playSkillEffect(objectName());
+                zhangchunhua->drawCards(x - hc);
             }
         }
-        else if(event == PhaseChange && zhangchunhua->getPhase() == Player::Finish){
-            if(zhangchunhua->getHandcardNum()<losthp){
-                if(room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->playSkillEffect(objectName());
-                }
-            }
-        }else if(event == CardGotDone){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->to_place == Player::Hand){
-                if(zhangchunhua->getHandcardNum()<losthp && room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->playSkillEffect(objectName());
-                }
-            }
-        }
-        else if(event == CardDrawnDone){
-            if(zhangchunhua->getHandcardNum()<losthp){
-                if(room->askForSkillInvoke(zhangchunhua,objectName())){
-                    zhangchunhua->drawCards(losthp-zhangchunhua->getHandcardNum());
-                    room->playSkillEffect(objectName());
-                }
-            }
-        }
+        if(event)
+            x = 0;
         return false;
     }
 };
@@ -1305,7 +1266,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *fazheng = new General(this, "fazheng", "shu", 3);
     fazheng->addSkill(new Enyuan);
     fazheng->addSkill(new Xuanhuo);
-    patterns.insert(".ey", new EyPattern);
 
     General *lingtong = new General(this, "lingtong", "wu");
     lingtong->addSkill(new Xuanfeng);
@@ -1328,7 +1288,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     gaoshun->addSkill(new Jinjiu);
     skills << new XianzhenSlash;
 
-    General *zhangchunhua = new General(this, "zhangchunhua", "wei", 3, false, true, true);
+    General *zhangchunhua = new General(this, "zhangchunhua", "wei", 3, false, true);
     zhangchunhua->addSkill(new Jueqing);
     zhangchunhua->addSkill(new Shangshi);
 

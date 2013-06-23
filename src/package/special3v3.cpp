@@ -233,7 +233,7 @@ public:
         QList<const Player *> players = from->getSiblings();
         players << from;
         foreach(const Player *player, players){
-            if(player->hasSkill(objectName())){
+            if(player->isAlive() && player->hasSkill(objectName())){
                 wenpin = player;
                 players.removeOne(player);
                 break;
@@ -293,6 +293,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(ServerInfo.GameMode != "06_3v3")
+            return false;
         if(event == GameStart){
             if(player->hasSkill(objectName()))
                 player->gainMark("@honest");
@@ -338,6 +340,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(ServerInfo.GameMode != "06_3v3")
+            return false;
         QList<ServerPlayer *> zhaoyuns = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *zhaoyun, zhaoyuns){
             if(player->getHp() > 0)
@@ -368,12 +372,14 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return PhaseChangeSkill::triggerable(target)
-                && target->getMark("x~zhanshen") == 0
+                && target->getMark("xzhanshen") == 0
                 && target->getPhase() == Player::Start
                 && target->isWounded();
     }
 
     virtual bool onPhaseChange(ServerPlayer *lvbu) const{
+        if(ServerInfo.GameMode != "06_3v3")
+            return false;
         Room *room = lvbu->getRoom();
         int x = 0;
         foreach(ServerPlayer *fri, room->getOtherPlayers(lvbu))
@@ -385,7 +391,7 @@ public:
         LogMessage log;
         log.type = "#WakeUp";
         log.from = lvbu;
-        log.arg = "zhanshen";
+        log.arg = "xzhanshen";
         room->sendLog(log);
 
         //room->playLightbox(lvbu, "x~zhanshen", "5000", 5000);
@@ -395,7 +401,7 @@ public:
         room->acquireSkill(lvbu, "mashu");
         room->acquireSkill(lvbu, "shenji");
 
-        room->setPlayerMark(lvbu, "x~zhanshen", 1);
+        room->setPlayerMark(lvbu, "xzhanshen", 1);
 
         return false;
     }

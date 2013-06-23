@@ -208,6 +208,7 @@ class ProhibitSkill: public Skill{
 public:
     ProhibitSkill(const QString &name);
 
+    virtual bool prohibitable(const Player *to) const;
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
 };
 

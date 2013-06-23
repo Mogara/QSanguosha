@@ -61,6 +61,7 @@ public:
     void addPackage(const QString &name);
     void addScenario(const QString &name);
 
+    QHash<QString, const General *> getGenerals() const {return full_generals;}
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const QString &skill_name) const;
@@ -100,7 +101,7 @@ public:
     bool is3v3Friend(const ServerPlayer *a, const ServerPlayer *b);
 private:
     QHash<QString, QString> translations;
-    QHash<QString, const General *> generals, hidden_generals;
+    QHash<QString, const General *> generals, hidden_generals, full_generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
     QMap<QString, QString> modes;

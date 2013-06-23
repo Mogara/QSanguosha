@@ -21,20 +21,36 @@ public:
         if(player->getPhase() != Player::Finish)
             return false;
         Room *room = player->getRoom();
-        ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
-        if(!splayer || player == splayer || splayer->isKongcheng())
-            return false;
-        if(room->askForCard(splayer, "BasicCard", "@xiaoguo:" + player->objectName(), QVariant::fromValue((PlayerStar)player), CardDiscarded)){
-            if(!room->askForCard(player, "EquipCard,TrickCard", "@xiaoguoresponse:" + splayer->objectName(), QVariant(), CardDiscarded)){
-                room->playSkillEffect(objectName(), qrand() % 2 + 1);
-                DamageStruct damage;
-                damage.from = splayer;
-                damage.to = player;
-                room->damage(damage);
+        QList<ServerPlayer *> splayers = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *splayer, splayers){
+            if(player == splayer || splayer->isKongcheng())
+                continue;
+            if(room->askForCard(splayer, "BasicCard", "@xiaoguo:" + player->objectName(), QVariant::fromValue((PlayerStar)player), CardDiscarded)){
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = splayer;
+                log.arg = objectName();
+                room->sendLog(log);
+                if(!room->askForCard(player, "EquipCard,TrickCard", "@xiaoguoresponse:" + splayer->objectName(), QVariant(), CardDiscarded)){
+                    room->playSkillEffect(objectName(), qrand() % 2 + 1);
+
+                    LogMessage log;
+                    log.type = "#Xiaoguo";
+                    log.from = splayer;
+                    log.to << player;
+                    log.arg = objectName();
+                    room->sendLog(log);
+
+                    DamageStruct damage;
+                    damage.from = splayer;
+                    damage.to = player;
+                    room->damage(damage);
+                }
+                else
+                    room->playSkillEffect(objectName(), 3);
             }
-            else
-                room->playSkillEffect(objectName(), 3);
         }
+
         return false;
     }
 };
@@ -227,7 +243,8 @@ MingshiCard::MingshiCard(){
     target_fixed = true;
 }
 
-void MingshiCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
+void MingshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->showAllCards(source, true);
 }
 
 class MingshiViewAsSkill: public ZeroCardViewAsSkill{
@@ -251,38 +268,26 @@ public:
 class Mingshi: public TriggerSkill{
 public:
     Mingshi():TriggerSkill("mingshi"){
-        events << Predamaged << DamageComplete;
+        events << Predamaged;
         frequency = Compulsory;
         view_as_skill = new MingshiViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(event == DamageComplete){
-            if(player->hasFlag("mingshi")){
-                room->broadcastInvoke("clearAG");
-                player->setFlags("-mingshi");
+        if(damage.from && !damage.from->isKongcheng() && damage.damage > 0){
+            room->playSkillEffect(objectName());
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = objectName();
+            room->sendLog(log);
+            damage.from->tag["Mingshi"] = data;
+            if(!room->askForUseCard(damage.from, "@@mingshi", "@mingshi:" + damage.to->objectName())){
+                damage.damage --;
+                data = QVariant::fromValue(damage);
             }
-        }
-        else{
-            if(damage.from && !damage.from->isKongcheng() && damage.damage > 0){
-                room->playSkillEffect(objectName());
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = player;
-                log.arg = objectName();
-                room->sendLog(log);
-                damage.from->tag["Mingshi"] = data;
-                if(room->askForUseCard(damage.from, "@@mingshi", "@mingshi:" + damage.to->objectName())){
-                    player->setFlags("mingshi");
-                    room->showAllCards(damage.from);
-                }
-                else{
-                    damage.damage --;
-                    data = QVariant::fromValue(damage);
-                }
-                damage.from->tag.remove("Mingshi");
-            }
+            damage.from->tag.remove("Mingshi");
         }
         return false;
     }
@@ -296,8 +301,8 @@ bool LirangCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void LirangCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &t) const{
-    PlayerStar data = t.first();
-    source->tag["LirangTarget"] = QVariant::fromValue(data);
+    CardStar card = source->tag["LirangCard"].value<CardStar>();
+    t.first()->obtainCard(card);
 }
 
 class LirangViewAsSkill:public ZeroCardViewAsSkill{
@@ -321,20 +326,17 @@ public:
 class Lirang: public TriggerSkill{
 public:
     Lirang():TriggerSkill("lirang"){
-        events << CardDiscarded;
+        events << CardDiscard;
         view_as_skill = new LirangViewAsSkill;
-    }
-
-    virtual int getPriority() const{
-        return 2;
     }
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         CardStar card = data.value<CardStar>();
-        if(card && room->askForUseCard(player, "@@lirang", "@lirang")){
-            PlayerStar target = player->tag["LirangTarget"].value<PlayerStar>();
-            target->obtainCard(card);
-            return true;
+        if(card){
+            player->tag["LirangCard"] = QVariant::fromValue(card);
+            if(room->askForUseCard(player, "@@lirang", "@lirang"))
+                return true;
+            player->tag.remove("LirangCard");
         }
         return false;
     }
@@ -654,11 +656,11 @@ HegemonyPackage::HegemonyPackage()
     lushun->addSkill("qianxun");
     lushun->addSkill(new Duoshi);
 
-#ifdef USE_CRYPTO
+/*
     General *gz_zhouyu = new General(this, "gz_zhouyu", "wu", 3, true, true);
     gz_zhouyu->addSkill("yingzi");
     gz_zhouyu->addSkill("fanjian");
-#endif
+*/
 
     General *dingfeng = new General(this, "dingfeng", "wu");
     dingfeng->addSkill(new Duanbing);

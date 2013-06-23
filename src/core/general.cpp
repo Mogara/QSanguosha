@@ -73,10 +73,18 @@ bool General::isTotallyHidden() const{
 
 QString General::getPixmapPath(const QString &category) const{
     QString suffix = "png";
-    if(category.startsWith("card"))
+    QString categOry = category;
+    if(categOry.startsWith("card"))
         suffix = "jpg";
 
-    return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
+    QString path = QString("image/generals/%1/%2.%3").arg(categOry).arg(objectName()).arg(suffix);
+    if(categOry == "card3" && !QFile::exists(path)){
+        categOry = "card2";
+        path = QString("image/generals/%1/%2.%3").arg(categOry).arg(objectName()).arg(suffix);
+    }
+    if(categOry == "card2" && !QFile::exists(path))
+        path = QString("image/generals/card/%1.%2").arg(objectName()).arg(suffix);
+    return path;
 }
 
 void General::addSkill(Skill *skill){
@@ -167,7 +175,7 @@ QString General::getSkillDescription() const{
     return description;
 }
 
-void General::lastWord() const{
+QString General::getLastEffectPath() const{
     QString filename = QString("audio/death/%1.dat").arg(objectName());
     if(!QFile::exists(filename))
         filename = QString("audio/death/%1.ogg").arg(objectName());
@@ -189,6 +197,11 @@ void General::lastWord() const{
                 filename = QString("audio/death/%1.ogg").arg(origin_general);
         }
     }
+    return filename;
+}
+
+void General::lastWord() const{
+    QString filename = getLastEffectPath();
     Sanguosha->playEffect(filename);
 }
 

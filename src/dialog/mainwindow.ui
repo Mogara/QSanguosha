@@ -17,7 +17,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>19</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -29,6 +29,7 @@
     <addaction name="separator"/>
     <addaction name="actionRestart_game"/>
     <addaction name="actionReturn_main"/>
+    <addaction name="actionPause"/>
     <addaction name="actionReplay"/>
     <addaction name="actionExit"/>
    </widget>
@@ -490,6 +491,17 @@
    </property>
    <property name="text">
     <string>Enable Lua</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>Pause</string>
    </property>
   </action>
  </widget>

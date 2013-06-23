@@ -157,6 +157,20 @@ public:
     }
 };
 
+class DuanliangTargetMod: public TargetModSkill {
+public:
+    DuanliangTargetMod(): TargetModSkill("#duanliang-target"){
+        pattern = "SupplyShortage";
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *) const{
+        if (from->hasSkill("duanliang"))
+            return 2;
+        else
+            return 0;
+    }
+};
+
 class SavageAssaultAvoid: public TriggerSkill{
 public:
     SavageAssaultAvoid(const QString &avoid_skill)
@@ -889,10 +903,11 @@ ThicketPackage::ThicketPackage()
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     caopi->addSkill(new Songwei);
-    caopi->addSkill(new SPConvertSkill("#caopit", "caopi", "ass_caopi"));
 
     xuhuang = new General(this, "xuhuang", "wei");
     xuhuang->addSkill(new Duanliang);
+    xuhuang->addSkill(new DuanliangTargetMod);
+    related_skills.insertMulti("duanliang", "#duanliang-target");
 
     menghuo = new General(this, "menghuo", "shu");
     menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
