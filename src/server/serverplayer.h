@@ -8,6 +8,7 @@ class Recorder;
 class CardMoveReason;
 struct PhaseStruct;
 
+#include "structs.h"
 #include "player.h"
 #include "socket.h"
 #include "protocol.h"
