@@ -3,7 +3,7 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130602",
+	version = "20130613",
 	version_name = "拟·鬼隐版",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
@@ -81,7 +81,7 @@ config = {
 		"小二的肉饼",
 		"Slob的杀虫剂",
 		"克拉克的跑动投",
-		"天下孟德的霸气",
+		"天下孟德的独角戏",
 		"早苗的假面",
 		"墨韵的诅咒",
 		"被和谐的XX生",
@@ -90,7 +90,7 @@ config = {
 		"海南的椰子",
 		"喵一夏的幸福",
 		"不踢足球的小翼",
-		"爱上某的穹妹",
+		"爱某上穹的妹",
 		"役满国士无双",
 		"卖萌的豚纸",
 		"江西安义的雷海",

@@ -48,11 +48,16 @@ void CardItem::changeGeneral(const QString &general_name){
 
     const General *general = Sanguosha->getGeneral(general_name);
     if(general){
-#ifdef USE_CRYPTO
-        changePixmap(general->getPixmapPath("card2"));
-#else
-        changePixmap(general->getPixmapPath("card"));
-#endif
+        QString category = QString();
+        int style = Config.value("UI/GStyle", Config.S_STYLE_INDEX).toInt();
+        if(style == 1)
+            category = "card2";
+        else if(style == 2)
+            category = "card3";
+        else
+            category = "card";
+        changePixmap(general->getPixmapPath(category));
+
         setToolTip(general->getSkillDescription());
     }else{
         changePixmap("image/system/unknown.png");

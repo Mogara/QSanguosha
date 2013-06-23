@@ -652,7 +652,7 @@ AI *ServerPlayer::getAI() const{
     if(getState() == "online"){
         return NULL;
     }
-    else if(getState() == "trust" && !Config.FreeChoose)
+    else if(getState() == "trust" && !Config.value("Cheat/EnableCheatMenu", false).toBool())
         return trust_ai;
     else
         return ai;
@@ -867,7 +867,7 @@ void ServerPlayer::gainAnExtraTurn(ServerPlayer *clearflag){
     ServerPlayer *current = room->getCurrent();
 
     room->setCurrent(this);
-    room->removeTag("Zhichi");
+    //room->removeTag("Zhichi");
     if(clearflag)
         clearflag->clearFlags();
     room->getThread()->trigger(TurnStart, this);

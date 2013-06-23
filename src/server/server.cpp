@@ -189,8 +189,12 @@ QWidget *ServerDialog::createAdvancedTab(){
     nolordskill_checkbox = new QCheckBox(tr("No lord skill"));
     nolordskill_checkbox->setChecked(Config.NoLordSkill);
 
-    scene_checkbox  = new QCheckBox(tr("Enable Scene"));
+    reincarnation_checkbox = new QCheckBox(tr("Enable Reincarnation"));
+    reincarnation_checkbox->setChecked(Config.EnableReincarnation);
+    reinca_unchange_checkbox  = new QCheckBox(tr("Persist general in reincarnation"));
+    reinca_unchange_checkbox->setChecked(Config.value("ReincaPersist").toBool());
 
+    scene_checkbox = new QCheckBox(tr("Enable Scene"));//changjing
     scene_checkbox->setChecked(Config.EnableScene);	//changjing
 
     max_hp_label = new QLabel(tr("Max HP scheme"));
@@ -238,6 +242,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addRow(HLay(max_hp_label, max_hp_scheme_combobox));
     layout->addRow(HLay(basara_checkbox, hegemony_checkbox));
     layout->addRow(scene_checkbox); //changjing
+    layout->addRow(HLay(reincarnation_checkbox, reinca_unchange_checkbox));
     layout->addRow(HLay(new QLabel(tr("Address")), address_edit, new QLabel(tr("Port")), port_edit));
     layout->addRow(HLay(announce_ip_checkbox, detect_button));
     //layout->addStretch();
@@ -249,6 +254,8 @@ QWidget *ServerDialog::createAdvancedTab(){
     connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
     max_hp_scheme_combobox->setVisible(Config.Enable2ndGeneral);
     connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setVisible(bool)));
+    reinca_unchange_checkbox->setVisible(Config.value("ReincaPersist", false).toBool());
+    connect(reincarnation_checkbox, SIGNAL(toggled(bool)), reinca_unchange_checkbox, SLOT(setVisible(bool)));
 
     return widget;
 }
@@ -1020,6 +1027,7 @@ bool ServerDialog::config(){
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.NoLordSkill = nolordskill_checkbox->isChecked();
+    Config.EnableReincarnation = reincarnation_checkbox->isChecked();
     Config.EnableScene = scene_checkbox->isChecked();		//changjing
     Config.EnableSame = same_checkbox->isChecked();
     Config.EnableEndless = endless_checkbox->isChecked();
@@ -1061,6 +1069,8 @@ bool ServerDialog::config(){
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("NoLordSkill", Config.NoLordSkill);
+    Config.setValue("EnableReincarnation", Config.EnableReincarnation);
+    Config.setValue("ReincaPersist", reinca_unchange_checkbox->isChecked());
     Config.setValue("EnableScene", Config.EnableScene);	//changjing
     Config.setValue("EnableSame", Config.EnableSame);
     Config.setValue("EnableEndless", Config.EnableEndless);

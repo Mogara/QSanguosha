@@ -2889,8 +2889,15 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         table->setItem(i, 1, item);
 
         item = new QTableWidgetItem;
-        if(player->isAlive())
-            item->setText(tr("Alive"));
+        if(player->isAlive()){
+            if(Config.EnableReincarnation && player->property("isDead").toBool()){
+                item->setText(tr("Reincarn"));
+                QIcon icon("image/mark/@skull.png");
+                item->setIcon(icon);
+            }
+            else
+                item->setText(tr("Alive"));
+        }
         else
             item->setText(tr("Dead"));
         table->setItem(i, 2, item);
@@ -3290,7 +3297,7 @@ void RoomScene::onGameStart(){
     log_box->append(tr("<font color='white'>------- Game Start --------</font>"));
 
     // add free discard button
-    if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
+    if(Config.value("Cheat/FreeRegulate", false).toBool() && !ClientInstance->getReplayer()){
         free_discard = dashboard->addButton("free-discard", 190, true);
         free_discard->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);

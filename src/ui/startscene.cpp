@@ -132,7 +132,7 @@ void StartScene::printServerInfo(){
     if(Config.ContestMode)
         server_log->append(tr("The contest mode is enabled"));
 
-    server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
+    server_log->append(tr("Free general choose is %1").arg(Config.FreeChooseGenerals ? tr("Enabled") : tr("Disabled")));
 
     if(Config.Enable2ndGeneral){
         QString scheme_str;
@@ -145,6 +145,10 @@ void StartScene::printServerInfo(){
         server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
     }else
         server_log->append(tr("Seconardary general is disabled"));
+
+    server_log->append( Config.EnableReincarnation ?
+                        tr("Reincarnation Rule is enabled") :
+                        tr("Reincarnation Rule is disabled"));
 
     server_log->append( Config.EnableScene ?
                         tr("Scene Mode is enabled") :

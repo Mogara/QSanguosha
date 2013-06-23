@@ -28,6 +28,7 @@ public:
     ServerPlayer *addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;
+    bool isPCConsole() const;
     int getLack() const;
     QString getMode() const;
     const Scenario *getScenario() const;
@@ -38,7 +39,7 @@ public:
     int alivePlayerCount() const;
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
     QList<ServerPlayer *> getPlayers() const;
-    QList<ServerPlayer *> getAllPlayers() const;
+    QList<ServerPlayer *> getAllPlayers(bool include_dead = false) const;
     QList<ServerPlayer *> getAlivePlayers() const;
     void output(const QString &message);
     void outputEventStack();
@@ -87,6 +88,7 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
+    void showAllCards(ServerPlayer *source, bool onebyone);
     bool isNoLordSkill();
     void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);

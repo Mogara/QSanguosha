@@ -15,9 +15,11 @@ public:
     virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 
 private:
+    void beforeNext(ServerPlayer *player) const;
     void onPhaseChange(ServerPlayer *player) const;
     void changeGeneral1v1(ServerPlayer *player) const;
     QString getWinner(ServerPlayer *victim) const;
+    mutable jmp_buf danshou_env;
 };
 
 class HulaoPassMode: public GameRule{
@@ -59,6 +61,16 @@ public:
 private:
     void changeGeneral(ServerPlayer *player) const;
     mutable jmp_buf env;
+};
+
+class ReincarnationRule: public GameRule{
+    Q_OBJECT
+
+public:
+    ReincarnationRule(QObject *parent);
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    virtual int getPriority() const;
 };
 
 #endif // GAMERULE_H

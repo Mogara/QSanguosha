@@ -16,7 +16,7 @@ GameRule::GameRule(QObject *parent)
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
             << AskForPeaches << PreDeath << Death << Dying << GameOverJudge << RewardAndPunish
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
-            << DamageDone << DamageComplete
+            << Interrupt << DamageDone << DamageComplete
             << StartJudge << FinishJudge << Pindian;
 }
 
@@ -26,6 +26,24 @@ bool GameRule::triggerable(const ServerPlayer *) const{
 
 int GameRule::getPriority() const{
     return 0;
+}
+
+void GameRule::beforeNext(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    if(player->hasFlag("drank")){
+        LogMessage log;
+        log.type = "#UnsetDrankEndOfTurn";
+        log.from = player;
+        room->sendLog(log);
+
+        room->setPlayerFlag(player, "-drank");
+    }
+
+    player->clearFlags();
+    if(player->hasMark("rende"))
+        room->setPlayerMark(player, "rende", 0);
+    if(player->hasMark("fl_jizhi"))
+        room->setPlayerMark(player, "fl_jizhi", 0);
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
@@ -115,7 +133,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
                 if(jilei_cards.size() > player->getMaxCards()){
                     // show all his cards
-                    room->showAllCards(player);
+                    room->showAllCards(player, true);
 
                     DummyCard *dummy_card = new DummyCard;
                     foreach(const Card *card, handcards.toSet() - jilei_cards){
@@ -136,21 +154,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
 
     case Player::NotActive:{
-            if(player->hasFlag("drank")){
-                LogMessage log;
-                log.type = "#UnsetDrankEndOfTurn";
-                log.from = player;
-                room->sendLog(log);
-
-                room->setPlayerFlag(player, "-drank");
-            }
-
-            player->clearFlags();
-            if(player->hasMark("rende"))
-                room->setPlayerMark(player, "rende", 0);
-            if(player->hasMark("fl_jizhi"))
-                room->setPlayerMark(player, "fl_jizhi", 0);
-
+            beforeNext(player);
             return;
         }
     }
@@ -208,7 +212,14 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
 
             room->setTag("FirstRound", true);
             player->drawCards(4, false);
-
+            if(Config.value("Cheat/GamblingCards", false).toBool()){
+                if(player->getState() == "online" && player->askForSkillInvoke("gambling")){
+                    player->throwAllHandCards();
+                    player->drawCards(4, false);
+                }
+            }
+            if(setjmp(danshou_env))
+                player = room->getCurrent()->getNextAlive();
             break;
         }
 
@@ -354,6 +365,13 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
             break;
         }
 
+    case Interrupt:{
+            //player->setFlags("ShutUp");
+            player->skip();
+            beforeNext(player);
+            longjmp(danshou_env, 1);
+            break;
+        }
     case DamageDone:{
             DamageStruct damage = data.value<DamageStruct>();
             room->sendDamageLog(damage);
@@ -495,7 +513,7 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
         //DamageStar damage = data.value<DamageStar>();
         //ServerPlayer *killer = damage ? damage->from : NULL;
 
-        if(player->getState() == "online" && Config.FreeChoose && player->askForSkillInvoke("undead")){
+        if(Config.EnableEndless){
             if(player->getMaxHp() <= 0)
                 room->setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
             if(player->getHp() <= 0)
@@ -504,20 +522,32 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
         }
 
         if(player->getState() == "online"){
-            bool allrobot = true;
-            QStringList winners;
-            foreach(ServerPlayer *robot, room->getOtherPlayers(player)){
-                if(robot->getState() != "robot" && allrobot)
-                    allrobot = false;
-                if(robot->isAlive())
-                    winners << robot->objectName();
-            }
-            if(allrobot && player->askForSkillInvoke("goaway")){
-                room->gameOver(winners.join("+"));
+            if(Config.value("Cheat/FreeUnDead", false).toBool()){
+                if(player->getMaxHp() <= 0)
+                    room->setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
+                if(player->getHp() <= 0)
+                    room->setPlayerProperty(player, "hp", 1);
+                LogMessage log;
+                log.type = "#Undead";
+                log.from = player;
+                room->sendLog(log);
                 return true;
             }
+            if(Config.value("Cheat/HandsUp", false).toBool() && room->getMode() != "02_1v1"){
+                bool allrobot = true;
+                QStringList winners;
+                foreach(ServerPlayer *robot, room->getOtherPlayers(player)){
+                    if(robot->getState() != "robot" && allrobot)
+                        allrobot = false;
+                    if(robot->isAlive())
+                        winners << robot->objectName();
+                }
+                if(allrobot && player->askForSkillInvoke("goaway")){
+                    room->gameOver(winners.join("+"));
+                    return true;
+                }
+            }
         }
-
         break;
     }
 
@@ -555,6 +585,9 @@ bool GameRule::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QVar
         break;
     }
     case RewardAndPunish:{
+        if(Config.value("ReincaPersist", false).toBool() && player->property("isDead").toBool())
+            return true;
+
         DamageStar damage = data.value<DamageStar>();
         PlayerStar killer = damage->from;
         PlayerStar victim = player;
@@ -1268,4 +1301,74 @@ void ChangbanSlopeMode::changeGeneral(ServerPlayer *player) const{
         room->setPlayerProperty(player, "chained", false);
 
     player->drawCards(4);
+}
+
+ReincarnationRule::ReincarnationRule(QObject *parent)
+    :GameRule(parent)
+{
+    setObjectName("reincarnation_rule");
+}
+
+int ReincarnationRule::getPriority() const{
+    return -1;
+}
+
+bool ReincarnationRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    switch(event){
+    case GameStart:{
+        int count = Sanguosha->getPlayerCount(room->getMode());
+        if(count > 3)
+            room->attachSkillToPlayer(player, "sacrifice");
+        break;
+    }
+    case PhaseChange:{
+        if(player->getPhase() == Player::NotActive){
+            int count = Sanguosha->getPlayerCount(room->getMode());
+            if(count < 4)
+                break;
+            int max = count > 5 ? 4 : 3;
+            ServerPlayer *next = player->getNext();
+            while(next->isDead()){
+                if(next->getHandcardNum() >= max){
+                    LogMessage log;
+                    log.type = "#ReincarnRevive";
+                    log.from = next;
+                    room->sendLog(log);
+
+                    room->broadcastInvoke("playAudio", "mode/reincarnation");
+                    room->revivePlayer(next);
+
+                    if(!Config.value("ReincaPersist", false).toBool()){
+                        QStringList names;
+                        foreach(ServerPlayer *tmp, room->getAllPlayers()){
+                            names << tmp->getGeneralName();
+                            if(tmp->getGeneral2())
+                                names << tmp->getGeneral2Name();
+                        }
+                        if(!names.isEmpty()){
+                            QSet<QString> names_set = names.toSet();
+                            QString newname = Sanguosha->getRandomGenerals(1, names_set).first();
+                            room->transfigure(next, newname, false, true);
+                        }
+                    }
+                    if(next->getMaxHp() == 0)
+                        room->setPlayerProperty(next, "maxhp", 1);
+                    room->setPlayerProperty(next, "hp", 1);
+
+                    room->getThread()->delay(1500);
+                    room->attachSkillToPlayer(next, "sacrifice");
+                    room->setPlayerMark(next, "@skull", 1);
+                    room->setPlayerProperty(next, "isDead", true);
+                }
+                next = next->getNext();
+            }
+        }
+        break;
+    }
+
+    default:
+        break;
+    }
+
+    return false;
 }
