@@ -4,4 +4,4 @@ if [ -d swig ]; then
 	cd swig
 fi
 
-swig -c++ -lua sanguosha.i
+swig -c++ -lua -O sanguosha.i

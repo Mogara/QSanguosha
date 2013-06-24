@@ -296,7 +296,6 @@ CONFIG(chatvoice){
 
 CONFIG(lua){
     SOURCES += \
-        src/lua/print.c \
         src/lua/lzio.c \
         src/lua/lvm.c \
         src/lua/lundump.c \
@@ -322,7 +321,10 @@ CONFIG(lua){
         src/lua/ldo.c \
         src/lua/ldebug.c \
         src/lua/ldblib.c \
+        src/lua/lctype.c \
+        src/lua/lcorolib.c \
         src/lua/lcode.c \
+        src/lua/lbitlib.c \
         src/lua/lbaselib.c \
         src/lua/lauxlib.c \
         src/lua/lapi.c
