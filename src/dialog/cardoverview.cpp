@@ -4,6 +4,7 @@
 #include "clientstruct.h"
 #include "client.h"
 #include "settings.h"
+#include <QFile>
 
 #ifdef USE_CRYPTO
     #include <QResource>

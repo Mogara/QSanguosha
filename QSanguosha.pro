@@ -9,7 +9,7 @@ macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio
 
 # If you want to use crypto and rcc, please uncomment the following line:
-# CONFIG += crypto
+#CONFIG += crypto
 # However, this is not supported under Linux or Mac OS X temporarily
 
 # If you want to enable joystick support, please uncomment the following line:
@@ -70,6 +70,7 @@ SOURCES += \
 	src/package/yjcm.cpp \
 	src/package/yjcm2012.cpp \
 	src/package/yjcm2013.cpp \
+	src/package/new_standard.cpp \
 	src/package/bgm.cpp \
 	src/package/ling.cpp \
 	src/package/assassins.cpp \
@@ -197,6 +198,7 @@ HEADERS += \
 	src/package/yjcm.h \
 	src/package/yjcm2012.h \
 	src/package/yjcm2013.h \
+	src/package/new_standard.h \
 	src/package/bgm.h \
 	src/package/ling.h \
 	src/package/assassins.h \
@@ -300,7 +302,11 @@ OTHER_FILES += \
 CONFIG(audio){
 	DEFINES += AUDIO_SUPPORT
 	INCLUDEPATH += include/fmod
-	LIBS += -lfmodex
+	unix{
+		LIBS += lib/libfmodex.so
+	}else{
+		LIBS += -lfmodex
+	}
 	SOURCES += src/core/audio.cpp
 }
 

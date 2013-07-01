@@ -3,17 +3,29 @@
 # This is a Shell script that ease our compilation work in Linux
 # You should has Qt, swig, and plib installed before running this script
 
-which -s qmake
-if [[ $? != 0 ]]; then
+if ! which -s qmake ; then
 	echo "Qt is not installed or its tools are not in the PATH"
 	exit 1
 fi
 
-which -s swig 
-if [[ $? != 0 ]]; then
+if ! which -s swig ; then
 	echo "Swig is not installed!"
 	exit 1
 fi
+
+if ! which -s 7z ; then
+	echo "You need 7z to unzip some files"
+	exit 1
+fi
+
+
+echo "Decompressing ttf file"
+cd font
+7z x font.7z
+if [ -f "FONT.TTF" ]; then
+	mv FONT.TTF font.ttf # to lowercase
+fi
+cd $OLDPWD
 
 # first, generate Lua binding C++ code
 echo "Generate lua binding code"
@@ -25,7 +37,10 @@ qmake QSanguosha.pro
 
 # then do make
 echo "Compile it"
-make
+if ! make ; then
+	echo "Compiling error"
+	exit 1
+fi
 
 # Compile the translation file
 lrelease QSanguosha.pro
