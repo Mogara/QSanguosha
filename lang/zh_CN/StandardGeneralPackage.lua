@@ -255,7 +255,7 @@ return {
 	["cv:guanyu"] = "鬼叔",
 	["$wusheng1"] = "观尔乃插标卖首。",
 	["$wusheng2"] = "关羽在此，尔等受死！",
-	["~guanyu"] = "难守桃园之誓，额……",
+	["~guanyu"] = "难守桃园之誓，呃……",
 
 	["cv:zhangfei"] = "鬼叔",
 	["$paoxiao1"] = "啊啊~！",
