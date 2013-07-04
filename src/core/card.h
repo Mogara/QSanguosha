@@ -127,7 +127,7 @@ public:
     inline virtual QStringList getFlags() const{ return flags; }
 
     inline virtual bool isModified() const{ return false; }
-    inline virtual void onNullified(ServerPlayer *target) const{ return; }
+    inline virtual void onNullified(ServerPlayer * /* target */) const{ return; }
 
     // static functions
     static bool CompareByNumber(const Card *a, const Card *b);
