@@ -7,8 +7,13 @@ TEMPLATE = app
 CONFIG += warn_on audio
 
 # choose luajit if you like it, the default is to use lua.
-CONFIG += lua
-# CONFIG += luajit
+win32 {
+    CONFIG += lua
+}
+unix {
+    CONFIG += lua51
+#    CONFIG += luajit
+}
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
@@ -354,6 +359,65 @@ CONFIG(lua){
         src/lua/lauxlib.h \
         src/lua/lapi.h
     INCLUDEPATH += src/lua
+}
+
+CONFIG(lua51){
+    SOURCES += \
+        src/lua51/lzio.c \
+        src/lua51/lvm.c \
+        src/lua51/lundump.c \
+        src/lua51/ltm.c \
+        src/lua51/ltablib.c \
+        src/lua51/ltable.c \
+        src/lua51/lstrlib.c \
+        src/lua51/lstring.c \
+        src/lua51/lstate.c \
+        src/lua51/lparser.c \
+        src/lua51/loslib.c \
+        src/lua51/lopcodes.c \
+        src/lua51/lobject.c \
+        src/lua51/loadlib.c \
+        src/lua51/lmem.c \
+        src/lua51/lmathlib.c \
+        src/lua51/llex.c \
+        src/lua51/liolib.c \
+        src/lua51/linit.c \
+        src/lua51/lgc.c \
+        src/lua51/lfunc.c \
+        src/lua51/ldump.c \
+        src/lua51/ldo.c \
+        src/lua51/ldebug.c \
+        src/lua51/ldblib.c \
+        src/lua51/lcode.c \
+        src/lua51/lbaselib.c \
+        src/lua51/lauxlib.c \
+        src/lua51/lapi.c
+    HEADERS += \
+        src/lua51/lzio.h \
+        src/lua51/lvm.h \
+        src/lua51/lundump.h \
+        src/lua51/lualib.h \
+        src/lua51/luaconf.h \
+        src/lua51/lua.hpp \
+        src/lua51/lua.h \
+        src/lua51/ltm.h \
+        src/lua51/ltable.h \
+        src/lua51/lstring.h \
+        src/lua51/lstate.h \
+        src/lua51/lparser.h \
+        src/lua51/lopcodes.h \
+        src/lua51/lobject.h \
+        src/lua51/lmem.h \
+        src/lua51/llimits.h \
+        src/lua51/llex.h \
+        src/lua51/lgc.h \
+        src/lua51/lfunc.h \
+        src/lua51/ldo.h \
+        src/lua51/ldebug.h \
+        src/lua51/lcode.h \
+        src/lua51/lauxlib.h \
+        src/lua51/lapi.h
+    INCLUDEPATH += src/lua51
 }
 
 CONFIG(luajit){

@@ -28,7 +28,11 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
     case LUA_TTABLE: {
             QStringList list;
 
+#if (LUA_VERSION_NUM==501)
+            size_t size = lua_objlen(L, -1);
+#else
             size_t size = lua_rawlen(L, -1);
+#endif
             for (size_t i = 0; i < size; i++) {
                 lua_rawgeti(L, -1, i + 1);
                 QString element = QString::fromUtf8(lua_tostring(L, -1));
