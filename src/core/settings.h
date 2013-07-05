@@ -75,6 +75,7 @@ public:
     bool EnableBgMusic;
     float BGMVolume;
     float EffectVolume;
+    bool DisableLightbox;
     bool DisableLua;
 
     QString BackgroundBrush;

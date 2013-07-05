@@ -3285,11 +3285,13 @@ void Room::playLightbox(ServerPlayer *player, const QString &skill_name, const Q
     if(skillname.at(0).isUpper())
         skillname[0] = skillname.at(0).toLower();
     playSkillEffect(skillname);
-    QString bro = "";
-    if(broad != "")
-        bro = ":" + broad;
-    broadcastInvoke("animate", "lightbox:$" + skill_name + bro);
-    thread->delay(delay);
+    if(!Config.DisableLightbox){
+        QString bro = "";
+        if(broad != "")
+            bro = ":" + broad;
+        broadcastInvoke("animate", "lightbox:$" + skill_name + bro);
+        thread->delay(delay);
+    }
     setEmotion(player, "skill/" + skillname);
 }
 

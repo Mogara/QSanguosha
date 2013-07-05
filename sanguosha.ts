@@ -878,87 +878,97 @@
         <translation> 秒</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="505"/>
+        <location filename="src/dialog/configdialog.ui" line="496"/>
         <source>Never nullify my single target trick</source>
         <translation>从不无懈自己的单体锦囊</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="521"/>
+        <location filename="src/dialog/configdialog.ui" line="506"/>
         <source>Minimize the dialog when server runs</source>
         <translation>服务器运行时最小化到托盘</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="537"/>
+        <location filename="src/dialog/configdialog.ui" line="516"/>
+        <source>if emotions mutual interference</source>
+        <translation>关闭大屏字幕可避免和动画重叠播放</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/configdialog.ui" line="519"/>
+        <source>Close Light Box</source>
+        <translation>关闭觉醒技/限定技的大屏字幕</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/configdialog.ui" line="529"/>
         <source>Disable Lua Generals</source>
         <translation>禁用LUA扩展功能(重启后生效)</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="546"/>
+        <location filename="src/dialog/configdialog.ui" line="541"/>
         <source>Contest mode</source>
         <translation>竞赛模式</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="561"/>
+        <location filename="src/dialog/configdialog.ui" line="556"/>
         <source>SMTP Server</source>
         <translation>SMTP 服务器</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="568"/>
+        <location filename="src/dialog/configdialog.ui" line="563"/>
         <source>SMTP server&apos;s address</source>
         <translation>SMTP 服务器的地址</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="575"/>
+        <location filename="src/dialog/configdialog.ui" line="570"/>
         <source>Sender</source>
         <translation>发送者</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="582"/>
+        <location filename="src/dialog/configdialog.ui" line="577"/>
         <source>The sender&apos;s email address</source>
         <translation>发送者的邮件地址</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="589"/>
+        <location filename="src/dialog/configdialog.ui" line="584"/>
         <source>Password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="596"/>
+        <location filename="src/dialog/configdialog.ui" line="591"/>
         <source>The password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="603"/>
+        <location filename="src/dialog/configdialog.ui" line="598"/>
         <source>Receiver</source>
         <translation>接收者</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="610"/>
+        <location filename="src/dialog/configdialog.ui" line="605"/>
         <source>The receiver&apos;s email address</source>
         <translation>接收者的电子邮件</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="626"/>
+        <location filename="src/dialog/configdialog.ui" line="621"/>
         <source>Only save the record of lord</source>
         <translation>仅保存主公的重放记录</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="74"/>
+        <location filename="src/dialog/configdialog.cpp" line="75"/>
         <source>Select a background image</source>
         <translation>请选择一个背景图片</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="76"/>
+        <location filename="src/dialog/configdialog.cpp" line="77"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="152"/>
+        <location filename="src/dialog/configdialog.cpp" line="156"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="154"/>
+        <location filename="src/dialog/configdialog.cpp" line="158"/>
         <source>Audio files (*.wav *.mp3 *.ogg)</source>
         <translation>音频文件 (*.wav *.mp3 *.ogg)</translation>
     </message>
@@ -3084,7 +3094,7 @@
     <message>
         <location filename="src/server/room.cpp" line="1506"/>
         <location filename="src/server/room.cpp" line="1720"/>
-        <location filename="src/server/room.cpp" line="3740"/>
+        <location filename="src/server/room.cpp" line="3742"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
@@ -3116,7 +3126,7 @@
 %1</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="3739"/>
+        <location filename="src/server/room.cpp" line="3741"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>

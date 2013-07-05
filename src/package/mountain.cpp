@@ -6,7 +6,6 @@
 #include "standard.h"
 #include "carditem.h"
 #include "generaloverview.h"
-#include "clientplayer.h"
 #include "client.h"
 #include "ai.h"
 

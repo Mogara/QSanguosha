@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "standard.h"
 #include "client.h"
-#include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
 #include "maneuvering.h"
@@ -668,7 +667,8 @@ bool JiefanCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JiefanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &tar) const{
     source->loseMark("@bother");
-    room->broadcastInvoke("animate", "lightbox:$jiefan");
+    if(!Config.DisableLightbox)
+        room->broadcastInvoke("animate", "lightbox:$jiefan");
     room->getThread()->delay(1500);
     PlayerStar target = tar.first();
     foreach(ServerPlayer *p, room->getAllPlayers()){

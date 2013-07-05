@@ -1,6 +1,5 @@
 #include "standard.h"
 #include "serverplayer.h"
-#include "room.h"
 #include "skill.h"
 #include "maneuvering.h"
 #include "clientplayer.h"

@@ -490,7 +490,8 @@ FenchengCard::FenchengCard(){
 
 void FenchengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     source->loseMark("@conflagration");
-    room->broadcastInvoke("animate", "lightbox:$fencheng");
+    if(!Config.DisableLightbox)
+        room->broadcastInvoke("animate", "lightbox:$fencheng");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){

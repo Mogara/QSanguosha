@@ -1,10 +1,8 @@
 #include "thicket.h"
 #include "general.h"
 #include "skill.h"
-#include "room.h"
 #include "carditem.h"
 #include "maneuvering.h"
-#include "clientplayer.h"
 #include "client.h"
 #include "engine.h"
 #include "general.h"
@@ -657,7 +655,8 @@ LuanwuCard::LuanwuCard(){
 
 void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     source->loseMark("@chaos");
-    room->broadcastInvoke("animate", "lightbox:$luanwu");
+    if(!Config.DisableLightbox)
+        room->broadcastInvoke("animate", "lightbox:$luanwu");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){

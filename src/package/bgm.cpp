@@ -4,7 +4,6 @@
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
-#include "settings.h"
 
 class ChongZhen: public TriggerSkill{
 public:

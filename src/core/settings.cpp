@@ -132,6 +132,7 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
+    DisableLightbox = value("DisableLightbox", false).toBool();
     DisableLua = value("DisableLua", false).toBool();
 
 //banlist
