@@ -1491,7 +1491,6 @@ public:
 };
 
 // zhuanshi-mode
-#include "settings.h"
 SacrificeCard::SacrificeCard(){
     will_throw = false;
     target_fixed = true;

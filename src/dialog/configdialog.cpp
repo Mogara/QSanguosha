@@ -34,6 +34,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     // tab 2
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
+    ui->closelightBox->setChecked(Config.DisableLightbox);
     ui->disableLua->setChecked(Config.DisableLua);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
@@ -134,6 +135,9 @@ void ConfigDialog::saveConfig()
 
     Config.EnableMinimizeDialog = ui->minimizecCheckBox->isChecked();
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
+
+    Config.DisableLightbox = ui->closelightBox->isChecked();
+    Config.setValue("DisableLightbox", Config.DisableLightbox);
 
     Config.DisableLua = ui->disableLua->isChecked();
     Config.setValue("DisableLua", Config.DisableLua);

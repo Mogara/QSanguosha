@@ -878,87 +878,97 @@
         <translation> 秒</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="505"/>
+        <location filename="src/dialog/configdialog.ui" line="496"/>
         <source>Never nullify my single target trick</source>
         <translation>从不无懈自己的单体锦囊</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="521"/>
+        <location filename="src/dialog/configdialog.ui" line="506"/>
         <source>Minimize the dialog when server runs</source>
         <translation>服务器运行时最小化到托盘</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="537"/>
+        <location filename="src/dialog/configdialog.ui" line="516"/>
+        <source>if emotions mutual interference</source>
+        <translation>关闭大屏字幕可避免和动画重叠播放</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/configdialog.ui" line="519"/>
+        <source>Close Light Box</source>
+        <translation>关闭觉醒技/限定技的大屏字幕</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/configdialog.ui" line="529"/>
         <source>Disable Lua Generals</source>
         <translation>禁用LUA扩展功能(重启后生效)</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="546"/>
+        <location filename="src/dialog/configdialog.ui" line="541"/>
         <source>Contest mode</source>
         <translation>竞赛模式</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="561"/>
+        <location filename="src/dialog/configdialog.ui" line="556"/>
         <source>SMTP Server</source>
         <translation>SMTP 服务器</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="568"/>
+        <location filename="src/dialog/configdialog.ui" line="563"/>
         <source>SMTP server&apos;s address</source>
         <translation>SMTP 服务器的地址</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="575"/>
+        <location filename="src/dialog/configdialog.ui" line="570"/>
         <source>Sender</source>
         <translation>发送者</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="582"/>
+        <location filename="src/dialog/configdialog.ui" line="577"/>
         <source>The sender&apos;s email address</source>
         <translation>发送者的邮件地址</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="589"/>
+        <location filename="src/dialog/configdialog.ui" line="584"/>
         <source>Password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="596"/>
+        <location filename="src/dialog/configdialog.ui" line="591"/>
         <source>The password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="603"/>
+        <location filename="src/dialog/configdialog.ui" line="598"/>
         <source>Receiver</source>
         <translation>接收者</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="610"/>
+        <location filename="src/dialog/configdialog.ui" line="605"/>
         <source>The receiver&apos;s email address</source>
         <translation>接收者的电子邮件</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="626"/>
+        <location filename="src/dialog/configdialog.ui" line="621"/>
         <source>Only save the record of lord</source>
         <translation>仅保存主公的重放记录</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="74"/>
+        <location filename="src/dialog/configdialog.cpp" line="75"/>
         <source>Select a background image</source>
         <translation>请选择一个背景图片</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="76"/>
+        <location filename="src/dialog/configdialog.cpp" line="77"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="152"/>
+        <location filename="src/dialog/configdialog.cpp" line="156"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="154"/>
+        <location filename="src/dialog/configdialog.cpp" line="158"/>
         <source>Audio files (*.wav *.mp3 *.ogg)</source>
         <translation>音频文件 (*.wav *.mp3 *.ogg)</translation>
     </message>
@@ -1852,16 +1862,6 @@
         <translation>视图</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.ui" line="79"/>
-        <source>Card style</source>
-        <translation>卡牌风格</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="87"/>
-        <source>General style</source>
-        <translation>武将风格</translation>
-    </message>
-    <message>
         <location filename="src/dialog/mainwindow.ui" line="134"/>
         <source>Exit</source>
         <translation>退出</translation>
@@ -1892,20 +1892,6 @@
         <translation>Ctrl+R</translation>
     </message>
     <message>
-        <source>Start server</source>
-        <translation type="obsolete">启动服务器</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="105"/>
-        <source>Cheat</source>
-        <translation>作弊</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="117"/>
-        <source>DIY</source>
-        <translation>DIY</translation>
-    </message>
-    <message>
         <location filename="src/dialog/mainwindow.ui" line="151"/>
         <source>Start game</source>
         <translation>启动游戏</translation>
@@ -1914,6 +1900,36 @@
         <location filename="src/dialog/mainwindow.ui" line="159"/>
         <source>Join game</source>
         <translation>加入游戏</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="105"/>
+        <source>Cheat</source>
+        <translation>作弊</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="501"/>
+        <source>&amp;Pause</source>
+        <translation>暂停/继续(&amp;P)</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="504"/>
+        <source>Pause</source>
+        <translation>Pause</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="79"/>
+        <source>Card style</source>
+        <translation>游戏卡牌风格</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="87"/>
+        <source>General style</source>
+        <translation>武将卡牌风格</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="117"/>
+        <source>DIY</source>
+        <translation>DIY</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="167"/>
@@ -2046,50 +2062,51 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.ui" line="437"/>
-        <source>Check resource</source>
-        <translation>检查资源</translation>
+        <location filename="src/dialog/mainwindow.ui" line="403"/>
+        <source>Restart game</source>
+        <translation>再来一局</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="406"/>
+        <source>F4</source>
+        <translation>F4</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="411"/>
+        <source>Return main</source>
+        <translation>返回主界面</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.ui" line="414"/>
+        <source>F3</source>
+        <translation>F3</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="445"/>
         <location filename="src/dialog/mainwindow.ui" line="469"/>
         <source>Standard</source>
-        <translation>标准</translation>
+        <translation>原版风格</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="453"/>
         <source>Sgs OL</source>
-        <translation>三国杀 OL</translation>
+        <translation>三国杀OL风格</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="461"/>
         <location filename="src/dialog/mainwindow.ui" line="477"/>
         <source>Golden Snake</source>
-        <translation>金蛇</translation>
+        <translation>金蛇风格</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="485"/>
         <source>Custom</source>
-        <translation>自定义</translation>
+        <translation>自定义风格</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.ui" line="493"/>
-        <source>Enable Lua</source>
-        <translation>启用 Lua</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="501"/>
-        <source>&amp;Pause</source>
-        <translation>暂停</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="504"/>
-        <source>Pause</source>
-        <translation>暂停</translation>
-    </message>
-    <message>
-        <source>PC Console Start</source>
-        <translation type="obsolete">单机启动</translation>
+        <location filename="src/dialog/mainwindow.ui" line="437"/>
+        <source>Check resource</source>
+        <translation>资源文件查验</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="357"/>
@@ -2145,26 +2162,6 @@
         <translation>在服务器端执行脚本 ...</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.ui" line="403"/>
-        <source>Restart game</source>
-        <translation>重新开始</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="406"/>
-        <source>F4</source>
-        <translation>F4</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="411"/>
-        <source>Return main</source>
-        <translation>返回主菜单</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.ui" line="414"/>
-        <source>F3</source>
-        <translation>F3</translation>
-    </message>
-    <message>
         <location filename="src/dialog/mainwindow.ui" line="419"/>
         <source>Change general ...</source>
         <translation>换将卡 ...</translation>
@@ -2206,6 +2203,21 @@
         <translation>身份分配表</translation>
     </message>
     <message>
+        <location filename="src/dialog/mainwindow.ui" line="493"/>
+        <source>Enable Lua</source>
+        <translation>启用/禁用LUA扩展</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="735"/>
+        <source>LUA derail</source>
+        <translation>LUA扩展总开关</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="736"/>
+        <source>Enable or disable Lua need to restart, are you sure?</source>
+        <translation>LUA开关变动后须重启程序才能生效，是否重启？</translation>
+    </message>
+    <message>
         <location filename="src/dialog/mainwindow.ui" line="175"/>
         <source>About</source>
         <translation>关于</translation>
@@ -2229,7 +2241,7 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="174"/>
         <source>Can not pause in online game!</source>
-        <translation>在联机游戏过程中不能暂停！</translation>
+        <translation>联机时不能暂停！</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="204"/>
@@ -2301,16 +2313,6 @@
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="735"/>
-        <source>LUA derail</source>
-        <translation>Lua 细节</translation>
-    </message>
-    <message>
-        <location filename="src/dialog/mainwindow.cpp" line="736"/>
-        <source>Enable or disable Lua need to restart, are you sure?</source>
-        <translation>启用或禁用 Lua 需要重启，你确定？</translation>
-    </message>
-    <message>
         <location filename="src/dialog/mainwindow.cpp" line="1047"/>
         <source>General</source>
         <translation>武将</translation>
@@ -2323,12 +2325,12 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1048"/>
         <source>Death Effect</source>
-        <translation>阵亡台词</translation>
+        <translation>阵亡配音</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1048"/>
         <source>Skills</source>
-        <translation>技能</translation>
+        <translation>固有技能</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1088"/>
@@ -2337,7 +2339,7 @@
         <location filename="src/dialog/mainwindow.cpp" line="1118"/>
         <location filename="src/dialog/mainwindow.cpp" line="1128"/>
         <source>Full</source>
-        <translation>全</translation>
+        <translation>√</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1091"/>
@@ -2346,12 +2348,12 @@
         <location filename="src/dialog/mainwindow.cpp" line="1121"/>
         <location filename="src/dialog/mainwindow.cpp" line="1131"/>
         <source>Empty</source>
-        <translation>空</translation>
+        <translation>×</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1161"/>
         <source>Check Resource</source>
-        <translation>检查资源</translation>
+        <translation>资源验收单</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1250"/>
@@ -3092,7 +3094,7 @@
     <message>
         <location filename="src/server/room.cpp" line="1506"/>
         <location filename="src/server/room.cpp" line="1720"/>
-        <location filename="src/server/room.cpp" line="3740"/>
+        <location filename="src/server/room.cpp" line="3742"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
@@ -3124,7 +3126,7 @@
 %1</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="3739"/>
+        <location filename="src/server/room.cpp" line="3741"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3399,6 +3401,11 @@
         <translation>名称</translation>
     </message>
     <message>
+        <location filename="src/ui/roomscene.cpp" line="2894"/>
+        <source>Reincarn</source>
+        <translation>转世</translation>
+    </message>
+    <message>
         <location filename="src/ui/roomscene.cpp" line="2865"/>
         <location filename="src/ui/roomscene.cpp" line="2899"/>
         <source>Alive</source>
@@ -3433,11 +3440,6 @@
         <location filename="src/ui/roomscene.cpp" line="2871"/>
         <source>Recover</source>
         <translation>回复</translation>
-    </message>
-    <message>
-        <location filename="src/ui/roomscene.cpp" line="2894"/>
-        <source>Reincarn</source>
-        <translation>复活</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="3035"/>
@@ -3663,94 +3665,9 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用暗将模式</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="47"/>
-        <source>Cheat</source>
-        <translation>作弊</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="168"/>
-        <source>Arrange the seats randomly</source>
-        <translation>随机分配座位</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="192"/>
-        <source>Enable Reincarnation</source>
-        <translation>启用复活</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="194"/>
-        <source>Persist general in reincarnation</source>
-        <translation>在复活后保持武将状态</translation>
-    </message>
-    <message>
         <location filename="src/server/server.cpp" line="211"/>
         <source>Enable Hegemony</source>
         <translation>启用国战模式</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="240"/>
-        <source>Swap pile count</source>
-        <translation>交换卡牌堆数目</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="266"/>
-        <source>Enable Cheat Menu</source>
-        <translation>启用作弊菜单</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="270"/>
-        <source>cheat options</source>
-        <translation>作弊选项</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="278"/>
-        <source>Choose generals freely</source>
-        <translation>自由选择武将</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="281"/>
-        <source>Choose cards freely</source>
-        <translation>自由选择卡牌</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="292"/>
-        <source>Regulate freely</source>
-        <translation>自由校准</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="295"/>
-        <source>Gambling Cards</source>
-        <translation>赌牌</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="298"/>
-        <source>Change me freely</source>
-        <translation>自由改变我</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="301"/>
-        <source>Undead body</source>
-        <translation>不死之身</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="304"/>
-        <source>Hands up</source>
-        <translation>举手</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="322"/>
-        <source>Endless Mode</source>
-        <translation>无尽模式</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="327"/>
-        <source>This box set the swap times</source>
-        <translation>这个盒子用于设置交换次数</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="328"/>
-        <source>Endless swap</source>
-        <translation>无尽交换</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="620"/>
@@ -3818,6 +3735,11 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>竞赛模式</translation>
     </message>
     <message>
+        <location filename="src/server/server.cpp" line="168"/>
+        <source>Arrange the seats randomly</source>
+        <translation>随机安排座位</translation>
+    </message>
+    <message>
         <location filename="src/server/server.cpp" line="44"/>
         <source>Basic</source>
         <translation>基本</translation>
@@ -3846,6 +3768,16 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="src/server/server.cpp" line="189"/>
         <source>No lord skill</source>
         <translation>无主公技</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="192"/>
+        <source>Enable Reincarnation</source>
+        <translation>启用转世规则</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="194"/>
+        <source>Persist general in reincarnation</source>
+        <translation>转世后原武将不变</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="197"/>
@@ -3898,6 +3830,76 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>探测我的广域网IP</translation>
     </message>
     <message>
+        <location filename="src/server/server.cpp" line="47"/>
+        <source>Cheat</source>
+        <translation>测试选项</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="240"/>
+        <source>Swap pile count</source>
+        <translation>最大洗牌次数</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="266"/>
+        <source>Enable Cheat Menu</source>
+        <translation>开启作弊菜单</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="270"/>
+        <source>cheat options</source>
+        <translation>游戏测试功能</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="278"/>
+        <source>Choose generals freely</source>
+        <translation>自由选择武将</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="281"/>
+        <source>Choose cards freely</source>
+        <translation>自由选择卡牌</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="292"/>
+        <source>Regulate freely</source>
+        <translation>显示自由弃牌按钮</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="295"/>
+        <source>Gambling Cards</source>
+        <translation>启用手气卡</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="298"/>
+        <source>Change me freely</source>
+        <translation>启用变身卡</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="301"/>
+        <source>Undead body</source>
+        <translation>启用不死之身</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="304"/>
+        <source>Hands up</source>
+        <translation>无人类玩家时可选择投降离开</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="322"/>
+        <source>Endless Mode</source>
+        <translation>启用无尽模式</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="328"/>
+        <source>Endless swap</source>
+        <translation>最大洗牌次数</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="327"/>
+        <source>This box set the swap times</source>
+        <translation>设置无尽模式下的洗牌次数</translation>
+    </message>
+    <message>
         <location filename="src/server/server.cpp" line="48"/>
         <source>Artificial intelligence</source>
         <translation>人工智能</translation>
@@ -3938,21 +3940,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>小型场景</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="820"/>
-        <source>PC Console</source>
-        <translation>单机模式</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="821"/>
-        <source>Start Server</source>
-        <translation>启动服务器</translation>
-    </message>
-    <message>
-        <location filename="src/server/server.cpp" line="823"/>
-        <source>Minimize the dialog when server runs</source>
-        <translation>服务器运行时最小化到托盘</translation>
-    </message>
-    <message>
         <location filename="src/server/server.cpp" line="853"/>
         <location filename="src/server/server.cpp" line="868"/>
         <source>Warning</source>
@@ -3980,10 +3967,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>%1 (%2 人)</translation>
     </message>
     <message>
-        <source>Choose generals and cards freely</source>
-        <translation type="obsolete">自由选择武将与卡牌</translation>
-    </message>
-    <message>
         <location filename="src/server/server.cpp" line="181"/>
         <source>Forbid same IP with multiple connection</source>
         <translation>禁止同一个IP建立多个连接</translation>
@@ -4004,8 +3987,19 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用 AI</translation>
     </message>
     <message>
-        <source>OK</source>
-        <translation type="obsolete">确定</translation>
+        <location filename="src/server/server.cpp" line="821"/>
+        <source>Start Server</source>
+        <translation>启动服务器(&amp;S)</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="820"/>
+        <source>PC Console</source>
+        <translation>单机启动(&amp;A)</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="823"/>
+        <source>Minimize the dialog when server runs</source>
+        <translation>服务器运行时最小化到托盘</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="822"/>
@@ -4053,7 +4047,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="src/client/clientstruct.cpp" line="101"/>
         <source>Reincarnation Rule</source>
-        <translation>复活规则</translation>
+        <translation>转世规则</translation>
     </message>
     <message>
         <location filename="src/client/clientstruct.cpp" line="103"/>
@@ -4340,12 +4334,12 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="src/ui/startscene.cpp" line="150"/>
         <source>Reincarnation Rule is enabled</source>
-        <translation>复活规则已启用</translation>
+        <translation>启用转世规则</translation>
     </message>
     <message>
         <location filename="src/ui/startscene.cpp" line="151"/>
         <source>Reincarnation Rule is disabled</source>
-        <translation>复活规则已禁用</translation>
+        <translation>禁用转世规则</translation>
     </message>
     <message>
         <location filename="src/ui/startscene.cpp" line="154"/>
@@ -4358,11 +4352,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>禁用场景模式</translation>
     </message>
     <message>
-        <location filename="src/ui/startscene.cpp" line="166"/>
-        <source>Same Mode is enabled</source>
-        <translation>启用同将模式</translation>
-    </message>
-    <message>
         <location filename="src/ui/startscene.cpp" line="167"/>
         <source>Same Mode is disabled</source>
         <translation>禁用同将模式</translation>
@@ -4371,16 +4360,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="src/ui/startscene.cpp" line="158"/>
         <source>Basara Mode is enabled</source>
         <translation>暗将模式已开启</translation>
-    </message>
-    <message>
-        <location filename="src/ui/startscene.cpp" line="32"/>
-        <source>Lua Manager</source>
-        <translation>Lua 管理器</translation>
-    </message>
-    <message>
-        <location filename="src/ui/startscene.cpp" line="34"/>
-        <source>Replay</source>
-        <translation>战局重放</translation>
     </message>
     <message>
         <location filename="src/ui/startscene.cpp" line="159"/>
@@ -4398,14 +4377,19 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>国战模式已关闭</translation>
     </message>
     <message>
+        <location filename="src/ui/startscene.cpp" line="166"/>
+        <source>Same Mode is enabled</source>
+        <translation>启用同将模式</translation>
+    </message>
+    <message>
         <location filename="src/ui/startscene.cpp" line="170"/>
         <source>Endless Mode is enabled, time: %1</source>
-        <translation>无尽模式启用，时间:%1</translation>
+        <translation>启用无尽模式，最大洗牌次数：%1</translation>
     </message>
     <message>
         <location filename="src/ui/startscene.cpp" line="171"/>
         <source>Endless Mode is disabled</source>
-        <translation>无尽模式已禁用</translation>
+        <translation>禁用无尽模式</translation>
     </message>
     <message>
         <location filename="src/ui/startscene.cpp" line="174"/>
@@ -4431,6 +4415,16 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="src/ui/startscene.cpp" line="129"/>
         <source>There is no time limit</source>
         <translation>没有时间限制</translation>
+    </message>
+    <message>
+        <location filename="src/ui/startscene.cpp" line="32"/>
+        <source>Lua Manager</source>
+        <translation>扩展管理</translation>
+    </message>
+    <message>
+        <location filename="src/ui/startscene.cpp" line="34"/>
+        <source>Replay</source>
+        <translation>战局重放</translation>
     </message>
     <message>
         <location filename="src/ui/startscene.cpp" line="130"/>

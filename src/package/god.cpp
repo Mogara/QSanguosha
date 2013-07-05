@@ -2,7 +2,6 @@
 #include "client.h"
 #include "engine.h"
 #include "carditem.h"
-#include "settings.h"
 #include "maneuvering.h"
 #include "general.h"
 
@@ -188,7 +187,8 @@ bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+    if(!Config.DisableLightbox)
+        room->broadcastInvoke("animate", "lightbox:$greatyeyan");
 
     shenzhouyu->loseMark("@flame");
     room->loseHp(shenzhouyu, 3);
@@ -204,7 +204,8 @@ bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const P
 }
 
 void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
+    if(!Config.DisableLightbox)
+        room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
 
     shenzhouyu->loseMark("@flame");
     room->loseHp(shenzhouyu, 3);
@@ -227,7 +228,8 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 }
 
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
-    room->broadcastInvoke("animate", "lightbox:$smallyeyan");
+    if(!Config.DisableLightbox)
+        room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
 
     Card::use(room, shenzhouyu, targets);
@@ -379,7 +381,7 @@ public:
                 room->playSkillEffect(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(weiwudi);
-                if(players.length() >=5)
+                if(players.length() >=5 && !Config.DisableLightbox)
                     room->broadcastInvoke("animate", "lightbox:$guixin");
 
                 foreach(ServerPlayer *player, players){

@@ -4,10 +4,8 @@
 #include "room.h"
 #include "carditem.h"
 #include "maneuvering.h"
-#include "clientplayer.h"
 #include "client.h"
 #include "engine.h"
-#include "general.h"
 
 DujiCard::DujiCard(){
     target_fixed = true;

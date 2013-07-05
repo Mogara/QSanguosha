@@ -4,7 +4,6 @@
 #include "clientplayer.h"
 #include "engine.h"
 #include "client.h"
-#include "settings.h"
 
 ZhihengCard::ZhihengCard(){
     target_fixed = true;

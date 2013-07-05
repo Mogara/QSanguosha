@@ -8,7 +8,6 @@
 
 #ifdef USE_CRYPTO
     #include <QResource>
-    #include <QFile>
     #include "crypto.h"
 #endif
 static CardOverview *Overview;

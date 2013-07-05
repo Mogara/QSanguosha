@@ -98,11 +98,11 @@ return {
 	["#ZhichiAvoid"] = "%from 受到【智迟】的影响，【杀】和非延时锦囊对其无效",
 
 	["#zhangchunhua"] = "冷血皇后",
-	["zhangchunhua"]="张春华",
-	["jueqing"]="绝情",
-	[":jueqing"]="<b>锁定技</b>，你即将造成的伤害均视为体力流失。",
-	["shangshi"]="伤逝",
-	[":shangshi"]="<b>锁定技</b>，弃牌阶段外，当你的手牌数小于X时，你将手牌补至X张（X为你已损失的体力值且最多为2）",
+	["zhangchunhua"] = "张春华",
+	["jueqing"] = "绝情",
+	[":jueqing"] = "<b>锁定技</b>，你即将造成的伤害均视为体力流失。",
+	["shangshi"] = "伤逝",
+	[":shangshi"] = "<b>锁定技</b>，弃牌阶段外，当你的手牌数小于X时，你将手牌补至X张（X为你已损失的体力值且最多为2）",
 	["#Jueqing"] = "%from 的锁定技【%arg】被触发，对 %to 造成的伤害视为体力流失。",
 
 	["#zhonghui"] = "桀骜的野心家",
@@ -213,6 +213,8 @@ return {
 	["$zhichi4"] = "智计有余，早有防备。", -- 发动后受到杀或非延时类锦囊
 	["~chengong"] = "请出就戮！",
 
+	["illustrator:zhangchunhua"] = "樱花闪乱",
+	["designer:zhangchunhua"] = "JZHIEI",
 	["cv:zhangchunhua"] = "白衣筱雅",
 	["$jueqing1"] = "你的死活与我何干？",
 	["$jueqing2"] = "无来无去，不悔不怨。",

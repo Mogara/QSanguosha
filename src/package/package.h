@@ -5,6 +5,7 @@ class Skill;
 class Card;
 class Player;
 
+#include "settings.h"
 #include <QObject>
 #include <QHash>
 #include <QStringList>

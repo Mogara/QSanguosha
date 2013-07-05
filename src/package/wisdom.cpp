@@ -3,8 +3,6 @@
 #include "client.h"
 #include "engine.h"
 #include "carditem.h"
-#include "settings.h"
-#include "room.h"
 #include "maneuvering.h"
 #include "general.h"
 

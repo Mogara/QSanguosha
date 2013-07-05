@@ -29,6 +29,8 @@ config = {
 		"SP",
 		"YJCM",
 		"YJCM2012",
+		"YJCM2013",
+		"NewStandard",
 		"Special3v3",
 		"BGM",
 		"Yitian",
