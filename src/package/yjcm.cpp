@@ -1193,60 +1193,6 @@ public:
     }
 };
 
-class Jueqing: public TriggerSkill{
-public:
-    Jueqing():TriggerSkill("jueqing"){
-        frequency = Compulsory;
-        events << Predamage;
-    }
-
-    virtual int getPriority() const{
-        return -1;
-    }
-
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if(damage.from && damage.damage > 0){
-            LogMessage log;
-            log.type = "#Jueqing";
-            log.from = zhangchunhua;
-            log.arg = objectName();
-            log.to << damage.to;
-            room->sendLog(log);
-            room->loseHp(damage.to,damage.damage);
-            room->playSkillEffect(objectName());
-            return true;
-        }
-        return false;
-    }
-};
-
-class Shangshi: public TriggerSkill{
-public:
-    Shangshi():TriggerSkill("shangshi"){
-        events << HpChanged << CardLostDone << CardGotDone << CardDrawnDone << PhaseChange;
-        frequency = Frequent;
-    }
-
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *zhangchunhua, QVariant &data) const{
-        if(zhangchunhua->getPhase() == Player::Discard)
-            return false;
-        int x = qMin(2, zhangchunhua->getLostHp());
-        if(x == 0)
-            return false;
-        int hc = zhangchunhua->getHandcardNum();
-        if(hc < x && zhangchunhua->getHp() > 0){
-            if(zhangchunhua->askForSkillInvoke(objectName())){
-                room->playSkillEffect(objectName());
-                zhangchunhua->drawCards(x - hc);
-            }
-        }
-        if(event)
-            x = 0;
-        return false;
-    }
-};
-
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
     caozhi->addSkill(new Luoying);
@@ -1287,10 +1233,6 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     gaoshun->addSkill(new Xianzhen);
     gaoshun->addSkill(new Jinjiu);
     skills << new XianzhenSlash;
-
-    General *zhangchunhua = new General(this, "zhangchunhua", "wei", 3, false, true);
-    zhangchunhua->addSkill(new Jueqing);
-    zhangchunhua->addSkill(new Shangshi);
 
     General *zhonghui = new General(this, "zhonghui", "wei");
     zhonghui->addSkill(new QuanjiKeep);
