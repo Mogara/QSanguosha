@@ -38,7 +38,7 @@ bool Crypto::encryptMusicFile(const QString &filename, const char *GlobalKey){
 
     int readed = file.read((char *)buffer, size);
     if(readed == -1){
-        delete buffer;
+        delete[] buffer;
         return false;
     }
 
@@ -48,12 +48,12 @@ bool Crypto::encryptMusicFile(const QString &filename, const char *GlobalKey){
     if(newFile.open(QIODevice::WriteOnly)){
         newFile.write((char *)buffer, size);
 
-        delete buffer;
+        delete[] buffer;
 
         return true;
 
     }else{
-        delete buffer;
+        delete[] buffer;
         return false;
     }
 }
@@ -76,10 +76,10 @@ bool Crypto::decryptMusicFile(const QString &filename, const QString &GlobalKey)
     QFile newFile(output);
     if(newFile.open(QIODevice::WriteOnly)){
         newFile.write((char *)buffer, size);
-        delete buffer;
+        delete[] buffer;
         return true;
     }else{
-        delete buffer;
+        delete[] buffer;
         return false;
     }
 }
@@ -110,7 +110,7 @@ FMOD_SOUND *Crypto::initEncryptedFile(FMOD_SYSTEM *System, const QString &filena
     info.length = size;
 
     FMOD_System_CreateSound(System, (const char *)buffer, FMOD_OPENMEMORY, &info, &sound);
-    delete buffer;
+    delete[] buffer;
 
     return sound;
 }
