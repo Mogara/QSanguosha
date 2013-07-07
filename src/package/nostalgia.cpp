@@ -338,29 +338,6 @@ public:
     }
 };
 
-class NosShangshi: public TriggerSkill{
-public:
-    NosShangshi():TriggerSkill("nosshangshi"){
-        events << HpChanged << CardLostDone << CardGotDone << CardDrawnDone << PhaseChange;
-        frequency = Frequent;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *zch, QVariant &data) const{
-        if(zch->getPhase() == Player::Discard)
-            return false;
-        int losthp = zch->getLostHp();
-        if(losthp < 1)
-            return false;
-        if(zch->getHandcardNum() < losthp){
-            if(zch->askForSkillInvoke(objectName())){
-                room->playSkillEffect(objectName());
-                zch->drawCards(losthp - zch->getHandcardNum());
-            }
-        }
-        return false;
-    }
-};
-
 //gd1h
 #include "maneuvering.h"
 
@@ -819,10 +796,6 @@ NostalGeneralPackage::NostalGeneralPackage()
     nos_xushu->addSkill(new NosJujian);
     addMetaObject<NosXuanhuoCard>();
     addMetaObject<NosJujianCard>();
-
-    General *nos_zhangchunhua = new General(this, "nos_zhangchunhua", "wei", 3, false, true);
-    nos_zhangchunhua->addSkill("jueqing");
-    nos_zhangchunhua->addSkill(new NosShangshi);
 
     General *nos_handang = new General(this, "nos_handang", "wu");
     nos_handang->addSkill(new NosGongqi);
