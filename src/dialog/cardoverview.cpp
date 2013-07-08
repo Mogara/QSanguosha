@@ -16,10 +16,8 @@ CardOverview *CardOverview::GetInstance(QWidget *main_window){
     if(Overview == NULL)
         Overview = new CardOverview(main_window);
 
-#ifdef USE_CRYPTO
-    Crypto cry;
-    QResource::registerResource(cry.getEncryptedFile("image/big-card.dat"));
-#endif
+    QResource::registerResource("image/big-card.qrc");
+
     return Overview;
 }
 
@@ -88,10 +86,7 @@ void CardOverview::addCard(int i, const Card *card){
 
 CardOverview::~CardOverview()
 {
-#ifdef USE_CRYPTO
-    Crypto cry;
-    QResource::unregisterResource(cry.getEncryptedFile("image/big-card.dat"));
-#endif
+    QResource::unregisterResource("image/big-card.qrc");
     delete ui;
 }
 
@@ -129,7 +124,7 @@ void CardOverview::askCard(){
     }
 }
 
-void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
+void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* )
 {
     if(Self)
         askCard();

@@ -97,7 +97,7 @@ void HallDialog::createRoom(){
     refreshRooms(0);
 }
 
-void HallDialog::toggleDisplay(bool only_nonful){
+void HallDialog::toggleDisplay(bool ){
 
 }
 
@@ -110,7 +110,7 @@ void HallDialog::joinRoom(int room_id){
     ClientInstance->request("joinRoom " + QString::number(room_id));
 }
 
-void HallDialog::roomBegin(int total, int pagelimit){
+void HallDialog::roomBegin(int total, int ){
     table->clearContents();
     table->setRowCount(total);
     room_row = 0;

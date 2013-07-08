@@ -1,116 +1,124 @@
 #include "crypto.h"
+#include "tomcrypt.h"
 
-void DES_Process(const char *keyString, byte *block, size_t length, CryptoPP::CipherDir direction){
-    using namespace CryptoPP;
+#include <QFile>
+#include <QDir>
 
-    byte key[DES_EDE2::KEYLENGTH];
-    memcpy(key, keyString, DES_EDE2::KEYLENGTH);
-    BlockTransformation *t = NULL;
+static const int KEYSIZE = 8;
+static const int BLOCKSIZE = 8;
+static const int ROUNDS = 16;
 
-    if(direction == ENCRYPTION)
-        t = new DES_EDE2_Encryption(key, DES_EDE2::KEYLENGTH);
-    else
-        t = new DES_EDE2_Decryption(key, DES_EDE2::KEYLENGTH);
+static unsigned char key[KEYSIZE];
 
-    int steps = length / t->BlockSize();
-    for(int i=0; i<steps; i++){
-        int offset = i * t->BlockSize();
-        t->ProcessBlock(block + offset);
-    }
-
-    delete t;
+int Crypto::getKeySize(){
+    return KEYSIZE;
 }
 
-bool Crypto::encryptMusicFile(const QString &filename, const char *GlobalKey){
-    QFileInfo info(filename);
-    QString output = QString("%1/%2.dat").arg(info.absolutePath()).arg(info.baseName());
-
-    QFile file(filename);
-
-    if(file.open(QIODevice::ReadOnly) == false)
-        return false;
-
-    qint64 realSize = file.size();
-    int padding = realSize % 8;
-    qint64 size = realSize + padding;
-
-    byte *buffer = new byte[size];
-
-    int readed = file.read((char *)buffer, size);
-    if(readed == -1){
-        delete[] buffer;
-        return false;
-    }
-
-    DES_Process(GlobalKey, buffer, size, CryptoPP::ENCRYPTION);
-
-    QFile newFile(output);
-    if(newFile.open(QIODevice::WriteOnly)){
-        newFile.write((char *)buffer, size);
-
-        delete[] buffer;
-
-        return true;
-
-    }else{
-        delete[] buffer;
-        return false;
-    }
+void Crypto::setKey(const char *k){
+    memcpy(key, k, KEYSIZE);
 }
 
-bool Crypto::decryptMusicFile(const QString &filename, const QString &GlobalKey){
-    QFile file(filename);
-    QFileInfo info(filename);
-    QString output = QString("%1/%2.ogg").arg(info.absolutePath()).arg(info.baseName());
+QString Crypto::getVersion(){
+    return SCRYPT;
+}
 
-    if(file.open(QIODevice::ReadOnly) == false)
+typedef int (* process_func)(const unsigned char *, unsigned char *, symmetric_key *skey);
+
+static const char *process(const char *in, size_t &length, process_func func){
+    symmetric_key skey;
+    int result = des_setup(key, KEYSIZE, ROUNDS, &skey);
+    if(result != CRYPT_OK)
         return NULL;
 
-    const char *key = GlobalKey.toLocal8Bit().data();
-    qint64 size = file.size();
-    byte *buffer = new byte[size];
+    length += length % BLOCKSIZE;
+    char *out = new char[length];
 
-    file.read((char *)buffer, size);
-    DES_Process(key, buffer, size, CryptoPP::DECRYPTION);
+    const int n = length / BLOCKSIZE;
+    for(int i=0; i<n; i++){
+        const int offset = i * BLOCKSIZE;
+        const unsigned char *ct = reinterpret_cast<const unsigned char *>(in + offset);
+        unsigned char *pt = reinterpret_cast<unsigned char *>(out + offset);
+        int result = func(ct, pt, &skey);
+        if(result != CRYPT_OK){
+            delete[] out;
+            return NULL;
+        }
+    }
 
-    QFile newFile(output);
-    if(newFile.open(QIODevice::WriteOnly)){
-        newFile.write((char *)buffer, size);
-        delete[] buffer;
-        return true;
-    }else{
-        delete[] buffer;
-        return false;
+    des_done(&skey);
+    return out;
+}
+
+const char *Crypto::encrypt(const char *in, size_t &length){
+    return process(in, length, des_ecb_encrypt);
+}
+
+const char *Crypto::decrypt(const char *in, size_t &length){
+    return process(in, length, des_ecb_decrypt);
+}
+
+void Crypto::encryptFile(const QString &from, const QString &to){
+    QFile in(from);
+    if(!in.open(QIODevice::ReadOnly))
+        return;
+
+    QFile out(to);
+    if(!out.open(QIODevice::WriteOnly))
+        return;
+
+    QByteArray data = in.readAll();
+    size_t length = data.length();
+    qint32 originalLength = length;
+    const char *result = Crypto::encrypt(data.constData(), length);
+
+    out.write((char *)&originalLength, sizeof(qint32));
+    out.write(result, length);
+
+    delete[] result;
+}
+
+const char *Crypto::decryptFile(const QString &filename, qint32 &length){
+    QFile in(filename);
+    if(!in.open(QIODevice::ReadOnly))
+        return NULL;
+
+    in.read((char *)&length, sizeof(qint32));
+
+    QByteArray data = in.readAll();
+    size_t dataLength = data.length();
+    return Crypto::decrypt(data.constData(), dataLength);
+}
+
+void Crypto::decryptFile(const QString &from, const QString &to){
+    QFile out(to);
+    if(out.open(QIODevice::WriteOnly)){
+        qint32 length = 0;
+        const char *result = Crypto::decryptFile(from, length);
+        out.write(result, length);
     }
 }
 
-const uchar *Crypto::getEncryptedFile(const QString &filename, const char *GlobalKey){
-    QFile file(filename);
+typedef void (* process_method)(const QString &, const QString &);
 
-    if(file.open(QIODevice::ReadOnly) == false)
-        return NULL;
+static int process_files(const QString &dirname, const QString &fromSuffix, const QString &toSuffix, process_method method){
+    QDir dir(dirname);
+    int count = 0;
+    foreach(QFileInfo info, dir.entryInfoList(QStringList() << "*." + fromSuffix)){
+        QString from = info.absoluteFilePath();
+        QString to = dir.filePath(QString("%1.%2").arg(info.baseName()).arg(toSuffix));
 
-    size = file.size();
-    byte *buffer = new byte[size];
+        method(from, to);
 
-    file.read((char *)buffer, size);
-    DES_Process(GlobalKey, buffer, size, CryptoPP::DECRYPTION);
+        count ++;
+    }
 
-    return (const uchar *)buffer;
+    return count;
 }
 
-FMOD_SOUND *Crypto::initEncryptedFile(FMOD_SYSTEM *System, const QString &filename, const char *GlobalKey){
-    const uchar *buffer = getEncryptedFile(filename, GlobalKey);
+int Crypto::encryptFiles(const QString &dirname, const QString &fromSuffix, const QString &toSuffix){
+    return process_files(dirname, fromSuffix, toSuffix, &Crypto::encryptFile);
+}
 
-    FMOD_SOUND *sound;
-
-    FMOD_CREATESOUNDEXINFO info;
-    memset(&info, 0, sizeof(info));
-    info.cbsize = sizeof(info);
-    info.length = size;
-
-    FMOD_System_CreateSound(System, (const char *)buffer, FMOD_OPENMEMORY, &info, &sound);
-    delete[] buffer;
-
-    return sound;
+int Crypto::decryptFiles(const QString &dirname, const QString &fromSuffix, const QString &toSuffix){
+    return process_files(dirname, fromSuffix, toSuffix, &Crypto::decryptFile);
 }

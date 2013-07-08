@@ -3,11 +3,14 @@
 #include "settings.h"
 
 #ifdef USE_CRYPTO
-    #include "crypto.h"
+
+#include "crypto.h"
+
 #endif
 
 #include <QCache>
 #include <QtDebug>
+#include <QFile>
 
 class Sound;
 
@@ -25,8 +28,17 @@ public:
             FMOD_System_CreateSound(System, filename.toAscii(), FMOD_DEFAULT, NULL, &sound);
 #ifdef USE_CRYPTO
         else{
-            Crypto cry;
-            sound = cry.initEncryptedFile(System, filename);
+            qint32 length = 0;
+            const char *buffer = Crypto::decryptFile(filename, length);
+
+            FMOD_CREATESOUNDEXINFO info;
+            memset(&info, 0, sizeof(info));
+            info.cbsize = sizeof(info);
+            info.length = length;
+
+            FMOD_System_CreateSound(System, buffer, FMOD_OPENMEMORY, &info, &sound);
+
+            delete[] buffer;
         }
 #endif
     }

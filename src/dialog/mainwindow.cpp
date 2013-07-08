@@ -68,10 +68,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = NULL;
 
-#ifdef USE_CRYPTO
-    Crypto cry;
-    QResource::registerResource(cry.getEncryptedFile("image/card.dat"));
-#endif
 
     setWindowTitle(Sanguosha->translate("QSanguosha"));
     connection_dialog = new ConnectionDialog(this);
@@ -113,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionMinimize_to_system_tray);
 
     systray = NULL;
+
+    Crypto::setKey("http://qsanguosha.org");
 }
 
 void MainWindow::restoreFromConfig(){
@@ -152,10 +150,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
 
 MainWindow::~MainWindow()
 {
-#ifdef USE_CRYPTO
-    Crypto cry;
-    QResource::unregisterResource(cry.getEncryptedFile("image/card.dat"));
-#endif
+    QResource::unregisterResource("image/card.qrc");
     delete ui;
 }
 
@@ -1288,56 +1283,4 @@ void MainWindow::on_actionAbout_Lua_triggered()
     window->shift();
 
     window->appear();
-}
-
-void MainWindow::on_actionCrypto_audio_triggered(){
-#ifdef USE_CRYPTO
-    QStringList filenames = QFileDialog::getOpenFileNames(
-            this, tr("Please select audio files"),
-            QString(),
-            tr("OGG Audio files (*.ogg)"));
-
-    if(filenames.isEmpty())
-        return;
-    Crypto cry;
-    int count = 0;
-    foreach(QString filename, filenames){
-        if(!cry.encryptMusicFile(filename))
-            QMessageBox::warning(this, tr("Notice"), tr("Encrypt music file %1 failed!").arg(filename));
-        else
-            count++;
-    }
-    QMessageBox::information(this, tr("Notice"), tr("Encrypt %1 music files done!").arg(QString::number(count)));
-    if(QMessageBox::question(this, tr("Warning"), tr("Delete all old files?"),
-                             QMessageBox::StandardButtons(QMessageBox::Yes | QMessageBox::No), QMessageBox::No)
-        == QMessageBox::Yes){
-        foreach(QString filename, filenames)
-            QFile::remove(filename);
-    }
-#endif
-}
-
-void MainWindow::on_actionDecrypto_audio_triggered(){
-#ifdef USE_CRYPTO
-    QStringList filenames = QFileDialog::getOpenFileNames(
-            this, tr("Please select crypto files"),
-            QString(),
-            tr("Crypto files (*.dat)"));
-
-    if(filenames.isEmpty())
-        return;
-
-    QString key = QInputDialog::getText(this, tr("The key for decrypt"), tr("Please input the key"));
-    if(!key.isEmpty()){
-        Crypto cry;
-        int count = 0;
-        foreach(QString filename, filenames){
-            if(!cry.decryptMusicFile(filename, key))
-                QMessageBox::warning(this, tr("Notice"), tr("Decrypt music file %1 failed!").arg(filename));
-            else
-                count++;
-        }
-        QMessageBox::information(this, tr("Notice"), tr("Decrypt %1 music files done!").arg(QString::number(count)));
-    }
-#endif
 }

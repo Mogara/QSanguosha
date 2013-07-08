@@ -6,11 +6,7 @@ QT += network sql declarative
 TEMPLATE = app
 win32 : RC_FILE = resource/icon.rc
 macx : ICON = resource/icon/sgs.icns
-CONFIG += warn_on audio
-
-# If you want to use crypto and rcc, please uncomment the following line:
-#CONFIG += crypto
-# However, this is not supported under Linux or Mac OS X temporarily
+CONFIG += warn_on audio crypto
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
@@ -326,9 +322,9 @@ CONFIG(chatvoice){
 }
 
 CONFIG(crypto){
+        INCLUDEPATH += include/tomcrypt
         DEFINES += USE_CRYPTO
-        LIBS += -lcryptopp
-        HEADERS += \
-            src/core/crypto.h
+        LIBS += -ltomcrypt
+        HEADERS += src/core/crypto.h
         SOURCES += src/core/crypto.cpp
 }

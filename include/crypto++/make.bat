@@ -1,1 +1,0 @@
-﻿E:\QT\mingw\bin\mingw32-make
