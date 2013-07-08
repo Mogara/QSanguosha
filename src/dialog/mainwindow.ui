@@ -138,10 +138,6 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
-   </property>
    <property name="text">
     <string>Configure</string>
    </property>
