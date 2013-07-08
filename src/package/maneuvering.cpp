@@ -96,7 +96,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "slash";
     }
 
@@ -331,11 +331,11 @@ QString IronChain::getSubtype() const{
     return "damage_spread";
 }
 
-QString IronChain::getEffectPath(bool is_male) const{
+QString IronChain::getEffectPath(bool ) const{
     return QString();
 }
 
-bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const{
     int trick_etargets = TrickCard::geteTargetsCount(Self, this);
     trick_etargets += 2;
     if(targets.length() >= trick_etargets)
@@ -344,7 +344,7 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
     return true;
 }
 
-bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     if(getSkillName() == "guhuo")
         return targets.length() == 1 || targets.length() == 2;
     else

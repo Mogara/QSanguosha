@@ -201,7 +201,7 @@ void EffectAnimation::deleteEffect(QAnimatedEffect *effect)
     }
 }
 
-EmphasizeEffect::EmphasizeEffect(bool stay,QObject *parent)
+EmphasizeEffect::EmphasizeEffect(bool stay,QObject *)
 {
     this->setObjectName("emphasizer");
     index = 0;
@@ -270,7 +270,7 @@ void QAnimatedEffect::setStay(bool stay)
     }
 }
 
-SentbackEffect::SentbackEffect(bool stay, QObject *parent)
+SentbackEffect::SentbackEffect(bool stay, QObject *)
 {
     grayed = 0;
     this->setObjectName("backsender");
@@ -330,7 +330,7 @@ void SentbackEffect::draw(QPainter *painter)
     return;
 }
 
-FadeEffect::FadeEffect(bool stay, QObject *parent)
+FadeEffect::FadeEffect(bool stay, QObject *)
 {
     this->setObjectName("fader");
     index = 0;

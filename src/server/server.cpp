@@ -20,8 +20,11 @@
 #include <QLabel>
 #include <QRadioButton>
 #include <QApplication>
-#include <QHttp>
 #include <QAction>
+
+#if QT_VERSION < 0x050000
+#include <QHttp>
+#endif
 
 static QLayout *HLay(QWidget *left, QWidget *right, QWidget *other = NULL, QWidget *other2 = NULL){
     QHBoxLayout *layout = new QHBoxLayout;
@@ -837,6 +840,9 @@ QLayout *ServerDialog::createButtonLayout(){
 }
 
 void ServerDialog::onDetectButtonClicked(){
+#if QT_VERSION >= 0x050000
+    QMessageBox::warning(this, tr("Warning"), tr("I'm sorry that this function is not implemented yet!"));
+#else
     QString host = "www.net.cn";
     QString path = "/static/customercare/yourIP.asp";
     QHttp *http = new QHttp(this);
@@ -844,9 +850,11 @@ void ServerDialog::onDetectButtonClicked(){
 
     connect(http, SIGNAL(done(bool)), this, SLOT(onHttpDone(bool)));
     http->get(path);
+#endif
 }
 
 void ServerDialog::onHttpDone(bool error){
+#if QT_VERSION < 0x050000
     QHttp *http = qobject_cast<QHttp *>(sender());
 
     if(error){
@@ -861,6 +869,7 @@ void ServerDialog::onHttpDone(bool error){
 
         http->deleteLater();
     }
+#endif
 }
 
 void ServerDialog::onOkButtonClicked(){
@@ -1194,7 +1203,7 @@ void Server::processNewConnection(ClientSocket *socket){
 }
 
 static inline QString ConvertFromBase64(const QString &base64){
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QByteArray data = QByteArray::fromBase64(base64.toLatin1());
     return QString::fromUtf8(data);
 }
 

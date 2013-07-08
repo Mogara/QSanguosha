@@ -9,7 +9,7 @@ GongxinCard::GongxinCard(){
     once = true;
 }
 
-bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.isEmpty() && !to_select->isKongcheng();
 }
 
@@ -182,7 +182,7 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
 GreatYeyanCard::GreatYeyanCard(){
 }
 
-bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.isEmpty();
 }
 
@@ -199,7 +199,7 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
 MediumYeyanCard::MediumYeyanCard(){
 }
 
-bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.length() < 2;
 }
 
@@ -223,7 +223,7 @@ SmallYeyanCard::SmallYeyanCard(){
 
 }
 
-bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.length() < 3;
 }
 
@@ -404,7 +404,7 @@ public:
 
     }
 
-    virtual int getCorrect(const Player *from, const Player *to) const{
+    virtual int getCorrect(const Player *, const Player *to) const{
         if(to->hasSkill(objectName()))
             return +1;
         else
@@ -548,8 +548,7 @@ public:
         return target != NULL && target->hasSkill("wuqian");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
-
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         if(event == PhaseChange || event == Death){
             if(player->hasSkill(objectName()) && (event == Death || player->getPhase() == Player::NotActive)){
                 foreach(ServerPlayer *p , room->getAllPlayers())
@@ -724,7 +723,7 @@ KuangfengCard::KuangfengCard(){
 
 }
 
-bool KuangfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool KuangfengCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.isEmpty();
 }
 
@@ -741,11 +740,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@kuangfeng";
     }
 
@@ -822,7 +821,7 @@ public:
         return target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &) const{
         QList<ServerPlayer *> players = room->getAllPlayers();
         foreach(ServerPlayer *player, players){
             player->loseAllMarks("@gale");
@@ -837,11 +836,11 @@ DawuCard::DawuCard(){
 
 }
 
-bool DawuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool DawuCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const{
     return targets.length() < Self->getMark("@star");
 }
 
-void DawuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void DawuCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     int n = targets.length();
     Qixing::DiscardStar(source, n);
 
@@ -857,11 +856,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@dawu";
     }
 
@@ -886,7 +885,7 @@ public:
         return target->getMark("@fog") > 0;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.nature != DamageStruct::Thunder){
 
@@ -1215,7 +1214,7 @@ public:
 
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "slash"
                 || pattern == "jink"
                 || pattern.contains("peach")

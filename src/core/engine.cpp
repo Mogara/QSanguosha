@@ -361,7 +361,7 @@ QColor Engine::getKingdomColor(const QString &kingdom) const{
     static QMap<QString, QColor> color_map;
     if(color_map.isEmpty()){
         foreach(QString k, getKingdoms()){
-            QString color_str = GetConfigFromLuaState(lua,  ("color_" + k).toAscii()).toString();
+            QString color_str = GetConfigFromLuaState(lua,  ("color_" + k).toLatin1()).toString();
             QRegExp rx("#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})");
             if(rx.exactMatch(color_str)){
                 QStringList results = rx.capturedTexts();

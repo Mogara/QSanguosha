@@ -97,7 +97,7 @@ void NativeClientSocket::disconnectFromHost(){
 }
 
 void NativeClientSocket::send(const QString &message){
-    socket->write(message.toAscii());
+    socket->write(message.toLatin1());
     socket->write("\n");
 }
 

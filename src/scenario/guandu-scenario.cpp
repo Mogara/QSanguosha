@@ -311,7 +311,7 @@ AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlaye
     return AI::GetRelation(a, b);
 }
 
-void GuanduScenario::onTagSet(Room *room, const QString &key) const{
+void GuanduScenario::onTagSet(Room *room, const QString &) const{
     bool zhanshuangxiong = room->getTag("ZhanShuangxiong").toBool();
     bool burnwuchao = room->getTag("BurnWuchao").toBool();
 

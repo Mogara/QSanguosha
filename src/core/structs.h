@@ -207,6 +207,8 @@ enum TriggerEvent{
     NumOfEvents
 };
 
+#include <serverplayer.h>
+
 typedef const Card *CardStar;
 typedef ServerPlayer *PlayerStar;
 typedef JudgeStruct *JudgeStar;

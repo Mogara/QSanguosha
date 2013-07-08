@@ -298,7 +298,7 @@ void Monkey::onInstall(ServerPlayer *player) const{
     player->getRoom()->getThread()->addTriggerSkill(grab_peach);
 }
 
-void Monkey::onUninstall(ServerPlayer *player) const{
+void Monkey::onUninstall(ServerPlayer *) const{
 
 }
 

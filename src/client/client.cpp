@@ -177,7 +177,7 @@ void Client::signup(){
         QString signup_str = QString("%1 %2:%3").arg(command).arg(base64).arg(Config.UserAvatar);
         QString password = Config.Password;
         if(!password.isEmpty()){
-            password = QCryptographicHash::hash(password.toAscii(), QCryptographicHash::Md5).toHex();
+            password = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Md5).toHex();
             signup_str.append(":" + password);
         }
         request(signup_str);
@@ -229,7 +229,7 @@ void Client::disconnectFromHost(){
 typedef char buffer_t[1024];
 
 void Client::processCommand(const QString &cmd){
-    processReply(cmd.toAscii().data());
+    processReply(cmd.toLatin1().data());
 }
 
 void Client::processReply(char *reply){
@@ -284,7 +284,7 @@ void Client::addPlayer(const QString &player_info){
     QStringList texts = player_info.split(":");
     QString name = texts.at(0);
     QString base64 = texts.at(1);
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QByteArray data = QByteArray::fromBase64(base64.toLatin1());
     QString screen_name = QString::fromUtf8(data);
     QString avatar = texts.at(2);
 
@@ -1547,7 +1547,7 @@ void Client::speak(const QString &speak_data){
     QString who = words.at(0);
     QString base64 = words.at(1);
 
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QByteArray data = QByteArray::fromBase64(base64.toLatin1());
     QString text = QString::fromUtf8(data);
     emit text_spoken(text);
 
@@ -1625,7 +1625,7 @@ void Client::setScreenName(const QString &set_str){
     QStringList words = set_str.split(":");
     ClientPlayer *player = getPlayer(words.first());
     QString base64 = words.at(1);
-    QString screen_name = QString::fromUtf8(QByteArray::fromBase64(base64.toAscii()));
+    QString screen_name = QString::fromUtf8(QByteArray::fromBase64(base64.toLatin1()));
     player->setScreenName(screen_name);
 }
 

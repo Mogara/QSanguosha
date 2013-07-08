@@ -3434,7 +3434,7 @@ void Room::makeCheat(const QString &cheat_str){
     }else if(doscript_rx.exactMatch(cheat_str)){
         QString script = doscript_rx.capturedTexts().value(1);
         if(!script.isEmpty()){
-            QByteArray data = QByteArray::fromBase64(script.toAscii());
+            QByteArray data = QByteArray::fromBase64(script.toLatin1());
             data = qUncompress(data);
             script = data;
             doScript(script);
@@ -3452,7 +3452,7 @@ void Room::makeDamage(const QStringList &texts){
 
     damage.to = findChild<ServerPlayer *>(texts.at(2));
 
-    char nature = texts.at(3).toAscii().at(0);
+    char nature = texts.at(3).toLatin1().at(0);
     switch(nature){
     case 'N': damage.nature = DamageStruct::Normal; break;
     case 'T': damage.nature = DamageStruct::Thunder; break;

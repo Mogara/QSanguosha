@@ -157,7 +157,7 @@ public:
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *) const{
         return selected.length() < 3;
     }
 
@@ -348,7 +348,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaodayihao, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaodayihao, QVariant &) const{
         if(event == PhaseChange){
             if(gaodayihao->getPhase() == Player::Draw){
                 room->playSkillEffect(objectName());
@@ -384,7 +384,7 @@ public:
     NosLonghun():OneCardViewAsSkill("noslonghun"){
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "slash"
                 || pattern == "jink"
                 || pattern.contains("peach")
@@ -488,7 +488,7 @@ public:
         events << PhaseChange;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *gaodayihao, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *gaodayihao, QVariant &) const{
         if(gaodayihao->getPhase() == Player::Start){
             foreach(ServerPlayer *p, room->getOtherPlayers(gaodayihao)){
                 if(p->hasWeapon("qinggang_sword") && room->askForSkillInvoke(gaodayihao, objectName())){
@@ -512,7 +512,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "slash";
     }
 
@@ -549,7 +549,7 @@ public:
         events << Dying << SlashHit << SlashMissed << CardFinished;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 

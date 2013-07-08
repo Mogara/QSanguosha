@@ -266,7 +266,12 @@ void MainWindow::on_actionRestart_game_triggered(){
 
 void MainWindow::on_actionReplay_triggered()
 {
+#if QT_VERSION >= 0x050000
+    QString location;
+#else
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+#endif
+
     QString last_dir = Config.value("LastReplayDir").toString();
     if(!last_dir.isEmpty())
         location = last_dir;
@@ -864,11 +869,8 @@ public:
     }
 };
 
-typedef RoomItem *RoomItemStar;
-Q_DECLARE_METATYPE(RoomItemStar);
-
 void MeleeDialog::startTest(){
-    foreach(RoomItemStar room_item, room_items)
+    foreach(RoomItem *room_item, room_items)
         if(room_item) delete room_item;
 
     room_items.clear();
@@ -895,8 +897,9 @@ void MeleeDialog::onGameStart(){
     if(room_count>10) return;
     Room *room = qobject_cast<Room *>(sender());
 
-    RoomItemStar room_item = new RoomItem(room);
-    room->setTag("RoomItem", QVariant::fromValue(room_item));
+    RoomItem *room_item = new RoomItem(room);
+    qint64 room_item_ptr = reinterpret_cast<qint64>(room_item);
+    room->setTag("RoomItem", room_item_ptr);
 
     room_items << room_item;
     record_scene->addItem(room_item);
@@ -904,7 +907,9 @@ void MeleeDialog::onGameStart(){
 
 void MeleeDialog::onGameOver(const QString &winner){
     Room *room = qobject_cast<Room *>(sender());
-    RoomItemStar room_item = room->getTag("RoomItem").value<RoomItemStar>();
+    qint64 room_item_ptr = room->getTag("RoomItem").toLongLong();
+    RoomItem *room_item = reinterpret_cast<RoomItem *>(room_item_ptr);
+
     QString to_test = room->property("to_test").toString();
 
     QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();

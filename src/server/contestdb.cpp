@@ -77,7 +77,7 @@ bool ContestDB::checkPassword(const QString &username, const QString &password){
     if(members.contains(username)){
         Member member = members.value(username);
         QString salted = password + member.salt;
-        QString digest = QCryptographicHash::hash(salted.toAscii(), QCryptographicHash::Md5).toHex();
+        QString digest = QCryptographicHash::hash(salted.toLatin1(), QCryptographicHash::Md5).toHex();
         return digest == member.password;
     }else
         return false;
@@ -208,7 +208,7 @@ void ContestDB::sendResult(Room *room){
         return;
     }
 
-    lua_pushstring(L, start_time.toAscii());
+    lua_pushstring(L, start_time.toLatin1());
 
     error = lua_pcall(L, 1, 1, 0);
     if(error){

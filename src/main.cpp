@@ -1,4 +1,4 @@
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include <QCoreApplication>
 #include <QTranslator>
@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
         new QCoreApplication(argc, argv);
     else
         new QApplication(argc, argv);
+
+    GlobalConfig = new Settings();
 
 #ifdef Q_OS_MAC
 #ifdef QT_NO_DEBUG

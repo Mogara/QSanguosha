@@ -247,7 +247,7 @@ public:
     Duduan():ProhibitSkill("duduan"){
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
         return card->inherits("DelayedTrick");
     }
 };

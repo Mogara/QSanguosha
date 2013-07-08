@@ -284,7 +284,7 @@ void GeneralOverview::askChange(){
     }
 }
 
-void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
+void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* )
 {
     if(Self)
         askChange();

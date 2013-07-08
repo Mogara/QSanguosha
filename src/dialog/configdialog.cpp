@@ -70,7 +70,12 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::on_browseBgButton_clicked()
 {
+#if QT_VERSION >= 0x050000
+    QString location;
+#else
     QString location = QDesktopServices::storageLocation(QDesktopServices::PicturesLocation);
+#endif
+
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a background image"),
                                                     location,
@@ -151,7 +156,12 @@ void ConfigDialog::saveConfig()
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
 {
+#if QT_VERSION >= 0x050000
+    QString location;
+#else
     QString location = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
+#endif
+
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a background music"),
                                                     location,

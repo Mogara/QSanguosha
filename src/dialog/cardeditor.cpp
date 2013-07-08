@@ -489,7 +489,12 @@ CardScene::CardScene()
 
     resetPhoto();
 
+#if QT_VERSION >= 0x050000
+    QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL);
+    this->addItem(magatama_group);
+#else
     QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL, this);
+#endif
 
     int i;
     for(i=0; i<10; i++){
@@ -718,7 +723,12 @@ void CardScene::resetPhoto(){
 }
 
 void CardScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
+#if QT_VERSION >= 0x050000
+    QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
+#else
     QGraphicsItem *item = itemAt(event->scenePos());
+#endif
+
     if(item){
         if(item->parentItem() == skill_box){
             QGraphicsScene::contextMenuEvent(event);

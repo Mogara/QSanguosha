@@ -967,7 +967,12 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     QGraphicsScene::contextMenuEvent(event);
 
+#if QT_VERSION >= 0x050000
+    QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
+#else
     QGraphicsItem *item = itemAt(event->scenePos());
+#endif
+
     if(!item)
         return;
 
@@ -1506,7 +1511,9 @@ void RoomScene::removeWidgetFromSkillDock(QWidget *widget){
 
 void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
     QGraphicsObject *dest = getAnimationObject(player->objectName());
-    QGraphicsTextItem *item = new QGraphicsTextItem(Sanguosha->translate(skill_name), NULL, this);
+    QGraphicsTextItem *item = new QGraphicsTextItem(Sanguosha->translate(skill_name), NULL);
+    addItem(item);
+
     item->setFont(Config.BigFont);
 
     QGraphicsDropShadowEffect *drop = new QGraphicsDropShadowEffect;
@@ -2641,7 +2648,12 @@ void RoomScene::addRestartButton(QDialog *dialog){
 }
 
 void RoomScene::saveReplayRecord(){
+#if QT_VERSION >= 0x050000
+    QString location;
+#else
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+#endif
+
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
                                                     location,
@@ -2685,7 +2697,7 @@ void ScriptExecutor::doScript(){
         return;
 
     QString script = box->toPlainText();
-    QByteArray data = script.toAscii();
+    QByteArray data = script.toLatin1();
     data = qCompress(data);
     script = data.toBase64();
 
@@ -3329,7 +3341,7 @@ void RoomScene::onGameStart(){
             memory->lock();
 
             char *username = static_cast<char *>(memory->data());
-            const char *my_username = Config.UserName.toAscii();
+            const char *my_username = Config.UserName.toLatin1();
             play_music = qstrcmp(username, my_username) == 0;
 
             memory->unlock();
@@ -3337,7 +3349,7 @@ void RoomScene::onGameStart(){
             memory->lock();
 
             void *data = memory->data();
-            const char *username = Config.UserName.toAscii();
+            const char *username = Config.UserName.toLatin1();
             memcpy(data, username, qstrlen(username));
 
             play_music = true;
@@ -3485,7 +3497,7 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args){
 
 #include "playercarddialog.h"
 
-void RoomScene::animateHpChange(const QString &name, const QStringList &args)
+void RoomScene::animateHpChange(const QString &, const QStringList &args)
 {
     QString who = args.at(0);
     const ClientPlayer *player = ClientInstance->getPlayer(who);
@@ -3620,7 +3632,7 @@ void RoomScene::doAppearingAnimation(const QString &name, const QStringList &arg
     connect(disappear, SIGNAL(finished()), item, SLOT(deleteLater()));
 }
 
-void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args){
+void RoomScene::doLightboxAnimation(const QString &, const QStringList &args){
     // hide discarded card
     foreach(CardItem *item, discarded_queue){
         item->hide();
@@ -3656,7 +3668,7 @@ void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args
     connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
 }
 
-void RoomScene::doHuashen(const QString &name, const QStringList &args){
+void RoomScene::doHuashen(const QString &, const QStringList &args){
     QVariantList huashen_list = Self->tag["Huashens"].toList();
     foreach(QString arg, args){
         huashen_list << arg;
@@ -3704,7 +3716,7 @@ void RoomScene::showIndicator(const QString &from, const QString &to){
     indicator->doAnimation();
 }
 
-void RoomScene::doIndicate(const QString &name, const QStringList &args){
+void RoomScene::doIndicate(const QString &, const QStringList &args){
     showIndicator(args.first(), args.last());
 }
 

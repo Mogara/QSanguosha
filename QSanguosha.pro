@@ -8,6 +8,8 @@ win32 : RC_FILE = resource/icon.rc
 macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio crypto
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
 # However, joystick is not supported under Mac OS X temporarily
@@ -298,11 +300,11 @@ OTHER_FILES += \
 CONFIG(audio){
 	DEFINES += AUDIO_SUPPORT
 	INCLUDEPATH += include/fmod
+        macx: LIBS += libfmodex.dylib
+        win32: LIBS += -lfmodex
 	unix{
-		LIBS += lib/libfmodex.so
-	}else{
-		LIBS += -lfmodex
-	}
+            !macx:LIBS += lib/libfmodex.so
+        }
 	SOURCES += src/core/audio.cpp
 }
 

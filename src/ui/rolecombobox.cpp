@@ -17,7 +17,7 @@ QString RoleComboboxItem::getRole() const{
     return role;
 }
 
-void RoleComboboxItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
+void RoleComboboxItem::mousePressEvent(QGraphicsSceneMouseEvent *){
     emit clicked();
 }
 

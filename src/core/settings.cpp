@@ -11,7 +11,7 @@
 #include <QNetworkInterface>
 #include <QDateTime>
 
-Settings Config;
+Settings *GlobalConfig;
 
 static const qreal ViewWidth = 1280 * 0.8;
 static const qreal ViewHeight = 800 * 0.8;

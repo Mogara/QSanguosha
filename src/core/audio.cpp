@@ -25,7 +25,7 @@ public:
         :sound(NULL), channel(NULL)
     {
         if(!filename.endsWith("dat"))
-            FMOD_System_CreateSound(System, filename.toAscii(), FMOD_DEFAULT, NULL, &sound);
+            FMOD_System_CreateSound(System, filename.toLatin1(), FMOD_DEFAULT, NULL, &sound);
 #ifdef USE_CRYPTO
         else{
             qint32 length = 0;

@@ -85,6 +85,8 @@ public:
     static const int S_STYLE_INDEX;
 };
 
-extern Settings Config;
+extern Settings *GlobalConfig;
+
+#define Config (*GlobalConfig)
 
 #endif // SETTINGS_H

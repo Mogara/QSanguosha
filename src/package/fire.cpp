@@ -74,7 +74,7 @@ JiemingCard::JiemingCard(){
 
 }
 
-bool JiemingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool JiemingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     if(!targets.isEmpty())
         return false;
 
@@ -97,11 +97,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@jieming";
     }
 
@@ -474,11 +474,11 @@ public:
         return to_select->getFilteredCard()->isBlack() && !to_select->isEquipped();
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "nullification";
     }
 
@@ -561,7 +561,7 @@ public:
         return 0;
     }
 
-    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *slash) const{
+    virtual int getSlashExtraGoals(const Player *from, const Player *, const Card *) const{
         if(from->hasSkill("tianyi") && from->hasFlag("tianyi_success"))
             return 1;
         else
