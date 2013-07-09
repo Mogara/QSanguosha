@@ -515,7 +515,7 @@ bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{
 
 const Card *LuaFilterSkill::viewAs(CardItem *card_item) const{
 	if(view_as == 0)
-		return false;
+		return NULL;
 
 	lua_State *L = Sanguosha->getLuaState();
 
