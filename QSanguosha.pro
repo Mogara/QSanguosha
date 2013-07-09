@@ -2,13 +2,17 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network sql declarative
+QT += network sql
 TEMPLATE = app
 win32 : RC_FILE = resource/icon.rc
 macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio crypto
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4){
+     QT += widgets
+}else{
+     QT += declarative
+}
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
@@ -289,6 +293,9 @@ INCLUDEPATH += src/lua
 LIBS += -Llib
 LIBS += -L.
 
+# for Linux's in-source compilation
+unix:!macx: -Llib/linux
+
 TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
@@ -302,9 +309,8 @@ CONFIG(audio){
 	INCLUDEPATH += include/fmod
         macx: LIBS += libfmodex.dylib
         win32: LIBS += -lfmodex
-	unix{
-            !macx:LIBS += lib/libfmodex.so
-        }
+        unix:!macx:LIBS += -lfmodex
+
 	SOURCES += src/core/audio.cpp
 }
 

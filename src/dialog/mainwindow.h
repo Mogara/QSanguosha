@@ -12,9 +12,6 @@
 #include <QSpinBox>
 #include <QTableWidget>
 
-#include <QtDeclarative/QDeclarativeView>
-#include <QtDeclarative/QDeclarativeContext>
-
 namespace Ui {
     class MainWindow;
 }
@@ -73,19 +70,6 @@ private:
     Server *server;
     int room_count;
     QList<RoomItem*> room_items;
-};
-
-class AcknowledgementScene : public QGraphicsScene
-{
-    Q_OBJECT
-public:
-    explicit AcknowledgementScene(QObject *parent = 0);
-signals:
-    void go_back();
-private:
-    QDeclarativeView *view;
-    QDeclarativeContext *ctxt;
-    QList<QObject*> tokens,equipped,loaded;
 };
 
 class MainWindow : public QMainWindow {

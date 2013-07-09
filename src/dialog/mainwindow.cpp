@@ -718,9 +718,6 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
-    AcknowledgementScene* ack = new AcknowledgementScene;
-    connect(ack,SIGNAL(go_back()),this,SLOT(on_actionReturn_main_triggered()));
-    gotoScene(ack);
 }
 
 void MainWindow::on_actionScript_editor_triggered()
@@ -1014,20 +1011,6 @@ void MeleeDialog::setGeneral(const QString &general_name){
         Config.setValue("MeleeGeneral", general_name);
         avatar_button->setProperty("to_test", general_name);
     }
-}
-
-AcknowledgementScene::AcknowledgementScene(QObject *parent) :
-    QGraphicsScene(parent)
-{
-    view = new QDeclarativeView;
-    view->setSource(QUrl::fromLocalFile("acknowledgement/main.qml"));
-    addWidget(view);
-    view->move( - width()/2, - height()/2);
-    view->setStyleSheet(QString("background: transparent"));
-
-    QObject *item = view->rootObject();
-
-    connect(item,SIGNAL(go_back()),this,SIGNAL(go_back()));
 }
 
 void MainWindow::on_actionAI_Melee_triggered()
