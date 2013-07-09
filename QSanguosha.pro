@@ -288,7 +288,10 @@ INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
 INCLUDEPATH += src/lua
 
-LIBS += -Llib
+exists($$OUT_PWD/lib){
+    LIBS += -Llib
+}
+
 LIBS += -L.
 
 # for Linux's in-source compilation

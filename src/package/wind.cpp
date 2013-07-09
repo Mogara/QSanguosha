@@ -15,7 +15,7 @@ GuidaoCard::GuidaoCard(){
     can_jilei = true;
 }
 
-void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
+void GuidaoCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
 
 }
 
@@ -23,7 +23,7 @@ LeijiCard::LeijiCard(){
 
 }
 
-bool LeijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool LeijiCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.isEmpty();
 }
 
@@ -77,11 +77,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@guidao";
     }
 
@@ -208,11 +208,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern == "@@leiji";
     }
 
@@ -282,7 +282,7 @@ public:
     ShensuViewAsSkill():ViewAsSkill("shensu"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -293,7 +293,7 @@ public:
             return selected.isEmpty() && to_select->getCard()->inherits("EquipCard");
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern.startsWith("@@shensu");
     }
 
@@ -397,7 +397,7 @@ public:
         events << Damage << DamageDone;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -631,7 +631,7 @@ public:
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@tianxiang";
     }
 

@@ -52,11 +52,11 @@ Chengx1angCard::Chengx1angCard()
 {
 }
 
-bool Chengx1angCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool Chengx1angCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.length() < subcardsLength();
 }
 
-bool Chengx1angCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool Chengx1angCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() <= subcardsLength();
 }
 
@@ -87,7 +87,7 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -262,7 +262,7 @@ JuejiCard::JuejiCard(){
     mute = true;
 }
 
-bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.isEmpty() && !to_select->isKongcheng();
 }
 
@@ -404,7 +404,7 @@ LianliCard::LianliCard(){
 
 }
 
-bool LianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool LianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.isEmpty() && to_select->getGeneral()->isMale();
 }
 
@@ -570,11 +570,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@lianli";
     }
 
@@ -670,7 +670,7 @@ public:
         return target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &) const{
         QList<ServerPlayer *> players = room->getAllPlayers();
         foreach(ServerPlayer *player, players){
             if(player->getMark("@tied") > 0)
@@ -689,7 +689,7 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
         return card->inherits("Indulgence") || card->inherits("SupplyShortage");
     }
 };
@@ -704,7 +704,7 @@ public:
         return -1;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -754,11 +754,11 @@ public:
         return 2;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
         if(xuandi == NULL)
             return false;
@@ -1016,11 +1016,11 @@ public:
         events << DamageComplete;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.from == NULL)

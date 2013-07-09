@@ -95,7 +95,7 @@ public:
         view_as_skill = new FangzhuViewAsSkill;
     }
 
-    virtual void onDamaged(ServerPlayer *caopi, const DamageStruct &damage) const{
+    virtual void onDamaged(ServerPlayer *caopi, const DamageStruct &) const{
         Room *room = caopi->getRoom();
         room->askForUseCard(caopi, "@@fangzhu", "@fangzhu");
     }
@@ -328,7 +328,7 @@ public:
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->inherits("SavageAssault") &&
                 ((!use.card->isVirtualCard()) ||
@@ -478,7 +478,7 @@ public:
         return card;
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -494,7 +494,7 @@ public:
         view_as_skill = new HaoshiViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *lusu, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *lusu, QVariant &) const{
         if(lusu->hasFlag("haoshi")){
             lusu->setFlags("-haoshi");
 
@@ -571,7 +571,7 @@ bool DimengCard::targetFilter(const QList<const Player *> &targets, const Player
     return false;
 }
 
-bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() == 2;
 }
 
@@ -704,7 +704,7 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
         return card->inherits("TrickCard") && card->isBlack() && !card->inherits("Collateral");
     }
 };
@@ -718,7 +718,7 @@ public:
         return Analeptic::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern.contains("analeptic");
     }
 

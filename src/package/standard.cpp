@@ -37,7 +37,7 @@ Card::CardType TrickCard::getTypeId() const{
     return Trick;
 }
 
-bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
+bool TrickCard::isCancelable(const CardEffectStruct &) const{
     return cancelable;
 }
 
@@ -66,7 +66,7 @@ Card::CardType EquipCard::getTypeId() const{
     return Equip;
 }
 
-QString EquipCard::getEffectPath(bool is_male) const{
+QString EquipCard::getEffectPath(bool ) const{
     return "audio/card/common/equip.ogg";
 }
 
@@ -113,7 +113,7 @@ void EquipCard::onInstall(ServerPlayer *player) const{
         room->getThread()->addTriggerSkill(skill);
 }
 
-void EquipCard::onUninstall(ServerPlayer *player) const{
+void EquipCard::onUninstall(ServerPlayer *) const{
 
 }
 
@@ -173,7 +173,7 @@ QString SingleTargetTrick::getSubtype() const{
     return "single_target_trick";
 }
 
-bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool SingleTargetTrick::targetFilter(const QList<const Player *> &, const Player *, const Player *) const{
     return true;
 }
 
