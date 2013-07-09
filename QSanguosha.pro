@@ -291,12 +291,7 @@ INCLUDEPATH += src/lua
 LIBS += -L.
 
 TRANSLATIONS += sanguosha.ts
-
-OTHER_FILES += \
-        sanguosha.qss \
-        acknowledgement/main.qml \
-        acknowledgement/list.png \
-        acknowledgement/back.png
+OTHER_FILES += sanguosha.qss
 
 CONFIG(audio){
 	DEFINES += AUDIO_SUPPORT
@@ -351,4 +346,8 @@ CONFIG(crypto){
         win32{
             LIBS += $$PWD/lib/libtomcrypt.a
         }
+}
+
+!exists($$PWD/sanguosha.qm){
+    system("lrelease sanguosha.ts")
 }
