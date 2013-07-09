@@ -3,17 +3,17 @@
 # This is a Shell script that ease our compilation work in Linux
 # You should has Qt, swig, and plib installed before running this script
 
-if ! which -s qmake ; then
+if ! which qmake ; then
 	echo "Qt is not installed or its tools are not in the PATH"
 	exit 1
 fi
 
-if ! which -s swig ; then
+if ! which swig ; then
 	echo "Swig is not installed!"
 	exit 1
 fi
 
-if ! which -s 7z ; then
+if ! which 7z ; then
 	echo "You need 7z to unzip some files"
 	exit 1
 fi
