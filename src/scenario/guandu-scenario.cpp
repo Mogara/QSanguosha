@@ -9,7 +9,7 @@ ZhanShuangxiongCard::ZhanShuangxiongCard(){
     once = true;
 }
 
-bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.isEmpty() && to_select->getGeneralName() == "yanliangwenchou" && !to_select->isKongcheng();
 }
 

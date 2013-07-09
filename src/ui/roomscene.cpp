@@ -40,7 +40,7 @@
 #include <QMovie>
 #include <QtCore>
 
-#ifdef Q_OS_WIN32
+#ifdef CHAT_VOICE
 #include <QAxObject>
 #endif
 

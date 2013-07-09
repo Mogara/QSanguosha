@@ -424,7 +424,7 @@ void SkillBox::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
 }
 
 AvatarRectItem::AvatarRectItem(qreal width, qreal height, const QRectF &box_rect, int font_size)
-    :QGraphicsRectItem(0, 0, width, height), name_box(name_box)
+    :QGraphicsRectItem(0, 0, width, height)
 {
     QPen thick_pen(Qt::black);
     thick_pen.setWidth(4);

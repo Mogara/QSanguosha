@@ -292,7 +292,9 @@ LIBS += -Llib
 LIBS += -L.
 
 # for Linux's in-source compilation
-unix:!macx: -Llib/linux
+unix{
+    !macx: -Llib/linux
+}
 
 TRANSLATIONS += sanguosha.ts
 
