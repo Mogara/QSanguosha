@@ -48,7 +48,7 @@ public:
     V5QuanjiViewAsSkill():OneCardViewAsSkill("v5quanji"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -211,7 +211,7 @@ public:
         view_as_skill = new V5YexinViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &) const{
         if(player->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName(), 1);
             int up = room->drawCard();

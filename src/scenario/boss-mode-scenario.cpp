@@ -45,7 +45,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
+    virtual void onDamaged(ServerPlayer *player, const DamageStruct &) const{
         Room *room = player->getRoom();
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
