@@ -288,16 +288,7 @@ INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
 INCLUDEPATH += src/lua
 
-exists($$OUT_PWD/lib){
-    LIBS += -Llib
-}
-
 LIBS += -L.
-
-# for Linux's in-source compilation
-unix{
-    !macx: -Llib/linux
-}
 
 TRANSLATIONS += sanguosha.ts
 
@@ -310,11 +301,22 @@ OTHER_FILES += \
 CONFIG(audio){
 	DEFINES += AUDIO_SUPPORT
 	INCLUDEPATH += include/fmod
-        macx: LIBS += libfmodex.dylib
-        win32: LIBS += -lfmodex
-        unix:!macx:LIBS += -lfmodex
+        SOURCES += src/core/audio.cpp
 
-	SOURCES += src/core/audio.cpp
+        unix{
+            macx{
+                LIBS += $$PWD/lib/mac/libfmodex.dylib
+                !exists(libfmodex.dylib){
+                    message("copying libfmodex.dylib")
+                    system("cp $$PWD/lib/mac/libfmodex.dylib .")
+                }
+            }else{
+                LIBS += $$PWD/lib/linux/libfmodex.so
+            }
+        }
+
+        win32: LIBS += $$PWD/lib/libfmodex.a
+
 }
 
 CONFIG(joystick){
@@ -335,7 +337,18 @@ CONFIG(chatvoice){
 CONFIG(crypto){
         INCLUDEPATH += include/tomcrypt
         DEFINES += USE_CRYPTO
-        LIBS += -ltomcrypt
         HEADERS += src/core/crypto.h
         SOURCES += src/core/crypto.cpp
+
+        unix{
+            macx{
+                LIBS += $$PWD/lib/mac/libtomcrypt.a
+            }else{
+                LIBS += $$PWD/lib/linux/libtomcrypt.a
+            }
+        }
+
+        win32{
+            LIBS += $$PWD/lib/libtomcrypt.a
+        }
 }

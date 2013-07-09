@@ -78,7 +78,7 @@ void Pixmap::scaleSmoothly(qreal ratio){
     prepareGeometryChange();
 }
 
-void Pixmap::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void Pixmap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
     painter->drawPixmap(0, 0, pixmap);
 }
 

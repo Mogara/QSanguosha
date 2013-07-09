@@ -12,7 +12,7 @@ JuaoCard::JuaoCard(){
     will_throw = false;
 }
 
-bool JuaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool JuaoCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     if(!targets.isEmpty())
         return false;
     return true;
@@ -134,11 +134,11 @@ public:
         return -1;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *xuyou = room->findPlayerBySkillName(objectName());
         if(!xuyou) return false;
         PindianStar pindian = data.value<PindianStar>();
@@ -327,11 +327,11 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern == "@@bawang";
     }
 };
@@ -365,7 +365,7 @@ public:
         return false;
     }
 
-    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return 0;
     }
 };
@@ -417,7 +417,7 @@ public:
                 && !player->hasUsed("WeidaiCard");
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@weidai";
     }
 
@@ -495,11 +495,11 @@ public:
         return 0;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *zhangzhao = room->findPlayerBySkillName(objectName());
         if(!zhangzhao)
             return false;
@@ -601,7 +601,7 @@ public:
         events << Predamage << SlashProceed;
         frequency = Compulsory;
     }
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 

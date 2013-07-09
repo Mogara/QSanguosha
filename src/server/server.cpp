@@ -869,6 +869,8 @@ void ServerDialog::onHttpDone(bool error){
 
         http->deleteLater();
     }
+#else
+    Q_UNUSED(error);
 #endif
 }
 
