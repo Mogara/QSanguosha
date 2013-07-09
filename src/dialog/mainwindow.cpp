@@ -1290,7 +1290,9 @@ void MainWindow::on_actionAbout_libtomcrypt_triggered()
     QString address = "http://libtom.org";
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
+#ifdef USE_CRYPTO
     content.append(tr("Current versionn %1 <br/>").arg(Crypto::getVersion()));
+#endif
 
     Window *window = new Window(tr("About Lua"), QSize(500, 300));
     scene->addItem(window);

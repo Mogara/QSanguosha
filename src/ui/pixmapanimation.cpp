@@ -8,7 +8,8 @@
 PixmapAnimation::PixmapAnimation(QGraphicsScene *scene) :
     QGraphicsItem(NULL)
 {
-    scene->addItem(this);
+    if(scene)
+        scene->addItem(this);
 }
 
 void PixmapAnimation::advance(int phase)
