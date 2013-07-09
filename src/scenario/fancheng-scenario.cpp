@@ -70,7 +70,7 @@ public:
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.length() != 2)
-            return false;
+            return NULL;
 
         DujiangCard *card = new DujiangCard;
         card->addSubcards(cards);
@@ -167,7 +167,7 @@ TaichenFightCard::TaichenFightCard(){
     once = true;
 }
 
-void TaichenFightCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void TaichenFightCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->loseHp(source);
 
     if(source->isAlive()){
