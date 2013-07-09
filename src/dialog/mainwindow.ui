@@ -17,7 +17,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -68,6 +68,7 @@
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_Lua"/>
     <addaction name="actionAbout_fmod"/>
+    <addaction name="actionAbout_libtomcrypt"/>
     <addaction name="actionAcknowledgement"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -498,6 +499,11 @@
    </property>
    <property name="shortcut">
     <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionAbout_libtomcrypt">
+   <property name="text">
+    <string>About libtomcrypt</string>
    </property>
   </action>
  </widget>

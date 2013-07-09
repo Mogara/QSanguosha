@@ -605,7 +605,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *hua = room->findPlayerBySkillName(objectName());
         if(!hua) return false;
         if(event == SlashProceed){
@@ -653,7 +653,7 @@ public:
         events << PhaseChange;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 

@@ -68,7 +68,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = NULL;
 
-
     setWindowTitle(Sanguosha->translate("QSanguosha"));
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionJoin_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
@@ -1272,6 +1271,28 @@ void MainWindow::on_actionAbout_Lua_triggered()
     content.append(LUA_COPYRIGHT);
 
     Window *window = new Window(tr("About Lua"), QSize(500, 500));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
+}
+
+#include "crypt.h"
+
+void MainWindow::on_actionAbout_libtomcrypt_triggered()
+{
+    QString content = tr("Libtomcrypt is a fast and powerful open source encryption library for C programming language");
+    content.append("<p align='center'> <img src='image/logo/libtomcrypt.png' /> </p> <br/>");
+
+    QString address = "http://libtom.org";
+    content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
+
+    content.append(tr("Current versionn %1 <br/>").arg(Crypto::getVersion()));
+
+    Window *window = new Window(tr("About Lua"), QSize(500, 300));
     scene->addItem(window);
 
     window->addContent(content);
