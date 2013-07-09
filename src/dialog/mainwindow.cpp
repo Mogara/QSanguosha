@@ -718,6 +718,14 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle(tr("Acknowledgement"));
+    QVBoxLayout *layout = new QVBoxLayout;
+    QLabel *label = new QLabel;
+    label->setPixmap(QPixmap("image/system/thanks.png"));
+    layout->addWidget(label);
+    dialog->setLayout(layout);
+    dialog->exec();
 }
 
 void MainWindow::on_actionScript_editor_triggered()

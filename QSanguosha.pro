@@ -10,8 +10,6 @@ CONFIG += warn_on audio crypto
 
 greaterThan(QT_MAJOR_VERSION, 4){
      QT += widgets
-}else{
-     QT += declarative
 }
 
 # If you want to enable joystick support, please uncomment the following line:
