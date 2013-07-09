@@ -47,9 +47,10 @@
     <addaction name="actionBroadcast"/>
     <addaction name="actionAI_Melee"/>
     <addaction name="actionReplay_file_convert"/>
-    <addaction name="actionCrypto_audio"/>
-    <addaction name="actionDecrypto_audio"/>
     <addaction name="actionCheck_resource"/>
+    <addaction name="separator"/>
+    <addaction name="actionEncrypt_files"/>
+    <addaction name="actionDecrypt_files"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionExpand_dashboard"/>
@@ -504,6 +505,16 @@
   <action name="actionAbout_libtomcrypt">
    <property name="text">
     <string>About libtomcrypt</string>
+   </property>
+  </action>
+  <action name="actionEncrypt_files">
+   <property name="text">
+    <string>Encrypt files ...</string>
+   </property>
+  </action>
+  <action name="actionDecrypt_files">
+   <property name="text">
+    <string>Decrypt files ...</string>
    </property>
   </action>
  </widget>

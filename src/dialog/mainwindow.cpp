@@ -1303,3 +1303,71 @@ void MainWindow::on_actionAbout_libtomcrypt_triggered()
 
     window->appear();
 }
+
+QString MainWindow::getKeyFromUser(){
+    size_t keySize = Crypto::getKeySize();
+    QString key = QInputDialog::getText(this,
+                                        tr("Key request"),
+                                        tr("Please supply the key, length >= %1 (extra characters will be ignored)").arg(keySize));
+
+    if(key.isEmpty())
+        return QString();
+
+    if(key.length() < (int)keySize){
+        QMessageBox::warning(this, tr("Warning"), tr("Your input key is too short"));
+        return QString();
+    }else
+        return key;
+}
+
+void MainWindow::on_actionEncrypt_files_triggered()
+{
+    QString key = getKeyFromUser();
+    if(key.isNull())
+        return;
+
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Please select files to encrypt"));
+    if(filenames.isEmpty())
+        return;
+
+    Crypto::backupKey();
+
+    Crypto::setKey(key.toLatin1());
+
+    foreach(QString filename, filenames){
+        QFileInfo info(filename);
+        QString to = info.dir().filePath(info.baseName() + ".dat");
+
+        Crypto::encryptFile(filename, to);
+    }
+
+    Crypto::restoreKey();
+}
+
+void MainWindow::on_actionDecrypt_files_triggered()
+{
+    QString key = getKeyFromUser();
+    if(key.isNull())
+        return;
+
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Please select files to decrypt"), QString(), tr("Encrypted files (*.dat)"));
+    if(filenames.isEmpty())
+        return;
+
+    QString suffix = QInputDialog::getText(this, tr("Original suffix"), tr("Please input the decrypted files' suffix"));
+    if(suffix.isEmpty())
+        return;
+
+    Crypto::backupKey();
+
+    Crypto::setKey(key.toLatin1());
+
+    foreach(QString filename, filenames){
+        QFileInfo info(filename);
+        QString to = info.dir().filePath(QString("%1.%2").arg(info.baseName()).arg(suffix));
+
+        Crypto::decryptFile(filename, to);
+    }
+
+    Crypto::restoreKey();
+}

@@ -8,7 +8,7 @@ static const int KEYSIZE = 8;
 static const int BLOCKSIZE = 8;
 static const int ROUNDS = 16;
 
-static unsigned char key[KEYSIZE];
+static unsigned char key[KEYSIZE], backup[KEYSIZE];
 
 int Crypto::getKeySize(){
     return KEYSIZE;
@@ -16,6 +16,14 @@ int Crypto::getKeySize(){
 
 void Crypto::setKey(const char *k){
     memcpy(key, k, KEYSIZE);
+}
+
+void Crypto::backupKey(){
+    memcpy(backup, key, KEYSIZE);
+}
+
+void Crypto::restoreKey(){
+    memcpy(key, backup, KEYSIZE);
 }
 
 QString Crypto::getVersion(){

@@ -8,6 +8,9 @@ public:
     static int getKeySize();
     static void setKey(const char *key);
 
+    static void backupKey();
+    static void restoreKey();
+
     static const char *encrypt(const char *in, size_t &length);
     static const char *decrypt(const char *in, size_t &length);
 

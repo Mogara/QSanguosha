@@ -92,6 +92,7 @@ private:
 
     void restoreFromConfig();
     void fillTable(QTableWidget *table);
+    QString getKeyFromUser();
 
 public slots:
     void on_actionRestart_game_triggered();
@@ -140,6 +141,8 @@ private slots:
     void sendLowLevelCommand();
     void startGameInAnotherInstance();
     void changeBackground();
+    void on_actionEncrypt_files_triggered();
+    void on_actionDecrypt_files_triggered();
 };
 
 #endif // MAINWINDOW_H
