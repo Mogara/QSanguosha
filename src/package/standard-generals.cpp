@@ -234,11 +234,11 @@ public:
     GuicaiViewAsSkill():OneCardViewAsSkill(""){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@guicai";
     }
 
@@ -408,11 +408,11 @@ public:
         return jink;
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern == "jink";
     }
 };
@@ -531,7 +531,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern == "slash";
     }
 
@@ -601,7 +601,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "jink" || pattern == "slash";
     }
 
@@ -680,7 +680,7 @@ public:
 
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card) const{
         if(card->isKindOf("Slash") || card->isKindOf("Duel"))
             return to->isKongcheng();
         else
@@ -718,7 +718,7 @@ public:
         return 2;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *yueying, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room* room, ServerPlayer *yueying, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         CardStar card = use.card;
         if(card->isNDTrick()){
@@ -982,11 +982,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@liuli";
     }
 
@@ -1206,7 +1206,7 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -1244,7 +1244,7 @@ public:
     {
     }
 
-    virtual int getCorrect(const Player *from, const Player *to) const{
+    virtual int getCorrect(const Player *from, const Player *) const{
         if(from->hasSkill(objectName()))
             return -1;
         else
@@ -1496,7 +1496,7 @@ SacrificeCard::SacrificeCard(){
     target_fixed = true;
 }
 
-void SacrificeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void SacrificeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     if(!Config.EnableReincarnation)
         return;
 

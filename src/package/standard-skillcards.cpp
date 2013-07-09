@@ -55,7 +55,7 @@ JieyinCard::JieyinCard(){
     mute = true;
 }
 
-bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     if(!targets.isEmpty())
         return false;
 
@@ -160,7 +160,7 @@ LijianCard::LijianCard(){
     once = true;
 }
 
-bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     if(!to_select->getGeneral()->isMale())
         return false;
 
@@ -171,7 +171,7 @@ bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player
     return true;
 }
 
-bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() == 2;
 }
 
@@ -195,7 +195,7 @@ QingnangCard::QingnangCard(){
     once = true;
 }
 
-bool QingnangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool QingnangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.isEmpty() && to_select->isWounded();
 }
 
@@ -228,7 +228,7 @@ GuicaiCard::GuicaiCard(){
     mute = true;
 }
 
-void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void GuicaiCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
 
 }
 
@@ -296,7 +296,7 @@ CheatCard::CheatCard(){
     will_throw = false;
 }
 
-void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     if(Config.FreeChooseCards)
         room->obtainCard(source, subcards.first());
 }
@@ -305,7 +305,7 @@ ChangeCard::ChangeCard(){
     target_fixed = true;
 }
 
-void ChangeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void ChangeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     if(Config.value("Cheat/FreeChange", false).toBool()){
         QString name = Self->tag["GeneralName"].toString();
         room->transfigure(source, name, false, true);
