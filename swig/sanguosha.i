@@ -2,8 +2,6 @@
 
 %{
 
-#define toAscii toLatin1
-
 #include "structs.h"
 #include "engine.h"
 #include "client.h"
@@ -1004,7 +1002,7 @@ void Room::doScript(const QString &script){
 	SWIG_NewPointerObj(L, current, SWIGTYPE_p_ServerPlayer, 0);
 	lua_setglobal(L, "P");
 
-	luaL_dostring(L, script.toAscii());
+	luaL_dostring(L, script.toLatin1());
 }
 
 %}

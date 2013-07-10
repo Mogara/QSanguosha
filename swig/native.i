@@ -24,7 +24,7 @@ static int GetFileNames(lua_State *lua){
 
 	int i;
 	for(i=0; i<filenames.length(); i++){
-		lua_pushstring(lua, filenames.at(i).toAscii());
+		lua_pushstring(lua, filenames.at(i).toLatin1());
 		lua_rawseti(lua, -2, i+1);
 	}
 
