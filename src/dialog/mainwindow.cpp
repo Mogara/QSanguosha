@@ -10,10 +10,7 @@
 #include "window.h"
 #include "halldialog.h"
 #include "pixmapanimation.h"
-
-#ifdef USE_CRYPTO
-    #include "crypto.h"
-#endif
+#include "crypto.h"
 
 #include <cmath>
 #include <QGraphicsView>
@@ -109,7 +106,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     systray = NULL;
 
+#ifdef USE_CRYPTO
     Crypto::setKey("http://qsanguosha.org");
+#endif
 }
 
 void MainWindow::restoreFromConfig(){
@@ -1279,8 +1278,6 @@ void MainWindow::on_actionAbout_Lua_triggered()
 
     window->appear();
 }
-
-#include "crypt.h"
 
 void MainWindow::on_actionAbout_libtomcrypt_triggered()
 {
