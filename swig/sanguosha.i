@@ -143,7 +143,7 @@ public:
     bool hasSkill(const char *skill_name, bool include_lose = false) const;
     bool hasSkills(const char *skill_name, bool include_lose = false) const;
     bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
-    bool hasInnateSkill(const char *skill_name, bool include_lose = false) const;
+    bool hasInnateSkill(const char *skill_name) const;
 
     void setEquip(WrappedCard *equip);
     void removeEquip(WrappedCard *equip);
