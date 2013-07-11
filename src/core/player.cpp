@@ -319,7 +319,7 @@ bool Player::hasSkills(const QString &skill_name, bool include_lose) const{
     return false;
 }
 
-bool Player::hasInnateSkill(const QString &skill_name, bool include_lose) const{
+bool Player::hasInnateSkill(const QString &skill_name) const{
     if (general && general->hasSkill(skill_name))
         return true;
 
