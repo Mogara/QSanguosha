@@ -135,7 +135,7 @@ public:
     virtual void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;
-    bool hasInnateSkill(const QString &skill_name, bool include_lose = false) const;
+    bool hasInnateSkill(const QString &skill_name) const;
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
 
