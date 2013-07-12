@@ -149,3 +149,17 @@ void Audio::stopBGM(){
 QString Audio::getVersion(){
     return "4.38.06";
 }
+
+QString Audio::audioPath(const QString &dirname, const QString &name){
+    static QStringList templates;
+    if(templates.isEmpty())
+        templates << "%1/%2.dat" << "%1/%2.ogg";
+
+    foreach(QString t, templates){
+        QString path = t.arg(dirname).arg(name);
+        if(QFile::exists(path))
+            return path;
+    }
+
+    return QString();
+}

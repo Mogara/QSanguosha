@@ -141,7 +141,7 @@ QRectF Button::boundingRect() const{
     return QRectF(QPointF(), size);
 }
 
-void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
     QRectF rect = boundingRect();
 
     //painter->setOpacity(0.8);

@@ -5,6 +5,7 @@
 #include "client.h"
 #include "standard.h"
 #include "scenario.h"
+#include "audio.h"
 
 #include <QFile>
 
@@ -71,20 +72,16 @@ void Skill::initMediaSource(){
 
     int i;
     for(i=1; ;i++){
-        QString effect_file = QString("audio/skill/%1%2.dat").arg(objectName()).arg(i);
-        if(!QFile::exists(effect_file))
-            effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
-        if(QFile::exists(effect_file))
-            sources << effect_file;
-        else
+        QString effect_file = Audio::audioPath("audio/skill", QString("%1%2").arg(objectName()).arg(i));
+        if(effect_file.isNull())
             break;
+        else
+            sources << effect_file;
     }
 
     if(sources.isEmpty()){
-        QString effect_file = QString("audio/skill/%1.dat").arg(objectName());
-        if(!QFile::exists(effect_file))
-            effect_file = QString("audio/skill/%1.ogg").arg(objectName());
-        if(QFile::exists(effect_file))
+        QString effect_file = Audio::audioPath("audio/skill", objectName());
+        if(!effect_file.isNull())
             sources << effect_file;
     }
 }

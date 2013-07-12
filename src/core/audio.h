@@ -17,6 +17,8 @@ public:
     static void setBGMVolume(float volume);
     static void stopBGM();
 
+    static QString audioPath(const QString &dirname, const QString &name);
+
     static QString getVersion();
 };
 

@@ -66,7 +66,7 @@ Card::CardType EquipCard::getTypeId() const{
     return Equip;
 }
 
-QString EquipCard::getEffectPath(bool ) const{
+QString EquipCard::getEffectPath(bool ) const{    
     return "audio/card/common/equip.ogg";
 }
 

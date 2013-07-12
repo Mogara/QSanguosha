@@ -1,6 +1,10 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
+
+# it is said that call this function will improve qmake's performance
+cache()
+
 TARGET = QSanguosha
 QT += network sql
 TEMPLATE = app
@@ -350,4 +354,9 @@ CONFIG(crypto){
 
 !exists($$PWD/sanguosha.qm){
     system("lrelease sanguosha.ts")
+}
+
+!exists($$PWD/font.ttf){
+    system("7z x $$PWD/font/font.7z")
+    !win32:system("mv $$PWD/font/FONT.TTF $$PWD/font/font.ttf")
 }

@@ -3,6 +3,7 @@
 #include "skill.h"
 #include "package.h"
 #include "client.h"
+#include "audio.h"
 
 #include <QSize>
 #include <QFile>
@@ -176,28 +177,18 @@ QString General::getSkillDescription() const{
 }
 
 QString General::getLastEffectPath() const{
-    QString filename = QString("audio/death/%1.dat").arg(objectName());
-    if(!QFile::exists(filename))
-        filename = QString("audio/death/%1.ogg").arg(objectName());
-    QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly)){
-        QStringList origin_generals = objectName().split("_");
-        if(origin_generals.length()>1){
-            filename = QString("audio/death/%1.dat").arg(origin_generals.at(1));
-            if(!QFile::exists(filename))
-                filename = QString("audio/death/%1.ogg").arg(origin_generals.at(1));
-        }
+    static QList<QRegExp> rxs;
+    if(rxs.isEmpty()){
+        rxs << QRegExp("(.*)") << QRegExp(".*_(.*)") << QRegExp("(.*)f");
     }
-    if(!file.open(QIODevice::ReadOnly) && objectName().endsWith("f")){
-        QString origin_general = objectName();
-        origin_general.chop(1);
-        if(Sanguosha->getGeneral(origin_general)){
-            filename = QString("audio/death/%1.dat").arg(origin_general);
-            if(!QFile::exists(filename))
-                filename = QString("audio/death/%1.ogg").arg(origin_general);
-        }
+
+    foreach(QRegExp rx, rxs){
+        QString path = Audio::audioPath("audio/death", objectName().replace(rx, "\\1"));
+        if(!path.isNull())
+            return path;
     }
-    return filename;
+
+    return QString();
 }
 
 void General::lastWord() const{

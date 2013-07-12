@@ -5,6 +5,7 @@
 #include "room.h"
 #include "carditem.h"
 #include "lua-wrapper.h"
+#include "audio.h"
 #include <QFile>
 
 const Card::Suit Card::AllSuits[4] = {
@@ -222,10 +223,8 @@ QString Card::getPackage() const{
 
 QString Card::getEffectPath(bool is_male) const{
     QString gender = is_male ? "male" : "female";
-    QString path = QString("audio/card/%1/%2.dat").arg(gender).arg(objectName());
-    if(!QFile::exists(path))
-        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(objectName());
-    return path;
+
+    return Audio::audioPath(QString("audio/card/%1").arg(gender), objectName());
 }
 
 bool Card::isNDTrick() const{
@@ -233,7 +232,7 @@ bool Card::isNDTrick() const{
 }
 
 QString Card::getEffectPath() const{
-    return QString("audio/card/common/%1.ogg").arg(objectName());
+    return Audio::audioPath("audio/card/common", objectName());
 }
 
 QIcon Card::getSuitIcon() const{
