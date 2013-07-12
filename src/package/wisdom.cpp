@@ -411,7 +411,7 @@ public:
     WeidaiViewAsSkill():ZeroCardViewAsSkill("weidai$"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player){
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return player->hasLordSkill("weidai")
                 && !player->hasUsed("Analeptic")
                 && !player->hasUsed("WeidaiCard");
