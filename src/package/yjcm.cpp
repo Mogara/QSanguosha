@@ -182,7 +182,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -278,11 +278,11 @@ public:
         return !to_select->getCard()->inherits("BasicCard");
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@jujian";
     }
 };
@@ -407,11 +407,11 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern == "@@xuanhuo";
     }
 };
@@ -529,11 +529,11 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@xuanfeng";
     }
 };
@@ -709,7 +709,7 @@ public:
         return target != NULL && target->hasSkill("xianzhen");
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *gaoshun, QVariant &) const{
         ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
 
         if(event == Death || event == PhaseChange){
@@ -816,7 +816,7 @@ public:
         events << PhaseEnd;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -906,7 +906,7 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
     }
 }
 
-bool GanluCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool GanluCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() == 2;
 }
 
@@ -1137,7 +1137,7 @@ PaiyiCard::PaiyiCard(){
     mute = true;
 }
 
-bool PaiyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool PaiyiCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     if(!targets.isEmpty())
         return false;
     return true;

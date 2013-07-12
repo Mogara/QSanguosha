@@ -55,6 +55,7 @@ public:
     QString getPackage() const;
     QString getSkillDescription() const;
     QString getLastEffectPath() const;
+    QString getWinEffectPath() const;
     QString getLastword() const;
     QString getWinword() const;
     bool isCaoCao(const QString &other_name = QString()) const;

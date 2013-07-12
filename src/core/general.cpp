@@ -176,19 +176,31 @@ QString General::getSkillDescription() const{
     return description;
 }
 
-QString General::getLastEffectPath() const{
+static QString GetAudioPath(const QString &dirname, QString name){
     static QList<QRegExp> rxs;
     if(rxs.isEmpty()){
         rxs << QRegExp("(.*)") << QRegExp(".*_(.*)") << QRegExp("(.*)f");
     }
 
     foreach(QRegExp rx, rxs){
-        QString path = Audio::audioPath("audio/death", objectName().replace(rx, "\\1"));
+        QString path = Audio::audioPath(dirname, name.replace(rx, "\\1"));
         if(!path.isNull())
             return path;
     }
 
     return QString();
+}
+
+QString General::getWinEffectPath() const{
+    // special case
+    if(isCaoCao())
+        return "audio/win/caocao.ogg";
+    else
+        return GetAudioPath("audio/win", objectName());
+}
+
+QString General::getLastEffectPath() const{
+    return GetAudioPath("audio/death", objectName());
 }
 
 void General::lastWord() const{
@@ -197,22 +209,7 @@ void General::lastWord() const{
 }
 
 void General::winWord() const{
-    QString filename = QString("audio/win/%1.dat").arg(objectName());
-    if(isCaoCao())
-        filename = "audio/win/caocao.ogg";
-    QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly)){
-        QStringList origin_generals = objectName().split("_");
-        if(origin_generals.length()>1)
-            filename = QString("audio/win/%1.dat").arg(origin_generals.at(1));
-    }
-    if(!file.open(QIODevice::ReadOnly) && objectName().endsWith("f")){
-        QString origin_general = objectName();
-        origin_general.chop(1);
-        if(Sanguosha->getGeneral(origin_general))
-            filename = QString("audio/win/%1.dat").arg(origin_general);
-    }
-    Sanguosha->playEffect(filename);
+    Sanguosha->playEffect(getWinEffectPath());
 }
 
 QString General::getLastword() const{

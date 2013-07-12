@@ -38,7 +38,7 @@ QRectF IrregularButton::boundingRect() const{
     return QRectF(normal.rect());
 }
 
-void IrregularButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void IrregularButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
     QPixmap *to_draw = NULL;
     if(!isEnabled())
         to_draw = &disabled;
@@ -74,7 +74,7 @@ void IrregularButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     }
 }
 
-void IrregularButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+void IrregularButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *){
     changeState(Normal);
 }
 

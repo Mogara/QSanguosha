@@ -363,7 +363,7 @@ const ClientPlayer *Photo::getPlayer() const{
     return player;
 }
 
-void Photo::speak(const QString &content)
+void Photo::speak(const QString &)
 {
 
 }
