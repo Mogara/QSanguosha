@@ -383,6 +383,8 @@ void XiongyiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     source->loseMark("@xiongyi");
     if(!Config.DisableLightbox)
         room->broadcastInvoke("animate", "lightbox:$Xiongyi");
+    else
+        room->setEmotion(source, "skill/" + skill_name);
     room->getThread()->delay(1500);
     bool onlyme = false;
     if(targets.contains(source) && targets.length() == 1)

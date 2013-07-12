@@ -324,7 +324,7 @@ CONFIG(joystick){
 
 CONFIG(chatvoice){
 	win32{
-		QT += qaxcontainer
+		CONFIG += qaxcontainer
 		DEFINES += CHAT_VOICE
 	}
 }

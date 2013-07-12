@@ -1291,7 +1291,7 @@ void MainWindow::on_actionAbout_libtomcrypt_triggered()
     content.append(tr("Current versionn %1 <br/>").arg(Crypto::getVersion()));
 #endif
 
-    Window *window = new Window(tr("About Lua"), QSize(500, 300));
+    Window *window = new Window(tr("About Libtomcrypt"), QSize(500, 300));
     scene->addItem(window);
 
     window->addContent(content);
@@ -1319,17 +1319,17 @@ QString MainWindow::getKeyFromUser(){
 
 void MainWindow::on_actionEncrypt_files_triggered()
 {
-    QString key = getKeyFromUser();
-    if(key.isNull())
-        return;
+    //QString key = getKeyFromUser();
+    //if(key.isNull())
+    //    return;
 
     QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Please select files to encrypt"));
     if(filenames.isEmpty())
         return;
 
-    Crypto::backupKey();
+    //Crypto::backupKey();
 
-    Crypto::setKey(key.toLatin1());
+    //Crypto::setKey(key.toLatin1());
 
     foreach(QString filename, filenames){
         QFileInfo info(filename);
@@ -1338,7 +1338,7 @@ void MainWindow::on_actionEncrypt_files_triggered()
         Crypto::encryptFile(filename, to);
     }
 
-    Crypto::restoreKey();
+    //Crypto::restoreKey();
 }
 
 void MainWindow::on_actionDecrypt_files_triggered()
@@ -1351,9 +1351,11 @@ void MainWindow::on_actionDecrypt_files_triggered()
     if(filenames.isEmpty())
         return;
 
-    QString suffix = QInputDialog::getText(this, tr("Original suffix"), tr("Please input the decrypted files' suffix"));
+    QString suffix = QInputDialog::getText(this, tr("Original suffix"),
+                                           tr("Please input the decrypted files' suffix"),
+                                           QLineEdit::Normal, "ogg");
     if(suffix.isEmpty())
-        return;
+        suffix = "ogg";
 
     Crypto::backupKey();
 

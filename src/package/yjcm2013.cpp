@@ -492,6 +492,8 @@ void FenchengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     source->loseMark("@conflagration");
     if(!Config.DisableLightbox)
         room->broadcastInvoke("animate", "lightbox:$fencheng");
+    else
+        room->setEmotion(source, "skill/" + skill_name);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){

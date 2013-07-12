@@ -189,6 +189,8 @@ bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
     if(!Config.DisableLightbox)
         room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+    else
+        room->setEmotion(shenzhouyu, "skill/" + skill_name);
 
     shenzhouyu->loseMark("@flame");
     room->loseHp(shenzhouyu, 3);
@@ -206,6 +208,8 @@ bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const P
 void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
     if(!Config.DisableLightbox)
         room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
+    else
+        room->setEmotion(shenzhouyu, "skill/" + skill_name);
 
     shenzhouyu->loseMark("@flame");
     room->loseHp(shenzhouyu, 3);
@@ -230,6 +234,8 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
     if(!Config.DisableLightbox)
         room->broadcastInvoke("animate", "lightbox:$smallyeyan");
+    else
+        room->setEmotion(shenzhouyu, "skill/" + skill_name);
     shenzhouyu->loseMark("@flame");
 
     Card::use(room, shenzhouyu, targets);
@@ -383,6 +389,8 @@ public:
                 QList<ServerPlayer *> players = room->getOtherPlayers(weiwudi);
                 if(players.length() >=5 && !Config.DisableLightbox)
                     room->broadcastInvoke("animate", "lightbox:$guixin");
+                if(Config.DisableLightbox)
+                    room->setEmotion(weiwudi, "skill/" + objectName());
 
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){

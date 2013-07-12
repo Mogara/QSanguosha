@@ -669,6 +669,8 @@ void JiefanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     source->loseMark("@bother");
     if(!Config.DisableLightbox)
         room->broadcastInvoke("animate", "lightbox:$jiefan");
+    else
+        room->setEmotion(source, "skill/" + skill_name);
     room->getThread()->delay(1500);
     PlayerStar target = tar.first();
     foreach(ServerPlayer *p, room->getAllPlayers()){

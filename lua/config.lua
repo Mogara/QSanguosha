@@ -3,8 +3,8 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20130613",
-	version_name = "拟·鬼隐版",
+	version = "20130712",
+	version_name = "鬼隐版 Stage 7",
 	mod_name = "official",
 	kingdoms = { "wei", "shu", "wu", "qun", "god"},
 	package_names = {

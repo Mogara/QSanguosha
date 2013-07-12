@@ -657,6 +657,8 @@ void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     source->loseMark("@chaos");
     if(!Config.DisableLightbox)
         room->broadcastInvoke("animate", "lightbox:$luanwu");
+    else
+        room->setEmotion(source, "skill/" + skill_name);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){
