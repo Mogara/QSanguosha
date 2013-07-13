@@ -244,6 +244,14 @@ QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
     return skills;
 }
 
+const Card *Engine::getCard(const QString &name) const{
+    foreach(const Card *card, cards){
+        if(card->objectName() == name || card->getSubtype() == name)
+            return card;
+    }
+    return NULL;
+}
+
 const General *Engine::getGeneral(const QString &name) const{
     if(generals.contains(name))
         return generals.value(name);
@@ -537,6 +545,10 @@ int Engine::getCardCount() const{
     return cards.length();
 }
 
+QList<Card*> Engine::getCards() const{
+    return cards;
+}
+
 QStringList Engine::getLords() const{
     QStringList lords;
 
@@ -593,9 +605,8 @@ QStringList Engine::getRandomLords() const{
 
     qShuffle(nonlord_list);
 
-    int i;
     const static int extra = 2;
-    for(i=0; i< extra; i++)
+    for(int i=0; i< extra; i++)
         lords << nonlord_list.at(i);
 
     return lords;

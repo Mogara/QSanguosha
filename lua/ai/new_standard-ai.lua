@@ -51,3 +51,25 @@ end
 sgs.ai_skill_use_func.NewRendeCard = function(card,use,self)
 	use.card = card
 end
+
+-- zhangjiao
+sgs.ai_skill_use["@@new_leiji"]=function(self,prompt)
+	local mode = self.room:getMode()
+	if mode:find("mini") or mode:find("custom") then 
+		local players = self.room:getAllPlayers();
+		for _,aplayer in sgs.qlist(players) do
+			if aplayer:getState() ~= "robot" then
+				return "@LeijiCard=.->"..aplayer:objectName()
+			end
+		end
+	end
+
+	self:updatePlayers()
+	self:sort(self.enemies,"hp")
+	for _,enemy in ipairs(self.enemies) do
+		if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and not (enemy:isChained() and not self:isGoodChainTarget(enemy)) then
+			return "@LeijiCard=.->"..enemy:objectName()
+		end
+	end
+	return "."
+end
