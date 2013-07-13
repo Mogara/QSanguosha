@@ -67,6 +67,8 @@ private slots:
     void switchTo(int item);
 };
 
+class QNetworkReply;
+
 class ServerDialog: public QDialog{
     Q_OBJECT
 
@@ -147,7 +149,8 @@ private slots:
     void onSerButtonClicked();
     void onPCCButtonClicked();
     void onDetectButtonClicked();
-    void onHttpDone(bool error);
+    void onNetworkReplyGot(QNetworkReply *reply);
+
     void select3v3Generals();
     void edit1v1Banlist();
     void updateButtonEnablility(QAbstractButton* button);

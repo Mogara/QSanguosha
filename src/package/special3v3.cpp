@@ -30,11 +30,11 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@hongyuan";
     }
 };
@@ -63,7 +63,7 @@ public:
         events << CardDrawnDone;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhugejin, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zhugejin, QVariant &) const{
         if(zhugejin->getPhase() == Player::Draw && zhugejin->hasFlag("Invoked")){
             room->setPlayerFlag(zhugejin, "-Invoked");
             if(ServerInfo.GameMode == "06_3v3"){
@@ -87,7 +87,7 @@ HuanshiCard::HuanshiCard(){
     can_jilei = true;
 }
 
-void HuanshiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void HuanshiCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
 
 }
 
@@ -96,11 +96,11 @@ public:
     HuanshiViewAsSkill():OneCardViewAsSkill("huanshi"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@huanshi";
     }
 
@@ -288,7 +288,7 @@ public:
         frequency = Limited;
     }
 
-    virtual bool triggerable(const ServerPlayer *i) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 

@@ -21,10 +21,8 @@
 #include <QRadioButton>
 #include <QApplication>
 #include <QAction>
-
-#if QT_VERSION < 0x050000
-#include <QHttp>
-#endif
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 static QLayout *HLay(QWidget *left, QWidget *right, QWidget *other = NULL, QWidget *other2 = NULL){
     QHBoxLayout *layout = new QHBoxLayout;
@@ -838,40 +836,31 @@ QLayout *ServerDialog::createButtonLayout(){
     return button_layout;
 }
 
-void ServerDialog::onDetectButtonClicked(){
-#if QT_VERSION >= 0x050000
-    QMessageBox::warning(this, tr("Warning"), tr("I'm sorry that this function is not implemented yet!"));
-#else
-    QString host = "www.net.cn";
-    QString path = "/static/customercare/yourIP.asp";
-    QHttp *http = new QHttp(this);
-    http->setHost(host);
 
-    connect(http, SIGNAL(done(bool)), this, SLOT(onHttpDone(bool)));
-    http->get(path);
-#endif
+void ServerDialog::onDetectButtonClicked(){
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    manager->get(QNetworkRequest(QUrl("http://www.net.cn/static/customercare/yourIP.asp")));
+
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onNetworkReplyGot(QNetworkReply*)));
 }
 
-void ServerDialog::onHttpDone(bool error){
-#if QT_VERSION < 0x050000
-    QHttp *http = qobject_cast<QHttp *>(sender());
-
-    if(error){
-        QMessageBox::warning(this, tr("Warning"), http->errorString());
+void ServerDialog::onNetworkReplyGot(QNetworkReply *reply)
+{
+    if(reply->error() != QNetworkReply::NoError){
+        QMessageBox::warning(this, tr("Warning"), reply->errorString());
     }else{
         QRegExp rx("(\\d+\\.\\d+\\.\\d+\\.\\d+)");
-        int index = rx.indexIn(http->readAll());
+        int index = rx.indexIn(reply->readAll());
         if(index != -1){
             QString addr = rx.capturedTexts().at(0);
             address_edit->setText(addr);
         }
 
-        http->deleteLater();
+        reply->deleteLater();
+        reply->manager()->deleteLater();
     }
-#else
-    Q_UNUSED(error);
-#endif
 }
+
 
 void ServerDialog::onOkButtonClicked(){
     if(announce_ip_checkbox->isChecked() && address_edit->text().isEmpty()){
