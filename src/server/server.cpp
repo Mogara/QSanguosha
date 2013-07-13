@@ -487,7 +487,6 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
 
     list = new QListWidget;
     list->setObjectName("Pairs");
-    this->list = list;
     foreach(QString banned, BanPair::getAllBanSet().toList()){
         addGeneral(banned);
     }
