@@ -3,6 +3,92 @@
 #include "carditem.h"
 #include "engine.h"
 
+NewLeijiCard::NewLeijiCard(){
+
+}
+
+bool NewLeijiCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
+    return targets.isEmpty();
+}
+
+void NewLeijiCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *zhangjiao = effect.from;
+    ServerPlayer *target = effect.to;
+
+    Room *room = zhangjiao->getRoom();
+    room->setEmotion(target, "bad");
+
+    JudgeStruct judge;
+    judge.pattern = QRegExp("(.*):(spade|club):(.*)");
+    judge.good = false;
+    judge.reason = "new_leiji";
+    judge.who = target;
+
+    room->judge(judge);
+
+    if(judge.isBad()){
+        DamageStruct damage;
+        damage.card = NULL;
+        damage.from = zhangjiao;
+        damage.to = target;
+        damage.nature = DamageStruct::Thunder;
+
+        room->damage(damage);
+        if(zhangjiao->isWounded()){
+            RecoverStruct rec;
+            room->recover(zhangjiao, rec);
+        }
+    }else
+        room->setEmotion(zhangjiao, "bad");
+}
+
+class NewLeijiViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    NewLeijiViewAsSkill():ZeroCardViewAsSkill("new_leiji"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@new_leiji";
+    }
+
+    virtual const Card *viewAs() const{
+        return new NewLeijiCard;
+    }
+};
+
+class NewLeiji: public TriggerSkill{
+public:
+    NewLeiji():TriggerSkill("new_leiji"){
+        events << CardAsked << CardResponsed;
+        view_as_skill = new NewLeijiViewAsSkill;
+    }
+
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zhangjiao, QVariant &data) const{
+        if(event == CardAsked){
+            if(data.toString() == "jink")
+                zhangjiao->setFlags("new_leiji_invoke");
+        }
+        else{
+            CardStar card_star = data.value<CardStar>();
+            if(!card_star->inherits("Jink") || !zhangjiao->hasFlag("new_leiji_invoke"))
+                return false;
+
+            zhangjiao->setFlags("-new_leiji_invoke");
+            room->askForUseCard(zhangjiao, "@@new_leiji", "@new_leiji");
+        }
+        return false;
+    }
+};
+
 class Yaowu:public MasochismSkill{
 public:
     Yaowu():MasochismSkill("yaowu"){
@@ -250,6 +336,12 @@ public:
 NewStandardPackage::NewStandardPackage()
     :Package("new_standard")
 {
+    General *new_zhangjiao = new General(this, "new_zhangjiao$", "qun", 3);
+    new_zhangjiao->addSkill(new NewLeiji);
+    new_zhangjiao->addSkill("guidao");
+    new_zhangjiao->addSkill("huangtian");
+    addMetaObject<NewLeijiCard>();
+
     General *new_huaxiong = new General(this, "new_huaxiong", "qun", 6);
     new_huaxiong->addSkill(new Yaowu);
 

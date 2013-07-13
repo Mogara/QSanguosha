@@ -3,6 +3,14 @@
 return {
 	["new_standard"] = "新标准版",
 
+	["#new_zhangjiao"] = "天宫将军",
+	["new_zhangjiao"] = "张角",
+	["illustrator:new_zhangjiao"] = "LiuHeng",
+	["cv:new_zhangjiao"] = "苏遥东，极光星逝",
+	["new_leiji"] = "雷擊",
+	[":new_leiji"] = "每当你使用或打出一张【闪】时，可令一名其他角色判定，若结果为黑色，你对该角色造成1点雷电伤害且你回复1点体力。",
+	["@new_leiji"] = "令任意一名角色判定，若为黑色，你对该角色造成1点雷电伤害，然后自己回复1点体力",
+
 	["#new_huaxiong"] = "飞扬跋扈",
 	["new_huaxiong"] = "华雄",
 	["designer:new_huaxiong"] = "不明",
