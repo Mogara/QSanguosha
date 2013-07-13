@@ -823,7 +823,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
     QVariant asked = pattern;
     if(thread->trigger(CardUseAsk, player, asked))
-        return NULL;
+        return false;
 
     QString answer;
 
@@ -861,7 +861,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit){
+bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool ){
     Q_ASSERT(!victims.isEmpty());
 
     const Card *slash = askForCard(slasher, "slash", prompt, QVariant(), NonTrigger);
@@ -3728,7 +3728,7 @@ QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const Q
     return result;
 }
 
-void Room::selectRoleCommand(ServerPlayer *player, const QString &arg){
+void Room::selectRoleCommand(ServerPlayer *, const QString &arg){
     result = arg;
     if(result.isEmpty())
         result = "abstained";

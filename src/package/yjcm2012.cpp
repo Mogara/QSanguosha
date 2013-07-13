@@ -66,7 +66,7 @@ public:
         return card;
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -200,7 +200,7 @@ public:
         return GuhuoDialog::getInstance("qice", false);
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
         return !to_select->isEquipped();
     }
 
@@ -318,7 +318,7 @@ public:
         events << CardAsk << CardUseAsk;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *caozhang, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* , ServerPlayer *caozhang, QVariant &data) const{
         QString asked = data.toString();
         if(asked == "slash" && caozhang->hasFlag("jiangchi_forbid")){
             /*room->playSkillEffect(objectName(), qrand() % 2 + 3);
@@ -368,7 +368,7 @@ public:
         return target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         if(event == PhaseChange && player->getPhase() == Player::Start){
             if(player->askForSkillInvoke(objectName())){
                 room->playSkillEffect(objectName());
@@ -482,7 +482,7 @@ public:
         return pattern == "slash";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
         return !to_select->isEquipped();
     }
 
@@ -602,7 +602,7 @@ public:
 GongqiCard::GongqiCard(){
 }
 
-bool GongqiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool GongqiCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     if(!targets.isEmpty())
         return false;
     return true;
@@ -629,7 +629,7 @@ public:
     Gongqi():OneCardViewAsSkill("gongqi"){
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const CardItem *) const{
         return true;
     }
 
@@ -712,7 +712,7 @@ bool AnxuCard::targetFilter(const QList<const Player *> &targets, const Player *
         return false;
 }
 
-bool AnxuCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool AnxuCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() == 2;
 }
 
@@ -747,7 +747,7 @@ protected:
         return !player->hasUsed("AnxuCard");
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &) const{
         return false;
     }
 };
@@ -791,7 +791,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return  pattern == "slash";
     }
 
@@ -867,7 +867,7 @@ public:
     ChunlaoViewAsSkill():ViewAsSkill("chunlao"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -897,11 +897,11 @@ public:
         view_as_skill = new ChunlaoViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *chengpu = room->findPlayerBySkillName(objectName());
         if(!chengpu)
             return false;
