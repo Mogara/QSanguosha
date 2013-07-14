@@ -150,7 +150,7 @@ SOURCES += \
 	src/lua/lbaselib.c \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
-	swig/sanguosha_wrap.cxx
+	swig/sanguosha_wrap.cxx 
 
 HEADERS += \
 	src/client/aux-skills.h \
@@ -272,15 +272,15 @@ HEADERS += \
 	src/lua/ldebug.h \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
-	src/lua/lapi.h
-	
+	src/lua/lapi.h 
+
 FORMS += \
 	src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
 	src/dialog/connectiondialog.ui \
 	src/dialog/generaloverview.ui \
 	src/dialog/mainwindow.ui 
-	
+
 INCLUDEPATH += include
 INCLUDEPATH += src/client
 INCLUDEPATH += src/core
