@@ -289,22 +289,22 @@ AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlaye
 
     bool burned = a->getRoom()->getTag("BurnWuchao").toBool();
     if(!burned && a->getRoom()->getAlivePlayers().length() > 4){
-        if(a->getGeneral()->isCaoCao("liubei")){
+        if(a->getGeneral()->nameContains("liubei")){
             if(b->getRole() == "loyalist" || b->isLord())
                 return AI::Friend;
             if(b->getRole() == "rebel")
                 return AI::Enemy;
         }
-        if(a->getGeneral()->isCaoCao("guanyu")){
+        if(a->getGeneral()->nameContains("guanyu")){
             if(b->getRole() == "loyalist")
                 return AI::Enemy;
         }
         if(a->getRole() == "loyalist" || a->isLord()){
-            if(b->getGeneral()->isCaoCao("liubei"))
+            if(b->getGeneral()->nameContains("liubei"))
                 return AI::Friend;
         }
         if(a->getRole() == "rebel"){
-            if(b->getGeneral()->isCaoCao("guanyu"))
+            if(b->getGeneral()->nameContains("guanyu"))
                 return AI::Friend;
         }
     }

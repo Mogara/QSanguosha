@@ -584,7 +584,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
                 (damage.card->isRed() || damage.card->hasFlag("drank"))){
-            int index = damage.card->hasFlag("drank") ? 2 : damage.from->getGeneral()->isCaoCao("guanyu") ? 3 : 1;
+            int index = damage.card->hasFlag("drank") ? 2 : damage.from->getGeneral()->nameContains("guanyu") ? 3 : 1;
             room->playSkillEffect(objectName(), index);
 
             LogMessage log;
@@ -721,7 +721,7 @@ void AnxuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     ServerPlayer *from = selecteds.first()->getHandcardNum() < selecteds.last()->getHandcardNum() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
     int index = 1;
-    if(from->getGeneral()->isCaoCao("sunquan") || to->getGeneral()->isCaoCao("sunquan"))
+    if(from->getGeneral()->nameContains("sunquan") || to->getGeneral()->nameContains("sunquan"))
         index = 2;
     room->playSkillEffect(skill_name, index);
     int id = room->askForCardChosen(from, to, "h", "anxu");
@@ -771,7 +771,7 @@ public:
             return false;
 
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
-        room->playSkillEffect(objectName(), target->getGeneral()->isCaoCao("sunquan") ? 2 : 1);
+        room->playSkillEffect(objectName(), target->getGeneral()->nameContains("sunquan") ? 2 : 1);
 
         target->drawCards(3);
         RecoverStruct recover;
@@ -934,7 +934,7 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *who, const Card *) const{
-        if(who->getGeneral()->isCaoCao("zhouyu"))
+        if(who->getGeneral()->nameContains("zhouyu"))
             return 3;
         else
             return 2;

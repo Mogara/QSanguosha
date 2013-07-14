@@ -470,7 +470,7 @@ public:
         return false;
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const CardItem *) const{
         return true;
     }
 
@@ -599,7 +599,7 @@ public:
         events << DamageComplete << Death << HpLost;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -750,7 +750,7 @@ KnowThyself::KnowThyself(Suit suit, int number)
     setObjectName("know_thyself");
 }
 
-bool KnowThyself::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool KnowThyself::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() <= 1;
 }
 

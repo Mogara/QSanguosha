@@ -58,7 +58,9 @@ public:
     QString getWinEffectPath() const;
     QString getLastword() const;
     QString getWinword() const;
-    bool isCaoCao(const QString &other_name = QString()) const;
+    bool isCaoCao() const;
+    bool isZhugeliang() const;
+    bool nameContains(const QString &name) const;
 
     static QSize BigIconSize;
     static QSize SmallIconSize;

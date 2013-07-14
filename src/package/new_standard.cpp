@@ -268,7 +268,7 @@ NewRendeCard::NewRendeCard(){
     mute = true;
 }
 
-void NewRendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void NewRendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     QList<int> rende_cards = getSubcards();
     int num = 0;
     while(room->askForYiji(source, rende_cards))

@@ -107,7 +107,7 @@ public:
             return false;
 
         if(caozhi && caozhi->askForSkillInvoke(objectName(), data)){
-            if(player->getGeneral()->isCaoCao("zhenji"))
+            if(player->getGeneral()->nameContains("zhenji"))
                 room->playSkillEffect("luoying", 2);
             else
                 room->playSkillEffect("luoying", 1);
@@ -234,7 +234,7 @@ bool JujianCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    if(effect.to->getGeneral()->isCaoCao("zhugeliang"))
+    if(effect.to->getGeneral()->isZhugeliang())
         room->playSkillEffect(skill_name, 3);
     else
         room->playSkillEffect(skill_name, qrand() % 2 + 1);
@@ -764,7 +764,7 @@ MingceCard::MingceCard(){
 
 void MingceCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    if(effect.to->getGeneral()->isCaoCao("lvbu"))
+    if(effect.to->getGeneral()->nameContains("lvbu"))
         room->playSkillEffect(skill_name, 3);
     else
         room->playSkillEffect(skill_name, qrand() % 2 + 1);

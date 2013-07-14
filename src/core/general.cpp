@@ -250,15 +250,18 @@ QString General::getWinword() const{
     return win_word;
 }
 
-bool General::isCaoCao(const QString &other_name) const{
-    if(other_name.isEmpty() || other_name == "caocao")
-        return objectName().contains("caocao") || objectName() == "weiwudi";
-    else{
-        if(other_name == "zhugeliang")
-            return objectName().contains(other_name) ||  objectName() == "wolong";
-        else
-            return objectName().contains(other_name);
-    }
+bool General::isCaoCao() const{
+    return objectName().contains("caocao") || objectName() == "weiwudi";
+}
+
+bool General::isZhugeliang() const
+{
+    return objectName().contains("zhugeliang") || objectName() == "wolong";
+}
+
+bool General::nameContains(const QString &name) const
+{
+    return objectName().contains(name);
 }
 
 QSize General::BigIconSize(94, 96);

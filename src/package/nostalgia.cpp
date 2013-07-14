@@ -121,7 +121,7 @@ void NosJujianCard::onEffect(const CardEffectStruct &effect) const{
     int n = subcardsLength();
     effect.to->drawCards(n);
     Room *room = effect.from->getRoom();
-    if(effect.to->getGeneral()->isCaoCao("zhugeliang"))
+    if(effect.to->getGeneral()->isZhugeliang())
         room->playSkillEffect(skill_name, 3);
     else
         room->playSkillEffect(skill_name, qrand() % 2 + 1);
@@ -665,7 +665,7 @@ public:
                 int n = 3;
                 if(target == wangyi)
                     n = 2;
-                else if(target->getGeneral()->isCaoCao("machao"))
+                else if(target->getGeneral()->nameContains("machao"))
                     n = 4;
                 room->playSkillEffect(objectName(), n);
 

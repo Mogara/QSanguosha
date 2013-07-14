@@ -884,7 +884,7 @@ public:
 
                     ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
 
-                    if(player->getGeneral()->isCaoCao("zhugeliang"))
+                    if(player->getGeneral()->isZhugeliang())
                         room->playSkillEffect("fangquan", 1);
                     else
                         room->playSkillEffect("fangquan", 2);

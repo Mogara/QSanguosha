@@ -57,7 +57,7 @@ public:
         events << Dying;
     }
 
-    virtual bool triggerable(const ServerPlayer *player) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -115,7 +115,7 @@ public:
         events << CardRecord << CardUsed;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -163,7 +163,7 @@ public:
 XiansiCard::XiansiCard() {
 }
 
-bool XiansiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool XiansiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.length() < 2 && !to_select->isNude();
 }
 
@@ -178,11 +178,11 @@ public:
     XiansiViewAsSkill(): ZeroCardViewAsSkill("xiansi") {
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@xiansi";
     }
 
@@ -409,7 +409,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if(!use.card->isKindOf("Slash"))
             return false;
@@ -688,7 +688,7 @@ public:
         return pattern == "@@qiaoshui";
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 

@@ -591,7 +591,8 @@ QStringList Engine::getRandomLords() const{
         const General *general = generals.value(nonlord);
         if(ban_package.contains(general->getPackage()))
             continue;
-        if(general->isCaoCao("bgm_pangtong"))
+
+        if(general->objectName() == "bgm_pangtong")
             continue;
 
         if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
