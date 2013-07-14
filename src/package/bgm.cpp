@@ -1890,7 +1890,7 @@ public:
     MingjianViewAsSkill():OneCardViewAsSkill("mingjian"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -1915,7 +1915,7 @@ public:
         view_as_skill = new MingjianViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -1947,7 +1947,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room*, ServerPlayer *, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         return !judge->who->getPile("jian").isEmpty();
     }
