@@ -41,7 +41,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
     model->setParent(this);
     ui->tableView->setModel(model);
 
-    on_tableView_clicked(model->firstIndex());
+    on_tableView_clicked(model->index(0, 0));
 }
 
 void GeneralOverview::resetButtons(){

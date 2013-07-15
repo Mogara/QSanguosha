@@ -52,11 +52,11 @@ QVariant GeneralModel::data(const QModelIndex &index, int role) const
 }
 
 QVariant GeneralModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    if(role != Qt::DisplayRole)
-        return QVariant();
-
+{   
     if(orientation == Qt::Horizontal){
+        if(role != Qt::DisplayRole)
+            return QVariant();
+
         switch(section){
         case NameColumn: return tr("Name");
         case KingdomColumn: return tr("Kingdom");
@@ -66,19 +66,16 @@ QVariant GeneralModel::headerData(int section, Qt::Orientation orientation, int 
         case TitleColumn: return tr("Title");
         }
     }else if(orientation == Qt::Vertical){
-        return QString::number(1 + section);
+        switch(role){
+        case Qt::DisplayRole: return QString::number(1 + section);
+        case Qt::DecorationRole:{
+            const General *general = list[section];
+            if(general->isLord())
+                return QIcon("image/system/roles/lord.png");
+        }
+        }
     }
 
     return QVariant();
 }
-
-QModelIndex GeneralModel::firstIndex()
-{
-    if(list.isEmpty())
-        return QModelIndex();
-    else
-        return createIndex(0, 0);
-
-}
-
 
