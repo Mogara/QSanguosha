@@ -234,7 +234,7 @@ public:
             return x;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zombie, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *zombie, QVariant &) const{
         if(event == PhaseChange && zombie->getPhase() == Player::Play){
             int x = getNumDiff(zombie);
             if(x > 0){

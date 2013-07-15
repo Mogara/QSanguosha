@@ -465,7 +465,7 @@ Zha0xinCard::Zha0xinCard(){
     mute = true;
 }
 
-void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &tar) const{
+void Zha0xinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->showAllCards(source, true);
     int samecount = 0, unsamecount = 0;
     foreach(const Card *card1, source->getHandcards()){
@@ -525,7 +525,7 @@ public:
         return -1;
     }
 
-    virtual bool trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room*, ServerPlayer *player, QVariant &) const{
         if(player->askForSkillInvoke(objectName())){
             player->playSkillEffect(objectName());
             player->drawCards(1);
@@ -543,7 +543,7 @@ public:
         return Analeptic::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern.contains("analeptic");
     }
 
@@ -744,7 +744,7 @@ public:
 SijieCard::SijieCard(){
 }
 
-bool SijieCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool SijieCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     if(!targets.isEmpty())
         return false;
 
@@ -767,11 +767,11 @@ public:
     SijieViewAsSkill():ZeroCardViewAsSkill("sijie"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@sijie";
     }
 
