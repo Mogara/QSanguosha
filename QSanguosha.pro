@@ -150,7 +150,8 @@ SOURCES += \
 	src/lua/lbaselib.c \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
-	swig/sanguosha_wrap.cxx 
+	swig/sanguosha_wrap.cxx \ 
+    src/dialog/generalmodel.cpp
 
 HEADERS += \
 	src/client/aux-skills.h \
@@ -272,7 +273,8 @@ HEADERS += \
 	src/lua/ldebug.h \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
-	src/lua/lapi.h 
+	src/lua/lapi.h \ 
+    src/dialog/generalmodel.h
 
 FORMS += \
 	src/dialog/cardoverview.ui \
@@ -326,11 +328,14 @@ CONFIG(joystick){
 	unix: LIBS += -lplibjs -lplibul
 }
 
-CONFIG(chatvoice){
-	win32{
-		CONFIG += qaxcontainer
-		DEFINES += CHAT_VOICE
-	}
+CONFIG(chatvoice):win32{
+    greaterThan(QT_MAJOR_VERSION, 4){
+        QT += qaxcontainer
+    }else{
+        CONFIG += qaxcontainer
+    }
+
+    DEFINES += CHAT_VOICE
 }
 
 CONFIG(crypto){

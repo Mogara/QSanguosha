@@ -32,9 +32,8 @@ private:
 private slots:
     void playEffect();
     void copyLines();
-    void askChange();
-    void on_tableWidget_itemSelectionChanged();
-    void on_tableWidget_itemDoubleClicked(QTableWidgetItem* item);
+    void on_tableView_doubleClicked(const QModelIndex &index);
+    void on_tableView_clicked(const QModelIndex &index);
 };
 
 #endif // GENERALOVERVIEW_H

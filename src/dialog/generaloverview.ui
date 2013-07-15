@@ -30,7 +30,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
-    <widget class="QTableWidget" name="tableWidget">
+    <widget class="QTableView" name="tableView">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -43,36 +43,6 @@
      <property name="sortingEnabled">
       <bool>true</bool>
      </property>
-     <column>
-      <property name="text">
-       <string>Nick</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>General</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Kingdom</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Gender</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>MaxHP</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Package</string>
-      </property>
-     </column>
     </widget>
    </item>
    <item>
@@ -221,7 +191,7 @@
              <x>0</x>
              <y>0</y>
              <width>241</width>
-             <height>477</height>
+             <height>460</height>
             </rect>
            </property>
           </widget>

@@ -82,4 +82,6 @@ private:
     bool never_shown;
 };
 
+typedef QList<const General *> GeneralList;
+
 #endif // GENERAL_H

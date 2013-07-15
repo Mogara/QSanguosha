@@ -220,6 +220,10 @@ QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
 }
 
+QString Engine::translate(const QString &to_translate, const QString &defaultValue) const{
+    return translations.value(to_translate, defaultValue);
+}
+
 int Engine::getRoleIndex() const{
     if(ServerInfo.GameMode == "06_3v3")
         return 4;

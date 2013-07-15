@@ -10,6 +10,8 @@
 #include <QCommandLinkButton>
 #include <QClipboard>
 
+#include "generalmodel.h"
+
 GeneralOverview::GeneralOverview(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GeneralOverview)
@@ -22,8 +24,6 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     group_box->setTitle(tr("Effects"));
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
-    //ui->skillTextEdit->setProperty("type", "description");
-    setProperty("GeneralName", "songjiang");
 }
 
 void GeneralOverview::fillGenerals(const QList<const General *> &generals){
@@ -34,75 +34,9 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
             itor.remove();
     }
 
-    ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(copy_generals.length());
-    ui->tableWidget->setIconSize(QSize(20,20));
-    QIcon lord_icon("image/system/roles/lord.png");
-
-    int i;
-    for(i=0; i<copy_generals.length(); i++){
-        const General *general = copy_generals[i];
-
-        QString name, kingdom, gender, max_hp, package;
-
-        name = Sanguosha->translate(general->objectName());
-
-        kingdom = Sanguosha->translate(general->getKingdom());
-        gender = general->isMale() ? tr("Male") : tr("Female");
-        max_hp = QString::number(general->getMaxHp());
-        package = Sanguosha->translate(general->getPackage());
-
-        QString nickname = Sanguosha->translate("#" + general->objectName());
-        QTableWidgetItem *nickname_item;
-        if(!nickname.startsWith("#"))
-            nickname_item = new QTableWidgetItem(nickname);
-        else
-            nickname_item = new QTableWidgetItem(Sanguosha->translate("UnknowNick"));
-        nickname_item->setData(Qt::UserRole, general->objectName());
-        nickname_item->setTextAlignment(Qt::AlignCenter);
-
-        if(general->isHidden())
-            nickname_item->setBackgroundColor(Qt::gray);
-
-        QTableWidgetItem *name_item = new QTableWidgetItem(name);
-        name_item->setTextAlignment(Qt::AlignCenter);
-        name_item->setData(Qt::UserRole, general->objectName());
-        if(general->isLord()){
-            name_item->setIcon(lord_icon);
-            name_item->setTextAlignment(Qt::AlignCenter);
-        }
-
-        if(general->isHidden())
-            name_item->setBackgroundColor(Qt::gray);
-
-        QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
-        kingdom_item->setTextAlignment(Qt::AlignCenter);
-
-        QTableWidgetItem *gender_item = new QTableWidgetItem(gender);
-        gender_item->setTextAlignment(Qt::AlignCenter);
-
-        QTableWidgetItem *max_hp_item = new QTableWidgetItem(max_hp);
-        max_hp_item->setTextAlignment(Qt::AlignCenter);
-
-        QTableWidgetItem *package_item = new QTableWidgetItem(package);
-        package_item->setTextAlignment(Qt::AlignCenter);
-
-        ui->tableWidget->setItem(i, 0, nickname_item);
-        ui->tableWidget->setItem(i, 1, name_item);
-        ui->tableWidget->setItem(i, 2, kingdom_item);
-        ui->tableWidget->setItem(i, 3, gender_item);
-        ui->tableWidget->setItem(i, 4, max_hp_item);
-        ui->tableWidget->setItem(i, 5, package_item);
-    }
-
-    ui->tableWidget->setColumnWidth(0, 80);
-    ui->tableWidget->setColumnWidth(1, 80);
-    ui->tableWidget->setColumnWidth(2, 40);
-    ui->tableWidget->setColumnWidth(3, 50);
-    ui->tableWidget->setColumnWidth(4, 60);
-    ui->tableWidget->setColumnWidth(5, 60);
-
-    ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
+    GeneralModel *model = new GeneralModel(copy_generals);
+    model->setParent(this);
+    ui->tableView->setModel(model);
 }
 
 void GeneralOverview::resetButtons(){
@@ -173,10 +107,9 @@ void GeneralOverview::copyLines(){
     }
 }
 
-void GeneralOverview::on_tableWidget_itemSelectionChanged()
+void GeneralOverview::on_tableView_clicked(const QModelIndex &index)
 {
-    int row = ui->tableWidget->currentRow();
-    QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
+    QString general_name = ui->tableView->model()->data(index, Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
 
     QString category = QString();
@@ -272,20 +205,17 @@ void GeneralOverview::playEffect()
     }
 }
 
-void GeneralOverview::askChange(){
-    if(!Self || !Config.value("Cheat/FreeChange", false).toBool())
+void GeneralOverview::on_tableView_doubleClicked(const QModelIndex &index)
+{
+    if(Self == NULL)
         return;
 
-    int row = ui->tableWidget->currentRow();
-    QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-    if(Self && general_name != Self->getGeneralName()){
+    if(!Config.value("Cheat/FreeChange", false).toBool())
+        return;
+
+    QString general_name = ui->tableView->model()->data(index, Qt::UserRole).toString();
+    if(general_name != Self->getGeneralName()){
         ClientInstance->changeGeneral(general_name);
         ui->changeGeneralButton->setEnabled(false);
     }
-}
-
-void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* )
-{
-    if(Self)
-        askChange();
 }
