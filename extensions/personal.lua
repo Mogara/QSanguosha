@@ -172,7 +172,7 @@ tianshuang:addSkill(dragonfist)
 tianshuang:addSkill(dragonfistt)
 
 sgs.LoadTranslationTable{
-	["personal"] = "Pesonal",
+	["personal"] = "Personal",
 
 	["#tianyin"] = "天道之化身",
 	["tianyin"] = "天音",
