@@ -27,6 +27,8 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+    QModelIndex firstIndex();
+
 private:
     GeneralList list;
 };

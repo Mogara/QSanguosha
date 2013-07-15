@@ -34,9 +34,14 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
             itor.remove();
     }
 
+    if(copy_generals.isEmpty())
+        return;
+
     GeneralModel *model = new GeneralModel(copy_generals);
     model->setParent(this);
     ui->tableView->setModel(model);
+
+    on_tableView_clicked(model->firstIndex());
 }
 
 void GeneralOverview::resetButtons(){

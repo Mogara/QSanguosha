@@ -72,4 +72,13 @@ QVariant GeneralModel::headerData(int section, Qt::Orientation orientation, int 
     return QVariant();
 }
 
+QModelIndex GeneralModel::firstIndex()
+{
+    if(list.isEmpty())
+        return QModelIndex();
+    else
+        return createIndex(0, 0);
+
+}
+
 
